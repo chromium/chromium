@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import org.chromium.webapk.shell_apk.HostBrowserLauncher;
 import org.chromium.webapk.shell_apk.HostBrowserLauncherParams;
 import org.chromium.webapk.shell_apk.HostBrowserUtils;
-import org.chromium.webapk.shell_apk.R;
 import org.chromium.webapk.shell_apk.TransparentLauncherActivity;
 
 /**
@@ -30,10 +29,7 @@ public class H2OMainActivity extends TransparentLauncherActivity {
 
         if (enabledSetting == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT) {
             // H2OMainActivity is enabled by default for old-style WebAPKs.
-            // R.bool.transparent_main_activity_enabled_default is inaccurate for old-style WebAPKs.
-            return !isNewStyleWebApk
-                    || context.getResources()
-                            .getBoolean(R.bool.transparent_main_activity_enabled_default);
+            return !isNewStyleWebApk;
         }
         return enabledSetting == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
     }

@@ -26,7 +26,7 @@ import java.util.Locale;
 
 /** Convenience wrapper for parameters to {@link HostBrowserLauncher} methods. */
 public class HostBrowserLauncherParams {
-    private boolean mIsNewStyleWebApk;
+    private boolean mIsArcChromeOs;
     @NonNull private PackageNameAndComponentName mHostBrowserPackageNameAndComponentName;
     private boolean mDialogShown;
     private Intent mOriginalIntent;
@@ -102,10 +102,10 @@ public class HostBrowserLauncherParams {
         // Ignore deep links which came with non HTTP/HTTPS schemes and which were not rewritten.
         if (!doesUrlUseHttpOrHttpsScheme(startUrl)) return null;
 
-        boolean isNewStyleWebApk = metadata.getBoolean(WebApkMetaDataKeys.IS_NEW_STYLE_WEBAPK);
+        boolean isArcChromeos = metadata.getBoolean(WebApkMetaDataKeys.IS_ARC_CHROMEOS);
 
         return new HostBrowserLauncherParams(
-                isNewStyleWebApk,
+                isArcChromeos,
                 hostBrowserPackageNameAndComponentName,
                 dialogShown,
                 intent,
@@ -228,7 +228,7 @@ public class HostBrowserLauncherParams {
     }
 
     private HostBrowserLauncherParams(
-            boolean isNewStyleWebApk,
+            boolean isArcChromeOs,
             @NonNull PackageNameAndComponentName hostBrowserPackageNameAndComponentName,
             boolean dialogShown,
             Intent originalIntent,
@@ -238,7 +238,7 @@ public class HostBrowserLauncherParams {
             long launchTimeMs,
             long splashShownTimeMs,
             String selectedShareTargetActivityClassName) {
-        mIsNewStyleWebApk = isNewStyleWebApk;
+        mIsArcChromeOs = isArcChromeOs;
         mHostBrowserPackageNameAndComponentName = hostBrowserPackageNameAndComponentName;
         mDialogShown = dialogShown;
         mOriginalIntent = originalIntent;
@@ -255,7 +255,7 @@ public class HostBrowserLauncherParams {
      * enabled for new-style WebAPKs.
      */
     public boolean isNewStyleWebApk() {
-        return mIsNewStyleWebApk;
+        return !mIsArcChromeOs;
     }
 
     /** Returns the chosen host browser Package Name. */
