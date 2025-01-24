@@ -1,20 +1,15 @@
 # Glic test client
 
-This is a test page that facilitates testing the API between the host and the web client.
+This is a test page that facilitates testing the API between the host and the
+web client.
 
 
 ## Instructions
 
-1. Build it
+1. Build and run it.
 
 ```bash
-   autoninja -C out/Default chrome/test/data/webui/glic:generate_test_files
+   chrome/test/data/webui/glic/test_client/serve.py -C out/Default
 ```
 
-2. Serve it
-
-```bash
-   python3 -m http.server -d out/Default/gen/chrome/test/data/webui/glic
-```
-
-3. Run Chrome with `--glic-guest-url=http://localhost:8000/glic/test_client/index.html`
+2. Run Chrome with `--glic-guest-url=http://localhost:8000/glic/test_client/index.html`
