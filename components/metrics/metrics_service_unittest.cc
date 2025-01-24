@@ -753,13 +753,19 @@ TEST_F(MetricsServiceTest, FgBgId) {
   service.Start();
   ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
 
+  // Immediately send a foreground notification to simulate the application
+  // being launched. This should not close the current log (since it is too
+  // early to do so), and it should not cause it to have its `fg_bg_id` cleared
+  // (verified below by the first "ongoing log").
+  service.OnAppEnterForeground(/*force_open_new_log=*/true);
+  MetricsLogStore* test_log_store = service.LogStoreForTest();
+  EXPECT_FALSE(test_log_store->has_unsent_logs());
+
   // Fast forward the time until the MetricsRotationScheduler first runs, which
   // should complete the first ongoing log.
   task_environment_.FastForwardBy(
       base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()));
   ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
-
-  MetricsLogStore* test_log_store = service.LogStoreForTest();
 
   // Stage the next log, which should be the first ongoing log. Check that the
   // log has a `fg_bg_id` value set, and remember it to compare with follow up
@@ -767,13 +773,22 @@ TEST_F(MetricsServiceTest, FgBgId) {
   test_log_store->StageNextLog();
   int fg_bg_id1 = GetFgBgId(test_log_store);
 
-  // Close and stage the next log, which is the second "ongoing log". Check that
-  // it has the same `fg_bg_id` as the first log.
+  // Send another foreground notification, which will create a second "ongoing
+  // log". Since we are already foregrounded (see above), this should not result
+  // in a new `fg_bg_id` (verified by the third "ongoing log" below). These
+  // duplicate notifications can often happen on platforms like iOS.
+  test_log_store->DiscardStagedLog();
+  service.OnAppEnterForeground(/*force_open_new_log=*/true);
+  test_log_store->StageNextLog();
+  EXPECT_EQ(GetFgBgId(test_log_store), fg_bg_id1);
+
+  // Close and stage the next log, which is the third "ongoing log". Check that
+  // it has the same `fg_bg_id` as the last two logs.
   test_log_store->DiscardStagedLog();
   service.StageCurrentLogForTest();
   EXPECT_EQ(GetFgBgId(test_log_store), fg_bg_id1);
 
-  // Simulate backgrounding. The act of backgrounding will create a third
+  // Simulate backgrounding. The act of backgrounding will create a fourth
   // "ongoing log" -- which should contain the last metrics from when the
   // browser was in the foreground, and hence should have the same `fg_bg_id`
   // as the previous two logs.
@@ -784,7 +799,7 @@ TEST_F(MetricsServiceTest, FgBgId) {
   EXPECT_EQ(GetFgBgId(test_log_store), fg_bg_id1);
   EXPECT_EQ(GetSampleCountOfBeforeBackgroundHistogram(test_log_store), 1);
 
-  // Create a fourth then fifth "ongoing log". These logs should only contain
+  // Create a fifth then sixth "ongoing log". These logs should only contain
   // metrics from after the browser was backgrounded, and hence have the same
   // `fg_bg_id`, but it should be different than all the previous logs.
   test_log_store->DiscardStagedLog();
@@ -795,7 +810,7 @@ TEST_F(MetricsServiceTest, FgBgId) {
   service.StageCurrentLogForTest();
   EXPECT_EQ(GetFgBgId(test_log_store), fg_bg_id2);
 
-  // Simulate foregrounding. The act of foregrounding will create a sixth
+  // Simulate foregrounding. The act of foregrounding will create a seventh
   // "ongoing log" -- which should contain the last metrics from when the
   // browser was in the background, and hence should have the same `fg_bg_id`
   // as the previous two logs.
@@ -806,7 +821,7 @@ TEST_F(MetricsServiceTest, FgBgId) {
   EXPECT_EQ(GetFgBgId(test_log_store), fg_bg_id2);
   EXPECT_EQ(GetSampleCountOfBeforeForegroundHistogram(test_log_store), 1);
 
-  // Lastly, for good measure, create a seventh then eight "ongoing log". These
+  // Lastly, for good measure, create an eight then ninth "ongoing log". These
   // logs should only contain metrics from after the browser was foregrounded,
   // and hence have the same `fg_bg_id`, but it should be different than all the
   // previous logs.
@@ -841,6 +856,13 @@ TEST_F(MetricsServiceTest, FgBgId_BackgroundForegroundBeforeFirstLog) {
   // Start() will create the first ongoing log.
   service.Start();
   ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
+
+  // Immediately send a foreground notification to simulate the application
+  // being launched. This should not close the current log (since it is too
+  // early to do so), and it should not cause it to have its `fg_bg_id` cleared
+  // (verified below).
+  service.OnAppEnterForeground(/*force_open_new_log=*/true);
+  EXPECT_FALSE(test_log_store->has_unsent_logs());
 
   // Fast forward the time by |initialization_delay|, which is when the pending
   // init tasks will run.
@@ -912,13 +934,19 @@ TEST_F(MetricsServiceTest, FgBgId_NoRecordingInBackground) {
   service.Start();
   ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
 
+  // Immediately send a foreground notification to simulate the application
+  // being launched. This should not close the current log (since it is too
+  // early to do so, and `force_open_new_log` is set to false), and it should
+  // not cause it to have its `fg_bg_id` cleared (verified below).
+  service.OnAppEnterForeground(/*force_open_new_log=*/false);
+  MetricsLogStore* test_log_store = service.LogStoreForTest();
+  EXPECT_FALSE(test_log_store->has_unsent_logs());
+
   // Fast forward the time until the MetricsRotationScheduler first runs, which
   // should complete the first ongoing log.
   task_environment_.FastForwardBy(
       base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()));
   ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
-
-  MetricsLogStore* test_log_store = service.LogStoreForTest();
 
   // Stage the next log, which should be the first ongoing log. Check that the
   // log has a `fg_bg_id` value set, and remember it to compare with follow up
@@ -926,11 +954,18 @@ TEST_F(MetricsServiceTest, FgBgId_NoRecordingInBackground) {
   test_log_store->StageNextLog();
   int fg_bg_id1 = GetFgBgId(test_log_store);
 
+  // Send another foreground notification. Since we are already foregrounded
+  // (see above), this should not result in a new `fg_bg_id` (verified by the
+  // second "ongoing log" below). These duplicate notifications can often happen
+  // on platforms like iOS.
+  test_log_store->DiscardStagedLog();
+  service.OnAppEnterForeground(/*force_open_new_log=*/false);
+  EXPECT_FALSE(test_log_store->has_unsent_logs());
+
   // Simulate backgrounding. The act of backgrounding will create a second
   // "ongoing log" -- which should contain the last metrics from when the
   // browser was in the foreground, and hence should have the same `fg_bg_id`
   // as the previous log.
-  test_log_store->DiscardStagedLog();
   base::UmaHistogramBoolean(kBeforeBackgroundHistogram, true);
   service.OnAppEnterBackground(/*keep_recording_in_background=*/false);
   test_log_store->StageNextLog();

@@ -12,6 +12,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -124,6 +125,17 @@ class MetricsService {
   void OnApplicationNotIdle();
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Increments the global `fg_bg_id` for when OnAppEnterBackground() or
+  // OnAppEnterForeground() below has closed the current log. In some cases,
+  // this may be no-op; see implementation for details.
+  void IncrementFgBgIdIfNeeded(
+      std::optional<bool> previous_is_in_foreground) const;
+
+  // Clears `fg_bg_id` from the current log for when OnAppEnterBackground() or
+  // OnAppEnterForeground() below cannot close it. In some cases, this may be
+  // no-op; see implementation for details.
+  void ClearFgBgIdIfNeeded(std::optional<bool> previous_is_in_foreground) const;
+
   // Called when the application is going into background mode.
   // If |keep_recording_in_background| is true, UMA is still recorded and
   // reported while in the background.
@@ -260,10 +272,6 @@ class MetricsService {
   MetricsServiceObserver* logs_event_observer() {
     return logs_event_observer_.get();
   }
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  bool IsInForegroundForTesting() const { return is_in_foreground_; }
-#endif
 
   // Creates a new MetricsLog instance with the given |log_type|.
   std::unique_ptr<MetricsLog> CreateLogForTesting(
@@ -617,7 +625,7 @@ class MetricsService {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Indicates whether OnAppEnterForeground() (true) or OnAppEnterBackground
   // (false) was called.
-  bool is_in_foreground_ = false;
+  std::optional<bool> is_in_foreground_ = std::nullopt;
 #endif
 
   FRIEND_TEST_ALL_PREFIXES(MetricsServiceTest, ActiveFieldTrialsReported);
