@@ -45,6 +45,8 @@ class PermissionDialogJavaDelegate {
 
   virtual void UpdateDialog();
 
+  virtual void NotifyPermissionAllowed();
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> j_delegate_;
   raw_ptr<PermissionPromptAndroid, DanglingUntriaged> permission_prompt_;
@@ -86,6 +88,7 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   void Dismissed(JNIEnv* env,
                  const JavaParamRef<jobject>& obj,
                  int dismissalType);
+  void HandleSystemPermission(JNIEnv* env, const JavaParamRef<jobject>& obj);
 
   // Reset the java JNI object object. Called from Java once the permission
   // dialog has been responded to.
@@ -94,6 +97,11 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   // Notify Java side to update content view of the dialog associated with this
   // object.
   void UpdateDialog();
+
+  // Notify Java side that the permission has been allowed. It's basically the
+  // end if a permission flow and Java side can perform next task, such as
+  // update permission icon or showing next dialog.
+  void NotifyPermissionAllowed();
 
  private:
   // On navigation or page destruction, hide the dialog.

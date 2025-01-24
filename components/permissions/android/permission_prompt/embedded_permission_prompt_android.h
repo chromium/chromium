@@ -42,6 +42,7 @@ class EmbeddedPermissionPromptAndroid : public PermissionPromptAndroid {
   void AcceptThisTime() override;
   void Acknowledge() override;
   void Deny() override;
+  void HandleSystemPermission() override;
   bool ShouldCurrentRequestUseQuietUI() override;
   std::optional<PermissionUiSelector::QuietUiReason> ReasonForUsingQuietUi()
       const override;

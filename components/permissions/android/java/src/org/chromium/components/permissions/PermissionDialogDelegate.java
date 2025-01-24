@@ -117,6 +117,10 @@ public class PermissionDialogDelegate {
         mEmbeddedPromptVariant = variant;
     }
 
+    public boolean isEmbeddedPromptVariant() {
+        return mEmbeddedPromptVariant != EmbeddedPromptVariant.UNINITIALIZED;
+    }
+
     public void onAccept() {
         assert mNativeDelegatePtr != 0;
         PermissionDialogDelegateJni.get().accept(mNativeDelegatePtr, PermissionDialogDelegate.this);
@@ -145,6 +149,12 @@ public class PermissionDialogDelegate {
                 .acknowledge(mNativeDelegatePtr, PermissionDialogDelegate.this);
     }
 
+    public void onHandleSystemPermission() {
+        assert mNativeDelegatePtr != 0;
+        PermissionDialogDelegateJni.get()
+                .handleSystemPermission(mNativeDelegatePtr, PermissionDialogDelegate.this);
+    }
+
     public void destroy() {
         assert mNativeDelegatePtr != 0;
         PermissionDialogDelegateJni.get()
@@ -170,13 +180,19 @@ public class PermissionDialogDelegate {
     @CalledByNative
     private void updateIcon(Bitmap icon) {
         assert mDialogController != null;
-        mDialogController.updateIcon(icon);
+        mDialogController.updateIcon(this, icon);
     }
 
     @CalledByNative
     private int getIconSizeInPx() {
         assert mDialogController != null;
-        return mDialogController.getIconSizeInPx();
+        return mDialogController.getIconSizeInPx(this);
+    }
+
+    @CalledByNative
+    private void notifyPermissionAllowed() {
+        assert mDialogController != null;
+        mDialogController.notifyPermissionAllowed(this);
     }
 
     /**
@@ -275,7 +291,7 @@ public class PermissionDialogDelegate {
         mEmbeddedPromptVariant = variant;
 
         assert mDialogController != null;
-        mDialogController.updateCustomView(this);
+        mDialogController.updateDialog(this);
     }
 
     @NativeMethods
@@ -294,6 +310,9 @@ public class PermissionDialogDelegate {
                 @DismissalType int dismissalType);
 
         void destroy(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+
+        void handleSystemPermission(
+                long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
 
         int getRequestTypeEnumSize();
     }

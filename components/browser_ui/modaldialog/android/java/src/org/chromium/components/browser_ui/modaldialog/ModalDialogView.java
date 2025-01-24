@@ -366,11 +366,21 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     }
 
     void setupButtonGroup(ModalDialogProperties.ModalDialogButtonSpec[] buttonSpecList) {
+        // There are flows can dynamically change the button, so remove all the previous buttons
+        // before adding new ones.
+        if (mButtonGroup.getChildCount() > 0) {
+            mButtonGroup.removeAllViews();
+        }
         mButtonGroup.setVisibility(View.VISIBLE);
         int numButtons = buttonSpecList.length;
 
         for (int i = 0; i < buttonSpecList.length; i++) {
             ModalDialogProperties.ModalDialogButtonSpec spec = buttonSpecList[i];
+            // We can get rid of the button by just leaving the text blank.
+            if (TextUtils.isEmpty(spec.getText())) {
+                continue;
+            }
+
             int style = 0;
             if (numButtons == 1) {
                 style = R.style.FilledButton_Tonal_ThemeOverlay_SingleButton;

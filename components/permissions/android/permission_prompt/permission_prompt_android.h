@@ -57,6 +57,7 @@ class PermissionPromptAndroid : public PermissionPrompt {
   virtual void AcceptThisTime();
   virtual void Acknowledge() {}
   virtual void Deny();
+  virtual void HandleSystemPermission() {}
   void SetManageClicked();
   void SetLearnMoreClicked();
   virtual bool ShouldCurrentRequestUseQuietUI();

@@ -114,6 +114,11 @@ void PermissionDialogJavaDelegate::DismissDialog() {
   Java_PermissionDialogDelegate_dismissFromNative(env, j_delegate_);
 }
 
+void PermissionDialogJavaDelegate::NotifyPermissionAllowed() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PermissionDialogDelegate_notifyPermissionAllowed(env, j_delegate_);
+}
+
 void PermissionDialogJavaDelegate::UpdateDialog() {
   CHECK(permission_prompt_->GetEmbeddedPromptVariant() !=
         EmbeddedPermissionPromptFlowModel::Variant::kUninitialized);
@@ -185,6 +190,13 @@ void PermissionDialogDelegate::Deny(JNIEnv* env,
   permission_prompt_->Deny();
 }
 
+void PermissionDialogDelegate::HandleSystemPermission(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  CHECK(permission_prompt_);
+  permission_prompt_->HandleSystemPermission();
+}
+
 void PermissionDialogDelegate::Dismissed(JNIEnv* env,
                                          const JavaParamRef<jobject>& obj,
                                          int dismissalType) {
@@ -211,6 +223,11 @@ void PermissionDialogDelegate::Dismissed(JNIEnv* env,
 void PermissionDialogDelegate::Destroy(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj) {
   java_delegate_.reset();
+}
+
+void PermissionDialogDelegate::NotifyPermissionAllowed() {
+  CHECK(java_delegate_);
+  java_delegate_->NotifyPermissionAllowed();
 }
 
 void PermissionDialogDelegate::UpdateDialog() {

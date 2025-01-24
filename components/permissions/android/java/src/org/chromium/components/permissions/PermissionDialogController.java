@@ -114,14 +114,14 @@ public class PermissionDialogController {
     }
 
     /**
-     * Update the custom view for the given native delegate, if the delegate points to the current
-     * displaying dialog.
+     * Update the dialog for the given native delegate, if the delegate points to the current
+     * displaying dialog. This may hide the current dialog and show OS prompt instead
      *
      * @param delegate The wrapper for the native-side permission delegate.
      */
-    public void updateCustomView(PermissionDialogDelegate delegate) {
+    public void updateDialog(PermissionDialogDelegate delegate) {
         if (mDialogDelegate == delegate) {
-            mCoordinator.updateCustomView();
+            mCoordinator.updateDialog();
         }
     }
 
@@ -145,7 +145,6 @@ public class PermissionDialogController {
     /** Shows the dialog asking the user for a web API permission. */
     private void dequeueDialog() {
         assert mCoordinator == null;
-
         mDialogDelegate = mRequestQueue.remove(0);
         Context context = mDialogDelegate.getWindow().getContext().get();
 
@@ -167,7 +166,7 @@ public class PermissionDialogController {
     }
 
     public void dismissFromNative(PermissionDialogDelegate delegate) {
-        if (mDialogDelegate != delegate) {
+        if (mDialogDelegate != null && mDialogDelegate != delegate) {
             assert mRequestQueue.contains(delegate);
             mRequestQueue.remove(delegate);
         } else {
@@ -178,6 +177,7 @@ public class PermissionDialogController {
 
     public void notifyObservers(@ContentSettingValues int result) {
         if (result != ContentSettingValues.DEFAULT) {
+            assert mDialogDelegate != null;
             WindowAndroid currentWindow = mDialogDelegate.getWindow();
             for (Observer obs : mObservers) {
                 obs.onDialogResult(
@@ -186,22 +186,32 @@ public class PermissionDialogController {
         }
     }
 
+    public void notifyPermissionAllowed(PermissionDialogDelegate delegate) {
+        if (mDialogDelegate == delegate) {
+            notifyObservers(ContentSettingValues.ALLOW);
+        }
+    }
+
     /**
      * Update the icon of the current custom view for the given bit map.
      *
+     * @param delegate The wrapper for the native-side permission delegate.
      * @param icon The bitmap icon to display on the custom view.
      */
-    public void updateIcon(Bitmap icon) {
-        mCoordinator.updateIcon(icon);
+    public void updateIcon(PermissionDialogDelegate delegate, Bitmap icon) {
+        if (mDialogDelegate == delegate) {
+            mCoordinator.updateIcon(icon);
+        }
     }
 
     /**
      * Get size of icon showing on the custom view.
      *
+     * @param delegate The wrapper for the native-side permission delegate.
      * @return icon The size of icon displayed on the custom view.
      */
-    public int getIconSizeInPx() {
-        return mCoordinator.getIconSizeInPx();
+    public int getIconSizeInPx(PermissionDialogDelegate delegate) {
+        return mDialogDelegate == delegate ? mCoordinator.getIconSizeInPx() : 0;
     }
 
     public boolean isDialogShownForTest() {

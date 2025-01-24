@@ -71,6 +71,10 @@ void EmbeddedPermissionPromptAndroid::Deny() {
   delegate()->FinalizeCurrentRequests();
 }
 
+void EmbeddedPermissionPromptAndroid::HandleSystemPermission() {
+  MaybeUpdateDialogWithNewScreenVariant();
+}
+
 bool EmbeddedPermissionPromptAndroid::ShouldCurrentRequestUseQuietUI() {
   return false;
 }
@@ -129,8 +133,10 @@ EmbeddedPermissionPromptAndroid::GetAnnotatedMessageText() const {
     case Variant::kAdministratorDenied:
       return GetDialogAnnotatedMessageTextWithOrigin(
           IDS_EMBEDDED_PROMPT_ADMIN_BLOCKED);
-    case Variant::kUninitialized:
     case Variant::kOsPrompt:
+      return PermissionRequest::AnnotatedMessageText(std::u16string(),
+                                                     /*bolded_ranges=*/{});
+    case Variant::kUninitialized:
       NOTREACHED();
   }
   NOTREACHED();
@@ -144,10 +150,7 @@ EmbeddedPermissionPromptAndroid::GetPositiveButtonText(JNIEnv* env,
       return is_one_time
                  ? ConvertUTF16ToJavaString(
                        env, l10n_util::GetStringUTF16(
-                                permissions::feature_params::
-                                        kUseWhileVisitingLanguage.Get()
-                                    ? IDS_PERMISSION_ALLOW_WHILE_VISITING
-                                    : IDS_PERMISSION_ALLOW_EVERY_VISIT))
+                                IDS_PERMISSION_ALLOW_WHILE_VISITING))
                  : ConvertUTF16ToJavaString(
                        env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
 
@@ -170,8 +173,9 @@ EmbeddedPermissionPromptAndroid::GetPositiveButtonText(JNIEnv* env,
     case Variant::kAdministratorDenied:
       return ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OK_LABEL));
-    case Variant::kUninitialized:
     case Variant::kOsPrompt:
+      return ConvertUTF16ToJavaString(env, std::u16string_view());
+    case Variant::kUninitialized:
       NOTREACHED();
   }
   NOTREACHED();
@@ -182,16 +186,8 @@ EmbeddedPermissionPromptAndroid::GetNegativeButtonText(JNIEnv* env,
                                                        bool is_one_time) const {
   switch (GetEmbeddedPromptVariant()) {
     case Variant::kAsk:
-      return is_one_time
-                 ? ConvertUTF16ToJavaString(
-                       env, l10n_util::GetStringUTF16(
-                                permissions::feature_params::
-                                        kUseStrongerPromptLanguage.Get()
-                                    ? IDS_PERMISSION_NEVER_ALLOW
-                                    : IDS_PERMISSION_DONT_ALLOW))
-                 : ConvertUTF16ToJavaString(
-                       env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
-
+      return ConvertUTF16ToJavaString(
+          env, l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW));
     case Variant::kPreviouslyGranted:
       return ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_STOP_ALLOWING));
@@ -203,9 +199,9 @@ EmbeddedPermissionPromptAndroid::GetNegativeButtonText(JNIEnv* env,
           env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
     case Variant::kAdministratorGranted:
     case Variant::kAdministratorDenied:
+    case Variant::kOsPrompt:
       return ConvertUTF16ToJavaString(env, std::u16string_view());
     case Variant::kUninitialized:
-    case Variant::kOsPrompt:
       NOTREACHED();
   }
   NOTREACHED();
@@ -235,6 +231,10 @@ EmbeddedPermissionPromptAndroid::Requests() const {
 void EmbeddedPermissionPromptAndroid::MaybeUpdateDialogWithNewScreenVariant() {
   prompt_model_->CalculateCurrentVariant();
   if (prompt_model_->prompt_variant() == Variant::kPreviouslyGranted) {
+    // Here the whole permission flow has already ended with permission allowed.
+    // It's necessary to notify to Java side, for example to update omnibox
+    // icon.
+    permission_dialog_delegate()->NotifyPermissionAllowed();
     delegate()->FinalizeCurrentRequests();
     return;
   }
