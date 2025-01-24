@@ -1385,9 +1385,7 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
       // one.
       /*precedence=*/15u,
       std::make_unique<os_crypt_async::AppBoundEncryptionProviderWin>(
-          local_state(),
-          base::FeatureList::IsEnabled(
-              features::kUseAppBoundEncryptionProviderForEncryption))));
+          local_state())));
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)

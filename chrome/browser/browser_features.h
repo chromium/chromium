@@ -51,10 +51,6 @@ BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 #endif
 
-#if BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kUseAppBoundEncryptionProviderForEncryption);
-#endif
-
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
 BASE_DECLARE_FEATURE(kIncomingCallNotifications);
 
