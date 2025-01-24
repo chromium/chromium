@@ -75,12 +75,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/352703668: tests failing on trogdor.
   "security.SELinuxFilesDataDir.arcvm_user@trogdor",
 
-  # b/374043687
-  "crostini.AppFirefox.bookworm_clamshell_stable@volteer",
-  "crostini.AppFirefoxWindowOperations.maximize_bookworm_clamshell_stable@volteer",
-  "crostini.AppFirefoxWindowOperations.minimize_bookworm_clamshell_stable@volteer",
-  "crostini.AppFirefoxWindowOperations.switch_tablet_bookworm_clamshell_stable@volteer",
-
   # b/384060114
   "inputs.InputMethodShelfInputs@reven-vmtest",
   "inputs.VirtualKeyboardHandwriting.docked@reven-vmtest",
