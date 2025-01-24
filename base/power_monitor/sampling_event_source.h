@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 
 namespace base {
 
@@ -20,6 +21,9 @@ class BASE_EXPORT SamplingEventSource {
   // Starts generating sampling events. Returns whether the operation succeeded.
   // |callback| is invoked for every sampling event.
   virtual bool Start(SamplingEventCallback callback) = 0;
+
+  // Returns the expected time between each call to the SamplingEventCallback.
+  virtual base::TimeDelta GetSampleInterval() = 0;
 };
 
 }  // namespace base
