@@ -12,6 +12,8 @@
 
 # Testing WebUI Pages
 
+[TOC]
+
 Chromium WebUI pages should be tested using Mocha test suites.
 [Mocha](https://mochajs.org) is a flexible, lightweight test framework with
 strong async support. With Mocha, we can write small unit tests for individual
@@ -143,7 +145,7 @@ directory. Each test file should contain one or more Mocha test suites. Often
 each major custom element of a UI will have its own Mocha test file, as will
 many of the data classes.
 
-``` ts
+```ts
 // chrome/test/data/webui/foo_bar/search_box_test.ts
 
 import 'chrome://foo-bar/foo_bar.js';
@@ -282,17 +284,6 @@ generate_grd("build_grd") {
 }
 
 ```
-### Running the tests
-
-You can build the `browser_tests` target and run your WebUI tests just like
-other browser tests. You may filter tests by class or test name (the arguments
-to `IN_PROC_BROWSER_TEST_F`) via `--gtest_filter`:
-
-```sh
-autoninja -C out/Release browser_tests
-./out/Release/browser_tests --gtest_filter=FooBarSearchBoxTest.Empty
-```
-
 ### Unusual Test Setups
 Some UIs may need to rely on loading a particular URL, such that using the
 default `chrome://foo-bar/test_loader.html` URL that is used to dynamically
@@ -329,6 +320,39 @@ IN_PROC_BROWSER_TEST_F(FooDialogBrowserTest, MyTest) {
       /*skip_test_loader=*/true));
 }
 ```
+
+### Running tests
+
+You can build the `browser_tests` target and run your WebUI tests just like
+other browser tests. You may filter tests by class or test name (the arguments
+to `IN_PROC_BROWSER_TEST_F`) via `--gtest_filter`:
+
+```sh
+autoninja -C out/Release browser_tests
+./out/Release/browser_tests --gtest_filter=FooBarSearchBoxTest.Empty
+```
+
+### Debugging tests
+
+You can run a subset of the Mocha test cases, by using `test.only()` instead of
+`test()`. For example:
+
+```ts
+test.only('MyTestcase', function() {...});
+```
+
+You can skip a subset of the Mocha test cases, by using `test.skip()` instead of
+`test()`. For example:
+
+```ts
+test.skip('MyTestcase', function() {...});
+```
+
+When authoring a new test case or when investigating existing test failures, you
+will often have a need to step through the code in the DevTools debugger, to
+figure out what is happening. Use the `launchDebugger` helper function to do
+that. Detailed instructions on how to use it exist in the source code
+documentation [here] (https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/data/webui/test_util.ts;l=107-144;drc=b1866df4398a971088ba287d4c7efe704f6bc4b1)
 
 ### Common errors
 

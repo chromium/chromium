@@ -509,3 +509,62 @@ HelloWorldUI::HelloWorldUI(content::WebUI* web_ui) {
       base::span(kBarSharedResources));
 }
 ```
+
+## Development tips
+
+### Turn off optimizations
+
+It is suggested to turn off any optimizations during WebUI development by adding
+the following in the args.gn file:
+
+```
+optimize_webui = false
+```
+
+This makes the build faster, as well as skips any minification and bundling,
+making it easier to use DevTools to view the code or add any breakpoints. Unless
+you are working on a performance specific issue, prefer this configuration for
+day to day development.
+
+### Load WebUIs straight from disk (experimental)
+
+WebUI files are normally packed in a single `.pak` file (a custom format used in
+Chromium) during the build and are read and served from this file at runtime.
+This means that **every modification to a WebUI file requires**
+
+* rebuilding the `chrome` target **and**
+* relaunching the browser
+
+A mechanism has been recently added that allows **loading WebUI resources
+straight from disk** (available on Win, Mac, Linux), such that developers can
+iterate faster by **not having to do the above steps**. In order to use this
+flow, follow the steps below:
+
+**Step 1:** Add the following in your args.gn file and build the `chrome` target.
+```
+optimize_webui = false # explained in previous section
+load_webui_from_disk = true
+```
+**Step 2:** Launch Chrome with the `--load-webui-from-disk` command line flag.
+
+**Step 3:** Make a change in a `.ts`, `.css` or `.html` file in the src/
+folder and build only the corresponding `:build_ts` target, for example
+```
+autoninja -C out/Default/ chrome/browser/resources/settings:build_ts
+```
+**Step 4:** Refresh the WebUI page. **It should use the latest contents.**
+
+You can now repeat steps 3-4 to quickly iterate, as many times as needed.
+
+Notes:
+
+* The above requires that `build_webui()` is used to build the WebUI and
+  `webui::AddResourcePaths()` or `webui::SetupWebUIDataSource()` is used to
+  register the WebUI's resources C++ side.
+* Removing the runtime flag will revert back to normal loading from the
+  `.pak` file (even without rebuilding `chrome`)
+* Future improvements on this flow might eliminate the need for building
+  `:build_ts` by automatically monitoring for file modifications and triggering
+  it automatically, as well as make it faster by leveraging TypeScript's
+  `noCheck` option. Follow [crbug.com/384636724](https://issues.chromium.org/issues/384636724)
+  for updates.
