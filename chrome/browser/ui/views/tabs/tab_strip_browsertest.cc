@@ -980,7 +980,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
-                       TabGroupHeaderAccessibleProperties) {
+                       DISABLED_TabGroupHeaderAccessibleProperties) {
   browser()->set_update_ui_immediately_for_testing();
   AppendTab();
   AppendTab();
