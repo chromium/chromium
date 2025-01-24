@@ -22,6 +22,7 @@
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
@@ -3158,4 +3159,94 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
   const TemplateURL* turl = model()->GetTemplateURLForGUID("guid");
   ASSERT_TRUE(turl);
   EXPECT_EQ(turl->GetLocalData(), turl->GetAccountData());
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       RemoveLocalOnlySearchEngine) {
+  // Add a local search engine.
+  const TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com",
+      /*guid=*/"localguid"));
+
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+  ASSERT_EQ(0u, processor()->change_list_size());
+
+  model()->Remove(turl);
+
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"localkey"));
+  // Nothing should be committed since there was no account data.
+  EXPECT_EQ(0u, processor()->change_list_size());
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       RemoveAccountOnlySearchEngine) {
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/"accountguid")
+          ->data()));
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES, initial_data,
+                                    PassProcessor());
+  ASSERT_EQ(0u, processor()->change_list_size());
+
+  const TemplateURL* turl = model()->GetTemplateURLForGUID("accountguid");
+  model()->Remove(turl);
+
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("accountguid"));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"accountkey"));
+  // Deletion should be committed.
+  EXPECT_EQ(1u, processor()->change_list_size());
+  EXPECT_EQ(processor()->change_for_guid("accountguid").change_type(),
+            syncer::SyncChange::ACTION_DELETE);
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       RemoveSearchEngineWithLocalAndAccountData) {
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+
+  const TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"key", /*url=*/"http://url.com", /*guid=*/"guid"));
+  ASSERT_EQ(turl->GetLocalData(), turl->GetAccountData());
+  ASSERT_EQ(processor()->change_for_guid("guid").change_type(),
+            syncer::SyncChange::ACTION_ADD);
+
+  model()->Remove(turl);
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("guid"));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"key"));
+  // Deletion should be committed.
+  EXPECT_EQ(processor()->change_for_guid("guid").change_type(),
+            syncer::SyncChange::ACTION_DELETE);
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       RemoveSearchEngineWithDifferentLocalAndAccountData) {
+  model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"key", /*url=*/"http://localurl.com", /*guid=*/"localguid"));
+  ASSERT_TRUE(model()->GetTemplateURLForGUID("localguid"));
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"key", /*url=*/"http://accounturl.com",
+          /*guid=*/"accountguid")
+          ->data()));
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES, initial_data,
+                                    PassProcessor());
+  ASSERT_EQ(0u, processor()->change_list_size());
+  ASSERT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  const TemplateURL* turl = model()->GetTemplateURLForGUID("accountguid");
+  ASSERT_TRUE(turl);
+
+  model()->Remove(turl);
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("accountguid"));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"key"));
+  // Deletion should be committed.
+  EXPECT_EQ(1u, processor()->change_list_size());
+  EXPECT_EQ(processor()->change_for_guid("accountguid").change_type(),
+            syncer::SyncChange::ACTION_DELETE);
 }

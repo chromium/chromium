@@ -757,7 +757,7 @@ void TemplateURLService::Remove(const TemplateURL* template_url) {
   template_urls_.erase(i);
 
   if (template_url->type() == TemplateURL::NORMAL) {
-    if (web_data_service_) {
+    if (web_data_service_ && template_url->GetLocalData()) {
       web_data_service_->RemoveKeyword(template_url->id());
     }
     // Inform sync of the deletion.
@@ -1879,8 +1879,15 @@ void TemplateURLService::ProcessTemplateURLChange(
 
   if (base::FeatureList::IsEnabled(
           syncer::kSeparateLocalAndAccountSearchEngines)) {
-    // Dual-write active value to local and account.
-    turl->CopyActiveValueToLocalAndAccount();
+    if (type == syncer::SyncChange::ACTION_ADD ||
+        type == syncer::SyncChange::ACTION_UPDATE) {
+      // Dual-write active value to local and account.
+      turl->CopyActiveValueToLocalAndAccount();
+    } else if (!turl->GetAccountData()) {
+      CHECK_EQ(type, syncer::SyncChange::ACTION_DELETE);
+      // Nothing to commit if there was no account data to begin with.
+      return;
+    }
   }
 
   syncer::SyncData sync_data = CreateSyncDataFromTemplateURLData(turl->data());
