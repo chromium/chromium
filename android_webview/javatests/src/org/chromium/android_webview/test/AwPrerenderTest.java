@@ -97,7 +97,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     private TestWebMessageListener mPrerenderLifecycleWebMessageListener;
 
     private class ActivationCallbackHelper extends CallbackHelper {
-        public Callback<Void> getActivationCallback() {
+        public Callback<Void> getCallback() {
             return new Callback<Void>() {
                 @Override
                 public void onResult(Void result) {
@@ -430,8 +430,8 @@ public class AwPrerenderTest extends AwParameterizedTest {
                                 mAwContents.startPrerendering(
                                         mPrerenderingUrl,
                                         prefetchParameters,
-                                        /* activationCallback= */ null,
-                                        /* errorCallback= */ null);
+                                        mActivationCallbackHelper.getCallback(),
+                                        mPrerenderErrorCallbackHelper.getCallback());
                                 return false;
                             } catch (IllegalArgumentException e) {
                                 return true;
@@ -526,7 +526,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerenderingAndWait(
                 mPrerenderingUrl,
                 null,
-                mActivationCallbackHelper.getActivationCallback(),
+                mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
@@ -559,7 +559,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerenderingAndWait(
                 mPrerenderingUrl,
                 /* prefetchParameters= */ null,
-                /* activationCallback= */ null,
+                mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
         // Navigate to `prerender.html?b=42` that doesn't match the prerendered page. This should
@@ -595,7 +595,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerenderingAndWait(
                 initialPrerenderingUrl,
                 /* prefetchParameters= */ null,
-                mActivationCallbackHelper.getActivationCallback(),
+                mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
         activatePage(initialPrerenderingUrl, mPrerenderingUrl, ActivationBy.LOAD_URL);
@@ -639,7 +639,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerendering(
                 initialPrerenderingUrl,
                 /* prefetchParameters= */ null,
-                mActivationCallbackHelper.getActivationCallback(),
+                mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
         activatePage(
@@ -684,7 +684,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerendering(
                 initialPrerenderingUrl,
                 /* prefetchParameters= */ null,
-                /* activationCallback= */ null,
+                mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
         // Wait until prerendering is canceled, as cross-site prerendering is disallowed.
@@ -728,7 +728,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerendering(
                 mPrerenderingUrl,
                 prefetchParameters,
-                mActivationCallbackHelper.getActivationCallback(),
+                mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
         // shouldInterceptRequest should see the additional headers on prerendering navigation.
@@ -909,7 +909,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerendering(
                 mPrerenderingUrl,
                 prefetchParameters,
-                mActivationCallbackHelper.getActivationCallback(),
+                mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
         // Navigate to `prerender.html?a=42` without waiting for completion of prerendering so that
@@ -928,32 +928,6 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // Wait until the navigation activates the prerendered page.
         mActivationCallbackHelper.waitForCallback(currentCallCount);
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    // Tests WebView prerendering trigger with null activation callback.
-    @Test
-    @LargeTest
-    @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
-    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void testNullActivationCallback() throws Throwable {
-        loadInitialPage();
-
-        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
-
-        AwPrefetchParameters prefetchParameters =
-                new AwPrefetchParameters(
-                        /* additionalHeaders= */ null,
-                        /* expectedNoVarySearch= */ null,
-                        /* isJavascriptEnabled= */ true);
-        startPrerenderingAndWait(
-                mPrerenderingUrl,
-                prefetchParameters,
-                /* activationCallback= */ null,
-                mPrerenderErrorCallbackHelper.getCallback());
-
-        activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
@@ -1706,7 +1680,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerenderingAndWait(
                 mPrerenderingUrl,
                 null,
-                mActivationCallbackHelper.getActivationCallback(),
+                mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
         // Prerendering should consume the prefetched request. It shouldn't send a request.
@@ -1757,7 +1731,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerenderingAndWait(
                 prerenderUrl,
                 null,
-                mActivationCallbackHelper.getActivationCallback(),
+                mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
         // Prerendering shouldn't send a request to "?a=12" or "?a=124".
