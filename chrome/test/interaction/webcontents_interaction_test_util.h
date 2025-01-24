@@ -236,9 +236,13 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
   // Creates a util object that becomes valid when an already-instrumented
   // web contents with `outer_identifier` has an inner WebContents at
   // `inner_contents_index` is loaded and ready.
+  //
+  // This is for chrome.webviewTag/<webview> elements in WebUI, apps, and
+  // extensions only, not for iframes, which you should just use DeepQuery for.
   static std::unique_ptr<WebContentsInteractionTestUtil> ForInnerWebContents(
-      ui::ElementIdentifier outer_identifier,
-      size_t inner_contents_index);
+      ui::ElementIdentifier outer_page_identifier,
+      size_t inner_contents_index,
+      ui::ElementIdentifier inner_page_identifier);
 
   // Returns whether the given value is "truthy" in the Javascript sense.
   static bool IsTruthy(const base::Value& value);
@@ -267,7 +271,11 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
   bool HasPageBeenPainted() const;
 
   // Returns the instrumented WebView, or null if none.
-  virtual views::WebView* GetWebView() = 0;
+  virtual views::WebView* GetWebView() const = 0;
+
+  // Returns what the context would be if an element could be created or is
+  // already present; null if it cannot be determined.
+  virtual ui::ElementContext GetElementContext() const = 0;
 
   // Page Navigation ///////////////////////////////////////////////////////////
 
@@ -384,10 +392,8 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
   //
   // If the element is in a tab or window that is not visible, an empty `Rect`
   // will be returned.
-  gfx::Rect GetElementBoundsInScreen(const DeepQuery& where);
-  gfx::Rect GetElementBoundsInScreen(const std::string& where);
-
-  // Miscellaneous Tools ///////////////////////////////////////////////////////
+  virtual gfx::Rect GetElementBoundsInScreen(const DeepQuery& where) const;
+  gfx::Rect GetElementBoundsInScreen(const std::string& where) const;
 
  protected:
   WebContentsInteractionTestUtil(content::WebContents* web_contents,
@@ -406,7 +412,6 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
   void DiscardCurrentElement();
 
   virtual bool ForceNavigateWithController() const;
-  virtual ui::ElementContext GetElementContext() const = 0;
 
   TrackedElementWebContents* current_element() {
     return current_element_.get();

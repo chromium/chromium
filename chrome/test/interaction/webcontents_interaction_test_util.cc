@@ -400,7 +400,7 @@ class TabWebContentsInteractionTestUtil : public WebContentsInteractionTestUtil,
 
   // WebContentsInteractionTestUtil:
   void LoadPageInNewTab(const GURL& url, bool activate_tab) override;
-  views::WebView* GetWebView() override;
+  views::WebView* GetWebView() const override;
 
  protected:
   // TabStripModelObserver:
@@ -427,7 +427,7 @@ class WebViewWebContentsInteractionTestUtil
                                         ui::ElementIdentifier page_identifier);
   ~WebViewWebContentsInteractionTestUtil() override;
 
-  views::WebView* GetWebView() override;
+  views::WebView* GetWebView() const override;
 
  protected:
   // TabStripModelObserver:
@@ -439,6 +439,42 @@ class WebViewWebContentsInteractionTestUtil
 
   // Tracks the WebView that hosts a non-tab WebContents; null otherwise.
   std::unique_ptr<WebViewData> web_view_data_;
+};
+
+// Tracks an inner WebContents at a particular index in an outer instrumented
+// WebContents. Valid only when the inner contents and outer contents are both
+// valid and visible.
+class InnerWebContentsInteractionTestUtil
+    : public WebContentsInteractionTestUtil {
+ public:
+  InnerWebContentsInteractionTestUtil(
+      ui::ElementIdentifier outer_webcontents_id,
+      size_t inner_contents_index,
+      ui::ElementIdentifier inner_page_identifier);
+  ~InnerWebContentsInteractionTestUtil() override;
+
+ public:
+  views::WebView* GetWebView() const override;
+  gfx::Rect GetElementBoundsInScreen(const DeepQuery& where) const override;
+  ui::ElementContext GetElementContext() const override;
+
+ private:
+  class ParentWebContentsObserver;
+
+  const WebContentsInteractionTestUtil* parent_util() const {
+    return parent_element_ ? parent_element_->owner() : nullptr;
+  }
+
+  void MaybeObserveChild();
+
+  void OnParentShown(ui::TrackedElement* parent);
+  void OnParentHidden(ui::TrackedElement* parent);
+
+  raw_ptr<const TrackedElementWebContents> parent_element_ = nullptr;
+  const size_t inner_contents_index_;
+  std::unique_ptr<ParentWebContentsObserver> parent_observer_;
+  base::CallbackListSubscription parent_shown_subscription_;
+  base::CallbackListSubscription parent_hidden_subscription_;
 };
 
 WebContentsInteractionTestUtil::DeepQuery::DeepQuery() = default;
@@ -636,6 +672,16 @@ WebContentsInteractionTestUtil::ForNextTabInAnyBrowser(
       static_cast<Browser*>(nullptr), page_identifier);
 }
 
+// static
+std::unique_ptr<WebContentsInteractionTestUtil>
+WebContentsInteractionTestUtil::ForInnerWebContents(
+    ui::ElementIdentifier outer_page_identifier,
+    size_t inner_contents_index,
+    ui::ElementIdentifier inner_page_identifier) {
+  return base::WrapUnique(new InnerWebContentsInteractionTestUtil(
+      outer_page_identifier, inner_contents_index, inner_page_identifier));
+}
+
 bool WebContentsInteractionTestUtil::HasPageBeenPainted() const {
   return is_page_loaded() &&
          web_contents()->CompletedFirstVisuallyNonEmptyPaint();
@@ -755,7 +801,7 @@ void WebContentsInteractionTestUtil::ExecuteAt(const std::string& selector,
 }
 
 gfx::Rect WebContentsInteractionTestUtil::GetElementBoundsInScreen(
-    const DeepQuery& where) {
+    const DeepQuery& where) const {
   if (!current_element_) {
     return gfx::Rect();
   }
@@ -773,7 +819,11 @@ gfx::Rect WebContentsInteractionTestUtil::GetElementBoundsInScreen(
   const gfx::Point offset = web_view->GetBoundsInScreen().origin();
 
   // Perform our custom bounds calculation, taking into account e.g. iframes.
-  const base::Value result = Evaluate(GetElementBounds(where));
+  // Note that this does not modify the contents of the frame, so it's safe to
+  // do this const cast.
+  const base::Value result =
+      const_cast<WebContentsInteractionTestUtil*>(this)->Evaluate(
+          GetElementBounds(where));
 
   // This will crash if any of the values are not found, however, since this is
   // test code that's fine; it *should* crash the test.
@@ -787,7 +837,7 @@ gfx::Rect WebContentsInteractionTestUtil::GetElementBoundsInScreen(
 }
 
 gfx::Rect WebContentsInteractionTestUtil::GetElementBoundsInScreen(
-    const std::string& where) {
+    const std::string& where) const {
   return GetElementBoundsInScreen(DeepQuery{where});
 }
 
@@ -833,8 +883,9 @@ WebContentsInteractionTestUtil::WebContentsInteractionTestUtil(
 }
 
 void WebContentsInteractionTestUtil::MaybeCreateElement() {
-  if (current_element_ || !web_contents())
+  if (current_element_ || !web_contents()) {
     return;
+  }
 
   if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame() ||
       web_contents()->HasUncommittedNavigationInPrimaryMainFrame()) {
@@ -996,7 +1047,7 @@ void TabWebContentsInteractionTestUtil::LoadPageInNewTab(const GURL& url,
   CHECK(navigate_result);
 }
 
-views::WebView* TabWebContentsInteractionTestUtil::GetWebView() {
+views::WebView* TabWebContentsInteractionTestUtil::GetWebView() const {
   if (!current_element()) {
     return nullptr;
   }
@@ -1205,7 +1256,7 @@ WebViewWebContentsInteractionTestUtil::WebViewWebContentsInteractionTestUtil(
 WebViewWebContentsInteractionTestUtil::
     ~WebViewWebContentsInteractionTestUtil() = default;
 
-views::WebView* WebViewWebContentsInteractionTestUtil::GetWebView() {
+views::WebView* WebViewWebContentsInteractionTestUtil::GetWebView() const {
   return web_view_data_->visible() ? web_view_data_->web_view() : nullptr;
 }
 
@@ -1216,6 +1267,108 @@ ui::ElementContext WebViewWebContentsInteractionTestUtil::GetElementContext()
     context = web_view_data_->context();
   }
   return context;
+}
+
+class InnerWebContentsInteractionTestUtil::ParentWebContentsObserver
+    : public WebContentsObserver {
+ public:
+  explicit ParentWebContentsObserver(InnerWebContentsInteractionTestUtil& owner)
+      : owner_(owner) {}
+  ~ParentWebContentsObserver() override = default;
+
+  void StartObserving(content::WebContents* parent_contents) {
+    Observe(parent_contents);
+  }
+
+  void StopObserving() { Observe(nullptr); }
+
+ private:
+  // WebContentsObserver:
+  void InnerWebContentsAttached(content::WebContents* inner_web_contents,
+                                content::RenderFrameHost*) override {
+    owner_->MaybeObserveChild();
+  }
+
+  const raw_ref<InnerWebContentsInteractionTestUtil> owner_;
+};
+
+InnerWebContentsInteractionTestUtil::InnerWebContentsInteractionTestUtil(
+    ui::ElementIdentifier outer_webcontents_id,
+    size_t inner_contents_index,
+    ui::ElementIdentifier page_identifier)
+    : WebContentsInteractionTestUtil(nullptr, page_identifier),
+      inner_contents_index_(inner_contents_index),
+      parent_observer_(std::make_unique<ParentWebContentsObserver>(*this)) {
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  parent_shown_subscription_ = tracker->AddElementShownInAnyContextCallback(
+      outer_webcontents_id,
+      base::BindRepeating(&InnerWebContentsInteractionTestUtil::OnParentShown,
+                          base::Unretained(this)));
+  parent_hidden_subscription_ = tracker->AddElementHiddenInAnyContextCallback(
+      outer_webcontents_id,
+      base::BindRepeating(&InnerWebContentsInteractionTestUtil::OnParentHidden,
+                          base::Unretained(this)));
+  if (auto* const parent_el =
+          tracker->GetElementInAnyContext(outer_webcontents_id)) {
+    OnParentShown(parent_el);
+  }
+}
+
+InnerWebContentsInteractionTestUtil::~InnerWebContentsInteractionTestUtil() =
+    default;
+
+views::WebView* InnerWebContentsInteractionTestUtil::GetWebView() const {
+  if (auto* const parent = parent_util()) {
+    return parent->GetWebView();
+  }
+  return nullptr;
+}
+
+gfx::Rect InnerWebContentsInteractionTestUtil::GetElementBoundsInScreen(
+    const DeepQuery& where) const {
+  // TODO(dfried): IMPLEMENT
+  NOTREACHED();
+}
+
+ui::ElementContext InnerWebContentsInteractionTestUtil::GetElementContext()
+    const {
+  if (auto* const parent = parent_util()) {
+    return parent->GetElementContext();
+  }
+  return ui::ElementContext();
+}
+
+void InnerWebContentsInteractionTestUtil::MaybeObserveChild() {
+  if (auto* const parent = parent_observer_->web_contents()) {
+    const auto inner_contents = parent->GetInnerWebContents();
+    if (inner_contents_index_ < inner_contents.size()) {
+      auto* inner = inner_contents[inner_contents_index_];
+      if (web_contents() && web_contents() != inner) {
+        DiscardCurrentElement();
+      }
+      Observe(inner_contents[inner_contents_index_]);
+      MaybeCreateElement();
+      return;
+    }
+  }
+  DiscardCurrentElement();
+}
+
+void InnerWebContentsInteractionTestUtil::OnParentShown(
+    ui::TrackedElement* parent_el) {
+  CHECK(!parent_element_);
+  parent_element_ = parent_el->AsA<TrackedElementWebContents>();
+  CHECK(parent_element_);
+  parent_observer_->StartObserving(parent_element_->owner()->web_contents());
+  MaybeObserveChild();
+}
+
+void InnerWebContentsInteractionTestUtil::OnParentHidden(
+    ui::TrackedElement* parent_el) {
+  CHECK_EQ(parent_el, parent_element_.get());
+  parent_element_ = nullptr;
+  parent_observer_->StopObserving();
+  DiscardCurrentElement();
 }
 
 void PrintTo(const WebContentsInteractionTestUtil::DeepQuery& deep_query,
