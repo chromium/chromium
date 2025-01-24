@@ -146,10 +146,13 @@ void ExpectModalTimeSample(
 
   NSString* suggestionLabel =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT);
+  NSString* suggestionSubLabel =
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT);
   id<GREYMatcher> userChip =
       [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]
-          ? grey_accessibilityLabel([NSString
-                stringWithFormat:@"%@, %@", suggestionLabel, suggestionLabel])
+          ? grey_accessibilityLabel(
+                [NSString stringWithFormat:@"%@, %@", suggestionLabel,
+                                           suggestionSubLabel])
           : grey_text(suggestionLabel);
 
   // Ensure the plus_address suggestion appears.
