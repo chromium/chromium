@@ -29,8 +29,12 @@ AutofillProgressDialogViewAndroid::AutofillProgressDialogViewAndroid(
     base::WeakPtr<AutofillProgressDialogController> controller)
     : controller_(controller) {}
 
-AutofillProgressDialogViewAndroid::~AutofillProgressDialogViewAndroid() =
-    default;
+AutofillProgressDialogViewAndroid::~AutofillProgressDialogViewAndroid() {
+  if (!java_object_.is_null()) {
+    Java_AutofillProgressDialogBridge_destroy(
+        base::android::AttachCurrentThread(), java_object_);
+  }
+}
 
 void AutofillProgressDialogViewAndroid::Dismiss(
     bool show_confirmation_before_closing,
@@ -46,10 +50,9 @@ void AutofillProgressDialogViewAndroid::Dismiss(
     return;
   }
 
-  // Move the `java_object_` to a local since calling OnDismissed() below will
-  // destroy `this`.
-  base::android::ScopedJavaGlobalRef<jobject> java_object =
-      std::move(java_object_);
+  // Keep a local referenze to `java_object_` since calling OnDismissed()
+  // below will destroy `this`.
+  base::android::ScopedJavaGlobalRef<jobject> java_object = java_object_;
 
   if (controller_) {
     // Call to OnDismissed will destroy `this`.
