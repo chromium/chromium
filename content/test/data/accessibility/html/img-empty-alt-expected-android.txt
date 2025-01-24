@@ -5,6 +5,6 @@ android.webkit.WebView focusable focused
 ++++android.widget.TextView name=' '
 ++++android.widget.TextView name=' '
 ++++android.widget.TextView name=' '
-++++android.widget.Image role_description='graphic' name='read'
+++++android.widget.Image role_description='graphic' interesting name='read'
 ++++android.widget.TextView name=' '
-++++android.widget.Image role_description='graphic' name='full'
+++++android.widget.Image role_description='graphic' interesting name='full'

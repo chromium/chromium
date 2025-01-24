@@ -2,4 +2,4 @@ android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.widget.Image role_description='graphic'
 ++++++android.view.View hint='Group with circle and text'
-++++++++android.widget.TextView name='hello world'
+++++++++android.widget.TextView interesting name='hello world'

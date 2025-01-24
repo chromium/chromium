@@ -1,18 +1,18 @@
 android.webkit.WebView focusable
-++android.widget.EditText clickable editable_text focusable focused has_non_empty_value multiline name='A contenteditable with a link and an <newline><newline> and a Button.<newline>Always expose editable tables as tables.<newline>1. Editable list item.' text_change_added_count=117
+++android.widget.EditText clickable editable_text focusable focused has_non_empty_value multiline interesting name='A contenteditable with a link and an <newline><newline> and a Button.<newline>Always expose editable tables as tables.<newline>1. Editable list item.' text_change_added_count=117
 ++++android.view.View
-++++++android.widget.TextView name='A contenteditable with a '
+++++++android.widget.TextView interesting name='A contenteditable with a '
 ++++++android.view.View role_description='link' clickable link name='link'
 ++++++++android.widget.TextView name='link'
-++++++android.widget.TextView name=' and an '
-++++++android.widget.Image role_description='graphic' name='Image'
-++++++android.widget.TextView name=' and a '
-++++++android.widget.Button role_description='button' clickable focusable name='Button'
-++++++android.widget.TextView name='.'
+++++++android.widget.TextView interesting name=' and an '
+++++++android.widget.Image role_description='graphic' interesting name='Image'
+++++++android.widget.TextView interesting name=' and a '
+++++++android.widget.Button role_description='button' clickable focusable interesting name='Button'
+++++++android.widget.TextView interesting name='.'
 ++++android.widget.GridView role_description='table' collection row_count=1 column_count=1
 ++++++android.view.View
-++++++++android.view.View collection_item name='Always expose editable tables as tables.' row_span=1 column_span=1
+++++++++android.view.View collection_item interesting name='Always expose editable tables as tables.' row_span=1 column_span=1
 ++++android.widget.ListView collection item_count=1 row_count=1 column_count=1
 ++++++android.view.View collection_item row_span=1 column_span=1
-++++++++android.view.View name='1. '
-++++++++android.widget.TextView name='Editable list item.'
+++++++++android.view.View interesting name='1. '
+++++++++android.widget.TextView interesting name='Editable list item.'

@@ -1,18 +1,18 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.widget.TextView name='This text contains '
-++++android.view.View name='subscript'
-++++android.widget.TextView name=' text.'
+++++android.widget.TextView interesting name='This text contains '
+++++android.view.View interesting name='subscript'
+++++android.widget.TextView interesting name=' text.'
 ++android.view.View
-++++android.widget.TextView name='H'
+++++android.widget.TextView interesting name='H'
 ++++android.view.View
 ++++++android.widget.TextView name=' '
 ++++++android.view.View role_description='deletion'
-++++++++android.view.View focusable
-++++++++++android.widget.TextView name='3' hint='oops'
+++++++++android.view.View focusable interesting
+++++++++++android.widget.TextView interesting name='3' hint='oops'
 ++++++android.widget.TextView name=' '
 ++++++android.view.View role_description='insertion'
-++++++++android.view.View role_description='link' clickable focusable link name='2'
+++++++++android.view.View role_description='link' clickable focusable link interesting name='2'
 ++++++++++android.widget.TextView name='2' hint='better'
 ++++++android.widget.TextView name=' '
-++++android.widget.TextView name='O'
+++++android.widget.TextView interesting name='O'
