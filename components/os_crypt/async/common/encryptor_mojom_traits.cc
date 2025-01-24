@@ -21,7 +21,6 @@
 #include <dpapi.h>
 
 #include "base/feature_list.h"
-#include "components/os_crypt/async/common/encryptor_features.h"
 #endif
 
 namespace mojo {
@@ -97,13 +96,10 @@ bool StructTraits<os_crypt_async::mojom::KeyDataView,
   std::copy(memory_span.begin(), memory_span.end(), out->key_.begin());
 
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(
-          os_crypt_async::features::kProtectEncryptionKey)) {
-    SecureZeroMemory(std::data(memory_span), std::size(memory_span));
-    out->encrypted_ =
-        ::CryptProtectMemory(std::data(out->key_), std::size(out->key_),
-                             CRYPTPROTECTMEMORY_SAME_PROCESS);
-  }
+  SecureZeroMemory(std::data(memory_span), std::size(memory_span));
+  out->encrypted_ =
+      ::CryptProtectMemory(std::data(out->key_), std::size(out->key_),
+                           CRYPTPROTECTMEMORY_SAME_PROCESS);
 #endif  // BUILDFLAG(IS_WIN)
 
   out->algorithm_ = data.algorithm();

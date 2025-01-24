@@ -28,7 +28,6 @@
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/os_crypt/async/common/encryptor_features.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -1844,17 +1843,7 @@ class TestCookieEncryptionProvider
   mojo::Receiver<network::mojom::CookieEncryptionProvider> receiver_{this};
 };
 
-class NetworkServiceCookieEncryptionBrowserTest
-    : public ContentBrowserTest,
-      public testing::WithParamInterface</*kProtectEncryptionKey*/ bool> {
- public:
-#if BUILDFLAG(IS_WIN)
-  NetworkServiceCookieEncryptionBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        os_crypt_async::features::kProtectEncryptionKey, GetParam());
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
+class NetworkServiceCookieEncryptionBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -1879,17 +1868,12 @@ class NetworkServiceCookieEncryptionBrowserTest
 
     const std::vector<uint8_t> key_;
   };
-
-#if BUILDFLAG(IS_WIN)
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif  // BUILDFLAG(IS_WIN)
 };
 
 // This test verifies that when a cookie encryption provider is set when
 // creating a network context, then it results in a call to the GetEncryptor
 // method on the CookieEncryptionProvider.
-IN_PROC_BROWSER_TEST_P(NetworkServiceCookieEncryptionBrowserTest,
+IN_PROC_BROWSER_TEST_F(NetworkServiceCookieEncryptionBrowserTest,
                        CookieEncryptionProvider) {
   const auto data_path =
       shell()->web_contents()->GetBrowserContext()->GetPath();
@@ -1979,24 +1963,12 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceCookieEncryptionBrowserTest,
       it += key_data.size();
     }
 
-    // If kProtectEncryptionKey is enabled, no instances of the key should be
-    // present in the full memory dump of the network service process.
-    EXPECT_EQ(GetParam() ? 0u : 1u, occurrences);
+    // No instances of the key should be present in the full memory dump of the
+    // network service process as it's encrypted.
+    EXPECT_EQ(0u, occurrences);
   }
 #endif  // BUILDFLAG(IS_WIN) && !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         NetworkServiceCookieEncryptionBrowserTest,
-                         ::testing::Values(false
-#if BUILDFLAG(IS_WIN)
-                                           ,
-                                           true
-#endif
-                                           ),
-                         [](const auto& info) {
-                           return info.param ? "ProtectOn" : "ProtectOff";
-                         });
 
 #if BUILDFLAG(IS_WIN)
 class NetworkServiceCodeIntegrityTest : public NetworkServiceBrowserTest {
