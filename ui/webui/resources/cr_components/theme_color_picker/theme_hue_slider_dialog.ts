@@ -129,8 +129,7 @@ export class ThemeHueSliderDialogElement extends
 
   protected updateSelectedHueValue_() {
     this.selectedHue = this.$.slider.value;
-    this.dispatchEvent(new CustomEvent(
-        'selected-hue-changed', {detail: {selectedHue: this.selectedHue}}));
+    this.fire('selected-hue-changed', {selectedHue: this.selectedHue});
   }
 }
 

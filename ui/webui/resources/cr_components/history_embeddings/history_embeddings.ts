@@ -363,27 +363,23 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   }
 
   protected onAnswerLinkContextMenu_(e: MouseEvent) {
-    this.dispatchEvent(new CustomEvent('answer-context-menu', {
-      detail: {
-        item: this.answerSource_,
-        x: e.clientX,
-        y: e.clientY,
-      },
-    }));
+    this.fire('answer-context-menu', {
+      item: this.answerSource_,
+      x: e.clientX,
+      y: e.clientY,
+    });
   }
 
   protected onAnswerLinkClick_(e: MouseEvent) {
     this.answerLinkClicked_ = true;
-    this.dispatchEvent(new CustomEvent('answer-click', {
-      detail: {
-        item: this.answerSource_,
-        middleButton: e.button === 1,
-        altKey: e.altKey,
-        ctrlKey: e.ctrlKey,
-        metaKey: e.metaKey,
-        shiftKey: e.shiftKey,
-      },
-    }));
+    this.fire('answer-click', {
+      item: this.answerSource_,
+      middleButton: e.button === 1,
+      altKey: e.altKey,
+      ctrlKey: e.ctrlKey,
+      metaKey: e.metaKey,
+      shiftKey: e.shiftKey,
+    });
   }
 
   protected onMoreActionsClick_(e: Event) {
@@ -401,9 +397,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   protected onMoreFromSiteClick_() {
     assert(this.actionMenuItem_);
-    this.dispatchEvent(new CustomEvent(
-        'more-from-site-click',
-        {detail: this.actionMenuItem_, bubbles: true, composed: true}));
+    this.fire('more-from-site-click', this.actionMenuItem_);
     this.$.sharedMenu.get().close();
   }
 
@@ -415,46 +409,36 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         this.searchResult_.items.indexOf(this.actionMenuItem_), 1);
     this.searchResultDirty_ = true;
     await this.updateComplete;
-    this.dispatchEvent(new CustomEvent(
-        'remove-item-click',
-        {detail: this.actionMenuItem_, bubbles: true, composed: true}));
+    this.fire('remove-item-click', this.actionMenuItem_);
     this.$.sharedMenu.get().close();
   }
 
   protected onResultContextMenu_(e: MouseEvent) {
     assert(this.searchResult_);
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
-    this.dispatchEvent(new CustomEvent('result-context-menu', {
-      detail: {
-        item: this.searchResult_.items[index],
-        x: e.clientX,
-        y: e.clientY,
-      },
-    }));
+    this.fire('result-context-menu', {
+      item: this.searchResult_.items[index],
+      x: e.clientX,
+      y: e.clientY,
+    });
   }
 
   protected onResultClick_(e: MouseEvent) {
     assert(this.searchResult_);
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
-    this.dispatchEvent(new CustomEvent('result-click', {
-      detail: {
-        item: this.searchResult_.items[index],
-        middleButton: e.button === 1,
-        altKey: e.altKey,
-        ctrlKey: e.ctrlKey,
-        metaKey: e.metaKey,
-        shiftKey: e.shiftKey,
-      },
-    }));
+    this.fire('result-click', {
+      item: this.searchResult_.items[index],
+      middleButton: e.button === 1,
+      altKey: e.altKey,
+      ctrlKey: e.ctrlKey,
+      metaKey: e.metaKey,
+      shiftKey: e.shiftKey,
+    });
 
-    this.dispatchEvent(new CustomEvent('record-history-link-click', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        resultType: HistoryResultType.EMBEDDINGS,
-        index,
-      },
-    }));
+    this.fire('record-history-link-click', {
+      resultType: HistoryResultType.EMBEDDINGS,
+      index,
+    });
 
     this.clickedIndices_.add(index);
     this.browserProxy_.recordSearchResultsMetrics(
