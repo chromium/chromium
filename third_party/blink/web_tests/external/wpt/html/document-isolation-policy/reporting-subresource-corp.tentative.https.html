@@ -127,6 +127,14 @@ const ENVIRONMENTS = [{
     return await fetchInWorker(worker, url, expected_count);
   },
 }, {
+  tag: 'shared worker',
+  contextUrl: WORKER_URL,
+  run: async (test, url, expected_count) => {
+    const worker = new SharedWorker(WORKER_URL);
+    worker.addEventListener('error', test.unreached_func('Worker.onerror'));
+    return await fetchInWorker(worker.port, url, expected_count);
+  },
+}, {
   tag: 'between service worker and page',
   contextUrl: REPORTING_FRAME_URL,
   run: async (test, url, expected_count) => {
