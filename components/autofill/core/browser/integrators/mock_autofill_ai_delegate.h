@@ -26,6 +26,13 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
                const FormData& form,
                const FormFieldData& field),
               (override));
+  MOCK_METHOD(void,
+              GetSuggestionsV2,
+              (autofill::FormGlobalId form_global_id,
+               autofill::FieldGlobalId field_global_id,
+               bool is_manual_fallback,
+               GetSuggestionsCallback callback),
+              (override));
   MOCK_METHOD(void, UserFeedbackReceived, (UserFeedback feedback), (override));
   MOCK_METHOD(bool,
               IsEligibleForAutofillAi,
@@ -46,10 +53,9 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
        base::OnceCallback<void(std::unique_ptr<FormStructure> form,
                                bool autofill_ai_shows_bubble)> callback),
       (override));
-  MOCK_METHOD(void, HasDataStored, (HasDataCallback callback), (override));
   MOCK_METHOD(bool,
               ShouldDisplayIph,
-              (const FormStructure& form, const AutofillField& field),
+              (const AutofillField& field),
               (const override));
   MOCK_METHOD(void, GoToSettings, (), (const override));
   MOCK_METHOD(void,

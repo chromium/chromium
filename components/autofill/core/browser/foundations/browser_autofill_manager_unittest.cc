@@ -6592,17 +6592,16 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiSuggestions) {
 
   MockAutofillAiDelegate& delegate = *client().GetAutofillAiDelegate();
   ON_CALL(delegate, IsEligibleForAutofillAi).WillByDefault(Return(true));
-  EXPECT_CALL(delegate, HasDataStored)
-      .WillOnce(RunOnceCallback<0>(AutofillAiDelegate::HasData(true)));
-  EXPECT_CALL(delegate, GetSuggestions)
-      .WillOnce(Return(std::vector<Suggestion>{
-          Suggestion(u"Autocomplete", SuggestionType::kRetrieveAutofillAi)}));
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kFillAutofillAi)};
+  EXPECT_CALL(delegate, GetSuggestionsV2)
+      .WillOnce(RunOnceCallback<3>(suggestions));
 
   OnAskForValuesToFill(form, form.fields().front(),
                        AutofillSuggestionTriggerSource::kAutofillAi);
   EXPECT_THAT(external_delegate()->suggestions(),
               ElementsAre(Field(&Suggestion::type,
-                                Eq(SuggestionType::kRetrieveAutofillAi))));
+                                Eq(SuggestionType::kFillAutofillAi))));
 }
 
 // Tests that the Autofill AI IPH is shown when the user and form are eligible
