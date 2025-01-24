@@ -25,20 +25,7 @@ namespace {
 
 class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
  public:
-  ~BitmapSoftwareBacking() override {
-    DCHECK(shared_image);
-
-    shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
-    shared_image.reset();
-    // DestroySharedImage is a DeferredRequest, so it doesn't trigger IPC
-    // itself. We need a flush here to trigger IPC. Without the flush, there
-    // will be memory regressions in tiles.
-    if (shared_image_interface) {
-      shared_image_interface->Flush();
-    }
-  }
-
-  scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
+  ~BitmapSoftwareBacking() override = default;
 };
 
 class BitmapRasterBufferImpl : public RasterBuffer {

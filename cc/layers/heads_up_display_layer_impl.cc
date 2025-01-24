@@ -157,19 +157,7 @@ class HudGpuBacking : public ResourcePool::GpuBacking {
 
 class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
  public:
-  ~HudSoftwareBacking() override {
-    DCHECK(shared_image);
-    shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
-
-    shared_image.reset();
-    // DestroySharedImage is a DeferredRequest, so it doesn't trigger IPC
-    // itself. Flush here to trigger IPC.
-    if (shared_image_interface) {
-      shared_image_interface->Flush();
-    }
-  }
-
-  scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
+  ~HudSoftwareBacking() override = default;
 };
 
 bool HeadsUpDisplayLayerImpl::WillDraw(
