@@ -772,4 +772,28 @@ suite('SyncAccountControl', function() {
         assertEquals(email, 'foo@foo.com');
         assertEquals(isDefaultPromoAccount, true);
       });
+
+
+  test(
+      'sync off has passphrase error, kImprovedSettingsUIOnDesktop enabled',
+      async function() {
+        loadTimeData.overrideValues(
+            {isImprovedSettingsUIOnDesktopEnabled: true});
+
+        testElement.syncStatus = {
+          firstSetupInProgress: false,
+          signedInState: SignedInState.SIGNED_IN,
+          signedInUsername: 'foo@foo.com',
+          hasError: true,
+          statusAction: StatusAction.ENTER_PASSPHRASE,
+        };
+
+        assertTrue(isChildVisible(testElement, '#sync-error-button'));
+        const signOut =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#turn-off')!;
+        assertFalse(signOut.hidden);
+        signOut.click();
+        const deleteProfile = await browserProxy.whenCalled('signOut');
+        assertFalse(deleteProfile);
+      });
 });
