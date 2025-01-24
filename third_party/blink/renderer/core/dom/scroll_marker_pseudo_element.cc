@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 
 namespace blink {
@@ -69,6 +70,30 @@ void ScrollMarkerPseudoElement::SetSelected(bool value) {
   }
   is_selected_ = value;
   PseudoStateChanged(CSSSelector::kPseudoTargetCurrent);
+  if (is_selected_ && scroll_marker_group_) {
+    LayoutBox* group_box = scroll_marker_group_->GetLayoutBox();
+    LayoutObject* marker_object = GetLayoutObject();
+    if (!group_box || !marker_object) {
+      return;
+    }
+    ScrollableArea* group_scroller = group_box->GetScrollableArea();
+    if (group_scroller) {
+      // AbsoluteBoundingBoxRectForScrollIntoView detects that this is a
+      // scroll-marker pseudo and returns the rect of the originating element.
+      // Since what we want is the rect of the scroll-marker itself, we use
+      // AbsoluteBoundingBoxRectHandlingEmptyInline directly.
+      PhysicalRect rect =
+          marker_object->AbsoluteBoundingBoxRectHandlingEmptyInline();
+      PhysicalBoxStrut scroll_margin =
+          marker_object->Style()->ScrollMarginStrut();
+      mojom::blink::ScrollIntoViewParamsPtr params =
+          scroll_into_view_util::CreateScrollIntoViewParams(
+              ScrollAlignment::ToEdgeIfNeeded(),
+              ScrollAlignment::ToEdgeIfNeeded());
+      params->behavior = group_box->Style()->GetScrollBehavior();
+      group_scroller->ScrollIntoView(rect, scroll_margin, params);
+    }
+  }
 }
 
 void ScrollMarkerPseudoElement::AttachLayoutTree(AttachContext& context) {
