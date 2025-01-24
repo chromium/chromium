@@ -672,8 +672,7 @@ void RecordSignoutForceClearDataChoice(bool force_clear_data);
 
 // Records the total number of open tabs at the moment of signin or enabling
 // sync.
-void RecordOpenTabCountOnSignin(signin_metrics::AccessPoint access_point,
-                                signin::ConsentLevel consent_level,
+void RecordOpenTabCountOnSignin(signin::ConsentLevel consent_level,
                                 size_t tabs_count);
 
 // Records the history opt-in state, at the moment of signin or turning on sync.

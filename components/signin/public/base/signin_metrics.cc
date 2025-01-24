@@ -322,8 +322,7 @@ void RecordSignoutForceClearDataChoice(bool force_clear_data) {
 }
 #endif  // BUILDFLAG(IS_IOS)
 
-void RecordOpenTabCountOnSignin(signin_metrics::AccessPoint access_point,
-                                signin::ConsentLevel consent_level,
+void RecordOpenTabCountOnSignin(signin::ConsentLevel consent_level,
                                 size_t tabs_count) {
   std::string_view consent_level_token =
       consent_level == signin::ConsentLevel::kSignin ? ".OnSignin" : ".OnSync";
