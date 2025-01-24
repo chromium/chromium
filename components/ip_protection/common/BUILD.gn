@@ -86,6 +86,7 @@ source_set("ip_protection_core_impl_unittest") {
     ":masked_domain_list_manager",
     "//base",
     "//base/test:test_support",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
     "//net",
     "//testing/gtest",
   ]
@@ -340,6 +341,7 @@ source_set("ip_protection_proxy_delegate_unittest") {
     "//net:test_support",
     "//net/traffic_annotation:test_support",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]
