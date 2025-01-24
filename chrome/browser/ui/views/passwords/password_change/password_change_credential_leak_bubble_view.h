@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "ui/views/controls/styled_label.h"
 
 class PasswordChangeCredentialLeakBubbleView : public PasswordBubbleViewBase {
   METADATA_HEADER(PasswordChangeCredentialLeakBubbleView,
@@ -20,6 +21,8 @@ class PasswordChangeCredentialLeakBubbleView : public PasswordBubbleViewBase {
 
  private:
   ~PasswordChangeCredentialLeakBubbleView() override;
+
+  std::unique_ptr<views::StyledLabel> CreateBodyText();
 
   // PasswordBubbleViewBase
   PasswordBubbleControllerBase* GetController() override;

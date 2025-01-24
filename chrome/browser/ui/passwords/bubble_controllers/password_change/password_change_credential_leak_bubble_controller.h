@@ -27,7 +27,13 @@ class PasswordChangeCredentialLeakBubbleController
   std::u16string GetTitle() const override;
   void ReportInteractions() override;
 
+  // Get the change password origin to be displayed in UI.
+  std::u16string GetDisplayOrigin() const;
+  std::u16string GetPrimaryAccountEmail() const;
+
+  void OnGooglePasswordManagerLinkClicked();
   void ChangePassword();
+  void Cancel();
 
  private:
   base::WeakPtr<PasswordChangeDelegate> password_change_delegate_;
