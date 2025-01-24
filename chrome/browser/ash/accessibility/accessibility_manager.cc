@@ -1971,6 +1971,18 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
           "Accessibility.CrosFlashNotifications",
           prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
     }
+
+    if (::features::IsAccessibilityBounceKeysEnabled()) {
+      bool bounce_keys_enabled =
+          prefs->GetBoolean(prefs::kAccessibilityBounceKeysEnabled);
+      base::UmaHistogramBoolean("Accessibility.CrosBounceKeys",
+                                bounce_keys_enabled);
+      if (bounce_keys_enabled) {
+        base::UmaHistogramSparse(
+            "Accessibility.CrosBounceKeysDelay",
+            prefs->GetInteger(prefs::kAccessibilityBounceKeysDelayMs));
+      }
+    }
   }
   base::UmaHistogramBoolean("Accessibility.CrosCaretHighlight",
                             IsCaretHighlightEnabled());

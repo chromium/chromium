@@ -400,6 +400,26 @@ TEST_F(AccessibilityControllerTest, SetAutoclickEnabled) {
   controller()->RemoveObserver(&observer);
 }
 
+TEST_F(AccessibilityControllerTest, SetBounceKeysEnabled) {
+  EXPECT_FALSE(controller()->bounce_keys().enabled());
+
+  TestAccessibilityObserver observer;
+  controller()->AddObserver(&observer);
+  EXPECT_EQ(0, observer.status_changed_count_);
+
+  controller()->bounce_keys().SetEnabled(true);
+  EXPECT_TRUE(controller()->bounce_keys().enabled());
+  EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosBounceKeys", 0);
+
+  controller()->bounce_keys().SetEnabled(false);
+  EXPECT_FALSE(controller()->bounce_keys().enabled());
+  EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosBounceKeys", 1);
+
+  controller()->RemoveObserver(&observer);
+}
+
 TEST_F(AccessibilityControllerTest, SetCaretHighlightEnabled) {
   EXPECT_FALSE(controller()->caret_highlight().enabled());
 
