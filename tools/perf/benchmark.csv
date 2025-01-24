@@ -12,6 +12,7 @@ UNSCHEDULED_blink_perf.view_transitions,"bokan@chromium.org, khushalsagar@chromi
 UNSCHEDULED_dummy_wpr_benchmark.loading_using_wpr,maxqli@google.com,Test>Telemetry,,
 UNSCHEDULED_jetstream20,"vahl@chromium.org, cbruni@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.0/in-depth.html,all
 UNSCHEDULED_jetstream21,"vahl@chromium.org, cbruni@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.1/in-depth.html,all
+UNSCHEDULED_jetstream22,"vahl@chromium.org, cbruni@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.2/in-depth.html,all
 UNSCHEDULED_speedometer1.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer,all
 UNSCHEDULED_speedometer2.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.0,all
 UNSCHEDULED_speedometer2.1,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.1,all

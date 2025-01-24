@@ -86,8 +86,12 @@ class JetStream21Story(_JetStream2Story):
   URL = 'http://browserbench.org/JetStream2.1/'
 
 
-class JetStream2Story(JetStream20Story):
-  URL = 'http://browserbench.org/JetStream/'
+class JetStream22Story(_JetStream2Story):
+  NAME = 'JetStream22'
+  URL = 'http://browserbench.org/JetStream2.2/'
+
+
+class JetStream2Story(JetStream22Story):
   NAME = 'JetStream2'
 
 
@@ -106,6 +110,10 @@ class JetStream20StorySet(_JetStream2StorySet):
 
 class JetStream21StorySet(_JetStream2StorySet):
   _STORY_CLS = JetStream21Story
+
+
+class JetStream22StorySet(_JetStream2StorySet):
+  _STORY_CLS = JetStream22Story
 
 
 class JetStream2StorySet(_JetStream2StorySet):
