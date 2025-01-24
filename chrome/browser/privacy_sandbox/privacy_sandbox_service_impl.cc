@@ -679,10 +679,6 @@ void PrivacySandboxServiceImpl::OnExtendedAccountInfoRemoved(
   // the time of startup, we won't record the metric here since we have no way
   // of knowing when the user signed in.
   if (first_sign_in_time == base::Time()) {
-    CreateTimingHistogram(
-        base::StrCat({"PrivacySandbox.DarkLaunch.", profile_bucket,
-                      ".ProfileSignOutDuration"}),
-        base::TimeDelta());
     return;
   }
 
@@ -1171,40 +1167,59 @@ void PrivacySandboxServiceImpl::ForceChromeBuildForTests(
 void PrivacySandboxServiceImpl::MaybeEmitFakeNoticePromptMetrics(
     bool third_party_cookies_blocked) {
   std::string profile_bucket = privacy_sandbox::GetProfileBucketName(profile_);
-  if (!profile_bucket.empty()) {
-    // Emit metrics for fake prompt synced prefs.
-    auto metrics_prefix_synced = base::StrCat(
-        {"PrivacySandbox.DarkLaunch.", profile_bucket, ".SyncedPref"});
-    int current_suppression = EmitFakeNoticeShownMetrics(
-        pref_service_, third_party_cookies_blocked, primary_account_state_,
-        prefs::kPrivacySandboxFakeNoticePromptShownTimeSync,
-        metrics_prefix_synced);
+  if (profile_bucket.empty()) {
+    return;
+  }
 
-    // If the eligibility doesn't change we don't want to log any new
-    // histograms.
-    if (current_suppression &&
-        current_suppression != prompt_suppression_bitmap_) {
-      prompt_suppression_bitmap_ = current_suppression;
-      EmitFakeNoticePromptSuppressionMetrics(
-          pref_service_, metrics_prefix_synced, current_suppression,
-          prefs::kPrivacySandboxFakeNoticePromptShownTimeSync);
-    }
+  // Emit metrics for fake prompt synced prefs.
+  auto metrics_prefix_synced = base::StrCat(
+      {"PrivacySandbox.DarkLaunch.", profile_bucket, ".SyncedPref"});
+  int current_suppression = EmitFakeNoticeShownMetrics(
+      pref_service_, third_party_cookies_blocked, primary_account_state_,
+      prefs::kPrivacySandboxFakeNoticePromptShownTimeSync,
+      metrics_prefix_synced);
 
-    // Emit metrics for fake prompt non-synced prefs.
-    auto metrics_prefix = base::StrCat(
-        {"PrivacySandbox.DarkLaunch.", profile_bucket, ".NonSyncedPref"});
-    current_suppression = EmitFakeNoticeShownMetrics(
-        pref_service_, third_party_cookies_blocked, primary_account_state_,
-        prefs::kPrivacySandboxFakeNoticePromptShownTime, metrics_prefix);
-    // If the eligibility doesn't change we don't want to log any new
-    // histograms.
-    if (current_suppression &&
-        current_suppression != prompt_suppression_bitmap_sync_) {
-      prompt_suppression_bitmap_sync_ = current_suppression;
-      EmitFakeNoticePromptSuppressionMetrics(
-          pref_service_, metrics_prefix, current_suppression,
-          prefs::kPrivacySandboxFakeNoticePromptShownTime);
-    }
+  // If the eligibility doesn't change we don't want to log any new
+  // histograms.
+  if (current_suppression &&
+      current_suppression != prompt_suppression_bitmap_sync_) {
+    prompt_suppression_bitmap_sync_ = current_suppression;
+    EmitFakeNoticePromptSuppressionMetrics(
+        pref_service_, metrics_prefix_synced, current_suppression,
+        prefs::kPrivacySandboxFakeNoticePromptShownTimeSync);
+  }
+
+  // Emit metrics for fake prompt non-synced prefs.
+  auto metrics_prefix = base::StrCat(
+      {"PrivacySandbox.DarkLaunch.", profile_bucket, ".NonSyncedPref"});
+  current_suppression = EmitFakeNoticeShownMetrics(
+      pref_service_, third_party_cookies_blocked, primary_account_state_,
+      prefs::kPrivacySandboxFakeNoticePromptShownTime, metrics_prefix);
+  // If the eligibility doesn't change we don't want to log any new
+  // histograms.
+  if (current_suppression &&
+      current_suppression != prompt_suppression_bitmap_) {
+    prompt_suppression_bitmap_ = current_suppression;
+    EmitFakeNoticePromptSuppressionMetrics(
+        pref_service_, metrics_prefix, current_suppression,
+        prefs::kPrivacySandboxFakeNoticePromptShownTime);
+  }
+
+  // Emit pref mismatch.
+  bool sync_pref_exists =
+      pref_service_->GetTime(
+          prefs::kPrivacySandboxFakeNoticePromptShownTimeSync) != base::Time();
+  bool nonsync_pref_exists =
+      pref_service_->GetTime(prefs::kPrivacySandboxFakeNoticePromptShownTime) !=
+      base::Time();
+  if (sync_pref_exists && !nonsync_pref_exists) {
+    base::UmaHistogramBoolean(base::StrCat({"PrivacySandbox.DarkLaunch.",
+                                            profile_bucket, ".PrefMismatch"}),
+                              true);
+  } else if (sync_pref_exists && nonsync_pref_exists) {
+    base::UmaHistogramBoolean(base::StrCat({"PrivacySandbox.DarkLaunch.",
+                                            profile_bucket, ".PrefMismatch"}),
+                              false);
   }
 }
 
@@ -1224,15 +1239,15 @@ void PrivacySandboxServiceImpl::MaybeEmitPromptStartupAccountMetrics() {
                     ".PrimaryAccountOnStartup"}),
       primary_account_state_);
 
-  // We only want to emit 0 if the sign in time doesn't exist.
+  // Sign in time doesn't exist.
   if (primary_account_state_ != PrimaryAccountUserGroups::kSignedOut &&
       primary_account_state_ != PrimaryAccountUserGroups::kNotSet &&
       pref_service_->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime) ==
           base::Time()) {
-    CreateTimingHistogram(
+    base::UmaHistogramBoolean(
         base::StrCat({"PrivacySandbox.DarkLaunch.", profile_bucket,
-                      ".ProfileSignInDuration"}),
-        base::TimeDelta());
+                      ".UnknownProfileSignInDuration"}),
+        true);
   }
 }
 

@@ -1307,6 +1307,20 @@ TEST_F(PrivacySandboxDarkLaunchMetrics,
       PrimaryAccountUserGroups::kSignedInCapabilityTrue, 1);
 }
 
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       PrimaryAccountAlreadySignedInOnStartup) {
+  EnableSignInOver18();
+  prefs()->SetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime,
+                   base::Time());
+  // Initial sign in
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.UnknownProfileSignInDuration", true,
+      1);
+}
+
 TEST_F(PrivacySandboxDarkLaunchMetrics, OnPrimaryAccountChangedSignIn) {
   EnableSignIn();
   const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
