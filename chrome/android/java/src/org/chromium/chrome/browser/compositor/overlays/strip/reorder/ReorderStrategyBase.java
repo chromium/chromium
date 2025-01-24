@@ -20,8 +20,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
-import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate;
-import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
@@ -29,6 +27,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
@@ -41,11 +40,9 @@ import java.util.Collections;
 import java.util.List;
 
 /** Base class for {@link ReorderStrategy} implementations. */
-public abstract class ReorderStrategyBase implements ReorderStrategy {
+abstract class ReorderStrategyBase implements ReorderStrategy {
+
     // Constants
-    public static final float FOLIO_ATTACHED_BOTTOM_MARGIN_DP = 0.f;
-    public static final float FOLIO_DETACHED_BOTTOM_MARGIN_DP = 4.f;
-    public static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
     private static final int ANIM_FOLIO_DETACH_MS = 75;
     private static final float FOLIO_ANIM_INTERMEDIATE_MARGIN_DP = -12.f;
 
@@ -62,7 +59,7 @@ public abstract class ReorderStrategyBase implements ReorderStrategy {
     protected final ObservableSupplierImpl<Integer> mGroupIdToHideSupplier;
     protected final Supplier<Float> mTabWidthSupplier;
 
-    public ReorderStrategyBase(
+    ReorderStrategyBase(
             ReorderDelegate reorderDelegate,
             StripUpdateDelegate stripUpdateDelegate,
             AnimationHost animationHost,
@@ -269,13 +266,17 @@ public abstract class ReorderStrategyBase implements ReorderStrategy {
     }
 
     @VisibleForTesting
-    public void updateTabAttachState(
+    void updateTabAttachState(
             StripLayoutTab tab, boolean attached, @NonNull List<Animator> animationList) {
         float startValue =
-                attached ? FOLIO_DETACHED_BOTTOM_MARGIN_DP : FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
+                attached
+                        ? StripLayoutUtils.FOLIO_DETACHED_BOTTOM_MARGIN_DP
+                        : StripLayoutUtils.FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
         float intermediateValue = FOLIO_ANIM_INTERMEDIATE_MARGIN_DP;
         float endValue =
-                attached ? FOLIO_ATTACHED_BOTTOM_MARGIN_DP : FOLIO_DETACHED_BOTTOM_MARGIN_DP;
+                attached
+                        ? StripLayoutUtils.FOLIO_ATTACHED_BOTTOM_MARGIN_DP
+                        : StripLayoutUtils.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
 
         ArrayList<Animator> attachAnimationList = new ArrayList<>();
         CompositorAnimator dropAnimation =
@@ -331,10 +332,10 @@ public abstract class ReorderStrategyBase implements ReorderStrategy {
      *
      * @param stripTabs The list of {@link StripLayoutTab}.
      */
-    public void setEdgeMarginsForReorder(StripLayoutTab[] stripTabs) {
+    void setEdgeMarginsForReorder(StripLayoutTab[] stripTabs) {
         float marginWidth =
                 StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier)
-                        * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+                        * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
 
         // 1. Set the start margin. Update the scroll offset to prevent any apparent movement.
         StripLayoutTab firstTab = stripTabs[0];

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.compositor.overlays.strip;
+package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.ANIM_TAB_MOVE_MS;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
@@ -22,11 +22,13 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
+import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
-import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ExternalViewDragDropReorderStrategy;
-import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderStrategy;
-import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderStrategyBase;
-import org.chromium.chrome.browser.compositor.overlays.strip.reorder.SourceViewDragDropReorderStrategy;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -137,11 +139,11 @@ public class ReorderDelegate {
     // Getters and setters
     // ============================================================================================
 
-    boolean getInReorderMode() {
+    public boolean getInReorderMode() {
         return Boolean.TRUE.equals(mInReorderModeSupplier.get());
     }
 
-    boolean isReorderingTab() {
+    public boolean isReorderingTab() {
         // TODO(crbug.com/380327012): Update when we support group tearing.
         return getInReorderMode()
                 && (mActiveStrategy == mSourceViewDragDropReorderStrategy
@@ -195,7 +197,7 @@ public class ReorderDelegate {
      * @param groupIdToHideSupplier The {@link ObservableSupplierImpl} for the group ID to hide.
      * @param containerView The tab strip container {@link View}.
      */
-    void initialize(
+    public void initialize(
             AnimationHost animationHost,
             StripUpdateDelegate stripUpdateDelegate,
             TabGroupModelFilter tabGroupModelFilter,
@@ -294,7 +296,7 @@ public class ReorderDelegate {
     }
 
     /** See {@link ReorderStrategy#updateReorderPosition} */
-    void updateReorderPosition(
+    public void updateReorderPosition(
             StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
@@ -330,7 +332,7 @@ public class ReorderDelegate {
      * @param leftMargin The start margin in tab-strip. Used to compute auto-scroll speed.
      * @param rightMargin The end margin in tab-strip. Used to compute auto-scroll speed.
      */
-    void updateReorderPositionAutoScroll(
+    public void updateReorderPositionAutoScroll(
             StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
@@ -426,18 +428,18 @@ public class ReorderDelegate {
         }
     }
 
-    void addInReorderModeObserver(Callback<Boolean> observer) {
+    public void addInReorderModeObserver(Callback<Boolean> observer) {
         mInReorderModeSupplier.addObserver(observer);
     }
 
-    void removeInReorderModeObserver(Callback<Boolean> observer) {
+    public void removeInReorderModeObserver(Callback<Boolean> observer) {
         mInReorderModeSupplier.removeObserver(observer);
     }
 
     /** Update and animate views for external view drop on strip. */
-    void handleTabDropForExternalView(
+    public void handleTabDropForExternalView(
             StripLayoutGroupTitle[] groupTitles, int draggedTabId, int dropIndex) {
-        assert mExternalViewDragDropReorderStrategy != null;
+        assert mInitialized && mExternalViewDragDropReorderStrategy != null;
         mExternalViewDragDropReorderStrategy.handleDrop(groupTitles, draggedTabId, dropIndex);
     }
 
@@ -451,7 +453,7 @@ public class ReorderDelegate {
      *
      * @param stripTabs The list of {@link StripLayoutTab}.
      */
-    void setEdgeMarginsForReorder(StripLayoutTab[] stripTabs) {
+    public void setEdgeMarginsForReorder(StripLayoutTab[] stripTabs) {
         if (!mInitialized) return;
         ((ReorderStrategyBase) mActiveStrategy).setEdgeMarginsForReorder(stripTabs);
     }
@@ -464,7 +466,7 @@ public class ReorderDelegate {
         // Tab being reordered.
         private StripLayoutTab mInteractingTab;
 
-        public TabReorderStrategy(
+        TabReorderStrategy(
                 ReorderDelegate reorderDelegate,
                 StripUpdateDelegate stripUpdateDelegate,
                 AnimationHost animationHost,
@@ -671,7 +673,8 @@ public class ReorderDelegate {
             if (interactingGroupTitle.isCollapsed()) {
                 // Case C.1: Maybe drag past collapsed group.
                 float threshold =
-                        interactingGroupTitle.getWidth() * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+                        interactingGroupTitle.getWidth()
+                                * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
                 if (Math.abs(offset) <= threshold) return false;
 
                 movePastCollapsedGroup(interactingTab, interactingGroupTitle, curIndex, towardEnd);
@@ -734,7 +737,7 @@ public class ReorderDelegate {
         /** Returns the threshold to drag into a group. */
         private float getDragInThreshold() {
             return StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier)
-                    * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+                    * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
         }
     }
 
@@ -799,7 +802,7 @@ public class ReorderDelegate {
     /** Returns the threshold to swap the interacting views with an adjacent tab. */
     private float getTabSwapThreshold() {
         return StripLayoutUtils.getEffectiveTabWidth(mTabWidthSupplier)
-                * ReorderStrategyBase.REORDER_OVERLAP_SWITCH_PERCENTAGE;
+                * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
     }
 
     /**
@@ -810,7 +813,7 @@ public class ReorderDelegate {
     private float getDragOutThreshold(StripLayoutGroupTitle groupTitle, boolean towardEnd) {
         float dragOutThreshold =
                 StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier)
-                        * ReorderStrategyBase.REORDER_OVERLAP_SWITCH_PERCENTAGE;
+                        * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
         return dragOutThreshold + (towardEnd ? 0 : groupTitle.getWidth());
     }
 
@@ -825,7 +828,7 @@ public class ReorderDelegate {
         StripLayoutTab mFirstTabInGroup;
         StripLayoutTab mLastTabInGroup;
 
-        public GroupReorderStrategy(
+        GroupReorderStrategy(
                 ReorderDelegate reorderDelegate,
                 StripUpdateDelegate stripUpdateDelegate,
                 AnimationHost animationHost,
@@ -1059,10 +1062,10 @@ public class ReorderDelegate {
          */
         private float getGroupSwapThreshold(StripLayoutGroupTitle adjTitle) {
             if (adjTitle.isCollapsed()) {
-                return adjTitle.getWidth() * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+                return adjTitle.getWidth() * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
             }
             return (adjTitle.getBottomIndicatorWidth() + TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET)
-                    * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+                    * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
         }
     }
 
@@ -1070,15 +1073,15 @@ public class ReorderDelegate {
     // IN-TEST
     // ============================================================================================
 
-    void setInReorderModeForTesting(boolean inReorderMode) {
+    public void setInReorderModeForTesting(boolean inReorderMode) {
         mInReorderModeSupplier.set(inReorderMode);
     }
 
-    float getLastReorderXForTesting() {
+    public float getLastReorderXForTesting() {
         return mLastReorderX;
     }
 
-    StripLayoutTab getInteractingTabForTesting() {
+    public StripLayoutTab getInteractingTabForTesting() {
         return (StripLayoutTab) mActiveStrategy.getInteractingView();
     }
 }

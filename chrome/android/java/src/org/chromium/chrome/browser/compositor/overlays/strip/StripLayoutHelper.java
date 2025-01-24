@@ -5,12 +5,12 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.FOLIO_FOOT_LENGTH_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
-import static org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderStrategyBase.FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
-import static org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderStrategyBase.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
@@ -66,13 +66,15 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
-import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.ReorderType;
-import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle.StripLayoutGroupTitleDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripIphController.IphType;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabDragSource;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -3727,21 +3729,6 @@ public class StripLayoutHelper
         mTabAtPositionForTesting = tab;
     }
 
-    int getTabIndexForTabDrop(float x) {
-        float halfTabWidth = mCachedTabWidthSupplier.get() / 2;
-        for (int i = 0; i < mStripTabs.length; i++) {
-            final StripLayoutTab stripTab = mStripTabs[i];
-
-            if (LocalizationUtils.isLayoutRtl()) {
-                if (x > stripTab.getTouchTargetRight() - halfTabWidth) return i;
-            } else {
-                if (x < stripTab.getTouchTargetLeft() + halfTabWidth) return i;
-            }
-        }
-
-        return mStripTabs.length;
-    }
-
     StripLayoutTab getTabAtPosition(float x) {
         return (StripLayoutTab) getViewAtPositionX(x, false);
     }
@@ -4251,7 +4238,7 @@ public class StripLayoutHelper
     // Drag and Drop View Delegate.
     // ============================================================================================
 
-    void handleDragEnter(
+    public void handleDragEnter(
             float currX, float lastX, boolean isSourceStrip, boolean draggedTabIncognito) {
         if (isSourceStrip) {
             // Drag enter event after reorder was stopped. no-op.
@@ -4283,13 +4270,14 @@ public class StripLayoutHelper
         }
     }
 
-    void handleDragWithin(long time, float x, float y, float deltaX, boolean draggedTabIncognito) {
+    public void handleDragWithin(
+            long time, float x, float y, float deltaX, boolean draggedTabIncognito) {
         if (mIncognito == draggedTabIncognito) {
             drag(time, x, y, deltaX);
         }
     }
 
-    void handleDragExit(boolean isSourceStrip, boolean draggedTabIncognito) {
+    public void handleDragExit(boolean isSourceStrip, boolean draggedTabIncognito) {
         if (isSourceStrip) {
             // Drag exit event after reorder was stopped. no-op.
             if (!mReorderDelegate.getInReorderMode()) return;
@@ -4307,14 +4295,29 @@ public class StripLayoutHelper
         }
     }
 
-    void maybeMergeToGroupOnDrop(int draggedTabId, int index) {
+    public void maybeMergeToGroupOnDrop(int draggedTabId, int index) {
         mReorderDelegate.handleTabDropForExternalView(mStripGroupTitles, draggedTabId, index);
     }
 
-    void stopReorderMode() {
+    public void stopReorderMode() {
         if (mReorderDelegate.getInReorderMode()) {
             mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
         }
+    }
+
+    public int getTabIndexForTabDrop(float x) {
+        float halfTabWidth = mCachedTabWidthSupplier.get() / 2;
+        for (int i = 0; i < mStripTabs.length; i++) {
+            final StripLayoutTab stripTab = mStripTabs[i];
+
+            if (LocalizationUtils.isLayoutRtl()) {
+                if (x > stripTab.getTouchTargetRight() - halfTabWidth) return i;
+            } else {
+                if (x < stripTab.getTouchTargetLeft() + halfTabWidth) return i;
+            }
+        }
+
+        return mStripTabs.length;
     }
 
     private boolean isTabDraggingInProgress() {

@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabDragSource;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;

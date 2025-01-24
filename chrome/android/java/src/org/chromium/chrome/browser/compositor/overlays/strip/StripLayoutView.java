@@ -262,7 +262,7 @@ public abstract class StripLayoutView implements VirtualView {
     /**
      * @param isForegrounded Whether or not the given view should be foregrounded for reorder.
      */
-    void setIsForegrounded(boolean isForegrounded) {
+    public void setIsForegrounded(boolean isForegrounded) {
         mIsForegrounded = isForegrounded;
     }
 

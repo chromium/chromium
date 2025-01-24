@@ -478,7 +478,7 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     /** Sets if the end divider will be forced hidden for group reorder. */
-    void setForceHideEndDivider(boolean forceHide) {
+    public void setForceHideEndDivider(boolean forceHide) {
         mForceHideEndDivider = forceHide;
     }
 

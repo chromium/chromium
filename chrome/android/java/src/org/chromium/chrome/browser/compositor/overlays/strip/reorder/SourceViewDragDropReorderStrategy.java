@@ -13,16 +13,14 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
-import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate;
-import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.ReorderType;
-import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
-import org.chromium.chrome.browser.compositor.overlays.strip.TabDragSource;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -35,7 +33,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
  * Drag and drop reorder - start dragging strip view. Subsequently drag out of, within and back onto
  * strip.
  */
-public class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
+class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     // Drag helpers
     private final TabDragSource mTabDragSource;
     private final ActionConfirmationManager mActionConfirmationManager;
@@ -51,7 +49,7 @@ public class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     // Whether sub-strategy is in progress.
     private boolean mTabStrategyInProgress;
 
-    public SourceViewDragDropReorderStrategy(
+    SourceViewDragDropReorderStrategy(
             ReorderDelegate reorderDelegate,
             StripUpdateDelegate stripUpdateDelegate,
             AnimationHost animationHost,

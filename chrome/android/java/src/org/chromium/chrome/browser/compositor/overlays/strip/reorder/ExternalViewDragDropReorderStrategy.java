@@ -13,14 +13,13 @@ import androidx.annotation.NonNull;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
-import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate;
-import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.ReorderType;
-import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -38,7 +37,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
     // handle drop event (eg: re-parenting dropped tab).
     private StripLayoutView mInteractingViewDuringStop;
 
-    public ExternalViewDragDropReorderStrategy(
+    ExternalViewDragDropReorderStrategy(
             ReorderDelegate reorderDelegate,
             StripUpdateDelegate stripUpdateDelegate,
             AnimationHost animationHost,
@@ -171,7 +170,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
     }
 
     /** Merges dropped tab to interacting view's tab group, if one exists. */
-    public void handleDrop(StripLayoutGroupTitle[] groupTitles, int draggedTabId, int dropIndex) {
+    void handleDrop(StripLayoutGroupTitle[] groupTitles, int draggedTabId, int dropIndex) {
         if (mInteractingViewDuringStop == null) return;
 
         StripLayoutTab interactingView = (StripLayoutTab) mInteractingViewDuringStop;

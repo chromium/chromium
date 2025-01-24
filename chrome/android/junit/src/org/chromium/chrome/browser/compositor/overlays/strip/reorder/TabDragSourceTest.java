@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.compositor.overlays.strip;
+package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -66,7 +66,9 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
-import org.chromium.chrome.browser.compositor.overlays.strip.TabDragSource.TabDragShadowBuilder;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
+import org.chromium.chrome.browser.compositor.overlays.strip.TestTabModel;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabDragSource.TabDragShadowBuilder;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -858,8 +860,6 @@ public class TabDragSourceTest {
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Test
     public void test_onDrag_dropInStrip_withDragAsWindowFF_destination() {
-        mockStripTabPosition(TAB_WIDTH, POS_X - (TAB_WIDTH / 2), TAB_INDEX);
-
         new DragEventInvoker()
                 .dragExit(mSourceInstance)
                 .verifyShadowVisibility(true)
@@ -1200,14 +1200,6 @@ public class TabDragSourceTest {
                 .verifyShadowVisibility(true)
                 .drop(mDestInstance)
                 .end(dragEndRes);
-    }
-
-    private void mockStripTabPosition(float tabWidth, float drawX, int tabIndex) {
-        StripLayoutTab stripTab = mock(StripLayoutTab.class);
-        when(stripTab.getWidth()).thenReturn(tabWidth);
-        when(stripTab.getDrawX()).thenReturn(drawX);
-        when(stripTab.getTabId()).thenReturn(10);
-        when(mDestStripLayoutHelper.getTabAtPosition(POS_X)).thenReturn(stripTab);
     }
 
     class DragEventInvoker {

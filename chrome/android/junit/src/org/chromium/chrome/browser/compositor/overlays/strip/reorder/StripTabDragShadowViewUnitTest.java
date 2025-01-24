@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.compositor.overlays.strip;
+package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
