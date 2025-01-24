@@ -160,7 +160,7 @@ public class ScrollDelegate {
      *
      * @param newStartMargin The new reorder start margin.
      */
-    void setReorderStartMargin(float newStartMargin) {
+    public void setReorderStartMargin(float newStartMargin) {
         float delta = newStartMargin - mReorderStartMargin;
         mReorderStartMargin = newStartMargin;
 

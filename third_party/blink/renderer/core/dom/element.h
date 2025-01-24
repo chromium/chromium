@@ -295,6 +295,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void SetAttributeWithoutValidation(const QualifiedName&,
                                      const AtomicString& value);
 
+  void SetAttributeWithoutValidation(const QualifiedName& name,
+                                     const String& value) {
+    SetAttributeWithoutValidation(name, AtomicString(value));
+  }
+
   // Set an attribute with Trusted Type validation. Passing g_null_atom
   // is the same as removing the attribute.
   void SetAttributeWithValidation(const QualifiedName&,

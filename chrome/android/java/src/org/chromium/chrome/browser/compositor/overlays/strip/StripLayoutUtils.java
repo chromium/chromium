@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -35,8 +36,8 @@ public class StripLayoutUtils {
     static final float TAB_OVERLAP_WIDTH_DP = 28.f;
 
     // Animation Constants.
-    static final int ANIM_TAB_MOVE_MS = 125;
-    static final int ANIM_TAB_SLIDE_OUT_MS = 250;
+    public static final int ANIM_TAB_MOVE_MS = 125;
+    public static final int ANIM_TAB_SLIDE_OUT_MS = 250;
 
     // Reorder Constants.
     static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
@@ -63,7 +64,7 @@ public class StripLayoutUtils {
      * @param tabId The ID of the given tab.
      * @return {@code true} if the tab is grouped and is the last tab in the group. False otherwise.
      */
-    static boolean isLastTabInGroup(TabGroupModelFilter modelFilter, int tabId) {
+    public static boolean isLastTabInGroup(TabGroupModelFilter modelFilter, int tabId) {
         Tab tab = modelFilter.getTabModel().getTabById(tabId);
         if (tab == null) {
             return false;
@@ -77,7 +78,7 @@ public class StripLayoutUtils {
      * @param stripLayoutGroupTitle The {@link StripLayoutGroupTitle}
      * @return The number of tabs in the group associated with the group title.
      */
-    static int getNumOfTabsInGroup(
+    public static int getNumOfTabsInGroup(
             TabGroupModelFilter modelFilter, StripLayoutGroupTitle stripLayoutGroupTitle) {
         if (stripLayoutGroupTitle == null) {
             return 0;
@@ -90,7 +91,8 @@ public class StripLayoutUtils {
      * @param rootId The root ID for the tab group title we're searching for.
      * @return The {@link StripLayoutGroupTitle} with the given root ID. {@code null} otherwise.
      */
-    static StripLayoutGroupTitle findGroupTitle(StripLayoutGroupTitle[] groupTitles, int rootId) {
+    public static StripLayoutGroupTitle findGroupTitle(
+            StripLayoutGroupTitle[] groupTitles, int rootId) {
         for (int i = 0; i < groupTitles.length; i++) {
             final StripLayoutGroupTitle groupTitle = groupTitles[i];
             if (groupTitle.getRootId() == rootId) return groupTitle;
@@ -141,7 +143,7 @@ public class StripLayoutUtils {
      * @param effectiveTabWidth The width of a tab, accounting for overlap.
      * @return The total width of the group title and the number of tabs associated with it.
      */
-    static float calculateBottomIndicatorWidth(
+    public static float calculateBottomIndicatorWidth(
             StripLayoutGroupTitle groupTitle, int numTabsInGroup, float effectiveTabWidth) {
         if (groupTitle == null || groupTitle.isCollapsed() || numTabsInGroup == 0) {
             return 0.f;
@@ -160,6 +162,20 @@ public class StripLayoutUtils {
             if (tab != null && tab.getRootId() == rootId) groupedTabs.add(stripTab);
         }
         return groupedTabs;
+    }
+
+    // ============================================================================================
+    // Tab util methods
+    // ============================================================================================
+
+    /** Returns half of {@code mEffectiveTabWidth}. */
+    public static float getHalfTabWidth(Supplier<Float> tabWidthSupplier) {
+        return getEffectiveTabWidth(tabWidthSupplier) / 2;
+    }
+
+    /** Returns the current effective tab width (accounting for overlap). */
+    public static float getEffectiveTabWidth(Supplier<Float> tabWidthSupplier) {
+        return (tabWidthSupplier.get() - TAB_OVERLAP_WIDTH_DP);
     }
 
     // ============================================================================================
@@ -267,7 +283,7 @@ public class StripLayoutUtils {
         array[newIndex] = elem;
     }
 
-    static <T> boolean arrayContains(T[] array, T desiredElem) {
+    public static <T> boolean arrayContains(T[] array, T desiredElem) {
         for (int i = 0; i < array.length; i++) {
             final T elem = array[i];
             if (elem == desiredElem) return true;

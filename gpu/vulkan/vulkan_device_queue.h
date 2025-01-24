@@ -78,6 +78,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue
       VkPhysicalDevice vk_physical_device,
       VkDevice vk_device,
       VkQueue vk_queue,
+      void* vk_queue_lock_context,
       uint32_t vk_queue_index,
       gfx::ExtensionSet enabled_extensions,
       const VkPhysicalDeviceFeatures2& vk_physical_device_features2,
@@ -115,6 +116,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue
     DCHECK_NE(static_cast<VkQueue>(VK_NULL_HANDLE), vk_queue_);
     return vk_queue_;
   }
+  void* GetVulkanQueueLockContext() const { return angle_display_; }
 
   VkInstance GetVulkanInstance() const { return vk_instance_; }
 
@@ -169,6 +171,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue
       VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
   raw_ptr<const VkPhysicalDeviceFeatures2>
       enabled_device_features_2_from_angle_ = nullptr;
+  raw_ptr<void> angle_display_ = nullptr;
 
   bool allow_protected_memory_ = false;
 

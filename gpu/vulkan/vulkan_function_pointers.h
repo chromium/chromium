@@ -19,8 +19,8 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/native_library.h"
-#include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "gpu/vulkan/vulkan_queue_lock.h"
 #include "ui/gfx/extension_set.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -78,7 +78,7 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   // multiple gpu threads are accessing it. Note that this map will be only
   // accessed by multiple gpu threads concurrently to read the data, so it
   // should be thread safe to use this map by multiple threads.
-  base::flat_map<VkQueue, std::unique_ptr<base::Lock>> per_queue_lock_map;
+  base::flat_map<VkQueue, std::unique_ptr<VulkanQueueLock>> per_queue_lock_map;
 
   template <typename T>
   class VulkanFunction;
@@ -1103,22 +1103,22 @@ ALWAYS_INLINE VkResult vkQueueSubmit(VkQueue queue,
                                      uint32_t submitCount,
                                      const VkSubmitInfo* pSubmits,
                                      VkFence fence) {
-  base::Lock* lock = nullptr;
+  gpu::VulkanQueueLock* lock = nullptr;
   auto it = gpu::GetVulkanFunctionPointers()->per_queue_lock_map.find(queue);
   if (it != gpu::GetVulkanFunctionPointers()->per_queue_lock_map.end()) {
     lock = it->second.get();
   }
-  base::AutoLockMaybe auto_lock(lock);
+  gpu::VulkanQueueAutoLockMaybe auto_lock(lock);
   return gpu::GetVulkanFunctionPointers()->vkQueueSubmit(queue, submitCount,
                                                          pSubmits, fence);
 }
 ALWAYS_INLINE VkResult vkQueueWaitIdle(VkQueue queue) {
-  base::Lock* lock = nullptr;
+  gpu::VulkanQueueLock* lock = nullptr;
   auto it = gpu::GetVulkanFunctionPointers()->per_queue_lock_map.find(queue);
   if (it != gpu::GetVulkanFunctionPointers()->per_queue_lock_map.end()) {
     lock = it->second.get();
   }
-  base::AutoLockMaybe auto_lock(lock);
+  gpu::VulkanQueueAutoLockMaybe auto_lock(lock);
   return gpu::GetVulkanFunctionPointers()->vkQueueWaitIdle(queue);
 }
 ALWAYS_INLINE VkResult vkResetCommandBuffer(VkCommandBuffer commandBuffer,
@@ -1326,12 +1326,12 @@ ALWAYS_INLINE VkResult vkGetSwapchainImagesKHR(VkDevice device,
 }
 ALWAYS_INLINE VkResult vkQueuePresentKHR(VkQueue queue,
                                          const VkPresentInfoKHR* pPresentInfo) {
-  base::Lock* lock = nullptr;
+  gpu::VulkanQueueLock* lock = nullptr;
   auto it = gpu::GetVulkanFunctionPointers()->per_queue_lock_map.find(queue);
   if (it != gpu::GetVulkanFunctionPointers()->per_queue_lock_map.end()) {
     lock = it->second.get();
   }
-  base::AutoLockMaybe auto_lock(lock);
+  gpu::VulkanQueueAutoLockMaybe auto_lock(lock);
   return gpu::GetVulkanFunctionPointers()->vkQueuePresentKHR(queue,
                                                              pPresentInfo);
 }

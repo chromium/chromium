@@ -122,6 +122,11 @@ interface WebClientHandler {
   // window (floats free).
   DetachPanel();
 
+  // Triggers the change profile flow, which allows the user to switch which
+  // profile is used. If a new profile is chosen, this WebUI will be closed in
+  // favor of a new one.
+  ShowProfilePicker();
+
   // Returns the context from the currently active tab.
   // `tab_context_result` is null if tab content could not be captured.
   // This may fail if the tab is navigated while collecting data, or closed

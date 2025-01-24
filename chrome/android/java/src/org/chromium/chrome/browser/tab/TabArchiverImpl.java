@@ -88,6 +88,7 @@ public class TabArchiverImpl implements TabArchiver {
     public void doArchivePass(TabModelSelector selectorToArchive) {
         ThreadUtils.assertOnUiThread();
         if (!mTabArchiveSettings.getArchiveEnabled()) return;
+        long startTimeMs = mClock.currentTimeMillis();
 
         // Wait for the declutter pass to complete, then do follow-up tasks.
         addObserver(
@@ -121,6 +122,8 @@ public class TabArchiverImpl implements TabArchiver {
 
         RecordHistogram.recordCount1000Histogram(
                 "Tabs.TabArchived.FoundDuplicateInRegularModel", tabsToClose.size());
+        RecordHistogram.recordTimesHistogram(
+                "Tabs.ArchivePass.DurationMs", mClock.currentTimeMillis() - startTimeMs);
 
         broadcastDeclutterComplete();
     }
@@ -190,13 +193,14 @@ public class TabArchiverImpl implements TabArchiver {
     public void doAutodeletePass() {
         ThreadUtils.assertOnUiThread();
         if (!mTabArchiveSettings.isAutoDeleteEnabled()) return;
+        long startTimeMs = mClock.currentTimeMillis();
 
         List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < mArchivedTabGroupModelFilter.getTabModel().getCount(); i++) {
             tabs.add(mArchivedTabGroupModelFilter.getTabModel().getTabAt(i));
         }
 
-        deleteArchivedTabsIfEligibleAsync(tabs);
+        deleteArchivedTabsIfEligibleAsync(tabs, startTimeMs);
     }
 
     @Override
@@ -218,6 +222,7 @@ public class TabArchiverImpl implements TabArchiver {
                 .closeTabs(
                         TabClosureParams.closeTabs(tabs).allowUndo(false).build(),
                         /* allowDialog= */ false);
+
         RecordHistogram.recordCount1000Histogram("Tabs.TabArchived.TabCount", tabCount);
         initializePersistedTabDataAsync(archivedTabs);
     }
@@ -273,11 +278,16 @@ public class TabArchiverImpl implements TabArchiver {
                 mCallbackController.makeCancelable(
                         () ->
                                 initializePersistedTabDataAsyncImpl(
-                                        archivedTabs, /* currentIndex= */ 0)));
+                                        archivedTabs,
+                                        /* currentIndex= */ 0,
+                                        mClock.currentTimeMillis())));
     }
 
-    void initializePersistedTabDataAsyncImpl(List<Tab> archivedTabs, int currentIndex) {
+    void initializePersistedTabDataAsyncImpl(
+            List<Tab> archivedTabs, int currentIndex, long startTimeMs) {
         if (currentIndex >= archivedTabs.size()) {
+            RecordHistogram.recordTimesHistogram(
+                    "Tabs.InitializePTD.DurationMs", mClock.currentTimeMillis() - startTimeMs);
             broadcastPersistedTabDataCreated();
             return;
         }
@@ -297,19 +307,24 @@ public class TabArchiverImpl implements TabArchiver {
                             mCallbackController.makeCancelable(
                                     () ->
                                             initializePersistedTabDataAsyncImpl(
-                                                    archivedTabs, currentIndex + 1)));
+                                                    archivedTabs, currentIndex + 1, startTimeMs)));
                 });
     }
 
-    private void deleteArchivedTabsIfEligibleAsync(List<Tab> tabs) {
+    private void deleteArchivedTabsIfEligibleAsync(List<Tab> tabs, long startTimeMs) {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 mCallbackController.makeCancelable(
-                        () -> deleteArchivedTabsIfEligibleAsyncImpl(tabs, /* currentIndex= */ 0)));
+                        () ->
+                                deleteArchivedTabsIfEligibleAsyncImpl(
+                                        tabs, /* currentIndex= */ 0, startTimeMs)));
     }
 
-    private void deleteArchivedTabsIfEligibleAsyncImpl(List<Tab> tabs, int currentIndex) {
+    private void deleteArchivedTabsIfEligibleAsyncImpl(
+            List<Tab> tabs, int currentIndex, long startTimeMs) {
         if (currentIndex >= tabs.size()) {
+            RecordHistogram.recordTimesHistogram(
+                    "Tabs.DeleteWithPTD.DurationMs", mClock.currentTimeMillis() - startTimeMs);
             broadcastAutodeletePassComplete();
             return;
         }
@@ -336,7 +351,7 @@ public class TabArchiverImpl implements TabArchiver {
                             mCallbackController.makeCancelable(
                                     () ->
                                             deleteArchivedTabsIfEligibleAsyncImpl(
-                                                    tabs, currentIndex + 1)));
+                                                    tabs, currentIndex + 1, startTimeMs)));
                 });
     }
 

@@ -152,6 +152,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        BlocksTabStripModalUIWhileShown) {
   ASSERT_TRUE(browser()->tab_strip_model()->CanShowModalUI());
 
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kNone, nullptr);
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
 

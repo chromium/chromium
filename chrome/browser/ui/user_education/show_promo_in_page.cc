@@ -68,6 +68,7 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
           params.overwrite_active_tab
               ? WindowOpenDisposition::CURRENT_TAB
               : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      navigate_params.window_action = NavigateParams::SHOW_WINDOW;
       navigate_handle_ = Navigate(&navigate_params);
     } else {
       auto* visible_element =

@@ -13,7 +13,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import java.util.List;
 
 /** Host for animations in the tab strip. */
-interface AnimationHost {
+public interface AnimationHost {
     /**
      * @return The {@link CompositorAnimationHandler} associated with this animation host.
      */

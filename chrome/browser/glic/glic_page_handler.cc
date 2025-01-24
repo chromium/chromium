@@ -120,6 +120,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void DetachPanel() override { glic_service_->DetachPanel(); }
 
+  void ShowProfilePicker() override { glic_service_->ShowProfilePicker(); }
+
   void ResizeWidget(const gfx::Size& size,
                     base::TimeDelta duration,
                     ResizeWidgetCallback callback) override {

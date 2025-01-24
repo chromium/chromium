@@ -101,6 +101,11 @@ webapps::AppId InstallWebApp(Profile* profile,
   if (web_app_info->title.empty())
     web_app_info->title = u"WebAppInstallInfo App Name";
 
+  // Ensure web apps can never be installed with an empty scope.
+  if (web_app_info->scope.is_empty()) {
+    web_app_info->scope = web_app_info->start_url().GetWithoutFilename();
+  }
+
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       future;
   auto* provider = WebAppProvider::GetForTest(profile);

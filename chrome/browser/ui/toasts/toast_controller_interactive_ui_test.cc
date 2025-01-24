@@ -45,6 +45,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
@@ -577,4 +578,28 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
           ->GetContentsWebView()
           ->GetBoundsInScreen();
   EXPECT_TRUE(web_view_bounds.Contains(toast_bounds));
+}
+
+// Regression test for http://crbug.com/383898425
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
+                       HandlesReducedAnimation) {
+  ToastController* const toast_controller = GetToastController();
+  {
+    // Show toast while rich animations are disabled.
+    const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations =
+        gfx::AnimationTestApi::SetRichAnimationRenderMode(
+            gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+    gfx::Animation::SetPrefersReducedMotionForTesting(true);
+    EXPECT_TRUE(gfx::Animation::PrefersReducedMotion());
+    EXPECT_TRUE(
+        toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+  }
+  {
+    // Animate out toast (due to new toast showing) after enabling animations.
+    const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations =
+        gfx::AnimationTestApi::SetRichAnimationRenderMode(
+            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+    EXPECT_TRUE(
+        toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+  }
 }

@@ -1846,6 +1846,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.ArchivePass.DurationMs" units="ms"
+    expires_after="2025-05-04">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records the duration of an archive pass, not including the
+    time it takes to initialize the PersistedTabData (PTD).
+  </summary>
+</histogram>
+
 <histogram name="Tabs.ArchiveSettings.ArchiveDuplicateTabsEnabled"
     enum="Boolean" expires_after="2025-06-29">
   <owner>bjfong@google.com</owner>
@@ -1937,6 +1947,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     [iOS] The number of tabs opened at cold launch. With a wider range than
     Tabs.CountAtStartup (100 -&gt; 1M)
+  </summary>
+</histogram>
+
+<histogram name="Tabs.DeleteWithPTD.DurationMs" units="ms"
+    expires_after="2025-05-04">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records the duration of an auto-delete pass, including the
+    time it takes to load the PersistedTabData (PTD).
   </summary>
 </histogram>
 
@@ -2048,6 +2068,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     [iOS] Records the number of tabs that are considered inactive as per the
     current tab inactivity threshold. This is recorded at cold launch.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.InitializePTD.DurationMs" units="ms"
+    expires_after="2025-05-04">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records the duration of initializing all the PersistedTabData
+    (PTD) from an archive pass.
   </summary>
 </histogram>
 

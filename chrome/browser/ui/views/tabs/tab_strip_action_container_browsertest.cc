@@ -32,6 +32,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/ui/views/tabs/glic_button.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
@@ -343,5 +344,24 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
           browser()->GetProfile());
 
   EXPECT_TRUE(glic_keyed_service->window_controller().IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
+                       ShowAndHideGlicButtonWhenGlicNudgeButtonShows) {
+  ShowTabStripNudgeButton(GlicNudgeButton());
+  tab_strip_action_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
+
+  EXPECT_FALSE(tab_strip_action_container()->GetGlicButton()->GetVisible());
+  SetLockedExpansionMode(LockedExpansionMode::kWillHide, GlicNudgeButton());
+
+  OnButtonDismissed(GlicNudgeButton());
+
+  tab_strip_action_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  EXPECT_TRUE(tab_strip_action_container()->GetGlicButton()->GetVisible());
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)

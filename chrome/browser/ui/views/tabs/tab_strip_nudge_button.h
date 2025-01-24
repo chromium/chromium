@@ -19,7 +19,8 @@ class TabStripNudgeButton : public TabStripControlButton {
                       PressedCallback close_pressed_callback,
                       const std::u16string& initial_label_text,
                       const ui::ElementIdentifier& element_identifier,
-                      Edge flat_edge);
+                      Edge flat_edge,
+                      const gfx::VectorIcon& icon);
 
   TabStripNudgeButton(const TabStripNudgeButton&) = delete;
   TabStripNudgeButton& operator=(const TabStripNudgeButton&) = delete;

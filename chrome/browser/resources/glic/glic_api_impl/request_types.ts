@@ -65,6 +65,10 @@ export declare interface HostRequestTypes {
     request: {},
     response: void,
   };
+  glicBrowserShowProfilePicker: {
+    request: {},
+    response: void,
+  };
   glicBrowserGetContextFromFocusedTab: {
     request: {
       options: TabContextOptions,

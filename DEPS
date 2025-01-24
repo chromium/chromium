@@ -276,11 +276,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '329734bca901dd99e920881113a29b6a0bb2f0d7',
+  'src_internal_revision': '30d68719e227d1c56b17e5c5b8920ab4ea44fc22',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'b34b6f115fb0087ae234e0fad974af5835a0c738',
+  'skia_revision': 'c8aba6a056c5d76b72be2ba9441a415463907b91',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -288,11 +288,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '55f421f69e50de3ae3b94d6b06186a5b32439fa7',
+  'angle_revision': 'c1214ec2c40d360b11213dd856bbff0bb9fd53b0',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
-  'swiftshader_revision': '73053a0586b008514ff6e24ffde48dddbe0bbcba',
+  'swiftshader_revision': 'fc53776f06ef029466a5228967bb65e9c61dc34c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
@@ -300,7 +300,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
-  'boringssl_revision': 'f7febd26f8b6ddeb132a8c801e1f02c23eceb2f4',
+  'boringssl_revision': '5823b5e1b1e964ef0d1f5be2be907ded3feaf155',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Fuchsia sdk
   # and whatever else without interference from each other.
@@ -364,7 +364,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling fuzztest
   # and whatever else without interference from each other.
-  'fuzztest_revision': 'ce1164d3f463a79729861806536645a2b2818fbc',
+  'fuzztest_revision': 'eddb5c2de06760767c96b9bb64a4d6d5da48fb87',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling domato
   # and whatever else without interference from each other.
@@ -496,7 +496,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
-  'llvm_libc_revision':    '7fb16ccf18668c4b0146bf27143933cbcbe5a421',
+  'llvm_libc_revision':    'b24bb82dd0736d0333f5cdeb613aeeb4c9c1c15b',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -1439,12 +1439,12 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'a93ca1f5788654dca17609642beef3fa1abe0f42',
+    '0c0004d4136c9d6e9be995fba2f41b296d4745d9',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
   'src/docs/website': {
-    'url': Var('chromium_git') + '/website.git' + '@' + 'c342ee15185719fabeae6654841fc0047031fcaa',
+    'url': Var('chromium_git') + '/website.git' + '@' + '2d36f0243a62a4b60e643f5569f6b4bb0aeb6780',
   },
 
   'src/ios/third_party/earl_grey2/src': {
@@ -1598,7 +1598,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'JnIjviDAjCfHRu7c2i3reVPqGvxvLIbe9E4mdb2-ma0C',
+          'version': '7YgV4CrBljw0cIVv2J9QjoXnRy2LLppGsWBM4gXMJvcC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -2803,7 +2803,7 @@ deps = {
     Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + '450cceb587613ac1469c5a131fac15935c99e0e7',
 
   'src/third_party/webgpu-cts/src':
-    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'e50eb8038dbd0a5d347ba1235480ccd27570d0c6',
+    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '1e8a3781e7f7bd00cc6dd1533ed6e1941465357e',
 
   'src/third_party/webpagereplay':
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
@@ -4538,7 +4538,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'ef309f7eddc84ad8a68c5175ba3e3631d13d7a42',
+        '919b4ce9b9c225282de1fe59d2e38dd7d6dbed97',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

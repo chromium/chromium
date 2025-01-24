@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import static org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
-import static org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.FOLIO_FOOT_LENGTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderStrategyBase.FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderStrategyBase.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
@@ -105,7 +105,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingService.Observer;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -365,7 +364,7 @@ public class StripLayoutHelper
     private final ActionConfirmationManager mActionConfirmationManager;
     private final StripStacker mStripStacker = new ScrollingStripStacker();
     private final ScrollDelegate mScrollDelegate = new ScrollDelegate();
-    private final ReorderDelegate mReorderDelegate = new ReorderDelegate();
+    private ReorderDelegate mReorderDelegate = new ReorderDelegate();
     private final Callback<Boolean> mInReorderModeObserver = this::onInReorderModeChanged;
 
     // Common state used for animations on the strip triggered by independent actions including and
@@ -486,11 +485,12 @@ public class StripLayoutHelper
     private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
 
     // Tab group share.
-    private ModalDialogManager mModalDialogManager;
     @Nullable private DataSharingTabManager mDataSharingTabManager;
     @Nullable private DataSharingService mDataSharingService;
-    @Nullable private TabGroupSyncService mTabGroupSyncService;
     @Nullable private DataSharingService.Observer mDataSharingObserver;
+    @Nullable private TabGroupSyncService mTabGroupSyncService;
+    @Nullable private TabGroupSyncService.Observer mTabGroupSyncObserver;
+    private ModalDialogManager mModalDialogManager;
 
     // IPH on tab strip.
     private TabStripIphController mTabStripIphController;
@@ -704,6 +704,10 @@ public class StripLayoutHelper
         if (mDataSharingService != null) {
             mDataSharingService.removeObserver(mDataSharingObserver);
             mDataSharingService = null;
+        }
+        if (mTabGroupSyncService != null) {
+            mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
+            mTabGroupSyncService = null;
         }
     }
 
@@ -1054,8 +1058,19 @@ public class StripLayoutHelper
         if (shouldEnableGroupSharing(profile)) {
             mDataSharingService = DataSharingServiceFactory.getForProfile(profile);
             mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+            mTabGroupSyncObserver =
+                    new TabGroupSyncService.Observer() {
+                        @Override
+                        public void onTabGroupLocalIdChanged(
+                                String syncTabGroupId, @Nullable LocalTabGroupId localTabGroupId) {
+                            if (localTabGroupId == null) return;
+                            updateSharedTabGroupIfNeeded(
+                                    findGroupTitle(localTabGroupId.tabGroupId));
+                        }
+                    };
+            mTabGroupSyncService.addObserver(mTabGroupSyncObserver);
             mDataSharingObserver =
-                    new Observer() {
+                    new DataSharingService.Observer() {
                         @Override
                         public void onGroupChanged(GroupData groupData) {
                             updateOrClearSharedState(groupData);
@@ -1961,6 +1976,28 @@ public class StripLayoutHelper
     }
 
     /**
+     * Updates the tab group shared state if applicable.
+     *
+     * @param groupTitle The group title to update with the shared tab group state.
+     */
+    private void updateSharedTabGroupIfNeeded(StripLayoutGroupTitle groupTitle) {
+        Token tabGroupId = groupTitle.getTabGroupId();
+        if (shouldEnableGroupSharing(mTabGroupModelFilter.getTabModel().getProfile())) {
+            SavedTabGroup savedTabGroup =
+                    mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
+            if (savedTabGroup == null || savedTabGroup.collaborationId == null) return;
+            mDataSharingService.readGroup(
+                    savedTabGroup.collaborationId,
+                    (groupDataOrFailureOutcome) -> {
+                        // Update the group title with avatar and notification bubble.
+                        if (TabShareUtils.hasMultipleCollaborators(groupDataOrFailureOutcome)) {
+                            updateSharedTabGroup(savedTabGroup.collaborationId, groupTitle);
+                        }
+                    });
+        }
+    }
+
+    /**
      * Updates the shared state of a tab group, including the avatar face piles and setup
      * notification bubbler for the group title when the group is shared.
      *
@@ -1968,16 +2005,17 @@ public class StripLayoutHelper
      * @param groupTitle The group title to update with the shared tab group state.
      */
     private void updateSharedTabGroup(String collaborationId, StripLayoutGroupTitle groupTitle) {
-        if (groupTitle == null) {
-            return;
-        }
+        if (groupTitle == null) return;
 
+        // Setup bubbler and show all notifications.
         if (groupTitle.getTabBubbler() == null) {
-            groupTitle.setTabBubbler(
+            TabBubbler tabBubbler =
                     new TabBubbler(
                             mTabGroupModelFilter.getTabModel().getProfile(),
                             this,
-                            new ObservableSupplierImpl<>(groupTitle.getTabGroupId())));
+                            new ObservableSupplierImpl<>(groupTitle.getTabGroupId()));
+            groupTitle.setTabBubbler(tabBubbler);
+            tabBubbler.showAll();
         }
 
         groupTitle.updateSharedTabGroup(
@@ -3012,6 +3050,10 @@ public class StripLayoutHelper
         return StripLayoutUtils.findGroupTitle(mStripGroupTitles, rootId);
     }
 
+    private StripLayoutGroupTitle findGroupTitle(Token tabGroupId) {
+        return StripLayoutUtils.findGroupTitle(mStripGroupTitles, tabGroupId);
+    }
+
     private StripLayoutGroupTitle findOrCreateGroupTitle(int rootId, Token tabGroupId) {
         StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
         return groupTitle == null ? createGroupTitle(rootId, tabGroupId) : groupTitle;
@@ -3030,22 +3072,8 @@ public class StripLayoutHelper
         updateGroupTextAndSharedState(groupTitle);
 
         // Update tab group share avatars if necessary. The data sharing observer should already be
-        // in place by this point (added during #setTabGroupModelFilter).
-        if (shouldEnableGroupSharing(mTabGroupModelFilter.getTabModel().getProfile())) {
-            SavedTabGroup savedTabGroup =
-                    mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
-            if (savedTabGroup != null && savedTabGroup.collaborationId != null) {
-                mDataSharingService.readGroup(
-                        savedTabGroup.collaborationId,
-                        (groupDataOrFailureOutcome) -> {
-                            // Check if the group has multiple collaborators.
-                            if (TabShareUtils.hasMultipleCollaborators(groupDataOrFailureOutcome)) {
-                                // Update the group title with shared state and avatar.
-                                updateSharedTabGroup(savedTabGroup.collaborationId, groupTitle);
-                            }
-                        });
-            }
-        }
+        // in place by this point.
+        updateSharedTabGroupIfNeeded(groupTitle);
         return groupTitle;
     }
 
@@ -4157,6 +4185,10 @@ public class StripLayoutHelper
         mReorderDelegate.setInReorderModeForTesting(inReorderMode);
     }
 
+    void setReorderDelegateForTesting(ReorderDelegate delegate) {
+        mReorderDelegate = delegate;
+    }
+
     ReorderDelegate getReorderDelegateForTesting() {
         return mReorderDelegate;
     }
@@ -4319,13 +4351,5 @@ public class StripLayoutHelper
             @NonNull StripLayoutTab clickedTab, @NonNull PointF dragStartPointF) {
         startReorderMode(
                 dragStartPointF.x, dragStartPointF.y, clickedTab, ReorderType.START_DRAG_DROP);
-    }
-
-    void setLastOffsetXForTesting(float lastOffsetX) {
-        mReorderDelegate.setDragLastOffsetXForTesting(lastOffsetX); // IN-TEST
-    }
-
-    float getLastOffsetXForTesting() {
-        return mReorderDelegate.getDragLastOffsetXForTesting(); // IN-TEST
     }
 }

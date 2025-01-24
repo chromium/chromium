@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_settings_util.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
@@ -136,6 +138,19 @@ void GlicKeyedService::ResizePanel(const gfx::Size& size,
                                    base::TimeDelta duration,
                                    base::OnceClosure callback) {
   window_controller_.Resize(size, duration, std::move(callback));
+}
+
+void GlicKeyedService::ShowProfilePicker() {
+  base::OnceCallback<void(Profile*)> callback =
+      base::BindOnce([](Profile* profile) {
+        if (profile) {
+          GlicKeyedService* service =
+              GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+          service->LaunchUI(nullptr);
+        }
+      });
+  ProfilePicker::Show(
+      ProfilePicker::Params::ForGlicManager(std::move(callback)));
 }
 
 void GlicKeyedService::SetPanelDraggableAreas(

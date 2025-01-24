@@ -37,6 +37,8 @@ if (enable_vulkan) {
     sources = [
       "vulkan_function_pointers.cc",
       "vulkan_function_pointers.h",
+      "vulkan_queue_lock.cc",
+      "vulkan_queue_lock.h",
     ]
 
     public_configs = [ ":vulkan_config" ]
@@ -48,6 +50,7 @@ if (enable_vulkan) {
     deps = [
       "//base",
       "//ui/gfx",
+      "//ui/gl",
     ]
 
     public_deps = [ "//third_party/vulkan-headers/src:vulkan_headers" ]

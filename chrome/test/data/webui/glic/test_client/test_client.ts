@@ -11,6 +11,7 @@ interface PageElementTypes {
   pageHeader: HTMLDivElement;
   focusedFavicon: HTMLImageElement;
   focusedUrl: HTMLInputElement;
+  contextAccessIndicator: HTMLInputElement;
   syncCookiesBn: HTMLButtonElement;
   syncCookieStatus: HTMLSpanElement;
   getUserProfileInfoBn: HTMLButtonElement;
@@ -171,6 +172,10 @@ $.newtabbn.addEventListener('click', async () => {
 
 $.reloadpage.addEventListener('click', () => {
   location.reload();
+});
+
+$.contextAccessIndicator.addEventListener('click', () => {
+  getBrowser()!.setContextAccessIndicator!($.contextAccessIndicator.checked);
 });
 
 $.getpagecontext.addEventListener('click', async () => {

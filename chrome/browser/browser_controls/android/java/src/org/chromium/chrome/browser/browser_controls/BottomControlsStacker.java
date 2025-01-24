@@ -468,7 +468,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         // the screen. `animated` is only true when the android views for the browser controls are
         // visible, or when there is a browser driven animation in progress (meaning there are no
         // composited views present.)
-        if (animated) {
+        if (animated && bottomOffset != 0) {
             // When bottomOffset is negative, the browser controls is going through a height
             // reduction.
             //

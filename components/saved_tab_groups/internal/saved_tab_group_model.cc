@@ -161,7 +161,7 @@ void SavedTabGroupModel::AddedLocally(SavedTabGroup saved_group) {
   InsertGroupImpl(std::move(saved_group));
 
   for (auto& observer : observers_) {
-    observer.SavedTabGroupAddedLocally(Get(group_guid)->saved_guid());
+    observer.SavedTabGroupAddedLocally(group_guid);
   }
 }
 

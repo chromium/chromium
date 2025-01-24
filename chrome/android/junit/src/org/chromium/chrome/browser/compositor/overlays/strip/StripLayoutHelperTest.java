@@ -16,7 +16,6 @@ import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -91,6 +90,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
+import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripIphController.IphType;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
@@ -2759,22 +2759,6 @@ public class StripLayoutHelperTest {
                 0.5f);
     }
 
-    @Test
-    public void testFolioAttached_ReattachAnimationSkipped() {
-        // Arrange
-        int tabCount = 6;
-        initializeTest(false, false, 0, tabCount);
-        groupTabs(0, 2);
-        ReorderDelegate reorderDelegateSpy = spy(mStripLayoutHelper.getReorderDelegateForTesting());
-
-        // Start and stop reorder mode for tab drop.
-        mStripLayoutHelper.handleDragEnter(/* currX= */ 10.f, /* lastX= */ 0f, false, false);
-        mStripLayoutHelper.stopReorderMode();
-
-        // Verify: folio reattachment animation does not run for tab drop.
-        verify(reorderDelegateSpy, never()).updateTabAttachState(any(), eq(true), notNull());
-    }
-
     private float calculateExpectedBottomIndicatorWidth(
             float tabWidth, float tabCount, StripLayoutGroupTitle groupTitle) {
         // (tabWidth - tabOverlap(28.f)) * tabCount + groupTitleWidth -
@@ -4424,66 +4408,22 @@ public class StripLayoutHelperTest {
     public void testDrag_DragActiveClickedTabOntoStrip() {
         // Setup and mark the active clicked tab.
         initializeTest(false, false, 0, 5);
-        setTabDragSourceMock();
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        mStripLayoutHelper.startDragAndDropTabForTesting(tabs[1], DRAG_START_POINT);
+        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
+        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
+        when(mockDelegate.getInReorderMode()).thenReturn(true);
 
         // Drag tab back onto strip.
-        float expectedOffsetX = 123.45f;
-        mStripLayoutHelper.setLastOffsetXForTesting(expectedOffsetX);
         mStripLayoutHelper.handleDragEnter(0f, 0f, true, false);
 
-        // Verify we continue reorder mode with the correct x-offset.
-        assertFalse(
-                "Should mark the tab is not off the strip.",
-                mStripLayoutHelper.getInteractingTabForTesting().isDraggedOffStrip());
-        assertEquals(
-                "Should restore x-offset.",
-                expectedOffsetX,
-                mStripLayoutHelper.getInteractingTabForTesting().getOffsetX(),
-                EPSILON);
-
-        // Verify we continue reorder mode.
-        assertTrue(
-                "Should re-enter reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.R)
-    public void testDrag_DragActiveClickedTabOutOfStrip() {
-        // Setup and start drag.
-        initializeTest(false, false, 1, 5);
-        setTabDragSourceMock();
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
-
-        // Drag tab out of strip.
-        float expectedOffsetX = 123.45f;
-        mStripLayoutHelper.handleDragEnter(0f, 0f, true, false);
-        StripLayoutTab draggedTab = mStripLayoutHelper.getInteractingTabForTesting();
-        draggedTab.setOffsetX(expectedOffsetX);
-        mStripLayoutHelper.handleDragExit(true, false);
-
-        // Finish animations.
-        assertNotNull(
-                "Animator should be running.", mStripLayoutHelper.getRunningAnimatorForTesting());
-        mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
-
-        // Verify we animate the tab exiting. Reorder is still in progress.
-        assertEquals(
-                "Should have stored dragged tab's x-offset.",
-                expectedOffsetX,
-                mStripLayoutHelper.getLastOffsetXForTesting(),
-                EPSILON);
-        assertTrue("Should mark the tab is off the strip.", draggedTab.isDraggedOffStrip());
-        assertEquals(
-                "Tab should be translated off the strip.",
-                SCREEN_HEIGHT,
-                draggedTab.getOffsetY(),
-                EPSILON);
-        assertTrue("Should be in reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
+        // Verify we continue reorder.
+        verify(mockDelegate)
+                .updateReorderPosition(
+                        any(),
+                        any(),
+                        any(),
+                        anyFloat(),
+                        anyFloat(),
+                        eq(ReorderType.DRAG_ONTO_STRIP));
     }
 
     @Test

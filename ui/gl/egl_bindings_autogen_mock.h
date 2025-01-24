@@ -209,6 +209,7 @@ static EGLint GL_BINDING_CALL Mock_eglLabelObjectKHR(EGLDisplay display,
                                                      EGLenum objectType,
                                                      EGLObjectKHR object,
                                                      EGLLabelKHR label);
+static void GL_BINDING_CALL Mock_eglLockVulkanQueueANGLE(EGLDisplay dpy);
 static EGLBoolean GL_BINDING_CALL Mock_eglMakeCurrent(EGLDisplay dpy,
                                                       EGLSurface draw,
                                                       EGLSurface read,
@@ -326,6 +327,7 @@ Mock_eglSwapBuffersWithDamageKHR(EGLDisplay dpy,
 static EGLBoolean GL_BINDING_CALL Mock_eglSwapInterval(EGLDisplay dpy,
                                                        EGLint interval);
 static EGLBoolean GL_BINDING_CALL Mock_eglTerminate(EGLDisplay dpy);
+static void GL_BINDING_CALL Mock_eglUnlockVulkanQueueANGLE(EGLDisplay dpy);
 static EGLBoolean GL_BINDING_CALL Mock_eglWaitClient(void);
 static EGLBoolean GL_BINDING_CALL Mock_eglWaitGL(void);
 static EGLBoolean GL_BINDING_CALL Mock_eglWaitNative(EGLint engine);

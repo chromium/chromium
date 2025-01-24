@@ -2612,9 +2612,9 @@ TEST_F(LensOverlayQueryControllerMockTimeTest,
   query_controller.StartQueryFlow(
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown,
-      /**/ 0, base::TimeTicks::Now());
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeContentBytes,
+      lens::MimeType::kPdf,
+      /*ui_scale_factor=*/0, base::TimeTicks::Now());
 
   // Wait for the full image response to be received, then clear the future.
   ASSERT_TRUE(full_image_response_future.Wait());
@@ -2636,6 +2636,29 @@ TEST_F(LensOverlayQueryControllerMockTimeTest,
             2);
   CheckGen204IdsMatch(query_controller.sent_client_logs(),
                       url_response_future.Get());
+
+  // Verify the full image request has the correct request id.
+  auto full_image_request = query_controller.sent_full_image_objects_request();
+  ASSERT_EQ(full_image_request.request_context().request_id().sequence_id(), 1);
+  ASSERT_EQ(
+      full_image_request.request_context().request_id().image_sequence_id(), 1);
+
+  // Verify the page content request has the correct request id.
+  auto page_content_request =
+      query_controller.sent_page_content_objects_request();
+  ASSERT_EQ(page_content_request.request_context().request_id().sequence_id(),
+            1);
+  ASSERT_EQ(
+      page_content_request.request_context().request_id().image_sequence_id(),
+      1);
+
+  // Verify the interaction request has the correct request id.
+  auto interaction_request = query_controller.sent_interaction_request();
+  ASSERT_EQ(interaction_request.request_context().request_id().sequence_id(),
+            2);
+  ASSERT_EQ(
+      interaction_request.request_context().request_id().image_sequence_id(),
+      1);
 }
 
 }  // namespace lens

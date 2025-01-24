@@ -401,7 +401,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             mTabArchiveSettings.setArchiveTimeDeltaHours(0);
         }
 
-        // TODO(crbug.com/361130234): Record timing metrics here.
         mTabArchiver.addObserver(
                 new TabArchiver.Observer() {
                     @Override
