@@ -8616,12 +8616,6 @@ crbug.com/324441376 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling
 crbug.com/388445687 http/tests/devtools/console/console-copy-treeoutline.js [ Failure Pass ]
 crbug.com/388445687 http/tests/devtools/console/console-viewport-selection.js [ Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/6184803
-crbug.com/391381439 http/tests/devtools/security/blocked-mixed-content.js [ Failure Pass ]
-crbug.com/391381439 http/tests/devtools/security/mixed-content-active-and-passive-reload.js [ Failure Pass ]
-crbug.com/391381439 http/tests/devtools/security/mixed-content-reload.js [ Failure Pass ]
-crbug.com/391381439 http/tests/devtools/security/security-blocked-mixed-content.js [ Failure Pass ]
-
 # Temporarily disabled to unblock https://crrev.com/c/6187530
 crbug.com/391381439 http/tests/devtools/components/minimum-size.js [ Failure Pass ]
 crbug.com/391381439 http/tests/devtools/components/split-widget.js [ Failure Pass ]
