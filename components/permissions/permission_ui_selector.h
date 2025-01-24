@@ -12,6 +12,10 @@
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace permissions {
 
 // The interface for implementations that decide if the quiet prompt UI should
@@ -77,7 +81,8 @@ class PermissionUiSelector {
   // when done, either synchronously or asynchronously. The |callback| is
   // guaranteed never to be invoked after |this| goes out of scope. Only one
   // request is supported at a time.
-  virtual void SelectUiToUse(PermissionRequest* request,
+  virtual void SelectUiToUse(content::WebContents* web_contents,
+                             PermissionRequest* request,
                              DecisionMadeCallback callback) = 0;
 
   // Cancel the pending request, if any. After this, the |callback| is

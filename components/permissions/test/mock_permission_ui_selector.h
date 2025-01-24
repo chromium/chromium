@@ -21,7 +21,8 @@ class MockPermissionUiSelector : public permissions::PermissionUiSelector {
 
  protected:
   // permissions::PermissionUiSelector:
-  void SelectUiToUse(permissions::PermissionRequest* request,
+  void SelectUiToUse(content::WebContents* web_contents,
+                     permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override;
 
   bool IsPermissionRequestSupported(

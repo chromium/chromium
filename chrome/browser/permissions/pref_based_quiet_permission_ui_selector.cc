@@ -24,6 +24,7 @@ PrefBasedQuietPermissionUiSelector::~PrefBasedQuietPermissionUiSelector() =
     default;
 
 void PrefBasedQuietPermissionUiSelector::SelectUiToUse(
+    content::WebContents* web_contents,
     permissions::PermissionRequest* request,
     DecisionMadeCallback callback) {
   const ContentSettingsType content_settings_type =

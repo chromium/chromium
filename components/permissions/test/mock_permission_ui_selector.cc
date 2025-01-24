@@ -5,6 +5,7 @@
 #include "components/permissions/test/mock_permission_ui_selector.h"
 
 void MockPermissionUiSelector::SelectUiToUse(
+    content::WebContents* web_contents,
     permissions::PermissionRequest* request,
     DecisionMadeCallback callback) {
   std::move(callback).Run(canned_decision_);

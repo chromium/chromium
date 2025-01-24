@@ -950,7 +950,7 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
         permission_ui_selectors_[selector_index]->IsPermissionRequestSupported(
             requests_.front()->request_type())) {
       permission_ui_selectors_[selector_index]->SelectUiToUse(
-          requests_.front(),
+          web_contents(), requests_.front(),
           base::BindOnce(&PermissionRequestManager::OnPermissionUiSelectorDone,
                          weak_factory_.GetWeakPtr(), selector_index));
       continue;

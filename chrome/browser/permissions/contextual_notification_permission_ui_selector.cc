@@ -133,6 +133,7 @@ ContextualNotificationPermissionUiSelector::
     ContextualNotificationPermissionUiSelector() = default;
 
 void ContextualNotificationPermissionUiSelector::SelectUiToUse(
+    content::WebContents* web_contents,
     permissions::PermissionRequest* request,
     DecisionMadeCallback callback) {
   callback_ = std::move(callback);

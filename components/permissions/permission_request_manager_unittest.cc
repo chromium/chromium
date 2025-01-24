@@ -851,7 +851,8 @@ class MockNotificationPermissionUiSelector : public PermissionUiSelector {
         prediction_likelihood_(prediction_likelihood),
         async_delay_(async_delay) {}
 
-  void SelectUiToUse(PermissionRequest* request,
+  void SelectUiToUse(content::WebContents* web_contents,
+                     PermissionRequest* request,
                      DecisionMadeCallback callback) override {
     selected_ui_to_use_ = true;
     Decision decision(quiet_ui_reason_, Decision::ShowNoWarning());

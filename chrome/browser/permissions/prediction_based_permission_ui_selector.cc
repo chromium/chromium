@@ -29,6 +29,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/unified_consent/pref_names.h"
+#include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
@@ -52,6 +54,10 @@ constexpr base::TimeDelta kPermissionActionCutoffAge = base::Days(28);
 // Only send requests if there are at least 4 action in the user's history for
 // the particular permission type.
 constexpr size_t kRequestedPermissionMinimumHistoricalActions = 4;
+
+// The maximum length of a page's content. It is needed to limit on-device ML
+// input to reduce processing latency.
+constexpr size_t kPageContentMaxLength = 500;
 
 std::optional<
     permissions::PermissionPrediction_Likelihood_DiscretizedLikelihood>
@@ -101,6 +107,7 @@ PredictionBasedPermissionUiSelector::~PredictionBasedPermissionUiSelector() =
     default;
 
 void PredictionBasedPermissionUiSelector::SelectUiToUse(
+    content::WebContents* web_contents,
     permissions::PermissionRequest* request,
     DecisionMadeCallback callback) {
   VLOG(1) << "[CPSS] Selector activated";
@@ -108,6 +115,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   last_request_grant_likelihood_ = std::nullopt;
   last_permission_request_relevance_ = std::nullopt;
   was_decision_held_back_ = std::nullopt;
+
   const PredictionSource prediction_source =
       GetPredictionTypeToUse(request->request_type());
   if (prediction_source == PredictionSource::USE_NONE) {
@@ -146,6 +154,13 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   }
 
   DCHECK(!request_);
+
+  // TODO(crbug.com/382447738): refactor it later to use a proper
+  // `PredictionSource`.
+  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
+    FetchInnerTextForFrame(web_contents->GetPrimaryMainFrame());
+    return;
+  }
 
   if (prediction_source == PredictionSource::USE_SERVER_SIDE) {
     permissions::PredictionService* service =
@@ -203,6 +218,37 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   NOTREACHED();
+}
+
+void PredictionBasedPermissionUiSelector::FetchInnerTextForFrame(
+    content::RenderFrameHost* rfh) {
+  content_extraction::GetInnerText(
+      *rfh, /*node_id=*/std::nullopt,
+      base::BindOnce(
+          &PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
+    std::unique_ptr<content_extraction::InnerTextResult> result) {
+  if (result && !result->inner_text.empty()) {
+    std::string inner_text = std::move(result->inner_text);
+
+    if (inner_text.size() > kPageContentMaxLength) {
+      inner_text.resize(kPageContentMaxLength);
+    }
+    // TODO(crbug.com/382447738): Use `inner_text` as an input for an on-device
+    // ML model.
+
+    // TODO(crbug.com/382447738): The next line is a temporary solution until
+    // on-device ML execution is ready.
+    std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+  } else {
+    // TODO(crbug.com/382447738): If text is empty, run CPSSv3 logic instead of
+    // showing the loud UI.
+    VLOG(1) << "[CPSS] Cannot fetch page's content";
+    std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+  }
 }
 
 void PredictionBasedPermissionUiSelector::Cancel() {
