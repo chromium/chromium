@@ -45,6 +45,7 @@ public abstract class ReorderStrategyBase implements ReorderStrategy {
     // Constants
     public static final float FOLIO_ATTACHED_BOTTOM_MARGIN_DP = 0.f;
     public static final float FOLIO_DETACHED_BOTTOM_MARGIN_DP = 4.f;
+    public static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
     private static final int ANIM_FOLIO_DETACH_MS = 75;
     private static final float FOLIO_ANIM_INTERMEDIATE_MARGIN_DP = -12.f;
 
@@ -196,9 +197,8 @@ public abstract class ReorderStrategyBase implements ReorderStrategy {
      * @param groupTitle The group title associated with the tab. Null if tab is not grouped.
      * @param shouldHaveTrailingMargin Whether the tab should have a trailing margin or not.
      * @param animationList The list to add the animation to, or {@code null} if not animating.
-     * @return Whether or not the trailing margin for the given tab actually changed.
      */
-    private boolean setTrailingMarginForTab(
+    private void setTrailingMarginForTab(
             StripLayoutTab tab,
             StripLayoutGroupTitle groupTitle,
             boolean shouldHaveTrailingMargin,
@@ -208,7 +208,7 @@ public abstract class ReorderStrategyBase implements ReorderStrategy {
                 shouldHaveTrailingMargin
                         ? StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier)
                         : 0.f;
-        if (tab.getTrailingMargin() == trailingMargin) return false;
+        if (tab.getTrailingMargin() == trailingMargin) return;
 
         // Update group title bottom indicator width if needed.
         if (groupTitle != null) {
@@ -240,8 +240,6 @@ public abstract class ReorderStrategyBase implements ReorderStrategy {
                         tab.getTrailingMargin(),
                         trailingMargin,
                         ANIM_TAB_SLIDE_OUT_MS));
-
-        return true;
     }
 
     protected void handleStopReorderMode(
@@ -325,6 +323,33 @@ public abstract class ReorderStrategyBase implements ReorderStrategy {
                     stripTab, groupTitles, /* shouldHaveTrailingMargin= */ false, animationList);
         }
         mScrollDelegate.setReorderStartMargin(/* newStartMargin= */ 0.f);
+    }
+
+    /**
+     * Calculates the start and end margins needed to allow for reordering tabs into/out of groups
+     * near the edge of the tab strip. 0 if the first/last tabs aren't grouped, respectively.
+     *
+     * @param stripTabs The list of {@link StripLayoutTab}.
+     */
+    public void setEdgeMarginsForReorder(StripLayoutTab[] stripTabs) {
+        float marginWidth =
+                StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier)
+                        * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+
+        // 1. Set the start margin. Update the scroll offset to prevent any apparent movement.
+        StripLayoutTab firstTab = stripTabs[0];
+        boolean firstTabIsInGroup =
+                mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(firstTab.getTabId()));
+        if (firstTabIsInGroup) mScrollDelegate.setReorderStartMargin(marginWidth);
+
+        // 2. Set the trailing margin.
+        StripLayoutTab lastTab = stripTabs[stripTabs.length - 1];
+        boolean lastTabIsInGroup =
+                mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(lastTab.getTabId()));
+        lastTab.setTrailingMargin((lastTabIsInGroup && !lastTab.isCollapsed()) ? marginWidth : 0.f);
+
+        // 3. Ensure the second-to-last tab doesn't have a trailing margin after reorder.
+        if (stripTabs.length > 1) stripTabs[stripTabs.length - 2].setTrailingMargin(0f);
     }
 
     // ============================================================================================

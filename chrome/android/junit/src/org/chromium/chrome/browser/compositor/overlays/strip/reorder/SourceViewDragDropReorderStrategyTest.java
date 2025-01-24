@@ -4,8 +4,10 @@
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -15,7 +17,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.graphics.PointF;
-import android.view.View;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,65 +28,33 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
-import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.ReorderType;
-import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.StripUpdateDelegate;
-import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabDragSource;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
-import org.chromium.chrome.browser.tabmodel.TabUngrouper;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 
 import java.util.Collections;
 
 /** Tests for {@link SourceViewDragDropReorderStrategy}. */
 @Config(qualifiers = "sw600dp")
 @RunWith(BaseRobolectricTestRunner.class)
-public class SourceViewDragDropReorderStrategyTest {
+public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBase {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private static final PointF DRAG_START_POINT = new PointF(70f, 20f);
-    private static final float END_X = 10f;
-    private static final float DELTA_X = 5f;
-    private static final float EPSILON = 0.001f;
+    // Constants
+    private static final float END_X = 10f; // Arbitrary value.
+    private static final float DELTA_X = 5f; // Arbitrary value.
 
     // Dependencies
     @Mock private TabDragSource mTabDragSource;
-    @Mock private ActionConfirmationManager mActionConfirmationManager;
-    @Mock private ReorderStrategy mTabStrategy;
-    @Mock private AnimationHost mAnimationHost;
-    @Mock private StripUpdateDelegate mStripUpdateDelegate;
-    @Mock private ScrollDelegate mScrollDelegate;
-    @Mock private View mContainerView;
-    @Mock private ObservableSupplierImpl<Integer> mGroupIdToHideSupplier;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private TabModel mModel;
-    @Mock private ReorderDelegate mReorderDelegate;
-    @Mock private Supplier<Float> mTabWidthSupplier;
-    @Mock private TabUngrouper mTabUnGrouper;
-
-    // Data
-    private StripLayoutTab[] mStripTabs = new StripLayoutTab[0];
-    private StripLayoutGroupTitle[] mGroupTitles = new StripLayoutGroupTitle[0];
-    private StripLayoutView[] mStripViews = new StripLayoutView[0];
-    @Mock private StripLayoutTab mInteractingView;
-    @Mock private Tab mTabForInteractingView;
 
     // Target
     private SourceViewDragDropReorderStrategy mStrategy;
 
     @Before
+    @Override
     public void setup() {
+        super.setup();
         mStrategy =
                 new SourceViewDragDropReorderStrategy(
                         mReorderDelegate,
@@ -100,7 +69,7 @@ public class SourceViewDragDropReorderStrategyTest {
                         mTabDragSource,
                         mActionConfirmationManager,
                         mTabStrategy);
-        when(mModel.getTabById(anyInt())).thenReturn(mTabForInteractingView);
+        mInteractingView = buildStripTab(INTERACTING_VIEW_ID, 0, TAB_WIDTH);
     }
 
     @Test
@@ -118,6 +87,15 @@ public class SourceViewDragDropReorderStrategyTest {
 
         // Assert
         assertNotNull("Dragged view should not be null", mStrategy.getViewBeingDraggedForTesting());
+
+        // Verify
+        verify(mTabDragSource)
+                .startTabDragAction(
+                        Mockito.eq(mContainerView),
+                        eq(mTabForInteractingView),
+                        eq(DRAG_START_POINT),
+                        anyFloat(),
+                        anyFloat());
     }
 
     @Test
@@ -156,9 +134,9 @@ public class SourceViewDragDropReorderStrategyTest {
                 mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
 
         // Verify tab properties
-        verify(mInteractingView).setIsDraggedOffStrip(false);
-        verify(mInteractingView).setOffsetX(0f);
-        verify(mInteractingView).setOffsetY(0f);
+        assertFalse("DraggedOffStrip should be false", mInteractingView.isDraggedOffStrip());
+        assertEquals("OffsetX should be 0", 0f, mInteractingView.getOffsetX(), EPSILON);
+        assertEquals("OffsetY should be 0", 0f, mInteractingView.getOffsetY(), EPSILON);
 
         // Verify
         verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
@@ -204,9 +182,7 @@ public class SourceViewDragDropReorderStrategyTest {
         when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(false);
         // Set properties for dragged tab.
         float drawX = 24f; // Arbitrary value.
-        float height = 35f; // Arbitrary value.
-        when(mInteractingView.getIdealX()).thenReturn(drawX);
-        when(mInteractingView.getHeight()).thenReturn(height);
+        mInteractingView.setIdealX(drawX);
         startReorder();
 
         // Call
@@ -219,10 +195,22 @@ public class SourceViewDragDropReorderStrategyTest {
                 ReorderType.DRAG_OUT_OF_STRIP);
 
         // Verify tab properties
-        verify(mInteractingView).setIsDraggedOffStrip(true);
-        verify(mInteractingView).setDrawX(drawX);
-        verify(mInteractingView).setDrawY(height);
-        verify(mInteractingView).setOffsetY(height);
+        assertTrue("DraggedOffStrip should be true", mInteractingView.isDraggedOffStrip());
+        assertEquals(
+                "DrawX should match idealX",
+                mInteractingView.getIdealX(),
+                mInteractingView.getDrawX(),
+                EPSILON);
+        assertEquals(
+                "DrawY should match height",
+                mInteractingView.getHeight(),
+                mInteractingView.getDrawY(),
+                EPSILON);
+        assertEquals(
+                "OffsetY should match height",
+                mInteractingView.getHeight(),
+                mInteractingView.getOffsetY(),
+                EPSILON);
 
         // Verify
         verify(mTabStrategy).stopReorderMode(mGroupTitles, mStripTabs);
@@ -240,7 +228,7 @@ public class SourceViewDragDropReorderStrategyTest {
 
         // Update reorder - drag out of strip to set lastOffsetX
         float lastOffsetX = 12f; // Arbitrary value.
-        when(mInteractingView.getOffsetX()).thenReturn(lastOffsetX);
+        mInteractingView.setOffsetX(lastOffsetX);
         mStrategy.updateReorderPosition(
                 mStripViews,
                 mGroupTitles,
@@ -248,13 +236,23 @@ public class SourceViewDragDropReorderStrategyTest {
                 END_X,
                 DELTA_X,
                 ReorderType.DRAG_OUT_OF_STRIP);
+        assertEquals(
+                "LastOffsetX should be set",
+                lastOffsetX,
+                mStrategy.getDragLastOffsetXForTesting(),
+                EPSILON);
 
         // Call - drag onto strip.
         mStrategy.updateReorderPosition(
                 mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
+        assertEquals(
+                "LastOffsetX should be unset",
+                0,
+                mStrategy.getDragLastOffsetXForTesting(),
+                EPSILON);
 
         // Verify tab offsetX
-        verify(mInteractingView).setOffsetX(lastOffsetX);
+        assertEquals("OffsetX should be set", lastOffsetX, mInteractingView.getOffsetX(), EPSILON);
     }
 
     @Test
@@ -312,16 +310,16 @@ public class SourceViewDragDropReorderStrategyTest {
 
         // Start reorder. Simulate drag off strip.
         startReorder();
-        when(mInteractingView.isDraggedOffStrip()).thenReturn(true);
+        mInteractingView.setIsDraggedOffStrip(true);
 
         // Call
         mStrategy.stopReorderMode(mGroupTitles, mStripTabs);
 
         // Verify restore.
         verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
-        verify(mInteractingView).setIsDraggedOffStrip(false);
-        verify(mInteractingView).setWidth(0.f);
         verify(mStripUpdateDelegate).resizeTabStrip(true, mInteractingView, true);
+        assertFalse("DraggedOffStrip should be false", mInteractingView.isDraggedOffStrip());
+        assertEquals("Width should be 0", 0f, mInteractingView.getWidth(), EPSILON);
     }
 
     @Test

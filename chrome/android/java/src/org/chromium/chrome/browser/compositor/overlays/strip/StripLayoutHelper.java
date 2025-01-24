@@ -4271,7 +4271,7 @@ public class StripLayoutHelper
 
             // 2. StartX indicates where the external drag enters the  tab strip.
             // Adjust by a half tab-width so that we target the nearest tab gap.
-            float startX = mReorderDelegate.adjustXForTabDrop(currX);
+            float startX = StripLayoutUtils.adjustXForTabDrop(currX, mCachedTabWidthSupplier);
 
             // 3. Mark the "interacting" view. This is not the DnD dragged tab, but rather the tab
             // in the strip that is currently being hovered by the DnD drag.

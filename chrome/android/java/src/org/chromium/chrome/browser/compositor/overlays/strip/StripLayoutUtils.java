@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
@@ -40,7 +41,6 @@ public class StripLayoutUtils {
     public static final int ANIM_TAB_SLIDE_OUT_MS = 250;
 
     // Reorder Constants.
-    static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
     static final long INVALID_TIME = 0L;
 
     // ============================================================================================
@@ -176,6 +176,14 @@ public class StripLayoutUtils {
     /** Returns the current effective tab width (accounting for overlap). */
     public static float getEffectiveTabWidth(Supplier<Float> tabWidthSupplier) {
         return (tabWidthSupplier.get() - TAB_OVERLAP_WIDTH_DP);
+    }
+
+    /** Shifts x by half tab width to accommodate for tab drop. */
+    public static float adjustXForTabDrop(float x, Supplier<Float> tabWidthSupplier) {
+        return x
+                - MathUtils.flipSignIf(
+                        StripLayoutUtils.getHalfTabWidth(tabWidthSupplier),
+                        LocalizationUtils.isLayoutRtl());
     }
 
     // ============================================================================================
