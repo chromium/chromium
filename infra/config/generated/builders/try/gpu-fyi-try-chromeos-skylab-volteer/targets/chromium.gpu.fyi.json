@@ -356,7 +356,7 @@
         "cros_board": "volteer",
         "cros_model": "voxel",
         "dut_pool": "chromium",
-        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --use-angle=gles --force_high_performance_gpu",
         "name": "webgl2_conformance_gles_passthrough_tests VOLTEER_PUBLIC_RELEASE_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",

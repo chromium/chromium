@@ -4500,7 +4500,6 @@ targets.bundle(
                     "--extra-browser-args=--use-cmd-decoder=validating --disable-features=SkiaGraphite",
                 ],
             ),
-            "gpu_integration_test_common_args",
         ],
     },
 )
@@ -4559,19 +4558,12 @@ targets.bundle(
     per_test_modifications = {
         "webgl2_conformance_validating_tests": [
             targets.mixin(
-                args = [
-                    "--webgl-conformance-version=2.0.1",
-                    targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
-                    # On dual-GPU devices we want the high-performance GPU to be active
-                    "--extra-browser-args=--use-cmd-decoder=validating --force_high_performance_gpu",
-                ],
                 swarming = targets.swarming(
                     # These tests currently take about an hour and fifteen minutes
                     # to run. Split them into roughly 5-minute shards.
                     shards = 20,
                 ),
             ),
-            "gpu_integration_test_common_args",
         ],
     },
 )
@@ -4637,11 +4629,6 @@ targets.bundle(
     per_test_modifications = {
         "webgl_conformance_tests": [
             targets.mixin(
-                args = [
-                    # On dual-GPU devices we want the high-performance GPU to be active
-                    "--extra-browser-args=--force_high_performance_gpu",
-                    targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
-                ],
                 swarming = targets.swarming(
                     shards = 2,
                 ),
@@ -4652,7 +4639,6 @@ targets.bundle(
                     shards = 20,
                 ),
             ),
-            "gpu_integration_test_common_args",
         ],
     },
 )
