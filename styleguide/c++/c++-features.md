@@ -1849,6 +1849,28 @@ possible, and otherwise prefer shorter alternatives in
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/lVQOJTng1RU)
 ***
 
+### btree_\* containers <sup>[banned]</sup>
+
+```c++
+absl::btree_map
+absl::btree_set
+absl::btree_multimap
+absl::btree_multiset
+```
+
+**Description:** Alternatives to the tree-based standard library containers
+designed to be more efficient in the general case.
+
+**Documentation:** [Containers](https://abseil.io/docs/cpp/guides/container)
+
+**Notes:**
+*** promo
+In theory these should be superior alternatives that could replace most uses of
+`std::map` and company. In practice they have been found to introduce a
+substantial code size increase. Until this problem can be resolved the use of
+these containers is banned. Use the standard library containers instead.
+***
+
 ### bind_front <sup>[banned]</sup>
 
 ```c++
@@ -2132,35 +2154,6 @@ absl::AnyInvocable
 **Notes:**
 *** promo
 Overlaps with `base::RepeatingCallback`, `base::OnceCallback`.
-***
-
-### Containers <sup>[tbd]</sup>
-
-```c++
-absl::flat_hash_map
-absl::flat_hash_set
-absl::node_hash_map
-absl::node_hash_set
-absl::btree_map
-absl::btree_set
-absl::btree_multimap
-absl::btree_multiset
-```
-
-**Description:** Alternatives to STL containers designed to be more efficient
-in the general case.
-
-**Documentation:**
-*   [Containers](https://abseil.io/docs/cpp/guides/container)
-*   [Hash](https://abseil.io/docs/cpp/guides/hash)
-
-**Notes:**
-*** promo
-Supplements `base/containers/`.
-
-absl::InlinedVector is explicitly allowed, see the [discussion
-thread](https://groups.google.com/a/chromium.org/g/cxx/c/jTfqVfU-Ka0/m/caaal90NCgAJ).
-
 ***
 
 ### CRC32C library <sup>[tbd]</sup>
