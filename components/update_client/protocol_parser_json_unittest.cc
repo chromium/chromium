@@ -22,7 +22,6 @@ const char* kJSONValid = R"()]}'
                     {"codebasediff":"http://diff.example.com/"}]},
      "manifest":{
       "version":"1.2.3.4",
-      "prodversionmin":"2.0.143.0",
       "packages":{"package":[{"name":"extension_1_2_3_4.crx"}]}}
      }
     }
@@ -40,7 +39,6 @@ const char* kJSONHash = R"()]}'
      "urls":{"url":[{"codebase":"http://example.com/"}]},
      "manifest":{
       "version":"1.2.3.4",
-      "prodversionmin":"2.0.143.0",
       "packages":{"package":[{"name":"extension_1_2_3_4.crx",
                               "hash_sha256":"1234",
                               "hashdiff_sha256":"5678"}]}}
@@ -60,7 +58,6 @@ const char* kJSONInvalidSizes = R"()]}'
      "urls":{"url":[{"codebase":"http://example.com/"}]},
      "manifest":{
       "version":"1.2.3.4",
-      "prodversionmin":"2.0.143.0",
       "packages":{"package":[{"name":"1","size":1234},
                              {"name":"2","size":9007199254740991},
                              {"name":"3","size":-1234},
@@ -90,7 +87,6 @@ const char* kJSONInvalidMissingCodebase = R"()]}'
      "urls":{"url":[{"codebasediff":"http://diff.example.com"}]},
      "manifest":{
       "version":"1.2.3.4",
-      "prodversionmin":"2.0.143.0",
       "packages":{"package":[{"namediff":"extension_1_2_3_4.crx"}]}}
      }
     }
@@ -203,7 +199,6 @@ const char* kJSONWithDaystart = R"()]}'
                     {"codebasediff":"http://diff.example.com/"}]},
      "manifest":{
       "version":"1.2.3.4",
-      "prodversionmin":"2.0.143.0",
       "packages":{"package":[{"name":"extension_1_2_3_4.crx"}]}}
      }
     }
@@ -241,7 +236,6 @@ const char* kJSONTwoAppsOneError = R"()]}'
      "urls":{"url":[{"codebase":"http://example.com/"}]},
      "manifest":{
       "version":"1.2.3.4",
-      "prodversionmin":"2.0.143.0",
       "packages":{"package":[{"name":"extension_1_2_3_4.crx"}]}}
      }
     }
@@ -266,7 +260,6 @@ const char* kJSONTwoAppsSetCohort = R"()]}'
      "urls":{"url":[{"codebase":"http://example.com/"}]},
      "manifest":{
       "version":"1.2.3.4",
-      "prodversionmin":"2.0.143.0",
       "packages":{"package":[{"name":"extension_1_2_3_4.crx"}]}}
      }
     }
@@ -286,7 +279,6 @@ const char* kJSONUpdateCheckStatusOkWithRunAction = R"()]}'
                     {"codebasediff":"http://diff.example.com/"}]},
      "manifest":{
       "version":"1.2.3.4",
-      "prodversionmin":"2.0.143.0",
       "packages":{"package":[{"name":"extension_1_2_3_4.crx"}]}}
      }
     }
@@ -384,7 +376,6 @@ const char* kJSONManifestRun = R"()]}'
                     {"codebasediff":"http://diff.example.com/"}]},
      "manifest":{
       "version":"1.2.3.4",
-      "prodversionmin":"2.0.143.0",
       "run":"UpdaterSetup.exe",
       "arguments":"--arg1 --arg2",
       "packages":{"package":[{"name":"extension_1_2_3_4.crx"}]}}
@@ -460,7 +451,6 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     EXPECT_EQ(GURL("http://example.com/"), first_result->crx_urls[0]);
     EXPECT_EQ(GURL("http://diff.example.com/"), first_result->crx_diffurls[0]);
     EXPECT_EQ("1.2.3.4", first_result->manifest.version);
-    EXPECT_EQ("2.0.143.0", first_result->manifest.browser_min_version);
     EXPECT_EQ(1u, first_result->manifest.packages.size());
     EXPECT_EQ("extension_1_2_3_4.crx", first_result->manifest.packages[0].name);
   }

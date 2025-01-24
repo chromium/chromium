@@ -386,7 +386,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   const auto& result = results_->list.front();
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", result.extension_id.c_str());
   EXPECT_EQ("1.0", result.manifest.version);
-  EXPECT_EQ("11.0.1.0", result.manifest.browser_min_version);
   EXPECT_EQ(1u, result.manifest.packages.size());
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf.crx",
                result.manifest.packages.front().name.c_str());

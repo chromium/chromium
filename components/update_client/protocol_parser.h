@@ -45,7 +45,6 @@ class ProtocolParser {
       ~Manifest();
 
       std::string version;
-      std::string browser_min_version;
       std::vector<Package> packages;
 
       // A path within the CRX archive to an executable to run as part of the

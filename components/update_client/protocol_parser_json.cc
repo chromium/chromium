@@ -47,18 +47,6 @@ bool ParseManifest(const base::Value& manifest_node_val,
     return false;
   }
 
-  // Get the optional minimum browser version.
-  const std::string* browser_min_version =
-      manifest_node.FindString("prodversionmin");
-  if (browser_min_version) {
-    result->manifest.browser_min_version = *browser_min_version;
-    if (!base::Version(result->manifest.browser_min_version).IsValid()) {
-      *error = base::StrCat({"Invalid prodversionmin: '",
-                             result->manifest.browser_min_version, "'."});
-      return false;
-    }
-  }
-
   result->manifest.run = GetValueString(manifest_node, "run");
   result->manifest.arguments = GetValueString(manifest_node, "arguments");
 
