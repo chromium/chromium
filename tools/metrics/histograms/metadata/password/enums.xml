@@ -85,6 +85,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Edited"/>
 </enum>
 
+<enum name="AccountTypeWithSyncState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Gsuite"/>
+  <int value="2" label="Gmail"/>
+  <int value="3" label="Non-gaia enterprise"/>
+  <int value="4" label="Saved password"/>
+  <int value="5" label="Gsuite syncing"/>
+  <int value="6" label="Gmail syncing"/>
+</enum>
+
 <enum name="AcknowledgeGroupedCredentialSheetBridgeDismissReason">
   <int value="0" label="Accepted"/>
   <int value="1" label="Back button pressed"/>

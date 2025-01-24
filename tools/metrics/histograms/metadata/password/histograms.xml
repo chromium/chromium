@@ -4931,6 +4931,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="TriggerType" variants="PasswordProtectionTriggerType"/>
 </histogram>
 
+<histogram name="PasswordProtection.ReusedPasswordAccountType"
+    enum="AccountTypeWithSyncState" expires_after="2026-01-23">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    In the event of a password reuse, and a password protection request is
+    constructed, the reused password's account type and whether it is syncing is
+    logged.
+  </summary>
+</histogram>
+
 <histogram name="PasswordProtection.SampleReportSent" enum="Boolean"
     expires_after="2025-02-10">
   <owner>skrakowi@chromium.org</owner>
