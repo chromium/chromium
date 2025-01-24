@@ -23,9 +23,20 @@ executable("elevated_tracing_service") {
     ":service_lib",
     ":version_resources",
     "//build/win:default_exe_manifest",
-    "//chrome/windows_services/service_program",
+    "//chrome/windows_services/service_program:service_program_with_crashpad",
+    "//components/crash/core/app:crash_export_thunks",
     "//components/tracing:tracing_service_idl",
     "//mojo/core/embedder",
+  ]
+}
+
+# A source set for use by the service and by its clients.
+source_set("integration") {
+  public = [ "service_integration.h" ]
+  sources = [ "service_integration.cc" ]
+  deps = [
+    "//base",
+    "//chrome/install_static:install_static_util",
   ]
 }
 
@@ -42,10 +53,9 @@ source_set("lib") {
   ]
 
   deps = [
-    "//base/version_info:channel",
-    "//base/version_info:version_info",
-    "//chrome/install_static:install_static_util",
+    ":integration",
     "//chrome/windows_services/service_program:common",
+    "//chrome/windows_services/service_program:crash_integration",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
@@ -107,12 +117,12 @@ test("elevated_tracing_service_unittests") {
     "//chrome/common/win:eventlog_provider",
     "//chrome/install_static:install_static_util",
     "//chrome/install_static/test:test_support",
-    "//chrome/windows_services/service_program",
     "//chrome/windows_services/service_program:common",
     "//chrome/windows_services/service_program:lib",
     "//chrome/windows_services/service_program:unit_tests",
     "//chrome/windows_services/service_program/test_support",
     "//chrome/windows_services/service_program/test_support:unit_tests",
+    "//components/crash/core/app:crash_export_thunks",
     "//components/tracing:tracing_service_idl",
     "//mojo/core/embedder",
     "//mojo/public/cpp/platform",

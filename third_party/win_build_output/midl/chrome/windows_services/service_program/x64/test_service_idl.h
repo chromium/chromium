@@ -109,6 +109,13 @@ EXTERN_C const IID IID_ITestService;
         virtual HRESULT STDMETHODCALLTYPE IsRunningUnattended( 
             /* [out] */ VARIANT_BOOL *is_running_unattended) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE GetCrashpadDatabasePath( 
+            /* [out] */ BSTR *database_path) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE InduceCrash( void) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE InduceCrashSoon( void) = 0;
+        
     };
     
     
@@ -143,6 +150,19 @@ EXTERN_C const IID IID_ITestService;
             ITestService * This,
             /* [out] */ VARIANT_BOOL *is_running_unattended);
         
+        DECLSPEC_XFGVIRT(ITestService, GetCrashpadDatabasePath)
+        HRESULT ( STDMETHODCALLTYPE *GetCrashpadDatabasePath )( 
+            ITestService * This,
+            /* [out] */ BSTR *database_path);
+        
+        DECLSPEC_XFGVIRT(ITestService, InduceCrash)
+        HRESULT ( STDMETHODCALLTYPE *InduceCrash )( 
+            ITestService * This);
+        
+        DECLSPEC_XFGVIRT(ITestService, InduceCrashSoon)
+        HRESULT ( STDMETHODCALLTYPE *InduceCrashSoon )( 
+            ITestService * This);
+        
         END_INTERFACE
     } ITestServiceVtbl;
 
@@ -171,6 +191,15 @@ EXTERN_C const IID IID_ITestService;
 
 #define ITestService_IsRunningUnattended(This,is_running_unattended)	\
     ( (This)->lpVtbl -> IsRunningUnattended(This,is_running_unattended) ) 
+
+#define ITestService_GetCrashpadDatabasePath(This,database_path)	\
+    ( (This)->lpVtbl -> GetCrashpadDatabasePath(This,database_path) ) 
+
+#define ITestService_InduceCrash(This)	\
+    ( (This)->lpVtbl -> InduceCrash(This) ) 
+
+#define ITestService_InduceCrashSoon(This)	\
+    ( (This)->lpVtbl -> InduceCrashSoon(This) ) 
 
 #endif /* COBJMACROS */
 
@@ -204,6 +233,11 @@ TestService;
 #endif /* __TestServiceLib_LIBRARY_DEFINED__ */
 
 /* Additional Prototypes for ALL interfaces */
+
+unsigned long             __RPC_USER  BSTR_UserSize(     unsigned long *, unsigned long            , BSTR * ); 
+unsigned char * __RPC_USER  BSTR_UserMarshal(  unsigned long *, unsigned char *, BSTR * ); 
+unsigned char * __RPC_USER  BSTR_UserUnmarshal(unsigned long *, unsigned char *, BSTR * ); 
+void                      __RPC_USER  BSTR_UserFree(     unsigned long *, BSTR * ); 
 
 /* end of Additional Prototypes */
 

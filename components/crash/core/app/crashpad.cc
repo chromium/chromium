@@ -95,7 +95,8 @@ bool InitializeCrashpadImpl(bool initial_client,
            process_type == "os-update-handler" ||
            process_type == "platform-experience-helper" ||
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-           process_type == "GCPW Installer" || process_type == "GCPW DLL");
+           process_type == "GCPW Installer" || process_type == "GCPW DLL" ||
+           process_type == "elevated-tracing-service");
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     DCHECK(browser_process);
 #else

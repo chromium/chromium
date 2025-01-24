@@ -19,6 +19,15 @@ interface ITestService : IUnknown
 
   // Returns `VARIANT_TRUE` if the service is run with `--unattended-test`.
   HRESULT IsRunningUnattended([out] VARIANT_BOOL* is_running_unattended);
+
+  // Returns the path to the crashpad database.
+  HRESULT GetCrashpadDatabasePath([out] BSTR* database_path);
+
+  // Induces a crash synchronously.
+  HRESULT InduceCrash();
+
+  // Induces a crash on a background thread asynchronously.
+  HRESULT InduceCrashSoon();
 };
 
 [
