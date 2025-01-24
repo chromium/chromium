@@ -38,9 +38,9 @@ namespace ash::personalization_app {
 namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kTestGaiaId("1234567890");
 AccountId kAccountId =
-    AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kTestGaiaId));
+    AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
 
 void AddAndLoginUser() {
   ash::FakeChromeUserManager* user_manager =

@@ -58,7 +58,7 @@ constexpr char kTimeFarPast[] = "2023-12-25";
 constexpr char kTimeFuture[] = "2024-04-30";
 constexpr char kTimeFarFuture[] = "2025-05-15";
 
-constexpr char kGaiaId[] = "1234";
+constexpr GaiaId::Literal kGaiaId("1234");
 
 constexpr char kFirstAppName[] = "kFirstAppName";
 constexpr char kSecondAppName[] = "kSecondAppName";
@@ -93,7 +93,7 @@ class ExtendedUpdatesControllerTest : public AshTestBase {
     // Enable arc for test profile.
     // Log in user to ensure ARC PlayStore can be enabled.
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile_->GetProfileUserName(), GaiaId(kGaiaId)));
+        profile_->GetProfileUserName(), kGaiaId));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
     arc::SetArcAvailableCommandLineForTesting(

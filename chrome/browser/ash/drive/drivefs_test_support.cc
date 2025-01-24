@@ -27,7 +27,7 @@ namespace drive {
 
 const char FakeDriveFsHelper::kPredefinedProfileSalt[] = "salt";
 const char FakeDriveFsHelper::kDefaultUserEmail[] = "testuser@gmail.com";
-const char FakeDriveFsHelper::kDefaultGaiaId[] = "123456";
+const GaiaId::Literal FakeDriveFsHelper::kDefaultGaiaId("123456");
 
 FakeDriveFsHelper::FakeDriveFsHelper(Profile* profile,
                                      const base::FilePath& mount_path)

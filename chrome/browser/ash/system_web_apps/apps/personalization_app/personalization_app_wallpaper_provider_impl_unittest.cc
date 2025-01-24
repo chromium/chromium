@@ -80,7 +80,7 @@ namespace ash::personalization_app {
 namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kTestGaiaId("1234567890");
 
 // Create fake Jpg image bytes.
 std::string CreateJpgBytes() {
@@ -112,7 +112,7 @@ void AddAndLoginUser(const AccountId& account_id) {
 }
 
 AccountId GetTestAccountId() {
-  return AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kTestGaiaId));
+  return AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
 }
 
 // Create a test 1x1 image with a given |color|.

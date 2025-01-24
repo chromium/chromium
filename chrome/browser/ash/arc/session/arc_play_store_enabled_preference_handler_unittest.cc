@@ -52,7 +52,7 @@ namespace arc {
 namespace {
 
 constexpr char kTestEmail[] = "user@gmail.com";
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kTestGaiaId("1234567890");
 
 class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
  public:
@@ -92,7 +92,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
         std::make_unique<ArcPlayStoreEnabledPreferenceHandler>(
             profile_.get(), arc_session_manager_.get());
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
+        profile()->GetProfileUserName(), kTestGaiaId));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 

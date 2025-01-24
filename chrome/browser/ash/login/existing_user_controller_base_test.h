@@ -21,14 +21,14 @@ class AuthEventsRecorder;
 
 namespace {
 
-const char kFirstSAMLUserId[] = "12345";
+const GaiaId::Literal kFirstSAMLUserId("12345");
 const char kFirstSAMLUserEmail[] = "bob@corp.example.com";
-const char kSecondSAMLUserId[] = "67891";
+const GaiaId::Literal kSecondSAMLUserId("67891");
 const char kSecondSAMLUserEmail[] = "alice@corp.example.com";
 
-const char kFirstGaiaUserId[] = "88888";
+const GaiaId::Literal kFirstGaiaUserId("88888");
 const char kFirstGaiaUserEmail[] = "bob@gaia.example.com";
-const char kSecondGaiaUserId[] = "88884";
+const GaiaId::Literal kSecondGaiaUserId("88884");
 const char kSecondGaiaUserEmail[] = "alice@gaia.example.com";
 
 }  // namespace
@@ -41,20 +41,16 @@ class ExistingUserControllerBaseTest : public ::testing::Test {
   FakeChromeUserManager* GetFakeUserManager();
 
   const AccountId saml_login_account1_id_ =
-      AccountId::FromUserEmailGaiaId(kFirstSAMLUserEmail,
-                                     GaiaId(kFirstSAMLUserId));
+      AccountId::FromUserEmailGaiaId(kFirstSAMLUserEmail, kFirstSAMLUserId);
 
   const AccountId saml_login_account2_id_ =
-      AccountId::FromUserEmailGaiaId(kSecondSAMLUserEmail,
-                                     GaiaId(kSecondSAMLUserId));
+      AccountId::FromUserEmailGaiaId(kSecondSAMLUserEmail, kSecondSAMLUserId);
 
   const AccountId gaia_login_account1_id_ =
-      AccountId::FromUserEmailGaiaId(kFirstGaiaUserEmail,
-                                     GaiaId(kFirstGaiaUserId));
+      AccountId::FromUserEmailGaiaId(kFirstGaiaUserEmail, kFirstGaiaUserId);
 
   const AccountId gaia_login_account2_id_ =
-      AccountId::FromUserEmailGaiaId(kSecondGaiaUserEmail,
-                                     GaiaId(kSecondGaiaUserId));
+      AccountId::FromUserEmailGaiaId(kSecondGaiaUserEmail, kSecondGaiaUserId);
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

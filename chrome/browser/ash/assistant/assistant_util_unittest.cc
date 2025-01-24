@@ -43,7 +43,7 @@ namespace {
 
 constexpr char kTestProfileName[] = "user@gmail.com";
 constexpr char16_t kTestProfileName16[] = u"user@gmail.com";
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kTestGaiaId("1234567890");
 
 class ScopedSpoofGoogleBrandedDevice {
  public:
@@ -214,7 +214,7 @@ class ChromeAssistantUtilTest : public testing::Test {
 
   AccountId GetGaiaUserAccountId(const TestingProfile* profile) {
     return AccountId::FromUserEmailGaiaId(profile->GetProfileUserName(),
-                                          GaiaId(kTestGaiaId));
+                                          kTestGaiaId);
   }
 
   AccountId GetGaiaUserAccountId(const std::string& user_name,

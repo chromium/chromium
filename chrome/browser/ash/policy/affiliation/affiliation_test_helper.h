@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "google_apis/gaia/gaia_id.h"
 
 class AccountId;
 
@@ -74,7 +75,7 @@ class AffiliationTestHelper {
 
   static const char kFakeRefreshToken[];
   static const char kEnterpriseUserEmail[];
-  static const char kEnterpriseUserGaiaId[];
+  static const GaiaId::Literal kEnterpriseUserGaiaId;
 
  private:
   explicit AffiliationTestHelper(

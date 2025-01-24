@@ -59,7 +59,7 @@ namespace ash {
 namespace {
 
 constexpr char kUserEmail[] = "test-user@gmail.com";
-constexpr char kGaiaID[] = "111111";
+constexpr GaiaId::Literal kGaiaID("111111");
 constexpr char kTokenHandle[] = "test_token_handle";
 constexpr char kTestingFileName[] = "testing-file.txt";
 
@@ -89,7 +89,7 @@ class PasswordChangeTestBase : public LoginManagerTest {
 
  protected:
   const AccountId test_account_id_ =
-      AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaID));
+      AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaID);
   const LoginManagerMixin::TestUserInfo test_user_info_{
       test_account_id_,
       test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};

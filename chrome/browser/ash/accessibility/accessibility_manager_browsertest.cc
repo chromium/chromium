@@ -535,7 +535,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
   int default_autoclick_delay_ = 0;
 
   const AccountId test_account_id_ =
-      AccountId::FromUserEmailGaiaId(kTestUserName, GaiaId(kTestUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
 
   bool ShouldShowNetworkDictationDialog(const std::string& locale) {
     return AccessibilityManager::Get()->ShouldShowNetworkDictationDialog(
@@ -1849,7 +1849,7 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
   MockBrailleController braille_controller_;
 
   const AccountId test_account_id_ =
-      AccountId::FromUserEmailGaiaId(kTestUserName, GaiaId(kTestUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
 
  private:
   ui::ScopedAnimationDurationScaleMode disable_animations_;

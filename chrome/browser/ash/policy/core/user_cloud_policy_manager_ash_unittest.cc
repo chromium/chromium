@@ -99,10 +99,10 @@ void SendJobOKNowForBinding(FakeDeviceManagementService* service,
 using PolicyEnforcement = UserCloudPolicyManagerAsh::PolicyEnforcement;
 
 constexpr char kEmail[] = "user@example.com";
-constexpr char kTestGaiaId[] = "12345";
+constexpr GaiaId::Literal kTestGaiaId("12345");
 
 constexpr char kEmail2[] = "user2@example.com";
-constexpr char kTestGaiaId2[] = "123456";
+constexpr GaiaId::Literal kTestGaiaId2("123456");
 
 constexpr char kOAuth2AccessTokenData[] = R"(
     {
@@ -206,8 +206,7 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
     ASSERT_TRUE(
         policy_data_.SerializeToString(policy_response->mutable_policy_data()));
 
-    AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kEmail, GaiaId(kTestGaiaId));
+    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kTestGaiaId);
     TestingProfile* profile =
         profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
     user_manager_->AddUserWithAffiliationAndTypeAndProfile(account_id, false,
@@ -849,8 +848,7 @@ TEST_F(UserCloudPolicyManagerAshTest, TestReportSchedulerCreation) {
       enterprise_reporting::kCloudReportingEnabled, true);
 
   // Log in an user account, and set it as primary.
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId(kEmail, GaiaId(kTestGaiaId));
+  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kTestGaiaId);
   user_manager_->LoginUser(account_id);
   ASSERT_TRUE(user_manager_->GetPrimaryUser());
 
@@ -882,8 +880,7 @@ TEST_F(UserCloudPolicyManagerAshTest, TestReportSchedulerDelayedCreation) {
 
   // To simulate an intermediate status in user session, log in an user account
   // as primiary but set |profile_is_created_| as false.
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId(kEmail, GaiaId(kTestGaiaId));
+  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kTestGaiaId);
   user_manager_->LoginUser(account_id, false /* set_profile_created_flag */);
   ASSERT_TRUE(user_manager_->GetPrimaryUser());
   ASSERT_FALSE(user_manager_->GetPrimaryUser()->is_profile_created());
@@ -904,8 +901,7 @@ TEST_F(UserCloudPolicyManagerAshTest, TestReportSchedulerDelayedCreation) {
   EXPECT_FALSE(manager_->GetReportSchedulerForTesting());
 
   // The notification has no effect if the account id is another one.
-  AccountId account_id2 =
-      AccountId::FromUserEmailGaiaId(kEmail2, GaiaId(kTestGaiaId2));
+  AccountId account_id2 = AccountId::FromUserEmailGaiaId(kEmail2, kTestGaiaId2);
   session_manager.NotifyUserProfileLoaded(account_id2);
   EXPECT_FALSE(manager_->GetReportSchedulerForTesting());
 

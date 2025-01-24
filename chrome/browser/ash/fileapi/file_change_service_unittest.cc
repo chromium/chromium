@@ -262,9 +262,9 @@ TEST_F(FileChangeServiceTest, CreatesServiceInstancesPerProfile) {
 
   // `FileChangeService` should be created as needed for additional profiles.
   constexpr char kSecondaryProfileName[] = "secondary_profile@test";
-  constexpr char kFakeGaia2[] = "fakegaia2";
+  const GaiaId kFakeGaia2("fakegaia2");
   auto* secondary_profile =
-      CreateLoggedInUserProfile(kSecondaryProfileName, GaiaId(kFakeGaia2));
+      CreateLoggedInUserProfile(kSecondaryProfileName, kFakeGaia2);
   auto* secondary_profile_service = factory->GetService(secondary_profile);
   ASSERT_TRUE(secondary_profile_service);
 

@@ -31,7 +31,7 @@
 namespace {
 
 constexpr char kFakeUserName[] = "test@example.com";
-constexpr char kFakeGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kFakeGaiaId("1234567890");
 
 }  // namespace
 
@@ -100,7 +100,7 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
 
   void CreateUser() {
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kFakeUserName, GaiaId(kFakeGaiaId)));
+        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
     user_manager_->AddUser(account_id);
     user_manager_->LoginUser(account_id);
   }

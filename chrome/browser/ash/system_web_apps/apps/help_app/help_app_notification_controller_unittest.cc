@@ -43,8 +43,8 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
 
   TestingProfile* CreateRegularProfile() {
     constexpr char kEmail[] = "user@gmail.com";
-    constexpr char kFakeGaia[] = "fakegaia";
-    LogIn(kEmail, GaiaId(kFakeGaia));
+    const GaiaId kFakeGaia("fakegaia");
+    LogIn(kEmail, kFakeGaia);
     auto* profile = CreateProfile(kEmail);
     // Set profile creation version, otherwise it defaults to 1.0.0.0.
     ChromeVersionService::SetVersion(

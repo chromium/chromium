@@ -96,7 +96,7 @@ constexpr std::initializer_list<
     };
 
 constexpr char kEmailId[] = "test@example.com";
-constexpr char kGaiaId[] = "12345";
+constexpr GaiaId::Literal kGaiaId("12345");
 
 struct FileInfo {
   std::string file_contents;
@@ -1497,8 +1497,7 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kNewFilesPolicyUX);
 
-    AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kEmailId, GaiaId(kGaiaId));
+    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
     profile_->SetIsNewProfile(true);
     user_manager::User* user =
         fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
