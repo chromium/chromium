@@ -364,7 +364,7 @@ views::UniqueWidgetPtr MahiMenuView::CreateWidget(
   params.shadow_elevation = 2;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.name = GetWidgetName();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   params.init_properties_container.SetProperty(kIsMahiMenuKey, true);
 #endif
 
@@ -414,7 +414,7 @@ void MahiMenuView::OnButtonPressed(ButtonType button_type) {
         display.id(), button_type,
         /*question=*/std::u16string(), GetBoundsInScreen());
   } else if (surface_ == Surface::kMediaApp) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Only ash chrome has `surface_` = kMediaApp
     CHECK(chromeos::MahiMediaAppContentManager::Get());
     chromeos::MahiMediaAppContentManager::Get()->OnMahiContextMenuClicked(
@@ -461,7 +461,7 @@ void MahiMenuView::OnQuestionSubmitted() {
         display.id(), /*button_type=*/ButtonType::kQA, textfield_->GetText(),
         GetBoundsInScreen());
   } else if (surface_ == Surface::kMediaApp) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Only ash chrome has `surface_` = kMediaApp
     CHECK(chromeos::MahiMediaAppContentManager::Get());
     chromeos::MahiMediaAppContentManager::Get()->OnMahiContextMenuClicked(

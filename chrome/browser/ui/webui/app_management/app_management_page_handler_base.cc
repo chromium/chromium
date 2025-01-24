@@ -47,7 +47,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #endif
 
@@ -81,7 +81,7 @@ bool ShouldHidePinToShelf(const std::string& app_id) {
 }
 
 bool ShouldHideStoragePermission(const std::string& app_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   constexpr auto kAppIdsWithHiddenStoragePermission =
       base::MakeFixedFlatSet<std::string_view>({
           arc::kPlayStoreAppId,

@@ -38,7 +38,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #endif
 
@@ -202,7 +202,7 @@ views::BubbleDialogDelegateView* SharingDialogView::GetAsBubble(
 // static
 views::BubbleDialogDelegateView* SharingDialogView::GetAsBubbleForClickToCall(
     SharingDialog* dialog) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!dialog) {
     auto* bubble = IntentPickerBubbleView::intent_picker_bubble();
     if (bubble && bubble->bubble_type() ==

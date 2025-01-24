@@ -27,7 +27,7 @@ class PresentationReceiverWindowDelegate;
 class PresentationReceiverWindowFrame;
 class LocationBarModelImpl;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class FullscreenWindowObserver;
 #endif
 
@@ -130,7 +130,7 @@ class PresentationReceiverWindowView final
   ui::Accelerator fullscreen_accelerator_;
   std::unique_ptr<ExclusiveAccessBubbleViews> exclusive_access_bubble_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<FullscreenWindowObserver> window_observer_;
 #endif
 };

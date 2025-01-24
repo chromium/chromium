@@ -54,10 +54,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/browser_process.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace {
 
 views::BubbleDialogDelegate* g_instance_for_test = nullptr;

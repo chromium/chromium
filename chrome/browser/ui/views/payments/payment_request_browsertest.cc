@@ -26,7 +26,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #endif
 
@@ -255,7 +255,7 @@ using PaymentRequestSettingsLinkTest = PaymentRequestBrowserTestBase;
 
 // Tests that clicking the settings link brings the user to settings.
 IN_PROC_BROWSER_TEST_F(PaymentRequestSettingsLinkTest, ClickSettingsLink) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Install the Settings App.
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();

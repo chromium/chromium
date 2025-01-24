@@ -60,7 +60,7 @@
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/styled_label.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/promos/bubble_signin_promo_view.h"
 #endif
 
@@ -340,9 +340,9 @@ void BookmarkBubbleView::ShowBubble(
   if (bookmark_bubble_) {
     return;
   }
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   BubbleSignInPromoDelegate* const delegate_ptr = delegate.get();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   Profile* profile = browser->profile();
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
@@ -459,7 +459,7 @@ void BookmarkBubbleView::ShowBubble(
     bubble->SetFootnoteView(
         std::make_unique<commerce::ShoppingCollectionIphView>());
   } else if (signin::ShouldShowSyncPromo(*profile)) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     // TODO(pbos): Consider adding model support for footnotes so that this does
     // not need to be tied to views.
     // TODO(pbos): Consider updating ::SetFootnoteView so that it can resize the

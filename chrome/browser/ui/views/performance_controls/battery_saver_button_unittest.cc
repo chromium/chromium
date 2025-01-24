@@ -47,7 +47,7 @@ class BatterySaverButtonTest : public TestWithBrowserView {
 };
 
 // Battery Saver is controlled by the OS on ChromeOS
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 // Battery saver button should not be shown when the pref state for battery
 // saver mode is ON and shown when the pref state is ON
@@ -192,4 +192,4 @@ TEST_F(BatterySaverButtonTest, LogMetricsOnTurnOffNowTest) {
       BatterySaverBubbleActionType::kTurnOffNow, 1);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)

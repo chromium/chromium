@@ -355,7 +355,7 @@ void RelaunchNotificationController::DoNotifyRelaunchRequired(
     base::Time relaunch_deadline,
     base::OnceCallback<base::Time()> on_visible) {
   platform_impl_.NotifyRelaunchRequired(relaunch_deadline,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                                         notification_type_required_overridden_,
 #endif
                                         std::move(on_visible));

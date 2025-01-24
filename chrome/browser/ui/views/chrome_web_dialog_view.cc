@@ -14,7 +14,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/utility/wm_util.h"
@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_view.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace chrome {
 namespace {
@@ -58,7 +58,7 @@ gfx::NativeWindow ShowWebDialogWithParams(
     std::optional<views::Widget::InitParams> extra_params,
     bool show) {
   views::WebDialogView* view = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   view = new ash::SystemWebDialogView(
       context, delegate, std::make_unique<ChromeWebContentsHandler>());
 #else
@@ -78,7 +78,7 @@ gfx::NativeWindow ShowWebDialogWithParams(
   }
   params.delegate = view;
   params.parent = parent;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!parent &&
       delegate->GetDialogModalType() == ui::mojom::ModalType::kSystem) {
     int container_id = ash_util::GetSystemModalDialogContainerId();
@@ -87,7 +87,7 @@ gfx::NativeWindow ShowWebDialogWithParams(
 #endif
   gfx::NativeWindow window =
       CreateWebDialogWidget(std::move(params), view, show);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const user_manager::User* user = ash::ProfileHelper::Get()->GetUserByProfile(
       Profile::FromBrowserContext(context));
   if (user && session_manager::SessionManager::Get()->session_state() ==
