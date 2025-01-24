@@ -21,9 +21,10 @@
 // Insert `item` at `index` in the Magic Stack.
 - (void)insertItem:(MagicStackModule*)item atIndex:(NSUInteger)index;
 
-// Remove `item` from the Magic Stack. The `completion` will be executed after
-// the item is removed.
+// Remove `item` from the Magic Stack. Animates if `animate` is YES. The
+// `completion` will be executed after the item is removed.
 - (void)removeItem:(MagicStackModule*)item
+           animate:(BOOL)animate
     withCompletion:(ProceduralBlock)completion;
 
 // Reconfigure existing item.

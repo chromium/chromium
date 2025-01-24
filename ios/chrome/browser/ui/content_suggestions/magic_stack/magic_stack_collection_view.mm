@@ -194,6 +194,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 }
 
 - (void)removeItem:(MagicStackModule*)item
+           animate:(BOOL)animate
     withCompletion:(ProceduralBlock)completion {
   NSIndexPath* existingItemIndexPath =
       [self.diffableDataSource indexPathForItemIdentifier:item];
@@ -208,7 +209,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
     MagicStackSnapshot* snapshot = [weakSelf.diffableDataSource snapshot];
     [snapshot deleteItemsWithIdentifiers:@[ item ]];
     [weakSelf.diffableDataSource applySnapshot:snapshot
-                          animatingDifferences:YES
+                          animatingDifferences:animate
                                     completion:completion];
   };
 
@@ -217,7 +218,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
       (MagicStackModuleCollectionViewCell*)[_collectionView
           cellForItemAtIndexPath:existingItemIndexPath];
 
-  if (!cell) {
+  if (!cell || !animate) {
     deleteItemFromDataSource();
     return;
   }
