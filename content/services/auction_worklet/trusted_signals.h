@@ -21,6 +21,7 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
+#include "content/services/auction_worklet/public/mojom/seller_worklet.mojom-forward.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
@@ -112,7 +113,8 @@ class CONTENT_EXPORT TrustedSignals {
         AuctionV8Helper* v8_helper,
         v8::Local<v8::Context> context,
         const GURL& render_url,
-        const std::vector<std::string>& ad_component_render_urls) const;
+        const std::vector<mojom::CreativeInfoWithoutOwnerPtr>& ad_components)
+        const;
 
     std::optional<uint32_t> GetDataVersion() const { return data_version_; }
 
@@ -162,6 +164,9 @@ class CONTENT_EXPORT TrustedSignals {
     CreativeInfo(blink::AdDescriptor ad_descriptor,
                  std::string creative_scanning_metadata,
                  std::optional<url::Origin> interest_group_owner);
+    CreativeInfo(bool send_creative_scanning_metadata,
+                 const mojom::CreativeInfoWithoutOwner& mojo_creative_info,
+                 const url::Origin& in_interest_group_owner);
     ~CreativeInfo();
 
     CreativeInfo(CreativeInfo&&);

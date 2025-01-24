@@ -143,6 +143,11 @@ class AuctionWorkletManager::WorkletOwner
   // method has been invoked.
   bool TrustedScoringSignalsUrlAllowed() const;
 
+  // Returns KVv2 trusted scoring signals public key if one is in used.
+  // Must only be called after the worklet available callback has been called.
+  const auction_worklet::mojom::TrustedSignalsPublicKey*
+  GetTrustedSignalsPublicKey() const;
+
   // If a process hasn't been assigned for this worklet, add a trace event to
   // trace the process assignment.
   void MaybeStartTracingProcessLaunch(uint64_t trace_id);
@@ -379,6 +384,13 @@ bool AuctionWorkletManager::WorkletOwner::TrustedScoringSignalsUrlAllowed()
     const {
   CHECK(trusted_signals_url_allowed_.has_value());
   return *trusted_signals_url_allowed_;
+}
+
+const auction_worklet::mojom::TrustedSignalsPublicKey*
+AuctionWorkletManager::WorkletOwner::GetTrustedSignalsPublicKey() const {
+  DCHECK(process_assigned_);
+  DCHECK(!waiting_on_trusted_signals_kvv2_public_key_);
+  return trusted_signals_kvv2_public_key_.get();
 }
 
 void AuctionWorkletManager::WorkletOwner::MaybeStartTracingProcessLaunch(
@@ -882,6 +894,11 @@ AuctionWorkletManager::WorkletHandle::GetSellerWorklet() {
 bool AuctionWorkletManager::WorkletHandle::TrustedScoringSignalsUrlAllowed()
     const {
   return worklet_owner_->TrustedScoringSignalsUrlAllowed();
+}
+
+const auction_worklet::mojom::TrustedSignalsPublicKey*
+AuctionWorkletManager::WorkletHandle::GetTrustedSignalsPublicKey() const {
+  return worklet_owner_->GetTrustedSignalsPublicKey();
 }
 
 const SubresourceUrlAuthorizations& AuctionWorkletManager::WorkletHandle::

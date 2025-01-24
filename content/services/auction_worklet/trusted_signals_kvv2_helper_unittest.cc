@@ -32,6 +32,7 @@
 #include "content/common/features.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -206,7 +207,8 @@ std::string ExtractScoringSignals(
   v8::Local<v8::Context> context = v8::Context::New(isolate);
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Value> value = signals->GetScoringSignals(
-      v8_helper, context, render_url, ad_component_render_urls);
+      v8_helper, context, render_url,
+      CreateMojoCreativeInfoWithoutOwnerVector(ad_component_render_urls));
   std::string result;
 
   if (v8_helper->ExtractJson(context, value, /*script_timeout=*/nullptr,

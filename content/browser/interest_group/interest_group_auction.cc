@@ -1352,6 +1352,20 @@ std::vector<GURL> InterestGroupAuction::Bid::GetAdComponentUrls() const {
   return ad_component_urls;
 }
 
+std::vector<auction_worklet::mojom::CreativeInfoWithoutOwnerPtr>
+InterestGroupAuction::Bid::GetAdComponentCreativeInfo(
+    bool send_creative_scanning_metadata) const {
+  std::vector<auction_worklet::mojom::CreativeInfoWithoutOwnerPtr> out;
+  out.reserve(selected_ad_components.size());
+  for (const auto& in : selected_ad_components) {
+    out.push_back(auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+        in.ad_descriptor, send_creative_scanning_metadata
+                              ? in.ad->creative_scanning_metadata
+                              : std::nullopt));
+  }
+  return out;
+}
+
 // If the auction config specified 'deprecatedRenderURLReplacements', this will
 // return the ad descriptor with the proper replacements.
 blink::AdDescriptor
@@ -5558,7 +5572,6 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
   DCHECK(url_builder);  // Should be ready by now.
   seller_worklet_handle_->AuthorizeSubresourceUrls(*url_builder);
 
-  std::vector<GURL> ad_component_urls = bid->GetAdComponentUrls();
   auction_worklet::mojom::TrustedSignalsCacheKeyPtr cache_key;
   scoped_refptr<TrustedSignalsCacheImpl::Handle> cache_handle;
   // If KVv2 scoring signals are required, the TrustedSignalsCache is enabled,
@@ -5584,14 +5597,25 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
                 *config_->non_shared_params.trusted_scoring_signals_coordinator,
                 bid->interest_group->owner,
                 bid->bid_state->bidder->joining_origin, bid->ad_descriptor.url,
-                ad_component_urls, std::move(additional_params), partition_id);
+                bid->GetAdComponentUrls(), std::move(additional_params),
+                partition_id);
     cache_key = auction_worklet::mojom::TrustedSignalsCacheKey::New(
         cache_handle->compression_group_token(), partition_id);
   }
 
+  bool send_creative_scanning_metadata =
+      config_->send_creative_scanning_metadata && !cache_key &&
+      !seller_worklet_handle_->GetTrustedSignalsPublicKey();
+
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
       bid->ad_metadata, bid->bid, bid->bid_currency, config_->non_shared_params,
-      std::move(cache_key), GetDirectFromSellerSellerSignals(url_builder),
+      std::move(cache_key),
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          bid->ad_descriptor, send_creative_scanning_metadata
+                                  ? bid->bid_ad->creative_scanning_metadata
+                                  : std::nullopt),
+      bid->GetAdComponentCreativeInfo(send_creative_scanning_metadata),
+      GetDirectFromSellerSellerSignals(url_builder),
       GetDirectFromSellerSellerSignalsHeaderAdSlot(
           *direct_from_seller_signals_header_ad_slot_),
       GetDirectFromSellerAuctionSignals(url_builder),
@@ -5600,10 +5624,8 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
       GetOtherSellerParam(*bid),
       parent_ ? PerBuyerCurrency(config_->seller, *parent_->config_)
               : std::nullopt,
-      bid->interest_group->owner, bid->ad_descriptor.url,
-      bid->selected_buyer_and_seller_reporting_id,
-      maybe_buyer_and_seller_reporting_id, ad_component_urls,
-      bid->bid_duration.InMilliseconds(), bid->ad_descriptor.size,
+      bid->interest_group->owner, bid->selected_buyer_and_seller_reporting_id,
+      maybe_buyer_and_seller_reporting_id, bid->bid_duration.InMilliseconds(),
       IsOriginInDebugReportCooldownOrLockout(
           config_->seller, debug_report_lockout_and_cooldowns_,
           base::Time::Now()),

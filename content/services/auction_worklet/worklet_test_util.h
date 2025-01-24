@@ -13,6 +13,7 @@
 #include "base/types/optional_ref.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
+#include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/shared_storage.mojom-forward.h"
@@ -190,6 +191,8 @@ class TestAuctionNetworkEventsHandler
 // construsting the larger type it needs from simpler string input.
 std::set<TrustedSignals::CreativeInfo> CreateCreativeInfoSet(
     const std::vector<std::string>& urls);
+std::vector<mojom::CreativeInfoWithoutOwnerPtr>
+CreateMojoCreativeInfoWithoutOwnerVector(const std::vector<std::string>& urls);
 
 }  // namespace auction_worklet
 

@@ -284,4 +284,15 @@ std::set<TrustedSignals::CreativeInfo> CreateCreativeInfoSet(
   return result;
 }
 
+std::vector<mojom::CreativeInfoWithoutOwnerPtr>
+CreateMojoCreativeInfoWithoutOwnerVector(const std::vector<std::string>& urls) {
+  std::vector<mojom::CreativeInfoWithoutOwnerPtr> out;
+  for (const auto& url : urls) {
+    out.push_back(mojom::CreativeInfoWithoutOwner::New(
+        blink::AdDescriptor(GURL(url)),
+        /*creative_scanning_metadata=*/std::nullopt));
+  }
+  return out;
+}
+
 }  // namespace auction_worklet

@@ -30,6 +30,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
+#include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
 #include "net/base/parse_number.h"
@@ -237,26 +238,29 @@ TrustedSignals::Result::PerInterestGroupDataMap ParsePerInterestGroupMap(
 // Takes a list of keys, a map of strings to serialized values and creates a
 // corresponding v8::Object from the entries with the provided keys. `keys` must
 // not be empty.
+template <typename Container, typename Proj = std::identity>
 v8::Local<v8::Object> CreateObjectFromMap(
-    const std::vector<std::string>& keys,
+    const Container& keys,
     const std::map<std::string, AuctionV8Helper::SerializedValue>&
         serialized_data,
     AuctionV8Helper* v8_helper,
-    v8::Local<v8::Context> context) {
+    v8::Local<v8::Context> context,
+    Proj proj = {}) {
   DCHECK(v8_helper->v8_runner()->RunsTasksInCurrentSequence());
   DCHECK(!keys.empty());
 
   v8::Local<v8::Object> out = v8::Object::New(v8_helper->isolate());
 
   for (const auto& key : keys) {
-    auto data = serialized_data.find(key);
+    const std::string& str_key = proj(key);
+    auto data = serialized_data.find(str_key);
     v8::Local<v8::Value> v8_data;
     // Deserialize() shouldn't normally fail, but the first check might.
     if (data == serialized_data.end() ||
         !v8_helper->Deserialize(context, data->second).ToLocal(&v8_data)) {
       v8_data = v8::Null(v8_helper->isolate());
     }
-    bool result = v8_helper->InsertValue(key, v8_data, out);
+    bool result = v8_helper->InsertValue(str_key, v8_data, out);
     DCHECK(result);
   }
   return out;
@@ -318,7 +322,8 @@ v8::Local<v8::Object> TrustedSignals::Result::GetScoringSignals(
     AuctionV8Helper* v8_helper,
     v8::Local<v8::Context> context,
     const GURL& render_url,
-    const std::vector<std::string>& ad_component_render_urls) const {
+    const std::vector<mojom::CreativeInfoWithoutOwnerPtr>& ad_components)
+    const {
   DCHECK(v8_helper->v8_runner()->RunsTasksInCurrentSequence());
   DCHECK(render_url_data_.has_value());
   DCHECK(ad_component_data_.has_value());
@@ -337,9 +342,15 @@ v8::Local<v8::Object> TrustedSignals::Result::GetScoringSignals(
 
   // If there are any ad components, assemble and add an `adComponentRenderURLs`
   // object as well.
-  if (!ad_component_render_urls.empty()) {
-    v8::Local<v8::Object> ad_components_v8_object = CreateObjectFromMap(
-        ad_component_render_urls, *ad_component_data_, v8_helper, context);
+  if (!ad_components.empty()) {
+    auto extract_render_url =
+        [](const mojom::CreativeInfoWithoutOwnerPtr& c) -> const std::string& {
+      return c->ad_descriptor.url.spec();
+    };
+
+    v8::Local<v8::Object> ad_components_v8_object =
+        CreateObjectFromMap(ad_components, *ad_component_data_, v8_helper,
+                            context, extract_render_url);
     result = v8_helper->InsertValue("adComponentRenderURLs",
                                     ad_components_v8_object, out);
     // TODO(crbug.com/40266734): Remove deprecated `adComponentRenderUrls`
@@ -378,6 +389,20 @@ TrustedSignals::CreativeInfo::CreativeInfo(
     : ad_descriptor(std::move(ad_descriptor)),
       creative_scanning_metadata(std::move(creative_scanning_metadata)),
       interest_group_owner(std::move(interest_group_owner)) {}
+
+TrustedSignals::CreativeInfo::CreativeInfo(
+    bool send_creative_scanning_metadata,
+    const mojom::CreativeInfoWithoutOwner& mojo_creative_info,
+    const url::Origin& in_interest_group_owner) {
+  ad_descriptor.url = mojo_creative_info.ad_descriptor.url;
+  if (send_creative_scanning_metadata) {
+    ad_descriptor.size = mojo_creative_info.ad_descriptor.size;
+    creative_scanning_metadata =
+        mojo_creative_info.creative_scanning_metadata.value_or(std::string());
+    interest_group_owner = in_interest_group_owner;
+  }
+}
+
 TrustedSignals::CreativeInfo::~CreativeInfo() = default;
 
 TrustedSignals::CreativeInfo::CreativeInfo(CreativeInfo&&) = default;

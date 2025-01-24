@@ -398,6 +398,12 @@ class CONTENT_EXPORT InterestGroupAuction
     // Get a vector of ad component urls.
     std::vector<GURL> GetAdComponentUrls() const;
 
+    // Gets information on ad components selected with this bid in form suitable
+    // for sending over mojo; this has all the info needed for worklet process
+    // to both pass in things to JS and request trusted scoring signals.
+    std::vector<auction_worklet::mojom::CreativeInfoWithoutOwnerPtr>
+    GetAdComponentCreativeInfo(bool send_creative_scanning_metadata) const;
+
     // These getters are necessary for handling the replacements within the
     // interest group auction.
     blink::AdDescriptor GetAdDescriptorWithReplacements();

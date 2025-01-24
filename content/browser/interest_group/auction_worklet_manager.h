@@ -209,6 +209,11 @@ class CONTENT_EXPORT AuctionWorkletManager {
     // and KVv2 signals and the KVv2 cache are enabled.
     bool TrustedScoringSignalsUrlAllowed() const;
 
+    // Returns KVv2 trusted scoring signals public key if one is in used.
+    // Must only be called after the worklet available callback has been called.
+    const auction_worklet::mojom::TrustedSignalsPublicKey*
+    GetTrustedSignalsPublicKey() const;
+
     const SubresourceUrlAuthorizations&
     GetSubresourceUrlAuthorizationsForTesting();
 
