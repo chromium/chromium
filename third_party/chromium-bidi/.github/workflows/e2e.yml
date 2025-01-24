@@ -33,7 +33,7 @@ jobs:
     name: '[Required] e2e sink'
     needs: [e2e]
     runs-on: ubuntu-latest
-    if: always()
+    if: ${{ !cancelled() }}
     steps:
       - if: ${{ needs.e2e.result != 'success' }}
         run: 'exit 1'
@@ -104,7 +104,7 @@ jobs:
         env:
           VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Upload artifacts
-        if: always()
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: ${{ matrix.os }}-${{ matrix.head }}-${{ matrix.this_chunk }}-artifacts
