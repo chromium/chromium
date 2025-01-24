@@ -276,7 +276,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '8262714acc40f9146bc67266f0bb157583297683',
+  'src_internal_revision': '80d1af3e067081991c26ca1eb45106e732ec52f0',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
@@ -284,7 +284,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '35151fda02737be0077a406b5b205f11017e2a52',
+  'v8_revision': 'eeaf2585756d9b91a941178d0f2bd66ca9004570',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '1198dc18befa69262bce1ae1c0bc9fbd3b5299a9',
+  'devtools_frontend_revision': '3f36b4b6c60738628fb9b91464b3594b8a75ae81',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -703,7 +703,7 @@ deps = {
       'packages': [
           {
               'package': 'chrome_internal/third_party/google3/data_sharing_sdk',
-              'version': 'zxLAT3jRg4uaRYyoYV84aJbgCshyFzN-MUlA6GfFla0C',
+              'version': 'o5h10j3bd80KJ-yN_D35b_-2GWsDACVKD7Lapv9lcWsC',
           },
       ],
       'condition': 'checkout_src_internal and non_git_source',
@@ -1435,7 +1435,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'fe286657605d753c862ed21ab69a86e13bf7e7d7',
+    'be3c364a3f12ea79ce9e00868a45cd75901ba7e5',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1900,7 +1900,7 @@ deps = {
   # Tools used when building Chrome for Chrome OS. This affects both the Simple
   # Chrome workflow, as well as the chromeos-chrome ebuild.
   'src/third_party/chromite': {
-      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '970c859887dc09b9a47db8fc5fd7adbc640446b1',
+      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '88ea53d8aae81e3124bf249a4fe8f46ec193706f',
       'condition': 'checkout_chromeos',
   },
 
@@ -2429,7 +2429,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'bc6aeafb395f6f3db7dc11df0deccdee07adc8e3',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'c23d681cdc5b0550b732a48ba902643c16a0a1bd',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2950,7 +2950,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'eb1YFvycrq9cwDSoYwkYiv-GQfX3TlPgwID4FmEiEG0C',
+        'version': 'G08hxJuVpl-KyQjenzUx4R83CcSNVD3oPhbfvQOufyQC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

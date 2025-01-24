@@ -21,6 +21,8 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -58,6 +60,7 @@ import java.util.List;
  * } </pre>
  * </p>
  */
+@NullMarked
 public class RadioButtonWithDescription extends RelativeLayout implements OnClickListener {
     /** Interface to listen to radio button changes. */
     public interface ButtonCheckedStateChangedListener {
@@ -68,14 +71,21 @@ public class RadioButtonWithDescription extends RelativeLayout implements OnClic
         void onButtonCheckedStateChanged(RadioButtonWithDescription checkedRadioButton);
     }
 
+    @SuppressWarnings("NullAway.Init")
     private RadioButton mRadioButton;
+
+    @SuppressWarnings("NullAway.Init")
     private ChromeImageView mIcon;
+
+    @SuppressWarnings("NullAway.Init")
     private TextView mPrimary;
+
+    @SuppressWarnings("NullAway.Init")
     private TextView mDescription;
 
-    private ButtonCheckedStateChangedListener mButtonCheckedStateChangedListener;
+    private @Nullable ButtonCheckedStateChangedListener mButtonCheckedStateChangedListener;
 
-    private List<RadioButtonWithDescription> mGroup;
+    private @Nullable List<RadioButtonWithDescription> mGroup;
 
     private static final String SUPER_STATE_KEY = "superState";
     private static final String CHECKED_KEY = "isChecked";

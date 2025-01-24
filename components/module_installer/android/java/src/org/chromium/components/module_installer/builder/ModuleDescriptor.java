@@ -4,7 +4,10 @@
 
 package org.chromium.components.module_installer.builder;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Provides information about a dynamic feature module. */
+@NullMarked
 public interface ModuleDescriptor {
     /** Returns the list of native library names this module requires at runtime. */
     String[] getLibraries();

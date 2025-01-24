@@ -7,9 +7,11 @@ package org.chromium.components.omnibox;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 /** Utility class to get security state info for the omnibox. */
+@NullMarked
 public class SecurityStatusIcon {
     /** @return the id of the resource identifying the icon corresponding to the securityLevel. */
     @DrawableRes

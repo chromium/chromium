@@ -123,9 +123,18 @@ void GlicBackgroundModeManager::RegisterHotkey(ui::Accelerator updated_hotkey) {
   CHECK(!updated_hotkey.IsEmpty());
   auto* const global_accelerator_listener =
       ui::GlobalAcceleratorListener::GetInstance();
-  if (global_accelerator_listener &&
-      global_accelerator_listener->RegisterAccelerator(updated_hotkey, this)) {
-    actual_registered_hotkey_ = updated_hotkey;
+  if (global_accelerator_listener) {
+    const bool shortcut_handling_suspended =
+        global_accelerator_listener->IsShortcutHandlingSuspended();
+    // Re-enable shortcut handling to allow the global accelerator listener to
+    // register the hotkey.
+    global_accelerator_listener->SetShortcutHandlingSuspended(false);
+    if (global_accelerator_listener->RegisterAccelerator(updated_hotkey,
+                                                         this)) {
+      actual_registered_hotkey_ = updated_hotkey;
+    }
+    global_accelerator_listener->SetShortcutHandlingSuspended(
+        shortcut_handling_suspended);
   }
 }
 

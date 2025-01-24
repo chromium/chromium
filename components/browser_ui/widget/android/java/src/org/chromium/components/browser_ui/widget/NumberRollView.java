@@ -13,6 +13,8 @@ import android.util.FloatProperty;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.text.NumberFormat;
@@ -21,13 +23,14 @@ import java.text.NumberFormat;
  * View that shows an integer number. It provides a smooth roll animation on changing the
  * number.
  */
+@NullMarked
 public class NumberRollView extends FrameLayout {
     private TextView mUpNumber;
     private TextView mDownNumber;
     private float mNumber;
-    private Animator mLastRollAnimator;
+    private @Nullable Animator mLastRollAnimator;
     private int mStringId;
-    private String mStringForZero;
+    private @Nullable String mStringForZero;
 
     /**
      * A Property wrapper around the <code>number</code> functionality handled by the {@link

@@ -72,6 +72,9 @@ _IGNORE_WARNINGS = (
     # corresponding EnclosingMethod attribute. Such InnerClasses attribute
     # entries are ignored."
     r'Warning: InnerClasses attribute has entries missing a corresponding EnclosingMethod attribute',  # pylint: disable=line-too-long
+    # Warning in obj/third_party/android_deps/google_play_services_fido_java/classes.jar:com/google/android/gms/internal/fido/zzel$zza.class:  # pylint: disable=line-too-long
+    # Classes with missing EnclosingMethod: com.google.android.gms.internal.fido.zzel$zza  # pylint: disable=line-too-long
+    r'Classes with missing EnclosingMethod',
     # Full error example: "Warning in <path to target prebuilt>:
     # androidx/test/espresso/web/internal/deps/guava/collect/Maps$1.class:"
     # Also happens in espresso core.

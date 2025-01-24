@@ -6,19 +6,21 @@ package org.chromium.components.browser_ui.edge_to_edge;
 
 import android.app.Activity;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.util.TokenHolder;
 
+@NullMarked
 public class EdgeToEdgeManager {
     private final ObservableSupplierImpl<Boolean> mContentFitsWindowInsetsSupplier =
             new ObservableSupplierImpl<>();
-    private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+    private @Nullable EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private int mEdgeToEdgeToken = TokenHolder.INVALID_TOKEN;
-    private final @NonNull EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
+    private final EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
 
     /**
      * Creates an EdgeToEdgeManager for managing central edge-to-edge functionality.
@@ -31,9 +33,9 @@ public class EdgeToEdgeManager {
      *     default.
      */
     public EdgeToEdgeManager(
-            @NonNull Activity activity,
-            @NonNull EdgeToEdgeStateProvider edgeToEdgeStateProvider,
-            @NonNull OneshotSupplier<SystemBarColorHelper> systemBarColorHelperSupplier,
+            Activity activity,
+            EdgeToEdgeStateProvider edgeToEdgeStateProvider,
+            OneshotSupplier<SystemBarColorHelper> systemBarColorHelperSupplier,
             boolean shouldDrawEdgeToEdge) {
         mContentFitsWindowInsetsSupplier.set(!shouldDrawEdgeToEdge);
 
@@ -63,7 +65,7 @@ public class EdgeToEdgeManager {
      * Returns the {@link EdgeToEdgeStateProvider} for checking and requesting changes to the
      * edge-to-edge state.
      */
-    public EdgeToEdgeStateProvider getEdgeToEdgeStateProvider() {
+    public @Nullable EdgeToEdgeStateProvider getEdgeToEdgeStateProvider() {
         return mEdgeToEdgeStateProvider;
     }
 
@@ -86,6 +88,7 @@ public class EdgeToEdgeManager {
      * Returns true if the content should fit within the system's window insets, false if the
      * content should be drawn edge-to-edge (into the window insets).
      */
+    @NullUnmarked
     public boolean shouldContentFitsWindowInsets() {
         return mContentFitsWindowInsetsSupplier.get();
     }

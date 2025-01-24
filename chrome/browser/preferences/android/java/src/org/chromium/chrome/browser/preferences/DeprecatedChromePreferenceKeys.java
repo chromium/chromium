@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.preferences;
 
 import org.chromium.base.shared_preferences.KeyPrefix;
 import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import java.util.List;
  * should rest here, not just Chrome-layer keys.
  */
 @CheckDiscard("Validation is performed in tests and in debug builds.")
+@NullMarked
 public class DeprecatedChromePreferenceKeys {
     static List<String> getKeysForTesting() {
         return Arrays.asList(

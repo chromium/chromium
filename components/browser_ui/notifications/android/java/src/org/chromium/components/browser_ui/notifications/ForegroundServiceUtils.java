@@ -16,11 +16,13 @@ import androidx.core.content.ContextCompat;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Utility functions that call into Android foreground service related API, and provides
  * compatibility for older Android versions and work around for Android API bugs.
  */
+@NullMarked
 public class ForegroundServiceUtils {
     private static final String TAG = "ForegroundService";
 

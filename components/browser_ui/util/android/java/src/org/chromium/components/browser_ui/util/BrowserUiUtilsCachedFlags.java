@@ -4,16 +4,20 @@
 
 package org.chromium.components.browser_ui.util;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * A helper class that stores Chrome cached flag values to allow them to be used in //components.
  *
  * <p>TODO(crbug.com/40266922): Remove this class after code changes allow for //components to
  * access cached flags.
  */
+@NullMarked
 public class BrowserUiUtilsCachedFlags {
 
     /** The singleton instance for this class. */
-    private static BrowserUiUtilsCachedFlags sInstance;
+    private static @Nullable BrowserUiUtilsCachedFlags sInstance;
 
     private boolean mAsyncNotificationManager;
 

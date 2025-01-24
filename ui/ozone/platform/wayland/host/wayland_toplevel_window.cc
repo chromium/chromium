@@ -150,6 +150,8 @@ void WaylandToplevelWindow::Hide() {
     gtk_surface1_.reset();
 
   shell_toplevel_.reset();
+  ClearInFlightRequestsSerial();
+
   connection()->Flush();
 }
 

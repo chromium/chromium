@@ -16,10 +16,12 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Chrome workaround for material switch wrapped within a layout to scale down the size of the
@@ -42,6 +44,7 @@ import com.google.android.material.materialswitch.MaterialSwitch;
  *   This behavior makes it similar to the behavior as a SwitchPreferenceCompat.
  * </ul>
  */
+@NullMarked
 public class MaterialSwitchWithText extends LinearLayout implements Checkable, OnClickListener {
     private final MaterialSwitch mSwitch;
     private final TextView mTextView;

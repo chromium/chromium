@@ -7,11 +7,10 @@ package org.chromium.components.browser_ui.edge_to_edge;
 import android.graphics.Color;
 import android.view.Window;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Helper class that coordinates whether to apply the color changes to system window, or external
@@ -21,6 +20,7 @@ import org.chromium.base.supplier.OneshotSupplier;
  * <p>This instance is meant to be created at the based activity level, and one instance per
  * activity. This class will use the window's bar color when it's initialized.
  */
+@NullMarked
 public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
     private final ObservableSupplier<Boolean> mDoesContentFitWindowSupplier;
     private final OneshotSupplier<SystemBarColorHelper> mEdgeToEdgeDelegateHelperSupplier;
@@ -36,9 +36,9 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
      * @param delegateHelperSupplier Delegate helper that colors the bar when edge to edge.
      */
     public EdgeToEdgeSystemBarColorHelper(
-            @NonNull Window window,
-            @NonNull ObservableSupplier<Boolean> doesContentFitWindowSupplier,
-            @NonNull OneshotSupplier<SystemBarColorHelper> delegateHelperSupplier) {
+            Window window,
+            ObservableSupplier<Boolean> doesContentFitWindowSupplier,
+            OneshotSupplier<SystemBarColorHelper> delegateHelperSupplier) {
         mDoesContentFitWindowSupplier = doesContentFitWindowSupplier;
         mEdgeToEdgeDelegateHelperSupplier = delegateHelperSupplier;
         mWindowColorHelper = new WindowSystemBarColorHelper(window);
@@ -83,7 +83,7 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
         }
     }
 
-    private void onDelegateColorHelperChanged(@NonNull SystemBarColorHelper delegate) {
+    private void onDelegateColorHelperChanged(SystemBarColorHelper delegate) {
         updateStatusBarColor();
         updateNavBarColors();
     }

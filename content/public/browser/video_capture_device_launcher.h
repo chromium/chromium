@@ -13,6 +13,7 @@
 #include "base/token.h"
 #include "content/common/content_export.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
+#include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video/video_frame_receiver.h"
@@ -65,7 +66,9 @@ class CONTENT_EXPORT VideoCaptureDeviceLauncher {
       Callbacks* callbacks,
       base::OnceClosure done_cb,
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor) = 0;
+          video_effects_processor,
+      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+          readonly_video_effects_manager) = 0;
 
   virtual void AbortLaunch() = 0;
 };

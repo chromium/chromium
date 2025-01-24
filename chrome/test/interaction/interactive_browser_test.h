@@ -156,6 +156,18 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       AbsoluteViewSpecifier web_view,
       bool wait_for_ready = true);
 
+  // Instruments an inner webview of an already-instrumented WebContents of any
+  // type; the resulting element will be present only when the parent element is
+  // *and* the inner webview is loaded and ready.
+  //
+  // Do not use with iframe; just instrument the primary contents and use
+  // `DeepQuery` instead.
+  [[nodiscard]] MultiStep InstrumentInnerWebContents(
+      ui::ElementIdentifier inner_id,
+      ui::ElementIdentifier outer_id,
+      size_t inner_contents_index,
+      bool wait_for_ready = true);
+
   // These convenience methods wait for page navigation/ready. If you specify
   // `expected_url`, the test will fail if that is not the loaded page. If you
   // do not, there is no step start callback and you can add your own logic.

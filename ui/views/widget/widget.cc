@@ -373,7 +373,7 @@ void Widget::ReparentNativeView(gfx::NativeView native_view,
   Widget* parent_widget =
       new_parent ? GetWidgetForNativeView(new_parent) : nullptr;
   if (child_widget) {
-    child_widget->SetParent(parent_widget);
+    child_widget->HandleNativeWidgetReparented(parent_widget);
   }
 }
 
@@ -649,6 +649,13 @@ bool Widget::HasRemovalsObserver(const WidgetRemovalsObserver* observer) const {
 
 bool Widget::GetAccelerator(int cmd_id, ui::Accelerator* accelerator) const {
   return false;
+}
+
+void Widget::Reparent(Widget* parent) {
+  gfx::NativeView child_view = GetNativeView();
+  gfx::NativeView parent_view = parent->GetNativeView();
+  internal::NativeWidgetPrivate::ReparentNativeView(child_view, parent_view);
+  HandleNativeWidgetReparented(parent);
 }
 
 void Widget::ViewHierarchyChanged(const ViewHierarchyChangedDetails& details) {
@@ -1880,7 +1887,7 @@ void Widget::OnNativeWidgetDestroyed() {
 
 void Widget::OnNativeWidgetParentChanged(gfx::NativeView parent) {
   Widget* parent_widget = parent ? GetWidgetForNativeView(parent) : nullptr;
-  SetParent(parent_widget);
+  HandleNativeWidgetReparented(parent_widget);
 }
 
 gfx::Size Widget::GetMinimumSize() const {
@@ -2473,7 +2480,7 @@ void Widget::SetInitialBoundsForFramelessWindow(const gfx::Rect& bounds) {
   }
 }
 
-void Widget::SetParent(Widget* parent) {
+void Widget::HandleNativeWidgetReparented(Widget* parent) {
   if (parent == parent_.get()) {
     return;
   }

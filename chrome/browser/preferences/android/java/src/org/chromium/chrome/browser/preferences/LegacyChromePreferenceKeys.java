@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.preferences;
 
 import org.chromium.base.shared_preferences.KeyPrefix;
 import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
  * "Chrome.FooBar.FooEnabled", and add them to {@link ChromePreferenceKeys#getKeysInUse()}.
  */
 @CheckDiscard("Validation is performed in tests and in debug builds.")
+@NullMarked
 public class LegacyChromePreferenceKeys {
     /**
      * @return The list of [keys in use] that do not conform to the "Chrome.[Feature].[Key]" format.

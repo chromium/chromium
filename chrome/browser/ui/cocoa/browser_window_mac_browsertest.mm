@@ -123,3 +123,23 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacA11yTest, A11yTreeIsWellFormed) {
     ui::PrintNSAXTree(window);
   }
 }
+
+IN_PROC_BROWSER_TEST_F(BrowserWindowMacA11yTest,
+                       AccessibilityDocumentExposedOnWindow) {
+  GURL url_before(R"HTML(data:text/html,before)HTML");
+  EXPECT_TRUE(AddTabAtIndex(0, url_before, ui::PAGE_TRANSITION_TYPED));
+
+  NSWindow* window = browser()->window()->GetNativeWindow().GetNativeNSWindow();
+  ASSERT_NE(nullptr, window);
+  // TODO(crbug.com/363275809): Update this after the URL is made available,
+  // e.g. via `ViewAccessibility`. The expected result is that the URL is
+  // the same string as `url_before`.
+  EXPECT_EQ(nil, [window accessibilityDocument]);
+
+  GURL url_after(R"HTML(data:text/html,after)HTML");
+  EXPECT_TRUE(AddTabAtIndex(1, url_after, ui::PAGE_TRANSITION_TYPED));
+  // TODO(crbug.com/363275809): Update this after the URL is made available,
+  // e.g. via `ViewAccessibility`. The expected result is that the URL is
+  // the same string as `url_after`.
+  EXPECT_EQ(nil, [window accessibilityDocument]);
+}

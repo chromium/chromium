@@ -3692,28 +3692,28 @@ void WebContentsImpl::OnSharedDictionaryAccessed(
 
 void WebContentsImpl::OnDeviceBoundSessionAccessed(
     NavigationHandle* navigation,
-    const net::device_bound_sessions::SessionKey& session) {
+    const net::device_bound_sessions::SessionAccess& access) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::OnDeviceBoundSessionAccessed",
                         "navigation_handle", navigation);
   // Use a variable to select between overloads.
   void (WebContentsObserver::*func)(
-      NavigationHandle*, const net::device_bound_sessions::SessionKey&) =
+      NavigationHandle*, const net::device_bound_sessions::SessionAccess&) =
       &WebContentsObserver::OnDeviceBoundSessionAccessed;
-  observers_.NotifyObservers(func, navigation, session);
+  observers_.NotifyObservers(func, navigation, access);
 }
 
 void WebContentsImpl::OnDeviceBoundSessionAccessed(
     RenderFrameHostImpl* rfh,
-    const net::device_bound_sessions::SessionKey& session) {
+    const net::device_bound_sessions::SessionAccess& access) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::OnDeviceBoundSessionAccessed",
                         "render_frame_host", rfh);
   // Use a variable to select between overloads.
   void (WebContentsObserver::*func)(
-      RenderFrameHost*, const net::device_bound_sessions::SessionKey&) =
+      RenderFrameHost*, const net::device_bound_sessions::SessionAccess&) =
       &WebContentsObserver::OnDeviceBoundSessionAccessed;
-  observers_.NotifyObservers(func, rfh, session);
+  observers_.NotifyObservers(func, rfh, access);
 }
 
 void WebContentsImpl::NotifyStorageAccessed(

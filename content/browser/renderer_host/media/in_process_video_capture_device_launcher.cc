@@ -244,7 +244,9 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     Callbacks* callbacks,
     base::OnceClosure done_cb,
     mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_processor) {
+        video_effects_processor,
+    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+        readonly_video_effects_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(state_ == State::READY_TO_LAUNCH);
 

@@ -89,7 +89,9 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     Callbacks* callbacks,
     base::OnceClosure done_cb,
     mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_processor) {
+        video_effects_processor,
+    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+        readonly_video_effects_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == State::READY_TO_LAUNCH);
 
@@ -132,6 +134,11 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   if (video_effects_processor) {
     source->RegisterVideoEffectsProcessor(std::move(video_effects_processor));
+  }
+
+  if (readonly_video_effects_manager) {
+    source->RegisterReadonlyVideoEffectsManager(
+        std::move(readonly_video_effects_manager));
   }
 #endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 

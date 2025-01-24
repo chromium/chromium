@@ -10,6 +10,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /**
@@ -18,12 +20,14 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
  * Reuse the name of MaterialCardViewNoShadow to keep the same usage.
  * But this class is no longer an extension of MaterialCardView.
  */
+@NullMarked
 public class MaterialCardViewNoShadow extends FrameLayout {
-    public MaterialCardViewNoShadow(Context context, AttributeSet attrs) {
+    public MaterialCardViewNoShadow(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public MaterialCardViewNoShadow(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MaterialCardViewNoShadow(
+            Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         final TypedArray typedArray =

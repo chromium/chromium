@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.widget.image_tiles;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.image_tiles.ImageTileCoordinator.TileVisualsProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -14,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * (1) A set of properties that act directly on the list view itself. (2) A set of
  * properties that are effectively shared across all list items like callbacks.
  */
+@NullMarked
 interface TileListProperties {
     /** The callback to run when a {@link ImageTile} is clicked on the UI. */
     WritableObjectPropertyKey<Callback<ImageTile>> CLICK_CALLBACK =

@@ -22,6 +22,7 @@ source_set("browser_tests") {
     "kiosk_iwa_permissions_browsertest.cc",
     "kiosk_multi_chrome_app_browsertest.cc",
     "kiosk_settings_browsertest.cc",
+    "kiosk_untrusted_cros_settings_browsertest.cc",
     "kiosk_web_app_offline_enabled_browsertest.cc",
     "minimum_chrome_version_browsertest.cc",
     "new_windows_in_kiosk_allowed_browsertest.cc",

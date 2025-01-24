@@ -4,10 +4,9 @@
 
 package org.chromium.components.tab_group_sync;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
 
@@ -17,6 +16,7 @@ import java.util.List;
  * The core service class for handling tab group sync across devices. Provides 1. Mutation methods
  * to propagate local changes to remote. 2. Observer interface to propagate remote changes to local.
  */
+@NullMarked
 public interface TabGroupSyncService {
 
     /**
@@ -133,8 +133,7 @@ public interface TabGroupSyncService {
      * @param title The title of the tab group.
      * @param color The color of the tab group.
      */
-    void updateVisualData(
-            LocalTabGroupId tabGroupId, @NonNull String title, @TabGroupColorId int color);
+    void updateVisualData(LocalTabGroupId tabGroupId, String title, @TabGroupColorId int color);
 
     /**
      * Makes the saved tab group a shared group.
@@ -142,7 +141,7 @@ public interface TabGroupSyncService {
      * @param tabGroupId The local group ID of the corresponding tab group.
      * @param collaborationId Collaboration ID with which the group is associated.
      */
-    void makeTabGroupShared(LocalTabGroupId tabGroupId, @NonNull String collaborationId);
+    void makeTabGroupShared(LocalTabGroupId tabGroupId, String collaborationId);
 
     /**
      * Starts the process of converting a shared tab group to saved tab group.
@@ -150,7 +149,7 @@ public interface TabGroupSyncService {
      * @param tabGroupId The local group ID of the corresponding tab group.
      * @param callback Callback to be called when group is converted to saved tab group.
      */
-    void aboutToUnShareTabGroup(LocalTabGroupId tabGroupId, Callback<Boolean> callback);
+    void aboutToUnShareTabGroup(LocalTabGroupId tabGroupId, @Nullable Callback<Boolean> callback);
 
     /**
      * Called when shared tab group is successfully converted to saved tab group.
@@ -225,6 +224,7 @@ public interface TabGroupSyncService {
      * @param syncGroupId The sync ID of the group to be returned.
      * @return The associated {@link SavedTabGroup}.
      */
+    @Nullable
     SavedTabGroup getGroup(String syncGroupId);
 
     /**

@@ -15,7 +15,11 @@ import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Abstraction over Notification.Builder and NotificationCompat.Builder interfaces. */
+@NullMarked
 public interface NotificationWrapperBuilder {
     NotificationWrapperBuilder setAutoCancel(boolean autoCancel);
 
@@ -122,6 +126,7 @@ public interface NotificationWrapperBuilder {
     NotificationWrapper buildWithBigTextStyle(String bigText);
 
     @Deprecated
+    @Nullable
     Notification build();
 
     NotificationWrapper buildNotificationWrapper();

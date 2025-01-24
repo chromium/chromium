@@ -99,7 +99,7 @@ class InflightNavigationContentSettings
       service_worker_accesses;
   std::vector<network::mojom::SharedDictionaryAccessDetailsPtr>
       shared_dictionary_accesses;
-  std::vector<net::device_bound_sessions::SessionKey>
+  std::vector<net::device_bound_sessions::SessionAccess>
       device_bound_session_accesses;
 
  private:
@@ -187,10 +187,10 @@ class WebContentsHandler
       const network::mojom::SharedDictionaryAccessDetails& details) override;
   void OnDeviceBoundSessionAccessed(
       content::NavigationHandle* navigation,
-      const net::device_bound_sessions::SessionKey& details) override;
+      const net::device_bound_sessions::SessionAccess& details) override;
   void OnDeviceBoundSessionAccessed(
       content::RenderFrameHost* rfh,
-      const net::device_bound_sessions::SessionKey& details) override;
+      const net::device_bound_sessions::SessionAccess& details) override;
   void WebContentsDestroyed() override;
 
   std::unique_ptr<Delegate> delegate_;
@@ -398,7 +398,7 @@ void WebContentsHandler::OnSharedDictionaryAccessed(
 
 void WebContentsHandler::OnDeviceBoundSessionAccessed(
     content::NavigationHandle* navigation,
-    const net::device_bound_sessions::SessionKey& details) {
+    const net::device_bound_sessions::SessionAccess& details) {
   if (WillNavigationCreateNewPageSpecificContentSettingsOnCommit(navigation)) {
     auto* inflight_navigation_settings =
         content::NavigationHandleUserData<InflightNavigationContentSettings>::
@@ -417,9 +417,10 @@ void WebContentsHandler::OnDeviceBoundSessionAccessed(
 
 void WebContentsHandler::OnDeviceBoundSessionAccessed(
     content::RenderFrameHost* rfh,
-    const net::device_bound_sessions::SessionKey& details) {
+    const net::device_bound_sessions::SessionAccess& details) {
   PageSpecificContentSettings::BrowsingDataAccessed(
-      rfh, details, BrowsingDataModel::StorageType::kDeviceBoundSession,
+      rfh, details.session_key,
+      BrowsingDataModel::StorageType::kDeviceBoundSession,
       /*blocked=*/false);
 }
 

@@ -10,13 +10,17 @@ import android.view.ViewTreeObserver;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 
 /** A utility for observing when a view gets drawn for the first time. */
+@NullMarked
 public class FirstDrawDetector {
     WeakReference<View> mView;
-    Runnable mCallback;
+    @Nullable Runnable mCallback;
     private boolean mHasRunBefore;
 
     private FirstDrawDetector(View view, Runnable callback) {
@@ -49,6 +53,7 @@ public class FirstDrawDetector {
      * Starts waiting for a draw to trigger the callback.
      * @param strict Whether to wait for an |#onDraw| strictly. See |#waitForFirstDrawStrict()|.
      */
+    @NullUnmarked
     private void startWaiting(boolean strict) {
         ViewTreeObserver.OnDrawListener firstDrawListener =
                 new ViewTreeObserver.OnDrawListener() {

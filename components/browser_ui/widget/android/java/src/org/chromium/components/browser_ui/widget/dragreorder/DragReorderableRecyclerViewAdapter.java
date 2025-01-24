@@ -9,14 +9,15 @@ import android.content.res.Resources;
 import android.util.SparseArray;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -37,6 +38,7 @@ import java.util.function.BiFunction;
  *    isn't itself draggable. The call is identical to SimpleRecyclerViewAdapter#registerType
  *    but it keeps track of the view to make it available to drag over later.
  */
+@NullMarked
 public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
     /**
      * Responsible for binding draggable views to the items adapter. The viewHolder should add a
@@ -61,7 +63,7 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
     }
 
     /** Keep a reference to the underlying RecyclerView to attach the drag/drop helpers. */
-    private RecyclerView mRecyclerView;
+    private @Nullable RecyclerView mRecyclerView;
 
     private boolean mDragEnabled;
     private int mStart;
@@ -87,7 +89,7 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
     /** A callback for touch actions on drag-reorderable lists. */
     private class DragTouchCallback extends ItemTouchHelper.Callback {
         // The view that is being dragged now; null means no view is being dragged now;
-        private @Nullable RecyclerView.ViewHolder mBeingDragged;
+        private RecyclerView.@Nullable ViewHolder mBeingDragged;
 
         @Override
         public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
@@ -113,8 +115,10 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
             return true;
         }
 
+        @NullUnmarked
         @Override
-        public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+        public void onSelectedChanged(
+                RecyclerView.@Nullable ViewHolder viewHolder, int actionState) {
             super.onSelectedChanged(viewHolder, actionState);
             // similar to getMovementFlags, this method may be called multiple times
             if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && mBeingDragged != viewHolder) {
@@ -229,8 +233,8 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
             int typeId,
             ViewBuilder<T> builder,
             ViewBinder<PropertyModel, T, PropertyKey> binder,
-            @NonNull DragBinder dragBinder,
-            @NonNull DraggabilityProvider draggabilityProvider) {
+            DragBinder dragBinder,
+            DraggabilityProvider draggabilityProvider) {
         super.registerType(typeId, builder, binder);
         assert mDragBinderMap.get(typeId) == null;
         assert mDraggabilityProviderMap.get(typeId) == null;
@@ -331,6 +335,7 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
      * @param start The index of the ViewHolder that you want to drag.
      * @param end The index this ViewHolder should be dragged to and dropped at.
      */
+    @NullUnmarked
     public void simulateDragForTests(int start, int end) {
         RecyclerView.ViewHolder viewHolder = mRecyclerView.findViewHolderForAdapterPosition(start);
         mItemTouchHelper.startDrag(viewHolder);

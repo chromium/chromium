@@ -9,11 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Leftover implementation of an earlier BroadcastReceiver used for BackgroundTasks scheduled at
  * an exact time.
  */
+@NullMarked
 public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "BkgrdTaskBR";
 

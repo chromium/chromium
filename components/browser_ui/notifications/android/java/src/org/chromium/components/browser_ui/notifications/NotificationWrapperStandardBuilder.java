@@ -20,9 +20,11 @@ import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
 /** Wraps a {@link Notification.Builder} object. */
+@NullMarked
 public class NotificationWrapperStandardBuilder implements NotificationWrapperBuilder {
     private static final String TAG = "NotifStandardBuilder";
     private final Notification.Builder mBuilder;

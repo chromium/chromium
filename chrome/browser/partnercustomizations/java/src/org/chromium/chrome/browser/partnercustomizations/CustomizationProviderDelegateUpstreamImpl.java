@@ -10,15 +10,16 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.SystemClock;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** Delegate used to retrieve information from the ContentProvider about partner customization. */
+@NullMarked
 public class CustomizationProviderDelegateUpstreamImpl implements CustomizationProviderDelegate {
     private static final String PARTNER_DISABLE_BOOKMARKS_EDITING_PATH = "disablebookmarksediting";
     private static final String PARTNER_DISABLE_INCOGNITO_MODE_PATH = "disableincognitomode";
@@ -27,8 +28,8 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
     private static final String PARTNER_HOMEPAGE_PATH = "homepage";
 
     private static String sProviderAuthority = PROVIDER_AUTHORITY;
-    private static Boolean sIgnoreSystemPackageCheckForTesting;
-    private static Boolean sValid;
+    private static @Nullable Boolean sIgnoreSystemPackageCheckForTesting;
+    private static @Nullable Boolean sValid;
 
     /** Provides a way to do some post-process timing for the validation function. */
     interface DelegateValidationCompletion {
@@ -43,7 +44,7 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
      * A completion to call after determining isValid that includes timing information. Typically
      * {@code null} on Chromium but can be set from Downstream.
      */
-    @Nullable private DelegateValidationCompletion mValidationCompletion;
+    private @Nullable DelegateValidationCompletion mValidationCompletion;
 
     @Override
     public @Nullable String getHomepage() {

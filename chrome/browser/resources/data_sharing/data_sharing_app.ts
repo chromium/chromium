@@ -19,8 +19,8 @@ import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './data_sharing_app.html.js';
-import type {DataSharingSdk, DataSharingSdkGetLinkParams, DataSharingSdkSitePreview, DynamicMessageParams, TranslationMap} from './data_sharing_sdk_types.js';
-import {Code, DataSharingMemberRoleEnum, DynamicMessageKey, LearnMoreUrlType, StaticMessageKey} from './data_sharing_sdk_types.js';
+import type {DataSharingSdk, DataSharingSdkGetLinkParams, DataSharingSdkSitePreview, DynamicMessageParams, Logger, LoggingEvent, TranslationMap} from './data_sharing_sdk_types.js';
+import {Code, DataSharingMemberRoleEnum, DynamicMessageKey, LearnMoreUrlType, LoggingIntent, StaticMessageKey} from './data_sharing_sdk_types.js';
 
 // Param names in loaded URL. Should match those in
 // chrome/browser/ui/views/data_sharing/data_sharing_utils.cc.
@@ -230,12 +230,14 @@ const learnMoreUrlMap = {
   [LearnMoreUrlType.BLOCK]: () => 'about:blank',
 };
 
-export class DataSharingApp extends CustomElement {
+export class DataSharingApp extends CustomElement implements Logger {
   private initialized_: boolean = false;
   private dataSharingSdk_: DataSharingSdk =
       window.data_sharing_sdk.buildDataSharingSdk();
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private translationMap_: TranslationMap = createTranslationMap();
+  private abandonJoin_: boolean = false;
+  private successfullyJoined_: boolean = false;
 
   static get is() {
     return 'data-sharing-app';
@@ -263,6 +265,17 @@ export class DataSharingApp extends CustomElement {
 
   connectedCallback() {
     ColorChangeUpdater.forDocument().start();
+  }
+
+  // Logger implementation.
+  onEvent(event: LoggingEvent) {
+    if (event.intentType === LoggingIntent.ABANDON_JOIN) {
+      this.abandonJoin_ = true;
+    }
+  }
+
+  setSuccessfullyJoinedForTesting() {
+    this.successfullyJoined_ = true;
   }
 
   // Called with when the owner presses copy link in share dialog.
@@ -344,14 +357,23 @@ export class DataSharingApp extends CustomElement {
               tokenSecret: tokenSecret!,
               learnMoreUrlMap: learnMoreUrlMap,
               onJoinSuccessful: () => {
+                this.successfullyJoined_ = true;
                 this.browserProxy_.handler!.openTabGroup(groupId!);
               },
               fetchPreviewData: () => {
                 return this.getTabGroupPreview(groupId!, tokenSecret!);
               },
+              logger: this,
             })
             .then((res) => {
-              this.browserProxy_.closeUi(res.status);
+              let code: Code = res.status;
+              if (!this.successfullyJoined_ && !this.abandonJoin_) {
+                // If user neither succesfully joined nor abandon join, there
+                // must be an error.
+                code = Code.UNKNOWN;
+              }
+
+              this.browserProxy_.closeUi(code);
             });
         break;
       case FlowValues.MANAGE:

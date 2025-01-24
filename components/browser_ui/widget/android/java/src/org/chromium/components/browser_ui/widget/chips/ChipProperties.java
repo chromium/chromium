@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.widget.chips;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
@@ -14,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties that describe a single chip in a list/group of chips. */
+@NullMarked
 public class ChipProperties {
     /** ID for a basic chip in it's containing recycler view. */
     public static final int BASIC_CHIP = 0;

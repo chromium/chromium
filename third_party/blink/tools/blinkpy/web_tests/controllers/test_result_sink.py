@@ -141,9 +141,7 @@ class TestResultSink:
         tags = [
             pair('test_name', result.test_name),
             pair('web_tests_device_failed', str(result.device_failed)),
-            pair('web_tests_result_type', result.type),
-            pair('web_tests_flag_specific_config_name',
-                 self._port.flag_specific_config_name() or ''),
+            # Used by `//third_party/blink/tools/run_slow_test_analyzer.py`.
             pair('web_tests_base_timeout',
                  str(int(self._port.timeout_ms() / 1000))),
             pair('web_tests_test_was_slow', json.dumps(test_was_slow)),
@@ -156,6 +154,7 @@ class TestResultSink:
                 pair(test_failures.FailureImage.ACTUAL_HASH_RDB_TAG,
                      result.actual_image_hash))
 
+        # Used by `//third_party/blink/tools/run_fuzzy_diff_analyzer.py`.
         if (result.image_diff_stats and result.image_diff_stats.keys() >=
             {'maxDifference', 'totalPixels'}):
             tags.append(
@@ -164,10 +163,10 @@ class TestResultSink:
             tags.append(
                 pair('web_tests_image_diff_total_pixels',
                      str(result.image_diff_stats['totalPixels'])))
-
         for test_type_str in sorted(result.test_type):
             tags.append(pair('web_tests_test_type', test_type_str))
 
+        # Used by the Blink unexpected pass finder (UPF).
         for used_file in self._port.used_expectations_files():
             tags.append(
                 pair('web_tests_used_expectations_file',

@@ -38,9 +38,9 @@ void DeviceBoundSessionManager::GetAllSessions(
 
 void DeviceBoundSessionManager::DeleteSession(
     const net::device_bound_sessions::SessionKey& session_key) {
-  service_->DeleteSession(
-      session_key.site,
-      net::device_bound_sessions::Session::Id(session_key.id));
+  service_->DeleteSessionAndNotify(
+      session_key.site, net::device_bound_sessions::Session::Id(session_key.id),
+      base::NullCallback());
 }
 
 void DeviceBoundSessionManager::DeleteAllSessions(

@@ -15,7 +15,10 @@ import android.view.WindowInsets;
 import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Collection of methods computing various height dimensions that differ by OS build version. */
+@NullMarked
 public abstract class DimensionCompat {
     protected final Activity mActivity;
     protected final Runnable mPositionUpdater;

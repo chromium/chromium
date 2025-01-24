@@ -17,6 +17,9 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.StyleRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
@@ -44,6 +47,7 @@ import java.lang.annotation.RetentionPolicy;
  * | SECONDARY---------------- |
  * -----------------------------
  */
+@NullMarked
 public final class DualControlLayout extends ViewGroup {
     // When changing these values, you need to update ui/android/java/res/values/attrs.xml
     @IntDef({
@@ -95,7 +99,10 @@ public final class DualControlLayout extends ViewGroup {
      * @return Button that can be used in the view.
      */
     public static Button createButtonForLayout(
-            Context context, @ButtonType int buttonType, String text, OnClickListener listener) {
+            Context context,
+            @ButtonType int buttonType,
+            String text,
+            @Nullable OnClickListener listener) {
         ButtonCompat button = new ButtonCompat(context, getButtonTheme(buttonType));
         button.setId(getButtonId(buttonType));
         button.setOnClickListener(listener);
@@ -149,8 +156,8 @@ public final class DualControlLayout extends ViewGroup {
     private int mStackedMargin;
 
     private boolean mIsStacked;
-    private View mPrimaryView;
-    private View mSecondaryView;
+    private @Nullable View mPrimaryView;
+    private @Nullable View mSecondaryView;
 
     /**
      * Construct a new DualControlLayout.
@@ -213,6 +220,7 @@ public final class DualControlLayout extends ViewGroup {
         super.removeAllViews();
     }
 
+    @NullUnmarked
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         mIsStacked = false;
@@ -265,6 +273,7 @@ public final class DualControlLayout extends ViewGroup {
                 resolveSize(layoutHeight, heightMeasureSpec));
     }
 
+    @NullUnmarked
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         int leftPadding = getPaddingLeft();

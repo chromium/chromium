@@ -9,6 +9,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import org.chromium.build.annotations.NullMarked;
+
+@NullMarked
 public class DeviceBondStateReceiverWrapper extends BroadcastReceiver {
     private Callback mCallback;
 

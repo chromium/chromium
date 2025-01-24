@@ -348,8 +348,8 @@ void RemoteSuggestionsService::StopCreatingDocumentSuggestionsRequest() {
 
 void RemoteSuggestionsService::
     CreateEnterpriseSearchAggregatorSuggestionsRequest(
+        const std::u16string& query,
         const GURL& suggest_url,
-        const std::string& request_body,
         StartCallback start_callback,
         CompletionCallback completion_callback) {
   if (!enterprise_search_aggregator_suggestions_service_) {
@@ -361,7 +361,7 @@ void RemoteSuggestionsService::
 
   enterprise_search_aggregator_suggestions_service_
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
-          suggest_url, request_body,
+          query, suggest_url,
           base::BindOnce(&RemoteSuggestionsService::OnRequestCreated,
                          weak_ptr_factory_.GetWeakPtr(), request_id),
           base::BindOnce(&RemoteSuggestionsService::OnRequestStartedAsync,

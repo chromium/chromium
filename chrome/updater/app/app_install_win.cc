@@ -62,12 +62,12 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/installer/exit_code.h"
 #include "chrome/updater/win/manifest_util.h"
+#include "chrome/updater/win/protocol_parser_xml.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/win_constants.h"
-#include "components/update_client/protocol_parser.h"
 #include "components/update_client/update_client_errors.h"
 #include "url/gurl.h"
 
@@ -409,7 +409,7 @@ class AppInstallControllerImpl : public AppInstallController,
                      const std::string& app_name,
                      base::OnceCallback<void(int)> callback);
   void DoInstallAppOffline(
-      const update_client::ProtocolParser::Results& results,
+      const OfflineManifestSystemRequirements& requirements,
       const std::string& installer_version,
       const base::FilePath& installer_path,
       const std::string& install_args,
@@ -577,7 +577,7 @@ void AppInstallControllerImpl::InstallAppOffline(
           [](const std::string& app_id) {
             // Parse the offline manifest to get the install
             // command and install data.
-            update_client::ProtocolParser::Results results;
+            OfflineManifestSystemRequirements requirements;
             std::string installer_version;
             base::FilePath installer_path;
             std::string install_args;
@@ -585,13 +585,13 @@ void AppInstallControllerImpl::InstallAppOffline(
             ReadInstallCommandFromManifest(
                 base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
                     kOfflineDirSwitch),
-                app_id, GetInstallDataIndexFromAppArgs(app_id), results,
+                app_id, GetInstallDataIndexFromAppArgs(app_id), requirements,
                 installer_version, installer_path, install_args, install_data);
 
             const std::string client_install_data =
                 GetDecodedInstallDataFromAppArgs(app_id);
             return std::make_tuple(
-                results, installer_version, installer_path, install_args,
+                requirements, installer_version, installer_path, install_args,
                 client_install_data.empty() ? install_data
                                             : client_install_data);
           },
@@ -599,7 +599,7 @@ void AppInstallControllerImpl::InstallAppOffline(
       base::BindOnce(
           [](scoped_refptr<AppInstallControllerImpl> self,
              const std::tuple<
-                 update_client::ProtocolParser::Results /*results*/,
+                 OfflineManifestSystemRequirements /*requirements*/,
                  std::string /*installer_version*/,
                  base::FilePath /*installer_path*/, std::string /*arguments*/,
                  std::string /*install_data*/>& result) {
@@ -611,14 +611,14 @@ void AppInstallControllerImpl::InstallAppOffline(
 }
 
 void AppInstallControllerImpl::DoInstallAppOffline(
-    const update_client::ProtocolParser::Results& results,
+    const OfflineManifestSystemRequirements& requirements,
     const std::string& installer_version,
     const base::FilePath& installer_path,
     const std::string& install_args,
     const std::string& install_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsOsSupported(results)) {
+  if (!IsOsSupported(requirements)) {
     HandleOsNotSupported();
     return;
   }

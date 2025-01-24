@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
@@ -2090,7 +2091,7 @@ bool HTMLSelectElement::IsPopoverForAppearanceBase(const Node* node) {
 bool HTMLSelectElement::IsPopoverForAppearanceBase(const Element* element) {
   if (auto* root = DynamicTo<ShadowRoot>(element->parentNode())) {
     return IsA<HTMLSelectElement>(root->host()) &&
-           element->FastHasAttribute(html_names::kPopoverAttr);
+           element->ShadowPseudoId() == shadow_element_names::kPickerSelect;
   }
   return false;
 }

@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.widget.image_tiles;
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.image_tiles.ImageTileCoordinator.TileVisualsProvider;
 
 /**
@@ -19,6 +20,7 @@ import org.chromium.components.browser_ui.widget.image_tiles.ImageTileCoordinato
  *   - Implement {@link TileVisualsProvider} to provide thumbnails for the images.
  *   - Define click handlers to be invoked when the tiles are clicked.
  */
+@NullMarked
 public class ImageTileCoordinatorFactory {
     /**
      * Creates a {@link ImageTileCoordinator}.

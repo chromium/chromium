@@ -10,6 +10,8 @@ import android.content.res.Resources;
 import android.media.AudioAttributes;
 import android.net.Uri;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +23,7 @@ import java.util.Set;
  * See the README.md alongside ChromeChannelDefinitions.java for more information before adding or
  * changing any channels.
  */
+@NullMarked
 public abstract class ChannelDefinitions {
     /**
      * @return A set of all known channel group ids that can be used for {@link #getChannelGroup}.

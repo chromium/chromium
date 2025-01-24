@@ -4,13 +4,15 @@
 
 package org.chromium.components.commerce.core;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Optional;
 
 /** A data container for discount info provided by the shopping service. */
+@NullMarked
 public final class DiscountInfo {
     @DiscountClusterType public final int clusterType;
 

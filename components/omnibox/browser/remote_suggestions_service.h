@@ -202,8 +202,8 @@ class RemoteSuggestionsService : public KeyedService {
   //  `suggest_url` and `response_body` asynchronously after obtaining an OAuth2
   //  token for signed-in enterprise users.
   void CreateEnterpriseSearchAggregatorSuggestionsRequest(
+      const std::u16string& query,
       const GURL& suggest_url,
-      const std::string& request_body,
       StartCallback start_callback,
       CompletionCallback completion_callback);
 

@@ -4,15 +4,16 @@
 
 package org.chromium.components.browser_ui.notifications;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.BrowserUiUtilsCachedFlags;
 
 /** Factory class for creating BaseNotificationManagerProxyFactory. */
+@NullMarked
 public class BaseNotificationManagerProxyFactory {
-    @Nullable private static BaseNotificationManagerProxy sProxyForTest;
+    private static @Nullable BaseNotificationManagerProxy sProxyForTest;
 
     private BaseNotificationManagerProxyFactory() {}
 

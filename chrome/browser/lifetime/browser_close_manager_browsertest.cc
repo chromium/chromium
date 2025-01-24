@@ -621,16 +621,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 }
 
-// Flaky on Windows 7 (dbg) trybot, see https://crbug.com/751081.
-#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
-#define MAYBE_TestAddWindowDuringShutdown DISABLED_TestAddWindowDuringShutdown
-#else
-#define MAYBE_TestAddWindowDuringShutdown TestAddWindowDuringShutdown
-#endif
-
 // Test that a window created during shutdown is closed.
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
-                       MAYBE_TestAddWindowDuringShutdown) {
+                       TestAddWindowDuringShutdown) {
   ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);
@@ -832,14 +825,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
       browser2->tab_strip_model()->GetWebContentsAt(1)->GetLastCommittedURL());
 }
 
-// TODO(crbug.com/40921700): This test is failing on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_TestCloseTabDuringShutdown DISABLED_TestCloseTabDuringShutdown
-#else
-#define MAYBE_TestCloseTabDuringShutdown TestCloseTabDuringShutdown
-#endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
-                       MAYBE_TestCloseTabDuringShutdown) {
+                       TestCloseTabDuringShutdown) {
   ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);

@@ -4,14 +4,14 @@
 
 package org.chromium.components.tab_group_sync;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -22,6 +22,7 @@ import java.util.List;
  * delegated to the native C++ class.
  */
 @JNINamespace("tab_groups")
+@NullMarked
 public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     private final ObserverList<TabGroupSyncService.Observer> mObservers = new ObserverList<>();
     private long mNativePtr;
@@ -91,7 +92,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
-    public void aboutToUnShareTabGroup(LocalTabGroupId tabGroupId, Callback<Boolean> callback) {
+    public void aboutToUnShareTabGroup(LocalTabGroupId tabGroupId, @Nullable Callback<Boolean> callback) {
         if (mNativePtr == 0) return;
         assert tabGroupId != null;
         TabGroupSyncServiceImplJni.get()
@@ -150,7 +151,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
-    public SavedTabGroup getGroup(String syncGroupId) {
+    public @Nullable SavedTabGroup getGroup(String syncGroupId) {
         if (mNativePtr == 0) return null;
         return TabGroupSyncServiceImplJni.get()
                 .getGroupBySyncGroupId(mNativePtr, this, syncGroupId);
@@ -320,7 +321,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 long nativeTabGroupSyncServiceAndroid,
                 TabGroupSyncServiceImpl caller,
                 LocalTabGroupId tabGroupId,
-                Callback<Boolean> callback);
+                @Nullable Callback<Boolean> callback);
 
         void onTabGroupUnShareComplete(
                 long nativeTabGroupSyncServiceAndroid,
@@ -362,7 +363,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
         void setTabSelected(
                 long nativeTabGroupSyncServiceAndroid,
                 TabGroupSyncServiceImpl caller,
-                LocalTabGroupId groupId,
+                @Nullable LocalTabGroupId groupId,
                 int tabId);
 
         String[] getAllGroupIds(
@@ -410,7 +411,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 long nativeTabGroupSyncServiceAndroid,
                 TabGroupSyncServiceImpl caller,
                 int eventType,
-                LocalTabGroupId localGroupId,
+                @Nullable LocalTabGroupId localGroupId,
                 int localTabId,
                 int openingSource,
                 int closingSource);

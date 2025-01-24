@@ -19,6 +19,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils.NotificationEvent;
 
 import java.util.ArrayList;
@@ -30,11 +32,12 @@ import java.util.function.Function;
  * Default implementation of the NotificationManagerProxy, which passes through all calls to the
  * normal Android Notification Manager.
  */
+@NullMarked
 public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     private static final String TAG = "NotifManagerProxy";
     private final NotificationManagerCompat mNotificationManager;
 
-    private static NotificationManagerProxy sInstance;
+    private static @Nullable NotificationManagerProxy sInstance;
 
     public static NotificationManagerProxy getInstance() {
         // No need to cache the real instance, it makes testing more difficult as tests that shadow
@@ -186,7 +189,7 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     }
 
     @Override
-    public NotificationChannel getNotificationChannel(String channelId) {
+    public @Nullable NotificationChannel getNotificationChannel(String channelId) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         try (TraceEvent e =
                 TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannel")) {
@@ -241,7 +244,7 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     }
 
     /** Helper method to run an runnable inside a scoped event. */
-    private void runRunnable(TraceEvent scopedEvent, Runnable runnable) {
+    private void runRunnable(@Nullable TraceEvent scopedEvent, Runnable runnable) {
         try (scopedEvent) {
             NotificationProxyUtils.recordNotificationEventHistogram(
                     NotificationEvent.NO_CALLBACK_START);
@@ -260,7 +263,7 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
      * on the ui thread.
      */
     private <T> void runCallableAndReply(
-            TraceEvent scopedEvent, Callable<T> callable, Callback callback) {
+            @Nullable TraceEvent scopedEvent, Callable<T> callable, Callback callback) {
         try (scopedEvent) {
             NotificationProxyUtils.recordNotificationEventHistogram(
                     NotificationEvent.HAS_CALLBACK_START);

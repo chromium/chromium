@@ -990,6 +990,19 @@ need to be translated for each locale.-->
       <message name="CONTENT_INVALID_GRAMMAR" desc="Error message for aria-invalid = grammar">
         Invalid grammar
       </message>
+
+      <message name="IDS_AX_CAROUSEL_SCROLL_LEFT" desc="This is a label used by accessibility to indicate that the button, when pressed, is going to cause the carousel to scroll left.">
+        Scroll left
+      </message>
+      <message name="IDS_AX_CAROUSEL_SCROLL_RIGHT" desc="This is a label used by accessibility to indicate that the button, when pressed, is going to cause the carousel to scroll right.">
+        Scroll right
+      </message>
+      <message name="IDS_AX_CAROUSEL_SCROLL_UP" desc="This is a label used by accessibility to indicate that the button, when pressed, is going to cause the carousel to scroll up.">
+        Scroll up
+      </message>
+      <message name="IDS_AX_CAROUSEL_SCROLL_DOWN" desc="This is a label used by accessibility to indicate that the button, when pressed, is going to cause the carousel to scroll down.">
+        Scroll down
+      </message>
    </messages>
   </release>
 </grit>

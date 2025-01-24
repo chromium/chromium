@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.firstrun;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -32,6 +34,7 @@ import java.lang.annotation.RetentionPolicy;
     MobileFreProgress.MAX,
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface MobileFreProgress {
     int STARTED = 0;
     int WELCOME_SHOWN = 1;

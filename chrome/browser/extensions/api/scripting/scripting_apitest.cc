@@ -123,17 +123,15 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, MainFrameTests) {
 }
 
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, SubFramesTests) {
-  // Open up two tabs, each with cross-site iframes, one at a.com and one at
-  // d.com.
-  // In both cases, the cross-site iframes point to b.com and c.com.
   OpenURLInCurrentTab(
       embedded_test_server()->GetURL("a.com", "/iframe_cross_site.html"));
   OpenURLInNewTab(
       embedded_test_server()->GetURL("d.com", "/iframe_cross_site.html"));
   OpenURLInNewTab(
       embedded_test_server()->GetURL("e.com", "/iframe_sandboxed_srcdoc.html"));
+  OpenURLInNewTab(
+      embedded_test_server()->GetURL("f.com", "/iframe_blob_url.html"));
 
-  // From there, the test continues in the JS.
   ASSERT_TRUE(RunExtensionTest("scripting/sub_frames")) << message_;
 }
 

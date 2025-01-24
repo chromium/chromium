@@ -19,9 +19,12 @@ import android.graphics.drawable.shapes.RoundRectShape;
 import androidx.annotation.ColorInt;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 
 /** A {@link Drawable} that is a bubble with an arrow pointing out of either the top or bottom. */
+@NullMarked
 class ArrowBubbleDrawable extends Drawable implements Drawable.Callback {
     private final Rect mCachedBubblePadding = new Rect();
 
@@ -200,7 +203,7 @@ class ArrowBubbleDrawable extends Drawable implements Drawable.Callback {
     }
 
     @Override
-    public void setColorFilter(ColorFilter cf) {
+    public void setColorFilter(@Nullable ColorFilter cf) {
         assert false : "Unsupported";
     }
 

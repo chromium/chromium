@@ -19,11 +19,13 @@ import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.VI
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The Class responsible for binding properties to and updating the scrim. */
+@NullMarked
 class ScrimViewBinder {
     static void bind(PropertyModel model, ScrimView view, PropertyKey propertyKey) {
         if (TOP_MARGIN == propertyKey) {

@@ -1367,7 +1367,7 @@ void URLRequest::SetIsSharedDictionaryReadAllowedCallback(
 }
 
 void URLRequest::SetDeviceBoundSessionAccessCallback(
-    base::RepeatingCallback<void(const device_bound_sessions::SessionKey&)>
+    base::RepeatingCallback<void(const device_bound_sessions::SessionAccess&)>
         callback) {
   device_bound_session_access_callback_ = std::move(callback);
 }

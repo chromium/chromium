@@ -9,9 +9,9 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.UiUtils;
 
@@ -20,6 +20,7 @@ import org.chromium.ui.UiUtils;
  * supports both a 'waiting' drawable and an 'unavailable' drawable that will be used in the
  * foreground when the async image isn't present yet.
  */
+@NullMarked
 public class AsyncImageView extends ForegroundRoundedCornerImageView {
     /** An interface that provides a way for this class to query for a {@link Drawable}. */
     @FunctionalInterface
@@ -45,16 +46,16 @@ public class AsyncImageView extends ForegroundRoundedCornerImageView {
          * Called by the {@link AsyncImageView} before drawing to the screen.
          * @param drawable The {@link Drawable} to be drawn.
          */
-        void maybeResizeImage(Drawable drawable);
+        void maybeResizeImage(@Nullable Drawable drawable);
     }
 
-    private Drawable mUnavailableDrawable;
-    private Drawable mWaitingDrawable;
+    private @Nullable Drawable mUnavailableDrawable;
+    private @Nullable Drawable mWaitingDrawable;
 
-    private Factory mFactory;
-    private ImageResizer mImageResizer;
+    private @Nullable Factory mFactory;
+    private @Nullable ImageResizer mImageResizer;
 
-    private Runnable mCancelable;
+    private @Nullable Runnable mCancelable;
     private boolean mWaitingForResponse;
 
     private @Nullable Object mIdentifier;
@@ -70,7 +71,7 @@ public class AsyncImageView extends ForegroundRoundedCornerImageView {
     }
 
     /** Creates an {@link AsyncImageDrawable instance. */
-    public AsyncImageView(Context context, AttributeSet attrs, int defStyle) {
+    public AsyncImageView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
         TypedArray types =
@@ -138,7 +139,7 @@ public class AsyncImageView extends ForegroundRoundedCornerImageView {
 
     // RoundedCornerImageView implementation.
     @Override
-    public void setImageDrawable(Drawable drawable) {
+    public void setImageDrawable(@Nullable Drawable drawable) {
         // If we had an outstanding async request, cancel it because we're now setting the drawable
         // to something else.
         cancelPreviousDrawableRequest();
@@ -163,7 +164,7 @@ public class AsyncImageView extends ForegroundRoundedCornerImageView {
         if (mImageResizer != null) mImageResizer.maybeResizeImage(getDrawable());
     }
 
-    private void setAsyncImageDrawableResponse(Drawable drawable, Object identifier) {
+    private void setAsyncImageDrawableResponse(Drawable drawable, @Nullable Object identifier) {
         // If we ended up swapping out the identifier and somehow this request didn't cancel ignore
         // the response.  This does a direct == comparison instead of .equals() because any new
         // request should have canceled this one (we'll leave null alone though).

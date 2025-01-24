@@ -3527,8 +3527,6 @@ class AuthenticatorImplRemoteDesktopClientOverrideTest
   }
 
   base::test::ScopedCommandLine scoped_command_line_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnGoogleCorpRemoteDesktopClientPrivilege};
 };
 
 TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, MakeCredential) {
@@ -10415,8 +10413,6 @@ class AuthenticatorImplWithRequestProxyTest : public AuthenticatorImplTest {
 
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
   TestAuthenticatorContentBrowserClient test_client_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnGoogleCorpRemoteDesktopClientPrivilege};
 };
 
 TEST_F(AuthenticatorImplWithRequestProxyTest, Inactive) {

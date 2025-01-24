@@ -9,8 +9,11 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This class is the java version of the commerce component's feature_utils. */
 @JNINamespace("commerce")
+@NullMarked
 public class CommerceFeatureUtils {
 
     public static boolean isShoppingListEligible(ShoppingService shoppingService) {

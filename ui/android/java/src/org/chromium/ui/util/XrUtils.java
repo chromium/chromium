@@ -5,9 +5,11 @@
 package org.chromium.ui.util;
 
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /** A singleton utility class to manages XR session and UI environment. */
+@NullMarked
 public class XrUtils {
 
     private static XrUtils sInstance = new XrUtils();

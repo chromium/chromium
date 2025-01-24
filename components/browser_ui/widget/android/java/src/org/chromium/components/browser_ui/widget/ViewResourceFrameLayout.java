@@ -11,6 +11,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewParent;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 import org.chromium.ui.widget.OptimizedFrameLayout;
 
@@ -18,9 +20,10 @@ import org.chromium.ui.widget.OptimizedFrameLayout;
  * Extension to FrameLayout that handles tracking the necessary invalidates to generate
  * a corresponding {@link org.chromium.ui.resources.Resource} for use in the browser compositor.
  */
+@NullMarked
 public class ViewResourceFrameLayout extends OptimizedFrameLayout {
     private ViewResourceAdapter mResourceAdapter;
-    private Rect mTempRect;
+    private @Nullable Rect mTempRect;
 
     /**
      * Constructs a ViewResourceFrameLayout.

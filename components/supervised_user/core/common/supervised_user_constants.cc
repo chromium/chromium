@@ -23,8 +23,7 @@ constexpr char kParentAccessBaseURL[] =
 // URL to which the parent access widget redirects on approval.
 constexpr char kParentAccessContinueURL[] = "https://families.google.com";
 constexpr char kParentAccessIOSCallerID[] = "qSTnVRdQ";
-// TODO(crbug.com/384000707): Update with the server-defined ID.
-constexpr char kParentAccessDesktopCallerID[] = "5140b89c";
+constexpr char kParentAccessDesktopCallerID[] = "clwAA5XJ";
 
 GURL GetParentAccessURL(const std::string& caller_id,
                         const std::string& locale) {

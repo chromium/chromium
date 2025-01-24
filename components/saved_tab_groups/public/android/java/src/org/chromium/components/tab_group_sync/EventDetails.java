@@ -4,11 +4,15 @@
 
 package org.chromium.components.tab_group_sync;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Convenient class to help passing various pieces of information to native for metrics logging
  * purposes. Most of the fields are optional, so fill them as you need. These should be used /
  * interpreted only in context of the event being recorded.
  */
+@NullMarked
 public class EventDetails {
     private static final int INVALID_TAB_ID = -1;
 
@@ -16,7 +20,7 @@ public class EventDetails {
     public @TabGroupEvent int eventType;
 
     /** Tab group ID. Mandatory. */
-    public LocalTabGroupId localGroupId;
+    public @Nullable LocalTabGroupId localGroupId;
 
     /** Tab ID. Optional. */
     public int localTabId = INVALID_TAB_ID;

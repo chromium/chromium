@@ -13,6 +13,8 @@ import com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListene
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Install engine that uses Play Core and SplitCompat to install modules. */
+@NullMarked
 class SplitCompatEngine implements InstallEngine {
     private final SplitCompatEngineFacade mFacade;
     private final SplitInstallStateUpdatedListener mUpdateListener = getStatusUpdateListener();
@@ -101,6 +104,7 @@ class SplitCompatEngine implements InstallEngine {
         };
     }
 
+    @NullUnmarked
     private void notifyListeners(String moduleName, Boolean success) {
         for (InstallListener listener : sSessions.get(moduleName)) {
             notifyListener(listener, success);

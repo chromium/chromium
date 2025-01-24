@@ -14,16 +14,19 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerExternalUma;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /** Helper class to report UMA. */
+@NullMarked
 public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalUma {
     static final String KEY_CACHED_UMA = "bts_cached_uma";
 
-    private static BackgroundTaskSchedulerUma sInstance;
+    private static @Nullable BackgroundTaskSchedulerUma sInstance;
 
     private static class CachedUmaEntry {
         private static final String SEPARATOR = ":";
@@ -37,7 +40,7 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
          * @param entry A serialized entry from preferences store.
          * @return A parsed CachedUmaEntry object, or <c>null</c> if parsing failed.
          */
-        public static CachedUmaEntry parseEntry(String entry) {
+        public static @Nullable CachedUmaEntry parseEntry(String entry) {
             if (entry == null) return null;
 
             String[] entryParts = entry.split(SEPARATOR);

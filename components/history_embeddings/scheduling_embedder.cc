@@ -69,11 +69,6 @@ SchedulingEmbedder::TaskId SchedulingEmbedder::ComputePassagesEmbeddings(
 
   jobs_.emplace_back(priority, task_id, std::move(passages),
                      std::move(callback));
-  // Put higher priority jobs at the front. This may suspend partially
-  // completed jobs of lower priority by pushing them toward the back.
-  std::stable_sort(jobs_.begin(), jobs_.end(), [](const Job& a, const Job& b) {
-    return a.priority < b.priority;
-  });
 
   if (submit) {
     SubmitWorkToEmbedder();
@@ -92,6 +87,12 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
     // No jobs to start.
     return;
   }
+
+  // Put higher priority jobs at the front. This may suspend partially
+  // completed jobs of lower priority by pushing them toward the back.
+  std::stable_sort(jobs_.begin(), jobs_.end(), [](const Job& a, const Job& b) {
+    return a.priority < b.priority;
+  });
 
   // Submit a batch of passages taken from jobs near the front of the queue.
   // Only submit one priority type of passage, regardless of count.

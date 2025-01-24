@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.flags;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.MutableBooleanParamWithSafeDefault;
@@ -13,6 +11,7 @@ import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.MutableIntParamWithSafeDefault;
 import org.chromium.base.MutableParamWithSafeDefault;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.cached_flags.BooleanCachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFlag;
@@ -35,6 +34,7 @@ import java.util.Map;
  * <p>Chrome-layer {@link CachedFlag}s and {@link MutableFlagWithSafeDefault}s are instantiated
  * here, as well as {@link CachedFeatureParam}s and {@link MutableParamWithSafeDefault}s.
  */
+@NullMarked
 public abstract class ChromeFeatureList {
 
     /** Prevent instantiation. */
@@ -131,7 +131,7 @@ public abstract class ChromeFeatureList {
     }
 
     public static StringCachedFeatureParam newStringCachedFeatureParam(
-            String featureName, String variationName, @NonNull String defaultValue) {
+            String featureName, String variationName, String defaultValue) {
         return new StringCachedFeatureParam(
                 ChromeFeatureMap.getInstance(), featureName, variationName, defaultValue);
     }

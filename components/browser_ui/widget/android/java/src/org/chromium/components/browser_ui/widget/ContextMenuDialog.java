@@ -21,9 +21,10 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.animation.EmptyAnimationListener;
@@ -38,6 +39,7 @@ import org.chromium.ui.widget.RectProvider;
  * ContextMenuDialog is a subclass of AlwaysDismissedDialog that ensures that the proper scale
  * animation is played upon calling {@link #show()} and {@link #dismiss()}.
  */
+@NullMarked
 public class ContextMenuDialog extends AlwaysDismissedDialog {
     public static final int NO_CUSTOM_MARGIN = -1;
 
@@ -55,15 +57,15 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private int mContextMenuFirstLocationYPx;
     private @Nullable AnchoredPopupWindow mPopupWindow;
     private View mLayout;
-    private OnLayoutChangeListener mOnLayoutChangeListener;
-    private DragEventDispatchHelper mDragEventDispatchHelper;
+    private @Nullable OnLayoutChangeListener mOnLayoutChangeListener;
+    private @Nullable DragEventDispatchHelper mDragEventDispatchHelper;
     private Rect mRect;
 
     private int mTopMarginPx;
     private int mBottomMarginPx;
 
-    private Integer mPopupMargin;
-    private Integer mDesiredPopupContentWidth;
+    private @Nullable Integer mPopupMargin;
+    private @Nullable Integer mDesiredPopupContentWidth;
 
     /**
      * View that is showing behind the context menu. If menu is shown as a popup without scrim, this
@@ -125,6 +127,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mRect = rect;
     }
 
+    @NullUnmarked
     @Override
     public void onStart() {
         super.onStart();
@@ -320,6 +323,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mContentView.startAnimation(exitAnimation);
     }
 
+    @NullUnmarked
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -374,6 +378,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         return mIsPopup && mShouldRemoveScrim && mTouchEventDelegateView != null;
     }
 
+    @Nullable
     OnDragListener getOnDragListenerForTesting() {
         return mDragEventDispatchHelper;
     }

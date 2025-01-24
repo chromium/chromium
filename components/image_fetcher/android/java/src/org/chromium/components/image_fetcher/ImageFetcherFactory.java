@@ -5,12 +5,15 @@
 package org.chromium.components.image_fetcher;
 
 import org.chromium.base.DiscardableReferencePool;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 
 /** Factory to provide the image fetcher best suited for the given config. */
+@NullMarked
 public class ImageFetcherFactory {
     /** Alias for createImageFetcher below. */
-    public static ImageFetcher createImageFetcher(
+    public static @Nullable ImageFetcher createImageFetcher(
             @ImageFetcherConfig int config, SimpleFactoryKeyHandle simpleFactoryKeyHandle) {
         ImageFetcherBridge bridge =
                 ImageFetcherBridge.getForSimpleFactoryKeyHandle(simpleFactoryKeyHandle);
@@ -19,7 +22,7 @@ public class ImageFetcherFactory {
     }
 
     /** Alias for createImageFetcher below. */
-    public static ImageFetcher createImageFetcher(
+    public static @Nullable ImageFetcher createImageFetcher(
             @ImageFetcherConfig int config,
             SimpleFactoryKeyHandle simpleFactoryKeyHandle,
             DiscardableReferencePool discardableReferencePool) {
@@ -33,7 +36,7 @@ public class ImageFetcherFactory {
     }
 
     /** Alias for createImageFetcher below. */
-    public static ImageFetcher createImageFetcher(
+    public static @Nullable ImageFetcher createImageFetcher(
             @ImageFetcherConfig int config,
             SimpleFactoryKeyHandle simpleFactoryKeyHandle,
             DiscardableReferencePool discardableReferencePool,
@@ -54,10 +57,10 @@ public class ImageFetcherFactory {
      * @param inMemoryCacheSize The size of the in memory cache (in bytes).
      * @return The correct ImageFetcher according to the provided config.
      */
-    static ImageFetcher createImageFetcher(
+    static @Nullable ImageFetcher createImageFetcher(
             @ImageFetcherConfig int config,
             ImageFetcherBridge imageFetcherBridge,
-            DiscardableReferencePool discardableReferencePool,
+            @Nullable DiscardableReferencePool discardableReferencePool,
             int inMemoryCacheSize) {
         // TODO(crbug.com/41449848):Allow server-side configuration image fetcher clients.
         switch (config) {

@@ -1838,8 +1838,8 @@ public class AwContents implements SmartClipProvider {
     public void startPrerendering(
             @NonNull String prerenderingUrl,
             @Nullable AwPrefetchParameters prefetchParameters,
-            @Nullable Callback<Void> activationCallback,
-            @Nullable Callback<Throwable> errorCallback) {
+            @NonNull Callback<Void> activationCallback,
+            @NonNull Callback<Throwable> errorCallback) {
         if (isDestroyed(NO_WARN)) return;
         if (prefetchParameters != null) {
             Optional<IllegalArgumentException> exception =
@@ -1859,10 +1859,8 @@ public class AwContents implements SmartClipProvider {
                         mNativeAwContents,
                         prerenderingUrl,
                         prefetchParameters,
-                        activationCallback != null ? activationCallback.bind(null) : null,
-                        errorCallback != null
-                                ? errorCallback.bind(new Exception("Prerendering fails."))
-                                : null);
+                        activationCallback.bind(null),
+                        errorCallback.bind(new Exception("Prerendering fails.")));
     }
 
     public void cancelAllPrerendering() {
@@ -4892,8 +4890,8 @@ public class AwContents implements SmartClipProvider {
                 long nativeAwContents,
                 @JniType("std::string") @NonNull String prerenderingUrl,
                 @Nullable AwPrefetchParameters prefetchParameters,
-                @Nullable Runnable activationCallback,
-                @Nullable Runnable errorCallback);
+                @NonNull Runnable activationCallback,
+                @NonNull Runnable errorCallback);
 
         void cancelAllPrerendering(long nativeAwContents);
     }

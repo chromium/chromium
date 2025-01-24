@@ -6,6 +6,8 @@ package org.chromium.components.browser_ui.widget.displaystyle;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Changes a view's padding when switching between {@link UiConfig} display styles. If the display
  * style is {@link HorizontalDisplayStyle#REGULAR}, a predetermined value will be used to set the
@@ -13,6 +15,7 @@ import android.view.View;
  * will be calculated using the available screen width to keep the view constrained to {@link
  * UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP}
  */
+@NullMarked
 public class ViewResizer implements DisplayStyleObserver, View.OnLayoutChangeListener {
     /** The default value for the lateral padding. */
     private int mDefaultPaddingPixels;

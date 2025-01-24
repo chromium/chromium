@@ -6,6 +6,8 @@ package org.chromium.components.browser_ui.widget.displaystyle;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -16,6 +18,7 @@ import java.lang.annotation.RetentionPolicy;
     HorizontalDisplayStyle.REGULAR,
     HorizontalDisplayStyle.WIDE
 })
+@NullMarked
 public @interface HorizontalDisplayStyle {
     int NARROW = 0;
     int REGULAR = 1;

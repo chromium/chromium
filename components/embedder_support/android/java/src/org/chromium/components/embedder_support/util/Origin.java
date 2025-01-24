@@ -6,7 +6,8 @@ package org.chromium.components.embedder_support.util;
 
 import android.net.Uri;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A class to canonically represent a HTTP or HTTPS web origin in Java. In comparison to
@@ -19,6 +20,7 @@ import androidx.annotation.Nullable;
  * {@link org.chromium.net.GURLUtils#getOrigin} adds it as a bug, but as its result is saved to
  * user's Android Preferences, it is not trivial to change.
  */
+@NullMarked
 public class Origin {
     private static final int HTTP_DEFAULT_PORT = 80;
     private static final int HTTPS_DEFAULT_PORT = 443;
@@ -33,8 +35,7 @@ public class Origin {
      * Constructs a canonical Origin from a String. Will return {@code null} for origins that are
      * not HTTP or HTTPS.
      */
-    @Nullable
-    public static Origin create(String uri) {
+    public static @Nullable Origin create(String uri) {
         return create(Uri.parse(uri));
     }
 
@@ -42,8 +43,7 @@ public class Origin {
      * Constructs a canonical Origin from an Uri. Will return {@code null} for origins that are not
      * HTTP or HTTPS.
      */
-    @Nullable
-    public static Origin create(Uri uri) {
+    public static @Nullable Origin create(Uri uri) {
         if (uri == null || uri.getScheme() == null || uri.getAuthority() == null) {
             return null;
         }

@@ -16,7 +16,12 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Generic builder for promo dialogs. */
+@NullMarked
 public abstract class PromoDialog extends AlwaysDismissedDialog
         implements View.OnClickListener, DialogInterface.OnDismissListener {
     /** Parameters that can be used to create a new PromoDialog. */
@@ -40,7 +45,7 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
          * This parameter is mutually exclusive with {@link #drawableResource} and
          * {@link #vectorDrawableResource}.
          */
-        public Drawable drawableInstance;
+        public @Nullable Drawable drawableInstance;
 
         /** Resource ID of the String to show as the promo title. */
         public int headerStringResource;
@@ -49,13 +54,13 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
          * Optional: CharSequence to show as promo title.
          * This parameter takes precedence over {@link #headerStringResoruce}
          */
-        public CharSequence headerCharSequence;
+        public @Nullable CharSequence headerCharSequence;
 
         /**
          * Optional: CharSequence to show as descriptive text.
          * This parameter takes precedence over {@link #subheaderStringResoruce}
          */
-        public CharSequence subheaderCharSequence;
+        public @Nullable CharSequence subheaderCharSequence;
 
         /** Optional: Boolean flag set to true if descriptive text has a link. */
         public boolean subheaderIsLink;
@@ -73,7 +78,7 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
          * Optional: CharSequence to show on the primary/ok button.
          * This parameter takes precedence over {@link #primaryButtonStringResource}
          */
-        public CharSequence primaryButtonCharSequence;
+        public @Nullable CharSequence primaryButtonCharSequence;
 
         /** Optional: Resource ID of the String to show on the secondary/cancel button. */
         public int secondaryButtonStringResource;
@@ -114,8 +119,9 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
         mDialogLayout.addControl(control);
     }
 
+    @NullUnmarked
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(mScrimView);
 

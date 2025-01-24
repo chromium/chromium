@@ -206,6 +206,29 @@ export declare interface AddAccessTokenParams {
 export declare interface AddAccessTokenResult {
   groupData: DataSharingSdkGroupData;
 }
+export const enum LoggingIntent {
+  UNKNOWN = 0,
+  STOP_SHARING = 1,
+  LEAVE_GROUP = 2,
+  REMOVE_ACCESS = 3,
+  UPDATE_ACCESS = 4,
+  BLOCK_USER = 5,
+  REMOVE_USER = 6,
+  REMOVE_ACCESS_TOKEN = 7,
+  ADD_ACCESS_TOKEN = 8,
+  COPY_LINK = 9,
+  BLOCK_AND_LEAVE = 10,
+  OPEN_GROUP_DETAILS = 11,
+  OPEN_LEARN_MORE_URL = 12,
+  ACCEPT_JOIN_AND_OPEN = 13,
+  ABANDON_JOIN = 14,
+}
+export declare interface LoggingEvent {
+  intentType: LoggingIntent;
+}
+export declare interface Logger {
+  onEvent(event: LoggingEvent): void;
+}
 export declare interface RunJoinFlowParams extends DataSharingSdkGroupId {
   tokenSecret: string;
   parent: HTMLElement;
@@ -213,6 +236,7 @@ export declare interface RunJoinFlowParams extends DataSharingSdkGroupId {
   learnMoreUrlMap: {[type in LearnMoreUrlType]?: () => string};
   onJoinSuccessful: () => void;
   fetchPreviewData: () => Promise<DataSharingSdkSitePreview[]>;
+  logger?: Logger;
 }
 export declare interface RunInviteFlowParams {
   parent: HTMLElement;
@@ -220,12 +244,15 @@ export declare interface RunInviteFlowParams {
   groupName: string;
   translatedMessages: TranslationMap;
   learnMoreUrlMap: {[type in LearnMoreUrlType]?: () => string};
+  logger?: Logger;
 }
 export declare interface RunManageFlowParams extends DataSharingSdkGroupId {
   parent: HTMLElement;
   getShareLink: DataSharingSdkGetLink;
   translatedMessages: TranslationMap;
   learnMoreUrlMap: {[type in LearnMoreUrlType]?: () => string};
+  activityLogCallback?: () => void;
+  logger?: Logger;
 }
 export declare interface DataSharingSdk {
   createGroup(

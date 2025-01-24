@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.widget;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -20,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
  * Simple ModalDialogProperties.Controller impl that returns which button was pressed or whether no
  * click occurred.
  */
+@NullMarked
 public class StrictButtonPressController implements ModalDialogProperties.Controller {
     @IntDef({
         ButtonClickResult.NO_CLICK,

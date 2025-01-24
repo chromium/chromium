@@ -1297,8 +1297,6 @@ class OriginMayUseRemoteDesktopClientOverrideTest
       "https://remotedesktop-daily-6.corp.google.com/";
   static constexpr char kExampleOrigin[] = "https://example.com";
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnGoogleCorpRemoteDesktopClientPrivilege};
 };
 
 TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,

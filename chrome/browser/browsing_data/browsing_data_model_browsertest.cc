@@ -113,14 +113,14 @@ class TestDeviceBoundSessionAccessObserver
   // WebContentsObserver
   void OnDeviceBoundSessionAccessed(
       content::RenderFrameHost* render_frame_host,
-      const net::device_bound_sessions::SessionKey& session) override {
+      const net::device_bound_sessions::SessionAccess& access) override {
     if (on_access_closure_) {
       std::move(on_access_closure_).Run();
     }
   }
   void OnDeviceBoundSessionAccessed(
       content::NavigationHandle* navigation_handle,
-      const net::device_bound_sessions::SessionKey& session) override {
+      const net::device_bound_sessions::SessionAccess& access) override {
     if (on_access_closure_) {
       std::move(on_access_closure_).Run();
     }

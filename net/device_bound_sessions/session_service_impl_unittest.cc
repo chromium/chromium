@@ -153,14 +153,14 @@ class TestDeferCompletion {
 
 class FakeDeviceBoundSessionObserver {
  public:
-  const std::vector<SessionKey>& notifications() const {
+  const std::vector<SessionAccess>& notifications() const {
     return notifications_;
   }
 
   void ClearNotifications() { notifications_.clear(); }
 
-  void OnSessionAccessed(const SessionKey& session_key) {
-    notifications_.push_back(session_key);
+  void OnSessionAccessed(const SessionAccess& session_access) {
+    notifications_.push_back(session_access);
   }
 
   SessionService::OnAccessCallback GetCallback() {
@@ -170,7 +170,7 @@ class FakeDeviceBoundSessionObserver {
   }
 
  private:
-  std::vector<SessionKey> notifications_;
+  std::vector<SessionAccess> notifications_;
 };
 
 class SessionServiceImplTest : public TestWithTaskEnvironment {
@@ -331,15 +331,17 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnRegistration) {
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt);
-  base::test::TestFuture<SessionKey> future;
+  base::test::TestFuture<SessionAccess> future;
   service().RegisterBoundSession(
-      future.GetRepeatingCallback<const SessionKey&>(), std::move(fetch_param),
+      future.GetRepeatingCallback<const SessionAccess&>(),
+      std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
       NetLogWithSource());
 
-  SessionKey session_key = future.Take();
-  EXPECT_EQ(session_key.site, SchemefulSite(kTestUrl));
-  EXPECT_EQ(session_key.id.value(), kSessionId);
+  SessionAccess access = future.Take();
+  EXPECT_EQ(access.access_type, SessionAccess::AccessType::kCreation);
+  EXPECT_EQ(access.session_key.site, SchemefulSite(kTestUrl));
+  EXPECT_EQ(access.session_key.id.value(), kSessionId);
 }
 
 TEST_F(SessionServiceImplTest, AccessObserverCalledOnDeferral) {
@@ -353,14 +355,15 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnDeferral) {
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  base::test::TestFuture<SessionKey> future;
+  base::test::TestFuture<SessionAccess> future;
   request->SetDeviceBoundSessionAccessCallback(
-      future.GetRepeatingCallback<const SessionKey&>());
+      future.GetRepeatingCallback<const SessionAccess&>());
   service().GetAnySessionRequiringDeferral(request.get());
 
-  SessionKey session_key = future.Take();
-  EXPECT_EQ(session_key.site, SchemefulSite(kTestUrl));
-  EXPECT_EQ(session_key.id.value(), kSessionId);
+  SessionAccess access = future.Take();
+  EXPECT_EQ(access.access_type, SessionAccess::AccessType::kUpdate);
+  EXPECT_EQ(access.session_key.site, SchemefulSite(kTestUrl));
+  EXPECT_EQ(access.session_key.id.value(), kSessionId);
 }
 
 TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
@@ -374,13 +377,14 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
       SessionChallengeParam::CreateIfValid(kTestUrl, headers.get());
   ASSERT_EQ(params.size(), 1U);
 
-  base::test::TestFuture<SessionKey> future;
+  base::test::TestFuture<SessionAccess> future;
   service().SetChallengeForBoundSession(
-      future.GetRepeatingCallback<const SessionKey&>(), kTestUrl, params[0]);
+      future.GetRepeatingCallback<const SessionAccess&>(), kTestUrl, params[0]);
 
-  SessionKey session_key = future.Take();
-  EXPECT_EQ(session_key.site, SchemefulSite(kTestUrl));
-  EXPECT_EQ(session_key.id.value(), kSessionId);
+  SessionAccess access = future.Take();
+  EXPECT_EQ(access.access_type, SessionAccess::AccessType::kUpdate);
+  EXPECT_EQ(access.session_key.site, SchemefulSite(kTestUrl));
+  EXPECT_EQ(access.session_key.id.value(), kSessionId);
 }
 
 TEST_F(SessionServiceImplTest, GetAllSessions) {
@@ -401,9 +405,14 @@ TEST_F(SessionServiceImplTest, DeleteSession) {
 
   ASSERT_TRUE(service().GetSession(site, session_id));
 
-  service().DeleteSession(site, session_id);
+  base::test::TestFuture<SessionAccess> future;
+  service().DeleteSessionAndNotify(
+      site, session_id, future.GetRepeatingCallback<const SessionAccess&>());
 
-  EXPECT_FALSE(service().GetSession(site, session_id));
+  SessionAccess access = future.Take();
+  EXPECT_EQ(access.access_type, SessionAccess::AccessType::kTermination);
+  EXPECT_EQ(access.session_key.site, site);
+  EXPECT_EQ(access.session_key.id, session_id);
 }
 
 TEST_F(SessionServiceImplTest, DeleteAllSessionsByCreationTime) {
@@ -496,8 +505,12 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestRestart) {
                                    defer_completion.GetContinueCb());
 
   // Check access callback triggered by DeferRequestForRefresh.
-  ASSERT_THAT(observer.notifications(),
-              ElementsAre(SessionKey(site, Session::Id(kSessionId))));
+  SessionAccess expected_access{SessionAccess::AccessType::kCreation,
+                                SessionKey(site, Session::Id(kSessionId))};
+  ASSERT_THAT(
+      observer.notifications(),
+      ElementsAre(SessionAccess{SessionAccess::AccessType::kUpdate,
+                                SessionKey(site, Session::Id(kSessionId))}));
 
   // Check the restart callback is called for successful fetcher.
   EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
@@ -524,14 +537,13 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue) {
 
   // Defer the request.
   // Set AccessCallback for DeferRequestForRefresh().
-  base::test::TestFuture<SessionKey> future_2;
-  request->SetDeviceBoundSessionAccessCallback(
-      future_2.GetRepeatingCallback<const SessionKey&>());
+  FakeDeviceBoundSessionObserver observer;
+  request->SetDeviceBoundSessionAccessCallback(observer.GetCallback());
 
   // Set RestartCallback and ContinueCallback.
-  base::test::TestFuture<TestDeferCompletion::CallbackType> future_3;
+  base::test::TestFuture<TestDeferCompletion::CallbackType> future_2;
   TestDeferCompletion defer_completion(
-      future_3.GetCallback<TestDeferCompletion::CallbackType>());
+      future_2.GetCallback<TestDeferCompletion::CallbackType>());
 
   // Set up a null fetcher for failure refresh.
   ScopedNullFetcher scoped_null_fetcher;
@@ -540,12 +552,15 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue) {
                                    defer_completion.GetContinueCb());
 
   // Check access callback triggered by DeferRequestForRefresh.
-  SessionKey session_key = future_2.Take();
-  EXPECT_EQ(session_key.site, site_1);
-  EXPECT_EQ(session_key.id.value(), kSessionId);
+  ASSERT_THAT(
+      observer.notifications(),
+      ElementsAre(SessionAccess{SessionAccess::AccessType::kUpdate,
+                                SessionKey(site_1, Session::Id(kSessionId))},
+                  SessionAccess{SessionAccess::AccessType::kTermination,
+                                SessionKey(site_1, Session::Id(kSessionId))}));
 
   // Check the restart callback is called for successful fetcher.
-  EXPECT_EQ(future_3.Take(), TestDeferCompletion::CallbackType::kContinue);
+  EXPECT_EQ(future_2.Take(), TestDeferCompletion::CallbackType::kContinue);
 }
 
 TEST_F(SessionServiceImplTest, TestDeferRequestArbitrary) {
@@ -571,9 +586,9 @@ TEST_F(SessionServiceImplTest, TestDeferRequestArbitrary) {
 
   // Defer the request any way.
   // Set AccessCallback for DeferRequestForRefresh().
-  base::test::TestFuture<SessionKey> future_2;
+  base::test::TestFuture<SessionAccess> future_2;
   request->SetDeviceBoundSessionAccessCallback(
-      future_2.GetRepeatingCallback<const SessionKey&>());
+      future_2.GetRepeatingCallback<const SessionAccess&>());
 
   // Set RestartCallback and ContinueCallback.
   base::test::TestFuture<TestDeferCompletion::CallbackType> future_3;
@@ -628,9 +643,14 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
                                    defer_completion.GetContinueCb());
 
   // Check access callback triggered by DeferRequestForRefresh.
-  EXPECT_THAT(observer.notifications(),
-              ElementsAre(SessionKey(site, Session::Id(kSessionId)),
-                          SessionKey(site, Session::Id(kSessionId2))));
+  EXPECT_THAT(
+      observer.notifications(),
+      ElementsAre(SessionAccess{SessionAccess::AccessType::kUpdate,
+                                SessionKey(site, Session::Id(kSessionId))},
+                  SessionAccess{SessionAccess::AccessType::kTermination,
+                                SessionKey(site, Session::Id(kSessionId))},
+                  SessionAccess{SessionAccess::AccessType::kCreation,
+                                SessionKey(site, Session::Id(kSessionId2))}));
 
   // Check the restart callback is called for successful fetcher.
   EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);

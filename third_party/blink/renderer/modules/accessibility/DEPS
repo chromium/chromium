@@ -24,4 +24,5 @@ include_rules = [
     "+ui/accessibility/mojom/ax_relative_bounds.mojom-blink.h",
     "+ui/accessibility/ax_location_and_scroll_updates.h",
     "+ui/accessibility/mojom/ax_location_and_scroll_updates.mojom-blink.h",
+    "+ui/strings/grit/ax_strings.h",
 ]

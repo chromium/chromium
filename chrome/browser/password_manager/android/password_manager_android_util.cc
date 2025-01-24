@@ -380,7 +380,8 @@ UseUpmLocalAndSeparateStoresState GetSplitStoresAndLocalUpmPrefValue(
 }
 
 bool AreMinUpmRequirementsMet() {
-  if (!IsInternalBackendPresent()) {
+  PasswordManagerUtilBridge util_bridge;
+  if (!util_bridge.IsInternalBackendPresent()) {
     return false;
   }
 

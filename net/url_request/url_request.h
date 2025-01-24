@@ -79,7 +79,7 @@ class URLRequestJob;
 class X509Certificate;
 
 namespace device_bound_sessions {
-struct SessionKey;
+struct SessionAccess;
 }
 
 //-----------------------------------------------------------------------------
@@ -817,9 +817,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // bound sessions can be accessed asynchronously after this request
   // completes, this callback must be able to safely outlive `this`.
   void SetDeviceBoundSessionAccessCallback(
-      base::RepeatingCallback<void(const device_bound_sessions::SessionKey&)>
+      base::RepeatingCallback<void(const device_bound_sessions::SessionAccess&)>
           callback);
-  base::RepeatingCallback<void(const device_bound_sessions::SessionKey&)>
+  base::RepeatingCallback<void(const device_bound_sessions::SessionAccess&)>
   device_bound_session_access_callback() {
     return device_bound_session_access_callback_;
   }
@@ -1179,7 +1179,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // request will not include the Sec-Fetch-Storage-Access header.
   std::optional<net::cookie_util::StorageAccessStatus> storage_access_status_;
 
-  base::RepeatingCallback<void(const device_bound_sessions::SessionKey&)>
+  base::RepeatingCallback<void(const device_bound_sessions::SessionAccess&)>
       device_bound_session_access_callback_;
 
   THREAD_CHECKER(thread_checker_);

@@ -176,8 +176,7 @@ InteractiveBrowserTestApi::InstrumentNextTab(ui::ElementIdentifier id,
   return std::move(
       WithElement(
           ui::test::internal::kInteractiveTestPivotElementId,
-          base::BindLambdaForTesting([this, id,
-                                      in_browser](ui::TrackedElement* el) {
+          [this, id, in_browser](ui::TrackedElement* el) {
             Browser* const browser = GetBrowserFor(el->context(), in_browser);
             test_impl().AddInstrumentedWebContents(
                 browser
@@ -185,7 +184,7 @@ InteractiveBrowserTestApi::InstrumentNextTab(ui::ElementIdentifier id,
                           browser, id)
                     : WebContentsInteractionTestUtil::ForNextTabInAnyBrowser(
                           id));
-          }))
+          })
           .AddDescriptionPrefix(
               base::StrCat({"InstrumentTab( ", id.GetName(), " )"})));
 }
@@ -248,6 +247,28 @@ InteractiveBrowserTestApi::InstrumentNonTabWebView(
       Steps(NameView(kTemporaryElementName, std::move(web_view)),
             InstrumentNonTabWebView(id, kTemporaryElementName, wait_for_ready));
   AddDescriptionPrefix(steps, "InstrumentNonTabWebView()");
+  return steps;
+}
+
+InteractiveBrowserTestApi::MultiStep
+InteractiveBrowserTestApi::InstrumentInnerWebContents(
+    ui::ElementIdentifier inner_id,
+    ui::ElementIdentifier outer_id,
+    size_t inner_contents_index,
+    bool wait_for_ready) {
+  MultiStep steps;
+  steps.emplace_back(Do([this, inner_id, outer_id, inner_contents_index]() {
+    test_impl().AddInstrumentedWebContents(
+        WebContentsInteractionTestUtil::ForInnerWebContents(
+            outer_id, inner_contents_index, inner_id));
+  }));
+  if (wait_for_ready) {
+    steps.push_back(WaitForWebContentsReady(inner_id));
+  }
+  AddDescriptionPrefix(
+      steps, base::StringPrintf("InstrumentInnerWebContents( %s, %s, %u, %d )",
+                                inner_id.GetName(), outer_id.GetName(),
+                                inner_contents_index, wait_for_ready));
   return steps;
 }
 

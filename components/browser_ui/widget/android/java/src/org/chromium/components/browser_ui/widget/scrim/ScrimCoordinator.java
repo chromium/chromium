@@ -14,6 +14,8 @@ import androidx.core.content.ContextCompat;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -31,6 +33,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * manually using {@link #setAlpha(float)}. Once the scrim is done being used, {@link
  * #hideScrim(boolean)} should be called.
  */
+@NullMarked
 public class ScrimCoordinator {
 
     /** The duration for the scrim animation. */
@@ -64,10 +67,10 @@ public class ScrimCoordinator {
      * {@link #showScrim(PropertyModel)} is called, this view is recreated, so all old state is
      * discarded.
      */
-    private ScrimView mView;
+    private @Nullable ScrimView mView;
 
     /** A handle to the object pushing updates from the model to the view. */
-    private PropertyModelChangeProcessor mChangeProcessor;
+    private @Nullable PropertyModelChangeProcessor mChangeProcessor;
 
     /**
      * @param context An Android {@link Context} for creating the view.
@@ -215,7 +218,7 @@ public class ScrimCoordinator {
         mMediator.disableAnimationForTesting(disable);
     }
 
-    public ScrimView getViewForTesting() {
+    public @Nullable ScrimView getViewForTesting() {
         return mView;
     }
 

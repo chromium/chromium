@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -26,6 +27,7 @@ import java.util.Locale;
  * Info popup where different parts of the URL should appear in different colours depending on the
  * scheme, host and connection.
  */
+@NullMarked
 public class OmniboxUrlEmphasizer {
     /** Describes the components of a URL that should be emphasized. */
     public static class EmphasizeComponentsResponse {

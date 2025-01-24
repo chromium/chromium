@@ -17659,8 +17659,8 @@ void RenderFrameHostImpl::OnVibrate() {
 }
 
 void RenderFrameHostImpl::OnDeviceBoundSessionAccessed(
-    const net::device_bound_sessions::SessionKey& session) {
-  delegate_->OnDeviceBoundSessionAccessed(this, session);
+    const net::device_bound_sessions::SessionAccess& access) {
+  delegate_->OnDeviceBoundSessionAccessed(this, access);
 }
 
 void RenderFrameHostImpl::SetEmbeddingToken(

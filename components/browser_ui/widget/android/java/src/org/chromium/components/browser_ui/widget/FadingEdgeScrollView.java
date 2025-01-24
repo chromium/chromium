@@ -14,10 +14,13 @@ import android.widget.ScrollView;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** An extension of the ScrollView that supports edge boundaries coming in. */
+@NullMarked
 public class FadingEdgeScrollView extends ScrollView {
     @IntDef({EdgeType.NONE, EdgeType.FADING, EdgeType.HARD})
     @Retention(RetentionPolicy.SOURCE)

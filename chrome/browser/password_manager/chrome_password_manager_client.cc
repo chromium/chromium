@@ -530,7 +530,8 @@ void ChromePasswordManagerClient::ShowPasswordManagerErrorMessage(
   bool oldGMSSavingPossible = error_type ==
                               password_manager::PasswordStoreBackendErrorType::
                                   kGMSCoreOutdatedSavingPossible;
-  bool noPlayStore = !password_manager_android_util::IsPlayStoreAppPresent();
+  password_manager_android_util::PasswordManagerUtilBridge util_bridge;
+  bool noPlayStore = !util_bridge.IsPlayStoreAppPresent();
   bool login_db_deprecation_enabled = base::FeatureList::IsEnabled(
       password_manager::features::kLoginDbDeprecationAndroid);
   if ((oldGMSSavingDisabled || oldGMSSavingPossible) &&

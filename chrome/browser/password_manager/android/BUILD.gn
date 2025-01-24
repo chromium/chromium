@@ -529,6 +529,7 @@ source_set("utils") {
     "password_manager_ui_util_android.h",
     "password_manager_util_bridge.cc",
     "password_manager_util_bridge.h",
+    "password_manager_util_bridge_interface.h",
     "password_store_android_backend_api_error_codes.h",
   ]
 
@@ -568,6 +569,8 @@ source_set("unit_tests") {
     "mock_password_checkup_launcher_helper.h",
     "mock_password_manager_error_message_helper_bridge.cc",
     "mock_password_manager_error_message_helper_bridge.h",
+    "mock_password_manager_util_bridge.cc",
+    "mock_password_manager_util_bridge.h",
     "mock_password_store_android_backend_bridge_helper.cc",
     "mock_password_store_android_backend_bridge_helper.h",
     "mock_password_sync_controller_delegate_bridge.cc",

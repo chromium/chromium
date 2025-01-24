@@ -5,8 +5,10 @@
 package org.chromium.components.module_installer.util;
 
 import org.chromium.base.BundleUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** Utilitary class (proxy) exposing DFM functionality to the broader application. */
+@NullMarked
 public class ModuleUtil {
     /** Updates the CrashKey report containing modules currently present. */
     public static void updateCrashKeys() {

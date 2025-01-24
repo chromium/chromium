@@ -10,6 +10,7 @@ import android.app.NotificationChannelGroup;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.MockedInTests;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.List;
 import java.util.function.Function;
@@ -19,6 +20,7 @@ import java.util.function.Function;
  * this once AsyncNofificationManagerProxy is set to default.
  */
 @MockedInTests
+@NullMarked
 public interface BaseNotificationManagerProxy {
     /**
      * @see <a

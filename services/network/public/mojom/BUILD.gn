@@ -841,6 +841,10 @@ mojom("url_loader_base") {
           mojom = "network.mojom.DeviceBoundSessionKey"
           cpp = "::net::device_bound_sessions::SessionKey"
         },
+        {
+          mojom = "network.mojom.DeviceBoundSessionAccess"
+          cpp = "::net::device_bound_sessions::SessionAccess"
+        },
       ]
       traits_headers = [
         "//services/network/public/cpp/device_bound_sessions_mojom_traits.h",

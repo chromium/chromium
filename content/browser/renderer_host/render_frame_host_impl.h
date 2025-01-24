@@ -2741,7 +2741,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // network::mojom::DeviceBoundSessionAccessObserver
   void OnDeviceBoundSessionAccessed(
-      const net::device_bound_sessions::SessionKey& session) override;
+      const net::device_bound_sessions::SessionAccess& access) override;
 
   void GetSavableResourceLinksFromRenderer();
 

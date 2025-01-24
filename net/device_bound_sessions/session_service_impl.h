@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/registration_fetcher.h"
@@ -81,7 +82,10 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void GetAllSessionsAsync(
       base::OnceCallback<void(const std::vector<SessionKey>&)> callback)
       override;
-  void DeleteSession(const SchemefulSite& site, const Session::Id& id) override;
+  void DeleteSessionAndNotify(
+      const SchemefulSite& site,
+      const Session::Id& id,
+      SessionService::OnAccessCallback per_request_callback) override;
   void DeleteAllSessions(
       std::optional<base::Time> created_after_time,
       std::optional<base::Time> created_before_time,
@@ -119,11 +123,21 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   std::pair<SessionsMap::iterator, SessionsMap::iterator> GetSessionsForSite(
       const SchemefulSite& site);
 
-  // Remove a session from the session map. It also clears the session from
-  // `session_store_` and any BFCache entries.
+  // Remove a session from the session map. It also clears the session
+  // from `session_store_` and notifies any observers (including
+  // `per_request_callback`) about the termination.
   // Return the iterator to the next session in the map.
-  [[nodiscard]] SessionsMap::iterator DeleteSessionInternal(
-      SessionsMap::iterator it);
+  [[nodiscard]] SessionsMap::iterator DeleteSessionAndNotifyInternal(
+      SessionsMap::iterator it,
+      SessionService::OnAccessCallback per_request_callback);
+
+  // Notify all observers about an access to a session. Will update
+  // `per_request_callback` unconditionally.
+  void NotifySessionAccess(
+      SessionService::OnAccessCallback per_request_callback,
+      SessionAccess::AccessType access_type,
+      const SchemefulSite& site,
+      const Session& session);
 
   // Whether we are waiting on the initial load of saved sessions to complete.
   bool pending_initialization_ = false;

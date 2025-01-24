@@ -7,13 +7,15 @@ package org.chromium.components.browser_ui.widget.dragreorder;
 import android.content.Context;
 import android.content.res.Resources;
 
-import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.R;
 
@@ -25,19 +27,28 @@ import java.util.List;
  *
  * @param <T> The type of item that inhabits this adapter's list
  */
+@NullMarked
 public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter<ViewHolder> {
     protected final Context mContext;
 
     // keep track of the list and list managers
+    @SuppressWarnings("NullAway.Init")
     protected ItemTouchHelper mItemTouchHelper;
+
+    @SuppressWarnings("NullAway.Init")
     private ItemTouchHelper.Callback mTouchHelperCallback;
+
+    @SuppressWarnings("NullAway.Init")
     protected List<T> mElements;
+
+    @SuppressWarnings("NullAway.Init")
     protected RecyclerView mRecyclerView;
 
     // keep track of how this item looks
     private final int mDraggedBackgroundColor;
     private final float mDraggedElevation;
 
+    @SuppressWarnings("NullAway.Init")
     protected DragStateDelegate mDragStateDelegate;
 
     private int mStart;
@@ -70,8 +81,9 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
             return true;
         }
 
+        @NullUnmarked
         @Override
-        public void onSelectedChanged(ViewHolder viewHolder, int actionState) {
+        public void onSelectedChanged(@Nullable ViewHolder viewHolder, int actionState) {
             super.onSelectedChanged(viewHolder, actionState);
 
             // similar to getMovementFlags, this method may be called multiple times
@@ -226,6 +238,7 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
         mRecyclerView = recyclerView;
     }
 
+    @NullUnmarked
     @Override
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
         mRecyclerView = null;
@@ -268,6 +281,7 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
      * @param start The index of the ViewHolder that you want to drag.
      * @param end The index this ViewHolder should be dragged to and dropped at.
      */
+    @NullUnmarked
     public void simulateDragForTests(int start, int end) {
         ViewHolder viewHolder = mRecyclerView.findViewHolderForAdapterPosition(start);
         mItemTouchHelper.startDrag(viewHolder);

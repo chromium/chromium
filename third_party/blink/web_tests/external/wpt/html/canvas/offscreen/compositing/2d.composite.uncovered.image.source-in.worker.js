@@ -17,7 +17,6 @@ promise_test(async t => {
   const blob = await response.blob();
   const bitmap = await createImageBitmap(blob);
   ctx.drawImage(bitmap, 40, 40, 10, 10, 40, 50, 10, 10);
-  _assertPixelApprox(canvas, 15,15, 0,0,0,0, 5);
   _assertPixelApprox(canvas, 50,25, 0,0,0,0, 5);
 }, "drawImage() draws pixels not covered by the source object as (0,0,0,0), and does not leave the pixels unchanged.");
 done();

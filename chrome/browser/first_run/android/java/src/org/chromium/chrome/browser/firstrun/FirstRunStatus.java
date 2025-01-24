@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.firstrun;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Gets and sets preferences related to the status of the first run experience. */
+@NullMarked
 public class FirstRunStatus {
     // Whether the first run flow is triggered in the current browser session.
     private static boolean sFirstRunTriggered;

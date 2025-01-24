@@ -48,7 +48,7 @@ ScrollbarThemeFluent::ScrollbarThemeFluent() {
   WebThemeEngineHelper::GetNativeThemeEngine()->GetOverlayScrollbarStyle(
       &style_);
   if (WebTestSupport::IsRunningWebTest()) {
-    style_.fade_out_delay = base::TimeDelta();
+    style_.fade_out_delay = base::TimeDelta::Max();
     style_.fade_out_duration = base::TimeDelta();
   }
 }

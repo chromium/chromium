@@ -11433,7 +11433,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_WithThrottling_20250121_5",
+                    "name": "Enabled_WithThrottling_20250121",
                     "enable_features": [
                         "AutofillAcrossIframesIos",
                         "AutofillAcrossIframesIosThrottling",
@@ -22283,23 +22283,6 @@
                     },
                     "enable_features": [
                         "IPH_SideSearch"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SigninInterceptSimpleButtons": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SigninInterceptSimpleButtons"
                     ]
                 }
             ]

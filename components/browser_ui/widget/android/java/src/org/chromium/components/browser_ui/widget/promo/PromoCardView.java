@@ -9,8 +9,8 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.ButtonCompat;
@@ -20,6 +20,7 @@ import org.chromium.ui.widget.ChromeImageButton;
  * A promo card view that contains an image view in the top center, a block of short description,
  * two button compat and a close button.
  */
+@NullMarked
 class PromoCardView extends MaterialCardViewNoShadow {
     ImageView mPromoImage;
     TextView mTitle;

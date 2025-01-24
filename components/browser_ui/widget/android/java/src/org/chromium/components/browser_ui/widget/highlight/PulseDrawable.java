@@ -17,12 +17,12 @@ import android.os.SystemClock;
 import android.view.animation.Interpolator;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.core.view.animation.PathInterpolatorCompat;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.interpolators.Interpolators;
@@ -32,6 +32,7 @@ import org.chromium.ui.interpolators.Interpolators;
  * to be created with a {@link Painter} that does the actual drawing work based on the pulse
  * interpolation value.
  */
+@NullMarked
 public class PulseDrawable extends Drawable implements Animatable {
     private static final long PULSE_DURATION_MS = 2500;
     private static final long FRAME_RATE = 60;
@@ -386,7 +387,7 @@ public class PulseDrawable extends Drawable implements Animatable {
     }
 
     @Override
-    public void draw(@NonNull Canvas canvas) {
+    public void draw(Canvas canvas) {
         mPaint.setColor(mState.drawColor);
         mState.painter.draw(this, mPaint, canvas, mState.progress);
     }
@@ -410,7 +411,7 @@ public class PulseDrawable extends Drawable implements Animatable {
     }
 
     @Override
-    public void setColorFilter(ColorFilter colorFilter) {
+    public void setColorFilter(@Nullable ColorFilter colorFilter) {
         mPaint.setColorFilter(colorFilter);
     }
 
@@ -431,7 +432,6 @@ public class PulseDrawable extends Drawable implements Animatable {
     }
 
     @Override
-    @NonNull
     public Drawable mutate() {
         if (!mMutated && super.mutate() == this) {
             mState = new PulseState(mState);

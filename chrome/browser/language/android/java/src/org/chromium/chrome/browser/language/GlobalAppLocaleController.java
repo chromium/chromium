@@ -15,6 +15,9 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.language.AndroidLanguageMetricsBridge;
 
 import java.lang.annotation.Retention;
@@ -26,6 +29,7 @@ import java.util.Locale;
  * {@link AppLocaleUtils#getAppLanguagePref} to override the locales in
  * {@link ChromeApplication} and {@link ChromeActivity} and default Locale.
  */
+@NullMarked
 public class GlobalAppLocaleController {
     private static final GlobalAppLocaleController INSTANCE = new GlobalAppLocaleController();
 
@@ -55,7 +59,7 @@ public class GlobalAppLocaleController {
 
     // Set the original system language before Locale.getDefault() is overridden.
     private Locale mOriginalSystemLocale = Locale.getDefault();
-    private String mOverrideLanguage;
+    private @Nullable String mOverrideLanguage;
     private boolean mIsOverridden;
 
     private GlobalAppLocaleController() {}
@@ -66,6 +70,7 @@ public class GlobalAppLocaleController {
      * @param context The Context to use to get the shared preference from.
      * @return boolean Whether or not an override language is set.
      */
+    @NullUnmarked
     public boolean init(Context base) {
         if (AppLocaleUtils.shouldUseSystemManagedLocale()) {
             mIsOverridden = false;
@@ -95,6 +100,7 @@ public class GlobalAppLocaleController {
      * @param base The base Context for the application and has the system locales.
      * @return Configuration to override application context with or null.
      */
+    @NullUnmarked
     public Configuration getOverrideConfig(Context base) {
         assert mIsOverridden : "Can only call GlobalAppLocaleController.getConfig if overridden";
 
@@ -153,6 +159,7 @@ public class GlobalAppLocaleController {
      * Record the override language and it's status compared to the system locale. If no override
      * language is set report it as the empty string.
      */
+    @NullUnmarked
     public void recordOverrideLanguageMetrics() {
         // When following the system language there is no override so Chrome tracks the System UI.
         String histogramLanguage =

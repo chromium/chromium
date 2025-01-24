@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.ArrayList;
@@ -48,16 +50,17 @@ import java.util.List;
  * }</pre>
  * </p>
  */
+@NullMarked
 public final class RadioButtonWithDescriptionLayout extends RadioGroup
         implements RadioButtonWithDescription.ButtonCheckedStateChangedListener {
     private final List<RadioButtonWithDescription> mRadioButtonsWithDescriptions;
-    private OnCheckedChangeListener mOnCheckedChangeListener;
+    private @Nullable OnCheckedChangeListener mOnCheckedChangeListener;
 
     public RadioButtonWithDescriptionLayout(Context context) {
         this(context, null);
     }
 
-    public RadioButtonWithDescriptionLayout(Context context, AttributeSet attrs) {
+    public RadioButtonWithDescriptionLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mRadioButtonsWithDescriptions = new ArrayList<>();
     }

@@ -404,6 +404,12 @@ void WaylandWindow::Hide() {
   frame_manager_->Hide();
 }
 
+void WaylandWindow::ClearInFlightRequestsSerial() {
+  for (auto& request : in_flight_requests_) {
+    request.serial = -1;
+  }
+}
+
 void WaylandWindow::OnChannelDestroyed() {
   frame_manager_->ClearStates();
   base::circular_deque<std::pair<WaylandSubsurface*, wl::WaylandOverlayConfig>>

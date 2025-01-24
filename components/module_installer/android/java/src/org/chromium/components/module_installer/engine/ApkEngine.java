@@ -4,12 +4,15 @@
 
 package org.chromium.components.module_installer.engine;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Engine used by APK builds.
  *
  * This class exposes no behavior - it's main purpose is to help our compile-time optimizers
  * to exclude libraries that should not be included in APK builds (for example, SplitCompat).
  */
+@NullMarked
 class ApkEngine implements InstallEngine {
     @Override
     public void install(String moduleName, InstallListener listener) {

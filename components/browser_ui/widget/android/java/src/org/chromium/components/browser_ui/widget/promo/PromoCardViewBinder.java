@@ -10,11 +10,13 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** View binder than binds the promo view with the property model. */
+@NullMarked
 class PromoCardViewBinder
         implements PropertyModelChangeProcessor.ViewBinder<
                 PropertyModel, PromoCardView, PropertyKey> {
