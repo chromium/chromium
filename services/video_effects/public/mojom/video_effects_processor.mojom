@@ -49,20 +49,18 @@ union PostProcessResult {
 interface VideoEffectsProcessor {
   // Runs post-processing of a single video frame. The configuration of video
   // effects is implicit to the processor - it is being driven by
-  // `VideoEffectsManager` passed to Video Effects Service at creation time of
-  // the processor.
-  // The input frame is available in `input_frame_data` and is described by
-  // `input_frame_info`. The results of post-processing are going to be placed
-  // in `result_frame_data`. `result_frame_data` is also described by
-  // `input_frame_info`, with exception of the pixel format, which is passed in
-  // `result_pixel_format` - this is how the caller can request a pixel format
-  // conversion.
-  // Note that both the `input_frame_data` and `result_frame_data` are
-  // allocated by the caller of this method.
-  // On success, the `result_frame_data` is guaranteed to be populated with the
-  // video frame contents. In that case, the `result.success.frame_info` will
-  // contain the frame information for the frame written into
-  // `result_frame_data`. The input frame's timestamp will be retained.
+  // `ReadonlyVideoEffectsManager` passed to Video Effects Service at creation
+  // time of the processor. The input frame is available in `input_frame_data`
+  // and is described by `input_frame_info`. The results of post-processing are
+  // going to be placed in `result_frame_data`. `result_frame_data` is also
+  // described by `input_frame_info`, with exception of the pixel format, which
+  // is passed in `result_pixel_format` - this is how the caller can request a
+  // pixel format conversion. Note that both the `input_frame_data` and
+  // `result_frame_data` are allocated by the caller of this method. On success,
+  // the `result_frame_data` is guaranteed to be populated with the video frame
+  // contents. In that case, the `result.success.frame_info` will contain the
+  // frame information for the frame written into `result_frame_data`. The input
+  // frame's timestamp will be retained.
   PostProcess(
     media.mojom.VideoBufferHandle input_frame_data,
     media.mojom.VideoFrameInfo input_frame_info,

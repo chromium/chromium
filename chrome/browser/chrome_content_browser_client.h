@@ -1053,11 +1053,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const override;
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  void BindVideoEffectsManager(
+  void BindReadonlyVideoEffectsManager(
       const std::string& device_id,
       content::BrowserContext* browser_context,
-      mojo::PendingReceiver<media::mojom::VideoEffectsManager>
-          video_effects_manager) override;
+      mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
+          readonly_video_effects_manager) override;
 
   void BindVideoEffectsProcessor(
       const std::string& device_id,

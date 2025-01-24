@@ -3001,11 +3001,11 @@ class CONTENT_EXPORT ContentBrowserClient {
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   // Allows the embedder to correlate backend media services with profile-keyed
   // effect settings.
-  virtual void BindVideoEffectsManager(
+  virtual void BindReadonlyVideoEffectsManager(
       const std::string& device_id,
       BrowserContext* browser_context,
-      mojo::PendingReceiver<media::mojom::VideoEffectsManager>
-          video_effects_manager);
+      mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
+          readonly_video_effects_manager);
 
   // Allows the embedder to correlate backend media services with profile-keyed
   // effect settings.

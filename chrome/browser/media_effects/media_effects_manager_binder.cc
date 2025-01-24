@@ -10,11 +10,11 @@
 
 namespace {
 
-void BindVideoEffectsManagerOnUIThread(
+void BindReadonlyVideoEffectsManagerOnUIThread(
     const std::string& device_id,
     content::BrowserContext* browser_context,
-    mojo::PendingReceiver<media::mojom::VideoEffectsManager>
-        video_effects_manager) {
+    mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
+        readonly_video_effects_manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* media_effects_service =
       MediaEffectsServiceFactory::GetForBrowserContext(browser_context);
@@ -24,8 +24,8 @@ void BindVideoEffectsManagerOnUIThread(
     return;
   }
 
-  media_effects_service->BindVideoEffectsManager(
-      device_id, std::move(video_effects_manager));
+  media_effects_service->BindReadonlyVideoEffectsManager(
+      device_id, std::move(readonly_video_effects_manager));
 }
 
 void BindVideoEffectsProcessorOnUIThread(
@@ -66,21 +66,21 @@ void BindVideoEffectsProcessor(
                      browser_context, std::move(video_effects_processor)));
 }
 
-void BindVideoEffectsManager(
+void BindReadonlyVideoEffectsManager(
     const std::string& device_id,
     content::BrowserContext* browser_context,
-    mojo::PendingReceiver<media::mojom::VideoEffectsManager>
-        video_effects_manager) {
+    mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
+        readonly_video_effects_manager) {
   if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
-    BindVideoEffectsManagerOnUIThread(device_id, browser_context,
-                                      std::move(video_effects_manager));
+    BindReadonlyVideoEffectsManagerOnUIThread(
+        device_id, browser_context, std::move(readonly_video_effects_manager));
     return;
   }
   // The function wasn't called from the UI thread, so post a task.
   content::GetUIThreadTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BindVideoEffectsManagerOnUIThread, device_id,
-                     browser_context, std::move(video_effects_manager)));
+      FROM_HERE, base::BindOnce(&BindReadonlyVideoEffectsManagerOnUIThread,
+                                device_id, browser_context,
+                                std::move(readonly_video_effects_manager)));
 }
 
 base::WeakPtr<VideoEffectsManagerImpl> GetOrCreateVideoEffectsManager(

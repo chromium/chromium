@@ -12,7 +12,8 @@
 
 class PrefService;
 
-class VideoEffectsManagerImpl : public media::mojom::VideoEffectsManager {
+class VideoEffectsManagerImpl
+    : public media::mojom::ReadonlyVideoEffectsManager {
  public:
   VideoEffectsManagerImpl(PrefService* pref_service,
                           base::OnceClosure last_receiver_disconnected_handler);
@@ -22,12 +23,13 @@ class VideoEffectsManagerImpl : public media::mojom::VideoEffectsManager {
 
   ~VideoEffectsManagerImpl() override;
 
-  void Bind(mojo::PendingReceiver<media::mojom::VideoEffectsManager> receiver);
+  void Bind(mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
+                receiver);
 
   void SetConfiguration(
       media::mojom::VideoEffectsConfigurationPtr configuration);
 
-  // media::mojom::VideoEffectsManager overrides
+  // media::mojom::ReadonlyVideoEffectsManager overrides
   void GetConfiguration(GetConfigurationCallback callback) override;
   void AddObserver(
       mojo::PendingRemote<media::mojom::VideoEffectsConfigurationObserver>
@@ -42,7 +44,7 @@ class VideoEffectsManagerImpl : public media::mojom::VideoEffectsManager {
 
   raw_ptr<PrefService> pref_service_;
   base::OnceClosure last_receiver_disconnected_handler_;
-  mojo::ReceiverSet<media::mojom::VideoEffectsManager> receivers_;
+  mojo::ReceiverSet<media::mojom::ReadonlyVideoEffectsManager> receivers_;
 
   media::mojom::VideoEffectsConfigurationPtr configuration_;
   mojo::RemoteSet<media::mojom::VideoEffectsConfigurationObserver> observers_;

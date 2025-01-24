@@ -1769,17 +1769,17 @@ bool ContentBrowserClient::UseOutermostMainFrameOrEmbedderForSubCaptureTargets()
 }
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-void ContentBrowserClient::BindVideoEffectsManager(
+void ContentBrowserClient::BindReadonlyVideoEffectsManager(
     const std::string& device_id,
     BrowserContext* browser_context,
-    mojo::PendingReceiver<media::mojom::VideoEffectsManager>
-        video_effects_manager) {}
+    mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
+        readonly_video_effects_manager) {}
 
 void ContentBrowserClient::BindVideoEffectsProcessor(
     const std::string& device_id,
     BrowserContext* browser_context,
     mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_manager) {}
+        video_effects_processor) {}
 #endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 void ContentBrowserClient::PreferenceRankAudioDeviceInfos(

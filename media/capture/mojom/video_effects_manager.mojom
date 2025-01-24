@@ -47,7 +47,7 @@ enum SetConfigurationResult {
 
 // The interface for reading / observing the effects that are applied to live
 // video streams.
-interface VideoEffectsManager {
+interface ReadonlyVideoEffectsManager {
   // Returns the current configuration.
   GetConfiguration() => (VideoEffectsConfiguration configuration);
 

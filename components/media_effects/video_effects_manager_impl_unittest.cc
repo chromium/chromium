@@ -11,7 +11,7 @@
 
 namespace {
 media::mojom::VideoEffectsConfigurationPtr GetConfigurationSync(
-    mojo::Remote<media::mojom::VideoEffectsManager>& effects_manager) {
+    mojo::Remote<media::mojom::ReadonlyVideoEffectsManager>& effects_manager) {
   base::test::TestFuture<media::mojom::VideoEffectsConfigurationPtr>
       output_configuration;
   effects_manager->GetConfiguration(output_configuration.GetCallback());
@@ -56,8 +56,9 @@ class VideoEffectsManagerImplTest : public testing::Test {
                 &VideoEffectsManagerImplTest::OnLastReceiverDisconnected,
                 base::Unretained(this))) {}
 
-  mojo::Remote<media::mojom::VideoEffectsManager> GetEffectManagerRemote() {
-    mojo::Remote<media::mojom::VideoEffectsManager> remote;
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager>
+  GetEffectManagerRemote() {
+    mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> remote;
     effects_manager_.Bind(remote.BindNewPipeAndPassReceiver());
     return remote;
   }

@@ -23,7 +23,7 @@ static_assert(BUILDFLAG(ENABLE_VIDEO_EFFECTS),
 
 namespace {
 media::mojom::VideoEffectsConfigurationPtr GetConfigurationSync(
-    mojo::Remote<media::mojom::VideoEffectsManager>& effect_manager) {
+    mojo::Remote<media::mojom::ReadonlyVideoEffectsManager>& effect_manager) {
   base::test::TestFuture<media::mojom::VideoEffectsConfigurationPtr>
       output_configuration;
   effect_manager->GetConfiguration(output_configuration.GetCallback());
@@ -37,13 +37,14 @@ class MediaEffectsManagerBinderTest : public testing::Test {
   user_prefs::TestBrowserContextWithPrefs browser_context_;
 };
 
-TEST_F(MediaEffectsManagerBinderTest, BindVideoEffectsManager) {
+TEST_F(MediaEffectsManagerBinderTest, BindReadonlyVideoEffectsManager) {
   const char* kDeviceId = "device_id";
 
-  mojo::Remote<media::mojom::VideoEffectsManager> video_effects_manager;
-  media_effects::BindVideoEffectsManager(
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager>
+      readonly_video_effects_manager;
+  media_effects::BindReadonlyVideoEffectsManager(
       kDeviceId, &browser_context_,
-      video_effects_manager.BindNewPipeAndPassReceiver());
+      readonly_video_effects_manager.BindNewPipeAndPassReceiver());
 
   // Allow queued device registration to complete.
   base::RunLoop().RunUntilIdle();
@@ -59,7 +60,7 @@ TEST_F(MediaEffectsManagerBinderTest, BindVideoEffectsManager) {
           nullptr, nullptr,
           media::mojom::Framing::New(gfx::InsetsF{kPaddingRatio})));
 
-  EXPECT_EQ(kPaddingRatio, GetConfigurationSync(video_effects_manager)
+  EXPECT_EQ(kPaddingRatio, GetConfigurationSync(readonly_video_effects_manager)
                                ->framing->padding_ratios.top());
 }
 

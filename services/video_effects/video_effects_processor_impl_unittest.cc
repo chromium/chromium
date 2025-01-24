@@ -67,7 +67,8 @@ class VideoEffectsProcessorTest : public testing::Test {
   // Processor under test's remote. The unit-tests will usually interact with
   // the processor via the remote.
   mojo::Remote<mojom::VideoEffectsProcessor> processor_remote_;
-  mojo::PendingReceiver<media::mojom::VideoEffectsManager> manager_receiver_;
+  mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
+      manager_receiver_;
 };
 
 TEST_F(VideoEffectsProcessorTest, InitializeSucceeds) {

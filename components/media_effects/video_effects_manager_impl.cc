@@ -19,7 +19,7 @@ VideoEffectsManagerImpl::VideoEffectsManagerImpl(
 VideoEffectsManagerImpl::~VideoEffectsManagerImpl() = default;
 
 void VideoEffectsManagerImpl::Bind(
-    mojo::PendingReceiver<media::mojom::VideoEffectsManager> receiver) {
+    mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager> receiver) {
   receivers_.Add(this, std::move(receiver));
 }
 

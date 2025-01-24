@@ -17,11 +17,11 @@ static_assert(BUILDFLAG(ENABLE_VIDEO_EFFECTS),
 
 namespace media_effects {
 
-void BindVideoEffectsManager(
+void BindReadonlyVideoEffectsManager(
     const std::string& device_id,
     content::BrowserContext* browser_context,
-    mojo::PendingReceiver<media::mojom::VideoEffectsManager>
-        video_effects_manager);
+    mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
+        readonly_video_effects_manager);
 
 // Must be called on UI thread.
 base::WeakPtr<VideoEffectsManagerImpl> GetOrCreateVideoEffectsManager(

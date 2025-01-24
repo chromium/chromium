@@ -68,7 +68,8 @@ std::unique_ptr<VideoCaptureJpegDecoder> ReturnNullPtrAsJpecDecoder() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-class FakeVideoEffectsManagerImpl : public media::mojom::VideoEffectsManager {
+class FakeVideoEffectsManagerImpl
+    : public media::mojom::ReadonlyVideoEffectsManager {
   void GetConfiguration(GetConfigurationCallback callback) override {}
   void AddObserver(
       ::mojo::PendingRemote<media::mojom::VideoEffectsConfigurationObserver>
@@ -160,7 +161,7 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
   void Cleanup() {
     receiver_ = nullptr;
     device_client_.reset();
-    video_effects_manager_receiver_.reset();
+    readonly_video_effects_manager_receiver_.reset();
 
     // VideoCaptureDeviceClient's dtor submits a task to destroy its effects
     // processor. In order to avoid LSAN warnings, we need to wait for that task
@@ -177,8 +178,8 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
       fake_video_effects_processor_;
   FakeVideoEffectsManagerImpl fake_video_effects_manager_;
 
-  mojo::Receiver<media::mojom::VideoEffectsManager>
-      video_effects_manager_receiver_{&fake_video_effects_manager_};
+  mojo::Receiver<media::mojom::ReadonlyVideoEffectsManager>
+      readonly_video_effects_manager_receiver_{&fake_video_effects_manager_};
 
   // Must outlive `receiver_`.
   std::unique_ptr<VideoCaptureDeviceClient> device_client_;
@@ -201,8 +202,8 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
     mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
         processor_remote(processor_receiver.InitWithNewPipeAndPassRemote());
 
-    mojo::PendingRemote<mojom::VideoEffectsManager> manager_remote =
-        video_effects_manager_receiver_.BindNewPipeAndPassRemote();
+    mojo::PendingRemote<mojom::ReadonlyVideoEffectsManager> manager_remote =
+        readonly_video_effects_manager_receiver_.BindNewPipeAndPassRemote();
 
     fake_video_effects_processor_.emplace(std::move(processor_receiver),
                                           std::move(manager_remote));
@@ -602,7 +603,7 @@ TEST_F(VideoCaptureDeviceClientTest, CheckRotationsAndCrops) {
 TEST_F(VideoCaptureDeviceClientTest, DestructionClosesVideoEffectsManager) {
   InitWithSharedMemoryBufferPool();
   base::RunLoop run_loop;
-  video_effects_manager_receiver_.set_disconnect_handler(
+  readonly_video_effects_manager_receiver_.set_disconnect_handler(
       run_loop.QuitClosure());
   receiver_ = nullptr;
   EXPECT_NO_FATAL_FAILURE(device_client_.reset());

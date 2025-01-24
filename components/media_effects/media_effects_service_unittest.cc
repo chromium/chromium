@@ -35,7 +35,7 @@ constexpr char kDeviceId2[] = "test_device_2";
 constexpr char kDeviceId3[] = "test_device_3";
 
 media::mojom::VideoEffectsConfigurationPtr GetConfigurationSync(
-    mojo::Remote<media::mojom::VideoEffectsManager>& effects_manager) {
+    mojo::Remote<media::mojom::ReadonlyVideoEffectsManager>& effects_manager) {
   base::test::TestFuture<media::mojom::VideoEffectsConfigurationPtr>
       output_configuration;
   effects_manager->GetConfiguration(output_configuration.GetCallback());
@@ -103,9 +103,9 @@ class MediaEffectsServiceTest : public testing::Test {
   base::WeakPtr<FakeModelProvider> model_provider_;
 };
 
-TEST_F(MediaEffectsServiceTest, BindVideoEffectsManager) {
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager;
-  service_->BindVideoEffectsManager(
+TEST_F(MediaEffectsServiceTest, BindReadonlyVideoEffectsManager) {
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId, effects_manager.BindNewPipeAndPassReceiver());
 
   EXPECT_TRUE(GetConfigurationSync(effects_manager)->framing.is_null());
@@ -119,10 +119,11 @@ TEST_F(MediaEffectsServiceTest, BindVideoEffectsManager) {
             configuration->framing->padding_ratios);
 }
 
-TEST_F(MediaEffectsServiceTest,
-       BindVideoEffectsManager_TwoRegistrantsWithSameIdConnectToSameManager) {
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager1;
-  service_->BindVideoEffectsManager(
+TEST_F(
+    MediaEffectsServiceTest,
+    BindReadonlyVideoEffectsManager_TwoRegistrantsWithSameIdConnectToSameManager) {
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager1;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId, effects_manager1.BindNewPipeAndPassReceiver());
 
   const float kFramingPaddingRatio = 0.234;
@@ -132,8 +133,8 @@ TEST_F(MediaEffectsServiceTest,
   EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio},
             GetConfigurationSync(effects_manager1)->framing->padding_ratios);
 
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager2;
-  service_->BindVideoEffectsManager(
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager2;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId, effects_manager2.BindNewPipeAndPassReceiver());
 
   EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio},
@@ -142,9 +143,9 @@ TEST_F(MediaEffectsServiceTest,
 
 TEST_F(
     MediaEffectsServiceTest,
-    BindVideoEffectsManager_TwoRegistrantsWithDifferentIdConnectToDifferentManager) {
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager1;
-  service_->BindVideoEffectsManager(
+    BindReadonlyVideoEffectsManager_TwoRegistrantsWithDifferentIdConnectToDifferentManager) {
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager1;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId1, effects_manager1.BindNewPipeAndPassReceiver());
 
   const float kFramingPaddingRatio = 0.234;
@@ -154,8 +155,8 @@ TEST_F(
   EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio},
             GetConfigurationSync(effects_manager1)->framing->padding_ratios);
 
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager2;
-  service_->BindVideoEffectsManager(
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager2;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId2, effects_manager2.BindNewPipeAndPassReceiver());
 
   // Expect `framing` to be unset because it is a separate instance of
@@ -173,11 +174,11 @@ TEST_F(
   auto service_reset =
       video_effects::SetVideoEffectsServiceRemoteForTesting(&service);
 
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager1;
-  service_->BindVideoEffectsManager(
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager1;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId, effects_manager1.BindNewPipeAndPassReceiver());
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager2;
-  service_->BindVideoEffectsManager(
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager2;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId, effects_manager2.BindNewPipeAndPassReceiver());
 
   auto effects_processor_future =
@@ -213,8 +214,8 @@ TEST_F(
   // Wait for the reset to complete
   base::RunLoop().RunUntilIdle();
 
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager3;
-  service_->BindVideoEffectsManager(
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager3;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId, effects_manager3.BindNewPipeAndPassReceiver());
 
   // Expect `framing` to be unset because it is a new instance of
@@ -251,8 +252,8 @@ TEST_F(
   // a different manager if a different ID was used. This is validated by
   // checking that the managers return different configurations. We also set a
   // different config directly via effects manager interface (originating from
-  // a call to `MediaEffectsService::BindVideoEffectsManager()`) so this test
-  // also checks that a correct relationship is established between manager
+  // a call to `MediaEffectsService::BindReadonlyVideoEffectsManager()`) so this
+  // test also checks that a correct relationship is established between manager
   // and processor.
 
   mojo::Remote<video_effects::mojom::VideoEffectsService> service;
@@ -261,8 +262,8 @@ TEST_F(
   auto service_reset =
       video_effects::SetVideoEffectsServiceRemoteForTesting(&service);
 
-  mojo::Remote<media::mojom::VideoEffectsManager> effects_manager;
-  service_->BindVideoEffectsManager(
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> effects_manager;
+  service_->BindReadonlyVideoEffectsManager(
       kDeviceId1, effects_manager.BindNewPipeAndPassReceiver());
 
   constexpr float kFramingPaddingRatio1 = 0.234;

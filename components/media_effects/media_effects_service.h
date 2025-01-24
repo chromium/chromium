@@ -45,9 +45,9 @@ class MediaEffectsService : public KeyedService,
   // Note that this API only allows interacting with the manager via mojo in
   // order to support communication with the VideoCaptureService in a different
   // process.
-  void BindVideoEffectsManager(
+  void BindReadonlyVideoEffectsManager(
       const std::string& device_id,
-      mojo::PendingReceiver<media::mojom::VideoEffectsManager>
+      mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
           effects_manager_receiver);
 
   // Connects a `VideoEffectsManagerImpl` to the provided
@@ -65,7 +65,7 @@ class MediaEffectsService : public KeyedService,
   //
   // Note that this API does not expose the `VideoEffectsManagerImpl` in any
   // way. If you need to interact with the manager, call
-  // `BindVideoEffectsManager()` instead.
+  // `BindReadonlyVideoEffectsManager()` instead.
   //
   // Calling this method will launch a new instance of Video Effects Service if
   // it's not already running.
