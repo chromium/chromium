@@ -59,6 +59,14 @@
     "expiry_milestone": 133
   },
   {
+    "name": "ai-settings-enterprise-disabled-ui",
+    "owners": [
+      "dullweber@chromium.org",
+      "zalmashni@google.com",
+      "chrome-browser-privacy-team@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "ai-settings-page-refresh",
     "owners": [
       "zalmashni@google.com",

@@ -21748,6 +21748,7 @@ from previous Chrome versions.
   <int value="646738320" label="disable-gesture-editing"/>
   <int value="647662142" label="use-angle"/>
   <int value="647724971" label="LauncherImageSearchIca:disabled"/>
+  <int value="648101846" label="AiSettingsPageEnterpriseDisabledUi:disabled"/>
   <int value="648697679" label="VirtualKeyboardNewHeader:disabled"/>
   <int value="649111851" label="MidiManagerCros:enabled"/>
   <int value="649384106" label="FailFastQuietChip:disabled"/>
@@ -22893,6 +22894,7 @@ from previous Chrome versions.
       label="AutofillUpstreamAuthenticatePreflightCall:enabled"/>
   <int value="1102309668" label="EnableKeyboardUsedPalmSuppression:disabled"/>
   <int value="1102780374" label="ClickToCallDetectionV2:disabled"/>
+  <int value="1103037724" label="AiSettingsPageEnterpriseDisabledUi:enabled"/>
   <int value="1104206686" label="UseMultiPlaneFormatForHardwareVideo:enabled"/>
   <int value="1104948452" label="manual-enhanced-bookmarks-optout"/>
   <int value="1105058168" label="CrosSafetyService:enabled"/>
