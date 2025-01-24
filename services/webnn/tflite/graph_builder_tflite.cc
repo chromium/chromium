@@ -22,6 +22,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/data_type_limits.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
@@ -426,15 +427,20 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/kAllDataTypesExceptUint4,
        /*constant=*/kAllDataTypesExceptUint4,
-       /*arg_min_max_input=*/kFloat16To32AndInt8To32AndUint8,
+       /*arg_min_max_input=*/
+       {kFloat16To32AndInt8To32AndUint8, SupportedRanks::NonScalarUpTo(8)},
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
        /*batch_normalization_input=*/DataTypeConstraint::kFloat16To32,
-       /*cast_input=*/kFloat16To32AndInts8To32AndInt64,
-       /*clamp_input=*/DataTypeConstraint::kFloat16To32,
+       /*cast_input=*/
+       {kFloat16To32AndInts8To32AndInt64, SupportedRanks::UpTo(8)},
+       // Polyfilled using MIN and MAX.
+       /*clamp_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(5)},
        /*concat_inputs=*/kAllDataTypesExceptUint4,
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
-       /*cumulative_sum_input=*/kFloat16To32AndInt32To64,
+       /*cumulative_sum_input=*/
+       {kFloat16To32AndInt32To64, SupportedRanks::NonScalarUpTo(8)},
        /*dequantize_linear_input=*/kInt4AndInts8,
        // TODO(crbug.com/376722724): Support float16 scale.
        /*dequantize_linear_scale=*/DataTypeConstraint::kFloat32,
@@ -479,25 +485,43 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        // Polyfilled using a cast to BOOL and NOT_EQUAL.
        /*logical_xor_input=*/
        {DataTypeConstraint::kUint8, SupportedRanks::UpTo(4)},
-       /*logical_not_input=*/DataTypeConstraint::kUint8,
+       /*logical_not_input=*/
+       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
        /*logical_output=*/DataTypeConstraint::kUint8,
-       /*abs_input=*/kFloat16To32AndInt32,
-       /*ceil_input=*/DataTypeConstraint::kFloat16To32,
-       /*cos_input=*/DataTypeConstraint::kFloat16To32,
-       /*erf_input=*/DataTypeConstraint::kFloat16To32,
-       /*exp_input=*/DataTypeConstraint::kFloat16To32,
-       /*floor_input=*/DataTypeConstraint::kFloat16To32,
+       /*abs_input=*/{kFloat16To32AndInt32, SupportedRanks::UpTo(8)},
+       /*ceil_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
+       /*cos_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
+       // Polyfilled using DIV and POW. Limited by DIV because POW is only
+       // used with integer powers which works for any dimension.
+       /*erf_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(5)},
+       /*exp_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
+       /*floor_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
        // Identity is emulated by reshape.
-       /*identity_input=*/kFloat16To32AndInt8To64AndUint8,
-       /*log_input=*/DataTypeConstraint::kFloat16To32,
-       /*neg_input=*/kFloat16To32AndInt32To64,
-       /*reciprocal_input=*/DataTypeConstraint::kFloat16To32,
-       /*sign_input=*/kFloat16To32AndInt32,
-       /*sin_input=*/DataTypeConstraint::kFloat16To32,
-       /*sqrt_input=*/DataTypeConstraint::kFloat16To32,
-       /*tan_input=*/DataTypeConstraint::kFloat16To32,
-       /*elu_input=*/kFloat16To32AndInt8,
-       /*expand_input=*/kFloat16To32AndInts8To32AndInt64,
+       /*identity_input=*/
+       {kFloat16To32AndInt8To64AndUint8, SupportedRanks::UpTo(8)},
+       /*log_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
+       /*neg_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(8)},
+       // Polyfilled with DIV.
+       /*reciprocal_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(5)},
+       /*sign_input=*/{kFloat16To32AndInt32, SupportedRanks::UpTo(8)},
+       /*sin_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
+       /*sqrt_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
+       // Polyfilled with SIN, COS and DIV however since it will never require
+       // broadcasting this doesn't have those limitations.
+       /*tan_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
+       /*elu_input=*/{kFloat16To32AndInt8, SupportedRanks::UpTo(8)},
+       /*expand_input=*/
+       {kFloat16To32AndInts8To32AndInt64, SupportedRanks::UpTo(8)},
        /*gather_input=*/kFloat16To32AndInt8To64AndUint8,
        /*gather_indices=*/
        DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
@@ -507,25 +531,37 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*gather_nd_input=*/kFloat16To32AndInt8To64AndUint8,
        /*gather_nd_indices=*/
        DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
-       /*gelu_input=*/DataTypeConstraint::kFloat16To32,
+       /*gelu_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
        /*gemm_input=*/DataTypeConstraint::kFloat16To32,
        /*gru_input=*/DataTypeConstraint::kFloat16To32,
        /*gru_cell_input=*/DataTypeConstraint::kFloat16To32,
-       /*hard_sigmoid_input=*/DataTypeConstraint::kFloat16To32,
-       /*hard_swish_input=*/DataTypeConstraint::kFloat16To32,
+       // Polyfilled with ADD and MUL.
+       /*hard_sigmoid_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(6)},
+       // Polyfilled with ADD and MUL.
+       /*hard_swish_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(6)},
        /*instance_normalization_input=*/DataTypeConstraint::kFloat16To32,
        /*layer_normalization_input=*/DataTypeConstraint::kFloat16To32,
-       /*leaky_relu_input=*/DataTypeConstraint::kFloat16To32,
+       /*leaky_relu_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
        // Linear is emulated by mul and add.
-       /*linear_input=*/kFloat16To32AndInt32To64,
+       /*linear_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(6)},
        /*lstm_input=*/DataTypeConstraint::kFloat16To32,
        /*lstm_cell_input=*/DataTypeConstraint::kFloat16To32,
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/batch_matmul.h
        /*matmul_input=*/{kFloat16To32AndInt8, SupportedRanks::UpTo(5)},
-       /*pad_input=*/kFloat16To32AndInt32To64AndUint8,
-       /*average_pool2d_input=*/DataTypeConstraint::kFloat16To32,
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/pad.h
+       /*pad_input=*/
+       {kFloat16To32AndInt32To64AndUint8, SupportedRanks::UpTo(5)},
+       // Pooling operators are limited to 4D.
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/pooling.h
+       /*average_pool2d_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
        /*l2_pool2d_input=*/{},
-       /*max_pool2d_input=*/DataTypeConstraint::kFloat16To32,
+       /*max_pool2d_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
        /*prelu_input=*/DataTypeConstraint::kFloat16To32,
        // TODO(crbug.com/376722724): Support float16 input.
        /*quantize_linear_input=*/DataTypeConstraint::kFloat32,
@@ -533,24 +569,37 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        // https://github.com/tensorflow/tensorflow/issues/80335
        /*quantize_linear_zero_point=*/DataTypeConstraint::kInts8,
        // ReduceL1 is emulated by abs and reduceSum.
-       /*reduce_l1_input=*/kFloat16To32AndInt32,
-       // ReduceL2 is emulated by pow and reduceSumSquare.
-       /*reduce_l2_input=*/DataTypeConstraint::kFloat16To32,
+       /*reduce_l1_input=*/{kFloat16To32AndInt32, SupportedRanks::UpTo(8)},
+       // ReduceL2 is emulated by reduceSumSquare followed by pow(x, 0.5)
+       // which can't broadcast to more than 4D.
+       /*reduce_l2_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(4)},
        // ReduceLogSum is emulated by reduceSum and log.
-       /*reduce_log_sum_input=*/DataTypeConstraint::kFloat16To32,
+       /*reduce_log_sum_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
        // ReduceLogSumExp is emulated by reduceSum and exp.
-       /*reduce_log_sum_exp_input=*/DataTypeConstraint::kFloat16To32,
-       /*reduce_max_input=*/kFloat16To32AndInt32To64,
-       /*reduce_mean_input=*/kFloat16To32AndInt32To64AndUint8,
-       /*reduce_min_input=*/kFloat16To32AndInt32To64,
-       /*reduce_product_input=*/kFloat16To32AndInt32To64,
-       /*reduce_sum_input=*/kFloat16To32AndInt32To64,
-       // ReduceLogSum is emulated by reduceSum and pow.
-       /*reduce_sum_square_input=*/kFloat16To32AndInt32,
-       /*relu_input=*/DataTypeConstraint::kFloat16To32,
-       /*resample2d_input=*/DataTypeConstraint::kFloat16To32,
-       /*reshape_input=*/kAllDataTypesExceptUint4,
-       /*reverse_input=*/kFloat16To32AndInt8To32AndUint8,
+       /*reduce_log_sum_exp_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
+       /*reduce_max_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(8)},
+       /*reduce_mean_input=*/
+       {kFloat16To32AndInt32To64AndUint8, SupportedRanks::UpTo(8)},
+       /*reduce_min_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(8)},
+       /*reduce_product_input=*/
+       {kFloat16To32AndInt32To64, SupportedRanks::UpTo(8)},
+       /*reduce_sum_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(8)},
+       // ReduceSumSquare is emulated by reduceSum and pow. pow(x, 2) works for
+       // any dimension.
+       /*reduce_sum_square_input=*/
+       {kFloat16To32AndInt32, SupportedRanks::UpTo(8)},
+       /*relu_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/resize_bilinear.h
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/resize_nearest_neighbor.h
+       /*resample2d_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(4)},
+       /*reshape_input=*/{kAllDataTypesExceptUint4, SupportedRanks::UpTo(8)},
+       /*reverse_input=*/
+       {kFloat16To32AndInt8To32AndUint8, SupportedRanks::UpTo(8)},
        /*scatter_elements_input=*/kFloat16To32AndInt8To64AndUint32,
        // The indices data type is the same as scatter_nd.
        /*scatter_elements_indices=*/{OperandDataType::kInt32},
@@ -558,19 +607,31 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        // The indices of tfl.scatter_nd only support int32.
        // https://www.tensorflow.org/mlir/tfl_ops#operands_117
        /*scatter_nd_indices=*/{OperandDataType::kInt32},
-       /*sigmoid_input=*/DataTypeConstraint::kFloat16To32,
-       /*slice_input=*/kFloat16To32AndInts8To32AndInt64,
-       /*softmax_input=*/DataTypeConstraint::kFloat16To32,
-       /*softplus_input=*/DataTypeConstraint::kFloat16To32,
-       /*softsign_input=*/DataTypeConstraint::kFloat16To32,
-       /*split_input=*/
+       // Polyfilled with linear.
+       /*sigmoid_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(6)},
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/slice.h
+       /*slice_input=*/
+       {kFloat16To32AndInts8To32AndInt64, SupportedRanks::UpTo(5)},
+       /*softmax_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::NonScalarUpTo(8)},
+       // Polyfilled with a broadcasted ADD.
+       /*softplus_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(6)},
+       // Polyfilled with a broadcasted ADD.
+       /*softsign_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(6)},
        {kFloat16To32AndInt8To64AndUint8, SupportedRanks::UpTo(8)},
-       /*tanh_input=*/DataTypeConstraint::kFloat16To32,
-       /*tile_input=*/kFloat16To32AndInt32To64AndUint8,
-       /*transpose_input=*/kFloat16To32AndInt8To64AndUint8,
-       /*triangular_input=*/kFloat16To32AndInt32To64AndUint32,
-       // Limited to 5D when broadcasting is required:
-       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/select.h
+       /*tanh_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
+       /*tile_input=*/
+       {kFloat16To32AndInt32To64AndUint8, SupportedRanks::UpTo(8)},
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/transpose.h
+       /*transpose_input=*/
+       {kFloat16To32AndInt8To64AndUint8, SupportedRanks::UpTo(6)},
+       // Polyfilled with MUL, requires broadcasting.
+       /*triangular_input=*/
+       {kFloat16To32AndInt32To64AndUint32, SupportedRanks::UpTo(6)},
        /*where_condition=*/
        {DataTypeConstraint::kUint8, SupportedRanks::UpTo(5)},
        /*where_value=*/
@@ -1636,8 +1697,8 @@ int32_t GraphBuilderTflite::SerializeSubGraphPowMul(
 
 auto GraphBuilderTflite::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.arg_min_max_input.Has(
-      GetOperand(arg_min_max.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.arg_min_max_input.Supports(
+      GetOperand(arg_min_max.input_operand_id).descriptor));
   CHECK(context_properties_.data_type_limits.arg_min_max_output.Has(
       GetOperand(arg_min_max.output_operand_id).descriptor.data_type()));
 
@@ -1793,8 +1854,8 @@ auto GraphBuilderTflite::SerializeSubGraphMaxMin(
 
 auto GraphBuilderTflite::SerializeClamp(const mojom::Clamp& clamp)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.clamp_input.Has(
-      GetOperand(clamp.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.clamp_input.Supports(
+      GetOperand(clamp.input_operand_id).descriptor));
 
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(clamp.input_operand_id));
@@ -1836,8 +1897,8 @@ auto GraphBuilderTflite::SerializeConcat(const mojom::Concat& concat)
 auto GraphBuilderTflite::SerializeCumulativeSum(
     const mojom::CumulativeSum& cumulative_sum)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.cumulative_sum_input.Has(
-      GetOperand(cumulative_sum.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.cumulative_sum_input.Supports(
+      GetOperand(cumulative_sum.input_operand_id).descriptor));
 
   // The axis is validated by ValidateCumulativeSumAndInferOutput(), so the axis
   // doesn't overflow.
@@ -2182,18 +2243,18 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
                                     mojom::ElementWiseUnary::Kind::kCast));
   const int32_t input_tensor_index = input_tensor_info.index;
   const int32_t output_tensor_index = output_tensor_info.index;
-  const OperandDataType input_data_type =
-      GetOperand(op.input_operand_id).descriptor.data_type();
+  const OperandDescriptor& input_descriptor =
+      GetOperand(op.input_operand_id).descriptor;
 
   const DataTypeLimits data_type_limits = context_properties_.data_type_limits;
   switch (op.kind) {
     case mojom::ElementWiseUnary::Kind::kAbs: {
-      CHECK(data_type_limits.abs_input.Has(input_data_type));
+      CHECK(data_type_limits.abs_input.Supports(input_descriptor));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_ABS,
                                      input_tensor_index, output_tensor_index);
     }
     case mojom::ElementWiseUnary::Kind::kCast: {
-      CHECK(data_type_limits.cast_input.Has(input_data_type));
+      CHECK(data_type_limits.cast_input.Supports(input_descriptor));
       return SerializeCastOperation(
           input_tensor_index,
           OperandDataTypeToTFLite(
@@ -2203,71 +2264,71 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
               GetOperand(op.output_operand_id).descriptor.data_type()));
     }
     case mojom::ElementWiseUnary::Kind::kCeil: {
-      CHECK(data_type_limits.ceil_input.Has(input_data_type));
+      CHECK(data_type_limits.ceil_input.Supports(input_descriptor));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_CEIL,
                                      input_tensor_index, output_tensor_index);
     }
     case mojom::ElementWiseUnary::Kind::kCos: {
-      CHECK(data_type_limits.cos_input.Has(input_data_type));
+      CHECK(data_type_limits.cos_input.Supports(input_descriptor));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_COS,
                                      input_tensor_index, output_tensor_index);
     }
     case mojom::ElementWiseUnary::Kind::kExp: {
-      CHECK(data_type_limits.exp_input.Has(input_data_type));
+      CHECK(data_type_limits.exp_input.Supports(input_descriptor));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_EXP,
                                      input_tensor_index, output_tensor_index);
     }
     case mojom::ElementWiseUnary::Kind::kFloor: {
-      CHECK(data_type_limits.floor_input.Has(input_data_type));
+      CHECK(data_type_limits.floor_input.Supports(input_descriptor));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_FLOOR,
                                      input_tensor_index, output_tensor_index);
     }
     case mojom::ElementWiseUnary::Kind::kIdentity: {
-      CHECK(context_properties_.data_type_limits.identity_input.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.identity_input.Supports(
+          input_descriptor));
       return SerializeIdentityOperation(input_tensor_info.index,
                                         output_tensor_info.index,
                                         input_tensor_info.dimensions);
     }
     case mojom::ElementWiseUnary::Kind::kLog: {
-      CHECK(data_type_limits.log_input.Has(input_data_type));
+      CHECK(data_type_limits.log_input.Supports(input_descriptor));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_LOG,
                                      input_tensor_index, output_tensor_index);
     }
     case mojom::ElementWiseUnary::Kind::kLogicalNot: {
-      CHECK(data_type_limits.logical_not_input.Has(input_data_type));
+      CHECK(data_type_limits.logical_not_input.Supports(input_descriptor));
       return SerializeLogicalNot(input_tensor_info, output_tensor_info);
     }
     case mojom::ElementWiseUnary::Kind::kNeg: {
-      CHECK(data_type_limits.neg_input.Has(input_data_type));
+      CHECK(data_type_limits.neg_input.Supports(input_descriptor));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_NEG,
                                      input_tensor_index, output_tensor_index);
     }
     case mojom::ElementWiseUnary::Kind::kReciprocal: {
-      CHECK(data_type_limits.reciprocal_input.Has(input_data_type));
+      CHECK(data_type_limits.reciprocal_input.Supports(input_descriptor));
       return SerializeReciprocal(input_tensor_info, output_tensor_info);
     }
     case mojom::ElementWiseUnary::Kind::kSign: {
-      CHECK(data_type_limits.sign_input.Has(input_data_type));
+      CHECK(data_type_limits.sign_input.Supports(input_descriptor));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_SIGN,
                                      input_tensor_index, output_tensor_index);
     }
     case mojom::ElementWiseUnary::Kind::kSin: {
-      CHECK(data_type_limits.sin_input.Has(input_data_type));
+      CHECK(data_type_limits.sin_input.Supports(input_descriptor));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_SIN,
                                      input_tensor_index, output_tensor_index);
     }
     case mojom::ElementWiseUnary::Kind::kSqrt: {
-      CHECK(data_type_limits.sqrt_input.Has(input_data_type));
+      CHECK(data_type_limits.sqrt_input.Supports(input_descriptor));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_SQRT,
                                      input_tensor_index, output_tensor_index);
     }
     case mojom::ElementWiseUnary::Kind::kTan: {
-      CHECK(data_type_limits.tan_input.Has(input_data_type));
+      CHECK(data_type_limits.tan_input.Supports(input_descriptor));
       return SerializeTan(input_tensor_info, output_tensor_info);
     }
     case mojom::ElementWiseUnary::Kind::kErf: {
-      CHECK(data_type_limits.erf_input.Has(input_data_type));
+      CHECK(data_type_limits.erf_input.Supports(input_descriptor));
       return SerializeErf(input_tensor_info, output_tensor_info);
     }
   }
@@ -2275,8 +2336,8 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
 
 auto GraphBuilderTflite::SerializeElu(const mojom::Elu& elu)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.elu_input.Has(
-      GetOperand(elu.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.elu_input.Supports(
+      GetOperand(elu.input_operand_id).descriptor));
 
   if (elu.alpha != 1.0) {
     // TODO: crbug.com/328736354 - Support custom alpha values.
@@ -2395,8 +2456,8 @@ auto GraphBuilderTflite::SerializeErf(const TensorInfo& input_tensor_info,
 
 auto GraphBuilderTflite::SerializeExpand(const mojom::Expand& expand)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.expand_input.Has(
-      GetOperand(expand.output_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.expand_input.Supports(
+      GetOperand(expand.output_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(expand.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
@@ -2635,8 +2696,8 @@ auto GraphBuilderTflite::SerializeGatherND(const mojom::GatherND& gather_nd)
 
 auto GraphBuilderTflite::SerializeGelu(const mojom::Gelu& gelu)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.gelu_input.Has(
-      GetOperand(gelu.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.gelu_input.Supports(
+      GetOperand(gelu.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(gelu.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
@@ -3710,8 +3771,8 @@ auto GraphBuilderTflite::SerializeHardSigmoid(
   // x + beta))` that is applied to the input tensor element-wise.
   //
   // The subexpression `alpha * x + beta` is considered a linear operation.
-  CHECK(context_properties_.data_type_limits.hard_sigmoid_input.Has(
-      GetOperand(hard_sigmoid.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.hard_sigmoid_input.Supports(
+      GetOperand(hard_sigmoid.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(hard_sigmoid.input_operand_id));
   const int32_t output_tensor_index_of_linear = SerializeTemporaryTensor(
@@ -3732,8 +3793,8 @@ auto GraphBuilderTflite::SerializeHardSigmoid(
 
 auto GraphBuilderTflite::SerializeHardSwish(const mojom::HardSwish& hard_swish)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.hard_swish_input.Has(
-      GetOperand(hard_swish.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.hard_swish_input.Supports(
+      GetOperand(hard_swish.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(hard_swish.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
@@ -3948,8 +4009,8 @@ auto GraphBuilderTflite::SerializeLayerNormalization(
 
 auto GraphBuilderTflite::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.leaky_relu_input.Has(
-      GetOperand(leaky_relu.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.leaky_relu_input.Supports(
+      GetOperand(leaky_relu.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(leaky_relu.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
@@ -3966,8 +4027,8 @@ auto GraphBuilderTflite::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
 
 auto GraphBuilderTflite::SerializeLinear(const mojom::Linear& linear)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.linear_input.Has(
-      GetOperand(linear.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.linear_input.Supports(
+      GetOperand(linear.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(linear.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
@@ -4140,8 +4201,8 @@ auto GraphBuilderTflite::SerializeMatmul(const mojom::Matmul& matmul)
 auto GraphBuilderTflite::SerializePad(const mojom::Pad& pad)
     -> base::expected<OperatorOffset, std::string> {
   CHECK_EQ(pad.beginning_padding.size(), pad.ending_padding.size());
-  CHECK(context_properties_.data_type_limits.pad_input.Has(
-      GetOperand(pad.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.pad_input.Supports(
+      GetOperand(pad.input_operand_id).descriptor));
 
   std::vector<int32_t> paddings;
   paddings.resize(pad.beginning_padding.size() * 2);
@@ -4260,13 +4321,13 @@ auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
   ::tflite::BuiltinOperator operator_code;
   switch (pool2d.kind) {
     case mojom::Pool2d::Kind::kAveragePool2d:
-      CHECK(context_properties_.data_type_limits.average_pool2d_input.Has(
-          input_operand.descriptor.data_type()));
+      CHECK(context_properties_.data_type_limits.average_pool2d_input.Supports(
+          input_operand.descriptor));
       operator_code = ::tflite::BuiltinOperator_AVERAGE_POOL_2D;
       break;
     case mojom::Pool2d::Kind::kMaxPool2d:
-      CHECK(context_properties_.data_type_limits.max_pool2d_input.Has(
-          input_operand.descriptor.data_type()));
+      CHECK(context_properties_.data_type_limits.max_pool2d_input.Supports(
+          input_operand.descriptor));
       operator_code = ::tflite::BuiltinOperator_MAX_POOL_2D;
       break;
     case mojom::Pool2d::Kind::kL2Pool2d:
@@ -4662,31 +4723,31 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
   ::tflite::BuiltinOperator operator_code;
   int32_t input_tensor_index = input_tensor_info.index;
   const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
-  const OperandDataType input_data_type =
-      GetOperand(reduce.input_operand_id).descriptor.data_type();
+  const OperandDescriptor& input_descriptor =
+      GetOperand(reduce.input_operand_id).descriptor;
   switch (reduce.kind) {
     case mojom::Reduce::Kind::kMax:
-      CHECK(data_type_limits.reduce_max_input.Has(input_data_type));
+      CHECK(data_type_limits.reduce_max_input.Supports(input_descriptor));
       operator_code = ::tflite::BuiltinOperator_REDUCE_MAX;
       break;
     case mojom::Reduce::Kind::kMean:
-      CHECK(data_type_limits.reduce_mean_input.Has(input_data_type));
+      CHECK(data_type_limits.reduce_mean_input.Supports(input_descriptor));
       operator_code = ::tflite::BuiltinOperator_MEAN;
       break;
     case mojom::Reduce::Kind::kMin:
-      CHECK(data_type_limits.reduce_min_input.Has(input_data_type));
+      CHECK(data_type_limits.reduce_min_input.Supports(input_descriptor));
       operator_code = ::tflite::BuiltinOperator_REDUCE_MIN;
       break;
     case mojom::Reduce::Kind::kProduct:
-      CHECK(data_type_limits.reduce_product_input.Has(input_data_type));
+      CHECK(data_type_limits.reduce_product_input.Supports(input_descriptor));
       operator_code = ::tflite::BuiltinOperator_REDUCE_PROD;
       break;
     case mojom::Reduce::Kind::kSum:
-      CHECK(data_type_limits.reduce_sum_input.Has(input_data_type));
+      CHECK(data_type_limits.reduce_sum_input.Supports(input_descriptor));
       operator_code = ::tflite::BuiltinOperator_SUM;
       break;
     case mojom::Reduce::Kind::kLogSum:
-      CHECK(data_type_limits.reduce_log_sum_input.Has(input_data_type));
+      CHECK(data_type_limits.reduce_log_sum_input.Supports(input_descriptor));
       // The reduceLogSum can be emulated with appending log operation after
       // reduceSum.
       operator_code = ::tflite::BuiltinOperator_SUM;
@@ -4694,7 +4755,8 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
     case mojom::Reduce::Kind::kLogSumExp: {
       // The reduceLogSumExp can be emulated with adding exp operation before
       // reduceSum and appending log operation after the reduceSum.
-      CHECK(data_type_limits.reduce_log_sum_exp_input.Has(input_data_type));
+      CHECK(
+          data_type_limits.reduce_log_sum_exp_input.Supports(input_descriptor));
       const int32_t output_tensor_index_of_exp = SerializeTemporaryTensor(
           input_tensor_info.dimensions, input_tensor_info.data_type);
       operators_.emplace_back(SerializeUnaryOperation(
@@ -4706,7 +4768,7 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
       break;
     }
     case mojom::Reduce::Kind::kL2: {
-      CHECK(data_type_limits.reduce_l2_input.Has(input_data_type));
+      CHECK(data_type_limits.reduce_l2_input.Supports(input_descriptor));
       // The reduceL2 can be emulated with appending pow(x, 0.5) operation after
       // reduceSumSquare.
       const int32_t output_tensor_index_of_sum = SerializeTemporaryTensor(
@@ -4727,13 +4789,14 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
     case mojom::Reduce::Kind::kSumSquare: {
       // The reduceSumSquare can be emulated with adding pow operation before
       // reduceSum.
-      CHECK(data_type_limits.reduce_sum_square_input.Has(input_data_type));
+      CHECK(
+          data_type_limits.reduce_sum_square_input.Supports(input_descriptor));
       return SerializeReduceSumSquare(input_tensor_info, signed_axes,
                                       reduce.keep_dimensions,
                                       output_tensor_info.index);
     }
     case mojom::Reduce::Kind::kL1: {
-      CHECK(data_type_limits.reduce_l1_input.Has(input_data_type));
+      CHECK(data_type_limits.reduce_l1_input.Supports(input_descriptor));
       // The reduceL1 can be emulated with adding abs operation before
       // reduceSum.
       const int32_t output_tensor_index_of_abs = SerializeTemporaryTensor(
@@ -4800,8 +4863,8 @@ auto GraphBuilderTflite::SerializeRelu(const mojom::Relu& relu)
   // TODO(crbug.com/354625677): Support 32-bit signed integer with
   // TFL::MaximumOp
   // https://www.tensorflow.org/mlir/tfl_ops#tflmaximum_tflmaximumop.
-  CHECK(context_properties_.data_type_limits.relu_input.Has(
-      GetOperand(relu.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.relu_input.Supports(
+      GetOperand(relu.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(relu.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
@@ -4816,8 +4879,8 @@ auto GraphBuilderTflite::SerializeResample2d(
     const mojom::Resample2d& resample2d)
     -> base::expected<OperatorOffset, std::string> {
   // TODO: crbug.com/329543543 - `resample2d.scales` is dropped on the floor.
-  CHECK(context_properties_.data_type_limits.resample2d_input.Has(
-      GetOperand(resample2d.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.resample2d_input.Supports(
+      GetOperand(resample2d.input_operand_id).descriptor));
 
   const std::array<uint32_t, 2> supported_axes = {1, 2};
   CHECK(base::ranges::equal(resample2d.axes, supported_axes));
@@ -4876,8 +4939,8 @@ auto GraphBuilderTflite::SerializeResample2d(
 auto GraphBuilderTflite::SerializeReshape(uint64_t input_operand_id,
                                           uint64_t output_operand_id)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.reshape_input.Has(
-      GetOperand(input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.reshape_input.Supports(
+      GetOperand(input_operand_id).descriptor));
   ASSIGN_OR_RETURN(
       const TensorInfo& input_tensor_info,
       SerializeInputTensorInfo(input_operand_id, /*quantize_params=*/0,
@@ -4895,8 +4958,8 @@ auto GraphBuilderTflite::SerializeReshape(uint64_t input_operand_id,
 
 auto GraphBuilderTflite::SerializeReverse(const mojom::Reverse& reverse)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.reverse_input.Has(
-      GetOperand(reverse.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.reverse_input.Supports(
+      GetOperand(reverse.input_operand_id).descriptor));
 
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(reverse.input_operand_id));
@@ -4937,8 +5000,8 @@ auto GraphBuilderTflite::SerializeReverse(const mojom::Reverse& reverse)
 
 auto GraphBuilderTflite::SerializeSigmoid(const mojom::Sigmoid& sigmoid)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.sigmoid_input.Has(
-      GetOperand(sigmoid.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.sigmoid_input.Supports(
+      GetOperand(sigmoid.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(sigmoid.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
@@ -5058,8 +5121,8 @@ auto GraphBuilderTflite::SerializeScatterND(const mojom::ScatterND& scatter_nd)
 
 auto GraphBuilderTflite::SerializeSlice(const mojom::Slice& slice)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.slice_input.Has(
-      GetOperand(slice.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.slice_input.Supports(
+      GetOperand(slice.input_operand_id).descriptor));
 
   // The number of starts, sizes and strides are the same as input rank that is
   // verified in ValidateSliceAndInferOutput() function.
@@ -5117,8 +5180,8 @@ auto GraphBuilderTflite::SerializeSlice(const mojom::Slice& slice)
 
 auto GraphBuilderTflite::SerializeSoftmax(const mojom::Softmax& softmax)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.softmax_input.Has(
-      GetOperand(softmax.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.softmax_input.Supports(
+      GetOperand(softmax.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(softmax.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
@@ -5165,8 +5228,8 @@ auto GraphBuilderTflite::SerializeSoftmax(const mojom::Softmax& softmax)
 
 auto GraphBuilderTflite::SerializeSoftplus(const mojom::Softplus& softplus)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.softplus_input.Has(
-      GetOperand(softplus.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.softplus_input.Supports(
+      GetOperand(softplus.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(softplus.input_operand_id));
 
@@ -5200,8 +5263,8 @@ auto GraphBuilderTflite::SerializeSoftplus(const mojom::Softplus& softplus)
 
 auto GraphBuilderTflite::SerializeSoftsign(const mojom::Softsign& softsign)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.softsign_input.Has(
-      GetOperand(softsign.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.softsign_input.Supports(
+      GetOperand(softsign.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(softsign.input_operand_id));
 
@@ -5313,8 +5376,8 @@ auto GraphBuilderTflite::SerializeTan(const TensorInfo& input_tensor_info,
 
 auto GraphBuilderTflite::SerializeTanh(const mojom::Tanh& tanh)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.tanh_input.Has(
-      GetOperand(tanh.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.tanh_input.Supports(
+      GetOperand(tanh.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(tanh.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
@@ -5327,8 +5390,8 @@ auto GraphBuilderTflite::SerializeTanh(const mojom::Tanh& tanh)
 
 auto GraphBuilderTflite::SerializeTile(const mojom::Tile& tile)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.tile_input.Has(
-      GetOperand(tile.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.tile_input.Supports(
+      GetOperand(tile.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(tile.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
@@ -5354,9 +5417,10 @@ auto GraphBuilderTflite::SerializeTile(const mojom::Tile& tile)
 auto GraphBuilderTflite::SerializeTriangular(
     const mojom::Triangular& triangular)
     -> base::expected<OperatorOffset, std::string> {
-  OperandDataType data_type =
-      GetOperand(triangular.input_operand_id).descriptor.data_type();
-  CHECK(context_properties_.data_type_limits.triangular_input.Has(data_type));
+  const OperandDescriptor& input_descriptor =
+      GetOperand(triangular.input_operand_id).descriptor;
+  CHECK(context_properties_.data_type_limits.triangular_input.Supports(
+      input_descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(triangular.input_operand_id));
 
@@ -5382,7 +5446,7 @@ auto GraphBuilderTflite::SerializeTriangular(
   //
   // TODO(crbug.com/359729258): Save GPU memory consumption.
   int32_t mask_tensor_index;
-  switch (data_type) {
+  switch (input_descriptor.data_type()) {
     case OperandDataType::kFloat16:
       // The float16 data type has been casted to float32.
       [[fallthrough]];
@@ -5427,9 +5491,8 @@ auto GraphBuilderTflite::SerializeTriangular(
 
 auto GraphBuilderTflite::SerializeTranspose(const mojom::Transpose& transpose)
     -> base::expected<OperatorOffset, std::string> {
-  const OperandDataType& data_type =
-      GetOperand(transpose.input_operand_id).descriptor.data_type();
-  CHECK(context_properties_.data_type_limits.transpose_input.Has(data_type));
+  CHECK(context_properties_.data_type_limits.transpose_input.Supports(
+      GetOperand(transpose.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(transpose.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,

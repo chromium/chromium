@@ -19,7 +19,13 @@ struct SupportedRanks {
   uint32_t min;
   uint32_t max;
 
+  static constexpr SupportedRanks Exactly(uint32_t rank) {
+    return {rank, rank};
+  }
   static constexpr SupportedRanks UpTo(uint32_t max) { return {0, max}; }
+  static constexpr SupportedRanks NonScalarUpTo(uint32_t max) {
+    return {1, max};
+  }
 
   friend bool operator==(const SupportedRanks& lhs, const SupportedRanks& rhs);
 };

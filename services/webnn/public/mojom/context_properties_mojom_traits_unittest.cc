@@ -24,19 +24,23 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        /*constant=*/
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        /*arg_min_max_input=*/
-       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+       {{webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+        kMaxRank},
        /*arg_min_max_output=*/
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        /*batch_normalization_input=*/
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        /*cast_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
-       /*clamp_input=*/{webnn::OperandDataType::kFloat16},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
+       /*clamp_input=*/
+       {{webnn::OperandDataType::kFloat16}, kMaxRank},
        /*concat_inputs=*/
        {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
        /*conv2d_input=*/webnn::SupportedDataTypes::All(),
        /*conv_transpose2d_input=*/webnn::SupportedDataTypes::All(),
-       /*cumulative_sum_input=*/webnn::SupportedDataTypes::All(),
+       /*cumulative_sum_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
        /*dequantize_linear_input=*/
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        /*dequantize_linear_scale=*/
@@ -66,33 +70,49 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        /*logical_and_input=*/{{webnn::OperandDataType::kFloat16}, kMaxRank},
        /*logical_or_input=*/{{webnn::OperandDataType::kFloat16}, kMaxRank},
        /*logical_xor_input=*/{{webnn::OperandDataType::kFloat16}, kMaxRank},
-       /*logical_not_input=*/webnn::SupportedDataTypes::All(),
+       /*logical_not_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
        /*logical_output=*/{webnn::OperandDataType::kUint64},
        /*abs_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*ceil_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*cos_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*erf_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*exp_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*floor_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*identity_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
-       /*log_input=*/webnn::SupportedDataTypes::All(),
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
+       /*log_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
        /*neg_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*reciprocal_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
-       /*sign_input=*/{webnn::OperandDataType::kUint8},
-       /*sin_input=*/webnn::SupportedDataTypes::All(),
-       /*sqrt_input=*/webnn::SupportedDataTypes::All(),
-       /*tan_input=*/webnn::SupportedDataTypes::All(),
-       /*elu_input=*/webnn::SupportedDataTypes::All(),
-       /*expand_input=*/webnn::SupportedDataTypes::All(),
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
+       /*sign_input=*/
+       {{webnn::OperandDataType::kUint8}, kMaxRank},
+       /*sin_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
+       /*sqrt_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
+       /*tan_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
+       /*elu_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
+       /*expand_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
        /*gather_input=*/webnn::SupportedDataTypes::All(),
        /*gather_indices=*/webnn::SupportedDataTypes::All(),
        /*gather_elements_input=*/{webnn::OperandDataType::kUint64},
@@ -103,47 +123,70 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {webnn::OperandDataType::kInt32, webnn::OperandDataType::kUint32,
         webnn::OperandDataType::kInt64},
        /*gelu_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*gemm_input=*/webnn::SupportedDataTypes::All(),
        /*gru_input=*/{webnn::OperandDataType::kFloat32},
        /*gru_cell_input=*/{webnn::OperandDataType::kFloat32},
-       /*hard_sigmoid_input=*/{webnn::OperandDataType::kFloat32},
-       /*hard_swish_input=*/{webnn::OperandDataType::kFloat32},
+       /*hard_sigmoid_input=*/
+       {{webnn::OperandDataType::kFloat32}, kMaxRank},
+       /*hard_swish_input=*/
+       {{webnn::OperandDataType::kFloat32}, kMaxRank},
        /*instance_normalization_input=*/{webnn::OperandDataType::kFloat32},
        /*layer_normalization_input=*/{webnn::OperandDataType::kFloat32},
-       /*leaky_relu_input=*/{webnn::OperandDataType::kFloat32},
-       /*linear_input=*/{webnn::OperandDataType::kFloat32},
+       /*leaky_relu_input=*/
+       {{webnn::OperandDataType::kFloat32}, kMaxRank},
+       /*linear_input=*/
+       {{webnn::OperandDataType::kFloat32}, kMaxRank},
        /*lstm_input=*/{webnn::OperandDataType::kFloat32},
        /*lstm_cell_input=*/
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        /*matmul_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
        /*pad_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*average_pool2d_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
-       /*l2_pool2d_input=*/{webnn::OperandDataType::kUint8},
-       /*max_pool2d_input=*/webnn::SupportedDataTypes::All(),
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
+       /*l2_pool2d_input=*/
+       {{webnn::OperandDataType::kUint8}, kMaxRank},
+       /*max_pool2d_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
        /*prelu_input=*/webnn::SupportedDataTypes::All(),
        /*quantize_linear_input=*/{webnn::OperandDataType::kFloat32},
        /*quantize_linear_zero_point=*/
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},
        /*reduce_l1_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint8},
-       /*reduce_l2_input=*/{webnn::OperandDataType::kUint8},
-       /*reduce_log_sum_input=*/webnn::SupportedDataTypes::All(),
-       /*reduce_log_sum_exp_input=*/webnn::SupportedDataTypes::All(),
-       /*reduce_max_input=*/webnn::SupportedDataTypes::All(),
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint8},
+        kMaxRank},
+       /*reduce_l2_input=*/
+       {{webnn::OperandDataType::kUint8}, kMaxRank},
+       /*reduce_log_sum_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
+       /*reduce_log_sum_exp_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
+       /*reduce_max_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
        /*reduce_mean_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
-       /*reduce_min_input=*/{webnn::OperandDataType::kFloat32},
-       /*reduce_product_input=*/webnn::SupportedDataTypes::All(),
-       /*reduce_sum_input=*/webnn::SupportedDataTypes::All(),
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
+       /*reduce_min_input=*/
+       {{webnn::OperandDataType::kFloat32}, kMaxRank},
+       /*reduce_product_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
+       /*reduce_sum_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
        /*reduce_sum_square_input=*/
-       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
-       /*relu_input=*/webnn::SupportedDataTypes::All(),
-       /*resample2d_input=*/webnn::SupportedDataTypes::All(),
-       /*reshape_input=*/webnn::SupportedDataTypes::All(),
-       /*reverse_input=*/webnn::SupportedDataTypes::All(),
+       {{webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+        kMaxRank},
+       /*relu_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
+       /*resample2d_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
+       /*reshape_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
+       /*reverse_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
        /*scatter_elements_input=*/
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        /*scatter_elements_indices=*/
@@ -152,21 +195,27 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        /*scatter_nd_indices=*/
        {webnn::OperandDataType::kInt32, webnn::OperandDataType::kUint32},
-       /*sigmoid_input=*/webnn::SupportedDataTypes::All(),
-       /*slice_input=*/webnn::SupportedDataTypes::All(),
+       /*sigmoid_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
+       /*slice_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
        /*softmax_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint8},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint8},
+        kMaxRank},
        /*softplus_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint32},
-       /*softsign_input=*/webnn::SupportedDataTypes::All(),
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint32},
+        kMaxRank},
+       /*softsign_input=*/
+       {webnn::SupportedDataTypes::All(), kMaxRank},
        /*split_input=*/
        {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},
         kMaxRank},
        /*tanh_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint8},
-       /*tile_input=*/{webnn::OperandDataType::kUint8},
-       /*transpose_input=*/webnn::SupportedDataTypes::All(),
-       /*triangular_input=*/webnn::SupportedDataTypes::All(),
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint8},
+        kMaxRank},
+       /*tile_input=*/{{webnn::OperandDataType::kUint8}, kMaxRank},
+       /*transpose_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+       /*triangular_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
        /*where_condition=*/{webnn::SupportedDataTypes::All(), kMaxRank},
        /*where_value=*/
        {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},

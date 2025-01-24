@@ -17,6 +17,7 @@
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
@@ -968,20 +969,19 @@ MLOperand* BuildElementWiseBinary(
   return output;
 }
 
-MLOperand* BuildUnaryOperator(
-    MLGraphBuilder* builder,
-    ExceptionState& exception_state,
-    blink_mojom::Operation::Tag kind,
-    const webnn::SupportedDataTypes& data_type_constraint,
-    MLOperand* input,
-    const MLOperatorOptions* options) {
+MLOperand* BuildUnaryOperator(MLGraphBuilder* builder,
+                              ExceptionState& exception_state,
+                              blink_mojom::Operation::Tag kind,
+                              const webnn::SupportedTensors& tensor_constraint,
+                              MLOperand* input,
+                              const MLOperatorOptions* options) {
   // The output tensor of unary operator has the same data type and dimensions
   // as its input tensor.
-  if (!data_type_constraint.Has(input->DataType())) {
+  if (!tensor_constraint.Supports(input->Descriptor())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
-        String(NotSupportedInputArgumentTypeError(input->DataType(),
-                                                  data_type_constraint)));
+        String(NotSupportedInputArgumentError(input->Descriptor(),
+                                              tensor_constraint)));
     return nullptr;
   }
 
@@ -997,15 +997,15 @@ MLOperand* BuildElementWiseUnaryOperator(
     MLGraphBuilder* builder,
     ExceptionState& exception_state,
     blink_mojom::ElementWiseUnary::Kind kind,
-    const webnn::SupportedDataTypes& data_type_constraint,
+    const webnn::SupportedTensors& tensor_constraint,
     MLOperand* input,
     const MLOperatorOptions* options) {
   const std::string label = options->label().Utf8();
-  if (!data_type_constraint.Has(input->DataType())) {
+  if (!tensor_constraint.Supports(input->Descriptor())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
-        String(NotSupportedInputArgumentTypeError(input->DataType(),
-                                                  data_type_constraint)));
+        String(webnn::NotSupportedInputArgumentError(input->Descriptor(),
+                                                     tensor_constraint)));
     return nullptr;
   }
 
@@ -2014,12 +2014,12 @@ MLOperand* MLGraphBuilder::cast(MLOperand* input,
 
   const std::string label = options->label().Utf8();
 
-  if (!ml_context_->GetProperties().data_type_limits.cast_input.Has(
-          input->DataType())) {
+  if (!ml_context_->GetProperties().data_type_limits.cast_input.Supports(
+          input->Descriptor())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
-        String(NotSupportedInputArgumentTypeError(
-            input->DataType(),
+        String(NotSupportedInputArgumentError(
+            input->Descriptor(),
             ml_context_->GetProperties().data_type_limits.cast_input)));
     return nullptr;
   }
@@ -2027,13 +2027,13 @@ MLOperand* MLGraphBuilder::cast(MLOperand* input,
   const webnn::OperandDataType cast_data_type =
       FromBlinkDataType(output_data_type.AsEnum());
 
-  if (!ml_context_->GetProperties().data_type_limits.cast_input.Has(
+  if (!ml_context_->GetProperties().data_type_limits.cast_input.data_types.Has(
           cast_data_type)) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
         String(NotSupportedOpOutputTypeError(
-            cast_data_type,
-            ml_context_->GetProperties().data_type_limits.cast_input)));
+            cast_data_type, ml_context_->GetProperties()
+                                .data_type_limits.cast_input.data_types)));
     return nullptr;
   }
 
@@ -2122,13 +2122,13 @@ MLOperand* MLGraphBuilder::expand(MLOperand* input,
 
   const std::string label = options->label().Utf8();
 
-  const webnn::SupportedDataTypes& data_type_constraint =
+  const webnn::SupportedTensors& tensor_constraint =
       ml_context_->GetProperties().data_type_limits.expand_input;
-  if (!data_type_constraint.Has(input->DataType())) {
+  if (!tensor_constraint.Supports(input->Descriptor())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
-        String(NotSupportedInputArgumentTypeError(input->DataType(),
-                                                  data_type_constraint)));
+        String(NotSupportedInputArgumentError(input->Descriptor(),
+                                              tensor_constraint)));
     return nullptr;
   }
 
@@ -2799,12 +2799,12 @@ MLOperand* MLGraphBuilder::reshape(MLOperand* input,
 
   const std::string label = options->label().Utf8();
 
-  if (!ml_context_->GetProperties().data_type_limits.reshape_input.Has(
-          input->DataType())) {
+  if (!ml_context_->GetProperties().data_type_limits.reshape_input.Supports(
+          input->Descriptor())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
-        String(NotSupportedInputArgumentTypeError(
-            input->DataType(),
+        String(NotSupportedInputArgumentError(
+            input->Descriptor(),
             ml_context_->GetProperties().data_type_limits.reshape_input)));
     return nullptr;
   }
