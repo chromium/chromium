@@ -127,9 +127,8 @@ void AffiliatedMatchHelper::GetAffiliatedAndGroupedRealms(
   FacetURI facet_uri(
       FacetURI::FromPotentiallyInvalidSpec(observed_form.signon_realm));
   affiliation_service_->GetAffiliationsAndBranding(
-      facet_uri, affiliations::AffiliationService::StrategyOnCacheMiss::FAIL,
-      base::BindOnce(&ProcessAffiliatedFacets, facet_uri)
-          .Then(barrier_callback));
+      facet_uri, base::BindOnce(&ProcessAffiliatedFacets, facet_uri)
+                     .Then(barrier_callback));
 
   affiliation_service_->GetGroupingInfo(
       {facet_uri}, base::BindOnce(&ProcessGroupedFacets, facet_uri)
@@ -159,7 +158,6 @@ void AffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
     // making it safe to use base::Unretained(form) below.
     affiliation_service_->GetAffiliationsAndBranding(
         FacetURI::FromPotentiallyInvalidSpec(form->signon_realm),
-        affiliations::AffiliationService::StrategyOnCacheMiss::FAIL,
         base::BindOnce(&AffiliatedMatchHelper::
                            CompleteInjectAffiliationAndBrandingInformation,
                        weak_ptr_factory_.GetWeakPtr(), base::Unretained(form),

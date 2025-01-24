@@ -94,10 +94,6 @@ class AffiliationServiceImpl : public AffiliationService,
   void PrefetchChangePasswordURLs(const std::vector<GURL>& urls,
                                   base::OnceClosure callback) override;
 
-  // Clears the |change_password_urls_| map and cancels prefetch requests if
-  // still running.
-  void Clear() override;
-
   // In case no valid URL was found, a method returns an empty URL.
   GURL GetChangePasswordURL(const GURL& url) const override;
 
@@ -113,7 +109,6 @@ class AffiliationServiceImpl : public AffiliationService,
 
   void GetAffiliationsAndBranding(
       const FacetURI& facet_uri,
-      AffiliationService::StrategyOnCacheMiss cache_miss_strategy,
       ResultCallback result_callback) override;
 
   void Prefetch(const FacetURI& facet_uri,
