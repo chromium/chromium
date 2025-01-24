@@ -19,6 +19,7 @@
 @protocol ContextualPanelEntrypointVisibilityDelegate;
 @protocol FakeboxButtonsSnapshotProvider;
 @protocol HelpCommands;
+@protocol LensCommands;
 @protocol LensOverlayCommands;
 @protocol LocationBarOffsetProvider;
 @protocol LoadQueryCommands;
@@ -79,6 +80,7 @@ class Tracker;
 @property(nonatomic, weak) id<ActivityServiceCommands,
                               ApplicationCommands,
                               LoadQueryCommands,
+                              LensCommands,
                               LensOverlayCommands,
                               OmniboxCommands>
     dispatcher;
