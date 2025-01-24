@@ -236,7 +236,7 @@ class OpenerHeuristicBrowserTest : public ContentBrowserTest,
   void RecordUserActivationInteraction(const GURL& url, base::Time time) {
     auto* dips = GetDipsService();
     dips->storage()
-        ->AsyncCall(&BtmStorage::RecordInteraction)
+        ->AsyncCall(&BtmStorage::RecordUserActivation)
         .WithArgs(url, time, dips->GetCookieMode());
     dips->storage()->FlushPostedTasksForTesting();
   }

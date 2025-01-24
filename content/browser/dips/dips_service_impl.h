@@ -75,12 +75,12 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
       BtmRedirectChainInfoPtr chain,
       base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback);
 
-  void RecordInteractionForTesting(const GURL& url) override;
+  void RecordUserActivationForTesting(const GURL& url) override;
 
-  void DidSiteHaveInteractionSince(
+  void DidSiteHaveUserActivationSince(
       const GURL& url,
       base::Time bound,
-      CheckInteractionCallback callback) const override;
+      CheckUserActivationCallback callback) const override;
 
   // This allows unit-testing the metrics emitted by HandleRedirect() without
   // instantiating BtmService.

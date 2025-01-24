@@ -2146,7 +2146,7 @@ class RemoveBtmEventsTester {
           .WithArgs(url, storage_time.value(), BtmCookieMode::kBlock3PC);
     }
     if (interaction_time.has_value()) {
-      storage_->AsyncCall(&BtmStorage::RecordInteraction)
+      storage_->AsyncCall(&BtmStorage::RecordUserActivation)
           .WithArgs(url, interaction_time.value(), BtmCookieMode::kBlock3PC);
     }
     storage_->FlushPostedTasksForTesting();
@@ -2194,7 +2194,7 @@ TEST_F(BrowsingDataRemoverImplDipsTest, RemoveBtmEventsForLastHour) {
     ASSERT_TRUE(state_val1.has_value());
     EXPECT_TRUE(state_val1->site_storage_times.has_value());
     ASSERT_TRUE(state_val2.has_value());
-    EXPECT_TRUE(state_val2->user_interaction_times.has_value());
+    EXPECT_TRUE(state_val2->user_activation_times.has_value());
   }
 
   uint64_t remove_mask = TpcBlockingBrowserClient::DATA_TYPE_HISTORY |
@@ -2209,7 +2209,7 @@ TEST_F(BrowsingDataRemoverImplDipsTest, RemoveBtmEventsForLastHour) {
 
     EXPECT_FALSE(state_val1.has_value());
     ASSERT_TRUE(state_val2.has_value());
-    EXPECT_TRUE(state_val2->user_interaction_times.has_value());
+    EXPECT_TRUE(state_val2->user_activation_times.has_value());
   }
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(), remove_mask,
@@ -2247,11 +2247,11 @@ TEST_F(BrowsingDataRemoverImplDipsTest, RemoveBtmEventsByType) {
     EXPECT_TRUE(state_val1->site_storage_times.has_value());
 
     ASSERT_TRUE(state_val2.has_value());
-    EXPECT_TRUE(state_val2->user_interaction_times.has_value());
+    EXPECT_TRUE(state_val2->user_activation_times.has_value());
 
     ASSERT_TRUE(state_val3.has_value());
     EXPECT_TRUE(state_val3->site_storage_times.has_value());
-    EXPECT_TRUE(state_val3->user_interaction_times.has_value());
+    EXPECT_TRUE(state_val3->user_activation_times.has_value());
   }
 
   // Remove interaction events from DIPS Storage.
@@ -2272,7 +2272,7 @@ TEST_F(BrowsingDataRemoverImplDipsTest, RemoveBtmEventsByType) {
 
     ASSERT_TRUE(state_val3.has_value());
     EXPECT_TRUE(state_val3->site_storage_times.has_value());
-    EXPECT_TRUE(state_val3->user_interaction_times.has_value());
+    EXPECT_TRUE(state_val3->user_activation_times.has_value());
   }
 
   // Remove storage events from DIPS Storage.
@@ -2292,7 +2292,7 @@ TEST_F(BrowsingDataRemoverImplDipsTest, RemoveBtmEventsByType) {
 
     ASSERT_TRUE(state_val3.has_value());
     EXPECT_FALSE(state_val3->site_storage_times.has_value());
-    EXPECT_TRUE(state_val3->user_interaction_times.has_value());
+    EXPECT_TRUE(state_val3->user_activation_times.has_value());
   }
 }
 

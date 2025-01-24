@@ -115,9 +115,9 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
         base::StrCat({"full_name-", test_account->email}));
   }
 
-  bool DidSiteHaveInteraction(std::string_view domain) {
+  bool DidSiteHaveUserActivation(std::string_view domain) {
     base::test::TestFuture<bool> future;
-    dips_service()->DidSiteHaveInteractionSince(
+    dips_service()->DidSiteHaveUserActivationSince(
         GetURL(domain), base::Time::Min(), future.GetCallback());
     return future.Get();
   }
@@ -152,7 +152,7 @@ TEST_F(BrowserSigninDetectorServiceTest, AccountWithNoExtendedAccountInfo) {
             signin::AccountManagedStatusFinder::Outcome::kPending);
 
   // There should be no recorded interactions.
-  ASSERT_FALSE(DidSiteHaveInteraction(kIdentityProviderDomain));
+  ASSERT_FALSE(DidSiteHaveUserActivation(kIdentityProviderDomain));
 }
 
 TEST_F(BrowserSigninDetectorServiceTest, NonEnterpriseAccount) {
@@ -171,7 +171,7 @@ TEST_F(BrowserSigninDetectorServiceTest, NonEnterpriseAccount) {
             signin::AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown);
 
   // There should be a recorded interaction for the`kIdentityProviderDomain`.
-  EXPECT_TRUE(DidSiteHaveInteraction(kIdentityProviderDomain));
+  EXPECT_TRUE(DidSiteHaveUserActivation(kIdentityProviderDomain));
 }
 
 TEST_F(BrowserSigninDetectorServiceTest, EnterpriseAccount) {
@@ -190,11 +190,11 @@ TEST_F(BrowserSigninDetectorServiceTest, EnterpriseAccount) {
             signin::AccountManagedStatusFinder::Outcome::kEnterprise);
 
   // There should be a recorded interaction for the`kIdentityProviderDomain`.
-  EXPECT_TRUE(DidSiteHaveInteraction(kIdentityProviderDomain));
+  EXPECT_TRUE(DidSiteHaveUserActivation(kIdentityProviderDomain));
 
   // There should be a recorded interaction for the
   // `kEnterpriseAccount.host_domain`.
-  EXPECT_TRUE(DidSiteHaveInteraction(kEnterpriseAccount.host_domain));
+  EXPECT_TRUE(DidSiteHaveUserActivation(kEnterpriseAccount.host_domain));
 }
 
 TEST_F(BrowserSigninDetectorServiceTest,
@@ -217,7 +217,7 @@ TEST_F(BrowserSigninDetectorServiceTest,
       signin::AccountManagedStatusFinder::Outcome::kEnterpriseGoogleDotCom);
 
   // There should be a recorded interaction for the `kIdentityProviderDomain`.
-  EXPECT_TRUE(DidSiteHaveInteraction(kIdentityProviderDomain));
+  EXPECT_TRUE(DidSiteHaveUserActivation(kIdentityProviderDomain));
 }
 
 TEST_F(BrowserSigninDetectorServiceTest, LateObservation) {
@@ -238,9 +238,9 @@ TEST_F(BrowserSigninDetectorServiceTest, LateObservation) {
   InitBtmService();
 
   // There should be a recorded interaction for the `kIdentityProviderDomain`.
-  EXPECT_TRUE(DidSiteHaveInteraction(kIdentityProviderDomain));
+  EXPECT_TRUE(DidSiteHaveUserActivation(kIdentityProviderDomain));
 
   // There should be a recorded interaction for the
   // `kEnterpriseAccount.host_domain`.
-  EXPECT_TRUE(DidSiteHaveInteraction(kEnterpriseAccount.host_domain));
+  EXPECT_TRUE(DidSiteHaveUserActivation(kEnterpriseAccount.host_domain));
 }

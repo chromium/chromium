@@ -1227,7 +1227,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
   std::optional<StateValue> state =
       GetBtmState(GetDipsService(web_contents), url);
   ASSERT_TRUE(state.has_value());
-  ASSERT_TRUE(state->user_interaction_times.has_value());
+  ASSERT_TRUE(state->user_activation_times.has_value());
 
   // Visit initial page on a.test.
   ASSERT_TRUE(NavigateToURL(
@@ -2627,7 +2627,7 @@ IN_PROC_BROWSER_TEST_F(
   std::optional<StateValue> state =
       GetBtmState(GetDipsService(web_contents), url);
   ASSERT_TRUE(state.has_value());
-  ASSERT_FALSE(state->user_interaction_times.has_value());
+  ASSERT_FALSE(state->user_activation_times.has_value());
   ASSERT_TRUE(state->web_authn_assertion_times.has_value());
 
   // Navigate with a click (not a redirect) to d.test, which statefully
@@ -2891,7 +2891,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   // Verify the interaction was recorded in the DIPS DB.
   std::optional<StateValue> state =
       GetBtmState(GetDipsService(web_contents), url);
-  ASSERT_THAT(state->user_interaction_times,
+  ASSERT_THAT(state->user_activation_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
   // Click again, just before kBtmTimestampUpdateInterval elapses.
@@ -2899,7 +2899,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   SimulateMouseClick();
   // Verify the second interaction was NOT recorded, due to throttling.
   state = GetBtmState(GetDipsService(web_contents), url);
-  ASSERT_THAT(state->user_interaction_times,
+  ASSERT_THAT(state->user_activation_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
   // Click a third time, after kBtmTimestampUpdateInterval has passed since the
@@ -2908,7 +2908,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   SimulateMouseClick();
   // Verify the third interaction WAS recorded.
   state = GetBtmState(GetDipsService(web_contents), url);
-  ASSERT_THAT(state->user_interaction_times,
+  ASSERT_THAT(state->user_activation_times,
               testing::Optional(testing::Pair(
                   start_time, start_time + kBtmTimestampUpdateInterval)));
 }
@@ -2925,7 +2925,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   // Verify the interaction was recorded in the DIPS DB.
   std::optional<StateValue> state =
       GetBtmState(GetDipsService(web_contents), url);
-  ASSERT_THAT(state->user_interaction_times,
+  ASSERT_THAT(state->user_activation_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
   // Navigate to a new page and click, only a second after the previous click.
@@ -2935,7 +2935,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   SimulateMouseClick();
   // Verify the second interaction was also recorded (not throttled).
   state = GetBtmState(GetDipsService(web_contents), url2);
-  ASSERT_THAT(state->user_interaction_times,
+  ASSERT_THAT(state->user_activation_times,
               testing::Optional(testing::Pair(start_time + base::Seconds(1),
                                               start_time + base::Seconds(1))));
 }
@@ -3324,11 +3324,11 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxApiInteractionTest,
                                                           bounce_back_url));
   EndRedirectChain();
 
-  // Expect DIPS to not have recorded user interaction.
+  // Expect DIPS to not have recorded user activation.
   std::optional<StateValue> state =
       GetBtmState(GetDipsService(web_contents), bounce_url);
   ASSERT_TRUE(state.has_value());
-  EXPECT_EQ(state->user_interaction_times, std::nullopt);
+  EXPECT_EQ(state->user_activation_times, std::nullopt);
 
   // Expect DIPS to have classified the bounce to the PAT-using site as
   // stateless (i.e., to have recorded a bounce, but no stateful bounce).
@@ -3399,11 +3399,11 @@ IN_PROC_BROWSER_TEST_F(
                                                           bounce_back_url));
   EndRedirectChain();
 
-  // Expect DIPS to not have recorded user interaction.
+  // Expect DIPS to not have recorded user activation.
   std::optional<StateValue> state =
       GetBtmState(GetDipsService(web_contents), bounce_url);
   ASSERT_TRUE(state.has_value());
-  EXPECT_EQ(state->user_interaction_times, std::nullopt);
+  EXPECT_EQ(state->user_activation_times, std::nullopt);
 
   // Expect DIPS to have classified the bounce to the PAT-using site as
   // stateless (= to have recorded a bounce but no stateful bounce).
@@ -3477,11 +3477,11 @@ IN_PROC_BROWSER_TEST_F(
                                                           bounce_back_url));
   EndRedirectChain();
 
-  // Expect DIPS to not have recorded user interaction.
+  // Expect DIPS to not have recorded user activation.
   std::optional<StateValue> state =
       GetBtmState(GetDipsService(web_contents), bounce_url);
   ASSERT_TRUE(state.has_value());
-  EXPECT_EQ(state->user_interaction_times, std::nullopt);
+  EXPECT_EQ(state->user_activation_times, std::nullopt);
 
   // Expect DIPS to have classified the bounce to the PAT-using site as
   // stateless (= to have recorded a bounce but no stateful bounce).
@@ -3542,11 +3542,11 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxApiInteractionTest,
                                                           bounce_back_url));
   EndRedirectChain();
 
-  // Expect DIPS to not have recorded user interaction.
+  // Expect DIPS to not have recorded user activation.
   std::optional<StateValue> state =
       GetBtmState(GetDipsService(web_contents), bounce_url);
   ASSERT_TRUE(state.has_value());
-  EXPECT_EQ(state->user_interaction_times, std::nullopt);
+  EXPECT_EQ(state->user_activation_times, std::nullopt);
 
   // Expect DIPS to have classified the bounce to the PAT-using site as
   // stateless (= to have recorded a bounce but no stateful bounce).

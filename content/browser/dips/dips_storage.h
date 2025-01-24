@@ -53,17 +53,17 @@ class CONTENT_EXPORT BtmStorage {
   // Delete all DB rows for |sites|.
   void RemoveRows(const std::vector<std::string>& sites);
   // Delete all DB rows for |sites| without a protective event. A protective
-  // event is a user interaction or successful WebAuthn assertion.
+  // event is a user activation or successful WebAuthn assertion.
   void RemoveRowsWithoutProtectiveEvent(const std::set<std::string>& sites);
 
   // DIPS Helper Method Impls --------------------------------------------------
 
   // Record that |url| wrote to storage.
   void RecordStorage(const GURL& url, base::Time time, BtmCookieMode mode);
-  // Record that the user interacted on |url|.
-  // TODO (crbug.com/371304526): Change "Interaction" in DIPS to
-  // "UserActivation"
-  void RecordInteraction(const GURL& url, base::Time time, BtmCookieMode mode);
+  // Record that there was a user activation on |url|.
+  void RecordUserActivation(const GURL& url,
+                            base::Time time,
+                            BtmCookieMode mode);
   void RecordWebAuthnAssertion(const GURL& url,
                                base::Time time,
                                BtmCookieMode mode);
@@ -74,7 +74,7 @@ class CONTENT_EXPORT BtmStorage {
   // Storage querying Methods --------------------------------------------------
 
   // Returns the subset of sites in |sites| WITHOUT a protective event recorded.
-  // A protective event is a user interaction or successful WebAuthn assertion.
+  // A protective event is a user activation or successful WebAuthn assertion.
   std::set<std::string> FilterSitesWithoutProtectiveEvent(
       std::set<std::string> sites) const;
 
@@ -99,13 +99,11 @@ class CONTENT_EXPORT BtmStorage {
   std::vector<std::string> GetSitesToClear(
       std::optional<base::TimeDelta> grace_period) const;
 
-  // Returns true if `url`'s site has had user interaction since `bound`.
-  // TODO (crbug.com/371304526): Change "Interaction" in DIPS to
-  // "UserActivation"
-  bool DidSiteHaveInteractionSince(const GURL& url, base::Time bound);
+  // Returns true if `url`'s site has had user activation since `bound`.
+  bool DidSiteHaveUserActivationSince(const GURL& url, base::Time bound);
 
-  // Returns the timestamp of the last user interaction time on `url`, or
-  // std::nullopt if there has been no user interaction on `url`.
+  // Returns the timestamp of the last user activation time on `url`, or
+  // std::nullopt if there has been no user activation on `url`.
   std::optional<base::Time> LastUserActivationTime(const GURL& url);
 
   // Returns the timestamp of the last web authentication time on `url`, or

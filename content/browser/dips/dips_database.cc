@@ -177,8 +177,8 @@ bool BtmDatabase::InitTables() {
       "site TEXT PRIMARY KEY NOT NULL,"
       "first_site_storage_time INTEGER,"
       "last_site_storage_time INTEGER,"
-      "first_user_interaction_time INTEGER,"
-      "last_user_interaction_time INTEGER,"
+      "first_user_activation_time INTEGER,"
+      "last_user_activation_time INTEGER,"
       "first_stateful_bounce_time INTEGER,"
       "last_stateful_bounce_time INTEGER,"
       "first_bounce_time INTEGER,"
@@ -336,7 +336,7 @@ bool BtmDatabase::ExecuteSqlForTesting(const base::cstring_view sql) {
 
 bool BtmDatabase::Write(const std::string& site,
                         const TimestampRange& storage_times,
-                        const TimestampRange& interaction_times,
+                        const TimestampRange& user_activation_times,
                         const TimestampRange& stateful_bounce_times,
                         const TimestampRange& bounce_times,
                         const TimestampRange& web_authn_assertion_times) {
@@ -358,8 +358,8 @@ bool BtmDatabase::Write(const std::string& site,
       "site,"
       "first_site_storage_time,"
       "last_site_storage_time,"
-      "first_user_interaction_time,"
-      "last_user_interaction_time,"
+      "first_user_activation_time,"
+      "last_user_activation_time,"
       "first_stateful_bounce_time,"
       "last_stateful_bounce_time,"
       "first_bounce_time,"
@@ -375,7 +375,7 @@ bool BtmDatabase::Write(const std::string& site,
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kWriteSql));
   statement.BindString(0, site);
   BindTimesOrNull(statement, storage_times, 1, 2);
-  BindTimesOrNull(statement, interaction_times, 3, 4);
+  BindTimesOrNull(statement, user_activation_times, 3, 4);
   BindTimesOrNull(statement, stateful_bounce_times, 5, 6);
   BindTimesOrNull(statement, bounce_times, 7, 8);
   BindTimesOrNull(statement, web_authn_assertion_times, 9, 10);
@@ -435,8 +435,8 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
       "SELECT site,"
           "first_site_storage_time,"
           "last_site_storage_time,"
-          "first_user_interaction_time,"
-          "last_user_interaction_time,"
+          "first_user_activation_time,"
+          "last_user_activation_time,"
           "first_stateful_bounce_time,"
           "last_stateful_bounce_time,"
           "first_bounce_time,"
@@ -461,26 +461,26 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
     return std::nullopt;
   }
 
-  std::optional<base::Time> last_user_interaction_time =
+  std::optional<base::Time> last_user_activation_time =
       ColumnOptionalTime(&statement, 4);
   std::optional<base::Time> last_web_authn_assertion_time =
       ColumnOptionalTime(&statement, 10);
-  // If the last interaction and last web authn assertion have expired, treat
-  // this entry as not in the database so that callers rewrite the entry for
-  // `site` as if it was deleted.
-  if (HasExpired(last_user_interaction_time.has_value()
-                     ? last_user_interaction_time
+  // If the last user activation and last web authn assertion have expired,
+  // treat this entry as not in the database so that callers rewrite the entry
+  // for `site` as if it was deleted.
+  if (HasExpired(last_user_activation_time.has_value()
+                     ? last_user_activation_time
                      : last_web_authn_assertion_time) &&
       HasExpired(last_web_authn_assertion_time.has_value()
                      ? last_web_authn_assertion_time
-                     : last_user_interaction_time)) {
+                     : last_user_activation_time)) {
     return std::nullopt;
   }
 
   std::vector<BtmErrorCode> errors;
   TimestampRange site_storage_times =
       RangeFromColumns(&statement, 1, 2, errors);
-  TimestampRange user_interaction_times =
+  TimestampRange user_activation_times =
       RangeFromColumns(&statement, 3, 4, errors);
   TimestampRange stateful_bounce_times =
       RangeFromColumns(&statement, 5, 6, errors);
@@ -523,7 +523,7 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
     return std::nullopt;
   }
 
-  return StateValue{site_storage_times, user_interaction_times,
+  return StateValue{site_storage_times, user_activation_times,
                     stateful_bounce_times, bounce_times,
                     web_authn_assertion_times};
 }
@@ -650,7 +650,7 @@ std::vector<std::string> BtmDatabase::GetSitesThatBounced(
     "SELECT site FROM bounces "
     "WHERE "
       "first_bounce_time<? "
-      "AND last_user_interaction_time IS NULL "
+      "AND last_user_activation_time IS NULL "
       "AND last_web_authn_assertion_time IS NULL "
     "ORDER BY site";
   // clang-format on
@@ -681,7 +681,7 @@ std::vector<std::string> BtmDatabase::GetSitesThatBouncedWithState(
     "SELECT site FROM bounces "
     "WHERE "
       "first_stateful_bounce_time<? "
-      "AND last_user_interaction_time IS NULL "
+      "AND last_user_activation_time IS NULL "
       "AND last_web_authn_assertion_time IS NULL "
     "ORDER BY site";
   // clang-format on
@@ -713,7 +713,7 @@ std::vector<std::string> BtmDatabase::GetSitesThatUsedStorage(
     "SELECT site FROM bounces "
     "WHERE "
       "first_site_storage_time<? "
-      "AND last_user_interaction_time IS NULL "
+      "AND last_user_activation_time IS NULL "
       "AND last_web_authn_assertion_time IS NULL "
     "ORDER BY site";
   // clang-format on
@@ -741,7 +741,7 @@ std::set<std::string> BtmDatabase::FilterSitesWithProtectiveEvent(
   ClearExpiredRows();
 
   sql::Statement statement(db_->GetUniqueStatement(base::StrCat(
-      {"SELECT site,last_user_interaction_time,"
+      {"SELECT site,last_user_activation_time,"
        "last_web_authn_assertion_time FROM bounces "
        "WHERE site IN(",
        base::JoinString(std::vector<std::string_view>(sites.size(), "?"), ","),
@@ -755,12 +755,12 @@ std::set<std::string> BtmDatabase::FilterSitesWithProtectiveEvent(
 
   std::set<std::string> sites_with_protective_event;
   while (statement.Step()) {
-    std::optional<base::Time> last_user_interaction =
+    std::optional<base::Time> last_user_activation =
         ColumnOptionalTime(&statement, 1);
     std::optional<base::Time> last_web_authn_assertion_time =
         ColumnOptionalTime(&statement, 2);
 
-    if (last_user_interaction.has_value() ||
+    if (last_user_activation.has_value() ||
         last_web_authn_assertion_time.has_value()) {
       sites_with_protective_event.insert(statement.ColumnString(0));
     }
@@ -782,8 +782,8 @@ size_t BtmDatabase::ClearExpiredRows() {
   static constexpr char kClearAllExpiredBouncesTableSql[] =  // clang-format off
     "DELETE FROM bounces "
     "WHERE MAX("
-      "COALESCE(last_user_interaction_time,last_web_authn_assertion_time),"
-      "COALESCE(last_web_authn_assertion_time,last_user_interaction_time)"
+      "COALESCE(last_user_activation_time,last_web_authn_assertion_time),"
+      "COALESCE(last_web_authn_assertion_time,last_user_activation_time)"
     ")<?";
   // clang-format on
 
@@ -943,21 +943,21 @@ bool BtmDatabase::ClearTimestamps(const base::Time& delete_begin,
   ClearExpiredRows();
 
   if ((type & BtmEventRemovalType::kHistory) == BtmEventRemovalType::kHistory) {
-    static constexpr char kClearInteractionSql[] =  // clang-format off
+    static constexpr char kClearUserActivationSql[] =  // clang-format off
         "UPDATE bounces SET "
-            "first_user_interaction_time=NULL,"
-            "last_user_interaction_time=NULL "
-            "WHERE first_user_interaction_time>=? AND "
-                  "last_user_interaction_time<=?";
+            "first_user_activation_time=NULL,"
+            "last_user_activation_time=NULL "
+            "WHERE first_user_activation_time>=? AND "
+                  "last_user_activation_time<=?";
     // clang-format on
-    DCHECK(db_->IsSQLValid(kClearInteractionSql));
+    DCHECK(db_->IsSQLValid(kClearUserActivationSql));
 
-    sql::Statement s_clear_interaction(
-        db_->GetCachedStatement(SQL_FROM_HERE, kClearInteractionSql));
-    s_clear_interaction.BindTime(0, delete_begin);
-    s_clear_interaction.BindTime(1, delete_end);
+    sql::Statement s_clear_user_activation(
+        db_->GetCachedStatement(SQL_FROM_HERE, kClearUserActivationSql));
+    s_clear_user_activation.BindTime(0, delete_begin);
+    s_clear_user_activation.BindTime(1, delete_end);
 
-    if (!s_clear_interaction.Run()) {
+    if (!s_clear_user_activation.Run()) {
       return false;
     }
 
@@ -1074,19 +1074,19 @@ bool BtmDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
   }
 
   if ((type & BtmEventRemovalType::kHistory) == BtmEventRemovalType::kHistory) {
-    static constexpr char kUpdateFirstInteractionSql[] =  // clang-format off
-        "UPDATE bounces SET first_user_interaction_time=?2 "
-            "WHERE first_user_interaction_time>=?1 AND "
-                  "first_user_interaction_time<?2";
+    static constexpr char kUpdateFirstUserActivationSql[] =  // clang-format off
+        "UPDATE bounces SET first_user_activation_time=?2 "
+            "WHERE first_user_activation_time>=?1 AND "
+                  "first_user_activation_time<?2";
     // clang-format on
-    DCHECK(db_->IsSQLValid(kUpdateFirstInteractionSql));
+    DCHECK(db_->IsSQLValid(kUpdateFirstUserActivationSql));
 
-    sql::Statement s_first_interaction(
-        db_->GetCachedStatement(SQL_FROM_HERE, kUpdateFirstInteractionSql));
-    s_first_interaction.BindTime(0, delete_begin);
-    s_first_interaction.BindTime(1, delete_end);
+    sql::Statement s_first_user_activation(
+        db_->GetCachedStatement(SQL_FROM_HERE, kUpdateFirstUserActivationSql));
+    s_first_user_activation.BindTime(0, delete_begin);
+    s_first_user_activation.BindTime(1, delete_end);
 
-    if (!s_first_interaction.Run()) {
+    if (!s_first_user_activation.Run()) {
       return false;
     }
 
@@ -1178,19 +1178,19 @@ bool BtmDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
   }
 
   if ((type & BtmEventRemovalType::kHistory) == BtmEventRemovalType::kHistory) {
-    static constexpr char kUpdateLastInteractionSql[] =  // clang-format off
-        "UPDATE bounces SET last_user_interaction_time=?1 "
-            "WHERE last_user_interaction_time>?1 AND "
-                  "last_user_interaction_time<=?2";
+    static constexpr char kUpdateLastUserActivationSql[] =  // clang-format off
+        "UPDATE bounces SET last_user_activation_time=?1 "
+            "WHERE last_user_activation_time>?1 AND "
+                  "last_user_activation_time<=?2";
     // clang-format on
-    DCHECK(db_->IsSQLValid(kUpdateLastInteractionSql));
+    DCHECK(db_->IsSQLValid(kUpdateLastUserActivationSql));
 
-    sql::Statement s_last_interaction(
-        db_->GetCachedStatement(SQL_FROM_HERE, kUpdateLastInteractionSql));
-    s_last_interaction.BindTime(0, delete_begin);
-    s_last_interaction.BindTime(1, delete_end);
+    sql::Statement s_last_user_activation(
+        db_->GetCachedStatement(SQL_FROM_HERE, kUpdateLastUserActivationSql));
+    s_last_user_activation.BindTime(0, delete_begin);
+    s_last_user_activation.BindTime(1, delete_end);
 
-    if (!s_last_interaction.Run()) {
+    if (!s_last_user_activation.Run()) {
       return false;
     }
 
@@ -1308,8 +1308,8 @@ bool BtmDatabase::RemoveEmptyRows() {
     "DELETE FROM bounces "
     "WHERE first_site_storage_time IS NULL "
       "AND last_site_storage_time IS NULL "
-      "AND first_user_interaction_time IS NULL "
-      "AND last_user_interaction_time IS NULL "
+      "AND first_user_activation_time IS NULL "
+      "AND last_user_activation_time IS NULL "
       "AND first_stateful_bounce_time IS NULL "
       "AND last_stateful_bounce_time IS NULL "
       "AND first_bounce_time IS NULL "
@@ -1394,22 +1394,22 @@ size_t BtmDatabase::GarbageCollectOldest(const BtmDatabaseTable table,
       "ORDER BY "
         "MAX("
           "COALESCE("
-            "last_user_interaction_time,"
+            "last_user_activation_time,"
             "last_web_authn_assertion_time,"
             "last_site_storage_time"
           "),"
           "COALESCE("
             "last_web_authn_assertion_time,"
-            "last_user_interaction_time,"
+            "last_user_activation_time,"
             "last_site_storage_time"
           "),"
           "COALESCE("
             "last_site_storage_time,"
-            "last_user_interaction_time,"
+            "last_user_activation_time,"
             "last_web_authn_assertion_time"
           ")"
         ") ASC,"
-        "last_user_interaction_time ASC,"
+        "last_user_activation_time ASC,"
         "last_web_authn_assertion_time ASC,"
         "last_site_storage_time ASC "
       "LIMIT ?"
@@ -1458,22 +1458,22 @@ std::vector<std::string> BtmDatabase::GetGarbageCollectOldestSitesForTesting(
     "ORDER BY "
       "MAX("
         "COALESCE("
-          "last_user_interaction_time,"
+          "last_user_activation_time,"
           "last_web_authn_assertion_time,"
           "last_site_storage_time"
         "),"
         "COALESCE("
           "last_web_authn_assertion_time,"
-          "last_user_interaction_time,"
+          "last_user_activation_time,"
           "last_site_storage_time"
         "),"
         "COALESCE("
           "last_site_storage_time,"
-          "last_user_interaction_time,"
+          "last_user_activation_time,"
           "last_web_authn_assertion_time"
         ")"
       ") ASC,"
-      "last_user_interaction_time ASC,"
+      "last_user_activation_time ASC,"
       "last_web_authn_assertion_time ASC,"
       "last_site_storage_time ASC";
     // clang-format on

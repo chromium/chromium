@@ -105,7 +105,7 @@ struct CONTENT_EXPORT BtmRedirectInfo {
 
   // These properties aren't known at the time of creation, and are filled in
   // later:
-  std::optional<bool> has_interaction;
+  std::optional<bool> site_had_user_activation;
   std::optional<size_t> chain_index;
   // See BtmRedirectChainInfo::chain_id.
   std::optional<int32_t> chain_id;

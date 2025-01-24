@@ -58,6 +58,10 @@ class CONTENT_EXPORT BtmDatabaseMigrator {
   // `is_authentication_interaction` field to the Popups table.
   bool MigrateSchemaVersionFrom7To8();
 
+  // Migrates from v8 to v9 of the DIPS database schema. This migration renames
+  // the `user_interaction` columns to be `user_activation`.
+  bool MigrateSchemaVersionFrom8To9();
+
   BtmDatabaseMigrator(const BtmDatabaseMigrator&) = delete;
   BtmDatabaseMigrator& operator=(const BtmDatabaseMigrator&) = delete;
 

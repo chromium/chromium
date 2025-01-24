@@ -6467,6 +6467,7 @@ data/devtools/worker_imported_module.js
 data/devtools/zoom.html
 data/dips/v6.sql
 data/dips/v7.sql
+data/dips/v8.sql
 data/direct_sockets/open.html
 data/direct_sockets/open.html.mock-http-headers
 data/direct_sockets/open.js

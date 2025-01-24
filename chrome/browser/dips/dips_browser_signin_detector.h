@@ -46,9 +46,9 @@ class BtmBrowserSigninDetector : public KeyedService,
   void Shutdown() override;
   // End KeyedService overrides.
 
-  // Processes account |info| and records interaction(s) in the DIPS Database if
-  // the account |info| is relevant.
-  void RecordInteractionsIfRelevant(const AccountInfo& info);
+  // Processes account |info| and records user activation(s) in the DIPS
+  // Database if the account |info| is relevant.
+  void RecordUserActivationsIfRelevant(const AccountInfo& info);
 
   raw_ptr<content::BtmService> dips_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;

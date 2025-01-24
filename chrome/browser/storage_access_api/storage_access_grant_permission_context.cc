@@ -491,7 +491,7 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
   }
 
   GURL site(request_data.requesting_origin);
-  dips_service->DidSiteHaveInteractionSince(
+  dips_service->DidSiteHaveUserActivationSince(
       site, base::Time::Now() - kStorageAccessAPITopLevelUserInteractionBound,
       base::BindOnce(&StorageAccessGrantPermissionContext::
                          OnCheckedUserInteractionHeuristic,

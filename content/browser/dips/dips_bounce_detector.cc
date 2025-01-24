@@ -531,9 +531,9 @@ void BtmWebContentsObserver::RecordEvent(BtmRecordedEvent event,
           .WithArgs(url, time, dips_service_->GetCookieMode());
       return;
     }
-    case BtmRecordedEvent::kInteraction: {
+    case BtmRecordedEvent::kUserActivation: {
       dips_service_->storage()
-          ->AsyncCall(&BtmStorage::RecordInteraction)
+          ->AsyncCall(&BtmStorage::RecordUserActivation)
           .WithArgs(url, time, dips_service_->GetCookieMode());
       return;
     }
@@ -1176,7 +1176,7 @@ void BtmWebContentsObserver::FrameReceivedUserActivation(
   if (!UpdateTimestamp(last_interaction_timestamp_, now)) {
     return;
   }
-  RecordEvent(BtmRecordedEvent::kInteraction, url, now);
+  RecordEvent(BtmRecordedEvent::kUserActivation, url, now);
 }
 
 void BtmBounceDetector::WebAuthnAssertionRequestSucceeded() {
