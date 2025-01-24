@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_REAUTHENTICATION_HANDLER_H_
 #define IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_REAUTHENTICATION_HANDLER_H_
 
-#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
-
 #import <UIKit/UIKit.h>
+
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 
 // Handler for showing the hardwarde reauthentication input to user, or
 // a dialog about setting a passcode if nothing else is available.

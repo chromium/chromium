@@ -60,4 +60,4 @@ TEST_F(MetricsUtilTest, CheckUMACountUpdatesAsExpected) {
   VerifyMetricForKey(kMetric2, 0);
 }
 
-}  // credential_provider_extension
+}  // namespace credential_provider_extension

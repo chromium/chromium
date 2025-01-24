@@ -48,7 +48,7 @@ namespace {
 UIColor* BackgroundColor() {
   return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
-}
+}  // namespace
 
 enum class PasskeyCreationEligibility {
   kCanCreate,
