@@ -97,6 +97,7 @@ class HeightTransitionHandler {
     private @Nullable BrowserControlsStateProvider.Observer mTransitionFinishedObserver;
 
     private boolean mForceUpdateHeight;
+    private boolean mApplyScrimOverlay;
 
     /**
      * Create the manager for transitions to show / hide the tab strip by updating the strip height.
@@ -289,10 +290,11 @@ class HeightTransitionHandler {
         mForceUpdateHeight = forceUpdateHeight;
     }
 
-    void onTabStripSizeChanged(int width, int topPadding) {
+    void onTabStripSizeChanged(int width, int topPadding, boolean applyScrimOverlay) {
         if (width == mTabStripWidth && topPadding == mTopPadding) return;
         mTabStripWidth = width;
         mTopPadding = topPadding;
+        mApplyScrimOverlay = applyScrimOverlay;
 
         int oldToken = mOnLayoutToken;
         mOnLayoutToken = mDeferTransitionTokenHolder.acquireToken();
@@ -430,7 +432,9 @@ class HeightTransitionHandler {
 
         assert mTabStripTransitionDelegateSupplier.get() != null
                 : "TabStripTransitionDelegate should be available.";
-        mTabStripTransitionDelegateSupplier.get().onHeightChanged(mTabStripHeight);
+        mTabStripTransitionDelegateSupplier
+                .get()
+                .onHeightChanged(mTabStripHeight, mApplyScrimOverlay);
 
         // If top control is already at steady state, notify right away.
         if (isTopControlAtSteadyState()) {

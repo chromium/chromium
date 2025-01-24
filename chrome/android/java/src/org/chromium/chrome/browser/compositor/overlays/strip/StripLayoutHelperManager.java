@@ -30,6 +30,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -116,6 +117,7 @@ public class StripLayoutHelperManager
                 TabStripTransitionDelegate,
                 TopResumedActivityChangedObserver,
                 AppHeaderObserver {
+    private static final String TAG = "StripLayoutHelperMgr";
 
     /**
      * POD type that contains the necessary tab model info on startup. Used in the startup flicker
@@ -211,6 +213,8 @@ public class StripLayoutHelperManager
     private boolean mTabStripObscured;
     private float mStripTransitionScrimOpacity;
     private Animator mFadeTransitionAnimator;
+    // This will be set only when a strip height transition runs to update the strip visibility and
+    // not when this transition runs to solely update the strip top padding.
     private boolean mIsHeightTransitioning;
     private final ToolbarManager mToolbarManager;
     private final StatusBarColorController mStatusBarColorController;
@@ -844,21 +848,31 @@ public class StripLayoutHelperManager
     // Implements TabStripTransitionDelegate.
 
     @Override
-    public void onHeightChanged(int newHeightPx) {
-        mIsHeightTransitioning = true;
-        boolean hideStrip = newHeightPx == 0;
-        mStripVisibilityStateSupplier.set(
-                hideStrip ? StripVisibilityState.GONE : StripVisibilityState.VISIBLE);
-        mStripTransitionScrimOpacity = hideStrip ? 0f : 1f;
-        // Update the strip visibility state in StatusBarController just after the margins are
-        // updated during a hide->show transition so that the status bar assumes the base tab strip
-        // color for the remaining duration of the transition while a scrim is applied.
-        if (!hideStrip) {
-            mStatusBarColorController.setTabStripHiddenOnTablet(false);
+    public void onHeightChanged(int newHeightPx, boolean applyScrimOverlay) {
+        if (applyScrimOverlay
+                && mFadeTransitionAnimator != null
+                && mFadeTransitionAnimator.isRunning()) {
+            Log.w(
+                    TAG,
+                    "Scrim update may be conflicted due to simultaneous fade and height"
+                            + " transitions.");
         }
-        // Set the status bar color and scrim overlay at the start of the transition.
-        mStatusBarColorController.setTabStripColorOverlay(
-                getStripTransitionScrimColor(), mStripTransitionScrimOpacity);
+        if (applyScrimOverlay) {
+            mIsHeightTransitioning = true;
+            boolean hideStrip = newHeightPx == 0;
+            mStripVisibilityStateSupplier.set(
+                    hideStrip ? StripVisibilityState.GONE : StripVisibilityState.VISIBLE);
+            mStripTransitionScrimOpacity = hideStrip ? 0f : 1f;
+            // Update the strip visibility state in StatusBarController just after the margins are
+            // updated during a hide->show transition so that the status bar assumes the base tab
+            // strip color for the remaining duration of the transition while a scrim is applied.
+            if (!hideStrip) {
+                mStatusBarColorController.setTabStripHiddenOnTablet(false);
+            }
+            // Set the status bar color and scrim overlay at the start of the transition.
+            mStatusBarColorController.setTabStripColorOverlay(
+                    getStripTransitionScrimColor(), mStripTransitionScrimOpacity);
+        }
 
         if (mIsLayoutOptimizationsEnabled) {
             // Convert the input HeightPx to Dp.
@@ -875,6 +889,9 @@ public class StripLayoutHelperManager
         // Opacity is already the desired value, return early.
         if (newOpacity == mStripTransitionScrimOpacity) return;
 
+        assert !mIsHeightTransitioning
+                : "Fade transition is requested when height transition to update the scrim is in"
+                        + " progress.";
         boolean showStrip = newOpacity == 0f;
         if (mFadeTransitionAnimator != null && mFadeTransitionAnimator.isRunning()) {
             mFadeTransitionAnimator.cancel();
@@ -898,6 +915,9 @@ public class StripLayoutHelperManager
     }
 
     private void onFadeTransitionEnd(boolean showStrip) {
+        assert !mIsHeightTransitioning
+                : "Height transition to update the scrim should not be running when a fade"
+                        + " transition is finishing.";
         mFadeTransitionAnimator = null;
         mStripVisibilityStateSupplier.set(
                 showStrip ? StripVisibilityState.VISIBLE : StripVisibilityState.INVISIBLE);
@@ -905,9 +925,14 @@ public class StripLayoutHelperManager
 
     @Override
     public void onHeightTransitionFinished() {
+        if (!mIsHeightTransitioning) return;
+
+        assert mFadeTransitionAnimator == null || !mFadeTransitionAnimator.isRunning()
+                : "Fade transition should not be running when a height transition to update the"
+                        + " scrim is finishing.";
         mIsHeightTransitioning = false;
         mStripTransitionScrimOpacity = 0f;
-        //  Update the strip visibility state in StatusBarColorController only after a show->hide
+        // Update the strip visibility state in StatusBarColorController only after a show->hide
         // transition, so that the status bar assumes the toolbar color when the strip is hidden.
         if (getStripVisibilityState() == StripVisibilityState.GONE) {
             mStatusBarColorController.setTabStripHiddenOnTablet(true);

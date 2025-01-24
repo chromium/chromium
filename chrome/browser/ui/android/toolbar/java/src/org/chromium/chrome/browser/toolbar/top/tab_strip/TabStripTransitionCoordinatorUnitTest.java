@@ -804,11 +804,29 @@ public class TabStripTransitionCoordinatorUnitTest {
     // Tests for transitions initiated during desktop windowing mode changes.
 
     @Test
+    public void smallFullscreenWindowToSmallDesktopWindow_TokenNotInUse() {
+        doTestDesktopWindowModeChanged(
+                /* enterDesktopWindow= */ true,
+                /* smallSourceWindow= */ true,
+                /* smallDestinationWindow= */ true,
+                /* tokenInUse= */ false);
+    }
+
+    @Test
     public void smallFullscreenWindowToLargeDesktopWindow_TokenNotInUse() {
         doTestDesktopWindowModeChanged(
                 /* enterDesktopWindow= */ true,
                 /* smallSourceWindow= */ true,
                 /* smallDestinationWindow= */ false,
+                /* tokenInUse= */ false);
+    }
+
+    @Test
+    public void largeFullscreenWindowToSmallDesktopWindow_TokenNotInUse() {
+        doTestDesktopWindowModeChanged(
+                /* enterDesktopWindow= */ true,
+                /* smallSourceWindow= */ false,
+                /* smallDestinationWindow= */ true,
                 /* tokenInUse= */ false);
     }
 
@@ -887,6 +905,8 @@ public class TabStripTransitionCoordinatorUnitTest {
             destinationWidth =
                     smallDestinationWindow ? NARROW_NORMAL_WINDOW_WIDTH : LARGE_NORMAL_WINDOW_WIDTH;
         }
+        // Update browser controls offset override to run height transitions to completion.
+        doReturn(true).when(mBrowserControlsVisibilityManager).offsetOverridden();
 
         // Initialize the coordinator with the start state.
         setUpTabStripTransitionCoordinator(!enterDesktopWindow, sourceWidth);
@@ -904,6 +924,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         // Verify the last height request made to the transition delegate.
         int expectedHeight;
         int expectedHeightAfterTokenRelease;
+        boolean expectedApplyScrimOverlay = false;
         if (enterDesktopWindow) {
             expectedHeightAfterTokenRelease = TEST_TAB_STRIP_HEIGHT + mReservedTopPadding;
             expectedHeight = tokenInUse ? NOTHING_OBSERVED : expectedHeightAfterTokenRelease;
@@ -915,6 +936,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                     tokenInUse
                             ? TEST_TAB_STRIP_HEIGHT + mReservedTopPadding
                             : expectedHeightAfterTokenRelease;
+            expectedApplyScrimOverlay = true;
         }
         Assert.assertEquals(
                 "Height is not as expected.", expectedHeight, mObserver.heightRequested);
@@ -941,6 +963,11 @@ public class TabStripTransitionCoordinatorUnitTest {
                     expectedHeightAfterTokenRelease,
                     mObserver.heightRequested);
         }
+
+        Assert.assertEquals(
+                "Scrim overlay is not applied as expected.",
+                expectedApplyScrimOverlay,
+                mDelegate.applyScrimOverlay);
     }
 
     private void setUpTabStripTransitionCoordinator(boolean isInDesktopWindow, int windowWidth) {
@@ -1194,6 +1221,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         public int heightChanged = NOTHING_OBSERVED;
         public boolean heightTransitionFinished;
         public float scrimOpacityRequested = NOTHING_OBSERVED;
+        public boolean applyScrimOverlay;
         private @StripVisibilityState int mStripVisibilityState = StripVisibilityState.UNKNOWN;
 
         void reset() {
@@ -1201,13 +1229,17 @@ public class TabStripTransitionCoordinatorUnitTest {
             heightTransitionFinished = false;
             scrimOpacityRequested = NOTHING_OBSERVED;
             mStripVisibilityState = StripVisibilityState.UNKNOWN;
+            applyScrimOverlay = false;
         }
 
         @Override
-        public void onHeightChanged(int newHeight) {
+        public void onHeightChanged(int newHeight, boolean applyScrimOverlay) {
             heightChanged = newHeight;
-            mStripVisibilityState =
-                    newHeight == 0 ? StripVisibilityState.GONE : StripVisibilityState.VISIBLE;
+            if (applyScrimOverlay) {
+                mStripVisibilityState =
+                        newHeight == 0 ? StripVisibilityState.GONE : StripVisibilityState.VISIBLE;
+            }
+            this.applyScrimOverlay = applyScrimOverlay;
         }
 
         @Override

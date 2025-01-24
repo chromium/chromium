@@ -55,8 +55,11 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
          * toolbar reserved for the tab strip.
          *
          * @param newHeight The height same as {@link #getTabStripHeight()}.
+         * @param applyScrimOverlay Whether the strip scrim should be updated during the transition.
+         *     {@code true} when the transition expects to update the strip visibility, {@code
+         *     false} otherwise.
          */
-        default void onHeightChanged(int newHeight) {}
+        default void onHeightChanged(int newHeight, boolean applyScrimOverlay) {}
 
         /** Notify when the tab strip height transition is completed by the browser controls. */
         default void onHeightTransitionFinished() {}
@@ -335,11 +338,18 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         mFadeTransitionHandler.setForceFadeInStrip(mForceFadeInStrip);
 
         boolean isInDesktopWindow = AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager);
-        if (!isInDesktopWindow || mForceUpdateHeight) {
-            mHeightTransitionHandler.onTabStripSizeChanged(width, topPadding);
+        boolean runHeightTransition = !isInDesktopWindow || mForceUpdateHeight;
+        boolean runFadeTransition = isInDesktopWindow || mForceFadeInStrip;
+
+        if (runHeightTransition) {
+            // The height transition should apply the strip scrim overlay only when its goal is to
+            // update the strip visibility. In a desktop window, the height transition runs solely
+            // to update the strip top padding and it is expected of the fade transition to
+            // control the strip visibility by updating the scrim in this case when applicable.
+            mHeightTransitionHandler.onTabStripSizeChanged(width, topPadding, !isInDesktopWindow);
         }
 
-        if (isInDesktopWindow || mForceFadeInStrip) {
+        if (runFadeTransition) {
             mFadeTransitionHandler.onTabStripSizeChanged(width);
         }
 
