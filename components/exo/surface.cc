@@ -82,21 +82,11 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(exo::Surface*)
 
 namespace exo {
 
-BASE_FEATURE(kExoPerSurfaceOcclusion,
-             "ExoPerSurfaceOcclusion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDisableNonYUVOverlaysFromExo,
              "DisableNonYUVOverlaysFromExo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
-
-bool IsExoOcclusionEnabled() {
-  static bool is_enabled =
-      base::FeatureList::IsEnabled(kExoPerSurfaceOcclusion);
-  return is_enabled;
-}
 
 // A property key containing the surface that is associated with
 // window. If unset, no surface is associated with window.
@@ -1613,19 +1603,32 @@ static bool IsOccludedByPreviousSqs(
     const gfx::Transform& quad_to_target_transform,
     const gfx::Rect& quad_rect,
     const gfx::MaskFilterInfo& msk) {
-  viz::SharedQuadState* prev_sqs =
+  const viz::SharedQuadState* prev_sqs =
       !render_pass->shared_quad_state_list.empty()
           ? render_pass->shared_quad_state_list.back()
           : nullptr;
-  // Limit the cases here to pixel aligned occlusions so all tests are known to
-  // be in the same space.
-  if (prev_sqs && quad_to_target_transform.IsIdentity() &&
-      prev_sqs->quad_to_target_transform.IsIdentity() &&
-      prev_sqs->are_contents_opaque && prev_sqs->opacity == 1.f) {
-    if (prev_sqs->clip_rect && !prev_sqs->clip_rect->Contains(quad_rect)) {
+
+  if (!prev_sqs ||
+      !prev_sqs->quad_to_target_transform
+           .NonDegeneratePreserves2dAxisAlignment() ||
+      !quad_to_target_transform.NonDegeneratePreserves2dAxisAlignment()) {
+    return false;
+  }
+
+  if (prev_sqs->are_contents_opaque && prev_sqs->opacity == 1.f) {
+    const gfx::Rect quad_rect_in_target_space =
+        cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
+            quad_to_target_transform, quad_rect);
+    if (prev_sqs->clip_rect &&
+        !prev_sqs->clip_rect->Contains(quad_rect_in_target_space)) {
       return false;
     }
-    if (prev_sqs->quad_layer_rect.Contains(quad_rect)) {
+
+    const gfx::Rect sqs_rect_in_target =
+        cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
+            prev_sqs->quad_to_target_transform,
+            prev_sqs->visible_quad_layer_rect);
+    if (sqs_rect_in_target.Contains(quad_rect_in_target_space)) {
       if (msk == prev_sqs->mask_filter_info) {
         return true;
       }
@@ -1822,8 +1825,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
     }
   }
 
-  if (IsExoOcclusionEnabled() &&
-      IsOccludedByPreviousSqs(render_pass, quad_to_target_transform, quad_rect,
+  if (IsOccludedByPreviousSqs(render_pass, quad_to_target_transform, quad_rect,
                               msk)) {
     render_pass->damage_rect.Union(gfx::ToEnclosedRect(damage_rect_px));
     if (current_resource_.id) {
