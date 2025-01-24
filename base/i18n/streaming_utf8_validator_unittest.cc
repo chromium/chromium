@@ -130,7 +130,7 @@ const char* const valid[] = {
     "\xef\xbb\xbf",  // UTF-8 BOM
 };
 
-const char* const* const valid_end = valid + std::size(valid);
+const char* const* const valid_end = std::end(valid);
 
 const char* const invalid[] = {
     // always invalid bytes
@@ -176,7 +176,7 @@ const char* const invalid[] = {
     "\xff\xfe",
 };
 
-const char* const* const invalid_end = invalid + std::size(invalid);
+const char* const* const invalid_end = std::end(invalid);
 
 // A ForwardIterator which returns all the non-empty prefixes of the elements of
 // "valid".

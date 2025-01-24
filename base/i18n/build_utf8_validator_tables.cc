@@ -320,9 +320,8 @@ uint8_t MakeState(const StringSet& set,
       {0, 1},
       {range.from(), target_state},
       {static_cast<uint8_t>(range.to() + 1), 1}};
-  states->emplace_back(
-      new_state_initializer,
-      new_state_initializer + std::size(new_state_initializer));
+  states->emplace_back(std::begin(new_state_initializer),
+                       std::end(new_state_initializer));
   const uint8_t new_state_number =
       base::checked_cast<uint8_t>(states->size() - 1);
   CHECK(state_map->insert(std::make_pair(set, new_state_number)).second);
@@ -354,9 +353,8 @@ std::vector<State> GenerateStates(const PairVector& pairs) {
       const StateRange new_range_initializer[] = {
           {range.from(), target_state},
           {static_cast<uint8_t>(range.to() + 1), 1}};
-      states[0].insert(
-          states[0].end(), new_range_initializer,
-          new_range_initializer + std::size(new_range_initializer));
+      states[0].insert(states[0].end(), std::begin(new_range_initializer),
+                       std::end(new_range_initializer));
     }
   }
   return states;
