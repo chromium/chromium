@@ -18,7 +18,6 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 
 namespace collaboration {
 
-
 // iOS implementation of CollaborationControllerDelegate.
 class IOSCollaborationControllerDelegate
     : public CollaborationControllerDelegate {

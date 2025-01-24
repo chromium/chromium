@@ -163,7 +163,6 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
     const data_sharing::GroupToken& token,
     const data_sharing::SharedDataPreview& preview_data,
     ResultCallback result) {
-
   ShareKitJoinConfiguration* config = [[ShareKitJoinConfiguration alloc] init];
   config.token = token;
   config.baseViewController = base_view_controller_;
@@ -232,7 +231,6 @@ void IOSCollaborationControllerDelegate::OnUrlReadyToShare(
 void IOSCollaborationControllerDelegate::ShowManageDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
-
   tab_groups::TabGroupSyncService* tab_group_sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser_->GetProfile());
