@@ -2,74 +2,49 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://chrome-signin/gaia_action_buttons/gaia_action_buttons.js';
 
-import {GaiaActionButtonsElement} from 'chrome://chrome-signin/gaia_action_buttons/gaia_action_buttons.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
+import type {CrButtonElement} from '//resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {NativeEventTarget} from '//resources/ash/common/event_target.js';
+import type {GaiaActionButtonsElement} from 'chrome://chrome-signin/gaia_action_buttons/gaia_action_buttons.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-window.gaia_action_buttons_test = {};
-const gaia_action_buttons_test = window.gaia_action_buttons_test;
-gaia_action_buttons_test.suiteName = 'GaiaActionButtonsTest';
-
-/** @enum {string} */
-gaia_action_buttons_test.TestNames = {
-  ButtonLabels: 'Button labels and visibility',
-  EnabledEvents: '"set...ActionEnabled" events',
-};
 
 const primaryActionLabel = 'fakePrimaryActionLabel';
 const secondaryActionLabel = 'fakeSecondaryActionLabel';
 
-class TestAuthenticator extends EventTarget {
+class TestAuthenticator extends NativeEventTarget {
   constructor() {
     super();
-    /** @type {*} */
-    this.webviewMessage = null;
-  }
-
-  /** @param {*} payload Payload of the HTML5 message. */
-  sendMessageToWebview(payload) {
-    this.webviewMessage = payload;
   }
 }
 
-/**
- * @param {HTMLElement} button
- * @param {string} label
- */
-function assertVisibleButtonWithLabel(button, label) {
+function assertVisibleButtonWithLabel(button: HTMLElement, label: string) {
   assertFalse(button.hidden);
-  assertEquals(label, button.textContent.trim());
+  assertEquals(label, button.textContent!.trim());
 }
 
-suite(gaia_action_buttons_test.suiteName, () => {
-  /** @type {GaiaActionButtonsElement} */
-  let actionButtonsComponent;
-  /** @type {TestAuthenticator} */
-  let testAuthenticator;
-  /** @type {CrButtonElement} */
-  let primaryButton;
-  /** @type {CrButtonElement} */
-  let secondaryButton;
+suite('GaiaActionButtonsTest', () => {
+  let actionButtonsComponent: GaiaActionButtonsElement;
+  let testAuthenticator: TestAuthenticator;
+  let primaryButton: CrButtonElement;
+  let secondaryButton: CrButtonElement;
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
-    actionButtonsComponent = /** @type {!GaiaActionButtonsElement} */ (
-        document.createElement('gaia-action-buttons'));
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    actionButtonsComponent = (document.createElement('gaia-action-buttons'));
     document.body.appendChild(actionButtonsComponent);
     testAuthenticator = new TestAuthenticator();
     actionButtonsComponent.setAuthenticatorForTest(testAuthenticator);
     flush();
-    primaryButton = /** @type {!CrButtonElement} */ (
-        actionButtonsComponent.shadowRoot.querySelector('.action-button'));
-    secondaryButton = /** @type {!CrButtonElement} */ (
-        actionButtonsComponent.shadowRoot.querySelector('.secondary-button'));
+    primaryButton =
+        actionButtonsComponent.shadowRoot!.querySelector('.action-button')!;
+    secondaryButton =
+        actionButtonsComponent.shadowRoot!.querySelector('.secondary-button')!;
   });
 
-  test(assert(gaia_action_buttons_test.TestNames.ButtonLabels), () => {
+  test('ButtonLabelsAndVisibility', () => {
     // Buttons are hidden by default.
     assertTrue(primaryButton.hidden);
     assertTrue(secondaryButton.hidden);
@@ -94,7 +69,7 @@ suite(gaia_action_buttons_test.suiteName, () => {
     assertTrue(secondaryButton.hidden);
   });
 
-  test(assert(gaia_action_buttons_test.TestNames.EnabledEvents), () => {
+  test('SetActionEnabledEvents', () => {
     // Show both buttons.
     testAuthenticator.dispatchEvent(
         new CustomEvent('setPrimaryActionLabel', {detail: primaryActionLabel}));
