@@ -1644,10 +1644,8 @@ void LensOverlayController::GetPartialPdfTextCallback(
   CHECK_EQ(initialization_data_->pdf_pages_text_.size(), page_index);
 
   // Add the page text to the list of pages and update the total characters
-  // retrieved count. Do not add the page text if it is empty.
-  if (!page_text.empty()) {
-    initialization_data_->pdf_pages_text_.push_back(page_text);
-  }
+  // retrieved count.
+  initialization_data_->pdf_pages_text_.push_back(page_text);
 
   // Ensure no integer overflow. If overflow, set the total characters retrieved
   // to the max value so the loop will exit.
