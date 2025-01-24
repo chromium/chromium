@@ -67,6 +67,10 @@ const char kBucketTable[] = "buckets";
 // registered into the buckets table. Introduced 2022-05 (crrev.com/c/3594211).
 const char kBucketsTableBootstrapped[] = "IsBucketsBootstrapped";
 
+// Flag to not repeat MediaLicenseDatabase cleanup in all the bucket
+// directories. Introduced 2025-01 (crrev.com/c/6088694).
+const char kMediaLicenseDatabaseRemoved[] = "IsMediaLicenseDatabaseRemoved";
+
 const int kCommitIntervalMs = 30000;
 
 const base::Clock* g_clock_for_testing = nullptr;
@@ -921,6 +925,28 @@ QuotaError QuotaDatabase::SetIsBootstrapped(bool bootstrap_flag) {
   }
 
   return meta_table_->SetValue(kBucketsTableBootstrapped, bootstrap_flag)
+             ? QuotaError::kNone
+             : QuotaError::kDatabaseError;
+}
+
+bool QuotaDatabase::IsMediaLicenseDatabaseRemoved() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (EnsureOpened() != QuotaError::kNone) {
+    return false;
+  }
+
+  int flag = 0;
+  return meta_table_->GetValue(kMediaLicenseDatabaseRemoved, &flag) && flag;
+}
+
+QuotaError QuotaDatabase::SetIsMediaLicenseDatabaseRemoved(bool removed_flag) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  QuotaError open_error = EnsureOpened();
+  if (open_error != QuotaError::kNone) {
+    return open_error;
+  }
+
+  return meta_table_->SetValue(kMediaLicenseDatabaseRemoved, removed_flag)
              ? QuotaError::kNone
              : QuotaError::kDatabaseError;
 }

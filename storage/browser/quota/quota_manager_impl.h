@@ -477,6 +477,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   static constexpr base::TimeDelta kMinutesAfterStartupToBeginEviction =
       base::Minutes(5);
 
+  // After 15 minutes from startup, go through the buckets to delete the
+  // MediaLicense database from all of the bucket directories.
+  static constexpr base::TimeDelta
+      kMinutesAfterStartupToBeginMediaLicenseDatabaseDeletion =
+          base::Minutes(15);
+
   static constexpr int kThresholdOfErrorsToBeDenylisted = 3;
 
   static constexpr char kDatabaseName[] = "QuotaManager";
@@ -523,6 +529,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   }
 
   bool is_db_disabled_for_testing() { return db_disabled_; }
+
+  void DeleteMediaLicenseDatabaseForTesting() { DeleteMediaLicenseDatabase(); }
 
   void AddObserver(
       mojo::PendingRemote<storage::mojom::QuotaManagerObserver> observer);
@@ -583,6 +591,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Initialize() must be called after all quota clients are added to the
   // manager by RegisterClient().
   void EnsureDatabaseOpened();
+
+  // Removes Media License Databases only if it hasn't already happened.
+  void MaybeRemoveMediaLicenseDatabases();
+
+  // Methods to help with the removal of the Media License Databases, including
+  // retrieving the flag from the metadata and disabling the database if there
+  // is an error with the retrieval.
+  void RemoveMediaLicenseDatabases();
+  void DidGetMediaLicenseDatabaseRemovalFlag(
+      bool is_media_license_database_removed);
 
   // Bootstraps only if it hasn't already happened.
   void MaybeBootstrapDatabase();
@@ -675,6 +693,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Notifies the embedder that space is too low. This ends up showing a
   // user-facing dialog in Chrome.
   void NotifyWriteFailed(const blink::StorageKey& storage_key);
+
+  // Methods for MediaLicenseDB logic.
+  void DeleteMediaLicenseDatabase();
+  void DidGetBucketsForMediaLicenseDeletion(
+      const std::set<BucketLocator>& buckets);
 
   // Methods for eviction logic.
   void StartEviction();

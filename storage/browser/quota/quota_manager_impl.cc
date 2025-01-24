@@ -66,6 +66,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
 #include "storage/browser/quota/quota_temporary_storage_evictor.h"
+#include "storage/browser/quota/storage_directory_util.h"
 #include "storage/browser/quota/usage_tracker.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
@@ -1906,6 +1907,39 @@ void QuotaManagerImpl::EnsureDatabaseOpened() {
   }
 
   MaybeBootstrapDatabase();
+  MaybeRemoveMediaLicenseDatabases();
+}
+
+void QuotaManagerImpl::MaybeRemoveMediaLicenseDatabases() {
+  db_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&QuotaDatabase::IsMediaLicenseDatabaseRemoved,
+                     base::Unretained(database_.get())),
+      base::BindOnce(&QuotaManagerImpl::DidGetMediaLicenseDatabaseRemovalFlag,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void QuotaManagerImpl::DidGetMediaLicenseDatabaseRemovalFlag(
+    bool is_media_license_database_removed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_media_license_database_removed) {
+    RemoveMediaLicenseDatabases();
+  }
+}
+
+void QuotaManagerImpl::RemoveMediaLicenseDatabases() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&QuotaManagerImpl::DeleteMediaLicenseDatabase,
+                     weak_factory_.GetWeakPtr()),
+      kMinutesAfterStartupToBeginMediaLicenseDatabaseDeletion);
+
+  PostTaskAndReplyWithResultForDBThread(
+      base::BindOnce([](QuotaDatabase* database) {
+        DCHECK(database);
+        return database->SetIsMediaLicenseDatabaseRemoved(true);
+      }),
+      base::DoNothing(), FROM_HERE);
 }
 
 void QuotaManagerImpl::MaybeBootstrapDatabase() {
@@ -2004,6 +2038,13 @@ void QuotaManagerImpl::DidSetDatabaseBootstrapped(QuotaError error) {
       base::BindOnce(&QuotaManagerImpl::StartEviction,
                      weak_factory_.GetWeakPtr()),
       kMinutesAfterStartupToBeginEviction);
+
+  // Schedule the MediaLicenseDatabase deletion task.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&QuotaManagerImpl::DeleteMediaLicenseDatabase,
+                     weak_factory_.GetWeakPtr()),
+      kMinutesAfterStartupToBeginMediaLicenseDatabaseDeletion);
 }
 
 void QuotaManagerImpl::RunDatabaseCallbacks() {
@@ -2287,6 +2328,39 @@ void QuotaManagerImpl::StartEviction() {
         std::make_unique<QuotaTemporaryStorageEvictor>(this, kEvictionInterval);
   }
   temporary_storage_evictor_->Start();
+}
+
+void QuotaManagerImpl::DeleteMediaLicenseDatabase() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  GetBucketsModifiedBetween(
+      StorageType::kTemporary, base::Time::Min(), base::Time::Max(),
+      base::BindOnce(&QuotaManagerImpl::DidGetBucketsForMediaLicenseDeletion,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void QuotaManagerImpl::DidGetBucketsForMediaLicenseDeletion(
+    const std::set<BucketLocator>& buckets) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<base::FilePath> media_license_dir_paths;
+
+  for (const BucketLocator& bucket : buckets) {
+    if (bucket.storage_key.IsFirstPartyContext()) {
+      base::FilePath media_license_bucket_path = CreateClientBucketPath(
+          profile_path_, bucket, QuotaClientType::kMediaLicense);
+      media_license_dir_paths.push_back(media_license_bucket_path);
+    }
+  }
+
+  db_runner_->PostTask(FROM_HERE,
+                       base::BindOnce(
+                           [](std::vector<base::FilePath> file_paths) {
+                             for (base::FilePath& path : file_paths) {
+                               base::DeletePathRecursively(path);
+                             }
+                           },
+                           std::move(media_license_dir_paths)));
 }
 
 void QuotaManagerImpl::DeleteBucketFromDatabase(
