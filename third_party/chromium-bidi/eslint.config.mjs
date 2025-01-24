@@ -73,6 +73,9 @@ export default [
     },
 
     languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+
       globals: {
         ...globals.browser,
         ...globals.mocha,
@@ -165,8 +168,8 @@ export default [
     },
 
     languageOptions: {
-      ecmaVersion: 5,
-      sourceType: 'script',
+      ecmaVersion: 'latest',
+      sourceType: 'module',
 
       parserOptions: {
         project: './tsconfig.base.json',
