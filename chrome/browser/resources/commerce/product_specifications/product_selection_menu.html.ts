@@ -24,13 +24,14 @@ export function getHtml(this: ProductSelectionMenuElement) {
                 <div class="section-title">${section.title}</div>
               </cr-expand-button>
               <cr-collapse ?opened="${section.expanded}">
-                ${section.entries.map((item) => html`
+                ${section.entries.map((item, index) => html`
                   <cr-url-list-item class="dropdown-item" size="medium"
                       url="${item.url}" title="${item.title}"
-                      data-url-section="${section.sectionType}"
                       description="${this.getUrl_(item)}" no-hover
-                      @click="${
-                          () => this.onSelect_(item, section.sectionType)}">
+                      data-item-index="${index}"
+                      data-section-index="${sectionIndex}"
+                      data-section-type="${section.sectionType}"
+                      @click="${this.onSelect_}">
                   </cr-url-list-item>
                 `)}
                 <!-- Add spacer instead of adding margin or padding to the -->

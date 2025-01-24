@@ -151,7 +151,13 @@ export class ProductSelectionMenuElement extends CrLitElement {
                         }));
   }
 
-  protected onSelect_(item: UrlListEntry, sectionType: SectionType) {
+  protected onSelect_(e: Event) {
+    const currentTarget = e.currentTarget as HTMLElement;
+    const itemIndex = Number(currentTarget.dataset['itemIndex']);
+    const sectionIndex = Number(currentTarget.dataset['sectionIndex']);
+    const sectionType =
+        Number(currentTarget.dataset['sectionType']) as SectionType;
+    const item = this.sections[sectionIndex].entries[itemIndex];
     this.close();
     this.dispatchEvent(new CustomEvent('selected-url-change', {
       bubbles: true,
