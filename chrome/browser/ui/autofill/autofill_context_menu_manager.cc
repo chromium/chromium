@@ -430,6 +430,11 @@ bool AutofillContextMenuManager::ShouldAddAutofillAiItem(
 
 bool AutofillContextMenuManager::ShouldAddPasswordsManualFallbackItem(
     ContentPasswordManagerDriver& password_manager_driver) {
+  // Password suggestions should not be triggered on text areas.
+  if (params_.form_control_type == blink::mojom::FormControlType::kTextArea) {
+    return false;
+  }
+
   return password_manager_driver.GetPasswordManager()
              ->GetClient()
              ->IsFillingEnabled(
