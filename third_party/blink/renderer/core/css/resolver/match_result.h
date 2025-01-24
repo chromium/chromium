@@ -126,7 +126,7 @@ class CORE_EXPORT MatchResult {
   MatchResult& operator=(const MatchResult&) = delete;
 
   void AddMatchedProperties(const CSSPropertyValueSet* properties,
-                            const MatchedProperties::Data& types);
+                            MatchedProperties::Data types);
   bool HasMatchedProperties() const { return matched_properties_.size(); }
 
   void BeginAddingAuthorRulesForTreeScope(const TreeScope&);
