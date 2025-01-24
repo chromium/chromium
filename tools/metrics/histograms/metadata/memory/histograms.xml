@@ -240,6 +240,19 @@ chromium-metrics-reviews@google.com.
   <summary>TBD.</summary>
 </histogram>
 
+<histogram name="Memory.Browser.MappingsCount" units="count"
+    expires_after="2025-06-22">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    How many memory mappings are present in the process, at the time of
+    recording.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms, only on Linux-based systems.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Browser.MemoryFootprint" units="MB"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
@@ -1188,6 +1201,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Gpu.MappingsCount" units="count"
+    expires_after="2025-06-22">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    How many memory mappings are present in the process, at the time of
+    recording.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms, only on Linux-based systems.
+  </summary>
+</histogram>
+
 <histogram name="Memory.GPU.PeakMemoryAllocationSource2.{Usage}.{Source}"
     units="MB" expires_after="2025-07-13">
   <owner>jonross@chromium.org</owner>
@@ -1889,6 +1915,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Memory.Renderer.MappingsCount" units="count"
+    expires_after="2025-06-22">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    How many memory mappings are present in the process, at the time of
+    recording.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms, only on Linux-based systems.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Renderer.PrivateMemoryFootprint" units="MB"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
@@ -2380,6 +2419,19 @@ chromium-metrics-reviews@google.com.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Utility.MappingsCount" units="count"
+    expires_after="2025-06-22">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    How many memory mappings are present in the process, at the time of
+    recording.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms, only on Linux-based systems.
   </summary>
 </histogram>
 

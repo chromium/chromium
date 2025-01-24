@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
+
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <stdint.h>
@@ -16,6 +18,7 @@
 
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/android/library_loader/anchor_functions_buildflags.h"
+#include "base/containers/heap_array.h"
 #include "base/debug/elf_reader.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -23,13 +26,13 @@
 #include "base/format_macros.h"
 #include "base/memory/page_size.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 // Symbol with virtual address of the start of ELF header of the current binary.
@@ -258,6 +261,50 @@ class ScopedProcessSetDumpable {
   bool was_dumpable_;
 };
 
+// Count how many mappings exist in a process.
+//
+// Return 0 in case of error (since a process necessarily has at least a
+// mapping, this is an invalid value).
+//
+// The return value is approximate, as this happens while the process is
+// running.
+uint32_t CountMappings(base::ProcessId pid) {
+  // seq_file only writes out a page-sized amount on each call.
+  const size_t read_size = static_cast<size_t>(sysconf(_SC_PAGESIZE));
+  auto buffer = base::HeapArray<char>::Uninit(read_size);
+
+  base::FilePath path = GetProcPidDir(pid).Append("maps");
+  base::ScopedFD fd(HANDLE_EINTR(open(path.value().c_str(), O_RDONLY)));
+  if (!fd.is_valid()) {
+    DPLOG(ERROR) << "Couldn't open /proc/PID/maps";
+    return 0;
+  }
+
+  // /proc/PID/smaps has a single line per mapping, without a header, just count
+  // the number of newline characters. See man proc(5) for the format.
+  uint32_t newline_characters = 0;
+  while (true) {
+    ssize_t bytes_read =
+        HANDLE_EINTR(read(fd.get(), &buffer[0], buffer.size()));
+    if (bytes_read < 0) {
+      DPLOG(ERROR) << "Couldn't read /proc/PID/maps";
+      return 0;
+    }
+
+    if (bytes_read == 0) {
+      break;
+    }
+
+    for (ssize_t i = 0; i < bytes_read; i++) {
+      if (buffer[i] == '\n') {
+        newline_characters++;
+      }
+    }
+  }
+
+  return newline_characters;
+}
+
 }  // namespace
 
 FILE* g_proc_smaps_for_testing = nullptr;
@@ -281,6 +328,8 @@ bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
       base::saturated_cast<uint32_t>(info->resident_set_bytes / 1024);
   dump->peak_resident_set_kb = GetPeakResidentSetSize(handle);
   dump->is_peak_rss_resettable = ResetPeakRSSIfPossible(handle);
+
+  dump->mappings_count = CountMappings(handle);
 
 #if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
