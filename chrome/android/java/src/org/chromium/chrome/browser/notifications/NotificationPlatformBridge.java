@@ -285,8 +285,6 @@ public class NotificationPlatformBridge {
                         SuspiciousNotificationWarningInteractions.UNSUBSCRIBE);
                 return true;
             case NotificationConstants.ACTION_SHOW_ORIGINAL_NOTIFICATION:
-                // TODO(crbug.com/382475678): Figure out a way to stay on the notifications screen
-                // when "Show Original" is tapped, instead of exiting out to previous screen.
                 onNotificationShowOriginal(attributes);
                 recordSuspiciousNotificationWarningInteractions(
                         SuspiciousNotificationWarningInteractions.SHOW_ORIGINAL_NOTIFICATION);

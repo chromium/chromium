@@ -223,7 +223,10 @@ public class NotificationIntentInterceptor {
                         || actionType
                                 == NotificationUmaTracker.ActionType.COMMIT_UNSUBSCRIBE_IMPLICIT
                         || actionType
-                                == NotificationUmaTracker.ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT;
+                                == NotificationUmaTracker.ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT
+                        || actionType
+                                == NotificationUmaTracker.ActionType.SHOW_ORIGINAL_NOTIFICATION
+                        || actionType == NotificationUmaTracker.ActionType.ALWAYS_ALLOW;
 
         Context applicationContext = ContextUtils.getApplicationContext();
         Intent intent = null;
