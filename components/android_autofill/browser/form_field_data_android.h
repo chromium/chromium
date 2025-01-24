@@ -12,7 +12,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ref.h"
-#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -29,23 +29,23 @@ class FormFieldDataAndroid {
   struct FieldTypes {
     FieldTypes();
     // Sets all types to `type`.
-    explicit FieldTypes(AutofillType type);
-    FieldTypes(AutofillType heuristic_type,
-               AutofillType server_type,
-               AutofillType computed_type,
-               std::vector<AutofillType> server_predictions);
+    explicit FieldTypes(FieldType type);
+    FieldTypes(FieldType heuristic_type,
+               FieldType server_type,
+               std::string_view computed_type,
+               std::vector<FieldType> server_predictions);
     FieldTypes(FieldTypes&&);
     FieldTypes& operator=(FieldTypes&&);
     ~FieldTypes();
 
     // Returns true iff all types (including the server predictions) have the
     // same string representation as `type`.
-    bool operator==(const AutofillType& type) const;
+    bool operator==(FieldType type) const;
 
-    AutofillType heuristic_type;
-    AutofillType server_type;
-    AutofillType computed_type;
-    std::vector<AutofillType> server_predictions;
+    FieldType heuristic_type = UNKNOWN_TYPE;
+    FieldType server_type = UNKNOWN_TYPE;
+    std::string computed_type;
+    std::vector<FieldType> server_predictions;
   };
 
   explicit FormFieldDataAndroid(FormFieldData* field);
@@ -66,7 +66,7 @@ class FormFieldDataAndroid {
   void OnFormFieldVisibilityDidChange(const FormFieldData& field);
 
   bool SimilarFieldAs(const FormFieldData& field) const;
-  void UpdateAutofillTypes(FieldTypes field_types);
+  void UpdateFieldTypes(FieldTypes field_types);
 
   const FieldTypes& field_types() const { return field_types_; }
   FieldGlobalId global_id() const { return field_.get().global_id(); }

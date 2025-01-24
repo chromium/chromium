@@ -729,8 +729,8 @@ TEST_F(AndroidAutofillProviderTest,
   ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
 
   auto has_field_type = [](FieldType field_type) {
-    return Pointee(Property(&FormFieldDataAndroid::field_types,
-                            Eq(AutofillType(field_type))));
+    return Pointee(
+        Property(&FormFieldDataAndroid::field_types, Eq(field_type)));
   };
   EXPECT_CALL(provider_bridge(),
               SendPrefillRequest(EqualsFormDataWithFields(
