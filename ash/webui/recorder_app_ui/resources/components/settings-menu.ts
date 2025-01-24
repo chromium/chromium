@@ -320,20 +320,14 @@ export class SettingsMenu extends ReactiveLitElement {
     if (!this.shouldShowLanguagePicker) {
       return nothing;
     }
-    let description = '';
+    let description = i18n.settingsOptionsTranscriptionLanguageDescription;
     const selectedLanguage = this.platformHandler.getSelectedLanguage();
     if (selectedLanguage !== null) {
-      const sodaState = this.platformHandler.getSodaState(selectedLanguage);
       const langPackInfo =
         this.platformHandler.getLangPackInfo(selectedLanguage);
-      // Shows selected language even if it's downloading or error state. These
-      // states will be shown in the subpage or in the transcript view when
-      // recording.
-      if (sodaState.value.kind === 'error' ||
-          sodaState.value.kind === 'installing' ||
-          sodaState.value.kind === 'installed') {
-        description = langPackInfo.displayName;
-      }
+      // Shows selected language regardless of its state. The state will be
+      // shown in the subpage or in the transcript view when recording.
+      description = langPackInfo.displayName;
     }
     return html`
       <settings-row>
@@ -346,6 +340,7 @@ export class SettingsMenu extends ReactiveLitElement {
           size="small"
           slot="action"
           shape="circle"
+          aria-label=${i18n.settingsOptionsLanguageSubpageButtonAriaLabel}
           @click=${this.onLanguagePickerExpand}
         >
           <cra-icon slot="icon" name="chevron_right"></cra-icon>
