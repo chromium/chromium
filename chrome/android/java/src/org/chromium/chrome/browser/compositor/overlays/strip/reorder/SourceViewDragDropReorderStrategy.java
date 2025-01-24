@@ -119,13 +119,16 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             @ReorderType int reorderType) {
         StripLayoutTab draggedTab = (StripLayoutTab) mViewBeingDragged;
         if (reorderType == ReorderType.DRAG_ONTO_STRIP) {
-            // 1. Bring dragged view onto strip, resize strip views accordingly.
+            // 1. Hide compositor buttons.
+            mStripUpdateDelegate.setCompositorButtonsVisible(false);
+
+            // 2. Bring dragged view onto strip, resize strip views accordingly.
             mAnimationHost.finishAnimationsAndPushTabUpdates();
             bringViewOntoStrip(draggedTab);
             mStripUpdateDelegate.resizeTabStrip(
                     /* animate= */ false, /* tabToAnimate= */ null, /* animateTabAdded= */ false);
 
-            // 2. Start to reorder within strip - delegate to another strategy.
+            // 3. Start to reorder within strip - delegate to another strategy.
             mTabStrategy.startReorderMode(
                     stripTabs, groupTitles, mViewBeingDragged, new PointF(endX, 0f));
             mTabStrategyInProgress = true;
@@ -134,7 +137,10 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             mTabStrategy.updateReorderPosition(
                     stripViews, groupTitles, stripTabs, endX, deltaX, reorderType);
         } else if (reorderType == ReorderType.DRAG_OUT_OF_STRIP) {
-            // 1. Maybe show user prompt when last tab in group is dragged out.
+            // 1. Show compositor buttons.
+            mStripUpdateDelegate.setCompositorButtonsVisible(true);
+
+            // 2. Maybe show user prompt when last tab in group is dragged out.
             // Stop reorder and return if so.
             boolean draggedLastTabInGroupWithPrompt = shouldShowUserPrompt(draggedTab);
             if (draggedLastTabInGroupWithPrompt) {
@@ -148,12 +154,12 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 return;
             }
 
-            // 2. Prompt not shown - Store reorder state, then exit reorder within strip.
+            // 3. Prompt not shown - Store reorder state, then exit reorder within strip.
             mLastOffsetX = draggedTab.getOffsetX();
             mTabStrategy.stopReorderMode(groupTitles, stripTabs);
             mTabStrategyInProgress = false;
 
-            // 3. Immediately hide the dragged tab container, as if it were being translated
+            // 4. Immediately hide the dragged tab container, as if it were being translated
             // off like a closed tab. Resize strip views accordingly.
             mAnimationHost.finishAnimationsAndPushTabUpdates();
             removeViewOutOfStrip(draggedTab);

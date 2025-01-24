@@ -3755,7 +3755,8 @@ public class StripLayoutHelper
         startReorderMode(x, 0, getTabAtPosition(x), ReorderType.DRAG_WITHIN_STRIP);
     }
 
-    private void setCompositorButtonsVisible(boolean visible) {
+    @Override
+    public void setCompositorButtonsVisible(boolean visible) {
         float endOpacity = visible ? 1.f : 0.f;
 
         CompositorAnimator.ofFloatProperty(
@@ -3779,7 +3780,6 @@ public class StripLayoutHelper
     }
 
     private void onInReorderModeChanged(boolean inReorderMode) {
-        setCompositorButtonsVisible(!inReorderMode);
         if (!inReorderMode) {
             mDelayedReorderView = null;
         }

@@ -138,6 +138,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         assertEquals("OffsetY should be 0", 0f, mInteractingView.getOffsetY(), EPSILON);
 
         // Verify
+        verify(mStripUpdateDelegate).setCompositorButtonsVisible(false);
         verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
         verify(mStripUpdateDelegate).resizeTabStrip(false, null, false);
         verify(mTabStrategy)
@@ -212,6 +213,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                 EPSILON);
 
         // Verify
+        verify(mStripUpdateDelegate).setCompositorButtonsVisible(true);
         verify(mTabStrategy).stopReorderMode(mGroupTitles, mStripTabs);
         verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
         verify(mStripUpdateDelegate).resizeTabStrip(true, mInteractingView, false);
@@ -252,6 +254,10 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
         // Verify tab offsetX
         assertEquals("OffsetX should be set", lastOffsetX, mInteractingView.getOffsetX(), EPSILON);
+
+        // Verify compositor buttons hidden and then shown
+        verify(mStripUpdateDelegate).setCompositorButtonsVisible(false);
+        verify(mStripUpdateDelegate).setCompositorButtonsVisible(true);
     }
 
     @Test

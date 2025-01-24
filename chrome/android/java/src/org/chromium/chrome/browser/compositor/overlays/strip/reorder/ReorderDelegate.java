@@ -99,6 +99,13 @@ public class ReorderDelegate {
          * scroll). Updated properties won't be available immediately.
          */
         void refresh();
+
+        /**
+         * Sets visibility for compositor buttons during reorder.
+         *
+         * @param visible Whether buttons should be visible.
+         */
+        void setCompositorButtonsVisible(boolean visible);
     }
 
     // Tab State.
@@ -291,6 +298,7 @@ public class ReorderDelegate {
         mLastReorderScrollTime = INVALID_TIME;
         mReorderScrollState = REORDER_SCROLL_NONE;
         mLastReorderX = startPoint.x;
+        mStripUpdateDelegate.setCompositorButtonsVisible(false);
 
         mActiveStrategy.startReorderMode(stripTabs, stripGroupTitles, interactingView, startPoint);
     }
@@ -370,6 +378,7 @@ public class ReorderDelegate {
         // Reset state.
         mReorderScrollState = REORDER_SCROLL_NONE;
         mInReorderModeSupplier.set(false);
+        mStripUpdateDelegate.setCompositorButtonsVisible(true);
         mActiveStrategy = null;
     }
 
