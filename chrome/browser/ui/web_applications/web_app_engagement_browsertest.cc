@@ -100,7 +100,7 @@ using Histograms = std::bitset<kHistogramMaxValue>;
 void ExpectBucketCounts(const base::HistogramTester& tester,
                         const Histograms& histograms_mask,
                         site_engagement::EngagementType type,
-                        base::HistogramBase::Count count) {
+                        base::HistogramBase::Count32 count) {
   for (int h = 0; h < kHistogramMaxValue; ++h) {
     if (histograms_mask[h]) {
       const char* histogram_name = HistogramEnumIndexToStr(h);
@@ -111,7 +111,7 @@ void ExpectBucketCounts(const base::HistogramTester& tester,
 
 void ExpectTotalCounts(const base::HistogramTester& tester,
                        const Histograms& histograms_mask,
-                       base::HistogramBase::Count count) {
+                       base::HistogramBase::Count32 count) {
   for (int h = 0; h < kHistogramMaxValue; ++h) {
     if (histograms_mask[h]) {
       const char* histogram_name = HistogramEnumIndexToStr(h);
@@ -121,8 +121,8 @@ void ExpectTotalCounts(const base::HistogramTester& tester,
 }
 
 void ExpectLaunchCounts(const base::HistogramTester& tester,
-                        base::HistogramBase::Count windowLaunches,
-                        base::HistogramBase::Count tabLaunches) {
+                        base::HistogramBase::Count32 windowLaunches,
+                        base::HistogramBase::Count32 tabLaunches) {
   tester.ExpectBucketCount("WebApp.LaunchContainer",
                            apps::LaunchContainer::kLaunchContainerWindow,
                            windowLaunches);

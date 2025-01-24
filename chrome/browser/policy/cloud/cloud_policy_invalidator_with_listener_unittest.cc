@@ -823,8 +823,8 @@ class CloudPolicyInvalidatorWithListenerUserTypedTest
  protected:
   CloudPolicyInvalidatorWithListenerUserTypedTest() = default;
 
-  base::HistogramBase::Count GetCount(MetricPolicyRefresh metric);
-  base::HistogramBase::Count GetInvalidationCount(PolicyInvalidationType type);
+  base::HistogramBase::Count32 GetCount(MetricPolicyRefresh metric);
+  base::HistogramBase::Count32 GetInvalidationCount(PolicyInvalidationType type);
 
  private:
   // CloudPolicyInvalidatorWithListenerTest:

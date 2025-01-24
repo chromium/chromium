@@ -300,11 +300,11 @@ class FastPairAdvertiserTest : public testing::Test {
   bool called_on_start_advertising_ = false;
   bool called_on_start_advertising_error_ = false;
   bool called_on_stop_advertising_ = false;
-  base::HistogramBase::Count expected_start_success_count_ = 0;
-  base::HistogramBase::Count expected_start_failure_count_ = 0;
-  base::HistogramBase::Count expected_start_error_bucket_count_ = 0;
-  base::HistogramBase::Count expected_end_success_count_ = 0;
-  base::HistogramBase::Count expected_end_failure_count_ = 0;
+  base::HistogramBase::Count32 expected_start_success_count_ = 0;
+  base::HistogramBase::Count32 expected_start_failure_count_ = 0;
+  base::HistogramBase::Count32 expected_start_error_bucket_count_ = 0;
+  base::HistogramBase::Count32 expected_end_success_count_ = 0;
+  base::HistogramBase::Count32 expected_end_failure_count_ = 0;
 };
 
 class FastPairAdvertiserModelIdsTest

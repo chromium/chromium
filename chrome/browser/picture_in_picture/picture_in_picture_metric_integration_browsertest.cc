@@ -79,7 +79,7 @@ class PictureInPictureMetricIntegrationTest
   }
 
   void ExpectBlinkCounterUMABucketCount(const blink::mojom::WebFeature& sample,
-                                        base::HistogramBase::Count count) {
+                                        base::HistogramBase::Count32 count) {
     histogram_tester()->ExpectBucketCount(kBlinkUseCounterHistogram, sample,
                                           count);
   }

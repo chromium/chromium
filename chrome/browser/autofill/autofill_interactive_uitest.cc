@@ -3116,7 +3116,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   // Short hand for ExpectBucketCount:
   auto expect_count = [&](std::string_view name,
                           base::HistogramBase::Sample32 sample,
-                          base::HistogramBase::Count expected_count) {
+                          base::HistogramBase::Count32 expected_count) {
     histogram_tester().ExpectBucketCount(name, sample, expected_count);
   };
   expect_count("Autofill.KeyMetrics.FillingReadiness.CreditCard", 1, 1);

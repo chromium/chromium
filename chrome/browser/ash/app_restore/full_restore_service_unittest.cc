@@ -280,7 +280,7 @@ class FullRestoreServiceTest : public testing::Test {
   }
 
   void VerifyRestoreInitSettingHistogram(RestoreOption option,
-                                         base::HistogramBase::Count count) {
+                                         base::HistogramBase::Count32 count) {
     histogram_tester_.ExpectUniqueSample("Apps.RestoreInitSetting", option,
                                          count);
   }

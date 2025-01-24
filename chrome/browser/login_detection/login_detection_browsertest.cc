@@ -74,7 +74,7 @@ class LoginDetectionBrowserTest : public InProcessBrowserTest {
   // with the given expected bucket count for the prerendering test.
   void ExpectLoginDetectionTypeMetric(
       LoginDetectionType type,
-      base::HistogramBase::Count expected_bucket_count) {
+      base::HistogramBase::Count32 expected_bucket_count) {
     histogram_tester_->ExpectUniqueSample("Login.PageLoad.DetectionType", type,
                                           expected_bucket_count);
   }
