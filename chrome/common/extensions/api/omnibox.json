@@ -31,6 +31,29 @@
         }
       },
       {
+        "id": "Action",
+        "type": "object",
+        "description": "An action button attached to a suggest result.",
+        "nodoc": true,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The string sent to the extension in the event corresponding to the user clicking on the action."
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The action button label."
+          },
+          "tooltipText": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The action button hover tooltip text."
+          }
+        }
+      },
+      {
         "id": "SuggestResult",
         "type": "object",
         "description": "A suggest result.",
@@ -58,6 +81,15 @@
             "items": {
               "name": "matchClassification",
               "$ref": "MatchClassification"
+            }
+          },
+          "actions": {
+            "nodoc": true,
+            "optional": true,
+            "type": "array",
+            "description": "An array of actions attached to the suggestion. Only supported for suggestions added in unscoped mode.",
+            "items": {
+              "$ref": "Action"
             }
           }
         }
@@ -195,6 +227,19 @@
             "type": "string",
             "name": "text",
             "description": "Text of the deleted suggestion."
+          }
+        ]
+      },
+      {
+        "name": "onActionExecuted",
+        "nodoc": true,
+        "type": "function",
+        "description": "User has selected an action attached to a suggested result by pressing the corresponding button in the Omnibox.",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "actionName",
+            "description": "The name of the action the user selected, as defined by the `action` field in `Action`."
           }
         ]
       }

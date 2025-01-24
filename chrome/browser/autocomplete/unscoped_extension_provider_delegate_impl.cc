@@ -5,15 +5,20 @@
 #include "chrome/browser/autocomplete/unscoped_extension_provider_delegate_impl.h"
 
 #include <cstddef>
+#include <memory>
 #include <string>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/omnibox/omnibox_input_watcher_factory.h"
 #include "chrome/browser/omnibox/omnibox_suggestions_watcher_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/omnibox/browser/actions/omnibox_extension_action.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/unscoped_extension_provider.h"
@@ -173,6 +178,18 @@ UnscopedExtensionProviderDelegateImpl::CreateAutocompleteMatch(
   match.contents_class =
       extensions::StyleTypesToACMatchClassifications(suggestion);
   match.suggestion_group_id = extension_id_to_group_id_map_[extension_id];
+
+  if (suggestion.actions) {
+    for (const auto& action : *suggestion.actions) {
+      match.actions.push_back(base::MakeRefCounted<OmniboxExtensionAction>(
+          base::UTF8ToUTF16(action.label),
+          base::UTF8ToUTF16(action.tooltip_text),
+          base::BindRepeating(
+              &UnscopedExtensionProviderDelegateImpl::OnActionExecuted,
+              weak_factory_.GetWeakPtr(), extension_id, action.name)));
+    }
+  }
+
   return match;
 }
 
@@ -181,4 +198,15 @@ void UnscopedExtensionProviderDelegateImpl::ClearSuggestions() {
   extension_id_to_group_id_map_.clear();
   next_available_group_index_ = 0;
   next_available_section_index_ = 0;
+}
+
+void UnscopedExtensionProviderDelegateImpl::OnActionExecuted(
+    const std::string& extension_id,
+    const std::string& action_name) {
+  extensions::ExtensionOmniboxEventRouter::OnActionExecuted(
+      profile_.get(), extension_id, action_name);
+  // Action has been executed, clear the current list of suggestions and ensure
+  // any suggestions that may be incoming later with a stale request ID are
+  // discarded.
+  Stop(/*clear_cached_results=*/true);
 }
