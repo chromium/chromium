@@ -32,6 +32,7 @@ class DeletionDialogController {
   // Mapping of the different text strings and user preferences on this dialog.
   enum class DialogType {
     DeleteSingle,
+    DeleteSingleShared,
     UngroupSingle,
     RemoveTabAndDelete,
     CloseTabAndDelete,

@@ -16,6 +16,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kTabGroupsDeletionSkipDialogOnCloseTab, false);
   registry->RegisterBooleanPref(kTabGroupsDeletionSkipDialogOnLeaveGroup,
                                 false);
+  registry->RegisterBooleanPref(kTabGroupsDeletionSkipDialogOnDeleteShared,
+                                false);
   registry->RegisterIntegerPref(kTabGroupLearnMoreFooterShownCount, 0);
 }
 

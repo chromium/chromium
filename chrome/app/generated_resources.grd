@@ -12277,6 +12277,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name ="IDS_DATA_SHARING_OWNER_DELETE_DIALOG_BODY" desc="The body for the owner's delete group dialog.">
           Everyone will immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group, and it will be deleted from all devices
         </message>
+        <message name="IDS_DATA_SHARING_OWNER_DELETE_DIALOG_BODY_NO_GROUP_TITLE" desc="The body for the owner's delete group dialog when the group does not have a title.">
+          Everyone will immediately lose access to this tab group, and it will be deleted from all devices
+        </message>
       <!-- /Data Sharing Owner Delete Group -->
 
       <!-- Data Sharing Preview Dialog -->

@@ -108,6 +108,23 @@ DialogText GetDialogText(
           base::i18n::MessageFormatter::FormatWithNumberedArgs(
               l10n_util::GetStringUTF16(kDeleteOkTextId), closing_group_count)};
     }
+    case DeletionDialogController::DialogType::DeleteSingleShared: {
+      const bool title_is_empty =
+          !dialog_metadata.title_of_closing_group.has_value() ||
+          dialog_metadata.title_of_closing_group->empty();
+      const std::u16string body_text =
+          title_is_empty
+              ? l10n_util::GetStringUTF16(
+                    IDS_DATA_SHARING_OWNER_DELETE_DIALOG_BODY_NO_GROUP_TITLE)
+              : l10n_util::GetStringFUTF16(
+                    IDS_DATA_SHARING_OWNER_DELETE_DIALOG_BODY,
+                    dialog_metadata.title_of_closing_group.value());
+      return DialogText{
+          l10n_util::GetStringUTF16(IDS_DATA_SHARING_OWNER_DELETE_DIALOG_TITLE),
+          body_text,
+          l10n_util::GetStringUTF16(
+              IDS_DATA_SHARING_OWNER_DELETE_DIALOG_CONFIRM)};
+    }
     case DeletionDialogController::DialogType::UngroupSingle: {
       return DialogText{
           base::i18n::MessageFormatter::FormatWithNumberedArgs(
@@ -178,6 +195,10 @@ bool IsDialogSkippedByUserSettings(Profile* profile,
       return pref_service->GetBoolean(
           saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnDelete);
     }
+    case DeletionDialogController::DialogType::DeleteSingleShared: {
+      return pref_service->GetBoolean(
+          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnDeleteShared);
+    }
     case DeletionDialogController::DialogType::UngroupSingle: {
       return pref_service->GetBoolean(
           saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnUngroup);
@@ -209,6 +230,11 @@ void SetSkipDialogForType(Profile* profile,
     case DeletionDialogController::DialogType::DeleteSingle: {
       return pref_service->SetBoolean(
           saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnDelete,
+          new_value);
+    }
+    case DeletionDialogController::DialogType::DeleteSingleShared: {
+      return pref_service->SetBoolean(
+          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnDeleteShared,
           new_value);
     }
     case DeletionDialogController::DialogType::UngroupSingle: {
