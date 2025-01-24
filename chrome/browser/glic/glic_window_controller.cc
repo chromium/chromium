@@ -347,14 +347,13 @@ void GlicWindowController::OpenAttached(Browser* browser,
       GetTopRightPositionForAttachedGlicWindow(glic_button_view);
   glic_window_widget_initial_rect = glic_button_view->GetBoundsInScreen();
 
-  glic_attached_widget_ =
-      CreateAttachedWidget(profile_, glic_window_widget_initial_rect);
-  glic_widget_observation_.Observe(glic_attached_widget_.get());
+  glic_widget_ = CreateGlicWidget(profile_, glic_window_widget_initial_rect);
+  glic_widget_observation_.Observe(glic_widget_.get());
 
-  glic_attached_widget_->Show();
+  glic_widget_->Show();
   AttachToBrowser(browser);
   // Set target bounds for animation and run the open attached animation.
-  gfx::Rect target_bounds = glic_attached_widget_->GetWindowBoundsInScreen();
+  gfx::Rect target_bounds = glic_widget_->GetWindowBoundsInScreen();
   int final_x = top_right_point.x() - widget_size.width();
   target_bounds.set_x(final_x);
   target_bounds.set_width(widget_size.width());
@@ -375,8 +374,8 @@ void GlicWindowController::OpenDetached() {
   gfx::Rect initial_bounds = GetInitialDetachedBounds();
 
   // Make the widget.
-  glic_attached_widget_ = CreateAttachedWidget(profile_, initial_bounds);
-  glic_widget_observation_.Observe(glic_attached_widget_.get());
+  glic_widget_ = CreateGlicWidget(profile_, initial_bounds);
+  glic_widget_observation_.Observe(glic_widget_.get());
 
   // We skip the showing animation and jump straight to waiting for glic to
   // load.
@@ -467,7 +466,7 @@ GlicView* GlicWindowController::GetGlicView() {
 }
 
 views::Widget* GlicWindowController::GetGlicWidget() {
-  return glic_attached_widget_.get();
+  return glic_widget_.get();
 }
 
 gfx::Point GlicWindowController::GetTopRightPositionForAttachedGlicWindow(
@@ -521,7 +520,7 @@ void GlicWindowController::Detach() {
   // moves to the top right of the display.
   gfx::Size screen_size =
       display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
-  gfx::Rect widget_bounds = glic_attached_widget_->GetWindowBoundsInScreen();
+  gfx::Rect widget_bounds = glic_widget_->GetWindowBoundsInScreen();
   widget_bounds.set_origin(
       gfx::Point(screen_size.width() - widget_bounds.width(), 0));
   AnimateBounds(widget_bounds, base::Milliseconds(kEntryDurationMs),
@@ -543,7 +542,7 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
   // Add observer to new parent.
   attached_browser_widget_observation_.Reset();
   attached_browser_widget_observation_.Observe(browser_widget);
-  glic_attached_widget_->Reparent(browser_widget);
+  glic_widget_->Reparent(browser_widget);
   if (!IsActive()) {
     GetGlicWidget()->Activate();
   }
@@ -606,7 +605,7 @@ void GlicWindowController::AnimateBounds(const gfx::Rect& target_bounds,
       this, target_bounds, duration, std::move(callback));
 }
 
-std::unique_ptr<views::Widget> GlicWindowController::CreateAttachedWidget(
+std::unique_ptr<views::Widget> GlicWindowController::CreateGlicWidget(
     Profile* profile,
     const gfx::Rect& initial_bounds) {
   views::Widget::InitParams params(
@@ -657,7 +656,7 @@ void GlicWindowController::Close() {
   window_event_observer_.reset();
   browser_close_subscription_.reset();
   glic_widget_observation_.Reset();
-  glic_attached_widget_.reset();
+  glic_widget_.reset();
   NotifyIfPanelStateChanged();
 
   if (web_client_) {
@@ -802,13 +801,13 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
     params.accept_events = false;
     // Widget name is specified for debug purposes.
     params.name = "HolderWindow";
-    params.bounds = glic_attached_widget_->GetWindowBoundsInScreen();
+    params.bounds = glic_widget_->GetWindowBoundsInScreen();
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     holder_widget_->Init(std::move(params));
     holder_widget_->ShowInactive();
   }
 
-  glic_attached_widget_->Reparent(holder_widget_.get());
+  glic_widget_->Reparent(holder_widget_.get());
   NotifyIfPanelStateChanged();
 
   // When the glic window is in a detached state, elevate its z-order to be
