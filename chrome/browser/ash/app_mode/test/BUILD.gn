@@ -12,6 +12,7 @@ source_set("browser_tests") {
   sources = [
     "kiosk_browsertest.cc",
     "kiosk_chrome_app_browsertest.cc",
+    "kiosk_chrome_app_offline_network_prompt_browsertest.cc",
     "kiosk_chrome_app_update_browsertest.cc",
     "kiosk_chrome_app_usb_update_browsertest.cc",
     "kiosk_file_system_volumes_browsertest.cc",
