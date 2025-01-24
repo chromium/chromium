@@ -146,6 +146,7 @@ void WaylandPopup::Hide() {
   if (shell_popup_) {
     parent_window()->set_child_popup(nullptr);
     shell_popup_.reset();
+    ClearInFlightRequestsSerial();
   }
 
   connection()->Flush();

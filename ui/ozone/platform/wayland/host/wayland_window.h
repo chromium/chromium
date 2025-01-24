@@ -484,6 +484,10 @@ class WaylandWindow : public PlatformWindow,
     return !in_flight_requests_.empty();
   }
 
+  // When surface roles are destroyed with in-flight requests, these serials
+  // become invalid. Clear them so we do not get "wrong configure serial" error.
+  void ClearInFlightRequestsSerial();
+
   // PendingConfigureState describes the content of a configure sent from the
   // wayland server.
   struct PendingConfigureState {
