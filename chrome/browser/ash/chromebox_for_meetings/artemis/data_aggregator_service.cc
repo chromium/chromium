@@ -25,7 +25,7 @@ static DataAggregatorService* g_data_aggregator_service = nullptr;
 constexpr base::TimeDelta kFetchFrequency = base::Minutes(1);
 constexpr size_t kDefaultLogBatchSize = 500;  // lines
 
-constexpr size_t kPayloadMaxSizeBytes = 500000;  // 500Kb
+constexpr size_t kPayloadMaxSizeBytes = 500 * 1000;  // 500Kb
 constexpr base::TimeDelta kPayloadEnqueueTimeout = base::Minutes(10);
 constexpr size_t kMaxPayloadQueueSize = 3;  // # payloads
 
