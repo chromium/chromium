@@ -9,6 +9,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_egtest_utils.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -79,6 +80,7 @@ void ReloadFromOmnibox() {
 - (void)setUp {
   [super setUp];
   MakeFirstRunRecent();
+  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
 }
 
 - (void)tearDownHelper {
@@ -88,7 +90,7 @@ void ReloadFromOmnibox() {
   [super tearDownHelper];
 }
 
-// Tests that the pull-to-refresh IPH is atttempted when user taps the omnibox
+// Tests that the pull-to-refresh IPH is attempted when user taps the omnibox
 // to reload the same page, and disappears after the user navigates away.
 - (void)testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
@@ -567,6 +569,40 @@ void ReloadFromOmnibox() {
       @"Toolbar swipe IPH should be dismissed after leaving the page.");
   ExpectHistogramEmittedForIPHDismissal(
       IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView);
+}
+
+// Tests that the Lens overlay entrypoint tip is dismissed when Omnibox position
+// is changed.
+- (void)testLensOverlayEntrypointTipDismissedWhenOmniboxPositionChanged {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
+  }
+  RelaunchWithIPHFeature(@"IPH_iOSLensOverlayEntrypointTip",
+                         /*safari_switcher=*/NO);
+
+  // Load a random page.
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:destinationUrl1];
+
+  // Verify Lens overlay entrypoint tip is shown.
+  GREYAssertTrue(
+      [ChromeEarlGrey
+          testUIElementAppearanceWithMatcher:grey_accessibilityID(
+                                                 kBubbleViewArrowViewIdentifier)
+                                     timeout:base::Seconds(1)],
+      @"Lens overlay entrypoint tip is not shown");
+
+  // Move Omnibox to the bottom.
+  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  // Verify Lens overlay entrypoint tip is hidden after Omnibox position
+  // changed.
+  GREYAssertFalse(
+      [ChromeEarlGrey testUIElementAppearanceWithMatcher:
+                          grey_accessibilityID(kBubbleViewArrowViewIdentifier)],
+      @"Lens overlay entrypoint tip is still shown");
 }
 
 @end
