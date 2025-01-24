@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
@@ -24,12 +25,14 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_test_utils.h"
+#include "components/web_package/test_support/signed_web_bundles/key_pair.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
@@ -37,11 +40,6 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
-
-constexpr std::string_view kIwa1UrlString(
-    "isolated-app://wiabxazz27gf4rgupuiogazvf3u4pszqgzp2tlocmvnhpkyzsvnaaaac/");
-constexpr std::string_view kIwa2UrlString(
-    "isolated-app://lcqmu3b7fzkmcev36j2slaxolx6edzzinw7n4xhppqsk4wo3hkfaaaac/");
 
 const base::FilePath::CharType kStoragePartitionDirname[] =
     FILE_PATH_LITERAL("Storage");
@@ -92,35 +90,15 @@ class GarbageCollectStoragePartitionsCommandBrowserTest
         .Append(kExtensionsDirname);
   }
 
-  base::FilePath UrlToRelativeDomainPath(const GURL& url) {
-    auto url_info = IsolatedWebAppUrlInfo::Create(url);
+  base::FilePath WebBundleIdToRelativeDomainPath(
+      const web_package::SignedWebBundleId& web_bundle_id) {
     content::StoragePartitionConfig sp_config =
-        url_info->storage_partition_config(profile());
+        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id)
+            .storage_partition_config(profile());
     return base::FilePath::FromUTF8Unsafe(sp_config.partition_domain());
   }
 
-  IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebAppWithScope(
-      const url::Origin& proxy_origin,
-      const GURL& scope_url) {
-    base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,
-                                          InstallIsolatedWebAppCommandError>>
-        future;
-
-    auto url_info = IsolatedWebAppUrlInfo::Create(scope_url);
-    CHECK(url_info.has_value());
-
-    WebAppProvider::GetForWebApps(profile())->scheduler().InstallIsolatedWebApp(
-        url_info.value(),
-        IsolatedWebAppInstallSource::FromDevUi(IwaSourceProxy(proxy_origin)),
-        /*expected_version=*/std::nullopt,
-        /*optional_keep_alive=*/nullptr,
-        /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
-
-    CHECK(future.Get().has_value()) << future.Get().error();
-    return url_info.value();
-  }
-
-  content::StoragePartitionConfig AddPersistentStoragePartitonToIwa(
+  content::StoragePartitionConfig AddPersistentStoragePartitionToIwa(
       const IsolatedWebAppUrlInfo& url_info,
       const std::string& partition_name,
       const base::Location location = FROM_HERE) {
@@ -146,35 +124,37 @@ class GarbageCollectStoragePartitionsCommandBrowserTest
 IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
                        PRE_UninstalledAppsHaveStoragePartitionsCleanedUp) {
   base::ScopedAllowBlockingForTesting blocking_allow;
-  const GURL kIwa1Url(kIwa1UrlString);
-  const GURL kIwa2Url(kIwa2UrlString);
 
   // Install 2 IWAs.
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  IsolatedWebAppUrlInfo url_info_1 = InstallDevModeProxyIsolatedWebAppWithScope(
-      isolated_web_app_dev_server->GetOrigin(), kIwa1Url);
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app1 =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .BuildBundle(web_package::test::GetDefaultEcdsaP256KeyPair());
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info_1,
+                       app1->Install(profile()));
+
   content::StoragePartitionConfig iwa_1_base_sp_config =
       url_info_1.storage_partition_config(profile());
   ASSERT_TRUE(profile()->GetStoragePartition(iwa_1_base_sp_config,
                                              /*can_create=*/false));
   content::StoragePartitionConfig iwa_1_sp_1_config =
-      AddPersistentStoragePartitonToIwa(url_info_1, "partition");
+      AddPersistentStoragePartitionToIwa(url_info_1, "partition");
   // The previous command only registers the partition, therefore we need to
   // create it here.
   ASSERT_TRUE(
       profile()->GetStoragePartition(iwa_1_sp_1_config, /*can_create=*/true));
 
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_2 =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  IsolatedWebAppUrlInfo url_info_2 = InstallDevModeProxyIsolatedWebAppWithScope(
-      isolated_web_app_dev_server->GetOrigin(), kIwa2Url);
+  // Install 2nd app - different Key Pair results in different Web Bundle Id
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app2 =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .BuildBundle(web_package::test::GetDefaultEd25519KeyPair());
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info_2,
+                       app2->Install(profile()));
   content::StoragePartitionConfig iwa_2_base_sp_config =
       url_info_2.storage_partition_config(profile());
   ASSERT_TRUE(profile()->GetStoragePartition(iwa_2_base_sp_config,
                                              /*can_create=*/false));
   content::StoragePartitionConfig iwa_2_sp_1_config =
-      AddPersistentStoragePartitonToIwa(url_info_2, "partition");
+      AddPersistentStoragePartitionToIwa(url_info_2, "partition");
   // The previous command only registers the partition, therefore we need to
   // create it here.
   ASSERT_TRUE(
@@ -192,11 +172,15 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
   ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(
       prefs::kShouldGarbageCollectStoragePartitions));
   // Both paths exist before garbage collection.
-  ASSERT_TRUE(PathHasSubPath(storage_partition_path(),
-                             UrlToRelativeDomainPath(kIwa1Url)))
+  ASSERT_TRUE(
+      PathHasSubPath(storage_partition_path(),
+                     WebBundleIdToRelativeDomainPath(
+                         web_package::test::GetDefaultEcdsaP256WebBundleId())))
       << SubDirDebugValue(storage_partition_path());
-  ASSERT_TRUE(PathHasSubPath(storage_partition_path(),
-                             UrlToRelativeDomainPath(kIwa2Url)))
+  ASSERT_TRUE(
+      PathHasSubPath(storage_partition_path(),
+                     WebBundleIdToRelativeDomainPath(
+                         web_package::test::GetDefaultEd25519WebBundleId())))
       << SubDirDebugValue(storage_partition_path());
 }
 
@@ -211,16 +195,17 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
       .Post(FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 
-  const GURL kIwa1Url(kIwa1UrlString);
-  const GURL kIwa2Url(kIwa2UrlString);
-
   ASSERT_TRUE(base::PathExists(storage_partition_path()));
   // Only IWA1's path still exists.
-  EXPECT_TRUE(PathHasSubPath(storage_partition_path(),
-                             UrlToRelativeDomainPath(kIwa1Url)))
+  EXPECT_TRUE(
+      PathHasSubPath(storage_partition_path(),
+                     WebBundleIdToRelativeDomainPath(
+                         web_package::test::GetDefaultEcdsaP256WebBundleId())))
       << SubDirDebugValue(storage_partition_path());
-  EXPECT_FALSE(PathHasSubPath(storage_partition_path(),
-                              UrlToRelativeDomainPath(kIwa2Url)))
+  EXPECT_FALSE(
+      PathHasSubPath(storage_partition_path(),
+                     WebBundleIdToRelativeDomainPath(
+                         web_package::test::GetDefaultEd25519WebBundleId())))
       << SubDirDebugValue(storage_partition_path());
 }
 
