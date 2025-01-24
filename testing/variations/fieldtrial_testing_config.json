@@ -3066,26 +3066,6 @@
             ]
         }
     ],
-    "BackForwardCacheSensors": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AllowSensorsToEnterBfcache"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackForwardTransitions": [
         {
             "platforms": [

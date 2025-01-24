@@ -21,7 +21,7 @@ using device::mojom::SensorType;
 namespace features {
 BASE_FEATURE(kAllowSensorsToEnterBfcache,
              "AllowSensorsToEnterBfcache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }
 
 namespace content {
