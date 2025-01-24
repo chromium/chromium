@@ -469,18 +469,18 @@ void WebApp::SetStartUrl(const GURL& start_url) {
 }
 
 void WebApp::SetScope(const GURL& scope) {
-  GURL scope_for_app = scope;
-  // If the given scope is empty, populate the scope from the `start_url_`.
+  // TODO(crbug.com/339718933): Remove this after shortcut apps are fully
+  // removed.
   if (scope.is_empty()) {
-    CHECK(start_url_.is_valid());
-    scope_for_app = start_url_.GetWithoutFilename();
+    scope_ = scope;
+    return;
   }
-  CHECK(scope_for_app.is_valid());
+  CHECK(scope.is_valid());
   // Ensure that the scope can never include queries or fragments, as per spec.
   GURL::Replacements scope_replacements;
   scope_replacements.ClearRef();
   scope_replacements.ClearQuery();
-  scope_ = scope_for_app.ReplaceComponents(scope_replacements);
+  scope_ = scope.ReplaceComponents(scope_replacements);
 }
 
 void WebApp::SetThemeColor(std::optional<SkColor> theme_color) {

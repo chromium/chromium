@@ -90,10 +90,12 @@ struct WebAppInstallParams {
 
   bool require_manifest = false;
 
-  // Used only by ExternallyManagedInstallCommand, to create DIY web apps where
-  // only limited values from the manifest are used (like theme color) and all
-  // extra capabilities are not used (like file handlers).
-  bool install_as_diy = false;
+  // Used only by ExternallyManagedInstallCommand.
+  // Has the same meaning as WebAppInstallFlow::kCreateShortcut
+  // TODO(crbug.com/339718933): This is a deprecated feature. To install a site
+  // as an app, install it as a 'diy' app instead, or use
+  // shortcuts::CreateShortcutForWebContents().
+  bool install_as_shortcut = false;
 
   std::vector<std::string> additional_search_terms;
 
@@ -119,10 +121,11 @@ enum class WebAppInstallFlow {
   // TODO(crbug.com/40184819): This should be removed by adding all known flows
   // to this enum.
   kUnknown,
-#if BUILDFLAG(IS_CHROMEOS)
-  // Perform the `Create Shortcut` flow on CrOS that creates a DIY app.
+  // The 'Create Shortcut' flow for adding the current page as a shortcut app.
+  // TODO(crbug.com/339718933): This is a deprecated feature. To install a site
+  // as an app, install it as a 'diy' app instead (currently by using
+  // kInstallSite). Or use shortcuts::CreateShortcutForWebContents().
   kCreateShortcut,
-#endif
   // The 'Install Site' flow for installing the current site with an app
   // experience determined by the site.
   kInstallSite,
