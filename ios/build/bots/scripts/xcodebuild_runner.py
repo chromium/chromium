@@ -250,6 +250,11 @@ class LaunchCommand(object):
       tests_to_include = (
           tests_to_include
           | overall_launch_command_result.never_expected_tests())
+      # Do not retry ASan failures
+      asan_failures = overall_launch_command_result.asan_failed_tests()
+      if asan_failures:
+        LOGGER.info('Skipping retrying ASan failures.')
+        tests_to_include = tests_to_include - asan_failures
       self.egtests_app.included_tests = list(tests_to_include)
 
       # Nothing to run in retry.

@@ -12,7 +12,10 @@ MAX_RUNTIME_KEPT_DAYS = '3'
 # Maximum number of simulator runtime we should keep in any given time
 MAX_RUNTIME_KETP_COUNT = 3
 
-# Message checked for in EG test logs to determine if the app crashed
+# Message printed in EG test logs to determine if the app crashed
 CRASH_MESSAGE = 'App crashed and disconnected.'
+
+# Message printed in host app test logs when an ASan error occurs
+ASAN_ERROR = 'ERROR: AddressSanitizer'
 
 LAYOUT_CONSTRAINT_MSG = 'Omitting layout constraint warnings'
