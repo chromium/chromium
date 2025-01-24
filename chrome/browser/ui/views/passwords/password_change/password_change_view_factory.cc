@@ -9,6 +9,7 @@
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/views/passwords/password_change/failed_password_change_view.h"
 #include "chrome/browser/ui/views/passwords/password_change/no_password_change_form_view.h"
+#include "chrome/browser/ui/views/passwords/password_change/password_change_credential_leak_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_info_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/password_change/privacy_notice_view.h"
 #include "chrome/browser/ui/views/passwords/password_change/successful_password_change_view.h"
@@ -18,7 +19,9 @@ PasswordBubbleViewBase* CreatePasswordChangeBubbleView(
     content::WebContents* web_contents,
     views::View* anchor_view) {
   switch (delegate->GetCurrentState()) {
-      // TODO (crbug.com/375564659): Implement views for each state.
+    case PasswordChangeDelegate::State::kOfferingPasswordChange:
+      return new PasswordChangeCredentialLeakBubbleView(web_contents,
+                                                        anchor_view);
     case PasswordChangeDelegate::State::kWaitingForAgreement:
       return new PrivacyNoticeView(web_contents, anchor_view);
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:

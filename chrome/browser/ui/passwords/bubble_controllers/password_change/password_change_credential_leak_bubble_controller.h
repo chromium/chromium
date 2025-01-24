@@ -18,10 +18,8 @@
 class PasswordChangeCredentialLeakBubbleController
     : public PasswordBubbleControllerBase {
  public:
-  PasswordChangeCredentialLeakBubbleController(
-      base::WeakPtr<PasswordsModelDelegate> delegate,
-      base::WeakPtr<PasswordsLeakDialogDelegate> leak_dialog_delegate,
-      password_manager::LeakedPasswordDetails details);
+  explicit PasswordChangeCredentialLeakBubbleController(
+      base::WeakPtr<PasswordsModelDelegate> delegate);
 
   ~PasswordChangeCredentialLeakBubbleController() override;
 
@@ -32,10 +30,7 @@ class PasswordChangeCredentialLeakBubbleController
   void ChangePassword();
 
  private:
-  base::WeakPtr<PasswordsLeakDialogDelegate> leak_dialog_delegate_;
-  std::u16string username_;
-  std::u16string password_;
-  GURL url_;
+  base::WeakPtr<PasswordChangeDelegate> password_change_delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_PASSWORD_CHANGE_PASSWORD_CHANGE_CREDENTIAL_LEAK_BUBBLE_CONTROLLER_H_

@@ -55,8 +55,22 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     if (StartsWith(name, "PrivacyNotice", base::CompareCase::SENSITIVE)) {
-      password_change_service()->StartPasswordChange(main_url, u"test",
-                                                     u"password", web_contents);
+      password_change_service()->OfferPasswordChangeUi(
+          main_url, u"test", u"password", web_contents);
+      password_change_service()
+          ->GetPasswordChangeDelegate(web_contents)
+          ->StartPasswordChangeFlow();
+    } else if (StartsWith(name, "LeakBubble", base::CompareCase::SENSITIVE)) {
+      auto* controller =
+          ManagePasswordsUIController::FromWebContents(web_contents);
+      controller->OnCredentialLeak(password_manager::LeakedPasswordDetails(
+          password_manager::CreateLeakType(
+              password_manager::IsSaved(true),
+              password_manager::IsReused(false),
+              password_manager::IsSyncing(true),
+              password_manager::HasChangePasswordUrl(true)),
+          GURL("https://example.com/"), u"username", u"password",
+          /*in_account_store=*/false));
     }
     PasswordBubbleViewBase::ShowBubble(
         web_contents, LocationBarBubbleDelegateView::USER_GESTURE);
@@ -70,5 +84,9 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeUiBrowserTest, InvokeUi_PrivacyNotice) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUiBrowserTest, InvokeUi_LeakBubble) {
   ShowAndVerifyUi();
 }

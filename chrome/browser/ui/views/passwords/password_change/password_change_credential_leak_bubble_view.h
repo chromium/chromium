@@ -15,11 +15,8 @@ class PasswordChangeCredentialLeakBubbleView : public PasswordBubbleViewBase {
                   PasswordBubbleViewBase)
 
  public:
-  PasswordChangeCredentialLeakBubbleView(
-      content::WebContents* web_contents,
-      views::View* anchor_view,
-      base::WeakPtr<PasswordsLeakDialogDelegate> leak_dialog_delegate,
-      password_manager::LeakedPasswordDetails details);
+  PasswordChangeCredentialLeakBubbleView(content::WebContents* web_contents,
+                                         views::View* anchor_view);
 
  private:
   ~PasswordChangeCredentialLeakBubbleView() override;

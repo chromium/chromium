@@ -20,6 +20,7 @@ class PasswordChangeDelegateMock final : public PasswordChangeDelegate {
       delete;
   ~PasswordChangeDelegateMock() override;
 
+  MOCK_METHOD(void, StartPasswordChangeFlow, (), (override));
   MOCK_METHOD(bool,
               IsPasswordChangeOngoing,
               (content::WebContents*),

@@ -100,6 +100,7 @@ bool PasswordChangeIconViews::OnMousePressed(const ui::MouseEvent& event) {
 
 const gfx::VectorIcon& PasswordChangeIconViews::GetVectorIcon() const {
   switch (controller_.GetCurrentState()) {
+    case PasswordChangeDelegate::State::kOfferingPasswordChange:
     case PasswordChangeDelegate::State::kWaitingForAgreement:
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
@@ -138,6 +139,7 @@ void PasswordChangeIconViews::UpdateIconAndLabel() {
                                         ? kColorOmniboxIconBackgroundTonal
                                         : kColorOmniboxIconBackground;
   switch (controller_.GetCurrentState()) {
+    case PasswordChangeDelegate::State::kOfferingPasswordChange:
     case PasswordChangeDelegate::State::kWaitingForAgreement:
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:

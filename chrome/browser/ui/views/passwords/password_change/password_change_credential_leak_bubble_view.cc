@@ -25,15 +25,11 @@
 
 PasswordChangeCredentialLeakBubbleView::PasswordChangeCredentialLeakBubbleView(
     content::WebContents* web_contents,
-    views::View* anchor_view,
-    base::WeakPtr<PasswordsLeakDialogDelegate> leak_dialog_delegate,
-    password_manager::LeakedPasswordDetails details)
+    views::View* anchor_view)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
                              /*easily_dismissable=*/true),
-      controller_(PasswordsModelDelegateFromWebContents(web_contents),
-                  leak_dialog_delegate,
-                  std::move(details)) {
+      controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 

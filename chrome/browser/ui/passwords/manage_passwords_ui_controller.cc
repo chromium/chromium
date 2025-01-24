@@ -437,6 +437,14 @@ void ManagePasswordsUIController::OnCredentialLeak(
     ClearPopUpFlagForBubble();
   }
 
+  if (password_manager::IsPasswordChangeSupported(details.leak_type) &&
+      GetPasswordChangeService(web_contents())) {
+    GetPasswordChangeService(web_contents())
+        ->OfferPasswordChangeUi(details.origin, details.username,
+                                details.password, web_contents());
+    return;
+  }
+
   auto metric_recorder = std::make_unique<
       password_manager::metrics_util::LeakDialogMetricsRecorder>(
       web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
@@ -1010,20 +1018,6 @@ void ManagePasswordsUIController::OnLeakDialogHidden() {
     }
     UpdateBubbleAndIconVisibility();
   }
-}
-
-void ManagePasswordsUIController::ChangePassword(
-    const GURL& url,
-    const std::u16string& username,
-    const std::u16string& password) {
-  ChromePasswordChangeService* password_change_service =
-      GetPasswordChangeService(web_contents());
-  if (!password_change_service) {
-    return;
-  }
-  password_change_service->StartPasswordChange(url, username, password,
-                                               web_contents());
-  UpdateBubbleAndIconVisibility();
 }
 
 bool ManagePasswordsUIController::IsSavingPromptBlockedExplicitlyOrImplicitly()

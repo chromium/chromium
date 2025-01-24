@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -46,7 +47,7 @@ bool ChromePasswordChangeService::IsPasswordChangeSupported(const GURL& url) {
   return affiliation_service_->GetChangePasswordURL(url).is_valid();
 }
 
-void ChromePasswordChangeService::StartPasswordChange(
+void ChromePasswordChangeService::OfferPasswordChangeUi(
     const GURL& url,
     const std::u16string& username,
     const std::u16string& password,
@@ -65,7 +66,7 @@ void ChromePasswordChangeService::StartPasswordChange(
   // immediately returned by GetPasswordChangeDelegate() when the flow starts.
   static_cast<PasswordChangeDelegateImpl*>(
       password_change_delegates_.back().get())
-      ->Init();
+      ->OfferPasswordChangeUi();
 }
 
 PasswordChangeDelegate* ChromePasswordChangeService::GetPasswordChangeDelegate(
