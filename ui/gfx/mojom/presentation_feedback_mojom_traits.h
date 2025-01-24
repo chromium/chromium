@@ -5,6 +5,8 @@
 #ifndef UI_GFX_MOJOM_PRESENTATION_FEEDBACK_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_PRESENTATION_FEEDBACK_MOJOM_TRAITS_H_
 
+#include <cstdint>
+
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -60,9 +62,15 @@ struct StructTraits<gfx::mojom::PresentationFeedbackDataView,
   }
 #endif
 
+  static std::optional<int64_t> display_trace_id(
+      const gfx::PresentationFeedback& input) {
+    return input.display_trace_id;
+  }
+
   static bool Read(gfx::mojom::PresentationFeedbackDataView data,
                    gfx::PresentationFeedback* out) {
     out->flags = data.flags();
+    out->display_trace_id = data.display_trace_id();
     return data.ReadTimestamp(&out->timestamp) &&
            data.ReadInterval(&out->interval) &&
            data.ReadAvailableTimestamp(&out->available_timestamp) &&
