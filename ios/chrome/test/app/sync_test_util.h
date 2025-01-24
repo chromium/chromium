@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include <set>
 #include <string>
 
 #include "base/time/time.h"
