@@ -78,6 +78,7 @@ class SVGScriptElement final : public SVGElement,
   String EventAttributeValue() const override { return String(); }
   String ForAttributeValue() const override { return String(); }
   String IntegrityAttributeValue() const override { return String(); }
+  String SignatureAttributeValue() const override { return String(); }
   String ReferrerPolicyAttributeValue() const override { return String(); }
   String FetchPriorityAttributeValue() const override { return String(); }
   String LanguageAttributeValue() const override { return String(); }

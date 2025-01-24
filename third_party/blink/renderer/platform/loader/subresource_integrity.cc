@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 namespace blink {
 
@@ -400,7 +401,8 @@ SubresourceIntegrity::ParseAttributeAlgorithm(std::string_view token,
     const std::string_view prefix(prefix_cstr);
     // Parse signature-based algorithm prefixes iff the runtime feature is
     // enabled.
-    if (!RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled() &&
+    if (!(RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled() ||
+          RuntimeEnabledFeatures::SignatureBasedInlineIntegrityEnabled()) &&
         prefix == "ed25519") {
       continue;
     }
@@ -525,6 +527,73 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
       metadata_set.signatures.insert(integrity_metadata.ToPair());
     }
   }
+}
+
+bool SubresourceIntegrity::VerifyInlineIntegrity(const String& integrity_attr,
+                                                 const String& signature_attr,
+                                                 const String& source_code) {
+  if (!RuntimeEnabledFeatures::SignatureBasedInlineIntegrityEnabled()) {
+    return true;
+  }
+
+  // Parse `integrity`:
+  IntegrityMetadataSet integrity_metadata;
+  if (!integrity_attr.empty()) {
+    IntegrityReport integrity_report;
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        integrity_attr, integrity_metadata, &integrity_report);
+    // TODO(391907163): Log errors from |integrity_report|.
+  }
+
+  // Loop through asserted signatures, attempting to verify any of them using
+  // any of the known keys. If any key can verify any signature, return true.
+  int semantically_valid_signatures = 0;
+
+  StringUTF8Adaptor sig_adaptor(signature_attr);
+  StringUTF8Adaptor source_adaptor(source_code);
+  for (std::string_view piece : base::SplitStringPiece(
+           sig_adaptor.AsStringView(), base::kWhitespaceASCII,
+           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    auto [algorithm, base64_signature] =
+        base::SplitStringOnce(piece, '-')
+            .value_or(std::make_pair(std::string_view(), std::string_view()));
+    if (algorithm != "ed25519") {
+      // TODO(391907163): Log a warning for unknown (and therefore ignored)
+      // signature algorithms.
+      continue;
+    }
+
+    Vector<char> decoded_signature;
+    if (!Base64Decode(StringView(base::as_byte_span(base64_signature)),
+                      decoded_signature) ||
+        decoded_signature.size() != 64u) {
+      // TODO(391907163): Log an error for invalid signature digests.
+      continue;
+    }
+    semantically_valid_signatures++;
+
+    for (const auto& key : integrity_metadata.signatures) {
+      Vector<char> decoded_key;
+      if (!Base64Decode(key.first, decoded_key) || decoded_key.size() != 32u) {
+        // TODO(391907163): Log an error for invalid public key digests.
+        continue;
+      }
+      if (ED25519_verify(
+              reinterpret_cast<const uint8_t*>(source_adaptor.data()),
+              source_adaptor.size(),
+              reinterpret_cast<const uint8_t*>(decoded_signature.data()),
+              reinterpret_cast<const uint8_t*>(decoded_key.data()))) {
+        return true;
+      }
+    }
+  }
+
+  // If there were no signatures matching the grammar, then return true (as
+  // we treat that case as not having any meaningful assertion). Otherwise,
+  // no asserted signature could be validated above, so fail verification.
+  //
+  // TODO(391907163): Log an error for non-verifiable signatures.
+  return semantically_valid_signatures == 0;
 }
 
 }  // namespace blink

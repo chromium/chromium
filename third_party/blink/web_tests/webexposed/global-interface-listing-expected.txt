@@ -4923,6 +4923,7 @@ interface HTMLScriptElement : HTMLElement
     getter integrity
     getter noModule
     getter referrerPolicy
+    getter signature
     getter src
     getter text
     getter type
@@ -4939,6 +4940,7 @@ interface HTMLScriptElement : HTMLElement
     setter integrity
     setter noModule
     setter referrerPolicy
+    setter signature
     setter src
     setter text
     setter type

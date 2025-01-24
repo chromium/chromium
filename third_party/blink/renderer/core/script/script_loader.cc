@@ -664,8 +664,11 @@ PendingScript* ScriptLoader::PrepareScript(
   // returns "Blocked" when given el, "script", and source text, then return.
   // [CSP]</spec>
   if (!element_->HasSourceAttribute() &&
-      !element_->AllowInlineScriptForCSP(element_->GetNonceForElement(),
-                                         position.line_, source_text)) {
+      (!element_->AllowInlineScriptForCSP(element_->GetNonceForElement(),
+                                          position.line_, source_text) ||
+       !SubresourceIntegrity::VerifyInlineIntegrity(
+           element_->IntegrityAttributeValue(),
+           element_->SignatureAttributeValue(), source_text))) {
     return nullptr;
   }
 

@@ -66,6 +66,14 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
                                       IntegrityMetadataSet&,
                                       IntegrityReport*);
 
+  // Returns true if the element's `integrity` and `signature` attributes
+  // produce a verifiable signature for the element's content.
+  //
+  // https://mikewest.github.io/inline-integrity/
+  static bool VerifyInlineIntegrity(const String& integrity,
+                                    const String& signatures,
+                                    const String& source_code);
+
  private:
   friend class SubresourceIntegrityTest;
   FRIEND_TEST_ALL_PREFIXES(SubresourceIntegrityTest, Parsing);
