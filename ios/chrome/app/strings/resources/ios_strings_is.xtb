@@ -646,6 +646,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3955740319737378355">Lokið</translation>
 <translation id="3955822496205734389">Þú ert með léleg aðgangsorð.</translation>
 <translation id="3958312024468322930">Dragðu það í dokkuna neðst á heimaskjánum</translation>
+<translation id="3960218941754097036">Notaðu Google-linsu til að leita að hverju sem er á skjánum</translation>
 <translation id="3962326069546168954">Vista</translation>
 <translation id="3967327056943561740">Bókamerki</translation>
 <translation id="3967822245660637423">Niðurhali lokið</translation>
@@ -688,6 +689,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4147897805161313378">Google-myndir</translation>
 <translation id="4148023517926189160">Þetta vefsvæði vill sækja skrá og bæta henni við dagatalið hjá þér.</translation>
 <translation id="4152011295694446843">Þú finnur bókamerkin þín hér</translation>
+<translation id="4154753961803534698">Leita með myndavél</translation>
 <translation id="4158491215857439601">Aðgangsorðastjórnun</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bókamerki vistað í „{title}“. Það er aðeins vistað í þessu tæki.}one{{count} bókamerki vistað í „{title}“. Þau eru aðeins vistuð í þessu tæki.}other{{count} bókamerki vistuð í „{title}“. Þau eru aðeins vistuð í þessu tæki.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> sem endar á <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6168647875670665004">Tillögur um greinar</translation>
 <translation id="6173499589275053515">Aðgangsorð vistað á Google-reikningnum þínum, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Leitarskjár</translation>
 <translation id="6187302354554850004">Síðast samstillt: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Búið til <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ólesið</translation>

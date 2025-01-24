@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">完了</translation>
 <translation id="3955822496205734389">脆弱なパスワードがあります。</translation>
 <translation id="3958312024468322930">ホーム画面の下部にあるドックまでドラッグします</translation>
+<translation id="3960218941754097036">Google レンズで画面上のコンテンツを検索</translation>
 <translation id="3962326069546168954">保存</translation>
 <translation id="3967327056943561740">ブックマーク</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google フォト</translation>
 <translation id="4148023517926189160">このウェブサイトがファイルをダウンロードしてカレンダーに追加する許可を求めています。</translation>
 <translation id="4152011295694446843">ブックマークはここに表示されます</translation>
+<translation id="4154753961803534698">カメラで検索</translation>
 <translation id="4158491215857439601">パスワード マネージャー</translation>
 <translation id="4163699139741158298">{count,plural, =1{ブックマークを「{title}」に保存しました。このデバイスにのみ保存されます。}other{{count} 件のブックマークを「{title}」に保存しました。このデバイスにのみ保存されます。}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />（末尾 4 桁: <ph name="LAST_FOUR_DIGITS" />）</translation>
@@ -1150,6 +1152,7 @@
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6168647875670665004">記事の候補表示</translation>
 <translation id="6173499589275053515">Google アカウント（<ph name="EMAIL" />）に保存されたパスワード</translation>
+<translation id="6181969657494915430">画面を検索</translation>
 <translation id="6187302354554850004">最終同期: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">作成: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">未読</translation>

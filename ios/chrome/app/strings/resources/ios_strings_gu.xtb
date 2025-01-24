@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">થઈ ગયું</translation>
 <translation id="3955822496205734389">તમારી પાસે નબળા પાસવર્ડ છે.</translation>
 <translation id="3958312024468322930">તમારી હોમ સ્ક્રીનની એકદમ નીચે તેને ડૉક પર ખેંચો</translation>
+<translation id="3960218941754097036">Google Lens વડે તમારી સ્ક્રીન પર દેખાતું કંઈપણ શોધો</translation>
 <translation id="3962326069546168954">સાચવો</translation>
 <translation id="3967327056943561740">બુકમાર્ક</translation>
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">આ વેબસાઇટ ફાઇલ ડાઉનલોડ કરવા અને તેને તમારા કૅલેન્ડરમાં ઉમેરવા માગે છે.</translation>
 <translation id="4152011295694446843">તમને તમારા બુકમાર્ક અહીં મળશે</translation>
+<translation id="4154753961803534698">કૅમેરા વડે શોધો</translation>
 <translation id="4158491215857439601">પાસવર્ડ મેનેજર</translation>
 <translation id="4163699139741158298">{count,plural, =1{"{title}"માં બુકમાર્ક સાચવ્યું. તે ફક્ત આ ડિવાઇસ પર સાચવવામાં આવે છે.}one{"{title}"માં {count} બુકમાર્ક સાચવ્યું. તે ફક્ત આ ડિવાઇસ પર સાચવવામાં આવે છે.}other{"{title}"માં {count} બુકમાર્ક સાચવ્યા. તે ફક્ત આ ડિવાઇસ પર સાચવવામાં આવે છે.}}</translation>
 <translation id="4168651806173792090">અંતમાં <ph name="LAST_FOUR_DIGITS" /> ધરાવતું <ph name="NETWORK_NAME" /></translation>
@@ -1150,6 +1152,7 @@
 <translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6168647875670665004">લેખ સૂચનો</translation>
 <translation id="6173499589275053515">પાસવર્ડને તમારા Google એકાઉન્ટમાં સાચવ્યો, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">શોધ સ્ક્રીન</translation>
 <translation id="6187302354554850004">છેલ્લે સમન્વયિત કરેલું: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" />ના રોજ બનાવ્યું</translation>
 <translation id="6189413832092199491">વાંચ્યા વગરની</translation>

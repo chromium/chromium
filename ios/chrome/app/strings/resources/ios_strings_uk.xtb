@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">Готово</translation>
 <translation id="3955822496205734389">У вас є ненадійні паролі.</translation>
 <translation id="3958312024468322930">Перетягніть його на нижню панель головного екрана</translation>
+<translation id="3960218941754097036">Шукайте будь-що на екрані за допомогою Google Об’єктива</translation>
 <translation id="3962326069546168954">Зберегти</translation>
 <translation id="3967327056943561740">Закладки</translation>
 <translation id="3967822245660637423">Завантажено</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4148023517926189160">Цей веб-сайт просить дозвіл завантажити файл і додати його у ваш календар.</translation>
 <translation id="4152011295694446843">Тут відображатимуться ваші закладки</translation>
+<translation id="4154753961803534698">Пошук за допомогою камери</translation>
 <translation id="4158491215857439601">Менеджер паролів</translation>
 <translation id="4163699139741158298">{count,plural, =1{Закладку збережено в папці "{title}". Вона зберігається лише на поточному пристрої.}one{{count} закладку збережено в папці "{title}". Вони зберігаються лише на поточному пристрої.}few{{count} закладки збережено в папці "{title}". Вони зберігаються лише на поточному пристрої.}many{{count} закладок збережено в папці "{title}". Вони зберігаються лише на поточному пристрої.}other{{count} закладки збережено в папці "{title}". Вони зберігаються лише на поточному пристрої.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> (останні цифри номера: <ph name="LAST_FOUR_DIGITS" />)</translation>
@@ -1150,6 +1152,7 @@
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6168647875670665004">Пропозиції статей</translation>
 <translation id="6173499589275053515">Пароль збережено у вашому обліковому записі Google (<ph name="EMAIL" />)</translation>
+<translation id="6181969657494915430">Пошук на екрані</translation>
 <translation id="6187302354554850004">Востаннє синхрон.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Створено <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Непрочитані</translation>

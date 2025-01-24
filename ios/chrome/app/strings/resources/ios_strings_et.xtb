@@ -646,6 +646,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3955740319737378355">Valmis</translation>
 <translation id="3955822496205734389">Teil on nõrgad paroolid.</translation>
 <translation id="3958312024468322930">Pukseerige see dokki, mis asub avakuva allosas</translation>
+<translation id="3960218941754097036">Google Lensi abil ekraanikuvalt otsimine</translation>
 <translation id="3962326069546168954">Salvesta</translation>
 <translation id="3967327056943561740">Järjehoidjad</translation>
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
@@ -688,6 +689,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">See veebisait soovib faili alla laadida ja lisada selle teie kalendrisse.</translation>
 <translation id="4152011295694446843">Oma järjehoidjad leiate siit</translation>
+<translation id="4154753961803534698">Kaameraga otsimine</translation>
 <translation id="4158491215857439601">Paroolihaldur</translation>
 <translation id="4163699139741158298">{count,plural, =1{Järjehoidja salvestati kausta „{title}“. See salvestatakse ainult selles seadmes.}other{{count} järjehoidjat salvestati kausta „{title}“. Need salvestatakse ainult selles seadmes.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> lõpuga <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6165508094623778733">Lisateave</translation>
 <translation id="6168647875670665004">Artiklite soovitused</translation>
 <translation id="6173499589275053515">Parool salvestati teie Google'i kontole <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Otsi ekraanikuvalt</translation>
 <translation id="6187302354554850004">Viimati sünkr.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Loodi kuupäeval <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Lugemata</translation>

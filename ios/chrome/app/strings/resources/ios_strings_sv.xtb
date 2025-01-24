@@ -646,6 +646,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3955740319737378355">Klar</translation>
 <translation id="3955822496205734389">Du har svaga lösenord.</translation>
 <translation id="3958312024468322930">Dra den till Dock längst ned på hemskärmen</translation>
+<translation id="3960218941754097036">Sök efter vad som helst på skärmen med Google Lens</translation>
 <translation id="3962326069546168954">Spara</translation>
 <translation id="3967327056943561740">Bokmärken</translation>
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
@@ -688,6 +689,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148023517926189160">Den här webbplatsen försöker ladda ned en fil och lägga till den i din kalender.</translation>
 <translation id="4152011295694446843">Du hittar dina bokmärken här</translation>
+<translation id="4154753961803534698">Sök med kameran</translation>
 <translation id="4158491215857439601">Lösenordshantering</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bokmärket har sparats i {title}. Det är bara sparat på den här enheten.}other{{count} bokmärken har sparats i {title}. De är bara sparade på den här enheten.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> som slutar på <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6168647875670665004">Artikelförslag</translation>
 <translation id="6173499589275053515">Lösenordet har sparats i Google-kontot <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Sökskärm</translation>
 <translation id="6187302354554850004">Synkroniserades senast: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Skapades den <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Olästa</translation>

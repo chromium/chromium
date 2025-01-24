@@ -3775,7 +3775,7 @@
 <translation id="3652181838577940678">مکان‌یابی دکمه‌های قلم</translation>
 <translation id="3652817283076144888">مقداردهی اولیه</translation>
 <translation id="3653160965917900914">دستگاه ذخیره‌سازی متصل به شبکه</translation>
-<translation id="3653227677390502622">پاسخگویی</translation>
+<translation id="3653227677390502622">واکنش‌گرا</translation>
 <translation id="3653241190370117833">برگه‌های غیرفعال ظاهر جدیدی پیدا می‌کنند</translation>
 <translation id="3653887973853407813">‏نمی‌توانید از این افزونه استفاده کنید. ولی یا سرپرستتان «اجازه‌های سایت‌ها، برنامه‌ها، و افزونه‌ها» را در Chrome خاموش کرده است.</translation>
 <translation id="3653999333232393305">ادامه اجازه به <ph name="HOST" /> برای دسترسی به میکروفون</translation>
@@ -9023,6 +9023,7 @@
 <translation id="7424818322350938336">شبکه اضافه شد</translation>
 <translation id="7425037327577270384">کمک به نوشتن</translation>
 <translation id="7427348830195639090">صفحه پس‌زمینه: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">این نمایه تحت‌مدیریت است</translation>
 <translation id="7427798576651127129">تماس از <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">‏خروجی نمایشگر بریل قابل‌بازخوانی را در
     پانل ChromeVox در بالای صفحه شبیه‌سازی می‌کند</translation>

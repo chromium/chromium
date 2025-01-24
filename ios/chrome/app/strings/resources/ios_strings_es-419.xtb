@@ -646,6 +646,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3955740319737378355">Listo</translation>
 <translation id="3955822496205734389">Tienes contraseñas poco seguras.</translation>
 <translation id="3958312024468322930">Arrástrala al Dock que se encuentra en la parte inferior de la pantalla de inicio</translation>
+<translation id="3960218941754097036">Busca lo que quieras en la pantalla con Google Lens</translation>
 <translation id="3962326069546168954">Guardar</translation>
 <translation id="3967327056943561740">Favoritos</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
@@ -688,6 +689,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Este sitio web quiere descargar un archivo y agregarlo al calendario.</translation>
 <translation id="4152011295694446843">Aquí encontrarás tus favoritos</translation>
+<translation id="4154753961803534698">Buscar con la cámara</translation>
 <translation id="4158491215857439601">Administrador de contraseñas</translation>
 <translation id="4163699139741158298">{count,plural, =1{El favorito se guardó en "{title}". Se guarda solo en este dispositivo.}other{{count} favoritos se guardaron en "{title}". Se guardan solo en este dispositivo.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> que termina en <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6168647875670665004">Sugerencias de artículos</translation>
 <translation id="6173499589275053515">Se guardó la contraseña en tu Cuenta de Google, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Buscar en la pantalla</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Se creó el <ph name="DATE" /></translation>
 <translation id="6189413832092199491">No leídas</translation>

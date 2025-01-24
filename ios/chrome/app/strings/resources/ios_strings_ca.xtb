@@ -646,6 +646,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3955740319737378355">Fet</translation>
 <translation id="3955822496205734389">Tens contrasenyes poc segures.</translation>
 <translation id="3958312024468322930">Arrossega-la a la base que hi ha a la part inferior de la pantalla d'inici</translation>
+<translation id="3960218941754097036">Cerca qualsevol cosa que es mostri en pantalla amb Google Lens</translation>
 <translation id="3962326069546168954">Desa</translation>
 <translation id="3967327056943561740">Adreces d'interès</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
@@ -688,6 +689,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Aquest lloc web vol baixar un fitxer i afegir-lo al teu calendari.</translation>
 <translation id="4152011295694446843">Trobaràs les adreces d'interès aquí</translation>
+<translation id="4154753961803534698">Cerca amb la càmera</translation>
 <translation id="4158491215857439601">Gestor de contrasenyes</translation>
 <translation id="4163699139741158298">{count,plural, =1{L'adreça d'interès s'ha desat a {title} i només en aquest dispositiu.}other{S'han desat {count} adreces d'interès a {title} i només en aquest dispositiu.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, que acaba en <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6168647875670665004">Suggeriments d'articles</translation>
 <translation id="6173499589275053515">S'ha desat la contrasenya al teu Compte de Google (<ph name="EMAIL" />)</translation>
+<translation id="6181969657494915430">Cerca a la pantalla</translation>
 <translation id="6187302354554850004">Última sincronització: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Creat el dia <ph name="DATE" /></translation>
 <translation id="6189413832092199491">No llegits</translation>

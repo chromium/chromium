@@ -646,6 +646,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3955740319737378355">Done</translation>
 <translation id="3955822496205734389">You have weak passwords.</translation>
 <translation id="3958312024468322930">Drag it to the dock at the bottom of your Home screen</translation>
+<translation id="3960218941754097036">Search anything on your screen with Google Lens</translation>
 <translation id="3962326069546168954">Save</translation>
 <translation id="3967327056943561740">Bookmarks</translation>
 <translation id="3967822245660637423">Download complete</translation>
@@ -688,6 +689,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">This website wants to download a file and add it to your calendar.</translation>
 <translation id="4152011295694446843">You'll find your bookmarks here</translation>
+<translation id="4154753961803534698">Search with camera</translation>
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bookmark saved to ‘{title}’. It is saved only to this device.}other{{count} bookmarks saved to ‘{title}’. They are saved only to this device.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> ending in <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6168647875670665004">Article suggestions</translation>
 <translation id="6173499589275053515">Password saved in your Google Account, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Search screen</translation>
 <translation id="6187302354554850004">Last synced: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Created on <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Unread</translation>

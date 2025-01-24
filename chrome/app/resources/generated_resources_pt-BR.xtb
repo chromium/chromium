@@ -974,7 +974,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1654580009054503925">A exibição de solicitações está bloqueada</translation>
 <translation id="1654713139320245449">Nenhum destino de transmissão encontrado. Precisa de ajuda?</translation>
 <translation id="1656528038316521561">Opacidade do plano de fundo</translation>
-<translation id="1657406563541664238">Ajudar a aprimorar o <ph name="PRODUCT_NAME" /> enviando automaticamente estatísticas de uso e relatórios de problemas ao Google.</translation>
+<translation id="1657406563541664238">Ajudar o <ph name="PRODUCT_NAME" /> a melhorar enviando automaticamente estatísticas de uso e relatórios de problemas ao Google.</translation>
 <translation id="1657937299377480641">Para fazer login novamente e ter acesso a recursos educacionais, peça permissão a um dos responsáveis</translation>
 <translation id="1658424621194652532">Esta página está acessando seu microfone.</translation>
 <translation id="1660763353352708040">Problema com o adaptador de energia</translation>
@@ -9028,6 +9028,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7424818322350938336">Rede adicionada</translation>
 <translation id="7425037327577270384">Quero ajuda para escrever</translation>
 <translation id="7427348830195639090">Página de plano de fundo: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427729970025360383">Este perfil é gerenciado</translation>
 <translation id="7427798576651127129">Chamada de <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">Simula a saída de uma linha braille atualizável
     na parte superior da tela do painel do ChromeVox</translation>

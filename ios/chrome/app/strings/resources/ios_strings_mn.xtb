@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">Дууссан</translation>
 <translation id="3955822496205734389">Танд сул нууц үгнүүд байна.</translation>
 <translation id="3958312024468322930">Үүнийг үндсэн нүүрнийхээ доод талын суурилуулагч руу чирнэ үү</translation>
+<translation id="3960218941754097036">Google Lens-р дэлгэц дээрээ байгаа дурын зүйлийг хайгаарай</translation>
 <translation id="3962326069546168954">Хадгалах</translation>
 <translation id="3967327056943561740">Хавчуурга</translation>
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google Зураг</translation>
 <translation id="4148023517926189160">Энэ вебсайт файл татаж, таны календарьт нэмэхийг хүсэж байна.</translation>
 <translation id="4152011295694446843">Та хавчуургуудаа эндээс олох болно</translation>
+<translation id="4154753961803534698">Камераар хайх</translation>
 <translation id="4158491215857439601">Нууц үгний менежер</translation>
 <translation id="4163699139741158298">{count,plural, =1{Хавчуургыг "{title}"-д хадгалсан. Үүнийг зөвхөн энэ төхөөрөмжид хадгалсан.}other{{count} хавчуургыг "{title}"-д хадгалсан. Тэдгээрийг зөвхөн энэ төхөөрөмжид хадгалсан.}}</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" />-р төгссөн <ph name="NETWORK_NAME" /></translation>
@@ -1150,6 +1152,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6168647875670665004">Нийтлэлийн зөвлөмж</translation>
 <translation id="6173499589275053515">Таны <ph name="EMAIL" /> Google Бүртгэлд нууц үг хадгалсан</translation>
+<translation id="6181969657494915430">Дэлгэцээс хайх</translation>
 <translation id="6187302354554850004">Хамгийн сүүлд синк хийсэн: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" />-нд үүсгэсэн</translation>
 <translation id="6189413832092199491">Уншаагүй</translation>

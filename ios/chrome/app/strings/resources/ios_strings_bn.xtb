@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">হয়ে গেছে</translation>
 <translation id="3955822496205734389">আপনার দুর্বল পাসওয়ার্ড আছে।</translation>
 <translation id="3958312024468322930">আপনার হোম স্ক্রিনের নিচে ডকে এটি টেনে নিয়ে আসুন</translation>
+<translation id="3960218941754097036">Google Lens ব্যবহার করে আপনার স্ক্রিনে যেকোনও জিনিস সার্চ করুন</translation>
 <translation id="3962326069546168954">সেভ করুন</translation>
 <translation id="3967327056943561740">বুকমার্ক</translation>
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">এই ওয়েবসাইটটি একটি ফাইল ডাউনলোড করতে এবং এটি আপনার ক্যালেন্ডারে যোগ করতে চায়।</translation>
 <translation id="4152011295694446843">আপনি নিজের বুকমার্ক এখানে খুঁজে পাবেন</translation>
+<translation id="4154753961803534698">ক্যামেরা ব্যবহার করে সার্চ করুন</translation>
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4163699139741158298">{count,plural, =1{"{title}"-এ বুকমার্ক সেভ করা হয়েছে। এটি শুধু এই ডিভাইসেই সেভ করা হয়।}one{{count}টি বুকমার্ক {title}-এ সেভ করা হয়েছে। এটি শুধু এই ডিভাইসেই সেভ করা হয়।}other{{count}টি বুকমার্ক {title}-এ সেভ করা হয়েছে। এটি শুধু এই ডিভাইসেই সেভ করা হয়।}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, যার শেষ সংখ্যাগুলি হল <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1151,6 +1153,7 @@
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6168647875670665004">নিবন্ধ সম্পর্কিত পরামর্শ</translation>
 <translation id="6173499589275053515">পাসওয়ার্ড আপনার Google অ্যাকাউন্ট, <ph name="EMAIL" />-এ সেভ করা আছে</translation>
+<translation id="6181969657494915430">সার্চের স্ক্রিন</translation>
 <translation id="6187302354554850004">শেষে সিঙ্ক হয়েছে: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" /> তারিখে তৈরি করা হয়েছে</translation>
 <translation id="6189413832092199491">অপঠিত</translation>

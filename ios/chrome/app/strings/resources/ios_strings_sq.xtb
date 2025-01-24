@@ -646,6 +646,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3955740319737378355">U krye</translation>
 <translation id="3955822496205734389">Ke fjalëkalime të dobëta.</translation>
 <translation id="3958312024468322930">Zvarrite te stacioni në fund të ekranit bazë</translation>
+<translation id="3960218941754097036">Kërko për çdo gjë në ekranin tënd me "Lenten e Google"</translation>
 <translation id="3962326069546168954">Ruaj</translation>
 <translation id="3967327056943561740">Faqeshënuesit</translation>
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
@@ -688,6 +689,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4147897805161313378">Fotografitë e Google</translation>
 <translation id="4148023517926189160">Ky uebsajt dëshiron të shkarkojë një skedar dhe ta shtojë atë në kalendarin tënd.</translation>
 <translation id="4152011295694446843">Këtu do të gjesh faqeshënuesit e tu</translation>
+<translation id="4154753961803534698">Kërko me kamerë</translation>
 <translation id="4158491215857439601">Menaxheri i fjalëkalimeve</translation>
 <translation id="4163699139741158298">{count,plural, =1{Faqeshënuesi u ruajt te "{title}". Ai është ruajtur vetëm në këtë pajisje.}other{{count} faqeshënues u ruajtën te "{title}". Ata janë ruajtur vetëm në këtë pajisje.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> që mbaron me <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6168647875670665004">Sugjerimet e artikujve</translation>
 <translation id="6173499589275053515">Fjalëkalimi u ruajt në "Llogarinë tënde të Google", <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Kërko në ekran</translation>
 <translation id="6187302354554850004">Sinkronizimi i fundit: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Krijuar më <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Të palexuara</translation>

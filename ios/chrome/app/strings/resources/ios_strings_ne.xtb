@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">सम्पन्न भयो</translation>
 <translation id="3955822496205734389">तपाईंका पासवर्डहरू कमजोर छन्।</translation>
 <translation id="3958312024468322930">यसलाई ड्रयाग गरी आफ्नो होम स्क्रिनको पुछारमा रहेको डकसम्म पुर्‍याउनुहोस्</translation>
+<translation id="3960218941754097036">Google लेन्स प्रयोग गरी आफ्नो डिभाइसको स्क्रिनमा भएका जुनसुकै सामग्री खोज्नुहोस्</translation>
 <translation id="3962326069546168954">सेभ गर्नुहोस्</translation>
 <translation id="3967327056943561740">बुकमार्कहरू</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">यो वेबसाइट कुनै फाइल डाउनलोड गर्न र उक्त फाइल तपाईंको पात्रोमा हाल्न चाहन्छ।</translation>
 <translation id="4152011295694446843">तपाईंका बुकमार्कहरू यहाँ देखिने छन्</translation>
+<translation id="4154753961803534698">क्यामेरा प्रयोग गरी खोज्नुहोस्</translation>
 <translation id="4158491215857439601">पासवर्ड म्यानेजर</translation>
 <translation id="4163699139741158298">{count,plural, =1{यो बुकमार्क "{title}" मा सेभ गरिएको छ। यो बुकमार्क यो डिभाइसमा मात्र सेभ गरिएको छ।}other{{count} वटा बुकमार्क "{title}" मा सेभ गरिएका छन्। यी बुकमार्क यो डिभाइसमा मात्र सेभ गरिएका छन्।}}</translation>
 <translation id="4168651806173792090">अन्तिमका अङ्क <ph name="LAST_FOUR_DIGITS" /> भएको <ph name="NETWORK_NAME" /></translation>
@@ -1150,6 +1152,7 @@
 <translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6168647875670665004">लेखका सुझावहरू</translation>
 <translation id="6173499589275053515">यो पासवर्ड तपाईंको Google खाता <ph name="EMAIL" /> मा सेभ गरिएको छ</translation>
+<translation id="6181969657494915430">स्क्रिनमा भएको सामग्री खोज्नुहोस्</translation>
 <translation id="6187302354554850004">पछिल्लोपटक सिंक भएको: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" /> मा बनाइएको</translation>
 <translation id="6189413832092199491">नपढिएको</translation>

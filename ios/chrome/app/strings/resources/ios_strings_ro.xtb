@@ -646,6 +646,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3955740319737378355">Terminat</translation>
 <translation id="3955822496205734389">Ai parole slabe.</translation>
 <translation id="3958312024468322930">Trage-o în bara de andocare din partea de jos a ecranului de pornire</translation>
+<translation id="3960218941754097036">Caută orice pe ecran folosind Google Lens</translation>
 <translation id="3962326069546168954">Salvează</translation>
 <translation id="3967327056943561740">Marcaje</translation>
 <translation id="3967822245660637423">Descărcare finalizată</translation>
@@ -688,6 +689,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148023517926189160">Site-ul dorește să descarce un fișier și să-l adauge în calendar.</translation>
 <translation id="4152011295694446843">Aici vei vedea marcajele</translation>
+<translation id="4154753961803534698">Caută folosind camera foto</translation>
 <translation id="4158491215857439601">Manager de parole</translation>
 <translation id="4163699139741158298">{count,plural, =1{Marcajul s-a salvat în {title}. Se salvează numai pe acest dispozitiv.}few{{count} marcaje s-au salvat în {title}. Ele se salvează numai pe acest dispozitiv.}other{{count} de marcaje s-au salvat în {title}. Ele se salvează numai pe acest dispozitiv.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> care se termină în <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6168647875670665004">Sugestii de articole</translation>
 <translation id="6173499589275053515">Parola s-a salvat în Contul Google, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Ecran pentru căutare</translation>
 <translation id="6187302354554850004">Ultima sincronizare: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Data creării: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Necitite</translation>

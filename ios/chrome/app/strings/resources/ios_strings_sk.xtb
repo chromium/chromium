@@ -646,6 +646,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3955740319737378355">Hotovo</translation>
 <translation id="3955822496205734389">Máte slabé heslá.</translation>
 <translation id="3958312024468322930">Presuňte ju do ponuky aplikácií v dolnej časti plochy</translation>
+<translation id="3960218941754097036">Vyhľadajte čokoľvek na obrazovke pomocou funkcie Google Lens</translation>
 <translation id="3962326069546168954">Uložiť</translation>
 <translation id="3967327056943561740">Záložky</translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
@@ -688,6 +689,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4147897805161313378">Fotky Google</translation>
 <translation id="4148023517926189160">Tento web chce stiahnuť súbor a pridať ho do vášho kalendára.</translation>
 <translation id="4152011295694446843">Tu nájdete svoje záložky</translation>
+<translation id="4154753961803534698">Hľadať pomocou kamery</translation>
 <translation id="4158491215857439601">Správca hesiel</translation>
 <translation id="4163699139741158298">{count,plural, =1{Záložka bola uložená do priečinka {title}. Je uložená iba v tomto zariadení.}few{{count} záložky boli uložené do priečinka {title}. Sú uložené iba v tomto zariadení.}many{{count} bookmarks saved to "{title}". They are saved only to this device.}other{{count} záložiek bolo uložených do priečinka {title}. Sú uložené iba v tomto zariadení.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> s koncovým štvorčíslím <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6168647875670665004">Návrhy článkov</translation>
 <translation id="6173499589275053515">Heslo bolo uložené do vášho účtu Google, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Hľadať na obrazovke</translation>
 <translation id="6187302354554850004">Synchronizované <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Vytvorené: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Neprečítané</translation>

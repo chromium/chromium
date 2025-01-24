@@ -646,6 +646,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3955740319737378355">Terminé</translation>
 <translation id="3955822496205734389">Vous avez des mots de passe faibles.</translation>
 <translation id="3958312024468322930">Faites-la glisser jusqu'au Dock situé dans la partie inférieure de votre écran d'accueil</translation>
+<translation id="3960218941754097036">Rechercher ce qui se trouve sur votre écran avec Lentille Google</translation>
 <translation id="3962326069546168954">Enregistrer</translation>
 <translation id="3967327056943561740">Favoris</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
@@ -688,6 +689,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">Ce site Web souhaite télécharger un fichier et l'ajouter à votre agenda.</translation>
 <translation id="4152011295694446843">Vous trouverez vos favoris ici</translation>
+<translation id="4154753961803534698">Rechercher avec l'appareil photo</translation>
 <translation id="4158491215857439601">Gestionnaire de mots de passe</translation>
 <translation id="4163699139741158298">{count,plural, =1{Favori enregistré dans « {title} ». Il est enregistré uniquement sur cet appareil.}one{{count} favori enregistré dans « {title} ». Il est enregistré uniquement sur cet appareil.}other{{count} favoris enregistrés dans « {title} ». Ils sont enregistrés uniquement sur cet appareil.}}</translation>
 <translation id="4168651806173792090">Réseau <ph name="NETWORK_NAME" /> se terminant par <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6168647875670665004">Articles suggérés</translation>
 <translation id="6173499589275053515">Mot de passe enregistré dans votre compte Google, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Rechercher sur l'écran</translation>
 <translation id="6187302354554850004">Dernière synchro : <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Créé le <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Non lu</translation>

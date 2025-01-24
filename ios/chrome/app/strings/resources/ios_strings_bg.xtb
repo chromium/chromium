@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">Готово</translation>
 <translation id="3955822496205734389">Имате ненадеждни пароли.</translation>
 <translation id="3958312024468322930">Преместете с плъзгане до лентата Dock в долната част на началния екран</translation>
+<translation id="3960218941754097036">Търсете цялото съдържание на екрана си посредством Google Обектив</translation>
 <translation id="3962326069546168954">Запазване</translation>
 <translation id="3967327056943561740">Отметки</translation>
 <translation id="3967822245660637423">Изтеглянето завърши</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google Снимки</translation>
 <translation id="4148023517926189160">Този уебсайт иска да изтегли файл и да го добави към календара ви.</translation>
 <translation id="4152011295694446843">Тук ще се показват отметките ви</translation>
+<translation id="4154753961803534698">Търсене с камерата</translation>
 <translation id="4158491215857439601">Мениджър на пароли</translation>
 <translation id="4163699139741158298">{count,plural, =1{Отметката е запазена в(ъв) „{title}“. Тя е запазена само на това устройство.}other{{count} отметки са запазени в(ъв) „{title}“. Те са запазени само на това устройство.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, завършваща на <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@
 <translation id="6165508094623778733">Научете повече</translation>
 <translation id="6168647875670665004">Предложения за статии</translation>
 <translation id="6173499589275053515">Паролата е запазена в профила ви в Google <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Търсене на съдържанието на екрана</translation>
 <translation id="6187302354554850004">Последно синхр.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Създадено на <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Непрочетени</translation>

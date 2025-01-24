@@ -646,6 +646,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3955740319737378355">Klaar</translation>
 <translation id="3955822496205734389">Je hebt zwakke wachtwoorden.</translation>
 <translation id="3958312024468322930">Sleep de app naar het dock onderaan je startscherm</translation>
+<translation id="3960218941754097036">Iets op je scherm zoeken met Google Lens</translation>
 <translation id="3962326069546168954">Opslaan</translation>
 <translation id="3967327056943561740">Bookmarks</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
@@ -688,6 +689,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4147897805161313378">Google Foto's</translation>
 <translation id="4148023517926189160">Deze website wil een bestand downloaden en toevoegen aan je agenda.</translation>
 <translation id="4152011295694446843">Hier vind je je bookmarks</translation>
+<translation id="4154753961803534698">Zoeken met camera</translation>
 <translation id="4158491215857439601">Wachtwoordmanager</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bookmark opgeslagen in {title}. Deze wordt alleen op dit apparaat opgeslagen.}other{{count} bookmarks opgeslagen in {title}. Deze worden alleen op dit apparaat opgeslagen.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> eindigend op <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6168647875670665004">Artikelsuggesties</translation>
 <translation id="6173499589275053515">Wachtwoord opgeslagen in je Google-account, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Zoeken op scherm</translation>
 <translation id="6187302354554850004">Laatst gesynchroniseerd: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Gemaakt op <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ongelezen</translation>

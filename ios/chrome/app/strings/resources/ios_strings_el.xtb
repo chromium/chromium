@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">Τέλος</translation>
 <translation id="3955822496205734389">Έχετε ασθενείς κωδικούς πρόσβασης.</translation>
 <translation id="3958312024468322930">Σύρετέ το στη γραμμή εφαρμογών στο κάτω μέρος της αρχικής οθόνης</translation>
+<translation id="3960218941754097036">Αναζητήστε οτιδήποτε στην οθόνη σας με το Google Lens</translation>
 <translation id="3962326069546168954">Αποθήκευση</translation>
 <translation id="3967327056943561740">Σελιδοδείκτες</translation>
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Φωτογραφίες Google</translation>
 <translation id="4148023517926189160">Αυτός ο ιστότοπος θέλει να κατεβάσει ένα αρχείο και να το προσθέσει στο ημερολόγιό σας.</translation>
 <translation id="4152011295694446843">Εδώ θα βρείτε τους σελιδοδείκτες σας</translation>
+<translation id="4154753961803534698">Αναζήτηση με την κάμερα</translation>
 <translation id="4158491215857439601">Διαχείριση κωδικών πρόσβασης</translation>
 <translation id="4163699139741158298">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε στην ενότητα {title}. Αποθηκεύεται μόνο σε αυτή τη συσκευή.}other{{count} σελιδοδείκτες αποθηκεύτηκαν στην ενότητα {title}. Αποθηκεύονται μόνο σε αυτή τη συσκευή.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> που λήγει σε <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@
 <translation id="6165508094623778733">Μάθετε περισσότερα</translation>
 <translation id="6168647875670665004">Προτάσεις για άρθρα</translation>
 <translation id="6173499589275053515">Ο κωδικός πρόσβασης αποθηκεύτηκε στον Λογαριασμό σας Google, <ph name="EMAIL" />.</translation>
+<translation id="6181969657494915430">Αναζήτηση στην οθόνη</translation>
 <translation id="6187302354554850004">Τελευτ. συγχρ.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Δημιουργήθηκε στις <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Μη αναγνωσμένα</translation>

@@ -646,6 +646,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3955740319737378355">Gotovo</translation>
 <translation id="3955822496205734389">Imate slabe zaporke.</translation>
 <translation id="3958312024468322930">Povucite je na traku pri dnu početnog zaslona</translation>
+<translation id="3960218941754097036">Pretražite bilo što na zaslonu pomoću Google objektiva</translation>
 <translation id="3962326069546168954">Spremi</translation>
 <translation id="3967327056943561740">Oznake</translation>
 <translation id="3967822245660637423">Preuzimanje dovršeno</translation>
@@ -688,6 +689,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4147897805161313378">Google fotografije</translation>
 <translation id="4148023517926189160">Web-lokacija želi preuzeti datoteku i dodati je na kalendar.</translation>
 <translation id="4152011295694446843">Ovdje ćete pronaći svoje oznake</translation>
+<translation id="4154753961803534698">Pretražite kamerom</translation>
 <translation id="4158491215857439601">Upravitelj zaporki</translation>
 <translation id="4163699139741158298">{count,plural, =1{Oznaka je spremljena u mapu {title}. Sprema se samo na ovom uređaju.}one{{count} oznaka spremljena je u mapu {title}. Spremaju se samo na ovom uređaju.}few{{count} oznake spremljene su u mapu {title}. Spremaju se samo na ovom uređaju.}other{{count} oznaka spremljeno je u mapu {title}. Spremaju se samo na ovom uređaju.}}</translation>
 <translation id="4168651806173792090">Račun <ph name="NETWORK_NAME" /> koji završava s <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6168647875670665004">Prijedlozi članaka</translation>
 <translation id="6173499589275053515">Zaporka je spremljena na vaš Google račun, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Pretraži zaslon</translation>
 <translation id="6187302354554850004">Posljednja sinkr.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Izrađeno <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nepročitano</translation>

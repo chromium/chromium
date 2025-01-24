@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">تم</translation>
 <translation id="3955822496205734389">لديك كلمات مرور ضعيفة.</translation>
 <translation id="3958312024468322930">اسحب رمز التطبيق إلى شريط التطبيقات في أسفل شاشتك الرئيسية</translation>
+<translation id="3960218941754097036">‏البحث باستخدام "عدسة Google" عن أي محتوى يظهر على شاشتك</translation>
 <translation id="3962326069546168954">حفظ</translation>
 <translation id="3967327056943561740">الإشارات المرجعية</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">‏صور Google‏‏</translation>
 <translation id="4148023517926189160">يطلب هذا الموقع الإلكتروني تنزيل ملف وإضافته إلى تقويمك.</translation>
 <translation id="4152011295694446843">ستظهر الإشارات المرجعية هنا</translation>
+<translation id="4154753961803534698">البحث باستخدام الكاميرا</translation>
 <translation id="4158491215857439601">مدير كلمات المرور</translation>
 <translation id="4163699139741158298">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" على هذا الجهاز فقط.}zero{تم حفظ {count} إشارة مرجعية في "{title}" على هذا الجهاز فقط.}two{تم حفظ إشارتَين مرجعيتَين ({count}) في "{title}" على هذا الجهاز فقط.}few{تم حفظ {count} إشارات مرجعية في "{title}" على هذا الجهاز فقط.}many{تم حفظ {count} إشارة مرجعية في "{title}" على هذا الجهاز فقط.}other{تم حفظ {count} إشارة مرجعية في "{title}" على هذا الجهاز فقط.}}</translation>
 <translation id="4168651806173792090">بطاقة ائتمان من النوع <ph name="NETWORK_NAME" /> تنتهي بالرقم <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -706,7 +708,7 @@
 <translation id="422474357428465195">هناك العديد من المشاكل المتعلقة بكلمات المرور، والتي قد تعرّضك لمخاطر أمنية.</translation>
 <translation id="422477017457571619">‏يوفِّر هذا الوضع حمايةً فورية مستندة إلى الذكاء الاصطناعي (AI) من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة استنادًا إلى بيانات تصفُّحك التي يتم إرسالها إلى Google</translation>
 <translation id="4231395118547300571">تم تفعيل إشعارات ميزة "التحقّق من الأمان"</translation>
-<translation id="4237377247299956313">‏النقر على <ph name="BEGIN_BOLD" />Default Browser App (تطبيق المتصفِّح التلقائي)<ph name="END_BOLD" /></translation>
+<translation id="4237377247299956313">‏النقر على  <ph name="BEGIN_BOLD" />تطبيق المتصفِّح التلقائي (Default Browser App) <ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
 <translation id="4250432749243022864">{count,plural, =0{فتح {count} علامة تبويب}=1{فتح علامة تبويب واحدة ({count})}two{فتح علامتَي تبويب ({count})}few{فتح {count} علامات تبويب}many{فتح {count} علامة تبويب}other{فتح {count} علامة تبويب}}</translation>
 <translation id="4250680216510889253">لا</translation>
@@ -750,7 +752,7 @@
 <translation id="4415276339145661267">‏إدارة حسابك على Google</translation>
 <translation id="4430277756566635951">الحساب الذي تم اختياره حاليًا هو <ph name="EMAIL" />. اختَر حسابًا.</translation>
 <translation id="4431224949908513835">اختَر طريقة دفع لاستخدامها.</translation>
-<translation id="4442550905108052454">‏فتح <ph name="BEGIN_BOLD" />Settings (الإعدادات)<ph name="END_BOLD" /></translation>
+<translation id="4442550905108052454">‏فتح <ph name="BEGIN_BOLD" />الإعدادات (Settings)<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">خيارات إضافية حول "<ph name="CELL_ACCESSIBILITY_LABEL" />"</translation>
 <translation id="4455710003856931944">يمكنك التمرير سريعًا من الحافة للرجوع للخلف أو التقدّم للأمام.</translation>
 <translation id="4460014764210899310">إلغاء التجميع</translation>
@@ -1148,6 +1150,7 @@
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6168647875670665004">اقتراحات المقالات</translation>
 <translation id="6173499589275053515">‏تم حفظ كلمة المرور في حساب Google الخاص بك: <ph name="EMAIL" />.</translation>
+<translation id="6181969657494915430">البحث عن محتوى على الشاشة</translation>
 <translation id="6187302354554850004">تاريخ آخر مزامنة: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">‏تم إنشاء الخلفية بتاريخ ‎<ph name="DATE" />.</translation>
 <translation id="6189413832092199491">غير مقروءة</translation>

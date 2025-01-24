@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">ಮುಗಿದಿದೆ</translation>
 <translation id="3955822496205734389">ನೀವು ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ.</translation>
 <translation id="3958312024468322930">ನಿಮ್ಮ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ನ ಕೆಳಭಾಗದಲ್ಲಿರುವ ಡಾಕ್‌ಗೆ ಅದನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
+<translation id="3960218941754097036">Google Lens ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಮೇಲೆ ಯಾವುದನ್ನಾದರೂ ಹುಡುಕಿ</translation>
 <translation id="3962326069546168954">ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="3967327056943561740">ಬುಕ್‌ಮಾರ್ಕ್‌‌ಗಳು</translation>
 <translation id="3967822245660637423">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">ಈ ವೆಬ್‌ಸೈಟ್ ಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಮತ್ತು ಅದನ್ನು ನಿಮ್ಮ ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಸೇರಿಸಲು ಬಯಸುತ್ತದೆ.</translation>
 <translation id="4152011295694446843">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
+<translation id="4154753961803534698">ಕ್ಯಾಮರಾದ ಮೂಲಕ ಹುಡುಕಿ</translation>
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4163699139741158298">{count,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು "{title}" ಗೆ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ.}one{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು "{title}" ಗೆ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ.}other{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು "{title}" ಗೆ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ.}}</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" /> ಸಂಖ್ಯೆಯೊಂದಿಗೆ ಕೊನೆಗೊಳ್ಳುವ <ph name="NETWORK_NAME" /></translation>
@@ -1150,6 +1152,7 @@
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6168647875670665004">ಲೇಖನ ಸಲಹೆಗಳು</translation>
 <translation id="6173499589275053515">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">ಹುಡುಕಾಟ ಸ್ಕ್ರೀನ್</translation>
 <translation id="6187302354554850004">ಕೊನೆಯದಾಗಿ ಸಿಂಕ್ ಮಾಡಿರುವುದು: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" /> ರಂದು ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="6189413832092199491">ಓದದಿರುವುದು</translation>

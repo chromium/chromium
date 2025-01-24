@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">పూర్తయింది</translation>
 <translation id="3955822496205734389">మీ వద్ద బలహీనమైన పాస్‌వర్డ్‌లు ఉన్నాయి.</translation>
 <translation id="3958312024468322930">దీన్ని మీ మొదటి స్క్రీన్ దిగువున ఉన్న డాక్‌కు లాగండి</translation>
+<translation id="3960218941754097036">Google Lens సహాయంతో మీ స్క్రీన్‌పై ఉన్న దానిలో దేనికోసమైనా సెర్చ్ చేయండి</translation>
 <translation id="3962326069546168954">సేవ్ చేయండి</translation>
 <translation id="3967327056943561740">బుక్‌మార్క్‌లు</translation>
 <translation id="3967822245660637423">డౌన్‌లోడ్ పూర్తయింది</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">ఈ వెబ్‌సైట్ ఒక ఫైల్‌ను డౌన్‌లోడ్ చేసి, దానిని మీ క్యాలెండర్‌కు జోడించాలనుకుంటోంది.</translation>
 <translation id="4152011295694446843">మీరు మీ బుక్‌మార్క్‌లను ఇక్కడ చూడవచ్చు</translation>
+<translation id="4154753961803534698">కెమెరాతో సెర్చ్ చేయండి</translation>
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4163699139741158298">{count,plural, =1{బుక్‌మార్క్ "{title}"కు సేవ్ చేయబడింది. ఇది ఈ పరికరంలో మాత్రమే సేవ్ చేయబడుతుంది.}other{{count} బుక్‌మార్క్‌లు "{title}"లో సేవ్ అయ్యాయి. అవి ఈ పరికరంలో మాత్రమే సేవ్ చేయబడతాయి.}}</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" />తో ముగిసే <ph name="NETWORK_NAME" /></translation>
@@ -1150,6 +1152,7 @@
 <translation id="6165508094623778733">మరింత తెలుసుకోండి</translation>
 <translation id="6168647875670665004">కథనం సూచనలు</translation>
 <translation id="6173499589275053515">పాస్‌వర్డ్ మీ Google ఖాతా, <ph name="EMAIL" />లో సేవ్ చేయబడింది</translation>
+<translation id="6181969657494915430">సెర్చ్ స్క్రీన్</translation>
 <translation id="6187302354554850004">చివరగా సింక్ చేసింది: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" />‌ తేదీన క్రియేట్ చేయబడింది</translation>
 <translation id="6189413832092199491">చదవనివి</translation>

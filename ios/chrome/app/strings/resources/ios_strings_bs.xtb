@@ -646,6 +646,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3955740319737378355">Gotovo</translation>
 <translation id="3955822496205734389">Imate slabe lozinke.</translation>
 <translation id="3958312024468322930">Prevucite je u traku u donjem dijelu početnog ekrana</translation>
+<translation id="3960218941754097036">Pretražite sadržaj ekrana putem Google Objektiva</translation>
 <translation id="3962326069546168954">Sačuvaj</translation>
 <translation id="3967327056943561740">Oznake</translation>
 <translation id="3967822245660637423">Preuzimanje je završeno</translation>
@@ -688,6 +689,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4147897805161313378">Google Fotografije</translation>
 <translation id="4148023517926189160">Ova web lokacija želi preuzeti fajl i dodati ga u vaš kalendar.</translation>
 <translation id="4152011295694446843">Oznake ćete pronaći ovdje</translation>
+<translation id="4154753961803534698">Pretražite pomoću kamere</translation>
 <translation id="4158491215857439601">Upravitelj lozinki</translation>
 <translation id="4163699139741158298">{count,plural, =1{Oznaka je sačuvana na lokaciju "{title}". Sačuvana je samo na ovom uređaju.}one{{count} oznaka je sačuvana na lokaciju "{title}". Sačuvane su samo na ovom uređaju.}few{{count} oznake su sačuvane na lokaciju "{title}". Sačuvane su samo na ovom uređaju.}other{{count} oznaka je sačuvano na lokaciju "{title}". Sačuvane su samo na ovom uređaju.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> čiji se broj završava sa <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6168647875670665004">Prijedlozi članaka</translation>
 <translation id="6173499589275053515">Lozinka je sačuvana na Google računu, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Pretražite ekran</translation>
 <translation id="6187302354554850004">Posljednji put sinhronizirano: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Kreirano je <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nepročitano</translation>

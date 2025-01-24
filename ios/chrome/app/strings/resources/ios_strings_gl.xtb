@@ -646,6 +646,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3955740319737378355">Feito</translation>
 <translation id="3955822496205734389">Tes contrasinais pouco seguros.</translation>
 <translation id="3958312024468322930">Arrastra a icona á barra de aplicacións que está na parte inferior da pantalla de inicio</translation>
+<translation id="3960218941754097036">Busca calquera cousa que apareza na pantalla con Google Lens</translation>
 <translation id="3962326069546168954">Gardar</translation>
 <translation id="3967327056943561740">Marcadores</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
@@ -688,6 +689,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Este sitio web quere descargar un ficheiro e engadilo ao teu calendario.</translation>
 <translation id="4152011295694446843">Aquí atoparás os teus marcadores</translation>
+<translation id="4154753961803534698">Buscar coa cámara</translation>
 <translation id="4158491215857439601">Xestor de contrasinais</translation>
 <translation id="4163699139741158298">{count,plural, =1{Gardouse o marcador en {title}. Está gardado só neste dispositivo.}other{Gardáronse {count} marcadores en {title}. Están gardados só neste dispositivo.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> que remata en <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6168647875670665004">Suxestións de artigos</translation>
 <translation id="6173499589275053515">O contrasinal gardouse na túa Conta de Google, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Buscar na pantalla</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Creado o <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Mensaxes non lidas</translation>

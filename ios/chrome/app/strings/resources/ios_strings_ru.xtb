@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">Готово</translation>
 <translation id="3955822496205734389">У вас есть простые пароли.</translation>
 <translation id="3958312024468322930">Перетащите значок на панель Dock внизу экрана</translation>
+<translation id="3960218941754097036">Поиск информации о контенте на экране с помощью Google Объектива</translation>
 <translation id="3962326069546168954">Сохранить</translation>
 <translation id="3967327056943561740">Закладки</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4148023517926189160">Сайт собирается скачать файл и добавить его в ваш календарь.</translation>
 <translation id="4152011295694446843">Здесь вы найдете свои закладки</translation>
+<translation id="4154753961803534698">Искать с помощью камеры</translation>
 <translation id="4158491215857439601">Менеджер паролей</translation>
 <translation id="4163699139741158298">{count,plural, =1{Закладка сохранена в папке "{title}" (только на этом устройстве).}one{{count} закладка сохранена в папке "{title}" (только на этом устройстве).}few{{count} закладки сохранено в папке "{title}" (только на этом устройстве).}many{{count} закладок сохранено в папке "{title}" (только на этом устройстве).}other{{count} закладки сохранено в папке "{title}" (только на этом устройстве).}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> (последние цифры номера: <ph name="LAST_FOUR_DIGITS" />)</translation>
@@ -750,7 +752,7 @@
 <translation id="4415276339145661267">Перейти в настройки аккаунта Google</translation>
 <translation id="4430277756566635951">Выбор аккаунта. Сейчас выбран <ph name="EMAIL" />.</translation>
 <translation id="4431224949908513835">Выберите, какой способ оплаты использовать.</translation>
-<translation id="4442550905108052454">Откройте приложение <ph name="BEGIN_BOLD" />Настройки<ph name="END_BOLD" />.</translation>
+<translation id="4442550905108052454">Откройте <ph name="BEGIN_BOLD" />Настройки<ph name="END_BOLD" />.</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" />, другие действия</translation>
 <translation id="4455710003856931944">Чтобы перейти вперед или назад, проведите пальцем по краю экрана.</translation>
 <translation id="4460014764210899310">Разгруппировать</translation>
@@ -1150,6 +1152,7 @@
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6168647875670665004">Рекомендуемые статьи</translation>
 <translation id="6173499589275053515">Пароль сохранен в аккаунте <ph name="EMAIL" />.</translation>
+<translation id="6181969657494915430">Поиск по экрану</translation>
 <translation id="6187302354554850004">Послед. синхр.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Дата создания: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Непрочитанные</translation>

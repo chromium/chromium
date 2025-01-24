@@ -646,6 +646,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3955740319737378355">Ferdig</translation>
 <translation id="3955822496205734389">Du har svake passord.</translation>
 <translation id="3958312024468322930">Dra den til dokken nederst på startsiden</translation>
+<translation id="3960218941754097036">Søk etter hva som helst på skjermen med Google Lens</translation>
 <translation id="3962326069546168954">Lagre</translation>
 <translation id="3967327056943561740">Bokmerker</translation>
 <translation id="3967822245660637423">Nedlasting fullført</translation>
@@ -688,6 +689,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148023517926189160">Dette nettstedet vil laste ned en fil og legge den til på kalenderen din.</translation>
 <translation id="4152011295694446843">Her finner du bokmerkene dine</translation>
+<translation id="4154753961803534698">Søk med kameraet</translation>
 <translation id="4158491215857439601">Passordlagring</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bokmerket er lagret i «{title}». Det er bare lagret på denne enheten.}other{{count} bokmerker er lagret i «{title}». De er bare lagret på denne enheten.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> som slutter på <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6168647875670665004">Artikkelforslag</translation>
 <translation id="6173499589275053515">Passordet er lagret i Google-kontoen din, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Søk på skjermen</translation>
 <translation id="6187302354554850004">Sist synkronisert: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Laget <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ulest</translation>

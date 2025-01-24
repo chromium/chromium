@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">Бүттү</translation>
 <translation id="3955822496205734389">Начар сырсөздөрүңүз бар.</translation>
 <translation id="3958312024468322930">Аны Башкы экрандын ылдый жагындагы докко сүйрөп келиңиз</translation>
+<translation id="3960218941754097036">Экраныңыздагы нерселерди Google Lens аркылуу издеңиз</translation>
 <translation id="3962326069546168954">Сактоо</translation>
 <translation id="3967327056943561740">Кыстармалар</translation>
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4148023517926189160">Бул вебсайт файлды жүктөп алып, жылнаамаңызга кошкону жатат.</translation>
 <translation id="4152011295694446843">Кыстармаларыңызды ушул жерден табасыз</translation>
+<translation id="4154753961803534698">Камера менен издөө</translation>
 <translation id="4158491215857439601">Сырсөздөрдү башкаргыч</translation>
 <translation id="4163699139741158298">{count,plural, =1{Кыстарма төмөнкүгө сакталды: "{title}". Ал ушул түзмөктө гана сакталат.}other{{count} кыстарма төмөнкүгө сакталды: "{title}". Алар ушул түзмөктө гана сакталат.}}</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" /> менен бүткөн <ph name="NETWORK_NAME" /></translation>
@@ -1150,6 +1152,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6165508094623778733">Кошумча маалымат</translation>
 <translation id="6168647875670665004">Макалаларды сунуштоо</translation>
 <translation id="6173499589275053515">Сырсөз Google аккаунтуңузга сакталды, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Экрандан издөө</translation>
 <translation id="6187302354554850004">Акркы жолу шайкешт: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" /> түзүлдү</translation>
 <translation id="6189413832092199491">Окулбагандар</translation>

@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">סיום</translation>
 <translation id="3955822496205734389">יש לך סיסמאות חלשות.</translation>
 <translation id="3958312024468322930">‏גוררים את הסמל אל ה-Dock שבחלק התחתון של מסך הבית</translation>
+<translation id="3960218941754097036">‏אפשר לחפש מה שמוצג במסך באמצעות Google Lens</translation>
 <translation id="3962326069546168954">שמירה</translation>
 <translation id="3967327056943561740">סימניות</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">האתר הזה מבקש להוריד קובץ ולהוסיף אותו ליומן שלך.</translation>
 <translation id="4152011295694446843">הסימניות זמינות כאן</translation>
+<translation id="4154753961803534698">חיפוש באמצעות המצלמה</translation>
 <translation id="4158491215857439601">מנהל הסיסמאות</translation>
 <translation id="4163699139741158298">{count,plural, =1{הסימנייה נשמרה בתיקייה ‘{title}'. היא שמורה רק במכשיר הזה.}one{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}two{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}other{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> המסתיים בספרות <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6168647875670665004">מאמרים מוצעים</translation>
 <translation id="6173499589275053515">‏הסיסמה נשמרה בחשבון Google שלך, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">חיפוש במסך</translation>
 <translation id="6187302354554850004">סונכרן לאחרונה: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">נוצר בתאריך <ph name="DATE" /></translation>
 <translation id="6189413832092199491">פריטים שלא נקראו</translation>

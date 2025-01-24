@@ -646,6 +646,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3955740319737378355">Selesai</translation>
 <translation id="3955822496205734389">Anda memiliki sandi lemah.</translation>
 <translation id="3958312024468322930">Tarik ikon aplikasi ke dock di bagian bawah Layar Utama</translation>
+<translation id="3960218941754097036">Telusuri apa saja di layar Anda dengan Google Lens</translation>
 <translation id="3962326069546168954">Simpan</translation>
 <translation id="3967327056943561740">Bookmark</translation>
 <translation id="3967822245660637423">Download selesai</translation>
@@ -688,6 +689,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148023517926189160">Situs ini ingin mendownload file dan menambahkannya ke kalender Anda.</translation>
 <translation id="4152011295694446843">Bookmark Anda akan ditampilkan di sini</translation>
+<translation id="4154753961803534698">Telusuri dengan kamera</translation>
 <translation id="4158491215857439601">Pengelola Sandi</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}other{{count} bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> diakhiri dengan <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6168647875670665004">Saran artikel</translation>
 <translation id="6173499589275053515">Sandi disimpan di Akun Google Anda, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Layar penelusuran</translation>
 <translation id="6187302354554850004">Sinkron terakhir: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Dibuat pada <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Belum dibaca</translation>

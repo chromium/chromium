@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">ہو گیا</translation>
 <translation id="3955822496205734389">آپ کے پاس کمزور پاس ورڈز ہیں۔</translation>
 <translation id="3958312024468322930">اسے اپنی ہوم اسکرین کے نیچے ڈاک پر گھسیٹیں۔</translation>
+<translation id="3960218941754097036">‏‫Google لینز کے ساتھ جو کچھ آپ کی اسکرین پر ہے اسے تلاش کریں</translation>
 <translation id="3962326069546168954">محفوظ کریں</translation>
 <translation id="3967327056943561740">بُک مارکس</translation>
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">‏Google تصاویر</translation>
 <translation id="4148023517926189160">یہ ویب سائٹ ایک فائل ڈاؤن لوڈ کرنا چاہتی ہے اور اسے آپ کے کیلنڈر میں شامل کرنا چاہتی ہے۔</translation>
 <translation id="4152011295694446843">آپ اپنے بُک مارکس یہاں پائیں گے</translation>
+<translation id="4154753961803534698">کیمرا سے تلاش کریں</translation>
 <translation id="4158491215857439601">پاس ورڈ مینیجر</translation>
 <translation id="4163699139741158298">{count,plural, =1{بک مارک "{title}" میں محفوظ کیا گیا۔ یہ صرف اس آلہ پر محفوظ ہے۔}other{‫{count} بک مارکس "{title}" میں محفوظ کیے گئے۔ یہ صرف اس آلے پر محفوظ ہیں۔}}</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" /> پر ختم ہونے والا <ph name="NETWORK_NAME" /></translation>
@@ -1150,6 +1152,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6168647875670665004">مضمون کی تجاویز</translation>
 <translation id="6173499589275053515">‏آپ کے Google اکاؤنٹ <ph name="EMAIL" /> میں پاس ورڈ محفوظ کیا گیا ہے</translation>
+<translation id="6181969657494915430">تلاش اسکرین</translation>
 <translation id="6187302354554850004">آخری مطابقت پذیری: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" /> کو تخلیق کیا گیا</translation>
 <translation id="6189413832092199491">نہ پڑھے ہوئے</translation>

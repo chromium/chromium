@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">Պատրաստ է</translation>
 <translation id="3955822496205734389">Դուք ունեք թույլ գաղտնաբառեր։</translation>
 <translation id="3958312024468322930">Քաշեք պատկերակը Dock վահանակի վրա՝ հիմնական էկրանի ներքևում</translation>
+<translation id="3960218941754097036">Որոնեք ցանկացած բան ձեր էկրանին Google Տեսապակու միջոցով</translation>
 <translation id="3962326069546168954">Պահել</translation>
 <translation id="3967327056943561740">Էջանիշներ</translation>
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google Լուսանկարներ</translation>
 <translation id="4148023517926189160">Այս կայքն ուզում է ֆայլ ներբեռնել և այն ավելացնել ձեր օրացույցում։</translation>
 <translation id="4152011295694446843">Ձեր էջանիշները կգտնեք այստեղ</translation>
+<translation id="4154753961803534698">Որոնել տեսախցիկի միջոցով</translation>
 <translation id="4158491215857439601">Գաղտնաբառերի կառավարիչ</translation>
 <translation id="4163699139741158298">{count,plural, =1{Էջանիշը պահվեց «{title}» պանակում։ Այն պահվում է միայն այս սարքում։}one{{count} էջանիշ պահվեց «{title}» պանակում։ Այն պահվում է միայն այս սարքում։}other{{count} էջանիշ պահվեց «{title}» պանակում։ Դրանք պահվում են միայն այս սարքում։}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> (քարտի համարի վերջին թվերը՝ <ph name="LAST_FOUR_DIGITS" />)</translation>
@@ -1150,6 +1152,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6168647875670665004">Հոդվածների առաջարկներ</translation>
 <translation id="6173499589275053515">Գաղտնաբառը պահվեց ձեր Google հաշվում (<ph name="EMAIL" />)</translation>
+<translation id="6181969657494915430">Որոնել էկրանին</translation>
 <translation id="6187302354554850004">Վերջին անգամ համաժամացվել է՝ <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Ստեղծվել է՝ <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Չկարդացված</translation>

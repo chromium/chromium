@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">完成</translation>
 <translation id="3955822496205734389">您有些密码的安全系数较低。</translation>
 <translation id="3958312024468322930">将图标拖动到主屏幕底部的程序坞中</translation>
+<translation id="3960218941754097036">使用 Google 智能镜头搜索屏幕上的任何内容</translation>
 <translation id="3962326069546168954">保存</translation>
 <translation id="3967327056943561740">书签</translation>
 <translation id="3967822245660637423">下载完毕</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google 相册</translation>
 <translation id="4148023517926189160">此网站想下载文件并将其添加到您的日历中。</translation>
 <translation id="4152011295694446843">您的书签会显示在此处</translation>
+<translation id="4154753961803534698">拍照搜索</translation>
 <translation id="4158491215857439601">密码管理工具</translation>
 <translation id="4163699139741158298">{count,plural, =1{书签已保存到“{title}”，而且只保存在此设备上。}other{{count} 个书签已保存到“{title}”，而且只保存在此设备上。}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />，后四位数字为 <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6168647875670665004">文章推荐</translation>
 <translation id="6173499589275053515">密码已保存到您的 Google 账号 <ph name="EMAIL" /> 中</translation>
+<translation id="6181969657494915430">搜索屏幕</translation>
 <translation id="6187302354554850004">上次同步时间：<ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">创建日期：<ph name="DATE" /></translation>
 <translation id="6189413832092199491">未读</translation>

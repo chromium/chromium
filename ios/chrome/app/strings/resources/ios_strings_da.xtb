@@ -646,6 +646,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3955740319737378355">Udfør</translation>
 <translation id="3955822496205734389">Du har svage adgangskoder.</translation>
 <translation id="3958312024468322930">Træk det til Dock nederst på hjemmeskærmen</translation>
+<translation id="3960218941754097036">Søg efter hvad som helst på din skærm ved hjælp af Google Lens</translation>
 <translation id="3962326069546168954">Gem</translation>
 <translation id="3967327056943561740">Bogmærker</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
@@ -688,6 +689,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Dette website vil gerne downloade en fil og føje den til din kalender.</translation>
 <translation id="4152011295694446843">Her finder du dine bogmærker</translation>
+<translation id="4154753961803534698">Søg med kameraet</translation>
 <translation id="4158491215857439601">Adgangskodeadministrator</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bogmærket er gemt i "{title}". Det gemmes kun på denne enhed.}one{{count} bogmærke er gemt i "{title}". Det gemmes kun på denne enhed.}other{{count} bogmærker er gemt i "{title}". De gemmes kun på denne enhed.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, der slutter med <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6168647875670665004">Artikelforslag</translation>
 <translation id="6173499589275053515">Adgangskoden er blevet gemt på din Google-konto, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Søg efter noget på skærmen</translation>
 <translation id="6187302354554850004">Sidst synkroniseret: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Oprettet <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ulæst</translation>

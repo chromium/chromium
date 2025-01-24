@@ -646,6 +646,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3955740319737378355">Gotowe</translation>
 <translation id="3955822496205734389">Masz słabe hasła.</translation>
 <translation id="3958312024468322930">Przeciągnij ją do Docka u dołu ekranu głównego</translation>
+<translation id="3960218941754097036">Wyszukaj dowolną rzecz na ekranie za pomocą Obiektywu Google</translation>
 <translation id="3962326069546168954">Zapisz</translation>
 <translation id="3967327056943561740">Zakładki</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
@@ -688,6 +689,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4147897805161313378">Zdjęcia Google</translation>
 <translation id="4148023517926189160">Ta witryna chce pobrać plik i dodać go do Twojego kalendarza.</translation>
 <translation id="4152011295694446843">Tu znajdziesz swoje zakładki</translation>
+<translation id="4154753961803534698">Wyszukaj przy użyciu aparatu</translation>
 <translation id="4158491215857439601">Menedżer haseł</translation>
 <translation id="4163699139741158298">{count,plural, =1{Zakładka została zapisana w folderze „{title}” tylko na tym urządzeniu.}few{{count} zakładki zostały zapisane w folderze „{title}” tylko na tym urządzeniu.}many{{count} zakładek zostało zapisanych w folderze „{title}” tylko na tym urządzeniu.}other{{count} zakładki zostało zapisane w folderze „{title}” tylko na tym urządzeniu.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> – numer zakończony na: <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1150,6 +1152,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6168647875670665004">Proponowanie artykułów</translation>
 <translation id="6173499589275053515">Hasło zostało zapisane na Twoim koncie Google (<ph name="EMAIL" />)</translation>
+<translation id="6181969657494915430">Wyszukaj na ekranie</translation>
 <translation id="6187302354554850004">Ostatnia synchronizacja: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Utworzono <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nieprzeczytane</translation>

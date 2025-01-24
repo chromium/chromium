@@ -646,6 +646,7 @@
 <translation id="3955740319737378355">முடிந்தது</translation>
 <translation id="3955822496205734389">வலுவற்ற கடவுச்சொற்கள் உள்ளன.</translation>
 <translation id="3958312024468322930">முகப்புத் திரையின் கீழ்ப்பகுதியில் உள்ள டாக்கிற்கு அதை இழுங்கள்</translation>
+<translation id="3960218941754097036">திரையில் உள்ள எதையும் Google Lens மூலம் தேடுங்கள்</translation>
 <translation id="3962326069546168954">சேமி</translation>
 <translation id="3967327056943561740">புக்மார்க்குகள்</translation>
 <translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
@@ -688,6 +689,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">இந்த இணையதளம் ஒரு ஃபைலைப் பதிவிறக்கி அதை உங்கள் கேலெண்டரில் சேர்க்க விரும்புகிறது.</translation>
 <translation id="4152011295694446843">உங்கள் புக்மார்க்குகளை இங்கே பார்ப்பீர்கள்</translation>
+<translation id="4154753961803534698">கேமரா மூலம் தேடு</translation>
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4163699139741158298">{count,plural, =1{"{title}" ஃபோல்டரில் புக்மார்க் சேமிக்கப்பட்டது. இது இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளது.}other{"{title}" ஃபோல்டரில் {count} புக்மார்க்குகள் சேமிக்கப்பட்டன. இவை இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளன.}}</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" />ல் முடிவடையும் <ph name="NETWORK_NAME" /></translation>
@@ -1150,6 +1152,7 @@
 <translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6168647875670665004">கட்டுரைப் பரிந்துரைகள்</translation>
 <translation id="6173499589275053515"><ph name="EMAIL" /> என்ற உங்கள் Google கணக்கில் சேமிக்கப்பட்ட கடவுச்சொல்</translation>
+<translation id="6181969657494915430">திரையில் தேடு</translation>
 <translation id="6187302354554850004">கடைசியாக ஒத்திசைத்தது: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">உருவாக்கப்பட்டது: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">படிக்காதவை</translation>
