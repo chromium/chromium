@@ -34,6 +34,10 @@
 namespace segmentation_platform::home_modules {
 
 #if BUILDFLAG(IS_ANDROID)
+const char kAuxiliarySearchPromoImpressionCounterPref[] =
+    "ephemeral_pref_counter.auxiliary_search_promo_counter";
+const char kAuxiliarySearchPromoInteractedPref[] =
+    "ephemeral_pref_interacted.auxiliary_search_promo_interacted";
 const char kDefaultBrowserPromoImpressionCounterPref[] =
     "ephemeral_pref_counter.default_browser_promo_counter";
 const char kDefaultBrowserPromoInteractedPref[] =
@@ -50,10 +54,6 @@ const char kQuickDeletePromoImpressionCounterPref[] =
     "ephemeral_pref_counter.quick_delete_promo_counter";
 const char kQuickDeletePromoInteractedPref[] =
     "ephemeral_pref_interacted.quick_delete_promo_interacted";
-const char kAuxiliarySearchPromoImpressionCounterPref[] =
-    "ephemeral_pref_counter.auxiliary_search_promo_counter";
-const char kAuxiliarySearchPromoInteractedPref[] =
-    "ephemeral_pref_interacted.auxiliary_search_promo_interacted";
 #endif
 
 namespace {
@@ -188,6 +188,8 @@ void HomeModulesCardRegistry::RegisterProfilePrefs(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+  registry->RegisterIntegerPref(kAuxiliarySearchPromoImpressionCounterPref, 0);
+  registry->RegisterBooleanPref(kAuxiliarySearchPromoInteractedPref, false);
   registry->RegisterIntegerPref(kDefaultBrowserPromoImpressionCounterPref, 0);
   registry->RegisterBooleanPref(kDefaultBrowserPromoInteractedPref, false);
   registry->RegisterIntegerPref(kTabGroupPromoImpressionCounterPref, 0);
@@ -196,8 +198,6 @@ void HomeModulesCardRegistry::RegisterProfilePrefs(
   registry->RegisterBooleanPref(kTabGroupSyncPromoInteractedPref, false);
   registry->RegisterIntegerPref(kQuickDeletePromoImpressionCounterPref, 0);
   registry->RegisterBooleanPref(kQuickDeletePromoInteractedPref, false);
-  registry->RegisterIntegerPref(kAuxiliarySearchPromoImpressionCounterPref, 0);
-  registry->RegisterBooleanPref(kAuxiliarySearchPromoInteractedPref, false);
 #endif
 }
 
@@ -413,6 +413,12 @@ void HomeModulesCardRegistry::CreateAllCards() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+  int auxiliary_search_promo_count =
+      profile_prefs_->GetInteger(kAuxiliarySearchPromoImpressionCounterPref);
+  if (AuxiliarySearchPromo::IsEnabled(auxiliary_search_promo_count)) {
+    all_cards_by_priority_.push_back(std::make_unique<AuxiliarySearchPromo>());
+  }
+
   int default_browser_promo_count =
       profile_prefs_->GetInteger(kDefaultBrowserPromoImpressionCounterPref);
   if (DefaultBrowserPromo::IsEnabled(default_browser_promo_count)) {
@@ -441,11 +447,6 @@ void HomeModulesCardRegistry::CreateAllCards() {
         std::make_unique<QuickDeletePromo>(profile_prefs_));
   }
 
-  int auxiliary_search_promo_count =
-      profile_prefs_->GetInteger(kAuxiliarySearchPromoImpressionCounterPref);
-  if (AuxiliarySearchPromo::IsEnabled(auxiliary_search_promo_count)) {
-    all_cards_by_priority_.push_back(std::make_unique<AuxiliarySearchPromo>());
-  }
 #endif
   InitializeAfterAddingCards();
 }
