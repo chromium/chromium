@@ -21,6 +21,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "chrome/common/webui_url_constants.h"
 #include "components/pdf/common/pdf_util.h"
 #include "extensions/renderer/guest_view/mime_handler_view/post_message_support.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -31,16 +32,22 @@ ChromePrintRenderFrameHelperDelegate::ChromePrintRenderFrameHelperDelegate() =
 ChromePrintRenderFrameHelperDelegate::~ChromePrintRenderFrameHelperDelegate() =
     default;
 
-// Return the PDF object element if `frame` is the out of process PDF extension
-// or its child frame.
+// Returns the PDF object element if the parent of `frame` is the PDF extension
+// frame.
 blink::WebElement ChromePrintRenderFrameHelperDelegate::GetPdfElement(
     blink::WebLocalFrame* frame) {
 #if BUILDFLAG(ENABLE_PDF)
-  if (frame->Parent() &&
-      IsPdfInternalPluginAllowedOrigin(frame->Parent()->GetSecurityOrigin())) {
-    auto plugin_element = frame->GetDocument().QuerySelector("embed");
-    DCHECK(!plugin_element.IsNull());
-    return plugin_element;
+  if (frame->Parent()) {
+    // Note that the parent of `frame` is for the to-be-printed PDF, so it can
+    // never be the PDF viewer embedded in Print Preview.
+    const url::Origin parent_origin(frame->Parent()->GetSecurityOrigin());
+    CHECK_NE(parent_origin,
+             url::Origin::Create(GURL(chrome::kChromeUIPrintURL)));
+    if (IsPdfExtensionOrigin(parent_origin)) {
+      auto plugin_element = frame->GetDocument().QuerySelector("embed");
+      CHECK(!plugin_element.IsNull());
+      return plugin_element;
+    }
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
   return blink::WebElement();
