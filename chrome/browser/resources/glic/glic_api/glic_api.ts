@@ -298,6 +298,8 @@ export declare interface TabContextOptions {
    * response.
    */
   viewportScreenshot?: boolean;
+  /** If true, returns the serialized annotatedPageContent proto. */
+  annotatedPageContent?: boolean;
   /** If true, and the tab contains a PDF, returns PdfDocumentData. */
   pdfData?: boolean;
   /**
@@ -327,6 +329,8 @@ export declare interface TabContextResult {
   viewportScreenshot?: Screenshot;
   /** PDF document data. Provided if requested, and the document is a PDF. */
   pdfDocumentData?: PdfDocumentData;
+  /** Page content data. Provided if requested. */
+  annotatedPageData?: AnnotatedPageData;
 }
 
 /**
@@ -357,6 +361,10 @@ export declare interface DocumentData {
   innerText?: string;
 }
 
+export declare interface AnnotatedPageData {
+  /** Serialized annotatedPageContent proto. */
+  annotatedPageContent?: ReadableStream;
+}
 /**
  * Various bits of data about a browser tab.
  */

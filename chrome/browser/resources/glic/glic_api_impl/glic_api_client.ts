@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ChromeVersion, DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, PanelState, PdfDocumentData, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, PanelState, PdfDocumentData, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
-import type {PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClientRequestTypes} from './request_types.js';
+import type {AnnotatedPageDataPrivate, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClientRequestTypes} from './request_types.js';
 import {ImageAlphaType, ImageColorType} from './request_types.js';
 
 
@@ -406,15 +406,26 @@ function convertTabDataFromPrivate(data: TabDataPrivate): TabData {
   return replaceProperties(data, {favicon});
 }
 
+function streamFromBuffer(buffer: ArrayBuffer): ReadableStream {
+  return new ReadableStream({
+    start(controller) {
+      controller.enqueue(buffer);
+      controller.close();
+    },
+  });
+}
+
 function convertPdfDocumentDataFromPrivate(data: PdfDocumentDataPrivate):
     PdfDocumentData {
-  const pdfData = data.pdfData && new ReadableStream({
-                    start(controller) {
-                      controller.enqueue(data.pdfData);
-                      controller.close();
-                    },
-                  });
+  const pdfData = data.pdfData && streamFromBuffer(data.pdfData);
   return replaceProperties(data, {pdfData});
+}
+
+function convertAnnotatedPageDataFromPrivate(data: AnnotatedPageDataPrivate):
+    AnnotatedPageData {
+  const annotatedPageContent =
+      data.annotatedPageContent && streamFromBuffer(data.annotatedPageContent);
+  return replaceProperties(data, {annotatedPageContent});
 }
 
 function convertTabContextResultFromPrivate(data: TabContextResultPrivate):
@@ -422,7 +433,9 @@ function convertTabContextResultFromPrivate(data: TabContextResultPrivate):
   const tabData = convertTabDataFromPrivate(data.tabData);
   const pdfDocumentData = data.pdfDocumentData &&
       convertPdfDocumentDataFromPrivate(data.pdfDocumentData);
-  return replaceProperties(data, {tabData, pdfDocumentData});
+  const annotatedPageData = data.annotatedPageData &&
+      convertAnnotatedPageDataFromPrivate(data.annotatedPageData);
+  return replaceProperties(data, {tabData, pdfDocumentData, annotatedPageData});
 }
 
 class ObservableSubscription<T> implements Subscriber {

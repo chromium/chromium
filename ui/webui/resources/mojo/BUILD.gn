@@ -18,6 +18,7 @@ mojo_ts_files = [
   "mojo/public/mojom/base/file_path.mojom-webui.ts",
   "mojo/public/mojom/base/int128.mojom-webui.ts",
   "mojo/public/mojom/base/process_id.mojom-webui.ts",
+  "mojo/public/mojom/base/proto_wrapper.mojom-webui.ts",
   "mojo/public/mojom/base/read_only_buffer.mojom-webui.ts",
   "mojo/public/mojom/base/safe_base_name.mojom-webui.ts",
   "mojo/public/mojom/base/string16.mojom-webui.ts",
@@ -86,6 +87,7 @@ preprocess_if_expr("copy_mojo_ts") {
   in_files = mojo_ts_files
   deps = [
     "//mojo/public/mojom/base:base_ts__generator",
+    "//mojo/public/mojom/base:protobuf_support_ts__generator",
     "//skia/public/mojom:mojom_ts__generator",
     "//ui/base/mojom:mojom_ts__generator",
     "//ui/gfx/geometry/mojom:mojom_ts__generator",

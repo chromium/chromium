@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/glic/glic.mojom.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "pdf/mojom/pdf.mojom-forward.h"
 #include "third_party/skia/include/core/SkSize.h"
@@ -47,6 +48,8 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
       std::optional<std::vector<uint8_t>> screenshot_jpeg_data);
   void ReceivedInnerText(
       std::unique_ptr<content_extraction::InnerTextResult> result);
+  void ReceivedAnnotatedPageContent(
+      std::optional<optimization_guide::proto::AnnotatedPageContent>);
   void RunCallbackIfComplete();
   void ReceivedPdfBytes(pdf::mojom::PdfListener_GetPdfBytesStatus status,
                         const std::vector<uint8_t>& pdf_bytes,
@@ -64,6 +67,7 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   bool screenshot_done_ = false;
   bool inner_text_done_ = false;
   bool pdf_done_ = false;
+  bool annotated_page_content_done_ = false;
   // Whether the primary page has changed since context fetching began.
   bool primary_page_changed_ = false;
   url::Origin pdf_origin_;
@@ -73,6 +77,8 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   std::unique_ptr<content_extraction::InnerTextResult> inner_text_result_;
   std::vector<uint8_t> pdf_bytes_;
   std::optional<pdf::mojom::PdfListener_GetPdfBytesStatus> pdf_status_;
+  std::optional<optimization_guide::proto::AnnotatedPageContent>
+      annotated_page_content_;
 
   base::WeakPtrFactory<GlicPageContextFetcher> weak_ptr_factory_{this};
 };

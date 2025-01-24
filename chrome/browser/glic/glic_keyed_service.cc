@@ -177,6 +177,7 @@ void GlicKeyedService::GetContextFromFocusedTab(
         mojom::GetTabContextErrorReason::kWebContentsChanged));
     return;
   }
+  DCHECK(web_contents->GetPrimaryMainFrame());
 
   auto fetcher = std::make_unique<glic::GlicPageContextFetcher>();
   fetcher->Fetch(

@@ -24,7 +24,7 @@ import type {GlicAppController} from '../glic_app_controller.js';
 
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
-import type {HostRequestTypes, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, UserProfileInfoPrivate} from './request_types.js';
+import type {AnnotatedPageDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, UserProfileInfoPrivate} from './request_types.js';
 import {ImageAlphaType, ImageColorType} from './request_types.js';
 
 // Turn everything except void into a promise.
@@ -205,6 +205,8 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       includeInnerText: request.options.innerText || false,
       includeViewportScreenshot: request.options.viewportScreenshot || false,
       includePdf: request.options.pdfData || false,
+      includeAnnotatedPageContent:
+          request.options.annotatedPageContent || false,
       pdfSizeLimit: request.options.pdfSizeLimit === undefined ?
           DEFAULT_PDF_SIZE_LIMIT :
           Math.min(Number.MAX_SAFE_INTEGER, request.options.pdfSizeLimit),
@@ -269,6 +271,18 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         pdfData,
       };
     }
+    let annotatedPageData: AnnotatedPageDataPrivate|undefined = undefined;
+    if (tabContext.annotatedPageData) {
+      const annotatedPageContent =
+          tabContext.annotatedPageData.annotatedPageContent ?
+          getArrayBufferFromBigBuffer(
+              tabContext.annotatedPageData.annotatedPageContent.smuggled) :
+          undefined;
+      if (annotatedPageContent) {
+        transfer.push(annotatedPageContent);
+      }
+      annotatedPageData = {annotatedPageContent};
+    }
 
     return {
       tabContextResult: {
@@ -276,6 +290,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         webPageData: webPageDataResult,
         viewportScreenshot: viewportScreenshotResult,
         pdfDocumentData,
+        annotatedPageData,
       },
     };
   }
