@@ -99,19 +99,9 @@ PageInfoMerchantTrustContentView::CreateDescriptionLabel() {
   description_label->SizeToFit(PageInfoViewFactory::kMinBubbleWidth -
                                button_insets.width());
 
-  size_t offset;
-  std::u16string text_for_link =
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_LEARN_MORE_LINK);
-  description_label->SetText(l10n_util::GetStringFUTF16(
-      IDS_PAGE_INFO_MERCHANT_TRUST_DESCRIPTION, text_for_link, &offset));
+  description_label->SetText(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_DESCRIPTION));
 
-  gfx::Range link_range(offset, offset + text_for_link.length());
-  views::StyledLabel::RangeStyleInfo link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &PageInfoMerchantTrustContentView::NotifyLearnMoreLinkPressed,
-          base::Unretained(this)));
-  link_style.text_style = views::style::STYLE_LINK_4;
-  description_label->AddStyleRange(link_range, link_style);
   return description_label;
 }
 

@@ -18736,14 +18736,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
   </message>
 
      <!-- Merchant Trust IPH strings -->
-    <message name="IDS_MERCHANT_TRUST_IPH_TITLE" desc="Title of in product help to introduce merchant trust feature." translateable="false">
-      What customers say
+    <message name="IDS_MERCHANT_TRUST_IPH_TITLE" desc="Title of in product help to introduce merchant trust feature.">
+      See ratings for this store
     </message>
-    <message name="IDS_MERCHANT_TRUST_IPH_BODY" desc="Content of in product help to introduce merchant trust feature." translateable="false">
-      Chrome now offers ratings and reviews for the stores you visit
+    <message name="IDS_MERCHANT_TRUST_IPH_BODY" desc="Content of in product help to introduce merchant trust feature.">
+      You can get a summary of what people are saying in their reviews
     </message>
-    <message name="IDS_MERCHANT_TRUST_IPH_BODY_SCREEN_READER" desc="Announcement to screen reader users when the merchant trust IPH is shown." translateable="false" is_accessibility_with_no_ui="true">
-      Chrome now offers ratings and reviews for the stores you visit
+    <message name="IDS_MERCHANT_TRUST_IPH_BODY_SCREEN_READER" desc="Announcement to screen reader users when the merchant trust IPH is shown." is_accessibility_with_no_ui="true">
+      You can get a summary of what people are saying in their reviews
     </message>
   </messages>
 </release>
