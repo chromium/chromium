@@ -1989,6 +1989,16 @@ void OverviewGrid::StartScroll() {
 }
 
 bool OverviewGrid::UpdateScrollOffset(float delta) {
+  // `kGestureScrollEnd` happens on every touch point release. Accidental
+  // touch point down and up during a scroll gesture could cause `EndScroll`
+  // to be called prematurely. In this case, scroll is practically ended but
+  // we may still getting `kGestureScrollUpdate` to get here with the
+  // remaining touch points. Bail out in this case.
+  const bool in_scroll = scroll_pauser_ && presentation_time_recorder_;
+  if (!in_scroll) {
+    return false;
+  }
+
   float new_scroll_offset = scroll_offset_;
   new_scroll_offset += delta;
   new_scroll_offset = std::clamp(new_scroll_offset, scroll_offset_min_, 0.f);
@@ -2021,7 +2031,6 @@ bool OverviewGrid::UpdateScrollOffset(float delta) {
 
   scroll_offset_ = new_scroll_offset;
 
-  DCHECK(presentation_time_recorder_);
   presentation_time_recorder_->RequestNext();
   return in_range;
 }
