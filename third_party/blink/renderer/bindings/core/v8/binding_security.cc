@@ -34,6 +34,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_location.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -145,13 +146,14 @@ bool CanAccessWindow(const LocalDOMWindow* accessing_window,
 }
 
 DOMWindow* FindWindow(v8::Isolate* isolate,
-                      const WrapperTypeInfo* type,
                       v8::Local<v8::Object> holder) {
-  if (V8Window::GetWrapperTypeInfo()->Equals(type))
-    return V8Window::ToWrappableUnsafe(isolate, holder);
+  if (auto* window = V8Window::ToWrappable(isolate, holder)) {
+    return window;
+  }
 
-  if (V8Location::GetWrapperTypeInfo()->Equals(type))
-    return V8Location::ToWrappableUnsafe(isolate, holder)->DomWindow();
+  if (auto* location = V8Location::ToWrappable(isolate, holder)) {
+    return location->DomWindow();
+  }
 
   // This function can handle only those types listed above.
   NOTREACHED();
@@ -238,11 +240,9 @@ bool BindingSecurity::ShouldAllowAccessToV8Context(
       ScriptState::From(isolate, target_context));
 }
 
-void BindingSecurity::FailedAccessCheckFor(v8::Isolate* isolate,
-                                           const WrapperTypeInfo* type,
-                                           v8::Local<v8::Object> holder,
-                                           ExceptionState& exception_state) {
-  DOMWindow* target = FindWindow(isolate, type, holder);
+void BindingSecurity::FailedAccessCheckFor(v8::Local<v8::Object> holder) {
+  v8::Isolate* isolate = holder->GetIsolate();
+  DOMWindow* target = FindWindow(isolate, holder);
   // Failing to find a target means something is wrong. Failing to throw an
   // exception could be a security issue, so just crash.
   CHECK(target);
@@ -256,11 +256,11 @@ void BindingSecurity::FailedAccessCheckFor(v8::Isolate* isolate,
        IsSameWindowAgentFactory(local_dom_window, target->ToLocalDOMWindow()))
           ? DOMWindow::CrossDocumentAccessPolicy::kAllowed
           : DOMWindow::CrossDocumentAccessPolicy::kDisallowed;
-  exception_state.ThrowSecurityError(
-      target->SanitizedCrossDomainAccessErrorMessage(local_dom_window,
-                                                     cross_document_access),
-      target->CrossDomainAccessErrorMessage(local_dom_window,
-                                            cross_document_access));
+  V8ThrowDOMException::Throw(isolate, DOMExceptionCode::kSecurityError,
+                             target->SanitizedCrossDomainAccessErrorMessage(
+                                 local_dom_window, cross_document_access),
+                             target->CrossDomainAccessErrorMessage(
+                                 local_dom_window, cross_document_access));
 }
 
 }  // namespace blink

@@ -399,11 +399,9 @@ static void PromiseRejectHandlerInWorker(v8::PromiseRejectMessage data) {
 // static
 void V8Initializer::FailedAccessCheckCallbackInMainThread(
     v8::Local<v8::Object> holder,
-    v8::AccessType type,
-    v8::Local<v8::Value> data) {
-  BindingSecurity::FailedAccessCheckFor(
-      holder->GetIsolate(), WrapperTypeInfo::Unwrap(data), holder,
-      PassThroughException(holder->GetIsolate()));
+    v8::AccessType,
+    v8::Local<v8::Value>) {
+  BindingSecurity::FailedAccessCheckFor(holder);
 }
 
 // Check whether Content Security Policy allows script execution.

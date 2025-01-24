@@ -77,11 +77,6 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
     kIdlOtherType,
   };
 
-  static const WrapperTypeInfo* Unwrap(v8::Local<v8::Value> type_info_wrapper) {
-    return reinterpret_cast<const WrapperTypeInfo*>(
-        v8::External::Cast(*type_info_wrapper)->Value());
-  }
-
   bool Equals(const WrapperTypeInfo* that) const { return this == that; }
 
   bool IsSubclass(const WrapperTypeInfo* that) const {

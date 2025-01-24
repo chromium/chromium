@@ -479,25 +479,7 @@ def bind_callback_local_vars(code_node, cg_context):
 
 
 def _make_throw_security_error():
-    # CxxUnlikelyIfNode() is used here as a hint to the bindings generator that
-    # we are relatively unlikely to reach a security error, and therefore
-    # should prefer to scope variables inside the if(true). We want to lean
-    # toward creating the ExceptionState inside the if(true) because it is
-    # relatively expensive.
-    return SequenceNode([
-        TextNode("""\
-// if(true) is used as part of a hint to the bindings generator. See
-// _make_throw_security_error for details.\
-"""),
-        CxxUnlikelyIfNode(cond="true",
-                          attribute=None,
-                          body=TextNode(
-                              "BindingSecurity::FailedAccessCheckFor("
-                              "${isolate}, "
-                              "${class_name}::GetWrapperTypeInfo(), "
-                              "${info}.Holder(), "
-                              "${exception_state});"))
-    ])
+    return TextNode("BindingSecurity::FailedAccessCheckFor(${info}.Holder());")
 
 
 def _make_reflect_content_attribute_key(code_node, cg_context):
@@ -6240,10 +6222,7 @@ ${instance_template}->SetAccessCheckCallbackAndHandler(
         CrossOriginIndexedDefinerCallback,
         CrossOriginIndexedDescriptorCallback,
         v8::Local<v8::Value>(),
-        v8::PropertyHandlerFlags::kNone),
-    v8::External::New(
-        ${isolate},
-        const_cast<WrapperTypeInfo*>(${class_name}::GetWrapperTypeInfo())));
+        v8::PropertyHandlerFlags::kNone));
 """
     install_node.append(TextNode(text))
     install_node.accumulate(
