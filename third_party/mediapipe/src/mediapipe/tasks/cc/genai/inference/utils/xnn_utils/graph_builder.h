@@ -160,8 +160,11 @@ class XnnGraphBuilder {
 
   absl::StatusOr<std::shared_ptr<Tensor>> Rms(std::shared_ptr<Tensor> input);
 
+  // Root Mean Square normalization
+  // out = input / rms(input) * (1 + scale)
+  // if scale is absent, scale is considered to be zero.
   absl::StatusOr<std::shared_ptr<Tensor>> RmsNorm(
-      std::shared_ptr<Tensor> input, std::shared_ptr<Tensor> scale);
+      std::shared_ptr<Tensor> input, std::shared_ptr<Tensor> scale = nullptr);
 
   absl::StatusOr<std::shared_ptr<Tensor>> Reshape(std::shared_ptr<Tensor> input,
                                                   Tensor::DimsType new_dims);
@@ -182,7 +185,7 @@ class XnnGraphBuilder {
   // dimensions unchanged. For instance, for input A = [B, M, N] and axis = 1,
   // the output slice would be [B, offset:offset+length, N].
   absl::StatusOr<std::shared_ptr<Tensor>> Slice(std::shared_ptr<Tensor> input,
-                                                size_t axis, size_t offset,
+                                                size_t axis, int64_t offset,
                                                 size_t length);
 
   // Concatenate two input tensors along the provided axis. Both input tensors
@@ -303,6 +306,9 @@ class XnnGraphBuilder {
       std::shared_ptr<Tensor> beta = nullptr);
 
  protected:
+  absl::StatusOr<std::shared_ptr<Tensor>> ExpandDims(
+      std::shared_ptr<Tensor> input, Tensor::DimsType new_axes);
+
   absl::StatusOr<std::shared_ptr<Tensor>> IntermediateTensor(
       Tensor::DimsType dims, absl::string_view tag = "");
   absl::StatusOr<std::shared_ptr<Tensor>> IntermediateTensor(
@@ -322,6 +328,9 @@ class XnnGraphBuilder {
   std::vector<std::shared_ptr<Tensor>> interm_tensors_added_order_;
   // Intermediate tensors in hash_set, for easy existence check.
   absl::flat_hash_set<std::shared_ptr<Tensor>> interm_tensors_;
+
+  // Static weights keeping the same order as how they were added.
+  std::vector<std::shared_ptr<Tensor>> static_weights_added_order_;
   absl::flat_hash_set<std::shared_ptr<Tensor>> static_weights_;
 
   // Caches
@@ -364,8 +373,6 @@ class XnnGraph {
 
   std::vector<std::shared_ptr<Tensor>> input_tensors_;
   std::vector<std::shared_ptr<Tensor>> output_tensors_;
-
-  absl::flat_hash_set<std::shared_ptr<Tensor>> static_weights_;
 };
 
 }  // namespace xnn_utils

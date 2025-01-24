@@ -123,6 +123,7 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/calculators/tflite/ssd_anchors_calculator.proto",
     "src/mediapipe/calculators/util/detection_label_id_to_text_calculator.proto",
     "src/mediapipe/calculators/util/non_max_suppression_calculator.proto",
+    "src/mediapipe/calculators/util/resource_provider_calculator.proto",
     "src/mediapipe/framework/calculator.proto",
     "src/mediapipe/framework/calculator_options.proto",
     "src/mediapipe/framework/deps/proto_descriptor.proto",
@@ -135,6 +136,7 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/framework/formats/object_detection/anchor.proto",
     "src/mediapipe/framework/formats/rect.proto",
     "src/mediapipe/framework/formats/time_series_header.proto",
+    "src/mediapipe/framework/graph_runtime_info.proto",
     "src/mediapipe/framework/mediapipe_options.proto",
     "src/mediapipe/framework/packet_factory.proto",
     "src/mediapipe/framework/packet_generator.proto",
@@ -326,6 +328,8 @@ tflite_source_set("mediapipe_core_always_link") {
     "src/mediapipe/calculators/core/begin_item_loop_calculator.cc",
     "src/mediapipe/calculators/core/end_item_loop_calculator.cc",
     "src/mediapipe/calculators/core/pass_through_calculator.cc",
+    "src/mediapipe/calculators/util/resource_provider_calculator.cc",
+    "src/mediapipe/calculators/util/resource_provider_calculator.h",
     "src/mediapipe/framework/stream_handler/default_input_stream_handler.cc",
     "src/mediapipe/framework/stream_handler/default_input_stream_handler.h",
     "src/mediapipe/framework/stream_handler/in_order_output_stream_handler.cc",
@@ -395,9 +399,14 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/deps/file_path.cc",
     "src/mediapipe/framework/deps/file_path.h",
     "src/mediapipe/framework/deps/map_util.h",
+    "src/mediapipe/framework/deps/mlock_helpers.cc",
+    "src/mediapipe/framework/deps/mlock_helpers.h",
+    "src/mediapipe/framework/deps/mmapped_file.h",
     "src/mediapipe/framework/deps/monotonic_clock.cc",
     "src/mediapipe/framework/deps/monotonic_clock.h",
     "src/mediapipe/framework/deps/no_destructor.h",
+    "src/mediapipe/framework/deps/platform_strings.cc",
+    "src/mediapipe/framework/deps/platform_strings.h",
     "src/mediapipe/framework/deps/registration.cc",
     "src/mediapipe/framework/deps/registration.h",
     "src/mediapipe/framework/deps/registration_token.cc",
@@ -495,6 +504,10 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/timestamp.h",
     "src/mediapipe/framework/tool/fill_packet_set.cc",
     "src/mediapipe/framework/tool/fill_packet_set.h",
+    "src/mediapipe/framework/tool/graph_runtime_info_logger.cc",
+    "src/mediapipe/framework/tool/graph_runtime_info_logger.h",
+    "src/mediapipe/framework/tool/graph_runtime_info_utils.cc",
+    "src/mediapipe/framework/tool/graph_runtime_info_utils.h",
     "src/mediapipe/framework/tool/name_util.cc",
     "src/mediapipe/framework/tool/name_util.h",
     "src/mediapipe/framework/tool/options_field_util.cc",
@@ -528,6 +541,10 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/type_map.h",
     "src/mediapipe/framework/validated_graph_config.cc",
     "src/mediapipe/framework/validated_graph_config.h",
+    "src/mediapipe/framework/vlog_overrides.cc",
+    "src/mediapipe/framework/vlog_overrides.h",
+    "src/mediapipe/framework/vlog_utils.cc",
+    "src/mediapipe/framework/vlog_utils.h",
     "src/mediapipe/gpu/webgpu/webgpu_check.cc",
     "src/mediapipe/gpu/webgpu/webgpu_check.h",
     "src/mediapipe/util/cpu_util.cc",
@@ -541,6 +558,14 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/util/tflite/error_reporter.cc",
     "src/mediapipe/util/tflite/error_reporter.h",
   ]
+
+  if (!is_win) {
+    sources += [
+      "src/mediapipe/framework/formats/shared_fd.h",
+      "src/mediapipe/framework/formats/unique_fd.cc",
+      "src/mediapipe/framework/formats/unique_fd.h",
+    ]
+  }
 
   if (is_win) {
     sources += [ "src/mediapipe/util/resource_util_windows.cc" ]
@@ -582,6 +607,9 @@ tflite_static_library("mediapipe_core") {
       "src/mediapipe/framework/formats/image_frame.cc",
       "src/mediapipe/framework/formats/image_frame.h",
       "src/mediapipe/gpu/attachments.h",
+      "src/mediapipe/gpu/egl_base.h",
+      "src/mediapipe/gpu/egl_errors.cc",
+      "src/mediapipe/gpu/egl_errors.h",
       "src/mediapipe/gpu/gl_base.h",
       "src/mediapipe/gpu/gl_calculator_helper.cc",
       "src/mediapipe/gpu/gl_calculator_helper.h",
@@ -621,6 +649,15 @@ tflite_static_library("mediapipe_core") {
       "src/mediapipe/gpu/webgpu/webgpu_utils.h",
       "src/mediapipe/web/jspi_check.h",
     ]
+
+    if (!is_win) {
+      sources += [
+        "src/mediapipe/gpu/egl_sync.cc",
+        "src/mediapipe/gpu/egl_sync.h",
+        "src/mediapipe/gpu/egl_sync_point.cc",
+        "src/mediapipe/gpu/egl_sync_point.h",
+      ]
+    }
 
     if (is_mac) {
       sources += [

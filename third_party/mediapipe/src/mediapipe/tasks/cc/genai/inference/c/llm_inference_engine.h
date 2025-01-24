@@ -58,6 +58,12 @@ typedef struct {
   // Path to the model artifact.
   const char* model_path;
 
+  // Path to the vision encoder to use for vision modality. Optional.
+  const char* vision_encoder_path;
+
+  // Path to the vision adapter  to use for vision modality. Optional.
+  const char* vision_adapter_path;
+
   // Directory path for storing model related tokenizer and cache weights. the
   // user is responsible for providing the directory that can be writable by the
   // program.
@@ -96,6 +102,14 @@ typedef struct {
   // Optional setting for the number of draft tokens to generate when using
   // speculative decoding. Setting to 0 will disable speculative decoding.
   size_t num_draft_tokens;
+
+  // If true, waits for weights to finish uploading when initializing. Otherwise
+  // initialization may finish before weights have finished uploading which
+  // might push some of the weight upload time into input processing.
+  bool wait_for_weight_uploads;
+
+  // Whether the submodel should be used if available.
+  bool use_submodel;
 } LlmModelSettings;
 
 // LlmSessionConfig configures how to execute the model.
@@ -114,8 +128,16 @@ typedef struct {
   size_t random_seed;
 
   // Path to the LoRA tflite flatbuffer file. Optional.
-  // This is only compatible with GPU models.
+  // This is only compatible with GPU handwritten models and converter based
+  // models.
   const char* lora_path;
+
+  // Whether to configure the graph to include the token cost calculator,
+  // which allows users to only compute the cost of a prompt.
+  bool include_token_cost_calculator;
+
+  // Whether to configure the graph to include the vision modality.
+  bool enable_vision_modality;
 } LlmSessionConfig;
 
 // LlmResponseContext is the return type for
@@ -161,10 +183,16 @@ ODML_EXPORT void LlmInferenceEngine_Session_Delete(
 ODML_EXPORT int LlmInferenceEngine_Session_AddQueryChunk(
     LlmInferenceEngine_Session* session, const char* input, char** error_msg);
 
+// Adds an SKBitmap to the session.
+ODML_EXPORT int LlmInferenceEngine_Session_AddImage(
+    LlmInferenceEngine_Session* session, const void* sk_bitmap,
+    char** error_msg);
+
 // Return the generated output based on the previously added query chunks in
 // sync mode.
-ODML_EXPORT LlmResponseContext
-LlmInferenceEngine_Session_PredictSync(LlmInferenceEngine_Session* session);
+ODML_EXPORT int LlmInferenceEngine_Session_PredictSync(
+    LlmInferenceEngine_Session* session, LlmResponseContext* response_context,
+    char** error_msg);
 
 // Run callback function in async mode.
 // The callback will be invoked multiple times until `response_context.done`
@@ -172,8 +200,9 @@ LlmInferenceEngine_Session_PredictSync(LlmInferenceEngine_Session* session);
 // each invocation to free memory.
 // The callback context can be a pointer to any user defined data structure as
 // it is passed to the callback unmodified.
-ODML_EXPORT void LlmInferenceEngine_Session_PredictAsync(
+ODML_EXPORT int LlmInferenceEngine_Session_PredictAsync(
     LlmInferenceEngine_Session* session, void* callback_context,
+    char** error_msg,
     void (*callback)(void* callback_context,
                      LlmResponseContext* response_context));
 
