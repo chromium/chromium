@@ -359,9 +359,12 @@ std::string CookieInclusionStatus::GetDebugString() const {
     case ExemptionReason::kScheme:
       reason = "ExemptionScheme";
       break;
+    case ExemptionReason::kSameSiteNoneCookiesInSandbox:
+      reason = "ExemptionSameSiteNoneCookiesInSandbox";
+      break;
     case ExemptionReason::kNone:
       NOTREACHED();
-  };
+  }
   base::StrAppend(&out, {reason});
 
   return out;

@@ -74,6 +74,8 @@ constexpr StorageAccessResult GetStorageAccessResult(
       return StorageAccessResult::ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT;
     case AllowMechanism::kAllowByScheme:
       return StorageAccessResult::ACCESS_ALLOWED_SCHEME;
+    case AllowMechanism::kAllowBySandboxValue:
+      return StorageAccessResult::ACCESS_ALLOWED_SANDBOX_VALUE;
   }
 }
 
@@ -103,6 +105,7 @@ constexpr std::optional<SettingSource> GetSettingSource(
     case AllowMechanism::kAllowByStorageAccess:
     case AllowMechanism::kAllowByTopLevelStorageAccess:
     case AllowMechanism::kAllowByScheme:
+    case AllowMechanism::kAllowBySandboxValue:
       return std::nullopt;
   }
 }
@@ -195,6 +198,7 @@ bool CookieSettingsBase::IsAnyTpcdMetadataAllowMechanism(
     case AllowMechanism::kAllowByTopLevel3PCD:
     case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
     case AllowMechanism::kAllowByScheme:
+    case AllowMechanism::kAllowBySandboxValue:
       return false;
     case AllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
     case AllowMechanism::kAllowBy3PCDMetadataSourceTest:
@@ -233,6 +237,7 @@ bool CookieSettingsBase::Is1PDtRelatedAllowMechanism(
     case AllowMechanism::kAllowBy3PCDMetadataSourceCuj:
     case AllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
     case AllowMechanism::kAllowByScheme:
+    case AllowMechanism::kAllowBySandboxValue:
       return false;
   }
 }
@@ -532,6 +537,23 @@ bool CookieSettingsBase::IsAllowedByTopLevelStorageAccessGrant(
                            /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
 }
 
+bool CookieSettingsBase::IsAllowedBySandboxValue(
+    const GURL& url,
+    const GURL& first_party_url,
+    net::CookieSettingOverrides overrides) const {
+  if (!overrides.Has(
+          net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox) ||
+      !base::FeatureList::IsEnabled(
+          net::features::kAllowSameSiteNoneCookiesInSandbox)) {
+    return false;
+  }
+
+  url::Origin origin = url::Origin::Create(url);
+  url::Origin first_party_origin = url::Origin::Create(first_party_url);
+  return origin.IsSameOriginWith(first_party_origin) ||
+         net::SchemefulSite(origin) == net::SchemefulSite(first_party_origin);
+}
+
 absl::variant<CookieSettingsBase::AllowAllCookies,
               CookieSettingsBase::AllowPartitionedCookies,
               CookieSettingsBase::BlockAllCookies>
@@ -575,6 +597,10 @@ CookieSettingsBase::DecideAccess(
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowByStorageAccess,
         AllowedByStorageAccessType::kStorageAccessOnly};
+  }
+  if (IsAllowedBySandboxValue(url, first_party_url, overrides)) {
+    return AllowAllCookies{
+        ThirdPartyCookieAllowMechanism::kAllowBySandboxValue};
   }
 
   if (IsAllowedBy3pcdHeuristicsGrantsSettings(url, first_party_url,

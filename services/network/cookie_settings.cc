@@ -108,6 +108,8 @@ net::CookieInclusionStatus::ExemptionReason GetExemptionReason(
       return ExemptionReason::kNone;
     case AllowMechanism::kAllowByScheme:
       return ExemptionReason::kScheme;
+    case AllowMechanism::kAllowBySandboxValue:
+      return ExemptionReason::kSameSiteNoneCookiesInSandbox;
   }
 }
 

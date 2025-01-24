@@ -277,9 +277,11 @@ class NET_EXPORT CookieInclusionStatus {
     kTopLevelStorageAccess = 8,
     // Allowed by the scheme.
     kScheme = 9,
+    // Allowed by the sandbox 'allow-same-site-none-cookies' value.
+    kSameSiteNoneCookiesInSandbox = 10,
 
     // Keep last.
-    kMaxValue = kScheme
+    kMaxValue = kSameSiteNoneCookiesInSandbox
   };
 
   using ExclusionReasonBitset =

@@ -6495,6 +6495,8 @@ domain Network
       TopLevelStorageAccess
       # The cookie should have been blocked by 3PCD but is exempted by the first-party URL scheme.
       Scheme
+      # The cookie was included due to the 'allow-same-site-none-cookies' value being set in the sandboxing policy.
+      SameSiteNoneCookiesInSandbox
 
   # A cookie which was not stored from a response with the corresponding reason.
   experimental type BlockedSetCookieWithReason extends object

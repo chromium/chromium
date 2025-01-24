@@ -1052,6 +1052,9 @@ Network::CookieExemptionReason GetProtocolCookieExemptionReason(
       return Network::CookieExemptionReasonEnum::TopLevelStorageAccess;
     case net::CookieInclusionStatus::ExemptionReason::kScheme:
       return Network::CookieExemptionReasonEnum::Scheme;
+    case net::CookieInclusionStatus::ExemptionReason::
+        kSameSiteNoneCookiesInSandbox:
+      return Network::CookieExemptionReasonEnum::SameSiteNoneCookiesInSandbox;
   }
 }
 
