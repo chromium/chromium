@@ -1278,7 +1278,7 @@ BASE_FEATURE(kAccessibilityIncludeLongClickAction,
 // This flag is the fast-follow for the AccessibilityPageZoom experiment.
 BASE_FEATURE(kAccessibilityPageZoomEnhancements,
              "AccessibilityPageZoomEnhancements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the second iteration of AccessibilityPageZoom, which continues
 // the work completed in the first experiment and the subsequent fast-follow.
