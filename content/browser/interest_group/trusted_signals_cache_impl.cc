@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <list>
 #include <map>
 #include <memory>
 #include <optional>
@@ -435,13 +436,14 @@ class TrustedSignalsCacheImpl::CompressionGroupData
         fetch_(fetch),
         fetch_compression_group_(fetch_compression_group) {}
 
-  // Sets the received data. May only be called once. Clears information about
-  // the Fetch, since it's now completed.
+  // Sets the received data and sets `size_` accordingly. May only be called
+  // once. Clears information about the Fetch, since it's now completed.
   //
   // Also sends `data` to all pending clients waiting on it, if there are any,
   // and clears them all.
   void SetData(CachedResult data) {
     DCHECK(!data_);
+    DCHECK_EQ(size_, 0u);
     data_ = std::make_unique<CachedResult>(std::move(data));
 
     // Errors are given TTLs of 0.
@@ -449,6 +451,15 @@ class TrustedSignalsCacheImpl::CompressionGroupData
       expiry_ = base::TimeTicks::Now();
     } else {
       expiry_ = base::TimeTicks::Now() + data_->value().ttl;
+
+      // Calculate size. Leave it as zero on errors, since errors are instantly
+      // expired and won't be added to the LruList, anyways.
+      //
+      // TODO(https://crbug.com/333445540): Consider including more in this
+      // measurement, and including the size of everything other than
+      // `compression_group_data` in its value on construction.
+      size_ = sizeof(CompressionGroupData) +
+              (*data_)->compression_group_data.size();
     }
 
     // The fetch has now completed and the caller will delete it once it's done
@@ -583,10 +594,64 @@ class TrustedSignalsCacheImpl::CompressionGroupData
     return compression_group_token_;
   }
 
+  // Used, along with total size of all compression groups, to determine if an
+  // entry should be added to the LruList or discarded.
+  bool IsLoadedAndCanBeUsedByNewRequests() const {
+    // If there's a Fetch, then the data hasn't finished loading yet.
+    if (fetch_) {
+      return false;
+    }
+
+    // If expired, can't be used by new requests. Note that failed fetches are
+    // considered instantly expired, so will always fail this check.
+    if (IsExpired()) {
+      return false;
+    }
+
+    // Return whether there are any entries in the index that point at `this`.
+    return !bidding_cache_entries_.empty() || !scoring_cache_entries_.empty();
+  }
+
+  // The approximate size of the entry. Starts at 0, and only set to anything
+  // else in SetData().
+  size_t size() const { return size_; }
+
+  // Called by Handle on construction. The Handle must be holding onto a
+  // reference to the CompressionGroupData, as this will remove it from the
+  // LruList, if it's in the list, so would otherwise result in destruction of
+  // `this`.
+  void OnHandleCreated() {
+    if (lru_list_it_) {
+      cache_->RemoveFromLruList(*lru_list_it_);
+    }
+    ++num_handles_;
+  }
+
+  // Called by Handle's destructor. Returns number of outstanding Handles. If
+  // it's 0, the Handle should inform the TrustedSignalsCacheImpl.
+  uint32_t OnHandleDestroyed() {
+    // All Handles should be destroyed before this is added to the LruList.
+    DCHECK(!lru_list_it_);
+    return --num_handles_;
+  }
+
+  void set_lru_list_it(std::optional<LruList::iterator> lru_list_it) {
+    // There should be no Handles when calling this method, regardless of
+    // whether `lru_list_it` is nullopt or not - it should be removed from the
+    // LruList before any handle is created.
+    DCHECK_EQ(num_handles_, 0u);
+    lru_list_it_ = std::move(lru_list_it);
+  }
+
  private:
   friend class base::RefCounted<CompressionGroupData>;
 
   virtual ~CompressionGroupData() {
+    // The CompressionGroupData should be have no Handles and not be in the LRU
+    // list when destroyed.
+    DCHECK_EQ(num_handles_, 0u);
+    DCHECK(lru_list_it_ == std::nullopt);
+
     cache_->OnCompressionGroupDataDestroyed(*this);
   }
 
@@ -634,6 +699,21 @@ class TrustedSignalsCacheImpl::CompressionGroupData
 
   int next_partition_id_ = 0;
 
+  // The number of Handles. Maintained by calls made from Handle's
+  // constructor/destructor. When non-zero, `lru_list_it_` should be nullopt.
+  // This is used to determine when an entry should be added to the LruList.
+  // While CompressionGroupData is refcounted, and the reference count could
+  // theoretically be used for this purpose, references may be owned by things
+  // other than Handles as well, so it's safest to maintain this count
+  // separately.
+  uint32_t num_handles_ = 0;
+
+  // Corresponding entry in `cache_->lru_list_`, if there currently is one.
+  std::optional<LruList::iterator> lru_list_it_;
+
+  // Approximate size of the entry. Calculated when the fetch completes.
+  size_t size_ = 0;
+
   // The token that needs to be passed to GetTrustedSignals() to retrieve the
   // response.
   const base::UnguessableToken compression_group_token_{
@@ -641,8 +721,12 @@ class TrustedSignalsCacheImpl::CompressionGroupData
 };
 
 TrustedSignalsCacheImpl::Handle::Handle(
+    TrustedSignalsCacheImpl* trusted_signals_cache,
     scoped_refptr<CompressionGroupData> compression_group_data)
-    : compression_group_data_(std::move(compression_group_data)) {}
+    : trusted_signals_cache_(trusted_signals_cache),
+      compression_group_data_(std::move(compression_group_data)) {
+  compression_group_data_->OnHandleCreated();
+}
 
 base::UnguessableToken
 TrustedSignalsCacheImpl::Handle::compression_group_token() const {
@@ -653,7 +737,12 @@ void TrustedSignalsCacheImpl::Handle::StartFetch() {
   compression_group_data_->StartFetch();
 }
 
-TrustedSignalsCacheImpl::Handle::~Handle() = default;
+TrustedSignalsCacheImpl::Handle::~Handle() {
+  if (compression_group_data_->OnHandleDestroyed() == 0u) {
+    trusted_signals_cache_->OnLastHandleDestroyed(
+        std::move(compression_group_data_));
+  }
+}
 
 bool TrustedSignalsCacheImpl::ReceiverRestrictions::operator==(
     const ReceiverRestrictions& other) const = default;
@@ -665,7 +754,18 @@ TrustedSignalsCacheImpl::TrustedSignalsCacheImpl(
       get_coordinator_key_callback_(std::move(get_coordinator_key_callback)),
       network_partition_nonce_cache_(kNonceCacheSize) {}
 
-TrustedSignalsCacheImpl::~TrustedSignalsCacheImpl() = default;
+TrustedSignalsCacheImpl::~TrustedSignalsCacheImpl() {
+  // Clearing the LruList should delete all remaining compression group entries.
+  // Need to call RemoveFromLruList() for each entry to avoid DCHECKs in
+  // CompressionGroupData's destructor, due to `lru_list_it_` not being cleared
+  // before destruction.
+  while (!lru_list_.empty()) {
+    RemoveFromLruList(lru_list_.begin());
+  }
+  lru_list_.clear();
+  DCHECK(compression_group_data_map_.empty());
+  DCHECK_EQ(size_, 0u);
+}
 
 mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
 TrustedSignalsCacheImpl::CreateRemote(SignalsType signals_type,
@@ -717,18 +817,17 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
                                     trusted_bidding_signals_keys);
       partition_id = cache_entry->partition_id;
       return base::MakeRefCounted<Handle>(
-          scoped_refptr(compression_group_data));
+          this, scoped_refptr(compression_group_data));
     }
 
-    // Otherwise, check if the entry is not expired and all necessary value that
-    // aren't part of the BiddingCacheKey appear in the entry. If both are the
-    // case, reuse the cache entry without doing any more work.
+    // Otherwise, check if the entry is not expired and all necessary values
+    // that aren't part of the BiddingCacheKey appear in the entry. If both are
+    // the case, reuse the cache entry without doing any more work.
     if (!compression_group_data->IsExpired() &&
         cache_entry->ContainsInterestGroup(interest_group_name,
                                            trusted_bidding_signals_keys)) {
       partition_id = cache_entry->partition_id;
-      return base::MakeRefCounted<Handle>(
-          scoped_refptr(compression_group_data));
+      return base::MakeRefCounted<Handle>(this, compression_group_data);
     }
 
     // Otherwise, delete the cache entry. Even if its `compression_group_data`
@@ -780,7 +879,7 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
   compression_group_data->AddBiddingEntry(cache_entry_it);
 
   partition_id = cache_entry_it->second.partition_id;
-  return base::MakeRefCounted<Handle>(std::move(compression_group_data));
+  return base::MakeRefCounted<Handle>(this, std::move(compression_group_data));
 }
 
 scoped_refptr<TrustedSignalsCacheImpl::Handle>
@@ -816,7 +915,7 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
         !compression_group_data->IsExpired()) {
       partition_id = cache_entry->partition_id;
       return base::MakeRefCounted<Handle>(
-          scoped_refptr(compression_group_data));
+          this, scoped_refptr(compression_group_data));
     }
 
     // Otherwise, delete the cache entry. Even if its `compression_group_data`
@@ -861,7 +960,8 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
   compression_group_data->AddScoringEntry(cache_entry_it);
 
   partition_id = cache_entry_it->second.partition_id;
-  return base::MakeRefCounted<Handle>(scoped_refptr(compression_group_data));
+  return base::MakeRefCounted<Handle>(this,
+                                      scoped_refptr(compression_group_data));
 }
 
 scoped_refptr<TrustedSignalsCacheImpl::CompressionGroupData>
@@ -1185,6 +1285,9 @@ void TrustedSignalsCacheImpl::OnFetchComplete(
     for (auto& compression_group_result : compression_group_results) {
       compression_group_result.first->SetData(
           std::move(compression_group_result.second));
+      // Update `size_`, now that SetData() caused in the compression group's
+      // size to be calculated.
+      size_ += compression_group_result.first->size();
     }
   } else {
     // On error, copy the shared error value to each group's
@@ -1194,7 +1297,17 @@ void TrustedSignalsCacheImpl::OnFetchComplete(
           compression_group_pair.second.compression_group_data;
       compression_group->SetData(
           base::unexpected(signals_fetch_result.error()));
+      // On error, the size of compression groups is treated as zero, as they'll
+      // be discarded as soon as they fall out of use.
+      DCHECK_EQ(compression_group->size(), 0u);
     }
+  }
+
+  // While the cache is too large, remove entries from `lru_cache_`, if there
+  // are any. May not get below max cache size, due to not being able to delete
+  // live entries.
+  while (size_ > kMaxCacheSizeBytes && !lru_list_.empty()) {
+    RemoveFromLruList(lru_list_.begin());
   }
 
   // The SetData() calls above cleared the references to the fetch held by the
@@ -1202,8 +1315,43 @@ void TrustedSignalsCacheImpl::OnFetchComplete(
   fetches_.erase(fetch_it);
 }
 
+void TrustedSignalsCacheImpl::OnLastHandleDestroyed(
+    scoped_refptr<CompressionGroupData> compression_group_data) {
+  // If the maximum size has already been exceeded, don't add the entry to the
+  // LruList.
+  if (size_ > kMaxCacheSizeBytes) {
+    // In this case, `lru_list_` should have no entries in it, since only
+    // entries with live Handles can exceed the limit, and entries in the list
+    // should not have any live Handles.
+    DCHECK(lru_list_.empty());
+    return;
+  }
+
+  // If the entry is still loading, or can't be used by new requests, due to
+  // expiration or having been removed from the index, discard it.
+  if (!compression_group_data->IsLoadedAndCanBeUsedByNewRequests()) {
+    return;
+  }
+
+  // Add entry to the LruList. This is the inverse of RemoveFromLruList(),
+  // below.
+  auto it =
+      lru_list_.emplace(lru_list_.end(), std::move(compression_group_data));
+  (*it)->set_lru_list_it(it);
+}
+
+void TrustedSignalsCacheImpl::RemoveFromLruList(LruList::iterator lru_list_it) {
+  // This needs to be done before removing the CompressionGroupData from the
+  // LruList, as removal may destroy the CompressionGroupData.
+  (*lru_list_it)->set_lru_list_it(std::nullopt);
+  lru_list_.erase(lru_list_it);
+}
+
 void TrustedSignalsCacheImpl::OnCompressionGroupDataDestroyed(
     CompressionGroupData& compression_group_data) {
+  DCHECK_LE(compression_group_data.size(), size_);
+  size_ -= compression_group_data.size();
+
   // Need to clean up the *CacheEntries associated with the
   // CompressionGroupData.
   for (auto cache_entry_it : compression_group_data.bidding_cache_entries()) {
