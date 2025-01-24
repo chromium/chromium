@@ -104,6 +104,7 @@ public class TabListCoordinator
 
     private final ObserverList<TabListItemSizeChangedObserver> mTabListItemSizeChangedObserverList =
             new ObserverList<>();
+    private final TabListFaviconProvider mTabListFaviconProvider;
     private final TabListMediator mMediator;
     private final TabListRecyclerView mRecyclerView;
     private final SimpleRecyclerViewAdapter mAdapter;
@@ -290,7 +291,7 @@ public class TabListCoordinator
         // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
         // incognito profile) instead of always using regular profile. It works correctly now, but
         // it is not safe.
-        TabListFaviconProvider tabListFaviconProvider =
+        mTabListFaviconProvider =
                 new TabListFaviconProvider(
                         mActivity,
                         mMode == TabListMode.STRIP,
@@ -304,7 +305,7 @@ public class TabListCoordinator
                         modalDialogManager,
                         tabGroupModelFilterSupplier,
                         thumbnailProvider,
-                        tabListFaviconProvider,
+                        mTabListFaviconProvider,
                         actionOnRelatedTabs,
                         selectionDelegateProvider,
                         gridCardOnClickListenerProvider,
@@ -762,6 +763,7 @@ public class TabListCoordinator
         if (mOnItemTouchListener != null) {
             mRecyclerView.removeOnItemTouchListener(mOnItemTouchListener);
         }
+        mTabListFaviconProvider.destroy();
     }
 
     /**

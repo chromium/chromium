@@ -67,8 +67,9 @@ public class TabGroupListCoordinator {
     }
 
     private final TabGroupListView mView;
-
     private final SimpleRecyclerViewAdapter mSimpleRecyclerViewAdapter;
+    private final TabListFaviconProvider mTabListFaviconProvider;
+
     private TabGroupListMediator mTabGroupListMediator;
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
@@ -119,7 +120,11 @@ public class TabGroupListCoordinator {
         mView.setRecyclerViewAdapter(mSimpleRecyclerViewAdapter);
 
         Profile profile = profileProvider.getOriginalProfile();
-        FaviconResolver faviconResolver = buildFaviconResolver(context, profile);
+        mTabListFaviconProvider =
+                new TabListFaviconProvider(
+                        context, /* isTabStrip= */ false, R.dimen.default_favicon_corner_radius);
+        FaviconResolver faviconResolver =
+                buildFaviconResolver(context, profile, mTabListFaviconProvider);
         @Nullable TabGroupSyncService tabGroupSyncService = null;
         if (TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) {
             tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
@@ -161,10 +166,8 @@ public class TabGroupListCoordinator {
     }
 
     @VisibleForTesting
-    static FaviconResolver buildFaviconResolver(Context context, Profile profile) {
-        TabListFaviconProvider fallbackProvider =
-                new TabListFaviconProvider(
-                        context, /* isTabStrip= */ false, R.dimen.default_favicon_corner_radius);
+    static FaviconResolver buildFaviconResolver(
+            Context context, Profile profile, TabListFaviconProvider fallbackProvider) {
         return (GURL url, Callback<Drawable> callback) -> {
             if (UrlUtilities.isInternalScheme(url)) {
                 callback.onResult(
@@ -228,5 +231,6 @@ public class TabGroupListCoordinator {
             mEdgeToEdgePadAdjuster.destroy();
             mEdgeToEdgePadAdjuster = null;
         }
+        mTabListFaviconProvider.destroy();
     }
 }
