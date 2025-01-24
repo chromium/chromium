@@ -26,7 +26,7 @@ RELEASE = "bullseye"
 # This number is appended to the sysroot key to cause full rebuilds.  It
 # should be incremented when removing packages or patching existing packages.
 # It should not be incremented when adding packages.
-SYSROOT_RELEASE = 2
+SYSROOT_RELEASE = 1
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -508,7 +508,9 @@ def cleanup_jail_symlinks(install_root: str) -> None:
             if os.path.islink(full_path):
                 target_path = os.readlink(full_path)
                 if target_path == "/dev/null":
-                    # Don't relativize this link.
+                    # Some systemd services get masked by symlinking them to
+                    # /dev/null. It's safe to remove these.
+                    os.remove(full_path)
                     continue
 
                 # If the link's target does not exist, remove this broken link.
@@ -574,7 +576,7 @@ def removing_unnecessary_files(install_root, arch):
             os.remove(link)
 
 
-def strip_sections(install_root: str):
+def strip_sections(install_root: str, arch: str):
     """
     Strips all sections from ELF files except for dynamic linking and
     essential sections. Skips static libraries (.a) and object files (.o).
@@ -622,7 +624,9 @@ def strip_sections(install_root: str):
 
             sections_to_remove = sections - PRESERVED_SECTIONS
             if sections_to_remove:
-                objcopy_cmd = (["objcopy"] + [
+                objcopy_arch = "amd64" if arch == "i386" else arch
+                objcopy_bin = TRIPLES[objcopy_arch] + "-objcopy"
+                objcopy_cmd = ([objcopy_bin] + [
                     f"--remove-section={section}"
                     for section in sections_to_remove
                 ] + [file_path])
@@ -684,7 +688,7 @@ def build_sysroot(arch: str) -> None:
     hacks_and_patches(install_root, SCRIPT_DIR, arch)
     cleanup_jail_symlinks(install_root)
     removing_unnecessary_files(install_root, arch)
-    strip_sections(install_root)
+    strip_sections(install_root, arch)
     restore_metadata(install_root, old_metadata)
     create_tarball(install_root, arch)
 
@@ -694,6 +698,7 @@ def upload_sysroot(arch: str) -> str:
                                 f"{DISTRO}_{RELEASE}_{arch}_sysroot.tar.xz")
     command = [
         "upload_to_google_storage_first_class.py",
+        "--force",
         "--bucket",
         "chrome-linux-sysroot",
         tarball_path,
