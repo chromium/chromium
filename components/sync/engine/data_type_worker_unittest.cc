@@ -3553,8 +3553,8 @@ TEST_F(DataTypeWorkerSharedTabGroupDataTest,
 
 TEST_F(DataTypeWorkerSharedTabGroupDataTest, ShouldPopulateAttributionData) {
   const std::string kCollaborationId = "collaboration";
-  const std::string kCreatorUserId = "creator_user_id";
-  const std::string kUpdaterUserId = "updater_user_id";
+  const GaiaId kCreatorUserId("creator_user_id");
+  const GaiaId kUpdaterUserId("updater_user_id");
 
   NormalInitialize();
   server()->AddCollaboration(kCollaborationId);
@@ -3562,9 +3562,9 @@ TEST_F(DataTypeWorkerSharedTabGroupDataTest, ShouldPopulateAttributionData) {
   sync_pb::SyncEntity::CollaborationMetadata collaboration_metadata_proto;
   collaboration_metadata_proto.set_collaboration_id(kCollaborationId);
   collaboration_metadata_proto.mutable_creation_attribution()
-      ->set_obfuscated_gaia_id(kCreatorUserId);
+      ->set_obfuscated_gaia_id(kCreatorUserId.ToString());
   collaboration_metadata_proto.mutable_last_update_attribution()
-      ->set_obfuscated_gaia_id(kUpdaterUserId);
+      ->set_obfuscated_gaia_id(kUpdaterUserId.ToString());
 
   EntitySpecifics specifics;
   specifics.mutable_shared_tab_group_data()->set_guid("guid");
@@ -3587,8 +3587,8 @@ TEST_F(DataTypeWorkerSharedTabGroupDataTest, ShouldPopulateAttributionData) {
           .front()
           ->entity.collaboration_metadata;
   ASSERT_TRUE(collaboration_metadata.has_value());
-  EXPECT_EQ(collaboration_metadata->created_by(), GaiaId(kCreatorUserId));
-  EXPECT_EQ(collaboration_metadata->last_updated_by(), GaiaId(kUpdaterUserId));
+  EXPECT_EQ(collaboration_metadata->created_by(), kCreatorUserId);
+  EXPECT_EQ(collaboration_metadata->last_updated_by(), kUpdaterUserId);
 }
 
 }  // namespace syncer

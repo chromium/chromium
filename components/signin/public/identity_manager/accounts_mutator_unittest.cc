@@ -25,13 +25,13 @@
 
 namespace {
 
-const char kTestEmail[] = "test_user@test.com";
+constexpr char kTestEmail[] = "test_user@test.com";
 #if !BUILDFLAG(IS_CHROMEOS)
-const char kTestGaiaId[] = "gaia-id-test_user-test.com";
-const char kTestGaiaId2[] = "gaia-id-test_user-2-test.com";
-const char kTestEmail2[] = "test_user@test-2.com";
-const char kRefreshToken[] = "refresh_token";
-const char kRefreshToken2[] = "refresh_token_2";
+constexpr GaiaId::Literal kTestGaiaId("gaia-id-test_user-test.com");
+constexpr GaiaId::Literal kTestGaiaId2("gaia-id-test_user-2-test.com");
+constexpr char kTestEmail2[] = "test_user@test-2.com";
+constexpr char kRefreshToken[] = "refresh_token";
+constexpr char kRefreshToken2[] = "refresh_token_2";
 #endif
 
 // Class that observes diagnostics updates from signin::IdentityManager.
@@ -224,7 +224,7 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_AddNewAccount) {
       run_loop.QuitClosure());
 
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
-      GaiaId(kTestGaiaId), kTestEmail, kRefreshToken,
+      kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
       signin_metrics::AccessPoint::kSettings,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
@@ -258,7 +258,7 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
       run_loop.QuitClosure());
 
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
-      GaiaId(kTestGaiaId), kTestEmail, kRefreshToken,
+      kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
       signin_metrics::AccessPoint::kSettings,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
@@ -293,7 +293,7 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
       use_gaia_as_account_id ? kTestEmail2 : kTestEmail;
 
   accounts_mutator()->AddOrUpdateAccount(
-      GaiaId(kTestGaiaId), maybe_updated_email, kRefreshToken,
+      kTestGaiaId, maybe_updated_email, kRefreshToken,
       /*is_under_advanced_protection=*/true,
       signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
@@ -378,7 +378,7 @@ TEST_F(
       run_loop.QuitClosure());
 
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
-      GaiaId(kTestGaiaId), kTestEmail, kRefreshToken,
+      kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
       signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
@@ -486,7 +486,7 @@ TEST_F(AccountsMutatorTest, RemoveAccount_ExistingAccount) {
       run_loop.QuitClosure());
 
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
-      GaiaId(kTestGaiaId), kTestEmail, kRefreshToken,
+      kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
       signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
@@ -532,7 +532,7 @@ TEST_F(AccountsMutatorTest, RemoveAllAccounts) {
       run_loop.QuitClosure());
 
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
-      GaiaId(kTestGaiaId), kTestEmail, kRefreshToken,
+      kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
       signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
@@ -550,7 +550,7 @@ TEST_F(AccountsMutatorTest, RemoveAllAccounts) {
       run_loop2.QuitClosure());
 
   CoreAccountId account_id2 = accounts_mutator()->AddOrUpdateAccount(
-      GaiaId(kTestGaiaId2), kTestEmail2, kRefreshToken2,
+      kTestGaiaId2, kTestEmail2, kRefreshToken2,
       /*is_under_advanced_protection=*/false,
       signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
@@ -582,7 +582,7 @@ TEST_F(AccountsMutatorTest, UpdateAccessTokenFromSource) {
 
   // Add a default account.
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
-      GaiaId(kTestGaiaId), kTestEmail, "refresh_token", false,
+      kTestGaiaId, kTestEmail, "refresh_token", false,
       signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   EXPECT_EQ(
@@ -595,7 +595,7 @@ TEST_F(AccountsMutatorTest, UpdateAccessTokenFromSource) {
 
   // Update the default account with different source.
   accounts_mutator()->AddOrUpdateAccount(
-      GaiaId(kTestGaiaId), kTestEmail, "refresh_token2", true,
+      kTestGaiaId, kTestEmail, "refresh_token2", true,
       signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
   EXPECT_EQ(
@@ -615,7 +615,7 @@ TEST_F(AccountsMutatorTest, RemoveRefreshTokenFromSource) {
 
   // Add a default account.
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
-      GaiaId(kTestGaiaId), kTestEmail, "refresh_token", false,
+      kTestGaiaId, kTestEmail, "refresh_token", false,
       signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
 

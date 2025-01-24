@@ -1785,7 +1785,7 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
       listed_account.id);
-  EXPECT_EQ(GaiaId(kTestGaiaId), listed_account.gaia_id);
+  EXPECT_EQ(kTestGaiaId, listed_account.gaia_id);
   EXPECT_EQ(kTestEmail, listed_account.email);
 }
 
@@ -2386,9 +2386,9 @@ TEST_F(IdentityManagerTest, TestOnAccountRemovedWithInfoCallback) {
 }
 
 TEST_F(IdentityManagerTest, TestPickAccountIdForAccount) {
-  EXPECT_EQ(CoreAccountId::FromGaiaId(kTestGaiaId),
-            identity_manager()->PickAccountIdForAccount(GaiaId(kTestGaiaId),
-                                                        kTestEmail));
+  EXPECT_EQ(
+      CoreAccountId::FromGaiaId(kTestGaiaId),
+      identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail));
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -48,7 +48,7 @@ namespace {
 using ::account_manager::AccountManager;
 using ::account_manager::AccountManagerFacade;
 
-constexpr char kGaiaId[] = "gaia-id";
+constexpr GaiaId::Literal kGaiaId("gaia-id");
 constexpr char kGaiaToken[] = "gaia-token";
 constexpr char kUserEmail[] = "user@gmail.com";
 constexpr char kNoBindingChallenge[] = "";
@@ -201,7 +201,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
 
     account_tracker_service_.Initialize(&pref_service_, base::FilePath());
 
-    account_info_ = CreateAccountInfoTestFixture(GaiaId(kGaiaId), kUserEmail);
+    account_info_ = CreateAccountInfoTestFixture(kGaiaId, kUserEmail);
     account_tracker_service_.SeedAccountInfo(account_info_);
     ResetProfileOAuth2TokenServiceDelegateChromeOS(
         /*delete_signin_cookies_on_exit=*/false, /*is_syncing=*/false);

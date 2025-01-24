@@ -408,7 +408,7 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_NoAccount) {
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
       primary_account_mutator->SetPrimaryAccount(
-          CoreAccountId::FromGaiaId(GaiaId(kUnknownAccountId)),
+          CoreAccountId::FromGaiaId(kUnknownAccountId),
           signin::ConsentLevel::kSignin, signin_metrics::AccessPoint::kUnknown);
   EXPECT_EQ(
       signin::PrimaryAccountMutator::PrimaryAccountError::kAccountInfoEmpty,
@@ -437,7 +437,7 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_UnknownAccount) {
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
       primary_account_mutator->SetPrimaryAccount(
-          CoreAccountId::FromGaiaId(GaiaId(kUnknownAccountId)),
+          CoreAccountId::FromGaiaId(kUnknownAccountId),
           signin::ConsentLevel::kSignin, signin_metrics::AccessPoint::kUnknown);
   EXPECT_EQ(
       signin::PrimaryAccountMutator::PrimaryAccountError::kAccountInfoEmpty,
