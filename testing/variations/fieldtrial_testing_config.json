@@ -10730,6 +10730,29 @@
             ]
         }
     ],
+    "HappinessTrackingBluetoothAudio": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250123",
+                    "params": {
+                        "enabled_for_googlers": "true",
+                        "histogram_name": "ChromeOS.HaTS.BluetoothAudio",
+                        "prob": "0.05",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1698332400000",
+                        "trigger_id": "9ymFQS2qm0jBnuKU19R0UaKeWPaL"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingBluetoothAudio"
+                    ]
+                }
+            ]
+        }
+    ],
     "HappinessTrackingBorealisGames": [
         {
             "platforms": [
@@ -11047,6 +11070,28 @@
                     },
                     "enable_features": [
                         "HappinessTrackingArcGames"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HatsAudio": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250123",
+                    "params": {
+                        "histogram_name": "ChromeOS.HaTS.Audio",
+                        "prob": "0.01",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1642608000000",
+                        "trigger_id": "cVHSWE7RR0jBnuKU19R0ThFKQTU5"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingAudio"
                     ]
                 }
             ]
