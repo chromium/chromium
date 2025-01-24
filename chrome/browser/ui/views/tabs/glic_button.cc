@@ -70,7 +70,7 @@ void GlicButton::LaunchUI() {
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicKeyedServiceFactory::GetGlicKeyedService(
       tab_strip_controller_->GetProfile())
-      ->LaunchUI(this);
+      ->LaunchUI(tab_strip_controller_->GetBrowserWindowInterface());
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 

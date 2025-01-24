@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -260,12 +259,13 @@ void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
   }
 }
 
-void GlicWindowController::Show(views::View* glic_button_view) {
-  // TODO(crbug.com/391416274): Pass in Browser* explicitly.
-  Browser* browser = (glic_button_view)
-                         ? chrome::FindBrowserWithWindow(
-                               glic_button_view->GetWidget()->GetNativeWindow())
-                         : nullptr;
+void GlicWindowController::Show(BrowserWindowInterface* bwi) {
+  Browser* browser = bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
+  GlicButton* glic_button_view = browser ? browser->window()
+                                               ->AsBrowserView()
+                                               ->tab_strip_region_view()
+                                               ->GetGlicButton()
+                                         : nullptr;
 
   if (state_ == State::kOpen) {
     if (browser) {

@@ -60,8 +60,9 @@ class GlicWindowController : public views::WidgetObserver {
   ~GlicWindowController() override;
 
   // Creates the glic view, waits for the web client to initialize, and then
-  // shows the glic window.
-  void Show(views::View* glic_button_view);
+  // shows the glic window. If `browser` is non-nullptr then glic will be
+  // attached to the browser. Otherwise glic will be detached.
+  void Show(BrowserWindowInterface* browser);
 
   // Attaches glic to the last focused Chrome window.
   void Attach();

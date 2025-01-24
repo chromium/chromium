@@ -17,7 +17,8 @@
 #include "chrome/browser/glic/glic_profile_configuration.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "ui/views/view.h"
+
+class BrowserWindowInterface;
 
 namespace content {
 class BrowserContext;
@@ -50,9 +51,8 @@ class GlicKeyedService : public KeyedService {
   // KeyedService
   void Shutdown() override;
 
-  // Launches the Glic UI anchored at the given View object. When started from
-  // the launcher, no anchor view is provided.
-  void LaunchUI(views::View* glic_button_view);
+  // Launches the Glic UI anchored at the given browser window.
+  void LaunchUI(BrowserWindowInterface* bwi);
 
   GlicWindowController& window_controller() { return window_controller_; }
 
