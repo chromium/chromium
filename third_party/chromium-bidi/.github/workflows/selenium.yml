@@ -33,7 +33,7 @@ jobs:
       - name: Disable AppArmor
         # https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
         run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-      - uses: google/wireit@83d7f8bed70b7bcfc40f4b9f54f4b7485753991b # setup-github-actions-caching/v2.0.1
+      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
       - name: Install and build npm dependencies
         run: npm ci
       # Install chrome, chromedriver and headless shell is required to keep them cached.

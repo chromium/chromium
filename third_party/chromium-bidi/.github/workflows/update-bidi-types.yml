@@ -83,7 +83,7 @@ jobs:
           python-version: '3.11'
           cache: pip
       - name: Setup Go
-        uses: actions/setup-go@3041bf56c941b39c61721a86cd11f3bb1338122a # v5.0.0
+        uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5.0.0
         with:
           go-version: '1.21.x'
       - name: Install cddlconv
@@ -93,7 +93,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: npm
-      - uses: google/wireit@83d7f8bed70b7bcfc40f4b9f54f4b7485753991b # setup-github-actions-caching/v2.0.1
+      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
       - name: Install and build npm dependencies
         run: npm ci
       - name: Download WebDriverBidi CDDL
