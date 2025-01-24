@@ -23,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
+#include "cc/base/features.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -1514,36 +1515,46 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
 
   ukm::builders::Graphics_Smoothness_NormalizedPercentDroppedFrames builder(
       GetDelegate().GetPageUkmSourceId());
-  builder.SetAverage(smoothness_data.avg_smoothness)
-      .SetMedian(smoothness_data.median_smoothness)
-      .SetPercentile95(smoothness_data.percentile_95)
-      .SetAboveThreshold(smoothness_data.above_threshold)
-      .SetWorstCase(smoothness_data.worst_smoothness)
-      .SetVariance(smoothness_data.variance)
-      .SetSmoothnessVeryGood(smoothness_data.buckets[0])
-      .SetSmoothnessGood(smoothness_data.buckets[1])
-      .SetSmoothnessOkay(smoothness_data.buckets[2])
-      .SetSmoothnessBad(smoothness_data.buckets[3])
-      .SetSmoothnessVeryBad25to50(smoothness_data.buckets[4])
-      .SetSmoothnessVeryBad50to75(smoothness_data.buckets[5])
-      .SetSmoothnessVeryBad75to100(smoothness_data.buckets[6])
-      .SetMainFocusedMedian(smoothness_data.main_focused_median)
-      .SetMainFocusedPercentile95(smoothness_data.main_focused_percentile_95)
-      .SetMainFocusedVariance(smoothness_data.main_focused_variance)
-      .SetCompositorFocusedMedian(smoothness_data.compositor_focused_median)
-      .SetCompositorFocusedPercentile95(
-          smoothness_data.compositor_focused_percentile_95)
-      .SetCompositorFocusedVariance(smoothness_data.compositor_focused_variance)
-      .SetScrollFocusedMedian(smoothness_data.scroll_focused_median)
-      .SetScrollFocusedPercentile95(
-          smoothness_data.scroll_focused_percentile_95)
-      .SetScrollFocusedVariance(smoothness_data.scroll_focused_variance);
-  if (smoothness_data.worst_smoothness_after1sec >= 0)
-    builder.SetWorstCaseAfter1Sec(smoothness_data.worst_smoothness_after1sec);
-  if (smoothness_data.worst_smoothness_after2sec >= 0)
-    builder.SetWorstCaseAfter2Sec(smoothness_data.worst_smoothness_after2sec);
-  if (smoothness_data.worst_smoothness_after5sec >= 0)
-    builder.SetWorstCaseAfter5Sec(smoothness_data.worst_smoothness_after5sec);
+  if (features::StopExportDFCMetrics()) {
+    builder.SetAverage(smoothness_data.avg_smoothness)
+        .SetMedian(smoothness_data.median_smoothness)
+        .SetCompositorFocusedMedian(smoothness_data.compositor_focused_median);
+  } else {
+    builder.SetAverage(smoothness_data.avg_smoothness)
+        .SetMedian(smoothness_data.median_smoothness)
+        .SetPercentile95(smoothness_data.percentile_95)
+        .SetAboveThreshold(smoothness_data.above_threshold)
+        .SetWorstCase(smoothness_data.worst_smoothness)
+        .SetVariance(smoothness_data.variance)
+        .SetSmoothnessVeryGood(smoothness_data.buckets[0])
+        .SetSmoothnessGood(smoothness_data.buckets[1])
+        .SetSmoothnessOkay(smoothness_data.buckets[2])
+        .SetSmoothnessBad(smoothness_data.buckets[3])
+        .SetSmoothnessVeryBad25to50(smoothness_data.buckets[4])
+        .SetSmoothnessVeryBad50to75(smoothness_data.buckets[5])
+        .SetSmoothnessVeryBad75to100(smoothness_data.buckets[6])
+        .SetMainFocusedMedian(smoothness_data.main_focused_median)
+        .SetMainFocusedPercentile95(smoothness_data.main_focused_percentile_95)
+        .SetMainFocusedVariance(smoothness_data.main_focused_variance)
+        .SetCompositorFocusedMedian(smoothness_data.compositor_focused_median)
+        .SetCompositorFocusedPercentile95(
+            smoothness_data.compositor_focused_percentile_95)
+        .SetCompositorFocusedVariance(
+            smoothness_data.compositor_focused_variance)
+        .SetScrollFocusedMedian(smoothness_data.scroll_focused_median)
+        .SetScrollFocusedPercentile95(
+            smoothness_data.scroll_focused_percentile_95)
+        .SetScrollFocusedVariance(smoothness_data.scroll_focused_variance);
+    if (smoothness_data.worst_smoothness_after1sec >= 0) {
+      builder.SetWorstCaseAfter1Sec(smoothness_data.worst_smoothness_after1sec);
+    }
+    if (smoothness_data.worst_smoothness_after2sec >= 0) {
+      builder.SetWorstCaseAfter2Sec(smoothness_data.worst_smoothness_after2sec);
+    }
+    if (smoothness_data.worst_smoothness_after5sec >= 0) {
+      builder.SetWorstCaseAfter5Sec(smoothness_data.worst_smoothness_after5sec);
+    }
+  }
   builder.Record(ukm::UkmRecorder::Get());
 }
 
