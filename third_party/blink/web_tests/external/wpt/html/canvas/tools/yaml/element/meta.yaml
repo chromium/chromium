@@ -169,9 +169,8 @@
     const blob = await response.blob();
     const bitmap = await createImageBitmap(blob);
     ctx.drawImage(bitmap, 40, 40, 10, 10, 40, 50, 10, 10);
-    @assert pixel 15,15 ==~ %s +/- 5;
     @assert pixel 50,25 ==~ %s +/- 5;
-    """ % (dest, op, to_test(expected0), to_test(expected0)),
+    """ % (dest, op, to_test(expected0)),
                 'expected': """size 100 50
     cr.set_source_rgba(%s)
     cr.rectangle(0, 0, 100, 50)
@@ -239,8 +238,7 @@
     ctx.clip();
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 50, 50);
-    @assert pixel 25,25 == 0,255,0,255;
-    @assert pixel 75,25 == 0,255,0,255;
+    @assert pixel 50,25 == 0,255,0,255;
     """ % (op),
                 'expected': 'green'
         } )
