@@ -653,7 +653,7 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
     return;
   }
   self.navigationController.navigationBar.backgroundColor =
-      [UIColor colorNamed:@"password_checkup_header_background_color"];
+      [UIColor colorNamed:kLightOnlyGrey200Color];
 }
 
 // Updates the table view's header view depending on whether the header image
