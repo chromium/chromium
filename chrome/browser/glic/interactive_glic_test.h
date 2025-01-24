@@ -23,7 +23,12 @@
 
 namespace glic::test {
 
+namespace internal {
+
 // Observes `controller` for whether it has a loaded web client.
+// This can only happen when the glic page has sent the appropriate "I'm fully
+// initialized" message, so by this point the glic window should be capable of
+// sending messages to the browser.
 class GlicInitializedStateObserver
     : public ui::test::PollingStateObserver<bool> {
  public:
@@ -34,8 +39,11 @@ class GlicInitializedStateObserver
 DECLARE_STATE_IDENTIFIER_VALUE(GlicInitializedStateObserver,
                                kGlicInitializedState);
 
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kInstrumentedGlicWebContentsElementId);
-static constexpr char kMockGlicCloseButtonId[] = "closebn";
+}  // namespace internal
+
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
+extern const InteractiveBrowserTestApi::DeepQuery kPathToMockGlicCloseButton;
 
 // Mixin class that adds a mock glic to the current browser.
 // If all you need is the combination of this + interactive browser test, use
@@ -81,8 +89,34 @@ class InteractiveGlicTestT : public T {
                                         .spec());
   }
 
+  // Waits for glic to be ready and instruments it as `kGlicContentsElementId`.
+  auto WaitForAndInstrumentGlic() {
+    // NOTE: The use of "Api::" here is required because this is a template
+    // class with weakly-specified base class; it is not necessary in derived
+    // test classes.
+    auto steps = Api::Steps(
+        Api::UninstrumentWebContents(kGlicContentsElementId, false),
+        Api::UninstrumentWebContents(kGlicHostElementId, false),
+        Api::ObserveState(internal::kGlicInitializedState,
+                          std::ref(window_controller())),
+        Api::InAnyContext(Api::Steps(
+            Api::InstrumentNonTabWebView(kGlicHostElementId,
+                                         GlicView::kWebViewElementIdForTesting),
+            Api::InstrumentInnerWebContents(kGlicContentsElementId,
+                                            kGlicHostElementId, 0),
+            Api::WaitForWebContentsReady(kGlicContentsElementId))),
+        Api::WaitForState(internal::kGlicInitializedState, true),
+        Api::StopObservingState(internal::kGlicInitializedState));
+    Api::AddDescriptionPrefix(steps, "WaitForAndInstrumentGlic");
+    return steps;
+  }
+
   // Opens the glic window. It should not already be open.
+  // Also instruments the glic UI as `kGlicContentsElementId`.
   auto OpenGlicWindow(GlicWindowMode mode) {
+    // NOTE: The use of "Api::" here is required because this is a template
+    // class with weakly-specified base class; it is not necessary in derived
+    // test classes.
     Api::MultiStep steps;
     switch (mode) {
       case GlicWindowMode::kAttached:
@@ -93,36 +127,20 @@ class InteractiveGlicTestT : public T {
             Api::Do([this] { window_controller().Show(nullptr); }));
         break;
     }
-    steps.emplace_back(
-        // TODO(crbug.com/389729273): currently, the view element being shown is
-        // a proxy for the event that the glic UI generates when it is finished
-        // loading. Since this may change, we should also ensure that the "load
-        // complete" event was generated.
-        Api::InAnyContext(Api::WaitForShow(kGlicViewElementId)));
+    steps = Api::Steps(std::move(steps), WaitForAndInstrumentGlic());
     Api::AddDescriptionPrefix(steps, "OpenGlicWindow");
     return steps;
   }
 
   // Closes the glic window, which must be open.
   auto CloseGlicWindow() {
-    auto steps =
-        Api::Steps(ClickMockGlicElement(kMockGlicCloseButtonId),
-                   Api::InAnyContext(Api::WaitForHide(kGlicViewElementId)));
+    // NOTE: The use of "Api::" here is required because this is a template
+    // class with weakly-specified base class; it is not necessary in derived
+    // test classes.
+    auto steps = Api::InAnyContext(Api::Steps(
+        Api::ClickElement(kGlicContentsElementId, kPathToMockGlicCloseButton),
+        Api::WaitForHide(kGlicViewElementId)));
     Api::AddDescriptionPrefix(steps, "CloseGlicWindow");
-    return steps;
-  }
-
-  // Clicks the element with HTML `id` in the mock glic page.
-  auto ClickMockGlicElement(std::string id) {
-    auto steps = Api::Steps(
-        Api::ObserveState(kGlicInitializedState, std::ref(window_controller())),
-        Api::WaitForState(kGlicInitializedState, true),
-        ExecuteGlicJs(base::StringPrintf(
-                          "window.document.getElementById('%s').click();", id),
-                      Api::ExecuteJsMode::kWaitForCompletion),
-        Api::StopObservingState(kGlicInitializedState));
-    Api::AddDescriptionPrefix(
-        steps, base::StringPrintf("ClickMockGlicElement(\"%s\")", id));
     return steps;
   }
 
@@ -142,50 +160,6 @@ class InteractiveGlicTestT : public T {
   // are here for convenience to make the methods above more readable.
   using Api = InteractiveBrowserTestApi;
   using Test = InProcessBrowserTest;
-
-  // Possibly instruments the glic WebUI if it is not already instrumented.
-  auto MaybeInstrumentGlic() {
-    return Api::If(
-        [this]() {
-          return !static_cast<internal::InteractiveBrowserTestPrivate&>(
-                      Api::private_test_impl())
-                      .IsInstrumentedWebContents(
-                          kInstrumentedGlicWebContentsElementId);
-        },
-        Api::Steps(Api::InAnyContext(Api::InstrumentNonTabWebView(
-            kInstrumentedGlicWebContentsElementId,
-            GlicView::kWebViewElementIdForTesting))));
-  }
-
-  // Executes code in the glic webview, inside the wrapper WebUI.
-  //
-  // Currently injects via `webview.executeScript()` but alternatively it might
-  // be better to add the ability to get child frames of a WebContents and
-  // inject directly.
-  auto ExecuteGlicJs(std::string func, Api::ExecuteJsMode mode) {
-    // Need to escape quotes.
-    std::ostringstream oss;
-    size_t last = 0;
-    for (size_t pos = func.find_first_of("\'\"", 0); pos != std::string::npos;
-         pos = func.find_first_of("\'\"", last)) {
-      oss << func.substr(last, pos - last) << "\\" << func[pos];
-      last = pos + 1;
-    }
-    oss << func.substr(last);
-    const auto actual_func = base::StringPrintf(
-        R"(
-          function(webview) {
-            webview.executeScript({ code: '%s' });
-          }
-        )",
-        oss.str().c_str());
-    auto steps = Api::Steps(MaybeInstrumentGlic(),
-                            Api::InAnyContext(Api::ExecuteJsAt(
-                                kInstrumentedGlicWebContentsElementId,
-                                {"#guest-frame"}, actual_func, mode)));
-    Api::AddDescriptionPrefix(steps, "ExecuteGlicJs");
-    return steps;
-  }
 
   base::test::ScopedFeatureList features_;
 };
