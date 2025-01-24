@@ -535,8 +535,7 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
   // Add observer to new parent.
   attached_browser_widget_observation_.Reset();
   attached_browser_widget_observation_.Observe(browser_widget);
-  views::Widget::ReparentNativeView(glic_attached_widget_->GetNativeView(),
-                                    browser_widget->GetNativeView());
+  glic_attached_widget_->Reparent(browser_widget);
   if (!IsActive()) {
     GetGlicWidget()->Activate();
   }
@@ -797,8 +796,8 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
     holder_widget_->Init(std::move(params));
     holder_widget_->ShowInactive();
   }
-  views::Widget::ReparentNativeView(glic_attached_widget_->GetNativeView(),
-                                    holder_widget_->GetNativeView());
+
+  glic_attached_widget_->Reparent(holder_widget_.get());
   NotifyIfPanelStateChanged();
 
   // When the glic window is in a detached state, elevate its z-order to be

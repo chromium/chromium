@@ -587,6 +587,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // an out param.
   static void GetAllOwnedWidgets(gfx::NativeView native_view, Widgets* owned);
 
+  // https://crbug.com/391414831: This is only used by some views
+  // implementation details for content::WebContents glue, and for ChromeOS.
+  // New use cases should not be added. Use Reparent() instead.
   // Re-parent a NativeView and notify all Widgets in |native_view|'s hierarchy
   // of the change.
   static void ReparentNativeView(gfx::NativeView native_view,
@@ -632,6 +635,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Returns the accelerator given a command id. Returns false if there is
   // no accelerator associated with a given id, which is a common condition.
   virtual bool GetAccelerator(int cmd_id, ui::Accelerator* accelerator) const;
+
+  // Sets a new parent and notifies all Widgets in this widget's hierarchy of
+  // the change.
+  void Reparent(Widget* parent);
 
   // Forwarded from the RootView so that the widget can do any cleanup.
   void ViewHierarchyChanged(const ViewHierarchyChangedDetails& details);
@@ -1411,8 +1418,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Sizes and positions the frameless window just after it is created.
   void SetInitialBoundsForFramelessWindow(const gfx::Rect& bounds);
 
-  // Set the parent of this widget.
-  void SetParent(Widget* parent);
+  // The actual heavy-lifting for setting a widget's parent is handled at the
+  // NativeWidget layer. This just updates some book-keeping.
+  void HandleNativeWidgetReparented(Widget* parent);
 
   // Returns the bounds and "show" state from the delegate. Returns true if
   // the delegate wants to use a specified bounds.
