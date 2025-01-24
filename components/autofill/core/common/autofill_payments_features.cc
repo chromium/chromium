@@ -11,6 +11,12 @@ BASE_FEATURE(kAutofillDisableLocalCardMigration,
              "AutofillDisableLocalCardMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, card category benefits offered by BMO will be shown in Autofill
+// suggestions on the allowlisted merchant websites.
+BASE_FEATURE(kAutofillEnableAllowlistForBmoCardCategoryBenefits,
+             "AutofillEnableAllowlistForBmoCardCategoryBenefits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 // When enabled, Chrome will extract the checkout amount from the checkout page

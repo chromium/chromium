@@ -320,6 +320,10 @@ extern const char kAutofillDeprecateAccessibilityApiDescription[];
 extern const char kAutofillDisableLocalCardMigrationName[];
 extern const char kAutofillDisableLocalCardMigrationDescription[];
 
+extern const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[];
+extern const char
+    kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[];
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 extern const char kAutofillEnableAmountExtractionDesktopName[];

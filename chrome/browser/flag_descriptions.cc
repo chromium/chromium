@@ -503,6 +503,12 @@ const char kAutofillDisableLocalCardMigrationDescription[] =
     "When enabled, local credit card migration flows will not be offered, both "
     "from checkout flows and from the payment methods settings page.";
 
+const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[] =
+    "Enable allowlist for showing category benefits for BMO cards";
+const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[] =
+    "When enabled, card category benefits offered by BMO will be shown in "
+    "Autofill suggestions on the allowlisted merchant websites.";
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 const char kAutofillEnableAmountExtractionDesktopName[] =

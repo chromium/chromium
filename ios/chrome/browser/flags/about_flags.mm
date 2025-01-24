@@ -2303,6 +2303,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAnimatedDefaultBrowserPromoInFREDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(first_run::kAnimatedDefaultBrowserPromoInFRE)},
+    {"autofill-enable-allowlist-for-bmo-card-category-benefits",
+     flag_descriptions::kAutofillEnableAllowlistForBmoCardCategoryBenefitsName,
+     flag_descriptions::
+         kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnableAllowlistForBmoCardCategoryBenefits)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

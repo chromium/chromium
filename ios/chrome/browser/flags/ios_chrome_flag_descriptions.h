@@ -33,6 +33,12 @@ extern const char kAutofillDisableProfileUpdatesDescription[];
 extern const char kAutofillDisableSilentProfileUpdatesName[];
 extern const char kAutofillDisableSilentProfileUpdatesDescription[];
 
+// Title and description for the flag to enable allowlist for showing category
+// benefits for BMO cards.
+extern const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[];
+extern const char
+    kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[];
+
 // Title and description for the flag to enable American Express card benefits
 // for autofill Payments UI.
 extern const char kAutofillEnableCardBenefitsForAmericanExpressName[];
