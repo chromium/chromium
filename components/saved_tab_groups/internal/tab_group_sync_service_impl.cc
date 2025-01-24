@@ -782,8 +782,16 @@ void TabGroupSyncServiceImpl::ConnectLocalTabGroup(
   }
 
   VLOG(2) << __func__;
-  UpdateLocalTabGroupMapping(sync_id, local_id, opening_source);
-  coordinator_->ConnectLocalTabGroup(sync_id, local_id);
+
+  if (GetGroup(sync_id)) {
+    // Only connect the group if it exists in the model.
+    UpdateLocalTabGroupMapping(sync_id, local_id, opening_source);
+    coordinator_->ConnectLocalTabGroup(sync_id, local_id);
+  } else {
+    // This can happen in cases where a shared group was deleted remotely.
+    // TODO(crbug.com/392174867): Find a better way to fix this.
+    coordinator_->OnTabGroupRemoved(local_id, TriggerSource::REMOTE);
+  }
 }
 
 bool TabGroupSyncServiceImpl::IsRemoteDevice(
