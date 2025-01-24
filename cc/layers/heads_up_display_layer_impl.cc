@@ -145,14 +145,10 @@ class HudGpuBacking : public ResourcePool::GpuBacking {
       return;
     }
     if (returned_sync_token.HasData())
-      shared_image_interface->DestroySharedImage(returned_sync_token,
-                                                 std::move(shared_image));
+      shared_image->UpdateDestructionSyncToken(returned_sync_token);
     else if (mailbox_sync_token.HasData())
-      shared_image_interface->DestroySharedImage(mailbox_sync_token,
-                                                 std::move(shared_image));
+      shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
   }
-
-  raw_ptr<gpu::SharedImageInterface> shared_image_interface = nullptr;
 };
 
 class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
@@ -266,7 +262,6 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     if (!pool_resource.gpu_backing()) {
       auto backing = std::make_unique<HudGpuBacking>();
       auto* sii = raster_context_provider->SharedImageInterface();
-      backing->shared_image_interface = sii;
       backing->overlay_candidate = raster_caps.tile_overlay_candidate;
 
       gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
