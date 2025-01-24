@@ -138,13 +138,22 @@ id<GREYMatcher> EditProfileBottomSheet() {
   [super tearDownHelper];
 }
 
+// TODO(crbug.com/391826905): Re-enable this test on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testEditBottomSheetAlertBySwipingDown \
+  FLAKY_testEditBottomSheetAlertBySwipingDown
+#else
+#define MAYBE_testEditBottomSheetAlertBySwipingDown \
+  testEditBottomSheetAlertBySwipingDown
+#endif
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
   if ([self isRunningTest:@selector(testUserData_LocalEditViaBottomSheet)] ||
       [self
           isRunningTest:@selector(testUserData_LocalHideBottomSheetOnCancel)] ||
-      [self isRunningTest:@selector(testEditBottomSheetAlertBySwipingDown)]) {
+      [self isRunningTest:@selector
+            (MAYBE_testEditBottomSheetAlertBySwipingDown)]) {
     config.features_enabled.push_back(
         kAutofillDynamicallyLoadsFieldsForAddressInput);
   }
@@ -549,7 +558,8 @@ id<GREYMatcher> EditProfileBottomSheet() {
 
 // Tests that there is an alert shown if the user tries to dismiss an alert
 // after they edited a field in the edit prompt without saving.
-- (void)testEditBottomSheetAlertBySwipingDown {
+// Note that this test is defined above.
+- (void)MAYBE_testEditBottomSheetAlertBySwipingDown {
   // TODO(crbug.com/377270834): Fix implementation on iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
