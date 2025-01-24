@@ -147,19 +147,8 @@ struct VideoCaptureImpl::BufferContext
     return gmb_resources_.get();
   }
 
-  gfx::GpuMemoryBufferHandle TakeGpuMemoryBufferHandle() {
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
-    // The same GpuMemoryBuffersHandles will be reused repeatedly by the
-    // unaccelerated macOS path. Each of these uses will call this function.
-    // Ensure that this function doesn't invalidate the GpuMemoryBufferHandle
-    // on macOS for this reason.
-    // https://crbug.com/1159722
-    // It will also be reused repeatedly if GPU process is unavailable in
-    // Windows zero-copy path (e.g. due to repeated GPU process crashes).
+  gfx::GpuMemoryBufferHandle CloneGpuMemoryBufferHandle() {
     return gmb_resources_->gpu_memory_buffer_handle.Clone();
-#else
-    return std::move(gmb_resources_->gpu_memory_buffer_handle);
-#endif
   }
 
   void SetGpuMemoryBuffer(
@@ -396,7 +385,7 @@ VideoCaptureImpl::CreateVideoFrameInitData(
       if (!gpu_factories_ || !media_task_runner_) {
         video_frame_init_data.frame_or_buffer =
             media::VideoFrame::WrapUnacceleratedIOSurface(
-                buffer_context->TakeGpuMemoryBufferHandle(),
+                buffer_context->CloneGpuMemoryBufferHandle(),
                 gfx::Rect(
                     video_frame_init_data.ready_buffer->info->visible_rect),
                 video_frame_init_data.ready_buffer->info->timestamp);
@@ -407,7 +396,7 @@ VideoCaptureImpl::CreateVideoFrameInitData(
       // The associated shared memory region is mapped only once
       if (video_frame_init_data.ready_buffer->info->is_premapped &&
           !buffer_context->data()) {
-        auto gmb_handle = buffer_context->TakeGpuMemoryBufferHandle();
+        auto gmb_handle = buffer_context->CloneGpuMemoryBufferHandle();
         buffer_context->InitializeFromUnsafeShmemRegion(
             std::move(gmb_handle.region));
         DCHECK(buffer_context->data());
@@ -445,35 +434,10 @@ VideoCaptureImpl::CreateVideoFrameInitData(
 #endif
       CHECK(gpu_factories_);
       CHECK(media_task_runner_);
-      // Create GpuMemoryBuffer from handle.
-      if (!buffer_context->GetGpuMemoryBuffer()) {
-        gfx::BufferFormat gfx_format;
-        switch (video_frame_init_data.ready_buffer->info->pixel_format) {
-          case media::VideoPixelFormat::PIXEL_FORMAT_NV12:
-            gfx_format = gfx::BufferFormat::YUV_420_BIPLANAR;
-            break;
-          default:
-            LOG(FATAL) << "Unsupported pixel format";
-        }
-        // The GpuMemoryBuffer is allocated and owned by the video capture
-        // buffer pool from the video capture service process, so we don't need
-        // to destroy the GpuMemoryBuffer here.
-        auto gmb =
-            gpu_memory_buffer_support_->CreateGpuMemoryBufferImplFromHandle(
-                buffer_context->TakeGpuMemoryBufferHandle(),
-                gfx::Size(video_frame_init_data.ready_buffer->info->coded_size),
-                gfx_format, gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
-                base::DoNothing(), gpu_factories_->GpuMemoryBufferManager(),
-                pool_);
 
-        // Keep one GpuMemoryBuffer for current GpuMemoryHandle alive,
-        // so that any associated structures are kept alive while this buffer id
-        // is still used (e.g. DMA buf handles for linux/CrOS).
-        buffer_context->SetGpuMemoryBuffer(std::move(gmb));
-      }
-      CHECK(buffer_context->GetGpuMemoryBuffer());
+      auto buffer_handle = buffer_context->CloneGpuMemoryBufferHandle();
+      CHECK(!buffer_handle.is_null());
 
-      auto buffer_handle = buffer_context->GetGpuMemoryBuffer()->CloneHandle();
 #if BUILDFLAG(IS_CHROMEOS)
       video_frame_init_data.is_webgpu_compatible =
           buffer_handle.native_pixmap_handle.supports_zero_copy_webgpu_import;
@@ -487,6 +451,7 @@ VideoCaptureImpl::CreateVideoFrameInitData(
       // No need to propagate shared memory region further as it's already
       // exposed by |buffer_context->data()|.
       buffer_handle.region = base::UnsafeSharedMemoryRegion();
+
       // The buffer_context might still have a mapped shared memory region.
       // However, it contains valid data only if |is_premapped| is set.
       uint8_t* premapped_data =
@@ -498,12 +463,22 @@ VideoCaptureImpl::CreateVideoFrameInitData(
               ? buffer_context->data_size()
               : 0;
 
+      gfx::BufferFormat gfx_format;
+      switch (video_frame_init_data.ready_buffer->info->pixel_format) {
+        case media::VideoPixelFormat::PIXEL_FORMAT_NV12:
+          gfx_format = gfx::BufferFormat::YUV_420_BIPLANAR;
+          break;
+        default:
+          LOG(FATAL) << "Unsupported pixel format";
+      }
+
+      auto size =
+          gfx::Size(video_frame_init_data.ready_buffer->info->coded_size);
+
       // Clone the GpuMemoryBuffer and wrap it in a VideoFrame.
       std::unique_ptr<gfx::GpuMemoryBuffer> buffer =
           gpu_memory_buffer_support_->CreateGpuMemoryBufferImplFromHandle(
-              std::move(buffer_handle),
-              buffer_context->GetGpuMemoryBuffer()->GetSize(),
-              buffer_context->GetGpuMemoryBuffer()->GetFormat(),
+              std::move(buffer_handle), size, gfx_format,
               gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing(),
               gpu_factories_->GpuMemoryBufferManager(), pool_,
               base::span<uint8_t>(premapped_data, premapped_data_size));
