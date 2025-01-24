@@ -5,15 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_MODE_UI_BUNDLED_SAFE_MODE_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_SAFE_MODE_UI_BUNDLED_SAFE_MODE_COORDINATOR_H_
 
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-
 #import <UIKit/UIKit.h>
+
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 class Browser;
 @class SafeModeCoordinator;
 @class SceneState;
 
-@protocol SafeModeCoordinatorDelegate<NSObject>
+@protocol SafeModeCoordinatorDelegate <NSObject>
 - (void)coordinatorDidExitSafeMode:(SafeModeCoordinator*)coordinator;
 @end
 
