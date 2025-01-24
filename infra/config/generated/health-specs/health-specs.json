@@ -636,26 +636,6 @@
           }
         ]
       },
-      "Blink Unexpected Pass Finder": {
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "CFI Linux CF": {
         "contact_team_email": "lexan@google.com",
         "problem_specs": [
