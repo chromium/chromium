@@ -250,6 +250,8 @@ suite('FledgeSubpage', function() {
     assertTrue(isVisible(page.shadowRoot!.querySelector('#secondDescription')));
     assertFalse(
         isVisible(page.shadowRoot!.querySelector('#secondDescriptionV2')));
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#footer')));
+    assertFalse(isVisible(page.shadowRoot!.querySelector('#footerV2')));
     assertFalse(isVisible(page.shadowRoot!.querySelector('#disclaimer')));
     const learnMoreLink =
         page.shadowRoot!.querySelector<HTMLElement>('#learnMoreLink');
@@ -301,6 +303,24 @@ suite('SiteSuggestedAdsSubpageAdsApiUxEnhancement', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
+  test('footerLinksV2', async function() {
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#footerV2')));
+    const links = page.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
+        '#footerV2 a[href]');
+    assertEquals(links.length, 2, 'footer should contains two links');
+    links.forEach(
+        link => assertEquals(
+            link.getAttribute('aria-description'),
+            loadTimeData.getString('opensInNewTab'),
+            'the link should indicate that it will be opened in a new tab'));
+    const hrefs = Array.from<HTMLAnchorElement>(links).map(link => link.href);
+    const expectedLinks = [
+      'chrome://settings/adPrivacy/interests',
+      'chrome://settings/cookies',
+    ];
+    assertDeepEquals(hrefs, expectedLinks);
+  });
+
   test('siteSuggestedAdsContentV2', async function() {
     assertFalse(isVisible(page.shadowRoot!.querySelector('#fledgeToggle')));
     assertTrue(
@@ -309,6 +329,8 @@ suite('SiteSuggestedAdsSubpageAdsApiUxEnhancement', function() {
         isVisible(page.shadowRoot!.querySelector('#secondDescription')));
     assertTrue(
         isVisible(page.shadowRoot!.querySelector('#secondDescriptionV2')));
+    assertFalse(isVisible(page.shadowRoot!.querySelector('#footer')));
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#footerV2')));
     assertTrue(isVisible(page.shadowRoot!.querySelector('#disclaimer')));
     assertFalse(isVisible(page.shadowRoot!.querySelector('#learnMoreLink')));
     const learnMoreLinkV2 =
@@ -341,6 +363,7 @@ suite('TopicsSubpage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
+      isPrivacySandboxAdsApiUxEnhancementsEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -1007,7 +1030,28 @@ suite('TopicsSubpageAdsApiUxEnhancementsDisabled', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
+  test('footerLinksV2NotShown', async function() {
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#footer')));
+    const links =
+        page.shadowRoot!.querySelectorAll<HTMLAnchorElement>('#footer a[href]');
+    assertEquals(links.length, 3, 'footer should contains three links');
+    links.forEach(
+        link => assertEquals(
+            link.getAttribute('aria-description'),
+            loadTimeData.getString('opensInNewTab'),
+            'the link should indicate that it will be opened in a new tab'));
+    const hrefs = Array.from<HTMLAnchorElement>(links).map(link => link.href);
+    const expectedLinks = [
+      'chrome://settings/adPrivacy/sites',
+      'chrome://settings/cookies',
+      'https://support.google.com/chrome?p=ad_privacy',
+    ];
+    assertDeepEquals(hrefs, expectedLinks);
+  });
+
   test('TopicsPageContentV2NotShown', async function() {
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#footer')));
+    assertFalse(isVisible(page.shadowRoot!.querySelector('#footerV2')));
     const footerDisclaimer =
         page.shadowRoot!.querySelector('#footerDisclaimer');
     assertFalse(isVisible(footerDisclaimer));
@@ -1050,7 +1094,28 @@ suite('TopicsSubpageAdsApiUxEnhancements', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
+
+  test('footerLinksV2', async function() {
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#footerV2')));
+    const links = page.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
+        '#footerV2 a[href]');
+    assertEquals(links.length, 2, 'footer should contains three links');
+    links.forEach(
+        link => assertEquals(
+            link.getAttribute('aria-description'),
+            loadTimeData.getString('opensInNewTab'),
+            'the link should indicate that it will be opened in a new tab'));
+    const hrefs = Array.from<HTMLAnchorElement>(links).map(link => link.href);
+    const expectedLinks = [
+      'chrome://settings/adPrivacy/sites',
+      'chrome://settings/cookies',
+    ];
+    assertDeepEquals(hrefs, expectedLinks);
+  });
+
   test('TopicsPageContentV2', async function() {
+    assertFalse(isVisible(page.shadowRoot!.querySelector('#footer')));
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#footerV2')));
     const footerDisclaimer =
         page.shadowRoot!.querySelector('#footerDisclaimer');
     assertTrue(isVisible(footerDisclaimer));

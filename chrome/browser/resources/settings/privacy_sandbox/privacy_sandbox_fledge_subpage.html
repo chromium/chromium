@@ -180,10 +180,15 @@
   </div>
 </cr-collapse>
 
-<div id="footer" class="cr-secondary-text hr footer">
-  $i18nRaw{fledgePageFooter}
-</div>
+<template is="dom-if" if="[[!shouldShowV2_]]">
+  <div id="footer" class="cr-secondary-text hr footer">
+    $i18nRaw{fledgePageFooter}
+  </div>
+</template>
 <template is="dom-if" if="[[shouldShowV2_]]">
+  <div id="footerV2" class="cr-secondary-text hr footer">
+    $i18nRaw{siteSuggestedAdsFooterV2Desktop}
+  </div>
   <div id="disclaimer" class="cr-secondary-text footer">
     $i18nRaw{siteSuggestedAdsPageDisclaimer}
   </div>

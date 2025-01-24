@@ -171,10 +171,15 @@
       </cr-link-row>
   </div>
 </template>
-<div id="footer" class="cr-secondary-text hr footer">
-  $i18nRaw{topicsPageFooter}
-</div>
+<template is="dom-if" if="[[!shouldShowV2_]]">
+  <div id="footer" class="cr-secondary-text hr footer">
+    $i18nRaw{topicsPageFooter}
+  </div>
+</template>
 <template is="dom-if" if="[[shouldShowV2_]]">
+  <div id="footerV2" class="cr-secondary-text hr footer">
+    $i18nRaw{adTopicsPageFooterV2Desktop}
+  </div>
   <div id="footerDisclaimer" class="cr-secondary-text footer">
     $i18nRaw{adTopicsPageDisclaimer}
   </div>
