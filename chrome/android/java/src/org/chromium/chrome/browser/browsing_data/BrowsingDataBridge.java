@@ -10,16 +10,32 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.tab.CurrentTabObserver;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.components.browsing_data.content.BrowsingDataModel;
+import org.chromium.content_public.browser.WebContents;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Communicates between ClearBrowsingData, ImportantSitesUtils (C++) and ClearBrowsingDataFragment
- * (Java UI).
+ * Communicates between ClearBrowsingData, HatsService, ImportantSitesUtils (C++) and
+ * ClearBrowsingDataFragment (Java UI).
  */
-public final class BrowsingDataBridge {
+public final class BrowsingDataBridge implements Destroyable {
     private static ProfileKeyedMap<BrowsingDataBridge> sProfileMap;
+
+    /**
+     * List of observers to track the active tab in each {@link TabModelSelector}. This is used to
+     * trigger the HaTS survey on the next page load.
+     */
+    private final List<CurrentTabObserver> mCurrentTabObservers = new ArrayList<>();
 
     private final Profile mProfile;
 
@@ -73,7 +89,9 @@ public final class BrowsingDataBridge {
     public static BrowsingDataBridge getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
         if (sProfileMap == null) {
-            sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
+            sProfileMap =
+                    ProfileKeyedMap.createMapOfDestroyables(
+                            ProfileKeyedMap.ProfileSelection.OWN_INSTANCE);
         }
         return sProfileMap.getForProfile(profile, BrowsingDataBridge::new);
     }
@@ -249,6 +267,52 @@ public final class BrowsingDataBridge {
         callback.onResult(new BrowsingDataModel(nativeBrowsingDataModel));
     }
 
+    /**
+     * Attempt to trigger the HaTS survey 5 seconds after the next page load on any {@link
+     * TabModelSelector}.
+     *
+     * <p>TODO(crbug.com/40255099): Differentiate between Hats triggered from QD and CBD.
+     */
+    public void requestHatsSurvey() {
+        removeTabModelObservers();
+
+        TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
+        for (int i = 0; i < tabWindowManager.getMaxSimultaneousSelectors(); i++) {
+            var selector = tabWindowManager.getTabModelSelectorById(i);
+            if (selector != null) {
+                mCurrentTabObservers.add(
+                        new CurrentTabObserver(
+                                selector.getCurrentTabSupplier(),
+                                new EmptyTabObserver() {
+                                    @Override
+                                    public void onLoadStarted(
+                                            Tab tab, boolean toDifferentDocument) {
+                                        WebContents webContents = tab.getWebContents();
+                                        if (!tab.isOffTheRecord() && webContents != null) {
+                                            BrowsingDataBridgeJni.get()
+                                                    .triggerHatsSurvey(mProfile, webContents);
+                                            removeTabModelObservers();
+                                        }
+                                    }
+                                },
+                                /* swapCallback= */ null));
+            }
+        }
+    }
+
+    private void removeTabModelObservers() {
+        for (CurrentTabObserver observer : mCurrentTabObservers) {
+            observer.destroy();
+        }
+
+        mCurrentTabObservers.clear();
+    }
+
+    @Override
+    public void destroy() {
+        removeTabModelObservers();
+    }
+
     @NativeMethods
     public interface Natives {
         void clearBrowsingData(
@@ -285,5 +349,9 @@ public final class BrowsingDataBridge {
 
         void buildBrowsingDataModelFromDisk(
                 @JniType("Profile*") Profile profile, Callback<BrowsingDataModel> callback);
+
+        void triggerHatsSurvey(
+                @JniType("Profile*") Profile profile,
+                @JniType("content::WebContents*") WebContents webContents);
     }
 }

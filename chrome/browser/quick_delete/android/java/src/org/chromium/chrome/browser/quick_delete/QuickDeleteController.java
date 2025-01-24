@@ -21,8 +21,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -30,7 +28,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -54,8 +51,6 @@ public class QuickDeleteController {
     private final QuickDeleteMediator mQuickDeleteMediator;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
-    private final TabModelSelector mTabModelSelector;
-    private CurrentTabObserver mCurrentTabObserver;
 
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
@@ -98,7 +93,6 @@ public class QuickDeleteController {
         }
         mProfile = tabModelSelector.getCurrentModel().getProfile();
         mQuickDeleteBridge = new QuickDeleteBridge(mProfile);
-        mTabModelSelector = tabModelSelector;
 
         // MVC setup.
         View quickDeleteView =
@@ -135,11 +129,6 @@ public class QuickDeleteController {
     void destroy() {
         mPropertyModelChangeProcessor.destroy();
         mQuickDeleteBridge.destroy();
-
-        if (mCurrentTabObserver != null) {
-            mCurrentTabObserver.destroy();
-            mCurrentTabObserver = null;
-        }
     }
 
     /**
@@ -232,28 +221,8 @@ public class QuickDeleteController {
         trackerLock.release();
 
         if (isQuickDeleteSurveyEnabled()) {
-            assert mCurrentTabObserver == null;
-            mCurrentTabObserver =
-                    new CurrentTabObserver(
-                            mTabModelSelector.getCurrentTabSupplier(),
-                            new EmptyTabObserver() {
-                                @Override
-                                public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
-                                    WebContents webContents = tab.getWebContents();
-                                    if (!tab.isOffTheRecord() && webContents != null) {
-                                        showSurvey(webContents);
-                                    }
-                                }
-                            },
-                            /* swapCallback= */ null);
+            mDelegate.triggerHatsSurvey();
         }
-    }
-
-    /**
-     * @see {@link QuickDeleteBridge#showSurvey(WebContents)}
-     */
-    private void showSurvey(@NonNull WebContents webContents) {
-        mQuickDeleteBridge.showSurvey(webContents);
         destroy();
     }
 
