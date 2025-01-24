@@ -644,6 +644,22 @@ BASE_FEATURE_ENUM_PARAM(AsyncScriptExperimentalSchedulingTarget,
                         AsyncScriptExperimentalSchedulingTarget::kBoth,
                         &async_script_experimental_scheduling_targets);
 
+// If true, kDelayAsyncScriptExecution will not change the script
+// evaluation timing for the non parser inserted script.
+BASE_FEATURE_PARAM(bool,
+                   kDelayAsyncExecExcludeNonParserInsertedParam,
+                   &kDelayAsyncScriptExecution,
+                   "delay_async_exec_exclude_non_parser_inserted",
+                   false);
+
+// If true, kDelayAsyncScriptExecution will not change the script
+// evaluation timing for the scripts that were added via document.write().
+BASE_FEATURE_PARAM(bool,
+                   kDelayAsyncExecExcludeDocumentWriteParam,
+                   &kDelayAsyncScriptExecution,
+                   "delay_async_exec_exclude_document_write",
+                   false);
+
 BASE_FEATURE_PARAM(bool,
                    kDelayAsyncScriptExecutionOptOutLowFetchPriorityHintParam,
                    &kDelayAsyncScriptExecution,
@@ -1780,7 +1796,7 @@ BASE_FEATURE_PARAM(
     bool,
     kLowPriorityAsyncScriptExecutionOptOutLowFetchPriorityHintParam,
     &kLowPriorityAsyncScriptExecution,
-    "low_pri_async_exec__opt_out_low_fetch_priority_hint",
+    "low_pri_async_exec_opt_out_low_fetch_priority_hint",
     false);
 // kLowPriorityAsyncScriptExecution will be opted-out when FetchPriorityHint is
 // auto.

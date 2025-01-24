@@ -334,7 +334,9 @@ bool IsEligibleForForceInOrder(const Document& element_document) {
 // [Intervention, DelayAsyncScriptExecution, crbug.com/1340837]
 bool IsEligibleForDelay(const Resource& resource,
                         const Document& element_document,
-                        const ScriptElementBase& element) {
+                        const ScriptElementBase& element,
+                        bool parser_inserted,
+                        bool is_in_document_write) {
   if (!base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution)) {
     return false;
   }
@@ -386,6 +388,18 @@ bool IsEligibleForDelay(const Resource& resource,
       break;
     case features::AsyncScriptExperimentalSchedulingTarget::kBoth:
       break;
+  }
+
+  static const bool exclude_non_parser_inserted =
+      features::kDelayAsyncExecExcludeNonParserInsertedParam.Get();
+  if (exclude_non_parser_inserted && !parser_inserted) {
+    return false;
+  }
+
+  static const bool exclude_scripts_via_document_write =
+      features::kDelayAsyncExecExcludeDocumentWriteParam.Get();
+  if (exclude_scripts_via_document_write && is_in_document_write) {
+    return false;
   }
 
   const bool opt_out_low =
@@ -875,7 +889,8 @@ PendingScript* ScriptLoader::PrepareScript(
         Resource* resource = pending_script->GetResource();
         resource_keep_alive_ = resource;
         is_eligible_for_delay =
-            IsEligibleForDelay(*resource, element_document, *element_);
+            IsEligibleForDelay(*resource, element_document, *element_,
+                               parser_inserted_, is_in_document_write);
         is_eligible_for_selective_in_order =
             IsEligibleForSelectiveInOrder(*resource, element_document);
         break;

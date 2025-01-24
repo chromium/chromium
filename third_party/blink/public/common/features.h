@@ -354,6 +354,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     kDelayAsyncScriptExecutionTargetParam);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
+    kDelayAsyncExecExcludeNonParserInsertedParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kDelayAsyncExecExcludeDocumentWriteParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
     kDelayAsyncScriptExecutionOptOutLowFetchPriorityHintParam);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
