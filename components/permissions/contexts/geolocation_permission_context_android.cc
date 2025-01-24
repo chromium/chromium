@@ -124,7 +124,8 @@ void GeolocationPermissionContextAndroid::RequestPermission(
           render_frame_host, request_data.requesting_origin,
           request_data.embedding_origin)
           .status;
-  if (status == PermissionStatus::GRANTED &&
+  if (!request_data.embedded_permission_element_initiated &&
+      status == PermissionStatus::GRANTED &&
       ShouldRepromptUserForPermissions(web_contents,
                                        {ContentSettingsType::GEOLOCATION}) ==
           PermissionRepromptState::kShow) {
