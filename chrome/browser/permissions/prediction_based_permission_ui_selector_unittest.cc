@@ -86,7 +86,8 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
         request_type, permissions::PermissionRequestGestureType::GESTURE);
 
     selector->SelectUiToUse(
-        &request, base::BindLambdaForTesting([&](const Decision& decision) {
+        /*web_contents=*/nullptr, &request,
+        base::BindLambdaForTesting([&](const Decision& decision) {
           actual_decision = decision;
           run_loop.Quit();
         }));

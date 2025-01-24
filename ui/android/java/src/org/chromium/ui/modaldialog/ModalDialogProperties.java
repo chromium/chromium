@@ -223,8 +223,8 @@ public class ModalDialogProperties {
             new ReadableObjectPropertyKey<>();
 
     /** Configure a button group UI component. */
-    public static final ReadableObjectPropertyKey<ModalDialogButtonSpec[]>
-            BUTTON_GROUP_BUTTON_SPEC_LIST = new ReadableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<ModalDialogButtonSpec[]>
+            BUTTON_GROUP_BUTTON_SPEC_LIST = new WritableObjectPropertyKey<>();
 
     /** Whether the title is scrollable with the message. */
     public static final WritableBooleanPropertyKey TITLE_SCROLLABLE =

@@ -56,7 +56,7 @@ std::vector<autofill::Suggestion> CreateFillingSuggestions(
 // enabled.
 std::vector<autofill::Suggestion> CreateFillingSuggestionsV2(
     const autofill::FormStructure& form,
-    const autofill::FormFieldData& triggering_field,
+    autofill::FieldGlobalId field_global_id,
     base::span<const autofill::EntityInstance> entities);
 
 // Creates a suggestion shown when retrieving AutofillAi wasn't

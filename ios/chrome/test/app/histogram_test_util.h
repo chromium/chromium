@@ -89,7 +89,7 @@ class HistogramTester {
   // and is modified based on the snapshot stored for histogram `name`.
   BOOL CheckBucketCount(const std::string& name,
                         base::HistogramBase::Sample32 sample,
-                        base::Histogram::Count expected_count,
+                        base::Histogram::Count32 expected_count,
                         const base::HistogramSamples& samples,
                         FailureBlock failure_block) const;
 
@@ -97,7 +97,7 @@ class HistogramTester {
   // is `expected_count`. This is checked against `samples` minus the snapshot
   // that was taken for `name`.
   BOOL CheckTotalCount(const std::string& name,
-                       base::Histogram::Count expected_count,
+                       base::Histogram::Count32 expected_count,
                        const base::HistogramSamples& samples,
                        FailureBlock failure_block) const;
 

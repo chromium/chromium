@@ -285,6 +285,12 @@ BASE_DECLARE_FEATURE(kShowWarningsForSuspiciousNotifications);
 // warning. By default, no notifications will be replaced by a warning.
 extern const base::FeatureParam<int>
     kShowWarningsForSuspiciousNotificationsScoreThreshold;
+// The default button order when showing notification warnings is that the
+// "Show notification" and "Always allow" buttons are secondary buttons and
+// "Unsubscribe" is the primary button. If this parameter is true, the order of
+// the buttons should be swapped where "Unsubscribe" is the secondary button.
+extern const base::FeatureParam<bool>
+    kShowWarningsForSuspiciousNotificationsShouldSwapButtons;
 
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);

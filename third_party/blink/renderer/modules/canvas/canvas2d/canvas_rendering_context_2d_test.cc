@@ -558,7 +558,7 @@ MATCHER_P(OverdrawOpAreMatcher, expected_overdraw_ops, "") {
     SCOPED_TRACE(Message() << "Checking overdraw bucket: " << bucket);
     arg.ExpectBucketCount(
         "Blink.Canvas.OverdrawOp", bucket,
-        static_cast<base::HistogramBase::Count>(expected_overdraw_ops.count(
+        static_cast<base::HistogramBase::Count32>(expected_overdraw_ops.count(
             static_cast<BaseRenderingContext2D::OverdrawOp>(bucket))));
   }
   return true;

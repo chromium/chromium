@@ -73,8 +73,8 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion) {
   std::unique_ptr<autofill::FormStructure> form =
       CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER,
                            autofill::PHONE_HOME_WHOLE_NUMBER});
-  std::vector<autofill::Suggestion> suggestions =
-      CreateFillingSuggestionsV2(*form, *(form->fields()[0]), entities);
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestionsV2(
+      *form, form->fields()[0]->global_id(), entities);
 
   // There should be only one suggestion whose main text matches the entity
   // value for the `triggering_field_type`.
@@ -109,8 +109,8 @@ TEST_F(AutofillAiSuggestionsTest, NonMatchingEntity_DoNoReturnSuggestions) {
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<autofill::FormStructure> form =
       CreateFormStructure({triggering_field_type});
-  std::vector<autofill::Suggestion> suggestions =
-      CreateFillingSuggestionsV2(*form, *form->fields()[0], entities);
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestionsV2(
+      *form, form->fields()[0]->global_id(), entities);
 
   // There should be no suggestion since the triggering is a passport field and
   // the only available entity is for loyalty cards.

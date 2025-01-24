@@ -219,7 +219,7 @@ TEST_F(NotificationContentDetectionServiceTest,
               Execute(_, origin, /*is_allowlisted_by_user=*/false,
                       /*did_match_allowlist=*/true, _))
       .Times(1);
-  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(0);
+  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(1);
   notification_content_detection_service()
       ->MaybeCheckNotificationContentDetectionModel(
           notification_data, origin, /*is_allowlisted_by_user=*/false,

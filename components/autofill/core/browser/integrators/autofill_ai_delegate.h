@@ -22,8 +22,8 @@ class FormStructure;
 // //components/autofill_ai.
 class AutofillAiDelegate {
  public:
-  using HasData = base::StrongAlias<class HasDataTag, bool>;
-  using HasDataCallback = base::OnceCallback<void(HasData)>;
+  using GetSuggestionsCallback =
+      base::OnceCallback<void(std::vector<autofill::Suggestion>)>;
 
   // Specifies the types of feedback users can give.
   enum class UserFeedback { kThumbsUp, kThumbsDown };
@@ -36,10 +36,19 @@ class AutofillAiDelegate {
 
   // Returns Autofill AI suggestions combined with `autofill_suggestions`. May
   // return an empty vector.
+  // TODO(crbug.com/389629573): This method is deprecated and should be deleted.
   virtual std::vector<Suggestion> GetSuggestions(
       const std::vector<Suggestion>& autofill_suggestions,
       const FormData& form,
       const FormFieldData& field) = 0;
+
+  // Returns AutofillAi suggestions. These suggestions can be filling
+  // suggestions when triggered via left click, or loading suggestions when
+  // using manual fallbacks.
+  virtual void GetSuggestionsV2(autofill::FormGlobalId form_global_id,
+                                autofill::FieldGlobalId field_global_id,
+                                bool is_manual_fallback,
+                                GetSuggestionsCallback callback) = 0;
 
   // Returns whether `form` and `field` are eligible for the Autofill AI
   // experience.
@@ -84,14 +93,9 @@ class AutofillAiDelegate {
                               bool autofill_ai_shows_bubble)>
           autofill_callback) = 0;
 
-  // Checks if there is any data stored in the profile's user annotations that
-  // can be used for filling and runs the `callback` accordingly.
-  virtual void HasDataStored(HasDataCallback callback) = 0;
-
   // Returns whether we should suggest to the user enabling the Autofill AI pref
   // in chrome://settings.
-  virtual bool ShouldDisplayIph(const FormStructure& form,
-                                const AutofillField& field) const = 0;
+  virtual bool ShouldDisplayIph(const AutofillField& field) const = 0;
 
   // Opens the subpage of chrome settings that deals with managing information
   // stored by the Autofill AI system.
@@ -104,6 +108,8 @@ class AutofillAiDelegate {
       const FormFieldData& trigger_field,
       UpdateSuggestionsCallback update_suggestions_callback) = 0;
 
+  // TODO(crbug.com/389629573): This method is only used for logging purposes.
+  // Consider if we can have a difference approach.
   virtual void OnFormSeen(const FormStructure& form) = 0;
 
   virtual void OnDidFillSuggestion(FormGlobalId form_id) = 0;

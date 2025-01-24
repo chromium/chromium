@@ -21,6 +21,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -108,6 +109,7 @@ public class NavigationRecorderTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/391842690")
     public void testRecordVisitInCurrentTabEndsWhenHidden() throws TimeoutException {
         final CallbackHelper callback = new CallbackHelper();
         loadUrlAndRecordVisit(

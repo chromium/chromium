@@ -106,7 +106,7 @@ void NotificationContentDetectionModel::PostprocessCategories(
       bool is_suspicious =
           (100 * category.score >
            kShowWarningsForSuspiciousNotificationsScoreThreshold.Get()) &&
-          !is_allowlisted_by_user;
+          !is_allowlisted_by_user && !did_match_allowlist;
       std::move(model_verdict_callback).Run(is_suspicious);
       return;
     }

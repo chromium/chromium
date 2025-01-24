@@ -553,7 +553,7 @@ TEST_F(SigninHeaderHelperTest, TestDiceInvalidResponseParams) {
 TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
   const char kAuthorizationCode[] = "authorization_code";
   const char kEmail[] = "foo@example.com";
-  const char kGaiaID[] = "gaia_id";
+  const GaiaId kGaiaID("gaia_id");
   const char kSupportedTokenBindingAlgorithms[] = "ES256 RS256";
   const int kSessionIndex = 42;
 
@@ -564,11 +564,11 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
         BuildDiceSigninResponseParams(base::StringPrintf(
             "action=SIGNIN,id=%s,email=%s,authuser=%i,authorization_code=%s,"
             "eligible_for_token_binding=%s",
-            kGaiaID, kEmail, kSessionIndex, kAuthorizationCode,
+            kGaiaID.ToString(), kEmail, kSessionIndex, kAuthorizationCode,
             kSupportedTokenBindingAlgorithms));
     EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
     ASSERT_TRUE(params.signin_info);
-    EXPECT_EQ(GaiaId(kGaiaID), params.signin_info->account_info.gaia_id);
+    EXPECT_EQ(kGaiaID, params.signin_info->account_info.gaia_id);
     EXPECT_EQ(kEmail, params.signin_info->account_info.email);
     EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
     EXPECT_EQ(kAuthorizationCode, params.signin_info->authorization_code);
@@ -582,10 +582,10 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
     // EnableSync response.
     DiceResponseParams params = BuildDiceSigninResponseParams(
         base::StringPrintf("action=ENABLE_SYNC,id=%s,email=%s,authuser=%i",
-                           kGaiaID, kEmail, kSessionIndex));
+                           kGaiaID.ToString(), kEmail, kSessionIndex));
     EXPECT_EQ(DiceAction::ENABLE_SYNC, params.user_intention);
     ASSERT_TRUE(params.enable_sync_info);
-    EXPECT_EQ(GaiaId(kGaiaID), params.enable_sync_info->account_info.gaia_id);
+    EXPECT_EQ(kGaiaID, params.enable_sync_info->account_info.gaia_id);
     EXPECT_EQ(kEmail, params.enable_sync_info->account_info.email);
     EXPECT_EQ(kSessionIndex,
               params.enable_sync_info->account_info.session_index);
@@ -597,11 +597,11 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
     // some fields are wrapped in quotes.
     DiceResponseParams params = BuildDiceSignoutResponseParams(
         base::StringPrintf("email=\"%s\", sessionindex=%i, obfuscatedid=\"%s\"",
-                           kEmail, kSessionIndex, kGaiaID));
+                           kEmail, kSessionIndex, kGaiaID.ToString()));
     ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention);
     ASSERT_TRUE(params.signout_info);
     EXPECT_EQ(1u, params.signout_info->account_infos.size());
-    EXPECT_EQ(GaiaId(kGaiaID), params.signout_info->account_infos[0].gaia_id);
+    EXPECT_EQ(kGaiaID, params.signout_info->account_infos[0].gaia_id);
     EXPECT_EQ(kEmail, params.signout_info->account_infos[0].email);
     EXPECT_EQ(kSessionIndex,
               params.signout_info->account_infos[0].session_index);
@@ -610,21 +610,22 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
   {
     // Multi-Signout response.
     const char kEmail2[] = "bar@example.com";
-    const char kGaiaID2[] = "gaia_id_2";
+    const GaiaId kGaiaID2("gaia_id_2");
     const int kSessionIndex2 = 2;
     DiceResponseParams params =
         BuildDiceSignoutResponseParams(base::StringPrintf(
             "email=\"%s\", sessionindex=%i, obfuscatedid=\"%s\", "
             "email=\"%s\", sessionindex=%i, obfuscatedid=\"%s\"",
-            kEmail, kSessionIndex, kGaiaID, kEmail2, kSessionIndex2, kGaiaID2));
+            kEmail, kSessionIndex, kGaiaID.ToString(), kEmail2, kSessionIndex2,
+            kGaiaID2.ToString()));
     ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention);
     ASSERT_TRUE(params.signout_info);
     EXPECT_EQ(2u, params.signout_info->account_infos.size());
-    EXPECT_EQ(GaiaId(kGaiaID), params.signout_info->account_infos[0].gaia_id);
+    EXPECT_EQ(kGaiaID, params.signout_info->account_infos[0].gaia_id);
     EXPECT_EQ(kEmail, params.signout_info->account_infos[0].email);
     EXPECT_EQ(kSessionIndex,
               params.signout_info->account_infos[0].session_index);
-    EXPECT_EQ(GaiaId(kGaiaID2), params.signout_info->account_infos[1].gaia_id);
+    EXPECT_EQ(kGaiaID2, params.signout_info->account_infos[1].gaia_id);
     EXPECT_EQ(kEmail2, params.signout_info->account_infos[1].email);
     EXPECT_EQ(kSessionIndex2,
               params.signout_info->account_infos[1].session_index);
@@ -637,10 +638,10 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
     DiceResponseParams params = BuildDiceSigninResponseParams(
         base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i,"
                            "no_authorization_code=true",
-                           kGaiaID, kEmail, kSessionIndex));
+                           kGaiaID.ToString(), kEmail, kSessionIndex));
     EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
     ASSERT_TRUE(params.signin_info);
-    EXPECT_EQ(GaiaId(kGaiaID), params.signin_info->account_info.gaia_id);
+    EXPECT_EQ(kGaiaID, params.signin_info->account_info.gaia_id);
     EXPECT_EQ(kEmail, params.signin_info->account_info.email);
     EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
     EXPECT_TRUE(params.signin_info->authorization_code.empty());
@@ -653,8 +654,8 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
     // Missing authorization code and no_authorization_code.
     base::HistogramTester histogram_tester;
     DiceResponseParams params = BuildDiceSigninResponseParams(
-        base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i", kGaiaID,
-                           kEmail, kSessionIndex));
+        base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i",
+                           kGaiaID.ToString(), kEmail, kSessionIndex));
     EXPECT_EQ(DiceAction::NONE, params.user_intention);
     histogram_tester.ExpectTotalCount("Signin.DiceAuthorizationCode", 0);
   }
@@ -663,8 +664,8 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
     // Missing email in SIGNIN.
     DiceResponseParams params =
         BuildDiceSigninResponseParams(base::StringPrintf(
-            "action=SIGNIN,id=%s,authuser=%i,authorization_code=%s", kGaiaID,
-            kSessionIndex, kAuthorizationCode));
+            "action=SIGNIN,id=%s,authuser=%i,authorization_code=%s",
+            kGaiaID.ToString(), kSessionIndex, kAuthorizationCode));
     EXPECT_EQ(DiceAction::NONE, params.user_intention);
   }
 
@@ -673,7 +674,7 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
     DiceResponseParams params = BuildDiceSignoutResponseParams(
         base::StringPrintf("email=%s, sessionindex=%i, obfuscatedid=%s, "
                            "sessionindex=2, obfuscatedid=bar",
-                           kEmail, kSessionIndex, kGaiaID));
+                           kEmail, kSessionIndex, kGaiaID.ToString()));
     EXPECT_EQ(DiceAction::NONE, params.user_intention);
   }
 }
@@ -682,13 +683,13 @@ TEST_F(SigninHeaderHelperTest,
        BuildDiceSigninResponseParamsNotEligibleForTokenBinding) {
   const char kAuthorizationCode[] = "authorization_code";
   const char kEmail[] = "foo@example.com";
-  const char kGaiaID[] = "gaia_id";
+  const GaiaId kGaiaID("gaia_id");
   const int kSessionIndex = 42;
 
   // "eligible_for_token_binding" is missing.
   DiceResponseParams params = BuildDiceSigninResponseParams(base::StringPrintf(
-      "action=SIGNIN,id=%s,email=%s,authuser=%i,authorization_code=%s", kGaiaID,
-      kEmail, kSessionIndex, kAuthorizationCode));
+      "action=SIGNIN,id=%s,email=%s,authuser=%i,authorization_code=%s",
+      kGaiaID.ToString(), kEmail, kSessionIndex, kAuthorizationCode));
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
   ASSERT_TRUE(params.signin_info);
   EXPECT_TRUE(
@@ -700,18 +701,18 @@ TEST_F(SigninHeaderHelperTest,
 TEST_F(SigninHeaderHelperTest, BuildDiceSigninResponseParamsMixedOrder) {
   const char kAuthorizationCode[] = "authorization_code";
   const char kEmail[] = "foo@example.com";
-  const char kGaiaID[] = "gaia_id";
+  const GaiaId kGaiaID("gaia_id");
   const char kSupportedTokenBindingAlgorithms[] = "ES256 RS256";
   const int kSessionIndex = 42;
 
   DiceResponseParams params = BuildDiceSigninResponseParams(base::StringPrintf(
       "id=%s,action=SIGNIN,authuser=%i,eligible_for_token_binding=%s,email=%s,"
       "authorization_code=%s",
-      kGaiaID, kSessionIndex, kSupportedTokenBindingAlgorithms, kEmail,
-      kAuthorizationCode));
+      kGaiaID.ToString(), kSessionIndex, kSupportedTokenBindingAlgorithms,
+      kEmail, kAuthorizationCode));
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
   ASSERT_TRUE(params.signin_info);
-  EXPECT_EQ(GaiaId(kGaiaID), params.signin_info->account_info.gaia_id);
+  EXPECT_EQ(kGaiaID, params.signin_info->account_info.gaia_id);
   EXPECT_EQ(kEmail, params.signin_info->account_info.email);
   EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
   EXPECT_EQ(kAuthorizationCode, params.signin_info->authorization_code);

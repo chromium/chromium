@@ -41,29 +41,12 @@ class PermissionDialogModelFactory {
                                 PermissionsAndroidFeatureMap.isEnabled(
                                         PermissionsAndroidFeatureList
                                                 .ANDROID_CANCEL_PERMISSION_PROMPT_ON_TOUCH_OUTSIDE));
-        if (delegate.canShowEphemeralOption()) {
-            var positiveEphemeralButtonSpec =
-                    new ModalDialogProperties.ModalDialogButtonSpec(
-                            ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL,
-                            delegate.getPositiveEphemeralButtonText());
-            var positiveButtonSpec =
-                    new ModalDialogProperties.ModalDialogButtonSpec(
-                            ModalDialogProperties.ButtonType.POSITIVE,
-                            delegate.getPositiveButtonText());
-            var negativeButtonSpec =
-                    new ModalDialogProperties.ModalDialogButtonSpec(
-                            ModalDialogProperties.ButtonType.NEGATIVE,
-                            delegate.getNegativeButtonText());
-            var buttonSpecs =
-                    delegate.shouldShowPositiveNonEphemeralAsFirstButton()
-                            ? new ModalDialogProperties.ModalDialogButtonSpec[] {
-                                positiveButtonSpec, positiveEphemeralButtonSpec, negativeButtonSpec
-                            }
-                            : new ModalDialogProperties.ModalDialogButtonSpec[] {
-                                positiveEphemeralButtonSpec, positiveButtonSpec, negativeButtonSpec
-                            };
+        // TODO(crbug.com/388407665): we might change this when creating new UI.
+        if (delegate.canShowEphemeralOption() || delegate.isEmbeddedPromptVariant()) {
             builder.with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true)
-                    .with(ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST, buttonSpecs);
+                    .with(
+                            ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
+                            getButtonSpecs(delegate));
         } else {
             builder.with(
                             ModalDialogProperties.POSITIVE_BUTTON_TEXT,
@@ -73,5 +56,28 @@ class PermissionDialogModelFactory {
                             delegate.getNegativeButtonText());
         }
         return builder.build();
+    }
+
+    public static ModalDialogProperties.ModalDialogButtonSpec[] getButtonSpecs(
+            PermissionDialogDelegate delegate) {
+        var positiveEphemeralButtonSpec =
+                new ModalDialogProperties.ModalDialogButtonSpec(
+                        ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL,
+                        delegate.getPositiveEphemeralButtonText());
+        var positiveButtonSpec =
+                new ModalDialogProperties.ModalDialogButtonSpec(
+                        ModalDialogProperties.ButtonType.POSITIVE,
+                        delegate.getPositiveButtonText());
+        var negativeButtonSpec =
+                new ModalDialogProperties.ModalDialogButtonSpec(
+                        ModalDialogProperties.ButtonType.NEGATIVE,
+                        delegate.getNegativeButtonText());
+        return delegate.shouldShowPositiveNonEphemeralAsFirstButton()
+                ? new ModalDialogProperties.ModalDialogButtonSpec[] {
+                    positiveButtonSpec, positiveEphemeralButtonSpec, negativeButtonSpec
+                }
+                : new ModalDialogProperties.ModalDialogButtonSpec[] {
+                    positiveEphemeralButtonSpec, positiveButtonSpec, negativeButtonSpec
+                };
     }
 }

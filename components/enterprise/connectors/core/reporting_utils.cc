@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
@@ -19,6 +20,15 @@ namespace proto = ::chrome::cros::reporting::proto;
 // Alias to reduce verbosity when using PasswordBreachEvent::TriggerType.
 using TriggerType =
     ::chrome::cros::reporting::proto::PasswordBreachEvent::TriggerType;
+
+// Alias to reduce verbosity when using
+// SafeBrowsingInterstitialEvent::InterstitialReason;
+using InterstitialReason = ::chrome::cros::reporting::proto::
+    SafeBrowsingInterstitialEvent::InterstitialReason;
+
+// Alias to reduce verbosity when using EventResult and to differentiate from
+// the EventResult struct.
+using ProtoEventResult = ::chrome::cros::reporting::proto::EventResult;
 
 const char kMaskedUsername[] = "*****";
 
@@ -41,6 +51,30 @@ TriggerType GetTriggerType(const std::string& trigger) {
     return type;
   }
   return proto::PasswordBreachEvent::TRIGGER_TYPE_UNSPECIFIED;
+}
+
+InterstitialReason GetInterstitialReason(const std::string& reason) {
+  InterstitialReason interstitial_reason;
+  if (proto::SafeBrowsingInterstitialEvent::InterstitialReason_Parse(
+          reason, &interstitial_reason)) {
+    return interstitial_reason;
+  }
+  return proto::SafeBrowsingInterstitialEvent::THREAT_TYPE_UNSPECIFIED;
+}
+
+ProtoEventResult GetEventResult(EventResult event_result) {
+  switch (event_result) {
+    case EventResult::UNKNOWN:
+      return proto::EventResult::EVENT_RESULT_UNSPECIFIED;
+    case EventResult::ALLOWED:
+      return proto::EventResult::EVENT_RESULT_ALLOWED;
+    case EventResult::WARNED:
+      return proto::EVENT_RESULT_WARNED;
+    case EventResult::BLOCKED:
+      return proto::EventResult::EVENT_RESULT_BLOCKED;
+    case EventResult::BYPASSED:
+      return proto::EventResult::EVENT_RESULT_BYPASSED;
+  }
 }
 
 // Create a URLMatcher representing the filters in
@@ -122,10 +156,54 @@ proto::SafeBrowsingPasswordReuseEvent GetPasswordReuseEvent(
   return event;
 }
 
-chrome::cros::reporting::proto::SafeBrowsingPasswordChangedEvent
-GetPasswordChangedEvent(const std::string& user_name) {
+proto::SafeBrowsingPasswordChangedEvent GetPasswordChangedEvent(
+    const std::string& user_name) {
   proto::SafeBrowsingPasswordChangedEvent event;
   event.set_user_name(user_name);
+
+  return event;
+}
+
+proto::LoginEvent GetLoginEvent(const GURL& url,
+                                bool is_federated,
+                                const url::SchemeHostPort& federated_origin,
+                                const std::u16string& username) {
+  proto::LoginEvent event;
+  event.set_url(url.spec());
+  event.set_is_federated(is_federated);
+  if (is_federated) {
+    event.set_federated_origin(federated_origin.Serialize());
+  }
+  event.set_login_user_name(MaskUsername(username));
+
+  return event;
+}
+
+proto::SafeBrowsingInterstitialEvent GetInterstitialEvent(
+    const GURL& url,
+    const std::string& reason,
+    int net_error_code,
+    bool clicked_through,
+    EventResult event_result) {
+  proto::SafeBrowsingInterstitialEvent event;
+  event.set_url(url.spec());
+  event.set_reason(GetInterstitialReason(reason));
+  event.set_net_error_code(net_error_code);
+  event.set_clicked_through(clicked_through);
+  event.set_event_result(GetEventResult(event_result));
+
+  return event;
+}
+
+proto::BrowserCrashEvent GetBrowserCrashEvent(const std::string& channel,
+                                              const std::string& version,
+                                              const std::string& report_id,
+                                              const std::string& platform) {
+  proto::BrowserCrashEvent event;
+  event.set_channel(channel);
+  event.set_version(version);
+  event.set_report_id(report_id);
+  event.set_platform(platform);
 
   return event;
 }

@@ -19,8 +19,9 @@ class PermissionDialogCustomViewModelFactory {
         assert context != null;
 
         String messageText = delegate.getMessageText();
-        assert !TextUtils.isEmpty(messageText);
 
+        // TODO(crbug.com/388407665): we might change the assert when creating new UI.
+        assert !TextUtils.isEmpty(messageText) || delegate.isEmbeddedPromptVariant();
         return new PropertyModel.Builder(PermissionDialogCustomViewProperties.ALL_KEYS)
                 .with(PermissionDialogCustomViewProperties.MESSAGE_TEXT, messageText)
                 .with(

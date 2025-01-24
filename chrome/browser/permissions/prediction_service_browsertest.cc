@@ -53,7 +53,7 @@ class PredictionServiceBrowserTest : public InProcessBrowserTest {
          {optimization_guide::features::kOptimizationHints, {}},
          {optimization_guide::features::kRemoteOptimizationGuideFetching, {}},
          {features::kCpssUseTfliteSignatureRunner, {}}},
-        {});
+        {permissions::features::kPermissionsAIv1});
   }
 
   ~PredictionServiceBrowserTest() override = default;

@@ -178,9 +178,9 @@ public class PermissionDialogCoordinator {
         mMediator.dismissFromNative();
     }
 
-    /** Update the custom view of the current displaying dialog. */
-    public void updateCustomView() {
-        mMediator.updateCustomView(createCustomView());
+    /** Update the current dialog. This may hide the current dialog and show OS prompt instead. */
+    public void updateDialog() {
+        mMediator.updateDialog(createCustomView());
     }
 
     /**
@@ -226,7 +226,7 @@ public class PermissionDialogCoordinator {
             mCustomViewModelChangeProcessor.destroy();
             mCustomViewModelChangeProcessor = null;
         }
-        if (mMediator == null) {
+        if (mMediator != null) {
             mMediator.destroy();
             mMediator = null;
         }

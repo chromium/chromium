@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.validateMockitoUsage;
@@ -115,6 +116,7 @@ public class TabGridDialogViewBinderTest {
     private @Nullable View mShareButtonContainer;
     private @Nullable ButtonCompat mShareButton;
     private @Nullable View mImageTilesContainer;
+    private @Nullable View mSendFeedbackButton;
     private ImageView mHairline;
     private ScrimCoordinator mScrimCoordinator;
     private GridLayoutManager mLayoutManager;
@@ -164,6 +166,8 @@ public class TabGridDialogViewBinderTest {
                     mTabGridDialogView.setBindingToken(null);
 
                     mHairline = mTabGridDialogView.findViewById(R.id.tab_grid_dialog_hairline);
+                    mSendFeedbackButton =
+                            mTabGridDialogView.findViewById(R.id.send_feedback_button);
                     mBackButton = mToolbarView.findViewById(R.id.toolbar_back_button);
                     mNewTabButton = mToolbarView.findViewById(R.id.toolbar_new_tab_button);
                     mTitleTextView = mToolbarView.findViewById(R.id.title);
@@ -748,5 +752,31 @@ public class TabGridDialogViewBinderTest {
         mModel.set(TabGridDialogProperties.IS_CONTENT_SENSITIVE, false);
         assertEquals(
                 View.CONTENT_SENSITIVITY_NOT_SENSITIVE, mTabGridDialogView.getContentSensitivity());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSendFeedback() {
+        // Default state should be "safe".
+        assertEquals(View.GONE, mSendFeedbackButton.getVisibility());
+        mSendFeedbackButton.callOnClick();
+
+        // Test visibility.
+        mModel.set(TabGridDialogProperties.SHOW_SEND_FEEDBACK, true);
+        assertEquals(View.VISIBLE, mSendFeedbackButton.getVisibility());
+
+        mModel.set(TabGridDialogProperties.SHOW_SEND_FEEDBACK, false);
+        assertEquals(View.GONE, mSendFeedbackButton.getVisibility());
+
+        // Test click listener.
+        Runnable r = mock(Runnable.class);
+        mModel.set(TabGridDialogProperties.SEND_FEEDBACK_RUNNABLE, r);
+        mSendFeedbackButton.callOnClick();
+        verify(r).run();
+
+        // Null should not crash.
+        mModel.set(TabGridDialogProperties.SEND_FEEDBACK_RUNNABLE, null);
+        mSendFeedbackButton.callOnClick();
     }
 }

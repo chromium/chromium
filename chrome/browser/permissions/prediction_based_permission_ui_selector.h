@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/content_extraction/inner_text.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_ui_selector.h"
@@ -46,7 +47,8 @@ class PredictionBasedPermissionUiSelector
       const PredictionBasedPermissionUiSelector&) = delete;
 
   // NotificationPermissionUiSelector:
-  void SelectUiToUse(permissions::PermissionRequest* request,
+  void SelectUiToUse(content::WebContents* web_contents,
+                     permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override;
 
   void Cancel() override;
@@ -83,6 +85,10 @@ class PredictionBasedPermissionUiSelector
   void set_likelihood_override(PredictionGrantLikelihood mock_likelihood) {
     likelihood_override_for_testing_ = mock_likelihood;
   }
+
+  void FetchInnerTextForFrame(content::RenderFrameHost* rfh);
+  void OnGetInnerTextForOnDeviceModel(
+      std::unique_ptr<content_extraction::InnerTextResult> result);
 
   void OnModelExecutionComplete(
       const std::optional<permissions::GeneratePredictionsResponse>& result);

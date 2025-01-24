@@ -40,6 +40,7 @@ class FakeCwsMixin : InProcessBrowserTestMixin {
 
   // InProcessBrowserTestMixin overrides:
   void SetUpCommandLine(base::CommandLine* command_line) override;
+  void SetUpOnMainThread() override;
 
  private:
   CwsInstanceType instance_type_;

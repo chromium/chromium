@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -34,6 +36,8 @@ import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServi
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -103,6 +107,7 @@ public class TabGridDialogMediator
                 TabGridDialogView.VisibilityListener,
                 TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener,
                 AppHeaderObserver {
+    @VisibleForTesting static final String SHOW_SEND_FEEDBACK_PARAM = "show_send_feedback";
 
     /** Defines an interface for a {@link TabGridDialogMediator} to control dialog. */
     interface DialogController extends BackPressHandler {
@@ -271,8 +276,7 @@ public class TabGridDialogMediator
         mCollaborationService = CollaborationServiceFactory.getForProfile(mOriginalProfile);
         // TODO(crbug.com/377366460): This checks only the flag and might break for join only cases.
         // Figure out what to do here.
-        if (mTabGroupSyncService != null
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+        if (mTabGroupSyncService != null && ChromeFeatureList.isEnabled(DATA_SHARING)) {
             mDataSharingService = DataSharingServiceFactory.getForProfile(mOriginalProfile);
             mTransitiveSharedGroupObserver =
                     new TransitiveSharedGroupObserver(
@@ -541,12 +545,10 @@ public class TabGridDialogMediator
 
         mModel.set(TabGridDialogProperties.MENU_CLICK_LISTENER, getMenuButtonClickListener());
 
-        // TODO(b/325082444): Only a subset should be visible at a time. Only set the listeners that
-        // can be seen and used.
-        mModel.set(TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER, getShareBarClickListener());
+        mModel.set(TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER, getShareClickListener());
         mModel.set(
-                TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER,
-                getShareBarClickListener());
+                TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER, getShareClickListener());
+        mModel.set(TabGridDialogProperties.SEND_FEEDBACK_RUNNABLE, this::sendFeedback);
     }
 
     void hideDialog(boolean showAnimation) {
@@ -1010,14 +1012,19 @@ public class TabGridDialogMediator
         return mTabGridDialogMenuCoordinator.getOnClickListener();
     }
 
-    private View.OnClickListener getShareBarClickListener() {
-        return view -> {
-            handleShareClick();
-        };
+    private View.OnClickListener getShareClickListener() {
+        return unused -> handleShareClick();
+    }
+
+    private void sendFeedback() {
+        HelpAndFeedbackLauncher launcher =
+                HelpAndFeedbackLauncherFactory.getForProfile(mOriginalProfile);
+        // TODO(crbug.com/391766089): Replace the categoryTag with something non-null.
+        launcher.showFeedback(mActivity, /* url= */ null, /* categoryTag= */ null);
     }
 
     private void handleShareClick() {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
+        assert ChromeFeatureList.isEnabled(DATA_SHARING);
 
         String tabGroupDisplayName = mModel.get(TabGridDialogProperties.HEADER_TITLE);
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
@@ -1030,7 +1037,7 @@ public class TabGridDialogMediator
         if (mTransitiveSharedGroupObserver == null) return;
 
         boolean isIncognitoBranded = mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded();
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+        if (!ChromeFeatureList.isEnabled(DATA_SHARING)
                 || isIncognitoBranded
                 || !mCollaborationService.getServiceStatus().isAllowedToJoin()
                 || mCurrentTabId == Tab.INVALID_TAB_ID) {
@@ -1058,6 +1065,12 @@ public class TabGridDialogMediator
                 && mCollaborationService.getServiceStatus().isAllowedToCreate();
     }
 
+    private boolean shouldShowSendFeedback() {
+        return ChromeFeatureList.isEnabled(DATA_SHARING)
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        DATA_SHARING, SHOW_SEND_FEEDBACK_PARAM, false);
+    }
+
     private void onGroupSharedStateChanged(@Nullable @GroupSharedState Integer groupSharedState) {
         if (groupSharedState == null || groupSharedState == GroupSharedState.NOT_SHARED) {
             mModel.set(
@@ -1065,15 +1078,18 @@ public class TabGridDialogMediator
                     R.string.tab_grid_share_button_text);
             mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, shouldShowShareButton());
             mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, false);
+            mModel.set(TabGridDialogProperties.SHOW_SEND_FEEDBACK, false);
         } else if (groupSharedState == GroupSharedState.COLLABORATION_ONLY) {
             mModel.set(
                     TabGridDialogProperties.SHARE_BUTTON_STRING_RES,
                     R.string.tab_grid_manage_button_text);
             mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, shouldShowShareButton());
             mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, false);
+            mModel.set(TabGridDialogProperties.SHOW_SEND_FEEDBACK, shouldShowSendFeedback());
         } else {
             mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, false);
             mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, true);
+            mModel.set(TabGridDialogProperties.SHOW_SEND_FEEDBACK, shouldShowSendFeedback());
         }
     }
 

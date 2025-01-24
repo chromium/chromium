@@ -20,6 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -157,6 +158,66 @@ bool GetAppIdsFromUpdateUrl(const GURL& update_url,
     ids->push_back(id);
   }
   return !ids->empty();
+}
+
+// Given a `request_body` containing a JSON string such as:
+//
+//   {
+//      "request": {
+//         "app": [ {
+//            "appid": "ilaggnhkinenadmhbbdgbddpaipgfomg",
+//            ...
+//         }, {
+//            "appid": "ckgconpclkocfoolbepdpgmgaicpegnp",
+//            ...
+//         } ],
+//         ...
+//      }
+//   }
+//
+// Returns true and appends the list of app IDs to the given `ids`.
+//
+// Otherwise, if the `request_body` does not match the format above, returns
+// false and does not change `ids`.
+bool GetAppIdsFromRequestBody(const std::string& request_body,
+                              std::vector<std::string>* ids) {
+  const auto value = base::JSONReader::Read(request_body);
+  if (!value.has_value()) {
+    return false;
+  }
+
+  const auto* dict = value->GetIfDict();
+  if (dict == nullptr) {
+    return false;
+  }
+
+  const auto* request = dict->FindDict("request");
+  if (request == nullptr) {
+    return false;
+  }
+
+  const auto* app_list = request->FindList("app");
+  if (app_list == nullptr) {
+    return false;
+  }
+
+  std::vector<std::string> result;
+  for (const auto& app_value : *app_list) {
+    const auto* app = app_value.GetIfDict();
+    if (app == nullptr) {
+      return false;
+    }
+
+    const auto* app_id = app->FindString("appid");
+    if (app_id == nullptr) {
+      return false;
+    }
+
+    result.push_back(*app_id);
+  }
+
+  ids->insert(ids->end(), result.begin(), result.end());
+  return true;
 }
 
 // The detail request has an URL in form of
@@ -428,7 +489,8 @@ std::unique_ptr<HttpResponse> FakeCWS::HandleRequest(
       !id_to_update_check_content_map_.empty()) {
     std::vector<std::string> ids;
     if (GetAppIdsFromHeader(request.headers, &ids) ||
-        GetAppIdsFromUpdateUrl(request_url, &ids)) {
+        GetAppIdsFromUpdateUrl(request_url, &ids) ||
+        GetAppIdsFromRequestBody(request.content, &ids)) {
       bool use_json =
           request.content.size() > 0 && request.content.at(0) == '{';
       std::string update_check_content;
@@ -436,7 +498,9 @@ std::unique_ptr<HttpResponse> FakeCWS::HandleRequest(
         ++update_check_count_;
         auto http_response = std::make_unique<BasicHttpResponse>();
         http_response->set_code(net::HTTP_OK);
-        if (!use_json) {
+        if (use_json) {
+          http_response->set_content_type("application/json");
+        } else {
           http_response->set_content_type("text/xml");
         }
         http_response->set_content(update_check_content);

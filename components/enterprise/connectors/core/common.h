@@ -286,6 +286,29 @@ DataRegion ChromeDataRegionSettingToEnum(int chrome_data_region_setting);
 EnterpriseReportingEventType GetUmaEnumFromEventName(
     std::string_view eventName);
 
+// TODO(crbug.com/390419758): Migrate all the safe_browing::EventResult
+// references to use this struct.
+//
+//  The resulting action that chrome performed in response to a scan request.
+//  This maps to the event result in the real-time reporting.
+enum class EventResult {
+  UNKNOWN,
+
+  // The user was allowed to use the data without restriction.
+  ALLOWED,
+
+  // The user was allowed to use the data but was warned that it may violate
+  // enterprise rules.
+  WARNED,
+
+  // The user was not allowed to use the data.
+  BLOCKED,
+
+  // The user has chosen to use the data even though it violated enterprise
+  // rules.
+  BYPASSED,
+};
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_COMMON_H_

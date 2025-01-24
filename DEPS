@@ -280,15 +280,15 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'e6b5642def86bcfe47f021fba8bbc03a172bed6d',
+  'skia_revision': 'c5c98fc67cc4efafae13fc210493a9dc7e61bfe2',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'de482104b0127df415745e2ccac25d99c469cb7d',
+  'v8_revision': '35151fda02737be0077a406b5b205f11017e2a52',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '57eee4fae0d023e4e41cd1f0b3f0f9a958d19127',
+  'angle_revision': '41225dc8f8708d2d4a581c80939f14b63076755a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'd3ab2b23b3e301a3ec89658d6e95199b7e1089a0',
+  'devtools_frontend_revision': '27573a04e0fa20da3c44b3c0eceb4e8c9356a7ce',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1435,7 +1435,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '6fecdafb38db5099534318c8013a4d7ea6fe48f3',
+    '033f8b5cca8e28efc6e4a984315dec5a20010b5b',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2429,7 +2429,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'd42a543a2b2c87f71f5c776d6f809ca4761be60f',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'e81305634834e4403052756ad8056ac1499eab5a',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2796,13 +2796,13 @@ deps = {
     Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + '450cceb587613ac1469c5a131fac15935c99e0e7',
 
   'src/third_party/webgpu-cts/src':
-    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '1e8a3781e7f7bd00cc6dd1533ed6e1941465357e',
+    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '84c6cd81397a2c1b196425716027224c7f1aad9b',
 
   'src/third_party/webpagereplay':
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '63d3cf0d46d570d0580dfdfb2e3e48c9646dd177',
+    Var('webrtc_git') + '/src.git' + '@' + '1cc5e54368fee62620284f1cc802083df545c439',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -4531,7 +4531,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'aa5ae746e828b167b36ec68679cb430118a30c7a',
+        '0135f80fe3b3372dd5ded160aabdf1113b80a00f',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

@@ -217,7 +217,8 @@ class ContextualNotificationPermissionUiSelectorTest : public testing::Test {
     Decision actual_decison(std::nullopt, std::nullopt);
     EXPECT_CALL(mock_callback, Run)
         .WillRepeatedly(testing::SaveArg<0>(&actual_decison));
-    contextual_selector_.SelectUiToUse(&mock_request, mock_callback.Get());
+    contextual_selector_.SelectUiToUse(/*web_contents=*/nullptr, &mock_request,
+                                       mock_callback.Get());
     task_environment_.RunUntilIdle();
     testing::Mock::VerifyAndClearExpectations(&mock_callback);
     EXPECT_EQ(quiet_ui_reason, actual_decison.quiet_ui_reason);

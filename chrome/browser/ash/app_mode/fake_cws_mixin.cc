@@ -7,8 +7,10 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "extensions/common/verifier_formats.h"
+#include "net/test/embedded_test_server/http_request.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -19,6 +21,11 @@ constexpr std::string_view kPublicStoreUpdateEndpoint = "/update_check.xml";
 
 constexpr std::string_view kPrivateStoreUpdateEndpoint =
     "/private_store_update_check.xml";
+
+void LogRequest(const net::test_server::HttpRequest& request) {
+  LOG(INFO) << "Received " << request.method_string << " request for url '"
+            << request.GetURL() << "'";
+}
 
 }  // namespace
 
@@ -45,6 +52,10 @@ void FakeCwsMixin::SetUpCommandLine(base::CommandLine* command_line) {
   instance_type_ == kPublic ? fake_cws_.Init(&test_server_)
                             : fake_cws_.InitAsPrivateStore(
                                   &test_server_, kPrivateStoreUpdateEndpoint);
+}
+
+void FakeCwsMixin::SetUpOnMainThread() {
+  test_server_.RegisterRequestMonitor(base::BindRepeating(&LogRequest));
 }
 
 GURL FakeCwsMixin::UpdateUrl() const {

@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -272,18 +273,15 @@ std::vector<autofill::Suggestion> CreateLoadingSuggestions() {
 
 std::vector<autofill::Suggestion> CreateFillingSuggestionsV2(
     const autofill::FormStructure& form,
-    const autofill::FormFieldData& triggering_field,
+    FieldGlobalId field_global_id,
     base::span<const autofill::EntityInstance> entities) {
-  const AutofillField* triggering_autofill_field =
-      form.GetFieldById(triggering_field.global_id());
-  // Return early if the `form` does not contain `triggering_field`.
-  if (!triggering_autofill_field) {
-    return {};
-  }
+  const autofill::AutofillField* autofill_field =
+      form.GetFieldById(field_global_id);
+  CHECK(autofill_field);
 
   std::optional<AttributeType> triggering_field_attribute_type =
       AttributeType::FromFieldType(
-          triggering_autofill_field->GetAutofillAiServerTypePredictions());
+          autofill_field->GetAutofillAiServerTypePredictions());
   // The triggering field should be of `FieldTypeGroup::kAutofillAi`
   // type and therefore mapping it to an `AttributeType` should always
   // return a value.

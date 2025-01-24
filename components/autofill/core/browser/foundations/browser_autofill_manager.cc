@@ -1202,10 +1202,14 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
   if (delegate && form_structure && autofill_field &&
       delegate->IsEligibleForAutofillAi(*form_structure, *autofill_field)) {
-    delegate->HasDataStored(base::BindOnce(
-        &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1,
-        weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context,
-        std::move(callback)));
+    delegate->GetSuggestionsV2(
+        form.global_id(), field.global_id(),
+        /*is_manual_fallback=*/trigger_source ==
+            AutofillSuggestionTriggerSource::kAutofillAi,
+        base::BindOnce(
+            &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1,
+            weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
+            context, std::move(callback)));
     return;
   }
 
@@ -1216,7 +1220,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   // on with generating suggestions and maybe showing the UI.
   GenerateSuggestionsAndMaybeShowUIPhase1(form, field, trigger_source, context,
                                           std::move(callback),
-                                          AutofillAiDelegate::HasData(false));
+                                          /*autofill_ai_suggestions=*/{});
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
@@ -1225,7 +1229,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
     OnGenerateSuggestionsCallback callback,
-    AutofillAiDelegate::HasData has_autofill_ai_data) {
+    std::vector<Suggestion> autofill_ai_suggestions) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   // Note that this function cannot exit early in case GetCachedFormAndField()
@@ -1253,7 +1257,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
       weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
-      has_autofill_ai_data, context, std::move(callback));
+      std::move(autofill_ai_suggestions), context, std::move(callback));
 
   if (context.field_is_relevant_for_plus_addresses) {
     client().GetPlusAddressDelegate()->GetAffiliatedPlusAddresses(
@@ -1271,7 +1275,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     const FormData& form,
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
-    AutofillAiDelegate::HasData has_autofill_ai_data,
+    std::vector<Suggestion> autofill_ai_suggestions,
     SuggestionsContext context,
     OnGenerateSuggestionsCallback callback,
     std::vector<std::string> plus_addresses) {
@@ -1301,20 +1305,13 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     return;
   }
   AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
-  if (delegate && has_autofill_ai_data &&
-      (trigger_source == AutofillSuggestionTriggerSource::kAutofillAi ||
-       trigger_source ==
-           AutofillSuggestionTriggerSource::kFormControlElementClicked)) {
-    std::vector<Suggestion> prediction_improvements_suggestions =
-        delegate->GetSuggestions(suggestions, form, field);
-    if (!prediction_improvements_suggestions.empty()) {
-      std::move(callback).Run(/*show_suggestions=*/true,
-                              std::move(prediction_improvements_suggestions),
-                              /*ranking_context=*/std::nullopt);
-      return;
-    }
+  if (!autofill_ai_suggestions.empty()) {
+    std::move(callback).Run(/*show_suggestions=*/true,
+                            std::move(autofill_ai_suggestions),
+                            /*ranking_context=*/std::nullopt);
+    return;
   } else if (delegate && form_structure && autofill_field &&
-             delegate->ShouldDisplayIph(*form_structure, *autofill_field) &&
+             delegate->ShouldDisplayIph(*autofill_field) &&
              client().ShowAutofillFieldIphForFeature(
                  field, AutofillClient::IphFeature::kAutofillAi)) {
     return;

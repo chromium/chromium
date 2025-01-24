@@ -70,23 +70,30 @@ void NotificationContentDetectionService::OnCheckUrlForHighConfidenceAllowlist(
         logging_details) {
   base::UmaHistogramTimes(kAllowlistCheckLatencyHistogram,
                           base::TimeTicks::Now() - start_time);
-  // Only perform inference on the model for non-allowlisted URLs.
-  if (did_match_allowlist) {
+  bool should_skip_notification_warning =
+      did_match_allowlist || is_allowlisted_by_user;
+  if (should_skip_notification_warning) {
+    // If the `origin` is on the high confidence allowlist or was allowlisted by
+    // the user, then display the notification before checking the model.
+    std::move(model_verdict_callback).Run(/*is_suspicious=*/false);
     // The model check should happen at a sampled rate for notifications from
-    // allowlisted sites. This rate is defined by the
+    // allowlisted sites for collecting metrics. This rate is defined by the
     // `kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate` feature
     // parameter.
-    if (base::RandDouble() * 100 >=
-        kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate.Get()) {
-      std::move(model_verdict_callback).Run(/*is_suspicious=*/false);
+    if (did_match_allowlist &&
+        base::RandDouble() * 100 >=
+            kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate
+                .Get()) {
       return;
     }
   }
-
-  // Perform inference with model on `notification_contents`.
+  // Perform inference with model on `notification_contents`. If the origin is
+  // on our allowlist or allowed by the user, use `DoNothing()` as the model
+  // verdict callback, since the notification has already been displayed.
   notification_content_detection_model_->Execute(
       notification_data, origin, is_allowlisted_by_user, did_match_allowlist,
-      std::move(model_verdict_callback));
+      should_skip_notification_warning ? base::DoNothing()
+                                       : std::move(model_verdict_callback));
 }
 
 }  // namespace safe_browsing
