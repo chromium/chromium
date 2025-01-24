@@ -445,6 +445,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kV8WasmReturnCall,
           WebFeature::kV8WasmExnRef,
           WebFeature::kV8WasmExceptionHandling,
+          WebFeature::kTextAutosizing,
       }));
   return *opt_in_features;
 }
