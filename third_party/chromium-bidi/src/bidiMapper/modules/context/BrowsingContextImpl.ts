@@ -202,7 +202,6 @@ export class BrowsingContextImpl {
 
   dispose(emitContextDestroyed: boolean) {
     this.#navigationTracker.dispose();
-    this.#deleteAllChildren();
 
     this.#realmStorage.deleteRealms({
       browsingContextId: this.id,
@@ -226,6 +225,9 @@ export class BrowsingContextImpl {
         this.id,
       );
     }
+
+    // Dispose children after the events are emitted.
+    this.#deleteAllChildren();
 
     this.#eventManager.clearBufferedEvents(this.id);
 

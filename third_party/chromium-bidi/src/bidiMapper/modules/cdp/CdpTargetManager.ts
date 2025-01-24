@@ -117,10 +117,6 @@ export class CdpTargetManager {
       this.#handleFrameAttachedEvent.bind(this),
     );
     cdpClient.on(
-      'Page.frameDetached',
-      this.#handleFrameDetachedEvent.bind(this),
-    );
-    cdpClient.on(
       'Page.frameSubtreeWillBeDetached',
       this.#handleFrameSubtreeWillBeDetached.bind(this),
     );
@@ -147,14 +143,6 @@ export class CdpTargetManager {
         this.#logger,
       );
     }
-  }
-
-  #handleFrameDetachedEvent(params: Protocol.Page.FrameDetachedEvent) {
-    // In case of OOPiF no need in deleting BrowsingContext.
-    if (params.reason === 'swap') {
-      return;
-    }
-    this.#browsingContextStorage.findContext(params.frameId)?.dispose(true);
   }
 
   #handleFrameSubtreeWillBeDetached(
