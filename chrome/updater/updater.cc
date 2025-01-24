@@ -257,10 +257,12 @@ constexpr const char* BuildFlavor() {
 }
 
 constexpr const char* BuildArch() {
-#if defined(ARCH_CPU_64_BITS)
-  return "64 bits";
-#elif defined(ARCH_CPU_32_BITS)
-  return "32 bits";
+#if defined(ARCH_CPU_ARM64)
+  return "64 bit (ARM)";
+#elif defined(ARCH_CPU_X86_64)
+  return "64 bit (x64)";
+#elif defined(ARCH_CPU_X86)
+  return "32 bit (x86)";
 #else
 #error CPU architecture is unknown.
 #endif
