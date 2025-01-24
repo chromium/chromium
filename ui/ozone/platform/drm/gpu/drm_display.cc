@@ -479,6 +479,11 @@ bool DrmDisplay::ClearHdrOutputMetadata() {
       return false;
     }
 
+    if (hdr_output_metadata_property->count_blobs == 0) {
+      // HDR metadata property was never set
+      return true;
+    }
+
     // TODO(b/342617770): Atomically set connector properties across all
     // connectors owned by DrmDisplay to prevent scenarios where SetProperty()
     // succeeds for a subset of the connectors and creates inconsistencies.
