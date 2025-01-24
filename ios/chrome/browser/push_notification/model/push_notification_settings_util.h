@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_SETTINGS_UTIL_H_
 
 #import <Foundation/Foundation.h>
+
 #import <string>
 #import <vector>
 
