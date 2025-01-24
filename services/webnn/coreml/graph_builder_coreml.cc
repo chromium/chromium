@@ -3300,6 +3300,16 @@ GraphBuilderCoreml::AddOperationForLayerNormalization(
     return NewNotSupportedError("Axes must be ordered for layerNormalization.");
   }
 
+  // TODO: crbug.com/391423301: CoreML crashes for kCpu when axes are not
+  // consecutive, needs emulation.
+  if (device_ == mojom::CreateContextOptions::Device::kCpu) {
+    bool is_consecutive = base::ranges::adjacent_find(operation.axes,
+        [](auto a, auto b) { return (a + 1) != b; }) == operation.axes.end();
+    if (!is_consecutive) {
+      return NewNotSupportedError(
+          "Axes must be consecutive for layerNormalization on cpu.");
+    }
+  }
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpLayerNormalizationTypeName);
   RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
