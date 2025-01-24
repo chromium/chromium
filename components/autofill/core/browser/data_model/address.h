@@ -42,11 +42,9 @@ class Address : public FormGroup {
                                      const std::u16string& value,
                                      const std::string& locale,
                                      VerificationStatus status) override;
-  void GetMatchingTypesWithProfileSources(
-      const std::u16string& text,
-      const std::string& locale,
-      FieldTypeSet* matching_types,
-      PossibleProfileValueSources* profile_value_sources) const override;
+  void GetMatchingTypes(const std::u16string& text,
+                        const std::string& locale,
+                        FieldTypeSet* matching_types) const override;
   // Return the verification status of a structured name value.
   VerificationStatus GetVerificationStatus(FieldType type) const override;
 

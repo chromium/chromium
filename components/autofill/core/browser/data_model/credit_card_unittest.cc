@@ -1734,8 +1734,8 @@ TEST_P(CreditCardMatchingTypesTest, Cases) {
                   ASCIIToUTF16(test_case.card_exp_year));
 
   FieldTypeSet matching_types;
-  card.GetMatchingTypesWithProfileSources(
-      UTF8ToUTF16(test_case.value), test_case.locale, &matching_types, nullptr);
+  card.GetMatchingTypes(UTF8ToUTF16(test_case.value), test_case.locale,
+                        &matching_types);
   EXPECT_EQ(test_case.expected_matched_types, matching_types);
 }
 

@@ -126,13 +126,11 @@ TEST_F(NameInfoTest, GetMatchingTypes) {
   test::VerifyFormGroupValues(name, expectation);
 
   FieldTypeSet matching_types;
-  name.GetMatchingTypesWithProfileSources(u"Ruiz", "US", &matching_types,
-                                          nullptr);
+  name.GetMatchingTypes(u"Ruiz", "US", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({NAME_LAST_FIRST}));
 
   // The honorific prefix is ignored.
-  name.GetMatchingTypesWithProfileSources(u"Mr.", "US", &matching_types,
-                                          nullptr);
+  name.GetMatchingTypes(u"Mr.", "US", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({NAME_LAST_FIRST}));
 }
 
@@ -187,24 +185,20 @@ TEST_F(NameInfoTest, FinalizeAfterImportWithAlternativeName) {
 
   // Both "あおい" and "アオイ" are semantically equal.
   FieldTypeSet matching_types;
-  name.GetMatchingTypesWithProfileSources(u"あおい", "JP", &matching_types,
-                                          nullptr);
+  name.GetMatchingTypes(u"あおい", "JP", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypesWithProfileSources(u"アオイ", "JP", &matching_types,
-                                          nullptr);
+  name.GetMatchingTypes(u"アオイ", "JP", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
   matching_types.clear();
 
   // Both "やまもと" and "ヤマモト" are semantically equal.
-  name.GetMatchingTypesWithProfileSources(u"やまもと", "JP", &matching_types,
-                                          nullptr);
+  name.GetMatchingTypes(u"やまもと", "JP", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FAMILY_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypesWithProfileSources(u"ヤマモト", "JP", &matching_types,
-                                          nullptr);
+  name.GetMatchingTypes(u"ヤマモト", "JP", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FAMILY_NAME}));
 }
 
@@ -258,20 +252,17 @@ TEST_F(NameInfoTest, FinalizeAfterImportWithNameAndIncompleteAlternativeName1) {
   test::VerifyFormGroupValues(name, expectation);
 
   FieldTypeSet matching_types;
-  name.GetMatchingTypesWithProfileSources(u"葵", "JP", &matching_types,
-                                          nullptr);
+  name.GetMatchingTypes(u"葵", "JP", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({NAME_FIRST}));
   matching_types.clear();
 
   // Both "やまもと" and "ヤマモト" are semantically equal.
-  name.GetMatchingTypesWithProfileSources(u"やまもと", "JP", &matching_types,
-                                          nullptr);
+  name.GetMatchingTypes(u"やまもと", "JP", &matching_types);
   EXPECT_EQ(matching_types,
             FieldTypeSet({ALTERNATIVE_FAMILY_NAME, ALTERNATIVE_FULL_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypesWithProfileSources(u"ヤマモト", "JP", &matching_types,
-                                          nullptr);
+  name.GetMatchingTypes(u"ヤマモト", "JP", &matching_types);
   EXPECT_EQ(matching_types,
             FieldTypeSet({ALTERNATIVE_FAMILY_NAME, ALTERNATIVE_FULL_NAME}));
 
@@ -327,13 +318,11 @@ TEST_F(NameInfoTest, FinalizeAfterImportWithNameAndIncompleteAlternativeName2) {
 
   FieldTypeSet matching_types;
   // Both "やまもと あおい" and "ヤマモト アオイ" are semantically equal.
-  name.GetMatchingTypesWithProfileSources(u"やまもと あおい", "JP",
-                                          &matching_types, nullptr);
+  name.GetMatchingTypes(u"やまもと あおい", "JP", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FULL_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypesWithProfileSources(u"ヤマモト アオイ", "JP",
-                                          &matching_types, nullptr);
+  name.GetMatchingTypes(u"ヤマモト アオイ", "JP", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FULL_NAME}));
 }
 
@@ -381,39 +370,32 @@ TEST_F(NameInfoTest, FinalizeAfterImportWithIncompleteNameAndAlternativeName) {
   test::VerifyFormGroupValues(name, expectation);
 
   FieldTypeSet matching_types;
-  name.GetMatchingTypesWithProfileSources(u"葵", "JP", &matching_types,
-                                          nullptr);
+  name.GetMatchingTypes(u"葵", "JP", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({NAME_FULL, NAME_FIRST}));
   matching_types.clear();
 
   // Both "やまもと あおい" and "ヤマモト アオイ" are semantically equal.
-  name.GetMatchingTypesWithProfileSources(u"あおい", "JP", &matching_types,
-                                          nullptr);
+  name.GetMatchingTypes(u"あおい", "JP", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypesWithProfileSources(u"アオイ", "JP", &matching_types,
-                                          nullptr);
+  name.GetMatchingTypes(u"アオイ", "JP", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypesWithProfileSources(u"やまもと", "JP", &matching_types,
-                                          nullptr);
+  name.GetMatchingTypes(u"やまもと", "JP", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FAMILY_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypesWithProfileSources(u"ヤマモト", "JP", &matching_types,
-                                          nullptr);
+  name.GetMatchingTypes(u"ヤマモト", "JP", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FAMILY_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypesWithProfileSources(u"やまもと あおい", "JP",
-                                          &matching_types, nullptr);
+  name.GetMatchingTypes(u"やまもと あおい", "JP", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FULL_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypesWithProfileSources(u"ヤマモト アオイ", "JP",
-                                          &matching_types, nullptr);
+  name.GetMatchingTypes(u"ヤマモト アオイ", "JP", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FULL_NAME}));
 }
 
