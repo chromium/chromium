@@ -6,6 +6,7 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "base/notreached.h"
+#include "base/version_info/version_info.h"
 
 namespace android_webview {
 
@@ -16,8 +17,7 @@ AwPrefetchServiceDelegate::AwPrefetchServiceDelegate(
 AwPrefetchServiceDelegate::~AwPrefetchServiceDelegate() = default;
 
 std::string AwPrefetchServiceDelegate::GetMajorVersionNumber() {
-  NOTREACHED() << "Only used for isolated network context. WebView doesn't use "
-                  "an isolated network context for app triggered prefetching.";
+  return version_info::GetMajorVersionNumber();
 }
 
 std::string AwPrefetchServiceDelegate::GetAcceptLanguageHeader() {
