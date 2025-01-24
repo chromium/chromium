@@ -57,9 +57,10 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
 
     private final Map<Integer, Bitmap> mTabIdToFaviconMap = new HashMap<>();
 
-    @NonNull private Context mContext;
+    private @NonNull Context mContext;
     private int mTaskFinishedCount;
-    @NonNull private AuxiliarySearchController mAuxiliarySearchController;
+    private AuxiliarySearchController mAuxiliarySearchController;
+    private FaviconHelper mFaviconHelper;
 
     @Override
     protected int onStartTaskBeforeNativeLoaded(
@@ -102,6 +103,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                         : resources.getDimensionPixelSize(
                                 R.dimen.auxiliary_search_favicon_size_small);
 
+        mFaviconHelper = new FaviconHelper();
         readTabDonateMetadataAsync(
                 (tabs) ->
                         onTabDonateMetadataRead(
@@ -109,7 +111,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                                 faviconSize,
                                 startTimeMs,
                                 taskFinishedCallback,
-                                new FaviconHelper(),
+                                mFaviconHelper,
                                 mAuxiliarySearchController,
                                 tabs));
     }
@@ -239,6 +241,9 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
         if (mAuxiliarySearchController != null) {
             mAuxiliarySearchController.destroy();
             mAuxiliarySearchController = null;
+        }
+        if (mFaviconHelper != null) {
+            mFaviconHelper.destroy();
         }
         taskFinishedCallback.taskFinished(/* needsReschedule= */ false);
     }
