@@ -166,6 +166,9 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
   // Stores the maximum size area supported by an nv12 texture.
   int max_nv12_size_supported_ = 0;
 
+  // Stores whether NV12 format is supported by the D3D device.
+  bool d3d11_supports_nv12_;
+
   // Capabilities needed for getting the correct GL format for creating GL
   // textures.
   const GLFormatCaps gl_format_caps_;
