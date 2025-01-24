@@ -360,6 +360,7 @@ default_compiler_configs = [
   "//build/config/compiler:no_rtti",
   "//build/config/compiler:no_unresolved_symbols",
   "//build/config/compiler:runtime_library",
+  "//build/config/compiler:rust_integer_overflow_checks",
   "//build/config/compiler:thin_archive",
   "//build/config/compiler:thinlto_optimize_default",
   "//build/config/compiler/pgo:default_pgo_flags",
