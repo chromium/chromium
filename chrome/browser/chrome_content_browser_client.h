@@ -40,6 +40,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_handle.h"
+#include "pdf/buildflags.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -79,6 +80,7 @@ class PopupNavigationDelegate;
 namespace content {
 class BrowserContext;
 class BtmService;
+class NavigationHandle;
 class RenderFrameHost;
 enum class SmsFetchFailureType;
 struct ServiceWorkerVersionBaseInfo;
@@ -1147,6 +1149,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<content::WebUIController> OverrideForInternalWebUI(
       content::WebUI* web_ui,
       const GURL& url) override;
+
+#if BUILDFLAG(ENABLE_PDF)
+  std::optional<network::CrossOriginEmbedderPolicy>
+  MaybeOverrideLocalURLCrossOriginEmbedderPolicy(
+      content::NavigationHandle* navigation_handle) override;
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   void SetSamplingProfiler(
       std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler);

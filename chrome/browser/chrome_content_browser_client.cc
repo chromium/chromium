@@ -719,6 +719,7 @@
 #include "components/pdf/browser/pdf_navigation_throttle.h"
 #include "components/pdf/browser/pdf_url_loader_request_interceptor.h"
 #include "components/pdf/common/constants.h"
+#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 
@@ -8851,3 +8852,26 @@ ChromeContentBrowserClient::OverrideForInternalWebUI(content::WebUI* web_ui,
 
   return std::make_unique<InternalDebugPagesDisabledUI>(web_ui, url.host());
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+std::optional<network::CrossOriginEmbedderPolicy>
+ChromeContentBrowserClient::MaybeOverrideLocalURLCrossOriginEmbedderPolicy(
+    content::NavigationHandle* navigation_handle) {
+  if (!chrome_pdf::features::IsOopifPdfEnabled() ||
+      !navigation_handle->IsPdf()) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/40053796): Local URLs inherit their policy container from
+  // the navigation initiator instead of the document creating the navigation
+  // request, so local PDF URL navigations in the PDF renderer inherit policies
+  // from the PDF extension frame (the parent frame) and might have the
+  // incorrect COEP. Until this is fixed, just copy the COEP directly from the
+  // PDF embedder.
+  content::RenderFrameHost* pdf_extension = navigation_handle->GetParentFrame();
+  CHECK(pdf_extension);
+  content::RenderFrameHost* pdf_embedder = pdf_extension->GetParent();
+  CHECK(pdf_embedder);
+  return pdf_embedder->GetCrossOriginEmbedderPolicy();
+}
+#endif  // BUILDFLAG(ENABLE_PDF)

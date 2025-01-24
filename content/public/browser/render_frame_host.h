@@ -28,6 +28,7 @@
 #include "ipc/ipc_sender.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
@@ -1146,6 +1147,12 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // TODO(crbug.com/346386726): Delete this method once we have solidified the
   //   lifetime expectations of the PolicyContainerHost object.
   virtual bool HasPolicyContainerHost() const = 0;
+
+  // Returns the cross origin embedder policy for this frame. Must have a
+  // non-null PolicyContainerHost, otherwise a crash will occur.
+  // `HasPolicyContainerHost()` can be used to check if it is non-null.
+  virtual const network::CrossOriginEmbedderPolicy&
+  GetCrossOriginEmbedderPolicy() const = 0;
 
  private:
   // This interface should only be implemented inside content.

@@ -1917,4 +1917,10 @@ std::unique_ptr<WebUIController> ContentBrowserClient::OverrideForInternalWebUI(
   return nullptr;
 }
 
+std::optional<network::CrossOriginEmbedderPolicy>
+ContentBrowserClient::MaybeOverrideLocalURLCrossOriginEmbedderPolicy(
+    content::NavigationHandle* navigation_handle) {
+  return std::nullopt;
+}
+
 }  // namespace content

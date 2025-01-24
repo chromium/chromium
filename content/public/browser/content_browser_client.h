@@ -67,6 +67,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/proxy_config.mojom-forward.h"
@@ -3192,6 +3193,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::unique_ptr<WebUIController> OverrideForInternalWebUI(
       WebUI* web_ui,
       const GURL& url);
+
+  // Embedders can override the cross origin embedder policy of a local URL
+  // navigation. A local URL is a URL with a local scheme as defined in
+  // https://fetch.spec.whatwg.org/#local-scheme. Returns the cross origin
+  // embedder policy to use, or std::nullopt if the cross origin embedder policy
+  // should not be overridden.
+  virtual std::optional<network::CrossOriginEmbedderPolicy>
+  MaybeOverrideLocalURLCrossOriginEmbedderPolicy(
+      content::NavigationHandle* navigation_handle);
 };
 
 }  // namespace content

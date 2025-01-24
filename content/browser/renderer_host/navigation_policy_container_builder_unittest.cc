@@ -12,6 +12,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -174,7 +175,9 @@ TEST_F(NavigationPolicyContainerBuilderTest, SetDocumentIsolationPolicy) {
 TEST_F(NavigationPolicyContainerBuilderTest, DefaultFinalPolicies) {
   NavigationPolicyContainerBuilder builder(
       nullptr, nullptr, kInvalidChildProcessUniqueId, nullptr, nullptr);
-  builder.ComputePolicies(GURL(), false, network::mojom::WebSandboxFlags::kNone,
+  MockNavigationHandle navigation_handle(GURL(), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
+                          network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
   PolicyContainerPolicies expected_policies;
@@ -202,7 +205,8 @@ TEST_F(NavigationPolicyContainerBuilderTest, FinalPoliciesNormalUrl) {
   builder.AddContentSecurityPolicy(MakeTestCSP());
   PolicyContainerPolicies delivered_policies =
       builder.DeliveredPoliciesForTesting().Clone();
-  builder.ComputePolicies(GURL("https://foo.test"), false,
+  MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
@@ -218,7 +222,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
   PolicyContainerPolicies delivered_policies =
       builder.DeliveredPoliciesForTesting().Clone();
-  builder.ComputePolicies(AboutBlankUrl(), false,
+  MockNavigationHandle navigation_handle(AboutBlankUrl(), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
@@ -229,7 +234,9 @@ TEST_F(NavigationPolicyContainerBuilderTest, MHTMLSandboxFlags) {
   NavigationPolicyContainerBuilder builder(
       nullptr, nullptr, kInvalidChildProcessUniqueId, nullptr, nullptr);
   builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kLocal);
-  builder.ComputePolicies(GURL("file:///my/page.mhtml"),
+  MockNavigationHandle navigation_handle(GURL("file:///my/page.mhtml"),
+                                         nullptr);
+  builder.ComputePolicies(&navigation_handle,
                           /*is_inside_mhtml=*/true,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
@@ -248,7 +255,9 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   NavigationPolicyContainerBuilder builder(
       nullptr, nullptr, kInvalidChildProcessUniqueId, nullptr, nullptr);
   builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kLocal);
-  builder.ComputePolicies(GURL("file:///my/page.mhtml"),
+  MockNavigationHandle navigation_handle(GURL("file:///my/page.mhtml"),
+                                         nullptr);
+  builder.ComputePolicies(&navigation_handle,
                           /*is_inside_mhtml=*/true,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
@@ -272,7 +281,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   builder.AddContentSecurityPolicy(MakeTestCSP());
   PolicyContainerPolicies delivered_policies =
       builder.DeliveredPoliciesForTesting().Clone();
-  builder.ComputePolicies(AboutBlankUrl(), false,
+  MockNavigationHandle navigation_handle(AboutBlankUrl(), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
@@ -316,7 +326,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   PolicyContainerPolicies expected_policies;
   expected_policies.ip_address_space = network::mojom::IPAddressSpace::kPrivate;
 
-  builder.ComputePolicies(GURL("https://foo.test"), false,
+  MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
   EXPECT_EQ(builder.FinalPolicies(), expected_policies);
@@ -333,7 +344,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   builder.AddContentSecurityPolicy(
       network::mojom::ContentSecurityPolicy::New());
 
-  builder.ComputePolicies(GURL("https://foo.test"), false,
+  MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
   EXPECT_THAT(builder.FinalPolicies().content_security_policies, SizeIs(1));
@@ -387,7 +399,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 
   NavigationPolicyContainerBuilder builder(
       parent, nullptr, kInvalidChildProcessUniqueId, nullptr, nullptr);
-  builder.ComputePolicies(AboutSrcdocUrl(), false,
+  MockNavigationHandle navigation_handle(AboutSrcdocUrl(), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
@@ -407,7 +420,9 @@ TEST_F(NavigationPolicyContainerBuilderTest,
       builder.DeliveredPoliciesForTesting().Clone();
   EXPECT_TRUE(delivered_policies.is_web_secure_context);
 
-  builder.ComputePolicies(GURL(), false, network::mojom::WebSandboxFlags::kNone,
+  MockNavigationHandle navigation_handle(GURL(), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
+                          network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), delivered_policies);
@@ -426,7 +441,9 @@ TEST_F(NavigationPolicyContainerBuilderTest,
       builder.DeliveredPoliciesForTesting().Clone();
   EXPECT_FALSE(delivered_policies.is_web_secure_context);
 
-  builder.ComputePolicies(GURL(), false, network::mojom::WebSandboxFlags::kNone,
+  MockNavigationHandle navigation_handle(GURL(), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
+                          network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), delivered_policies);
@@ -447,7 +464,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 
   builder.SetIsOriginPotentiallyTrustworthy(true);
 
-  builder.ComputePolicies(GURL("https://foo.test"), false,
+  MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
@@ -473,7 +491,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
       builder.DeliveredPoliciesForTesting().Clone();
   EXPECT_FALSE(delivered_policies.is_web_secure_context);
 
-  builder.ComputePolicies(GURL("http://foo.test"), false,
+  MockNavigationHandle navigation_handle(GURL("http://foo.test"), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
@@ -499,7 +518,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
       builder.DeliveredPoliciesForTesting().Clone();
   EXPECT_TRUE(delivered_policies.is_web_secure_context);
 
-  builder.ComputePolicies(GURL("https://foo.test"), false,
+  MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
@@ -522,7 +542,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   // Add some CSP.
   network::mojom::ContentSecurityPolicyPtr test_csp = MakeTestCSP();
   builder.AddContentSecurityPolicy(test_csp.Clone());
-  builder.ComputePolicies(AboutSrcdocUrl(), false,
+  MockNavigationHandle navigation_handle(AboutSrcdocUrl(), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
 
@@ -534,11 +555,12 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 TEST_F(NavigationPolicyContainerBuilderTest, ComputePoliciesTwiceDCHECK) {
   NavigationPolicyContainerBuilder builder(
       nullptr, nullptr, kInvalidChildProcessUniqueId, nullptr, nullptr);
-  GURL url("https://foo.test");
-  builder.ComputePolicies(url, false, network::mojom::WebSandboxFlags::kNone,
+  MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
+                          network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
   EXPECT_DCHECK_DEATH(builder.ComputePolicies(
-      url, false, network::mojom::WebSandboxFlags::kNone,
+      &navigation_handle, false, network::mojom::WebSandboxFlags::kNone,
       /*is_credentialless=*/false));
 }
 
@@ -546,7 +568,8 @@ TEST_F(NavigationPolicyContainerBuilderTest, ComputePoliciesTwiceDCHECK) {
 TEST_F(NavigationPolicyContainerBuilderTest, ComputePoliciesThenError) {
   NavigationPolicyContainerBuilder builder(
       nullptr, nullptr, kInvalidChildProcessUniqueId, nullptr, nullptr);
-  builder.ComputePolicies(GURL("https://foo.test"), false,
+  MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
   builder.ComputePoliciesForError();
@@ -564,7 +587,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
       parent, nullptr, kInvalidChildProcessUniqueId, nullptr, nullptr);
   EXPECT_THAT(builder.ParentPolicies(), Pointee(Eq(ByRef(parent_policies))));
 
-  builder.ComputePolicies(GURL("https://foo.test"), false,
+  MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
   EXPECT_THAT(builder.ParentPolicies(), Pointee(Eq(ByRef(parent_policies))));
@@ -584,7 +608,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 
   NavigationPolicyContainerBuilder builder(
       parent, nullptr, kInvalidChildProcessUniqueId, nullptr, nullptr);
-  builder.ComputePolicies(GURL("https://foo.test"), false,
+  MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
   EXPECT_EQ(builder.FinalPolicies(), PolicyContainerPolicies());
@@ -592,7 +617,8 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   builder.ResetForCrossDocumentRestart();
   EXPECT_THAT(builder.ParentPolicies(), Pointee(Eq(ByRef(parent_policies))));
 
-  builder.ComputePolicies(AboutSrcdocUrl(), false,
+  navigation_handle.set_url(AboutSrcdocUrl());
+  builder.ComputePolicies(&navigation_handle, false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
   EXPECT_EQ(builder.FinalPolicies(), parent_policies);
