@@ -331,20 +331,29 @@ ProfileIOS* ProfileManagerIOSImpl::CreateProfile(std::string_view name) {
 
 void ProfileManagerIOSImpl::UnloadProfile(std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If the profile is not loaded, nor loading, return.
   auto iter = profiles_map_.find(name);
-  DCHECK(iter != profiles_map_.end());
-  ProfileInfo profile_info = std::move(iter->second);
+  if (iter == profiles_map_.end()) {
+    return;
+  }
+
+  ProfileInfo info = std::move(iter->second);
   profiles_map_.erase(iter);
-  if (!profile_info.is_loaded()) {
-    // The profile is unloaded before it could be fully loaded, notify
-    // any pending callback that the load has failed.
-    for (auto& callback : profile_info.TakeCallbacks()) {
-      std::move(callback).Run(nullptr);
-    }
-  } else {
+
+  // If profile is loaded, notify all observers that it is unloaded.
+  if (info.is_loaded()) {
+    ProfileIOS* profile = info.profile();
     for (auto& observer : observers_) {
-      observer.OnProfileUnloaded(this, profile_info.profile());
+      observer.OnProfileUnloaded(this, profile);
     }
+    return;
+  }
+
+  // If the profile is still loading, pretend that the loading failed
+  // by calling the ProfileLoadedCallbacks with nullptr.
+  for (auto& callback : info.TakeCallbacks()) {
+    std::move(callback).Run(nullptr);
   }
 }
 
