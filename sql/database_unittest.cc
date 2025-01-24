@@ -2446,6 +2446,19 @@ TEST_P(SQLDatabaseTest, OpenFails_SharedLock) {
 
 #endif  // BUILDFLAG(IS_WIN)
 
+TEST_P(SQLDatabaseTest, OpenHistograms) {
+  static constexpr char kCreateSql[] = "CREATE TABLE foo (id INTEGER UNIQUE)";
+  ASSERT_TRUE(db_->Execute(kCreateSql));
+  db_->Close();
+
+  base::HistogramTester tester;
+  ASSERT_TRUE(db_->Open(db_path_));
+  tester.ExpectTotalCount("Sql.Database.Success.SqliteOpenTime.Test", 1);
+  tester.ExpectTotalCount("Sql.Database.Success.OpenInternalTime.Test", 1);
+  tester.ExpectUniqueSample("Sql.Database.Success.SqliteOpenAttempts.Test", 1,
+                            1);
+}
+
 TEST_P(SQLDatabaseTest, OpenFailsAfterCorruptSizeInHeader) {
   // The database file ends up empty if we don't create at least one table.
   ASSERT_TRUE(

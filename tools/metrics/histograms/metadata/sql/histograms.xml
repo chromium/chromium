@@ -112,6 +112,19 @@ chromium-metrics-reviews@google.com.
   <token key="DatabaseTag" variants="DatabaseTag"/>
 </histogram>
 
+<histogram name="Sql.Database.Success.SqliteOpenAttempts.{DatabaseTag}"
+    units="count" expires_after="2025-11-15">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Records the total number of calls to sqlite3_open_v2 made to successfully
+    open the database. A value of one means that the first attempt succeeded.
+    Any other value indicates that one or more retries were needed. Recorded
+    once for each successful open of a database.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
 <histogram name="Sql.Database.Success.SqliteOpenTime.{DatabaseTag}"
     units="microseconds" expires_after="2025-11-15">
   <owner>anthonyvd@chromium.org</owner>
