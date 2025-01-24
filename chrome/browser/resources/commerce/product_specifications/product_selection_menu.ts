@@ -56,25 +56,11 @@ export class ProductSelectionMenuElement extends CrLitElement {
 
   static override get properties() {
     return {
-      selectedUrl: {
-        type: String,
-      },
-
-      excludedUrls: {
-        type: Array,
-      },
-
-      forNewColumn: {
-        type: Boolean,
-      },
-
-      isTableFull: {
-        type: Boolean,
-      },
-
-      sections: {
-        type: Array,
-      },
+      selectedUrl: {type: String},
+      excludedUrls: {type: Array},
+      forNewColumn: {type: Boolean},
+      isTableFull: {type: Boolean},
+      sections: {type: Array},
     };
   }
 
