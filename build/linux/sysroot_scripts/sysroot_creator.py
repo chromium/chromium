@@ -545,12 +545,16 @@ def removing_unnecessary_files(install_root, arch):
     Minimizes the sysroot by removing unnecessary files.
     """
     # Preserve these files.
+    gcc_triple = "i686-linux-gnu" if arch == "i386" else TRIPLES[arch]
     ALLOWLIST = {
         "usr/bin/cups-config",
-        f"usr/lib/gcc/{TRIPLES[arch]}/10/libgcc.a",
+        f"usr/lib/gcc/{gcc_triple}/10/libgcc.a",
         f"usr/lib/{TRIPLES[arch]}/libc_nonshared.a",
         f"usr/lib/{TRIPLES[arch]}/libffi_pic.a",
     }
+
+    for file in ALLOWLIST:
+        assert os.path.exists(os.path.join(install_root, file))
 
     # Remove all executables and static libraries, and any symlinks that
     # were pointing to them.
