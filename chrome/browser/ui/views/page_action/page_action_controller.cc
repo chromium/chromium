@@ -13,8 +13,11 @@
 namespace page_actions {
 
 PageActionController::PageActionController(
-    const PinnedToolbarActionsModel* pinned_actions_model)
-    : pinned_actions_model_(pinned_actions_model) {}
+    PinnedToolbarActionsModel* pinned_actions_model) {
+  if (pinned_actions_model) {
+    pinned_actions_observation_.Observe(pinned_actions_model);
+  }
+}
 
 PageActionController::~PageActionController() = default;
 
@@ -22,6 +25,9 @@ void PageActionController::Initialize(
     const std::vector<actions::ActionId>& action_ids) {
   for (actions::ActionId id : action_ids) {
     Register(id);
+  }
+  if (pinned_actions_observation_.GetSource()) {
+    PinnedActionsModelChanged();
   }
 }
 
@@ -32,14 +38,6 @@ void PageActionController::Register(actions::ActionId action_id) {
 void PageActionController::Show(actions::ActionId action_id) {
   FindPageActionModel(action_id).SetShowRequested(
       base::PassKey<PageActionController>(), true);
-}
-
-bool PageActionController::ShowIfNotPinned(actions::ActionId action_id) {
-  if (pinned_actions_model_ && pinned_actions_model_->Contains(action_id)) {
-    return false;
-  }
-  Show(action_id);
-  return true;
 }
 
 void PageActionController::Hide(actions::ActionId action_id) {
@@ -81,6 +79,28 @@ PageActionController::CreateActionItemSubscription(
                               base::Unretained(this), action_item));
   ActionItemChanged(action_item);
   return subscription;
+}
+
+void PageActionController::OnActionAddedLocally(const actions::ActionId& id) {}
+
+void PageActionController::OnActionRemovedLocally(const actions::ActionId& id) {
+}
+
+void PageActionController::OnActionMovedLocally(const actions::ActionId& id,
+                                                int from_index,
+                                                int to_index) {}
+void PageActionController::OnActionsChanged() {
+  PinnedActionsModelChanged();
+}
+
+void PageActionController::PinnedActionsModelChanged() {
+  PinnedToolbarActionsModel* pinned_actions_model =
+      pinned_actions_observation_.GetSource();
+  CHECK(pinned_actions_model);
+  for (auto& [id, model] : page_actions_) {
+    const bool is_pinned = pinned_actions_model->Contains(id);
+    model->SetHasPinnedIcon(base::PassKey<PageActionController>(), is_pinned);
+  }
 }
 
 PageActionModel& PageActionController::FindPageActionModel(

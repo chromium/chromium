@@ -12,9 +12,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "ui/actions/action_id.h"
-
-class PinnedToolbarActionsModel;
 
 namespace actions {
 class ActionItem;
@@ -33,22 +32,19 @@ class PageActionModelObserver;
 // `PageActionController` controls the state of all page actions, scoped to a
 // single tab. Each page action has a corresponding `PageActionModel` that will
 // receive updates from this controller.
-class PageActionController {
+class PageActionController : public PinnedToolbarActionsModel::Observer {
  public:
   explicit PageActionController(
-      const PinnedToolbarActionsModel* pinned_actions_model);
+      PinnedToolbarActionsModel* pinned_actions_model);
   PageActionController(const PageActionController&) = delete;
   PageActionController& operator=(const PageActionController&) = delete;
-  ~PageActionController();
+  ~PageActionController() override;
 
   void Initialize(const std::vector<actions::ActionId>& action_ids);
   void Register(actions::ActionId action_id);
 
   void Hide(actions::ActionId action_id);
   void Show(actions::ActionId action_id);
-  // Only attempts to show the page action if it's not already pinned.
-  // Returns true if the page action will be shown and false otherwise.
-  bool ShowIfNotPinned(actions::ActionId action_id);
 
   // By default, in suggestion chip mode, the ActionItem text will be used as
   // the control label. However, features can provide a custom text to use
@@ -70,6 +66,14 @@ class PageActionController {
   base::CallbackListSubscription CreateActionItemSubscription(
       actions::ActionItem* action_item);
 
+  // PinnedToolbarActionsModel::Observer
+  void OnActionAddedLocally(const actions::ActionId& id) override;
+  void OnActionRemovedLocally(const actions::ActionId& id) override;
+  void OnActionMovedLocally(const actions::ActionId& id,
+                            int from_index,
+                            int to_index) override;
+  void OnActionsChanged() override;
+
  private:
   using PageActionModelsMap =
       std::map<actions::ActionId, std::unique_ptr<PageActionModel>>;
@@ -77,10 +81,13 @@ class PageActionController {
   PageActionModel& FindPageActionModel(actions::ActionId action_id) const;
 
   void ActionItemChanged(const actions::ActionItem* action_item);
+  void PinnedActionsModelChanged();
 
   PageActionModelsMap page_actions_;
 
-  const raw_ptr<const PinnedToolbarActionsModel> pinned_actions_model_;
+  base::ScopedObservation<PinnedToolbarActionsModel,
+                          PinnedToolbarActionsModel::Observer>
+      pinned_actions_observation_{this};
 };
 
 }  // namespace page_actions

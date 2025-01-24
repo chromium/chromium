@@ -9,9 +9,11 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
@@ -78,6 +80,7 @@ class PageActionControllerTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    actions::ActionManager::Get().ResetForTesting();
     controller_.reset();
     pinned_actions_model_.reset();
     profile_.reset();
@@ -87,6 +90,7 @@ class PageActionControllerTest : public ::testing::Test {
   PinnedToolbarActionsModel* pinned_actions_model() {
     return pinned_actions_model_.get();
   }
+  TestingProfile* profile() { return profile_.get(); }
 
   std::unique_ptr<ActionItem> BuildActionItem(int action_id) {
     return ActionItem::Builder()
@@ -198,28 +202,79 @@ TEST_F(PageActionControllerTest, ActionItemPropertiesUpdateModel) {
 TEST_F(PageActionControllerTest, ShowIfNotPinned) {
   auto observer = PageActionTestObserver();
   TestPageActionModelObservation observation(&observer);
+  auto action_item = BuildActionItem(0);
   controller()->Register(0);
   controller()->AddObserver(0, observation);
-
-  auto action_item = BuildActionItem(0);
   base::CallbackListSubscription subscription =
       controller()->CreateActionItemSubscription(action_item.get());
+
   PinnedToolbarActionsModel* pinned_actions = pinned_actions_model();
   EXPECT_EQ(1, observer.model_change_count());
 
   // Pin the action item. Nothing should happen.
   pinned_actions->UpdatePinnedState(0, true);
-  EXPECT_FALSE(controller()->ShowIfNotPinned(0));
-  EXPECT_FALSE(observer.visible());
-  EXPECT_EQ(1, observer.model_change_count());
-
-  // Unpin the action item. `ShowIfNotPinned` should take effect.
-  pinned_actions->UpdatePinnedState(0, false);
-  EXPECT_TRUE(controller()->ShowIfNotPinned(0));
   EXPECT_EQ(2, observer.model_change_count());
+  EXPECT_FALSE(observer.visible());
+
+  controller()->Show(0);
+  EXPECT_EQ(3, observer.model_change_count());
+  EXPECT_FALSE(observer.visible());
+
+  // Unpin the action item. The page action should now be visible.
+  pinned_actions->UpdatePinnedState(0, false);
+  EXPECT_EQ(4, observer.model_change_count());
   EXPECT_TRUE(observer.visible());
 
-  actions::ActionManager::Get().ResetForTesting();
+  controller()->Hide(0);
+  EXPECT_EQ(5, observer.model_change_count());
+  EXPECT_FALSE(observer.visible());
+}
+
+TEST_F(PageActionControllerTest, ActionPinnedAtInitialization) {
+  auto observer = PageActionTestObserver();
+  TestPageActionModelObservation observation(&observer);
+  auto action_item = BuildActionItem(0);
+  PinnedToolbarActionsModel* pinned_actions = pinned_actions_model();
+  pinned_actions->UpdatePinnedState(0, true);
+
+  controller()->Initialize({0});
+  controller()->AddObserver(0, observation);
+  base::CallbackListSubscription subscription =
+      controller()->CreateActionItemSubscription(action_item.get());
+
+  controller()->Show(0);
+  EXPECT_FALSE(observer.visible());
+
+  // Unpin the action item. The page action should now be visible.
+  pinned_actions->UpdatePinnedState(0, false);
+  EXPECT_TRUE(observer.visible());
+}
+
+TEST_F(PageActionControllerTest, PinnedActionPrefChanged) {
+  auto observer = PageActionTestObserver();
+  TestPageActionModelObservation observation(&observer);
+  auto action_item = BuildActionItem(0);
+  controller()->Initialize({0});
+  controller()->AddObserver(0, observation);
+  base::CallbackListSubscription subscription =
+      controller()->CreateActionItemSubscription(action_item.get());
+
+  controller()->Show(0);
+  EXPECT_TRUE(observer.visible());
+
+  {
+    ScopedListPrefUpdate pref_update(profile()->GetPrefs(),
+                                     prefs::kPinnedActions);
+    pref_update.Get().Append(actions::ActionIdMap::ActionIdToString(0).value());
+  }
+  EXPECT_FALSE(observer.visible());
+
+  {
+    ScopedListPrefUpdate pref_update(profile()->GetPrefs(),
+                                     prefs::kPinnedActions);
+    pref_update.Get().clear();
+  }
+  EXPECT_TRUE(observer.visible());
 }
 
 TEST_F(PageActionControllerTest, OverrideText) {

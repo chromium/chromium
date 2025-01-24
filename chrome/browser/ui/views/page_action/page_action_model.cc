@@ -30,6 +30,15 @@ void PageActionModel::SetShowRequested(base::PassKey<PageActionController>,
   NotifyChange();
 }
 
+void PageActionModel::SetHasPinnedIcon(base::PassKey<PageActionController>,
+                                       bool has_pinned_icon) {
+  if (has_pinned_icon_ == has_pinned_icon) {
+    return;
+  }
+  has_pinned_icon_ = has_pinned_icon;
+  NotifyChange();
+}
+
 void PageActionModel::SetActionItemProperties(
     base::PassKey<PageActionController>,
     const ActionItem* action_item) {
@@ -62,7 +71,8 @@ void PageActionModel::SetActionItemProperties(
 }
 
 bool PageActionModel::GetVisible() const {
-  return action_item_enabled_ && action_item_visible_ && show_requested_;
+  return action_item_enabled_ && action_item_visible_ && show_requested_ &&
+         !has_pinned_icon_;
 }
 
 bool PageActionModel::GetShowSuggestionChip() const {

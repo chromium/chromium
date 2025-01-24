@@ -35,6 +35,8 @@ class PageActionModelInterface {
       const actions::ActionItem* action_item) = 0;
   virtual void SetShowRequested(base::PassKey<PageActionController>,
                                 bool requested) = 0;
+  virtual void SetHasPinnedIcon(base::PassKey<PageActionController>,
+                                bool has_pinned_icon) = 0;
   virtual void SetOverrideText(
       base::PassKey<PageActionController>,
       const std::optional<std::u16string>& override_text) = 0;
@@ -63,6 +65,9 @@ class PageActionModel : public PageActionModelInterface {
                                const actions::ActionItem* action_item) override;
   void SetShowRequested(base::PassKey<PageActionController>,
                         bool requested) override;
+  void SetHasPinnedIcon(base::PassKey<PageActionController>,
+                        bool has_pinned_icon) override;
+
   void SetOverrideText(
       base::PassKey<PageActionController>,
       const std::optional<std::u16string>& override_text) override;
@@ -78,6 +83,10 @@ class PageActionModel : public PageActionModelInterface {
  private:
   // Notifies observers of a model change.
   void NotifyChange();
+
+  // Represents whether this page action has a corresponding pinned icon sharing
+  // the same action.
+  bool has_pinned_icon_ = false;
 
   // Represents whether a feature requested to show this page action.
   bool show_requested_ = false;
