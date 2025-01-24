@@ -110,7 +110,9 @@ void SecurePaymentConfirmationService::MakePaymentCredential(
       // credential parameters from the payment extensions to the key store.
       browser_bound_key =
           browser_bound_key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
-              *browser_bound_key_id);
+              *browser_bound_key_id,
+              options->payment_browser_bound_key_parameters.value_or(
+                  options->public_key_parameters));
     }
     if (browser_bound_key) {
       auto payment_options = ::blink::mojom::PaymentOptions::New();

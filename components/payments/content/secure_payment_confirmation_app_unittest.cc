@@ -13,6 +13,7 @@
 
 #include "base/base64.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -45,6 +46,9 @@ using ::testing::Field;
 using ::testing::Optional;
 using ::testing::Property;
 
+#if BUILDFLAG(IS_ANDROID)
+static constexpr char kAlgorithmIdentifier = 1;
+#endif  // BUILDFLAG(IS_ANDROID)
 static constexpr char kChallengeBase64[] = "aaaa";
 static constexpr char kCredentialIdBase64[] = "cccc";
 
@@ -70,10 +74,19 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
     ASSERT_TRUE(base::Base64Decode(kCredentialIdBase64, &credential_id_bytes_));
   }
 
-  mojom::SecurePaymentConfirmationRequestPtr MakeRequest() {
+  mojom::SecurePaymentConfirmationRequestPtr MakeRequest(
+      std::optional<
+          std::vector<device::PublicKeyCredentialParams::CredentialInfo>>
+          credential_parameters = std::nullopt) {
     auto request = mojom::SecurePaymentConfirmationRequest::New();
     request->challenge =
         std::vector<uint8_t>(challenge_bytes_.begin(), challenge_bytes_.end());
+    if (credential_parameters) {
+      request->extensions =
+          blink::mojom::AuthenticationExtensionsClientInputs::New();
+      request->extensions->payment_browser_bound_key_parameters =
+          std::move(*credential_parameters);
+    }
     return request;
   }
 
@@ -167,7 +180,58 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(SecurePaymentConfirmationAppTest, AddsBrowserBoundKeyAndSignature) {
+struct BrowserBoundKeyTestParams {
+  std::optional<
+      std::vector<::device::PublicKeyCredentialParams::CredentialInfo>>
+      credential_parameters;
+  int32_t algorithm_identifier;
+  bool expect_browser_bound_key;
+  std::string test_name_suffix;
+};
+
+class SecurePaymentConfirmationAppBrowserBindingTest
+    : public SecurePaymentConfirmationAppTest,
+      public ::testing::WithParamInterface<BrowserBoundKeyTestParams> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    SecurePaymentConfirmationAppBrowserBindingTest,
+    SecurePaymentConfirmationAppBrowserBindingTest,
+    ::testing::Values(
+        BrowserBoundKeyTestParams{
+            .credential_parameters =
+                {{device::PublicKeyCredentialParams::CredentialInfo(
+                    device::CredentialType::kPublicKey,
+                    kAlgorithmIdentifier)}},
+            .algorithm_identifier = kAlgorithmIdentifier,
+            .expect_browser_bound_key = true,
+            .test_name_suffix = "WithSpecifiedAlgorithm",
+        },
+        BrowserBoundKeyTestParams{
+            .credential_parameters = std::nullopt,
+            .algorithm_identifier = base::strict_cast<int32_t>(
+                device::CoseAlgorithmIdentifier::kEs256),
+            .expect_browser_bound_key = true,
+            .test_name_suffix = "Es256WithDefaults",
+        },
+        BrowserBoundKeyTestParams{
+            .credential_parameters = std::nullopt,
+            .algorithm_identifier = base::strict_cast<int32_t>(
+                device::CoseAlgorithmIdentifier::kRs256),
+            .expect_browser_bound_key = true,
+            .test_name_suffix = "Rs256WithDefaults",
+        },
+        BrowserBoundKeyTestParams{
+            .credential_parameters = std::nullopt,
+            .algorithm_identifier = kAlgorithmIdentifier,
+            .expect_browser_bound_key = false,
+            .test_name_suffix = "WithNonDefaultAlgorithm",
+        }),
+    [](const ::testing::TestParamInfo<BrowserBoundKeyTestParams>& info) {
+      return info.param.test_name_suffix;
+    });
+
+TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
+       AddsBrowserBoundKeyAndSignature) {
   base::test::ScopedFeatureList features(
       blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
   auto authenticator =
@@ -180,23 +244,27 @@ TEST_F(SecurePaymentConfirmationAppTest, AddsBrowserBoundKeyAndSignature) {
   const std::vector<uint8_t> signature({0x09, 0x0a, 0x0b, 0x0c});
   const std::vector<uint8_t> browser_bound_key_id({0x0d, 0x0e, 0x0f, 0x10});
   FakeBrowserBoundKey browser_bound_key(public_key_as_cose_key, signature,
+                                        GetParam().algorithm_identifier,
                                         client_data_json);
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(), credential_id,
       browser_bound_key_id,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
-      MakeRequest(), std::move(authenticator),
+      MakeRequest(GetParam().credential_parameters), std::move(authenticator),
       /*network_label=*/u"", /*network_icon=*/SkBitmap(),
       /*issuer_label=*/u"", /*issuer_icon=*/SkBitmap());
   app.SetBrowserBoundKeyStoreForTesting(MakeFakeBrowserBoundKeyStore());
   browser_bound_key_store_->PutFakeKey(browser_bound_key_id, browser_bound_key);
 
-  EXPECT_CALL(*mock_authenticator,
-              SetPaymentOptions(Pointee(
-                  Field("browser_bound_public_key",
-                        &blink::mojom::PaymentOptions::browser_bound_public_key,
-                        Optional(ElementsAreArray(public_key_as_cose_key))))));
+  EXPECT_CALL(
+      *mock_authenticator,
+      SetPaymentOptions(Pointee(Field(
+          "browser_bound_public_key",
+          &blink::mojom::PaymentOptions::browser_bound_public_key,
+          GetParam().expect_browser_bound_key
+              ? std::optional<std::vector<uint8_t>>(public_key_as_cose_key)
+              : std::nullopt))));
   EXPECT_CALL(*mock_authenticator, GetAssertion(_, _))
       .WillOnce(
           [client_data_json](
@@ -224,7 +292,9 @@ TEST_F(SecurePaymentConfirmationAppTest, AddsBrowserBoundKeyAndSignature) {
       Pointee(Field("browser_bound_signature",
                     &blink::mojom::AuthenticationExtensionsPaymentResponse::
                         browser_bound_signature,
-                    ElementsAreArray(signature))));
+                    ElementsAreArray(GetParam().expect_browser_bound_key
+                                         ? signature
+                                         : std::vector<uint8_t>()))));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

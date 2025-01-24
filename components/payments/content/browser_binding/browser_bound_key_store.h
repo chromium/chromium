@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "device/fido/public_key_credential_params.h"
+
 namespace payments {
 
 class BrowserBoundKey;
@@ -27,9 +29,13 @@ class BrowserBoundKeyStore {
 
   // Get (or create if not present) a browser bound key for the given
   // credential_id.
+  // `allowed_credentials` is a vector of COSE Algorithm identifiers that
+  // restricts the algorithms of the browser bound key.
   virtual std::unique_ptr<BrowserBoundKey>
   GetOrCreateBrowserBoundKeyForCredentialId(
-      const std::vector<uint8_t>& credential_id) = 0;
+      const std::vector<uint8_t>& credential_id,
+      const std::vector<device::PublicKeyCredentialParams::CredentialInfo>&
+          allowed_credentials) = 0;
 };
 
 }  // namespace payments

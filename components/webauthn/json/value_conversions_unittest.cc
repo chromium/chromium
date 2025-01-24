@@ -148,6 +148,7 @@ TEST(WebAuthenticationJSONConversionTest,
           /*provider_scope_requested=*/true,
           device::AttestationConveyancePreference::kDirect,
           std::vector<std::string>({"a", "b", "c"})),
+      /*payment_browser_bound_key_parameters=*/std::nullopt,
       std::vector<std::string>{"attfmt1", "attfmt2"}, /*is_conditional=*/false);
 
   base::Value value = ToValue(options);
