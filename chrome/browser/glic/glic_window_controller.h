@@ -262,8 +262,9 @@ class GlicWindowController : public views::WidgetObserver {
   // True if we've hit a login page (and have not yet shown).
   bool login_page_committed_ = false;
 
-  // TODO(crbug.com/391402352): This member does not make sense. Rework it.
-  gfx::Rect final_widget_bounds_;
+  // This member contains the last size that glic requested. This is reset
+  // every time glic is closed.
+  std::optional<gfx::Size> glic_size_;
 
   // Used to monitor key and mouse events from native window.
   class WindowEventObserver;

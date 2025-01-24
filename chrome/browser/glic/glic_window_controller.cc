@@ -317,9 +317,9 @@ void GlicWindowController::Show(BrowserWindowInterface* bwi) {
 }
 
 gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
-  gfx::Size default_widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
-  if (!final_widget_bounds_.IsEmpty()) {
-    default_widget_size = final_widget_bounds_.size();
+  gfx::Size widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
+  if (glic_size_) {
+    widget_size = *glic_size_;
   }
   gfx::Rect initial_rect;
   // Right now this only detects whether the glic widget is summoned from the
@@ -328,19 +328,16 @@ gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
   // show up in a detached state.
   gfx::Point top_right_point = GetTopRightPositionForDetachedGlicWindow();
   int padding = 50;
-  initial_rect.set_x(top_right_point.x() - default_widget_size.width() -
-                     padding);
+  initial_rect.set_x(top_right_point.x() - widget_size.width() - padding);
   initial_rect.set_y(top_right_point.y() + padding);
-  initial_rect.set_size(default_widget_size);
+  initial_rect.set_size(widget_size);
   return initial_rect;
 }
 
 void GlicWindowController::OpenAttached(Browser* browser,
                                         views::View* glic_button_view) {
-  gfx::Size default_widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
-  if (final_widget_bounds_.IsEmpty()) {
-    final_widget_bounds_.set_size(default_widget_size);
-  }
+  // When opening attached, we always go through the standard opening animation.
+  gfx::Size widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
   gfx::Rect glic_window_widget_initial_rect;
 
   // If summoned from the tab strip button. This will always show up attached
@@ -358,10 +355,10 @@ void GlicWindowController::OpenAttached(Browser* browser,
   AttachToBrowser(browser);
   // Set target bounds for animation and run the open attached animation.
   gfx::Rect target_bounds = glic_attached_widget_->GetWindowBoundsInScreen();
-  int final_x = top_right_point.x() - final_widget_bounds_.width();
+  int final_x = top_right_point.x() - widget_size.width();
   target_bounds.set_x(final_x);
-  target_bounds.set_width(final_widget_bounds_.width());
-  target_bounds.set_height(final_widget_bounds_.height());
+  target_bounds.set_width(widget_size.width());
+  target_bounds.set_height(widget_size.height());
 
   // TODO(crbug.com/389982576): Match the background color of the widget with
   // the web client background.
@@ -448,8 +445,18 @@ void GlicWindowController::ShowFinish() {
 
   // Set the draggable area to the top bar of the window, by default.
   GetGlicView()->SetDraggableAreas(
-      {{0, 0, final_widget_bounds_.width(), kWidgetTopBarHeight}});
+      {{0, 0, GetGlicView()->width(), kWidgetTopBarHeight}});
   NotifyIfPanelStateChanged();
+
+  // Animate to the requested size, if it exists.
+  if (glic_size_) {
+    gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
+    if (*glic_size_ != current_bounds.size()) {
+      current_bounds.set_size(*glic_size_);
+      AnimateBounds(current_bounds, base::Milliseconds(kEntryDurationMs),
+                    base::DoNothing());
+    }
+  }
 }
 
 GlicView* GlicWindowController::GetGlicView() {
@@ -514,9 +521,10 @@ void GlicWindowController::Detach() {
   // moves to the top right of the display.
   gfx::Size screen_size =
       display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
-  final_widget_bounds_.set_origin(
-      gfx::Point(screen_size.width() - final_widget_bounds_.width(), 0));
-  AnimateBounds(final_widget_bounds_, base::Milliseconds(kEntryDurationMs),
+  gfx::Rect widget_bounds = glic_attached_widget_->GetWindowBoundsInScreen();
+  widget_bounds.set_origin(
+      gfx::Point(screen_size.width() - widget_bounds.width(), 0));
+  AnimateBounds(widget_bounds, base::Milliseconds(kEntryDurationMs),
                 base::DoNothing());
 }
 
@@ -564,7 +572,7 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
 void GlicWindowController::Resize(const gfx::Size& size,
                                   base::TimeDelta duration,
                                   base::OnceClosure callback) {
-  final_widget_bounds_.set_size(size);
+  glic_size_ = size;
 
   if (!GetGlicWidget()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -575,7 +583,7 @@ void GlicWindowController::Resize(const gfx::Size& size,
   gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
   int original_top_right = current_bounds.x() + current_bounds.width();
   current_bounds.set_size(size);
-  current_bounds.set_x(original_top_right - final_widget_bounds_.width());
+  current_bounds.set_x(original_top_right - size.width());
 
   AnimateBounds(current_bounds, duration, std::move(callback));
 }
@@ -641,6 +649,7 @@ void GlicWindowController::Close() {
   if (state_ == State::kClosed) {
     return;
   }
+  glic_size_.reset();
   state_ = State::kClosed;
   attached_browser_ = nullptr;
   attached_browser_widget_observation_.Reset();
@@ -764,16 +773,18 @@ void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
   gfx::Rect glic_button_rect = glic_button->GetBoundsInScreen();
   gfx::Point top_right = glic_button_rect.top_right();
   int tab_strip_padding = GetLayoutConstant(TAB_STRIP_PADDING);
-  final_widget_bounds_.set_x(top_right.x() - final_widget_bounds_.width() -
-                             tab_strip_padding);
-  final_widget_bounds_.set_y(top_right.y() + tab_strip_padding);
+
+  gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
+  gfx::Rect new_bounds = current_bounds;
+  new_bounds.set_x(top_right.x() - current_bounds.width() - tab_strip_padding);
+  new_bounds.set_y(top_right.y() + tab_strip_padding);
   // Avoid conversions between pixels and DIP on non 1.0 scale factor displays
   // changing widget width and height.
   if (animate) {
-    AnimateBounds(final_widget_bounds_, base::Milliseconds(kEntryDurationMs),
+    AnimateBounds(new_bounds, base::Milliseconds(kEntryDurationMs),
                   base::DoNothing());
   } else {
-    GetGlicWidget()->SetBounds(final_widget_bounds_);
+    GetGlicWidget()->SetBounds(new_bounds);
   }
   NotifyIfPanelStateChanged();
 }
