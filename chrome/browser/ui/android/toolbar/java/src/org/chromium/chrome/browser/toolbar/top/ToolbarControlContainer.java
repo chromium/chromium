@@ -755,7 +755,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     }
 
     private boolean isOnTabStrip(MotionEvent e) {
-        return e.getY() <= mToolbar.getTabStripHeight();
+        // If the tab strip is showing, allow the tab strip to consume its gestures.
+        // Otherwise, permit bottom toolbar to handle swipe up gesture to open tab switcher.
+        int tabStripHeight = mToolbar.getTabStripHeight();
+        return tabStripHeight != 0 && e.getY() <= tabStripHeight;
     }
 
     /**
