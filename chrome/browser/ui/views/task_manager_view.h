@@ -148,7 +148,8 @@ class TaskManagerView : public TableViewDelegate,
   // Creates a new TableModel which only operates on the subset of tasks
   // associated with the DisplayCategory (e.g. kTabs means only Tab processes
   // are displayed).
-  void PerformFilter(DisplayCategory category);
+  void PerformFilter(DisplayCategory category,
+                     const std::u16string& search_term = u"");
 
   // Creates all corresponding subcomponents for the header.
   std::unique_ptr<views::TabbedPaneTabStrip> CreateTabbedPane(

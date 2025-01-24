@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <unordered_set>
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -139,6 +140,11 @@ class TaskManagerTableModel : public TaskManagerObserver,
 
   std::optional<size_t> GetRowForActiveTask();
 
+  // Updates task positions based on category and search filters. Returns true
+  // if the model is changed.
+  bool UpdateModel(const DisplayCategory display_category,
+                   const std::u16string& search_term);
+
  private:
   friend class TaskManagerTester;
 
@@ -154,6 +160,17 @@ class TaskManagerTableModel : public TaskManagerObserver,
 
   // Determines whether a TaskId should be kept based on the DisplayCategory.
   bool ShouldKeepTask(TaskId task_id) const;
+
+  // Returns whether `task_id` related task group has matching tasks in current
+  // task list.
+  bool HasMatchInTasksSharingSameProcess(TaskId task_id) const;
+
+  // Goes through the task list to get matched process ids based on search
+  // terms.
+  void UpdateMatchedProcessSet();
+
+  // Updates matched process set by single task based on search terms.
+  void UpdateMatchedProcessSetById(TaskId task_id);
 
   // The delegate that will be used to communicate with the platform-specific
   // TableView.
@@ -181,6 +198,13 @@ class TaskManagerTableModel : public TaskManagerObserver,
 
   // Determines which rows should be kept from GetTaskIdsList().
   DisplayCategory display_category_;
+
+  // Search keyword to filter tasks.
+  std::u16string search_terms_;
+
+  // Contains the process IDs for tasks whose titles match the search
+  // terms. Tasks linked to these processes should be kept.
+  std::unordered_set<base::ProcessId> matched_process_set_;
 
   // Active task id when task manager is open. This variable will only set once
   // after task manager is open. In desktop platforms other than Lacros, active

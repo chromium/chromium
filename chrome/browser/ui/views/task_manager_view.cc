@@ -391,31 +391,17 @@ TaskManagerView::TableConfigs TaskManagerView::GetTableConfigs() {
   };
 }
 
-void TaskManagerView::PerformFilter(DisplayCategory category) {
-  // Clear the old model.
-  tab_table_->SetModel(nullptr);
+void TaskManagerView::PerformFilter(DisplayCategory category,
+                                    const std::u16string& search_term) {
+  if (table_model_->UpdateModel(category, search_term)) {
+    // Model row count may differ, leading to off-screen row rendering.
+    // Recompute scroll position.
+    tab_table_->InvalidateLayout();
 
-  // Create and set the new model.
-  table_model_ = std::make_unique<TaskManagerTableModel>(this, category);
-  tab_table_->SetModel(table_model_.get());
-
-  // Columns are already retrieved, however since the table model changed, the
-  // refresh types for this model need to be set for each column. Otherwise, the
-  // values for each column will stop updating.
-  table_model_->RetrieveSavedColumnsSettingsAndUpdateTable(
-      table_config_.sort_on_cpu_by_default);
-
-  // Redraw the table immediately by scheduling a paint since the rows most
-  // likely changed in between switching models.
-  tab_table_->OnItemsChanged(/*start=*/0, table_model_->RowCount());
-
-  // Model row count may differ, leading to off-screen row rendering. Recompute
-  // scroll position.
-  tab_table_->InvalidateLayout();
-
-  // Switch filters means deselecting all processes, so the end process button
-  // should also be disabled.
-  end_process_btn_->SetEnabled(false);
+    // Switch filters means deselecting all processes, so the end process button
+    // should also be disabled.
+    end_process_btn_->SetEnabled(false);
+  }
 }
 
 void TaskManagerView::TabSelectedAt(int index) {
@@ -573,7 +559,13 @@ std::unique_ptr<views::Separator> TaskManagerView::CreateSeparator(
 }
 
 void TaskManagerView::SearchBarOnInputChanged(const std::u16string& query) {
+  auto selected_category =
+      query.empty()
+          ? kTabDefinitions[tabs_->GetSelectedTabIndex()].associated_category
+          : DisplayCategory::kAll;
+
   tabs_->SetEnabled(query.empty());
+  PerformFilter(selected_category, query);
 }
 
 void TaskManagerView::SearchBarOnHoverChange(const bool is_hover_on) {

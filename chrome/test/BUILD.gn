@@ -2098,6 +2098,7 @@ if (!is_android) {
       "//chrome/browser/supervised_user:test_support",
       "//chrome/browser/support_tool:support_tool_proto",
       "//chrome/browser/sync",
+      "//chrome/browser/task_manager/common:common",
       "//chrome/browser/themes",
       "//chrome/browser/top_level_storage_access_api:permissions",
       "//chrome/browser/tpcd/http_error_observer:browser_tests",

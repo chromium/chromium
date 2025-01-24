@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/string_search.h"
 #include "base/i18n/time_formatting.h"
 #include "base/process/process_handle.h"
 #include "base/ranges/algorithm.h"
@@ -740,6 +741,11 @@ void TaskManagerTableModel::FilterTaskList(std::vector<TaskId>& tasks) {
 }
 
 void TaskManagerTableModel::OnTaskAdded(TaskId id) {
+  if (!search_terms_.empty()) {
+    // Update matched process id if task manager is in search mode.
+    UpdateMatchedProcessSetById(id);
+  }
+
   // For the table view scrollbar to behave correctly we must inform it that
   // a new task has been added.
 
@@ -761,6 +767,11 @@ void TaskManagerTableModel::OnTaskAdded(TaskId id) {
 }
 
 void TaskManagerTableModel::OnTaskToBeRemoved(TaskId id) {
+  if (!search_terms_.empty() && !HasMatchInTasksSharingSameProcess(id)) {
+    // Update matched process set if task manager is in search mode.
+    matched_process_set_.erase(observed_task_manager()->GetProcessId(id));
+  }
+
   if (!ShouldKeepTask(id)) {
     return;
   }
@@ -1052,8 +1063,9 @@ bool TaskManagerTableModel::IsTaskFirstInGroup(size_t row_index) const {
 }
 
 bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
-  if (display_category_ == DisplayCategory::kAll) {
-    return true;
+  if (!search_terms_.empty()) {
+    return matched_process_set_.contains(
+        observed_task_manager()->GetProcessId(task_id));
   }
 
   // Keep any TaskId iff the task that spawned it (root node) has a type that
@@ -1069,9 +1081,109 @@ bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
       return ShouldKeepTaskForExtensions(type);
     case DisplayCategory::kSystem:
       return ShouldKeepTaskForSystem(type, subtype);
+    case DisplayCategory::kAll:
+      return true;
     default:
       NOTREACHED();
   }
+}
+
+bool TaskManagerTableModel::HasMatchInTasksSharingSameProcess(
+    TaskId task_id) const {
+  if (tasks_.empty()) {
+    return false;
+  }
+
+  for (TaskId id :
+       observed_task_manager()->GetIdsOfTasksSharingSameProcess(task_id)) {
+    if (base::i18n::StringSearchIgnoringCaseAndAccents(
+            search_terms_, observed_task_manager()->GetTitle(id),
+            /*match_index=*/nullptr, /*match_length=*/nullptr) &&
+        base::ranges::find(tasks_, id) != tasks_.end()) {
+      // There is at least one matched task in task group, we need to
+      // keep it.
+      return true;
+    }
+  }
+  return false;
+}
+
+void TaskManagerTableModel::UpdateMatchedProcessSet() {
+  matched_process_set_.clear();
+
+  if (search_terms_.empty()) {
+    return;
+  }
+
+  for (TaskId task_id : observed_task_manager()->GetTaskIdsList()) {
+    UpdateMatchedProcessSetById(task_id);
+  }
+}
+
+void TaskManagerTableModel::UpdateMatchedProcessSetById(TaskId task_id) {
+  if (base::i18n::StringSearchIgnoringCaseAndAccents(
+          search_terms_, observed_task_manager()->GetTitle(task_id),
+          /*match_index=*/nullptr, /*match_length=*/nullptr)) {
+    matched_process_set_.insert(observed_task_manager()->GetProcessId(task_id));
+  }
+}
+
+bool TaskManagerTableModel::UpdateModel(const DisplayCategory display_category,
+                                        const std::u16string& search_term) {
+  if (search_terms_ == search_term && display_category_ == display_category) {
+    // Early return if no real change happens.
+    return false;
+  }
+
+  search_terms_ = search_term;
+  display_category_ = display_category;
+
+  // Precalculate matched processes for search terms.
+  UpdateMatchedProcessSet();
+
+  if (!table_model_observer_) {
+    return false;
+  }
+
+  // Task list which will be used for filter logic.
+  const auto task_list = observed_task_manager()->GetTaskIdsList();
+
+  // The final task list after applying the filter logic. It will be used to
+  // find the insert position for the new task in the final list.
+  auto filtered_task_list = task_list;
+  FilterTaskList(filtered_task_list);
+
+  for (TaskId id : task_list) {
+    auto filtered_iter = base::ranges::find(filtered_task_list, id);
+    bool should_keep_task = filtered_iter != filtered_task_list.end();
+    // Indicate if the task is in current task list.
+    auto task_iter = base::ranges::find(tasks_, id);
+    bool task_id_exists = task_iter != tasks_.end();
+    if (should_keep_task == task_id_exists) {
+      // The task already displays as the filter logic.
+      // Case 1 : The task in the complete task list which matches the filter
+      // logic already exists in current task list.
+      // Case 2 : The task in the complete task list which does not match  the
+      // filter logic does not exist in current task list.
+      continue;
+    }
+
+    if (should_keep_task) {
+      // Need to find a place to insert the task and update the table model.
+      std::vector<TaskId>::difference_type index =
+          filtered_iter - filtered_task_list.begin();
+      CHECK_LE(static_cast<size_t>(index), tasks_.size())
+          << " out of bounds insert index " << index;
+      tasks_.insert(tasks_.begin() + index, id);
+      table_model_observer_->OnItemsAdded(index, 1);
+    } else {
+      // Need to remove the task and update the table model.
+      auto removed_index = static_cast<size_t>(task_iter - tasks_.begin());
+      tasks_.erase(task_iter);
+      table_model_observer_->OnItemsRemoved(removed_index, 1);
+    }
+  }
+  return true;
 }
 
 }  // namespace task_manager

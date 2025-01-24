@@ -23,6 +23,7 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/task_manager/task_manager_tester.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/task_manager/task_manager_table_model.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -73,6 +75,7 @@
 #include "url/url_constants.h"
 
 using content::WebContents;
+using task_manager::DisplayCategory;
 using task_manager::browsertest_util::ColumnSpecifier;
 using task_manager::browsertest_util::MatchAboutBlankTab;
 using task_manager::browsertest_util::MatchAnyApp;
@@ -2231,4 +2234,98 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnySubframe()));
+}
+
+//==============================================================================
+// Desktop refreshed task manager test.
+class TaskManagerDesktopRefreshBrowserTest : public TaskManagerBrowserTest {
+ public:
+  TaskManagerDesktopRefreshBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kTaskManagerDesktopRefresh, {}}},
+        /*disabled_features=*/{});
+    EXPECT_TRUE(
+        base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh));
+  }
+  TaskManagerDesktopRefreshBrowserTest(
+      const TaskManagerDesktopRefreshBrowserTest&) = delete;
+  TaskManagerDesktopRefreshBrowserTest& operator=(
+      const TaskManagerDesktopRefreshBrowserTest&) = delete;
+  ~TaskManagerDesktopRefreshBrowserTest() override = default;
+
+  void UpdateModel(const DisplayCategory display_category,
+                   const std::u16string& search_term) {
+    model()->UpdateModel(display_category, search_term);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Testing that the refreshed task manager properly displays tasks on different
+// tabs.
+IN_PROC_BROWSER_TEST_F(TaskManagerDesktopRefreshBrowserTest,
+                       FilterTasksByCategoryAndSearchTerm) {
+  ShowTaskManager();
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAboutBlankTab()));
+
+  // New tab should be shown on the default `Tabs` tab of the task manager.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/title2.html")));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyExtension()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyUtility()));
+
+  // Load an extension which should not be shown in the default `Tabs` tab of
+  // the task manager. Current the task list is like below. The utility
+  // processes might be different for different systems.
+  // Utility: Network Service
+  // Utility: Video Capture
+  // Utility: Storage Service
+  // Tab: Title Of Awesomeness
+  // Extension: My extension 1
+  // Extension: Foobar
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("good")
+                                .AppendASCII("Extensions")
+                                .AppendASCII("behllobkkfkfnphdnhnkndlbkcpglgmj")
+                                .AppendASCII("1.0.0.0")));
+  GURL url("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/page.html");
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyExtension()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyUtility()));
+
+  // Switch to `Extensions` tab, the extension tasks show be shown.
+  UpdateModel(DisplayCategory::kExtensions, u"");
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchExtension("Foobar")));
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForTaskManagerRows(1, MatchExtension("My extension 1")));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyExtension()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyTab()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyUtility()));
+
+  // Switch to `System` tab, the extension and tabs should not be shown.
+  UpdateModel(DisplayCategory::kSystem, u"");
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyTab()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyExtension()));
+
+  // Input search terms, all matched tasks would be shown no matter which tab
+  // they lie in.
+  UpdateModel(DisplayCategory::kAll, u"title");
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyExtension()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyUtility()));
+
+  UpdateModel(DisplayCategory::kAll, u"EN");
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchExtension("Foobar")));
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForTaskManagerRows(1, MatchExtension("My extension 1")));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyExtension()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyExtension()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
 }
