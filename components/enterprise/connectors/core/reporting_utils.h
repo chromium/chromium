@@ -8,6 +8,7 @@
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace enterprise_connectors {
 
@@ -30,6 +31,25 @@ GetPasswordReuseEvent(const GURL& url,
 
 chrome::cros::reporting::proto::SafeBrowsingPasswordChangedEvent
 GetPasswordChangedEvent(const std::string& user_name);
+
+chrome::cros::reporting::proto::LoginEvent GetLoginEvent(
+    const GURL& url,
+    bool is_federated,
+    const url::SchemeHostPort& federated_origin,
+    const std::u16string& username);
+
+chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent
+GetInterstitialEvent(const GURL& url,
+                     const std::string& reason,
+                     int net_error_code,
+                     bool clicked_through,
+                     EventResult event_result);
+
+chrome::cros::reporting::proto::BrowserCrashEvent GetBrowserCrashEvent(
+    const std::string& channel,
+    const std::string& version,
+    const std::string& report_id,
+    const std::string& platform);
 
 }  // namespace enterprise_connectors
 

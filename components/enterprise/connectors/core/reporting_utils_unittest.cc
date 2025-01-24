@@ -87,4 +87,43 @@ TEST(ReportingUtilsTest, GetPasswordChangedEvent) {
   ASSERT_EQ(event.user_name(), kUsername);
 }
 
+TEST(ReportingUtilsTest, GetLoginEvent) {
+  url::SchemeHostPort federated_origin = url::SchemeHostPort();
+  auto event = GetLoginEvent(/*url=*/GURL("https://google.com/"),
+                             /*is_federated=*/federated_origin.IsValid(),
+                             /*federated_origin=*/federated_origin,
+                             /*username=*/u"username");
+
+  ASSERT_EQ(event.url(), "https://google.com/");
+  ASSERT_FALSE(event.is_federated());
+  ASSERT_EQ(event.federated_origin(), "");
+  ASSERT_EQ(event.login_user_name(), "*****");
+}
+
+TEST(ReportingUtilsTest, GetInterstitialEvent) {
+  auto event = GetInterstitialEvent(/*url=*/GURL("https://google.com/"),
+                                    /*reason=*/"MALWARE", /*net_error_code=*/0,
+                                    /*clicked_through=*/false,
+                                    /*event_result=*/EventResult::WARNED);
+
+  ASSERT_EQ(event.url(), "https://google.com/");
+  ASSERT_EQ(
+      event.reason(),
+      chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent::MALWARE);
+  ASSERT_EQ(event.net_error_code(), 0);
+  ASSERT_EQ(event.event_result(),
+            chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+}
+
+TEST(ReportingUtilsTest, GetBrowserCrashEvent) {
+  auto event =
+      GetBrowserCrashEvent(/*channel=*/"canary", /*version=*/"100.0.0000.000",
+                           /*report_id=*/"123", /*platform=*/"Windows");
+
+  ASSERT_EQ(event.channel(), "canary");
+  ASSERT_EQ(event.version(), "100.0.0000.000");
+  ASSERT_EQ(event.report_id(), "123");
+  ASSERT_EQ(event.platform(), "Windows");
+}
+
 }  // namespace enterprise_connectors
