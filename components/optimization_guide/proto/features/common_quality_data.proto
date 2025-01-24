@@ -339,6 +339,9 @@ message TextStyle {
   // to know which specific semantic was used; only that the website author
   // chose to emphasize the text in some way. The default is false.
   bool has_emphasis = 2;
+
+  // The color of the text in RGBA format.
+  uint32 color = 3;
 }
 
 // Information about the image. In the future, this may include a pixmap.
