@@ -896,27 +896,26 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
  public:
   CanvasResourceProviderSwapChain(
       gfx::Size size,
-      SkColorType sk_color_type,
+      viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
       CanvasResourceHost* resource_host)
-      : CanvasResourceProvider(
-            kSwapChain,
-            size,
-            viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
-            alpha_type,
-            color_space,
-            std::move(context_provider_wrapper),
-            resource_host),
+      : CanvasResourceProvider(kSwapChain,
+                               size,
+                               format,
+                               alpha_type,
+                               color_space,
+                               std::move(context_provider_wrapper),
+                               resource_host),
         use_oop_rasterization_(ContextProviderWrapper()
                                    ->ContextProvider()
                                    .GetCapabilities()
                                    .gpu_rasterization) {
     resource_ = CanvasResourceSwapChain::Create(
-        size, viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
-        alpha_type, color_space, ContextProviderWrapper(), CreateWeakPtr());
+        size, format, alpha_type, color_space, ContextProviderWrapper(),
+        CreateWeakPtr());
     // CanvasResourceProviderSwapChain can only operate in a single buffered
     // mode so enable it as soon as possible.
     TryEnableSingleBuffering();
@@ -1306,8 +1305,8 @@ CanvasResourceProvider::CreateSwapChainProvider(
   }
 
   auto provider = std::make_unique<CanvasResourceProviderSwapChain>(
-      size, sk_color_type, alpha_type, color_space, context_provider_wrapper,
-      resource_host);
+      size, viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
+      alpha_type, color_space, context_provider_wrapper, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
