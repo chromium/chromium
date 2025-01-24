@@ -2566,6 +2566,18 @@ GraphBuilderCoreml::AddOperationForGather(
   CHECK(context_properties_.data_type_limits.gather_indices.Has(
       MILDataTypeToOperandType(indices_operand_info.mil_data_type)));
 
+  // crbug.com/391672283 - Gather crashes with 5D input and 0D
+  // indices, so reshape indices to 1D.
+  uint64_t indices_operand_id = operation.indices_operand_id;
+  if (indices_operand_info.dimensions.empty() &&
+      input_operand_info.dimensions.size() == 5) {
+    ASSIGN_OR_RETURN(indices_operand_id, GenerateInternalOperandInfo(
+                                             indices_operand_info.mil_data_type,
+                                             std::array<uint32_t, 1>{1}));
+    RETURN_IF_ERROR(AddOperationForReshape(operation.indices_operand_id,
+                                           indices_operand_id, block));
+  }
+
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpGatherTypeName);
   RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
@@ -2573,7 +2585,7 @@ GraphBuilderCoreml::AddOperationForGather(
 
   // TODO(crbug.com/339087333): Handle negative and out-of-bounds indices.
   RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamIndices,
-                                      operation.indices_operand_id));
+                                      indices_operand_id));
 
   SetInputsWithValues(
       *op->mutable_inputs(),
@@ -2581,7 +2593,21 @@ GraphBuilderCoreml::AddOperationForGather(
                           base::checked_cast<int32_t>(operation.axis))},
        {kOpParamValidateIndices, CreateScalarImmediateValue(false)}});
 
-  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  if (indices_operand_id != operation.indices_operand_id) {
+    // If indices was reshaped from 0D to 1D, the output shape is different.
+    std::vector<uint32_t> output_shape(input_operand_info.dimensions);
+    // There is a single value at the gathered axis because indices is a single
+    // value.
+    output_shape[operation.axis] = 1u;
+    ASSIGN_OR_RETURN(uint64_t output_operand_id,
+                     GenerateInternalOperandInfo(
+                         input_operand_info.mil_data_type, output_shape));
+    PopulateNamedValueType(output_operand_id, *op->add_outputs());
+    RETURN_IF_ERROR(AddOperationForReshape(output_operand_id,
+                                           operation.output_operand_id, block));
+  } else {
+    PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  }
   return base::ok();
 }
 
