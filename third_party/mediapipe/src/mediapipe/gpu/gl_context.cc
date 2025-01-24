@@ -40,7 +40,6 @@
 #include "mediapipe/gpu/gpu_buffer_format.h"
 
 #ifndef __EMSCRIPTEN__
-#include "absl/debugging/leak_check.h"
 #include "mediapipe/gpu/gl_thread_collector.h"
 #endif
 
