@@ -65,7 +65,8 @@ void NoPasswordChangeFormView::OnWidgetInitialized() {
       ui::ImageModel::FromVectorIcon(vector_icons::kReloadChromeRefreshIcon,
                                      ui::kColorIconSecondary,
                                      GetLayoutConstant(PAGE_INFO_ICON_SIZE)));
-  SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
+  SetBubbleHeader(IDR_PASSWORD_CHANGE_NEUTRAL,
+                  IDR_PASSWORD_CHANGE_NEUTRAL_DARK);
 }
 
 BEGIN_METADATA(NoPasswordChangeFormView)
