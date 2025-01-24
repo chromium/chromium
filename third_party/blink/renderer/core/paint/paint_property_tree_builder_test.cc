@@ -1352,10 +1352,83 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootLocalToBorderBoxSnappingScale) {
   EXPECT_EQ(gfx::Vector2dF(8, 9),
             svg_properties->PaintOffsetTranslation()->Get2dTranslation());
   const float snapped_height = 99;
-  const float unsnapped_height = LayoutUnit(99.99f).ToFloat();
+  const PhysicalSize unsnapped_size(LayoutUnit(100), LayoutUnit(99.99f));
+  EXPECT_EQ(To<LayoutSVGRoot>(svg).Size(), unsnapped_size);
+  const float unsnapped_height = unsnapped_size.height.ToFloat();
   ASSERT_NE(svg_properties->ReplacedContentTransform(), nullptr);
   EXPECT_TRANSFORM_EQ(MakeScaleMatrix(snapped_height / unsnapped_height),
                       svg_properties->ReplacedContentTransform()->Matrix());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, SVGRootLocalToBorderBoxSnappingScaleWide) {
+  ScopedSvgInlineRootPixelSnappingScaleAdjustmentForTest snapscale_enabled(
+      true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      svg {
+        position: absolute;
+        display: block;
+        width: 211.419px;
+        height: 2.20228px;
+        overflow: visible;
+      }
+    </style>
+    <div style="position: relative">
+      <svg id="svg">
+        <path d="M0,2L382,2" stroke-width="4" stroke="black"/>
+      </svg>
+    </div>
+  )HTML");
+
+  const LayoutObject& svg = *GetLayoutObjectByElementId("svg");
+  const ObjectPaintProperties* svg_properties =
+      svg.FirstFragment().PaintProperties();
+  EXPECT_EQ(gfx::Vector2dF(8, 8),
+            svg_properties->PaintOffsetTranslation()->Get2dTranslation());
+  const gfx::SizeF snapped_size(211, 2);
+  const PhysicalSize unsnapped_size(LayoutUnit(211.419f), LayoutUnit(2.20228f));
+  EXPECT_EQ(To<LayoutSVGRoot>(svg).Size(), unsnapped_size);
+  ASSERT_NE(svg_properties->ReplacedContentTransform(), nullptr);
+  EXPECT_TRANSFORM_EQ(
+      MakeScaleMatrix(snapped_size.width() / unsnapped_size.width.ToFloat(),
+                      snapped_size.height() / unsnapped_size.height.ToFloat()),
+      svg_properties->ReplacedContentTransform()->Matrix());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest,
+       SVGRootLocalToBorderBoxSnappingScaleNarrow) {
+  ScopedSvgInlineRootPixelSnappingScaleAdjustmentForTest snapscale_enabled(
+      true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      svg {
+        position: absolute;
+        display: block;
+        width: 2.20228px;
+        height: 211.419px;
+        overflow: visible;
+      }
+    </style>
+    <div style="position: relative">
+      <svg id="svg">
+        <path d="M2,0L2,382" stroke-width="4" stroke="black"/>
+      </svg>
+    </div>
+  )HTML");
+
+  const LayoutObject& svg = *GetLayoutObjectByElementId("svg");
+  const ObjectPaintProperties* svg_properties =
+      svg.FirstFragment().PaintProperties();
+  EXPECT_EQ(gfx::Vector2dF(8, 8),
+            svg_properties->PaintOffsetTranslation()->Get2dTranslation());
+  const gfx::SizeF snapped_size(2, 211);
+  const PhysicalSize unsnapped_size(LayoutUnit(2.20228f), LayoutUnit(211.419f));
+  EXPECT_EQ(To<LayoutSVGRoot>(svg).Size(), unsnapped_size);
+  ASSERT_NE(svg_properties->ReplacedContentTransform(), nullptr);
+  EXPECT_TRANSFORM_EQ(
+      MakeScaleMatrix(snapped_size.width() / unsnapped_size.width.ToFloat(),
+                      snapped_size.height() / unsnapped_size.height.ToFloat()),
+      svg_properties->ReplacedContentTransform()->Matrix());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, SVGNestedViewboxTransforms) {
