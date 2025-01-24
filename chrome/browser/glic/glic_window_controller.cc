@@ -703,14 +703,10 @@ void GlicWindowController::HandleAttachmentToBrowserWindows(
   // This should only ever be called after a move is completed.
   CHECK(!in_move_loop_);
 
-  content::BrowserContext* glic_browser_context =
-      GetGlicView()->web_view()->GetBrowserContext();
-
   // The profile must have started off as Glic enabled since a Glic widget is
   // open but it may have been disabled at runtime by policy. In this edge-case,
   // prevent reattaching back to a window (as it no longer has a GlicButton).
-  if (!GlicEnabling::IsEnabledForProfile(
-          Profile::FromBrowserContext(glic_browser_context))) {
+  if (!GlicEnabling::IsEnabledForProfile(profile_)) {
     return;
   }
 
@@ -830,11 +826,10 @@ bool GlicWindowController::IsBrowserGlicCompatible(Browser* browser) {
   // - is not a TYPE_NORMAL browser
   // - is from a glic-disabled profile
   // - is not visible
-  // - uses a different BrowserContext from glic
+  // - uses a different Profile from glic
   if (!GlicEnabling::IsEnabledForProfile(browser->profile()) ||
       !browser->is_type_normal() || !browser->window()->IsVisible() ||
-      browser->GetWebView()->GetBrowserContext() !=
-          GetGlicView()->web_view()->GetBrowserContext()) {
+      browser->profile() != profile_) {
     return false;
   }
   return true;
