@@ -1726,11 +1726,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     @Override
-    protected boolean supportsEdgeToEdge() {
-        // TODO (crbug.com/377959826): Check whether bottom chin is implemented once top insets are
-        //  properly accounted for in the edge-to-edge logic. Return false when bottom chin is
-        //  enabled, true otherwise.
-        return false;
+    protected boolean shouldDrawEdgeToEdgeOnCreate() {
+        return EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
+                && !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled();
     }
 
     @Override

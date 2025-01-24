@@ -75,12 +75,14 @@ public class EdgeToEdgeManagerUnitTest {
     public void testShouldDrawEdgeToEdge() {
         mEdgeToEdgeManager = createEdgeToEdgeManager(/* shouldDrawEdgeToEdge= */ true);
         verify(mEdgeToEdgeStateProvider, atLeastOnce()).acquireSetDecorFitsSystemWindowToken();
+        assertFalse(mEdgeToEdgeManager.shouldContentFitsWindowInsets());
     }
 
     @Test
     public void testShouldNotDrawEdgeToEdge() {
         mEdgeToEdgeManager = createEdgeToEdgeManager(/* shouldDrawEdgeToEdge= */ false);
         verify(mEdgeToEdgeStateProvider, never()).acquireSetDecorFitsSystemWindowToken();
+        assertTrue(mEdgeToEdgeManager.shouldContentFitsWindowInsets());
     }
 
     @Test
@@ -116,7 +118,7 @@ public class EdgeToEdgeManagerUnitTest {
                         mActivity,
                         mEdgeToEdgeStateProvider,
                         systemBarColorHelperSupplier,
-                        /* shouldDrawEdgeToEdge= */ true);
+                        /* shouldDrawEdgeToEdge= */ false);
         assertTrue(
                 "The manager should have been initialized with the content fitting the window"
                         + " insets.",

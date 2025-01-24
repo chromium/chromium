@@ -203,6 +203,12 @@ public class EdgeToEdgeControllerImpl
         mSystemInsets = getSystemInsets(mInsetObserver.getLastRawWindowInsets());
         mEdgeToEdgeStateProvider = mEdgeToEdgeManager.getEdgeToEdgeStateProvider();
         mEdgeToEdgeToken = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();
+
+        // Any padding to make the content fit the window insets has not yet been applied, so by
+        // default, the content is not yet fitting the window insets. The signal should be set to
+        // false for now, and updated later if padding gets applied.
+        mEdgeToEdgeManager.setContentFitsWindowInsets(false);
+
         drawToEdge(
                 EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab),
                 /* changedWindowState= */ true);

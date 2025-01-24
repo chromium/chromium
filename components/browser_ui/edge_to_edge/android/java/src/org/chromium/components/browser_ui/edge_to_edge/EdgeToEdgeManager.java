@@ -35,8 +35,7 @@ public class EdgeToEdgeManager {
             @NonNull EdgeToEdgeStateProvider edgeToEdgeStateProvider,
             @NonNull OneshotSupplier<SystemBarColorHelper> systemBarColorHelperSupplier,
             boolean shouldDrawEdgeToEdge) {
-        // TODO(crbug.com/389790022) Pass in shouldContentFitWindow from the ctor args.
-        mContentFitsWindowInsetsSupplier.set(true);
+        mContentFitsWindowInsetsSupplier.set(!shouldDrawEdgeToEdge);
 
         mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
         mEdgeToEdgeSystemBarColorHelper =
@@ -87,7 +86,7 @@ public class EdgeToEdgeManager {
      * Returns true if the content should fit within the system's window insets, false if the
      * content should be drawn edge-to-edge (into the window insets).
      */
-    public boolean getContentFitsWindowInsets() {
+    public boolean shouldContentFitsWindowInsets() {
         return mContentFitsWindowInsetsSupplier.get();
     }
 
