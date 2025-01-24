@@ -22,7 +22,7 @@ enum class LensOverlayOnboardingTreatment {
   // The speedbump menu replaces the location bar button.
   kSpeedbumpMenu = 1,
   // The onboarding strings are updated.
-  kUpdatedOnboardingString = 2,
+  kUpdatedOnboardingStrings = 2,
   // The onboarding is presented with updated strings and graphics.
   kUpdatedOnboardingStringsAndVisuals = 3,
   kMaxValue = kUpdatedOnboardingStringsAndVisuals,

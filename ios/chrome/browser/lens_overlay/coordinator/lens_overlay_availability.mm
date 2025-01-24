@@ -40,27 +40,16 @@ bool IsLVFUnifiedExperienceEnabled() {
 }
 
 LensOverlayOnboardingTreatment GetLensOverlayOnboardingTreatment() {
-  LensOverlayOnboardingTreatment fallbackDefault =
-      LensOverlayOnboardingTreatment::kDefaultOnboardingExperience;
-
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  bool hasOnboardingSwitch =
-      command_line->HasSwitch(kLensOverlayAlternativeOnboardingType);
-  if (!hasOnboardingSwitch) {
-    return fallbackDefault;
+  std::string featureParam = base::GetFieldTrialParamValueByFeature(
+      kLensOverlayAlternativeOnboarding, kLensOverlayOnboardingParam);
+  if (featureParam == kLensOverlayOnboardingParamSpeedbumpMenu) {
+    return LensOverlayOnboardingTreatment::kSpeedbumpMenu;
+  } else if (featureParam == kLensOverlayOnboardingParamUpdatedStrings) {
+    return LensOverlayOnboardingTreatment::kUpdatedOnboardingStrings;
+  } else if (featureParam ==
+             kLensOverlayOnboardingParamUpdatedStringsAndVisuals) {
+    return LensOverlayOnboardingTreatment::kUpdatedOnboardingStringsAndVisuals;
+  } else {
+    return LensOverlayOnboardingTreatment::kDefaultOnboardingExperience;
   }
-
-  std::string optionString =
-      command_line->GetSwitchValueASCII(kLensOverlayAlternativeOnboardingType);
-
-  unsigned int intValue;
-  bool conversionSuccess = base::StringToUint(optionString, &intValue);
-  unsigned int maxValue =
-      static_cast<int>(LensOverlayOnboardingTreatment::kMaxValue);
-  if (intValue > maxValue || !conversionSuccess) {
-    return fallbackDefault;
-  }
-
-  return static_cast<LensOverlayOnboardingTreatment>(intValue);
 }
