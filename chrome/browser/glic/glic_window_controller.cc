@@ -648,7 +648,6 @@ void GlicWindowController::Close() {
   if (state_ == State::kClosed) {
     return;
   }
-  glic_size_.reset();
   state_ = State::kClosed;
   attached_browser_ = nullptr;
   attached_browser_widget_observation_.Reset();
