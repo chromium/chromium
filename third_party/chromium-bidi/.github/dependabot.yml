@@ -1,5 +1,7 @@
 version: 2
 
+# touch
+
 updates:
   - package-ecosystem: gitsubmodule
     directory: /
