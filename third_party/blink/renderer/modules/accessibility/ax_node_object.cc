@@ -185,6 +185,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 namespace {
@@ -4715,14 +4716,55 @@ bool AXNodeObject::OnNativeSetValueAction(const String& string) {
 String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
                              AXObjectVector* name_objects) const {
   String name = AXObject::GetName(name_from, name_objects);
+
+  // Fields inside a datetime control need to merge the field name with
+  // the name of the <input> element.
   if (RoleValue() == ax::mojom::blink::Role::kSpinButton &&
       DatetimeAncestor()) {
-    // Fields inside a datetime control need to merge the field name with
-    // the name of the <input> element.
     name_objects->clear();
     String input_name = DatetimeAncestor()->GetName(name_from, name_objects);
     if (!input_name.empty())
       return name + " " + input_name;
+  }
+
+  // Handle ::scroll-button(*) pseudo element names.
+  const Element* element = GetElement();
+  if (element && element->IsScrollButtonPseudoElement()) {
+    // Prioritize alt text if available.
+    std::optional<String> alt_text = GetCSSAltText(element);
+    if (alt_text && !alt_text->empty()) {
+      return *alt_text;
+    }
+
+    // If the alt text is not available, return a "Scroll [direction]" name,
+    const ComputedStyle* style =
+        GetLayoutObject() ? GetLayoutObject()->Style() : nullptr;
+    if (style) {
+      PhysicalDirection physical;
+      if (element->IsScrollButtonBlockStartPseudoElement()) {
+        physical = style->GetWritingDirection().BlockStart();
+      } else if (element->IsScrollButtonBlockEndPseudoElement()) {
+        physical = style->GetWritingDirection().BlockEnd();
+      } else if (element->IsScrollButtonInlineStartPseudoElement()) {
+        physical = style->GetWritingDirection().InlineStart();
+      } else if (element->IsScrollButtonInlineEndPseudoElement()) {
+        physical = style->GetWritingDirection().InlineEnd();
+      } else {
+        NOTREACHED()
+            << "ScrollButtonPseudoElement must be one of known directions";
+      }
+
+      switch (physical) {
+        case PhysicalDirection::kRight:
+          return element->GetLocale().QueryString(IDS_AX_CAROUSEL_SCROLL_RIGHT);
+        case PhysicalDirection::kLeft:
+          return element->GetLocale().QueryString(IDS_AX_CAROUSEL_SCROLL_LEFT);
+        case PhysicalDirection::kDown:
+          return element->GetLocale().QueryString(IDS_AX_CAROUSEL_SCROLL_DOWN);
+        case PhysicalDirection::kUp:
+          return element->GetLocale().QueryString(IDS_AX_CAROUSEL_SCROLL_UP);
+      }
+    }
   }
 
   return name;
