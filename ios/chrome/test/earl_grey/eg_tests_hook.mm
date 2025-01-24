@@ -325,6 +325,9 @@ void DeleteFilesRecursively(NSString* directoryPath) {
         if ([itemPath containsString:@"/Library/Preferences/"]) {
           continue;
         }
+        if ([itemPath containsString:@"Saved Application State"]) {
+          continue;
+        }
         if (![fileManager removeItemAtPath:itemPath error:&error]) {
           NSLog(@"Error deleting file: %@", error.localizedDescription);
         }
@@ -348,6 +351,7 @@ void WipeProfileIfRequested(int argc, char* argv[]) {
 
   DeleteFilesRecursively(
       [NSHomeDirectory() stringByAppendingPathComponent:@"Library"]);
+
   // Reset NSUserDefaults.
   [[NSUserDefaults standardUserDefaults]
       setPersistentDomain:[NSDictionary dictionary]
