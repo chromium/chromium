@@ -206,11 +206,6 @@ bool ChromeWebAuthenticationDelegate::OriginMayUseRemoteDesktopClientOverride(
   // The policy explicitly does not cover external instances of CRD. It
   // must not be extended to other origins or be made configurable without going
   // through security review.
-  if (!base::FeatureList::IsEnabled(
-          device::kWebAuthnGoogleCorpRemoteDesktopClientPrivilege)) {
-    return false;
-  }
-
   const Profile* profile = Profile::FromBrowserContext(browser_context);
   const PrefService* prefs = profile->GetPrefs();
   const bool google_corp_remote_proxied_request_allowed =
