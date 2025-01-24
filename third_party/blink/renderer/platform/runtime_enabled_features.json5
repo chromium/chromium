@@ -3001,7 +3001,7 @@
     },
     {
       name: "OffscreenCanvasGetContextAttributes",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "OmitBlurEventOnElementRemoval",
