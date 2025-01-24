@@ -24,6 +24,8 @@ class OnscreenContentProviderAndroid : public ContentCaptureConsumer {
   ~OnscreenContentProviderAndroid() override;
 
   // ContentCaptureConsumer
+  void FlushCaptureContent(const ContentCaptureSession& parent_session,
+                           const ContentCaptureFrame& data) override;
   void DidCaptureContent(const ContentCaptureSession& parent_session,
                          const ContentCaptureFrame& data) override;
   void DidUpdateContent(const ContentCaptureSession& parent_session,
