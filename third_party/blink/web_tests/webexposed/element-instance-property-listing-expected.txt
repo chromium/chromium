@@ -772,7 +772,6 @@ html element input
     property height
     property incremental
     property indeterminate
-    property interestTargetElement
     property labels
     property list
     property max
