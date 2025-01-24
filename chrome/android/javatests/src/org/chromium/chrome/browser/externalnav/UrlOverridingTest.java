@@ -476,10 +476,13 @@ public class UrlOverridingTest {
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         final Tab[] latestTabHolder = new Tab[1];
+        final InterceptNavigationDelegateImpl[] latestDelegateHolder =
+                new InterceptNavigationDelegateImpl[1];
 
         AtomicReference<OverrideUrlLoadingResult> lastResultValue = new AtomicReference<>();
 
         latestTabHolder[0] = tab;
+        latestDelegateHolder[0] = getInterceptNavigationDelegate(tab);
 
         Callback<Pair<GURL, OverrideUrlLoadingResult>> resultCallback =
                 (Pair<GURL, OverrideUrlLoadingResult> result) -> {
@@ -495,7 +498,7 @@ public class UrlOverridingTest {
                     lastResultValue.set(result.second);
                 };
 
-        InterceptNavigationDelegateImpl.setResultCallbackForTesting(resultCallback);
+        latestDelegateHolder[0].setResultCallbackForTesting(resultCallback);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.addObserver(
@@ -517,6 +520,12 @@ public class UrlOverridingTest {
                                                     failCallback,
                                                     loadCallback));
                                     latestTabHolder[0] = newTab;
+                                    latestDelegateHolder[0].setResultCallbackForTesting(null);
+                                    latestDelegateHolder[0] =
+                                            getInterceptNavigationDelegate(newTab);
+                                    latestDelegateHolder[0].setResultCallbackForTesting(
+                                            resultCallback);
+
                                     TestChildFrameNavigationObserver
                                             .createAndAttachToNativeWebContents(
                                                     newTab.getWebContents(),
@@ -641,6 +650,11 @@ public class UrlOverridingTest {
         } else {
             DOMUtils.clickNode(mActivityTestRule.getWebContents(), targetId);
         }
+    }
+
+    private static InterceptNavigationDelegateImpl getInterceptNavigationDelegate(Tab tab) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> InterceptNavigationDelegateTabHelper.get(tab));
     }
 
     private PropertyModel getCurrentExternalNavigationMessage() throws Exception {
@@ -837,7 +851,7 @@ public class UrlOverridingTest {
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> RedirectHandlerTabHelper.swapHandlerForTesting(tab, mSpyRedirectHandler));
+                () -> RedirectHandlerTabHelper.swapHandlerFor(tab, mSpyRedirectHandler));
         // This is a little fragile to code changes, but better than waiting 15 real seconds.
         Mockito.doReturn(SystemClock.elapsedRealtime()) // Initial Navigation create
                 .doReturn(SystemClock.elapsedRealtime()) // Initial Navigation shouldOverride
@@ -1382,10 +1396,12 @@ public class UrlOverridingTest {
                         ThreadUtils.runOnUiThreadBlocking(
                                 () -> RedirectHandlerTabHelper.getHandlerFor(tab)));
 
+        InterceptNavigationDelegateImpl delegate = getInterceptNavigationDelegate(tab);
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.addObserver(observer);
-                    RedirectHandlerTabHelper.swapHandlerForTesting(tab, spyHandler);
+                    RedirectHandlerTabHelper.swapHandlerFor(tab, spyHandler);
                 });
 
         // Click link to go to second page.
@@ -1394,7 +1410,7 @@ public class UrlOverridingTest {
         syncHelper.notifyCalled();
 
         AtomicInteger lastResultValue = new AtomicInteger();
-        InterceptNavigationDelegateImpl.setResultCallbackForTesting(
+        delegate.setResultCallbackForTesting(
                 (Pair<GURL, OverrideUrlLoadingResult> result) -> {
                     if (result.first.getSpec().equals(url)) return;
                     lastResultValue.set(result.second.getResultType());
@@ -1452,7 +1468,7 @@ public class UrlOverridingTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    RedirectHandlerTabHelper.swapHandlerForTesting(tab, mRedirectHandler);
+                    RedirectHandlerTabHelper.swapHandlerFor(tab, mRedirectHandler);
                     observer.observe(null);
                 });
 
@@ -1728,7 +1744,7 @@ public class UrlOverridingTest {
 
         final Tab tab = mCustomTabActivityRule.getActivity().getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> RedirectHandlerTabHelper.swapHandlerForTesting(tab, mSpyRedirectHandler));
+                () -> RedirectHandlerTabHelper.swapHandlerFor(tab, mSpyRedirectHandler));
 
         mCustomTabActivityRule.loadUrl(
                 mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_AND_SHORT_TIMEOUT_PAGE));
