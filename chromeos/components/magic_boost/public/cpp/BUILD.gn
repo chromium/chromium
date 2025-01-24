@@ -16,5 +16,8 @@ component("cpp") {
     "magic_boost_state.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromeos/constants",
+  ]
 }
