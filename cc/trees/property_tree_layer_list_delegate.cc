@@ -35,4 +35,53 @@ void PropertyTreeLayerListDelegate::UpdatePropertyTreesIfNeeded(
   }
 }
 
+void PropertyTreeLayerListDelegate::UpdateScrollOffsetFromImpl(
+    LayerTreeHost* host,
+    const ElementId& id,
+    const gfx::Vector2dF& delta,
+    const std::optional<TargetSnapAreaElementIds>& snap_target_ids) {
+  auto& scroll_tree = host->property_trees()->scroll_tree_mutable();
+  auto new_offset = scroll_tree.current_scroll_offset(id) + delta;
+  TRACE_EVENT_INSTANT2("cc", "NotifyDidScroll", TRACE_EVENT_SCOPE_THREAD,
+                       "cur_y", scroll_tree.current_scroll_offset(id).y(),
+                       "delta", delta.y());
+  if (auto* scroll_node = scroll_tree.FindNodeFromElementId(id)) {
+    // This update closely follows
+    // blink::PropertyTreeManager::DirectlyUpdateScrollOffsetTransform.
+
+    scroll_tree.SetScrollOffset(id, new_offset);
+    // |blink::PropertyTreeManager::DirectlySetScrollOffset| (called from
+    // |blink::PropertyTreeManager::DirectlyUpdateScrollOffsetTransform|)
+    // marks the layer as needing to push properties in order to clobber
+    // animations, but that is not needed for an impl-side scroll.
+
+    // Update the offset in the transform node.
+    TransformTree& transform_tree =
+        host->property_trees()->transform_tree_mutable();
+    auto* transform_node = transform_tree.Node(scroll_node->transform_id);
+    if (transform_node && transform_node->scroll_offset != new_offset) {
+      transform_node->scroll_offset = new_offset;
+      transform_node->needs_local_transform_update = true;
+      transform_node->transform_changed = true;
+      transform_tree.set_needs_update(true);
+
+      // If the scroll was realized on the compositor, then its transform node
+      // is already updated (see LayerTreeImpl::DidUpdateScrollOffset) and we
+      // are now "catching up" to it on main, so we don't need a commit.
+      //
+      // But if the scroll should be realized on the main thread, we need a
+      // commit to push the transform change.
+      if (scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node)) {
+        host->SetNeedsCommit();
+      }
+    }
+
+    // The transform tree has been modified which requires a call to
+    // |LayerTreeHost::UpdateLayers| to update the property trees.
+    host->SetNeedsUpdateLayers();
+  }
+
+  scroll_tree.NotifyDidCompositorScroll(id, new_offset, snap_target_ids);
+}
+
 }  // namespace cc

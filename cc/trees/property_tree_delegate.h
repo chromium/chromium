@@ -5,6 +5,12 @@
 #ifndef CC_TREES_PROPERTY_TREE_DELEGATE_H_
 #define CC_TREES_PROPERTY_TREE_DELEGATE_H_
 
+#include <optional>
+
+#include "cc/input/scroll_snap_data.h"
+#include "cc/paint/element_id.h"
+#include "ui/gfx/geometry/vector2d_f.h"
+
 namespace cc {
 
 class LayerTreeHost;
@@ -27,6 +33,12 @@ class PropertyTreeDelegate {
   // Called by LayerTreeHost::DoUpdateLayers() to ensure that the
   // property trees are up-to-date.
   virtual void UpdatePropertyTreesIfNeeded(LayerTreeHost* host) = 0;
+
+  virtual void UpdateScrollOffsetFromImpl(
+      LayerTreeHost* host,
+      const ElementId& id,
+      const gfx::Vector2dF& delta,
+      const std::optional<TargetSnapAreaElementIds>& snap_target_ids) = 0;
 };
 
 }  // namespace cc

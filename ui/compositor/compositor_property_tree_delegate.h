@@ -6,8 +6,13 @@
 #define UI_COMPOSITOR_COMPOSITOR_PROPERTY_TREE_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "cc/cc_export.h"
+#include "cc/input/scroll_snap_data.h"
+#include "cc/paint/element_id.h"
 #include "cc/trees/property_tree_delegate.h"
+#include "cc/trees/property_tree_layer_tree_delegate.h"
 #include "ui/compositor/compositor_export.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 class LayerTreeHost;
@@ -21,7 +26,7 @@ namespace ui {
 // removed once that migration is done and we can just use the
 // cc::Compositor's default logic for property tree / layer list mode.
 class COMPOSITOR_EXPORT CompositorPropertyTreeDelegate
-    : public cc::PropertyTreeDelegate {
+    : public cc::PropertyTreeLayerTreeDelegate {
  public:
   // This class exists for testing purposes, so that tests can probe the
   // property trees once they've been updated.
@@ -45,6 +50,13 @@ class COMPOSITOR_EXPORT CompositorPropertyTreeDelegate
 
   // PropertyTreeDelegate overrides.
   void UpdatePropertyTreesIfNeeded(cc::LayerTreeHost*) override;
+
+  void UpdateScrollOffsetFromImpl(
+      cc::LayerTreeHost* host,
+      const cc::ElementId& id,
+      const gfx::Vector2dF& delta,
+      const std::optional<cc::TargetSnapAreaElementIds>& snap_target_ids)
+      override;
 
  private:
   raw_ptr<Observer> observer_ = nullptr;
