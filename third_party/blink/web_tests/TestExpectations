@@ -2730,8 +2730,6 @@ crbug.com/388319477 [ Win ] external/wpt/css/css-page/margin-boxes/content-007-p
 crbug.com/388319477 [ Mac13 ] external/wpt/css/css-page/margin-boxes/dimensions-008-print.html [ Crash ]
 crbug.com/388319477 [ Win ] external/wpt/css/css-page/margin-boxes/dimensions-008-print.html [ Crash ]
 crbug.com/388345823 [ Win ] external/wpt/fetch/api/credentials/cookies.any.sharedworker.html [ Crash ]
-crbug.com/388312947 [ Mac14 ] virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-transition.html [ Crash ]
-crbug.com/388312947 [ Win ] virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-transition.html [ Crash ]
 crbug.com/388326073 [ Mac14 ] virtual/fedcm-authz/external/wpt/fedcm/fedcm-authz/fedcm-disclosure-text-shown.https.html [ Crash ]
 crbug.com/388326073 [ Win ] virtual/fedcm-authz/external/wpt/fedcm/fedcm-authz/fedcm-disclosure-text-shown.https.html [ Crash ]
 [ Linux ] virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/revoke-manual-report-event-beacons.https.html [ Crash ]
