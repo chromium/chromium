@@ -8,6 +8,7 @@ ci/Deterministic Android
 ci/Deterministic Android (dbg)
 ci/android-10-arm64-rel
 ci/android-10-x86-fyi-rel
+ci/android-10-x86-rel
 ci/android-12-x64-rel
 ci/android-12l-landscape-x64-dbg-tests
 ci/android-12l-x64-dbg-tests
@@ -41,6 +42,7 @@ ci/android-pie-arm64-dbg
 ci/android-pie-arm64-rel
 ci/android-pie-x86-rel
 try/android-10-x86-fyi-rel
+try/android-10-x86-rel
 try/android-12-x64-rel
 try/android-12l-landscape-x64-dbg
 try/android-12l-x64-rel-cq

@@ -18,7 +18,7 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "android_10_emulator_fyi_gtests",
+    name = "android_10_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
         "android_trichrome_smoke_tests",
@@ -36,6 +36,13 @@ targets.bundle(
             ],
         ),
         "webview_ui_instrumentation_tests",
+    ],
+)
+
+targets.bundle(
+    name = "android_10_emulator_fyi_gtests",
+    targets = [
+        "android_content_browsertests_fyi",
     ],
 )
 
