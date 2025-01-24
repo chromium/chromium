@@ -192,6 +192,15 @@ std::map<int, std::vector<raw_ref<const ink::Stroke>>> CollectVisibleStrokes(
   return visible_stroke_shapes;
 }
 
+blink::WebMouseEvent CreateMouseMoveWithLeftButtonEventAtPoint(
+    const gfx::PointF& point) {
+  return MouseEventBuilder()
+      .SetType(blink::WebInputEvent::Type::kMouseMove)
+      .SetPosition(point)
+      .SetButton(blink::WebPointerProperties::Button::kLeft)
+      .Build();
+}
+
 base::Value::Dict CreateGetAnnotationBrushMessageForTesting(
     const std::string& brush_type) {
   base::Value::Dict message;
@@ -998,11 +1007,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
 
     for (const gfx::PointF& mouse_move_point : mouse_move_points) {
       blink::WebMouseEvent mouse_move_event =
-          MouseEventBuilder()
-              .SetType(blink::WebInputEvent::Type::kMouseMove)
-              .SetPosition(mouse_move_point)
-              .SetButton(blink::WebPointerProperties::Button::kLeft)
-              .Build();
+          CreateMouseMoveWithLeftButtonEventAtPoint(mouse_move_point);
       EXPECT_EQ(expect_mouse_events_handled,
                 ink_module().HandleInputEvent(mouse_move_event));
     }
@@ -1717,11 +1722,7 @@ TEST_F(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
   EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
                                     InkStrokeBrushColorEq(SK_ColorBLACK)));
   blink::WebMouseEvent mouse_move_event =
-      MouseEventBuilder()
-          .SetType(blink::WebInputEvent::Type::kMouseMove)
-          .SetPosition(kLeftVerticalStrokePoint2)
-          .SetButton(blink::WebPointerProperties::Button::kLeft)
-          .Build();
+      CreateMouseMoveWithLeftButtonEventAtPoint(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
       MouseEventBuilder()
@@ -1776,11 +1777,7 @@ TEST_F(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
                 UpdateInkCursorImage(BitmapImageSizeEq(SkISize(8, 8))));
   }
   blink::WebMouseEvent mouse_move_event =
-      MouseEventBuilder()
-          .SetType(blink::WebInputEvent::Type::kMouseMove)
-          .SetPosition(kLeftVerticalStrokePoint2)
-          .SetButton(blink::WebPointerProperties::Button::kLeft)
-          .Build();
+      CreateMouseMoveWithLeftButtonEventAtPoint(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
       MouseEventBuilder()
@@ -1880,11 +1877,8 @@ TEST_F(PdfInkModuleStrokeTest, ChangeSizeDuringErasing) {
   static constexpr gfx::PointF kNearbyPointAboveLeftVerticalStroke(10.0f,
                                                                    10.0f);
   blink::WebMouseEvent mouse_move_event =
-      MouseEventBuilder()
-          .SetType(blink::WebInputEvent::Type::kMouseMove)
-          .SetPosition(kNearbyPointAboveLeftVerticalStroke)
-          .SetButton(blink::WebPointerProperties::Button::kLeft)
-          .Build();
+      CreateMouseMoveWithLeftButtonEventAtPoint(
+          kNearbyPointAboveLeftVerticalStroke);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
 
   blink::WebMouseEvent mouse_up_event =
@@ -1934,11 +1928,7 @@ TEST_F(PdfInkModuleStrokeTest, ChangeToEraserDuringDrawing) {
   EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
   EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
   blink::WebMouseEvent mouse_move_event =
-      MouseEventBuilder()
-          .SetType(blink::WebInputEvent::Type::kMouseMove)
-          .SetPosition(kRightVerticalStrokePoint2)
-          .SetButton(blink::WebPointerProperties::Button::kLeft)
-          .Build();
+      CreateMouseMoveWithLeftButtonEventAtPoint(kRightVerticalStrokePoint2);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
       MouseEventBuilder()
@@ -2003,11 +1993,7 @@ TEST_F(PdfInkModuleStrokeTest, ChangeToDrawingDuringErasing) {
   EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
   EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
   blink::WebMouseEvent mouse_move_event =
-      MouseEventBuilder()
-          .SetType(blink::WebInputEvent::Type::kMouseMove)
-          .SetPosition(kRightVerticalStrokePoint2)
-          .SetButton(blink::WebPointerProperties::Button::kLeft)
-          .Build();
+      CreateMouseMoveWithLeftButtonEventAtPoint(kRightVerticalStrokePoint2);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
       MouseEventBuilder()
@@ -2068,11 +2054,7 @@ TEST_F(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
                 UpdateInkCursorImage(BitmapImageSizeEq(SkISize(10, 10))));
   }
   blink::WebMouseEvent mouse_move_event =
-      MouseEventBuilder()
-          .SetType(blink::WebInputEvent::Type::kMouseMove)
-          .SetPosition(kLeftVerticalStrokePoint2)
-          .SetButton(blink::WebPointerProperties::Button::kLeft)
-          .Build();
+      CreateMouseMoveWithLeftButtonEventAtPoint(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
       MouseEventBuilder()
