@@ -5,9 +5,11 @@
 #include "sandbox/policy/win/sandbox_win.h"
 
 #include <windows.h>
-
-#include <stddef.h>
 #include <winternl.h>
+
+#include <evntprov.h>
+#include <evntrace.h>
+#include <stddef.h>
 
 #include <map>
 #include <optional>
@@ -91,6 +93,30 @@ const wchar_t* const kTroublesomeDlls[] = {
     L"rlls64.dll",                 // PremierOpinion and Relevant-Knowledge.
     L"rpchromebrowserrecordhelper.dll",    // RealPlayer.
 };
+
+// Queries an Etw registration which is known to call locale functions in its
+// provider, and so causes crashes if CsrssLockdown is enabled.
+bool CanEnableCsrssLockdown() {
+  BOOL enabled = FALSE;
+  // Microsoft.Windows.Graphics.DirectWrite:364e2beb-6efc-47dc-b8b1-49aae1d83922
+  GUID dwrite = {0x364e2bebL,
+                 0x6efcu,
+                 0x47dcu,
+                 {0xb8, 0xb1u, 0x49u, 0xaau, 0xe1u, 0xd8u, 0x39u, 0x22u}};
+  REGHANDLE handle;
+  if (ERROR_SUCCESS == ::EventRegister(&dwrite, nullptr, nullptr, &handle)) {
+    // Event category & trace level as seen in dwrite.dll.
+    ULONGLONG keyword = 0x200000000000ull;
+    enabled = ::EventProviderEnabled(handle, TRACE_LEVEL_INFORMATION, keyword);
+    ::EventUnregister(handle);
+  } else {
+    // Cannot probe registration, assume it is not safe for Csrss Lockdown.
+    enabled = TRUE;
+  }
+  base::UmaHistogramBoolean("Process.Sandbox.DirectWriteTracingEnabled",
+                            enabled);
+  return !enabled;
+}
 
 // Return a mapping between the long and short names for all loaded modules in
 // the current process. The mapping excludes modules which don't have a typical
@@ -686,7 +712,12 @@ ResultCode SandboxWin::SetJobLevel(Sandbox sandbox_type,
 void SandboxWin::AddBaseHandleClosePolicy(TargetConfig* config) {
   DCHECK(!config->IsConfigured());
 
-  if (base::FeatureList::IsEnabled(features::kEnableCsrssLockdown)) {
+  // Probe before checking the feature so that metrics are collected for all
+  // users.
+  const bool can_enable = CanEnableCsrssLockdown();
+  const bool lockdown_enabled =
+      base::FeatureList::IsEnabled(features::kEnableCsrssLockdown);
+  if (can_enable && lockdown_enabled) {
     // Close all ALPC ports.
     config->SetDisconnectCsrss();
   }

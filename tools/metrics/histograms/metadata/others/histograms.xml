@@ -7699,6 +7699,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Process.Sandbox.DirectWriteTracingEnabled" enum="Boolean"
+    expires_after="2025-06-01">
+  <owner>ajgo@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    True if a specific DirectWrite tracing provider is enabled, false otherwise.
+    Emitted once per session when the first renderer is launched.
+  </summary>
+</histogram>
+
 <histogram name="Process.Sandbox.DllBlocked" enum="WinTroublesomeDllName"
     expires_after="2025-04-13">
   <owner>ajgo@chromium.org</owner>
