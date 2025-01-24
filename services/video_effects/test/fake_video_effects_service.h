@@ -35,7 +35,7 @@ class FakeVideoEffectsService : public mojom::VideoEffectsService {
   void CreateEffectsProcessor(
       const std::string& device_id,
       mojo::PendingRemote<viz::mojom::Gpu> gpu,
-      mojo::PendingRemote<media::mojom::VideoEffectsManager> manager,
+      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager> manager,
       mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor) override;
 
   void SetBackgroundSegmentationModel(base::File model_file) override;

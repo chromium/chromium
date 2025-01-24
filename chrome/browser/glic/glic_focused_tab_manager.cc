@@ -9,6 +9,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "ui/views/widget/widget.h"
 
 namespace glic {
 
@@ -26,6 +29,7 @@ GlicFocusedTabManager::GlicFocusedTabManager(
 }
 
 GlicFocusedTabManager::~GlicFocusedTabManager() {
+  widget_observation_.Reset();
   BrowserList::GetInstance()->RemoveObserver(this);
 }
 
@@ -38,12 +42,21 @@ GlicFocusedTabManager::AddFocusedTabChangedCallback(
 void GlicFocusedTabManager::OnBrowserSetLastActive(Browser* browser) {
   // Clear any existing browser callback subscription.
   browser_subscription_ = {};
+  widget_observation_.Reset();
 
   // Subscribe to active tab changes to this browser if it's valid.
-  if (IsValidBrowser(browser)) {
+  if (IsBrowserValid(browser)) {
     browser_subscription_ = browser->RegisterActiveTabDidChange(
         base::BindRepeating(&GlicFocusedTabManager::OnActiveTabChanged,
                             base::Unretained(this)));
+
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    if (browser_view) {
+      views::Widget* widget = browser_view->GetWidget();
+      if (widget) {
+        widget_observation_.Observe(widget);
+      }
+    }
   }
 
   MaybeUpdateFocusedTab();
@@ -55,6 +68,14 @@ void GlicFocusedTabManager::OnBrowserNoLongerActive(Browser* browser) {
 
 void GlicFocusedTabManager::OnGlicWindowActivationChanged(bool active) {
   MaybeUpdateFocusedTab();
+}
+
+void GlicFocusedTabManager::OnWidgetShowStateChanged(views::Widget* widget) {
+  MaybeUpdateFocusedTab();
+}
+
+void GlicFocusedTabManager::OnWidgetDestroyed(views::Widget* widget) {
+  widget_observation_.Reset();
 }
 
 void GlicFocusedTabManager::OnActiveTabChanged(
@@ -106,11 +127,11 @@ content::WebContents* GlicFocusedTabManager::ComputeFocusedTab() {
 }
 
 content::WebContents* GlicFocusedTabManager::ComputeFocusableTabForBrowser(
-    BrowserWindowInterface* browser_interface) {
-  if (IsValidBrowser(browser_interface)) {
+    Browser* browser) {
+  if (IsBrowserValid(browser) && IsBrowserStateValid(browser)) {
     content::WebContents* const web_contents =
-        browser_interface->GetActiveTabInterface()
-            ? browser_interface->GetActiveTabInterface()->GetContents()
+        browser->GetActiveTabInterface()
+            ? browser->GetActiveTabInterface()->GetContents()
             : nullptr;
     if (IsValidFocusable(web_contents)) {
       return web_contents;
@@ -126,16 +147,33 @@ void GlicFocusedTabManager::NotifyFocusedTabChanged() {
   focused_callback_list_.Notify(GetWebContentsForFocusedTab());
 }
 
-bool GlicFocusedTabManager::IsValidBrowser(
-    BrowserWindowInterface* browser_interface) {
-  // TODO(wry): Handle browser minimized.
-  return browser_interface && browser_interface->GetProfile() == profile_ &&
-         !browser_interface->GetProfile()->IsOffTheRecord();
+bool GlicFocusedTabManager::IsBrowserValid(Browser* browser) {
+  if (!browser) {
+    return false;
+  }
+
+  if (browser->GetProfile() != profile_) {
+    return false;
+  }
+
+  if (browser->GetProfile()->IsOffTheRecord()) {
+    return false;
+  }
+
+  return true;
+}
+
+bool GlicFocusedTabManager::IsBrowserStateValid(Browser* browser) {
+  if (browser->window()->IsMinimized()) {
+    return false;
+  }
+
+  return true;
 }
 
 bool GlicFocusedTabManager::IsValidFocusable(
     content::WebContents* web_contents) {
-  // Changes here may also require new handling of |WebContents| observing.
+  // Changes here may also require new handling of `WebContents` observing.
   return web_contents;
 }
 

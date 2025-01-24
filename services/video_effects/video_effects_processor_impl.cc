@@ -22,7 +22,8 @@ namespace video_effects {
 
 VideoEffectsProcessorImpl::VideoEffectsProcessorImpl(
     wgpu::Device device,
-    mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
+    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+        manager_remote,
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
     scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider,
     base::OnceClosure on_unrecoverable_error)

@@ -39,14 +39,11 @@ void BlurSwitchViewController::BindVideoEffectsManager(
   if (!browser_context_) {
     return;
   }
-  media_effects::BindVideoEffectsManager(
-      active_device_id, browser_context_.get(),
-      video_effects_manager_.BindNewPipeAndPassReceiver());
+
+  video_effects_manager_ = media_effects::GetOrCreateVideoEffectsManager(
+      active_device_id, browser_context_.get());
   video_effects_manager_->AddObserver(
       video_effects_configuration_observer_.BindNewPipeAndPassRemote());
-  video_effects_manager_->GetConfiguration(
-      base::BindOnce(&BlurSwitchViewController::OnConfigurationChanged,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BlurSwitchViewController::ResetConnections() {
@@ -56,13 +53,13 @@ void BlurSwitchViewController::ResetConnections() {
 
 void BlurSwitchViewController::OnBlurSwitchPressed() {
   CHECK(blur_switch_);
-
-  video_effects_manager_->SetConfiguration(
-      media::mojom::VideoEffectsConfiguration::New(
-          nullptr,
-          blur_switch_->GetIsOn() ? media::mojom::Blur::New() : nullptr,
-          nullptr),
-      base::DoNothing());
+  if (video_effects_manager_) {
+    video_effects_manager_->SetConfiguration(
+        media::mojom::VideoEffectsConfiguration::New(
+            nullptr,
+            blur_switch_->GetIsOn() ? media::mojom::Blur::New() : nullptr,
+            nullptr));
+  }
 }
 
 void BlurSwitchViewController::OnConfigurationChanged(

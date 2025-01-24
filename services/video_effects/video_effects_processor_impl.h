@@ -39,7 +39,8 @@ class VideoEffectsProcessorImpl
   // the processor was unable to reinitialize GPU resources after context loss.
   explicit VideoEffectsProcessorImpl(
       wgpu::Device device,
-      mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
+      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+          manager_remote,
       mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
       scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider,
       base::OnceClosure on_unrecoverable_error);
@@ -88,7 +89,7 @@ class VideoEffectsProcessorImpl
 
   wgpu::Device device_;
 
-  mojo::Remote<media::mojom::VideoEffectsManager> manager_remote_;
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> manager_remote_;
   mojo::Receiver<media::mojom::VideoEffectsConfigurationObserver>
       configuration_observer_{this};
   mojo::Receiver<mojom::VideoEffectsProcessor> processor_receiver_;

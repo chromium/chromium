@@ -33,6 +33,9 @@ namespace {
 
 using ::boca::LockedNavigationOptions;
 
+// Chrome Web Store host.
+constexpr char kCWSHost[] = "chromewebstore.google.com";
+
 // Returns whether all the given query parameters are found in the URL.
 bool DoAllQueryParamsExist(const std::set<std::string>& request_params,
                            const GURL& url) {
@@ -165,11 +168,13 @@ bool OnTaskLockedSessionNavigationThrottle::
   bool is_boca_app_host_url =
       (url.SchemeIs(content::kChromeUIUntrustedScheme) &&
        url.host() == boca::kChromeBocaAppHost);
+  bool is_cws_host_url = (url.host() == kCWSHost);
   return (navigation_handle()->IsDownload() ||
           (navigation_handle()->GetRequestMethod() !=
                net::HttpRequestHeaders::kGetMethod &&
            !navigation_handle()->IsFormSubmission()) ||
-          (!url.SchemeIsHTTPOrHTTPS() && !is_boca_app_host_url));
+          (!url.SchemeIsHTTPOrHTTPS() && !is_boca_app_host_url) ||
+          is_cws_host_url);
 }
 
 bool OnTaskLockedSessionNavigationThrottle::IsOutsideOnTaskAppNavigation() {

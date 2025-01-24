@@ -692,10 +692,10 @@ TEST_F(ChromeContentBrowserClientTest, HandleWebUIReverse) {
 }
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsManager) {
+TEST_F(ChromeContentBrowserClientTest, BindReadonlyVideoEffectsManager) {
   TestChromeContentBrowserClient test_content_browser_client;
-  mojo::Remote<media::mojom::VideoEffectsManager> video_effects_manager;
-  test_content_browser_client.BindVideoEffectsManager(
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> video_effects_manager;
+  test_content_browser_client.BindReadonlyVideoEffectsManager(
       "test_device_id", &profile_,
       video_effects_manager.BindNewPipeAndPassReceiver());
 

@@ -8483,13 +8483,13 @@ bool ChromeContentBrowserClient::
 }
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-void ChromeContentBrowserClient::BindVideoEffectsManager(
+void ChromeContentBrowserClient::BindReadonlyVideoEffectsManager(
     const std::string& device_id,
     content::BrowserContext* browser_context,
-    mojo::PendingReceiver<media::mojom::VideoEffectsManager>
-        video_effects_manager) {
-  media_effects::BindVideoEffectsManager(device_id, browser_context,
-                                         std::move(video_effects_manager));
+    mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
+        readonly_video_effects_manager) {
+  media_effects::BindReadonlyVideoEffectsManager(
+      device_id, browser_context, std::move(readonly_video_effects_manager));
 }
 
 void ChromeContentBrowserClient::BindVideoEffectsProcessor(

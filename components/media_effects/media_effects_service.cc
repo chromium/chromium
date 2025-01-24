@@ -48,9 +48,9 @@ MediaEffectsService::~MediaEffectsService() {
   }
 }
 
-void MediaEffectsService::BindVideoEffectsManager(
+void MediaEffectsService::BindReadonlyVideoEffectsManager(
     const std::string& device_id,
-    mojo::PendingReceiver<media::mojom::VideoEffectsManager>
+    mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
         effects_manager_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -64,9 +64,11 @@ void MediaEffectsService::BindVideoEffectsProcessor(
         effects_processor_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  mojo::PendingRemote<media::mojom::VideoEffectsManager> video_effects_manager;
-  BindVideoEffectsManager(
-      device_id, video_effects_manager.InitWithNewPipeAndPassReceiver());
+  mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+      readonly_video_effects_manager;
+  BindReadonlyVideoEffectsManager(
+      device_id,
+      readonly_video_effects_manager.InitWithNewPipeAndPassReceiver());
 
   auto* video_effects_service = video_effects::GetVideoEffectsService();
   CHECK(video_effects_service);
@@ -86,7 +88,8 @@ void MediaEffectsService::BindVideoEffectsProcessor(
 
   LOG(WARNING) << "Calling CreateEffectsProcessor";
   video_effects_service->CreateEffectsProcessor(
-      device_id, std::move(gpu_remote), std::move(video_effects_manager),
+      device_id, std::move(gpu_remote),
+      std::move(readonly_video_effects_manager),
       std::move(effects_processor_receiver));
 }
 

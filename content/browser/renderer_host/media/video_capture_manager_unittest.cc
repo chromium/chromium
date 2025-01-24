@@ -240,10 +240,10 @@ class ScreenlockMonitorTestSource : public ScreenlockMonitorSource {
 class MockBrowserClient : public content::ContentBrowserClient {
  public:
   MOCK_METHOD(void,
-              BindVideoEffectsManager,
+              BindReadonlyVideoEffectsManager,
               (const std::string& device_id,
                content::BrowserContext* browser_context,
-               mojo::PendingReceiver<media::mojom::VideoEffectsManager>
+               mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
                    video_effects_manager),
               (override));
 
@@ -428,7 +428,8 @@ class VideoCaptureManagerTest : public testing::Test {
 // Try to open, start, stop and close a device.
 TEST_F(VideoCaptureManagerTest, CreateAndClose) {
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  EXPECT_CALL(browser_client_, BindVideoEffectsManager(_, _, _)).Times(0);
+  EXPECT_CALL(browser_client_, BindReadonlyVideoEffectsManager(_, _, _))
+      .Times(0);
 #endif
   InSequence s;
   EXPECT_CALL(*listener_,
@@ -453,7 +454,7 @@ TEST_F(VideoCaptureManagerTest, CreateAndClose) {
 TEST_F(VideoCaptureManagerTest, CreateWithVideoEffectsProcessor) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kCameraMicEffects);
-  mojo::PendingReceiver<media::mojom::VideoEffectsManager> receiver;
+  mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager> receiver;
   EXPECT_CALL(browser_client_, BindVideoEffectsProcessor(devices_.front().id,
                                                          &browser_context_, _))
       .Times(1);

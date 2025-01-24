@@ -48,6 +48,7 @@
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
+#include "storage/browser/quota/storage_directory_util.h"
 #include "storage/browser/test/mock_quota_client.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -3801,4 +3802,78 @@ TEST_F(QuotaManagerImplTest, StaticReportedQuota_Bucket) {
     EXPECT_EQ(result.quota, storage_capacity.available_space);
   }
 }
+
+TEST_F(QuotaManagerImplTest, DeleteMediaLicenseDb) {
+  auto clock = std::make_unique<base::SimpleTestClock>();
+  QuotaDatabase::SetClockForTesting(clock.get());
+  clock->SetNow(base::Time::Now());
+
+  // Create some buckets with MediaLicense.db files.
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 1},
+  };
+  MockQuotaClient* client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp});
+  RegisterClientBucketData(client, kData);
+
+  // Create MediaLicense.db files in the bucket paths.
+  for (const auto& data : kData) {
+    ASSERT_OK_AND_ASSIGN(auto bucket, GetBucket(ToStorageKey(data.origin),
+                                                data.name, data.type));
+    auto media_license_path =
+        CreateClientBucketPath(data_dir_.GetPath(), bucket.ToBucketLocator(),
+                               QuotaClientType::kMediaLicense);
+    base::CreateDirectory(media_license_path);
+    auto db_path =
+        media_license_path.Append(FILE_PATH_LITERAL("MediaLicense.db"));
+    std::string dummy_content = "dummy db content";
+    ASSERT_TRUE(base::WriteFile(db_path, dummy_content));
+    ASSERT_TRUE(base::PathExists(db_path));
+  }
+
+  // Run deletion on startup.
+  quota_manager_impl_->DeleteMediaLicenseDatabaseForTesting();
+  task_environment_.RunUntilIdle();
+
+  // Verify MediaLicense.db files are deleted.
+  for (const auto& data : kData) {
+    ASSERT_OK_AND_ASSIGN(auto bucket, GetBucket(ToStorageKey(data.origin),
+                                                data.name, data.type));
+    auto media_license_path =
+        CreateClientBucketPath(data_dir_.GetPath(), bucket.ToBucketLocator(),
+                               QuotaClientType::kMediaLicense);
+    auto db_path =
+        media_license_path.Append(FILE_PATH_LITERAL("MediaLicense.db"));
+    EXPECT_FALSE(base::PathExists(db_path));
+  }
+
+  QuotaDatabase::SetClockForTesting(nullptr);
+}
+
+TEST_F(QuotaManagerImplTest, DeleteMediaLicenseDb_NonexistentFiles) {
+  // Test deletion works when no MediaLicense.db files exist.
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+  };
+  MockQuotaClient* client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp});
+  RegisterClientBucketData(client, kData);
+
+  ASSERT_OK_AND_ASSIGN(auto bucket, GetBucket(ToStorageKey(kData[0].origin),
+                                              kData[0].name, kData[0].type));
+  auto media_license_path =
+      CreateClientBucketPath(data_dir_.GetPath(), bucket.ToBucketLocator(),
+                             QuotaClientType::kMediaLicense);
+  auto db_path =
+      media_license_path.Append(FILE_PATH_LITERAL("MediaLicense.db"));
+  ASSERT_FALSE(base::PathExists(db_path));
+
+  quota_manager_impl_->DeleteMediaLicenseDatabaseForTesting();
+  task_environment_.RunUntilIdle();
+
+  // Should complete without errors.
+  EXPECT_FALSE(base::PathExists(db_path));
+}
+
 }  // namespace storage

@@ -19,7 +19,7 @@ class FakeVideoEffectsProcessor : public mojom::VideoEffectsProcessor {
  public:
   explicit FakeVideoEffectsProcessor(
       mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor,
-      mojo::PendingRemote<media::mojom::VideoEffectsManager> manager);
+      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager> manager);
   ~FakeVideoEffectsProcessor() override;
 
   // mojom::VideoEffectsProcessor implementation
@@ -31,13 +31,14 @@ class FakeVideoEffectsProcessor : public mojom::VideoEffectsProcessor {
 
   // For testing, get the manager that this processor will use to obtain the
   // video effects configuration:
-  mojo::Remote<media::mojom::VideoEffectsManager>& GetVideoEffectsManager();
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager>&
+  GetVideoEffectsManager();
 
  private:
   void OnMojoConnectionLost();
 
   mojo::Receiver<mojom::VideoEffectsProcessor> receiver_;
-  mojo::Remote<media::mojom::VideoEffectsManager> manager_;
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> manager_;
 
   // Must be last:
   base::WeakPtrFactory<FakeVideoEffectsProcessor> weak_ptr_factory_{this};

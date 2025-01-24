@@ -40,7 +40,8 @@ VideoEffectsServiceImpl::~VideoEffectsServiceImpl() {
 void VideoEffectsServiceImpl::CreateEffectsProcessor(
     const std::string& device_id,
     mojo::PendingRemote<viz::mojom::Gpu> gpu_remote,
-    mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
+    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+        manager_remote,
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -170,7 +171,8 @@ void VideoEffectsServiceImpl::FinishCreatingEffectsProcessors() {
 
 void VideoEffectsServiceImpl::FinishCreatingEffectsProcessor(
     const std::string& device_id,
-    mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
+    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+        manager_remote,
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver) {
   // Called in-sequence.
   if (!device_) {
