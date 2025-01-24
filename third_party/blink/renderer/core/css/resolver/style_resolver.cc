@@ -1244,7 +1244,7 @@ const ComputedStyle* StyleResolver::ResolveStyle(
     return state.TakeStyle();
   }
 
-  if (ApplyAnimatedStyle(state, cascade)) {
+  if (ApplyAnimatedStyle(state, cascade, style_recalc_context)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   styles_animated, 1);
     StyleAdjuster::AdjustComputedStyle(
@@ -2321,8 +2321,10 @@ void StyleResolver::CollectPseudoRulesForElement(
   }
 }
 
-bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
-                                       StyleCascade& cascade) {
+bool StyleResolver::ApplyAnimatedStyle(
+    StyleResolverState& state,
+    StyleCascade& cascade,
+    const StyleRecalcContext& style_recalc_context) {
   Element& element = state.GetUltimateOriginatingElementOrSelf();
 
   // The animating element may be this element, the pseudo element we are
@@ -2365,7 +2367,7 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
       state.CanTriggerAnimations());
   CSSAnimations::CalculateTransitionUpdate(
       state.AnimationUpdate(), *animating_element, state.StyleBuilder(),
-      state.OldStyle(), state.CanTriggerAnimations());
+      state.OldStyle(), style_recalc_context, state.CanTriggerAnimations());
 
   bool apply = !state.AnimationUpdate().IsEmpty();
   if (apply) {

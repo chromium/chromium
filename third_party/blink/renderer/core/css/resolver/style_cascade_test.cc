@@ -309,7 +309,8 @@ class TestCascade {
   void CalculateInterpolationUpdate() {
     CSSAnimations::CalculateTransitionUpdate(
         state_.AnimationUpdate(), state_.GetElement(), state_.StyleBuilder(),
-        state_.OldStyle(), true /* can_trigger_animations */);
+        state_.OldStyle(), StyleRecalcContext(),
+        true /* can_trigger_animations */);
     CSSAnimations::CalculateAnimationUpdate(
         state_.AnimationUpdate(), state_.GetElement(), state_.GetElement(),
         state_.StyleBuilder(), state_.ParentStyle(),

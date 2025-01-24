@@ -345,7 +345,9 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   void ApplyPropertiesFromCascade(StyleResolverState&, StyleCascade& cascade);
 
-  bool ApplyAnimatedStyle(StyleResolverState&, StyleCascade&);
+  bool ApplyAnimatedStyle(StyleResolverState&,
+                          StyleCascade&,
+                          const StyleRecalcContext&);
   void ApplyAnchorData(StyleResolverState&);
 
   void ApplyCallbackSelectors(StyleResolverState&);
