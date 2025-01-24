@@ -112,6 +112,12 @@ bool DisableUpdateService();
 // can start before checking if the promo appears.
 bool DelayAppLaunchPromos();
 
+// Returns true if the data for discarded session should never be deleted.
+// This is a workaround because during EG tests, the application delegate
+// method -application:didDiscardSceneSessions: may be called with a list
+// of identifiers that contains identifiers of UIScene that are active.
+bool NeverPurgeDiscardedSessionsData();
+
 // Returns a policy provider that should be installed as the platform policy
 // provider when testing. May return nullptr.
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider();

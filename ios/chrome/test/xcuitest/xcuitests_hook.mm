@@ -53,6 +53,10 @@ bool DelayAppLaunchPromos() {
   return true;
 }
 
+bool NeverPurgeDiscardedSessionsData() {
+  return true;
+}
+
 std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
     PrefService* user_prefs,
     std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate) {

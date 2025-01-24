@@ -129,6 +129,10 @@ bool DelayAppLaunchPromos() {
   return true;
 }
 
+bool NeverPurgeDiscardedSessionsData() {
+  return true;
+}
+
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           "com.apple.configuration.managed")) {

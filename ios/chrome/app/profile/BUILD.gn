@@ -52,6 +52,7 @@ source_set("profile_controller") {
     "//ios/chrome/app:app_lifetime_observer",
     "//ios/chrome/app:launch_screen_ui",
     "//ios/chrome/app:task_names",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:metrics_mediator",
     "//ios/chrome/app/spotlight",

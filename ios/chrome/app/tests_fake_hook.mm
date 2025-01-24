@@ -48,6 +48,9 @@ bool DisableUpdateService() {
 bool DelayAppLaunchPromos() {
   return false;
 }
+bool NeverPurgeDiscardedSessionsData() {
+  return false;
+}
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   return nullptr;
 }
