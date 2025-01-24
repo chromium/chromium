@@ -476,6 +476,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="3053332585453689122">Envia os URLs que visita e uma pequena amostra de conteúdo de páginas, transferências, atividade de extensões e informações do sistema para a Navegação Segura do Google de forma a verificar se são prejudiciais.</translation>
 <translation id="3055102495753300780">Armazenamento de informações</translation>
 <translation id="3059270601560379555">Nova pesquisa</translation>
+<translation id="3064547930554042309">Faça a gestão das transferências</translation>
 <translation id="3072279342064724558">A palavra-passe já existe</translation>
 <translation id="3076846064362030967">A sessão na sua Conta Google não é terminada. Podem ser guardadas <ph name="BEGIN_LINK" />outras formas de atividade<ph name="END_LINK" /> na sua Conta Google quando tem sessão iniciada. Pode eliminá-las em qualquer altura.
 
@@ -543,7 +544,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 de outubro de 2023</translation>
 <translation id="3435738964857648380">Segurança</translation>
-<translation id="343850944564645513">Os seus sites principais</translation>
 <translation id="3443810440409579745">Separador recebido.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Saiba mais acerca do Google Lens</translation>
@@ -658,7 +658,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3967327056943561740">Marcadores</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
 <translation id="3982893814825393515">Comunicar um problema…</translation>
-<translation id="3984527584375648997">Ocultar "Os seus sites principais"</translation>
 <translation id="398604237578616937">Com sessão iniciada como <ph name="USER_EMAIL" />. Abra o menu da conta.</translation>
 <translation id="3986739045730058129">Aceder ao separador</translation>
 <translation id="3992684624889376114">Acerca desta página</translation>
@@ -700,6 +699,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4154753961803534698">Pesquisar com câmara</translation>
 <translation id="4158491215857439601">Gestor de Palavras-passe</translation>
 <translation id="4163699139741158298">{count,plural, =1{Marcador guardado em "{title}". Está guardado apenas neste dispositivo.}other{{count} marcadores guardados em "{title}". Estão guardados apenas neste dispositivo.}}</translation>
+<translation id="4164514562270305824">Eliminar automaticamente as transferências</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> terminado em <ph name="LAST_FOUR_DIGITS" />.</translation>
 <translation id="4169535189173047238">Não permitir</translation>
 <translation id="4172051516777682613">Mostrar sempre</translation>
@@ -1016,9 +1016,9 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5576885723883013398">Nova janela</translation>
 <translation id="5578795271662203820">Pesquisar a imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Ocultar Lista de leitura</translation>
-<translation id="5581202956276923239">Atalhos de sites</translation>
 <translation id="5585019845078534178">Cartões</translation>
 <translation id="5595485650161345191">Editar morada</translation>
+<translation id="559567008082979829">Defina as suas transferências para serem eliminadas após 1 mês.</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="560322036295180549">Desativado pela sua entidade</translation>
 <translation id="5611107723541161735">Atalhos para os sites que visitou recentemente neste dispositivo.</translation>

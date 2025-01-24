@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chrome staví na projektu s otevřeným zdrojovým kódem <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> a využívá i další <ph name="BEGIN_LINK_OSS" />otevřený software<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logo Chrome</translation>
 <translation id="3444832043240812445">Pokud zvolíte možnost <ph name="BEGIN_LINK" />povolit zprávy o selhání<ph name="END_LINK" />, tato stránka bude zobrazovat jen informace o posledních selháních.</translation>
+<translation id="3512634283363927263">Tyto stránky jsou určeny pro vývojáře Chromu a nemusí být aktivně udržovány ani testovány. Pokud je chcete povolit, přejděte na adresu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknutím na příslušné tlačítko povolte ladicí stránky a pak znovu přejděte na tuto stránku.</translation>
 <translation id="3875312571075912821">V nastavení firewallu a antivirového programu povolte prohlížeči Chrome přístup k síti.</translation>
 <translation id="5005121315113832363">Tato stránka je blokována prohlížečem Chrome</translation>
 <translation id="6011049234605203654">Přejděte do

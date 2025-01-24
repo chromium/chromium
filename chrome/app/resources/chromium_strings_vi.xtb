@@ -399,7 +399,6 @@
 <translation id="6455857529632101747">Chào mừng bạn đến với hồ sơ trên Chromium</translation>
 <translation id="6466344609055215035">Xoá tài khoản khỏi Chromium</translation>
 <translation id="6475912303565314141">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chromium.</translation>
-<translation id="648062525172759633">Các trang này dành cho nhà phát triển Chromium sử dụng và có thể không được duy trì hoặc kiểm tra liên tục. Để kích hoạt các trang này, hãy chuyển đến <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, nhấp vào nút để kích hoạt trang gỡ lỗi, rồi chuyển đến trang này một lần nữa.</translation>
 <translation id="648319183876919572">Tính năng Duyệt web an toàn có tăng cường bảo vệ hoạt động hiệu quả hơn để bảo vệ bạn khỏi các tệp đã tải xuống và trang web nguy hiểm</translation>
 <translation id="6510925080656968729">Gỡ cài đặt Chromium</translation>
 <translation id="651535675648445253">Phím tắt mở ra trong Chromium</translation>
@@ -533,7 +532,6 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8313851650939857356">Lỗi khi khởi động: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Tổ chức của bạn sẽ đóng Chromium khi Chromium không được dùng đến trong <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Lưu dưới dạng hình ảnh</translation>
-<translation id="8326785589245660814">xoá dữ liệu Chromium trong tài khoản của bạn</translation>
 <translation id="8330519371938183845">Đăng nhập để đồng bộ hóa và cá nhân hóa Chromium trên các thiết bị của bạn</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> trước đó đã sử dụng Chromium</translation>
 <translation id="8359544530202147897">Cập nhật Chromium để tiếp tục sử dụng dữ liệu Chromium trong Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn</translation>

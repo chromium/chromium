@@ -398,7 +398,6 @@
 <translation id="6455857529632101747">‏به نمایه‌های Chromium خوش‌آمدید</translation>
 <translation id="6466344609055215035">‏برداشتن حساب از Chromium</translation>
 <translation id="6475912303565314141">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chromium نشان داده می‌شود، کنترل می‌کند.</translation>
-<translation id="648062525172759633">‏این صفحه‌ها برای استفاده توسعه‌دهندگان Chromium درنظر گرفته شده‌اند و ممکن است به‌طور فعال نگهداری یا آزمایش نشوند. برای فعال کردن آن‌ها، به <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> بروید، روی دکمه فعال کردن صفحه‌های اشکال‌زدایی کلیک کنید و سپس دوباره به این صفحه بروید.</translation>
 <translation id="648319183876919572">«مرور ایمن پیشرفته» کارهای بیشتری برای محافظت از شما درمقابل وب‌سایت‌ها و بارگیری‌های خطرناک انجام می‌دهد</translation>
 <translation id="6510925080656968729">‏حذف نصب Chromium </translation>
 <translation id="651535675648445253">‏میان‌برها در Chromium باز می‌شود</translation>
@@ -531,7 +530,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8313851650939857356">خطای راه‌اندازی: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">‏اگر <ph name="TIMEOUT_DURATION" /> از Chromium استفاده نشود، سازمانتان آن را می‌بندد.</translation>
 <translation id="8321888067342493336">ذخیره کردن به‌عنوان تصویر</translation>
-<translation id="8326785589245660814">‏داده‌های Chromium ذخیره‌شده در حسابتان را پاک کنید</translation>
 <translation id="8330519371938183845">‏برای همگام‌سازی و شخصی‌سازی Chromium در همه دستگاه‌هایتان، به سیستم وارد شوید</translation>
 <translation id="8340674089072921962">‏<ph name="USER_EMAIL_ADDRESS" /> قبلاً از Chromium استفاده می‌کرد</translation>
 <translation id="8359544530202147897">‏برای ادامه استفاده از داده‌های Chromium ذخیره‌شده در «حساب Google» خود (<ph name="ACCOUNT_EMAIL" />)،‏ Chromium را به‌روز کنید</translation>

@@ -27,6 +27,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
            öğesine gidin ve yapılandırmanızın "proxy yok" veya "doğrudan" olarak ayarlandığından emin olun.</translation>
+<translation id="648062525172759633">Bu sayfalar Chromium geliştiricilerinin kullanması için tasarlanmış olup etkin şekilde yönetilmiyor veya test edilmemiş olabilir. Bu özellikleri etkinleştirmek için <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> adresine giderek hata ayıklama sayfalarını etkinleştirme düğmesini tıklayın ve tekrar bu sayfaya gelin.</translation>
 <translation id="6549378540556750549">Chromium ayrıca diğer <ph name="BEGIN_LINK_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_OSS" /> yararlanılarak geliştirilmiştir.</translation>
 <translation id="6613594504749178791">Değişiklikleriniz, Chromium tekrar başlatıldığında geçerli olacak.</translation>
 <translation id="691026815377248078">Chromium'un eşlemeye devam edebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

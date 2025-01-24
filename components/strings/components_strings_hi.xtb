@@ -912,7 +912,6 @@
 <translation id="255497580849974774">अपडेट के दौरान, कृपया अपने डिवाइस को चार्जर से कनेक्ट करके रखें.</translation>
 <translation id="2556876185419854533">&amp;बदलाव को पहले जैसा करें</translation>
 <translation id="2559566667529177711">मल्टी-लेयर</translation>
-<translation id="2565789370591907825">कीबोर्ड लॉक और उसका इस्तेमाल</translation>
 <translation id="2570734079541893434">सेटिंग को प्रबंधित करें</translation>
 <translation id="257136025287118539">आपका एडमिन, आपकी फ़ाइलों को <ph name="CLOUD_PROVIDER" /> में ट्रांसफ़र कर रहा है. फ़ाइलें अपलोड हो जाने के बाद, उनमें बदलाव किया जा सकता है.</translation>
 <translation id="2571488850200220306">डिवाइस की सुरक्षा के लिए एडमिन, डिवाइस का ओएस, ब्राउज़र वर्शन, और इंस्टॉल किया गया सॉफ़्टवेयर भी देख सकता है</translation>
@@ -1110,7 +1109,6 @@
 <translation id="2974468223369775963">इस IBAN को आपके Google खाते में सेव नहीं किया जा सका. इसके बजाय, इसे इस डिवाइस पर Chrome में सेव किया गया है. अगली बार इस IBAN का इस्तेमाल करने पर, Chrome इसे सेव करने के लिए आपसे दोबारा पूछेगा.</translation>
 <translation id="297667759942911166">टैब ग्रुप में मिलकर काम करें</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, इस समय चुना गया है. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">अपना कीबोर्ड लॉक करें और उसका इस्तेमाल करें</translation>
 <translation id="2978824962390592855">ऑपरा</translation>
 <translation id="2979424420072875974">लेखक के रिसॉर्स</translation>
 <translation id="2979639724566107830">नई विंडो में खोलें</translation>
@@ -2466,6 +2464,7 @@
 <translation id="5363532265530011914">मोज़े और होज़री</translation>
 <translation id="5371425731340848620">कार्ड अपडेट करें</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ने एक टैब बदला है</translation>
+<translation id="5374324662289354619">फ़िलहाल, इंटरनल डिबगिंग पेजों को लोड करने की सुविधा बंद है.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"आपकी घड़ी पीछे चल रही है" या "आपकी घड़ी आगे चल रही है" या "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">इस पासवर्ड को अपने सभी डिवाइसों पर सेव करने के लिए, अपनी पहचान की पुष्टि करें</translation>
@@ -4108,7 +4107,6 @@
 <translation id="8278544367771164040">व्यावसायिक क़र्ज़</translation>
 <translation id="8279290844152565425">कॉन्सर्ट और म्यूज़िक फ़ेस्टिवल</translation>
 <translation id="8279611986089885641">Chrome पर सूचनाएं पाने की सुविधा चालू होनी चाहिए. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> में जाकर, इसे चालू किया जा सकता है.</translation>
-<translation id="8280387559022105172">क्या आपको कीबोर्ड लॉक करना है?</translation>
 <translation id="8280630997017109758">ट्रे 11</translation>
 <translation id="8281730697546299650">विज्ञापन देखने वाले की निजता बनाए रखने से जुड़ी अन्य सुविधाएं अब उपलब्ध हैं</translation>
 <translation id="8281886186245836920">अभी नहीं</translation>
@@ -4178,7 +4176,6 @@
 <translation id="8398335999901363925">टच करके भरी जाने वाली पेमेंट के तरीकों की सूची, पूरी स्क्रीन पर खुली है.</translation>
 <translation id="8398446215576328011">लागू नीतियों को वापस लाएं</translation>
 <translation id="8398790343843005537">अपना फ़ोन ढूंढें</translation>
-<translation id="8399276468426899527">कीबोर्ड लॉक और उसका इस्तेमाल</translation>
 <translation id="8400929824946688748">नौकरी और शिक्षा</translation>
 <translation id="8402442052798347631">आपने जिस साइट पर जाने की कोशिश की है उससे जुड़े हमलावर, धोखे से आपके डिवाइस में नुकसान पहुंचाने वाला सॉफ़्टवेयर इंस्टॉल करवा सकते हैं. ये सॉफ़्टवेयर, आपके ब्राउज़ करने के तरीके पर असर डाल सकते हैं. जैसे, वे आपकी विज़िट की जाने वाली साइटों के होम पेज में बदलाव कर सकते हैं या उन साइटों पर आपको ज़्यादा विज्ञापन दिखा सकते हैं. किसी भी तरह के नुकसान से बचने के लिए, Chrome का सुझाव है कि आप इस साइट पर न जाएं. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">फ़ैन फ़िक्शन</translation>

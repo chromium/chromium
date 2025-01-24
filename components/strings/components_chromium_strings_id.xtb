@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           dan pastikan konfigurasi Anda disetel ke "tanpa proxy" atau "langsung".</translation>
+<translation id="648062525172759633">Halaman ini ditujukan untuk digunakan oleh developer Chromium, dan mungkin tidak dikelola atau diuji secara aktif. Untuk mengaktifkannya, buka <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik tombol untuk mengaktifkan halaman debug, lalu buka lagi halaman ini.</translation>
 <translation id="6549378540556750549">Chromium juga terwujud karena adanya <ph name="BEGIN_LINK_OSS" />software open source<ph name="END_LINK_OSS" /> lainnya.</translation>
 <translation id="6613594504749178791">Perubahan Anda akan berlaku saat berikutnya Anda membuka Chromium.</translation>
 <translation id="691026815377248078">Chromium memerlukan akses Bluetooth untuk melanjutkan 

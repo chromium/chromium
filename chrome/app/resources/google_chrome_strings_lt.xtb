@@ -206,7 +206,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="345171907106878721">Pridėkite save prie „Chrome“</translation>
 <translation id="3453763134178591239">„Chrome“ OS sąlygos</translation>
 <translation id="3503306920980160878">„Chrome“ reikia leidimo, kad galėtų naudoti vietovės informaciją ir bendrinti ją su šia svetaine</translation>
-<translation id="3512634283363927263">Šie puslapiai skirti naudoti „Chrome“ kūrėjams ir gali nebūti aktyviai tvarkomi ar išbandomi. Jei norite juos įgalinti, eikite adresu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, spustelėkite mygtuką, kad įgalintumėte derinimo puslapius, ir tada grįžkite į šį puslapį.</translation>
 <translation id="3533694711092285624">Nėra išsaugotų slaptažodžių. „Chrome“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote.</translation>
 <translation id="3541482654983822893">„Chrome“ negali patikrinti jūsų slaptažodžių. Bandykite dar kartą po 24 val.</translation>
 <translation id="3564543103555793392">Prisijungę prie „Chrome“ galite išsaugoti žymes, slaptažodžius ir kt., tada naudoti juos telefone</translation>
@@ -224,7 +223,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3673813398384385993">„Chrome“ aptiko kenkėjišką programą plėtinyje „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="3695446226812920698">Sužinokite kaip</translation>
 <translation id="3697952514309507634">Kiti „Chrome“ profiliai</translation>
-<translation id="3700276346088749847">išvalyti „Chrome“ duomenis paskyroje</translation>
 <translation id="3703994572283698466">„Chrome“ OS, kaip ir <ph name="BEGIN_LINK_LINUX_OSS" />„Linux“ kūrimo aplinka<ph name="END_LINK_LINUX_OSS" />, pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">„ChromeOS Flex“ versija</translation>
 <translation id="3718181793972440140">Atlikus šį veiksmą iš šio įrenginio bus ištrintas 1 elementas. Jei vėliau norėsite atgauti duomenis, prisijunkite prie „Chrome“ kaip <ph name="USER_EMAIL" />.</translation>

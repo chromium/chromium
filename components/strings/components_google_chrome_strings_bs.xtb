@@ -10,6 +10,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2447485272386224171">Chrome su omogućili <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> projekat otvorenog koda i drugi <ph name="BEGIN_LINK_OSS" />softveri otvorenog koda<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Chromeov logotip</translation>
 <translation id="3444832043240812445">Ova stranica prikazuje isključivo informacije o nedavnim padovima aplikacija ako <ph name="BEGIN_LINK" />omogućite izvještaj o padovima aplikacije<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Ove stranice su namijenjene za korištenje programerima Chromea i možda se neće aktivno održavati ili testirati. Da ih omogućite, idite na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite na dugme da omogućite stranice za otklanjanje grešaka, zatim se vratite na ovu stranicu.</translation>
 <translation id="3875312571075912821">Dozvolite Chromeu da pristupi mreži u postavkama vašeg zaštitnog zida ili
           antivirusnog programa.</translation>
 <translation id="5005121315113832363">Ovu stranicu je blokirao Chrome</translation>

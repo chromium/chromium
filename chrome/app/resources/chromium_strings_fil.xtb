@@ -401,7 +401,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="6455857529632101747">Welcome sa mga profile sa Chromium</translation>
 <translation id="6466344609055215035">Alisin ang Account sa Chromium</translation>
 <translation id="6475912303565314141">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chromium.</translation>
-<translation id="648062525172759633">Nakalaan ang mga page na ito para sa paggamit ng mga developer ng Chromium, at posibleng hindi ito aktibong pinapanatili o sinusubukan. Para i-enable ang mga ito, mag-navigate papunta sa <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, i-click ang button para i-enable ang mga page sa pag-debug, at pagkatapos ay mag-navigate ulit papunta sa page na ito.</translation>
 <translation id="648319183876919572">Mas maraming magagawa ang Pinahusay na Ligtas na Pag-browse para protektahan ka laban sa mga mapanganib na website at download</translation>
 <translation id="6510925080656968729">I-uninstall ang Chromium</translation>
 <translation id="651535675648445253">Magbubukas ang mga shortcut sa Chromium</translation>
@@ -535,7 +534,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8313851650939857356">Nagkaroon ng error sa startup: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Isinasara ng iyong organisasyon ang Chromium kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">I-save bilang larawan</translation>
-<translation id="8326785589245660814">i-clear ang data sa Chromium sa iyong account</translation>
 <translation id="8330519371938183845">Mag-sign in para i-sync at i-personalize ang Chromium sa lahat ng iyong device</translation>
 <translation id="8340674089072921962">Chromium ang dating ginagamit ng <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8359544530202147897">I-update ang Chromium para patuloy na magamit ang data sa Chromium sa iyong Google Account, <ph name="ACCOUNT_EMAIL" /></translation>

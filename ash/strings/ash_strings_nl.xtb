@@ -114,7 +114,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="132346741904777634">Camera uitgelijnd op de linkerbovenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> en vensters sluiten</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> gekoppeld</translation>
-<translation id="1337081488893096731">Gebruik de Content Transfer-app om de gegevens van je schoolaccount over te zetten naar je persoonlijke account</translation>
 <translation id="1340378040547539434">Uitzoomen op pagina</translation>
 <translation id="1341651618736211726">Overloop</translation>
 <translation id="1341926407152459446"><ph name="DEVICE_NAME" /> gebruiken voor audio-invoer en -uitvoer</translation>
@@ -809,7 +808,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3727231512028252576">Kan items niet laden. Probeer het opnieuw als je online bent.</translation>
 <translation id="3735740477244556633">Sorteren op</translation>
 <translation id="3738664582935948253">Je kunt nu klikken en sneltoetsen tonen in schermopnamen</translation>
-<translation id="3741482431277446954">Rechtermuisknop</translation>
+<translation id="3741482431277446954">Rechtermuistoets</translation>
 <translation id="3742055079367172538">Screenshot gemaakt</translation>
 <translation id="3743775386021959186">Focus staat aan, nog <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Weersuggestie verbergen</translation>
@@ -1863,7 +1862,7 @@ Nieuwe installatie</translation>
 <translation id="7198435252016571249">Camera uitgelijnd op de rechterbenedenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="7219573373513695352">Geen apparaten gekoppeld</translation>
 <translation id="7229029500464092426">Geheugen <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> (totaal)</translation>
-<translation id="7239814253344511868">Beide muisknoppen</translation>
+<translation id="7239814253344511868">Beide muistoetsen</translation>
 <translation id="7244725679040769470">Nog <ph name="PERCENTAGE" />% batterijlading. Sluit je apparaat aan op een voeding.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Deze Chromebook moet opnieuw worden opgestart om een update uit te voeren. Dit kan ongeveer één minuut duren.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2167,7 +2166,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8203224998425013577">Meer emoji's en gifjes tonen</translation>
 <translation id="8203795194971602413">Klik met rechtermuisknop</translation>
 <translation id="8205469348819768313">Probeer je Page Down te gebruiken? Gebruik</translation>
-<translation id="8213376797713070611">Linkermuisknop</translation>
+<translation id="8213376797713070611">Linkermuistoets</translation>
 <translation id="8214996719228530800">Canary-kanaal</translation>
 <translation id="8219451629189078428">Je Chromebook moet ondertussen aan blijven en zijn aangesloten op een stopcontact. Zorg dat de kabels van de oplader of adapter goed zijn aangesloten, zowel op je Chromebook als op het stopcontact. Zet je Chromebook niet uit.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> toevoegen</translation>
@@ -2396,7 +2395,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9034924485347205037">Linux-bestanden</translation>
 <translation id="9047624247355796468">Instellingen openen voor <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth is niet beschikbaar</translation>
-<translation id="9050999376345823055">Druk op . om los te laten</translation>
+<translation id="9050999376345823055">Druk op '.' om los te laten</translation>
 <translation id="906458777597946297">Venster maximaliseren</translation>
 <translation id="9065203028668620118">Bewerken</translation>
 <translation id="9070640332319875144">Instellingen voor Assistent</translation>

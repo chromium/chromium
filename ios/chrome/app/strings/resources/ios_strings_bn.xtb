@@ -476,6 +476,7 @@
 <translation id="3053332585453689122">আপনার দেখা URL ও পৃষ্ঠার কন্টেন্টের ছোট স্যাম্পেল, ডাউনলোড, এক্সটেনশন সম্পর্কিত অ্যাক্টিভিটি ও সিস্টেমের বিষয়ে তথ্য ক্ষতিকর কিনা তা চেক করে দেখতে Google Safe Browsing-এ পাঠানো হয়।</translation>
 <translation id="3055102495753300780">তথ্যের স্টোরেজ</translation>
 <translation id="3059270601560379555">নতুন সার্চ</translation>
+<translation id="3064547930554042309">ডাউনলোড ম্যানেজ করুন</translation>
 <translation id="3072279342064724558">পাসওয়ার্ডটি আগে থেকেই আছে</translation>
 <translation id="3076846064362030967">Google অ্যাকাউন্ট থেকে আপনি সাইন-আউট হয়ে যাবেন না। আপনি সাইন-ইন করে থাকলে <ph name="BEGIN_LINK" />অন্যান্য অ্যাক্টিভিটি<ph name="END_LINK" /> আপনার Google অ্যাকাউন্টে সেভ হয়ে যেতে পারে। আপনি যেকোনও সময় সেগুলি মুছে দিতে পারেন।
 
@@ -698,6 +699,7 @@
 <translation id="4154753961803534698">ক্যামেরা ব্যবহার করে সার্চ করুন</translation>
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4163699139741158298">{count,plural, =1{"{title}"-এ বুকমার্ক সেভ করা হয়েছে। এটি শুধু এই ডিভাইসেই সেভ করা হয়।}one{{count}টি বুকমার্ক {title}-এ সেভ করা হয়েছে। এটি শুধু এই ডিভাইসেই সেভ করা হয়।}other{{count}টি বুকমার্ক {title}-এ সেভ করা হয়েছে। এটি শুধু এই ডিভাইসেই সেভ করা হয়।}}</translation>
+<translation id="4164514562270305824">ডাউনলোড করা ফাইলগুলি অটোমেটিক মুছে ফেলুন</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, যার শেষ সংখ্যাগুলি হল <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">অনুমতি দেবেন না</translation>
 <translation id="4172051516777682613">সর্বদা দেখান</translation>
@@ -1015,9 +1017,9 @@
 <translation id="5576885723883013398">নতুন উইন্ডো</translation>
 <translation id="5578795271662203820">এই ইমেজটির জন্য <ph name="SEARCH_ENGINE" /> খুঁজুন</translation>
 <translation id="5579012242779565775">'পড়ার তালিকা' লুকান</translation>
-<translation id="5581202956276923239">সাইট শর্টকাট</translation>
 <translation id="5585019845078534178">কার্ড</translation>
 <translation id="5595485650161345191">ঠিকানা সম্পাদনা করুন</translation>
+<translation id="559567008082979829">আপনার ডাউনলোড করা ফাইলগুলি যাতে এক মাস পরে মুছে যায় সেই অনুযায়ী সেট করুন।</translation>
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="560322036295180549">আপনার সংস্থা বন্ধ করে দিয়েছে</translation>
 <translation id="5611107723541161735">এই ডিভাইসে সম্প্রতি আপনি দেখেছেন এমন সাইটের শর্টকাট।</translation>
@@ -1469,6 +1471,7 @@
 <translation id="746872191028309255">আপনার ক্যামেরা বা ফটো গ্যালারির মাধ্যমে যা দেখছেন তা কিনুন।</translation>
 <translation id="7471557245617580330">নতুন ট্যাব তৈরি করুন</translation>
 <translation id="7473891865547856676">না থাক</translation>
+<translation id="7476548258282096076">এই কার্ডে আপনি সবচেয়ে বেশি দেখেছেন এমন সাইট দেখানো হয়।</translation>
 <translation id="747956641630879526">এই কার্ড লুকালে প্যাকেজ ট্র্যাকিং বন্ধ হয়ে যাবে এবং আপনার সমস্ত ডেটা সরিয়ে দেওয়া হবে</translation>
 <translation id="7484645889979462775">এই সাইটের জন্য কখনই নয়</translation>
 <translation id="7486006552035434095">আপনার ডিভাইস সিঙ্ক করে রাখুন</translation>

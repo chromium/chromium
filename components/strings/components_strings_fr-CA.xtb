@@ -185,6 +185,7 @@
 <translation id="1310938305420497484">Tout d'abord, ouvrez les onglets et visitez les sites</translation>
 <translation id="1314311879718644478">Affichez les contenus en réalité augmentée</translation>
 <translation id="1314509827145471431">Reliure à droite</translation>
+<translation id="1314784609072437689">remplacement des entrées du clavier</translation>
 <translation id="1316805916535763484">Cours en ligne ouverts à tous</translation>
 <translation id="1318023360584041678">Enregistré dans le groupe de l'onglet</translation>
 <translation id="1319245136674974084">Ne plus me poser la question pour cette application</translation>
@@ -911,7 +912,6 @@
 <translation id="255497580849974774">Veuillez garder votre appareil connecté à un chargeur pendant la mise à jour.</translation>
 <translation id="2556876185419854533">&amp;Annuler la modification</translation>
 <translation id="2559566667529177711">Multicouche</translation>
-<translation id="2565789370591907825">Verrouillage et utilisation du clavier</translation>
 <translation id="2570734079541893434">Gérer les paramètres</translation>
 <translation id="257136025287118539">Votre administrateur déplace vos fichiers vers <ph name="CLOUD_PROVIDER" />. Vous pouvez modifier ces fichiers une fois le téléversement terminé.</translation>
 <translation id="2571488850200220306">Pour assurer la sécurité, il peut également consulter le système d'exploitation et la version du navigateur de l'appareil, ainsi que les logiciels installés</translation>
@@ -1109,7 +1109,6 @@
 <translation id="2974468223369775963">Cet IBAN n'a pas pu être enregistré dans votre compte Google. Il est plutôt enregistré dans Chrome sur cet appareil. Chrome vous le demandera à nouveau la prochaine fois que vous utiliserez cet IBAN.</translation>
 <translation id="297667759942911166">Collaborer dans des groupes d'onglets</translation>
 <translation id="2977665033722899841">Ligne <ph name="ROW_NAME" /> actuellement sélectionnée. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">verrouiller et utiliser votre clavier.</translation>
 <translation id="2978824962390592855">Opéra</translation>
 <translation id="2979424420072875974">Ressources pour les auteurs</translation>
 <translation id="2979639724566107830">Ouvrir dans une nouvelle fenêtre</translation>
@@ -2466,6 +2465,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5363532265530011914">Bas et collants</translation>
 <translation id="5371425731340848620">Mettre à jour la carte</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> a modifié un onglet</translation>
+<translation id="5374324662289354619">Les pages de débogage interne sont actuellement désactivées.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">« Votre horloge est en retard », « Votre horloge est en avance » ou « &lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt; »</translation>
 <translation id="5379618281582508161">Pour obtenir ce mot de passe sur tous vos appareils, confirmez qu'il s'agit bien de vous</translation>
@@ -2921,6 +2921,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6182972682129119950">A4 x 5</translation>
 <translation id="6184868291074982484">Chrome limite automatiquement les témoins tiers</translation>
 <translation id="6188479691141473408">et <ph name="N_FIELDS" /> autres champs</translation>
+<translation id="6190518157737269631">Remplacer certaines touches de votre clavier, comme Échap</translation>
 <translation id="6194209731893739467">Vous pouvez voir tous vos produits suivis en cliquant ici</translation>
 <translation id="6195163219142236913">Témoins tiers limités</translation>
 <translation id="6195371403461054755">Géologie</translation>
@@ -3046,6 +3047,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6394852772105848029">Ce site veut ouvrir l'application <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Scooters et cyclomoteurs</translation>
 <translation id="6398765197997659313">Quitter le mode plein écran</translation>
+<translation id="6399633237874954301">Lecteur de cartes à puce autorisé par votre administrateur</translation>
 <translation id="6401136357288658127">Cette politique est obsolète. Vous devriez utiliser la politique <ph name="NEW_POLICY" /> à la place.</translation>
 <translation id="640163077447496506">Expire aujourd'hui</translation>
 <translation id="6402537308870515461">Examen requis avant de déplacer les fichiers sélectionnés</translation>
@@ -4106,7 +4108,6 @@ Détails supplémentaires :
 <translation id="8278544367771164040">Prêts commerciaux</translation>
 <translation id="8279290844152565425">Concerts et festivals musicaux</translation>
 <translation id="8279611986089885641">Les notifications de Chrome doivent être activées. Vous pouvez les activer dans <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Verrouiller votre clavier?</translation>
 <translation id="8280630997017109758">Bac 11</translation>
 <translation id="8281730697546299650">Autres fonctionnalités de confidentialité des annonces désormais offertes</translation>
 <translation id="8281886186245836920">Ignorer</translation>
@@ -4176,7 +4177,6 @@ Détails supplémentaires :
 <translation id="8398335999901363925">Les modes de paiement accessibles à remplir au toucher sont ouverts à la pleine hauteur.</translation>
 <translation id="8398446215576328011">Rétablir les politiques appliquées</translation>
 <translation id="8398790343843005537">Rechercher votre téléphone</translation>
-<translation id="8399276468426899527">verrouillage et utilisation du clavier</translation>
 <translation id="8400929824946688748">Emploi et éducation</translation>
 <translation id="8402442052798347631">Des pirates informatiques qui se trouvent sur le site que vous avez essayé de visiter pourraient tenter de vous inciter à installer un logiciel nuisible qui affecte la façon dont vous naviguez, par exemple en modifiant votre page d'accueil ou en vous montrant des annonces supplémentaires sur les sites que vous visitez. Chrome recommande fortement de revenir à la page de sécurité pour éviter tout dommage. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fanafiction</translation>
@@ -4194,6 +4194,7 @@ Détails supplémentaires :
 <translation id="8421158157346464398">Renseignements relatifs à votre profil professionnel (tels que le nom d'utilisateur de votre profil professionnel)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Modifier</translation>
+<translation id="8426945547715537628">Autoriser le remplacement des entrées du clavier?</translation>
 <translation id="8427848540066057481">500 mm x 750 mm</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8428634594422941299">OK</translation>
@@ -4280,6 +4281,7 @@ Détails supplémentaires :
 <translation id="8574841453995331336">Réfrigérateurs et congélateurs</translation>
 <translation id="8577192028579836704">Prix habituel de toutes les options : <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Votre carte virtuelle n'est plus valide</translation>
+<translation id="8579000896558714521">Remplacement des entrées du clavier</translation>
 <translation id="8580265901435899937">Destinations touristiques</translation>
 <translation id="8581064022803799721">Cette page est enregistrée dans <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Équipement de squash et de racquetball</translation>

@@ -911,7 +911,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="255497580849974774">Upewnij się, że na czas aktualizacji urządzenie jest podłączone do zasilania.</translation>
 <translation id="2556876185419854533">&amp;Cofnij edycję</translation>
 <translation id="2559566667529177711">Wielowarstwowy</translation>
-<translation id="2565789370591907825">Blokowanie i używanie klawiatury</translation>
 <translation id="2570734079541893434">Zarządzaj ustawieniami</translation>
 <translation id="257136025287118539">Administrator przenosi Twoje pliki do usługi <ph name="CLOUD_PROVIDER" />. Po zakończeniu przesyłania możesz je zmodyfikować.</translation>
 <translation id="2571488850200220306">Aby zapewnić bezpieczeństwo, administrator może też wyświetlać informacje o systemie operacyjnym urządzenia, wersji przeglądarki i zainstalowanym oprogramowaniu</translation>
@@ -1109,7 +1108,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2974468223369775963">Nie udało się zapisać tego numeru IBAN na Twoim koncie Google. Zamiast tego został on zapisany w Chrome na tym urządzeniu. Chrome poprosi Cię o to ponownie, gdy następnym razem użyjesz tego numeru IBAN.</translation>
 <translation id="297667759942911166">Współpraca w grupach kart</translation>
 <translation id="2977665033722899841">Obecnie wybrany wiersz to <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Zablokować klawiaturę i jej używać</translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Zasoby dla pisarzy</translation>
 <translation id="2979639724566107830">Otwórz w nowym oknie</translation>
@@ -2466,6 +2464,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5363532265530011914">Skarpety i wyroby pończosznicze</translation>
 <translation id="5371425731340848620">Zaktualizuj dane karty</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> zmienił(a) kartę</translation>
+<translation id="5374324662289354619">Wewnętrzne strony debugowania są obecnie wyłączone.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Twój zegar się spóźnia” lub „Twój zegar się śpieszy” lub „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379618281582508161">Aby uzyskać dostęp do tego hasła na wszystkich swoich urządzeniach, potwierdź swoją tożsamość</translation>
@@ -3046,6 +3045,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6394852772105848029">Ta strona chce otworzyć aplikację <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Skutery i motorowery</translation>
 <translation id="6398765197997659313">Zamknij pełny ekran</translation>
+<translation id="6399633237874954301">Czytnik kart inteligentnych dozwolony przez administratora</translation>
 <translation id="6401136357288658127">Ta zasada została wycofana. Zalecamy używanie zasady <ph name="NEW_POLICY" />.</translation>
 <translation id="640163077447496506">Wygasa dzisiaj</translation>
 <translation id="6402537308870515461">Musisz sprawdzić pliki przed ich przeniesieniem</translation>
@@ -4107,7 +4107,6 @@ Dodatkowe informacje:
 <translation id="8278544367771164040">Pożyczki komercyjne</translation>
 <translation id="8279290844152565425">Koncerty i festiwale muzyczne</translation>
 <translation id="8279611986089885641">Powiadomienia w Chrome muszą być włączone. Aby je włączyć, otwórz <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Zablokować klawiaturę?</translation>
 <translation id="8280630997017109758">Taca 11</translation>
 <translation id="8281730697546299650">Pozostałe dostępne teraz funkcje ochrony prywatności w reklamach</translation>
 <translation id="8281886186245836920">Pomiń</translation>
@@ -4177,7 +4176,6 @@ Dodatkowe informacje:
 <translation id="8398335999901363925">Formy płatności dostępne do uzupełnienia kliknięciem są otwarte na całą wysokość.</translation>
 <translation id="8398446215576328011">Przywróć obowiązujące zasady</translation>
 <translation id="8398790343843005537">Znajdź swój telefon</translation>
-<translation id="8399276468426899527">blokowanie i używanie klawiatury</translation>
 <translation id="8400929824946688748">Praca i edukacja</translation>
 <translation id="8402442052798347631">Osoby przeprowadzające atak na stronę, którą próbujesz odwiedzić, mogą podstępem nakłonić Cię do zainstalowania szkodliwego oprogramowania wpływającego na sposób korzystania z internetu. Na przykład może ono zmienić stronę główną lub wyświetlać na odwiedzanych stronach dodatkowe reklamy. Chrome zdecydowanie zaleca powrót do zabezpieczeń, które pozwolą uniknąć szkód. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fan Fiction</translation>

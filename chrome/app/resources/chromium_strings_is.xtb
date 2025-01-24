@@ -401,7 +401,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="6455857529632101747">Velkomin(n) í Chromium prófíla</translation>
 <translation id="6466344609055215035">Fjarlægja reikning úr Chromium</translation>
 <translation id="6475912303565314141">Stýrir því einnig hvaða síða birtist þegar þú ræsir Chromium.</translation>
-<translation id="648062525172759633">Þessar síður eru ætlaðar til notkunar hjá þróunaraðilum Chromium og er e.t.v. ekki haldið við eða prófaðar reglulega. Til að kveikja á þeim skaltu fara á <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, smella á hnappinn til að kveikja á villuleitarsíðum og fara síðan aftur á þessa síðu.</translation>
 <translation id="648319183876919572">Enn öruggari vefskoðun gerir viðbótarráðstafanir til að vernda þig gegn skaðlegum vefsvæðum og niðurhali</translation>
 <translation id="6510925080656968729">Fjarlægja Chromium</translation>
 <translation id="651535675648445253">Flýtileiðir opnast í Chromium</translation>
@@ -535,7 +534,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8313851650939857356">Villa í ræsingu: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Fyrirtækið þitt lokar Chromium eftir aðgerðaleysi í <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Vista sem mynd</translation>
-<translation id="8326785589245660814">eyddu Chromium-gögnum af reikningnum þínum</translation>
 <translation id="8330519371938183845">Skráðu þig inn til að samstilla Chromium í tækjunum þínum og gera það að þínu</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> var áður að nota Chromium</translation>
 <translation id="8359544530202147897">Uppfærðu Chromium til að halda áfram að nota Chromium-gögnin á Google-reikningnum þínum, <ph name="ACCOUNT_EMAIL" /></translation>

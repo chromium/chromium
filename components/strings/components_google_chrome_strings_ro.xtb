@@ -9,6 +9,7 @@
 <translation id="2447485272386224171">Chrome există ca urmare a proiectului open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> și al altor <ph name="BEGIN_LINK_OSS" />software-uri open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Sigla Chrome</translation>
 <translation id="3444832043240812445">Această pagină afișează informații cu privire la recentele blocări numai dacă <ph name="BEGIN_LINK" />activezi raportarea blocărilor<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Aceste pagini sunt destinate dezvoltatorilor Chrome și este posibil să nu fie întreținute sau testate în mod activ. Pentru a le activa, accesează <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, dă clic pe butonul pentru a activa paginile de remediere a erorilor, apoi accesează din nou această pagină.</translation>
 <translation id="3875312571075912821">Din setările pentru firewall sau antivirus, permite browserului Chrome să acceseze
           rețeaua.</translation>
 <translation id="5005121315113832363">Pagina a fost blocată de Chrome</translation>

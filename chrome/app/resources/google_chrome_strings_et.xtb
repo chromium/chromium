@@ -204,7 +204,6 @@
 <translation id="345171907106878721">Lisa Chrome'i</translation>
 <translation id="3453763134178591239">Chrome OS-i tingimused</translation>
 <translation id="3503306920980160878">Chrome vajab juurdepääsu teie asukohale, et seda selle saidiga jagada</translation>
-<translation id="3512634283363927263">Need lehed on mõeldud kasutamiseks Chrome'i arendajatele ning neid ei pruugita aktiivselt hooldada ega testida. Silumislehtede lubamiseks navigeerige lingile <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klõpsake selleks ettenähtud nupul ja seejärel navigeerige uuesti praegusele lehele.</translation>
 <translation id="3533694711092285624">Salvestatud paroole ei ole. Chrome saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="3541482654983822893">Chrome ei saa teie paroole kontrollida. Proovige uuesti 24 tunni pärast.</translation>
 <translation id="3564543103555793392">Kui logite Chrome'i sisse, saate salvestada järjehoidjaid, paroole ja muud ning seejärel kasutada neid oma telefonis</translation>
@@ -222,7 +221,6 @@
 <translation id="3673813398384385993">Chrome leidis, et laiendus „<ph name="EXTENSION_NAME" />“ sisaldab pahavara</translation>
 <translation id="3695446226812920698">Lisateave</translation>
 <translation id="3697952514309507634">Muud Chrome'i profiilid</translation>
-<translation id="3700276346088749847">kustutage oma kontol Chrome'i andmed</translation>
 <translation id="3703994572283698466">Chrome OS-i ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flexi versioon</translation>
 <translation id="3718181793972440140">See kustutab seadmest ühe üksuse. Hiljem oma andmete toomiseks logige Chrome'i sisse kasutajana <ph name="USER_EMAIL" />.</translation>

@@ -185,6 +185,7 @@
 <translation id="1310938305420497484">まずタブを開いてサイトにアクセスしてください</translation>
 <translation id="1314311879718644478">拡張現実コンテンツを表示します</translation>
 <translation id="1314509827145471431">製本（右綴じ）</translation>
+<translation id="1314784609072437689">キーボードのオーバーライド</translation>
 <translation id="1316805916535763484">公開オンライン講座</translation>
 <translation id="1318023360584041678">タブグループに保存済み</translation>
 <translation id="1319245136674974084">このアプリでは次回から表示しない</translation>
@@ -911,7 +912,6 @@
 <translation id="255497580849974774">更新中はデバイスを充電器に接続したままにしてください。</translation>
 <translation id="2556876185419854533">編集の取り消し（&amp;U）</translation>
 <translation id="2559566667529177711">マルチレイヤ</translation>
-<translation id="2565789370591907825">キーボードのロックと使用</translation>
 <translation id="2570734079541893434">設定を管理</translation>
 <translation id="257136025287118539">管理者がファイルを <ph name="CLOUD_PROVIDER" />に移動しています。ファイルの変更はアップロードの完了後に行うことができます。</translation>
 <translation id="2571488850200220306">セキュリティ確保の目的で、デバイスの OS、ブラウザのバージョン、インストールされているソフトウェアも確認される可能性があります</translation>
@@ -1109,7 +1109,6 @@
 <translation id="2974468223369775963">この IBAN は Google アカウントに保存できず、代わりにこのデバイスの Chrome に保存されました。次回この IBAN を使用するときに再度確認が行われます。</translation>
 <translation id="297667759942911166">タブグループでの共同作業</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />が現在選択されています。<ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">キーボードのロックと使用</translation>
 <translation id="2978824962390592855">オペラ</translation>
 <translation id="2979424420072875974">作家、ライター向け情報</translation>
 <translation id="2979639724566107830">新しいウィンドウで開く</translation>
@@ -2466,6 +2465,7 @@
 <translation id="5363532265530011914">靴下、タイツ</translation>
 <translation id="5371425731340848620">カードを更新</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> さんがタブを変更しました</translation>
+<translation id="5374324662289354619">内部デバッグ ページは現在無効になっています。</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">「時計が遅れています」、「時計が進んでいます」、「&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;」</translation>
 <translation id="5379618281582508161">このパスワードをすべてのデバイスで使用するには、本人確認を行ってください</translation>
@@ -2921,6 +2921,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome でサードパーティ Cookie を自動的に制限します</translation>
 <translation id="6188479691141473408">他 <ph name="N_FIELDS" /> 個の項目</translation>
+<translation id="6190518157737269631">キーボードの一部のキー（Esc キーなど）のオーバーライド</translation>
 <translation id="6194209731893739467">トラッキングしている商品がすべてここに表示されます</translation>
 <translation id="6195163219142236913">サードパーティ Cookie が制限されています</translation>
 <translation id="6195371403461054755">地質学</translation>
@@ -3046,6 +3047,7 @@
 <translation id="6394852772105848029">このサイトは <ph name="APP_NAME" /> アプリを開くよう要求しています</translation>
 <translation id="639673288733510393">スクーター、モペッド</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
+<translation id="6399633237874954301">管理者が許可したスマートカード リーダー</translation>
 <translation id="6401136357288658127">このポリシーはサポートが終了したため、代わりに <ph name="NEW_POLICY" /> ポリシーを使用してください。</translation>
 <translation id="640163077447496506">今日で期限切れ</translation>
 <translation id="6402537308870515461">移動する前に確認が必要です</translation>
@@ -4108,7 +4110,6 @@
 <translation id="8278544367771164040">営利貸付</translation>
 <translation id="8279290844152565425">コンサート、音楽祭</translation>
 <translation id="8279611986089885641">Chrome の通知をオンにする必要があります。[<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />] でオンにできます。</translation>
-<translation id="8280387559022105172">キーボードをロックしますか？</translation>
 <translation id="8280630997017109758">トレイ 11</translation>
 <translation id="8281730697546299650">その他の広告のプライバシー機能がリリースされました</translation>
 <translation id="8281886186245836920">スキップ</translation>
@@ -4178,7 +4179,6 @@
 <translation id="8398335999901363925">タップ操作で入力できるお支払い方法が画面全体に表示されています。</translation>
 <translation id="8398446215576328011">適用済みのポリシーを元に戻す</translation>
 <translation id="8398790343843005537">スマートフォンを検出</translation>
-<translation id="8399276468426899527">キーボードのロックと使用</translation>
 <translation id="8400929824946688748">仕事、教育</translation>
 <translation id="8402442052798347631">アクセスしようとしたサイトでは、攻撃者がユーザーを騙してブラウジングに影響を与える（ホームページを変更する、アクセス先のサイトで余計な広告を表示するなど）有害なソフトウェアをインストールさせる可能性があります。危害を避けるため安全なページに戻ることを強くおすすめします。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">二次創作</translation>
@@ -4196,6 +4196,7 @@
 <translation id="8421158157346464398">仕事用プロファイルの情報（仕事用プロファイルのユーザー名など）</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">変更</translation>
+<translation id="8426945547715537628">キーボードのオーバーライドを許可しますか？</translation>
 <translation id="8427848540066057481">500x750 mm</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">OK</translation>
@@ -4282,6 +4283,7 @@
 <translation id="8574841453995331336">冷蔵庫、冷凍庫</translation>
 <translation id="8577192028579836704">すべてのオプションでの一般的な価格: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">仮想カードを使用できません</translation>
+<translation id="8579000896558714521">キーボードのオーバーライド</translation>
 <translation id="8580265901435899937">観光地</translation>
 <translation id="8581064022803799721">このページは <ph name="LAST_BOOKMARKS_FOLDER" /> に保存されています。</translation>
 <translation id="8586082901536468629">スカッシュ、ラケットボール用品</translation>

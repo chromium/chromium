@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           e verifica che la configurazione sia impostata su "nessun proxy" o "diretta".</translation>
+<translation id="648062525172759633">Queste pagine sono destinate agli sviluppatori di Chromium e potrebbero non essere attivamente gestite o testate. Per attivarle, vai a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, fai clic sul pulsante per attivare le pagine di debug, quindi torna a questa pagina.</translation>
 <translation id="6549378540556750549">La realizzazione di Chromium è stata possibile anche grazie ad altri <ph name="BEGIN_LINK_OSS" />software open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Le modifiche verranno applicate al prossimo riavvio di Chromium.</translation>
 <translation id="691026815377248078">Chromium richiede l'accesso al Bluetooth per continuare l'accoppiamento. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

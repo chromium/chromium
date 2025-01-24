@@ -185,6 +185,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1310938305420497484">Primero, abrir pestañas y acceder a sitios</translation>
 <translation id="1314311879718644478">Visualizar contenido de realidad aumentada</translation>
 <translation id="1314509827145471431">Encuadernar por la derecha</translation>
+<translation id="1314784609072437689">anulación del teclado</translation>
 <translation id="1316805916535763484">Cursos online abiertos</translation>
 <translation id="1318023360584041678">Guardado en un grupo de pestañas</translation>
 <translation id="1319245136674974084">No volver a preguntar para esta aplicación</translation>
@@ -911,7 +912,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="255497580849974774">Mantén tu dispositivo conectado a un cargador durante la actualización.</translation>
 <translation id="2556876185419854533">&amp;Deshacer edición</translation>
 <translation id="2559566667529177711">Varias capas</translation>
-<translation id="2565789370591907825">Bloqueo y uso del teclado</translation>
 <translation id="2570734079541893434">Gestionar configuración</translation>
 <translation id="257136025287118539">Tu administrador está moviendo tus archivos a <ph name="CLOUD_PROVIDER" />. Podrás modificar estos archivos cuando hayan terminado de subirse.</translation>
 <translation id="2571488850200220306">Para ayudar a garantizar la seguridad, también puede ver el SO del dispositivo, la versión del navegador y el software instalado</translation>
@@ -1109,7 +1109,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2974468223369775963">No se ha podido guardar este IBAN en tu cuenta de Google. Se ha guardado en Chrome en este dispositivo. Chrome te volverá a preguntar la próxima vez que uses este IBAN.</translation>
 <translation id="297667759942911166">Colabora en grupos de pestañas</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, opción seleccionada actualmente. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Bloquear y usar tu teclado</translation>
 <translation id="2978824962390592855">Ópera</translation>
 <translation id="2979424420072875974">Recursos para escritores</translation>
 <translation id="2979639724566107830">Abrir en una ventana nueva</translation>
@@ -2466,6 +2465,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5363532265530011914">Calcetines y medias</translation>
 <translation id="5371425731340848620">Actualizar tarjeta</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ha cambiado una pestaña</translation>
+<translation id="5374324662289354619">Las páginas de depuración internas están inhabilitadas en estos momentos.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Tu reloj está atrasado" o "Tu reloj está adelantado" o "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Para acceder a esta contraseña en todos tus dispositivos, debes verificar que eres tú</translation>
@@ -2921,6 +2921,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome limita automáticamente las cookies de terceros</translation>
 <translation id="6188479691141473408">y <ph name="N_FIELDS" /> campo más</translation>
+<translation id="6190518157737269631">Anular algunas teclas del teclado, como Esc</translation>
 <translation id="6194209731893739467">Consulta todos los productos que sigues aquí</translation>
 <translation id="6195163219142236913">Cookies de terceros limitadas</translation>
 <translation id="6195371403461054755">Geología</translation>
@@ -4108,7 +4109,6 @@ Más información:
 <translation id="8278544367771164040">Préstamos comerciales</translation>
 <translation id="8279290844152565425">Conciertos y festivales de música</translation>
 <translation id="8279611986089885641">Las notificaciones de Chrome deben estar activadas. Puedes activarlas en <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">¿Bloquear el teclado?</translation>
 <translation id="8280630997017109758">Bandeja 11</translation>
 <translation id="8281730697546299650">Ya disponibles otras funciones de privacidad en la publicidad</translation>
 <translation id="8281886186245836920">Saltar</translation>
@@ -4178,7 +4178,6 @@ Más información:
 <translation id="8398335999901363925">Los métodos de pago que puedes rellenar con un toque están abiertos a altura completa.</translation>
 <translation id="8398446215576328011">Deshacer políticas aplicadas</translation>
 <translation id="8398790343843005537">Buscar tu teléfono</translation>
-<translation id="8399276468426899527">bloqueo y uso del teclado</translation>
 <translation id="8400929824946688748">Empleo y educación</translation>
 <translation id="8402442052798347631">Es posible que los atacantes del sitio que has intentado visitar te engañen para que instales software dañino que afecte a tu navegación (por ejemplo, que cambie tu página principal o te muestre anuncios adicionales en los sitios que visites). Chrome te recomienda volver a un sitio seguro para evitar daños. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fanfiction</translation>
@@ -4196,6 +4195,7 @@ Más información:
 <translation id="8421158157346464398">Información del perfil de trabajo (como el nombre de usuario de tu perfil de trabajo)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Cambiar</translation>
+<translation id="8426945547715537628">¿Permitir la anulación del teclado?</translation>
 <translation id="8427848540066057481">500x750 mm</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428634594422941299">Entendido</translation>
@@ -4282,6 +4282,7 @@ Más información:
 <translation id="8574841453995331336">Frigoríficos y congeladores</translation>
 <translation id="8577192028579836704">Normalmente <ph name="TYPICAL_PRICE" /> para todas las opciones</translation>
 <translation id="8577348305244205642">Tarjeta virtual no disponible</translation>
+<translation id="8579000896558714521">Anulación del teclado</translation>
 <translation id="8580265901435899937">Destinos turísticos</translation>
 <translation id="8581064022803799721">Esta página se ha guardado en <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Equipamiento de squash y ráquetbol</translation>

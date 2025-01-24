@@ -9,6 +9,7 @@
 <translation id="2447485272386224171">Chrome'i aluseks on avatud lähtekoodiga projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ja muu <ph name="BEGIN_LINK_OSS" />avatud lähtekoodiga tarkvara<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Chrome'i logo</translation>
 <translation id="3444832043240812445">Lehel näidatakse vaid teavet hiljutiste krahhide kohta, kui olete <ph name="BEGIN_LINK" />krahhide aruandluse lubanud<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Need lehed on mõeldud kasutamiseks Chrome'i arendajatele ning neid ei pruugita aktiivselt hooldada ega testida. Silumislehtede lubamiseks navigeerige lingile <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klõpsake selleks ettenähtud nupul ja seejärel navigeerige uuesti praegusele lehele.</translation>
 <translation id="3875312571075912821">Lubage Chrome'i juurdepääs võrgule tulemüüri või viirusetõrje
          seadetes.</translation>
 <translation id="5005121315113832363">Chrome blokeeris selle lehe</translation>

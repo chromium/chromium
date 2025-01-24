@@ -397,7 +397,6 @@
 <translation id="6455857529632101747">Te damos la bienvenida a los perfiles de Chromium</translation>
 <translation id="6466344609055215035">Quitar cuenta de Chromium</translation>
 <translation id="6475912303565314141">También controla qué página se muestra al iniciar Chromium.</translation>
-<translation id="648062525172759633">Estas páginas están destinadas a los desarrolladores de Chromium y es posible que no se prueben ni se mantengan de forma activa. Para habilitarlas, ve a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, haz clic en el botón para habilitar las páginas de depuración y, luego, vuelve a esta página.</translation>
 <translation id="648319183876919572">La Navegación segura mejorada realiza más acciones para protegerte de descargas y sitios web peligrosos</translation>
 <translation id="6510925080656968729">Desinstalar Chromium</translation>
 <translation id="651535675648445253">Accesos directos abiertos en Chromium</translation>
@@ -527,7 +526,6 @@
 <translation id="8313851650939857356">Error de inicio: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Tu organización cierra Chromium cuando no se usa durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Guardar como imagen</translation>
-<translation id="8326785589245660814">borra los datos de Chromium de tu cuenta</translation>
 <translation id="8330519371938183845">Accede para sincronizar y personalizar Chromium en todos tus dispositivos</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> usaba Chromium anteriormente</translation>
 <translation id="8359544530202147897">Actualiza Chromium para seguir usando los datos de Chromium en tu Cuenta de Google, <ph name="ACCOUNT_EMAIL" /></translation>

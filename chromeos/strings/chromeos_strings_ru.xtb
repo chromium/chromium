@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">зеленый</translation>
 <translation id="225692081236532131">Статус активации</translation>
 <translation id="2267285889943769271">Добавить скриншот</translation>
+<translation id="2268044343513325586">Уточнить</translation>
 <translation id="2271469253353559191">Расписание тёмной темы</translation>
 <translation id="2276999893457278469">Самый популярный справочный контент</translation>
 <translation id="2277631741861284101">Записывайте и отправляйте аудиофайлы без труда</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Поиск сканеров…</translation>
 <translation id="3226657629376379887">Меню действий, связанных с раскладкой</translation>
 <translation id="3227186760713762082">Разделите значение "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Переписать</translation>
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
 <translation id="324961752321393509">Администратор запретил закрывать это приложение</translation>
 <translation id="3263941347294171263">Чтобы продолжить обновление, отключите и снова подключите устройство "<ph name="DEVICE_NAME" />".</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Обновление встроенного ПО для устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="346423161771747987">Потребление электроэнергии</translation>
 <translation id="346539236881580388">Переснять</translation>
+<translation id="3479552764303398839">Не сейчас</translation>
 <translation id="3484914941826596830">Пока выполняется обновление встроенного ПО, не отключайте внешнее устройство и не выключайте компьютер. Это окно можно свернуть. Обновление займет несколько минут, в течение которых внешнее устройство может не работать.</translation>
 <translation id="3486220673238053218">узнать определение</translation>
 <translation id="3487866404496702283">Отзыв о функции mahi</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Регулировка громкости</translation>
 <translation id="3767737419527918477">Поиск файлов записей</translation>
 <translation id="3771294271822695279">Видеофайлы</translation>
+<translation id="3771694256347217732">Условия использования Google</translation>
 <translation id="3780740315729837296">Назначьте клавишу</translation>
 <translation id="3784455785234192852">Заблокировать</translation>
 <translation id="3785643128701396311">пиксельная графика</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">Время ожидания HTTP (Android)</translation>
 <translation id="6078323886959318429">Добавить ярлык</translation>
 <translation id="6091080061796993741">желтый</translation>
-<translation id="6093853427925392522">Используйте приложение "Перенос контента" от Google, чтобы заранее перенести информацию из учебного аккаунта в личный.</translation>
 <translation id="6104112872696127344">Сканирование отменено.</translation>
 <translation id="6106186594183574873">Для завершения введите старый пароль.</translation>
 <translation id="6108689792487843350">Шлюз недоступен.</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Быстрые клавиши для поиска</translation>
 <translation id="7138614237884624401">Упрощенный текст</translation>
 <translation id="7138668887584231801">Для краткого пересказа выбрано недостаточно слов</translation>
-<translation id="7141470099673912333">Перенос контента</translation>
 <translation id="7143207342074048698">Подключение</translation>
 <translation id="7144878232160441200">Повторить</translation>
 <translation id="7144954474087165241">пагода</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8262870577632766028">1 час</translation>
 <translation id="827422111966801947">Индиго</translation>
-<translation id="8281886186245836920">Пропустить</translation>
 <translation id="8286154143153872371">Чтобы посмотреть обои, подключитесь к сети и обновите страницу.</translation>
 <translation id="8291967909914612644">Страна провайдера</translation>
 <translation id="8294431847097064396">Источник</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Создать название с помощью ИИ от Google</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
 <translation id="8798441408945964110">Название провайдера</translation>
+<translation id="8804164990146287819">Политика конфиденциальности</translation>
 <translation id="8808828119384186784">Настройки Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Обои</translation>

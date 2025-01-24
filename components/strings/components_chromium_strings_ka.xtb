@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
          და დარწმუნდით, რომ კონფიგურაციაში დაყენებულია მნიშვნელობები „პროქსის გარეშე“ ან „პირდაპირი“</translation>
+<translation id="648062525172759633">ეს გვერდები განკუთვნილია Chromium დეველოპერების მიერ გამოყენებისთვის და მათი აქტიურად შენარჩუნება ან ტესტირება დაუშვებელია. მათ ჩასართავად გახსენით <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, დააწკაპუნეთ ღილაკზე გვერდების გამართვის ჩასართავად და შემდეგ ისევ გადადით ამ გვერდზე.</translation>
 <translation id="6549378540556750549">Chromium, ასევე, მუშაობს <ph name="BEGIN_LINK_OSS" />ღია კოდის სხვა პროგრამული უზრუნველყოფის<ph name="END_LINK_OSS" /> დამსახურებით.</translation>
 <translation id="6613594504749178791">თქვენი ცვლილებები გააქტიურდება Chromium-ის შემდეგი გაშვებისას.</translation>
 <translation id="691026815377248078">დაწყვილების გასაგრძელებლად Chromium საჭიროებს Bluetooth-ზე წვდომას. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">녹색</translation>
 <translation id="225692081236532131">활성화 상태</translation>
 <translation id="2267285889943769271">스크린샷 추가</translation>
+<translation id="2268044343513325586">상세검색</translation>
 <translation id="2271469253353559191">어두운 모드 예약</translation>
 <translation id="2276999893457278469">상위 도움말 콘텐츠</translation>
 <translation id="2277631741861284101">오디오를 간편하게 녹음하고 공유하세요</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">스캐너 검색 중</translation>
 <translation id="3226657629376379887">레이아웃 작업 메뉴</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> 값을 <ph name="CONVERSION_RATE" />(으)로 나눕니다.</translation>
-<translation id="3237710083340813756">재작성하기</translation>
 <translation id="3246869037381808805">1일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="324961752321393509">관리자가 이 앱의 종료를 허용하지 않습니다.</translation>
 <translation id="3263941347294171263">업데이트를 계속하려면 <ph name="DEVICE_NAME" />에서 전원을 분리했다가 다시 연결하세요.</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> 업데이트 중</translation>
 <translation id="346423161771747987">전류</translation>
 <translation id="346539236881580388">다시 촬영</translation>
+<translation id="3479552764303398839">나중에</translation>
 <translation id="3484914941826596830">펌웨어 업데이트 도중에 외부 기기를 분리하거나 컴퓨터를 종료하지 마세요. 이 창을 최소화할 수 있습니다. 업데이트되는 데 몇 분 정도 걸릴 수 있으며 이 시간 동안 외부 기기가 작동하지 않을 수도 있습니다.</translation>
 <translation id="3486220673238053218">정의</translation>
 <translation id="3487866404496702283">mahi 기능에 관한 의견</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">볼륨 조정</translation>
 <translation id="3767737419527918477">녹음 파일 검색</translation>
 <translation id="3771294271822695279">동영상 파일</translation>
+<translation id="3771694256347217732">Google 서비스 약관</translation>
 <translation id="3780740315729837296">키보드 키 할당</translation>
 <translation id="3784455785234192852">잠금</translation>
 <translation id="3785643128701396311">픽셀 아트</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP 지연 시간</translation>
 <translation id="6078323886959318429">바로가기 추가</translation>
 <translation id="6091080061796993741">노란색</translation>
-<translation id="6093853427925392522">액세스 권한을 잃기 전에 Google 콘텐츠 전송 앱을 사용하여 학교 계정 데이터를 개인 계정으로 이전하세요.</translation>
 <translation id="6104112872696127344">스캔이 취소되었습니다.</translation>
 <translation id="6106186594183574873">완료하려면 이전 비밀번호를 입력하세요.</translation>
 <translation id="6108689792487843350">게이트웨이에 연결할 수 없습니다.</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">바로가기 검색</translation>
 <translation id="7138614237884624401">간략한 텍스트</translation>
 <translation id="7138668887584231801">단어가 너무 적어 요약할 수 없음</translation>
-<translation id="7141470099673912333">콘텐츠 전송</translation>
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="7144954474087165241">파고다</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8262870577632766028">1시간</translation>
 <translation id="827422111966801947">인디고</translation>
-<translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8286154143153872371">배경화면을 보려면 네트워크에 연결하고 페이지를 새로고침하세요.</translation>
 <translation id="8291967909914612644">홈 공급자 국가</translation>
 <translation id="8294431847097064396">출처</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Google AI를 사용하여 이름 만들기</translation>
 <translation id="8798099450830957504">기본값</translation>
 <translation id="8798441408945964110">공급자 이름</translation>
+<translation id="8804164990146287819">개인정보처리방침</translation>
 <translation id="8808828119384186784">Chrome 설정</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">배경화면</translation>

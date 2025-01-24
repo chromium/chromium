@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">绿色</translation>
 <translation id="225692081236532131">激活状态</translation>
 <translation id="2267285889943769271">添加屏幕截图</translation>
+<translation id="2268044343513325586">优化</translation>
 <translation id="2271469253353559191">深色模式时间表</translation>
 <translation id="2276999893457278469">热门帮助内容</translation>
 <translation id="2277631741861284101">轻松录制和分享音频</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">正在搜寻扫描器</translation>
 <translation id="3226657629376379887">布局操作菜单</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />值除以 <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">重写</translation>
 <translation id="3246869037381808805">系统会自动移除存在时长已超过 1 天的打印任务</translation>
 <translation id="324961752321393509">您的管理员不允许关闭此应用</translation>
 <translation id="3263941347294171263">请拔下并重新插入<ph name="DEVICE_NAME" />，以继续更新流程</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">正在更新“<ph name="DEVICE_NAME" />”</translation>
 <translation id="346423161771747987">电流</translation>
 <translation id="346539236881580388">重拍</translation>
+<translation id="3479552764303398839">以后再说</translation>
 <translation id="3484914941826596830">固件更新期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。此更新可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
 <translation id="3486220673238053218">定义</translation>
 <translation id="3487866404496702283">针对 Mahi 功能的反馈</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">调整音量</translation>
 <translation id="3767737419527918477">搜索录音文件</translation>
 <translation id="3771294271822695279">视频文件</translation>
+<translation id="3771694256347217732">Google 服务条款</translation>
 <translation id="3780740315729837296">分配键盘按键</translation>
 <translation id="3784455785234192852">锁定</translation>
 <translation id="3785643128701396311">像素风</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP 延迟时间</translation>
 <translation id="6078323886959318429">添加快捷方式</translation>
 <translation id="6091080061796993741">黄色</translation>
-<translation id="6093853427925392522">请务必在失去访问权限之前，使用 Google 的 Content Transfer 应用将学校账号数据转移到个人账号。</translation>
 <translation id="6104112872696127344">已取消扫描</translation>
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
 <translation id="6108689792487843350">无法连接至网关</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">搜索快捷键</translation>
 <translation id="7138614237884624401">简化文本</translation>
 <translation id="7138668887584231801">字词太少，无法总结</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="7144878232160441200">重试</translation>
 <translation id="7144954474087165241">佛塔</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">删除</translation>
 <translation id="8262870577632766028">1 小时</translation>
 <translation id="827422111966801947">靛青色</translation>
-<translation id="8281886186245836920">跳过</translation>
 <translation id="8286154143153872371">若要查看壁纸，请连接到网络并重新加载这个页面。</translation>
 <translation id="8291967909914612644">家用移动网络提供商所属国家/地区</translation>
 <translation id="8294431847097064396">来源</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">使用 Google AI 创建名称</translation>
 <translation id="8798099450830957504">默认</translation>
 <translation id="8798441408945964110">提供商名称</translation>
+<translation id="8804164990146287819">隐私权政策</translation>
 <translation id="8808828119384186784">Chrome 设置</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">壁纸</translation>

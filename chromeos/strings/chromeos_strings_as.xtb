@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">সেউজীয়া</translation>
 <translation id="225692081236532131">সক্ৰিয়কৰণৰ স্থিতি</translation>
 <translation id="2267285889943769271">স্ক্ৰীনশ্বট যোগ দিয়ক</translation>
+<translation id="2268044343513325586">পৰিষ্কৰণ</translation>
 <translation id="2271469253353559191">গাঢ় ম’ডৰ সময়সূচী</translation>
 <translation id="2276999893457278469">সহায় বিষয়ক সৰ্বোত্তম সমল</translation>
 <translation id="2277631741861284101">সহজে আপোনাৰ অডিঅ’ ৰেকৰ্ড আৰু শ্বেয়াৰ কৰক</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">স্কেনাৰ বিচাৰি থকা হৈছে</translation>
 <translation id="3226657629376379887">লে’আউট সম্পৰ্কীয় কাৰ্যৰ মেনু</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />ৰ মানটোক <ph name="CONVERSION_RATE" />ৰে হৰণ কৰক</translation>
-<translation id="3237710083340813756">পুনৰ লিখক</translation>
 <translation id="3246869037381808805">১ দিনতকৈ পুৰণি প্ৰিণ্ট কাৰ্যসমূহ আঁতৰোৱা হ’ব</translation>
 <translation id="324961752321393509">আপোনাৰ প্ৰশাসকে এই এপ্‌টো বন্ধ কৰিবলৈ অনুমতি নিদিয়ে</translation>
 <translation id="3263941347294171263">আপডে’ট প্ৰক্ৰিয়াটো অব্যাহত ৰাখিবলৈ <ph name="DEVICE_NAME" />ৰ পাৱাৰ কে’বলডাল আনপ্লাগ কৰি পুনৰ প্লাগ কৰক</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> আপডে’ট কৰি থকা হৈছে</translation>
 <translation id="346423161771747987">বৈদ্যুতিক প্ৰবাহ</translation>
 <translation id="346539236881580388">অন্য এখন ফট' লওক</translation>
+<translation id="3479552764303398839">এতিয়া নহয়</translation>
 <translation id="3484914941826596830">ফাৰ্মৱেৰটো আপডে’ট হৈ থকাৰ সময়ত, এই বাহ্যিক ডিভাইচটো আনপ্লাগ অথবা আপোনাৰ কম্পিউটাৰটো শ্বাট ডাউন নকৰিব। আপুনি এই ৱিণ্ড’খন মিনিমাইজ কৰিব পাৰে। এই আপডে’টটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে আৰু এই সময়খিনিত আপোনাৰ বাহ্যিক ডিভাইচটোৱে কাম নকৰিব পাৰে।</translation>
 <translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3487866404496702283">mahi সুবিধাৰ বাবে মতামত</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">ভলিউম মিলাওক</translation>
 <translation id="3767737419527918477">ৰেকৰ্ডিঙৰ ফাইল সন্ধান কৰক</translation>
 <translation id="3771294271822695279">ভিডিঅ’ ফাইল</translation>
+<translation id="3771694256347217732">Google সেৱাৰ চৰ্তাৱলী</translation>
 <translation id="3780740315729837296">কীব’ৰ্ডৰ কী এটা আৱণ্টন কৰক</translation>
 <translation id="3784455785234192852">লক আছে</translation>
 <translation id="3785643128701396311">পিক্সেল আৰ্ট</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP বিলম্বতা</translation>
 <translation id="6078323886959318429">শ্বর্টকাট যোগ কৰক</translation>
 <translation id="6091080061796993741">হালধীয়া</translation>
-<translation id="6093853427925392522">আপুনি এক্সেছ হেৰুওৱাৰ আগতেই আপোনাৰ বিদ্যালয়ৰ একাউণ্টৰ ডেটা আপোনাৰ ব্যক্তিগত একাউণ্টলৈ নিবলৈ Googleৰ Content Transfer এপ্‌টো ব্যৱহাৰ কৰাটো নিশ্চিত কৰক।</translation>
 <translation id="6104112872696127344">স্কেনিং বাতিল কৰা হৈছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি পাছৱর্ড দিয়ক</translation>
 <translation id="6108689792487843350">গেইটৱে'টো পাব পৰা অৱস্থাত নাই</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">সন্ধানৰ শ্বৰ্টকাট</translation>
 <translation id="7138614237884624401">সৰলীকৃত পাঠ</translation>
 <translation id="7138668887584231801">সাৰাংশ প্ৰস্তুত কৰিবলৈ পৰ্যাপ্ত শব্দ নাই</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">সংযোগ হৈছে</translation>
 <translation id="7144878232160441200">পুনৰ চেষ্টা কৰক</translation>
 <translation id="7144954474087165241">পেগ’ডা</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">মচক</translation>
 <translation id="8262870577632766028">১ ঘণ্টা</translation>
 <translation id="827422111966801947">ইণ্ডিগ'</translation>
-<translation id="8281886186245836920">এৰি যাওক</translation>
 <translation id="8286154143153872371">অনুগ্ৰহ কৰি এটা নেটৱৰ্কৰ সৈতে সংযোগ কৰক আৰু ৱালপেপাৰ চাবলৈ পৃষ্ঠাখন পুনৰ ল’ড কৰক।</translation>
 <translation id="8291967909914612644">গৃহ প্ৰদানকাৰী দেশ</translation>
 <translation id="8294431847097064396">উৎস</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Google AI ব্যৱহাৰ কৰি নাম সৃষ্টি কৰক</translation>
 <translation id="8798099450830957504">ডিফ’ল্ট</translation>
 <translation id="8798441408945964110">প্ৰদানকাৰীৰ নাম</translation>
+<translation id="8804164990146287819">গোপনীয়তা নীতি</translation>
 <translation id="8808828119384186784">Chromeৰ ছেটিং</translation>
 <translation id="8814190375133053267">ৱাই-ফাই</translation>
 <translation id="8818152010000655963">ৱালপেপাৰ</translation>

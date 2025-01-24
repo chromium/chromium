@@ -185,6 +185,7 @@
 <translation id="1310938305420497484">请先打开标签页并访问网站</translation>
 <translation id="1314311879718644478">查看增强现实内容</translation>
 <translation id="1314509827145471431">装订（右侧）</translation>
+<translation id="1314784609072437689">替换键盘按键</translation>
 <translation id="1316805916535763484">网络公开课</translation>
 <translation id="1318023360584041678">已保存在标签页组中</translation>
 <translation id="1319245136674974084">对于此应用不再询问</translation>
@@ -911,7 +912,6 @@
 <translation id="255497580849974774">更新期间，请将设备连接到充电器。</translation>
 <translation id="2556876185419854533">撤消修改(&amp;U)</translation>
 <translation id="2559566667529177711">多层</translation>
-<translation id="2565789370591907825">锁定和使用键盘</translation>
 <translation id="2570734079541893434">管理设置</translation>
 <translation id="257136025287118539">管理员正在将您的文件移至 <ph name="CLOUD_PROVIDER" />。上传完成后，您可以修改这些文件。</translation>
 <translation id="2571488850200220306">为了确保安全，它还能查看设备的操作系统、浏览器版本和已安装软件</translation>
@@ -1109,7 +1109,6 @@
 <translation id="2974468223369775963">此 IBAN 无法保存到您的 Google 账号中，已改为保存到此设备上的 Chrome 中。Chrome 会在您下次使用此 IBAN 时再次询问您。</translation>
 <translation id="297667759942911166">在标签页分组中协作</translation>
 <translation id="2977665033722899841">目前已选择“<ph name="ROW_NAME" />”。<ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">锁定和使用键盘</translation>
 <translation id="2978824962390592855">歌剧</translation>
 <translation id="2979424420072875974">写作资源</translation>
 <translation id="2979639724566107830">在新窗口中打开</translation>
@@ -2462,6 +2461,7 @@
 <translation id="5363532265530011914">短袜和袜类</translation>
 <translation id="5371425731340848620">更新信用卡</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />更改了标签页</translation>
+<translation id="5374324662289354619">内部调试页面目前已停用。</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">“您的时钟慢了”、“您的时钟快了”或“&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379618281582508161">如需在您的所有设备上获取此密码，请验证您的身份</translation>
@@ -2916,6 +2916,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome 会自动限制第三方 Cookie</translation>
 <translation id="6188479691141473408">以及另外 <ph name="N_FIELDS" /> 个字段</translation>
+<translation id="6190518157737269631">替换键盘上的某些键（例如 Esc 键）</translation>
 <translation id="6194209731893739467">您跟踪的所有商品都会显示在此处</translation>
 <translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6195371403461054755">地质学</translation>
@@ -4103,7 +4104,6 @@
 <translation id="8278544367771164040">商业贷款</translation>
 <translation id="8279290844152565425">音乐会与音乐节</translation>
 <translation id="8279611986089885641">Chrome 通知必须处于开启状态。您可在<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />中开启此类通知。</translation>
-<translation id="8280387559022105172">要锁定键盘吗？</translation>
 <translation id="8280630997017109758">纸匣 11</translation>
 <translation id="8281730697546299650">现已推出的其他广告隐私权功能</translation>
 <translation id="8281886186245836920">跳过</translation>
@@ -4173,7 +4173,6 @@
 <translation id="8398335999901363925">付款方式列表已全屏显示，轻触即可填充。</translation>
 <translation id="8398446215576328011">还原已应用的政策</translation>
 <translation id="8398790343843005537">查找您的手机</translation>
-<translation id="8399276468426899527">锁定和使用键盘</translation>
 <translation id="8400929824946688748">求职与教育</translation>
 <translation id="8402442052798347631">您尝试访问的网站上的攻击者可能会诱使您安装影响浏览体验的有害软件，例如，更改您的主页或在您访问的网站上展示额外的广告。Chrome 强烈建议您返回到安全的浏览环境，以免造成损害。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">同人小说</translation>
@@ -4191,6 +4190,7 @@
 <translation id="8421158157346464398">工作资料信息（例如工作资料用户名）</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> - <ph name="SECOND_LABEL" /> - <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">更改</translation>
+<translation id="8426945547715537628">允许替换键盘按键？</translation>
 <translation id="8427848540066057481">500 x 750 毫米</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8428634594422941299">知道了</translation>
@@ -4277,6 +4277,7 @@
 <translation id="8574841453995331336">冰箱和冷柜</translation>
 <translation id="8577192028579836704">所有选项的一般价格为 <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">无法使用虚拟卡</translation>
+<translation id="8579000896558714521">替换键盘按键</translation>
 <translation id="8580265901435899937">旅游目的地</translation>
 <translation id="8581064022803799721">该网页保存在“<ph name="LAST_BOOKMARKS_FOLDER" />”中。</translation>
 <translation id="8586082901536468629">壁球和短柄壁球装备</translation>

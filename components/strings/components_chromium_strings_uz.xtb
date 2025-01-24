@@ -29,6 +29,7 @@
           <ph name="PROXIES_TITLE" />
           va “proksi-serversiz” yoki “to‘g‘ridan-to‘g‘ri” sozlamalaridan biri
           belgilanganligiga ishonch xosil qiling.</translation>
+<translation id="648062525172759633">Bu sahifalar Chromium dastur ishlab chiquvchilari foydalanishi uchun moʻljallangan va faol ishlatish yoki sinovdan oʻtkazish mumkin emas. Ularni yoqish uchun <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> havolasiga oʻting, debag sahifalarini yoqish uchun tugmani bosib, keyin yana bu sahifaga oʻting.</translation>
 <translation id="6549378540556750549">Chromium paydo boʻlishida boshqa <ph name="BEGIN_LINK_OSS" />ochiq kodli dastur<ph name="END_LINK_OSS" /> taʼminotining katta oʻrni bor.</translation>
 <translation id="6613594504749178791">O‘zgartirishlar Chromium qaytadan ishga tushirilganda kuchga kiradi.</translation>
 <translation id="691026815377248078">Chromium ulanishi uchun Bluetooth orqali kirish ruxsati 

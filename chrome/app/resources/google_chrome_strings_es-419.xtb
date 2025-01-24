@@ -202,7 +202,6 @@
 <translation id="345171907106878721">Agrégate a Chrome</translation>
 <translation id="3453763134178591239">Condiciones del ChromeOS</translation>
 <translation id="3503306920980160878">Chrome necesita acceder a tu ubicación para compartirla con este sitio</translation>
-<translation id="3512634283363927263">Estas páginas están destinadas a los desarrolladores de Chrome y es posible que no se prueben ni se mantengan de forma activa. Para habilitarlas, ve a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, haz clic en el botón para habilitar las páginas de depuración y, luego, vuelve a esta página.</translation>
 <translation id="3533694711092285624">No hay contraseñas guardadas. Chrome puede revisar las contraseñas cuando las guardas.</translation>
 <translation id="3541482654983822893">Chrome no puede revisar las contraseñas. Vuelve a intentarlo después de 24 horas.</translation>
 <translation id="3564543103555793392">Cuando accedes a Chrome, puedes guardar favoritos, contraseñas y mucho más, y luego usarlos en tu teléfono</translation>
@@ -220,7 +219,6 @@
 <translation id="3673813398384385993">Chrome detectó que "<ph name="EXTENSION_NAME" />" contiene software malicioso.</translation>
 <translation id="3695446226812920698">Más información</translation>
 <translation id="3697952514309507634">Otros perfiles de Chrome</translation>
-<translation id="3700276346088749847">borra los datos de Chrome de tu cuenta</translation>
 <translation id="3703994572283698466">ChromeOS funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional, como <ph name="BEGIN_LINK_LINUX_OSS" />el entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versión de ChromeOS Flex</translation>
 <translation id="3718181793972440140">Esta acción borrará 1 elemento de este dispositivo. Si más adelante deseas recuperar los datos, accede a tu cuenta en Chrome como <ph name="USER_EMAIL" />.</translation>

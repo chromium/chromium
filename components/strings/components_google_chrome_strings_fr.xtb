@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chrome fonctionne grâce au projet Open Source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> et à d'autres <ph name="BEGIN_LINK_OSS" />logiciels libres<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logo Google Chrome</translation>
 <translation id="3444832043240812445">Cette page affiche uniquement des informations sur les erreurs récentes si vous <ph name="BEGIN_LINK" />activez l'envoi de rapports d'erreur<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Ces pages sont destinées aux développeurs Chrome, et il est possible qu'elles ne fassent pas l'objet d'une maintenance ni de tests actifs. Pour les activer, accédez à <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliquez sur le bouton pour activer les pages de débogage, puis accédez à nouveau à cette page.</translation>
 <translation id="3875312571075912821">Autorisez Chrome à accéder au réseau dans les paramètres du pare-feu ou
         de l'antivirus.</translation>
 <translation id="5005121315113832363">Cette page a été bloquée par Chrome</translation>

@@ -638,6 +638,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2105838220373099643">Hry RPG</translation>
 <translation id="2107021941795971877">Podpora tisku</translation>
 <translation id="2108755909498034140">Restartujte počítač</translation>
+<translation id="2109845311767915560">Sdílená skupina karet</translation>
 <translation id="2111166930115883695">Mezerníkem spustíte hru</translation>
 <translation id="2113977810652731515">Karta</translation>
 <translation id="2114841414352855701">Zásada ignorována, protože bylo přepsána zásadou <ph name="POLICY_NAME" />.</translation>
@@ -910,7 +911,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="255497580849974774">Během aktualizace nechte zařízení připojené k nabíječce.</translation>
 <translation id="2556876185419854533">&amp;Vrátit úpravy zpět</translation>
 <translation id="2559566667529177711">Vícevrstvé</translation>
-<translation id="2565789370591907825">Zámek a používání klávesnice</translation>
 <translation id="2570734079541893434">Spravovat nastavení</translation>
 <translation id="257136025287118539">Váš administrátor přesouvá vaše soubory do služby <ph name="CLOUD_PROVIDER" />. Po dokončení nahrávání můžete tyto soubory upravit.</translation>
 <translation id="2571488850200220306">Aby byla zajištěna bezpečnost, může také vidět operační systém zařízení, verzi prohlížeče a nainstalovaný software</translation>
@@ -1108,7 +1108,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2974468223369775963">Tento kód IBAN se nepodařilo uložit do vašeho účtu Google. Místo toho je uložen v Chromu na tomto zařízení. Při příštím použití tohoto kódu IBAN se vás Chrome zase zeptá.</translation>
 <translation id="297667759942911166">Spolupracujte ve skupinách karet</translation>
 <translation id="2977665033722899841">Aktuálně je vybrán řádek <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Zamykat a používat klávesnici</translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Zdroje pro psaní</translation>
 <translation id="2979639724566107830">Otevřít v novém okně</translation>
@@ -2088,6 +2087,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4704745399240123930">Karty, které tento obchodník nepřijímá (například virtuální karty), nelze vybrat.</translation>
 <translation id="4708268264240856090">Připojení bylo přerušeno</translation>
 <translation id="4708276642004148190">Zásobování vodou a úprava vody</translation>
+<translation id="4711628883879888561">Spolupracujte na skupině karet</translation>
 <translation id="471880041731876836">K návštěvě tohoto webu nemáte povolení</translation>
 <translation id="4718897478554657123">600 × 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Spustit Diagnostiku sítě systému Windows<ph name="END_LINK" /></translation>
@@ -2460,6 +2460,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5363532265530011914">Ponožky a punčochové zboží</translation>
 <translation id="5371425731340848620">Aktualizace karty</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> změnil(a) kartu</translation>
+<translation id="5374324662289354619">Interní ladicí stránky jsou aktuálně zakázány.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">Vaše hodiny se zpožďují, Vaše hodiny jdou napřed nebo &lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;</translation>
 <translation id="5379618281582508161">Pokud toto heslo chcete získat na všechna svá zařízení, ověřte svou totožnost</translation>
@@ -2694,6 +2695,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="578305955206182703">Žlutohnědá</translation>
 <translation id="5783700460098783980">Zavazadla a příslušenství na cesty</translation>
 <translation id="57838592816432529">Ztlumit</translation>
+<translation id="5783922175933467571">Platnost odkazu na skupinu karet <ph name="TAB_GROUP_DISPLAY_NAME" /> vyprší za 48 hodin</translation>
 <translation id="5784606427469807560">Při ověřování vaší karty došlo k problému. Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
 <translation id="5785756445106461925">Tato stránka obsahuje ještě další nezabezpečené zdroje. Tyto zdroje budou během přenosu moci zobrazit jiní uživatelé a případní útočníci je mohou upravit a změnit tak vzhled stránky.</translation>
 <translation id="5793317771769868848">Tato platební metoda bude z tohoto zařízení smazána</translation>
@@ -2766,6 +2768,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5930147475897662863">Pokud chcete používat funkci Pomozte mi s psaním, zapněte toto nastavení</translation>
 <translation id="593102073240001326">Návody, kutilství a obsah pro odborníky</translation>
 <translation id="5932224571077948991">Web zobrazuje rušivé nebo zavádějící reklamy</translation>
+<translation id="5933597524153120073">Otevřít vše (<ph name="ITEMS" />) v novém okně</translation>
 <translation id="5937560539988385583">Stránka byla přeložena</translation>
 <translation id="5938153366081463283">Přidat virtuální kartu</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3037,6 +3040,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6394852772105848029">Web chce otevřít aplikaci <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Skútry a mopedy</translation>
 <translation id="6398765197997659313">Ukončit režim celé obrazovky</translation>
+<translation id="6399633237874954301">Čtečka čipových karet povolená administrátorem</translation>
 <translation id="6401136357288658127">Podpora této zásady byla ukončena. Měli byste místo ní používat zásadu <ph name="NEW_POLICY" />.</translation>
 <translation id="640163077447496506">Platnost skončí dnes</translation>
 <translation id="6402537308870515461">Před přesunutím je vyžadována kontrola</translation>
@@ -4097,7 +4101,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8278544367771164040">Komerční pronájem</translation>
 <translation id="8279290844152565425">Koncerty a hudební festivaly</translation>
 <translation id="8279611986089885641">V Chromu musí být zapnutá oznámení. Můžete je zapnout v <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Zamknout klávesnici?</translation>
 <translation id="8280630997017109758">Přihrádka 11</translation>
 <translation id="8281730697546299650">Jsou k dispozici další funkce ochrany soukromí v reklamách</translation>
 <translation id="8281886186245836920">Přeskočit</translation>
@@ -4167,7 +4170,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8398335999901363925">Platební metody dostupné k vyplnění dotykem jsou otevřené na celou výšku.</translation>
 <translation id="8398446215576328011">Vrátit použité zásady zpět</translation>
 <translation id="8398790343843005537">Najděte svůj telefon</translation>
-<translation id="8399276468426899527">zámek a používání klávesnice</translation>
 <translation id="8400929824946688748">Práce a vzdělávání</translation>
 <translation id="8402442052798347631">Útočníci na webu, který jste se pokusili navštívit, by vás mohli přimět k instalaci škodlivého softwaru, který ovlivňuje prostředí při procházení – například mění domovskou stránku nebo na navštívených webech zobrazuje další reklamy. Chrome vám důrazně doporučuje vrátit se do bezpečí, abyste předešli újmě. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fanouškovská tvorba</translation>

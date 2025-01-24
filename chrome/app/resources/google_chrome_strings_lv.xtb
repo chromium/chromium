@@ -204,7 +204,6 @@
 <translation id="345171907106878721">Pievienot savu kontu pārlūkā Chrome</translation>
 <translation id="3453763134178591239">Chrome OS noteikumi</translation>
 <translation id="3503306920980160878">Pārlūkam Chrome ir nepieciešama piekļuve jūsu atrašanās vietas datiem, lai varētu tos kopīgot ar šo vietni.</translation>
-<translation id="3512634283363927263">Šīs lapas ir paredzētas Chrome izstrādātājiem, un tās var nebūt aktīvi uzturētas vai testētas. Lai tās iespējotu, pārejiet uz lapu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, noklikšķiniet uz pogas, lai iespējotu atkļūdošanas lapas, un pēc tam atkal pārejiet uz šo lapu.</translation>
 <translation id="3533694711092285624">Nav saglabātu paroļu. Pārlūkprogrammā Chrome var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="3541482654983822893">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles. Mēģiniet vēlreiz pēc 24 stundām.</translation>
 <translation id="3564543103555793392">Pierakstoties pārlūkā Chrome, varat saglabāt grāmatzīmes, paroles un citus datus un pēc tam izmantot tos savā tālrunī.</translation>
@@ -222,7 +221,6 @@
 <translation id="3673813398384385993">Pārlūkā Chrome tika konstatēts, ka paplašinājums “<ph name="EXTENSION_NAME" />” satur ļaunprātīgu programmatūru.</translation>
 <translation id="3695446226812920698">Uzzināt vairāk</translation>
 <translation id="3697952514309507634">Citi Chrome profili</translation>
-<translation id="3700276346088749847">notīriet Chrome datus savā kontā</translation>
 <translation id="3703994572283698466">Chrome OS, kā arī <ph name="BEGIN_LINK_LINUX_OSS" />Linux izstrādes vides<ph name="END_LINK_LINUX_OSS" /> darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flex versija</translation>
 <translation id="3718181793972440140">Veicot šo darbību, no šīs ierīces tiks dzēsts 1 vienums. Lai vēlāk izgūtu datus, pierakstieties pārlūkā Chrome kā <ph name="USER_EMAIL" />.</translation>

@@ -202,7 +202,6 @@
 <translation id="345171907106878721">Cadastrar-se no Chrome</translation>
 <translation id="3453763134178591239">Termos do ChromeOS</translation>
 <translation id="3503306920980160878">O Chrome precisa acessar seu local para compartilhá-lo com este site</translation>
-<translation id="3512634283363927263">Estas páginas se destinam para uso dos desenvolvedores do Chrome e podem não ser mantidas ou testadas ativamente. Para ativá-las, acesse <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, clique no botão para ativar as páginas de depuração. Em seguida, volte para esta página.</translation>
 <translation id="3533694711092285624">Nenhuma senha salva. O Chrome poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="3541482654983822893">Não foi possível verificar suas senhas. Tente novamente em 24 horas.</translation>
 <translation id="3564543103555793392">Quando você faz login no Chrome, pode salvar favoritos, senhas e muito mais para usar no smartphone</translation>
@@ -220,7 +219,6 @@
 <translation id="3673813398384385993">O Chrome encontrou malware na extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="3695446226812920698">Saiba como</translation>
 <translation id="3697952514309507634">Outros perfis do Chrome</translation>
-<translation id="3700276346088749847">apague os dados do Chrome na sua conta</translation>
 <translation id="3703994572283698466">A criação do ChromeOS só foi possível graças a outros <ph name="BEGIN_LINK_CROS_OSS" />softwares de código aberto<ph name="END_LINK_CROS_OSS" />, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente para desenvolvedores do Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versão do ChromeOS Flex</translation>
 <translation id="3718181793972440140">Essa ação excluirá 1 item desse dispositivo. Para recuperar seus dados mais tarde, faça login no Chrome como <ph name="USER_EMAIL" />.</translation>
@@ -326,7 +324,7 @@
 <translation id="5120334927898581447">Fazer login no Chrome ao se conectar a outros Serviços do Google</translation>
 <translation id="5126049312684316860">O Chrome pré-carrega mais páginas que você provavelmente vai visitar para que elas sejam carregadas mais rapidamente ao serem acessadas</translation>
 <translation id="5132929315877954718">Descubra ótimos aplicativos, jogos, extensões e temas para o Google Chrome.</translation>
-<translation id="5139423532931106058">Personalize seu perfil do Chrome</translation>
+<translation id="5139423532931106058">Personalizar perfil do Chrome</translation>
 <translation id="5161361450770099246">O Chrome pode deixar esta guia inativa para melhorar sua experiência de navegação e liberar recursos.</translation>
 <translation id="5163087008893166964">Conheça o Chrome. Nova janela do navegador aberta</translation>
 <translation id="5166439563123238795">O Chrome precisa de permissão para rastrear suas mãos</translation>
@@ -481,7 +479,7 @@
 <translation id="7106741999175697885">Gerenciador de tarefas - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo.}=1{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo. Sua janela anônima não será aberta novamente.}one{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo. Sua janela anônima não será aberta novamente.}other{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="7155997830309522122">Se tiver mudado, edite a senha salva no Chrome para que ela seja igual à nova senha.</translation>
-<translation id="7161904924553537242">Bem-vindo ao Google Chrome</translation>
+<translation id="7161904924553537242">Que bom te ver no Google Chrome!</translation>
 <translation id="7193885263065350793">Sua organização vai fechar o Chrome se ele não for usado por <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Você está fazendo login com uma conta gerenciada e concedendo ao administrador da conta o controle sobre seu perfil do Google Chrome. Seus dados do Google Chrome, como aplicativos, favoritos, histórico, senhas e outras configurações serão permanentemente vinculados a <ph name="USER_NAME" />. Você pode excluir esses dados pelo painel das Contas do Google, mas não pode associá-los a outra conta. Você tem a opção de criar um novo perfil para manter seus dados existentes do Google Chrome separados. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> gerencia o Chrome</translation>

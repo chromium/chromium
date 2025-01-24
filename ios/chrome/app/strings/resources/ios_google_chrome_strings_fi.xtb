@@ -183,7 +183,6 @@ Odota muutama minuutti ennen tilin vaihtamista. Jos vaihdat tiliä nyt, tämä d
 <translation id="5998675059699164418">Organisaatiosi edellyttää sisäänkirjautumista, jotta voit käyttää Chromea.</translation>
 <translation id="6021312115739110405">Googlen sinulle luoma fiidi. Sisältää uutiset, urheilun ja sään.</translation>
 <translation id="6022659036123304283">Tee Chromesta näköisesi</translation>
-<translation id="6110625574506755980">Jotkin Chromen ominaisuudet eivät ole enää käytettävissä.</translation>
 <translation id="6132149203299792222">Kirjaudu sisään Google-tililläsi, niin voit synkronoida esimerkiksi salasanat ja kirjanmerkit.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Hae Chromesta</translation>
@@ -289,7 +288,6 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="8317674518145175158">Maksutapoja ja osoitteita ei salata. Chromen selaushistoriaa ei synkronoida.
 
 Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-data<ph name="END_LINK" />.</translation>
-<translation id="8357607116237445042">Valitse, haluatko poistaa Chrome-datasi tältä laitteelta vai säilyttää sen</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="8371138994040262994">Avaa asetukset Chromessa.</translation>
 <translation id="8387459386171870978">Jatka Chromen käyttöä</translation>

@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">ಹಸಿರು</translation>
 <translation id="225692081236532131">ಸಕ್ರಿಯ ಸ್ಥಿತಿ</translation>
 <translation id="2267285889943769271">ಸ್ಕ್ರೀನ್‌ಶಾಟ್‌ ಸೇರಿಸಿ</translation>
+<translation id="2268044343513325586">ಪರಿಷ್ಕರಿಸು</translation>
 <translation id="2271469253353559191">ಕತ್ತಲೆ ಮೋಡ್ ವೇಳಾಪಟ್ಟಿ</translation>
 <translation id="2276999893457278469">ಟಾಪ್ ಸಹಾಯ ಕಂಟೆಂಟ್</translation>
 <translation id="2277631741861284101">ನಿಮ್ಮ ಆಡಿಯೋವನ್ನು ಸುಲಭವಾಗಿ ರೆಕಾರ್ಡ್ ಮಾಡಿ ಮತ್ತು ಹಂಚಿಕೊಳ್ಳಿ</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">ಸ್ಕ್ಯಾನರ್‌ಗಳಿಗಾಗಿ ಹುಡುಕಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3226657629376379887">ಲೇಔಟ್ ಕ್ರಿಯೆಗಳ ಮೆನು</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ನ ಮೌಲ್ಯವನ್ನು <ph name="CONVERSION_RATE" /> ಸಂಖ್ಯೆಯಿಂದ ಭಾಗಿಸಿ</translation>
-<translation id="3237710083340813756">ಪುನಃ ಬರೆಯಿರಿ</translation>
 <translation id="3246869037381808805">1 ದಿನಕ್ಕಿಂತ ಹಳೆಯದಾದ ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="324961752321393509">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಆ್ಯಪ್ ಅನ್ನು ಮುಚ್ಚಲು ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="3263941347294171263">ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಮುಂದುವರಿಸಲು <ph name="DEVICE_NAME" /> ಅನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಿ ಮತ್ತು ಮರುಪ್ಲಗ್ ಮಾಡಿ</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="346423161771747987">ಕರೆಂಟ್</translation>
 <translation id="346539236881580388">ರೀಟೇಕ್</translation>
+<translation id="3479552764303398839">ಈಗ ಬೇಡ</translation>
 <translation id="3484914941826596830">ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್ ಆಗುತ್ತಿರುವ ಸಮಯದಲ್ಲಿ, ಈ ಬಾಹ್ಯ ಸಾಧನವನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಬೇಡಿ ಅಥವಾ ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಸ್ಥಶಟ್ ಡೌನ್ ಮಾಡಬೇಡಿ. ನೀವು ಈ ವಿಂಡೋವನ್ನು ಕುಗ್ಗಿಸಬಹುದು. ಈ ಅಪ್‌ಡೇಟ್, ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು ಮತ್ತು ಈ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಬಾಹ್ಯ ಸಾಧನವು ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು.</translation>
 <translation id="3486220673238053218">ವಿವರಣೆ</translation>
 <translation id="3487866404496702283">ಮಾಹಿ ಫೀಚರ್‌ಗಾಗಿ ಫೀಡ್‌ಬ್ಯಾಕ್</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">ವಾಲ್ಯೂಮ್ ಅನ್ನು ಅಡ್ಜಸ್ಟ್ ಮಾಡಿ</translation>
 <translation id="3767737419527918477">ರೆಕಾರ್ಡಿಂಗ್‌ ಫೈಲ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="3771294271822695279">ವೀಡಿಯೊ ಫೈಲ್‌ಗಳು</translation>
+<translation id="3771694256347217732">Google ಸೇವಾ ನಿಯಮಗಳು</translation>
 <translation id="3780740315729837296">ಕೀಬೋರ್ಡ್ ಕೀ ಒಂದನ್ನು ನಿಯೋಜಿಸಿ</translation>
 <translation id="3784455785234192852">ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="3785643128701396311">ಪಿಕ್ಸೆಲ್ ಕಲೆ</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP ವಿಳಂಬ</translation>
 <translation id="6078323886959318429">ಶಾರ್ಟ್‌ಕಟ್ ಸೇರಿಸಿ</translation>
 <translation id="6091080061796993741">ಹಳದಿ</translation>
-<translation id="6093853427925392522">ನೀವು ಆ್ಯಕ್ಸೆಸ್‌ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುವ ಮೊದಲು ನಿಮ್ಮ ಶಾಲೆಯ ಖಾತೆಯ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಖಾತೆಗೆ ಸರಿಸಲು Google ನಿಂದ ಕಂಟೆಂಟ್‌ ವರ್ಗಾವಣೆ ಆ್ಯಪ್‌ ಅನ್ನು ಬಳಸುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="6104112872696127344">ಸ್ಕ್ಯಾನಿಂಗ್ ರದ್ದುಗೊಂಡಿದೆ</translation>
 <translation id="6106186594183574873">ಪೂರ್ಣಗೊಳಿಸಲು, ನಿಮ್ಮ ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="6108689792487843350">ಗೇಟ್‌ವೇ ತಲುಪಲಾಗುತ್ತಿಲ್ಲ</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="7138614237884624401">ಸರಳೀಕೃತ ಪಠ್ಯ</translation>
 <translation id="7138668887584231801">ಸಾರಾಂಶಗೊಳಿಸಿಲು ಸಾಕಷ್ಟು ಪದಗಳಿಲ್ಲ</translation>
-<translation id="7141470099673912333">ಕಂಟೆಂಟ್‌ ವರ್ಗಾವಣೆ</translation>
 <translation id="7143207342074048698">ಕನೆಕ್ಟ್...</translation>
 <translation id="7144878232160441200">ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7144954474087165241">ಪಗೋಡ</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">ಅಳಿಸಿ</translation>
 <translation id="8262870577632766028">1 ಗಂಟೆ</translation>
 <translation id="827422111966801947">ಇಂಡಿಗೊ</translation>
-<translation id="8281886186245836920">ಸ್ಕಿಪ್‌ ಮಾಡಿ</translation>
 <translation id="8286154143153872371">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ ಹಾಗೂ ವಾಲ್‌ಪೇಪರ್ ವೀಕ್ಷಿಸಲು ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="8291967909914612644">Home ಪೂರೈಕೆದಾರರ ರಾಷ್ಟ್ರ</translation>
 <translation id="8294431847097064396">ಮೂಲ</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Google AI ಮೂಲಕ ಹೆಸರನ್ನು ರಚಿಸಿ</translation>
 <translation id="8798099450830957504">ಡಿಫಾಲ್ಟ್</translation>
 <translation id="8798441408945964110">ಪೂರೈಕೆದಾರರ ಹೆಸರು</translation>
+<translation id="8804164990146287819">ಗೌಪ್ಯತಾ ನೀತಿ</translation>
 <translation id="8808828119384186784">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8814190375133053267">ವೈ-ಫೈ</translation>
 <translation id="8818152010000655963">ವಾಲ್‌ಪೇಪರ್</translation>

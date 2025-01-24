@@ -183,7 +183,6 @@ Subukang maghintay nang ilang minuto bago lumipat ng account. Kung lilipat ka ng
 <translation id="5998675059699164418">Hinihiling sa iyo ng organisasyon mo na mag-sign in para magamit ang Chrome.</translation>
 <translation id="6021312115739110405">Custom na feed na ginawa ng Google para sa iyo. May balita, sports, at lagay ng panahon.</translation>
 <translation id="6022659036123304283">Gawing iyo ang Chrome</translation>
-<translation id="6110625574506755980">Hindi na magiging available ang ilang feature ng Chrome.</translation>
 <translation id="6132149203299792222">Mag-sign in sa Google Account mo para ma-sync ang iyong mga password, bookmark, at higit pa.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Search in Chrome</translation>
@@ -289,7 +288,6 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="8317674518145175158">Hindi mae-encrypt ang mga paraan ng pagbabayad at address. Hindi masi-sync ang history ng pag-browse mula sa Chrome.
 
 Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data. Hindi ipinapadala sa o hindi sino-store ng Google ang passphrase. Kung makakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
-<translation id="8357607116237445042">Piliin kung iki-clear ang iyong data sa Chrome sa device na ito o kung papanatilihin ito</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8371138994040262994">Bubuksan ang mga setting sa Chrome.</translation>
 <translation id="8387459386171870978">Ipagpatuloy ang paggamit ng Chrome</translation>

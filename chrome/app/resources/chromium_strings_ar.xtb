@@ -399,7 +399,6 @@
 <translation id="6455857529632101747">‏مرحبًا بك في الملفات الشخصية على Chromium</translation>
 <translation id="6466344609055215035">‏إزالة الحساب من Chromium</translation>
 <translation id="6475912303565314141">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chromium.</translation>
-<translation id="648062525172759633">‏هذه الصفحات مخصّصة لمطوّري Chromium، وقد لا تتم صيانتها أو اختبارها بشكلٍ منتظم. لتفعيلها، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> والنقر على زر تفعيل صفحات تصحيح الأخطاء، ثم الانتقال إلى هذه الصفحة مرة أخرى.</translation>
 <translation id="648319183876919572">تعزِّز ميزة "الحماية المُحسّنة للتصفّح الآمن" حمايتك من المواقع الإلكترونية الضارة وعمليات التنزيل الخطيرة.</translation>
 <translation id="6510925080656968729">‏إزالة Chromium</translation>
 <translation id="651535675648445253">‏يتم فتح الاختصارات في Chromium</translation>
@@ -533,7 +532,6 @@
 <translation id="8313851650939857356">خطأ في بدء التشغيل: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">‏تغلق مؤسستك Chromium في حال عدم استخدامه لمدّة <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">حفظ كصورة</translation>
-<translation id="8326785589245660814">‏محو بيانات Chromium في حسابك</translation>
 <translation id="8330519371938183845">‏يمكنك تسجيل الدخول لمزامنة Chromium وتخصيصه على جميع أجهزتك.</translation>
 <translation id="8340674089072921962">‏كان <ph name="USER_EMAIL_ADDRESS" /> يستخدم Chromium مسبقًا</translation>
 <translation id="8359544530202147897">‏يُرجى تحديث متصفّح Chromium لمواصلة استخدام بياناته في حسابك على Google (<ph name="ACCOUNT_EMAIL" />)</translation>

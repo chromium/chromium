@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">vert</translation>
 <translation id="225692081236532131">État de l'activation</translation>
 <translation id="2267285889943769271">Ajouter une capture d'écran</translation>
+<translation id="2268044343513325586">Affiner</translation>
 <translation id="2271469253353559191">Programmation du mode sombre</translation>
 <translation id="2276999893457278469">Contenu d'aide le plus populaire</translation>
 <translation id="2277631741861284101">Enregistrer et partager facilement votre contenu audio</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Recherche de numériseurs en cours…</translation>
 <translation id="3226657629376379887">Menu des actions de mise en page</translation>
 <translation id="3227186760713762082">Diviser la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Reformuler</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront retirées</translation>
 <translation id="324961752321393509">Votre administrateur n'autorise pas la fermeture de cette application</translation>
 <translation id="3263941347294171263">Débranchez et rebranchez l'appareil <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Mise à jour de <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="346423161771747987">Courant</translation>
 <translation id="346539236881580388">Recommencer</translation>
+<translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3484914941826596830">Pendant la mise à jour du micrologiciel, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cette mise à jour peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
 <translation id="3486220673238053218">définition</translation>
 <translation id="3487866404496702283">Commentaires sur la fonctionnalité mahi</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Régler le volume</translation>
 <translation id="3767737419527918477">Rechercher des fichiers d'enregistrement</translation>
 <translation id="3771294271822695279">Fichiers vidéo</translation>
+<translation id="3771694256347217732">Conditions d'utilisation de Google</translation>
 <translation id="3780740315729837296">Attribuez une touche du clavier</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
 <translation id="3785643128701396311">art du pixel</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">Latence HTTP (Android)</translation>
 <translation id="6078323886959318429">Ajouter un raccourci</translation>
 <translation id="6091080061796993741">jaune</translation>
-<translation id="6093853427925392522">Assurez-vous d'utiliser l'appli Transfert de contenu de Google pour déplacer les données de votre compte scolaire vers votre compte personnel avant de perdre l'accès.</translation>
 <translation id="6104112872696127344">La numérisation a été annulée</translation>
 <translation id="6106186594183574873">Pour terminer cette opération, entrez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Impossible d'atteindre la passerelle</translation>
@@ -1300,7 +1301,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="7135814714616751706">Recherchez des raccourcis</translation>
 <translation id="7138614237884624401">Texte simplifié</translation>
 <translation id="7138668887584231801">Pas assez de mots pour résumer</translation>
-<translation id="7141470099673912333">Transfert de contenu</translation>
 <translation id="7143207342074048698">Connexion…</translation>
 <translation id="7144878232160441200">Réessayer</translation>
 <translation id="7144954474087165241">pagode</translation>
@@ -1541,7 +1541,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8262870577632766028">1 heure</translation>
 <translation id="827422111966801947">Indigo</translation>
-<translation id="8281886186245836920">Ignorer</translation>
 <translation id="8286154143153872371">Veuillez vous connecter au réseau et actualiser la page pour afficher le fond d'écran.</translation>
 <translation id="8291967909914612644">Pays du propriétaire</translation>
 <translation id="8294431847097064396">Source</translation>
@@ -1646,6 +1645,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8797082062139985406">Créer un nom à l'aide de l'IA de Google</translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8798441408945964110">Nom du fournisseur</translation>
+<translation id="8804164990146287819">Politique de confidentialité</translation>
 <translation id="8808828119384186784">Paramètres Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fond d'écran</translation>

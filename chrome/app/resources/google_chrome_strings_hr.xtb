@@ -202,7 +202,6 @@
 <translation id="345171907106878721">Dodajte sebe kao korisnika Chromea</translation>
 <translation id="3453763134178591239">Uvjeti za Chrome OS</translation>
 <translation id="3503306920980160878">Chrome treba dopuštenje za pristup vašoj lokaciji da bi je podijelio s ovom web-lokacijom</translation>
-<translation id="3512634283363927263">Te su stranice namijenjene razvojnim programerima Chromea i možda se ne održavaju ili testiraju aktivno. Da biste ih omogućili, otvorite <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite gumb za omogućivanje stranica za otklanjanje pogrešaka, a zatim se ponovo vratite na ovu stranicu.</translation>
 <translation id="3533694711092285624">Nema nijedne spremljene zaporke. Chrome može provjeriti vaše zaporke kad ih spremite.</translation>
 <translation id="3541482654983822893">Chrome ne može provjeriti vaše zaporke. Pokušajte ponovno nakon 24 sata.</translation>
 <translation id="3564543103555793392">Kad se prijavite u Chrome, možete spremati oznake, zaporke i druge podatke, a zatim ih upotrebljavati na telefonu</translation>
@@ -220,7 +219,6 @@
 <translation id="3673813398384385993">Chrome je otkrio da <ph name="EXTENSION_NAME" /> sadrži zlonamjerni softver</translation>
 <translation id="3695446226812920698">Saznajte kako</translation>
 <translation id="3697952514309507634">Ostali profili na Chromeu</translation>
-<translation id="3700276346088749847">izbrišite Chromeove podatke na svojem računu</translation>
 <translation id="3703994572283698466">Chrome OS omogućen je dodatnim <ph name="BEGIN_LINK_CROS_OSS" />softverom utemeljenim na otvorenom izvornom kodu<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />razvojnim okruženjem Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Verzija ChromeOS Flexa</translation>
 <translation id="3718181793972440140">Time će se izbrisati jedna stavka s uređaja. Da biste kasnije dohvatili svoje podatke, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>

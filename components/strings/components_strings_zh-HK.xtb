@@ -911,7 +911,6 @@
 <translation id="255497580849974774">請在更新期間將裝置連接電源。</translation>
 <translation id="2556876185419854533">復原編輯(&amp;U)</translation>
 <translation id="2559566667529177711">多層</translation>
-<translation id="2565789370591907825">鍵盤鎖定與使用</translation>
 <translation id="2570734079541893434">管理設定</translation>
 <translation id="257136025287118539">管理員將你的檔案移至「<ph name="CLOUD_PROVIDER" />」。上載完成後，你可以修改檔案。</translation>
 <translation id="2571488850200220306">為確保安全，管理員也可查看裝置的作業系統、瀏覽器版本和已安裝的軟件</translation>
@@ -1109,7 +1108,6 @@
 <translation id="2974468223369775963">此 IBAN 無法儲存至 Google 帳戶，因此已改為儲存至此裝置上的 Chrome。Chrome 會在你下次使用此 IBAN 時再次詢問你。</translation>
 <translation id="297667759942911166">在分頁群組中協作</translation>
 <translation id="2977665033722899841">目前揀咗<ph name="ROW_NAME" />。<ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">鎖定和使用鍵盤</translation>
 <translation id="2978824962390592855">歌劇</translation>
 <translation id="2979424420072875974">作家資源</translation>
 <translation id="2979639724566107830">在新視窗中開啟</translation>
@@ -2465,6 +2463,7 @@
 <translation id="5363532265530011914">襪和襪褲</translation>
 <translation id="5371425731340848620">更新信用卡</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />已變更分頁</translation>
+<translation id="5374324662289354619">目前已停用內部偵錯網頁。</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">「您的時鐘慢了」、「您的時鐘快了」或「&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;」</translation>
 <translation id="5379618281582508161">如要在所有裝置上使用此密碼，請驗證身分</translation>
@@ -3045,6 +3044,7 @@
 <translation id="6394852772105848029">此網站要求開啟 <ph name="APP_NAME" /> 應用程式</translation>
 <translation id="639673288733510393">綿羊仔和電動單車</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
+<translation id="6399633237874954301">管理員允許的智能讀卡器</translation>
 <translation id="6401136357288658127">此政策已被淘汰，請改用 <ph name="NEW_POLICY" /> 政策。</translation>
 <translation id="640163077447496506">今天到期</translation>
 <translation id="6402537308870515461">移動檔案前請務必確認</translation>
@@ -4106,7 +4106,6 @@
 <translation id="8278544367771164040">商業借貸</translation>
 <translation id="8279290844152565425">演唱會和音樂節</translation>
 <translation id="8279611986089885641">必須開啟 Chrome 通知。您可在<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />開啟</translation>
-<translation id="8280387559022105172">要鎖定鍵盤嗎？</translation>
 <translation id="8280630997017109758">紙匣 11</translation>
 <translation id="8281730697546299650">其他現已推出的廣告私隱功能</translation>
 <translation id="8281886186245836920">略過</translation>
@@ -4176,7 +4175,6 @@
 <translation id="8398335999901363925">㩒一下先可以填嘅付款方法，宜家顯示喺成個畫面。</translation>
 <translation id="8398446215576328011">還原已套用的政策</translation>
 <translation id="8398790343843005537">搜尋您的手機</translation>
-<translation id="8399276468426899527">鍵盤鎖定與使用</translation>
 <translation id="8400929824946688748">職業及教育</translation>
 <translation id="8402442052798347631">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝有害軟件，影響你的瀏覽方式，例如變更首頁，或在你瀏覽的網站上顯示額外廣告。Chrome 強烈建議你不要瀏覽這類網站，避免受攻擊。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">同人小說</translation>

@@ -396,7 +396,6 @@
 <translation id="6455857529632101747">Chromium profillerine hoş geldiniz</translation>
 <translation id="6466344609055215035">Hesabı Chromium'dan kaldır</translation>
 <translation id="6475912303565314141">Ayrıca, Chromium'u başlattığınızda gösterilecek sayfayı da denetler.</translation>
-<translation id="648062525172759633">Bu sayfalar Chromium geliştiricilerinin kullanması için tasarlanmış olup etkin şekilde yönetilmiyor veya test edilmemiş olabilir. Bu özellikleri etkinleştirmek için <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> adresine giderek hata ayıklama sayfalarını etkinleştirme düğmesini tıklayın ve tekrar bu sayfaya gelin.</translation>
 <translation id="648319183876919572">Gelişmiş Güvenli Tarama sizi tehlikeli web sitelerinden ve indirmelerden korumak için daha fazlasını yapar</translation>
 <translation id="6510925080656968729">Chromium'u Kaldır</translation>
 <translation id="651535675648445253">Kısayollar Chromium'da açılır</translation>
@@ -530,7 +529,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8313851650939857356">Başlatma hatası: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> boyunca kullanılmadığında Chromium kuruluşunuz tarafından kapatılır.</translation>
 <translation id="8321888067342493336">Resim olarak kaydet</translation>
-<translation id="8326785589245660814">hesabınızdaki Chromium verilerini temizleyin</translation>
 <translation id="8330519371938183845">Chromium'u cihazlarınız arasında senkronize etmek ve kişiselleştirmek için oturum açın</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> önceden Chromium kullanıyordu</translation>
 <translation id="8359544530202147897"><ph name="ACCOUNT_EMAIL" /> Google Hesabınızdaki Chromium verilerini kullanmaya devam etmek için Chromium'u güncelleyin</translation>

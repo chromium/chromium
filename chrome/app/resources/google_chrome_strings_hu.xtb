@@ -202,7 +202,6 @@
 <translation id="345171907106878721">Adja hozzá magát a Chrome-ban</translation>
 <translation id="3453763134178591239">ChromeOS – Szerződési Feltételek</translation>
 <translation id="3503306920980160878">A Chrome-nak a helyadatokhoz való hozzáférésre van szüksége ahhoz, hogy megoszthassa a webhellyel az Ön tartózkodási helyét</translation>
-<translation id="3512634283363927263">Ezek az oldalak a Chrome fejlesztői számára készültek, és előfordulhat, hogy nincsenek aktívan karbantartva vagy tesztelve. Az engedélyezésükhöz lépjen a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> oldalra, kattintson a hibaelhárítási oldalak engedélyezéséhez tartozó gombra, majd lépjen ismét erre az oldalra.</translation>
 <translation id="3533694711092285624">Nincsenek mentett jelszavak. A Chrome képes a jelszavak ellenőrzésére, amikor Ön menti őket.</translation>
 <translation id="3541482654983822893">A Chrome nem tudja ellenőrizni a jelszavait. Próbálja újra 24 óra múlva.</translation>
 <translation id="3564543103555793392">Amikor bejelentkezik a Chrome-ba, könyvjelzőket, jelszavakat és egyebeket menthet, majd használhatja őket a telefonján</translation>
@@ -220,7 +219,6 @@
 <translation id="3673813398384385993">A Chrome kártékony programot talált a következőben: „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="3695446226812920698">Tudnivalók</translation>
 <translation id="3697952514309507634">Egyéb Chrome-profilok</translation>
-<translation id="3700276346088749847">törölje a fiókjában lévő Chrome-adatokat</translation>
 <translation id="3703994572283698466">A ChromeOS létrejöttéhez egyéb <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak, ahogyan a <ph name="BEGIN_LINK_LINUX_OSS" />Linux fejlesztői környezet<ph name="END_LINK_LINUX_OSS" /> létrejöttéhez is.</translation>
 <translation id="3716540481907974026">ChromeOS Flex verziója</translation>
 <translation id="3718181793972440140">Ezzel egyetlen elemet töröl az eszközről. Az adatok későbbi lekéréséhez jelentkezzen be a Chrome-ba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>

@@ -688,6 +688,7 @@
 <translation id="1475502736924165259">下列檔案上的憑證不屬於任何其他類別</translation>
 <translation id="1476088332184200792">複製至您的裝置</translation>
 <translation id="1476347941828409626">管理 Chrome 設定檔(&amp;M)</translation>
+<translation id="1476595624592550506">變更您的密碼</translation>
 <translation id="1476607407192946488">語言設定(&amp;L)</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> 需要您繼續插入智能卡。</translation>
 <translation id="1477654881618305065">您的機構不允許分享此內容。如果您需要協助，請與管理員聯絡。</translation>
@@ -2220,7 +2221,6 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">確認您的使用者名稱</translation>
 <translation id="2517472476991765520">掃瞄</translation>
-<translation id="2517851527960406492">網站可以要求擷取和使用你的鍵盤輸入</translation>
 <translation id="2518024842978892609">使用您的客戶憑證。</translation>
 <translation id="2518620532958109495">已允許自動進入全螢幕模式</translation>
 <translation id="2519250377986324805">查看操作說明</translation>
@@ -2310,11 +2310,11 @@
 <translation id="2581786034175502848">按 Shift 鍵 5 次即可重新啟用</translation>
 <translation id="2581992808349413349">在 DNS (網域名稱系統) 中透過安全連線查詢網站的 IP 位址。這會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的受管服務供應商</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (平台：<ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
+<translation id="2583905535229480958">任何智能讀卡器</translation>
 <translation id="2584109212074498965">無法取得 Kerberos 票證。請再試一次，或與您機構的裝置管理員聯絡。(錯誤代碼 <ph name="ERROR_CODE" />)。</translation>
 <translation id="2584974473573720127">在 Chrome 中管理網站麥克風權限</translation>
 <translation id="2586561813241011046">無法安裝 <ph name="APP_NAME" />。請再試一次，或聯絡您的管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="2586672484245266891">請輸入較短的網址</translation>
-<translation id="2587922766792651800">已逾時</translation>
 <translation id="2588636910004461974">來自 <ph name="VENDOR_NAME" /> 的裝置</translation>
 <translation id="2589658397149952302">永不顯示「雲端硬碟」檔案</translation>
 <translation id="2593499352046705383">開始操作前，請確認資料已備份。安裝 <ph name="DEVICE_OS" /> 會覆寫硬碟的資料。請前往 g.co/flex/InstallGuide 以瞭解詳情。</translation>
@@ -2456,7 +2456,6 @@
 <translation id="2688734475209947648">您不需記住此密碼。系統會將密碼儲存至 <ph name="ACCOUNT" /> 的「Google 密碼管理工具」。</translation>
 <translation id="2690024944919328218">顯示語言選項</translation>
 <translation id="2691385045260836588">型號</translation>
-<translation id="2691811116976138467">網站會使用此功能來擷取和使用鍵盤輸入，例如遊戲或遠端桌面應用程式</translation>
 <translation id="2692503699962701720">在朗讀元素種類和格式化文字時變更音調</translation>
 <translation id="2692901429679246677">湖水綠</translation>
 <translation id="2693134906590795721">充電音效</translation>
@@ -4414,7 +4413,6 @@
 <translation id="4065876735068446555">目前使用的網絡 (<ph name="NETWORK_ID" />) 可能要求您前往其登入頁面。</translation>
 <translation id="4065931125325392744">系統可能即將停止支援此擴充程式</translation>
 <translation id="4066207411788646768">請檢查您的連線，以查看網絡中的可用打印機</translation>
-<translation id="4066458014195202324">允許擷取和使用你的鍵盤輸入</translation>
 <translation id="4067839975993712852">將目前的分頁標示為已讀</translation>
 <translation id="4068776064906523561">已儲存的指紋</translation>
 <translation id="4070132839822635162">不要登入</translation>
@@ -4777,7 +4775,6 @@
 <translation id="4345587454538109430">設定…</translation>
 <translation id="4345732373643853732">伺服器無法辨識使用者名稱</translation>
 <translation id="4346159263667201092">新增選填詳細資料</translation>
-<translation id="4348426576195894795">移除此帳戶亦會一併刪除使用此帳戶登入的任何 Chrome 設定檔</translation>
 <translation id="4348766275249686434">收集錯誤資訊</translation>
 <translation id="4349828822184870497">有幫助</translation>
 <translation id="4350230709416545141">一律禁止 <ph name="HOST" /> 存取您的位置</translation>
@@ -4852,7 +4849,6 @@
 <translation id="4403012369005671154">語音轉文字</translation>
 <translation id="4403266582403435904">隨時輕鬆還原資料或轉用裝置。備份會上載至 Google，並使用您子女的 Google 帳戶密碼加密。</translation>
 <translation id="4403775189117163360">選擇其他資料夾</translation>
-<translation id="4404136731284211429">重新掃瞄</translation>
 <translation id="4404843640767531781">您的家長已封鎖「<ph name="APP_NAME" />」。請要求家長授權使用此應用程式。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="4405224443901389797">移至…</translation>
@@ -5127,7 +5123,6 @@
 <translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解您的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。部分網站的功能可能會無法正常運作。</translation>
 <translation id="4598556348158889687">管理儲存空間</translation>
 <translation id="4598776695426288251">可透過多部裝置使用 Wi-Fi</translation>
-<translation id="4599323532350839656">不允許擷取和使用你的鍵盤輸入</translation>
 <translation id="4600071396330666617">建議數量</translation>
 <translation id="4601095002996233687">提供深入掃瞄功能，檢查是否有可疑的下載內容。</translation>
 <translation id="4601426376352205922">標示為未讀取</translation>
@@ -5768,7 +5763,6 @@
 <translation id="5068919226082848014">薄餅</translation>
 <translation id="5071295820492622726">返去最近嘅下載項目</translation>
 <translation id="5071892329440114717">顯示標準保護功能詳情</translation>
-<translation id="5072303130033714629">「內容轉移」工具</translation>
 <translation id="5072500507106264618">只有系統服務可使用你的位置</translation>
 <translation id="5072836811783999860">顯示受管理書籤</translation>
 <translation id="5072900412896857127">無法載入《Google Play 服務條款》。請檢查您的網絡連線，然後再試一次。</translation>
@@ -6185,7 +6179,6 @@
 <translation id="5372579129492968947">取消固定擴充程式</translation>
 <translation id="5372632722660566343">在不登入帳戶的情況下繼續</translation>
 <translation id="5372990315769030589">要保留「<ph name="EXTENSION_NAME" />」嗎？</translation>
-<translation id="5374324662289354619">目前已停用內部偵錯網頁。</translation>
 <translation id="5375318608039113175">如要與這些聯絡人使用「咫尺共享」，請將與他們 Google 帳戶連結的電郵地址加入您的通訊錄。</translation>
 <translation id="5375374982898812658">你將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從你的所有裝置刪除</translation>
 <translation id="5375577102295339548">網站可協助驗證您不是機器人</translation>
@@ -7316,7 +7309,6 @@
 <translation id="61988015556954366">螢幕閃光</translation>
 <translation id="6200047250927636406">捨棄檔案</translation>
 <translation id="6200151268994853226">管理擴充程式</translation>
-<translation id="6201608810045805374">要移除此帳戶嗎？</translation>
 <translation id="6202304368170870640">您可使用 PIN 登入或解鎖裝置。</translation>
 <translation id="6202935572248792580">已允許。將麥克風連接到裝置。</translation>
 <translation id="6203247599828309566">你儲存咗呢個網站某個密碼嘅備註。如要查看該備註，請按一下鎖匙圖示。</translation>
@@ -7328,7 +7320,6 @@
 <translation id="6207937957461833379">國家/地區</translation>
 <translation id="6208521041562685716">正在啟用流動數據</translation>
 <translation id="6208725777148613371">無法儲存至「<ph name="WEB_DRIVE" />」- <ph name="INTERRUPT_REASON" /></translation>
-<translation id="6209767197996242814">如果忘記密碼短語或想變更此設定，請<ph name="SETTINGS_LINK" />。</translation>
 <translation id="6209908325007204267">您的裝置包含一項 Chrome Enterprise 升級，但您的使用者名稱尚未連結企業賬戶。請透過另一部裝置前往 g.co/ChromeEnterpriseAccount 建立企業帳戶。</translation>
 <translation id="6210282067670792090">請在網址列中輸入相關的鍵盤快速鍵和快捷字詞，以使用搜尋引擎和網站搜尋</translation>
 <translation id="6211067089253408231">開啟「即時熱點」</translation>
@@ -8612,7 +8603,6 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> 正在使用您的麥克風</translation>
 <translation id="7140785920919278717">應用程式安裝程式</translation>
 <translation id="7141105143012495934">系統無法擷取您帳戶的詳細資料，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
-<translation id="7141470099673912333">內容轉移</translation>
 <translation id="7141844554192012199">檢查</translation>
 <translation id="714301620504747562">瀏覽和搜尋比標準預先載入更快捷</translation>
 <translation id="7143207342074048698">正在連接</translation>
@@ -10072,7 +10062,6 @@
 <translation id="8176529144855282213">如要開啟麥克風存取權，請開啟裝置上的實體麥克風開關</translation>
 <translation id="8177196903785554304">網絡詳情</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{將分頁移至新視窗}other{將分頁移至新視窗}}</translation>
-<translation id="8179188928355984576">不使用此帳戶登入 Android 應用程式</translation>
 <translation id="8179976553408161302">Enter 鍵</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />。<ph name="NUM_PRINTERS" /> 部打印機之中嘅第 <ph name="ITEM_POSITION" /> 部。</translation>
 <translation id="8180785270975217276">「慳電模式」已開啟</translation>
@@ -10633,7 +10622,6 @@
 <translation id="8577052309681449949">自動點擊、游標大小、游標顏色等等</translation>
 <translation id="8578639784464423491">不可超過 99 個字母</translation>
 <translation id="8581809080475256101">按下即可前往下一頁，內容選單會顯示記錄</translation>
-<translation id="8583122761178401199">不允許網站擷取和使用你的鍵盤輸入</translation>
 <translation id="8584280235376696778">在新分頁中開啟影片(&amp;O)</translation>
 <translation id="858451212965845553">傳送至裝置(&amp;D)</translation>
 <translation id="8584843865238667486">使用量為 <ph name="USAGE" /> (數據來自 <ph name="USAGE_PAGE" /> 使用量頁面) 的 HID 裝置</translation>

@@ -206,7 +206,6 @@
 <translation id="345171907106878721">‏خود کو Chrome میں شامل کریں</translation>
 <translation id="3453763134178591239">‏ChromeOS کی شرائط</translation>
 <translation id="3503306920980160878">‏Chrome کو اس سائٹ کے ساتھ آپ کے مقام کا اشتراک کرنے کیلئے آپ کے مقام تک رسائی درکار ہے</translation>
-<translation id="3512634283363927263">‏یہ صفحات Chrome کے ڈویلپرز کے استعمال کے ارادے سے ہیں اور ہو سکتا ہے کہ ان کی فعال طور پر دیکھ بھال یا جانچ نہ کی جائے۔ ان کو فعال کرنے کے لیے، <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> پر نیویگیٹ کریں، ڈیبگ صفحات کو فعال کرنے کے لیے بٹن پر کلک کریں اور پھر اس صفحہ پر دوبارہ نیویگیٹ کریں۔</translation>
 <translation id="3533694711092285624">‏کوئی محفوظ کردہ پاس ورڈز نہیں۔ جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chrome انہیں چیک کر سکتا ہے۔</translation>
 <translation id="3541482654983822893">‏Chrome آپ کے پاس ورڈز چیک نہیں کر سکتا ہے۔ 24 گھنٹے بعد دوبارہ کوشش کریں۔</translation>
 <translation id="3564543103555793392">‏جب آپ Chrome میں سائن ان کرتے ہیں، تو آپ بُک مارکس، پاس ورڈز اور بہت کچھ محفوظ کر سکتے ہیں، پھر انہیں اپنے فون پر استعمال کر سکتے ہیں</translation>
@@ -224,7 +223,6 @@
 <translation id="3673813398384385993">‏Chrome کو پتا چلا ہے کہ "<ph name="EXTENSION_NAME" />" میلوئیر پر مشتمل ہے</translation>
 <translation id="3695446226812920698">طریقہ جانیں</translation>
 <translation id="3697952514309507634">‏دیگر Chrome پروفائلز</translation>
-<translation id="3700276346088749847">‏اپنے اکاؤنٹ میں Chrome کا ڈیٹا صاف کریں</translation>
 <translation id="3703994572283698466">‏ChromeOS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے، جیسے کہ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ڈیولپمنٹ انوائرنمنٹ<ph name="END_LINK_LINUX_OSS" />۔</translation>
 <translation id="3716540481907974026">‏ChromeOS Flex ورژن</translation>
 <translation id="3718181793972440140">‏یہ اس آلہ سے 1 آئٹم کو حذف کر دے گا۔ بعد میں اپنا ڈیٹا بازیافت کرنے کیلئے Chrome میں <ph name="USER_EMAIL" /> کے بطور سائن ان کریں۔</translation>

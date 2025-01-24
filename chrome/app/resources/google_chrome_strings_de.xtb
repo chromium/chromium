@@ -202,7 +202,6 @@
 <translation id="345171907106878721">Mich zu Chrome hinzufügen</translation>
 <translation id="3453763134178591239">Chrome OS-Nutzungsbedingungen</translation>
 <translation id="3503306920980160878">Chrome benötigt Zugriff auf deinen Standort, um ihn mit dieser Website zu teilen</translation>
-<translation id="3512634283363927263">Diese Seiten sind für Chrome-Entwickler gedacht und werden möglicherweise nicht aktiv gepflegt oder getestet. Wenn du sie aktivieren möchtest, gehe zu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> und klicke auf die Schaltfläche zum Aktivieren von Debugging-Seiten. Rufe diese Seite dann noch einmal auf.</translation>
 <translation id="3533694711092285624">Keine gespeicherten Passwörter. Chrome kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="3541482654983822893">Chrome kann deine Passwörter nicht prüfen. Bitte versuche es in 24 Stunden noch einmal.</translation>
 <translation id="3564543103555793392">Wenn du dich in Chrome anmeldest, kannst du Lesezeichen, Passwörter und andere Daten speichern und sie dann auf deinem Smartphone verwenden</translation>
@@ -220,7 +219,6 @@
 <translation id="3673813398384385993">Chrome hat festgestellt, dass „<ph name="EXTENSION_NAME" />“ Malware enthält</translation>
 <translation id="3695446226812920698">Weitere Informationen</translation>
 <translation id="3697952514309507634">Andere Chrome-Profile</translation>
-<translation id="3700276346088749847">lösche die Chrome-Daten in deinem Konto</translation>
 <translation id="3703994572283698466">Chrome OS und die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-Entwicklungsumgebung<ph name="END_LINK_LINUX_OSS" /> werden durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="3716540481907974026">Chrome OS Flex-Version</translation>
 <translation id="3718181793972440140">Dadurch wird 1 Element von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>

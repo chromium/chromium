@@ -203,7 +203,6 @@
 <translation id="345171907106878721">Chrome foydalanuvchisini qo‘shish</translation>
 <translation id="3453763134178591239">ChromeOS shartlari</translation>
 <translation id="3503306920980160878">Bu sayt manzilingizdan foydalanishi uchun Chrome brauzeriga ruxsat berishingiz lozim</translation>
-<translation id="3512634283363927263">Bu sahifalar Chromium dastur ishlab chiquvchilari foydalanishi uchun moʻljallangan va faol ishlatish yoki sinovdan oʻtkazish mumkin emas. Ularni yoqish uchun <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> havolasiga oʻting, debag sahifalarini yoqish uchun tugmani bosib, keyin yana bu sahifaga oʻting.</translation>
 <translation id="3533694711092285624">Hech qanday parol saqlanmagan. Chrome faqat saqlangan parollaringizni tekshira oladi.</translation>
 <translation id="3541482654983822893">Chrome parollaringizni tekshira olmadi. 24 soatdan keyin qayta urining.</translation>
 <translation id="3564543103555793392">Chromega kirish orqali bukmarklar, parollar va boshqa maʼlumotlarni saqlash va telefonda ishlatish mumkin.</translation>
@@ -221,7 +220,6 @@
 <translation id="3673813398384385993">Chrome “<ph name="EXTENSION_NAME" />” kengaytmasi tarkibida zararli dastur aniqladi</translation>
 <translation id="3695446226812920698">Batafsil</translation>
 <translation id="3697952514309507634">Boshqa Chrome profillari</translation>
-<translation id="3700276346088749847">hisobingizda Chrome maʼlumotlarini tozalang</translation>
 <translation id="3703994572283698466">ChromeOS tizimini ishlab chiqishda <ph name="BEGIN_LINK_LINUX_OSS" />Linux dasturlash muhiti<ph name="END_LINK_LINUX_OSS" /> <ph name="BEGIN_LINK_CROS_OSS" />ochiq kodli DT<ph name="END_LINK_CROS_OSS" /> vositalaridan foydalanilgan.</translation>
 <translation id="3716540481907974026">ChromeOS Flex versiyasi</translation>
 <translation id="3718181793972440140">Bu qurilmadagi 1 elementni tozalaydi. Ma’lumotlaringizni keyinroq olish uchun Chrome brauzeriga <ph name="USER_EMAIL" /> sifatida kiring.</translation>

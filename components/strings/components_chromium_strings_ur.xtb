@@ -29,6 +29,7 @@
           <ph name="PROXIES_TITLE" />
           پر جائیں اور یقینی بنائیں کہ آپ کی کنفیگریشن
           "کوئی پراکسی نہیں" یا "ڈائریکٹ" پر سیٹ ہے۔</translation>
+<translation id="648062525172759633">‏یہ صفحات Chromium کے ڈویلپرز کے استعمال کے ارادے سے ہیں اور ہو سکتا ہے کہ ان کی فعال طور پر دیکھ بھال یا جانچ نہ کی جائے۔ ان کو فعال کرنے کے لیے، <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> پر نیویگیٹ کریں، ڈیبگ صفحات کو فعال کرنے کے لیے بٹن پر کلک کریں اور پھر اس صفحہ پر دوبارہ نیویگیٹ کریں۔</translation>
 <translation id="6549378540556750549">‏Chromium کو دوسرے <ph name="BEGIN_LINK_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_OSS" /> کے ذریعے بھی ممکن بنایا گیا ہے۔</translation>
 <translation id="6613594504749178791">‏آپ کی تبدیلیاں Chromium کو اگلی بار آپ کے دوبارہ شروع کرنے کے وقت نافذ ہوں گی۔</translation>
 <translation id="691026815377248078">‏جوڑا بنانا جاری رکھنے کیلئے Chromium کو بلوٹوتھ رسائی کی ضرورت ہے۔ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

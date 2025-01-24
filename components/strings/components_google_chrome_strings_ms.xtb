@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chrome berjaya dilaksanakan melalui projek sumber terbuka <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> dan <ph name="BEGIN_LINK_OSS" />perisian sumber terbuka<ph name="END_LINK_OSS" /> yang lain.</translation>
 <translation id="2588322182880276190">Logo Chrome</translation>
 <translation id="3444832043240812445">Halaman ini hanya menunjukkan maklumat mengenai nahas terkini anda jika anda <ph name="BEGIN_LINK" />mendayakan laporan nahas<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Halaman ini bertujuan untuk digunakan oleh pembangun Chrome dan mungkin tidak diselenggara atau diuji secara aktif. Untuk mendayakan halaman ini, navigasi kepada <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik butang untuk mendayakan halaman nyahpepijat, kemudian navigasi kepada halaman ini sekali lagi.</translation>
 <translation id="3875312571075912821">Benarkan Chrome mengakses rangkaian di tetapan tembok api atau
         antivirus anda.</translation>
 <translation id="5005121315113832363">Halaman ini telah disekat oleh Chrome</translation>

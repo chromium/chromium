@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           र तपाइँको विन्यास "प्रोक्सी छैन" वand make sure your configuration is set to "no proxy" or "direct."</translation>
+<translation id="648062525172759633">यी पेजहरू Chromium विकासकर्ताहरूको प्रयोगका लागि बनाइएका हुनाले सक्रिय रूपमा यिनको व्यवस्थापन वा परीक्षण नगरिएको हुन सक्छ। यी पेजहरू अन गर्न <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> मा जानुहोस्, यो बटन क्लिक गरी पेज डिबग गर्ने सुविधा अन गर्नुहोस् र त्यसपछि फेरि यो पेजमा जानुहोस्।</translation>
 <translation id="6549378540556750549">Chromium बनाउँदा <ph name="BEGIN_LINK_OSS" />खुला स्रोतका अन्य सफ्टवेयर<ph name="END_LINK_OSS" />को पनि मद्दत लिइएको छ।</translation>
 <translation id="6613594504749178791">तपाईंले अर्को पटक Chromium लाई पुन: लन्च गर्दा तपाईंका परिवर्तनहरू प्रभावमा आउनेछन्।</translation>
 <translation id="691026815377248078">कनेक्ट गर्ने प्रक्रिया जारी राख्न Chromium लाई ब्लुटुथ प्रयोग गर्ने अनुमति

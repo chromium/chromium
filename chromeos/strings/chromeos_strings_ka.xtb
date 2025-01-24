@@ -296,7 +296,9 @@
 <translation id="2240366984605217732">განლაგების გადართვა</translation>
 <translation id="2244834438220057800">მწვანე</translation>
 <translation id="225692081236532131">აქტივაციის სტატუსი</translation>
+<translation id="2265792117169966196">აირჩიეთ და ჩამოტვირთეთ <ph name="LANGUAGE_NAME" /> ენის ტრანსკრიფციის მოდელი</translation>
 <translation id="2267285889943769271">ეკრანის ანაბეჭდის დამატება</translation>
+<translation id="2268044343513325586">დახვეწა</translation>
 <translation id="2271469253353559191">მუქი რეჟიმის განრიგი</translation>
 <translation id="2276999893457278469">პოპულარული დამხმარე კონტენტი</translation>
 <translation id="2277631741861284101">მარტივად ჩაწერეთ და გააზიარეთ თქვენი აუდიო</translation>
@@ -464,7 +466,6 @@
 <translation id="3226405216343213872">მიმდინარეობს სკანერების ძიება</translation>
 <translation id="3226657629376379887">განლაგებასთან დაკავშირებული მოქმედებების მენიუ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />-ის მნიშვნელობის გაყოფა <ph name="CONVERSION_RATE" />-ზე</translation>
-<translation id="3237710083340813756">გადაწერა</translation>
 <translation id="3246869037381808805">ბეჭდვის 1 დღეზე ძველი დავალებები ამოიშლება</translation>
 <translation id="324961752321393509">ამ აპის დახურვა არ არის დაშვებული თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="3263941347294171263">გამოაერთეთ და ისევ შეაერთეთ <ph name="DEVICE_NAME" />, რომ განახლება განაგრძოთ</translation>
@@ -509,6 +510,7 @@
 <translation id="3462187165860821523">მიმდინარეობს <ph name="DEVICE_NAME" />-ის განახლება</translation>
 <translation id="346423161771747987">ამჟამინდელი</translation>
 <translation id="346539236881580388">ხელახლა გადაღება</translation>
+<translation id="3479552764303398839">ახლა არა</translation>
 <translation id="3484914941826596830">ჩაშენებული პროგრამული უზრუნველყოფის განახლების პროცესში არ გამოაერთოთ ეს გარე მოწყობილობა ან არ გამორთოთ კომპიუტერი. შეგიძლიათ ამ ფანჯრის ჩაკეცვა. ამ განახლებას შეიძლება დასჭირდეს რამდენიმე წუთი და გარე მოწყობილობამ შეიძლება ამ დროს არ იმუშაოს.</translation>
 <translation id="3486220673238053218">განსაზღვრება</translation>
 <translation id="3487866404496702283">გამოხმაურება mahi-ფუნქციასთან დაკავშირებით</translation>
@@ -567,6 +569,7 @@
 <translation id="3763034084412196440">ხმის რეგულირება</translation>
 <translation id="3767737419527918477">ჩანაწერის ფაილების ძებნა</translation>
 <translation id="3771294271822695279">ვიდეო ფაილები</translation>
+<translation id="3771694256347217732">Google-ის მომსახურების პირობები</translation>
 <translation id="3780740315729837296">მიანიჭეთ კლავიატურის კლავიში</translation>
 <translation id="3784455785234192852">დაბლოკვა</translation>
 <translation id="3785643128701396311">პიქსელური გრაფიკა</translation>
@@ -772,6 +775,7 @@
 <translation id="473775607612524610">განახლება</translation>
 <translation id="4744944742468440486">თქვენს არჩევანთან დაკავშირებული ინფორმაცია</translation>
 <translation id="4750394297954878236">შემოთავაზებები</translation>
+<translation id="4763771683769971829">ხელმისაწვდომი ენების სია</translation>
 <translation id="4771607256327216405">კლავიატურის სიკაშკაშე</translation>
 <translation id="4771923071974529837">ხვალ</translation>
 <translation id="4773299976671772492">შეწყვეტილია</translation>
@@ -853,6 +857,7 @@
 <translation id="5095761549884461003">გამოაერთეთ <ph name="DEVICE_NAME" />-ის ელკვების კაბელი და ისევ შეაერთეთ, რომ განახლება განაგრძოთ</translation>
 <translation id="5099354524039520280">ზემოთ</translation>
 <translation id="5107243100836678918">მალსახმობები „<ph name="META_KEY" />“ კლავიშის გარეშე, შესაძლოა, კონფლიქტში აღმოჩნდეს ზოგიერთი აპის მალსახმობებთან. ხელახლა დააჭირეთ ამ მალსახმობს, რომ გააგრძელოთ მისი გამოყენება, ან დააჭირეთ ახალ მალსახმობს „<ph name="KEY" />“ კლავიშთან ერთად. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> ენის ტრანსკრიფციის მოდელის ჩამოტვირთვა შეუძლებელია. ხელახლა ცადეთ ან გადატვირთეთ Chromebook</translation>
 <translation id="5108781503443873320">სინონიმური:</translation>
 <translation id="5121677070210013200">ტრანსკრიფციის მოდელის ჩამოტვირთვა შეუძლებელია. ხელახლა ცადეთ ან გადატვირთეთ Chromebook.</translation>
 <translation id="5130848777448318809">პონები</translation>
@@ -1053,7 +1058,6 @@
 <translation id="6075872808778243331">(Android) HTTP რეაგირების დრო</translation>
 <translation id="6078323886959318429">მალსახმობის დამატება</translation>
 <translation id="6091080061796993741">ყვითელი</translation>
-<translation id="6093853427925392522">გამოიყენეთ Google-ის კონტენტის გადატანის აპი სასკოლო ანგარიშის მონაცემების პერსონალურ ანგარიშში გადასატანად, სანამ წვდომას დაკარგავთ.</translation>
 <translation id="6104112872696127344">სკანირება გაუქმდა</translation>
 <translation id="6106186594183574873">დასასრულებლად შეიყვანეთ თქვენი ძველი პაროლი</translation>
 <translation id="6108689792487843350">გეითვეი მიუწვდომელია</translation>
@@ -1277,6 +1281,7 @@
 <translation id="7049916119678019302">ჩამოტვირთეთ ტრანსკრიფციის მოდელი პარამეტრებიდან</translation>
 <translation id="7058278511608979688">დასრულება და შენახვა</translation>
 <translation id="7059230779847288458">იტენება, სრულ დატენამდე დარჩენილია <ph name="TIME_VALUE" /></translation>
+<translation id="7065336548231472971">არჩეულია <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186"><ph name="KEY" /> კლავიში</translation>
 <translation id="7068619307603204412">მოამზადეთ თქვენი მოწყობილობა</translation>
 <translation id="7076851914315147928">აირჩიეთ ფონი</translation>
@@ -1300,7 +1305,6 @@
 <translation id="7135814714616751706">მალსახმობების ძიება</translation>
 <translation id="7138614237884624401">გამარტივებული ტექსტი</translation>
 <translation id="7138668887584231801">შეჯამებისთვის საკმარისი სიტყვა არ არის</translation>
-<translation id="7141470099673912333">კონტენტის გადატანა</translation>
 <translation id="7143207342074048698">დაკავშირება</translation>
 <translation id="7144878232160441200">გაიმეორეთ</translation>
 <translation id="7144954474087165241">პაგოდა</translation>
@@ -1371,6 +1375,7 @@
 <translation id="7415801143053185905">HTTP რეაგირების დრო ზედმეტად დიდია</translation>
 <translation id="7418738250896500352">მეტისმეტად ბევრი სიტყვაა გასამარტივებლად</translation>
 <translation id="7425037327577270384">დამეხმარეთ დაწერაში</translation>
+<translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> ენის ტრანსკრიფციის მოდელის <ph name="PROGRESS_PERCENTAGE" />% ჩამოიტვირთა</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ამ APN-ის გათიშვა ან წაშლა ვერ ხერხდება. დარწმუნდით, რომ <ph name="ATTACH" /> APN-ები, რომლებიც ჩართულია, გათიშული ან წაშლილია.</translation>
 <translation id="7453118953486228603">დააწკაპუნეთ მონიშნული ტექსტის შეჯამებისთვის</translation>
@@ -1407,6 +1412,7 @@
 <translation id="7595982850646262331">დარჩენილია <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776"><ph name="MANAGER" />-ის ადმინისტრატორმა დააყენა, როდის შეიძლება ამ <ph name="DEVICE_TYPE" />-ის გამოყენება</translation>
 <translation id="7613724632293948900">გადაადგილება შეგიძლიათ მაუსის ან ისრიანი კლავიშების მეშვეობით.</translation>
+<translation id="7618216277886673749">აირჩიეთ <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">ნეიტრალური</translation>
 <translation id="7620771111601174153">შეიტყვეთ მეტი დახმარების ცენტრში</translation>
 <translation id="7625095758347640998">AI ფონი</translation>
@@ -1541,7 +1547,6 @@
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="8262870577632766028">1 საათი</translation>
 <translation id="827422111966801947">ინდიგო</translation>
-<translation id="8281886186245836920">გამოტოვება</translation>
 <translation id="8286154143153872371">ფონის სანახავად დაუკავშირდით ქსელს და გადატვირთეთ გვერდი.</translation>
 <translation id="8291967909914612644">ადგილობრივი პროვაიდერის ქვეყანა</translation>
 <translation id="8294431847097064396">წყარო</translation>
@@ -1646,6 +1651,7 @@
 <translation id="8797082062139985406">სახელის შექმნა Google-ის ხელოვნური ინტელექტის მეშვეობით</translation>
 <translation id="8798099450830957504">ნაგულისხმევი</translation>
 <translation id="8798441408945964110">პროვაიდერის სახელი</translation>
+<translation id="8804164990146287819">კონფიდენციალურობის პოლიტიკა</translation>
 <translation id="8808828119384186784">Chrome-ის პარამეტრები</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">ფონი</translation>

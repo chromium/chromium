@@ -206,7 +206,6 @@
 <translation id="345171907106878721">Додај се себеси на Chrome</translation>
 <translation id="3453763134178591239">Услови на Chrome OS</translation>
 <translation id="3503306920980160878">На Chrome му треба пристап до вашата локација за да ја сподели со сајтов</translation>
-<translation id="3512634283363927263">Странициве се наменети за да ги користат програмерите на Chrome и може да не се одржуваат или тестираат активно. За да ги овозможите, одете на <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, кликнете го копчето за да ги овозможите страниците за отстранување грешки, па одете на страницава повторно.</translation>
 <translation id="3533694711092285624">Нема зачувани лозинки. Chrome може да ги проверува вашите лозинки кога ги зачувувате.</translation>
 <translation id="3541482654983822893">Chrome не може да ги провери вашите лозинки. Обидете се пак по 24 часа.</translation>
 <translation id="3564543103555793392">Кога ќе се најавите на Chrome, може да зачувувате обележувачи, лозинки и друго, па да ги користите на вашиот телефон</translation>
@@ -224,7 +223,6 @@
 <translation id="3673813398384385993">Chrome откри дека „<ph name="EXTENSION_NAME" />“ содржи злонамерен софтвер</translation>
 <translation id="3695446226812920698">Дознајте како</translation>
 <translation id="3697952514309507634">Други профили на Chrome</translation>
-<translation id="3700276346088749847">избришете ги податоците од Chrome во вашата сметка</translation>
 <translation id="3703994572283698466">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />средината за развој на Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Верзија на ChromeOS Flex</translation>
 <translation id="3718181793972440140">Ова ќе избрише една ставка од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>

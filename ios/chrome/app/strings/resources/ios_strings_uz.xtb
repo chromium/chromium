@@ -271,7 +271,7 @@
 <translation id="2104436223719117661">Trenddagi qidiruvlar</translation>
 <translation id="21133533946938348">Ichki oynani qadab qo‘yish</translation>
 <translation id="2119636449201577317">Ilovada ochish…</translation>
-<translation id="2120553909046681540">Maxfiy rejim tashkilotingiz tomonidan faolsizlantirildi.</translation>
+<translation id="2120553909046681540">Maxfiy rejim tashkilotingiz tomonidan faolsizlantirilgan.</translation>
 <translation id="2122754583996902531">Bu brauzer nazorat ostida. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Nusxalangan matnni qidirish</translation>
 <translation id="2147127444698817042">Faqat iPhoneda ishlaydi</translation>
@@ -543,7 +543,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3409785640040772790">Xaritalar</translation>
 <translation id="3416023309465857378">2023-yil 25-oktabr</translation>
 <translation id="3435738964857648380">Xavfsizlik</translation>
-<translation id="343850944564645513">Top saytlaringiz</translation>
 <translation id="3443810440409579745">Varaq qabul qilindi.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> daq</translation>
 <translation id="344589138074534176">Google Lens haqida batafsil</translation>
@@ -658,7 +657,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3967327056943561740">Bukmarklar</translation>
 <translation id="3967822245660637423">Yuklab olindi</translation>
 <translation id="3982893814825393515">Muammo haqida xabar yuborish…</translation>
-<translation id="3984527584375648997">“Top saytlaringiz” panelini berkitish</translation>
 <translation id="398604237578616937">Siz <ph name="USER_EMAIL" /> nomidan kirdingiz. Hisob menyusini ochish.</translation>
 <translation id="3986739045730058129">Varaqni ochish</translation>
 <translation id="3992684624889376114">Bu sahifa haqida</translation>
@@ -1016,7 +1014,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5576885723883013398">Yangi oyna</translation>
 <translation id="5578795271662203820">Bu rasmni <ph name="SEARCH_ENGINE" />‘dan qidirish</translation>
 <translation id="5579012242779565775">Saqlangan sahifalarni yashirish</translation>
-<translation id="5581202956276923239">Saytlar tezkor tugmasi</translation>
 <translation id="5585019845078534178">Bildirgilar</translation>
 <translation id="5595485650161345191">Manzilni o‘zgartirish</translation>
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>

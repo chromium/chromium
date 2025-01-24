@@ -202,7 +202,6 @@
 <translation id="345171907106878721">Lisää itsesi Chromeen</translation>
 <translation id="3453763134178591239">Chrome-käyttöjärjestelmän käyttöehdot</translation>
 <translation id="3503306920980160878">Chrome tarvitsee oikeuden käyttää sijaintiasi, jotta se voidaan jakaa tämän sivuston kanssa.</translation>
-<translation id="3512634283363927263">Nämä sivut on tarkoitettu Chromen kehittäjille, eikä niitä välttämättä ylläpidetä tai testata aktiivisesti. Voit ottaa ne käyttöön siirtymällä osoitteeseen <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klikkaamalla painiketta, jolla voit ottaa virheenkorjaussivut käyttöön, ja siirtymällä sitten uudelleen tälle sivulle.</translation>
 <translation id="3533694711092285624">Ei tallennettuja salasanoja. Chrome voi tarkistaa salasanasi, kun tallennat niitä.</translation>
 <translation id="3541482654983822893">Chrome ei voi tarkistaa salasanojasi. Yritä uudelleen 24 tunnin päästä.</translation>
 <translation id="3564543103555793392">Kun kirjaudut Chromeen, voit tallentaa esimerkiksi kirjanmerkkejä ja salasanoja ja käyttää niitä puhelimellasi</translation>
@@ -220,7 +219,6 @@
 <translation id="3673813398384385993">Chrome havaitsi, että "<ph name="EXTENSION_NAME" />" sisältää haittaohjelmia</translation>
 <translation id="3695446226812920698">Lisätietoja</translation>
 <translation id="3697952514309507634">Muut Chrome-profiilit</translation>
-<translation id="3700276346088749847">poista Chrome-data tililtäsi</translation>
 <translation id="3703994572283698466">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chrome-käyttöjärjestelmää, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linux-kehitysympäristöä<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flexin versio</translation>
 <translation id="3718181793972440140">Yksi kohde poistetaan pysyvästi  tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>

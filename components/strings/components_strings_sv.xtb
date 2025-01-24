@@ -911,7 +911,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="255497580849974774">Se till att enheten är ansluten till en laddare under uppdateringen.</translation>
 <translation id="2556876185419854533">&amp;Ånga Redigera</translation>
 <translation id="2559566667529177711">Flera lager</translation>
-<translation id="2565789370591907825">Låsa och använda tangentbordet</translation>
 <translation id="2570734079541893434">Hantera inställningar</translation>
 <translation id="257136025287118539">Administratören flyttar dina filer till <ph name="CLOUD_PROVIDER" />. Du kan ändra filerna när uppladdningen är klar.</translation>
 <translation id="2571488850200220306">Av säkerhetsskäl kan den även se enhetens operativsystem, webbläsarversion och vilken programvara som är installerad</translation>
@@ -1109,7 +1108,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2974468223369775963">Detta IBAN gick inte att spara i ditt Google-konto. Det har sparats i Chrome på den här enheten i stället. Chrome frågar dig igen nästa gång du använder detta IBAN.</translation>
 <translation id="297667759942911166">Samarbeta i flikgrupper</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> är markerad just nu. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Låsa och använda tangentbordet</translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Resurser för skribenter</translation>
 <translation id="2979639724566107830">Öppna i nytt fönster</translation>
@@ -2466,6 +2464,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5363532265530011914">Sockor och strumpor</translation>
 <translation id="5371425731340848620">Uppdatera kortet</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ändrade en flik</translation>
+<translation id="5374324662289354619">Interna felsökningssidor är för närvarande inaktiverade.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">Klockan går efter, Klockan går före eller &lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;</translation>
 <translation id="5379618281582508161">Verifiera din identitet om du vill få tillgång till det här lösenordet på alla dina enheter</translation>
@@ -4108,7 +4107,6 @@ Mer information.
 <translation id="8278544367771164040">Kommersiell långivning</translation>
 <translation id="8279290844152565425">Konserter och musikfestivaler</translation>
 <translation id="8279611986089885641">Chrome-aviseringar måste vara aktiverade. Du kan aktivera dem i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Vill du låsa tangentbordet?</translation>
 <translation id="8280630997017109758">Fack 11</translation>
 <translation id="8281730697546299650">Andra funktioner för annonsintegritet är nu tillgängliga</translation>
 <translation id="8281886186245836920">Hoppa över</translation>
@@ -4178,7 +4176,6 @@ Mer information.
 <translation id="8398335999901363925">De tillgängliga betalningsmetoderna som kan fyllas i med ett tryck har öppnats över hela skärmen.</translation>
 <translation id="8398446215576328011">Återställ tillämpade policyer</translation>
 <translation id="8398790343843005537">Sök efter mobilen</translation>
-<translation id="8399276468426899527">låsa och använda tangentbordet</translation>
 <translation id="8400929824946688748">Jobb och utbildning</translation>
 <translation id="8402442052798347631">Angripare på webbplatsen som du försökte besöka kan lura dig att installera skadlig mjukvara som påverkar hur du surfar, till exempel genom att ändra din startsida eller visa extra annonser på webbplatser som du besöker. Chrome rekommenderar starkt att du går tillbaka till säkra webbplatser för att undvika skada. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer om den här varningen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fanfiction</translation>

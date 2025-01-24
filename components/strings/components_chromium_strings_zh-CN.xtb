@@ -12,6 +12,7 @@
 <translation id="4622039161600275920">此页面已被 Chromium 屏蔽</translation>
 <translation id="48558539577516920">在防火墙或防病毒设置部分设为允许 Chromium 访问网络。</translation>
 <translation id="580822234363523061">依次转到 Chromium 菜单 &gt;“<ph name="SETTINGS_TITLE" />”&gt;“<ph name="ADVANCED_TITLE" />”&gt;“<ph name="PROXIES_TITLE" />”，并确保您已将配置设为“无代理”或“直接连接”。</translation>
+<translation id="648062525172759633">这些页面供 Chromium 开发者使用，可能不会积极维护或测试。如需启用这些页面，请前往 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />，点击启用调试页面的按钮，然后再次前往此页面。</translation>
 <translation id="6549378540556750549">Chromium 的诞生也离不开其他<ph name="BEGIN_LINK_OSS" />开源软件<ph name="END_LINK_OSS" />。</translation>
 <translation id="6613594504749178791">您所做的更改会在下次重新启动 Chromium 时生效。</translation>
 <translation id="691026815377248078">Chromium 需获得蓝牙使用权限才能继续配对。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

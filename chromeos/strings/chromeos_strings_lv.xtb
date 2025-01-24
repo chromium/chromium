@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">zaļa</translation>
 <translation id="225692081236532131">Aktivizācijas statuss</translation>
 <translation id="2267285889943769271">Pievienot ekrānuzņēmumu</translation>
+<translation id="2268044343513325586">Uzlabot</translation>
 <translation id="2271469253353559191">Tumšā režīma grafiks</translation>
 <translation id="2276999893457278469">Populārākais palīdzības saturs</translation>
 <translation id="2277631741861284101">Ērta audio ierakstīšana un kopīgošana</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Notiek skeneru meklēšana…</translation>
 <translation id="3226657629376379887">Izkārtojuma darbību izvēlne</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> jādala ar <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Pārrakstīšana</translation>
 <translation id="3246869037381808805">Drukas uzdevumi, kas ir vecāki par vienu dienu, tiks noņemti</translation>
 <translation id="324961752321393509">Jūsu administrators neļauj aizvērt šo lietotni.</translation>
 <translation id="3263941347294171263">Lai turpinātu atjaunināšanas procesu, atvienojiet un atkārtoti pievienojiet ierīci (<ph name="DEVICE_NAME" />).</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Notiek ierīces <ph name="DEVICE_NAME" /> atjaunināšana</translation>
 <translation id="346423161771747987">Strāvas patēriņš</translation>
 <translation id="346539236881580388">Uzņemt vēlreiz</translation>
+<translation id="3479552764303398839">Vēlāk</translation>
 <translation id="3484914941826596830">Kamēr notiek aparātprogrammatūras atjaunināšana, neatvienojiet šo ārējo ierīci un neizslēdziet datoru. Varat minimizēt šo logu. Atjaunināšana var ilgt dažas minūtes, un jūsu ārējā ierīce šajā laikā var nedarboties.</translation>
 <translation id="3486220673238053218">definīcija</translation>
 <translation id="3487866404496702283">Atsauksmes par funkciju “mahi”</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Skaļuma pielāgošana</translation>
 <translation id="3767737419527918477">Meklēt ierakstu failus</translation>
 <translation id="3771294271822695279">Video faili</translation>
+<translation id="3771694256347217732">Google pakalpojumu sniegšanas noteikumi</translation>
 <translation id="3780740315729837296">Piešķiriet tastatūras taustiņu.</translation>
 <translation id="3784455785234192852">Bloķēt</translation>
 <translation id="3785643128701396311">pikselizēts stils</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP latentums</translation>
 <translation id="6078323886959318429">Pievienot saīsni</translation>
 <translation id="6091080061796993741">dzeltena</translation>
-<translation id="6093853427925392522">Izmantojiet Google lietotni Satura pārsūtīšana, lai pārvietotu skolas konta datus uz personīgo kontu, pirms zaudējat piekļuvi.</translation>
 <translation id="6104112872696127344">Skenēšana ir atcelta</translation>
 <translation id="6106186594183574873">Lai pabeigtu, ievadiet savu iepriekšējo paroli</translation>
 <translation id="6108689792487843350">Vārteja nav sasniedzama</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Meklēt īsinājumtaustiņus</translation>
 <translation id="7138614237884624401">Vienkāršots teksts</translation>
 <translation id="7138668887584231801">Tekstā nav pietiekams vārdu skaits, lai apkopotu tā saturu.</translation>
-<translation id="7141470099673912333">Satura pārsūtīšana</translation>
 <translation id="7143207342074048698">Notiek savienojuma izveide</translation>
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1541,7 +1541,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8261506727792406068">Dzēst</translation>
 <translation id="8262870577632766028">1 stunda</translation>
 <translation id="827422111966801947">Indigo</translation>
-<translation id="8281886186245836920">Izlaist</translation>
 <translation id="8286154143153872371">Izveidojiet savienojumu ar tīklu un atkārtoti ielādējiet lapu, lai skatītu fona tapeti.</translation>
 <translation id="8291967909914612644">Mājas pakalpojumu sniedzēja valsts</translation>
 <translation id="8294431847097064396">Avots</translation>
@@ -1646,6 +1645,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8797082062139985406">Izveidot nosaukumu, izmantojot Google MI</translation>
 <translation id="8798099450830957504">Noklusējums</translation>
 <translation id="8798441408945964110">Pakalpojumu sniedzēja nosaukums</translation>
+<translation id="8804164990146287819">Konfidencialitātes politika</translation>
 <translation id="8808828119384186784">Chrome iestatījumi</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fona tapete</translation>

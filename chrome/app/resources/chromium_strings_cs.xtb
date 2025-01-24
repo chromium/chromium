@@ -400,7 +400,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="6455857529632101747">Vítejte v profilech Chromium</translation>
 <translation id="6466344609055215035">Odstranit účet z prohlížeče Chromium</translation>
 <translation id="6475912303565314141">Také řídí, která stránka se zobrazí při spuštění prohlížeče Chromium.</translation>
-<translation id="648062525172759633">Tyto stránky jsou určeny pro vývojáře prohlížeče Chromium a nemusí být aktivně udržovány ani testovány. Pokud je chcete povolit, přejděte na adresu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknutím na příslušné tlačítko povolte ladicí stránky a pak znovu přejděte na tuto stránku.</translation>
 <translation id="648319183876919572">Vylepšené Bezpečné prohlížení vás chrání před nebezpečnými weby a soubory ke stažení</translation>
 <translation id="6510925080656968729">Odinstalovat Chromium</translation>
 <translation id="651535675648445253">Zástupci se otevírají v prohlížeči Chromium</translation>
@@ -534,7 +533,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8313851650939857356">Chyba při spuštění: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Když prohlížeč Chromium <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace ho zavře.</translation>
 <translation id="8321888067342493336">Uložit jako obrázek</translation>
-<translation id="8326785589245660814">vymažte data prohlížeče Chromium ve svém účtu</translation>
 <translation id="8330519371938183845">Po přihlášení si budete moci Chromium synchronizovat a upravit na různých zařízeních</translation>
 <translation id="8340674089072921962">Před vámi prohlížeč Chromium používal uživatel <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8359544530202147897">Pokud chcete i nadále používat data prohlížeče Chromium ve svém účtu Google <ph name="ACCOUNT_EMAIL" />, aktualizujte Chromium</translation>

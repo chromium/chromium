@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chrome은 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 오픈소스 프로젝트를 비롯한 여러 <ph name="BEGIN_LINK_OSS" />오픈소스 소프트웨어<ph name="END_LINK_OSS" />를 기반으로 제작된 브라우저입니다</translation>
 <translation id="2588322182880276190">Chrome 로고</translation>
 <translation id="3444832043240812445"><ph name="BEGIN_LINK" />비정상 종료 보고를 사용<ph name="END_LINK" />하면 최근 비정상 종료에 대한 정보만 이 페이지에 표시됩니다.</translation>
+<translation id="3512634283363927263">이 페이지는 Chrome 개발자를 위한 것으로, 적극적으로 유지보수되거나 테스트되지 않을 수 있습니다. 사용 설정하려면 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />로 이동하여 버튼을 클릭하여 디버그 페이지를 사용 설정한 다음 이 페이지로 다시 이동하세요.</translation>
 <translation id="3875312571075912821">Chrome이 방화벽이나 백신 프로그램이 설정된
         네트워크에 액세스할 수 있도록 허용합니다.</translation>
 <translation id="5005121315113832363">Chrome에서 차단한 페이지입니다.</translation>

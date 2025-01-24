@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">yaşıl</translation>
 <translation id="225692081236532131">Aktivləşdirmə statusu</translation>
 <translation id="2267285889943769271">Skrinşot əlavə edin</translation>
+<translation id="2268044343513325586">Silin</translation>
 <translation id="2271469253353559191">Qaranlıq rejim cədvəli</translation>
 <translation id="2276999893457278469">Populyar yardım məzmunu</translation>
 <translation id="2277631741861284101">Asanlıqla audio qeydə alın və paylaşın</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Skanerlər axtarılır</translation>
 <translation id="3226657629376379887">Tərtibat üzrə əməliyyatlar menyusu</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> dəyərini <ph name="CONVERSION_RATE" /> ilə bölün</translation>
-<translation id="3237710083340813756">Yenidən yazın</translation>
 <translation id="3246869037381808805">1 gündən köhnə çap işləri silinəcək</translation>
 <translation id="324961752321393509">Administrator bu tətbiqi bağlamağa icazə vermir</translation>
 <translation id="3263941347294171263">Güncəllənmə prosesinə davam etmək üçün <ph name="DEVICE_NAME" /> cihazını ayırın və yenidən taxın</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> güncəllənir</translation>
 <translation id="346423161771747987">Cərəyan</translation>
 <translation id="346539236881580388">Yenidən çəkin</translation>
+<translation id="3479552764303398839">İndi yox</translation>
 <translation id="3484914941826596830">Proqram güncəllənərkən bu xarici cihazı ayırmayın və ya kompüterinizi söndürməyin. Bu pəncərəni kiçildə bilərsiniz. Bu güncəlləmə bir neçə dəqiqə çəkə bilər və xarici cihazınız bu müddət ərzində işləməyə bilər.</translation>
 <translation id="3486220673238053218">təsvir</translation>
 <translation id="3487866404496702283">Mahi funksiyası haqqında rəy</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Səsi tənzimləyin</translation>
 <translation id="3767737419527918477">Səsyazma fayllarını axtarın</translation>
 <translation id="3771294271822695279">Video Fayllar</translation>
+<translation id="3771694256347217732">Google Xidmət Şərtləri</translation>
 <translation id="3780740315729837296">Klaviatura düyməsi təyin edin</translation>
 <translation id="3784455785234192852">Kilidləyin</translation>
 <translation id="3785643128701396311">piksel şəkillər</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP Gecikməsi</translation>
 <translation id="6078323886959318429">Qısayol əlavə edin</translation>
 <translation id="6091080061796993741">sarı</translation>
-<translation id="6093853427925392522">Girişi itirməzdən əvvəl məktəb hesabı məlumatlarınızı şəxsi hesabınıza köçürmək üçün Google tərəfindən Kontent Köçürülməsi tətbiqindən istifadə edin.</translation>
 <translation id="6104112872696127344">Skanlama ləğv edilib</translation>
 <translation id="6106186594183574873">Tamamlamaq üçün köhnə parolu yazın</translation>
 <translation id="6108689792487843350">Giriş ilə əlaqə saxlamaq olmur</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Qısayol axtarın</translation>
 <translation id="7138614237884624401">Sadələşdirilmiş mətn</translation>
 <translation id="7138668887584231801">Xülasə etmək üçün kifayət qədər söz yoxdur</translation>
-<translation id="7141470099673912333">Kontent Köçürülməsi</translation>
 <translation id="7143207342074048698">Qoşulur</translation>
 <translation id="7144878232160441200">Yenidən cəhd edin</translation>
 <translation id="7144954474087165241">paqoda</translation>
@@ -1541,7 +1541,6 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8261506727792406068">Silin</translation>
 <translation id="8262870577632766028">1 saat</translation>
 <translation id="827422111966801947">İndiqo</translation>
-<translation id="8281886186245836920">Keçin</translation>
 <translation id="8286154143153872371">Divar kağızı görmək üçün şəbəkəyə qoşulun və səhifəni yenidən yükləyin.</translation>
 <translation id="8291967909914612644">Əsas səhifə provayder ölkəsi</translation>
 <translation id="8294431847097064396">Mənbə</translation>
@@ -1646,6 +1645,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8797082062139985406">Google Sİ ilə ad yaradın</translation>
 <translation id="8798099450830957504">Defolt</translation>
 <translation id="8798441408945964110">Provayder adı</translation>
+<translation id="8804164990146287819">Məxfilik Siyasəti</translation>
 <translation id="8808828119384186784">Chrome Ayarları</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Divar kağızı</translation>

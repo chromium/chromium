@@ -28,6 +28,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           i provjerite je li konfiguracija postavljena na "bez proxyja" ili "izravno".</translation>
+<translation id="648062525172759633">Te su stranice namijenjene razvojnim programerima Chromiuma i možda se ne održavaju ili testiraju aktivno. Da biste ih omogućili, otvorite <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite gumb za omogućivanje stranica za otklanjanje pogrešaka, a zatim se ponovo vratite na ovu stranicu.</translation>
 <translation id="6549378540556750549">Chromium je omogućio i drugi <ph name="BEGIN_LINK_OSS" />softver otvorenog izvornog koda<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Promjene će početi vrijediti sljedeći put kad ponovo pokrenete Chromium.</translation>
 <translation id="691026815377248078">Chromium treba pristup Bluetoothu za nastavak 

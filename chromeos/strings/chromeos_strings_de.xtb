@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">grünen</translation>
 <translation id="225692081236532131">Aktivierungsstatus</translation>
 <translation id="2267285889943769271">Screenshot hinzufügen</translation>
+<translation id="2268044343513325586">Verfeinern</translation>
 <translation id="2271469253353559191">Zeitplan für dunklen Modus</translation>
 <translation id="2276999893457278469">Häufig gelesene Hilfeartikel</translation>
 <translation id="2277631741861284101">Audioinhalte mühelos aufnehmen und teilen</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Suche nach Scannern läuft</translation>
 <translation id="3226657629376379887">Layout-Aktionsmenü</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> durch <ph name="CONVERSION_RATE" /> dividieren</translation>
-<translation id="3237710083340813756">Umformulieren</translation>
 <translation id="3246869037381808805">Druckaufträge, die älter als 1 Tag sind, werden entfernt</translation>
 <translation id="324961752321393509">Dein Administrator lässt das Schließen dieser App nicht zu</translation>
 <translation id="3263941347294171263">Trenne zum Fortsetzen des Updates die Verbindung des Geräts „<ph name="DEVICE_NAME" />“ und stell sie dann wieder her</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Das Gerät „<ph name="DEVICE_NAME" />“ wird aktualisiert</translation>
 <translation id="346423161771747987">Strom</translation>
 <translation id="346539236881580388">Neu aufnehmen</translation>
+<translation id="3479552764303398839">Jetzt nicht</translation>
 <translation id="3484914941826596830">Während die Firmware aktualisiert wird, darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst dieses Fenster minimieren. Die Aktualisierung dauert einige Minuten und dein externes Gerät funktioniert während dieser Zeit eventuell nicht.</translation>
 <translation id="3486220673238053218">Definition</translation>
 <translation id="3487866404496702283">Feedback zur Mahi-Funktion</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Lautstärke anpassen</translation>
 <translation id="3767737419527918477">Aufnahmedateien suchen</translation>
 <translation id="3771294271822695279">Videodateien</translation>
+<translation id="3771694256347217732">Google-Nutzungsbedingungen</translation>
 <translation id="3780740315729837296">Tastenbelegung zuweisen</translation>
 <translation id="3784455785234192852">Sperre</translation>
 <translation id="3785643128701396311">Pixel-Art</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP-Latenz</translation>
 <translation id="6078323886959318429">Verknüpfung</translation>
 <translation id="6091080061796993741">gelben</translation>
-<translation id="6093853427925392522">Verwende die App „Inhaltsübertragung“ von Google, um die Daten deines Kontos einer Bildungseinrichtung in dein privates Konto zu übertragen, bevor du den Zugriff verlierst.</translation>
 <translation id="6104112872696127344">Scannen wurde abgebrochen</translation>
 <translation id="6106186594183574873">Gib zum Schluss dein altes Passwort ein</translation>
 <translation id="6108689792487843350">Gateway nicht erreichbar</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Tastenkombinationen suchen</translation>
 <translation id="7138614237884624401">Vereinfachter Text</translation>
 <translation id="7138668887584231801">Nicht genügend Wörter für eine Zusammenfassung</translation>
-<translation id="7141470099673912333">Inhaltsübertragung</translation>
 <translation id="7143207342074048698">Verbindung...</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="7144954474087165241">Pagode</translation>
@@ -1541,7 +1541,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8262870577632766028">1 Stunde</translation>
 <translation id="827422111966801947">Indigo</translation>
-<translation id="8281886186245836920">Überspringen</translation>
 <translation id="8286154143153872371">Stelle bitte eine Verbindung zu einem Netzwerk her und lade die Seite neu, um den Hintergrund anzusehen.</translation>
 <translation id="8291967909914612644">Land des Homepageanbieters</translation>
 <translation id="8294431847097064396">Quelle</translation>
@@ -1646,6 +1645,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8797082062139985406">Name mit Google AI erstellen</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Name des Anbieters</translation>
+<translation id="8804164990146287819">Datenschutzerklärung</translation>
 <translation id="8808828119384186784">Chrome-Einstellungen</translation>
 <translation id="8814190375133053267">WLAN</translation>
 <translation id="8818152010000655963">Hintergrund</translation>

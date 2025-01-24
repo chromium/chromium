@@ -9,6 +9,7 @@
 <translation id="2447485272386224171">Chrome is made possible by the <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> open-source project and other <ph name="BEGIN_LINK_OSS" />open-source software<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Chrome logo</translation>
 <translation id="3444832043240812445">This page only shows information on your recent crashes if you <ph name="BEGIN_LINK" />enable crash reporting<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">These pages are intended for use by Chrome developers, and may not be actively maintained or tested. To enable them, navigate to <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, click the button to enable debug pages and then navigate to this page again.</translation>
 <translation id="3875312571075912821">Allow Chrome to access the network in your firewall or antivirus
           settings.</translation>
 <translation id="5005121315113832363">This page has been blocked by Chrome</translation>

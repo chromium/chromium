@@ -401,7 +401,6 @@
 <translation id="6455857529632101747">Добре дојдовте во профили на Chromium</translation>
 <translation id="6466344609055215035">Отстранете ја сметката од Chromium</translation>
 <translation id="6475912303565314141">Тоа исто така контролира која страница ќе се прикаже кога го стартувате Chromium.</translation>
-<translation id="648062525172759633">Странициве се наменети за да ги користат програмерите на Chromium и може да не се одржуваат или тестираат активно. За да ги овозможите, одете на <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, кликнете го копчето за да ги овозможите страниците за отстранување грешки, па одете на страницава повторно.</translation>
 <translation id="648319183876919572">„Подобрено безбедно прелистување“ нуди поголема заштита од опасни веб-сајтови и преземања</translation>
 <translation id="6510925080656968729">Деинсталирај Chromium</translation>
 <translation id="651535675648445253">Кратенките се отвораат во Chromium</translation>
@@ -535,7 +534,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8313851650939857356">Грешка при стартување: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Вашата организација го затвора Chromium кога не се користи <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Зачувај како слика</translation>
-<translation id="8326785589245660814">избришете ги податоците од Chromium во вашата сметка</translation>
 <translation id="8330519371938183845">Најавете се за да го синхронизирате и персонализирате Chromium на сите ваши уреди</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> претходно користеше Chromium</translation>
 <translation id="8359544530202147897">Ажурирајте го Chromium за да продолжите да ги користите податоците од Chromium во вашата сметка на Google <ph name="ACCOUNT_EMAIL" /></translation>

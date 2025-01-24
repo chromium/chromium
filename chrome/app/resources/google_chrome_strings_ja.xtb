@@ -202,7 +202,6 @@
 <translation id="345171907106878721">Chrome に自分を追加</translation>
 <translation id="3453763134178591239">ChromeOS 利用規約</translation>
 <translation id="3503306920980160878">このサイトで現在地を共有するには、Chrome で位置情報の使用を許可する必要があります</translation>
-<translation id="3512634283363927263">これらのページは Chrome デベロッパーが使用することを目的としたもので、積極的なメンテナンスやテストが行われていない可能性があります。これらのページを有効にするには、<ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> でデバッグページを有効にするボタンをクリックしてから、このページに戻ります。</translation>
 <translation id="3533694711092285624">保存されているパスワードがありません。パスワードを保存すると Chrome で確認できるようになります。</translation>
 <translation id="3541482654983822893">Chrome でパスワードを確認できません。24 時間後にもう一度お試しください。</translation>
 <translation id="3564543103555793392">Chrome にログインすると、ブックマークやパスワードなどの設定を保存して、スマートフォンで使用できます</translation>
@@ -220,7 +219,6 @@
 <translation id="3673813398384385993">Chrome で「<ph name="EXTENSION_NAME" />」に不正なソフトウェアが含まれていることが検出されました</translation>
 <translation id="3695446226812920698">詳細</translation>
 <translation id="3697952514309507634">その他の Chrome プロフィール</translation>
-<translation id="3700276346088749847">アカウントの Chrome データを削除</translation>
 <translation id="3703994572283698466">ChromeOS は、<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />と同様に、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="3716540481907974026">ChromeOS Flex のバージョン</translation>
 <translation id="3718181793972440140">このデバイスから 1 件の項目を削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>

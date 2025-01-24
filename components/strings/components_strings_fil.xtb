@@ -185,6 +185,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1310938305420497484">Una, magbukas ng mga tab at bumisita sa mga site</translation>
 <translation id="1314311879718644478">Tingnan ang augmented reality na content</translation>
 <translation id="1314509827145471431">Bind right</translation>
+<translation id="1314784609072437689">pag-override ng keyboard</translation>
 <translation id="1316805916535763484">Mga Bukas na Online na Kurso</translation>
 <translation id="1318023360584041678">Na-save sa grupo ng tab</translation>
 <translation id="1319245136674974084">Huwag nang magtanong ulit para sa app na ito</translation>
@@ -638,6 +639,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2105838220373099643">Mga Roleplaying Game</translation>
 <translation id="2107021941795971877">Mga suporta sa pag-print</translation>
 <translation id="2108755909498034140">I-restart ang iyong computer</translation>
+<translation id="2109845311767915560">Naka-share na grupo ng tab</translation>
 <translation id="2111166930115883695">Pindutin ang space para i-play</translation>
 <translation id="2113977810652731515">Card</translation>
 <translation id="2114841414352855701">Binalewala dahil na-override ito ng <ph name="POLICY_NAME" />.</translation>
@@ -910,7 +912,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="255497580849974774">Panatilihing nakakonekta ang iyong device sa isang charger habang nag-a-update.</translation>
 <translation id="2556876185419854533">&amp;I-undo ang Pag-e-edit</translation>
 <translation id="2559566667529177711">Multi-Layer</translation>
-<translation id="2565789370591907825">Lock at paggamit ng keyboard</translation>
 <translation id="2570734079541893434">Pamahalaan ang mga setting</translation>
 <translation id="257136025287118539">Inililipat ng iyong administrator ang mga file mo sa <ph name="CLOUD_PROVIDER" />. Puwede mong baguhin ang mga file na ito kapag natapos na ang pag-upload.</translation>
 <translation id="2571488850200220306">Para matiyak ang seguridad, nakikita rin nito ang OS ng device, bersyon ng browser, at kung anong software ang naka-install</translation>
@@ -1108,7 +1109,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2974468223369775963">Hindi ma-save ang IBAN na ito sa iyong Google Account. Na-save lang ito sa Chrome sa device na ito. Tatanungin ka ulit ng Chrome sa susunod na pagkakataong gamitin mo ang IBAN na ito.</translation>
 <translation id="297667759942911166">Makipag-collaborate sa mga grupo ng tab</translation>
 <translation id="2977665033722899841">Kasalukuyang napili ang <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">I-lock at gamitin ang iyong keyboard</translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Mga Resource ng Mga Manunulat</translation>
 <translation id="2979639724566107830">Buksan ng bagong window</translation>
@@ -2092,6 +2092,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4704745399240123930">Naka-disable ang mga card na hindi tinatanggap ng merchant na ito gaya ng mga virtual card.</translation>
 <translation id="4708268264240856090">Naputol ang iyong koneksyon</translation>
 <translation id="4708276642004148190">Supply at Treatment ng Tubig</translation>
+<translation id="4711628883879888561">Makipag-collaborate sa grupo ng tab</translation>
 <translation id="471880041731876836">Wala kang pahintulot na bisitahin ang site na ito</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Magpatakbo ng Windows Network Diagnostics<ph name="END_LINK" /></translation>
@@ -2464,6 +2465,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5363532265530011914">Mga Medyas at Hosiery</translation>
 <translation id="5371425731340848620">I-update ang card</translation>
 <translation id="537425196847960924">May binagong tab si <ph name="USER_DISPLAY_NAME" /></translation>
+<translation id="5374324662289354619">Kasalukuyang naka-disable ang mga page ng internal na pagde-debug.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Nahuhuli ang iyong orasan" o "Nauuna ang iyong orasan" o "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Para makuha ang password na ito sa lahat ng iyong device, i-verify na ikaw ito</translation>
@@ -2698,6 +2700,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="578305955206182703">Amber</translation>
 <translation id="5783700460098783980">Bagahe at Mga Accessory sa Pagbiyahe</translation>
 <translation id="57838592816432529">I-mute</translation>
+<translation id="5783922175933467571">Mag-e-expire ang link ng <ph name="TAB_GROUP_DISPLAY_NAME" /> sa loob ng 48 oras</translation>
 <translation id="5784606427469807560">Nagkaroon ng problema sa pagkumpirma ng iyong card. Suriin ang koneksyon sa internet at subukan ulit.</translation>
 <translation id="5785756445106461925">Bukod pa rito, ang page na ito ay may iba pang mga mapagkukunang hindi secure. Makikita ng iba ang mga mapagkukunang ito habang ipinadadala, at maaaring baguhin ng isang umaatake upang baguhin ang hitsura ng page.</translation>
 <translation id="5793317771769868848">Made-delete ang paraan ng pagbabayad na ito sa device na ito</translation>
@@ -2770,6 +2773,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5930147475897662863">I-on ang setting na ito para magamit ang Tulungan akong magsulat</translation>
 <translation id="593102073240001326">Paano Gawin, DIY, at Pang-ekspertong Content</translation>
 <translation id="5932224571077948991">Nagpapakita ang site ng mga nakakasagabal o nakakapanlinlang na ad</translation>
+<translation id="5933597524153120073">Buksan lahat (<ph name="ITEMS" />) sa bagong window</translation>
 <translation id="5937560539988385583">Naisalin na ang page</translation>
 <translation id="5938153366081463283">Magdagdag ng virtual card</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -2917,6 +2921,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Awtomatikong nililimitahan ng Chrome ang third-party na cookies</translation>
 <translation id="6188479691141473408">at <ph name="N_FIELDS" /> pang field</translation>
+<translation id="6190518157737269631">Mag-override ng ilang key sa iyong keyboard, gaya ng Esc</translation>
 <translation id="6194209731893739467">Tingnan ang lahat ng iyong sinusubaybayang produkto rito</translation>
 <translation id="6195163219142236913">Limitado ang third-party na cookies</translation>
 <translation id="6195371403461054755">Geology</translation>
@@ -3042,6 +3047,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6394852772105848029">Gusto ng site na ito na buksan ang <ph name="APP_NAME" /> app</translation>
 <translation id="639673288733510393">Mga Scooter at Moped</translation>
 <translation id="6398765197997659313">Lumabas sa buong screen</translation>
+<translation id="6399633237874954301">Smart card reader na pinapayagan ng iyong administrator</translation>
 <translation id="6401136357288658127">Hindi na ginagamit ang patakarang ito. Dapat mong gamitin ang patakarang <ph name="NEW_POLICY" /> sa halip.</translation>
 <translation id="640163077447496506">Mag-e-expire ngayong araw</translation>
 <translation id="6402537308870515461">Kinakailangan ang pagsusuri bago ilipat</translation>
@@ -4103,7 +4109,6 @@ Mga karagdagang detalye:
 <translation id="8278544367771164040">Pangkomersyong Pautang</translation>
 <translation id="8279290844152565425">Mga Concert at Music Festival</translation>
 <translation id="8279611986089885641">Dapat naka-on ang mga notification sa Chrome. Puwede mong i-on ang mga ito sa <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">I-lock ang iyong keyboard?</translation>
 <translation id="8280630997017109758">Tray 11</translation>
 <translation id="8281730697546299650">Available na ang iba pang feature ng privacy sa ad</translation>
 <translation id="8281886186245836920">Laktawan</translation>
@@ -4173,7 +4178,6 @@ Mga karagdagang detalye:
 <translation id="8398335999901363925">Mga paraan ng pagbabayad na available na mapunan kapag pinindot na nakabukas nang buo ang taas.</translation>
 <translation id="8398446215576328011">I-revert ang mga nalalapat na patakaran</translation>
 <translation id="8398790343843005537">Hanapin ang iyong telepono</translation>
-<translation id="8399276468426899527">lock at paggamit ng keyboard</translation>
 <translation id="8400929824946688748">Mga Trabaho at Edukasyon</translation>
 <translation id="8402442052798347631">Posibleng linlangin ka ng mga attacker sa site na sinubukan mong bisitahin na mag-install ng mapaminsalang software na nakakaapekto sa iyong paraan ng pag-browse — halimbawa, sa pamamagitan ng pagbago sa homepage mo o pagpapakita sa iyo ng mga karagdagang ad sa mga site na binibisita mo. Lubos na inirerekomenda ng Chrome na bumalik sa ligtas na lugar para maiwasan ang pinsala. <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa tungkol sa babalang ito<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fan Fiction</translation>
@@ -4191,6 +4195,7 @@ Mga karagdagang detalye:
 <translation id="8421158157346464398">Impormasyon ng profile sa trabaho (tulad ng iyong username sa profile sa trabaho)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Baguhin</translation>
+<translation id="8426945547715537628">Payagan ang pag-override ng keyboard?</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8428634594422941299">OK</translation>
@@ -4277,6 +4282,7 @@ Mga karagdagang detalye:
 <translation id="8574841453995331336">Mga Refrigerator at Freezer</translation>
 <translation id="8577192028579836704">Karaniwang <ph name="TYPICAL_PRICE" /> ang lahat ng opsyon</translation>
 <translation id="8577348305244205642">Hindi available ang virtual card</translation>
+<translation id="8579000896558714521">Pag-override ng keyboard</translation>
 <translation id="8580265901435899937">Pasyalan ng Mga Turista</translation>
 <translation id="8581064022803799721">Naka-save ang page na ito sa <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Kagamitan sa Squash at Racquetball</translation>

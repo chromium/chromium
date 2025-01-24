@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">हरे</translation>
 <translation id="225692081236532131">सक्रियण की स्थिति</translation>
 <translation id="2267285889943769271">स्क्रीनशॉट जोड़ें</translation>
+<translation id="2268044343513325586">बेहतर बनाएं</translation>
 <translation id="2271469253353559191">गहरे रंग वाला मोड शेड्यूल करें</translation>
 <translation id="2276999893457278469">सबसे ज़्यादा उपयोगी सहायता कॉन्टेंट</translation>
 <translation id="2277631741861284101">आसानी से ऑडियो रिकॉर्ड और शेयर करें</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">स्कैनर खोजे जा रहे हैं</translation>
 <translation id="3226657629376379887">लेआउट ऐक्शन मेन्यू</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> वैल्यू को <ph name="CONVERSION_RATE" /> से विभाजित करें</translation>
-<translation id="3237710083340813756">फिर से लिखें</translation>
 <translation id="3246869037381808805">एक दिन से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
 <translation id="324961752321393509">आपका एडमिन इस ऐप्लिकेशन को बंद करने की अनुमति नहीं देता</translation>
 <translation id="3263941347294171263">अपडेट की प्रोसेस जारी रखने के लिए, <ph name="DEVICE_NAME" /> को हटाएं और फिर से लगाएं</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> अपडेट हो रहा है</translation>
 <translation id="346423161771747987">करंट</translation>
 <translation id="346539236881580388">फिर से लें</translation>
+<translation id="3479552764303398839">अभी नहीं</translation>
 <translation id="3484914941826596830">फ़र्मवेयर के अपडेट होने तक, इस बाहरी डिवाइस को डिसकनेक्ट न करें या अपने कंप्यूटर को शट डाउन न करें. इस विंडो को छोटा किया जा सकता है. अपडेट पूरा होने में कुछ मिनट लग सकते हैं. हो सकता है कि इस दौरान आपका बाहरी डिवाइस काम न करे.</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3487866404496702283">माही सुविधा के बारे में सुझाव/राय दें या शिकायत करें</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">आवाज़ अडजस्ट करें</translation>
 <translation id="3767737419527918477">रिकॉर्ड की गई फ़ाइलें खोजें</translation>
 <translation id="3771294271822695279">वीडियो फ़ाइलें</translation>
+<translation id="3771694256347217732">Google की सेवा की शर्तें</translation>
 <translation id="3780740315729837296">कोई कीबोर्ड बटन असाइन करें</translation>
 <translation id="3784455785234192852">लॉक चालू है</translation>
 <translation id="3785643128701396311">पिक्सल आर्ट</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) एचटीटीपी के इंतज़ार का समय</translation>
 <translation id="6078323886959318429">शॉर्टकट जोड़ें</translation>
 <translation id="6091080061796993741">पीले</translation>
-<translation id="6093853427925392522">स्कूल वाले अपने खाते का ऐक्सेस हटने से पहले, उस पर मौजूद डेटा को निजी खाते में ट्रांसफ़र करें. इसके लिए, Google का Content Transfer ऐप्लिकेशन इस्तेमाल करें.</translation>
 <translation id="6104112872696127344">स्कैन करने की प्रोसेस रद्द कर दी गई है</translation>
 <translation id="6106186594183574873">पूरा करने के लिए, पुराना पासवर्ड डालें</translation>
 <translation id="6108689792487843350">गेटवे से कनेक्ट नहीं किया जा सका</translation>
@@ -1301,7 +1302,6 @@
 <translation id="7135814714616751706">शॉर्टकट खोजें</translation>
 <translation id="7138614237884624401">आसान टेक्स्ट</translation>
 <translation id="7138668887584231801">खास जानकारी पाने के लिए, बहुत कम शब्द चुने गए हैं</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">कनेक्‍टिंग</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
 <translation id="7144954474087165241">पगोडा</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">मिटाएं</translation>
 <translation id="8262870577632766028">1 घंटा</translation>
 <translation id="827422111966801947">गहरा नीला</translation>
-<translation id="8281886186245836920">अभी नहीं</translation>
 <translation id="8286154143153872371">वॉलपेपर देखने के लिए, नेटवर्क से कनेक्ट करें और पेज को फिर से लोड करें.</translation>
 <translation id="8291967909914612644">'होम' पर काम करने वाली सेवाएं देने वाला देश</translation>
 <translation id="8294431847097064396">स्रोत</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Google के एआई का इस्तेमाल करके रिकॉर्डिंग का नाम तय करें</translation>
 <translation id="8798099450830957504">डिफ़ॉल्ट</translation>
 <translation id="8798441408945964110">कंपनी का नाम</translation>
+<translation id="8804164990146287819">निजता नीति</translation>
 <translation id="8808828119384186784">Chrome की सेटिंग</translation>
 <translation id="8814190375133053267">वाई-फ़ाई </translation>
 <translation id="8818152010000655963">वॉलपेपर</translation>

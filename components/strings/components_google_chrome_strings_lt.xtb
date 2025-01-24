@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">„Chrome“ pasiekiama naudojant <ph name="BEGIN_LINK_CHROMIUM" />„Chromium“<ph name="END_LINK_CHROMIUM" /> atvirojo šaltinio projektą ir kitą <ph name="BEGIN_LINK_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">„Chrome“ logotipas</translation>
 <translation id="3444832043240812445">Šiame puslapyje rodoma informacija apie paskutines strigtis, jei <ph name="BEGIN_LINK" />įgalinote strigčių ataskaitų teikimą<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Šie puslapiai skirti naudoti „Chrome“ kūrėjams ir gali nebūti aktyviai tvarkomi ar išbandomi. Jei norite juos įgalinti, eikite adresu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, spustelėkite mygtuką, kad įgalintumėte derinimo puslapius, ir tada grįžkite į šį puslapį.</translation>
 <translation id="3875312571075912821">Leiskite „Chrome“ pasiekti tinklą užkardos arba antivirusinės
           programos nustatymuose.</translation>
 <translation id="5005121315113832363">Šį puslapį užblokavo „Chrome“</translation>

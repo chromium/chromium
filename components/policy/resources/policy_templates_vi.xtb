@@ -356,19 +356,6 @@ Tuy nhiên, các mẫu so khớp nguồn của chính sách này không được
       Khi bạn không đặt giá trị cho chính sách này, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho mọi trang web. Nếu không, chế độ cài đặt do người dùng chọn sẽ được áp dụng.
 
       Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.</translation>
-<translation id="1279062904578504503">Chính sách này cho phép người dùng được quản lý sử dụng ứng dụng Chuyển nội dung. Ứng dụng Chuyển nội dung giúp người dùng chuyển dữ liệu của họ từ tài khoản được quản lý sang tài khoản người dùng cá nhân.
-
-Nếu bạn đặt <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> thành <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, ứng dụng Chuyển nội dung sẽ hiển thị vào và trong khoảng thời gian từ ngày bắt đầu đến ngày kết thúc theo giờ địa phương.
-
-Nếu bạn đặt <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> thành <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> hoặc không đặt, ứng dụng sẽ không hiển thị.
-
-Nếu bạn không đặt <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" />, ứng dụng sẽ hiển thị cho đến ngày kết thúc.
-
-Nếu bạn không đặt <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />, ứng dụng sẽ hiển thị vô thời hạn kể từ ngày bắt đầu.
-
-Nếu bạn không đặt cả <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> và <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />, ứng dụng sẽ hiển thị vô thời hạn. Nếu ngày bắt đầu và ngày kết thúc không hợp lệ thì ứng dụng Chuyển nội dung sẽ không hiển thị. Những trường hợp này bao gồm cả khi ngày được cung cấp không tồn tại hoặc ngày kết thúc tới trước ngày bắt đầu.
-
-Bạn cũng cần bật tuỳ chọn chuyển dữ liệu bằng Takeout để ứng dụng Chuyển nội dung hoạt động đúng cách. Truy cập https://support.google.com/a/answer/6364687 để biết thêm thông tin.</translation>
 <translation id="1285819498003746288">Sẽ không cung cấp API Event.path.</translation>
 <translation id="1290722184971934486">Khi bạn đặt chính sách này thành <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (giá trị 2), theo mặc định, hệ thống sẽ tự động từ chối cấp quyền quản lý cửa sổ cho các trang web. Việc này sẽ hạn chế khả năng các trang web xem được thông tin về màn hình của thiết bị và dùng thông tin đó để mở/đặt cửa sổ hoặc yêu cầu chế độ toàn màn hình trên một số màn hình cụ thể.
 
@@ -1046,7 +1033,6 @@ gặp sự cố do thay đổi này. Phiên bản cuối cùng hỗ trợ chính
       Các mẫu URL không được xung đột với <ph name="FILE_SYSTEM_WRITE_ASK_FOR_URLS_POLICY_NAME" />. Không chính sách nào được ưu tiên nếu một URL khớp với cả hai chính sách.
 
       Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
-<translation id="1754668667300090632">Tắt Thẻ tệp Sharepoint trên NTP</translation>
 <translation id="1755310913456007816">Sử dụng các tùy chọn cài đặt của chính sách kiểm tra trạng thái thu hồi trực tuyến hiện có</translation>
 <translation id="1760951637494635692">Cho phép API nối tiếp trên các trang web này</translation>
 <translation id="1765503534110351026">Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="PROXY_SETTINGS_POLICY_NAME" />.
@@ -7613,13 +7599,6 @@ Nếu bạn đặt thành Disabled (Tắt) hoặc không đặt chính sách nà
 
       Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.</translation>
 <translation id="6431446111529802555">Châu Âu.</translation>
-<translation id="6432641193840355112">Chính sách này kiểm soát chế độ hiển thị của Thẻ tệp Sharepoint trên Trang thẻ mới. Thẻ này sẽ chỉ hiển thị trên Trang thẻ mới nếu bạn bật chính sách này và tổ chức của bạn cho phép sử dụng dữ liệu Tệp Sharepoint trong trình duyệt.
-
-Thẻ đề xuất Tệp Sharepoint hiển thị một danh sách các tệp được đề xuất.  Thẻ này nhằm giải quyết vấn đề chuyển đổi ngữ cảnh và nâng cao năng suất bằng cách cung cấp cho người dùng lối tắt đến các tài liệu quan trọng nhất đối với họ.
-
-Thẻ Microsoft Sharepoint sẽ yêu cầu thêm cấu hình của quản trị viên. Để biết thông tin chi tiết về cách kết nối Thẻ trên Trang thẻ mới của Chrome với Sharepoint, vui lòng xem bài viết trợ giúp.
-
-Nếu bạn tắt <ph name="NTPCARDSVISIBLE" />, Thẻ Sharepoint sẽ không hiển thị. Nếu bạn bật <ph name="NTPCARDSVISIBLE" />, thẻ Sharepoint sẽ hiển thị nếu bạn bật chính sách này và có dữ liệu để hiển thị. Nếu bạn không đặt <ph name="NTPCARDSVISIBLE" />, thẻ Sharepoint sẽ hiển thị nếu bạn bật chính sách này, người dùng bật thẻ này trong phần Tuỳ chỉnh Chrome và có dữ liệu để hiển thị.</translation>
 <translation id="6433697627431665375">Không cho phép đưa dữ liệu của <ph name="PRODUCT_NAME" /> vào bản sao lưu</translation>
 <translation id="6436052172226685535">Hành vi mặc định cho tính năng Hỗ trợ trình duyệt cũ.</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> cố gắng nâng cấp một số
@@ -8790,7 +8769,6 @@ Lưu ý quan trọng: Lịch biểu do chính sách này đặt có thể không
 
       Nếu bạn để trống hoặc không đặt chính sách này, thì người dùng có thể đặt một Tài khoản Google bất kỳ làm tài khoản chính của trình duyệt trong <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Đặt độ dài tối thiểu của mã PIN màn hình khóa</translation>
-<translation id="7232835921904883015">Hiển thị Thẻ tệp Sharepoint trên Trang thẻ mới</translation>
 <translation id="7234280155140786597">Tên của các máy chủ nhắn tin gốc bị cấm (hoặc * cho tất cả)</translation>
 <translation id="723621412149834592">Khi bạn đặt chính sách này thành <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (giá trị 2), theo mặc định, hệ thống sẽ tự động từ chối cấp quyền kiểm soát vị trí cửa sổ cho các trang web. Việc này sẽ hạn chế khả năng các trang web xem được thông tin về màn hình của thiết bị và dùng thông tin đó để mở/đặt cửa sổ hoặc yêu cầu chế độ toàn màn hình trên một số màn hình cụ thể.
 
@@ -9262,7 +9240,6 @@ Nếu bạn đặt chính sách này thành Tắt, thì chế độ cài đặt 
 Nếu bạn đặt chính sách này thành Bật hoặc không đặt chính sách này, thì người dùng sẽ có thể bật hoặc tắt chế độ cài đặt Đo lường quảng cáo của <ph name="PRIVACY_SANDBOX_NAME" /> trên thiết bị.
 
 Nếu đặt chính sách này, thì bạn cần đặt chính sách <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> thành Tắt.</translation>
-<translation id="7643824472046534064">Bật Thẻ tệp Sharepoint trên NTP</translation>
 <translation id="7643883929273267746">Hạn chế các tài khoản được hiển thị trong <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648664871086956188">Chính sách này là một quy tắc chung cho tất cả các quy tắc đã xác định trong chính sách DataLeakPreventionRulesList.
       Nếu bạn đặt chính sách này thành Bật, tùy chọn báo cáo theo thời gian thực về các sự kiện ngăn rò rỉ dữ liệu sẽ được bật.
@@ -9465,7 +9442,6 @@ Nếu bạn tắt chính sách này thì trình phân tích cú pháp HTML sẽ 
       Nếu bạn đặt chính sách này thành true, thì các sự kiện mạng của thiết bị sẽ được báo cáo.</translation>
 <translation id="780629758750905699">Cho phép thêm các tài khoản Family Link vào thiết bị</translation>
 <translation id="7807139251387225825">Danh sách các loại sẽ bị loại trừ khỏi quá trình đồng bộ hóa</translation>
-<translation id="7808219497358175018">Định cấu hình thời điểm hoạt động cho công cụ Chuyển nội dung trên <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="781268256210530471">Cài đặt trình bổ trợ</translation>
 <translation id="7816326058023670173">Dữ liệu mật được chia sẻ giữa thiết bị của con và cha mẹ.</translation>
 <translation id="7818131573217430250">Đặt trạng thái chế độ tương phản cao mặc định trên màn hình đăng nhập</translation>
@@ -10025,13 +10001,6 @@ Nếu bạn không đặt chính sách này, hệ thống sẽ dùng mọi giao 
 Hãy xem mục 5.2 của RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2) để biết nội dung mô tả chi tiết về tất cả giá trị xử lý.</translation>
 <translation id="8244171102276095471">Bật bộ mật mã RC4 trong TLS</translation>
 <translation id="8244525275280476362">Độ trễ tìm nạp tối đa sau khi hủy hiệu lực chính sách</translation>
-<translation id="8244828501034607035">Chính sách này kiểm soát chế độ hiển thị của Thẻ Outlook trên Trang thẻ mới. Thẻ này sẽ chỉ hiển thị trên Trang thẻ mới nếu bạn bật chính sách này và tổ chức của bạn cho phép sử dụng dữ liệu Lịch Outlook trong trình duyệt.
-
-Thẻ Outlook cho biết sự kiện tiếp theo trên lịch, cùng thông tin nhanh về các cuộc họp còn lại trong ngày. Thẻ này nhằm giải quyết vấn đề chuyển đổi ngữ cảnh và nâng cao năng suất bằng cách cung cấp cho người dùng lối tắt đến cuộc họp tiếp theo của họ.
-
-Thẻ Microsoft Outlook sẽ yêu cầu thêm cấu hình của quản trị viên. Để biết thông tin chi tiết về cách kết nối Thẻ trên Trang thẻ mới của Chrome với Outlook, vui lòng xem bài viết trợ giúp.
-
-Nếu bạn tắt <ph name="NTPCARDSVISIBLE" />, Thẻ Outlook sẽ không hiển thị. Nếu bạn bật <ph name="NTPCARDSVISIBLE" />, thẻ Outlook sẽ hiển thị nếu bạn bật chính sách này và có dữ liệu để hiển thị. Nếu bạn không đặt <ph name="NTPCARDSVISIBLE" />, thẻ Outlook sẽ hiển thị nếu bạn bật chính sách này, người dùng bật thẻ này trong phần Tuỳ chỉnh Chrome và có dữ liệu để hiển thị.</translation>
 <translation id="8245574649143980200">Nếu bạn không đặt hoặc đặt chính sách thành Bật, thì hệ thống sẽ cho phép người dùng xem và dùng mục trong trình đơn tìm kiếm khu vực của <ph name="GOOGLE_LENS_PRODUCT_NAME" /> trong trình đơn theo bối cảnh. Nếu bạn đặt chính sách thành Tắt, thì người dùng sẽ không nhìn thấy mục trong trình đơn tìm kiếm khu vực của <ph name="GOOGLE_LENS_PRODUCT_NAME" /> trong trình đơn theo bối cảnh khi tính năng tìm kiếm khu vực của <ph name="GOOGLE_LENS_PRODUCT_NAME" /> được hỗ trợ.</translation>
 <translation id="8247143534027746614">Chặn hành vi truy cập vào một danh sách các mẫu URL trong quá trình xác thực</translation>
 <translation id="824818544897669723">Bật tính năng xóa nhật ký trình duyệt và nhật ký tải xuống</translation>
@@ -10923,7 +10892,6 @@ Nếu bạn đặt chính sách này thành Tắt, thì hệ thống sẽ không
       Các thiết bị mới có múi giờ mặc định là Hoa Kỳ/Thái Bình Dương. Định dạng của giá trị sẽ dựa trên tên của múi giờ trong Cơ sở dữ liệu múi giờ IANA (https://en.wikipedia.org/wiki/Tz_database). Việc nhập giá trị không hợp lệ sẽ kích hoạt chính sách sử dụng giờ GMT.
 
       Nếu bạn không đặt chính sách này hoặc nếu bạn nhập một chuỗi trống, thì thiết bị sẽ sử dụng múi giờ hiện đang hoạt động. Tuy nhiên, người dùng có thể thay đổi múi giờ này.</translation>
-<translation id="8874071621901957187">Hiển thị thẻ Lịch Outlook trên Trang thẻ mới</translation>
 <translation id="8875202330803089599">Nếu bạn đặt chính sách này thì người dùng sẽ không thể bỏ qua các quyết định về bảo mật khi tải xuống.
 
       Có nhiều loại cảnh báo khi tải xuống trong Chrome, thường được chia thành các danh mục sau (tìm hiểu thêm về kết quả Duyệt web an toàn tại https://support.google.com/chrome/?p=ib_download_blocked):

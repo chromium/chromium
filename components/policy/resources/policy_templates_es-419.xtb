@@ -359,19 +359,6 @@ que se instale.</translation>
       Si no estableces la política, se aplicará <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
-<translation id="1279062904578504503">Esta política habilita la app de Content Transfer para los usuarios administrados. La app de Content Transfer ayuda a los usuarios a transferir sus datos de una cuenta administrada a una cuenta personal.
-
-Si estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> como <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, la app de Content Transfer se mostrará en las fechas de inicio y finalización, y entre ellas, según la hora local.
-
-Si estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> como <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> o no la estableces, no se mostrará la app.
-
-Si no estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" />, la app se mostrará hasta la fecha de finalización.
-
-Si no estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />, la app se mostrará de forma indefinida a partir de la fecha de inicio.
-
-Si no estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> ni <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />, se mostrará la app de forma indefinida. Si las fechas de inicio y finalización no son válidas, no se mostrará la app de Content Transfer. Por ejemplo, si las fechas proporcionadas no existen o si la fecha de finalización es anterior a la fecha de inicio.
-
-También se debe habilitar la transferencia de datos con Takeout para que la app de Content Transfer funcione correctamente. Consulta https://support.google.com/a/answer/6364687 para obtener más información.</translation>
 <translation id="1285819498003746288">La API de Event.path no estará disponible.</translation>
 <translation id="1290722184971934486">Si estableces la política como <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valor 2), se rechazará automáticamente el permiso de administración de ventanas para todos los sitios de forma predeterminada. Esto limitará la capacidad de los sitios para ver la información sobre las pantallas del dispositivo y utilizarla para abrir y ubicar ventanas o solicitar el modo pantalla completa en pantallas específicas.
 
@@ -1088,7 +1075,6 @@ política fue la versión 121. Se quitó en la versión 122.</translation>
       Los patrones de URL no pueden entrar en conflicto con <ph name="FILE_SYSTEM_WRITE_ASK_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalece ninguna de las dos.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
-<translation id="1754668667300090632">Inhabilitar la tarjeta de archivos de Sharepoint de NTP</translation>
 <translation id="1755310913456007816">Usa la configuración para comprobar la actual revocación en línea</translation>
 <translation id="1760951637494635692">Permite la API de Serial en estos sitios</translation>
 <translation id="1765503534110351026">Esta política dejó de estar disponible; usa <ph name="PROXY_SETTINGS_POLICY_NAME" /> en su lugar.
@@ -7799,13 +7785,6 @@ Si inhabilitas la política o no la estableces, la búsqueda de CNAME determinar
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
 <translation id="6431446111529802555">Europa.</translation>
-<translation id="6432641193840355112">Esta política controla la visibilidad de la tarjeta de archivos de SharePoint en la página Nueva pestaña. La tarjeta solo se mostrará en la página Nueva pestaña si la política está habilitada y tu organización autorizó el uso de los datos de archivos de SharePoint en el navegador.
-
-En la tarjeta de recomendaciones de archivos de SharePoint, se muestra una lista de archivos recomendados.  Su objetivo es abordar el problema relacionado con el cambio de contexto y mejorar la productividad brindándoles a los usuarios un acceso directo a sus documentos más importantes.
-
-La tarjeta de Microsoft Sharepoint requerirá una configuración adicional del administrador. Si quieres obtener información detallada para conectar la tarjeta de la página Nueva pestaña de Chrome a Sharepoint, consulta el artículo de ayuda.
-
-Si inhabilitas <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de SharePoint. Si habilitas <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de SharePoint si esta política también está habilitada y hay datos para mostrar. Si no estableces <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de SharePoint si esta política también está habilitada, el usuario tiene la tarjeta habilitada en Personalizar Chrome y hay datos para mostrar.</translation>
 <translation id="6433697627431665375">Impedir que se incluyan los datos de <ph name="PRODUCT_NAME" /> en las copias de seguridad</translation>
 <translation id="6436052172226685535">Comportamiento predeterminado de LBS</translation>
 <translation id="6438472072089952201">Cuando es posible, <ph name="PRODUCT_NAME" /> intenta actualizar algunas
@@ -9007,7 +8986,6 @@ Nota importante: Es posible que los programas establecidos por esta política no
 
       Si no se establece esta política o se deja en blanco, el usuario podrá establecer cualquier Cuenta de Google como la principal del navegador en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Establecer la longitud mínima del PIN de la pantalla bloqueada</translation>
-<translation id="7232835921904883015">Mostrar la tarjeta de archivo de Sharepoint en la página Nueva pestaña</translation>
 <translation id="7234280155140786597">Nombres de los hosts de mensajería nativa prohibidos (o * para todos)</translation>
 <translation id="723621412149834592">Si estableces la política como <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (valor 2), se rechazará automáticamente el permiso de ubicación de ventanas para todos los sitios de forma predeterminada. Esto limitará la capacidad de los sitios para ver la información sobre las pantallas del dispositivo y utilizarla para abrir y ubicar ventanas o solicitar el modo pantalla completa en pantallas específicas.
 
@@ -9477,7 +9455,6 @@ Si la inhabilitas, se desactivará la configuración de medición de anuncios pa
 Si habilitas esta política o no la estableces, los usuarios podrán activar o desactivar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de medición de anuncios en sus dispositivos.
 
 Para establecer esta política, se debe inhabilitar la política <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
-<translation id="7643824472046534064">Habilitar la tarjeta de archivos de Sharepoint de NTP</translation>
 <translation id="7643883929273267746">Restringir las cuentas visibles en <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648664871086956188">Esta política es una activación general de todas las reglas definidas en la política DataLeakPreventionRulesList.
       Si estableces esta política como verdadera, se activará la generación de informes en tiempo real para los eventos de prevención de filtraciones de datos.
@@ -9680,7 +9657,6 @@ Si inhabilitas esta política, el analizador de HTML restringirá las etiquetas 
       Si la estableces como verdadera, se informarán los eventos de red desde el dispositivo.</translation>
 <translation id="780629758750905699">Permitir agregar cuentas de Family Link al dispositivo</translation>
 <translation id="7807139251387225825">Lista de tipos que deben excluirse de la sincronización</translation>
-<translation id="7808219497358175018">Configurar en qué momento estará disponible la herramienta Content Transfer de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="781268256210530471">Configuración de los complementos</translation>
 <translation id="7816326058023670173">El secreto compartido entre el dispositivo del niño y el del padre o la madre.</translation>
 <translation id="7818131573217430250">Establece el estado predeterminado del modo de contraste alto en la pantalla de acceso.</translation>
@@ -10260,13 +10236,6 @@ Si no estableces la política, de forma predeterminada se utilizarán todas las 
 Consulta el RFC 8828, sección 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) para obtener una descripción detallada de todos los valores de procesamiento.</translation>
 <translation id="8244171102276095471">Habilitar los paquetes de encriptación RC4 en TLS</translation>
 <translation id="8244525275280476362">Demora de recuperación máxima después de invalidar una política</translation>
-<translation id="8244828501034607035">Esta política controla la visibilidad de la tarjeta de Outlook en la página Nueva pestaña. La tarjeta solo se mostrará en la página Nueva pestaña si la política está habilitada y tu organización autorizó el uso de los datos del calendario de Outlook en el navegador.
-
-La tarjeta de Outlook muestra el próximo evento de calendario, junto con una vista rápida del resto de las reuniones del día. Su objetivo es abordar el problema relacionado con el cambio de contexto y mejorar la productividad brindándoles a los usuarios un acceso directo a su próxima reunión.
-
-La tarjeta de Microsoft Outlook requerirá una configuración adicional del administrador. Si quieres obtener información detallada para conectar la tarjeta de la página Nueva pestaña de Chrome a Outlook, consulta el artículo de ayuda.
-
-Si inhabilitas <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de Outlook. Si habilitas <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de Outlook si esta política también está habilitada y hay datos para mostrar. Si no estableces <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de Outlook si esta política también está habilitada, el usuario tiene la tarjeta habilitada en Personalizar Chrome y hay datos para mostrar.</translation>
 <translation id="8245574649143980200">Si no estableces la política o la habilitas, los usuarios podrán ver y usar el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual. Si la inhabilitas, los usuarios no verán el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> (si la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> es compatible).</translation>
 <translation id="8247143534027746614">Bloquear el acceso a una lista de patrones de URL durante la autenticación</translation>
 <translation id="824818544897669723">Inhabilitar la eliminación del historial de descargas y del navegador</translation>
@@ -11202,7 +11171,6 @@ Esta opción es útil cuando el administrador sabe que es probable que los usuar
       Los dispositivos nuevos tienen configurada la zona horaria "EE.UU./Pacífico". El formato del valor sigue los nombres de las zonas horarias de la "Base de datos de zona horaria de IANA" (https://en.wikipedia.org/wiki/Tz_database). Si ingresas un valor no válido, se establecerá la política con el formato GMT.
 
       Si no la estableces o ingresas una string vacía, el dispositivo utilizará la zona horaria que esté activa actualmente, pero los usuarios podrán cambiarla.</translation>
-<translation id="8874071621901957187">Mostrar la tarjeta del calendario de Outlook en la página Nueva pestaña</translation>
 <translation id="8875202330803089599">Si estableces la política, los usuarios no podrán omitir las decisiones de seguridad relacionadas con las descargas.
 
       Chrome tiene varios tipos de advertencias de descarga, que pueden desglosarse en las siguientes categorías (puedes obtener más información sobre los veredictos de Navegación segura en https://support.google.com/chrome/?p=ib_download_blocked):

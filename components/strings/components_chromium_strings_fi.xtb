@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           ja varmista, että asetus on "ei välityspalvelinta" tai "suora".</translation>
+<translation id="648062525172759633">Nämä sivut on tarkoitettu Chromiumin kehittäjille, eikä niitä välttämättä ylläpidetä tai testata aktiivisesti. Voit ottaa ne käyttöön siirtymällä osoitteeseen <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klikkaamalla painiketta, jolla voit ottaa virheenkorjaussivut käyttöön, ja siirtymällä sitten uudelleen tälle sivulle.</translation>
 <translation id="6549378540556750549">Muu <ph name="BEGIN_LINK_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_OSS" /> tukee Chromiumia.</translation>
 <translation id="6613594504749178791">Muutokset tulevat voimaan, kun käynnistät Chromiumin seuraavan kerran.</translation>
 <translation id="691026815377248078">Chromium tarvitsee Bluetoothia jatkaakseen 

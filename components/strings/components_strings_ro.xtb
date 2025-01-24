@@ -911,7 +911,6 @@
 <translation id="255497580849974774">În timpul actualizării, menține dispozitivul conectat la un încărcător.</translation>
 <translation id="2556876185419854533">&amp;Anulați editarea</translation>
 <translation id="2559566667529177711">Mai multe straturi</translation>
-<translation id="2565789370591907825">Blocarea și utilizarea tastaturii</translation>
 <translation id="2570734079541893434">Gestionează setările</translation>
 <translation id="257136025287118539">Administratorul îți mută fișierele în <ph name="CLOUD_PROVIDER" />. Poți modifica fișierele după finalizarea încărcării.</translation>
 <translation id="2571488850200220306">Pentru a asigura securitatea, poate vedea și sistemul de operare al dispozitivului, versiunea browserului și software-ul instalat.</translation>
@@ -1109,7 +1108,6 @@
 <translation id="2974468223369775963">Codul IBAN nu a putut fi salvat în Contul Google. A fost salvat în Chrome pe acest dispozitiv. Chrome te va întreba din nou data viitoare când folosești acest IBAN.</translation>
 <translation id="297667759942911166">Colaborează la grupuri de file</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> selectat(ă). <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Blochează și folosește tastatura</translation>
 <translation id="2978824962390592855">Operă</translation>
 <translation id="2979424420072875974">Resurse pentru scriitori</translation>
 <translation id="2979639724566107830">Deschide într-o fereastră nouă</translation>
@@ -2466,6 +2464,7 @@
 <translation id="5363532265530011914">Șosete și ciorapi</translation>
 <translation id="5371425731340848620">Actualizează cardul</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> a modificat o filă</translation>
+<translation id="5374324662289354619">Paginile de remediere a erorilor interne sunt dezactivate momentan.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Ora este setată în trecut”, „Ora este setată în viitor” sau „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379618281582508161">Confirmă-ți identitatea ca să folosești această parolă pe toate dispozitivele</translation>
@@ -3046,6 +3045,7 @@
 <translation id="6394852772105848029">Site-ul dorește să deschidă aplicația <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Scutere și mopede</translation>
 <translation id="6398765197997659313">Ieși din ecranul complet</translation>
+<translation id="6399633237874954301">Cititor de carduri inteligent permis de administrator</translation>
 <translation id="6401136357288658127">Această politică este învechită. Ar trebui să folosești politica <ph name="NEW_POLICY" />.</translation>
 <translation id="640163077447496506">Expiră astăzi</translation>
 <translation id="6402537308870515461">Examinarea este obligatorie înainte de mutare</translation>
@@ -4107,7 +4107,6 @@ Detalii suplimentare:
 <translation id="8278544367771164040">Împrumuturi comerciale</translation>
 <translation id="8279290844152565425">Concerte și festivaluri de muzică</translation>
 <translation id="8279611986089885641">Notificările Chrome trebuie să fie activate. Le poți activa în <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Blochezi tastatura?</translation>
 <translation id="8280630997017109758">Tava 11</translation>
 <translation id="8281730697546299650">Sunt disponibile acum și alte funcții pentru confidențialitatea anunțurilor</translation>
 <translation id="8281886186245836920">Omite</translation>
@@ -4177,7 +4176,6 @@ Detalii suplimentare:
 <translation id="8398335999901363925">Metodele de plată disponibile pentru completarea la atingere, deschise la înălțimea completă.</translation>
 <translation id="8398446215576328011">Revino la politicile aplicate</translation>
 <translation id="8398790343843005537">Găsește telefonul</translation>
-<translation id="8399276468426899527">blocarea și utilizarea tastaturii</translation>
 <translation id="8400929824946688748">Locuri de muncă și educație</translation>
 <translation id="8402442052798347631">Atacatorii de pe site-ul pe care ai încercat să-l accesezi te pot păcăli să instalezi software dăunător care afectează modul în care navighezi, de exemplu, schimbând pagina principală sau afișând anunțuri suplimentare pe site-urile pe care le accesezi. Chrome recomandă insistent să închizi pagina pentru a evita pericolele. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest mesaj de avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Lucrări de ficțiune scrise de fani</translation>

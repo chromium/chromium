@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           a gwnewch yn siŵr bod eich ffurfweddiad wedi'i osod i "dim dirprwy weinydd" neu i "uniongyrchol."</translation>
+<translation id="648062525172759633">Mae'r tudalennau hyn wedi'u bwriadu i'w defnyddio gan ddatblygwyr Chromium, ac mae'n bosib na fyddant yn cael eu cynnal na'u profi'n weithredol. Er mwyn eu galluogi, llywiwch i <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliciwch ar y botwm i alluogi tudalennau dadfygio, ac yna llywiwch i'r dudalen hon eto.</translation>
 <translation id="6549378540556750549">Mae Chromium hefyd yn bosib oherwydd <ph name="BEGIN_LINK_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_OSS" /> eraill.</translation>
 <translation id="6613594504749178791">Bydd eich newidiadau yn dod i rym y tro nesaf y byddwch yn ail-lansio Chromium.</translation>
 <translation id="691026815377248078">Mae angen mynediad Bluetooth ar Chromium i barhau i 

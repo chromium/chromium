@@ -204,7 +204,6 @@
 <translation id="345171907106878721">Thêm chính bạn vào Chrome</translation>
 <translation id="3453763134178591239">Điều khoản của ChromeOS</translation>
 <translation id="3503306920980160878">Chrome cần quyền truy cập vào vị trí của bạn để chia sẻ thông tin vị trí với trang web này</translation>
-<translation id="3512634283363927263">Các trang này dành cho nhà phát triển Chrome sử dụng và có thể không được duy trì hoặc kiểm tra liên tục. Để kích hoạt các trang này, hãy chuyển đến <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, nhấp vào nút để kích hoạt trang gỡ lỗi, rồi chuyển đến trang này một lần nữa.</translation>
 <translation id="3533694711092285624">Bạn chưa lưu mật khẩu nào. Chrome có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
 <translation id="3541482654983822893">Chrome không thể kiểm tra mật khẩu của bạn. Hãy thử lại sau 24 giờ.</translation>
 <translation id="3564543103555793392">Khi đăng nhập vào Chrome, bạn có thể lưu dấu trang, mật khẩu và nhiều thông tin khác rồi dùng các thông tin đó trên điện thoại</translation>
@@ -222,7 +221,6 @@
 <translation id="3673813398384385993">Chrome nhận thấy rằng "<ph name="EXTENSION_NAME" />" chứa phần mềm độc hại</translation>
 <translation id="3695446226812920698">Tìm hiểu cách thức</translation>
 <translation id="3697952514309507634">Các hồ sơ khác trên Chrome</translation>
-<translation id="3700276346088749847">xoá dữ liệu Chrome trong tài khoản của bạn</translation>
 <translation id="3703994572283698466">ChromeOS có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung, tương tự như <ph name="BEGIN_LINK_LINUX_OSS" />môi trường phát triển Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Phiên bản ChromeOS Flex</translation>
 <translation id="3718181793972440140">Thao tác này sẽ xóa 1 mục khỏi thiết bị này. Để truy xuất dữ liệu của bạn sau, hãy đăng nhập vào Chrome dưới dạng <ph name="USER_EMAIL" />.</translation>

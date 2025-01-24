@@ -543,7 +543,6 @@
 <translation id="3409785640040772790">‏خرائط Google</translation>
 <translation id="3416023309465857378">‫25 تشرين الأول (أكتوبر) 2023</translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
-<translation id="343850944564645513">المواقع الإلكترونية الأكثر زيارةً</translation>
 <translation id="3443810440409579745">تم استلام علامة تبويب.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقيقة</translation>
 <translation id="344589138074534176">‏مزيد من المعلومات حول "عدسة Google"</translation>
@@ -658,7 +657,6 @@
 <translation id="3967327056943561740">الإشارات المرجعية</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
 <translation id="3982893814825393515">الإبلاغ عن مشكلة…</translation>
-<translation id="3984527584375648997">إخفاء بطاقة "المواقع الإلكترونية الأكثر زيارةً"</translation>
 <translation id="398604237578616937">تم تسجيل الدخول باسم "<ph name="USER_EMAIL" />". يؤدي النقر على هذا الزر إلى فتح قائمة الحسابات.</translation>
 <translation id="3986739045730058129">الانتقال إلى علامة التبويب</translation>
 <translation id="3992684624889376114">لمحة حول هذه الصفحة</translation>
@@ -716,7 +714,7 @@
 <translation id="422474357428465195">هناك العديد من المشاكل المتعلقة بكلمات المرور، والتي قد تعرّضك لمخاطر أمنية.</translation>
 <translation id="422477017457571619">‏يوفِّر هذا الوضع حمايةً فورية مستندة إلى الذكاء الاصطناعي (AI) من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة استنادًا إلى بيانات تصفُّحك التي يتم إرسالها إلى Google</translation>
 <translation id="4231395118547300571">تم تفعيل إشعارات ميزة "التحقّق من الأمان"</translation>
-<translation id="4237377247299956313">‏النقر على <ph name="BEGIN_BOLD" />Default Browser App (تطبيق المتصفِّح التلقائي)<ph name="END_BOLD" /></translation>
+<translation id="4237377247299956313">‏النقر على  <ph name="BEGIN_BOLD" />تطبيق المتصفِّح التلقائي (Default Browser App) <ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
 <translation id="4250432749243022864">{count,plural, =0{فتح {count} علامة تبويب}=1{فتح علامة تبويب واحدة ({count})}two{فتح علامتَي تبويب ({count})}few{فتح {count} علامات تبويب}many{فتح {count} علامة تبويب}other{فتح {count} علامة تبويب}}</translation>
 <translation id="4250680216510889253">لا</translation>
@@ -760,7 +758,7 @@
 <translation id="4415276339145661267">‏إدارة حسابك على Google</translation>
 <translation id="4430277756566635951">الحساب الذي تم اختياره حاليًا هو <ph name="EMAIL" />. اختَر حسابًا.</translation>
 <translation id="4431224949908513835">اختَر طريقة دفع لاستخدامها.</translation>
-<translation id="4442550905108052454">‏فتح <ph name="BEGIN_BOLD" />Settings (الإعدادات)<ph name="END_BOLD" /></translation>
+<translation id="4442550905108052454">‏فتح <ph name="BEGIN_BOLD" />الإعدادات (Settings)<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">خيارات إضافية حول "<ph name="CELL_ACCESSIBILITY_LABEL" />"</translation>
 <translation id="4455710003856931944">يمكنك التمرير سريعًا من الحافة للرجوع للخلف أو التقدّم للأمام.</translation>
 <translation id="4460014764210899310">إلغاء التجميع</translation>
@@ -1014,7 +1012,6 @@
 <translation id="5576885723883013398">نافذة جديدة</translation>
 <translation id="5578795271662203820">البحث في <ph name="SEARCH_ENGINE" /> عن هذه الصورة</translation>
 <translation id="5579012242779565775">إخفاء "قائمة القراءة"</translation>
-<translation id="5581202956276923239">اختصارات المواقع الإلكترونية</translation>
 <translation id="5585019845078534178">بطاقات</translation>
 <translation id="5595485650161345191">تعديل العنوان</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>

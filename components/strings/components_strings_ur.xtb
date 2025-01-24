@@ -638,6 +638,7 @@
 <translation id="2105838220373099643">رول پلے کرنے والی گیمز</translation>
 <translation id="2107021941795971877">پرنٹ سپورٹس</translation>
 <translation id="2108755909498034140">اپنے کمپیوٹر کو دوبارہ شروع کریں</translation>
+<translation id="2109845311767915560">اشتراک کردہ ٹیب گروپ</translation>
 <translation id="2111166930115883695">کھیلنے کے لیے اسپیس دبائیں</translation>
 <translation id="2113977810652731515">کارڈ</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> کی جانب سے اسے اوور رائڈ کیے جانے کی وجہ سے نظر انداز کر دیا گیا۔</translation>
@@ -910,7 +911,6 @@
 <translation id="255497580849974774">براہ کرم اپ ڈیٹ کے دوران اپنے آلہ کو چارجر سے منسلک رکھیں۔</translation>
 <translation id="2556876185419854533">ترمیم کریں کو &amp;کالعدم کریں</translation>
 <translation id="2559566667529177711">ملٹی لیئر</translation>
-<translation id="2565789370591907825">کی بورڈ لاک اور استعمال</translation>
 <translation id="2570734079541893434">ترتیبات کا نظم کریں</translation>
 <translation id="257136025287118539">آپ کے منتظم آپ کی فائلز کو <ph name="CLOUD_PROVIDER" /> میں منتقل کر رہے ہیں۔ اپ لوڈ مکمل ہونے کے بعد آپ ان فائلز میں ترمیم کر سکتے ہیں۔</translation>
 <translation id="2571488850200220306">‏سیکیورٹی کو یقینی بنانے میں مدد کے لیے، یہ آلہ کا OS، براؤزر ورژن اور کون سا سافٹ ویئر انسٹال ہوا ہے یہ بھی دیکھ سکتا ہے۔</translation>
@@ -1108,7 +1108,6 @@
 <translation id="2974468223369775963">‏یہ IBAN آپ کے Google اکاؤنٹ میں محفوظ نہیں ہو سکا۔ اس کی بجائے اسے اس آلہ پر Chrome میں محفوظ کر دیا گیا ہے۔ اگلی بار آپ کے اس IBAN کو استعمال کرنے پر Chrome آپ سے دوبارہ پوچھے گا۔</translation>
 <translation id="297667759942911166">ٹیب گروپس میں تعاون کریں</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />، فی الحال منتخب کردہ۔ <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">اپنے کی بورڈ کو لاک کریں اور استعمال کریں</translation>
 <translation id="2978824962390592855">اوپیرا</translation>
 <translation id="2979424420072875974">قلمکاروں کے وسائل</translation>
 <translation id="2979639724566107830">نئی ونڈو میں کھولیں</translation>
@@ -2093,6 +2092,7 @@
 <translation id="4704745399240123930">اس مرچنٹ کے ذریعے قبول نہ کئے جانے والے ورچوئل کارڈز جیسے کارڈز کو غیر فعال کر دیا جاتا ہے۔</translation>
 <translation id="4708268264240856090">آپ کے کنکشن میں مداخلت ہوگئی</translation>
 <translation id="4708276642004148190">پانی کی فراہمی اور علاج</translation>
+<translation id="4711628883879888561">ٹیب گروپ پر اکٹھے کام کریں</translation>
 <translation id="471880041731876836">یہ سائٹ ملاحظہ کرنے کیلئے آپ کو اجازت نہیں ہے</translation>
 <translation id="4718897478554657123">‏‎600 x 900 ملی میٹر</translation>
 <translation id="4722547256916164131">‏<ph name="BEGIN_LINK" />Windows نیٹ ورک کی تشخیصات چلانے کی<ph name="END_LINK" /></translation>
@@ -2465,6 +2465,7 @@
 <translation id="5363532265530011914">جرابیں اور ہوزری</translation>
 <translation id="5371425731340848620">کارڈ اپ ڈیٹ کریں</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> نے ایک ٹیب کو تبدیل کیا</translation>
+<translation id="5374324662289354619">اندرونی ڈیبگنگ صفحات فی الحال غیر فعال ہیں۔</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">‏"آپ کی گھڑی پیچھے ہے" یا "آپ کی گھڑی آگے ہے" یا "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">اپنے سبھی آلات پر اس پاس ورڈ کو حاصل کرنے کے لیے، توثیق کریں کہ یہ آپ ہی ہیں</translation>
@@ -2699,6 +2700,7 @@
 <translation id="578305955206182703">امبر</translation>
 <translation id="5783700460098783980">سامان اور سفر کے لوازمات</translation>
 <translation id="57838592816432529">آواز بند کریں</translation>
+<translation id="5783922175933467571"><ph name="TAB_GROUP_DISPLAY_NAME" /> کے لنک کی معیاد 48 گھنٹے میں ختم ہو جائے گی</translation>
 <translation id="5784606427469807560">آپ کے کارڈ کی توثیق کرنے میں ایک مسئلہ پیش آگیا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="5785756445106461925">اس کے علاوہ، اس صفحہ میں دیگر ایسے وسائل شامل ہیں جو محفوظ نہیں ہیں۔ ان وسائل کو ٹرانزٹ کے دوران دیگر لوگ دیکھ سکتے ہیں اور صفحہ کی ہیئت تبدیل کرنے کیلئے حملہ آور اس میں ترمیم کر سکتے ہیں۔</translation>
 <translation id="5793317771769868848">ادائیگی کا یہ طریقہ اس آلے سے حذف کر دیا جائے گا</translation>
@@ -2771,6 +2773,7 @@
 <translation id="5930147475897662863">لکھنے میں میری مدد کریں کے لیے اس ترتیب کو آن کریں</translation>
 <translation id="593102073240001326">‏طریقہ، DIY اور ماہرانہ مواد</translation>
 <translation id="5932224571077948991">سائٹ دخل انداز یا گمراہ کن اشتہارات دکھاتی ہے</translation>
+<translation id="5933597524153120073">سبھی (<ph name="ITEMS" />) کو نئی ونڈو میں کھولیں</translation>
 <translation id="5937560539988385583">صفحہ کا ترجمہ ہو گیا</translation>
 <translation id="5938153366081463283">ورچوئل کارڈ شامل کریں</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3044,6 +3047,7 @@
 <translation id="6394852772105848029">یہ سائٹ <ph name="APP_NAME" /> ایپ کو کھولنا چاہتی ہے</translation>
 <translation id="639673288733510393">اسکوٹرز اور موپیڈز</translation>
 <translation id="6398765197997659313">پوری سکرین سے خارج ہوں</translation>
+<translation id="6399633237874954301">آپ کے منتظم کے ذریعے اسمارٹ کارڈ ریڈر کی اجازت ہے</translation>
 <translation id="6401136357288658127">یہ پالیسی فرسودہ ہے۔ اس کی بجائے، آپ کو <ph name="NEW_POLICY" /> پالیسی کا استعمال کرنا چاہیے۔</translation>
 <translation id="640163077447496506">میعاد آج ختم ہوگی</translation>
 <translation id="6402537308870515461">منتقل کرنے سے پہلے جائزہ لینے کی ضرورت ہے</translation>
@@ -4104,7 +4108,6 @@
 <translation id="8278544367771164040">تجارتی قرض دہندگی</translation>
 <translation id="8279290844152565425">کنسرٹس اور موسیقی کے فیسٹیولز</translation>
 <translation id="8279611986089885641">‏Chrome کی اطلاعات کا آن ہونا ضروری ہے۔ آپ انہیں <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> میں آن کر سکتے ہیں۔</translation>
-<translation id="8280387559022105172">اپنے کی بورڈ کو لاک کریں؟</translation>
 <translation id="8280630997017109758">ٹرے 11</translation>
 <translation id="8281730697546299650">اشتہار کی رازداری کی دیگر خصوصیات اب دستیاب ہیں</translation>
 <translation id="8281886186245836920">نظر انداز کریں</translation>
@@ -4174,7 +4177,6 @@
 <translation id="8398335999901363925">ٹچ پر پُر کیے جانے والے دستیاب ادائیگی کے طریقے پوری اونچائی پر کھلے ہوئے ہیں۔</translation>
 <translation id="8398446215576328011">نافذ العمل پالیسیاں لوٹائیں</translation>
 <translation id="8398790343843005537">اپنا فون تلاش کریں</translation>
-<translation id="8399276468426899527">کی بورڈ لاک اور استعمال</translation>
 <translation id="8400929824946688748">جابز اور تعلیم</translation>
 <translation id="8402442052798347631">‏آپ نے جو سائٹ ملاحظہ کرنے کی کوشش ہے، اس پر حملہ آور دھوکے سے آپ سے ایسا نقصان دہ سافٹ ویئر انسٹال کروا سکتے ہیں جو آپ کے براؤز کرنے کے طریقے کو متاثر کر سکتا ہے، مثال کے طور پر، آپ کے ہوم پیج کو تبدیل کر کے یا آپ کو ان سائٹس پر اضافی اشتہارات دکھا کر جنہیں آپ ملاحظہ کرتے ہیں۔ نقصان سے بچنے کیلئے، Chrome تحفظ پر واپس جانے کا پُرزور مشورہ دیتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">فین فکشن</translation>

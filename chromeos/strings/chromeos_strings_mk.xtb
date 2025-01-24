@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">зелена</translation>
 <translation id="225692081236532131">Статус на активирање</translation>
 <translation id="2267285889943769271">Додајте слика од екранот</translation>
+<translation id="2268044343513325586">Подобри</translation>
 <translation id="2271469253353559191">Распоред за темен режим</translation>
 <translation id="2276999893457278469">Најпопуларни содржини за помош</translation>
 <translation id="2277631741861284101">Лесно снимајте и споделувајте го вашето аудио</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Се бараат скенери</translation>
 <translation id="3226657629376379887">Мени на дејства за распоред</translation>
 <translation id="3227186760713762082">Поделете ја вредноста на <ph name="CATEGORY_TEXT" /> со <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Препишување</translation>
 <translation id="3246869037381808805">Задачите за печатење постари од 1 ден ќе се отстранат</translation>
 <translation id="324961752321393509">Администраторот не го дозволува затворање на апликацијава</translation>
 <translation id="3263941347294171263">Исклучете, па вклучете го повторно уредот <ph name="DEVICE_NAME" /> за да продолжите со процесот на ажурирање</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Се ажурира <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Струја</translation>
 <translation id="346539236881580388">Фотографирај пак</translation>
+<translation id="3479552764303398839">Не сега</translation>
 <translation id="3484914941826596830">Додека фирмверот се ажурира, не исклучувајте го надворешниов уред од струја или не исклучувајте го компјутерот. Може да го минимизирате прозорецов. Ажурирањево може да потрае неколку минути и надворешниот уред можеби нема да работи во ова време.</translation>
 <translation id="3486220673238053218">дефиниција</translation>
 <translation id="3487866404496702283">Повратни информации за функцијата mahi</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Приспособете ја јачината на звукот</translation>
 <translation id="3767737419527918477">Пребарајте снимки</translation>
 <translation id="3771294271822695279">Видеодатотеки</translation>
+<translation id="3771694256347217732">Услови за користење на Google</translation>
 <translation id="3780740315729837296">Назначете копче од тастатурата</translation>
 <translation id="3784455785234192852">Катанец</translation>
 <translation id="3785643128701396311">пикселизирана уметност</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) Латенција на HTTP</translation>
 <translation id="6078323886959318429">Додајте кратенка</translation>
 <translation id="6091080061796993741">жолта</translation>
-<translation id="6093853427925392522">Погрижете се да ја користите апликацијата Content Transfer од Google за да ги префрлите податоците во училишната сметка во вашата лична сметка пред да го изгубите пристапот.</translation>
 <translation id="6104112872696127344">Скенирањето е откажано</translation>
 <translation id="6106186594183574873">За да завршите, внесете ја старата лозинка</translation>
 <translation id="6108689792487843350">Порталот е недостапен</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Пребарувајте кратенки</translation>
 <translation id="7138614237884624401">Поедноставен текст</translation>
 <translation id="7138668887584231801">Нема доволно зборови за да се резимира</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Се поврзува</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
 <translation id="7144954474087165241">пагода</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8262870577632766028">1 час</translation>
 <translation id="827422111966801947">Индиго</translation>
-<translation id="8281886186245836920">Прескокни</translation>
 <translation id="8286154143153872371">Поврзете се на мрежа и повторно вчитајте ја страницата за да се прикаже тапетот.</translation>
 <translation id="8291967909914612644">Земја на оператор на почетна страница</translation>
 <translation id="8294431847097064396">Извор</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Создај име со Google AI</translation>
 <translation id="8798099450830957504">Стандардно</translation>
 <translation id="8798441408945964110">Име на оператор</translation>
+<translation id="8804164990146287819">Политика за приватност</translation>
 <translation id="8808828119384186784">Поставки за Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Тапет</translation>

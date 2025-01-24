@@ -9,6 +9,7 @@
 <translation id="2447485272386224171">La realizzazione di Chrome è stata possibile grazie al progetto open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> e ad altri <ph name="BEGIN_LINK_OSS" />software open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logo di Chrome</translation>
 <translation id="3444832043240812445">Questa pagina mostra solo informazioni sugli arresti anomali recenti se <ph name="BEGIN_LINK" />attivi la segnalazione degli arresti anomali<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Queste pagine sono destinate agli sviluppatori di Chrome e potrebbero non essere attivamente gestite o testate. Per attivarle, vai a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, fai clic sul pulsante per attivare le pagine di debug, quindi torna a questa pagina.</translation>
 <translation id="3875312571075912821">Consenti a Chrome di accedere alla rete nelle impostazioni del firewall o del software
         antivirus.</translation>
 <translation id="5005121315113832363">Questa pagina è stata bloccata da Chrome</translation>

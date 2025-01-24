@@ -638,6 +638,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2105838220373099643">Lomu spēles</translation>
 <translation id="2107021941795971877">Balsta struktūras drukāšana</translation>
 <translation id="2108755909498034140">Restartējiet datoru</translation>
+<translation id="2109845311767915560">Kopīgotā ciļņu grupa</translation>
 <translation id="2111166930115883695">Lai spēlētu, nospiediet atstarpes taustiņu</translation>
 <translation id="2113977810652731515">Karte</translation>
 <translation id="2114841414352855701">Ignorēta, jo to atcēla politika <ph name="POLICY_NAME" />.</translation>
@@ -910,7 +911,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="255497580849974774">Atjaunināšanas laikā neatvienojiet ierīci no lādētāja.</translation>
 <translation id="2556876185419854533">&amp;Labojuma atsaukšana</translation>
 <translation id="2559566667529177711">Vairākslāņu</translation>
-<translation id="2565789370591907825">Tastatūras bloķēšana un lietošana</translation>
 <translation id="2570734079541893434">Pārvaldīt iestatījumus</translation>
 <translation id="257136025287118539">Jūsu administrators pārvieto jūsu failus uz pakalpojumu <ph name="CLOUD_PROVIDER" />. Kad failu augšupielāde būs pabeigta, varēsiet tos pārveidot.</translation>
 <translation id="2571488850200220306">Lai palīdzētu gādāt par drošību, administrators var arī skatīt ierīces operētājsistēmu, pārlūkprogrammas versiju un instalēto programmatūru.</translation>
@@ -1108,7 +1108,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2974468223369775963">Šo IBAN nevarēja saglabāt jūsu Google kontā. Taču tas tika saglabāts pārlūkā Chrome šajā ierīcē. Pārlūkā Chrome vēlreiz tiks jautāts, kad nākamreiz izmantosiet šo IBAN.</translation>
 <translation id="297667759942911166">Sadarbība ciļņu grupās</translation>
 <translation id="2977665033722899841">Pašlaik ir atlasīta rinda “<ph name="ROW_NAME" />”. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Bloķēt un izmantot tastatūru</translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Rakstnieku resursi</translation>
 <translation id="2979639724566107830">Atvērt jaunā logā</translation>
@@ -2090,6 +2089,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4704745399240123930">Kartes, ko šis tirgotājs nepieņem, piemēram, virtuālās kartes, ir atspējotas.</translation>
 <translation id="4708268264240856090">Savienojums tika pārtraukts</translation>
 <translation id="4708276642004148190">Ūdensapgāde un ūdens apstrāde</translation>
+<translation id="4711628883879888561">Sadarbība ciļņu grupā</translation>
 <translation id="471880041731876836">Jums nav atļaujas apmeklēt šo vietni</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Palaist Windows tīkla diagnostiku<ph name="END_LINK" /></translation>
@@ -2462,6 +2462,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5363532265530011914">Zeķes un zeķbikses</translation>
 <translation id="5371425731340848620">Kartes atjaunināšana</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> mainīja cilni</translation>
+<translation id="5374324662289354619">Iekšējās atkļūdošanas lapas pašlaik ir atspējotas</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">“Pulkstenis atpaliek”, “Pulkstenis steidzas” vai “&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379618281582508161">Lai varētu izmantot šo paroli visās savās ierīcēs, apstipriniet savu identitāti.</translation>
@@ -2696,6 +2697,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="578305955206182703">Dzintarkrāsa</translation>
 <translation id="5783700460098783980">Bagāža un ceļošanas piederumi</translation>
 <translation id="57838592816432529">Izslēgt skaņu</translation>
+<translation id="5783922175933467571"><ph name="TAB_GROUP_DISPLAY_NAME" /> — saite ir derīga 48 stundas.</translation>
 <translation id="5784606427469807560">Apstiprinot karti, radās problēma. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="5785756445106461925">Turklāt šajā lapā ir citi resursi, kas nav droši. Kamēr šie resursi tiek pārsūtīti, tos var aplūkot citi, kā arī uzbrucējs var tos pārveidot, lai mainītu lapas izskatu.</translation>
 <translation id="5793317771769868848">Šis maksājuma veids tiks dzēsts no šīs ierīces.</translation>
@@ -2768,6 +2770,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5930147475897662863">Ieslēdziet šo iestatījumu, lai izmantotu funkciju “Palīdzība rakstīšanā”.</translation>
 <translation id="593102073240001326">Praktiski padomi, pamācības un speciālistu pieredze</translation>
 <translation id="5932224571077948991">Vietnē tiek rādītas traucējošas vai maldinošas reklāmas</translation>
+<translation id="5933597524153120073">Atvērt visas tabulas (<ph name="ITEMS" />) jaunā logā</translation>
 <translation id="5937560539988385583">Lapa pārtulkota</translation>
 <translation id="5938153366081463283">Pievienojiet virtuālu karti</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3040,6 +3043,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6394852772105848029">Šī vietne vēlas atvērt lietotni <ph name="APP_NAME" />.</translation>
 <translation id="639673288733510393">Motorolleri un mopēdi</translation>
 <translation id="6398765197997659313">Iziet no pilnekrāna režīma</translation>
+<translation id="6399633237874954301">Viedkaršu lasītājs, ko ir atļāvis jūsu administrators</translation>
 <translation id="6401136357288658127">Šī politika ir novecojusi. Tās vietā jums vajadzētu izmantot <ph name="NEW_POLICY" /> politiku.</translation>
 <translation id="640163077447496506">Derīguma termiņš beidzas šodien</translation>
 <translation id="6402537308870515461">Pirms pārvietošanas jāveic pārskatīšana</translation>
@@ -4101,7 +4105,6 @@ Papildu informācija:
 <translation id="8278544367771164040">Komerciāli aizdevumi</translation>
 <translation id="8279290844152565425">Koncerti un mūzikas festivāli</translation>
 <translation id="8279611986089885641">Jābūt ieslēgtiem Chrome paziņojumiem. Varat tos ieslēgt šeit: <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Vai bloķēt tastatūru?</translation>
 <translation id="8280630997017109758">11. paplāte</translation>
 <translation id="8281730697546299650">Tagad ir pieejamas citas reklāmu konfidencialitātes funkcijas</translation>
 <translation id="8281886186245836920">Izlaist</translation>
@@ -4171,7 +4174,6 @@ Papildu informācija:
 <translation id="8398335999901363925">Maksājumu veidi, kas pieejami aizpildīšanai pieskaroties, ir atvērti pilnā augstumā.</translation>
 <translation id="8398446215576328011">Atcelt piemērotās politikas</translation>
 <translation id="8398790343843005537">Atrast tālruni</translation>
-<translation id="8399276468426899527">tastatūras bloķēšana un lietošana</translation>
 <translation id="8400929824946688748">Darbs un izglītība</translation>
 <translation id="8402442052798347631">Vietnē, kuru mēģinājāt apmeklēt, uzbrucēji var jūs maldināt, lai pamudinātu instalēt kaitīgu programmatūru, kas ietekmē pārlūkošanu, piemēram, maina sākumlapu vai rāda papildu reklāmas apmeklētajās vietnēs. Chrome stingri iesaka doties atpakaļ, lai izvairītos no kaitējuma. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk par šo brīdinājumu.<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fanu rakstīti stāsti</translation>

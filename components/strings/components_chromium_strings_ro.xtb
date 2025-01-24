@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           și asigurați-vă că aveți configurația setată la „fără proxy” sau „direct”.</translation>
+<translation id="648062525172759633">Aceste pagini sunt destinate utilizării de către dezvoltatorii Chromium și este posibil să nu fie întreținute sau testate în mod activ. Pentru a le activa, accesează <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, dă clic pe butonul pentru a activa paginile de remediere a erorilor, apoi accesează din nou această pagină.</translation>
 <translation id="6549378540556750549">Chromium acceptă și alte opțiuni de <ph name="BEGIN_LINK_OSS" />software open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Modificările dvs. vor intra în vigoare următoarea dată când reporniți Chromium.</translation>
 <translation id="691026815377248078">Chromium are nevoie de acces la Bluetooth pentru a continua conectarea. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

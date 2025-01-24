@@ -206,7 +206,6 @@
 <translation id="345171907106878721">Өзүңүздү Chrome'го кошуңуз</translation>
 <translation id="3453763134178591239">ChromeOS шарттары</translation>
 <translation id="3503306920980160878">Бул сайт менен бөлүшүү үчүн Chrome жайгашкан жериңиз тууралуу маалыматты алышы керек</translation>
-<translation id="3512634283363927263">Бул беттер Chromе иштеп чыгуучуларына арналган жана жигердүү түрдө иштетилип же сыналбашы мүмкүн. Аларды иштетүү үчүн <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> бөлүмүнө өтүп, мүчүлүштүктөрдү оңдоо беттерин иштетүү үчүн баскычты басып, бул бетке кайтып келиңиз.</translation>
 <translation id="3533694711092285624">Сакталган сырсөздөр жок. Сырсөздөрүңүздү сактаганда Chrome аларды текшере алат.</translation>
 <translation id="3541482654983822893">Chrome сырсөздөрүңүздү текшере албай жатат. 24 сааттан кийин кайталап көрүңүз.</translation>
 <translation id="3564543103555793392">Chrome'го киргениңизде, кыстармаларды, сырсөздөрдү жана башкаларды сактап, анан аларды телефонуңузда колдоно аласыз</translation>
@@ -224,7 +223,6 @@
 <translation id="3673813398384385993">Chrome "<ph name="EXTENSION_NAME" />" кеңейтүүсүндө кесепеттүү программанын болгонун аныктады</translation>
 <translation id="3695446226812920698">Үйрөнүп алыңыз</translation>
 <translation id="3697952514309507634">Башка Chrome профилдери</translation>
-<translation id="3700276346088749847">аккаунтуңуздагы Chromе маалыматын өчүрүңүз</translation>
 <translation id="3703994572283698466">ChromeOS тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux'ту өнүктүрүү чөйрөсү<ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен иштейт.</translation>
 <translation id="3716540481907974026">ChromeOS Flex версиясы</translation>
 <translation id="3718181793972440140">Ушуну менен түзмөктөгү 1 нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chrome'го <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>

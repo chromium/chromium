@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">yashil</translation>
 <translation id="225692081236532131">Aktivatsiya holati</translation>
 <translation id="2267285889943769271">Skrinshot kiritish</translation>
+<translation id="2268044343513325586">Aniqlashtirish</translation>
 <translation id="2271469253353559191">Tungi rejim rejasi</translation>
 <translation id="2276999893457278469">Eng sara yordam kontenti</translation>
 <translation id="2277631741861284101">Audioni oson yozib olish va ulashish</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Skanerlar qidirilmoqda</translation>
 <translation id="3226657629376379887">Interfeys amallari menyusi</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> qiymatini <ph name="CONVERSION_RATE" /> ga boʻling</translation>
-<translation id="3237710083340813756">Qayta yozish</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="324961752321393509">Administrator bu ilovani yopishni taqiqlagan</translation>
 <translation id="3263941347294171263">Yangilashda davom etish uchun <ph name="DEVICE_NAME" /> kabelini uzib, qayta ulang</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> yangilanmoqda</translation>
 <translation id="346423161771747987">Ayni vaqtda</translation>
 <translation id="346539236881580388">Qaytadan</translation>
+<translation id="3479552764303398839">Hozir emas</translation>
 <translation id="3484914941826596830">Mikrodastur yangilanayotganda tashqi qurilmani uzmay va kompyuterni oʻchirmay turing. Bu oynani yigʻish mumkin. Bu yangilanish bir necha daqiqa vaqt oladi va bu vaqtda tashqi qurilma ishlamay turishi mumkin.</translation>
 <translation id="3486220673238053218">ta’rif</translation>
 <translation id="3487866404496702283">Mahi funksiyasi yuzasidan fikr-mulohaza</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Tovush balandligini sozlash</translation>
 <translation id="3767737419527918477">Yozuv fayllari qidiruvi</translation>
 <translation id="3771294271822695279">Video fayllar</translation>
+<translation id="3771694256347217732">Google xizmat shartlari</translation>
 <translation id="3780740315729837296">Klaviatura tugmasini tayinlash</translation>
 <translation id="3784455785234192852">Qulflash</translation>
 <translation id="3785643128701396311">piksel grafikasi</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP kechikichi</translation>
 <translation id="6078323886959318429">Yorliq bilan nomlash</translation>
 <translation id="6091080061796993741">sariq</translation>
-<translation id="6093853427925392522">Maktab hisobingizdagi maʼlumotlarni shaxsiy hisobingizga oldindan koʻchirish uchun Google Kontent uzatish ilovasidan foydalaning.</translation>
 <translation id="6104112872696127344">Skanlash amali bekor qilindi</translation>
 <translation id="6106186594183574873">Yakunlash uchun eski parolni kiriting</translation>
 <translation id="6108689792487843350">Shlyuz bilan aloqa yoʻq</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Tezkor tugmalar qidiruvi</translation>
 <translation id="7138614237884624401">Soddalashgan matn</translation>
 <translation id="7138668887584231801">Xulosalash uchun soʻzlar yetarli emas</translation>
-<translation id="7141470099673912333">Kontent uzatish</translation>
 <translation id="7143207342074048698">Ulanmoqda</translation>
 <translation id="7144878232160441200">Qayta urinish</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1541,7 +1541,6 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="8262870577632766028">1 soat</translation>
 <translation id="827422111966801947">Toʻq siyohrang</translation>
-<translation id="8281886186245836920">Tashlab ketish</translation>
 <translation id="8286154143153872371">Fon rasmini koʻrish uchun tarmoqqa ulaning va sahifani yangilang.</translation>
 <translation id="8291967909914612644">Mahalliy ta’minotchi mamlakati</translation>
 <translation id="8294431847097064396">Manba</translation>
@@ -1646,6 +1645,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8797082062139985406">Google AI yordamida nomlash</translation>
 <translation id="8798099450830957504">Standart</translation>
 <translation id="8798441408945964110">Ta’minotchi nomi</translation>
+<translation id="8804164990146287819">Maxfiylik siyosati</translation>
 <translation id="8808828119384186784">Chrome sozlamalari</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fon rasmi</translation>

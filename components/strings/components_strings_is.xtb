@@ -911,7 +911,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="255497580849974774">Hafðu tækið í hleðslu á meðan uppfærsla stendur yfir.</translation>
 <translation id="2556876185419854533">Aft&amp;urkalla breytingu</translation>
 <translation id="2559566667529177711">Marglaga</translation>
-<translation id="2565789370591907825">Læsing og notkun lyklaborðs</translation>
 <translation id="2570734079541893434">Stjórna stillingum</translation>
 <translation id="257136025287118539">Kerfisstjórinn þinn er að færa skrárnar þínar yfir í <ph name="CLOUD_PROVIDER" />. Þú getur breytt þessum skrám þegar flutningi er lokið.</translation>
 <translation id="2571488850200220306">Í öryggisskyni getur viðkomandi einnig séð upplýsingar um stýrikerfi tækisins, vafraútgáfu og uppsettan hugbúnað</translation>
@@ -1109,7 +1108,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2974468223369775963">Ekki tókst að vista þetta IBAN-númer á Google-reikninginn þinn. Í staðinn var það vistað í Chrome í þessu tæki. Chrome mun spyrja þig aftur næst þegar þú notar þetta IBAN-númer.</translation>
 <translation id="297667759942911166">Notaðu flipahópa fyrir samvinnuna</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, valin. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Læsa og nota lyklaborðið þitt</translation>
 <translation id="2978824962390592855">Ópera</translation>
 <translation id="2979424420072875974">Tilföng fyrir rithöfunda</translation>
 <translation id="2979639724566107830">Opna í nýjum glugga</translation>
@@ -2466,6 +2464,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5363532265530011914">Sokkar og sokkavörur</translation>
 <translation id="5371425731340848620">Uppfæra kort</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> breytti flipa</translation>
+<translation id="5374324662289354619">Slökkt er á innri villuleitarsíðum eins og er.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Klukkan er á eftir“, „Klukkan þín er á undan“ eða „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
 <translation id="5379618281582508161">Staðfestu að þetta sért þú til að nota þetta aðgangsorð í öllum tækjunum þínum</translation>
@@ -3046,6 +3045,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6394852772105848029">Þetta forrit vill opna <ph name="APP_NAME" /> forritið</translation>
 <translation id="639673288733510393">Létt bifhjól og vespur</translation>
 <translation id="6398765197997659313">Hætta að nota allan skjáinn</translation>
+<translation id="6399633237874954301">Kerfisstjórinn þinn leyfir snjallkortalesara</translation>
 <translation id="6401136357288658127">Þessi regla er úrelt. Þú ættir að nota regluna <ph name="NEW_POLICY" /> í staðinn.</translation>
 <translation id="640163077447496506">Rennur út í dag</translation>
 <translation id="6402537308870515461">Yfirferðar er krafist fyrir flutning</translation>
@@ -4106,7 +4106,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8278544367771164040">Viðskiptalán</translation>
 <translation id="8279290844152565425">Tónleikar og tónlistarhátíðir</translation>
 <translation id="8279611986089885641">Kveikja þarf á Chrome-tilkynningum. Þú getur kveikt á þeim í <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Læsa lyklaborðinu?</translation>
 <translation id="8280630997017109758">Bakki 11</translation>
 <translation id="8281730697546299650">Nú eru fleiri persónuverndareiginleikar auglýsinga í boði</translation>
 <translation id="8281886186245836920">Sleppa</translation>
@@ -4176,7 +4175,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8398335999901363925">Listi yfir greiðslumáta sem hægt er að færa inn við snertingu opinn í fullri hæð.</translation>
 <translation id="8398446215576328011">Afturkalla gildandi stefnu</translation>
 <translation id="8398790343843005537">Finna símann minn</translation>
-<translation id="8399276468426899527">læsingu og notkun lyklaborðs</translation>
 <translation id="8400929824946688748">Atvinna og menntun</translation>
 <translation id="8402442052798347631">Tölvuþrjótar á vefsvæðinu sem reyndir að opna gætu reynt að plata þig til að setja upp skaðlegan hugbúnað sem hefur áhrif á vefskoðun þína, t.d. með því að breyta heimasíðunni þinni eða birta þér fleiri auglýsingar á vefsvæðunum sem þú skoðar. Chrome mælir eindregið með því að þú lokir vefsvæðinu til að forðast skaða. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Áhugaspuni</translation>

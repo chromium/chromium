@@ -400,7 +400,6 @@
 <translation id="6455857529632101747">歡迎使用 Chromium 設定檔</translation>
 <translation id="6466344609055215035">從 Chromium 移除帳戶</translation>
 <translation id="6475912303565314141">這個擴充功能也會管制您啟動 Chromium 時所顯示的網頁。</translation>
-<translation id="648062525172759633">這些頁面的適用對象為 Chromium 開發人員，可能不會主動維護或測試。如要啟用，請前往 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />，按一下按鈕啟用偵錯頁面，再返回此頁面。</translation>
 <translation id="648319183876919572">「強化安全瀏覽」可進一步保護您免受危險網站和下載檔案威脅</translation>
 <translation id="6510925080656968729">解除安裝 Chromium</translation>
 <translation id="651535675648445253">在 Chromium 中開啟捷徑</translation>
@@ -534,7 +533,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8313851650939857356">啟動錯誤：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8318772038038596122">您的機構會在 Chromium 閒置 <ph name="TIMEOUT_DURATION" />後關閉 Chromium。</translation>
 <translation id="8321888067342493336">儲存為圖片</translation>
-<translation id="8326785589245660814">清除帳戶中的 Chromium 資料</translation>
 <translation id="8330519371938183845">登入即可在不同裝置上同步和設定個人化的 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 以往曾使用 Chromium</translation>
 <translation id="8359544530202147897">請更新 Chromium 以繼續使用 Google 帳戶 <ph name="ACCOUNT_EMAIL" /> 中的 Chromium 資料</translation>

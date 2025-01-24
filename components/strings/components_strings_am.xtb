@@ -911,7 +911,6 @@
 <translation id="255497580849974774">በዝማኔው ወቅት መሳሪያዎን ከኃይል መሙያ ጋር እንደተገናኘ ያቆዩት።</translation>
 <translation id="2556876185419854533">&amp;አርትዕን ቀልብስ</translation>
 <translation id="2559566667529177711">ባለ ብዙ ንብርብር</translation>
-<translation id="2565789370591907825">የቁልፍ ሰሌዳ መቆለፊያ እና አጠቃቀም</translation>
 <translation id="2570734079541893434">ቅንብሮችን ያቀናብሩ</translation>
 <translation id="257136025287118539">አስተዳዳሪዎ ፋይሎችዎን ወደ <ph name="CLOUD_PROVIDER" /> እያንቀሳቀሰ ነው። አንዴ ሰቀላው ከተጠናቀቀ በኋላ እነዚህን ፋይሎች ማሻሻል ይችላሉ።</translation>
 <translation id="2571488850200220306">ደህንነትን ለማረጋገጥ እንዲያግዝ የመሣሪያውን ሥርዓተ ክወና፣ የአሳሽ ሥሪት እና ምን ሶፍትዌር እንደተጫነ ማየት ይችላል</translation>
@@ -1109,7 +1108,6 @@
 <translation id="2974468223369775963">ይህ አይቢኤኤን የGoogle መለያዎ ውስጥ ሊቀመጥ አልቻለም። በምትኩ በዚህ መሣሪያ ላይ ወደ Chrome ተቀምጧል። Chrome ይህን አይቢኤኤን በሚጠቀሙበት ቀጣይ ጊዜ እንደገና ይጠይቅዎታል።</translation>
 <translation id="297667759942911166">የትር ቡድኖች ውስጥ ይተባበሩ</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />፣ አሁን ላይ ተመርጧል። <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">ይቆልፉ እና የቁልፍ ሰሌዳዎን ይጠቀሙ</translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">የጸሐፊዎች መርጃዎች</translation>
 <translation id="2979639724566107830">በአዲስ መስኮት ክፈት</translation>
@@ -2465,6 +2463,7 @@
 <translation id="5363532265530011914">ካልሲዎች እና ረዥም ካልሲዎች</translation>
 <translation id="5371425731340848620">ካርድ ያዘምኑ</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ትር ለውጠዋል</translation>
+<translation id="5374324662289354619">ውስጣዊ ስህተት የሚታረምባቸው ገፆች በአሁኑ ጊዜ ተሰናክለዋል።</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">«የእርስዎ ሰዓት ቀርቷል» ወይም «የእርስዎ ሰዓት ቀድሟል» ወይም «&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;»</translation>
 <translation id="5379618281582508161">ይህን የይለፍ ቃል በሁሉም መሣሪያዎችዎ ላይ ለመግኘት እርስዎ መሆንዎን ያረጋግጡ</translation>
@@ -3045,6 +3044,7 @@
 <translation id="6394852772105848029">ይህ ጣቢያ የ<ph name="APP_NAME" /> መተግበሪያውን መክፈት ይፈልጋል</translation>
 <translation id="639673288733510393">ስኩተሮች እና ሞፔዶች</translation>
 <translation id="6398765197997659313">ከሙሉ ማሳያ መስኮት ይውጡ</translation>
+<translation id="6399633237874954301">በእርስዎ አስተዳዳሪ የሚፈቀድ ዘመናዊ ካርድ አንባቢ</translation>
 <translation id="6401136357288658127">ይህ መመሪያ ተቋርጧል። በምትኩ የ<ph name="NEW_POLICY" /> መመሪያውን መጠቀም አለብዎት።</translation>
 <translation id="640163077447496506">ዛሬ ጊዜው ያበቃል</translation>
 <translation id="6402537308870515461">ከማንቀሳቀስ በፊት ግምገማ ያስፈልጋል</translation>
@@ -4106,7 +4106,6 @@
 <translation id="8278544367771164040">የንግድ ብድር</translation>
 <translation id="8279290844152565425">ኮንሰርቶች እና የሙዚቃ ፌስቲቫሎች</translation>
 <translation id="8279611986089885641">የChrome ማሳወቂያዎች መብራት አለባቸው። በ<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> ውስጥ እነሱን ማብራት ይችላሉ።</translation>
-<translation id="8280387559022105172">የቁልፍ ሰሌዳዎን ይቆልፉ?</translation>
 <translation id="8280630997017109758">መሳቢያ 11</translation>
 <translation id="8281730697546299650">ሌሎች የማስታወቂያ የግላዊነት ባህሪያት አሁን ይገኛሉ</translation>
 <translation id="8281886186245836920">ዝለል</translation>
@@ -4176,7 +4175,6 @@
 <translation id="8398335999901363925">በንክኪ ለመሞላት የሚገኙ የመክፈያ ዘዴዎች በሙሉ ቁመት ተከፍተዋል።</translation>
 <translation id="8398446215576328011">የተተገበሩ መመሪያዎችን አድህር</translation>
 <translation id="8398790343843005537">ስልክዎን ያግኙ</translation>
-<translation id="8399276468426899527">የቁልፍ ሰሌዳ መቆለፊያ እና አጠቃቀም</translation>
 <translation id="8400929824946688748">ስራዎች እና ትምህርት</translation>
 <translation id="8402442052798347631">እርስዎ ለመጎብኘት በሞከሩት ጣቢያ ላይ ያሉ አጥቂዎች በእርስዎ የአሰሳ ዘዴ ላይ ተጽዕኖ የሚያደርስ ጎጂ ሶፍትዌር እንዲጭኑ ሊያታልሉዎት ይችላሉ — ለምሳሌ፣ የእርስዎን መነሻ ገፅ በመለወጥ ወይም በሚጎበኟቸው ጣቢያዎች ላይ ተጨማሪ ማስታወቂያዎችን ለእርስዎ በማሳየት። Chrome ጉዳትን ለማስወገድ ደህንነቱ ወደተጠበቀ ቦታ እንዲመለሱ አጥብቆ ይመክራል። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ይወቁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">የአድናቂ ልብ ወለድ</translation>

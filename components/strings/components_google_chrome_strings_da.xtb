@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Open source-projektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> og anden <ph name="BEGIN_LINK_OSS" />open source-software<ph name="END_LINK_OSS" /> er med til at gøre Chrome muligt.</translation>
 <translation id="2588322182880276190">Chrome-logo</translation>
 <translation id="3444832043240812445">Denne side viser kun oplysninger om dine seneste nedbrud, hvis du <ph name="BEGIN_LINK" />aktiverer rapportering af nedbrud<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Disse sider er beregnet til brug af Chrome-udviklere og vedligeholdes eller testes muligvis ikke aktivt. Hvis du vil aktivere dem, skal du gå til <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klikke på knappen for at aktivere fejlretningssider og derefter gå til denne side igen.</translation>
 <translation id="3875312571075912821">Tillad, at Chrome får adgang til netværket i dine indstillinger for firewall eller
        antivirus.</translation>
 <translation id="5005121315113832363">Chrome har blokeret denne side</translation>

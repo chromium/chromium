@@ -206,7 +206,6 @@
 <translation id="345171907106878721">Додајте себе у Chrome</translation>
 <translation id="3453763134178591239">Chrome ОС услови</translation>
 <translation id="3503306920980160878">Chrome тражи приступ вашој локацији да бисте је делили са овим сајтом</translation>
-<translation id="3512634283363927263">Ове странице су намењене програмерима Chrome-а и можда се не одржавају нити тестирају активно. Да бисте их омогућили, идите на <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, кликните на дугме да бисте омогућили странице за отклањање грешака, па поново идите на ову страницу.</translation>
 <translation id="3533694711092285624">Нема сачуваних лозинки. Chrome може да проверава лозинке када их сачувате.</translation>
 <translation id="3541482654983822893">Chrome не може да вам проверава лозинке. Пробајте поново за 24 сата.</translation>
 <translation id="3564543103555793392">Када се пријавите у Chrome, можете да сачувате обележиваче, лозинке и друго, па да их користите на телефону</translation>
@@ -224,7 +223,6 @@
 <translation id="3673813398384385993">Chrome је открио да <ph name="EXTENSION_NAME" /> садржи малвер</translation>
 <translation id="3695446226812920698">Сазнајте како</translation>
 <translation id="3697952514309507634">Други Chrome профили</translation>
-<translation id="3700276346088749847">обришите Chrome податке на налогу</translation>
 <translation id="3703994572283698466">Chrome ОС је омогућен захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />, као што је <ph name="BEGIN_LINK_LINUX_OSS" />Linux окружење за програмирање<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Верзија Chrome OS Flex-а</translation>
 <translation id="3718181793972440140">Овим ћете избрисати 1 ставку са овог уређаја. Да бисте касније вратили податке, пријавите се у Chrome као <ph name="USER_EMAIL" />.</translation>

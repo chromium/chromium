@@ -401,7 +401,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="6455857529632101747">Dobro došli u Chromium profile</translation>
 <translation id="6466344609055215035">Ukloni nalog iz Chromium-a</translation>
 <translation id="6475912303565314141">Kontroliše i stranicu koja se prikazuje kada pokrenete Chromium.</translation>
-<translation id="648062525172759633">Ove stranice su namenjene programerima Chromium-a i možda se ne održavaju niti testiraju aktivno. Da biste ih omogućili, idite na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite na dugme da biste omogućili stranice za otklanjanje grešaka, pa ponovo idite na ovu stranicu.</translation>
 <translation id="648319183876919572">Poboljšano bezbedno pregledanje doprinosi zaštiti od opasnih veb-sajtova i preuzimanja</translation>
 <translation id="6510925080656968729">Deinstaliraj Chromium</translation>
 <translation id="651535675648445253">Prečice se otvaraju u Chromium-u</translation>
@@ -535,7 +534,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8313851650939857356">Greška pri pokretanju: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">Organizacija zatvara Chromium kada se ne koristi <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Sačuvaj kao sliku</translation>
-<translation id="8326785589245660814">obrišite Chromium podatke na nalogu</translation>
 <translation id="8330519371938183845">Prijavite se da biste sinhronizovali i personalizovali Chromium na svim uređajima</translation>
 <translation id="8340674089072921962">Korisnik <ph name="USER_EMAIL_ADDRESS" /> je prethodno koristio Chromium</translation>
 <translation id="8359544530202147897">Ažurirajte Chromium da biste nastavili da koristite Chromium podatke na Google nalogu, <ph name="ACCOUNT_EMAIL" /></translation>

@@ -205,7 +205,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="345171907106878721">Ajouter un utilisateur à Chrome</translation>
 <translation id="3453763134178591239">Conditions d'utilisation de Chrome OS</translation>
 <translation id="3503306920980160878">Chrome a besoin d'accéder à votre position pour la partager avec ce site</translation>
-<translation id="3512634283363927263">Ces pages sont destinées aux développeurs Chrome, et il est possible qu'elles ne fassent pas l'objet d'une maintenance ni de tests actifs. Pour les activer, accédez à <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliquez sur le bouton pour activer les pages de débogage, puis accédez à nouveau à cette page.</translation>
 <translation id="3533694711092285624">Aucun mot de passe enregistré. Chrome ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="3541482654983822893">Chrome ne parvient pas à vérifier vos mots de passe. Réessayez dans 24 heures.</translation>
 <translation id="3564543103555793392">Lorsque vous vous connectez à Chrome, vous pouvez enregistrer vos favoris, vos mots de passe et plus encore, puis les utiliser sur votre téléphone</translation>
@@ -223,7 +222,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3673813398384385993">Chrome a détecté que <ph name="EXTENSION_NAME" /> contient un logiciel malveillant</translation>
 <translation id="3695446226812920698">Comment procéder</translation>
 <translation id="3697952514309507634">Autres profils Chrome</translation>
-<translation id="3700276346088749847">effacez les données Chrome de votre compte</translation>
 <translation id="3703994572283698466">Chrome OS dépend d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />, et l'<ph name="BEGIN_LINK_LINUX_OSS" />environnement de développement Linux<ph name="END_LINK_LINUX_OSS" /> en est un.</translation>
 <translation id="3716540481907974026">Version de ChromeOS Flex</translation>
 <translation id="3718181793972440140">Cette action aura pour effet de supprimer 1 élément de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>

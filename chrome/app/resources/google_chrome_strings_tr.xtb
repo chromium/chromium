@@ -202,7 +202,6 @@
 <translation id="345171907106878721">Kendinizi Chrome'a ekleyin</translation>
 <translation id="3453763134178591239">ChromeOS şartları</translation>
 <translation id="3503306920980160878">Konumunuzu bu siteyle paylaşabilmek için Chrome'un konum bilgilerinize erişmesi gerekiyor</translation>
-<translation id="3512634283363927263">Bu sayfalar Chrome geliştiricilerinin kullanması için tasarlanmış olup etkin şekilde yönetilmiyor veya test edilmemiş olabilir. Bu özellikleri etkinleştirmek için <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> adresine giderek hata ayıklama sayfalarını etkinleştirme düğmesini tıklayın ve tekrar bu sayfaya gelin.</translation>
 <translation id="3533694711092285624">Kaydedilen şifre yok. Kaydetmeniz halinde Chrome, şifrelerinizi kontrol edebilir.</translation>
 <translation id="3541482654983822893">Chrome, şifrelerinizi kontrol edemiyor. 24 saat sonra tekrar deneyin.</translation>
 <translation id="3564543103555793392">Chrome'da oturum açtığınızda yer işaretleri, şifreler ve diğer öğeleri kaydedip telefonunuzda kullanabilirsiniz.</translation>
@@ -220,7 +219,6 @@
 <translation id="3673813398384385993">Chrome, "<ph name="EXTENSION_NAME" />" uzantısında kötü amaçlı yazılım tespit etti</translation>
 <translation id="3695446226812920698">Nasıl yapacağınızı öğrenin</translation>
 <translation id="3697952514309507634">Diğer Chrome profilleri</translation>
-<translation id="3700276346088749847">hesabınızdaki Chrome verilerini temizleyin</translation>
 <translation id="3703994572283698466">ChromeOS, <ph name="BEGIN_LINK_LINUX_OSS" />Linux geliştirme ortamında<ph name="END_LINK_LINUX_OSS" /> olduğu gibi ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
 <translation id="3716540481907974026">ChromeOS Flex sürümü</translation>
 <translation id="3718181793972440140">Bu işlem, 1 öğeyi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chrome'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>

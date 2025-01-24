@@ -185,6 +185,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1310938305420497484">Først må du åpne faner og besøke nettsteder</translation>
 <translation id="1314311879718644478">Se utvidet virkelighet-innhold</translation>
 <translation id="1314509827145471431">Innbinding høyre</translation>
+<translation id="1314784609072437689">tastaturoverstyring</translation>
 <translation id="1316805916535763484">Åpne nettkurs</translation>
 <translation id="1318023360584041678">Lagret i fanegruppe</translation>
 <translation id="1319245136674974084">Ikke spør igjen for denne appen</translation>
@@ -911,7 +912,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="255497580849974774">Hold enheten koblet til en lader under oppdateringen.</translation>
 <translation id="2556876185419854533">&amp;Angre endringen</translation>
 <translation id="2559566667529177711">Flerlags</translation>
-<translation id="2565789370591907825">Tastaturlås og -bruk</translation>
 <translation id="2570734079541893434">Administrer innstillinger</translation>
 <translation id="257136025287118539">Administratoren din flytter filene dine til <ph name="CLOUD_PROVIDER" />. Du kan endre disse filene når opplastingen er fullført.</translation>
 <translation id="2571488850200220306">For å ivareta sikkerheten kan den også se enhetens OS, nettleserversjon og hvilken programvare som er installert</translation>
@@ -1109,7 +1109,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2974468223369775963">Kunne ikke lagre dette IBAN-nummeret i Google-kontoen din. Det ble lagret i Chrome på denne enheten i stedet. Chrome spør deg på nytt neste gang du bruker dette IBAN-nummeret.</translation>
 <translation id="297667759942911166">Samarbeid i fanegrupper</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, for øyeblikket valgt. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">låse og bruke tastaturet ditt</translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Skriveressurser</translation>
 <translation id="2979639724566107830">Åpne i nytt vindu</translation>
@@ -2466,6 +2465,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5363532265530011914">Sokker, tights og strømper</translation>
 <translation id="5371425731340848620">Oppdater kortet</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> endret en fane</translation>
+<translation id="5374324662289354619">Interne feilsøkingssider er deaktivert for øyeblikket.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">«Klokken går for sent», «Klokken går for fort» eller «&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;»</translation>
 <translation id="5379618281582508161">For å få dette passordet på alle enhetene dine, bekreft at det er deg</translation>
@@ -2921,6 +2921,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome begrenser automatisk informasjonskapsler fra tredjeparter</translation>
 <translation id="6188479691141473408">og <ph name="N_FIELDS" /> felt til</translation>
+<translation id="6190518157737269631">overstyre enkelte taster på tastaturet, for eksempel Esc</translation>
 <translation id="6194209731893739467">Se alle produktene du sporer, her</translation>
 <translation id="6195163219142236913">Informasjonskapsler fra tredjeparter er begrenset</translation>
 <translation id="6195371403461054755">Geologi</translation>
@@ -4107,7 +4108,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8278544367771164040">Lån</translation>
 <translation id="8279290844152565425">Konserter og musikkfestivaler</translation>
 <translation id="8279611986089885641">Chrome-varsler må være på. Du kan slå dem på i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Kan nettstedet låse tastaturet?</translation>
 <translation id="8280630997017109758">Skuff 11</translation>
 <translation id="8281730697546299650">Andre funksjoner for annonsepersonvern er nå tilgjengelige</translation>
 <translation id="8281886186245836920">Hopp over</translation>
@@ -4177,7 +4177,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8398335999901363925">Betalingsmåter som kan fylles ut ved å trykkes på, åpnes i full høyde.</translation>
 <translation id="8398446215576328011">Tilbakestill regler som er tatt i bruk</translation>
 <translation id="8398790343843005537">Finn telefonen din</translation>
-<translation id="8399276468426899527">tastaturlås og -bruk</translation>
 <translation id="8400929824946688748">Jobber og utdannelse</translation>
 <translation id="8402442052798347631">Angripere på nettstedet du prøvde å besøke, kan lure deg til å installere skadelig programvare som påvirker måten du surfer på – for eksempel ved å endre startsiden eller vise deg ekstra annonser på nettstedene du besøker. Chrome anbefaler på det sterkeste at du går tilbake til trygg grunn for å unngå skade. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer om denne advarselen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fanfiksjon</translation>
@@ -4195,6 +4194,7 @@ Mer informasjon:
 <translation id="8421158157346464398">informasjon om jobbprofilen (for eksempel brukernavnet for jobbprofilen)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Endre</translation>
+<translation id="8426945547715537628">Vil du tillate tastaturoverstyring?</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8428634594422941299">Greit</translation>
@@ -4281,6 +4281,7 @@ Mer informasjon:
 <translation id="8574841453995331336">Kjøleskap og frysere</translation>
 <translation id="8577192028579836704">Alle alternativer koster vanligvis <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuelt kort er ikke tilgjengelig</translation>
+<translation id="8579000896558714521">Tastaturoverstyring</translation>
 <translation id="8580265901435899937">Turistdestinasjoner</translation>
 <translation id="8581064022803799721">Denne siden er lagret i <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Utstyr for squash og racketball</translation>

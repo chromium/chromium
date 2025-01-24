@@ -10,6 +10,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="2447485272386224171">Mae Chrome yn bosib oherwydd prosiect ffynhonnell agored <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> a <ph name="BEGIN_LINK_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_OSS" /> eraill.</translation>
 <translation id="2588322182880276190">Logo Chrome</translation>
 <translation id="3444832043240812445">Mae'r dudalen hon yn dangos gwybodaeth am eich chwalfeydd diweddar dim ond os byddwch yn <ph name="BEGIN_LINK" />galluogi adrodd ar chwalfeydd<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Mae'r tudalennau hyn wedi'u bwriadu i'w defnyddio gan ddatblygwyr Chrome, ac mae'n bosib na fyddant yn cael eu cynnal na'u profi'n weithredol. Er mwyn eu galluogi, llywiwch i <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliciwch ar y botwm i alluogi tudalennau dadfygio, ac yna llywiwch i'r dudalen hon eto.</translation>
 <translation id="3875312571075912821">Caniatewch i Chrome gael mynediad at y rhwydwaith yn eich gosodiadau wal dân neu 
          wrthfeirysau.</translation>
 <translation id="5005121315113832363">Mae'r dudalen hon wedi'i rhwystro gan Chrome</translation>

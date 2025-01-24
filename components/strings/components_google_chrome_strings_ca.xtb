@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chrome és possible gràcies al projecte de codi obert <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> i a altres <ph name="BEGIN_LINK_OSS" />programes de codi obert<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logotip de Chrome</translation>
 <translation id="3444832043240812445">Aquesta pàgina només mostrarà informació sobre els bloqueigs recents si <ph name="BEGIN_LINK" />activeu la creació d'informes de bloqueig<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Aquestes pàgines estan pensades per a desenvolupadors de Chrome i és possible que no es mantinguin ni es provin activament. Per activar-les, navega fins a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, fes clic al botó per activar les pàgines de depuració i, a continuació, torna a aquesta pàgina.</translation>
 <translation id="3875312571075912821">Configureu el tallafoc o l'antivirus per permetre que Chrome accedeixi
           a la xarxa.</translation>
 <translation id="5005121315113832363">Chrome ha bloquejat aquesta pàgina</translation>

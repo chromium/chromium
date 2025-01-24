@@ -638,6 +638,7 @@
 <translation id="2105838220373099643">Rol Oyunları</translation>
 <translation id="2107021941795971877">Çap dəstəyi</translation>
 <translation id="2108755909498034140">Kompüteri yenidən başladın</translation>
+<translation id="2109845311767915560">Tab qrupu paylaşıldı</translation>
 <translation id="2111166930115883695">Oxutmaq üçün boşluq düyməsini basın</translation>
 <translation id="2113977810652731515">Kart</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> tərəfindən əvəzləndiyi üçün iqnor edin.</translation>
@@ -910,7 +911,6 @@
 <translation id="255497580849974774">Güncəllənmə zamanı cihazı adapterə qoşulu saxlayın.</translation>
 <translation id="2556876185419854533">Düzəlişi ləğv edin</translation>
 <translation id="2559566667529177711">Çoxqatlı</translation>
-<translation id="2565789370591907825">Klaviatura kilidi və istifadəsi</translation>
 <translation id="2570734079541893434">Ayarları idarə edin</translation>
 <translation id="257136025287118539">Administratorunuz fayllarınızı <ph name="CLOUD_PROVIDER" /> bölməsinə köçürür. Yükləmə tamamlandıqdan sonra bu faylları dəyişdirə bilərsiniz.</translation>
 <translation id="2571488850200220306">Təhlükəsizliyi təmin etmək üçün o, cihazın əməliyyat sistemini, brauzer versiyasını və hansı proqram təminatının quraşdırıldığını da görə bilər</translation>
@@ -1108,7 +1108,6 @@
 <translation id="2974468223369775963">Bu IBAN-ı Google Hesabında yadda saxlamaq olmadı. Bu cihazda Chrome-da yadda saxlanıb. Növbəti dəfə bu IBAN-dan istifadə edəndə Chrome yenidən soruşacaq.</translation>
 <translation id="297667759942911166">Tab qruplarında əməkdaşlıq edin</translation>
 <translation id="2977665033722899841">Hazırda <ph name="ROW_NAME" /> seçilib. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Klaviaturanı kilidləyin və istifadə edin</translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Yazıçı resursları</translation>
 <translation id="2979639724566107830">Yeni pəncərədə açın</translation>
@@ -2088,6 +2087,7 @@
 <translation id="4704745399240123930">Virtual kartlar kimi bu satıcı tərəfindən qəbul edilməyən kartlar deaktiv edilib.</translation>
 <translation id="4708268264240856090">Bağlantınız kəsildi</translation>
 <translation id="4708276642004148190">Su Təchizatı və Xidmət</translation>
+<translation id="4711628883879888561">Tab qrupunda əməkdaşlıq edin</translation>
 <translation id="471880041731876836">Bu sayta daxil olmaq üçün icazəniz yoxdur</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Şəbəkə Diaqnostikası İşləyir<ph name="END_LINK" /></translation>
@@ -2460,6 +2460,7 @@
 <translation id="5363532265530011914">Corab və corab məmulatı</translation>
 <translation id="5371425731340848620">Kartı yeniləyin</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> tabı dəyişdi</translation>
+<translation id="5374324662289354619">Daxili sazlama səhifələri hazırda deaktivdir.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Saatınız geridədir" və ya "Saatınız qabaqdadır" və ya "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Bu parolu bütün cihazlarınızda əldə etmək üçün kimliyinizi doğrulayın</translation>
@@ -2694,6 +2695,7 @@
 <translation id="578305955206182703">Kəhrəba</translation>
 <translation id="5783700460098783980">Çamadan və Səyahət Aksesuarları</translation>
 <translation id="57838592816432529">Səssiz</translation>
+<translation id="5783922175933467571"><ph name="TAB_GROUP_DISPLAY_NAME" /> linkinin müddəti 48 saata bitir</translation>
 <translation id="5784606427469807560">Kartı təsdiq edərkən problem oldu. Internet bağlantınızı yoxlayın və yenidən cəhd edin.</translation>
 <translation id="5785756445106461925">Bundan əlavə, bu səhifəyə təhlükəsiz olmayan başqa resurslar daxildir. Bu resurslar keçid zamanı başqaları tərəfindən görüntülən bilər və hücumçu tərəfindən səhifə görünüşünün dəyişdirilməsi üçün modifikasiya edilə bilər.</translation>
 <translation id="5793317771769868848">Bu ödəniş metodu bu cihazdan silinəcək</translation>
@@ -2766,6 +2768,7 @@
 <translation id="5930147475897662863">"Yazmağa kömək et" funksiyasından istifadə üçün bu ayarı aktiv edin</translation>
 <translation id="593102073240001326">Hazırlama qaydası, ÖD və eskpert kontenti</translation>
 <translation id="5932224571077948991">Sayt intruziv və ya aldadıcı reklamlar göstərir</translation>
+<translation id="5933597524153120073">Hamısını (<ph name="ITEMS" />) yeni pəncərədə açın</translation>
 <translation id="5937560539988385583">Səhifə tərcümə edildi</translation>
 <translation id="5938153366081463283">Virtual kart əlavə edin</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3038,6 +3041,7 @@
 <translation id="6394852772105848029">Bu sayt <ph name="APP_NAME" /> tətbiqini açmaq istəyir</translation>
 <translation id="639673288733510393">Skuterlər və Mopedlər</translation>
 <translation id="6398765197997659313">Tam ekrandan çıxın</translation>
+<translation id="6399633237874954301">Ağıllı kart oxuyana administratorunuz tərəfindən icazə verilir</translation>
 <translation id="6401136357288658127">Bu siyasət ləğv edilib. Əvəzinə <ph name="NEW_POLICY" /> siyasətindən istifadə edin.</translation>
 <translation id="640163077447496506">Bu gün vaxtı bitir</translation>
 <translation id="6402537308870515461">Köçürməzdən əvvəl nəzərdən keçirilməlidir</translation>
@@ -4098,7 +4102,6 @@
 <translation id="8278544367771164040">Kommersiya Krediti</translation>
 <translation id="8279290844152565425">Konsertlər və Musiqi Festivalları</translation>
 <translation id="8279611986089885641">Chrome bildirişləri aktiv olmalıdır. Onları <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> bölməsində aktiv edə bilərsiniz.</translation>
-<translation id="8280387559022105172">Klaviatura kilidlənsin?</translation>
 <translation id="8280630997017109758">Qab 11</translation>
 <translation id="8281730697546299650">Digər reklam məxfiliyi funksiyaları əlçatandır</translation>
 <translation id="8281886186245836920">Keçin</translation>
@@ -4168,7 +4171,6 @@
 <translation id="8398335999901363925">Toxunaraq doldurulacaq ödəniş metodlarının siyahısı tam hündürlükdə açılıb.</translation>
 <translation id="8398446215576328011">Tətbiq olunmuş qaydaları geri dəyişin</translation>
 <translation id="8398790343843005537">Telefonunuzu tapın</translation>
-<translation id="8399276468426899527">Klaviatura kilidi və istifadəsi</translation>
 <translation id="8400929824946688748">İş və Təhsil</translation>
 <translation id="8402442052798347631">Daxil olmağa cəhd etdiyiniz saytda hücumçular əsas səhifəni dəyişməklə və ya əlavə reklamlar göstərməklə sizi axtarış təcrübənizə təsir edən zərərli proqram təminatı quraşdırmağa təşviq edə bilər. Zərərdən yayınmaq üçün Chrome geri qayıtmağınızı təkidlə tövsiyə edir. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Həvəskar fantastika</translation>

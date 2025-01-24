@@ -476,6 +476,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="3053332585453689122">Sender nettadressene du besøker, samt et lite utvalg av sideinnhold, nedlastinger, utvidelsesaktivitet og systeminformasjon, til Google Safe Browsing for å sjekke om nettadressene er skadelige.</translation>
 <translation id="3055102495753300780">Informasjonslagring</translation>
 <translation id="3059270601560379555">Nytt søk</translation>
+<translation id="3064547930554042309">Administrer nedlastinger</translation>
 <translation id="3072279342064724558">Passordet finnes allerede</translation>
 <translation id="3076846064362030967">Du blir ikke logget av Google-kontoen din. <ph name="BEGIN_LINK" />Andre typer aktiviteter<ph name="END_LINK" /> kan bli lagret i Google-kontoen din når du er pålogget. Du kan slette dem når som helst.
 
@@ -543,7 +544,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25. oktober 2023</translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
-<translation id="343850944564645513">Nettstedene du besøker mest</translation>
 <translation id="3443810440409579745">Fane er mottatt.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Finn ut mer om Google Lens</translation>
@@ -658,7 +658,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3967327056943561740">Bokmerker</translation>
 <translation id="3967822245660637423">Nedlasting fullført</translation>
 <translation id="3982893814825393515">Rapporter et problem…</translation>
-<translation id="3984527584375648997">Skjul «Nettstedene du besøker mest»</translation>
 <translation id="398604237578616937">Logget på som <ph name="USER_EMAIL" />. Åpne kontomenyen.</translation>
 <translation id="3986739045730058129">Gå til fanen</translation>
 <translation id="3992684624889376114">Om denne siden</translation>
@@ -700,6 +699,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4154753961803534698">Søk med kameraet</translation>
 <translation id="4158491215857439601">Passordlagring</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bokmerket er lagret i «{title}». Det er bare lagret på denne enheten.}other{{count} bokmerker er lagret i «{title}». De er bare lagret på denne enheten.}}</translation>
+<translation id="4164514562270305824">Slett nedlastinger automatisk</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> som slutter på <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Ikke tillat</translation>
 <translation id="4172051516777682613">Vis alltid</translation>
@@ -1016,9 +1016,9 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5576885723883013398">Nytt vindu</translation>
 <translation id="5578795271662203820">Søk etter dette bildet i <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Skjul leselisten</translation>
-<translation id="5581202956276923239">Nettstedssnarveier</translation>
 <translation id="5585019845078534178">Kort</translation>
 <translation id="5595485650161345191">Rediger adresse</translation>
+<translation id="559567008082979829">Angi at nedlastingene dine skal slettes etter én måned.</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
 <translation id="560322036295180549">Organisasjonen din har slått av denne funksjonen</translation>
 <translation id="5611107723541161735">Snarveier til nettsteder du nylig har besøkt på denne enheten.</translation>

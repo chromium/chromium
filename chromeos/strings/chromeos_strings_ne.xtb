@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">हरियो</translation>
 <translation id="225692081236532131">सक्रियताको वस्तुस्थिति</translation>
 <translation id="2267285889943769271">स्क्रिनसट हाल्नुहोस्</translation>
+<translation id="2268044343513325586">परिशुद्ध</translation>
 <translation id="2271469253353559191">अँध्यारो मोडको समयतालिका</translation>
 <translation id="2276999893457278469">मद्दतसम्बन्धी मुख्य सामग्री</translation>
 <translation id="2277631741861284101">अडियो सजिलै रेकर्ड तथा सेयर गर्नुहोस्</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">स्क्यानरहरू खोजिँदै छ</translation>
 <translation id="3226657629376379887">लेआउट एक्सन मेनु</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> ले <ph name="CATEGORY_TEXT" /> लाई भाग गर्नुहोस्</translation>
-<translation id="3237710083340813756">फेरि लेख्नुहोस्</translation>
 <translation id="3246869037381808805">१ दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छन्</translation>
 <translation id="324961752321393509">तपाईंका एड्मिन यो एप बन्द गर्ने अनुमति दिनुहुन्न</translation>
 <translation id="3263941347294171263">अपडेट गर्ने प्रक्रिया जारी राख्न <ph name="DEVICE_NAME" /> निकालेर फेरि जोड्नुहोस्</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> अपडेट गरिँदै छ</translation>
 <translation id="346423161771747987">करेन्ट</translation>
 <translation id="346539236881580388">पुनः खिच्नुहोस्</translation>
+<translation id="3479552764303398839">अहिले होइन</translation>
 <translation id="3484914941826596830">फर्मवेयर अपडेट भइरहेका बेला यो बाह्य डिभाइस अनप्लग गर्ने वा कम्प्युटर सट डाउन गर्ने काम नगर्नुहोस्। तपाईं यो विन्डो मिनिमाइज गर्न सक्नुहुन्छ। फर्मवेयर अपडेट गर्न केही मिनेट लाग्न सक्छ र अपडेट भइरहेका बेला तपाईंको बाह्य डिभाइसले काम नगर्न सक्छ।</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3487866404496702283">Mahi सुविधाका बारेमा प्रतिक्रिया दिनुहोस्</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">भोल्युम बढाउनुहोस् वा घटाउनुहोस्</translation>
 <translation id="3767737419527918477">रेकर्डिङ फाइलहरू खोज्नुहोस्</translation>
 <translation id="3771294271822695279">भिडियो फाइलहरू</translation>
+<translation id="3771694256347217732">Google का सेवाका सर्तहरू</translation>
 <translation id="3780740315729837296">किबोर्डको की असाइन गर्नुहोस्</translation>
 <translation id="3784455785234192852">लक गर्नुहोस्</translation>
 <translation id="3785643128701396311">पिक्सेल आर्ट</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP को विलम्बता</translation>
 <translation id="6078323886959318429">सर्टकट हाल्नुहोस्</translation>
 <translation id="6091080061796993741">पहेँलो</translation>
-<translation id="6093853427925392522">आफ्नो विद्यालयको खाताको एक्सेस गुम्नुअघि नै सो खातामा भएको डेटा आफ्नो व्यक्तिगत खातामा सार्न Google ले बनाएको Content Transfer एप प्रयोग गर्नुहोस्।</translation>
 <translation id="6104112872696127344">स्क्यान गर्ने कार्य रद्द गरिएको छ</translation>
 <translation id="6106186594183574873">यो कार्य पूरा गर्न आफ्नो पुरानो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="6108689792487843350">गेटवेमा कनेक्ट गर्न सकिएन</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">सर्टकटहरू खोज्नुहोस्</translation>
 <translation id="7138614237884624401">सरलीकृत टेक्स्ट</translation>
 <translation id="7138668887584231801">अत्यन्तै थोरै शब्द भएकाले सारांश बनाउन मिल्दैन</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="7144954474087165241">प्यागोडा</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8262870577632766028">१ घण्टा</translation>
 <translation id="827422111966801947">इन्डिगो</translation>
-<translation id="8281886186245836920">स्किप गर्नुहोस्</translation>
 <translation id="8286154143153872371">वालपेपर हेर्न कृपया इन्टरनेटमा कनेक्ट गर्नुहोस् र पेज रिलोड गर्नुहोस्।</translation>
 <translation id="8291967909914612644">गृह प्रदायकको देश</translation>
 <translation id="8294431847097064396">स्रोत</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Google AI प्रयोग गरी नाम राख्नुहोस्</translation>
 <translation id="8798099450830957504">डिफल्ट</translation>
 <translation id="8798441408945964110">प्रदायकको नाम</translation>
+<translation id="8804164990146287819">गोपनीयता नीति</translation>
 <translation id="8808828119384186784">Chrome का सेटिङ</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">वालपेपर</translation>

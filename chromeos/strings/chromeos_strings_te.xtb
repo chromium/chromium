@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">ఆకుపచ్చ రంగు</translation>
 <translation id="225692081236532131">క్రియాశీలత స్థితి</translation>
 <translation id="2267285889943769271">స్క్రీన్‌షాట్‌ను జోడించండి</translation>
+<translation id="2268044343513325586">మరింత మెరుగుపరచండి</translation>
 <translation id="2271469253353559191">డార్క్ మోడ్ షెడ్యూల్</translation>
 <translation id="2276999893457278469">టాప్ సహాయక కంటెంట్</translation>
 <translation id="2277631741861284101">మీ ఆడియోను సులభంగా రికార్డ్ చేయండి, షేర్ చేయండి</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">స్కానర్‌ల కోసం వెతుకుతోంది</translation>
 <translation id="3226657629376379887">లేఅవుట్ చర్యల మెనూ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> విలువను <ph name="CONVERSION_RATE" />తో భాగించండి</translation>
-<translation id="3237710083340813756">మళ్లీ రాయండి</translation>
 <translation id="3246869037381808805">1 రోజుకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
 <translation id="324961752321393509">మీ అడ్మినిస్ట్రేటర్ ఈ యాప్‌ను మూసివేయడానికి అనుమతించడం లేదు</translation>
 <translation id="3263941347294171263">అప్‌డేట్ ప్రాసెస్‌ను కొనసాగించడానికి, <ph name="DEVICE_NAME" />‌ను అన్‌ప్లగ్ చేసి, మళ్లీ ప్లగ్ చేయండి</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> అప్‌డేట్ అవుతోంది</translation>
 <translation id="346423161771747987">విద్యుత్తు</translation>
 <translation id="346539236881580388">మళ్లీ తీయండి</translation>
+<translation id="3479552764303398839">ఇప్పుడు కాదు</translation>
 <translation id="3484914941826596830">ఫర్మ్‌వేర్ అప్‌డేట్ అవుతున్నప్పుడు, ఈ బాహ్య పరికరాన్ని అన్‌ప్లగ్ చేయవద్దు లేదా మీ కంప్యూటర్‌ను షట్ డౌన్ చేయవద్దు. మీరు ఈ విండోను చిన్నదిగా చేయవచ్చు. ఈ అప్‌డేట్‌కు కొన్ని నిమిషాల సమయం పట్టవచ్చు, ఇంకా ఈ సమయంలో మీ బాహ్య పరికరం పని చేయకపోవచ్చు.</translation>
 <translation id="3486220673238053218">నిర్వచనం</translation>
 <translation id="3487866404496702283">mahi ఫీచర్ కోసం ఫీడ్‌బ్యాక్.</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">వాల్యూమ్‌ను సర్దుబాటు చేయండి</translation>
 <translation id="3767737419527918477">రికార్డింగ్ ఫైళ్లను సెర్చ్ చేయండి</translation>
 <translation id="3771294271822695279">వీడియో ఫైళ్లు</translation>
+<translation id="3771694256347217732">Google సర్వీస్ నియమాలు</translation>
 <translation id="3780740315729837296">కీబోర్డ్ కీని కేటాయించండి</translation>
 <translation id="3784455785234192852">లాక్ చేయి</translation>
 <translation id="3785643128701396311">పిక్సెల్ ఆర్ట్</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP ప్రతిస్పందన సమయం</translation>
 <translation id="6078323886959318429">షార్ట్‌కట్‌ను జోడించండి</translation>
 <translation id="6091080061796993741">పసుపు రంగు</translation>
-<translation id="6093853427925392522">మీరు స్కూల్ ఖాతాకు యాక్సెస్‌ను కోల్పోయే ముందు దానికి సంబంధించిన డేటాను మీ వ్యక్తిగత ఖాతాకు తరలించడానికి Googleకు చెందిన Content Transfer యాప్‌ను ఉపయోగించారని నిర్ధారించుకోండి.</translation>
 <translation id="6104112872696127344">స్కానింగ్ రద్దు చేయబడింది</translation>
 <translation id="6106186594183574873">దీనిని ముగించడానికి, మీ పాత పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="6108689792487843350">గేట్‌వే అందుబాటులో లేదు</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">షార్ట్‌కట్‌ల కోసం సెర్చ్ చేయండి</translation>
 <translation id="7138614237884624401">సరళీకరించిన టెక్స్ట్</translation>
 <translation id="7138668887584231801">సమ్మరైజ్ చేయడానికి సరిపడా పదాలు లేవు</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
 <translation id="7144878232160441200">మళ్లీ ట్రై చేయండి</translation>
 <translation id="7144954474087165241">పగోడా</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">తొలగించండి</translation>
 <translation id="8262870577632766028">1 గంట</translation>
 <translation id="827422111966801947">నీలిమందు రంగు</translation>
-<translation id="8281886186245836920">స్కిప్ చేయండి</translation>
 <translation id="8286154143153872371">వాల్‌పేపర్‌ను చూడటానికి, దయచేసి నెట‌వర్క్‌కు కనెక్ట్ చేసి, పేజీని రీలోడ్ చేయండి.</translation>
 <translation id="8291967909914612644">స్వస్థల నెట్‌వర్క్ ప్రదాత దేశం</translation>
 <translation id="8294431847097064396">సోర్స్</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Google AIని ఉపయోగించి పేరును క్రియేట్ చేయండి</translation>
 <translation id="8798099450830957504">డిఫాల్ట్</translation>
 <translation id="8798441408945964110">ప్రదాత పేరు</translation>
+<translation id="8804164990146287819">గోప్యతా పాలసీ</translation>
 <translation id="8808828119384186784">Chrome సెట్టింగ్‌లు</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">వాల్‌పేపర్</translation>

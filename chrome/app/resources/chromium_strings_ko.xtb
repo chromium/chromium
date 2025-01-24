@@ -400,7 +400,6 @@
 <translation id="6455857529632101747">Chromium 프로필에 오신 것을 환영합니다</translation>
 <translation id="6466344609055215035">Chromium에서 계정 삭제</translation>
 <translation id="6475912303565314141">또한 Chromium을 시작할 때 표시되는 페이지를 설정합니다.</translation>
-<translation id="648062525172759633">이 페이지는 Chromium 개발자를 위한 것으로, 적극적으로 유지보수되거나 테스트되지 않을 수 있습니다. 사용 설정하려면 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />로 이동하여 버튼을 클릭하여 디버그 페이지를 사용 설정한 다음 이 페이지로 다시 이동하세요.</translation>
 <translation id="648319183876919572">향상된 세이프 브라우징은 위험한 웹사이트와 다운로드로부터 사용자를 보호합니다.</translation>
 <translation id="6510925080656968729">Chromium 설치 제거</translation>
 <translation id="651535675648445253">Chromium에서 바로가기가 열립니다</translation>
@@ -534,7 +533,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8313851650939857356">시작 오류: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chromium을 종료합니다.</translation>
 <translation id="8321888067342493336">이미지로 저장</translation>
-<translation id="8326785589245660814">계정의 Chromium 데이터를 삭제합니다.</translation>
 <translation id="8330519371938183845">로그인하여 모든 기기에서 Chromium을 동기화하고 맞춤설정하세요.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" />에서 이전에 Chromium을 사용한 적이 있음</translation>
 <translation id="8359544530202147897">Google 계정(<ph name="ACCOUNT_EMAIL" />)의 Chromium 데이터를 계속 사용하려면 Chromium을 업데이트하세요</translation>

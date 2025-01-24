@@ -183,7 +183,6 @@ Espera uns quants minuts abans de canviar de compte. Si canvies de compte ara, a
 <translation id="5998675059699164418">La teva organització requereix que iniciïs la sessió per utilitzar Chrome.</translation>
 <translation id="6021312115739110405">Un feed personalitzat que Google ha fet per a tu. Inclou notícies, esports i el temps.</translation>
 <translation id="6022659036123304283">Personalitza Chrome</translation>
-<translation id="6110625574506755980">Algunes funcions de Chrome ja no estaran disponibles.</translation>
 <translation id="6132149203299792222">Inicia la sessió amb el teu Compte de Google per sincronitzar les contrasenyes, les adreces d'interès i altres elements.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Fes cerques a Chrome</translation>
@@ -289,7 +288,6 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="8317674518145175158">Les formes de pagament i les adreces no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.
 
 Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chrome del compte<ph name="END_LINK" />.</translation>
-<translation id="8357607116237445042">Tria si vols esborrar les dades de Chrome d'aquest dispositiu o si vols conservar-les</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
 <translation id="8371138994040262994">Obre la configuració a Chrome.</translation>
 <translation id="8387459386171870978">Continua utilitzant Chrome</translation>

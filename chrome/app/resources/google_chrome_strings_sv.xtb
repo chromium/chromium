@@ -206,7 +206,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="345171907106878721">Lägg till dig själv i Chrome</translation>
 <translation id="3453763134178591239">Villkor för ChromeOS</translation>
 <translation id="3503306920980160878">Du behöver ge Chrome åtkomst till din plats om den ska kunna delas med webbplatsen</translation>
-<translation id="3512634283363927263">Dessa sidor är avsedda för Chrome-utvecklare och kanske inte underhålls eller testas aktivt. Om du vill aktivera dem navigerar du till <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klickar på knappen för att aktivera felsökningssidor och navigerar sedan till den här sidan igen.</translation>
 <translation id="3533694711092285624">Det finns inga sparade lösenord. Chrome kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="3541482654983822893">Chrome kan inte kontrollera dina lösenord. Försök igen om ett dygn.</translation>
 <translation id="3564543103555793392">När du loggar in i Chrome kan du spara bokmärken och lösenord med mera som du sedan kan använda på telefonen</translation>
@@ -224,7 +223,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3673813398384385993">Chrome har upptäckt att <ph name="EXTENSION_NAME" /> innehåller skadlig kod</translation>
 <translation id="3695446226812920698">Läs mer</translation>
 <translation id="3697952514309507634">Andra Chrome-profiler</translation>
-<translation id="3700276346088749847">rensa kontots Chrome-data</translation>
 <translation id="3703994572283698466">ChromeOS fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" /> program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />utvecklingsmiljön för Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flex-version</translation>
 <translation id="3718181793972440140">Ett objekt tas bort från enheten. Logga in i Chrome som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>

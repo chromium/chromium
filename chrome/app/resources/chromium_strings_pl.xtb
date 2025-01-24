@@ -396,7 +396,6 @@
 <translation id="6455857529632101747">Witamy w profilach Chromium</translation>
 <translation id="6466344609055215035">Usuń konto z Chromium</translation>
 <translation id="6475912303565314141">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chromium.</translation>
-<translation id="648062525172759633">Te strony są przeznaczone dla programistów Chromium i mogą nie być aktywnie utrzymywane ani testowane. Aby je włączyć, otwórz <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknij przycisk włączania debugowania stron, a potem ponownie otwórz tę stronę.</translation>
 <translation id="648319183876919572">Ulepszone Bezpieczne przeglądanie skuteczniej chroni Cię przed niebezpiecznymi stronami i pobieranymi plikami</translation>
 <translation id="6510925080656968729">Odinstaluj Chromium</translation>
 <translation id="651535675648445253">Skróty otwierają się w Chromium</translation>
@@ -530,7 +529,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8313851650939857356">Błąd uruchamiania: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">Twoja organizacja zamyka przeglądarkę Chromium, gdy nie jest ona używana przez <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Zapisz jako obraz</translation>
-<translation id="8326785589245660814">usuń dane Chromium ze swojego konta</translation>
 <translation id="8330519371938183845">Zaloguj się, by synchronizować dane Chromium i korzystać z własnych ustawień przeglądarki na wielu urządzeniach</translation>
 <translation id="8340674089072921962">Użytkownik <ph name="USER_EMAIL_ADDRESS" /> wcześniej używał Chromium</translation>
 <translation id="8359544530202147897">Zaktualizuj Chromium, aby nadal korzystać z danych Chromium na koncie <ph name="ACCOUNT_EMAIL" /></translation>

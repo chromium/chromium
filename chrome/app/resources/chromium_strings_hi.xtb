@@ -398,7 +398,6 @@
 <translation id="6455857529632101747">Chromium प्रोफ़ाइलों में आपका स्वागत है</translation>
 <translation id="6466344609055215035">Chromium से खाता हटाएं</translation>
 <translation id="6475912303565314141">इससे यह भी नियंत्रित होता है कि जब आप क्रोमियम प्रारंभ करते हैं तब कौन सा पृष्‍ठ दिखाया जाए.</translation>
-<translation id="648062525172759633">इन पेजों को Chromium डेवलपर के इस्तेमाल के लिए बनाया गया है. ऐसा हो सकता है कि समय-समय पर इनका रखरखाव या इनकी जांच न की जाती हो. इन पेजों की सेटिंग को चालू करने के लिए, <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> पर जाएं. इसके बाद, बटन पर क्लिक करके डीबग पेजों की सेटिंग को चालू करें और फिर इस पेज पर वापस जाएं.</translation>
 <translation id="648319183876919572">बेहतर सुरक्षित ब्राउज़िंग की सुविधा, आपको नुकसान पहुंचाने वाली वेबसाइटों और डाउनलोड से बचाती है</translation>
 <translation id="6510925080656968729">क्रोमियम को अनइंस्टाल करें</translation>
 <translation id="651535675648445253">शॉर्टकट, Chromium में खुलते हैं</translation>
@@ -532,7 +531,6 @@
 <translation id="8313851650939857356">स्टार्टअप में गड़बड़ी हुई: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> तक Chromium का इस्तेमाल न करने पर, आपका संगठन इसे बंद कर देता है.</translation>
 <translation id="8321888067342493336">इमेज के तौर पर सेव करें</translation>
-<translation id="8326785589245660814">अपने खाते में मौजूद Chromium का डेटा मिटाएं</translation>
 <translation id="8330519371938183845">Chrome को अपने सभी डिवाइस पर सिंक करने और मनमुताबिक बनाने के लिए साइन इन करें</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> पहले क्रोमियम का उपयोग कर रहा था</translation>
 <translation id="8359544530202147897">Chromium को अपडेट करें, ताकि आप अपने खाते <ph name="ACCOUNT_EMAIL" /> में Chromium के डेटा का इस्तेमाल जारी रख पाएं</translation>

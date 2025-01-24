@@ -401,7 +401,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="6455857529632101747">Karibu kwenye kipengele cha wasifu kwenye Chromium</translation>
 <translation id="6466344609055215035">Ondoa Akaunti kwenye Chromium</translation>
 <translation id="6475912303565314141">Pia inadhibiti ukurasa unaoonyeshwa unapoanzisha Chromium.</translation>
-<translation id="648062525172759633">Kurasa hizi zinanuiwa kutumiwa na wasanidi programu wa Chromium na huenda zisiweze kufanyiwa majaribio wala kudumishwa kila wakati. Ili uzifungue, nenda kwenye <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, bofya kitufe ili ufungue kurasa za utatuzi kisha urudi kwenye ukurasa huu tena.</translation>
 <translation id="648319183876919572">Kipengele cha Kuvinjari Salama Kilichoboreshwa hufanya mengi zaidi ili kukulinda dhidi ya tovuti na vipakuliwa hatarishi.</translation>
 <translation id="6510925080656968729">Ondoa Chromium</translation>
 <translation id="651535675648445253">Njia za mkato hufunguka kwenye Chromium</translation>
@@ -535,7 +534,6 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="8313851650939857356">Hitilafu ya kuwasha: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Shirika lako hufunga Chromium isipotumika kwa <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Hifadhi ikiwa picha</translation>
-<translation id="8326785589245660814">futa data ya Chromium kwenye akaunti yako</translation>
 <translation id="8330519371938183845">Ingia katika akaunti ili usawazishe na uweke mapendeleo kwenye Chromium katika vifaa vyako vyote</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ilikuwa ikitumia Chromium awali</translation>
 <translation id="8359544530202147897">Sasisha Chromium ili iendelee kutumia data ya Chromium katika Akaunti yako ya Google, <ph name="ACCOUNT_EMAIL" /></translation>

@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           en maak seker jou opstelling is op "geen instaanbediener" of "direk" gestel.</translation>
+<translation id="648062525172759633">Hierdie bladsye is bedoel vir gebruik deur Chromium-ontwikkelaars en word dalk nie aktief onderhou of getoets nie. As jy hulle wil aktiveer, navigeer na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik die knoppie om ontfoutbladsye te aktiveer en navigeer dan terug na hierdie bladsy toe.</translation>
 <translation id="6549378540556750549">Chromium word ook moontlik gemaak deur ander <ph name="BEGIN_LINK_OSS" />oopbronsagteware<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Jou veranderinge sal in werking tree wanneer jy Chromium weer herbegin.</translation>
 <translation id="691026815377248078">Chromium het Bluetooth-toegang nodig om voort te gaan met 

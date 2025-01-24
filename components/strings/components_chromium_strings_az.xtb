@@ -21,6 +21,7 @@
 <translation id="4622039161600275920">Bu səhifə Chromium tərəfindən bloklanıb</translation>
 <translation id="48558539577516920">Chromium'a qoruyucu divar və ya antivirus ayarlarınızda şəbəkəyə daxil olmağa imkan verin.</translation>
 <translation id="580822234363523061">Chromium menyusuna gedin &gt;           <ph name="SETTINGS_TITLE" />           &gt;           <ph name="ADVANCED_TITLE" />           &gt;           <ph name="PROXIES_TITLE" />           və konfiqurasiyanın "heç bir proksi" və ya "birbaşa" ayarlandığına əmin olun."</translation>
+<translation id="648062525172759633">Bu səhifələr Chromium developerləri tərəfindən istifadə üçün nəzərdə tutulub və aktiv şəkildə saxlanıla və ya sınaqdan keçirilə bilməz. Aktivləşdirmək üçün <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> ünvanına keçin, sazlama səhifələrini aktivləşdirmək üçün düyməni basın və sonra yenidən bu səhifəyə keçin.</translation>
 <translation id="6549378540556750549">Chromium, həmçinin <ph name="BEGIN_LINK_OSS" />digər açıq mənbə proqram təminatı<ph name="END_LINK_OSS" /> olmadan mümkün olmazdı.</translation>
 <translation id="6613594504749178791">Dəyişiklikləriniz gələn dəfə Chromium'u başlatdıqda qüvvəyə minəcək.</translation>
 <translation id="691026815377248078">Chromium birləşməyə davam etmək üçün Bluetooth'a giriş tələb edir. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

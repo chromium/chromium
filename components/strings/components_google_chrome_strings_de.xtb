@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chrome wird durch das Open-Source-Projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> und andere <ph name="BEGIN_LINK_OSS" />Open-Source-Software<ph name="END_LINK_OSS" /> ermöglicht.</translation>
 <translation id="2588322182880276190">Chrome-Logo</translation>
 <translation id="3444832043240812445">Diese Seite zeigt nur Informationen zu deinen letzten Abstürzen, wenn du die <ph name="BEGIN_LINK" />Absturzberichtsfunktion aktivierst<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Diese Seiten sind für Chrome-Entwickler gedacht und werden möglicherweise nicht aktiv gepflegt oder getestet. Wenn du sie aktivieren möchtest, gehe zu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> und klicke auf die Schaltfläche zum Aktivieren von Debugging-Seiten. Rufe diese Seite dann noch einmal auf.</translation>
 <translation id="3875312571075912821">Erlaube Chrome in deinen Firewall- und Virenschutzeinstellungen den Zugriff auf das Netzwerk.</translation>
 <translation id="5005121315113832363">Diese Seite wurde von Chrome blockiert</translation>
 <translation id="6011049234605203654">Gehe zum Chrome-Menü &gt; „<ph name="SETTINGS_TITLE" />“ &gt; „<ph name="ADVANCED_TITLE" />“ &gt; „<ph name="PROXIES_TITLE" />“ und vergewissere dich, dass in deiner Konfiguration die Einstellung „Kein Proxy“ oder „Direkt“ verwendet wird.</translation>

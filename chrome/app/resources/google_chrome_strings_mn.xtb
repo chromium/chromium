@@ -206,7 +206,6 @@
 <translation id="345171907106878721">Chrome-д өөрийгөө нэмэх</translation>
 <translation id="3453763134178591239">ChromeOS-н нөхцөл</translation>
 <translation id="3503306920980160878">Энэ сайтаар таны байршлыг хуваалцахын тулд Chrome-д таны байршилд хандах зөвшөөрөл шаардлагатай</translation>
-<translation id="3512634283363927263">Эдгээр хуудас Chromium-н хөгжүүлэгчдийн ашиглалтад зориулагдсан бөгөөд идэвхтэйгээр үргэлжлүүлэхгүй эсвэл туршихгүй байж магадгүй. Тэдгээрийг идэвхжүүлэхийн тулд <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> руу шилжиж, хуудаснуудыг дебаг хийхийг идэвхжүүлэхийн тулд товчин дээр товшиж, дараа нь энэ хуудас руу дахин шилжинэ үү.</translation>
 <translation id="3533694711092285624">Хадгалсан ямар ч нууц үг байхгүй байна. Таныг нууц үгсээ хадгалах үед Chrome тэднийг шалгах боломжтой.</translation>
 <translation id="3541482654983822893">Chrome таны нууц үгсийг шалгах боломжгүй байна. 24 цагийн дараа дахин оролдоно уу.</translation>
 <translation id="3564543103555793392">Та Chrome-д нэвтрэх үедээ хавчуурга, нууц үг болон бусад зүйлийг хадгалаад, дараа нь утсан дээрээ ашиглах боломжтой</translation>
@@ -224,7 +223,6 @@
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />" хортой программ агуулж байгааг Chrome олж мэдлээ</translation>
 <translation id="3695446226812920698">Заавар харах</translation>
 <translation id="3697952514309507634">Chrome-н бусад профайл</translation>
-<translation id="3700276346088749847">бүртгэлийнхээ Chrome-н өгөгдлийг арилгана уу</translation>
 <translation id="3703994572283698466">ChromeOS-г <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="3716540481907974026">ChromeOS Flex-н хувилбар</translation>
 <translation id="3718181793972440140">Энэ нь төхөөрөмжөөс 1 зүйл устгах болно. Өгөгдлөө дараа сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>

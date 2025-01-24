@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />,
           og kontrollér, at din konfiguration er indstillet til "ingen proxy" eller "direkte".</translation>
+<translation id="648062525172759633">Disse sider er beregnet til brug af Chromium-udviklere og vedligeholdes eller testes muligvis ikke aktivt. Hvis du vil aktivere dem, skal du gå til <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klikke på knappen for at aktivere fejlretningssider og derefter gå til denne side igen.</translation>
 <translation id="6549378540556750549">Chromium leveres også ved hjælp af andet <ph name="BEGIN_LINK_OSS" />open source-software<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Dine ændringer træder i kraft, næste gang du genstarter Chromium.</translation>
 <translation id="691026815377248078">Chromium skal have adgang til Bluetooth for at fortsætte 

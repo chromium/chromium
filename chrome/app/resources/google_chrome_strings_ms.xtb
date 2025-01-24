@@ -202,7 +202,6 @@
 <translation id="345171907106878721">Tambahkan diri anda kepada Chrome</translation>
 <translation id="3453763134178591239">Syarat Chrome OS</translation>
 <translation id="3503306920980160878">Chrome memerlukan akses kepada lokasi anda untuk berkongsi lokasi dengan tapak ini</translation>
-<translation id="3512634283363927263">Halaman ini bertujuan untuk digunakan oleh pembangun Chrome dan mungkin tidak diselenggara atau diuji secara aktif. Untuk mendayakan halaman ini, navigasi kepada <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik butang untuk mendayakan halaman nyahpepijat, kemudian navigasi kepada halaman ini sekali lagi.</translation>
 <translation id="3533694711092285624">Tiada kata laluan yang disimpan. Chrome boleh menyemak kata laluan anda yang disimpan.</translation>
 <translation id="3541482654983822893">Chrome tidak dapat menyemak kata laluan anda. Cuba lagi selepas 24 jam.</translation>
 <translation id="3564543103555793392">Apabila anda log masuk ke Chrome, anda boleh menyimpan penanda halaman, kata laluan dan pelbagai lagi, kemudian menggunakan maklumat ini pada telefon anda</translation>
@@ -220,7 +219,6 @@
 <translation id="3673813398384385993">Chrome mendapati bahawa "<ph name="EXTENSION_NAME" />" mengandungi perisian hasad</translation>
 <translation id="3695446226812920698">Ketahui caranya</translation>
 <translation id="3697952514309507634">Profil Chrome lain</translation>
-<translation id="3700276346088749847">kosongkan data Chrome dalam akaun anda</translation>
 <translation id="3703994572283698466">Chrome OS menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan, sebagaimana <ph name="BEGIN_LINK_LINUX_OSS" />persekitaran pembangunan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versi Chrome OS Flex</translation>
 <translation id="3718181793972440140">Tindakan ini akan memadamkan 1 item daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>

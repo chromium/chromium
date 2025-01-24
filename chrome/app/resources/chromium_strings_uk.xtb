@@ -399,7 +399,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="6455857529632101747">Представляємо профілі Chromium</translation>
 <translation id="6466344609055215035">Вилучити обліковий запис із Chromium</translation>
 <translation id="6475912303565314141">Також указує сторінку, яка відкривається під час запуску Chromium.</translation>
-<translation id="648062525172759633">Ці сторінки призначені для розробників Chromium. Вони можуть не підтримуватися й не тестуватися. Щоб увімкнути їх, перейдіть за посиланням <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, натисніть кнопку, щоб увімкнути сторінки налагодження, а потім поверніться сюди.</translation>
 <translation id="648319183876919572">Безпечний перегляд із розширеним захистом додатково захищає вас від небезпечних веб-сайтів і завантажень</translation>
 <translation id="6510925080656968729">Видалити Chromium</translation>
 <translation id="651535675648445253">Ярлики відкриваються в Chromium</translation>
@@ -533,7 +532,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8313851650939857356">Помилка запуску: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ваша організація закриває веб-переглядач Chromium, якщо він не використовується протягом <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Зберегти як зображення</translation>
-<translation id="8326785589245660814">очистьте дані Chromium у своєму обліковому записі</translation>
 <translation id="8330519371938183845">Увійдіть, щоб синхронізувати та персоналізувати роботу Chromium на всіх своїх пристроях</translation>
 <translation id="8340674089072921962">Раніше ви входили в обліковий запис <ph name="USER_EMAIL_ADDRESS" /> у Chromium</translation>
 <translation id="8359544530202147897">Щоб і надалі використовувати дані Chromium в обліковому записі Google <ph name="ACCOUNT_EMAIL" />, оновіть вебпереглядач</translation>

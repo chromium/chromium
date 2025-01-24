@@ -398,7 +398,6 @@
 <translation id="6455857529632101747">Chromium プロフィールへようこそ</translation>
 <translation id="6466344609055215035">Chromium からアカウントを削除</translation>
 <translation id="6475912303565314141">この拡張機能では、Chromium の起動時に表示されるページも制御されます。</translation>
-<translation id="648062525172759633">これらのページは Chromium デベロッパーが使用することを目的としたもので、積極的なメンテナンスやテストが行われていない可能性があります。これらのページを有効にするには、<ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> でデバッグページを有効にするボタンをクリックしてから、このページに戻ります。</translation>
 <translation id="648319183876919572">セーフ ブラウジング保護強化機能では、危険なウェブサイトやダウンロードから高いセキュリティ強度で保護されます</translation>
 <translation id="6510925080656968729">Chromium をアンインストール</translation>
 <translation id="651535675648445253">Chromium でショートカットを開く</translation>
@@ -532,7 +531,6 @@
 <translation id="8313851650939857356">起動エラー: <ph name="STARTUP_ERROR" />。</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chromium は組織によって終了されます。</translation>
 <translation id="8321888067342493336">画像として保存</translation>
-<translation id="8326785589245660814">アカウントの Chromium データを削除</translation>
 <translation id="8330519371938183845">ログインすると、同期してカスタマイズした Chromium をどのデバイスでも使用できます</translation>
 <translation id="8340674089072921962">Chromium の前回の使用者は <ph name="USER_EMAIL_ADDRESS" /> です</translation>
 <translation id="8359544530202147897">Google アカウント「<ph name="ACCOUNT_EMAIL" />」で Chromium のデータを引き続き使用するには、Chromium を更新してください</translation>

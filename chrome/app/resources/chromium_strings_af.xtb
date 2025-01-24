@@ -401,7 +401,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="6455857529632101747">Welkom by Chromium-profiele</translation>
 <translation id="6466344609055215035">Verwyder rekening uit Chromium</translation>
 <translation id="6475912303565314141">Dit beheer ook watter bladsy gewys word wanneer jy Chromium begin.</translation>
-<translation id="648062525172759633">Hierdie bladsye is bedoel vir gebruik deur Chromium-ontwikkelaars en word dalk nie aktief onderhou of getoets nie. As jy hulle wil aktiveer, navigeer na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik die knoppie om ontfoutbladsye te aktiveer en navigeer dan terug na hierdie bladsy toe.</translation>
 <translation id="648319183876919572">Verbeterde Veiligblaai doen meer om jou teen gevaarlike webwerwe en aflaaie te beskerm</translation>
 <translation id="6510925080656968729">Deïnstalleer Chromium</translation>
 <translation id="651535675648445253">Kortpaaie maak in Chromium oop</translation>
@@ -535,7 +534,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8313851650939857356">Aanskakelingfout: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Jou organisasie maak Chromium toe wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie.</translation>
 <translation id="8321888067342493336">Stoor as prent</translation>
-<translation id="8326785589245660814">vee die Chromium-data in jou rekening uit</translation>
 <translation id="8330519371938183845">Meld aan om Chromium op al jou toestelle te sinkroniseer en personaliseer</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> het voorheen Chromium gebruik</translation>
 <translation id="8359544530202147897">Dateer Chromium op om aan te hou om die Chromium-data in jou Google-rekening, <ph name="ACCOUNT_EMAIL" />, te gebruik</translation>

@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           i upewnij się, że w konfiguracji wybrano połączenie bez serwera proxy lub bezpośrednie.</translation>
+<translation id="648062525172759633">Te strony są przeznaczone dla programistów Chromium i mogą nie być aktywnie utrzymywane ani testowane. Aby je włączyć, otwórz <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknij przycisk włączania debugowania stron, a potem ponownie otwórz tę stronę.</translation>
 <translation id="6549378540556750549">Stworzenie przeglądarki Chromium było też możliwe dzięki innemu <ph name="BEGIN_LINK_OSS" />oprogramowaniu open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Zmiany zostaną zastosowane po ponownym uruchomieniu Chromium.</translation>
 <translation id="691026815377248078">Aby kontynuować parowanie, Chromium potrzebuje dostępu do Bluetootha. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

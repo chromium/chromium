@@ -185,6 +185,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1310938305420497484">Open eerst tabbladen en ga naar sites</translation>
 <translation id="1314311879718644478">Augmented reality-content bekijken</translation>
 <translation id="1314509827145471431">Rechts inbinden</translation>
+<translation id="1314784609072437689">toetsenbordoverschrijving</translation>
 <translation id="1316805916535763484">Openbare online cursussen</translation>
 <translation id="1318023360584041678">Opgeslagen in tabbladgroep</translation>
 <translation id="1319245136674974084">Niet meer vragen voor deze app</translation>
@@ -911,7 +912,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="255497580849974774">Zorg dat je apparaat tijdens de update is aangesloten op een oplader.</translation>
 <translation id="2556876185419854533">&amp;Bewerken ongedaan maken</translation>
 <translation id="2559566667529177711">Meerlaags</translation>
-<translation id="2565789370591907825">Toetsenbordvergrendeling en -gebruik</translation>
 <translation id="2570734079541893434">Instellingen beheren</translation>
 <translation id="257136025287118539">Je beheerder verplaatst je bestanden naar <ph name="CLOUD_PROVIDER" />. Je kunt deze bestanden aanpassen nadat de upload is afgerond.</translation>
 <translation id="2571488850200220306">Uit beveiligingsoverwegingen kan de beheerder ook het OS, de browserversie en de geïnstalleerde software van het apparaat zien</translation>
@@ -1109,7 +1109,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2974468223369775963">Dit IBAN kan niet worden opgeslagen in je Google-account. Het is opgeslagen in Chrome op dit apparaat. Chrome vraagt het je opnieuw wanneer je dit IBAN weer gebruikt.</translation>
 <translation id="297667759942911166">Samenwerken in tabbladgroepen</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, momenteel geselecteerd. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Je toetsenbord vergrendelen en gebruiken</translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Bronnen voor schrijvers</translation>
 <translation id="2979639724566107830">Openen in nieuw venster</translation>
@@ -2460,6 +2459,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5363532265530011914">Sokken en panty's</translation>
 <translation id="5371425731340848620">Pas updaten</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> heeft een tabblad gewijzigd</translation>
+<translation id="5374324662289354619">Interne foutopsporingspagina's staan op dit moment uit.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">'Je klok loopt achter', 'Je klok loopt voor' of '&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;'</translation>
 <translation id="5379618281582508161">Laat verifiëren dat jij het bent om dit wachtwoord op al je apparaten te gebruiken</translation>
@@ -2914,6 +2914,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome beperkt automatisch cookies van derden</translation>
 <translation id="6188479691141473408">en nog <ph name="N_FIELDS" /> velden</translation>
+<translation id="6190518157737269631">Sommige toetsen op je toetsenbord overschrijven, zoals Esc</translation>
 <translation id="6194209731893739467">Bekijk hier al je gevolgde producten</translation>
 <translation id="6195163219142236913">Cookies van derden beperkt</translation>
 <translation id="6195371403461054755">Geologie</translation>
@@ -3039,6 +3040,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6394852772105848029">Deze site wil de <ph name="APP_NAME" />-app openen</translation>
 <translation id="639673288733510393">Scooters en bromfietsen</translation>
 <translation id="6398765197997659313">Volledig scherm sluiten</translation>
+<translation id="6399633237874954301">Smartcardlezer toegestaan door je beheerder</translation>
 <translation id="6401136357288658127">Dit beleid is beëindigd. Gebruik in plaats daarvan dit beleid: <ph name="NEW_POLICY" />.</translation>
 <translation id="640163077447496506">Verloopt vandaag</translation>
 <translation id="6402537308870515461">Check bestanden voordat je ze verplaatst</translation>
@@ -4100,7 +4102,6 @@ Aanvullende informatie:
 <translation id="8278544367771164040">Commerciële leningen</translation>
 <translation id="8279290844152565425">Concerten en muziekfestivals</translation>
 <translation id="8279611986089885641">Chrome-meldingen moeten aanstaan. Je kunt ze aanzetten in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Je toetsenbord vergrendelen?</translation>
 <translation id="8280630997017109758">Lade 11</translation>
 <translation id="8281730697546299650">Er zijn nu andere functies voor advertentieprivacy beschikbaar</translation>
 <translation id="8281886186245836920">Overslaan</translation>
@@ -4170,7 +4171,6 @@ Aanvullende informatie:
 <translation id="8398335999901363925">Lijst met betaalmethoden die kunnen worden ingevuld via aanraking, is op volledige hoogte geopend.</translation>
 <translation id="8398446215576328011">Toegepast beleid terugzetten</translation>
 <translation id="8398790343843005537">Je telefoon zoeken</translation>
-<translation id="8399276468426899527">toetsenbordvergrendeling en -gebruik</translation>
 <translation id="8400929824946688748">Vacatures en opleidingen</translation>
 <translation id="8402442052798347631">Aanvallers op de site die je probeerde te bezoeken, kunnen je misleiden zodat je schadelijke software installeert die van invloed is op de manier waarop je browst, bijvoorbeeld door je homepage te wijzigen of extra advertenties te tonen op sites die je bezoekt. Chrome raadt je sterk aan terug te gaan naar een beveiligde website om schade te voorkomen. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie over deze waarschuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fanfictie</translation>
@@ -4188,6 +4188,7 @@ Aanvullende informatie:
 <translation id="8421158157346464398">Informatie over je werkprofiel (zoals de gebruikersnaam van je werkprofiel)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Wijzigen</translation>
+<translation id="8426945547715537628">Toetsenbordoverschrijving toestaan?</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8428634594422941299">OK</translation>
@@ -4274,6 +4275,7 @@ Aanvullende informatie:
 <translation id="8574841453995331336">Koelkasten en diepvriezers</translation>
 <translation id="8577192028579836704">Alle opties zijn meestal <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuele kaart niet beschikbaar</translation>
+<translation id="8579000896558714521">Toetsenbordoverschrijving</translation>
 <translation id="8580265901435899937">Toeristische bestemmingen</translation>
 <translation id="8581064022803799721">Deze pagina is opgeslagen in <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Squash- en racquetballbenodigdheden</translation>

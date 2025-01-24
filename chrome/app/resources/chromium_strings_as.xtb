@@ -401,7 +401,6 @@
 <translation id="6455857529632101747">Chromiumৰ প্ৰ’ফাইললৈ স্বাগতম</translation>
 <translation id="6466344609055215035">Chromiumৰ পৰা একাউণ্ট আঁতৰাওক</translation>
 <translation id="6475912303565314141">আপুনি Chromium আৰম্ভ কৰিলে কি পৃষ্ঠা দেখুওৱা হ'ব সেয়াও ই নিয়ন্ত্ৰণ কৰে।</translation>
-<translation id="648062525172759633">এই পৃষ্ঠাসমূহ Chromiumৰ বিকাশকৰ্তাৰ ব্যৱহাৰৰ বাবে সৃষ্টি কৰা হৈছে আৰু সেইসমূহ সক্ৰিয়ভাৱে ৰক্ষণাবেক্ষণ বা পৰীক্ষা কৰা নহ’বও পাৰে। সেয়া সক্ষম কৰিবলৈ <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />লৈ যাওক, পৃষ্ঠা ডিবাগ কৰাৰ সুবিধা সক্ষম কৰিবলৈ বুটামটোত ক্লিক কৰক আৰু তাৰ পাছত পুনৰ এই পৃষ্ঠাখনলৈ যাওক।</translation>
 <translation id="648319183876919572">বৰ্ধিত সুৰক্ষিত ব্ৰাউজিঙে আপোনাক বিপজ্জনক ৱেবছাইট আৰু ডাউনল’ডৰ পৰা সুৰক্ষিত কৰিবলৈ অধিক কাৰ্য কৰে</translation>
 <translation id="6510925080656968729">Chromium আনইনষ্টল কৰক</translation>
 <translation id="651535675648445253">Chromium খুলিবলৈ শ্বৰ্টকাট</translation>
@@ -535,7 +534,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8313851650939857356">ষ্টাৰ্টআপ সম্পৰ্কীয় আসোঁৱাহ: <ph name="STARTUP_ERROR" />।</translation>
 <translation id="8318772038038596122">Chromium <ph name="TIMEOUT_DURATION" />ৰ বাবে ব্যৱহাৰ নকৰিলে আপোনাৰ প্ৰতিষ্ঠানে ইয়াক বন্ধ কৰে।</translation>
 <translation id="8321888067342493336">প্ৰতিচ্ছবি হিচাপে ছেভ কৰক</translation>
-<translation id="8326785589245660814">আপোনাৰ একাউণ্টৰ Chromiumৰ ডেটা মচক</translation>
 <translation id="8330519371938183845">Chromiumক আপোনাৰ সকলো ডিভাইচতে ছিংক আৰু ব্যক্তিকৃত কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" />এ আগতে Chromium ব্যৱহাৰ কৰি আছিল</translation>
 <translation id="8359544530202147897">আপোনাৰ Google একাউণ্টত Chromiumৰ ডেটা ব্যৱহাৰ কৰি থাকিবলৈ Chromium আপডে'ট কৰক, <ph name="ACCOUNT_EMAIL" /></translation>

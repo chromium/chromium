@@ -296,7 +296,9 @@
 <translation id="2240366984605217732">Interruptor do esquema</translation>
 <translation id="2244834438220057800">verde</translation>
 <translation id="225692081236532131">Estado da ativação</translation>
+<translation id="2265792117169966196">Selecionar e transferir o modelo de transcrição <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Adicionar captura de ecrã</translation>
+<translation id="2268044343513325586">Refinar</translation>
 <translation id="2271469253353559191">Horário do modo escuro</translation>
 <translation id="2276999893457278469">Conteúdo de ajuda principal</translation>
 <translation id="2277631741861284101">Grave e partilhe facilmente o seu áudio</translation>
@@ -464,7 +466,6 @@
 <translation id="3226405216343213872">A procurar leitores…</translation>
 <translation id="3226657629376379887">Menu de ações do esquema</translation>
 <translation id="3227186760713762082">Divida o valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Reescrever</translation>
 <translation id="3246869037381808805">As tarefas de impressão com mais de um 1 dia serão removidas.</translation>
 <translation id="324961752321393509">O seu administrador não permite fechar esta app</translation>
 <translation id="3263941347294171263">Desligue e volte a ligar o dispositivo <ph name="DEVICE_NAME" /> para continuar o processo de atualização</translation>
@@ -509,6 +510,7 @@
 <translation id="3462187165860821523">A atualizar o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Corrente</translation>
 <translation id="346539236881580388">Repetir</translation>
+<translation id="3479552764303398839">Agora não</translation>
 <translation id="3484914941826596830">Enquanto o firmware está a ser atualizado, não desligue este dispositivo externo nem encerre o computador. Pode minimizar esta janela. Esta atualização pode demorar alguns minutos e o seu dispositivo externo pode não funcionar durante este período.</translation>
 <translation id="3486220673238053218">definição</translation>
 <translation id="3487866404496702283">Feedback sobre a caraterística do mahi</translation>
@@ -567,6 +569,7 @@
 <translation id="3763034084412196440">Ajustar o volume</translation>
 <translation id="3767737419527918477">Pesquisar ficheiros de gravação</translation>
 <translation id="3771294271822695279">Ficheiros de vídeo</translation>
+<translation id="3771694256347217732">Termos de Utilização do Google</translation>
 <translation id="3780740315729837296">Atribua uma tecla do teclado</translation>
 <translation id="3784455785234192852">Bloquear</translation>
 <translation id="3785643128701396311">arte pixelizada</translation>
@@ -772,6 +775,7 @@
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4744944742468440486">Informações relacionadas com a sua seleção</translation>
 <translation id="4750394297954878236">Sugestões</translation>
+<translation id="4763771683769971829">Lista de idiomas disponíveis</translation>
 <translation id="4771607256327216405">aumentar o brilho do teclado</translation>
 <translation id="4771923071974529837">amanhã</translation>
 <translation id="4773299976671772492">Parado</translation>
@@ -853,6 +857,7 @@
 <translation id="5095761549884461003">Desligue o cabo USB do dispositivo <ph name="DEVICE_NAME" /> e, de seguida, volte a inseri-lo para continuar o processo de atualização</translation>
 <translation id="5099354524039520280">para cima</translation>
 <translation id="5107243100836678918">O atalho sem tecla de <ph name="META_KEY" /> pode entrar em conflito com o atalho de alguma app. Prima este atalho novamente para continuar a usá-lo ou prima um novo atalho com a tecla de <ph name="KEY" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">Não é possível transferir o modelo de transcrição <ph name="LANGUAGE_NAME" />. Tente novamente ou reinicie o Chromebook</translation>
 <translation id="5108781503443873320">Sinónimos:</translation>
 <translation id="5121677070210013200">Não é possível transferir o modelo de transcrição. Tente novamente ou reinicie o Chromebook.</translation>
 <translation id="5130848777448318809">póneis</translation>
@@ -1053,7 +1058,6 @@
 <translation id="6075872808778243331">(Android) Latência de HTTP</translation>
 <translation id="6078323886959318429">Atalho</translation>
 <translation id="6091080061796993741">amarela</translation>
-<translation id="6093853427925392522">Certifique-se de que usa a app Transferência de conteúdo da Google para mover os dados da sua conta escolar para a sua conta pessoal antes de perder o acesso.</translation>
 <translation id="6104112872696127344">A digitalização foi cancelada.</translation>
 <translation id="6106186594183574873">Para terminar, introduza a palavra-passe antiga</translation>
 <translation id="6108689792487843350">Não é possível alcançar o gateway.</translation>
@@ -1277,6 +1281,7 @@
 <translation id="7049916119678019302">Transfira o modelo de transcrição nas Definições</translation>
 <translation id="7058278511608979688">Terminar e guardar</translation>
 <translation id="7059230779847288458">A carregar, <ph name="TIME_VALUE" /> até ficar totalmente carregada</translation>
+<translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> selecionado</translation>
 <translation id="7066538517128343186">a tecla <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Prepare o dispositivo</translation>
 <translation id="7076851914315147928">Escolha uma imagem de fundo</translation>
@@ -1300,7 +1305,6 @@
 <translation id="7135814714616751706">Pesquise atalhos</translation>
 <translation id="7138614237884624401">Texto simplificado</translation>
 <translation id="7138668887584231801">Não existem palavras suficientes para resumir</translation>
-<translation id="7141470099673912333">Transferência de conteúdo</translation>
 <translation id="7143207342074048698">A ligar</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="7144954474087165241">pagode</translation>
@@ -1371,6 +1375,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="7415801143053185905">Latência muito elevada de HTTP</translation>
 <translation id="7418738250896500352">Demasiadas palavras para simplificar</translation>
 <translation id="7425037327577270384">Ajuda-me a escrever</translation>
+<translation id="7425832472614771259">Modelo de transcrição <ph name="LANGUAGE_NAME" />: <ph name="PROGRESS_PERCENTAGE" />% transferido</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Não é possível desativar nem remover este APN. Certifique-se de que os APNs <ph name="ATTACH" /> ativados foram desativados ou removidos.</translation>
 <translation id="7453118953486228603">Clique para resumir o texto selecionado</translation>
@@ -1407,6 +1412,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="7595982850646262331">Falta(m) <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">O administrador de <ph name="MANAGER" /> definiu quando é possível usar este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Reposicione com o rato ou as teclas de seta.</translation>
+<translation id="7618216277886673749">Selecionar <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutro</translation>
 <translation id="7620771111601174153">Saber mais no Centro de Ajuda</translation>
 <translation id="7625095758347640998">Fundos de IA</translation>
@@ -1541,7 +1547,6 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8262870577632766028">1 hora</translation>
 <translation id="827422111966801947">Índigo</translation>
-<translation id="8281886186245836920">Ignorar</translation>
 <translation id="8286154143153872371">Estabeleça ligação a uma rede e atualize a página para ver a imagem de fundo.</translation>
 <translation id="8291967909914612644">País do fornecedor base</translation>
 <translation id="8294431847097064396">Origem</translation>
@@ -1646,6 +1651,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8797082062139985406">Crie um nome com a IA da Google</translation>
 <translation id="8798099450830957504">Predefinição</translation>
 <translation id="8798441408945964110">Nome do fornecedor</translation>
+<translation id="8804164990146287819">Política de Privacidade</translation>
 <translation id="8808828119384186784">Definições do Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Imagem de fundo</translation>

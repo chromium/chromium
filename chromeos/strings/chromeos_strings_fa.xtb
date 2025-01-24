@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">سبز</translation>
 <translation id="225692081236532131">وضعیت فعال‌سازی</translation>
 <translation id="2267285889943769271">افزودن نماگرفت</translation>
+<translation id="2268044343513325586">فیلتر</translation>
 <translation id="2271469253353559191">زمان‌بندی حالت تاریک</translation>
 <translation id="2276999893457278469">محتوای راهنمای برتر</translation>
 <translation id="2277631741861284101">به‌راحتی صدا را ضبط و هم‌رسانی کنید</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">درحال جستجوی اسکنرها</translation>
 <translation id="3226657629376379887">منوی کنش‌های طرح‌بندی</translation>
 <translation id="3227186760713762082">تقسیم مقدار <ph name="CATEGORY_TEXT" /> بر <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">بازنویسی</translation>
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
 <translation id="324961752321393509">سرپرستتان اجازه نمی‌دهد این برنامه را ببندید</translation>
 <translation id="3263941347294171263">برای ادامه فرایند به‌روزرسانی، کابل <ph name="DEVICE_NAME" /> را جدا و دوباره وصل کنید</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">درحال به‌روزرسانی <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">جریان</translation>
 <translation id="346539236881580388">عکس گرفتن مجدد</translation>
+<translation id="3479552764303398839">حالا نه</translation>
 <translation id="3484914941826596830">وقتی سفت‌افزار درحال به‌روزرسانی است، این دستگاه خارجی را جدا نکنید و رایانه را خاموش نکنید. می‌توانید این پنجره را کمینه کنید. این به‌روزرسانی ممکن است چند دقیقه طول بکشد و در این مدت ممکن است دستگاه خارجی‌تان کار نکند.</translation>
 <translation id="3486220673238053218">معنی</translation>
 <translation id="3487866404496702283">‏بازخورد درباره ویژگی mahi</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">تنظیم بلندی صدا</translation>
 <translation id="3767737419527918477">جستجوی فایل‌های ضبط‌شده</translation>
 <translation id="3771294271822695279">فایل‌های ویدئویی</translation>
+<translation id="3771694256347217732">‏شرایط خدمات Google</translation>
 <translation id="3780740315729837296">تخصیص کلید صفحه‌کلید</translation>
 <translation id="3784455785234192852">قفل</translation>
 <translation id="3785643128701396311">هنر پیکسلی</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">‏(Android) تأخیر HTTP ‏</translation>
 <translation id="6078323886959318429">افزودن میان‌بر</translation>
 <translation id="6091080061796993741">زرد</translation>
-<translation id="6093853427925392522">‏قبل‌از اینکه دسترسی‌تان را ازدست بدهید، حتماً داده‌های حساب تحصیلی خود را بااستفاده از برنامه «انتقال محتوا» که Google ارائه کرده است به حساب شخصی خود انتقال دهید.</translation>
 <translation id="6104112872696127344">اسکن کردن لغو شده است</translation>
 <translation id="6106186594183574873">برای تکمیل کار، گذرواژه قدیمی‌تان را وارد کنید</translation>
 <translation id="6108689792487843350">دروازه قابل دسترسی نیست</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">جستجوی میان‌برها</translation>
 <translation id="7138614237884624401">نوشتار ساده‌شده</translation>
 <translation id="7138668887584231801">تعداد کلمات برای خلاصه کردن کافی نیست</translation>
-<translation id="7141470099673912333">انتقال محتوا</translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
 <translation id="7144878232160441200">سعی مجدد</translation>
 <translation id="7144954474087165241">بتخانه</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8262870577632766028">۱ ساعت</translation>
 <translation id="827422111966801947">نیلی سیر</translation>
-<translation id="8281886186245836920">رد شدن</translation>
 <translation id="8286154143153872371">لطفاً برای مشاهده کاغذدیواری، به شبکه متصل شوید و صفحه را بار کردن مجدد کنید.</translation>
 <translation id="8291967909914612644">کشور ارائه‌دهنده اصلی</translation>
 <translation id="8294431847097064396">منبع</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">‏ایجاد کردن نام بااستفاده از هوش مصنوعی Google</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
 <translation id="8798441408945964110">نام ارائه‌دهنده</translation>
+<translation id="8804164990146287819">خط‌مشی رازداری</translation>
 <translation id="8808828119384186784">‏تنظیمات Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">کاغذ دیواری</translation>

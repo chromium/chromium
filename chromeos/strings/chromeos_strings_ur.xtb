@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">سبز</translation>
 <translation id="225692081236532131">فعالیت کی صورتحال</translation>
 <translation id="2267285889943769271">اسکرین شاٹ شامل کریں</translation>
+<translation id="2268044343513325586">بہتر بنائیں</translation>
 <translation id="2271469253353559191">تاریک وضع شیڈول</translation>
 <translation id="2276999893457278469">سرفہرست مددگار مواد</translation>
 <translation id="2277631741861284101">آسانی سے اپنی آڈیو کو ریکارڈ اور اس کا اشتراک کریں</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">اسکینرز کی تلاش جاری ہے</translation>
 <translation id="3226657629376379887">لے آؤٹ کارروائیوں کا مینیو</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> قدر کو <ph name="CONVERSION_RATE" /> سے تقسیم کریں</translation>
-<translation id="3237710083340813756">دوبارہ لکھیں</translation>
 <translation id="3246869037381808805">1 دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="324961752321393509">آپ کا منتظم اس ایپ کو بند کرنے کی اجازت نہیں دیتا ہے</translation>
 <translation id="3263941347294171263">اپ ڈیٹ ہونے کے عمل کو جاری رکھنے کے لیے <ph name="DEVICE_NAME" /> کو ان پلگ کریں اور دوبارہ پلگ ان کریں</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> اپ ڈیٹ ہو رہا ہے</translation>
 <translation id="346423161771747987">کرنٹ</translation>
 <translation id="346539236881580388">دوبارہ لیں</translation>
+<translation id="3479552764303398839">ابھی نہیں</translation>
 <translation id="3484914941826596830">فرم ویئر اپ ڈیٹ کرنے کے دوران اس خارجی آلے کو ان پلگ یا اپنے کمپیوٹر کو شٹ ڈاؤن نہ کریں۔ آپ اس ونڈو کو چھوٹا کر سکتے ہیں۔ اس اپ ڈیٹ میں کچھ منٹ لگ سکتے ہیں اور ہو سکتا ہے کہ آپ کا خارجی آلہ اس دوران کام نہ کرے۔</translation>
 <translation id="3486220673238053218">وضاحت</translation>
 <translation id="3487866404496702283">ماہی خصوصیت کے لیے تاثرات</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">والیوم ایڈجسٹ کریں</translation>
 <translation id="3767737419527918477">ریکارڈنگ کی فائلیں تلاش کریں</translation>
 <translation id="3771294271822695279">ویڈیو فائلیں</translation>
+<translation id="3771694256347217732">‏Google کی سروس کی شرائط</translation>
 <translation id="3780740315729837296">کی بورڈ کلید تفویض کریں</translation>
 <translation id="3784455785234192852">مقفل کریں</translation>
 <translation id="3785643128701396311">پکسل آرٹ</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">‏‎(Android) HTTP میں تاخیر</translation>
 <translation id="6078323886959318429">شارٹ کٹ شامل کریں</translation>
 <translation id="6091080061796993741">پیلا</translation>
-<translation id="6093853427925392522">‏رسائی کھونے سے پہلے اپنے اسکول اکاؤنٹ کے ڈیٹا کو اپنے ذاتی اکاؤنٹ میں منتقل کرنے کے لیے Google کی طرف سے مواد کی منتقلی ایپ کا استعمال یقینی بنائیں۔</translation>
 <translation id="6104112872696127344">اسکین کا عمل منسوخ کر دیا گیا</translation>
 <translation id="6106186594183574873">مکمل کرنے کے لئے اپنا پرانا پاس ورڈ درج کریں</translation>
 <translation id="6108689792487843350">گیٹ وے ناقابل رسائی ہے</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">شارٹ کٹس تلاش کریں</translation>
 <translation id="7138614237884624401">آسان کردہ ٹیکسٹ</translation>
 <translation id="7138668887584231801">خلاصہ کرنے کے لیے کافی الفاظ نہیں ہیں</translation>
-<translation id="7141470099673912333">مواد کی منتقلی</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
 <translation id="7144878232160441200">دوبارہ کوشش کریں</translation>
 <translation id="7144954474087165241">پگوڈا</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8262870577632766028">1 گھنٹہ</translation>
 <translation id="827422111966801947">گہرا نیلا</translation>
-<translation id="8281886186245836920">نظر انداز کریں</translation>
 <translation id="8286154143153872371">براہ کرم کسی نیٹ ورک سے منسلک ہوں اور وال پیپر دیکھنے کے لیے صفحے کو دوبارہ لوڈ کریں۔</translation>
 <translation id="8291967909914612644">گھر فراہم کرنے والے کا ملک</translation>
 <translation id="8294431847097064396">ماخذ</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">‏‫Google AI کے ذریعے نام تخلیق کریں</translation>
 <translation id="8798099450830957504">ڈیفالٹ</translation>
 <translation id="8798441408945964110">فراہم کنندہ کا نام</translation>
+<translation id="8804164990146287819">راز داری کی پالیسی</translation>
 <translation id="8808828119384186784">‏Chrome کی ترتیبات</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">وال پیپر</translation>

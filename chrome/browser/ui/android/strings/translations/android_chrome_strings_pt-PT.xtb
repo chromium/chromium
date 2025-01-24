@@ -116,6 +116,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="1435593198351412143">Abrir PDFs automaticamente</translation>
 <translation id="1436784010935106834">Removido</translation>
 <translation id="1437543266176261764">Em execução na app <ph name="APP_NAME" /></translation>
+<translation id="1448147069872048656">Valide a sua identidade para se certificar de que pode aceder a todas as suas palavras-passe neste dispositivo</translation>
 <translation id="1448440926884431741">Organize os produtos monitorizados nos Marcadores</translation>
 <translation id="1460751212339734034">Poupe tempo, escreva menos</translation>
 <translation id="1466383950273130737">Escolha o idioma do Chrome</translation>
@@ -847,6 +848,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4910889077668685004">Apps de pagamento</translation>
 <translation id="4912413785358399818">Mover separador</translation>
 <translation id="4913169188695071480">Parar a atualização</translation>
+<translation id="4913841543356834596">Tenha acesso a todas as suas palavras-passe</translation>
 <translation id="4918086044614829423">Aceitar</translation>
 <translation id="4925120120285606924">Captura de ecrã <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">As suas palavras-passe serão exportadas e transferidas como um ficheiro de texto. Serão visíveis para qualquer pessoa e qualquer app com acesso à pasta de destino.</translation>
@@ -960,6 +962,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="544776284582297024">Para abrir separadores e visitar várias páginas em simultâneo, toque no botão Abrir separadores.</translation>
 <translation id="5454166040603940656">com <ph name="PROVIDER" /></translation>
 <translation id="5454215368971121976">Quando o dispositivo está dobrado, pode escolher uma opção ou tocar sem soltar na barra de endereço para alterar a posição.</translation>
+<translation id="5456381639095306749">Transferir página</translation>
 <translation id="5458366071038729214">Encontrará os sites que segue aqui</translation>
 <translation id="5468068603361015296">Quer transferir <ph name="FILE_NAME" /> mesmo assim?</translation>
 <translation id="548278423535722844">Abrir na aplicação de mapas</translation>
@@ -1211,6 +1214,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6569373978618239158">Serão apresentadas notícias de <ph name="SITE_NAME" /> quando abrir um novo separador. Os sites que segue são guardados na sua Conta Google. Pode geri-los nas definições do Discover.</translation>
 <translation id="6570116402456758630">Resumo da página</translation>
 <translation id="657177046675873214">Para ver os seus marcadores em todos os dispositivos, ative os "Marcadores" nas definições</translation>
+<translation id="6573096386450695060">Permitir sempre</translation>
 <translation id="6573431926118603307">Os separadores que abriu no Chrome nos seus outros dispositivos são apresentados aqui.</translation>
 <translation id="6583199322650523874">Adicionar a página atual aos marcadores</translation>
 <translation id="6588043302623806746">Usar o DNS seguro</translation>
@@ -1328,6 +1332,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6987047470128880212">A Navegação anónima não está disponível neste dispositivo</translation>
 <translation id="6991701761229081516">As suas palavras-passe vão ser transferidas como um ficheiro CSV. Vão ser visíveis para qualquer pessoa que possa aceder ao ficheiro, incluindo apps. As palavras-passe exportadas vão ser eliminadas do Chrome.</translation>
 <translation id="6996145122199359148">Transfira esta página</translation>
+<translation id="7013627768165542797">Valide a sua identidade para aceder às palavras-passe na sua Conta Google</translation>
 <translation id="7013762323294215682">Esta chave de acesso vai ser guardada no seu gestor de palavras-passe. Qualquer pessoa com acesso a este gestor vai poder usar esta chave de acesso.</translation>
 <translation id="7020741890149022655">Adic. à Lista de leitura <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Abrir no navegador</translation>
@@ -1346,6 +1351,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7085332316435785646">Escolha se quer incluir o Histórico do Chrome para obter mais experiências personalizadas nos serviços Google</translation>
 <translation id="7088681679121566888">O Chrome está atualizado.</translation>
 <translation id="7094933634769755999">Impreciso</translation>
+<translation id="7102843846294013537">Algumas das suas palavras-passe não estão disponíveis neste dispositivo</translation>
 <translation id="7106762743910369165">O seu navegador é gerido pela sua entidade</translation>
 <translation id="7111394291981742152">O Chrome dá-lhe mais controlo sobre os anúncios que vê e limita o que os sites podem saber sobre si quando lhe mostram anúncios personalizados.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Autorizações revistas para 1 site}other{Autorizações revistas para # sites}}</translation>

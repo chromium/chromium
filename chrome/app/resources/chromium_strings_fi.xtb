@@ -399,7 +399,6 @@
 <translation id="6455857529632101747">Tervetuloa Chromium-profiileihin</translation>
 <translation id="6466344609055215035">Poista tili Chromiumista</translation>
 <translation id="6475912303565314141">Määrittää myös Chromiumin aloitussivun.</translation>
-<translation id="648062525172759633">Nämä sivut on tarkoitettu Chromiumin kehittäjille, eikä niitä välttämättä ylläpidetä tai testata aktiivisesti. Voit ottaa ne käyttöön siirtymällä osoitteeseen <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klikkaamalla painiketta, jolla voit ottaa virheenkorjaussivut käyttöön, ja siirtymällä sitten uudelleen tälle sivulle.</translation>
 <translation id="648319183876919572">Parannettu selaussuoja suojaa sinua entistä paremmin vaarallisilta sivustoilta ja latauksilta</translation>
 <translation id="6510925080656968729">Poista Chromium</translation>
 <translation id="651535675648445253">Pikakuvakkeet avautuvat Chromiumissa</translation>
@@ -533,7 +532,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8313851650939857356">Käynnistysvirhe: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Kun Chromium on ollut käyttämättömänä <ph name="TIMEOUT_DURATION" />, organisaatiosi sulkee sen.</translation>
 <translation id="8321888067342493336">Tallenna kuvana</translation>
-<translation id="8326785589245660814">poista Chromium-data tililtäsi</translation>
 <translation id="8330519371938183845">Kirjaudu sisään, niin voit synkronoida Chromiumin ja tehdä siitä yksilöllisemmän kaikilla laitteilla.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> käytti aiemmin Chromiumia</translation>
 <translation id="8359544530202147897">Päivitä Chromium, jotta voit jatkaa Chromium-datan käyttöä Google-tililläsi: <ph name="ACCOUNT_EMAIL" /></translation>

@@ -400,7 +400,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="6455857529632101747">Siyakwamukela kumaphrofayela we-Chromium</translation>
 <translation id="6466344609055215035">Susa I-akhawunti kuChromium</translation>
 <translation id="6475912303565314141">Iphinde ilawule ukuthi iliphi ikhasi eliboniswa lapho uqala i-Chromium.</translation>
-<translation id="648062525172759633">Lawa makhasi enzelwe ukusetshenziswa onjiniyela beChromium, futhi kungenzeka anganakekelwa noma ahlolwe. Ukuze uzinike amandla, funa kokuthi <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, chofoza inkinobho ukuze unike amandla amakhasi okususa iphutha, bese ufuna kuleli khasi futhi.</translation>
 <translation id="648319183876919572">Ukubhrawuza Ngokuphepha Okugqamile kwenza okuningi ukukuvikela kumawebhusayithi ayingozi nakokudawunilodiwe</translation>
 <translation id="6510925080656968729">Khipha i-Chromium</translation>
 <translation id="651535675648445253">Izinqamuleli zivulwe ku-Chromium</translation>
@@ -534,7 +533,6 @@ I-Chromium ayikwazi ukubuyisela izilungiselelo zakho.</translation>
 <translation id="8313851650939857356">Iphutha ekuqaliseni: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Inhlangano yakho ivala i-Chromium uma ingasetshenziswa isikhathi esingu-<ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Londoloza njengesithombe</translation>
-<translation id="8326785589245660814">sula idatha yeChromium e-akhawuntini yakho</translation>
 <translation id="8330519371938183845">Ngena ngemvume ukuze uvumelanise uphinde wenze kube ngeyakho i-Chromium kumadivayisi akho wonkana</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ngaphambilini ibisebenzisa i-Chromium</translation>
 <translation id="8359544530202147897">Buyekeza iChromium ukuze uqhubeke usebenzisa idatha yeChromium kuGoogle Account yakho, <ph name="ACCOUNT_EMAIL" /></translation>

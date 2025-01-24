@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">πράσινο</translation>
 <translation id="225692081236532131">Κατάσταση ενεργοποίησης</translation>
 <translation id="2267285889943769271">Προσθήκη στιγμιότυπου</translation>
+<translation id="2268044343513325586">Περιορισμός</translation>
 <translation id="2271469253353559191">Πρόγραμμα λειτουργίας χαμηλού φωτισμού</translation>
 <translation id="2276999893457278469">Κορυφαίο περιεχόμενο βοήθειας</translation>
 <translation id="2277631741861284101">Εγγράψτε και μοιραστείτε εύκολα τον ήχο σας</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Αναζήτηση για σαρωτές</translation>
 <translation id="3226657629376379887">Μενού ενεργειών διάταξης</translation>
 <translation id="3227186760713762082">Διαιρέστε την τιμή <ph name="CATEGORY_TEXT" /> με το <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Αναδιατύπωση</translation>
 <translation id="3246869037381808805">Οι εργασίες εκτύπωσης που είναι παλαιότερες της 1 ημέρας θα καταργηθούν.</translation>
 <translation id="324961752321393509">Ο διαχειριστής σας δεν επιτρέπει το κλείσιμο αυτής της εφαρμογής</translation>
 <translation id="3263941347294171263">Αποσυνδέστε και επανασυνδέστε τη συσκευή <ph name="DEVICE_NAME" /> για να συνεχίσετε τη διαδικασία ενημέρωσης</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Ενημέρωση <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Τρέχουσα</translation>
 <translation id="346539236881580388">Νέα λήψη</translation>
+<translation id="3479552764303398839">Όχι τώρα</translation>
 <translation id="3484914941826596830">Κατά την ενημέρωση του υλικολογισμικού, μην αποσυνδέσετε αυτή την εξωτερική συσκευή και μην τερματίσετε τη λειτουργία του υπολογιστή. Μπορείτε να ελαχιστοποιήσετε αυτό το παράθυρο. Μπορεί να χρειαστούν λίγα λεπτά για αυτή την ενημέρωση και η εξωτερική συσκευή σας μπορεί να μην λειτουργεί αυτό το διάστημα.</translation>
 <translation id="3486220673238053218">ορισμός</translation>
 <translation id="3487866404496702283">Σχόλια για τη λειτουργία mahi</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Προσαρμογή έντασης ήχου</translation>
 <translation id="3767737419527918477">Αναζήτηση αρχείων εγγραφής</translation>
 <translation id="3771294271822695279">Αρχεία βίντεο </translation>
+<translation id="3771694256347217732">Όροι Παροχής Υπηρεσιών της Google</translation>
 <translation id="3780740315729837296">Εκχώρηση πλήκτρου πληκτρολογίου</translation>
 <translation id="3784455785234192852">Κλείδωμα</translation>
 <translation id="3785643128701396311">pixel art</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) Λανθάνων χρόνος HTTP</translation>
 <translation id="6078323886959318429">Προσθήκη συντόμευσης</translation>
 <translation id="6091080061796993741">κίτρινο</translation>
-<translation id="6093853427925392522">Φροντίστε να χρησιμοποιήσετε την εφαρμογή Μεταφορά περιεχομένου της Google, για να μεταφέρετε τα δεδομένα του λογαριασμού σχολείου στον προσωπικό σας λογαριασμό, προτού χάσετε την πρόσβαση.</translation>
 <translation id="6104112872696127344">Η σάρωση ακυρώθηκε</translation>
 <translation id="6106186594183574873">Για να τελειώσετε, εισαγάγετε τον παλιό κωδικό πρόσβασης</translation>
 <translation id="6108689792487843350">Μη προσβάσιμη πύλη</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Αναζήτηση συντομεύσεων</translation>
 <translation id="7138614237884624401">Απλοποιημένο κείμενο</translation>
 <translation id="7138668887584231801">Δεν υπάρχουν αρκετές λέξεις για τη δημιουργία σύνοψης</translation>
-<translation id="7141470099673912333">Μεταφορά περιεχομένου</translation>
 <translation id="7143207342074048698">Σύνδεση</translation>
 <translation id="7144878232160441200">Επανάληψη</translation>
 <translation id="7144954474087165241">παγόδα</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="8262870577632766028">1 ώρα</translation>
 <translation id="827422111966801947">Λουλάκι</translation>
-<translation id="8281886186245836920">Παράβλεψη</translation>
 <translation id="8286154143153872371">Συνδεθείτε σε ένα δίκτυο και επαναφορτώστε τη σελίδα για να δείτε την ταπετσαρία.</translation>
 <translation id="8291967909914612644">Χώρα παρόχου αρχικής σελίδας</translation>
 <translation id="8294431847097064396">Πηγή</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Δημιουργία ονόματος με χρήση του Google AI</translation>
 <translation id="8798099450830957504">Προεπιλογή</translation>
 <translation id="8798441408945964110">Όνομα παρόχου</translation>
+<translation id="8804164990146287819">Πολιτική απορρήτου</translation>
 <translation id="8808828119384186784">Ρυθμίσεις του Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Ταπετσαρία</translation>

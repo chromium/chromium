@@ -183,7 +183,6 @@
 <translation id="5998675059699164418">조직에서 Chrome을 사용하려면 로그인해야 합니다.</translation>
 <translation id="6021312115739110405">Google에서 나를 위해 제공하는 맞춤 피드이며, 뉴스, 스포츠, 날씨 정보를 포함합니다</translation>
 <translation id="6022659036123304283">나만의 Chrome 만들기</translation>
-<translation id="6110625574506755980">일부 Chrome 기능을 더 이상 사용할 수 없게 됩니다</translation>
 <translation id="6132149203299792222">Google 계정으로 로그인하여 비밀번호, 북마크 등을 동기화하세요.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Chrome에서 검색</translation>
@@ -289,7 +288,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8317674518145175158">결제 수단 및 주소는 암호화되지 않습니다. Chrome 방문 기록은 동기화되지 않습니다.
 
 암호를 아는 사람만 암호화된 내 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
-<translation id="8357607116237445042">이 기기에서 내 Chrome 데이터를 삭제할지 또는 유지할지 선택하세요</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8371138994040262994">Chrome에서 설정을 엽니다.</translation>
 <translation id="8387459386171870978">Chrome 계속 사용</translation>

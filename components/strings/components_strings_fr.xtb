@@ -638,6 +638,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2105838220373099643">Jeux de rôles</translation>
 <translation id="2107021941795971877">Supports d'impression</translation>
 <translation id="2108755909498034140">Redémarrez l'ordinateur</translation>
+<translation id="2109845311767915560">Groupe d'onglets partagé</translation>
 <translation id="2111166930115883695">Appuyez sur la barre d'espace pour jouer</translation>
 <translation id="2113977810652731515">Carte</translation>
 <translation id="2114841414352855701">Ignorée parce que remplacée par <ph name="POLICY_NAME" />.</translation>
@@ -910,7 +911,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="255497580849974774">Veuillez brancher votre appareil à un chargeur pendant la mise à jour.</translation>
 <translation id="2556876185419854533">&amp;Annuler la modification</translation>
 <translation id="2559566667529177711">Multicouche</translation>
-<translation id="2565789370591907825">Verrouillage et utilisation du clavier</translation>
 <translation id="2570734079541893434">Gérer les paramètres</translation>
 <translation id="257136025287118539">Votre administrateur déplace vos fichiers vers <ph name="CLOUD_PROVIDER" />. Vous pourrez les modifier une fois l'importation terminée.</translation>
 <translation id="2571488850200220306">Pour assurer la sécurité, il peut aussi voir l'OS de l'appareil, la version du navigateur et les logiciels installés</translation>
@@ -1108,7 +1108,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2974468223369775963">Impossible d'enregistrer cet IBAN dans votre compte Google. Il a été enregistré dans Chrome sur cet appareil à la place. Chrome vous redemandera votre avis la prochaine fois que vous utiliserez cet IBAN.</translation>
 <translation id="297667759942911166">Collaborez dans des groupes d'onglets</translation>
 <translation id="2977665033722899841">La ligne "<ph name="ROW_NAME" />" est sélectionnée. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Verrouiller et utiliser votre clavier</translation>
 <translation id="2978824962390592855">Opéra</translation>
 <translation id="2979424420072875974">Ressources pour rédacteurs</translation>
 <translation id="2979639724566107830">Ouvrir dans une nouvelle fenêtre</translation>
@@ -2092,6 +2091,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4704745399240123930">Les cartes non acceptées par ce marchand, comme les cartes virtuelles, sont désactivées.</translation>
 <translation id="4708268264240856090">Votre connexion a été interrompue</translation>
 <translation id="4708276642004148190">Approvisionnement et traitement de l'eau</translation>
+<translation id="4711628883879888561">Collaborer sur un groupe d'onglets</translation>
 <translation id="471880041731876836">Vous n'êtes pas autorisé à consulter ce site</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Exécutez les diagnostics réseau de Windows<ph name="END_LINK" /></translation>
@@ -2464,6 +2464,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5363532265530011914">Chaussettes et collants</translation>
 <translation id="5371425731340848620">Mettre à jour la carte</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> a modifié un onglet</translation>
+<translation id="5374324662289354619">Les pages de débogage internes sont actuellement désactivées.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Votre horloge est en retard.", "Votre horloge est en avance." ou "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Pour obtenir ce mot de passe sur tous vos appareils, validez votre identité</translation>
@@ -2698,6 +2699,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="578305955206182703">Ambre</translation>
 <translation id="5783700460098783980">Bagages et accessoires de voyage</translation>
 <translation id="57838592816432529">Couper le son</translation>
+<translation id="5783922175933467571">Le lien vers "<ph name="TAB_GROUP_DISPLAY_NAME" />" expire dans 48 heures</translation>
 <translation id="5784606427469807560">Un problème est survenu lors de la validation de votre carte. Vérifiez votre connexion Internet, puis réessayez.</translation>
 <translation id="5785756445106461925">De plus, cette page inclut d'autres ressources qui ne sont pas sécurisées. Ces ressources peuvent être consultées par des tiers pendant leur transfert, et modifiées par un pirate informatique dans le but de changer l'aspect de cette page.</translation>
 <translation id="5793317771769868848">Ce mode de paiement sera supprimé de cet appareil</translation>
@@ -2770,6 +2772,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5930147475897662863">Activez ce paramètre pour utiliser M'aider à écrire</translation>
 <translation id="593102073240001326">Contenus pour bricoleurs et utilisateurs expérimentés</translation>
 <translation id="5932224571077948991">Le site affiche des annonces intrusives ou trompeuses</translation>
+<translation id="5933597524153120073">Tout ouvrir (<ph name="ITEMS" />) dans une nouvelle fenêtre</translation>
 <translation id="5937560539988385583">Page traduite</translation>
 <translation id="5938153366081463283">Ajouter une carte virtuelle</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3042,6 +3045,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6394852772105848029">Ce site veut ouvrir l'appli <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Scooters et cyclomoteurs</translation>
 <translation id="6398765197997659313">Quitter le mode plein écran</translation>
+<translation id="6399633237874954301">Lecteur de carte à puce autorisé par votre administrateur</translation>
 <translation id="6401136357288658127">Cette règle est obsolète. Vous devez utiliser la règle "<ph name="NEW_POLICY" />" à la place.</translation>
 <translation id="640163077447496506">Expire aujourd'hui</translation>
 <translation id="6402537308870515461">Examen requis avant le déplacement</translation>
@@ -4104,7 +4108,6 @@ Informations supplémentaires :
 <translation id="8278544367771164040">Prêts commerciaux</translation>
 <translation id="8279290844152565425">Concerts et festivals de musique</translation>
 <translation id="8279611986089885641">Les notifications Chrome doivent être activées. Vous pouvez les activer dans <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Verrouiller le clavier ?</translation>
 <translation id="8280630997017109758">Bac 11</translation>
 <translation id="8281730697546299650">De nouvelles fonctionnalités de confidentialité pour les annonces sont  disponibles</translation>
 <translation id="8281886186245836920">Passer</translation>
@@ -4174,7 +4177,6 @@ Informations supplémentaires :
 <translation id="8398335999901363925">Liste des modes de paiement à saisir de façon tactile, ouverte à pleine hauteur.</translation>
 <translation id="8398446215576328011">Rétablir les règles applicables</translation>
 <translation id="8398790343843005537">Rechercher votre téléphone</translation>
-<translation id="8399276468426899527">verrouillage et utilisation du clavier</translation>
 <translation id="8400929824946688748">Emploi et enseignement</translation>
 <translation id="8402442052798347631">Des pirates informatiques qui se trouvent sur le site que vous avez essayé de consulter peuvent vous inciter à installer des logiciels malveillants affectant votre façon de naviguer, par exemple en modifiant votre page d'accueil ou en vous montrant des annonces supplémentaires sur les sites que vous consultez. Chrome vous recommande vivement de revenir en lieu sûr. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fan fiction</translation>

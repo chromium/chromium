@@ -398,7 +398,6 @@
 <translation id="6455857529632101747">欢迎使用 Chromium 个人资料</translation>
 <translation id="6466344609055215035">从 Chromium 中移除账号</translation>
 <translation id="6475912303565314141">它还能够控制Chromium启动后显示的页面。</translation>
-<translation id="648062525172759633">这些页面供 Chromium 开发者使用，可能不会积极维护或测试。如需启用这些页面，请前往 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />，点击启用调试页面的按钮，然后再次前往此页面。</translation>
 <translation id="648319183876919572">“增强型安全浏览”功能有助于保护您免受危险的网站及下载内容的侵害</translation>
 <translation id="6510925080656968729">卸载 Chromium</translation>
 <translation id="651535675648445253">在 Chromium 中打开快捷方式</translation>
@@ -532,7 +531,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8313851650939857356">启动错误：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8318772038038596122">贵组织会在 Chromium 闲置 <ph name="TIMEOUT_DURATION" />后将其关闭。</translation>
 <translation id="8321888067342493336">另存为图片</translation>
-<translation id="8326785589245660814">清除您账号中的 Chromium 数据</translation>
 <translation id="8330519371938183845">登录即可在您的所有设备上同步并个性化设置 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 之前使用的是 Chromium</translation>
 <translation id="8359544530202147897">请更新 Chromium，以便继续使用 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中的 Chromium 数据</translation>

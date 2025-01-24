@@ -206,7 +206,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="345171907106878721">Shtoje veten te Chrome</translation>
 <translation id="3453763134178591239">Kushtet e ChromeOS</translation>
 <translation id="3503306920980160878">Chrome ka nevojë për qasje te vendndodhja jote për të ndarë vendndodhjen me këtë sajt</translation>
-<translation id="3512634283363927263">Këto faqe synohen të përdoren nga zhvilluesit e Chrome dhe mund të mos mirëmbahen apo testohen në mënyrë aktive. Për t'i aktivizuar ato, navigo te <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliko butonin për të aktivizuar faqet e korrigjimit dhe më pas navigo përsëri te kjo faqe.</translation>
 <translation id="3533694711092285624">Nuk ka asnjë fjalëkalim të ruajtur. Chrome mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="3541482654983822893">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri pas 24 orësh.</translation>
 <translation id="3564543103555793392">Kur identifikohesh në Chrome, mund të ruash faqeshënuesit, fjalëkalimet etj. dhe më pas mund t'i përdorësh ato në telefonin tënd</translation>
@@ -224,7 +223,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3673813398384385993">Chrome vuri re se "<ph name="EXTENSION_NAME" />" përmban softuer keqdashës</translation>
 <translation id="3695446226812920698">Mëso se si</translation>
 <translation id="3697952514309507634">Profilet e tjera të Chrome</translation>
-<translation id="3700276346088749847">pastro të dhënat e Chrome në llogarinë tënde</translation>
 <translation id="3703994572283698466">ChromeOS mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versioni i Chrome OS Flex</translation>
 <translation id="3718181793972440140">Kjo do të fshijë 1 artikull nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>

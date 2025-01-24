@@ -687,6 +687,7 @@
 <translation id="1475502736924165259">آپ کے پاس فائل پر ایسے سرٹیفیکیٹس ہیں جو کسی دوسرے زمرے میں فٹ نہیں ہوتے</translation>
 <translation id="1476088332184200792">اپنے آلہ پر کاپی کریں</translation>
 <translation id="1476347941828409626">‏Chrome پروفائلز کا &amp;نظم کریں</translation>
+<translation id="1476595624592550506">اپنا پاس ورڈ تبدیل کریں</translation>
 <translation id="1476607407192946488">&amp;زبان کی ترتیبات</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> آپ سے اپنا اسمارٹ کارڈ داخل کئے رکھنے کا تقاضا کرتا ہے۔</translation>
 <translation id="1477654881618305065">آپ کی تنظیم آپ کو اس مواد کا اشتراک کرنے کی اجازت نہیں دیتی ہے۔ اگر آپ کو مدد درکار ہے تو اپنے منتظم سے رابطہ کریں۔</translation>
@@ -2209,7 +2210,6 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">اپنے صارف نام کی توثیق کریں</translation>
 <translation id="2517472476991765520">اسکین کریں</translation>
-<translation id="2517851527960406492">سائٹس آپ کے کی بورڈ ان پٹ کو کیپچر کرنے اور استعمال کرنے کے لیے اجازت طلب کر سکتی ہیں</translation>
 <translation id="2518024842978892609">اپنے کلائنٹ سرٹیفکیٹس استعمال کریں</translation>
 <translation id="2518620532958109495">خودکار طور پر مکمل اسکرین میں داخل ہونے کی اجازت ہے</translation>
 <translation id="2519250377986324805">طریقہ دیکھیں</translation>
@@ -2299,11 +2299,11 @@
 <translation id="2581786034175502848">‏دوبارہ فعال کرنے کے لیے 5 بار shift دبائیں</translation>
 <translation id="2581992808349413349">‏DNS (ڈومین ناموں کا نظام) میں سائٹ کا IP پتہ تلاش کرنے کے لیے محفوظ کنکشن استعمال کریں۔ یہ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> پر نظم کردہ سروس فراہم کنندہ کا استعمال کرتا ہے</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (پلیٹ فارم <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
+<translation id="2583905535229480958">کوئی بھی اسمارٹ کارڈ ریڈر</translation>
 <translation id="2584109212074498965">‏Kerberos کی ٹکٹ حاصل نہیں کی جا سکی۔ دوبارہ کوشش کریں یا اپنی تنظیم کے آلہ کے منتظم سے رابطہ کریں۔ (خرابی کا کوڈ <ph name="ERROR_CODE" />)۔</translation>
 <translation id="2584974473573720127">‏‫Chrome میں ویب سائٹ کے مائیکروفون کی اجازتوں کا نظم کریں</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> انسٹال نہیں کی جا سکی۔ براہ کرم دوبارہ کوشش کریں، یا اپنے منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="2586672484245266891">‏براہ کرم ایک مختصر تر URL درج کریں</translation>
-<translation id="2587922766792651800">وقت ختم ہو گيا</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> کے آلات</translation>
 <translation id="2589658397149952302">‏Drive فائلیں کبھی نہ دکھائیں</translation>
 <translation id="2593499352046705383">‏شروع کرنے سے پہلے ، یقینی بنائیں کہ آپ کے پاس اپنے ڈیٹا کا بیک اپ ہے۔ <ph name="DEVICE_OS" /> کو انسٹال کرنے سے آپ کی ہارڈ ڈرائیو اوور رائٹ ہو جائے گی۔ g.co/flex/InstallGuide پر مزید جانیں۔</translation>
@@ -2445,7 +2445,6 @@
 <translation id="2688734475209947648">‏آپ کو یہ پاس ورڈ یاد رکھنے کی ضرورت نہیں ہوگی۔ اسے Google پاس ورڈ مینیجر میں <ph name="ACCOUNT" /> کے لیے محفوظ کیا جائے گا۔</translation>
 <translation id="2690024944919328218">زبان کے اختیارات دکھائیں</translation>
 <translation id="2691385045260836588">ماڈل</translation>
-<translation id="2691811116976138467">سائٹس اس خصوصیت کو آپ کا کی بورڈ ان پٹ جیسے گیمز یا ریموٹ ڈیسک ٹاپ ایپس کی خاطر کیپچر کرنے اور استعمال کرنے کے لیے استعمال کرتی ہیں</translation>
 <translation id="2692503699962701720">عنصر کی اقسام اور فارمیٹ کردہ ٹیکسٹ بولتے وقت پِچ تبدیل کریں</translation>
 <translation id="2692901429679246677">فیروزی</translation>
 <translation id="2693134906590795721">چارج کرنے کی آوازیں</translation>
@@ -4409,7 +4408,6 @@
 <translation id="4065876735068446555">آپ کا زیر استعمال نیٹ ورک (<ph name="NETWORK_ID" />) آپ سے اپنا لاگ ان صفحہ ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
 <translation id="4065931125325392744">ممکن ہے کہ یہ ایکسٹینشن جلد ہی مزید تعاون یافتہ نہ ہو</translation>
 <translation id="4066207411788646768">اپنے نیٹ ورک میں دستیاب پرنٹرز دیکھنے کے لیے براہ کرم اپنا کنکشن چیک کریں</translation>
-<translation id="4066458014195202324">آپ کے کی بورڈ ان پٹ کو کیپچر کرنے اور استعمال کرنے کی اجازت دی گئی</translation>
 <translation id="4067839975993712852">موجودہ ٹیب کو پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="4068776064906523561">محفوظ کردہ فنگر پرنٹس</translation>
 <translation id="4070132839822635162">سائن ان نہ کریں</translation>
@@ -4774,7 +4772,6 @@
 <translation id="4345587454538109430">کنفیگر کریں…</translation>
 <translation id="4345732373643853732">صارف نام سرور کے لیے نامعلوم ہے</translation>
 <translation id="4346159263667201092">اختیاری تفصیلات شامل کریں</translation>
-<translation id="4348426576195894795">‏اس اکاؤنٹ کو ہٹانے سے اس کے ساتھ سائن ان کردہ Chrome کی سبھی پروفائلز بھی حذف ہو جائیں گی</translation>
 <translation id="4348766275249686434">خرابیاں جمع کریں</translation>
 <translation id="4349828822184870497">مفید</translation>
 <translation id="4350230709416545141">اپنے مقام تک رسائی حاصل کرنے سے <ph name="HOST" /> کو ہمیشہ مسدود کریں</translation>
@@ -4849,7 +4846,6 @@
 <translation id="4403012369005671154">اسپیچ ٹو ٹیکسٹ</translation>
 <translation id="4403266582403435904">‏ڈیٹا کو آسانی سے بحال کریں یا کسی بھی وقت آلات پر سوئچ کریں۔ بیک اپس کو Google پر اپ لوڈ کیا جاتا ہے اور آپ کے بچے کے Google اکاؤنٹ کا پاس ورڈ استعمال کر کے انہیں مرموز کیا جاتا ہے۔</translation>
 <translation id="4403775189117163360">ایک مختلف فولڈر منتخب کریں</translation>
-<translation id="4404136731284211429">دوبارہ اسکین کریں</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> آپ کے والدین کے ذریعے مسدود ہے۔ اپنے والدین سے اس ایپ کا استعمال کرنے کی اجازت طلب کریں۔</translation>
 <translation id="4405117686468554883">‎*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">اس میں منتقل کریں…</translation>
@@ -5124,7 +5120,6 @@
 <translation id="4598549027014564149">پوشیدگی موڈ میں ہونے پر سائٹس تمام سائٹس یہاں تک کہ متعلقہ سائٹس میں آپ کی براؤزنگ سرگرمی کو دیکھنے کے لیے کوکیز کا استعمال نہیں کر سکتی ہیں۔ آپ کی براؤزنگ کی سرگرمی اشتہارات کو ذاتی نوعیت کا بنانے جیسی چیزوں کے لیے استعمال نہیں کی جاتی ہے۔ ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں۔</translation>
 <translation id="4598556348158889687">اسٹوریج کا نظم</translation>
 <translation id="4598776695426288251">‏متعدد آلات کے ذریعے Wi-Fi دستیاب ہے</translation>
-<translation id="4599323532350839656">آپ کے کی بورڈ ان پٹ کو کیپچر اور استعمال کرنے کی اجازت نہیں ہے</translation>
 <translation id="4600071396330666617">تجاویز کی تعداد</translation>
 <translation id="4601095002996233687">مشتبہ ڈاؤن لوڈز کے لیے گہرائی سے اسکینز کرتا ہے۔</translation>
 <translation id="4601426376352205922">نہ پڑھا ہوا کے بطور نشان زد کریں</translation>
@@ -5765,7 +5760,6 @@
 <translation id="5068919226082848014">پزّا</translation>
 <translation id="5071295820492622726">حالیہ ڈاؤن لوڈز پر واپس جائیں</translation>
 <translation id="5071892329440114717">معیاری تحفظ کی تفصیلات دکھائیں</translation>
-<translation id="5072303130033714629">مواد کی منتقلی کا ٹول</translation>
 <translation id="5072500507106264618">صرف سسٹم سروسز آپ کا مقام استعمال کر سکتی ہیں</translation>
 <translation id="5072836811783999860">منظم کردہ بُک مارکس دکھائیں</translation>
 <translation id="5072900412896857127">‏Google Play سروس کی شرائط کو لوڈ نہیں کیا جا سکتا ہے۔ براہ کرم اپنا نیٹ ورک کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
@@ -6182,7 +6176,6 @@
 <translation id="5372579129492968947">ایکسٹینشن سے پن ہٹائیں</translation>
 <translation id="5372632722660566343">اکاؤنٹ کے بغیر جاری رکھیں</translation>
 <translation id="5372990315769030589">"<ph name="EXTENSION_NAME" />" کو برقرار رکھیں؟</translation>
-<translation id="5374324662289354619">اندرونی ڈیبگنگ صفحات فی الحال غیر فعال ہیں۔</translation>
 <translation id="5375318608039113175">‏ان رابطوں کے ساتھ قریبی آلات کے ساتھ اشتراک کا استعمال کرنے کیلئے ان کے Google اکاؤنٹ سے لنک کردہ ای میل پتے کو اپنے رابطوں میں شامل کریں۔</translation>
 <translation id="5375374982898812658">آپ فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائیں گے، اور اسے آپ کے تمام آلات سے حذف کر دیا جائے گا</translation>
 <translation id="5375577102295339548">سائٹس اس بات کی تصدیق کرنے میں مدد کر سکتی ہیں کہ آپ بوٹ نہیں ہیں</translation>
@@ -7315,7 +7308,6 @@
 <translation id="61988015556954366">اسکرین فلیش</translation>
 <translation id="6200047250927636406">فائل مسترد کریں</translation>
 <translation id="6200151268994853226">ایکسٹینشن کا نظم کریں</translation>
-<translation id="6201608810045805374">اس اکاؤنٹ کو ہٹائیں؟</translation>
 <translation id="6202304368170870640">‏آپ اپنا آلہ غیر مقفل کرنے یا اس میں سائن ان ہونے کے لیے اپنا PIN استعمال کر سکتے ہیں۔</translation>
 <translation id="6202935572248792580">اجازت دی گئی۔ مائیکروفون کو اپنے آلہ سے منسلک کریں۔</translation>
 <translation id="6203247599828309566">آپ نے اس سائٹ پر پاس ورڈ کے لیے ایک نوٹ محفوظ کیا ہے۔ اسے دیکھنے کے لیے کلید کے آئیکن پر کلک کریں۔</translation>
@@ -7327,7 +7319,6 @@
 <translation id="6207937957461833379">ملک/علاقہ</translation>
 <translation id="6208521041562685716">موبائل ڈیٹا فعال کیا جا رہا ہے</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /> میں محفوظ کرنے میں ناکام ہو گیا</translation>
-<translation id="6209767197996242814">اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="SETTINGS_LINK" />۔</translation>
 <translation id="6209908325007204267">‏آپ کے آلے میں Chrome انٹرپرائز اپ گریڈ شامل ہے، لیکن آپ کا صارف نام انٹرپرائز اکاؤنٹ سے وابستہ نہیں ہے۔ براہ کرم کسی ثانوی آلہ پر g.co/ChromeEnterpriseAccount ملاحظہ کرکے انٹرپرائز اکاؤنٹ بنائیں۔</translation>
 <translation id="6210282067670792090">ایڈریس بار میں، اس کی بورڈ شارٹ کٹ کو سرچ انجن اور سائٹ کی تلاش کے لیے شارٹ کٹ کے ساتھ استعمال کریں</translation>
 <translation id="6211067089253408231">فوری ہاٹ اسپاٹ آن کریں</translation>
@@ -8610,7 +8601,6 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> ایپ آپ کا مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="7140785920919278717">ایپلیکیشن انسٹالر</translation>
 <translation id="7141105143012495934">سائن ان ناکام ہو گیا کیونکہ آپ کے اکاؤنٹ کی تفصیلات کی بازیافت نہيں ہو سکی۔ براہ کرم اپنے منتظم سے رابطہ کریں یا دوبارہ کوشش کریں۔</translation>
-<translation id="7141470099673912333">مواد کی منتقلی</translation>
 <translation id="7141844554192012199">چیک اپ</translation>
 <translation id="714301620504747562">براؤز کرنا اور تلاش کرنا معیاری پیشگی لوڈنگ سے زیادہ تیز ہے</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
@@ -10070,7 +10060,6 @@
 <translation id="8176529144855282213">مائیکروفون تک رسائی کو آن کرنے کے لیے، اپنے آلے پر فزیکل مائیکروفون سوئچ کو آن کریں</translation>
 <translation id="8177196903785554304">نیٹ ورک کی تفصیلات</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{ٹیب کو نئی ونڈو میں منتقل کریں}other{ٹیبز کو نئی ونڈو میں منتقل کریں}}</translation>
-<translation id="8179188928355984576">‏Android ایپس کے ساتھ استعمال نہیں کیا گیا</translation>
 <translation id="8179976553408161302">انٹر</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />۔ <ph name="NUM_PRINTERS" /> میں سے <ph name="ITEM_POSITION" /> پرنٹر۔</translation>
 <translation id="8180785270975217276">انرجی سیور آن ہو گیا</translation>
@@ -10631,7 +10620,6 @@
 <translation id="8577052309681449949">خودکار کلکس، کرسر کا سائز، کرسر کا رنگ، اور بہت کچھ</translation>
 <translation id="8578639784464423491">99 حروف سے زیادہ نہیں ہو سکتا</translation>
 <translation id="8581809080475256101">آگے جانے کیلئے دبائیں، سرگزشت دیکھنے کیلئے سیاق و سباق کا مینیو</translation>
-<translation id="8583122761178401199">سائٹس کو اپنا کی بورڈ ان پٹ کیپچر کرنے اور استعمال کرنے کی اجازت نہ دیں</translation>
 <translation id="8584280235376696778">&amp;ویڈیو نئے ٹیب میں کھولیں</translation>
 <translation id="858451212965845553">اپنے آلات پر بھیجیں</translation>
 <translation id="8584843865238667486">‏<ph name="USAGE_PAGE" /> استعمال کے صفحے سے <ph name="USAGE" /> استعمال والے HID آلات</translation>

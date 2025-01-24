@@ -296,7 +296,9 @@
 <translation id="2240366984605217732">สลับเลย์เอาต์</translation>
 <translation id="2244834438220057800">เขียว</translation>
 <translation id="225692081236532131">สถานะการเปิดใช้งาน</translation>
+<translation id="2265792117169966196">เลือกและดาวน์โหลดโมเดลการถอดเสียงเป็นคำของภาษา<ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">เพิ่มภาพหน้าจอ</translation>
+<translation id="2268044343513325586">ปรับแต่ง</translation>
 <translation id="2271469253353559191">กำหนดเวลาโหมดมืด</translation>
 <translation id="2276999893457278469">เนื้อหาช่วยเหลือยอดนิยม</translation>
 <translation id="2277631741861284101">บันทึกและแชร์เสียงได้ง่ายๆ</translation>
@@ -464,7 +466,6 @@
 <translation id="3226405216343213872">กำลังค้นหาเครื่องสแกน</translation>
 <translation id="3226657629376379887">เมนูการทำงานสำหรับเลย์เอาต์</translation>
 <translation id="3227186760713762082">นำค่า <ph name="CATEGORY_TEXT" /> มาหารด้วย <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">เขียนใหม่</translation>
 <translation id="3246869037381808805">ระบบจะนำงานพิมพ์ที่เก่ากว่า 1 วันออก</translation>
 <translation id="324961752321393509">ผู้ดูแลระบบไม่อนุญาตให้ปิดแอปนี้</translation>
 <translation id="3263941347294171263">ถอดสายของ <ph name="DEVICE_NAME" /> แล้วเสียบใหม่เพื่ออัปเดตต่อ</translation>
@@ -509,6 +510,7 @@
 <translation id="3462187165860821523">กำลังอัปเดต <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">กระแสไฟฟ้า</translation>
 <translation id="346539236881580388">ถ่ายใหม่</translation>
+<translation id="3479552764303398839">ไม่ใช่ตอนนี้</translation>
 <translation id="3484914941826596830">ขณะอัปเดตเฟิร์มแวร์ โปรดอย่าถอดปลั๊กอุปกรณ์ภายนอกเครื่องนี้หรือปิดคอมพิวเตอร์ คุณย่อหน้าต่างนี้ให้เล็กสุดได้ การอัปเดตอาจใช้เวลาสักครู่และอุปกรณ์ภายนอกอาจใช้ไม่ได้ในช่วงเวลานี้</translation>
 <translation id="3486220673238053218">คำจำกัดความ</translation>
 <translation id="3487866404496702283">ความคิดเห็นเกี่ยวกับฟีเจอร์ mahi</translation>
@@ -567,6 +569,7 @@
 <translation id="3763034084412196440">ปรับระดับเสียง</translation>
 <translation id="3767737419527918477">ค้นหาไฟล์บันทึก</translation>
 <translation id="3771294271822695279">ไฟล์วิดีโอ</translation>
+<translation id="3771694256347217732">ข้อกำหนดในการให้บริการของ Google</translation>
 <translation id="3780740315729837296">กำหนดแป้นบนแป้นพิมพ์</translation>
 <translation id="3784455785234192852">ล็อก</translation>
 <translation id="3785643128701396311">พิกเซลอาร์ต</translation>
@@ -772,6 +775,7 @@
 <translation id="473775607612524610">อัปเดต</translation>
 <translation id="4744944742468440486">ข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก</translation>
 <translation id="4750394297954878236">คำแนะนำ</translation>
+<translation id="4763771683769971829">รายการภาษาที่พร้อมให้บริการ</translation>
 <translation id="4771607256327216405">เพิ่มความสว่างของแป้นพิมพ์</translation>
 <translation id="4771923071974529837">พรุ่งนี้</translation>
 <translation id="4773299976671772492">หยุดแล้ว</translation>
@@ -853,6 +857,7 @@
 <translation id="5095761549884461003">ถอดสาย USB ของ <ph name="DEVICE_NAME" /> แล้วเสียบใหม่เพื่ออัปเดตต่อ</translation>
 <translation id="5099354524039520280">ขึ้น</translation>
 <translation id="5107243100836678918">แป้นพิมพ์ลัดที่ไม่มีแป้น<ph name="META_KEY" />อาจขัดแย้งกับแป้นพิมพ์ลัดของบางแอป กดแป้นพิมพ์ลัดนี้อีกครั้งเพื่อใช้ต่อไป หรือกดแป้นพิมพ์ลัดใหม่โดยใช้แป้น<ph name="KEY" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">ดาวน์โหลดโมเดลการถอดเสียงเป็นคำของภาษา<ph name="LANGUAGE_NAME" />ไม่ได้ โปรดลองอีกครั้งหรือรีสตาร์ท Chromebook</translation>
 <translation id="5108781503443873320">คล้ายกัน:</translation>
 <translation id="5121677070210013200">ดาวน์โหลดโมเดลการถอดเสียงเป็นคำไม่ได้ โปรดลองอีกครั้งหรือรีสตาร์ท Chromebook</translation>
 <translation id="5130848777448318809">ม้าแคระ</translation>
@@ -1053,7 +1058,6 @@
 <translation id="6075872808778243331">(Android) เวลาในการตอบสนองของ HTTP</translation>
 <translation id="6078323886959318429">เพิ่มทางลัด</translation>
 <translation id="6091080061796993741">เหลือง</translation>
-<translation id="6093853427925392522">โปรดใช้แอป Content Transfer โดย Google เพื่อย้ายข้อมูลบัญชีโรงเรียนไปยังบัญชีส่วนตัวก่อนที่คุณจะสูญเสียสิทธิ์เข้าถึง</translation>
 <translation id="6104112872696127344">ยกเลิกการสแกนแล้ว</translation>
 <translation id="6106186594183574873">ป้อนรหัสผ่านเดิมเพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
 <translation id="6108689792487843350">เข้าถึงเกตเวย์ไม่ได้</translation>
@@ -1277,6 +1281,7 @@
 <translation id="7049916119678019302">ดาวน์โหลดโมเดลการถอดเสียงเป็นคำในการตั้งค่า</translation>
 <translation id="7058278511608979688">สิ้นสุดและบันทึก</translation>
 <translation id="7059230779847288458">กำลังชาร์จ อีก <ph name="TIME_VALUE" />จะเต็ม</translation>
+<translation id="7065336548231472971">เลือกไว้ <ph name="LANGUAGE_NAME" /> รายการ</translation>
 <translation id="7066538517128343186">คีย์ <ph name="KEY" /></translation>
 <translation id="7068619307603204412">เตรียมอุปกรณ์ให้พร้อม</translation>
 <translation id="7076851914315147928">เลือกวอลเปเปอร์</translation>
@@ -1300,7 +1305,6 @@
 <translation id="7135814714616751706">ค้นหาทางลัด</translation>
 <translation id="7138614237884624401">ข้อความอย่างง่าย</translation>
 <translation id="7138668887584231801">มีคำไม่เพียงพอที่จะสรุป</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
 <translation id="7144954474087165241">เจดีย์</translation>
@@ -1371,6 +1375,7 @@
 <translation id="7415801143053185905">เวลาในการตอบสนองของ HTTP สูงมาก</translation>
 <translation id="7418738250896500352">มีคำมากเกินไปที่จะย่อความ</translation>
 <translation id="7425037327577270384">ช่วยฉันเขียน</translation>
+<translation id="7425832472614771259">ดาวน์โหลดโมเดลการถอดเสียงเป็นคำของภาษา<ph name="LANGUAGE_NAME" />แล้ว <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ปิดใช้หรือนํา APN นี้ออกไม่ได้ ตรวจสอบว่า APN แบบ <ph name="ATTACH" /> ที่เปิดใช้อยู่ถูกปิดใช้หรือนำออกแล้ว</translation>
 <translation id="7453118953486228603">คลิกเพื่อสรุปข้อความที่เลือก</translation>
@@ -1407,6 +1412,7 @@
 <translation id="7595982850646262331">เหลือ <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">ผู้ดูแลระบบ <ph name="MANAGER" /> ได้กำหนดเวลาที่จะใช้ <ph name="DEVICE_TYPE" /> เครื่องนี้ได้</translation>
 <translation id="7613724632293948900">เปลี่ยนตำแหน่งด้วยเมาส์หรือแป้นลูกศร</translation>
+<translation id="7618216277886673749">เลือก <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">ปานกลาง</translation>
 <translation id="7620771111601174153">ดูข้อมูลเพิ่มเติมในศูนย์ช่วยเหลือ</translation>
 <translation id="7625095758347640998">วอลเปเปอร์ AI</translation>
@@ -1541,7 +1547,6 @@
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8262870577632766028">1 ชั่วโมง</translation>
 <translation id="827422111966801947">สีคราม</translation>
-<translation id="8281886186245836920">ข้าม</translation>
 <translation id="8286154143153872371">โปรดเชื่อมต่อเครือข่ายและโหลดหน้าซ้ำเพื่อดูวอลเปเปอร์</translation>
 <translation id="8291967909914612644">ประเทศผู้ให้บริการหน้าแรก</translation>
 <translation id="8294431847097064396">แหล่งที่มา</translation>
@@ -1646,6 +1651,7 @@
 <translation id="8797082062139985406">สร้างชื่อโดยใช้ AI ของ Google</translation>
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>
 <translation id="8798441408945964110">ชื่อผู้ให้บริการ</translation>
+<translation id="8804164990146287819">นโยบายความเป็นส่วนตัว</translation>
 <translation id="8808828119384186784">การตั้งค่า Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">วอลเปเปอร์</translation>

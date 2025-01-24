@@ -202,7 +202,6 @@
 <translation id="345171907106878721">Додати себе в Chrome</translation>
 <translation id="3453763134178591239">Умови використання ОС Chrome</translation>
 <translation id="3503306920980160878">Chrome потрібен доступ до геоданих, щоб повідомляти цьому сайту ваше місцезнаходження</translation>
-<translation id="3512634283363927263">Ці сторінки призначені для розробників Chrome. Вони можуть не підтримуватися й не тестуватися. Щоб увімкнути їх, перейдіть за посиланням <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, натисніть кнопку, щоб увімкнути сторінки налагодження, а потім поверніться сюди.</translation>
 <translation id="3533694711092285624">Немає збережених паролів. Chrome зможе перевірити ваші паролі, коли ви їх збережете.</translation>
 <translation id="3541482654983822893">Chrome не може перевірити паролі. Повторіть спробу через 24 години.</translation>
 <translation id="3564543103555793392">Увійшовши в Chrome, ви можете зберігати закладки, паролі тощо, а потім використовувати їх на телефоні</translation>
@@ -220,7 +219,6 @@
 <translation id="3673813398384385993">Веб-переглядач Chrome виявив, що розширення "<ph name="EXTENSION_NAME" />" містить зловмисне програмне забезпечення</translation>
 <translation id="3695446226812920698">Докладніше</translation>
 <translation id="3697952514309507634">Інші профілі Chrome</translation>
-<translation id="3700276346088749847">очистьте дані Chrome у своєму обліковому записі</translation>
 <translation id="3703994572283698466">ОС Chrome і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Версія ОС Chrome Flex</translation>
 <translation id="3718181793972440140">1 елемент буде видалено з цього пристрою. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>

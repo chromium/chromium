@@ -185,6 +185,7 @@
 <translation id="1310938305420497484">Сначала нужно открыть несколько вкладок и сайтов.</translation>
 <translation id="1314311879718644478">Смотрите контент в режиме дополненной реальности.</translation>
 <translation id="1314509827145471431">Скрепление справа</translation>
+<translation id="1314784609072437689">переопределение клавиш</translation>
 <translation id="1316805916535763484">Открытые онлайн-курсы</translation>
 <translation id="1318023360584041678">Сохранено в группе вкладок</translation>
 <translation id="1319245136674974084">Больше не спрашивать для этого приложения</translation>
@@ -911,7 +912,6 @@
 <translation id="255497580849974774">Необходимо, чтобы во время обновления устройство заряжалось.</translation>
 <translation id="2556876185419854533">&amp;Отменить изменения</translation>
 <translation id="2559566667529177711">Многослойный материал</translation>
-<translation id="2565789370591907825">Управление клавиатурой</translation>
 <translation id="2570734079541893434">Настройки</translation>
 <translation id="257136025287118539">Администратор переносит файлы в <ph name="CLOUD_PROVIDER" />. Когда все будет готово, с ними снова можно будет работать.</translation>
 <translation id="2571488850200220306">В целях безопасности администратору доступна информация об операционной системе устройства, версии браузера и установленном программном обеспечении.</translation>
@@ -1109,7 +1109,6 @@
 <translation id="2974468223369775963">Не удалось сохранить код IBAN в аккаунте Google. Вместо этого код был сохранен в Chrome на устройстве. Браузер предложит повторить попытку, когда вы снова воспользуетесь кодом IBAN.</translation>
 <translation id="297667759942911166">Совместная работа в группах вкладок</translation>
 <translation id="2977665033722899841">Сейчас выбрано – <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" />.</translation>
-<translation id="2977847223286097084">Управление клавиатурой</translation>
 <translation id="2978824962390592855">Опера</translation>
 <translation id="2979424420072875974">Ресурсы для писателей</translation>
 <translation id="2979639724566107830">Открыть в новом окне</translation>
@@ -2465,6 +2464,7 @@
 <translation id="5363532265530011914">Чулочно-носочные изделия</translation>
 <translation id="5371425731340848620">Изменить информацию о карте</translation>
 <translation id="537425196847960924">Пользователь <ph name="USER_DISPLAY_NAME" /> изменил вкладку</translation>
+<translation id="5374324662289354619">Внутренние страницы для отладки отключены.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Часы отстают", "Часы спешат" или &lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;</translation>
 <translation id="5379618281582508161">Чтобы пароль был доступен на всех ваших устройствах, подтвердите личность.</translation>
@@ -2920,6 +2920,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome автоматически ограничивает использование сторонних файлов cookie</translation>
 <translation id="6188479691141473408">и ещё несколько полей (<ph name="N_FIELDS" />)</translation>
+<translation id="6190518157737269631">Переопределение некоторых клавиш, например Esc.</translation>
 <translation id="6194209731893739467">Здесь вы найдете все отслеживаемые товары</translation>
 <translation id="6195163219142236913">Использование сторонних файлов cookie ограничено</translation>
 <translation id="6195371403461054755">Геология</translation>
@@ -3045,6 +3046,7 @@
 <translation id="6394852772105848029">Этот сайт пытается открыть приложение "<ph name="APP_NAME" />".</translation>
 <translation id="639673288733510393">Скутеры и мопеды</translation>
 <translation id="6398765197997659313">Обычный режим</translation>
+<translation id="6399633237874954301">Администратор разрешил использовать устройство чтения смарт-карт</translation>
 <translation id="6401136357288658127">Правило устарело. Используйте <ph name="NEW_POLICY" />.</translation>
 <translation id="640163077447496506">Срок действия истекает сегодня</translation>
 <translation id="6402537308870515461">Проверьте файлы, перед тем как переносить их</translation>
@@ -4106,7 +4108,6 @@
 <translation id="8278544367771164040">Коммерческое кредитование</translation>
 <translation id="8279290844152565425">Концерты и музыкальные фестивали</translation>
 <translation id="8279611986089885641">Необходимо включить уведомления в Chrome. Чтобы сделать это, откройте <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Заблокировать клавиатуру?</translation>
 <translation id="8280630997017109758">Лоток 11</translation>
 <translation id="8281730697546299650">Доступны другие функции конфиденциальности в рекламе</translation>
 <translation id="8281886186245836920">Пропустить</translation>
@@ -4176,7 +4177,6 @@
 <translation id="8398335999901363925">Список способов оплаты, данные которых можно ввести нажатием, развернут полностью.</translation>
 <translation id="8398446215576328011">Отменить примененные правила</translation>
 <translation id="8398790343843005537">Найти телефон</translation>
-<translation id="8399276468426899527">Управление клавиатурой</translation>
 <translation id="8400929824946688748">Работа и образование</translation>
 <translation id="8402442052798347631">На этом сайте злоумышленники могут обманом заставить вас установить вредоносное ПО, которое будет мешать вашей работе в браузере (например, менять главную страницу или показывать дополнительную рекламу на сайтах). Мы настоятельно рекомендуем вернуться на безопасную страницу. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="8403506619177967839">Фанфики</translation>
@@ -4194,6 +4194,7 @@
 <translation id="8421158157346464398">Информацию о рабочем профиле, например имя пользователя.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Изменить</translation>
+<translation id="8426945547715537628">Разрешить переопределение клавиш?</translation>
 <translation id="8427848540066057481">500 x 750 мм</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428634594422941299">ОК</translation>
@@ -4280,6 +4281,7 @@
 <translation id="8574841453995331336">Холодильники и морозильные камеры</translation>
 <translation id="8577192028579836704">Средняя цена: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Виртуальная карта недоступна</translation>
+<translation id="8579000896558714521">Переопределение клавиш</translation>
 <translation id="8580265901435899937">Туристические направления</translation>
 <translation id="8581064022803799721">Эта страница сохранена в папке "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="8586082901536468629">Инвентарь для сквоша и ракетбола</translation>

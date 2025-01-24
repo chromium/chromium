@@ -399,7 +399,6 @@
 <translation id="6455857529632101747">Damos-lhe as boas-vindas aos perfis do Chromium</translation>
 <translation id="6466344609055215035">Remover conta do Chromium</translation>
 <translation id="6475912303565314141">Também controla a página apresentada quando inicia o Chromium.</translation>
-<translation id="648062525172759633">Estas páginas destinam-se a ser usadas por programadores do Chromium e podem não ser testadas nem mantidas ativamente. Para as ativar, navegue para <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, clique no botão para ativar as páginas de depuração e, em seguida, navegue para esta página novamente.</translation>
 <translation id="648319183876919572">A Navegação segura melhorada faz mais para proteger contra transferências e Websites perigosos</translation>
 <translation id="6510925080656968729">Desinstalar o Chromium</translation>
 <translation id="651535675648445253">Os atalhos são abertos no Chromium</translation>
@@ -533,7 +532,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8313851650939857356">Erro de arranque: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">A sua organização fecha o Chromium quando este não é usado durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Guardar como imagem</translation>
-<translation id="8326785589245660814">limpe os dados do Chromium na sua conta</translation>
 <translation id="8330519371938183845">Inicie sessão para sincronizar e personalizar o Chromium em todos os dispositivos.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> estava a utilizar o Chromium</translation>
 <translation id="8359544530202147897">Atualize o Chromium para continuar a usar os dados do Chromium na sua Conta Google, <ph name="ACCOUNT_EMAIL" /></translation>

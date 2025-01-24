@@ -476,6 +476,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="3053332585453689122">Šalje URL-ove koje posećujete i mali uzorak sadržaja stranice, preuzimanja, aktivnosti dodataka i informacija o sistemu u Google bezbedno pregledanje radi provere štetnosti.</translation>
 <translation id="3055102495753300780">Memorijski prostor za podatke</translation>
 <translation id="3059270601560379555">Nova pretraga</translation>
+<translation id="3064547930554042309">Upravljajte preuzimanjima</translation>
 <translation id="3072279342064724558">Lozinka već postoji</translation>
 <translation id="3076846064362030967">Nećemo vas odjaviti sa Google naloga. <ph name="BEGIN_LINK" />Drugi oblici aktivnosti<ph name="END_LINK" /> mogu da se sačuvaju na Google nalogu kada ste prijavljeni. Možete da ih izbrišete u bilo kom trenutku.
 
@@ -543,7 +544,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3409785640040772790">Mape</translation>
 <translation id="3416023309465857378">25. oktobar 2023.</translation>
 <translation id="3435738964857648380">Bezbednost</translation>
-<translation id="343850944564645513">Najposećeniji sajtovi</translation>
 <translation id="3443810440409579745">Kartica je primljena.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Saznajte više o Google objektivu</translation>
@@ -658,7 +658,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3967327056943561740">Obeleživači</translation>
 <translation id="3967822245660637423">Preuzimanje je dovršeno</translation>
 <translation id="3982893814825393515">Prijavljivanje problema…</translation>
-<translation id="3984527584375648997">Sakrij Najposećenije sajtove</translation>
 <translation id="398604237578616937">Prijavljeni ste kao <ph name="USER_EMAIL" />. Otvori meni naloga.</translation>
 <translation id="3986739045730058129">Idi na karticu</translation>
 <translation id="3992684624889376114">O ovoj stranici</translation>
@@ -700,6 +699,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4154753961803534698">Pretražite pomoću kamere</translation>
 <translation id="4158491215857439601">Menadžer lozinki</translation>
 <translation id="4163699139741158298">{count,plural, =1{Obeleživač je sačuvan u: {title}. Čuva se samo na ovom uređaju.}one{{count} obeleživač je sačuvan u: {title}. Čuva se samo na ovom uređaju.}few{{count} obeleživača su sačuvana u: {title}. Čuvaju se samo na ovom uređaju.}other{{count} obeleživača je sačuvano u: {title}. Čuvaju se samo na ovom uređaju.}}</translation>
+<translation id="4164514562270305824">Automatski briši preuzimanja</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> se završava brojevima <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Ne dozvoli</translation>
 <translation id="4172051516777682613">Uvek prikaži</translation>
@@ -1016,9 +1016,9 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5576885723883013398">Novi prozor</translation>
 <translation id="5578795271662203820">Potraži ovu sliku na <ph name="SEARCH_ENGINE" />-u</translation>
 <translation id="5579012242779565775">Sakrij opciju Lista za čitanje</translation>
-<translation id="5581202956276923239">Prečice za sajtove</translation>
 <translation id="5585019845078534178">Kartice</translation>
 <translation id="5595485650161345191">Izmena adrese</translation>
+<translation id="559567008082979829">Podesite da se preuzimanja brišu posle jednog meseca.</translation>
 <translation id="5596627076506792578">Još opcija</translation>
 <translation id="560322036295180549">Isključila je organizacija</translation>
 <translation id="5611107723541161735">Prečice do sajtova koje ste nedavno posetili na ovom uređaju.</translation>

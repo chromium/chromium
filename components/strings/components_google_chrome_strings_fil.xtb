@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Nagiging posible ang Chrome sa pamamagitan ng <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> open source project at iba pang <ph name="BEGIN_LINK_OSS" />open source software<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logo ng Chrome</translation>
 <translation id="3444832043240812445">Ipinapakita lang ng pahinang ito ang impormasyon ng iyong kamakailang mga pag-crash kung <ph name="BEGIN_LINK" />papaganahin mo ang pag-uulat ng pag-crash<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Nakalaan ang mga page na ito para sa paggamit ng mga developer ng Chrome, at posibleng hindi ito aktibong pinapanatili o sinusubukan. Para i-enable ang mga ito, mag-navigate papunta sa <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, i-click ang button para i-enable ang mga page sa pag-debug, at pagkatapos ay mag-navigate ulit papunta sa page na ito.</translation>
 <translation id="3875312571075912821">Pahintulutan ang Chrome na i-access ang network
           sa mga setting ng iyong firewall o antivirus.</translation>
 <translation id="5005121315113832363">Na-block ng Chrome ang page na ito</translation>

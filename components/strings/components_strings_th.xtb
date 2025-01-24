@@ -911,7 +911,6 @@
 <translation id="255497580849974774">โปรดเชื่อมต่ออุปกรณ์กับที่ชาร์จในระหว่างการอัปเดต</translation>
 <translation id="2556876185419854533">&amp;เลิกทำการแก้ไข</translation>
 <translation id="2559566667529177711">หลายชั้น</translation>
-<translation id="2565789370591907825">การล็อกและการใช้แป้นพิมพ์</translation>
 <translation id="2570734079541893434">จัดการการตั้งค่า</translation>
 <translation id="257136025287118539">ผู้ดูแลระบบกำลังย้ายไฟล์ของคุณไปยัง <ph name="CLOUD_PROVIDER" /> คุณจะแก้ไขไฟล์เหล่านี้ได้เมื่อการอัปโหลดเสร็จสมบูรณ์</translation>
 <translation id="2571488850200220306">เพื่อช่วยตรวจสอบการรักษาความปลอดภัย ยังสามารถดูระบบปฏิบัติการ เวอร์ชันเบราว์เซอร์ และซอฟต์แวร์ที่ติดตั้งของอุปกรณ์ได้อีกด้วย</translation>
@@ -1109,7 +1108,6 @@
 <translation id="2974468223369775963">บันทึก IBAN นี้ในบัญชี Google ไม่ได้ แต่บันทึกลงใน Chrome บนอุปกรณ์นี้แทน Chrome จะถามคุณอีกครั้งในครั้งถัดไปที่คุณใช้ IBAN นี้</translation>
 <translation id="297667759942911166">ทำงานร่วมกันในกลุ่มแท็บ</translation>
 <translation id="2977665033722899841">เลือก <ph name="ROW_NAME" /> อยู่ตอนนี้ <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">ล็อกและใช้แป้นพิมพ์</translation>
 <translation id="2978824962390592855">อุปรากร</translation>
 <translation id="2979424420072875974">ทรัพยากรสำหรับนักเขียน</translation>
 <translation id="2979639724566107830">เปิดในหน้าต่างใหม่</translation>
@@ -2465,6 +2463,7 @@
 <translation id="5363532265530011914">ถุงเท้าและถุงน่อง</translation>
 <translation id="5371425731340848620">อัปเดตบัตร</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> เปลี่ยนแท็บแล้ว</translation>
+<translation id="5374324662289354619">หน้าการแก้ไขข้อบกพร่องภายในปิดใช้อยู่ในขณะนี้</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"นาฬิกาของคุณช้ากว่าปัจจุบัน" หรือ "นาฬิกาของคุณเร็วกว่าปัจจุบัน" หรือ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">หากต้องการรับรหัสผ่านนี้ในอุปกรณ์ทุกเครื่อง โปรดยืนยันว่าเป็นคุณ</translation>
@@ -4107,7 +4106,6 @@
 <translation id="8278544367771164040">สินเชื่อธุรกิจ</translation>
 <translation id="8279290844152565425">คอนเสิร์ตและเทศกาลดนตรี</translation>
 <translation id="8279611986089885641">ต้องเปิดการแจ้งเตือนของ Chrome ซึ่งทำได้ใน<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /></translation>
-<translation id="8280387559022105172">ล็อกแป้นพิมพ์ไหม</translation>
 <translation id="8280630997017109758">ถาด 11</translation>
 <translation id="8281730697546299650">ฟีเจอร์อื่นๆ ด้านความเป็นส่วนตัวเกี่ยวกับโฆษณาพร้อมใช้งานแล้ว</translation>
 <translation id="8281886186245836920">ข้าม</translation>
@@ -4177,7 +4175,6 @@
 <translation id="8398335999901363925">วิธีการชำระเงินที่พร้อมใช้งานสำหรับการกรอกเมื่อแตะเปิดอยู่ที่ระดับความสูงเต็มหน้าจอ</translation>
 <translation id="8398446215576328011">เปลี่ยนกลับนโยบายที่บังคับใช้</translation>
 <translation id="8398790343843005537">หาโทรศัพท์ของคุณ</translation>
-<translation id="8399276468426899527">การล็อกและการใช้แป้นพิมพ์</translation>
 <translation id="8400929824946688748">งานและการศึกษา</translation>
 <translation id="8402442052798347631">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้คุณติดตั้งซอฟต์แวร์ที่เป็นอันตรายซึ่งส่งผลต่อการท่องเว็บ เช่น เปลี่ยนหน้าแรกหรือแสดงโฆษณาเพิ่มเติมในเว็บไซต์ที่เข้าชม Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัยเพื่อหลีกเลี่ยงอันตราย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">นวนิยายแฟนตาซี</translation>

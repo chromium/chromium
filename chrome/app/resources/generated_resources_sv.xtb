@@ -688,6 +688,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1475502736924165259">Du har certifikat i din dator som inte passar i några av de andra kategorierna</translation>
 <translation id="1476088332184200792">Kopiera till din enhet</translation>
 <translation id="1476347941828409626">&amp;Hantera Chrome-profiler</translation>
+<translation id="1476595624592550506">Ändra lösenordet</translation>
 <translation id="1476607407192946488">&amp;Språkinställningar</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> kräver att du har smartkortet isatt.</translation>
 <translation id="1477654881618305065">Organisationen tillåter inte att du delar innehållet. Kontakta administratören om du behöver hjälp.</translation>
@@ -2220,7 +2221,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Bekräfta ditt användarnamn</translation>
 <translation id="2517472476991765520">Sök</translation>
-<translation id="2517851527960406492">Webbplatser kan be om tillåtelse att registrera och använda tangentbordsindata</translation>
 <translation id="2518024842978892609">Använda dina klientcertifikat</translation>
 <translation id="2518620532958109495">Får aktivera helskärm automatiskt</translation>
 <translation id="2519250377986324805">Se hur det går till</translation>
@@ -2315,7 +2315,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2584974473573720127">Hantera webbplatsbehörigheter för mikrofonen i Chrome</translation>
 <translation id="2586561813241011046">Det gick inte att installera <ph name="APP_NAME" />. Försök igen eller kontakta administratören. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586672484245266891">Ange en kortare webbadress</translation>
-<translation id="2587922766792651800">Tidsgränsen överskreds</translation>
 <translation id="2588636910004461974">Enheter från <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Visa aldrig Drive-filer</translation>
 <translation id="2593499352046705383">Kontrollera att du har en säkerhetskopia av din data innan du börjar. All data på hårddisken skrivs över när du installerar <ph name="DEVICE_OS" />. Läs mer på g.co/flex/InstallGuide.</translation>
@@ -2457,7 +2456,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2688734475209947648">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering för <ph name="ACCOUNT" />.</translation>
 <translation id="2690024944919328218">Visa språkalternativ</translation>
 <translation id="2691385045260836588">Modell</translation>
-<translation id="2691811116976138467">Webbplatser använder den här funktionen för att registrera och använda indata från tangentbordet, till exempel för spel eller fjärrskrivbordsappar</translation>
 <translation id="2692503699962701720">Ändra tonhöjd när elementtyper och formaterad text läses upp.</translation>
 <translation id="2692901429679246677">Cyan</translation>
 <translation id="2693134906590795721">Laddningsljud</translation>
@@ -4423,7 +4421,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4065876735068446555">Nätverket du använder (<ph name="NETWORK_ID" />) kanske kräver att du besöker dess inloggningssida.</translation>
 <translation id="4065931125325392744">Det här tillägget stöds snart kanske inte längre</translation>
 <translation id="4066207411788646768">Kontrollera anslutningen om du vill se vilka skrivare som är tillgängliga i nätverket</translation>
-<translation id="4066458014195202324">Får registrera och använda tangentbordsindata</translation>
 <translation id="4067839975993712852">Markera den aktuella fliken som läst</translation>
 <translation id="4068776064906523561">Sparade fingeravtryck</translation>
 <translation id="4070132839822635162">Logga inte in</translation>
@@ -4788,7 +4785,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4345587454538109430">Konfigurera...</translation>
 <translation id="4345732373643853732">Användarnamnet är okänt på servern</translation>
 <translation id="4346159263667201092">Lägg till information (valfritt)</translation>
-<translation id="4348426576195894795">Om du tar bort det här kontot raderas även alla Chrome-profiler där du loggat in med kontot</translation>
 <translation id="4348766275249686434">Samla in fel</translation>
 <translation id="4349828822184870497">Användbart</translation>
 <translation id="4350230709416545141">Blockera alltid <ph name="HOST" /> från att få åtkomst till din plats</translation>
@@ -4863,7 +4859,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4403012369005671154">Tal till text</translation>
 <translation id="4403266582403435904">Återställ data eller byt enhet enkelt, när du vill. Säkerhetskopiorna krypteras med hjälp av lösenordet till barnets Google-konto och laddas upp på Google.</translation>
 <translation id="4403775189117163360">Välj en annan mapp</translation>
-<translation id="4404136731284211429">Sök igen</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> blockeras av en förälder. Be en förälder om behörighet att använda den här appen.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Flytta till …</translation>
@@ -5138,7 +5133,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4598549027014564149">I inkognitoläget kan webbplatser inte använda cookies för att se din webbaktivitet på olika webbplatser – inte ens relaterade webbplatser. Din webbaktivitet används inte för sådant som annonsanpassning. Vissa webbplatsers funktioner kanske inte fungerar.</translation>
 <translation id="4598556348158889687">Lagringshantering</translation>
 <translation id="4598776695426288251">wifi är tillgängligt via flera enheter</translation>
-<translation id="4599323532350839656">Får inte registrera och använda tangentbordsindata</translation>
 <translation id="4600071396330666617">Antal förslag</translation>
 <translation id="4601095002996233687">Ingående genomsökningar efter misstänkta nedladdningar.</translation>
 <translation id="4601426376352205922">Markera som oläst</translation>
@@ -5780,7 +5774,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5071295820492622726">Tillbaka till senaste nedladdningarna</translation>
 <translation id="5071892329440114717">Visa detaljer om standardskydd</translation>
-<translation id="5072303130033714629">Verktyget Content Transfer</translation>
 <translation id="5072500507106264618">Endast systemtjänster kan använda din plats</translation>
 <translation id="5072836811783999860">Visa hanterade bokmärken</translation>
 <translation id="5072900412896857127">Det gick inte att läsa in användarvillkoren för Google Play. Kontrollera nätverksanslutningen och försök igen.</translation>
@@ -6198,7 +6191,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5372579129492968947">Lossa tillägg</translation>
 <translation id="5372632722660566343">Fortsätt utan konto</translation>
 <translation id="5372990315769030589">Vill du behålla <ph name="EXTENSION_NAME" />?</translation>
-<translation id="5374324662289354619">Interna felsökningssidor är för närvarande inaktiverade.</translation>
 <translation id="5375318608039113175">Om du vill använda Närdelning med de här kontakterna lägger du till de e-postadresser som är kopplade till personernas Google-konton i dina kontakter.</translation>
 <translation id="5375374982898812658">Du förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och den raderas från alla dina enheter</translation>
 <translation id="5375577102295339548">Webbplatser kan hjälpa till att verifiera att du inte är en bot</translation>
@@ -7332,7 +7324,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="61988015556954366">Blinkande skärmavisering</translation>
 <translation id="6200047250927636406">Släng filen</translation>
 <translation id="6200151268994853226">Hantera tillägg</translation>
-<translation id="6201608810045805374">Vill du ta bort det här kontot?</translation>
 <translation id="6202304368170870640">Du kan logga in på eller låsa upp enheten med pinkoden.</translation>
 <translation id="6202935572248792580">Tillåts. Anslut en mikrofon till enheten.</translation>
 <translation id="6203247599828309566">Du har sparat en anteckning om lösenordet på den här webbplatsen. Du kan visa det genom att klicka på nyckelikonen.</translation>
@@ -7344,7 +7335,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6207937957461833379">Land/region</translation>
 <translation id="6208521041562685716">Mobildata aktiveras</translation>
 <translation id="6208725777148613371">Det gick inte att spara till <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="6209767197996242814">Om du glömmer lösenfrasen eller vill ändra den här inställningen kan du <ph name="SETTINGS_LINK" />.</translation>
 <translation id="6209908325007204267">Chrome Enterprise Upgrade ingår med enheten, men ditt användarnamn är inte kopplat till ett företagskonto. Skapa ett företagskonto genom att besöka g.co/ChromeEnterpriseAccount på en annan enhet.</translation>
 <translation id="6210282067670792090">Använd det här kortkommandot för sökmotorer och webbplatssökning i adressfältet</translation>
 <translation id="6211067089253408231">Aktivera snabb surfzon</translation>
@@ -8628,7 +8618,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7139627972753429585"><ph name="APP_NAME" /> använder mikrofonen</translation>
 <translation id="7140785920919278717">Installationsprogram för appar</translation>
 <translation id="7141105143012495934">Inloggningen misslyckades eftersom det inte gick att hämta dina kontouppgifter. Kontakta administratören eller försök igen.</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7141844554192012199">Kontroll</translation>
 <translation id="714301620504747562">Det går snabbare att surfa och söka än med standardinläsning i förväg</translation>
 <translation id="7143207342074048698">Ansluter</translation>
@@ -10089,7 +10078,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8176529144855282213">Aktivera mikrofonåtkomst med hjälp av det fysiska mikrofonreglaget på enheten</translation>
 <translation id="8177196903785554304">Nätverksuppgifter</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Flytta fliken till ett nytt fönster}other{Flytta flikarna till ett nytt fönster}}</translation>
-<translation id="8179188928355984576">Används inte i Android-appar</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Skrivare <ph name="ITEM_POSITION" /> av <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Energisparläget har aktiverats</translation>
@@ -10650,7 +10638,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8577052309681449949">Automatiska klick, markörstorlek, markörfärg med mera</translation>
 <translation id="8578639784464423491">Får inte vara längre än 99 tecken</translation>
 <translation id="8581809080475256101">Tryck här om du vill fortsätta till nästa, visa historiken med snabbmenyn</translation>
-<translation id="8583122761178401199">Tillåt inte att webbplatser registrerar och använder tangentbordsindata</translation>
 <translation id="8584280235376696778">&amp;Öppna video i ny flik</translation>
 <translation id="858451212965845553">Skicka till dina &amp;enheter</translation>
 <translation id="8584843865238667486">HID-enheter med användning <ph name="USAGE" /> från användningssidan <ph name="USAGE_PAGE" /></translation>

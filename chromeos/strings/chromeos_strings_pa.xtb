@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">ਹਰਾ</translation>
 <translation id="225692081236532131">ਕਿਰਿਆਸ਼ੀਲਤਾ ਸਥਿਤੀ</translation>
 <translation id="2267285889943769271">ਸਕ੍ਰੀਨਸ਼ਾਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="2268044343513325586">ਸੋਧੋ</translation>
 <translation id="2271469253353559191">ਗੂੜ੍ਹਾ ਮੋਡ ਨਿਯਤ ਕਰੋ</translation>
 <translation id="2276999893457278469">ਪ੍ਰਮੁੱਖ ਮਦਦ ਸਮੱਗਰੀ</translation>
 <translation id="2277631741861284101">ਆਪਣੀ ਆਡੀਓ ਨੂੰ ਆਸਾਨੀ ਨਾਲ ਰਿਕਾਰਡ ਅਤੇ ਸਾਂਝਾ ਕਰੋ</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">ਸਕੈਨਰ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="3226657629376379887">ਖਾਕਾ ਕਾਰਵਾਈ ਮੀਨੂ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ਮੁੱਲ ਨੂੰ <ph name="CONVERSION_RATE" /> ਨਾਲ ਭਾਗ ਕਰੋ</translation>
-<translation id="3237710083340813756">ਦੁਬਾਰਾ ਲਿਖੋ</translation>
 <translation id="3246869037381808805">1 ਦਿਨ ਤੋਂ ਜ਼ਿਆਦਾ ਪੁਰਾਣੀਆਂ ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="324961752321393509">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਐਪ ਨੂੰ ਬੰਦ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੰਦਾ</translation>
 <translation id="3263941347294171263">ਅੱਪਡੇਟ ਦੀ ਪ੍ਰਕਿਰਿਆ ਜਾਰੀ ਰੱਖਣ ਲਈ <ph name="DEVICE_NAME" /> ਨੂੰ ਅਣਪਲੱਗ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਲਗਾਓ</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="346423161771747987">ਕਰੰਟ</translation>
 <translation id="346539236881580388">ਫ਼ੋਟੋ ਦੁਬਾਰਾ ਖਿੱਚੋ</translation>
+<translation id="3479552764303398839">ਹੁਣ ਨਹੀਂ</translation>
 <translation id="3484914941826596830">ਫ਼ਰਮਵੇਅਰ ਦੇ ਅੱਪਡੇਟ ਹੋਣ ਦੌਰਾਨ ਇਸ ਬਾਹਰੀ ਡੀਵਾਈਸ ਨੂੰ ਅਣਪਲੱਗ ਨਾ ਕਰੋ ਜਾਂ ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਬੰਦ ਨਾ ਕਰੋ। ਤੁਸੀਂ ਇਸ ਵਿੰਡੋ ਨੂੰ ਛੋਟਾ ਕਰ ਸਕਦੇ ਹੋ। ਇਸ ਅੱਪਡੇਟ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ ਅਤੇ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਸ ਸਮੇਂ ਦੌਰਾਨ ਤੁਹਾਡਾ ਬਾਹਰੀ ਡੀਵਾਈਸ ਕੰਮ ਨਾ ਕਰੇ।</translation>
 <translation id="3486220673238053218">ਪਰਿਭਾਸ਼ਾ</translation>
 <translation id="3487866404496702283">mahi ਵਿਸ਼ੇਸ਼ਤਾ ਸੰਬੰਧੀ ਵਿਚਾਰ</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">ਅਵਾਜ਼ ਵੱਧ-ਘੱਟ ਕਰੋ</translation>
 <translation id="3767737419527918477">ਰਿਕਾਰਡਿੰਗ ਫ਼ਾਈਲਾਂ ਖੋਜੋ</translation>
 <translation id="3771294271822695279">ਵੀਡੀਓ ਫ਼ਾਈਲਾਂ</translation>
+<translation id="3771694256347217732">Google ਸੇਵਾ ਦੇ ਨਿਯਮ</translation>
 <translation id="3780740315729837296">ਕੋਈ ਕੀ-ਬੋਰਡ ਕੁੰਜੀ ਜ਼ਿੰਮੇ ਲਗਾਓ</translation>
 <translation id="3784455785234192852">ਲਾਕ ਕਰੋ</translation>
 <translation id="3785643128701396311">ਪਿਕਸਲ ਆਰਟ</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="6078323886959318429">ਸ਼ਾਰਟਕੱਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6091080061796993741">ਪੀਲਾ</translation>
-<translation id="6093853427925392522">ਆਪਣੇ ਸਕੂਲ ਖਾਤੇ ਦੇ ਡਾਟੇ ਨੂੰ ਆਪਣੇ ਨਿੱਜੀ ਖਾਤੇ ਵਿੱਚ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਲਈ Google ਦੀ Content Transfer ਐਪ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਪੱਕਾ ਕਰੋ ਅਤੇ ਅਜਿਹਾ ਪਹੁੰਚ ਗੁਆਉਣ ਤੋਂ ਪਹਿਲਾਂ ਕਰ ਲਓ।</translation>
 <translation id="6104112872696127344">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਗਈ</translation>
 <translation id="6106186594183574873">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6108689792487843350">ਗੇਟਵੇ ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">ਸ਼ਾਰਟਕੱਟ ਖੋਜੋ</translation>
 <translation id="7138614237884624401">ਲਿਖਤ ਨੂੰ ਸਰਲੀਕਿਰਤ ਕਰੋ</translation>
 <translation id="7138668887584231801">ਸਾਰਾਂਸ਼ ਲਈ ਚੁਣੇ ਗਏ ਸ਼ਬਦ ਬਹੁਤ ਘੱਟ ਹਨ</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7144878232160441200">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7144954474087165241">ਪੈਗੋਡਾ</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">ਮਿਟਾਓ</translation>
 <translation id="8262870577632766028">1 ਘੰਟਾ</translation>
 <translation id="827422111966801947">ਜਾਮਨੀ ਨੀਲਾ</translation>
-<translation id="8281886186245836920">ਛੱਡੋ</translation>
 <translation id="8286154143153872371">ਵਾਲਪੇਪਰ ਦੇਖਣ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਕਿਸੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ ਅਤੇ ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ।</translation>
 <translation id="8291967909914612644">ਹੋਮ ਪ੍ਰਦਾਨਕ ਦੇਸ਼</translation>
 <translation id="8294431847097064396">ਸ੍ਰੋਤ</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Google AI ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਨਾਮ ਬਣਾਓ</translation>
 <translation id="8798099450830957504">ਪੂਰਵ-ਨਿਰਧਾਰਤ</translation>
 <translation id="8798441408945964110">ਪ੍ਰਦਾਨਕ ਦਾ ਨਾਮ</translation>
+<translation id="8804164990146287819">ਪਰਦੇਦਾਰੀ ਨੀਤੀ</translation>
 <translation id="8808828119384186784">Chrome ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8814190375133053267">ਵਾਈ-ਫਾਈ</translation>
 <translation id="8818152010000655963">ਵਾਲਪੇਪਰ</translation>

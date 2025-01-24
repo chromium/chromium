@@ -400,7 +400,6 @@
 <translation id="6455857529632101747">Chromium ପ୍ରୋଫାଇଲକୁ ସ୍ୱାଗତ</translation>
 <translation id="6466344609055215035">Chromiumରୁ ଆକାଉଣ୍ଟକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="6475912303565314141">ଯେତେବେଳେ ଆପଣ Chromium ଆରମ୍ଭ କରନ୍ତି, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠା ଦେଖାଯିବ ତାହା ମଧ୍ୟ ନିୟନ୍ତ୍ରଣ କରେ।</translation>
-<translation id="648062525172759633">ଏହି ପୃଷ୍ଠାଗୁଡ଼ିକ Chromium ଡେଭେଲପରମାନଙ୍କ ଦ୍ୱାରା ବ୍ୟବହାର ପାଇଁ ଉଦ୍ଦିଷ୍ଟ ଏବଂ ଏଗୁଡ଼ିକୁ ସକ୍ରିୟ ଭାବରେ ପରିଚାଳନା କିମ୍ବା ପରୀକ୍ଷା କରାଯାଇନପାରେ। ସେଗୁଡ଼ିକୁ ସକ୍ଷମ କରିବା ପାଇଁ <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />କୁ ନାଭିଗେଟ କରନ୍ତୁ, ଡିବଗ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ସକ୍ଷମ କରିବା ପାଇଁ ବଟନରେ କ୍ଲିକ କରନ୍ତୁ ଏବଂ ତା'ପରେ ପୁଣି ଏହି ପୃଷ୍ଠାକୁ ନାଭିଗେଟ କରନ୍ତୁ।</translation>
 <translation id="648319183876919572">ବିପଦଜନକ ୱେବସାଇଟ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକରୁ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ଆହୁରି ଅନେକ କିଛି କରେ</translation>
 <translation id="6510925080656968729">Chromium ଅନ୍‍ଇନ୍‍ଷ୍ଟଲ୍‌ କରନ୍ତୁ</translation>
 <translation id="651535675648445253">Chromiumରେ ସର୍ଟକର୍ଟ ଖୋଲେ</translation>
@@ -534,7 +533,6 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8313851650939857356">ଷ୍ଟାର୍ଟଅପ ତ୍ରୁଟି: <ph name="STARTUP_ERROR" />।</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> ପାଇଁ Chromiumକୁ ବ୍ୟବହାର କରାନଗଲେ ଆପଣଙ୍କ ସଂସ୍ଥା ଏହାକୁ ବନ୍ଦ କରିଦିଏ।</translation>
 <translation id="8321888067342493336">ଇମେଜ ଭାବେ ସେଭ କରନ୍ତୁ</translation>
-<translation id="8326785589245660814">ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟାକୁ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="8330519371938183845">ସିଙ୍କରେ ସାଇନ୍‌ କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସ୍‌ରେ Chromiumକୁ ବ୍ୟକ୍ତିଗତକୃତ କରନ୍ତୁ</translation>
 <translation id="8340674089072921962">ପୂର୍ବରୁ <ph name="USER_EMAIL_ADDRESS" /> Chromium ବ୍ୟବହାର କରୁଥିଲା</translation>
 <translation id="8359544530202147897">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="ACCOUNT_EMAIL" />ରେ Chromium ଡାଟାକୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖିବା ପାଇଁ Chromiumକୁ ଅପଡେଟ କରନ୍ତୁ</translation>

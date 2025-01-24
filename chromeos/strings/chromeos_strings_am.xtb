@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">አረንጓዴ</translation>
 <translation id="225692081236532131">የገባሪነት ሁኔታ</translation>
 <translation id="2267285889943769271">ቅጽበታዊ ገፅ እይታ አክል</translation>
+<translation id="2268044343513325586">አጽዳ</translation>
 <translation id="2271469253353559191">የጨለማ ሁነታ መርሐግብር</translation>
 <translation id="2276999893457278469">ከፍተኛ የእገዛ ይዘት</translation>
 <translation id="2277631741861284101">በቀላሉ ይቅዱ እና ኦዲዮዎን ያጋሩ</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">ቃኚዎችን በመፈለግ ላይ</translation>
 <translation id="3226657629376379887">የአቀማመጥ እርምጃዎች ምናሌ</translation>
 <translation id="3227186760713762082">የ<ph name="CATEGORY_TEXT" /> እሴቱን በ<ph name="CONVERSION_RATE" /> ያካፍሉት</translation>
-<translation id="3237710083340813756">እንደገና ይጻፉ</translation>
 <translation id="3246869037381808805">ከ1 ቀን በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
 <translation id="324961752321393509">አስተዳዳሪዎ ይህን መተግበሪያ መዝጋትን አይፈቅድም</translation>
 <translation id="3263941347294171263">የማዘመን ሂደቱን ለመቀጠል <ph name="DEVICE_NAME" />ን ይንቀሉ እና እንደገና ይሰኩት</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" />ን በማዘመን ላይ</translation>
 <translation id="346423161771747987">የአሁኑ ጊዜ</translation>
 <translation id="346539236881580388">ዳግም አንሳ</translation>
+<translation id="3479552764303398839">አሁን አይደለም</translation>
 <translation id="3484914941826596830">ፊርምዌር በማዘመን ላይ ሳለ ይህን ውጫዊ መሣሪያ አይንቀሉት ወይም ኮምፒውተርዎን አይዝጉት። ይህን መስኮት መቀነስ ይችላሉ። ይህ ዝማኔ ጥቂት ደቂቃዎች ሊወስድ ይችላል፣ እና በዚህ ጊዜ የእርስዎ ውጫዊ መሣሪያ ላይሰራ ይችላል።</translation>
 <translation id="3486220673238053218">ብየና</translation>
 <translation id="3487866404496702283">ለmahi ባህሪ ግብረመልስ</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">የድምፅ መጠንን ያስተካክሉ</translation>
 <translation id="3767737419527918477">የቀረጻ ፋይሎችን ይፈልጉ</translation>
 <translation id="3771294271822695279">የቪዲዮ ፋይሎች</translation>
+<translation id="3771694256347217732">የGoogle የአገልግሎት ውል</translation>
 <translation id="3780740315729837296">የቁልፍ ሰሌዳ ቁልፍ ይመድቡ</translation>
 <translation id="3784455785234192852">ቆልፍ</translation>
 <translation id="3785643128701396311">የፒክስል ሥነ ጥበብ</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) የኤችቲቲፒኤስ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="6078323886959318429">አቋራጭ አክል</translation>
 <translation id="6091080061796993741">ቢጫ</translation>
-<translation id="6093853427925392522">መዳረሻ ከማጣትዎ በፊት የትምህርት ቤት መለያዎን ውሂብ ወደ እርስዎ የግል መለያ ለማስተላለፍ የContent Transfer መተግበሪያን በGoogle መጠቀምዎን ያረጋግጡ።</translation>
 <translation id="6104112872696127344">መቃኘት ተሰርዟል</translation>
 <translation id="6106186594183574873">ለማጠናቀቅ፣ የእርስዎን ይለፍ ቃል ያስገቡ</translation>
 <translation id="6108689792487843350">አግባቢ ፍኖት አይገኝም</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">የፍለጋ አቋራጮች</translation>
 <translation id="7138614237884624401">ቀላል ጽሑፍ</translation>
 <translation id="7138668887584231801">ለማጠቃለል በቂ ቃላት የሉም</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">በመያያዝ ላይ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
 <translation id="7144954474087165241">ፓጎዳ</translation>
@@ -1541,7 +1541,6 @@
 <translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="8262870577632766028">1 ሰዓት</translation>
 <translation id="827422111966801947">ወይን ጠጅ</translation>
-<translation id="8281886186245836920">ዝለል</translation>
 <translation id="8286154143153872371">ልጣፍን ለማየት እባክዎን ከአውታረ መረብ ጋር ይገናኙ እና ገጹን እንደገና ይጫኑ።</translation>
 <translation id="8291967909914612644">የመነሻ አቅራቢ አገር</translation>
 <translation id="8294431847097064396">ምንጭ</translation>
@@ -1646,6 +1645,7 @@
 <translation id="8797082062139985406">Google ሰው ሠራሽ አስተውሎት በመጠቀም ስም ይፍጠሩ</translation>
 <translation id="8798099450830957504">እንደወረደ</translation>
 <translation id="8798441408945964110">የአቅራቢ ስም</translation>
+<translation id="8804164990146287819">የግላዊነት መመሪያ</translation>
 <translation id="8808828119384186784">የChrome ቅንብሮች</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">ልጣፍ</translation>

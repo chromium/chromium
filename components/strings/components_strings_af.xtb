@@ -638,6 +638,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2105838220373099643">Rolspelspeletjies</translation>
 <translation id="2107021941795971877">Drukondersteuning</translation>
 <translation id="2108755909498034140">Herbegin jou rekenaar</translation>
+<translation id="2109845311767915560">Gedeelde oortjiegroep</translation>
 <translation id="2111166930115883695">Druk spasie om te speel</translation>
 <translation id="2113977810652731515">Kaart</translation>
 <translation id="2114841414352855701">Geïgnoreer, want dit is deur <ph name="POLICY_NAME" /> geïgnoreer.</translation>
@@ -910,7 +911,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="255497580849974774">Hou asseblief jou toestel tydens die opdatering aan ’n laaier gekoppel.</translation>
 <translation id="2556876185419854533">Ontdoen wysiging</translation>
 <translation id="2559566667529177711">Multilaag</translation>
-<translation id="2565789370591907825">Sleutelbordslot en -gebruik</translation>
 <translation id="2570734079541893434">Bestuur instellings</translation>
 <translation id="257136025287118539">Jou administrateur skuif jou lêers na <ph name="CLOUD_PROVIDER" />. Jy kan hierdie lêers wysig sodra die oplaai voltooi is.</translation>
 <translation id="2571488850200220306">Dit kan ook die toestel se bedryfstelsel en blaaierweergawe sien, en watter sagteware geïnstalleer is, om te help om sekuriteit te verseker</translation>
@@ -1108,7 +1108,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2974468223369775963">Hierdie IBAN kon nie in jou Google-rekening gestoor word nie. Dit word in plaas daarvan in Chrome op hierdie toestel gestoor. Chrome sal jou weer vra die volgende keer as jy hierdie IBAN gebruik.</translation>
 <translation id="297667759942911166">Werk saam in oortjiegroepe</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, tans gekies. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Sluit en gebruik jou sleutelbord</translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Skrywershulpbronne</translation>
 <translation id="2979639724566107830">Maak in nuwe venster oop</translation>
@@ -2092,6 +2091,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4704745399240123930">Kaarte wat nie deur hierdie handelaar aanvaar word nie, soos virtuele kaarte, word gedeaktiveer.</translation>
 <translation id="4708268264240856090">Jou verbinding is onderbreek</translation>
 <translation id="4708276642004148190">Watervoorsiening en -behandeling</translation>
+<translation id="4711628883879888561">Werk saam aan oortjiegroep</translation>
 <translation id="471880041731876836">Jy het nie toestemming om hierdie werf te besoek nie</translation>
 <translation id="4718897478554657123">600x900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Voer tans Windows Network Diagnostics uit<ph name="END_LINK" /></translation>
@@ -2464,6 +2464,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5363532265530011914">Kouse en onderklere</translation>
 <translation id="5371425731340848620">Dateer kaart op</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> het ’n oortjie verander</translation>
+<translation id="5374324662289354619">Interne ontfoutingbladsye is tans gedeaktiveer.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Jou horlosie is agter" of "Jou horlosie is voor" of "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Verifieer dat dit jy is sodat jy hierdie wagwoord op al jou toestelle kan kry</translation>
@@ -2698,6 +2699,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="578305955206182703">Geelbruin</translation>
 <translation id="5783700460098783980">Bagasie en reisbenodigdhede</translation>
 <translation id="57838592816432529">Demp</translation>
+<translation id="5783922175933467571"><ph name="TAB_GROUP_DISPLAY_NAME" />-skakel verval oor 48 uur</translation>
 <translation id="5784606427469807560">Kon nie jou kaart bevestig nie. Gaan jou internetverbinding na en probeer weer.</translation>
 <translation id="5785756445106461925">Hierdie bladsy sluit verder ander hulpbronne in wat nie veilig is nie. Hierdie hulpbronne kan deur ander mense bekyk word terwyl hulle op pad is, en kan deur 'n aanvaller aangepas word om die bladsy se voorkoms te verander.</translation>
 <translation id="5793317771769868848">Hierdie betaalmetode sal van hierdie toestel af uitgevee word</translation>
@@ -2770,6 +2772,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5930147475897662863">Skakel hierdie instelling aan om Help my skryf te gebruik</translation>
 <translation id="593102073240001326">Hoe-om-te-, selfdoen- en kennersinhoud</translation>
 <translation id="5932224571077948991">Werf wys indringerige of misleidende advertensies</translation>
+<translation id="5933597524153120073">Maak alle (<ph name="ITEMS" />) in nuwe venster oop</translation>
 <translation id="5937560539988385583">Bladsy is vertaal</translation>
 <translation id="5938153366081463283">Voeg virtuele kaart by</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3042,6 +3045,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6394852772105848029">Hierdie werf wil die <ph name="APP_NAME" />-app oopmaak</translation>
 <translation id="639673288733510393">Bromponies en kragfietse</translation>
 <translation id="6398765197997659313">Gaan by volskerm uit</translation>
+<translation id="6399633237874954301">Slimkaartleser word deur jou admin toegelaat</translation>
 <translation id="6401136357288658127">Hierdie beleid is opgeskort. Jy moet liewer die <ph name="NEW_POLICY" />-beleid gebruik.</translation>
 <translation id="640163077447496506">Verval vandag</translation>
 <translation id="6402537308870515461">Kontrolering word vereis voordat lêers geskuif word</translation>
@@ -4102,7 +4106,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8278544367771164040">Kommersiële lenings</translation>
 <translation id="8279290844152565425">Konserte en musiekfeeste</translation>
 <translation id="8279611986089885641">Chrome-kennisgewings moet aan wees. Jy kan hulle in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> aanskakel.</translation>
-<translation id="8280387559022105172">Sluit jou sleutelbord?</translation>
 <translation id="8280630997017109758">Laai 11</translation>
 <translation id="8281730697546299650">Ander advertensieprivaatheidkenmerke is nou beskikbaar</translation>
 <translation id="8281886186245836920">Slaan Oor</translation>
@@ -4172,7 +4175,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8398335999901363925">Betaalmetodes wat beskikbaar is om met aanraking in te vul, is teen volle hoogte oopgemaak.</translation>
 <translation id="8398446215576328011">Stel toegepaste beleide terug</translation>
 <translation id="8398790343843005537">Vind jou foon</translation>
-<translation id="8399276468426899527">sleutelbordslot en -gebruik</translation>
 <translation id="8400929824946688748">Werksgeleenthede en opvoeding</translation>
 <translation id="8402442052798347631">Aanvallers op die werf wat jy probeer besoek het, kan jou dalk mislei om skadelike sagteware te installeer wat ’n invloed kan hê op die manier waarop jy blaai – byvoorbeeld deur jou tuisblad te verander of vir jou ekstra advertensies te wys op werwe wat jy besoek. Chrome beveel sterk aan dat jy na veiligheid terugkeer om skade te vermy. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Aanhangerfiksie</translation>

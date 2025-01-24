@@ -476,6 +476,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="3053332585453689122">Šalje URL-ove koje posjetite i mali uzorak sadržaja stranice, preuzimanja, aktivnosti ekstenzija i sistemskih informacija Sigurnom pregledanju na Googleu radi provjere jesu li štetni.</translation>
 <translation id="3055102495753300780">Pohrana informacija</translation>
 <translation id="3059270601560379555">Novo pretraživanje</translation>
+<translation id="3064547930554042309">Upravljanje preuzimanjima</translation>
 <translation id="3072279342064724558">Lozinka već postoji</translation>
 <translation id="3076846064362030967">Nećete se odjaviti s Google računa. <ph name="BEGIN_LINK" />Ostali oblici aktivnosti<ph name="END_LINK" /> se mogu pohranjivati na vaš Google račun kada ste prijavljeni. Možete ih izbrisati bilo kada.
 
@@ -543,7 +544,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3409785640040772790">Mape</translation>
 <translation id="3416023309465857378">25. okt 2023.</translation>
 <translation id="3435738964857648380">Sigurnost</translation>
-<translation id="343850944564645513">Vaše najpopularnije web-lokacije</translation>
 <translation id="3443810440409579745">Kartica je primljena.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Saznajte više o Google Objektivu</translation>
@@ -658,7 +658,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3967327056943561740">Oznake</translation>
 <translation id="3967822245660637423">Preuzimanje je završeno</translation>
 <translation id="3982893814825393515">Prijava problema…</translation>
-<translation id="3984527584375648997">Sakrij "Vaše najpopularnije web-lokacije"</translation>
 <translation id="398604237578616937">Prijavljeni ste kao <ph name="USER_EMAIL" />. Otvaranje menija računa.</translation>
 <translation id="3986739045730058129">Idite na karticu</translation>
 <translation id="3992684624889376114">O ovoj stranici</translation>
@@ -700,6 +699,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4154753961803534698">Pretražite pomoću kamere</translation>
 <translation id="4158491215857439601">Upravitelj lozinki</translation>
 <translation id="4163699139741158298">{count,plural, =1{Oznaka je sačuvana na lokaciju "{title}". Sačuvana je samo na ovom uređaju.}one{{count} oznaka je sačuvana na lokaciju "{title}". Sačuvane su samo na ovom uređaju.}few{{count} oznake su sačuvane na lokaciju "{title}". Sačuvane su samo na ovom uređaju.}other{{count} oznaka je sačuvano na lokaciju "{title}". Sačuvane su samo na ovom uređaju.}}</translation>
+<translation id="4164514562270305824">Automatsko brisanje preuzimanja</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> čiji se broj završava sa <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Nemoj dozvoliti</translation>
 <translation id="4172051516777682613">Uvijek prikaži</translation>
@@ -1016,9 +1016,9 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5576885723883013398">Novi prozor</translation>
 <translation id="5578795271662203820">Pretražuj <ph name="SEARCH_ENGINE" /> za ovu sliku</translation>
 <translation id="5579012242779565775">Sakrij Listu za čitanje</translation>
-<translation id="5581202956276923239">Prečice web lokacija</translation>
 <translation id="5585019845078534178">Kartice</translation>
 <translation id="5595485650161345191">Uredite adresu</translation>
+<translation id="559567008082979829">Postavite da se preuzimanja brišu nakon mjesec dana.</translation>
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="560322036295180549">Isključila je vaša organizacija</translation>
 <translation id="5611107723541161735">Prečice web lokacija koje ste nedavno posjetili na ovom uređaju.</translation>
@@ -1470,7 +1470,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="746872191028309255">Kupite ono što vidite putem kamere ili galerije fotografija.</translation>
 <translation id="7471557245617580330">Napravi novu karticu</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>
-<translation id="7476548258282096076">Na ovoj se kartici prikazuju web-lokacije koje najčešće posjećujete.</translation>
+<translation id="7476548258282096076">Kartica pokazuje web lokacije koje ste najviše posjećivali.</translation>
 <translation id="747956641630879526">Sakrivanje ove kartice će isključiti praćenje paketa i ukloniti sve podatke</translation>
 <translation id="7484645889979462775">Nikada za ovu web lokaciju</translation>
 <translation id="7486006552035434095">Kontinuirano sinhronizirajte uređaje</translation>

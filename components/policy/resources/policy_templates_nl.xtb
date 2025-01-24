@@ -355,19 +355,6 @@ Patronen voor overeenkomende herkomst voor dit beleid mogen geen '/path' or '@qu
       Als je het beleid niet instelt, is <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
-<translation id="1279062904578504503">Met dit beleid wordt de Content Transfer-app aangezet voor beheerde gebruikers. Met de Content Transfer-app kunnen gebruikers hun gegevens overzetten van hun beheerde account naar een consumentenaccount.
-
-Als <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> is ingesteld op <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, wordt de Content Transfer-app getoond op en tussen de start- en einddatum volgens de lokale tijd.
-
-Als <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> is ingesteld op <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> of niet is ingesteld, wordt de app niet getoond.
-
-Als <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> niet is ingesteld, wordt de app getoond tot de einddatum.
-
-Als <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" /> niet is ingesteld, wordt de app vanaf de startdatum voor onbepaalde tijd getoond.
-
-Als zowel <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> als <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" /> niet zijn ingesteld, wordt de app voor onbepaalde tijd getoond. Als de start- en einddatum ongeldig zijn, wordt de Content Transfer-app niet getoond. Dit geldt ook als de ingevoerde datums niet bestaan of als de einddatum vóór de startdatum ligt.
-
-Gegevensoverdracht met Takeout moet ook aanstaan voor een goede werking van de Content Transfer-app. Ga naar https://support.google.com/a/answer/6364687 voor meer informatie.</translation>
 <translation id="1285819498003746288">Event.path API is niet beschikbaar.</translation>
 <translation id="1290722184971934486">Als je het beleid instelt op <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (waarde 2), wordt het recht voor vensterbeheer standaard geweigerd voor alle sites. Dit beperkt de mogelijkheid van sites om informatie over de schermen van het apparaat te bekijken en die informatie te gebruiken om vensters te openen en te plaatsen of om een volledig scherm voor bepaalde schermen aan te vragen.
 
@@ -1024,7 +1011,6 @@ Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden 
       URL-patronen mogen geen conflict vormen met <ph name="FILE_SYSTEM_WRITE_ASK_FOR_URLS_POLICY_NAME" />. Geen van beide beleidsregels krijgt voorrang als een URL met beide overeenkomt.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
-<translation id="1754668667300090632">Kaart Sharepoint-bestand uitzetten op pagina Nieuw tabblad</translation>
 <translation id="1755310913456007816">Bestaande instellingen voor online intrekkingscontrole gebruiken</translation>
 <translation id="1760951637494635692">De Serial API toestaan op deze sites</translation>
 <translation id="1765503534110351026">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
@@ -7414,13 +7400,6 @@ Als je het beleid niet toepast of niet instelt, bepaalt CNAME-lookup de canoniek
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
 <translation id="6431446111529802555">Europa.</translation>
-<translation id="6432641193840355112">Met dit beleid bepaal je of de kaart Sharepoint-bestand zichtbaar is op de pagina Nieuw tabblad. De kaart wordt alleen op de pagina Nieuw tabblad getoond als het beleid wordt toegepast en je organisatie het gebruik van de Sharepoint-bestandsgegevens in de browser heeft geautoriseerd.
-
-De kaart met aanbevelingen voor SharePoint-bestanden toont een lijst met aanbevolen bestanden.  Het doel is om het probleem van contextwisseling aan te pakken en de productiviteit te verbeteren door gebruikers een snelkoppeling te geven naar hun belangrijkste documenten.
-
-De kaart Microsoft Sharepoint vereist extra configuratie door de beheerder. Bekijk het Help-artikel voor meer informatie over hoe je de kaart op de pagina Nieuw tabblad van Chrome koppelt aan Sharepoint.
-
-Als <ph name="NTPCARDSVISIBLE" /> niet wordt toegepast, wordt de kaart Sharepoint niet getoond. Als <ph name="NTPCARDSVISIBLE" /> wordt toegepast, wordt de kaart Sharepoint getoond als dit beleid ook wordt toegepast en er gegevens zijn om te tonen. Als <ph name="NTPCARDSVISIBLE" /> niet is ingesteld, wordt de kaart Sharepoint getoond als dit beleid ook wordt toegepast, de gebruiker de kaart heeft aangezet in Chrome aanpassen en er gegevens zijn om te tonen.</translation>
 <translation id="6433697627431665375">Voorkomen dat <ph name="PRODUCT_NAME" />-gegevens in back-ups worden opgenomen</translation>
 <translation id="6436052172226685535">Standaardgedrag voor LBS.</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> probeert waar mogelijk bepaalde navigatie te upgraden van HTTP naar HTTPS. Je kunt dit beleid gebruiken om dit gedrag uit te zetten. Als je dit instelt op True of niet instelt, wordt deze functie standaard aangezet.
@@ -8569,7 +8548,6 @@ Belangrijke opmerking: De planningen die door dit beleid zijn ingesteld, worden 
 
       Als dit beleid niet wordt ingesteld of leeg is, kan de gebruiker elk willekeurig Google-account instellen als primair browseraccount in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">De minimumlengte van de pincode voor het vergrendelscherm instellen</translation>
-<translation id="7232835921904883015">Kaart SharePoint-bestand tonen op pagina Nieuw tabblad</translation>
 <translation id="7234280155140786597">Namen van de verboden hosts voor systeemeigen berichten (of * voor alle)</translation>
 <translation id="723621412149834592">Als je het beleid instelt op <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (waarde 2), wordt het recht voor vensterplaatsing automatisch geweigerd voor alle sites. Dit beperkt de mogelijkheid van sites om informatie over de schermen van het apparaat te bekijken en die informatie te gebruiken om vensters te openen en te plaatsen of om een volledig scherm voor bepaalde schermen aan te vragen.
 
@@ -9033,7 +9011,6 @@ Als je dit beleid niet toepast, wordt de instelling voor advertentiemeting uitge
 Als je dit beleid toepast of niet instelt, kunnen je gebruikers de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting aan- of uitzetten op hun apparaat.
 
 Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> instellen op Uit.</translation>
-<translation id="7643824472046534064">Kaart SharePoint-bestand aanzetten op pagina Nieuw tabblad</translation>
 <translation id="7643883929273267746">Accounts die zichtbaar zijn in <ph name="PRODUCT_NAME" /> beperken</translation>
 <translation id="7648664871086956188">Dit beleid is een algemene schakelaar voor alle regels die zijn gedefinieerd in het beleid DataLeakPreventionRulesList.
       Als je dit beleid instelt op True, wordt realtime rapportage van gebeurtenissen ter voorkoming van datalekken aangezet.
@@ -9235,7 +9212,6 @@ Als je dit beleid niet toepast, beperkt de HTML-parser welke tags in het &lt;sel
       Als je het beleid instelt op True, worden de netwerkgebeurtenissen van het apparaat gerapporteerd.</translation>
 <translation id="780629758750905699">Toevoegen van Family Link-accounts aan het apparaat toestaan</translation>
 <translation id="7807139251387225825">Lijst met typen die moeten worden uitgesloten van synchronisatie</translation>
-<translation id="7808219497358175018">Instellen wanneer de Content Transfer-tool van <ph name="PRODUCT_OS_NAME" /> beschikbaar is</translation>
 <translation id="781268256210530471">Instellingen voor plug-ins</translation>
 <translation id="7816326058023670173">Geheim gedeeld tussen het apparaat van het kind en het apparaat van de ouder.</translation>
 <translation id="7818131573217430250">De standaardstatus van de modus voor hoog contrast op het inlogscherm instellen</translation>
@@ -9780,13 +9756,6 @@ Als het beleid niet wordt ingesteld, worden standaard alle beschikbare netwerkin
 Zie RFC 8828 artikel 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) voor een gedetailleerde beschrijving van alle waarden voor verwerking.</translation>
 <translation id="8244171102276095471">RC4-coderingssuites in TLS aanzetten</translation>
 <translation id="8244525275280476362">Maximum vertraging voor ophalen na ongeldigverklaring voor beleid</translation>
-<translation id="8244828501034607035">Met dit beleid bepaal je of de kaart Outlook zichtbaar is op de pagina Nieuw tabblad. De kaart wordt alleen op de pagina Nieuw tabblad getoond als het beleid wordt toegepast en je organisatie het gebruik van de Outlook-agendagegevens in de browser heeft goedgekeurd.
-
-De kaart Outlook toont de volgende agenda-afspraak en een snel overzicht van de rest van de vergaderingen van de dag. Het doel is om het probleem van contextwisseling aan te pakken en de productiviteit te verbeteren door gebruikers een snelkoppeling naar hun volgende vergadering te geven.
-
-De kaart Microsoft Outlook vereist extra beheerdersconfiguratie. Bekijk het Help-artikel voor gedetailleerde informatie over hoe je de kaart op de pagina Nieuw tabblad van Chrome koppelt aan Outlook.
-
-Als <ph name="NTPCARDSVISIBLE" /> niet wordt toegepast, wordt de kaart Outlook niet getoond. Als <ph name="NTPCARDSVISIBLE" /> wordt toegepast, wordt de kaart Outlook getoond als dit beleid ook wordt toegepast en er gegevens zijn om te tonen. Als <ph name="NTPCARDSVISIBLE" /> niet is ingesteld, wordt de kaart Outlook getoond als dit beleid ook wordt toegepast, de gebruiker de kaart heeft aangezet in Chrome aanpassen en er gegevens zijn om te tonen.</translation>
 <translation id="8245574649143980200">Als je dit beleid toepast of niet instelt, kunnen gebruikers het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> in het contextmenu zien en gebruiken. Als je dit beleid niet toepast, kunnen gebruikers het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> niet zien in het contextmenu als regio doorzoeken voor <ph name="GOOGLE_LENS_PRODUCT_NAME" /> wordt ondersteund.</translation>
 <translation id="8247143534027746614">Toegang tot een lijst met URL-patronen blokkeren tijdens verificatie</translation>
 <translation id="824818544897669723">Verwijdering van browser- en downloadgeschiedenis uitzetten</translation>
@@ -10663,7 +10632,6 @@ Dit is handig als de beheerder weet dat de gebruikers van het apparaat een funct
       Bij nieuwe apparaten is de tijdzone standaard ingesteld op US/Pacific. De notatie van de waarde volgt de naamgeving in de IANA Time Zone Database (https://en.wikipedia.org/wiki/Tz_database). Als je een ongeldige waarde opgeeft, wordt het beleid geactiveerd met de instelling GMT.
 
       Als je het beleid niet instelt of een lege tekenreeks opgeeft, gebruikt het apparaat de momenteel actieve tijdzone. Gebruikers kunnen de tijdzone wijzigen.</translation>
-<translation id="8874071621901957187">Kaart Outlook-agenda tonen op de pagina Nieuw tabblad</translation>
 <translation id="8875202330803089599">Als je het beleid instelt, kunnen gebruikers de keuzes voor downloadbeveiliging niet omzeilen.
 
       Er zijn veel verschillende typen downloadmeldingen in Chrome, die grofweg zijn onder te verdelen in de volgende categorieën (meer informatie over Safe Browsing-analyseresultaten vind je op https://support.google.com/chrome/?p=ib_download_blocked):

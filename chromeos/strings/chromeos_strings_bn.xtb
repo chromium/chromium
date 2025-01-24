@@ -296,7 +296,9 @@
 <translation id="2240366984605217732">লেআউট সুইচ করার বোতাম</translation>
 <translation id="2244834438220057800">সবুজ</translation>
 <translation id="225692081236532131">সক্রিয়করণ স্থিতি</translation>
+<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> ট্রান্সক্রিপশন মডেল বেছে নিন এবং ডাউনলোড করুন</translation>
 <translation id="2267285889943769271">স্ক্রিনশট যোগ করুন</translation>
+<translation id="2268044343513325586">রিফাইন করুন</translation>
 <translation id="2271469253353559191">'ডার্ক মোড'-এর শিডিউল</translation>
 <translation id="2276999893457278469">সেরা সহায়তা কন্টেন্ট</translation>
 <translation id="2277631741861284101">আপনার অডিও সহজেই রেকর্ড ও শেয়ার করা যাবে</translation>
@@ -464,7 +466,6 @@
 <translation id="3226405216343213872">স্ক্যানার খোঁজা হচ্ছে</translation>
 <translation id="3226657629376379887">লেআউট অ্যাকশন মেনু</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> মান দ্বারা <ph name="CATEGORY_TEXT" /> ভাগ করুন</translation>
-<translation id="3237710083340813756">আবার লিখুন</translation>
 <translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="324961752321393509">আপনার অ্যাডমিনিস্ট্রেটর এই অ্যাপ বন্ধ করার অনুমতি দেয় না</translation>
 <translation id="3263941347294171263">প্রসেস আপডেট করা চালিয়ে যেতে <ph name="DEVICE_NAME" /> আনপ্লাগ করে প্লাগপয়েন্টে আবার লাগিয়ে দিন</translation>
@@ -509,6 +510,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> আপডেট করা হচ্ছে</translation>
 <translation id="346423161771747987">বর্তমান</translation>
 <translation id="346539236881580388">আবার তুলুন</translation>
+<translation id="3479552764303398839">এখনই নয়</translation>
 <translation id="3484914941826596830">ফার্মওয়্যার আপডেট করার সময়, এই এক্সটার্নাল ডিভাইসটি আনপ্লাগ করবেন না বা আপনার কম্পিউটার বন্ধ করবেন না। আপনি এই উইন্ডোটি মিনিমাইজ করতে পারবেন। এই আপডেটে কয়েক মিনিট সময় লাগতে পারে এবং এই সময়ে আপনার এক্সটার্নাল ডিভাইস কাজ নাও করতে পারে।</translation>
 <translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3487866404496702283">মাহি ফিচার সম্পর্কিত মতামত</translation>
@@ -567,6 +569,7 @@
 <translation id="3763034084412196440">ভলিউম অ্যাডজাস্ট করুন</translation>
 <translation id="3767737419527918477">রেকর্ড করা ফাইল সার্চ করুন</translation>
 <translation id="3771294271822695279">ভিডিও ফাইল</translation>
+<translation id="3771694256347217732">Google পরিষেবার শর্তাবলী</translation>
 <translation id="3780740315729837296">কীবোর্ডের 'কী' অ্যাসাইন করুন</translation>
 <translation id="3784455785234192852">লক করুন</translation>
 <translation id="3785643128701396311">পিক্সেল আর্ট</translation>
@@ -772,6 +775,7 @@
 <translation id="473775607612524610">আপডেট করুন</translation>
 <translation id="4744944742468440486">আপনার বেছে নেওয়া কন্টেন্টের ব্যাপারে তথ্য</translation>
 <translation id="4750394297954878236">প্রস্তাবনা</translation>
+<translation id="4763771683769971829">উপলভ্য ভাষার তালিকা</translation>
 <translation id="4771607256327216405">কীবোর্ড আরও উজ্জ্বল</translation>
 <translation id="4771923071974529837">আগামীকাল</translation>
 <translation id="4773299976671772492">থামানো হয়েছে</translation>
@@ -853,6 +857,7 @@
 <translation id="5095761549884461003"><ph name="DEVICE_NAME" />-এর USB কেবেল আনপ্লাগ করুন এবং আপডেট করার প্রসেস চালিয়ে যেতে সেটি আবার যোগ করুন</translation>
 <translation id="5099354524039520280">উপরে</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> 'কী' ছাড়া শর্টকার্ট কয়েকটি অ্যাপের শর্টকার্টের ক্ষেত্রে সমস্যা সৃষ্টি করতে পারে। এটি ব্যবহার করা চালিয়ে যেতে এই শর্টকার্ট প্রেস করুন বা <ph name="KEY" /> 'কী' ব্যবহার করে নতুন শর্টকার্ট প্রেস করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> ট্রান্সক্রিপশন মডেল ডাউনলোড করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার Chromebook রিস্টার্ট করুন</translation>
 <translation id="5108781503443873320">একই ধরনের:</translation>
 <translation id="5121677070210013200">ট্রান্সক্রিপশন মডেল ডাউনলোড করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার Chromebook রিস্টার্ট করুন।</translation>
 <translation id="5130848777448318809">ছোট ঘোড়া</translation>
@@ -1053,7 +1058,6 @@
 <translation id="6075872808778243331">(Android) HTTP লেটেন্সি</translation>
 <translation id="6078323886959318429">শর্টকাট যোগ করুন</translation>
 <translation id="6091080061796993741">হলুদ</translation>
-<translation id="6093853427925392522">অ্যাক্সেস হারানোর আগে, Google-এর Content Transfer অ্যাপের সাহায্যে স্কুল অ্যাকাউন্ট ডেটা আপনার ব্যক্তিগত অ্যাকাউন্টে পাঠাতে ভুলবেন না।</translation>
 <translation id="6104112872696127344">স্ক্যানিং বাতিল করা হয়েছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ করতে, আপনার পুরনো পাসওয়ার্ড লিখুন</translation>
 <translation id="6108689792487843350">নেটওয়ার্ক গেটওয়ে অ্যাক্সেস করা যাচ্ছে না</translation>
@@ -1277,6 +1281,7 @@
 <translation id="7049916119678019302">সেটিংস থেকে ট্রান্সক্রিপশন মডেল ডাউনলোড করুন</translation>
 <translation id="7058278511608979688">সম্পূর্ণ করে সেভ করুন</translation>
 <translation id="7059230779847288458">চার্জ করা হচ্ছে, সম্পূর্ণ চার্জ হতে <ph name="TIME_VALUE" /> সময় লাগবে</translation>
+<translation id="7065336548231472971"><ph name="LANGUAGE_NAME" />টি বেছে নেওয়া হয়েছে</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> কী</translation>
 <translation id="7068619307603204412">আপনার ডিভাইস রেডি করুন</translation>
 <translation id="7076851914315147928">ওয়ালপেপার বেছে নিন</translation>
@@ -1300,7 +1305,6 @@
 <translation id="7135814714616751706">শর্টকাট সার্চ করুন</translation>
 <translation id="7138614237884624401">সরল করা টেক্সট</translation>
 <translation id="7138668887584231801">সারসংক্ষেপের জন্য যথেষ্ট শব্দ বেছে নেওয়া হয়নি</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">সংযুক্ত হচ্ছে</translation>
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
 <translation id="7144954474087165241">প্যাগোডা</translation>
@@ -1371,6 +1375,7 @@
 <translation id="7415801143053185905">HTTP লেটেন্সি অনেক বেশি</translation>
 <translation id="7418738250896500352">সহজে বোঝার জন্য বেছে নেওয়া শব্দ খুব বেশি</translation>
 <translation id="7425037327577270384">আমাকে লিখতে সাহায্য করো</translation>
+<translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> ট্রান্সক্রিপশন মডেল <ph name="PROGRESS_PERCENTAGE" />% ডাউনলোড হয়েছে</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">এই APN বন্ধ করা বা সরানো যাচ্ছে না। নিশ্চিত করুন যে চালু করা <ph name="ATTACH" /> APN বন্ধ করা আছে বা সরানো হয়েছে।</translation>
 <translation id="7453118953486228603">বেছে নেওয়া টেক্সটের সারসংক্ষেপ করতে ক্লিক করুন</translation>
@@ -1407,6 +1412,7 @@
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> বাকি আছে</translation>
 <translation id="7600430297804876776">এই <ph name="DEVICE_TYPE" /> ডিভাইস কখন ব্যবহার করা যাবে তা <ph name="MANAGER" /> অ্যাডমিনিস্ট্রেটর সেট করে দিয়েছেন।</translation>
 <translation id="7613724632293948900">মাউস বা তীরচিহ্নযুক্ত 'কী'-এর সাহায্যে অন্য জায়গায় সরান।</translation>
+<translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> বেছে নিন</translation>
 <translation id="7618774594543487847">নিউট্রাল</translation>
 <translation id="7620771111601174153">সহায়তা কেন্দ্র বিভাগে গিয়ে আরও জানুন</translation>
 <translation id="7625095758347640998">এআই (AI) ওয়ালপেপার</translation>
@@ -1541,7 +1547,6 @@
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8262870577632766028">১ ঘণ্টা</translation>
 <translation id="827422111966801947">নীল</translation>
-<translation id="8281886186245836920">এড়িয়ে যান</translation>
 <translation id="8286154143153872371">ওয়ালপেপার দেখার জন্য কোনও নেটওয়ার্কে কানেক্ট করে পৃষ্ঠা আবার লোড করুন।</translation>
 <translation id="8291967909914612644">হোম পরিষেবা প্রদানকারী দেশ</translation>
 <translation id="8294431847097064396">উৎস</translation>
@@ -1646,6 +1651,7 @@
 <translation id="8797082062139985406">Google AI ব্যবহার করে নাম তৈরি করুন</translation>
 <translation id="8798099450830957504">ডিফল্ট</translation>
 <translation id="8798441408945964110">পরিষেবা প্রদানকারীর নাম</translation>
+<translation id="8804164990146287819">গোপনীয়তা নীতি</translation>
 <translation id="8808828119384186784">Chrome সেটিংস</translation>
 <translation id="8814190375133053267">ওয়াই-ফাই</translation>
 <translation id="8818152010000655963">ওয়ালপেপার</translation>

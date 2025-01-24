@@ -400,7 +400,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="6455857529632101747">Bienvenue dans les profils Chromium</translation>
 <translation id="6466344609055215035">Retirer le compte de Chromium</translation>
 <translation id="6475912303565314141">Elle gère également la page qui s'affiche au démarrage de Chromium.</translation>
-<translation id="648062525172759633">Ces pages visent à être utilisées par les développeurs Chromium et ne peuvent pas être activement entretenues ou testées. Pour les activer, accédez à <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliquez sur le bouton permettant d'activer les pages de débogage, puis accédez de nouveau à cette page.</translation>
 <translation id="648319183876919572">La navigation sécurisée améliorée vous protège davantage contre les sites Web et les téléchargements dangereux</translation>
 <translation id="6510925080656968729">Désinstaller Chromium</translation>
 <translation id="651535675648445253">Les raccourcis s'ouvrent dans Chromium</translation>
@@ -534,7 +533,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8313851650939857356">Erreur de démarrage : <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Votre organisation ferme Chromium lorsqu'il n'est pas utilisé pendant <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Enregistrer en tant qu'image</translation>
-<translation id="8326785589245660814">effacez les données Chromium de votre compte</translation>
 <translation id="8330519371938183845">Se connecter pour synchroniser et personnaliser Chromium sur vos appareils</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> utilisait précédemment Chromium</translation>
 <translation id="8359544530202147897">Mettez à jour Chromium pour continuer à utiliser les données Chromium dans votre compte Google, <ph name="ACCOUNT_EMAIL" /></translation>

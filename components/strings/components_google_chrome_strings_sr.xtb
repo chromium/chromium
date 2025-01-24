@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chrome омогућавају <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> пројекат отвореног кода и други <ph name="BEGIN_LINK_OSS" />софтвер отвореног кода<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Chrome логотип</translation>
 <translation id="3444832043240812445">Ова страница приказује информације о недавним отказивањима само уколико <ph name="BEGIN_LINK" />омогућите извештавање о отказивањима<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Ове странице су намењене програмерима Chrome-а и можда се не одржавају нити тестирају активно. Да бисте их омогућили, идите на <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, кликните на дугме да бисте омогућили странице за отклањање грешака, па поново идите на ову страницу.</translation>
 <translation id="3875312571075912821">Дозволите Chrome-у да приступа мрежи у заштитном зиду или антивирусним
           подешавањима.</translation>
 <translation id="5005121315113832363">Chrome блокира ову страницу</translation>

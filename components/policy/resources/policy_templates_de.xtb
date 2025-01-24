@@ -356,19 +356,6 @@ Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@
       Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
 
       Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
-<translation id="1279062904578504503">Mit dieser Richtlinie wird die App „Inhaltsübertragung“ für verwaltete Nutzer aktiviert. Mit „Inhaltsübertragung“ können Nutzer ihre Daten von ihrem verwalteten Konto in ein Privatnutzerkonto übertragen.
-
-Wenn „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" />“ auf „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />“ festgelegt ist, wird die App „Inhaltsübertragung“ am Start- und Enddatum sowie zwischen diesen beiden Tagen gemäß Ortszeit angezeigt.
-
-Wenn „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" />“ auf „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" />“ festgelegt oder nicht konfiguriert ist, wird die App nicht angezeigt.
-
-Wenn „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" />“ nicht konfiguriert ist, wird die App bis zum Enddatum angezeigt.
-
-Wenn „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />“ nicht konfiguriert ist, wird die App ab dem Startdatum dauerhaft angezeigt.
-
-Wenn weder „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" />“ noch „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />“ konfiguriert sind, wird die App dauerhaft angezeigt. Bei Ungültigkeit des Start- und Enddatums wird die App nicht angezeigt. Dies gilt auch, wenn die Datumsangaben nicht existieren oder das Enddatum vor dem Startdatum liegt.
-
-Die Datenübertragung mit Datenexport muss ebenfalls aktiviert sein, damit die App richtig funktioniert. Weitere Informationen findest du unter https://support.google.com/a/answer/6364687.</translation>
 <translation id="1285819498003746288">Die Event.path API ist nicht verfügbar.</translation>
 <translation id="1290722184971934486">Wenn die Richtlinie auf <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (Wert 2) gesetzt ist, wird die Berechtigung für die Fensterverwaltung automatisch auf allen Websites verweigert. Dadurch wird die Fähigkeit von Websites eingeschränkt, Informationen zum Bildschirm des Geräts abzurufen und zu nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
 
@@ -1027,7 +1014,6 @@ Diese Richtlinie ist eine vorübergehende Problemumgehung für den Fall, dass di
       URL-Muster dürfen nicht im Konflikt mit <ph name="FILE_SYSTEM_WRITE_ASK_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
-<translation id="1754668667300090632">Karte mit SharePoint-Dateien auf der Seite „Neuer Tab“ deaktivieren</translation>
 <translation id="1755310913456007816">Vorhandene Einstellungen zur Onlinewiderrufsprüfung verwenden</translation>
 <translation id="1760951637494635692">Serial API auf diesen Seiten erlauben</translation>
 <translation id="1765503534110351026">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“.
@@ -3615,6 +3601,7 @@ Verbindungen, die diese Prüfung nicht bestehen, schlagen mit dem Fehler ERR_SSL
 <translation id="3663124775601519286">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, darf die Translator API in <ph name="PRODUCT_NAME" /> verwendet werden.
 
       Ist die Richtlinie deaktiviert, darf die Translator API nicht verwendet werden.</translation>
+<translation id="3664164569472125114">Zugriff auf <ph name="GLIC" /> steuern</translation>
 <translation id="3665437376055221832">Nutzer nur dann auffordern, wenn kein Zertifikat zur automatischen Auswahl passt.</translation>
 <translation id="3667467644216039144">Konfiguriert eine Liste von Browserdatentypen, die beim Schließen aller Browserfenster gelöscht werden sollen.
 
@@ -7449,13 +7436,6 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, bestimmt die CNAME-
 
       Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="6431446111529802555">Europa.</translation>
-<translation id="6432641193840355112">Diese Richtlinie legt die Sichtbarkeit der Karte mit SharePoint-Dateien auf der Seite „Neuer Tab“ fest. Die Karte wird nur auf der Seite „Neuer Tab“ angezeigt, wenn die Richtlinie aktiviert ist und deine Organisation die Verwendung der SharePoint-Daten im Browser zulässt.
-
-Die Karte mit Empfehlungen für SharePoint-Dateien enthält eine Liste empfohlener Dateien.  Sie dient dazu, den Kontextwechsel zu erleichtern und die Produktivität zu steigern, indem Nutzer eine Verknüpfung zu ihren wichtigsten Dokumenten erhalten.
-
-Die Microsoft SharePoint-Karte muss von einem Administrator konfiguriert werden. Detaillierte Informationen zum Verknüpfen der Chrome-Karte für die Seite „Neuer Tab“ mit SharePoint findest du in diesem Hilfeartikel.
-
-Wenn die Richtlinie <ph name="NTPCARDSVISIBLE" /> deaktiviert ist, wird die SharePoint-Karte nicht angezeigt. Ist <ph name="NTPCARDSVISIBLE" /> aktiviert, wird die SharePoint-Karte angezeigt, wenn diese Richtlinie ebenfalls aktiviert ist und Daten vorhanden sind. Wenn <ph name="NTPCARDSVISIBLE" /> nicht konfiguriert ist, wird die SharePoint-Karte angezeigt, wenn diese Richtlinie ebenfalls aktiviert ist, der Nutzer die Karte in „Chrome anpassen“ aktiviert hat und Daten vorhanden sind, die angezeigt werden können.</translation>
 <translation id="6433697627431665375"><ph name="PRODUCT_NAME" />-Daten nicht in Sicherungen einschließen</translation>
 <translation id="6436052172226685535">Standardverhalten für die Unterstützung älterer Browser.</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> versucht nach Möglichkeit, einige Navigationen von HTTP auf HTTPS zu aktualisieren. Diese Richtlinie kann verwendet werden, um dieses Verhalten zu deaktivieren. Wenn sie auf „true“ gesetzt oder nicht konfiguriert ist, ist diese Funktion standardmäßig aktiviert.
@@ -8607,7 +8587,6 @@ Wenn ein Nutzer ein primäres Browserkonto mit einem Nutzernamen einrichten will
 
 Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, kann der Nutzer in <ph name="PRODUCT_NAME" /> jedes Google-Konto als primäres Browserkonto festlegen.</translation>
 <translation id="723103540848640830">Minimale Länge der Sperrbildschirm-PIN festlegen</translation>
-<translation id="7232835921904883015">Karten mit SharePoint-Dateien auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="7234280155140786597">Namen der unzulässigen Hosts für natives Messaging (oder "*" für alle)</translation>
 <translation id="723621412149834592">Wenn die Richtlinie auf <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (Wert 2) gesetzt ist, wird die Berechtigung für die Fensterpositionierung automatisch auf allen Websites verweigert. Dadurch wird die Fähigkeit von Websites eingeschränkt, Informationen zum Bildschirm des Geräts abzurufen und zu nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
 
@@ -9067,7 +9046,6 @@ Wenn die Richtlinie deaktiviert ist, wird die Einstellung für die Anzeigenanaly
 Wenn sie aktiviert oder nicht konfiguriert ist, können Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Anzeigenanalyse auf ihrem Gerät aktivieren oder deaktivieren.
 
 Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deaktiviert sein.</translation>
-<translation id="7643824472046534064">Karte mit SharePoint-Dateien auf der Seite „Neuer Tab“ aktivieren</translation>
 <translation id="7643883929273267746">Sichtbarkeit von Konten in <ph name="PRODUCT_NAME" /> einschränken</translation>
 <translation id="7648664871086956188">Mit dieser Richtlinie werden alle in der Richtlinie DataLeakPreventionRulesList definierten Regeln gesteuert.
       Wenn die Richtlinie auf „True“ gesetzt ist, werden Echtzeitberichte zur Verhinderung von Datenlecks aktiviert.
@@ -9270,7 +9248,6 @@ Wenn diese Richtlinie deaktiviert ist, schränkt der HTML-Parser ein, welche Tag
       Ist sie auf „true“ gesetzt, werden die Netzwerkereignisse des Geräts gemeldet.</translation>
 <translation id="780629758750905699">Hinzufügen von Family Link-Konten auf diesem Gerät erlauben</translation>
 <translation id="7807139251387225825">Liste von Typen, die von der Synchronisierung ausgeschlossen werden sollen</translation>
-<translation id="7808219497358175018">Konfigurieren, wann das <ph name="PRODUCT_OS_NAME" />-Tool „Inhaltsübertragung“ verfügbar ist</translation>
 <translation id="781268256210530471">Plug-in-Einstellungen</translation>
 <translation id="7816326058023670173">Secret, das zwischen Geräten von Kindern und Eltern geteilt wird.</translation>
 <translation id="7818131573217430250">Standardstatus für den Modus mit hohem Kontrast auf der Anmeldeseite festlegen</translation>
@@ -9810,13 +9787,6 @@ Wenn diese Richtlinie nicht konfiguriert ist, werden standardmäßig alle verfü
 Eine ausführliche Beschreibung aller Werte findest du unter RFC 8828, Abschnitt 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2).</translation>
 <translation id="8244171102276095471">RC4-Verschlüsselungssammlungen in TLS aktivieren</translation>
 <translation id="8244525275280476362">Maximale Abrufverzögerung nach der Außerkraftsetzung einer Richtlinie</translation>
-<translation id="8244828501034607035">Diese Richtlinie legt die Sichtbarkeit der Outlook-Karte auf der Seite „Neuer Tab“ fest. Die Karte wird nur auf der Seite „Neuer Tab“ angezeigt, wenn die Richtlinie aktiviert ist und deine Organisation die Verwendung der Outlook-Kalenderdaten im Browser zulässt.
-
-Die Outlook-Karte zeigt den nächsten Kalendertermin sowie eine Übersicht zu den verbleibenden Besprechungen des Tages. Sie dient dazu, den Kontextwechsel zu erleichtern und die Produktivität zu steigern, indem Nutzer eine Verknüpfung zu ihrer nächsten Besprechung erhalten.
-
-Die Microsoft Outlook-Karte muss von einem Administrator konfiguriert werden. Detaillierte Informationen zum Verknüpfen der Chrome-Karte für die Seite „Neuer Tab“ mit Outlook findest du in diesem Hilfeartikel.
-
-Wenn die Richtlinie <ph name="NTPCARDSVISIBLE" /> deaktiviert ist, wird die Outlook-Karte nicht angezeigt. Ist <ph name="NTPCARDSVISIBLE" /> aktiviert, wird die Outlook-Karte angezeigt, wenn diese Richtlinie ebenfalls aktiviert ist und Daten vorhanden sind. Wenn <ph name="NTPCARDSVISIBLE" /> nicht konfiguriert ist, wird die Outlook-Karte angezeigt, wenn diese Richtlinie ebenfalls aktiviert ist, der Nutzer die Karte in „Chrome anpassen“ aktiviert hat und Daten vorhanden sind, die angezeigt werden können.</translation>
 <translation id="8245574649143980200">Wenn diese Richtlinie nicht konfiguriert oder auf „Enabled“ gesetzt wird, können Nutzer den Menüpunkt „Ausschnittsuche“ von <ph name="GOOGLE_LENS_PRODUCT_NAME" /> im Kontextmenü verwenden. Ist die Richtlinie auf „Disabled“ gesetzt, wird Nutzern der Menüpunkt „Ausschnittsuche“ von <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nicht im Kontextmenü angezeigt, wenn die <ph name="GOOGLE_LENS_PRODUCT_NAME" />-Ausschnittsuche nicht unterstützt wird.</translation>
 <translation id="8247143534027746614">Zugriff auf eine Liste von URL-Mustern während der Authentifizierung blockieren</translation>
 <translation id="824818544897669723">Löschen des Browserverlaufs und des Downloadverlaufs deaktivieren</translation>
@@ -10698,7 +10668,6 @@ Das ist hilfreich, wenn der Administrator weiß, dass die Nutzer des Geräts wah
       Bei neuen Geräten ist die Zeitzone "US/Pacific Time" voreingestellt. Das Format des Werts entspricht den Namen der Zeitzonen in der Zeitzonen-Datenbank der IANA (https://de.wikipedia.org/wiki/Zeitzonen-Datenbank). Falls ein ungültiger Wert angegeben ist, wird für die Richtlinie "GMT" verwendet.
 
       Ist die Richtlinie nicht konfiguriert oder ein leerer String angegeben, wird auf dem Gerät die momentan aktive Zeitzone verwendet. Allerdings können Nutzer diese dann ändern.</translation>
-<translation id="8874071621901957187">Karte mit Outlook-Kalender auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="8875202330803089599">Wenn diese Richtlinie konfiguriert ist, können Nutzer keine Sicherheitsentscheidungen für Downloads umgehen.
 
       In Chrome gibt es verschiedene Arten von Warnungen zu Downloads, die sich in die folgenden Kategorien unterteilen lassen (weitere Informationen über Safe Browsing-Ergebnisse findest du unter https://support.google.com/chrome/?p=ib_download_blocked):

@@ -400,7 +400,6 @@
 <translation id="6455857529632101747">Chromium профильдеріне қош келдіңіз!</translation>
 <translation id="6466344609055215035">Аккаунтты Chromium-нен өшіру</translation>
 <translation id="6475912303565314141">Сонымен қатар Chromium іске қосылғанда қайсы бет көрсетілуін бақылайды.</translation>
-<translation id="648062525172759633">Бұл беттер Chromium әзірлеушілерінің қолданысына арналған және белсенді түрде жүргізілмеуі не сыналмауы мүмкін. Оларды қосу үшін <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> сайтына өтіп, түзету беттерін қосатын түймені басып, осы бетке қайтып келіңіз.</translation>
 <translation id="648319183876919572">Күшейтілген Safe Browsing-нің қауіпті веб-сайттар мен файлдардан қорғау қабілеті жоғарырақ.</translation>
 <translation id="6510925080656968729">Chromium жою</translation>
 <translation id="651535675648445253">Перне тіркесімдері Chromium-нен ашылады.</translation>
@@ -534,7 +533,6 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8313851650939857356">Іске қосу қатесі: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ұйымыңыз Chromium-ді <ph name="TIMEOUT_DURATION" /> бойы пайдаланбаған кезде жабады.</translation>
 <translation id="8321888067342493336">Сурет түрінде сақтау</translation>
-<translation id="8326785589245660814">аккаунтыңыздағы Chromium деректерін жойыңыз.</translation>
 <translation id="8330519371938183845">Chromium браузерін барлық құрылғыларда синхрондап, параметрлерін жекелендіру үшін аккаунтыңызға кіріңіз</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> бұрын Chromium браузерін пайдаланған</translation>
 <translation id="8359544530202147897">Chromium деректерін Google аккаунтында (<ph name="ACCOUNT_EMAIL" />) әрі қарай пайдалану үшін Chromium-ді жаңартыңыз.</translation>

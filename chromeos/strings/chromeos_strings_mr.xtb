@@ -296,7 +296,9 @@
 <translation id="2240366984605217732">लेआउट स्विच</translation>
 <translation id="2244834438220057800">हिरवा</translation>
 <translation id="225692081236532131">सक्रियन स्थिती</translation>
+<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> ट्रान्स्क्रिप्शन मॉडेल निवडा आणि डाउनलोड करा</translation>
 <translation id="2267285889943769271">स्क्रीनशॉट जोडा</translation>
+<translation id="2268044343513325586">सुधारित करा</translation>
 <translation id="2271469253353559191">गडद मोडचे शेड्युल</translation>
 <translation id="2276999893457278469">सर्वोत्तम मदत आशय</translation>
 <translation id="2277631741861284101">तुमचा ऑडिओ सहजरीत्या रेकॉर्ड करून शेअर करा</translation>
@@ -464,7 +466,6 @@
 <translation id="3226405216343213872">स्कॅनर शोधत आहे</translation>
 <translation id="3226657629376379887">लेआउट अ‍ॅक्‍शन मेनू</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> ने <ph name="CATEGORY_TEXT" /> मूल्याचा भागाकार करा</translation>
-<translation id="3237710083340813756">पुन्हा लिहा</translation>
 <translation id="3246869037381808805">एक दिवसापेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="324961752321393509">तुमचा अ‍ॅडमिनिस्ट्रेटर हे अ‍ॅप बंद करण्याची अनुमती देत नाही</translation>
 <translation id="3263941347294171263">अपडेट करण्याची प्रक्रिया पुढे सुरू ठेवण्यासाठी, <ph name="DEVICE_NAME" /> अनप्लग करून पुन्हा प्लग करा</translation>
@@ -509,6 +510,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> अपडेट होत आहे</translation>
 <translation id="346423161771747987">करंट</translation>
 <translation id="346539236881580388">पुन्हा काढा</translation>
+<translation id="3479552764303398839">सध्या नाही</translation>
 <translation id="3484914941826596830">फर्मवेअर अपडेट होत असताना, हे बाह्य डिव्हाइस अनप्लग करू नका किंवा तुमचा कॉंप्युटर बंद करू नका. तुम्ही ही विंडो लहान करू शकता. या अपडेटला काही मिनिटे लागू शकतात आणि या कालावधीदरम्यान तुमचे बाह्य डिव्हाइस कदाचित काम करणार नाही.</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3487866404496702283">माहि वैशिष्ट्य यासंबंधित फीडबॅक द्या</translation>
@@ -567,6 +569,7 @@
 <translation id="3763034084412196440">व्हॉल्यूम अ‍ॅडजस्ट करा</translation>
 <translation id="3767737419527918477">रेकॉर्डिंग फाइल शोधा</translation>
 <translation id="3771294271822695279">व्हिडिओ फाइल</translation>
+<translation id="3771694256347217732">Google सेवा अटी</translation>
 <translation id="3780740315729837296">कीबोर्डची की असाइन करा</translation>
 <translation id="3784455785234192852">लॉक करा</translation>
 <translation id="3785643128701396311">पिक्सेल आर्ट</translation>
@@ -772,6 +775,7 @@
 <translation id="473775607612524610">अपडेट करा</translation>
 <translation id="4744944742468440486">तुमच्या निवडीशी संबंधित माहिती</translation>
 <translation id="4750394297954878236">सूचना</translation>
+<translation id="4763771683769971829">उपलब्ध भाषांची सूची</translation>
 <translation id="4771607256327216405">कीबोर्ड उजळणे</translation>
 <translation id="4771923071974529837">उद्या</translation>
 <translation id="4773299976671772492">थांबविले</translation>
@@ -853,6 +857,7 @@
 <translation id="5095761549884461003">अपडेट करण्याची प्रक्रिया पुढे सुरू ठेवण्यासाठी, <ph name="DEVICE_NAME" /> ची USB केबल अनप्लग करून नंतर ती पुन्हा घाला</translation>
 <translation id="5099354524039520280">वर</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> कीशिवाय शॉर्टकटचा वापर केल्याने, काही अ‍ॅप्सच्या शॉर्टकटमध्ये समस्या निर्माण होऊ शकतात. हा शॉर्टकट वापरणे पुढे सुरू ठेवण्यासाठी, तो पुन्हा प्रेस करा किंवा <ph name="KEY" /> की वापरून नवीन शॉर्टकट प्रेस करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> ट्रान्स्क्रिप्शन मॉडेल डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे Chromebook रीस्टार्ट करा.</translation>
 <translation id="5108781503443873320">समानार्थी:</translation>
 <translation id="5121677070210013200">ट्रान्स्क्रिप्शन मॉडेल डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे Chromebook रीस्टार्ट करा.</translation>
 <translation id="5130848777448318809">पोनी</translation>
@@ -1053,7 +1058,6 @@
 <translation id="6075872808778243331">(Android) HTTP लेटन्सी</translation>
 <translation id="6078323886959318429">शॉर्टकट जोडा</translation>
 <translation id="6091080061796993741">पिवळा</translation>
-<translation id="6093853427925392522">तुम्ही अ‍ॅक्सेस गमवण्यापूर्वी तुमच्या शाळेचा खाते डेटा तुमच्या वैयक्तिक खात्यामध्ये हलवण्यासाठी Google चे Content Transfer ॲप वापरण्याची खात्री करा.</translation>
 <translation id="6104112872696127344">स्कॅनिंग रद्द केले गेले</translation>
 <translation id="6106186594183574873">पूर्ण करण्यासाठी, तुमचा जुना पासवर्ड एंटर करा</translation>
 <translation id="6108689792487843350">गेटवेशी कनेक्ट करू शकत नाही</translation>
@@ -1277,6 +1281,7 @@
 <translation id="7049916119678019302">ट्रान्स्क्रिप्शन मॉडेल सेटिंग्ज मध्ये डाउनलोड करा</translation>
 <translation id="7058278511608979688">संपवा आणि सेव्ह करा</translation>
 <translation id="7059230779847288458">चार्ज होत आहे, <ph name="TIME_VALUE" /> मध्ये पूर्ण होईल</translation>
+<translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> निवडली आहे</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> की</translation>
 <translation id="7068619307603204412">तुमचे डिव्हाइस तयार आहे</translation>
 <translation id="7076851914315147928">वॉलपेपर निवडा</translation>
@@ -1300,7 +1305,6 @@
 <translation id="7135814714616751706">शॉर्टकट शोधा</translation>
 <translation id="7138614237884624401">सुलभ केलेला मजकूर</translation>
 <translation id="7138668887584231801">सारांश देण्यासाठी पुरेसे शब्द नाहीत</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">कनेक्ट करत आहे</translation>
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
 <translation id="7144954474087165241">पॅगोडा</translation>
@@ -1371,6 +1375,7 @@
 <translation id="7415801143053185905">अत्युच्च HTTP लेटन्सी</translation>
 <translation id="7418738250896500352">सोपे करण्यासाठी खूप जास्त शब्द आहेत</translation>
 <translation id="7425037327577270384">मला लिहिण्यात मदत करा</translation>
+<translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> ट्रान्स्क्रिप्शन मॉडेलचा <ph name="PROGRESS_PERCENTAGE" />% भाग डाउनलोड केला आहे</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">हे APN बंद करू शकत नाही किंवा काढून टाकू शकत नाही. सुरू केलेली <ph name="ATTACH" /> APNs बंद केल्याची किंवा काढून टाकल्याची खात्री करा.</translation>
 <translation id="7453118953486228603">निवडलेल्या मजकुराचा सारांश देण्यासाठी क्लिक करा</translation>
@@ -1407,6 +1412,7 @@
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> शिल्लक</translation>
 <translation id="7600430297804876776">हे <ph name="DEVICE_TYPE" /> कधी वापरले जाऊ शकते ते <ph name="MANAGER" /> च्या अ‍ॅडमिनिस्ट्रेटरने सेट केले आहे.</translation>
 <translation id="7613724632293948900">माउस आणि अ‍ॅरो की वापरून स्थिती पुन्हा बदला.</translation>
+<translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> निवडा</translation>
 <translation id="7618774594543487847">न्यूट्रल</translation>
 <translation id="7620771111601174153">मदत केंद्र मध्ये अधिक जाणून घ्या</translation>
 <translation id="7625095758347640998">AI वॉलपेपर</translation>
@@ -1541,7 +1547,6 @@
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8262870577632766028">१ तास</translation>
 <translation id="827422111966801947">नीळ</translation>
-<translation id="8281886186245836920">वगळा</translation>
 <translation id="8286154143153872371">कृपया वॉलपेपर पाहण्यासाठी नेटवर्कशी कनेक्ट करा आणि पेज रीलोड करा.</translation>
 <translation id="8291967909914612644">होम पुरवठादार देश</translation>
 <translation id="8294431847097064396">स्रोत</translation>
@@ -1646,6 +1651,7 @@
 <translation id="8797082062139985406">Google AI वापरून नाव तयार करा</translation>
 <translation id="8798099450830957504">डीफॉल्ट</translation>
 <translation id="8798441408945964110">प्रदात्याचे नाव</translation>
+<translation id="8804164990146287819">गोपनीयता धोरण</translation>
 <translation id="8808828119384186784">Chrome सेटिंग्ज</translation>
 <translation id="8814190375133053267">वाय-फाय</translation>
 <translation id="8818152010000655963">वॉलपेपर</translation>

@@ -202,7 +202,6 @@
 <translation id="345171907106878721">Tambahkan diri Anda ke Chrome</translation>
 <translation id="3453763134178591239">Persyaratan ChromeOS</translation>
 <translation id="3503306920980160878">Chrome memerlukan akses ke lokasi Anda untuk berbagi lokasi dengan situs ini</translation>
-<translation id="3512634283363927263">Halaman ini ditujukan untuk digunakan oleh developer Chrome, dan mungkin tidak dikelola atau diuji secara aktif. Untuk mengaktifkannya, buka <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik tombol untuk mengaktifkan halaman debug, lalu buka lagi halaman ini.</translation>
 <translation id="3533694711092285624">Tidak ada sandi yang tersimpan. Chrome dapat memeriksa sandi Anda saat menyimpannya.</translation>
 <translation id="3541482654983822893">Chrome tidak dapat memeriksa sandi Anda. Coba lagi setelah 24 jam.</translation>
 <translation id="3564543103555793392">Saat login ke Chrome, Anda dapat menyimpan bookmark, sandi, dan data lainnya, lalu menggunakannya di ponsel</translation>
@@ -220,7 +219,6 @@
 <translation id="3673813398384385993">Chrome menemukan bahwa "<ph name="EXTENSION_NAME" />" berisi malware</translation>
 <translation id="3695446226812920698">Pelajari caranya</translation>
 <translation id="3697952514309507634">Profil Chrome lainnya</translation>
-<translation id="3700276346088749847">hapus data Chrome di akun Anda</translation>
 <translation id="3703994572283698466">ChromeOS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan, seperti <ph name="BEGIN_LINK_LINUX_OSS" />lingkungan pengembangan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versi ChromeOS Flex</translation>
 <translation id="3718181793972440140">Tindakan ini akan menghapus 1 item dari perangkat ini. Untuk mengambil data nanti, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>

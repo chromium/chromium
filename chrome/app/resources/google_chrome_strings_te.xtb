@@ -202,7 +202,6 @@
 <translation id="345171907106878721">Chromeకు మిమ్మల్ని జోడించుకోండి</translation>
 <translation id="3453763134178591239">ChromeOS నియమాలు</translation>
 <translation id="3503306920980160878">ఈ సైట్‌తో మీ లొకేషన్‌ను షేర్ చేయడానికి Chromeకు మీ లొకేషన్ యాక్సెస్ అవసరం</translation>
-<translation id="3512634283363927263">ఈ పేజీలు Chrome డెవలపర్‌ల ఉపయోగం కోసం ఉద్దేశించినవి, యాక్టివ్‌గా నిర్వహించబడకపోవచ్చు లేదా పరీక్షించబడకపోవచ్చు. వాటిని ఎనేబుల్ చేయడానికి, <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />కు నావిగేట్ చేయండి, డీబగ్ పేజీలను ఎనేబుల్ చేయడానికి బటన్‌ను క్లిక్ చేసి, ఆపై మళ్లీ ఈ పేజీకి నావిగేట్ చేయండి.</translation>
 <translation id="3533694711092285624">సేవ్ చేసిన పాస్‌వర్డ్‌లు లేవు. మీరు మీ పాస్‌వర్డ్‌లను సేవ్ చేసినప్పుడు Chrome వాటిని చెక్ చేయగలదు.</translation>
 <translation id="3541482654983822893">మీ పాస్‌వర్డ్‌లను Chrome చెక్ చేయలేకపోయింది. 24 గంటల తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3564543103555793392">మీరు Chromeకి సైన్ ఇన్ చేసినప్పుడు, మీరు బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, అలాగే మరిన్నింటిని సేవ్ చేయవచ్చు, ఆపై వాటిని మీ ఫోన్‌లో ఉపయోగించవచ్చు</translation>
@@ -220,7 +219,6 @@
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />"లో మాల్‌వేర్ ఉన్నట్టుగా Chrome కనుగొన్నది</translation>
 <translation id="3695446226812920698">ఎలాగో తెలుసుకోండి</translation>
 <translation id="3697952514309507634">ఇతర Chrome ప్రొఫైల్స్</translation>
-<translation id="3700276346088749847">మీ ఖాతాలో Chrome డేటాను క్లియర్ చేయండి</translation>
 <translation id="3703994572283698466">ChromeOS అనేది <ph name="BEGIN_LINK_LINUX_OSS" />Linux డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్<ph name="END_LINK_LINUX_OSS" /> తరహాలోనే, అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="3716540481907974026">ChromeOS Flex వెర్షన్</translation>
 <translation id="3718181793972440140">ఇది ఈ పరికరం నుండి 1 అంశాన్ని తొలగిస్తుంది. మీ డేటాను తర్వాత తిరిగి పొందడానికి, Chromeకు <ph name="USER_EMAIL" /> లాగా సైన్ ఇన్ చేయండి.</translation>

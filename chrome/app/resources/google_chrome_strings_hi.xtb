@@ -202,7 +202,6 @@
 <translation id="345171907106878721">स्वयं को Chrome में जोड़ें</translation>
 <translation id="3453763134178591239">ChromeOS शर्तें</translation>
 <translation id="3503306920980160878">इस साइट से आपकी जगह की जानकारी शेयर करने के लिए Chrome को आपकी जगह की जानकारी का एक्सेस चाहिए</translation>
-<translation id="3512634283363927263">इन पेजों को Chrome डेवलपर के इस्तेमाल के लिए बनाया गया है. ऐसा हो सकता है कि समय-समय पर इनका रखरखाव या इनकी जांच न की जाती हो. इन पेजों की सेटिंग को चालू करने के लिए, <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> पर जाएं. इसके बाद, बटन पर क्लिक करके डीबग पेजों की सेटिंग को चालू करें और फिर इस पेज पर वापस जाएं.</translation>
 <translation id="3533694711092285624">सेव किया हुआ कोई भी पासवर्ड नहीं है. Chrome आपके पासवर्ड की जांच तब कर सकता है, जब आप उन्हें सेव करें.</translation>
 <translation id="3541482654983822893">Chrome आपके पासवर्ड की जांच नहीं कर सकता. 24 घंटे बाद कोशिश करें.</translation>
 <translation id="3564543103555793392">Chrome में साइन इन करने पर, बुकमार्क, पासवर्ड वगैरह सेव किए जा सकते हैं और फ़ोन पर इस्तेमाल किए जा सकते हैं</translation>
@@ -220,7 +219,6 @@
 <translation id="3673813398384385993">Chrome को पता चला है कि "<ph name="EXTENSION_NAME" />" में मैलवेयर है</translation>
 <translation id="3695446226812920698">तरीका जानें</translation>
 <translation id="3697952514309507634">Chrome की अन्य प्रोफ़ाइलें</translation>
-<translation id="3700276346088749847">अपने खाते में मौजूद Chrome का डेटा मिटाएं</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux डेवलपमेंट एनवायरमेंट<ph name="END_LINK_LINUX_OSS" /> की तरह, ChromeOS को भी अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />ओपन सोर्स सॉफ़्टवेयर<ph name="END_LINK_CROS_OSS" /> की मदद से बनाया गया है.</translation>
 <translation id="3716540481907974026">ChromeOS Flex का वर्शन</translation>
 <translation id="3718181793972440140">ऐसा करने से इस डिवाइस से 1 आइटम मिट जाएगा. बाद में अपना डेटा पाने के लिए, Chrome में <ph name="USER_EMAIL" /> के रूप में साइन इन करें.</translation>

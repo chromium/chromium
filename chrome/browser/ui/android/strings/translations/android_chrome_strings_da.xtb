@@ -960,6 +960,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="544776284582297024">Hvis du vil åbne faner og besøge forskellige sider på samme tid, skal du trykke på faneknappen</translation>
 <translation id="5454166040603940656">med <ph name="PROVIDER" /></translation>
 <translation id="5454215368971121976">Når din enhed er foldet, kan du vælge en indstilling eller holde fingeren på adresselinjen for at ændre placeringen.</translation>
+<translation id="5456381639095306749">Download siden</translation>
 <translation id="5458366071038729214">Du kan finde de websites, du følger, her</translation>
 <translation id="5468068603361015296">Vil du downloade <ph name="FILE_NAME" /> alligevel?</translation>
 <translation id="548278423535722844">Åbn i kortapp</translation>
@@ -1002,6 +1003,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5665379678064389456">Opret begivenhed i <ph name="APP_NAME" /></translation>
 <translation id="5680616253592639556">Manglende oplysninger</translation>
 <translation id="5683547024293500885">Chrome kan ikke søge efter opdateringer</translation>
+<translation id="5683916195767086779">Fanegruppe</translation>
 <translation id="5686790454216892815">Filnavnet er for langt</translation>
 <translation id="5687606994963670306">Chrome sletter automatisk websites, der er mere end 30 dage gamle. Et website, du besøger igen, kan komme tilbage på listen. Du kan også blokere et website, så det ikke kan foreslå annoncer til dig. Få flere oplysninger om <ph name="BEGIN_LINK" />administration af privatliv vedrørende annoncering i Chrome<ph name="END_LINK" />.</translation>
 <translation id="569536719314091526">Oversæt denne side til et hvilket som helst sprog via knappen Flere valgmuligheder</translation>
@@ -1210,6 +1212,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6569373978618239158">Du får nu vist historier fra <ph name="SITE_NAME" />, når du åbner en ny fane. De websites, du følger, gemmes på din Google-konto. Du kan administrere dem i indstillingerne for Discover.</translation>
 <translation id="6570116402456758630">Sideoversigt</translation>
 <translation id="657177046675873214">Aktivér "Bogmærker" i indstillingerne for at få adgang til dine bogmærker på alle dine enheder</translation>
+<translation id="6573096386450695060">Tillad altid</translation>
 <translation id="6573431926118603307">Faner, du har åbnet i Chrome på dine andre enheder, vises her.</translation>
 <translation id="6583199322650523874">Føj et bogmærke til den aktuelle side</translation>
 <translation id="6588043302623806746">Brug et sikkert DNS</translation>

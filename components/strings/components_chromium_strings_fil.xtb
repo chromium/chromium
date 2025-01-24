@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           at tiyaking nakatakda sa "walang proxy" o "direkta" ang iyong configuration.</translation>
+<translation id="648062525172759633">Nakalaan ang mga page na ito para sa paggamit ng mga developer ng Chromium, at posibleng hindi ito aktibong pinapanatili o sinusubukan. Para i-enable ang mga ito, mag-navigate papunta sa <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, i-click ang button para i-enable ang mga page sa pag-debug, at pagkatapos ay mag-navigate ulit papunta sa page na ito.</translation>
 <translation id="6549378540556750549">Nagiging posible rin ang Chromium sa pamamagitan ng iba pang <ph name="BEGIN_LINK_OSS" />open source na software<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Magkakabisa ang iyong mga pagbabago sa susunod na ilunsad mong muli ang Chromium.</translation>
 <translation id="691026815377248078">Nangangailangan ang Chromium ng access sa Bluetooth para magpatuloy sa 

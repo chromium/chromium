@@ -297,6 +297,7 @@
 <translation id="2244834438220057800">grøn</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2267285889943769271">Tilføj screenshot</translation>
+<translation id="2268044343513325586">Juster</translation>
 <translation id="2271469253353559191">Tidsplan for mørk tilstand</translation>
 <translation id="2276999893457278469">Mest populære indhold i Hjælp</translation>
 <translation id="2277631741861284101">Optag og del nemt din lyd</translation>
@@ -464,7 +465,6 @@
 <translation id="3226405216343213872">Søger efter scannere</translation>
 <translation id="3226657629376379887">Handlingsmenu for layout</translation>
 <translation id="3227186760713762082">Divider værdien for <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Omskriv</translation>
 <translation id="3246869037381808805">Udskriftjobs, der er ældre end 1 dag, fjernes</translation>
 <translation id="324961752321393509">Din administrator tillader ikke lukning af denne app</translation>
 <translation id="3263941347294171263">Tag stikket ud af <ph name="DEVICE_NAME" />, og sæt det derefter i igen for at fortsætte opdateringsprocessen</translation>
@@ -509,6 +509,7 @@
 <translation id="3462187165860821523">Opdaterer <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Strøm</translation>
 <translation id="346539236881580388">Tag igen</translation>
+<translation id="3479552764303398839">Ikke nu</translation>
 <translation id="3484914941826596830">Du må ikke frakoble den eksterne enhed eller slukke din computer, mens firmwaren opdaterer. Du kan minimere dette vindue. Denne opdatering kan tage et par minutter, og din eksterne enhed fungerer muligvis ikke under opdateringen.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3487866404496702283">Feedback til mahi-funktionen</translation>
@@ -567,6 +568,7 @@
 <translation id="3763034084412196440">Juster lydstyrke</translation>
 <translation id="3767737419527918477">Søg efter optagelsesfiler</translation>
 <translation id="3771294271822695279">Videofiler</translation>
+<translation id="3771694256347217732">Googles servicevilkår</translation>
 <translation id="3780740315729837296">Tildel en tast</translation>
 <translation id="3784455785234192852">Lås</translation>
 <translation id="3785643128701396311">pixelkunst</translation>
@@ -1053,7 +1055,6 @@
 <translation id="6075872808778243331">(Android) HTTP-forsinkelse</translation>
 <translation id="6078323886959318429">Tilføj genvej</translation>
 <translation id="6091080061796993741">gul</translation>
-<translation id="6093853427925392522">Sørg for at bruge Googles Content Transfer-app til at flytte skolekontodata til din personlige konto, før du mister adgangen.</translation>
 <translation id="6104112872696127344">Scanningen blev annulleret</translation>
 <translation id="6106186594183574873">Angiv din gamle adgangskode for at afslutte</translation>
 <translation id="6108689792487843350">Denne gateway kan ikke nås</translation>
@@ -1300,7 +1301,6 @@
 <translation id="7135814714616751706">Søg efter genveje</translation>
 <translation id="7138614237884624401">Forenklet tekst</translation>
 <translation id="7138668887584231801">Der er ikke nok ord til at generere en opsummering</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Tilslutter</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
 <translation id="7144954474087165241">en pagode</translation>
@@ -1541,7 +1541,6 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8261506727792406068">Slet</translation>
 <translation id="8262870577632766028">1 time</translation>
 <translation id="827422111966801947">Indigoblå</translation>
-<translation id="8281886186245836920">Spring over</translation>
 <translation id="8286154143153872371">Opret forbindelse til et netværk, og genindlæs siden for at se baggrunden.</translation>
 <translation id="8291967909914612644">Land for udbyder til hjem</translation>
 <translation id="8294431847097064396">Kilde</translation>
@@ -1646,6 +1645,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8797082062139985406">Opret et navn ved hjælp af Google AI</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Navn på udbyder</translation>
+<translation id="8804164990146287819">Privatlivspolitik</translation>
 <translation id="8808828119384186784">Indstillinger for Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Baggrund</translation>

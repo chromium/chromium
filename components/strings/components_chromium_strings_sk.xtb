@@ -28,6 +28,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           a uistite sa, že je vaša konfigurácia nastavená na hodnotu „žiadny server proxy" alebo „priame".</translation>
+<translation id="648062525172759633">Tieto stránky môžu používať vývojári prehliadača Chromium a nemusia byť aktívne udržiavané ani testované. Ak ich chcete povoliť, prejdite na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknutím na tlačidlo povoľte stránky ladenia a potom sa vráťte na túto stránku.</translation>
 <translation id="6549378540556750549">Prehliadač Chromium je založený aj na inom <ph name="BEGIN_LINK_OSS" />softvéri open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Zmeny sa prejavia pri nasledujúcom reštartovaní prehliadača Chromium.</translation>
 <translation id="691026815377248078">Prehliadač Chromium potrebuje prístup k rozhraniu Bluetooth, aby mohol pokračovať 

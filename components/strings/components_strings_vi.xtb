@@ -185,6 +185,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1310938305420497484">Trước tiên, hãy mở các thẻ và truy cập vào các trang web</translation>
 <translation id="1314311879718644478">Xem nội dung thực tế tăng cường</translation>
 <translation id="1314509827145471431">Đóng gáy bên phải</translation>
+<translation id="1314784609072437689">ghi đè bàn phím</translation>
 <translation id="1316805916535763484">Khoá học trực tuyến mở</translation>
 <translation id="1318023360584041678">Đã lưu trong nhóm thẻ</translation>
 <translation id="1319245136674974084">Không hỏi lại đối với ứng dụng này</translation>
@@ -911,7 +912,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="255497580849974774">Hãy giữ thiết bị luôn kết nối với bộ sạc trong quá trình cập nhật.</translation>
 <translation id="2556876185419854533">&amp;Hoàn tác chỉnh sửa</translation>
 <translation id="2559566667529177711">Nhiều lớp</translation>
-<translation id="2565789370591907825">Khoá và sử dụng bàn phím</translation>
 <translation id="2570734079541893434">Quản lý chế độ cài đặt</translation>
 <translation id="257136025287118539">Quản trị viên đang chuyển các tệp của bạn sang <ph name="CLOUD_PROVIDER" />. Bạn có thể sửa đổi các tệp này sau khi quá trình tải lên hoàn tất.</translation>
 <translation id="2571488850200220306">Nhằm giúp bạn đảm bảo tính bảo mật, họ cũng có thể xem hệ điều hành, phiên bản trình duyệt của thiết bị và phần mềm đã cài đặt</translation>
@@ -1109,7 +1109,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2974468223369775963">Không thể lưu IBAN này vào Tài khoản Google của bạn. Thay vào đó, IBAN sẽ được lưu vào Chrome trên thiết bị này. Chrome sẽ hỏi lại bạn vào lần tiếp theo bạn sử dụng IBAN này.</translation>
 <translation id="297667759942911166">Cộng tác trong nhóm thẻ</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, hiện đã chọn. <ph name="ROW_CONTENT" /></translation>
-<translation id="2977847223286097084">Khoá và sử dụng bàn phím của bạn</translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Tài nguyên của nhà văn</translation>
 <translation id="2979639724566107830">Mở trong cửa sổ mới</translation>
@@ -2466,6 +2465,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5363532265530011914">Tất &amp; đồ dệt kim</translation>
 <translation id="5371425731340848620">Cập nhật thẻ</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> đã thay đổi một thẻ</translation>
+<translation id="5374324662289354619">Trang gỡ lỗi nội bộ đang bị vô hiệu hoá.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Đồng hồ của bạn chạy chậm" hoặc "Đồng hồ của bạn chạy nhanh" hay "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Để sử dụng mật khẩu này trên mọi thiết bị, hãy xác minh danh tính của bạn</translation>
@@ -2921,6 +2921,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome tự động hạn chế cookie của bên thứ ba</translation>
 <translation id="6188479691141473408">và <ph name="N_FIELDS" /> trường khác</translation>
+<translation id="6190518157737269631">Ghi đè một số phím trên bàn phím, chẳng hạn như phím Esc</translation>
 <translation id="6194209731893739467">Xem tất cả sản phẩm bạn theo dõi tại đây</translation>
 <translation id="6195163219142236913">Đã hạn chế cookie của bên thứ ba</translation>
 <translation id="6195371403461054755">Địa chất học</translation>
@@ -4108,7 +4109,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8278544367771164040">Cho vay thương mại</translation>
 <translation id="8279290844152565425">Hoà nhạc và lễ hội âm nhạc</translation>
 <translation id="8279611986089885641">Bạn phải bật thông báo của Chrome. Bạn có thể bật các thông báo này trong <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
-<translation id="8280387559022105172">Khoá bàn phím?</translation>
 <translation id="8280630997017109758">Khay 11</translation>
 <translation id="8281730697546299650">Hiện đã có thêm các tính năng về quyền riêng tư trong quảng cáo</translation>
 <translation id="8281886186245836920">Bỏ qua</translation>
@@ -4178,7 +4178,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8398335999901363925">Các phương thức thanh toán có thể điền bằng thao tác chạm đã mở trên toàn màn hình.</translation>
 <translation id="8398446215576328011">Huỷ bỏ chính sách đã áp dụng</translation>
 <translation id="8398790343843005537">Tìm điện thoại của bạn</translation>
-<translation id="8399276468426899527">khoá và sử dụng bàn phím</translation>
 <translation id="8400929824946688748">Việc làm và giáo dục</translation>
 <translation id="8402442052798347631">Những kẻ tấn công trên trang web bạn đã cố truy cập có thể lừa bạn cài đặt phần mềm độc hại gây ảnh hưởng đến cách bạn duyệt web – chẳng hạn như bằng cách thay đổi trang chủ hoặc hiển thị thêm quảng cáo trên các trang web bạn truy cập. Bạn nên quay lại trang an toàn để tránh bị tổn hại. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm về cảnh báo này<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Hư cấu</translation>
@@ -4196,6 +4195,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8421158157346464398">Thông tin hồ sơ công việc (chẳng hạn như tên người dùng trên hồ sơ công việc)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Thay đổi</translation>
+<translation id="8426945547715537628">Cho phép ghi đè bàn phím?</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8428634594422941299">Tôi hiểu</translation>
@@ -4282,6 +4282,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8574841453995331336">Tủ lạnh và máy ướp lạnh</translation>
 <translation id="8577192028579836704">Tất cả lựa chọn thường có giá là <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Không thể sử dụng thẻ ảo</translation>
+<translation id="8579000896558714521">Ghi đè bàn phím</translation>
 <translation id="8580265901435899937">Điểm đến du lịch</translation>
 <translation id="8581064022803799721">Trang này được lưu trong <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Bóng quần và dụng cụ chơi bóng quần</translation>

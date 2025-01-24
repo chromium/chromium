@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">A Chrome a <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> nyílt forráskódú projektnek és további <ph name="BEGIN_LINK_OSS" />nyílt forráskódú szoftvereknek<ph name="END_LINK_OSS" /> köszönhetően jött létre.</translation>
 <translation id="2588322182880276190">Chrome embléma</translation>
 <translation id="3444832043240812445">Ez az oldal csak akkor jelenít meg információkat a legutóbbi rendszerösszeomlásokról, ha <ph name="BEGIN_LINK" />engedélyezi a hibabejelentést<ph name="END_LINK" /> .</translation>
+<translation id="3512634283363927263">Ezek az oldalak a Chrome fejlesztői számára készültek, és előfordulhat, hogy nincsenek aktívan karbantartva vagy tesztelve. Az engedélyezésükhöz lépjen a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> oldalra, kattintson a hibaelhárítási oldalak engedélyezéséhez tartozó gombra, majd lépjen ismét erre az oldalra.</translation>
 <translation id="3875312571075912821">A hálózat elérésének engedélyezése a Chrome számára a tűzfal-
           vagy vírusirtó-beállításokban.</translation>
 <translation id="5005121315113832363">Ezt az oldalt a Chrome blokkolja</translation>

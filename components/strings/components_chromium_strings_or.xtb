@@ -26,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           ଯାଆନ୍ତୁ ଏବଂ ଏହା ସୁନିଶ୍ଚିତ କରନ୍ତୁ ଯେ, ଆପଣଙ୍କ କନ୍‍ଫିଗ୍‍ରେସନ୍ "ପ୍ରକ୍ସି ନୁହେଁ" କିମ୍ବା "ପ୍ରତ୍ୟେକ୍ଷ"ରେ ସେଟ୍ ହୋଇଛି।</translation>
+<translation id="648062525172759633">ଏହି ପୃଷ୍ଠାଗୁଡ଼ିକ Chromium ଡେଭେଲପରମାନଙ୍କ ଦ୍ୱାରା ବ୍ୟବହାର ପାଇଁ ଉଦ୍ଦିଷ୍ଟ ଏବଂ ଏଗୁଡ଼ିକୁ ସକ୍ରିୟ ଭାବରେ ପରିଚାଳନା କିମ୍ବା ପରୀକ୍ଷା କରାଯାଇନପାରେ। ସେଗୁଡ଼ିକୁ ସକ୍ଷମ କରିବା ପାଇଁ <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />କୁ ନାଭିଗେଟ କରନ୍ତୁ, ଡିବଗ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ସକ୍ଷମ କରିବା ପାଇଁ ବଟନରେ କ୍ଲିକ କରନ୍ତୁ ଏବଂ ତା'ପରେ ପୁଣି ଏହି ପୃଷ୍ଠାକୁ ନାଭିଗେଟ କରନ୍ତୁ।</translation>
 <translation id="6549378540556750549">Chromium ଅନ୍ୟ <ph name="BEGIN_LINK_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_OSS" /> ଦ୍ୱାରା ମଧ୍ୟ ସମ୍ଭବପର ହୋଇଥାଏ।</translation>
 <translation id="6613594504749178791">ପରବର୍ତ୍ତୀ ସମୟରେ Chromiumକୁ ପୁଣି ଲଞ୍ଚ କରିବାବେଳେ ଆପଣ କରିଥିବା ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ଲାଗୁ ହେବ।</translation>
 <translation id="691026815377248078">ପେୟାରିଂ ଜାରି ରଖିବା ପାଇଁ Chromium ବ୍ଲୁଟୁଥ୍ ଆକ୍ସେସ୍ ଆବଶ୍ୟକ କରେ। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

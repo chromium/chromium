@@ -206,7 +206,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="345171907106878721">Add yourself to Chrome</translation>
 <translation id="3453763134178591239">Chrome OS terms</translation>
 <translation id="3503306920980160878">Chrome needs access to your location to share your location with this site</translation>
-<translation id="3512634283363927263">These pages are intended for use by Chrome developers, and may not be actively maintained or tested. To enable them, navigate to <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, click the button to enable debug pages and then navigate to this page again.</translation>
 <translation id="3533694711092285624">No saved passwords. Chrome can check your passwords when you save them.</translation>
 <translation id="3541482654983822893">Chrome can't check your passwords. Try again after 24 hours.</translation>
 <translation id="3564543103555793392">When you sign in to Chrome, you can save bookmarks, passwords and more, then use them on your phone</translation>
@@ -224,7 +223,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3673813398384385993">Chrome found that '<ph name="EXTENSION_NAME" />' contains malware</translation>
 <translation id="3695446226812920698">Find out how</translation>
 <translation id="3697952514309507634">Other Chrome profiles</translation>
-<translation id="3700276346088749847">clear the Chrome data in your account</translation>
 <translation id="3703994572283698466">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flex version</translation>
 <translation id="3718181793972440140">This will delete 1 item from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>

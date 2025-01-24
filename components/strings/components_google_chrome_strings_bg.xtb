@@ -10,6 +10,7 @@
 <translation id="2447485272386224171">Chrome е възможен благодарение на проекта с отворен код <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> и на друг <ph name="BEGIN_LINK_OSS" />софтуер с отворен код<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Лого на Chrome</translation>
 <translation id="3444832043240812445">В тази страница се показва информация за скорошните сривове само ако сте <ph name="BEGIN_LINK" />активирали изпращането на сигнали за сривове<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Тези страници са предназначени за програмисти на Chrome и може да не се поддържат или тестват активно. За да ги активирате, навигирайте до <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, кликнете върху бутона за активиране на страниците за отстраняване на грешки и след това отново се придвижете до тази страница.</translation>
 <translation id="3875312571075912821">Разрешете достъпа на Chrome до мрежата от настройките на защитната стена
 или антивирусния си софтуер.</translation>
 <translation id="5005121315113832363">Тази страница е блокирана от Chrome</translation>

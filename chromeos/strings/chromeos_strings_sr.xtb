@@ -296,7 +296,9 @@
 <translation id="2240366984605217732">Прекидач распореда</translation>
 <translation id="2244834438220057800">зелене</translation>
 <translation id="225692081236532131">Статус активације</translation>
+<translation id="2265792117169966196">Изаберите и преузмите модел транскрипције за језик <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Додај снимак екрана</translation>
+<translation id="2268044343513325586">Прецизирај</translation>
 <translation id="2271469253353559191">Распоред тамног режима</translation>
 <translation id="2276999893457278469">Најпопуларнији садржај помоћи</translation>
 <translation id="2277631741861284101">Лако снимајте и делите звук</translation>
@@ -464,7 +466,6 @@
 <translation id="3226405216343213872">Траже се скенери</translation>
 <translation id="3226657629376379887">Мени са радњама за распоред</translation>
 <translation id="3227186760713762082">Вредност (<ph name="CATEGORY_TEXT" />) дели се бројем <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Прерада</translation>
 <translation id="3246869037381808805">Задаци штампања старији од 1 дана се уклањају</translation>
 <translation id="324961752321393509">Администратор не дозвољава затварање ове апликације</translation>
 <translation id="3263941347294171263">Искључите и поново прикључите уређај <ph name="DEVICE_NAME" /> да бисте наставили процес ажурирања</translation>
@@ -509,6 +510,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> се ажурира</translation>
 <translation id="346423161771747987">Струја</translation>
 <translation id="346539236881580388">Поново сними</translation>
+<translation id="3479552764303398839">Не сада</translation>
 <translation id="3484914941826596830">Не искључујте спољни уређај ни рачунар док се фирмвер ажурира. Можете да умањите овај прозор. Ово ажурирање може да потраје неколико минута, а спољни уређај можда неће радити током тог периода.</translation>
 <translation id="3486220673238053218">дефиниција</translation>
 <translation id="3487866404496702283">Повратне информације о функцији махи</translation>
@@ -567,6 +569,7 @@
 <translation id="3763034084412196440">Прилагодите јачину звука</translation>
 <translation id="3767737419527918477">Претражите фајлове снимака</translation>
 <translation id="3771294271822695279">Видео датотеке</translation>
+<translation id="3771694256347217732">Google услови коришћења услуге</translation>
 <translation id="3780740315729837296">Доделите тастер на тастатури</translation>
 <translation id="3784455785234192852">Закључај</translation>
 <translation id="3785643128701396311">пикселска графика</translation>
@@ -772,6 +775,7 @@
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4744944742468440486">Информације везане за ваш избор</translation>
 <translation id="4750394297954878236">Предлози</translation>
+<translation id="4763771683769971829">Листа доступних језика</translation>
 <translation id="4771607256327216405">осветљавање тастатуре</translation>
 <translation id="4771923071974529837">сутра</translation>
 <translation id="4773299976671772492">Заустављено је</translation>
@@ -853,6 +857,7 @@
 <translation id="5095761549884461003">Искључите USB кабл <ph name="DEVICE_NAME" />, па га поново прикључите да бисте наставили процес ажурирања</translation>
 <translation id="5099354524039520280">нагоре</translation>
 <translation id="5107243100836678918">Пречица без тастера <ph name="META_KEY" /> може да буде у супротности са пречицом неке апликације. Поново притисните ову пречицу да бисте наставили да је користите или притисните нову пречицу помоћу тастера <ph name="KEY" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">Преузимање модела транскрипције за језик <ph name="LANGUAGE_NAME" /> није успело. Пробајте поново или рестартујте Chromebook</translation>
 <translation id="5108781503443873320">Слично:</translation>
 <translation id="5121677070210013200">Преузимање модела транскрипције није успело. Пробајте поново или рестартујте Chromebook.</translation>
 <translation id="5130848777448318809">понији</translation>
@@ -1053,7 +1058,6 @@
 <translation id="6075872808778243331">(Android) HTTP кашњење</translation>
 <translation id="6078323886959318429">Додај пречицу</translation>
 <translation id="6091080061796993741">жуте</translation>
-<translation id="6093853427925392522">Обавезно користите Google апликацију Пренос садржаја да бисте преместили податке са школског налога на лични налог пре него што изгубите приступ.</translation>
 <translation id="6104112872696127344">Скенирање је отказано</translation>
 <translation id="6106186594183574873">Да бисте завршили, унесите стару лозинку</translation>
 <translation id="6108689792487843350">Мрежни пролаз је недоступан</translation>
@@ -1277,6 +1281,7 @@
 <translation id="7049916119678019302">Преузмите модел транскрипције у Подешавањима</translation>
 <translation id="7058278511608979688">Заврши и сачувај</translation>
 <translation id="7059230779847288458">Пуни се. <ph name="TIME_VALUE" /> до краја пуњења</translation>
+<translation id="7065336548231472971">Изабрали сте <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">тастер <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Припремите уређај</translation>
 <translation id="7076851914315147928">Одаберите позадину</translation>
@@ -1300,7 +1305,6 @@
 <translation id="7135814714616751706">Претражите пречице</translation>
 <translation id="7138614237884624401">Поједностављен текст</translation>
 <translation id="7138668887584231801">Нема довољно речи за резимирање</translation>
-<translation id="7141470099673912333">Пренос садржаја</translation>
 <translation id="7143207342074048698">Повезивање</translation>
 <translation id="7144878232160441200">Пробај поново</translation>
 <translation id="7144954474087165241">Пагода</translation>
@@ -1371,6 +1375,7 @@
 <translation id="7415801143053185905">Веома велико HTTP кашњење</translation>
 <translation id="7418738250896500352">Превише речи за поједностављивање</translation>
 <translation id="7425037327577270384">Помоћ при писању</translation>
+<translation id="7425832472614771259">Модел транскрипције за језик <ph name="LANGUAGE_NAME" /> је преузет <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Не можете да онемогућите нити уклоните овај назив приступне тачке. Уверите се да су омогућени називи приступних тачака који имају тип <ph name="ATTACH" /> онемогућени или уклоњени.</translation>
 <translation id="7453118953486228603">Кликните да бисте резимирали изабрани текст</translation>
@@ -1407,6 +1412,7 @@
 <translation id="7595982850646262331">Још <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Администратор за <ph name="MANAGER" /> је подесио када овај <ph name="DEVICE_TYPE" /> може да се користи</translation>
 <translation id="7613724632293948900">Промените положај помоћу тастера миша или тастера са стрелицама.</translation>
+<translation id="7618216277886673749">Изаберите <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Неутрално</translation>
 <translation id="7620771111601174153">Сазнајте више у Центру за помоћ</translation>
 <translation id="7625095758347640998">AI позадинe</translation>
@@ -1541,7 +1547,6 @@
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8262870577632766028">1 сат</translation>
 <translation id="827422111966801947">Тамноплава</translation>
-<translation id="8281886186245836920">Прескочи</translation>
 <translation id="8286154143153872371">Повежите се на мрежу и поново учитајте страницу да бисте видели позадину.</translation>
 <translation id="8291967909914612644">Земља добављача за Home</translation>
 <translation id="8294431847097064396">Извор</translation>
@@ -1646,6 +1651,7 @@
 <translation id="8797082062139985406">Направите назив помоћу Google вештачке интелигенције</translation>
 <translation id="8798099450830957504">Подразумевано</translation>
 <translation id="8798441408945964110">Назив добављача</translation>
+<translation id="8804164990146287819">Политика приватности</translation>
 <translation id="8808828119384186784">Подешавање Chrome-а</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="8818152010000655963">Позадина</translation>

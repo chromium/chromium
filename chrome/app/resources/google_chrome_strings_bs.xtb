@@ -206,7 +206,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="345171907106878721">Dodajte sebe na Chrome</translation>
 <translation id="3453763134178591239">Uslovi korištenja ChromeOS-a</translation>
 <translation id="3503306920980160878">Chrome traži pristup vašoj lokaciji da bi je podijelio s ovom web lokacijom.</translation>
-<translation id="3512634283363927263">Ove stranice su namijenjene za korištenje programerima Chromea i možda se neće aktivno održavati ili testirati. Da ih omogućite, idite na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite na dugme da omogućite stranice za otklanjanje grešaka, zatim se vratite na ovu stranicu.</translation>
 <translation id="3533694711092285624">Nema sačuvanih lozinki. Chrome može provjeravati vaše lozinke kada ih sačuvate.</translation>
 <translation id="3541482654983822893">Chrome ne može provjeravati vaše lozinke. Pokušajte ponovo za 24 sata.</translation>
 <translation id="3564543103555793392">Kada se prijavite u Chrome, možete sačuvati oznake, lozinke i drugo, a zatim ih koristiti na telefonu</translation>
@@ -224,7 +223,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3673813398384385993">Chrome je otkrio da ekstenzija "<ph name="EXTENSION_NAME" />" sadržava zlonamjerni softver</translation>
 <translation id="3695446226812920698">Saznajte kako</translation>
 <translation id="3697952514309507634">Drugi profili u Chromeu</translation>
-<translation id="3700276346088749847">obrišite podatke Chromea na računu</translation>
 <translation id="3703994572283698466">ChromeOS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Verzija ChromeOS Flexa</translation>
 <translation id="3718181793972440140">Ovim će se izbrisati 1 stavka s ovog uređaja. Da preuzmete svoje podatke kasnije, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>

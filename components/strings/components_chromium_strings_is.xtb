@@ -29,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           og gakktu úr skugga um að stillt sé á „ekki proxy“ eða „beint“.</translation>
+<translation id="648062525172759633">Þessar síður eru ætlaðar til notkunar hjá þróunaraðilum Chromium og er e.t.v. ekki haldið við eða prófaðar reglulega. Til að kveikja á þeim skaltu fara á <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, smella á hnappinn til að kveikja á villuleitarsíðum og fara síðan aftur á þessa síðu.</translation>
 <translation id="6549378540556750549">Chromium virkar einnig í krafti annars <ph name="BEGIN_LINK_OSS" />hugbúnaðar með opinn kóða<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Breytingar þínar munu taka gildi næst þegar þú endurræsir Chromium.</translation>
 <translation id="691026815377248078">Google Chrome þarf Bluetooth-aðgang til að halda pörun 

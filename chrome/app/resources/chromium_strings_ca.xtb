@@ -399,7 +399,6 @@
 <translation id="6455857529632101747">Et donem la benvinguda als perfils de Chromium</translation>
 <translation id="6466344609055215035">Suprimeix el compte de Chromium</translation>
 <translation id="6475912303565314141">També controla la pàgina que es mostra quan inicieu Chromium.</translation>
-<translation id="648062525172759633">Aquestes pàgines estan pensades per a desenvolupadors de Chromium i és possible que no es mantinguin ni es provin activament. Per activar-les, navega fins a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, fes clic al botó per activar les pàgines de depuració i, a continuació, torna a aquesta pàgina.</translation>
 <translation id="648319183876919572">La Navegació segura millorada és més eficaç a l'hora de protegir-te de baixades i llocs web perillosos</translation>
 <translation id="6510925080656968729">Desinstal·la Chromium</translation>
 <translation id="651535675648445253">Dreceres obertes a Chromium</translation>
@@ -533,7 +532,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8313851650939857356">Error d'arrencada: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">La teva organització tanca Chromium quan no s'utilitza durant <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Desa com a imatge</translation>
-<translation id="8326785589245660814">esborra les dades de Chromium del teu compte</translation>
 <translation id="8330519371938183845">Inicia la sessió per sincronitzar i personalitzar Chromium en tots els teus dispositius</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> abans utilitzava Chromium</translation>
 <translation id="8359544530202147897">Actualitza Chromium per continuar utilitzant les dades de Chromium al teu Compte de Google, <ph name="ACCOUNT_EMAIL" /></translation>

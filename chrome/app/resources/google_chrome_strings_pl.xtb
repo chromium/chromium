@@ -202,7 +202,6 @@
 <translation id="345171907106878721">Dodaj siebie do Chrome</translation>
 <translation id="3453763134178591239">Warunki korzystania z Chrome OS</translation>
 <translation id="3503306920980160878">Chrome musi mieć dostęp do Twojej lokalizacji, by udostępnić ją tej stronie</translation>
-<translation id="3512634283363927263">Te strony są przeznaczone dla programistów Chrome i mogą nie być aktywnie utrzymywane ani testowane. Aby je włączyć, otwórz <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknij przycisk włączania debugowania stron, a potem ponownie otwórz tę stronę.</translation>
 <translation id="3533694711092285624">Brak zapisanych haseł. Chrome może sprawdzać Twoje hasła, gdy je zapiszesz.</translation>
 <translation id="3541482654983822893">Chrome nie może sprawdzić Twoich haseł. Spróbuj ponownie za 24 godziny.</translation>
 <translation id="3564543103555793392">Po zalogowaniu się w Chrome możesz zapisać zakładki, hasła i inne dane, a potem korzystać z nich na telefonie</translation>
@@ -220,7 +219,6 @@
 <translation id="3673813398384385993">Przeglądarka Chrome wykryła, że rozszerzenie „<ph name="EXTENSION_NAME" />” zawiera złośliwe oprogramowanie</translation>
 <translation id="3695446226812920698">Instrukcje</translation>
 <translation id="3697952514309507634">Inne profile Chrome</translation>
-<translation id="3700276346088749847">usuń dane Chrome ze swojego konta</translation>
 <translation id="3703994572283698466">Opracowanie Chrome OS było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />. To samo dotyczy <ph name="BEGIN_LINK_LINUX_OSS" />środowiska programistycznego Linuksa<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Wersja ChromeOS Flex</translation>
 <translation id="3718181793972440140">Spowoduje to usunięcie 1 elementu z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chrome jako <ph name="USER_EMAIL" />.</translation>

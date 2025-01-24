@@ -9,6 +9,7 @@
 <translation id="2447485272386224171">Браузер Chrome создан на основе проекта <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> и другого <ph name="BEGIN_LINK_OSS" />программного обеспечения с открытым исходным кодом<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Логотип Chrome</translation>
 <translation id="3444832043240812445">Информация о недавних сбоях отображается на этой странице только при <ph name="BEGIN_LINK" />включенной функции отчетов о сбоях<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Эти страницы, предназначенные для разработчиков Chrome, могут тестироваться или поддерживаться нерегулярно. Чтобы включить их, перейдите по адресу <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, нажмите на кнопку включения отладочных страниц, а затем вернитесь сюда.</translation>
 <translation id="3875312571075912821">Разрешите доступ к сети для Chrome
           в настройках брандмауэра или антивируса.</translation>
 <translation id="5005121315113832363">Эта страница была заблокирована браузером Chrome.</translation>

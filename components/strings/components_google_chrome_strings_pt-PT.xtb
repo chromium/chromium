@@ -10,6 +10,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2447485272386224171">O Chrome foi concretizado graças ao projeto de código aberto <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />, assim como a outro <ph name="BEGIN_LINK_OSS" />software de código aberto<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logótipo do Chrome</translation>
 <translation id="3444832043240812445">Esta página mostra informações sobre falhas recentes apenas se <ph name="BEGIN_LINK" />ativar relatórios de falha<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Estas páginas destinam-se a ser usadas por programadores do Chrome e podem não ser testadas nem mantidas ativamente. Para as ativar, navegue para <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, clique no botão para ativar as páginas de depuração e, em seguida, navegue para esta página novamente.</translation>
 <translation id="3875312571075912821">Permita que o Chrome aceda à rede nas definições da sua firewall ou
           do antívirus.</translation>
 <translation id="5005121315113832363">Esta página foi bloqueada pelo Chrome</translation>
