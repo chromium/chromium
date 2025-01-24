@@ -15,36 +15,44 @@
         createScript: x => x, createHTML: x => x, createScriptURL: x => x });
 
     promise_test(async t => {
+      const input = "'modified via innerHTML';"
       let violation = await trusted_type_violation_for(TypeError, _ =>
-        document.getElementById("script").innerHTML = "'modified via innerHTML';"
+        document.getElementById("script").innerHTML = input
       );
       assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
+      assert_equals(violation.sample, `SVGScriptElement innerHTML|${clipSampleIfNeeded(input)}`);
     }, "Assign String to SVGScriptElement.innerHTML.");
 
     promise_test(async t => {
+      const input = "'modified via innerHTML';"
       let violation = await trusted_type_violation_for(TypeError, _ =>
-        document.getElementById("script").innerHTML = policy.createHTML("'modified via innerHTML';")
+        document.getElementById("script").innerHTML = policy.createHTML(input)
       );
       assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
+      assert_equals(violation.sample, `SVGScriptElement innerHTML|${clipSampleIfNeeded(input)}`);
     }, "Assign TrustedHTML to SVGScriptElement.innerHTML.");
 
     promise_test(async t => {
+      const input = "'modified via innerHTML';"
       const elem = document.createElementNS(
           "http://www.w3.org/2000/svg", "script");
       let violation = await trusted_type_violation_for(TypeError, _ =>
-        elem.innerHTML = policy.createHTML("'modified via innerHTML';")
+        elem.innerHTML = policy.createHTML(input)
       );
       assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
+      assert_equals(violation.sample, `SVGScriptElement innerHTML|${clipSampleIfNeeded(input)}`);
       document.getElementById("svg").appendChild(elem);
     }, "Assign TrustedHTML to SVGScriptElement.innerHTML and execute it.");
 
     promise_test(async t => {
+      const input = "modified via DOM";
       const elem = document.createElementNS(
           "http://www.w3.org/2000/svg", "script");
       let violation = await trusted_type_violation_for(TypeError, _ =>
-        elem.insertBefore(document.createTextNode("modified via DOM"), null)
+        elem.insertBefore(document.createTextNode(input), null)
       );
       assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
+      assert_equals(violation.sample, `SVGScriptElement text|${clipSampleIfNeeded(input)}`);
       document.getElementById("svg").appendChild(elem);
     }, "Modify SVGScriptElement via DOM manipulation.");
 

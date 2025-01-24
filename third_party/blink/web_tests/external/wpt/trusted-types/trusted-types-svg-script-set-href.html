@@ -16,11 +16,13 @@
       createScriptURL: script_url => script_url });
 
     promise_test(async t => {
+      const input = "about:blank";
       const elem = document.createElementNS(NSURI_SVG, "script");
       let violation = await trusted_type_violation_for(TypeError, _ =>
-        elem.href.baseVal = "about:blank"
+        elem.href.baseVal = input
       );
       assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
+      assert_equals(violation.sample, `SVGScriptElement href|${clipSampleIfNeeded(input)}`);
       document.getElementById("svg").appendChild(elem);
     }, "Assign string to SVGScriptElement.href.baseVal.");
 
@@ -34,11 +36,13 @@
     }, "Assign TrustedScriptURL to SVGScriptElement.href.baseVal.");
 
     promise_test(async t => {
+      const input = "about:blank";
       const elem = document.createElementNS(NSURI_SVG, "script");
       let violation = await trusted_type_violation_for(TypeError, _ =>
-        elem.setAttribute("href", "about:blank")
+        elem.setAttribute("href", input)
       );
       assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
+      assert_equals(violation.sample, `SVGScriptElement href|${clipSampleIfNeeded(input)}`);
       document.getElementById("svg").appendChild(elem);
     }, "Assign string to non-attached SVGScriptElement.href via setAttribute.");
 
@@ -52,12 +56,14 @@
     }, "Assign TrustedScriptURL to non-attached SVGScriptElement.href via setAttribute.");
 
     promise_test(async t => {
+      const input = "about:blank";
       const elem = document.createElementNS(NSURI_SVG, "script");
       document.getElementById("svg").appendChild(elem);
       let violation = await trusted_type_violation_for(TypeError, _ =>
-        elem.setAttribute("href", "about:blank")
+        elem.setAttribute("href", input)
       );
       assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
+      assert_equals(violation.sample, `SVGScriptElement href|${clipSampleIfNeeded(input)}`);
     }, "Assign string to attached SVGScriptElement.href via setAttribute.");
 
     promise_test(t => {
