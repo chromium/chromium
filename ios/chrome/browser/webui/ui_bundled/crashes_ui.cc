@@ -50,6 +50,8 @@ web::WebUIIOSDataSource* CreateCrashesUIHTMLSource() {
   return source;
 }
 
+}  // namespace
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // CrashesDOMHandler
@@ -162,8 +164,6 @@ void CrashesDOMHandler::UpdateUI() {
   base::ValueView args[] = {event_name, result};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
-
-}  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 //
