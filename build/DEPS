@@ -79,4 +79,17 @@ deps = {
       },
     ],
   },
+  'linux/debian_bullseye_ppc64el-sysroot': {
+    'bucket': 'chrome-linux-sysroot',
+    'condition': 'checkout_linux and checkout_ppc',
+    'dep_type': 'gcs',
+    'objects': [
+      {
+        'generation': 1737756598911109,
+        'object_name': 'd3ad23748c1756ba0be5cc035cf19889bb1e02e1168ee5a7ac0aa0352b691b0d',
+        'sha256sum': 'd3ad23748c1756ba0be5cc035cf19889bb1e02e1168ee5a7ac0aa0352b691b0d',
+        'size_bytes': 18574220,
+      },
+    ],
+  },
 }
