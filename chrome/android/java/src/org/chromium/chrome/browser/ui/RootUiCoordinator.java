@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeToolbarButtonController;
+import org.chromium.chrome.browser.download.DownloadMetrics.OpenWithExternalAppsSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -1303,7 +1304,8 @@ public class RootUiCoordinator
                             MimeTypeUtils.PDF_MIME_TYPE,
                             /* originalUrl= */ null,
                             /* referrer= */ null,
-                            mActivity)) {
+                            mActivity,
+                            OpenWithExternalAppsSource.APP_MENU)) {
                 Toast.makeText(
                                 mActivity,
                                 mActivity.getString(R.string.download_cant_open_file),

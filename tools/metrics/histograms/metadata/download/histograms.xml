@@ -712,6 +712,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.OpenDownloads.OpenWithExternalAppsSource"
+    enum="OpenDownloadWithExternalAppsSource" expires_after="2025-07-06">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records the source when download is forwarding from Chrome to an external
+    app to open. Recorded when the view intent is handled; even if the intent
+    picker is dismissed. Only record when there is an app to handle the intent.
+    Logged on Android only.
+  </summary>
+</histogram>
+
 <histogram name="Download.OpenDownloads.PerProfileType"
     enum="BrowserProfileType" expires_after="2025-06-08">
   <owner>sideyilmaz@chromium.org</owner>
