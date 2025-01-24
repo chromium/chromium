@@ -35,7 +35,6 @@ CGFloat const kHalfSheetCornerRadius = 13;
 @end
 
 @implementation UnitConversionCoordinator {
-
   // Mediator to handle the units updates and conversion.
   UnitConversionMediator* _mediator;
 
