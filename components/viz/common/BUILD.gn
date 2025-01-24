@@ -234,8 +234,6 @@ viz_component("common") {
     "resources/return_callback.h",
     "resources/returned_resource.cc",
     "resources/returned_resource.h",
-    "resources/shared_bitmap_id.cc",
-    "resources/shared_bitmap_id.h",
     "resources/transferable_resource.cc",
     "resources/transferable_resource.h",
     "skia_helper.cc",

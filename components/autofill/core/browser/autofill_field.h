@@ -17,7 +17,6 @@
 #include "base/types/pass_key.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/profile_value_source.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
@@ -123,26 +122,6 @@ class AutofillField : public FormFieldData {
   }
   void set_possible_types(const FieldTypeSet& possible_types) {
     possible_types_ = possible_types;
-  }
-
-  // Adds a profile `identifier` for `type` as a possible profile value source.
-  // If `type` is not an address type the call will be a noop.
-  PossibleProfileValueSources* possible_profile_value_sources() {
-    return &possible_profile_value_sources_;
-  }
-
-  void set_possible_profile_value_sources(
-      PossibleProfileValueSources possible_profile_value_sources) {
-    possible_profile_value_sources_ = std::move(possible_profile_value_sources);
-  }
-
-  std::optional<ProfileValueSource> assumed_profile_value_source() const {
-    return assumed_profile_value_source_;
-  }
-
-  void set_assumed_profile_value_source(
-      std::optional<ProfileValueSource> value_source) {
-    assumed_profile_value_source_ = value_source;
   }
 
   void SetHtmlType(HtmlFieldType type, HtmlFieldMode mode);
@@ -485,25 +464,8 @@ class AutofillField : public FormFieldData {
   HtmlFieldMode html_mode_ = HtmlFieldMode::kNone;
 
   // The set of possible types for this field. It is normally only populated on
-  // submission time together with the `possible_profile_value_sources_`.
+  // submission time.
   FieldTypeSet possible_types_;
-
-  // An Autofill profile is a source for a filled value when the field's value
-  // is contained in the profile stored as a specific type. It does not mean
-  // that the value was actually filled from this Autofill profile. It is
-  // normally only populated on submission time along with the
-  // `possible_types_`. It contains the address related information that is
-  // contained in `possible_types_` with the additional information in which
-  // profile the matching type was detected.
-  PossibleProfileValueSources possible_profile_value_sources_;
-
-  // Holds the assumed profile and type of the `value` found in this field.
-  // The assumed source may be derived by using the
-  // `possible_profile_value_sources_` or the `autofill_source_profile_guid_`.
-  // There are no strong guarantees regarding the consistency between those
-  // different fields. The `nullopt` state indicates that no assumed value
-  // source was identified yet.
-  std::optional<ProfileValueSource> assumed_profile_value_source_;
 
   // The field's initial value. By default, it's the same as the field's
   // `value()`, but FormStructure::RetrieveFromCache() may override it.
@@ -596,7 +558,6 @@ class AutofillField : public FormFieldData {
   // Note: `is_autofilled` is true for autocompleted fields. So `is_autofilled`
   // is not a sufficient condition for `autofill_source_profile_guid_` to have a
   // value. This is not tracked for fields filled with field by field filling.
-  // TODO(crbug.com/364937539): Use AutofillField::ProfileValueSource instead.
   std::optional<std::string> autofill_source_profile_guid_;
 
   // Denotes the type that was used to fill the field in its last autofill
@@ -604,7 +565,6 @@ class AutofillField : public FormFieldData {
   // Autofill might fallback to filling a classified field with a different type
   // than the classified one, based on country-specific rules.
   // This is not tracked for fields filled with field by field filling.
-  // TODO(crbug.com/364937539): Use AutofillField::ProfileValueSource instead.
   std::optional<FieldType> autofilled_type_;
 
   // Denotes the product last responsible for filling the field. If the field is

@@ -150,13 +150,10 @@ void Address::SetRawInfoWithVerificationStatus(FieldType type,
   Root()->SetValueForType(type, value, status);
 }
 
-void Address::GetMatchingTypesWithProfileSources(
-    const std::u16string& text,
-    const std::string& app_locale,
-    FieldTypeSet* matching_types,
-    PossibleProfileValueSources* profile_value_sources) const {
-  FormGroup::GetMatchingTypesWithProfileSources(
-      text, app_locale, matching_types, profile_value_sources);
+void Address::GetMatchingTypes(const std::u16string& text,
+                               const std::string& app_locale,
+                               FieldTypeSet* matching_types) const {
+  FormGroup::GetMatchingTypes(text, app_locale, matching_types);
 
   std::string country_code = GetRoot().GetCountryCode().value();
 

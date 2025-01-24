@@ -173,6 +173,12 @@ extra_kv = { configs_to_remove = [
   '//build/config/compiler:disallow_unstable_features',
 ] }
 
+[crate.fdeflate]
+extra_kv = { configs_to_remove = [
+  # Based on performance measurements - see https://crbug.com/357670287
+  '//build/config/compiler:rust_integer_overflow_checks',
+] }
+
 [crate.prost]
 extra_input_roots = ['../README.md']
 group = 'test'

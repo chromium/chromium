@@ -69,9 +69,24 @@ class JetStream21(_JetStream2Base):
 @benchmark.Info(
     emails=['vahl@chromium.org', 'cbruni@chromium.org'],
     component='Blink>JavaScript',
+    documentation_url='https://browserbench.org/JetStream2.2/in-depth.html')
+class JetStream22(_JetStream2Base):
+  """JetStream 2.2"""
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_jetstream22'
+
+  def CreateStorySet(self, options):
+    return page_sets.JetStream22StorySet(options.test_list)
+
+
+@benchmark.Info(
+    emails=['vahl@chromium.org', 'cbruni@chromium.org'],
+    component='Blink>JavaScript',
     documentation_url='https://browserbench.org/JetStream2.0/in-depth.html')
 class JetStream2(_JetStream2Base):
-  """Latest JetStream2 """
+  """Latest JetStream 2 """
   @classmethod
   def Name(cls):
     return 'jetstream2'
@@ -85,9 +100,9 @@ class JetStream2(_JetStream2Base):
     component='Blink>JavaScript>GarbageCollection',
     documentation_url='https://browserbench.org/JetStream2.0/in-depth.html')
 class JetStream2MinorMS(JetStream2):
-  """Latest JetStream2 without the MinorMS flag.
+  """Latest JetStream2 with the MinorMS flag.
 
-  Shows the performance with Scavenger young generation GC in V8.
+  Shows the performance with MinorMS young generation GC in V8.
   """
   @classmethod
   def Name(cls):

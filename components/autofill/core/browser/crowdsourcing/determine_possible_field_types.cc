@@ -146,12 +146,10 @@ void FindAndSetPossibleFieldTypesForField(
   FieldTypeSet matching_types;
 
   for (const AutofillProfile& profile : profiles) {
-    profile.GetMatchingTypesWithProfileSources(value, app_locale,
-                                               &matching_types, nullptr);
+    profile.GetMatchingTypes(value, app_locale, &matching_types);
   }
   for (const CreditCard& card : credit_cards) {
-    card.GetMatchingTypesWithProfileSources(value, app_locale, &matching_types,
-                                            nullptr);
+    card.GetMatchingTypes(value, app_locale, &matching_types);
   }
 
   if (field.state_is_a_matching_type()) {

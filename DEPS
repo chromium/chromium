@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '02ab38d1d19c3faf1ac2e17fed42b48ef9e8f42f',
+  'devtools_frontend_revision': '18b2d024521eacad9e84f2e2d96a97e7146c145e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1669,7 +1669,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/error_prone',
-               'version': 'Q3oiuVxuq1jkWhjfnfCSviXK8BbbB9n6_4jz3x_Mo3kC',
+               'version': 'DFqEkqm_CBBWylsmJnAMv2md7Kx6X9l3I3y8De6nmuAC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1702,7 +1702,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/manifest_merger',
-               'version': 'XR6gkuLVsVOJ1Ysmv0JCjHrWaTNjvh2a6EwSENxyrqsC',
+               'version': 'ESxV7cNgPg8y2RupSn5lYWBzQQMMK5Ai729X_Zhv_zwC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -2142,7 +2142,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/jdk',
-              'version': 'G-WIGWdFIBTPPhv2xPK_lTfI5N7WmfCBh0oTKqX-c5sC',
+              'version': 'piuWwZ1qQ83zsTBfiEG7bNjB8NhyDdJYJJJ9TzNVyQsC',
           },
       ],
       # Needed on Linux for use on chromium_presubmit (for checkstyle).
@@ -2176,7 +2176,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/kotlin_stdlib',
-              'version': 'z7NenFzvjmGieRhzC5IhUKe-nO3U6xA5VwUilO3GZLgC',
+              'version': 'LmSKTDmwndED_aum0BuvdMC2yCdbod5iQjnPdr05C8AC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -4472,7 +4472,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '56557e9faee2786ae64809b59e91dbde6e0d7fc7',
+        '9f7423c7457b92bf1ec8cfe4e4127eea4eac014d',
       'condition': 'checkout_src_internal',
   },
 
@@ -4538,7 +4538,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '919b4ce9b9c225282de1fe59d2e38dd7d6dbed97',
+        'ed4db1d02e704649662d352427cd0671f7755aa2',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

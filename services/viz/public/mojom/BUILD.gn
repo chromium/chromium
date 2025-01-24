@@ -36,7 +36,6 @@ mojom("mojom") {
     "compositing/resource_id.mojom",
     "compositing/returned_resource.mojom",
     "compositing/selection.mojom",
-    "compositing/shared_bitmap_id.mojom",
     "compositing/shared_quad_state.mojom",
     "compositing/subtree_capture_id.mojom",
     "compositing/surface_id.mojom",
@@ -215,17 +214,6 @@ mojom("mojom") {
       traits_public_deps = [
         "//components/viz/common",
         "//ui/gfx/geometry/mojom",
-      ]
-    },
-    {
-      types = [
-        {
-          mojom = "viz.mojom.SharedBitmapId"
-          cpp = "::viz::SharedBitmapId"
-        },
-      ]
-      traits_headers = [
-        "//services/viz/public/cpp/compositing/shared_bitmap_id_mojom_traits.h",
       ]
     },
   ]

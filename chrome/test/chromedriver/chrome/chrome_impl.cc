@@ -107,10 +107,20 @@ Status ChromeImpl::GetWebViewIdForFirstTab(std::string* web_view_id,
     return status;
   for (int i = views_info.GetSize() - 1; i >= 0; --i) {
     const WebViewInfo& view = views_info.Get(i);
-    if (view.type == WebViewInfo::kTab) {
-      *web_view_id = view.id;
-      return Status(kOk);
+    if (view.type != WebViewInfo::kTab) {
+      continue;
     }
+
+    // Extension tab targets can initialize earlier than actual start pages.
+    // Skip chrome extension pages from being start pages unless extension
+    // target capability is enabled.
+    if (view.url.starts_with("chrome-extension://") &&
+        !enable_extension_targets_) {
+      continue;
+    }
+
+    *web_view_id = view.id;
+    return Status(kOk);
   }
   return Status(kUnknownError, "unable to discover open window in chrome");
 }
