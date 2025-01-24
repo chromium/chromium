@@ -27,6 +27,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
@@ -110,14 +111,10 @@ class TextContainer : public views::View {
     if (tab_list_model_->count() > 1) {
       GetViewAccessibility().SetName(title_->GetText());
     } else {
-      // TODO (crbug/374094198): Its not ideal to concatenate two strings like
-      // this and necessarily produce a comprehensible sentence. We probably
-      // need IDS_CONCAT_TWO_STRINGS_WITH_COMMA instead with the two strings as
-      // placeholders.
-      GetViewAccessibility().SetName(base::StrCat(
-          {title_->GetText(), u" ",
-           l10n_util::GetStringUTF16(
-               IDS_PERFORMANCE_INTERVENTION_SINGLE_SUGGESTED_ROW_ACCNAME)}));
+      GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+          IDS_CONCAT_TWO_STRINGS_WITH_COMMA, title_->GetText(),
+          l10n_util::GetStringUTF16(
+              IDS_PERFORMANCE_INTERVENTION_SINGLE_SUGGESTED_ROW_ACCNAME)));
     }
   }
 
