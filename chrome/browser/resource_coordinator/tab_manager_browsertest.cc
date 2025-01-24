@@ -204,6 +204,12 @@ class TabManagerTest : public InProcessBrowserTest,
     GetTabLifecycleUnitSource()->SetFocusedTabStripModelForTesting(tsm());
   }
 
+  void TearDownOnMainThread() override {
+    // Clear the fakely-focused model before browsers are destroyed.
+    GetTabLifecycleUnitSource()->SetFocusedTabStripModelForTesting(nullptr);
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   void OpenTwoTabs(const GURL& first_url, const GURL& second_url) {
     // Open two tabs. Wait for both of them to load.
     content::TestNavigationObserver load1(tsm()->GetActiveWebContents(), 1);

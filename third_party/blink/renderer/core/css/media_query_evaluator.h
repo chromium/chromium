@@ -29,6 +29,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_EVALUATOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/kleene_value.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -44,15 +45,6 @@ class MediaQuerySet;
 class MediaQuerySetResult;
 class MediaValues;
 struct MediaQueryResultFlags;
-
-// See Kleene 3-valued logic
-//
-// https://drafts.csswg.org/mediaqueries-4/#evaluating
-enum class KleeneValue {
-  kTrue,
-  kFalse,
-  kUnknown,
-};
 
 // Class that evaluates css media queries as defined in
 // CSS3 Module "Media Queries" (http://www.w3.org/TR/css3-mediaqueries/)
@@ -111,13 +103,6 @@ class CORE_EXPORT MediaQueryEvaluator final
   void Trace(Visitor*) const;
 
  private:
-  KleeneValue EvalNot(const MediaQueryExpNode&, MediaQueryResultFlags*) const;
-  KleeneValue EvalAnd(const MediaQueryExpNode&,
-                      const MediaQueryExpNode&,
-                      MediaQueryResultFlags*) const;
-  KleeneValue EvalOr(const MediaQueryExpNode&,
-                     const MediaQueryExpNode&,
-                     MediaQueryResultFlags*) const;
   KleeneValue EvalFeature(const MediaQueryFeatureExpNode&,
                           MediaQueryResultFlags*) const;
   KleeneValue EvalStyleFeature(const MediaQueryFeatureExpNode&,

@@ -89,6 +89,7 @@ struct PrivacySandboxNoticeData {
   PrivacySandboxNoticeData& operator=(const PrivacySandboxNoticeData&);
   ~PrivacySandboxNoticeData();
   int schema_version = 0;
+  std::string chrome_version;
   NoticeActionTaken notice_action_taken = NoticeActionTaken::kNotSet;
   base::Time notice_action_taken_time;
   base::Time notice_first_shown;

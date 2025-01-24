@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -56,11 +55,6 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     @Override
     public void showPasswordCheckUi(Context context) {
         SafetyHubUtils.showPasswordCheckUi(context, mProfile, mModalDialogManagerSupplier);
-    }
-
-    @Override
-    public @Nullable UpdateStatusProvider.UpdateStatus getUpdateStatus() {
-        return SafetyHubFetchServiceFactory.getForProfile(mProfile).getUpdateStatus();
     }
 
     @Override

@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -149,9 +150,13 @@ public class SigninTestRule extends AccountManagerTestRule {
 
         addAccount(testChildAccount);
 
-        // The child will be force signed in (by SigninChecker).
+        // The account will be force signed in (by SigninChecker).
         // Wait for this to complete before enabling sync.
         waitForSignin(testChildAccount);
+
+        // Wait for child status properties to be populated through asynchronous callbacks triggered
+        // after sign-in completes.
+        waitForChildSettingPropagation(testChildAccount);
         return testChildAccount;
     }
 
@@ -218,5 +223,27 @@ public class SigninTestRule extends AccountManagerTestRule {
     /** Completes the device lock flow when on automotive devices. */
     public void completeDeviceLockIfOnAutomotive() {
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
+    }
+
+    /** Waits for the account manager to set corresponding child properties. */
+    private void waitForChildSettingPropagation(AccountInfo accountInfo) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    // The child sign-in triggers two changes to preferences in native code used
+                    // to determine the child status to trigger Android UI changes.
+                    // Check that `IsSubjectToParentalControls` is updated to `Tribool.TRUE` as
+                    // expected for supervised accounts.
+                    Criteria.checkThat(
+                            IdentityServicesProvider.get()
+                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
+                                    .findExtendedAccountInfoByEmailAddress(accountInfo.getEmail())
+                                    .getAccountCapabilities()
+                                    .isSubjectToParentalControls(),
+                            is(Tribool.TRUE));
+                    // Check that the `kSupervisedUserId` preference is populated, which backs the
+                    // Java `Profile.isChild` implementation.
+                    Criteria.checkThat(
+                            ProfileManager.getLastUsedRegularProfile().isChild(), is(true));
+                });
     }
 }

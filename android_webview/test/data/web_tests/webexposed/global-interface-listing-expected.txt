@@ -4276,7 +4276,6 @@ interface HTMLInputElement : HTMLElement
     getter height
     getter incremental
     getter indeterminate
-    getter interestTargetElement
     getter labels
     getter list
     getter max
@@ -4336,7 +4335,6 @@ interface HTMLInputElement : HTMLElement
     setter height
     setter incremental
     setter indeterminate
-    setter interestTargetElement
     setter max
     setter maxLength
     setter min

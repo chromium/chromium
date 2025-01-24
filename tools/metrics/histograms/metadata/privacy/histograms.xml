@@ -1369,6 +1369,18 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <token key="Profile" variants="Profile"/>
 </histogram>
 
+<histogram name="PrivacySandbox.DarkLaunch.{Profile}.PrefMismatch"
+    enum="Boolean" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Recorded every time there is a mismatch in values between when the prompt
+    was shown for a synced pref and when the prompt was shown for an unsynced
+    pref.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
 <histogram name="PrivacySandbox.DarkLaunch.{Profile}.PrimaryAccountOnStartup"
     enum="PrivacySandboxPrimaryAccountUserGroups" expires_after="2025-06-11">
   <owner>chrstne@google.com</owner>
@@ -1388,8 +1400,8 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <summary>
     Records the duration it takes for the time a {Profile} is created to the
     time it takes for a user to sign in to their profile for the first time.
-    This does not track subsequent sign-ins after the first sign in, if the user
-    starts chrome and is already signed in the duration will be tracked as 0.
+    This metric only tracks known sign in durations. This does not track
+    subsequent sign-ins after the first sign in.
   </summary>
   <token key="Profile" variants="Profile"/>
 </histogram>
@@ -1401,10 +1413,8 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <summary>
     Records the duration it takes for the time a {Profile} is signed in to the
     time it takes for the user to sign out of their profile for the first time.
-    Subsequent sign-outs will not be tracked and restarting chrome will not
-    count as a sign out. If the user starts chrome and is already signed in, the
-    sign out duration will be tracked as 0 since we have no way of knowing the
-    exact time the user signed in.
+    This metric only tracks known sign out durations, subsequent sign-outs will
+    not be tracked and restarting chrome will not count as a sign out.
   </summary>
   <token key="Profile" variants="Profile"/>
 </histogram>
@@ -1426,7 +1436,8 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <owner>koilos@google.com</owner>
   <summary>
     Records the duration of how long it's been since the {Profile} has seen the
-    prompt.
+    prompt. This is emitted every time a user's eligibility to see the prompt
+    changes.
   </summary>
   <token key="Profile" variants="Profile"/>
 </histogram>
@@ -1450,6 +1461,18 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <summary>
     Records the reasons why the fake prompt was suppressed on a {Profile},
     stored as an integer.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.DarkLaunch.{Profile}.UnknownProfileSignInDuration"
+    enum="Boolean" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Recorded each time a {Profile} is first loaded in a browser session. Emitted
+    every time a user starts chrome and is already signed in.
   </summary>
   <token key="Profile" variants="Profile"/>
 </histogram>

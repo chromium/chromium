@@ -48,8 +48,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
     private Activity mActivity;
     private PropertyModel mPasswordCheckPropertyModel;
     private SafetyHubExpandablePreference mPasswordCheckPreference;
-    private PropertyModel mUpdateCheckPropertyModel;
-    private SafetyHubExpandablePreference mUpdateCheckPreference;
     private PropertyModel mNotificationsReviewPropertyModel;
     private SafetyHubExpandablePreference mNotificationsReviewPreference;
     private PropertyModel mBrowserStatePropertyModel;
@@ -71,19 +69,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                 mPasswordCheckPropertyModel,
                 mPasswordCheckPreference,
                 DeprecatedSafetyHubModuleViewBinder::bindPasswordCheckProperties);
-
-        // Set up update check preference.
-        mUpdateCheckPreference = new SafetyHubExpandablePreference(mActivity, null);
-
-        mUpdateCheckPropertyModel =
-                new PropertyModel.Builder(
-                                DeprecatedSafetyHubModuleProperties
-                                        .UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS)
-                        .build();
-        PropertyModelChangeProcessor.create(
-                mUpdateCheckPropertyModel,
-                mUpdateCheckPreference,
-                DeprecatedSafetyHubModuleViewBinder::bindUpdateCheckProperties);
 
         // Set up notifications review preference.
         mNotificationsReviewPreference = new SafetyHubExpandablePreference(mActivity, null);
@@ -526,76 +511,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
     }
 
     @Test
-    public void testUpdateCheckModule_UpToDate() {
-        UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
-        updateStatus.updateState = UpdateStatusProvider.UpdateState.NONE;
-
-        mUpdateCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
-
-        String expectedTitle = mActivity.getString(R.string.safety_check_updates_updated);
-        String expectedSecondaryButtonText =
-                mActivity.getString(R.string.safety_hub_go_to_google_play_button);
-
-        assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
-        assertEquals(SAFE_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
-        assertNull(mUpdateCheckPreference.getPrimaryButtonText());
-        assertEquals(expectedSecondaryButtonText, mUpdateCheckPreference.getSecondaryButtonText());
-    }
-
-    @Test
-    public void testUpdateCheckModule_UpdateAvailable() {
-        UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
-        updateStatus.updateState = UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE;
-
-        mUpdateCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
-
-        String expectedTitle = mActivity.getString(R.string.safety_check_updates_outdated);
-        String expectedPrimaryButtonText = mActivity.getString(R.string.menu_update);
-
-        assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
-        assertEquals(
-                WARNING_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
-        assertEquals(expectedPrimaryButtonText, mUpdateCheckPreference.getPrimaryButtonText());
-        assertNull(mUpdateCheckPreference.getSecondaryButtonText());
-    }
-
-    @Test
-    public void testUpdateCheckModule_UnsupportedOsVersion() {
-        UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
-        updateStatus.updateState = UpdateStatusProvider.UpdateState.UNSUPPORTED_OS_VERSION;
-        updateStatus.latestUnsupportedVersion = "1.1.1.1";
-
-        mUpdateCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
-
-        String expectedTitle = mActivity.getString(R.string.menu_update_unsupported);
-        String expectedSummary =
-                mActivity.getString(R.string.menu_update_unsupported_summary_default);
-
-        assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
-        assertEquals(expectedSummary, mUpdateCheckPreference.getSummary().toString());
-        assertEquals(INFO_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
-    }
-
-    @Test
-    public void testUpdateCheckModule_StatusNotReady() {
-        mUpdateCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, null);
-
-        String expectedTitle = mActivity.getString(R.string.safety_hub_update_unavailable_title);
-        String expectedSummary = mActivity.getString(R.string.safety_hub_unavailable_summary);
-        String expectedSecondaryButtonText =
-                mActivity.getString(R.string.safety_hub_go_to_google_play_button);
-
-        assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
-        assertEquals(expectedSummary, mUpdateCheckPreference.getSummary().toString());
-        assertEquals(INFO_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
-        assertNull(mUpdateCheckPreference.getPrimaryButtonText());
-        assertEquals(expectedSecondaryButtonText, mUpdateCheckPreference.getSecondaryButtonText());
-    }
-
-    @Test
     public void testNotificationsReviewModule_NoNotificationPermissions() {
         mNotificationsReviewPropertyModel.set(
                 DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT, 0);
@@ -762,16 +677,11 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
 
     @Test
     public void testModuleOrder_AllSafeStates() {
-        UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
-        updateStatus.updateState = UpdateStatusProvider.UpdateState.NONE;
-        updateStatus.latestVersion = "1.1.1.1";
         int totalPasswordsCount = 1;
         int compromisedPasswordsCount = 0;
         int notificationPermissionsForReviewCount = 0;
 
         mPasswordCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, true);
-        mUpdateCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
         mPasswordCheckPropertyModel.set(
                 DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
                 compromisedPasswordsCount);
@@ -783,7 +693,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
 
         List<Integer> actualOrder =
                 Arrays.asList(
-                        mUpdateCheckPreference.getOrder(),
                         mPasswordCheckPreference.getOrder(),
                         mNotificationsReviewPreference.getOrder());
         Collections.sort(actualOrder);
@@ -794,7 +703,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
         assertThat(
                 actualOrder,
                 contains(
-                        mUpdateCheckPreference.getOrder(),
                         mPasswordCheckPreference.getOrder(),
                         mNotificationsReviewPreference.getOrder()));
     }
@@ -813,9 +721,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
         mPasswordCheckPropertyModel.set(
                 DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
 
-        // Unavailable state should rank after warning states.
-        mUpdateCheckPropertyModel.set(DeprecatedSafetyHubModuleProperties.UPDATE_STATUS, null);
-
         // Info state should rank above safe.
         mNotificationsReviewPropertyModel.set(
                 DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
@@ -823,7 +728,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
 
         List<Integer> actualOrder =
                 Arrays.asList(
-                        mUpdateCheckPreference.getOrder(),
                         mPasswordCheckPreference.getOrder(),
                         mNotificationsReviewPreference.getOrder());
         Collections.sort(actualOrder);
@@ -835,7 +739,6 @@ public class DeprecatedSafetyHubModuleViewBinderTest {
                 actualOrder,
                 contains(
                         mPasswordCheckPreference.getOrder(),
-                        mUpdateCheckPreference.getOrder(),
                         mNotificationsReviewPreference.getOrder()));
     }
 }

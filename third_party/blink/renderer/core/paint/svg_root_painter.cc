@@ -46,11 +46,25 @@ AffineTransform SVGRootPainter::TransformToPixelSnappedBorderBox(
           snapped_size.height() / size.height.ToFloat());
     } else if (RuntimeEnabledFeatures::
                    SvgInlineRootPixelSnappingScaleAdjustmentEnabled()) {
-      // Scale uniformly to fit in the snapped box.
-      const float scale_x = snapped_size.width() / size.width.ToFloat();
-      const float scale_y = snapped_size.height() / size.height.ToFloat();
-      const float uniform_scale = std::min(scale_x, scale_y);
-      paint_offset_to_border_box.Scale(uniform_scale);
+      // If snapping shrunk the box, scale it to avoid overflowing and getting
+      // clipped.
+      if (size.width > snapped_size.width() ||
+          size.height > snapped_size.height()) {
+        // Scale uniformly to fit in the snapped box.
+        const float scale_x = snapped_size.width() / size.width.ToFloat();
+        const float scale_y = snapped_size.height() / size.height.ToFloat();
+        const float uniform_scale = std::min(scale_x, scale_y);
+        PhysicalSize scaled_size = size;
+        scaled_size.Scale(uniform_scale);
+        // If scaling uniformly introduces too large of an error, then scale
+        // non-uniformly.
+        if (snapped_size.width() - scaled_size.width > 1 ||
+            snapped_size.height() - scaled_size.height > 1) {
+          paint_offset_to_border_box.Scale(scale_x, scale_y);
+        } else {
+          paint_offset_to_border_box.Scale(uniform_scale);
+        }
+      }
     }
   }
   paint_offset_to_border_box.PreConcat(

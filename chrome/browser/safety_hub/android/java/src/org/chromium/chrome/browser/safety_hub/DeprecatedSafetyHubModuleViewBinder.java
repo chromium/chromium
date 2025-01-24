@@ -10,8 +10,6 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.BuildInfo;
-import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleState;
 import org.chromium.components.browser_ui.settings.CardPreference;
@@ -45,16 +43,6 @@ public class DeprecatedSafetyHubModuleViewBinder {
                 || DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER == propertyKey
                 || DeprecatedSafetyHubModuleProperties.ACCOUNT_EMAIL == propertyKey) {
             updatePasswordCheckModule(preference, model);
-        }
-    }
-
-    public static void bindUpdateCheckProperties(
-            PropertyModel model,
-            SafetyHubExpandablePreference preference,
-            PropertyKey propertyKey) {
-        bindCommonProperties(model, preference, propertyKey);
-        if (DeprecatedSafetyHubModuleProperties.UPDATE_STATUS == propertyKey) {
-            updateUpdateCheckModule(preference, model);
         }
     }
 
@@ -93,83 +81,6 @@ public class DeprecatedSafetyHubModuleViewBinder {
         boolean managed = model.get(DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
         preference.setIcon(getIconForModuleState(preference.getContext(), state, managed));
         preference.setOrder(getOrderForModuleState(option, state, managed));
-    }
-
-    private static void updateUpdateCheckModule(
-            SafetyHubExpandablePreference preference, PropertyModel model) {
-        @ModuleOption int option = ModuleOption.UPDATE_CHECK;
-        UpdateStatusProvider.UpdateStatus updateStatus =
-                model.get(DeprecatedSafetyHubModuleProperties.UPDATE_STATUS);
-        @ModuleState int state = getModuleState(model, option);
-        String title;
-        String summary = null;
-        String primaryButtonText = null;
-        String secondaryButtonText = null;
-        View.OnClickListener primaryButtonListener = null;
-        View.OnClickListener secondaryButtonListener = null;
-
-        if (updateStatus == null) {
-            title = preference.getContext().getString(R.string.safety_hub_update_unavailable_title);
-            summary = preference.getContext().getString(R.string.safety_hub_unavailable_summary);
-            secondaryButtonText =
-                    preference.getContext().getString(R.string.safety_hub_go_to_google_play_button);
-            secondaryButtonListener =
-                    model.get(DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
-        } else {
-            switch (updateStatus.updateState) {
-                case UpdateStatusProvider.UpdateState.UNSUPPORTED_OS_VERSION:
-                    title = preference.getContext().getString(R.string.menu_update_unsupported);
-                    summary =
-                            preference
-                                    .getContext()
-                                    .getString(R.string.menu_update_unsupported_summary_default);
-                    break;
-                case UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE:
-                    title =
-                            preference
-                                    .getContext()
-                                    .getString(R.string.safety_check_updates_outdated);
-                    summary =
-                            preference
-                                    .getContext()
-                                    .getString(R.string.safety_hub_updates_outdated_summary);
-                    primaryButtonText = preference.getContext().getString(R.string.menu_update);
-                    primaryButtonListener =
-                            model.get(DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
-                    break;
-                default:
-                    title =
-                            preference
-                                    .getContext()
-                                    .getString(R.string.safety_check_updates_updated);
-                    String currentVersion = BuildInfo.getInstance().versionName;
-                    if (currentVersion != null && !currentVersion.isEmpty()) {
-                        summary =
-                                preference
-                                        .getContext()
-                                        .getString(
-                                                R.string.safety_hub_version_summary,
-                                                currentVersion);
-                    }
-                    secondaryButtonText =
-                            preference
-                                    .getContext()
-                                    .getString(R.string.safety_hub_go_to_google_play_button);
-                    secondaryButtonListener =
-                            model.get(
-                                    DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
-            }
-        }
-
-        preference.setTitle(title);
-        preference.setSummary(summary);
-        preference.setPrimaryButtonText(primaryButtonText);
-        preference.setSecondaryButtonText(secondaryButtonText);
-        preference.setPrimaryButtonClickListener(primaryButtonListener);
-        preference.setSecondaryButtonClickListener(secondaryButtonListener);
-
-        preference.setIcon(getIconForModuleState(preference.getContext(), state, false));
-        preference.setOrder(getOrderForModuleState(option, state, false));
     }
 
     private static void updateNotificationsReviewModule(
