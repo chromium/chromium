@@ -293,7 +293,7 @@ void ToastController::CreateToast(ToastParams params,
             &RecordToastActionButtonClicked, params.toast_id)));
   }
 
-  if (params.menu_model) {
+  if (spec->has_menu()) {
     toast_view->AddMenu(std::move(params.menu_model));
   }
 
