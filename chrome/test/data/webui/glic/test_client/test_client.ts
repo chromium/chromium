@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {GlicBrowserHost, GlicWebClient, TabData} from 'chrome://glic/glic_api/glic_api.js';
+import type {GlicBrowserHost, GlicWebClient, Observable, TabData} from 'chrome://glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
 
@@ -74,6 +74,22 @@ class WebClient implements GlicWebClient {
     const focusedTabState = await this.browser.getFocusedTabState!();
     focusedTabChanged(focusedTabState.getValue());
     focusedTabState.subscribe(focusedTabChanged);
+
+    // Initialize permission switches and subscribe for updates.
+    const permissionStates:
+        Record<PermissionSwitchName, Observable<boolean>> = {
+          microphone: this.browser.getMicrophonePermissionState!(),
+          geolocation: this.browser.getLocationPermissionState!(),
+          tabContext: this.browser.getTabContextPermissionState!(),
+        };
+    for (const permission of Object.keys(permissionStates) as
+         PermissionSwitchName[]) {
+      const state = permissionStates[permission]!;
+      updatePermissionSwitch(permission, state.getValue());
+      state.subscribe((enabled) => {
+        updatePermissionSwitch(permission, enabled);
+      });
+    }
   }
 
   async notifyPanelClosed() {
@@ -114,12 +130,11 @@ const permissionSwitches: Record<PermissionSwitchName, HTMLInputElement> = {
   tabContext: $.tabContextSwitch,
 };
 
+// Update a permission switch display state.
 function updatePermissionSwitch(
-    permissionSwitchName: PermissionSwitchName, enabled: boolean,
-    sendToBackend = true) {
+    permissionSwitchName: PermissionSwitchName, enabled: boolean) {
   logMessage(
-      `Setting permission ${permissionSwitchName} to ${enabled} and ${
-          sendToBackend ? '' : 'not'} sending to backend.`,
+      `Permission ${permissionSwitchName} updated to ${enabled}.`,
   );
   if (!permissionSwitches[permissionSwitchName]) {
     console.error('Permission switch not found: ' + permissionSwitchName);
@@ -127,6 +142,26 @@ function updatePermissionSwitch(
   }
   permissionSwitches[permissionSwitchName].checked = enabled;
 }
+
+// Listen to permission update requests by the web client user.
+$.testPermissionSwitch.addEventListener('click', () => {
+  const selectedPermission = $.permissionSelect.value as PermissionSwitchName;
+  const isEnabled = $.enabledSelect.value === 'true';
+  if (!permissionSwitches[selectedPermission]) {
+    console.error('Unknown permission: ' + selectedPermission);
+    return;
+  }
+  if (selectedPermission === 'microphone') {
+    getBrowser()!.setMicrophonePermissionState!(isEnabled);
+  } else if (selectedPermission === 'geolocation') {
+    getBrowser()!.setLocationPermissionState!(isEnabled);
+  } else if (selectedPermission === 'tabContext') {
+    getBrowser()!.setTabContextPermissionState!(isEnabled);
+  }
+  logMessage(
+      `Setting permission ${selectedPermission} to ${isEnabled}.`,
+  );
+});
 
 $.syncCookiesBn.addEventListener('click', async () => {
   $.syncCookieStatus!.innerText = 'Requesting';
@@ -155,14 +190,6 @@ $.getUserProfileInfoBn.addEventListener('click', async () => {
 $.changeProfileBn.addEventListener('click', () => {
   getBrowser()!.showProfilePicker!();
 });
-
-// Listen for switch changes by user in webclient:
-for (const key of Object.keys(permissionSwitches) as PermissionSwitchName[]) {
-  const element = permissionSwitches[key];
-  element.addEventListener('change', () => {
-    updatePermissionSwitch(key, element.checked);
-  });
-}
 
 // Add listeners to demo elements:
 $.newtabbn.addEventListener('click', async () => {
@@ -257,11 +284,6 @@ $.getlocation.addEventListener('click', async () => {
     logMessage('Geolocation is not supported by this browser.');
     $.location.innerHTML = 'Geolocation is not supported by this browser.';
   }
-});
-$.testPermissionSwitch.addEventListener('click', () => {
-  const selectedPermission = $.permissionSelect.value;
-  const isEnabled = $.enabledSelect.value === 'true';
-  updatePermissionSwitch(selectedPermission as any, isEnabled, false);
 });
 
 $.closebn.addEventListener('click', () => {

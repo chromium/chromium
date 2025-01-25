@@ -278,7 +278,55 @@ ci.thin_tester(
     cores = 8,
     console_view_entry = consoles.console_view_entry(
         category = "tester|x64",
-        short_name = "rel",
+        short_name = "14-rel",
+    ),
+    cq_mirrors_console_view = "mirrors",
+)
+
+ci.thin_tester(
+    name = "android-desktop-x64-rel-15-tests",
+    description_html = "Android desktop x64 release tests on Android 15.",
+    triggered_by = ["ci/android-desktop-x64-compile-rel"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "x64_builder_mb",
+        ),
+        build_gs_bucket = "chromium-android-desktop-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "android_desktop_junit_tests",
+            targets.bundle(
+                targets = "android_desktop_tests",
+                mixins = [
+                    "15-desktop-x64-emulator",
+                    "emulator-8-cores",
+                ],
+            ),
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
+    builderless = True,
+    cores = 8,
+    console_view_entry = consoles.console_view_entry(
+        category = "tester|x64",
+        short_name = "15-rel",
     ),
     cq_mirrors_console_view = "mirrors",
 )

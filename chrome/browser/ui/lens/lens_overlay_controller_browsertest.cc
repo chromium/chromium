@@ -2771,14 +2771,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
             lens::MULTIMODAL_SUGGEST_TYPEAHEAD);
 }
 
-// TODO(crbug.com/377033756): Test flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_PopAndLoadQueryFromHistory DISABLED_PopAndLoadQueryFromHistory
-#else
-#define MAYBE_PopAndLoadQueryFromHistory PopAndLoadQueryFromHistory
-#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_PopAndLoadQueryFromHistory) {
+                       PopAndLoadQueryFromHistory) {
   WaitForPaint();
 
   // State should start in off.
@@ -2827,7 +2821,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::TestNavigationObserver observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->LoadURLInResultsFrame(second_search_url);
-  observer.WaitForNavigationFinished();
+  observer.Wait();
 
   // The search query history stack should have 1 entry and the currently loaded
   // query should be set to the new query
@@ -2850,7 +2844,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::TestNavigationObserver pop_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->PopAndLoadQueryFromHistory();
-  pop_observer.WaitForNavigationFinished();
+  pop_observer.Wait();
 
   // The search query history stack should be empty and the currently loaded
   // query should be set to the previous query.
@@ -2872,16 +2866,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                             first_search_url);
 }
 
-// TODO(crbug.com/377033756): Test flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_PopAndLoadTranslateQueryFromHistory \
-  DISABLED_PopAndLoadTranslateQueryFromHistory
-#else
-#define MAYBE_PopAndLoadTranslateQueryFromHistory \
-  PopAndLoadTranslateQueryFromHistory
-#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_PopAndLoadTranslateQueryFromHistory) {
+                       PopAndLoadTranslateQueryFromHistory) {
   WaitForPaint();
 
   // State should start in off.
@@ -2940,7 +2926,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueTranslateFullPageRequestForTesting(source_lang, target_lang);
   controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
-  second_observer.WaitForNavigationFinished();
+  second_observer.Wait();
 
   // The search query history stack should be size 1.
   EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
@@ -2979,7 +2965,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueEndTranslateModeRequestForTesting();
   controller->LoadURLInResultsFrame(third_search_url);
-  third_observer.WaitForNavigationFinished();
+  third_observer.Wait();
 
   // The search query history stack should have 2 entries and the currently
   // loaded query should be set to the new query
@@ -3005,7 +2991,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::TestNavigationObserver fourth_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->PopAndLoadQueryFromHistory();
-  fourth_observer.WaitForNavigationFinished();
+  fourth_observer.Wait();
 
   // The search query history stack should have 1 entry and the currently loaded
   // query should be set to the previous query.
@@ -3041,7 +3027,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::TestNavigationObserver fifth_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->PopAndLoadQueryFromHistory();
-  fifth_observer.WaitForNavigationFinished();
+  fifth_observer.Wait();
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
@@ -3066,17 +3052,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(fake_controller->fake_overlay_page_.target_language_.empty());
 }
 
-// TODO(crbug.com/342390515): Test flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PopAndLoadQueryFromHistoryWithRegionAndTextSelection \
-  DISABLED_PopAndLoadQueryFromHistoryWithRegionAndTextSelection
-#else
-#define MAYBE_PopAndLoadQueryFromHistoryWithRegionAndTextSelection \
-  PopAndLoadQueryFromHistoryWithRegionAndTextSelection
-#endif
-IN_PROC_BROWSER_TEST_F(
-    LensOverlayControllerBrowserTest,
-    MAYBE_PopAndLoadQueryFromHistoryWithRegionAndTextSelection) {
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       PopAndLoadQueryFromHistoryWithRegionAndTextSelection) {
   WaitForPaint();
 
   // State should start in off.
@@ -3241,16 +3218,8 @@ IN_PROC_BROWSER_TEST_F(
             loaded_search_query->selected_text_);
 }
 
-// TODO(crbug.com/377033756): Test flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_PopAndLoadQueryFromHistoryWithInitialImageBytes \
-  DISABLED_PopAndLoadQueryFromHistoryWithInitialImageBytes
-#else
-#define MAYBE_PopAndLoadQueryFromHistoryWithInitialImageBytes \
-  PopAndLoadQueryFromHistoryWithInitialImageBytes
-#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_PopAndLoadQueryFromHistoryWithInitialImageBytes) {
+                       PopAndLoadQueryFromHistoryWithInitialImageBytes) {
   WaitForPaint();
 
   // State should start in off.
@@ -3305,7 +3274,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::TestNavigationObserver second_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueTextSelectionRequestForTesting("kiwi", 1, 100);
-  second_observer.WaitForNavigationFinished();
+  second_observer.Wait();
 
   // The search query history stack should have 1 entry and the currently loaded
   // query should be set to the new query
@@ -3333,7 +3302,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::TestNavigationObserver third_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->PopAndLoadQueryFromHistory();
-  third_observer.WaitForNavigationFinished();
+  third_observer.Wait();
 
   // Verify the new interaction request was sent.
   EXPECT_EQ(controller->get_selected_region_for_testing(), kTestRegion);
@@ -3366,16 +3335,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   VerifyTextQueriesAreEqual(third_observer.last_navigation_url(),
                             first_search_url);
 }
-// TODO(crbug.com/377033756): Test flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_PopAndLoadQueryFromHistoryWithMultimodalRequest \
-  DISABLED_PopAndLoadQueryFromHistoryWithMultimodalRequest
-#else
-#define MAYBE_PopAndLoadQueryFromHistoryWithMultimodalRequest \
-  PopAndLoadQueryFromHistoryWithMultimodalRequest
-#endif
+
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_PopAndLoadQueryFromHistoryWithMultimodalRequest) {
+                       PopAndLoadQueryFromHistoryWithMultimodalRequest) {
   WaitForPaint();
 
   // State should start in off.
@@ -3434,7 +3396,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
-  first_searchbox_query_observer.WaitForNavigationFinished();
+  first_searchbox_query_observer.Wait();
 
   // The search query history stack should have 1 entry and the currently loaded
   // query should be set to the new query
@@ -3463,7 +3425,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   controller->IssueSearchBoxRequestForTesting(
       "red", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/true, std::map<std::string, std::string>());
-  second_searchbox_query_observer.WaitForNavigationFinished();
+  second_searchbox_query_observer.Wait();
 
   // The search query history stack should have 2 entries and the currently
   // loaded query should be set to the new query
@@ -4371,7 +4333,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       base::as_byte_span(
           fake_query_controller->sent_request_id().analytics_id()),
       base32::Base32EncodePolicy::OMIT_PADDING);
-  EXPECT_NE(encoded_sent_interaction_analytics_id, encoded_sent_objects_analytics_id);
+  EXPECT_NE(encoded_sent_interaction_analytics_id,
+            encoded_sent_objects_analytics_id);
 
   // The interaction request and latency gen204 should have the same analytics
   // id.

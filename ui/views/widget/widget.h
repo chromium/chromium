@@ -28,6 +28,7 @@
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/display/display.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_source.h"
 #include "ui/gfx/native_widget_types.h"
@@ -309,6 +310,16 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // are set.
     bool ShouldInitAsHeadless() const;
 
+    // Sets the parent view using a parent Widget. This will set the `parent`
+    // field correctly.
+    void SetParent(Widget* parent_widget);
+
+    // Sets the parent view with the given gfx::NativeView directly. This is the
+    // same as directly assigning the `parent` field.
+    // TODO(crbug.com/392029296): Make the `parent` field private and favor this
+    // setter and/or the previous setter.
+    void SetParent(gfx::NativeView parent_view);
+
     Type type;
 
     // If null, a default implementation will be constructed. The default
@@ -394,6 +405,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // that way throughout. This should simply be a NativeWindow - windows are
     // parented to other windows, not to views, and it being a view confuses
     // the concept with bubble anchoring a la BubbleDialogDelegateView.
+    //
+    // TODO(crbug.com/392029296): Make this field private and only set via the
+    // setters above.
     gfx::NativeView parent = gfx::NativeView();
 
     // Specifies the initial bounds of the Widget. Default is empty, which means
@@ -621,6 +635,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // NULL on some platforms if the widget was created with a type other than
   // TYPE_WINDOW or TYPE_PANEL.
   gfx::NativeWindow GetNativeWindow() const;
+
+  // Returns the nearest display intersecting this Widget. Widget must be
+  // initialized.
+  std::optional<display::Display> GetNearestDisplay();
 
   // Add/remove observer.
   void AddObserver(WidgetObserver* observer);

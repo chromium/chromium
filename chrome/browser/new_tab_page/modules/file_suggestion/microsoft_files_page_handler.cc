@@ -148,6 +148,141 @@ const char kFakeTrendingData[] =
 
 constexpr base::TimeDelta kModuleDismissalDuration = base::Hours(12);
 
+const char kNonInsightsRequestUrl[] = "https://graph.microsoft.com/v1.0/$batch";
+const char kNonInsightsRequestBody[] = R"({
+  "requests": [
+  {
+    "id": "recent",
+    "method": "GET",
+    "url": "/me/drive/recent"
+  },
+  {
+    "id": "shared",
+    "method": "GET",
+    "url": "/me/drive/sharedWithMe"
+  }]})";
+
+const char kNonInsightsFakeData[] =
+    R"({
+  "responses" : [
+    {
+      "id": "recent",
+      "status": "200",
+      "body": {
+        "value": [
+          {
+            "id": "1",
+            "name": "Document 1.docx",
+            "webUrl": "https://foo.com/document1.docx",
+            "file": {
+              "mimeType": "application/vnd.)"
+    R"(openxmlformats-officedocument.wordprocessingml.document"
+            },
+            "fileSystemInfo": {
+              "lastAccessedDateTime": "2024-01-07T19:13:00Z"
+            },
+            "lastModifiedDateTime": "2024-01-07T19:13:00Z"
+          },
+          {
+            "id": "2",
+            "name": "Presentation.pptx",
+            "webUrl": "https://foo.com/presentation.pptx",
+            "file": {
+              "mimeType": "application/vnd.)"
+    R"(openxmlformats-officedocument.presentationml.presentation"
+            },
+            "fileSystemInfo": {
+              "lastAccessedDateTime": "2024-01-08T19:13:00Z"
+            },
+            "lastModifiedDateTime": "2024-01-08T17:13:00Z"
+          },
+          {
+            "id": "3",
+            "name": "Document xyz.docx",
+            "webUrl": "https://foo.com/documentxyz.docx",
+            "file": {
+              "mimeType": "application/vnd.)"
+    R"(openxmlformats-officedocument.wordprocessingml.document"
+            },
+            "fileSystemInfo": {
+              "lastAccessedDateTime": "2024-01-05T18:13:00Z"
+            },
+            "lastModifiedDateTime": "2024-05-08T17:12:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "shared",
+      "status": "200",
+      "body": {
+        "value": [
+          {
+            "id": "4",
+            "name": "Shared Spreadsheet.xlsx",
+            "webUrl": "https://foo.com/SharedSpreadsheet.xlsx",
+            "file": {
+              "mimeType": "application/vnd.)"
+    R"(openxmlformats-officedocument.spreadsheetml.sheet"
+            },
+            "lastModifiedDateTime": "2024-01-17T11:13:00Z",
+            "remoteItem": {
+              "shared": {
+                "sharedDateTime": "2024-01-07T11:13:00Z",
+                "sharedBy": {
+                  "user": {
+                    "displayName": "User 1"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "id": "5",
+            "name": "Shared Document.docx",
+            "webUrl": "https://foo.com/document3.docx",
+            "file": {
+              "mimeType": "application/vnd.)"
+    R"(openxmlformats-officedocument.wordprocessingml.document"
+            },
+            "lastModifiedDateTime": "2024-01-08T11:13:00Z",
+            "remoteItem": {
+              "shared": {
+                "sharedDateTime": "2024-01-07T11:13:00Z",
+                "sharedBy": {
+                  "user": {
+                    "displayName": "User 2"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "id": "6",
+            "name": "Roadmap.pptx",
+            "webUrl": "https://foo.com/roadmap.pptx",
+            "file": {
+              "mimeType": "application/vnd.)"
+    R"(openxmlformats-officedocument.presentationml.presentation"
+            },
+            "lastModifiedDateTime": "2024-01-20T09:13:00Z",
+            "remoteItem": {
+              "shared": {
+                "sharedDateTime": "2024-01-05T11:13:00Z",
+                "sharedBy": {
+                  "user": {
+                    "displayName": "User 1"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+})";
+
 std::string GetFileExtension(std::string mime_type) {
   base::FilePath::StringType extension;
   net::GetPreferredExtensionForMimeType(mime_type, &extension);
@@ -168,6 +303,11 @@ std::string GetFileExtension(std::string mime_type) {
 GURL GetFileIconUrl(std::string extension) {
   std::string path = extension + ".png";
   return GURL(kBaseIconUrl).Resolve(path);
+}
+
+// Remove the file extension that is appended to the file name.
+std::string GetFileName(std::string full_name, std::string file_extension) {
+  return full_name.substr(0, full_name.size() - file_extension.size() - 1);
 }
 
 }  // namespace
@@ -198,19 +338,23 @@ void MicrosoftFilesPageHandler::GetFiles(GetFilesCallback callback) {
     std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     return;
   }
-  // Parse data immediately when displaying fake data.
   if (ntp_features::kNtpSharepointModuleDataParam.Get() ==
-      ntp_features::NtpSharepointModuleDataType::kTrendingInsightsFakeData) {
-    data_decoder::DataDecoder::ParseJsonIsolated(
-        kFakeTrendingData,
-        base::BindOnce(&MicrosoftFilesPageHandler::OnJsonParsed,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
-  } else if (ntp_features::kNtpSharepointModuleDataParam.Get() ==
              ntp_features::NtpSharepointModuleDataType::kTrendingInsights) {
     GetTrendingFiles(std::move(callback));
+  } else if (ntp_features::kNtpSharepointModuleDataParam.Get() ==
+             ntp_features::NtpSharepointModuleDataType::kNonInsights) {
+    GetRecentlyUsedAndSharedFiles(std::move(callback));
   } else {
-    // TODO(376515309) Request recently used/shared files.
-    std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
+    // Parse data immediately when displaying fake data.
+    const auto* fake_data = ntp_features::kNtpSharepointModuleDataParam.Get() ==
+                                    ntp_features::NtpSharepointModuleDataType::
+                                        kTrendingInsightsFakeData
+                                ? kFakeTrendingData
+                                : kNonInsightsFakeData;
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        fake_data,
+        base::BindOnce(&MicrosoftFilesPageHandler::OnJsonParsed,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
 
@@ -243,6 +387,28 @@ void MicrosoftFilesPageHandler::GetTrendingFiles(GetFilesCallback callback) {
       kMaxResponseSize);
 }
 
+void MicrosoftFilesPageHandler::GetRecentlyUsedAndSharedFiles(
+    GetFilesCallback callback) {
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->method = "POST";
+  resource_request->url = GURL(kNonInsightsRequestUrl);
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                      "application/json");
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kCacheControl,
+                                      "no-cache");
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
+                                      "Bearer <accesstoken>");
+  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 traffic_annotation);
+  url_loader_->AttachStringForUpload(kNonInsightsRequestBody);
+
+  url_loader_->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(&MicrosoftFilesPageHandler::OnJsonReceived,
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
+      kMaxResponseSize);
+}
+
 void MicrosoftFilesPageHandler::OnJsonReceived(
     GetFilesCallback callback,
     std::unique_ptr<std::string> response_body) {
@@ -267,14 +433,34 @@ void MicrosoftFilesPageHandler::OnJsonParsed(
     return;
   }
 
-  auto* suggestions = result->GetDict().FindList("value");
+  bool is_trending_data =
+      ntp_features::kNtpSharepointModuleDataParam.Get() ==
+          ntp_features::NtpSharepointModuleDataType::kTrendingInsights ||
+      ntp_features::kNtpSharepointModuleDataParam.Get() ==
+          ntp_features::NtpSharepointModuleDataType::kTrendingInsightsFakeData;
+  if (is_trending_data) {
+    CreateTrendingFiles(std::move(callback), std::move(result->GetDict()));
+  } else {
+    CreateRecentlyUsedAndSharedFiles(std::move(callback),
+                                     std::move(result->GetDict()));
+  }
+}
+
+void MicrosoftFilesPageHandler::CreateTrendingFiles(GetFilesCallback callback,
+                                                    base::Value::Dict result) {
+  auto* suggestions = result.FindList("value");
   if (!suggestions) {
     std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     return;
   }
 
   std::vector<file_suggestion::mojom::FilePtr> created_suggestions;
+  const size_t num_max_files =
+      ntp_features::kNtpMicrosoftFilesModuleMaxFilesParam.Get();
   for (const auto& suggestion : *suggestions) {
+    if (created_suggestions.size() == num_max_files) {
+      break;
+    }
     const auto& suggestion_dict = suggestion.GetDict();
     const std::string* id = suggestion_dict.FindString("id");
     const std::string* title =
@@ -304,6 +490,87 @@ void MicrosoftFilesPageHandler::OnJsonParsed(
     created_file->title = *title;
     created_file->item_url = GURL(*url);
     created_suggestions.push_back(std::move(created_file));
+  }
+
+  std::move(callback).Run(std::move(created_suggestions));
+}
+
+// TODO(376515309): Remove duplicates. There may be overlap in the response from
+// both endpoints.
+void MicrosoftFilesPageHandler::CreateRecentlyUsedAndSharedFiles(
+    GetFilesCallback callback,
+    base::Value::Dict result) {
+  auto* responses = result.FindList("responses");
+  if (!responses) {
+    std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
+    return;
+  }
+
+  std::vector<file_suggestion::mojom::FilePtr> created_suggestions;
+  // The response body should contain a value list for each request.
+  for (const auto& response : *responses) {
+    const auto& response_dict = response.GetDict();
+    const std::string* response_id = response_dict.FindString("id");
+    auto* suggestions = response_dict.FindListByDottedPath("body.value");
+
+    if (!suggestions) {
+      std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
+      return;
+    }
+
+    for (const auto& suggestion : *suggestions) {
+      const auto& suggestion_dict = suggestion.GetDict();
+      const std::string* id = suggestion_dict.FindString("id");
+      const std::string* title = suggestion_dict.FindString("name");
+      const std::string* item_url = suggestion_dict.FindString("webUrl");
+      const std::string* mime_type =
+          suggestion_dict.FindStringByDottedPath("file.mimeType");
+      const std::string* last_opened_time_str =
+          suggestion_dict.FindStringByDottedPath(
+              "fileSystemInfo.lastAccessedDateTime");
+      const std::string* last_modified_time_str =
+          suggestion_dict.FindString("lastModifiedDateTime");
+      const std::string* shared_by = suggestion_dict.FindStringByDottedPath(
+          "remoteItem.shared.sharedBy.user.displayName");
+      const std::string* shared_time_str =
+          suggestion_dict.FindStringByDottedPath(
+              "remoteItem.shared.sharedDateTime");
+
+      // There may be some suggestions that are not files (the file property
+      // will be null), so skip those.
+      if (!mime_type) {
+        continue;
+      }
+
+      if (!id || !title || !item_url || !last_modified_time_str) {
+        std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
+        return;
+      }
+      // `lastAccessedTime` should be available for suggestions from recent
+      // files. Shared files should not have null `shared` properties.
+      if ((*response_id == "recent" && !last_opened_time_str) ||
+          (*response_id == "shared" && (!shared_by || !shared_time_str))) {
+        std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
+        return;
+      }
+
+      std::string file_extension = GetFileExtension(*mime_type);
+      // Skip creating file suggestion if there's an error mapping the mime-type
+      // to an extension as the extension is needed for the file's `icon_url.`
+      if (file_extension.empty()) {
+        continue;
+      }
+
+      file_suggestion::mojom::FilePtr created_file =
+          file_suggestion::mojom::File::New();
+      created_file->id = *id;
+      // TODO(386385623): Create justification text for file type.
+      created_file->justification_text = "Recently shared or used";
+      created_file->icon_url = GetFileIconUrl(file_extension);
+      created_file->title = GetFileName(*title, file_extension);
+      created_file->item_url = GURL(*item_url);
+      created_suggestions.push_back(std::move(created_file));
+    }
   }
 
   std::move(callback).Run(std::move(created_suggestions));

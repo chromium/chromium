@@ -276,11 +276,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '54598a6d30b267b93137ec8bf4e12b32aaf08043',
+  'src_internal_revision': '1e14d3a5b8a48cbdd7d5a1ac09ea43a1d07e5631',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'a5c42ae18d32f4d735f01024795608ce1b35cfcb',
+  'skia_revision': '0f2833b30535c055d3152293d21b95d4831dd348',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -288,7 +288,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'd7ea4b2ce3c0501afc2bed1adbec02c65600f838',
+  'angle_revision': '8c298ec937957736fb7830f0a118d2769332c28b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -364,7 +364,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling fuzztest
   # and whatever else without interference from each other.
-  'fuzztest_revision': 'eddb5c2de06760767c96b9bb64a4d6d5da48fb87',
+  'fuzztest_revision': 'b1d0067a853ff9320d7abe5b2761201b586f66dc',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling domato
   # and whatever else without interference from each other.
@@ -640,6 +640,19 @@ deps = {
         'object_name': '9681b26951bd8a49befa52f50d789920d4f0c312f23971dcd7ae67ac463ebfbe',
         'sha256sum': '9681b26951bd8a49befa52f50d789920d4f0c312f23971dcd7ae67ac463ebfbe',
         'size_bytes': 18940520,
+      },
+    ],
+  },
+  'src/build/linux/debian_bullseye_ppc64el-sysroot': {
+    'bucket': 'chrome-linux-sysroot',
+    'condition': 'checkout_linux and checkout_ppc and non_git_source',
+    'dep_type': 'gcs',
+    'objects': [
+      {
+        'generation': 1737756598911109,
+        'object_name': 'd3ad23748c1756ba0be5cc035cf19889bb1e02e1168ee5a7ac0aa0352b691b0d',
+        'sha256sum': 'd3ad23748c1756ba0be5cc035cf19889bb1e02e1168ee5a7ac0aa0352b691b0d',
+        'size_bytes': 18574220,
       },
     ],
   },
@@ -1435,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '7559149299469cfa45e2d25a332f43bc2779e7c2',
+    'a9e0329fa91aac9eda84086715da87b9160ed719',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1930,7 +1943,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '8c858fc98cfac56f34211a31988fd19c462c0c53',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '77a800d7294d29ded899af9685c65babb3a62821',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -4531,7 +4544,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '0135f80fe3b3372dd5ded160aabdf1113b80a00f',
+        'a87c08ff022f7deb451f704c3b98c2020dbacb0c',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 
@@ -4733,25 +4746,25 @@ deps = {
 
   'src/third_party/widevine/cdm/chromeos': {
       'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/chromeos.git' + '@' +
-        'b3c0f132204e9732422075787138ce2cb60faa4a',
+        'c0c105991677d8ef446cf23989939f2dedece36a',
       'condition': '(checkout_chromeos or checkout_linux) and checkout_src_internal',
   },
 
   'src/third_party/widevine/cdm/linux': {
       'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/linux.git' + '@' +
-        '8a12afc6ad470fac67ecb97bc9acf4bdbf9285e7',
+        'acdae03333e2a0da65745b30f6764f06eec655e4',
       'condition': 'checkout_linux and checkout_src_internal',
   },
 
   'src/third_party/widevine/cdm/mac': {
       'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/mac.git' + '@' +
-        '8c2898cf5e27669beeb7fc432a30f953f2541106',
+        '6d4742c1d3197bd3e8d5884f8620286bd3ac89be',
       'condition': 'checkout_mac and checkout_src_internal',
     },
 
   'src/third_party/widevine/cdm/win': {
       'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/win.git' + '@' +
-        '33d580b25178a85837950972b985f555c6d65fa9',
+        '5a5f896c36cbf8708705f5fbfcc6427a73e7551a',
       'condition': 'checkout_win and checkout_src_internal',
   },
 

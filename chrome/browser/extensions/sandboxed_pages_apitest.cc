@@ -4,31 +4,44 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "build/build_config.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_apitest.h"
+#endif
+
 namespace extensions {
 
 enum class ManifestVersion { TWO, THREE };
 
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionApiTestBase = ExtensionPlatformApiTest;
+#else
+using ExtensionApiTestBase = ExtensionApiTest;
+#endif
+
 class SandboxedPagesTest
-    : public ExtensionApiTest,
+    : public ExtensionApiTestBase,
       public ::testing::WithParamInterface<ManifestVersion> {
  public:
   SandboxedPagesTest() = default;
 
   void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
+    ExtensionApiTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
@@ -77,7 +90,7 @@ class SandboxedPagesTest
 // in the extension's manifest. This class is parameterized on
 // kIsolateSandboxedIframes so that it tests both in-process and
 // process-isolated sandboxed frames.
-class SandboxAPIMetricsTest : public ExtensionApiTest,
+class SandboxAPIMetricsTest : public ExtensionApiTestBase,
                               public ::testing::WithParamInterface<bool> {
  public:
   SandboxAPIMetricsTest() {
@@ -91,7 +104,7 @@ class SandboxAPIMetricsTest : public ExtensionApiTest,
   }
 
   void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
+    ExtensionApiTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
@@ -102,8 +115,13 @@ class SandboxAPIMetricsTest : public ExtensionApiTest,
 
 INSTANTIATE_TEST_SUITE_P(,
                          SandboxedPagesTest,
+#if BUILDFLAG(IS_ANDROID)
+                         // Android only supports manifest V3.
+                         ::testing::Values(ManifestVersion::THREE));
+#else
                          ::testing::Values(ManifestVersion::TWO,
                                            ManifestVersion::THREE));
+#endif
 
 IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, SandboxedPages) {
   const char* kManifestV2 = R"(
@@ -133,8 +151,10 @@ IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, SandboxedPages) {
       << message_;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Verifies the behavior of sandboxed pages in Manifest V2. Remote frames
-// should be disallowed.
+// should be disallowed. Android only supports Manifest V3, so this test is
+// skipped on Android.
 IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, ManifestV2DisallowsWebContent) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -159,6 +179,7 @@ IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, ManifestV2DisallowsWebContent) {
                       {.ignore_manifest_warnings = true}))
       << message_;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verifies the behavior of sandboxed pages in Manifest V3. Remote frames
 // should be allowed.
@@ -206,8 +227,10 @@ IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, ManifestV3AllowsWebContent) {
   ASSERT_TRUE(extension);
 
   content::DOMMessageQueue message_queue;
-  content::RenderFrameHost* frame_host = ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("sandboxed.html"));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, extension->GetResourceURL("sandboxed.html")));
+  content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(frame_host);
 
   // The frame should be sandboxed, so the origin should be "null" (as opposed
@@ -241,8 +264,10 @@ IN_PROC_BROWSER_TEST_P(SandboxAPIMetricsTest,
   static constexpr char kSandboxedScriptSrc[] =
       R"((async function hasAccessToExtensionAPIs() {
             try {
-              let tabs = await chrome.tabs.query({});
-              return tabs && tabs.length && tabs.length != 0;
+              // Use chrome.extension because it is available on Android.
+              let allowed = await chrome.extension.isAllowedIncognitoAccess();
+              // Intentionally check the type and the false value.
+              return allowed === false;
             } catch(err) {
               return false;
             }
@@ -273,8 +298,10 @@ IN_PROC_BROWSER_TEST_P(SandboxAPIMetricsTest,
   // Use message queue to verify that loading of the sandboxed child completed
   // successfully.
   content::DOMMessageQueue message_queue;
-  content::RenderFrameHost* frame_host = ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("main.html"));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents,
+                                     extension->GetResourceURL("main.html")));
+  content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(frame_host);
 
   // Verify the sandboxed frame loaded and has api access.
@@ -303,8 +330,10 @@ IN_PROC_BROWSER_TEST_P(SandboxAPIMetricsTest,
       R"(window.onload = async () => {
            let hasApiAccess = true;
            try {
-             let tabs = await chrome.tabs.query({});
-             hasApiAccess = tabs && tabs.length && tabs.length != 0;
+             // Use chrome.extension because it is available on Android.
+             let allowed = await chrome.extension.isAllowedIncognitoAccess();
+             // Intentionally check the type and the false value.
+             hasApiAccess = allowed === false;
            } catch(err) {
              hasApiAccess = false;
            }
@@ -344,8 +373,10 @@ IN_PROC_BROWSER_TEST_P(SandboxAPIMetricsTest,
   // Use message queue to verify that loading of the sandboxed child completed
   // successfully.
   content::DOMMessageQueue message_queue;
-  content::RenderFrameHost* frame_host = ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("main.html"));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents,
+                                     extension->GetResourceURL("main.html")));
+  content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(frame_host);
 
   // Verify the sandboxed frame loaded.
@@ -420,10 +451,9 @@ IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, WebAccessibleResourcesTest) {
         "Extensions.SandboxedPageLoad.IsWebAccessibleResource";
 
     // Fetch and test resource.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), extension->GetResourceURL(frame_url)));
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
+    ASSERT_TRUE(content::NavigateToURL(web_contents,
+                                       extension->GetResourceURL(frame_url)));
     constexpr char kFetchScriptTemplate[] =
         R"(
         fetch($1).then(result => {

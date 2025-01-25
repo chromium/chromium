@@ -5,6 +5,7 @@
 #include "ui/views/widget/widget.h"
 
 #include <algorithm>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -36,12 +37,14 @@
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/drag_controller.h"
 #include "ui/views/event_monitor.h"
@@ -217,6 +220,14 @@ bool Widget::InitParams::ShouldInitAsHeadless() const {
   }
 
   return false;
+}
+
+void Widget::InitParams::SetParent(Widget* parent_widget) {
+  SetParent(parent_widget->GetNativeView());
+}
+
+void Widget::InitParams::SetParent(gfx::NativeView parent_view) {
+  parent = parent_view;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -619,6 +630,13 @@ gfx::NativeView Widget::GetNativeView() const {
 gfx::NativeWindow Widget::GetNativeWindow() const {
   return native_widget_ ? native_widget_->GetNativeWindow()
                         : gfx::NativeWindow();
+}
+
+std::optional<display::Display> Widget::GetNearestDisplay() {
+  if (auto native_view = GetNativeView()) {
+    return display::Screen::GetScreen()->GetDisplayNearestView(native_view);
+  }
+  return std::nullopt;
 }
 
 void Widget::AddObserver(WidgetObserver* observer) {

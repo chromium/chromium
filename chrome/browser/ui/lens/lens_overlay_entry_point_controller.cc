@@ -8,6 +8,7 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_actions.h"

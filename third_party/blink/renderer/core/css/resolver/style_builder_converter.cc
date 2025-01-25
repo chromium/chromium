@@ -2322,9 +2322,8 @@ GapDataList<T> ConvertGapDecorationDataList(StyleResolverState& state,
         repeat_count = gap_repeat_value->Repetitions()->ComputeInteger(
             state.CssToLengthConversionData());
       }
-      ValueRepeater<T>* value_repeater = value_repeater =
-          MakeGarbageCollected<ValueRepeater<T>>(std::move(gap_values),
-                                                 repeat_count);
+      ValueRepeater<T>* value_repeater = MakeGarbageCollected<ValueRepeater<T>>(
+          std::move(gap_values), repeat_count);
       gap_data = GapData<T>(value_repeater);
     } else {
       gap_data = GapData<T>(ConvertGapDecorationPropertyValue<T>(

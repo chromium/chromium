@@ -1346,6 +1346,11 @@ public class LayoutManagerImpl
         }
 
         mSceneOverlays.add(index, overlay);
+        overlay.onSizeChanged(
+                mCachedWindowViewport.width() * mPxToDp,
+                mCachedWindowViewport.height() * mPxToDp,
+                mCachedVisibleViewport.top,
+                getOrientation());
         overlay.getHandleBackPressChangedSupplier().addObserver((v) -> onBackPressStateChanged());
     }
 

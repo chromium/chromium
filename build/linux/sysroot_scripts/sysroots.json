@@ -34,5 +34,11 @@
         "SysrootDir": "debian_bullseye_mipsel-sysroot",
         "Tarball": "debian_bullseye_mipsel_sysroot.tar.xz",
         "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot"
+    },
+    "bullseye_ppc64el": {
+        "Sha256Sum": "d3ad23748c1756ba0be5cc035cf19889bb1e02e1168ee5a7ac0aa0352b691b0d",
+        "SysrootDir": "debian_bullseye_ppc64el-sysroot",
+        "Tarball": "debian_bullseye_ppc64el_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot"
     }
 }

@@ -66,6 +66,30 @@ constexpr auto kDelayForGetUnmaskDetails = base::Minutes(3);
 // Suffix for server IDs in the cache indicating that a card is a virtual card.
 constexpr char kVirtualCardIdentifier[] = "_vcn";
 
+#if !BUILDFLAG(IS_IOS)
+bool IsEligibleForCardInfoRetrievalAuthentication(
+    const CreditCard& card,
+    const std::vector<CardUnmaskChallengeOption>& challenge_options) {
+  if (card.card_info_retrieval_enrollment_state() !=
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled) {
+    return false;
+  }
+
+  if (challenge_options.empty()) {
+    return false;
+  }
+
+  // We currently only support SMS OTP challenge for CardInfoRetrieval.
+  for (const CardUnmaskChallengeOption& challenge_option : challenge_options) {
+    if (challenge_option.type != CardUnmaskChallengeOptionType::kSmsOtp) {
+      return false;
+    }
+  }
+
+  return true;
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
 }  // namespace
 
 CreditCardAccessManager::CreditCardAccessManager(
@@ -488,16 +512,12 @@ void CreditCardAccessManager::StartAuthenticationFlowForMaskedServerCard(
   flow_type = UnmaskAuthFlowType::kCvc;
 #else
   // We check if the card is enrolled in runtime retrieval and only SMS OTP
-  // challenge option is present, then render the challenge option selection
+  // challenge options are present, then render the challenge option selection
   // dialog. Currently the selection dialog box is only supported for SMS OTP
-  // challenge for masked server cards.
-  std::vector<CardUnmaskChallengeOption>& challenge_options =
-      risk_based_authentication_response_.card_unmask_challenge_options;
-  if (card_->card_info_retrieval_enrollment_state() ==
-          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled &&
-      challenge_options.size() == 1 &&
-      challenge_options[0].type == CardUnmaskChallengeOptionType::kSmsOtp) {
-    selected_challenge_option_ = &challenge_options[0];
+  // challenges for masked server cards.
+  if (IsEligibleForCardInfoRetrievalAuthentication(
+          *card_,
+          risk_based_authentication_response_.card_unmask_challenge_options)) {
     ShowUnmaskAuthenticatorSelectionDialog();
     return;
   }

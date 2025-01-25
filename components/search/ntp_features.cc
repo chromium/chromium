@@ -407,6 +407,11 @@ const base::FeatureParam<NtpSharepointModuleDataType>
         NtpSharepointModuleDataType::kTrendingInsights,
         &kNtpSharepointModuleDataTypeOptions};
 
+const base::FeatureParam<int> kNtpMicrosoftFilesModuleMaxFilesParam(
+    &ntp_features::kNtpSharepointModule,
+    "NtpMicrosoftFilesModuleMaxFilesParam",
+    6);
+
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
       kNtpModulesLoadTimeoutMilliseconds,

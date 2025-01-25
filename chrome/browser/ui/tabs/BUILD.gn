@@ -355,6 +355,10 @@ if (!is_android) {
       "//ui/webui",
     ]
 
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
     if (enable_glic) {
       deps += [
         "//chrome/browser/glic",

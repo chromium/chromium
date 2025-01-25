@@ -19,6 +19,8 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/native_widget.h"
@@ -26,6 +28,10 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace constrained_window {
 extern const void* kConstrainedWindowWidgetIdentifier;
@@ -64,6 +70,24 @@ void TabDialogWidgetObserver::OnWidgetDestroyed(views::Widget* widget) {
 
 namespace {
 
+bool SupportsGlobalScreenCoordinates() {
+#if !BUILDFLAG(IS_OZONE)
+  return true;
+#else
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .supports_global_screen_coordinates;
+#endif
+}
+
+bool PlatformClipsChildrenToViewport() {
+#if BUILDFLAG(IS_LINUX)
+  return true;
+#else
+  return false;
+#endif
+}
+
 gfx::Rect GetModalDialogBounds(views::Widget* widget,
                                BrowserWindowInterface* host_browser_window,
                                const gfx::Size& size) {
@@ -75,7 +99,43 @@ gfx::Rect GetModalDialogBounds(views::Widget* widget,
   position.set_y(position.y() -
                  widget->non_client_view()->frame_view()->GetInsets().top());
 
-  return gfx::Rect(position, size);
+  gfx::Rect dialog_bounds(position, size);
+
+  if (widget->is_top_level() && SupportsGlobalScreenCoordinates()) {
+    views::Widget* const host_widget =
+        host_browser_window->TopContainer()->GetWidget();
+    gfx::Rect dialog_screen_bounds =
+        dialog_bounds +
+        host_widget->GetClientAreaBoundsInScreen().OffsetFromOrigin();
+    const gfx::Rect host_screen_bounds = host_widget->GetWindowBoundsInScreen();
+
+    // The requested dialog bounds should never fall outside the bounds of the
+    // transient parent.
+    DCHECK(dialog_screen_bounds.Intersects(host_screen_bounds));
+
+    // Adjust the dialog bound to ensure it remains visible on the display.
+    const gfx::Rect display_work_area =
+        host_widget->GetNearestDisplay().value().work_area();
+    if (!display_work_area.Contains(dialog_screen_bounds)) {
+      dialog_screen_bounds.AdjustToFit(display_work_area);
+    }
+
+    // For platforms that clip transient children to the viewport we must
+    // maximize its bounds on the display whilst keeping it within the host
+    // bounds to avoid viewport clipping.
+    // In the case that the host window bounds do not have sufficient overlap
+    // with the display, and the dialog cannot be shown in its entirety, this is
+    // a recoverable state as users are still able to reposition the host window
+    // back onto the display.
+    if (PlatformClipsChildrenToViewport() &&
+        !host_screen_bounds.Contains(dialog_screen_bounds)) {
+      dialog_screen_bounds.AdjustToFit(host_screen_bounds);
+    }
+
+    // Readjust the position of the dialog.
+    dialog_bounds.set_origin(dialog_screen_bounds.origin());
+  }
+  return dialog_bounds;
 }
 
 void UpdateModalDialogPosition(views::Widget* widget,

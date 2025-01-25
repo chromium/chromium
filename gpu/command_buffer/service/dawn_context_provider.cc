@@ -427,16 +427,9 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   }
 
   // Provided to wgpu::Device as logging callback.
-#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
   static void LogInfo(wgpu::LoggingType type,
                       wgpu::StringView message,
                       DawnSharedContext* shared_context) {
-#else
-  static void LogInfo(WGPULoggingType type,
-                      WGPUStringView message,
-                      void* userdata) {
-    auto* shared_context = static_cast<DawnSharedContext*>(userdata);
-#endif
     std::string_view view = {message.data, message.length};
     switch (static_cast<wgpu::LoggingType>(type)) {
       case wgpu::LoggingType::Warning:
@@ -515,11 +508,8 @@ DawnSharedContext::~DawnSharedContext() {
       base::trace_event::MemoryDumpManager::GetInstance()
           ->UnregisterDumpProvider(this);
     }
-#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
     device_.SetLoggingCallback([](wgpu::LoggingType, wgpu::StringView) {});
-#else
-    device_.SetLoggingCallback(nullptr, nullptr);
-#endif
+
     // Destroy the device now so that the lost callback, which references this
     // class, is fired now before we clean up the rest of this class.
     device_.Destroy();
@@ -539,17 +529,11 @@ bool DawnSharedContext::Initialize(
   // instance doesn't exit the GPU process.
   // LogInfo will be used to receive instance level errors. For example failures
   // of loading libraries, initializing backend, etc
-#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
   dawn::native::DawnInstanceDescriptor dawn_instance_desc;
   dawn_instance_desc.SetLoggingCallback(&DawnSharedContext::LogInfo, this);
   instance_ = webgpu::DawnInstance::Create(&platform_, gpu_preferences,
                                            webgpu::SafetyLevel::kUnsafe,
                                            &dawn_instance_desc);
-#else
-  instance_ = webgpu::DawnInstance::Create(&platform_, gpu_preferences,
-                                           webgpu::SafetyLevel::kUnsafe,
-                                           &DawnSharedContext::LogInfo, this);
-#endif
 
   std::vector<const char*> enabled_toggles =
       GetEnabledToggles(backend_type, force_fallback_adapter, gpu_preferences);
