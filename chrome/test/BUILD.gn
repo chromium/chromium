@@ -8748,6 +8748,11 @@ test("unit_tests") {
       "../common/extensions/manifest_tests/extension_manifests_webview_accessible_resources_unittest.cc",
       "../common/extensions/manifest_tests/permissions_parser_unittest.cc",
       "../common/extensions/manifest_unittest.cc",
+      "../common/extensions/permissions/chrome_api_permissions_unittest.cc",
+      "../common/extensions/permissions/chrome_permission_message_provider_unittest.cc",
+      "../common/extensions/permissions/chrome_permission_message_rules_unittest.cc",
+      "../common/extensions/permissions/permissions_data_unittest.cc",
+      "../common/extensions/permissions/settings_override_permission_unittest.cc",
     ]
     deps += [
       "//chrome/browser/extensions:test_support",
@@ -9017,12 +9022,7 @@ test("unit_tests") {
 
       # Platform apps are not supported on desktop Android.
       "../common/extensions/manifest_tests/extension_manifests_platformapp_unittest.cc",
-      "../common/extensions/permissions/chrome_api_permissions_unittest.cc",
-      "../common/extensions/permissions/chrome_permission_message_provider_unittest.cc",
-      "../common/extensions/permissions/chrome_permission_message_rules_unittest.cc",
       "../common/extensions/permissions/permission_set_unittest.cc",
-      "../common/extensions/permissions/permissions_data_unittest.cc",
-      "../common/extensions/permissions/settings_override_permission_unittest.cc",
       "../common/extensions/sync_type_unittest.cc",
       "../renderer/extensions/api/extension_hooks_delegate_unittest.cc",
       "../renderer/extensions/api/identity_hooks_delegate_unittest.cc",
