@@ -89,6 +89,14 @@ export enum NetworkType {
 }
 
 /**
+ * Declare boca user pref type.
+ */
+export enum BocaValidPref {
+  NAVIGATION_SETTING = 0,
+  CAPTION_ENABLEMENT_SETTING = 1,
+}
+
+/**
  * Declare controlled tab
  */
 export declare interface ControlledTab {
@@ -234,6 +242,16 @@ export declare interface ClientApiDelegate {
    * Request to view the screen of the student with the given id.
    */
   viewStudentScreen(id: string): Promise<boolean>;
+
+  /**
+   * Get the value of a boca specific user pref.
+   */
+  getUserPref(pref: BocaValidPref): Promise<any>;
+
+  /**
+   * Set the value of a boca specific user pref.
+   */
+  setUserPref(pref: BocaValidPref, value: any): Promise<void>;
 }
 
 /**

@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import type {CaptionConfig, Config, Course, Identity, OnTaskConfig, RemoveStudentError, SessionResult, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import type {BocaValidPref, CaptionConfig, Config, Course, Identity, OnTaskConfig, RemoveStudentError, SessionResult, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {PageHandlerRemote, SubmitAccessCodeError} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import {Value} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import type {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -244,6 +245,15 @@ class MockRemoteHandler extends PageHandlerRemote {
   }
   override authenticateWebview() {
     return Promise.resolve({success: true});
+  }
+  override getUserPref(pref: BocaValidPref): Promise<{value: Value;}> {
+    pref;
+    return Promise.resolve({value: {stringValue: 'value'}});
+  }
+  override setUserPref(pref: BocaValidPref, value: Value) {
+    pref;
+    value;
+    return Promise.resolve();
   }
 }
 
@@ -624,5 +634,18 @@ suite('ClientDelegateTest', function() {
         const result =
             await clientDelegateImpl.getInstance().authenticateWebview();
         assertTrue(result);
+      });
+
+  test(
+      'client delegate should respond correctly for retrieve user pref',
+      async () => {
+        const result = await clientDelegateImpl.getInstance().getUserPref(0);
+        assertDeepEquals({stringValue: 'value'}, result);
+      });
+
+  test(
+      'client delegate should respond correctly for set user pref',
+      async () => {
+        await clientDelegateImpl.getInstance().setUserPref(1, {value: {}});
       });
 });
