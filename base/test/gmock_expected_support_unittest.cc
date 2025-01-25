@@ -9,6 +9,7 @@
 
 #include "base/test/gmock_expected_support.h"
 
+#include <optional>
 #include <string>
 
 #include "base/types/expected.h"
@@ -20,8 +21,12 @@ namespace {
 
 TEST(GmockExpectedSupportTest, AssertOkAndAssign) {
   const expected<int, std::string> e_int = 1;
-  ASSERT_OK_AND_ASSIGN(int result, e_int);
-  EXPECT_EQ(1, result);
+  ASSERT_OK_AND_ASSIGN(int result1, e_int);
+  EXPECT_EQ(1, result1);
+
+  const std::optional<int> o_int = 2;
+  ASSERT_OK_AND_ASSIGN(int result2, o_int);
+  EXPECT_EQ(2, result2);
 }
 
 TEST(GmockExpectedSupportTest, VoidOkEquals) {

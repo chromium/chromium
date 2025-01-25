@@ -5,7 +5,9 @@
 #ifndef BASE_TYPES_EXPECTED_MACROS_H_
 #define BASE_TYPES_EXPECTED_MACROS_H_
 
+#include <concepts>
 #include <functional>
+#include <optional>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -18,24 +20,38 @@
 #include "base/macros/uniquify.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/types/expected.h"
+#include "base/types/is_instantiation.h"
 
-// Executes an expression `rexpr` that returns an `expected<T, E>`. If the
-// result is an error, causes the calling function to return. If no additional
-// arguments are given, the function return value is the `E` returned by
-// `rexpr`. Otherwise, the additional arguments are treated as an invocable that
-// expects an E as its last argument and returns some type (including `void`)
-// convertible to the function's return type; that is, the function returns the
-// result of `std::invoke(..., E)` on the additional arguments.
+// Executes an expression `rexpr` that returns an `expected<T, E>` or
+// `std::optional<T>`.
 //
-// This works with move-only types and can be used in functions that return
-// either an `E` directly or a `base::expected<U, E>`, without needing to
-// explicitly wrap the return in `base::unexpected`.
+// For the `expected<T, E>` case:
+//   If the result is an error, causes the calling function to return. If no
+//   additional arguments are given, the function return value is the `E`
+//   returned by `rexpr`. Otherwise, the additional arguments are treated as an
+//   invocable that expects an E as its last argument and returns some type
+//   (including `void`) convertible to the function's return type; that is, the
+//   function returns the result of `std::invoke(..., E)` on the additional
+//   arguments.
+//
+//   This works with move-only types and can be used in functions that return
+//   either an `E` directly or a `base::expected<U, E>`, without needing to
+//   explicitly wrap the return in `base::unexpected`.
+//
+// For the `std::optional<T>` case:
+//   If the result is `std::nullopt`, causes the calling function to return. If
+//   no additional arguments are given, the function return value is the return
+//   value of `rexpr` (i.e. an unbound `std::optional<T>`). Otherwise, the
+//   additional arguments are treated as an invocable that returns some type
+//   (including `void`) convertible to the function's return type; that is, the
+//   function returns the result of `std::invoke(...)` on the additional
+//   arguments.
 //
 // # Interface
 //
 // `RETURN_IF_ERROR(rexpr, ...);`
 //
-// # Examples
+// # Examples for the `expected<T, E>` case
 //
 // Use with no additional arguments:
 // ```
@@ -93,13 +109,39 @@
 // ```
 //   RETURN_IF_ERROR(TryProcessing(query), &MyClass::FailureHandler, this);
 // ```
+//
+// # Modified examples for the `std::optional<T>` case
+//
+// Use with no additional arguments:
+// ```
+//   std::optional<int> Foo() {
+//     RETURN_IF_ERROR(Function(args...));
+//     RETURN_IF_ERROR(obj.Method(args...));
+//     return 17;
+//   }
+// ```
+//
+// Returning some kind of error:
+// ```
+//   RETURN_IF_ERROR(TryProcessing(query),
+//                   [] { return SomeErrorCode::kFail); });
+// ```
+//
+// Returning void:
+// ```
+//   RETURN_IF_ERROR(TryProcessing(query), [] {});
+// ```
+// ```
+//   RETURN_IF_ERROR(TryProcessing(query), [] { LOG(WARNING) << "Uh oh"; }());
+// ```
 #define RETURN_IF_ERROR(rexpr, ...)                                        \
   BASE_INTERNAL_EXPECTED_PASS_ARGS(BASE_INTERNAL_EXPECTED_RETURN_IF_ERROR, \
                                    BASE_UNIQUIFY(_expected_value), rexpr,  \
                                    __VA_ARGS__)
 
-// Executes an expression `rexpr` that returns an `expected<T, E>`. If the
-// result is not an error, moves the `T` into whatever `lhs` defines/refers to;
+// Executes an expression `rexpr` that returns an `expected<T, E>` or
+// `std::optional<T>`. If the result is not an error/`std::nullopt`
+// (respectively), moves the `T` into whatever `lhs` defines/refers to;
 // otherwise, behaves like RETURN_IF_ERROR() above. Avoid side effects in `lhs`,
 // as it will not be evaluated in the error case.
 //
@@ -114,7 +156,7 @@
 // WARNING: Expands into multiple statements; cannot be used in a single
 //          statement (e.g. as the body of an `if` statement without `{}`)!
 //
-// # Examples
+// # Examples for the `expected<T, E>` case
 //
 // Declaring and initializing a new variable (ValueType can be anything that can
 // be initialized with assignment):
@@ -196,6 +238,23 @@
 //   ASSIGN_OR_RETURN(ValueType value, MaybeGetValue(query),
 //                    &MyClass::FailureHandler, this);
 // ```
+//
+// # Modified examples for the `std::optional<T>` case
+//
+// Returning some kind of error:
+// ```
+//   ASSIGN_OR_RETURN(ValueType value, MaybeGetValue(query),
+//                    [] { return SomeErrorCode::kFail); });
+// ```
+//
+// Returning void:
+// ```
+//   ASSIGN_OR_RETURN(ValueType value, MaybeGetValue(query), [] {});
+// ```
+// ```
+//   ASSIGN_OR_RETURN(ValueType value, MaybeGetValue(query),
+//                    [] { LOG(WARNING) << "Uh oh"; }());
+// ```
 #define ASSIGN_OR_RETURN(lhs, rexpr, ...)                                      \
   BASE_INTERNAL_EXPECTED_PASS_ARGS(BASE_INTERNAL_EXPECTED_ASSIGN_OR_RETURN,    \
                                    lhs, BASE_UNIQUIFY(_expected_value), rexpr, \
@@ -214,15 +273,17 @@ namespace base::internal {
 // constructed directly with an `E`, but with a lambda that returns `E`; and
 // callers must return `Ret()` rather than returning the deducer itself. Using
 // both these indirections allows consistent invocation from macros.
-template <typename Lambda, typename E = std::invoke_result_t<Lambda&&>>
+template <typename Lambda,
+          typename Arg,
+          typename E = std::invoke_result_t<Lambda&&, Arg&&>>
 class UnexpectedDeducer {
  public:
-  constexpr explicit UnexpectedDeducer(Lambda&& lambda) noexcept
-      : lambda_(std::move(lambda)) {}
+  constexpr UnexpectedDeducer(Lambda&& lambda, Arg&& arg) noexcept
+      : lambda_(std::move(lambda)), arg_(std::move(arg)) {}
 
   constexpr decltype(auto) Ret() && noexcept {
     if constexpr (std::is_void_v<E>) {
-      std::move(lambda_)();
+      std::move(lambda_)(std::move(arg_));
     } else {
       return std::move(*this);
     }
@@ -235,14 +296,29 @@ class UnexpectedDeducer {
   constexpr operator expected<T, E>() && noexcept
     requires(!std::is_void_v<E>)
   {
-    return expected<T, E>(unexpect, std::move(lambda_)());
+    return expected<T, E>(unexpect, std::move(lambda_)(std::move(arg_)));
   }
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr operator E() && noexcept
     requires(!std::is_void_v<E>)
   {
-    return std::move(lambda_)();
+    return std::move(lambda_)(std::move(arg_));
   }
+
+  // Disallow implicit conversion to `std::optional<T>`. Either `E` is already
+  // a type that can convert to this and this is unnecessary due to the
+  // conversion operator above, or `E` is some other type and we're discarding
+  // whatever was in it. Theoretically this might not be an information loss if
+  // e.g. `E` is an unbound `std::optional<U>`, but it seems better to force
+  // people to match types in this case. Also note that since `E` isn't
+  // convertible, this would be a compile error even without deleting this
+  // function; but deleting it makes it clear this isn't an omission in this
+  // code, but behavior we explicitly don't want to support.
+  template <typename T>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr operator std::optional<T>() && noexcept
+    requires(!std::is_void_v<E> && !std::convertible_to<E, std::optional<T>>)
+  = delete;  // Use an adapter that returns this type.
 
  private:
   // RAW_PTR_EXCLUSION: Not intended to handle &&-qualified members.
@@ -250,30 +326,66 @@ class UnexpectedDeducer {
   // copying and other overhead; using raw_ptr/ref goes against this design
   // without adding meaningful safety.
   RAW_PTR_EXCLUSION Lambda&& lambda_;
+  RAW_PTR_EXCLUSION Arg&& arg_;
 };
 
 // Deduce the type of the lambda automatically so callers don't need to spell
 // things twice (or use temps) and use decltype.
-template <typename Lambda>
-UnexpectedDeducer(Lambda) -> UnexpectedDeducer<Lambda>;
+template <typename Lambda, typename Arg>
+UnexpectedDeducer(Lambda, Arg) -> UnexpectedDeducer<Lambda, Arg>;
+
+// Workaround for https://github.com/llvm/llvm-project/issues/58872: Indirect
+// through an extra layer so if the compiler attempts to instantiate both arms
+// of the constexpr if in `BASE_INTERNAL_EXPECTED_BODY`, it will succeed.
+// TODO(https://github.com/llvm/llvm-project/issues/58872): Remove this struct
+// and the constructions of it below, and let them invoke `__VA_ARGS__`
+// directly.
+struct Trampoline {
+  template <typename... Args>
+  constexpr auto operator()(Args&&... args) const noexcept {
+    // Should always succeed if this is actually reached at runtime.
+    if constexpr (std::is_invocable_v<Args&&...>) {
+      return std::invoke(std::forward<Args>(args)...);
+    }
+  }
+};
 
 }  // namespace base::internal
 
 #define BASE_INTERNAL_EXPECTED_PASS_ARGS(func, ...) func(__VA_ARGS__)
 
-#define BASE_INTERNAL_EXPECTED_BODY(expected, rexpr, name, ...)           \
-  decltype(auto) expected = (rexpr);                                      \
-  {                                                                       \
-    static_assert(base::internal::IsExpected<decltype(expected)>,         \
-                  #name " should only be used with base::expected<>");    \
-  }                                                                       \
-  if (!expected.has_value()) [[unlikely]] {                               \
-    return base::internal::UnexpectedDeducer([&] {                        \
-             return BASE_IF(                                              \
-                 BASE_IS_EMPTY(__VA_ARGS__), std::move(expected).error(), \
-                 std::invoke(__VA_ARGS__, std::move(expected).error()));  \
-           })                                                             \
-        .Ret();                                                           \
+#define BASE_INTERNAL_EXPECTED_BODY(expected, rexpr, name, ...)               \
+  auto expected = (rexpr);                                                    \
+  {                                                                           \
+    static_assert(                                                            \
+        base::internal::IsExpected<decltype(expected)> ||                     \
+            base::is_instantiation<std::optional, decltype(expected)>,        \
+        #name                                                                 \
+        " should only be used with base::expected<> or std::optional<>");     \
+  }                                                                           \
+  if (!expected.has_value()) [[unlikely]] {                                   \
+    /* Pass `expected` as an arg rather than capturing, so the lambda body */ \
+    /* is a template context, so `constexpr if` avoids instantiating the */   \
+    /* non-matching arm, since it won't compile otherwise. */                 \
+    return base::internal::UnexpectedDeducer(                                 \
+               [&](auto&& base_internal_expected__) {                         \
+                 if constexpr (base::internal::IsExpected<                    \
+                                   decltype(base_internal_expected__)>) {     \
+                   return BASE_IF(                                            \
+                       BASE_IS_EMPTY(__VA_ARGS__),                            \
+                       std::move(base_internal_expected__).error(),           \
+                       std::invoke(                                           \
+                           base::internal::Trampoline(), __VA_ARGS__,         \
+                           std::move(base_internal_expected__).error()));     \
+                 } else {                                                     \
+                   return BASE_IF(BASE_IS_EMPTY(__VA_ARGS__),                 \
+                                  std::move(base_internal_expected__),        \
+                                  std::invoke(base::internal::Trampoline(),   \
+                                              __VA_ARGS__));                  \
+                 }                                                            \
+               },                                                             \
+               std::move(expected))                                           \
+        .Ret();                                                               \
   }
 
 #define BASE_INTERNAL_EXPECTED_RETURN_IF_ERROR(expected, rexpr, ...) \
