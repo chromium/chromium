@@ -406,7 +406,7 @@ public class AddressEditorTest {
                 /* isFullLine= */ false);
         validateTextField(
                 editorFields.get(7),
-                profile.getPostalCode(),
+                profile.getInfo(FieldType.ADDRESS_HOME_ZIP),
                 FieldType.ADDRESS_HOME_ZIP,
                 /* label= */ "postal code label",
                 shouldMarkFieldsRequired,
@@ -1162,7 +1162,7 @@ public class AddressEditorTest {
         assertEquals("111 First St", profile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS));
         assertEquals("", profile.getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY));
         assertEquals("Google", profile.getInfo(FieldType.COMPANY_NAME));
-        assertEquals("90291", profile.getPostalCode());
+        assertEquals("90291", profile.getInfo(FieldType.ADDRESS_HOME_ZIP));
         assertEquals("", profile.getSortingCode());
     }
 

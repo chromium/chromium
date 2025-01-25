@@ -333,16 +333,6 @@ public class AutofillProfile {
         return mFields.get(fieldType).getStatus();
     }
 
-    public String getPostalCode() {
-        return getInfo(FieldType.ADDRESS_HOME_ZIP);
-    }
-
-    @VisibleForTesting
-    @VerificationStatus
-    public int getPostalCodeStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_ZIP);
-    }
-
     public String getSortingCode() {
         return getInfo(FieldType.ADDRESS_HOME_SORTING_CODE);
     }
