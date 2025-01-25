@@ -268,6 +268,22 @@ void ScannerController::OnActiveUserSessionChanged(
   command_delegate_ = nullptr;
 }
 
+bool ScannerController::CanShowConsentScreenEntryPoints() {
+  ScannerProfileScopedDelegate* profile_scoped_delegate =
+      delegate_->GetProfileScopedDelegate();
+
+  if (profile_scoped_delegate == nullptr) {
+    return false;
+  }
+
+  specialized_features::FeatureAccessFailureSet checks =
+      profile_scoped_delegate->CheckFeatureAccess();
+
+  checks.Remove(
+      specialized_features::FeatureAccessFailure::kConsentNotAccepted);
+  return checks.empty();
+}
+
 bool ScannerController::CanShowFeatureSettingsToggle() {
   ScannerProfileScopedDelegate* profile_scoped_delegate =
       delegate_->GetProfileScopedDelegate();
