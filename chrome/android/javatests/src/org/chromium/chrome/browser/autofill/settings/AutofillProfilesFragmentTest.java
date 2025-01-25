@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -676,9 +677,14 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
-        assertEquals(0, findPreference(sAccountProfile.getFullName()).getWidgetLayoutResource());
         assertEquals(
-                0, findPreference(sLocalOrSyncProfile.getFullName()).getWidgetLayoutResource());
+                0,
+                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
+        assertEquals(
+                0,
+                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
     }
 
     @Test
@@ -690,10 +696,14 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
-        assertEquals(0, findPreference(sAccountProfile.getFullName()).getWidgetLayoutResource());
+        assertEquals(
+                0,
+                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
         assertEquals(
                 R.layout.autofill_local_profile_icon,
-                findPreference(sLocalOrSyncProfile.getFullName()).getWidgetLayoutResource());
+                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
     }
 
     @Test
@@ -705,10 +715,14 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
-        assertEquals(0, findPreference(sAccountProfile.getFullName()).getWidgetLayoutResource());
+        assertEquals(
+                0,
+                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
         assertEquals(
                 R.layout.autofill_local_profile_icon,
-                findPreference(sLocalOrSyncProfile.getFullName()).getWidgetLayoutResource());
+                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
     }
 
     @Test
@@ -720,9 +734,14 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
-        assertEquals(0, findPreference(sAccountProfile.getFullName()).getWidgetLayoutResource());
         assertEquals(
-                0, findPreference(sLocalOrSyncProfile.getFullName()).getWidgetLayoutResource());
+                0,
+                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
+        assertEquals(
+                0,
+                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL))
+                        .getWidgetLayoutResource());
     }
 
     private void checkPreferenceCount(int expectedPreferenceCount) {

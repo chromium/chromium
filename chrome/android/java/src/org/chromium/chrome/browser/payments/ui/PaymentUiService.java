@@ -46,6 +46,7 @@ import org.chromium.components.autofill.AddressNormalizer.NormalizedAddressReque
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.autofill.EditableOption;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.ErrorStrings;
@@ -537,7 +538,7 @@ public class PaymentUiService
                 AutofillProfile profile = getAutofillProfiles().get(i);
                 if (getContactEditor()
                                 .checkContactCompletionStatus(
-                                        profile.getFullName(),
+                                        profile.getInfo(FieldType.NAME_FULL),
                                         profile.getPhoneNumber(),
                                         profile.getEmailAddress())
                         == ContactEditor.COMPLETE) {

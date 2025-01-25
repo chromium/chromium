@@ -72,7 +72,7 @@ public class AutofillAddress extends EditableOption {
             Context context, AutofillProfile profile, PersonalDataManager personalDataManager) {
         super(
                 profile.getGUID(),
-                profile.getFullName(),
+                profile.getInfo(FieldType.NAME_FULL),
                 profile.getLabel(),
                 profile.getPhoneNumber(),
                 null);
@@ -116,7 +116,7 @@ public class AutofillAddress extends EditableOption {
         mProfile = profile;
         updateIdentifierAndLabels(
                 mProfile.getGUID(),
-                mProfile.getFullName(),
+                mProfile.getInfo(FieldType.NAME_FULL),
                 mProfile.getLabel(),
                 mProfile.getPhoneNumber());
         checkAndUpdateAddressCompleteness();
@@ -230,7 +230,7 @@ public class AutofillAddress extends EditableOption {
             AutofillProfile profile, PersonalDataManager personalDataManager) {
         @CompletionStatus int completionStatus = CompletionStatus.COMPLETE;
 
-        if (TextUtils.isEmpty(profile.getFullName())) {
+        if (TextUtils.isEmpty(profile.getInfo(FieldType.NAME_FULL))) {
             completionStatus |= CompletionStatus.INVALID_RECIPIENT;
         }
 
@@ -284,7 +284,7 @@ public class AutofillAddress extends EditableOption {
         result.postalCode = mProfile.getPostalCode();
         result.sortingCode = mProfile.getSortingCode();
         result.organization = mProfile.getCompanyName();
-        result.recipient = mProfile.getFullName();
+        result.recipient = mProfile.getInfo(FieldType.NAME_FULL);
         result.phone = mProfile.getPhoneNumber();
 
         return result;

@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VerificationStatus;
@@ -552,7 +553,8 @@ public class PersonalDataManagerTest {
         AutofillProfile storedProfile = mHelper.getProfile(guid);
         // When converted to C++ and back the verification statuses for name and address components
         // should be preserved.
-        Assert.assertEquals(VerificationStatus.PARSED, storedProfile.getFullNameStatus());
+        Assert.assertEquals(
+                VerificationStatus.PARSED, storedProfile.getInfoStatus(FieldType.NAME_FULL));
         Assert.assertEquals(VerificationStatus.FORMATTED, storedProfile.getStreetAddressStatus());
         Assert.assertEquals(VerificationStatus.OBSERVED, storedProfile.getRegionStatus());
         Assert.assertEquals(VerificationStatus.USER_VERIFIED, storedProfile.getLocalityStatus());
@@ -564,12 +566,14 @@ public class PersonalDataManagerTest {
     @Feature({"Autofill"})
     public void testValuesSetInProfileGainUserVerifiedStatus() {
         AutofillProfile profile = AutofillProfile.builder().build();
-        Assert.assertEquals(VerificationStatus.NO_STATUS, profile.getFullNameStatus());
+        Assert.assertEquals(
+                VerificationStatus.NO_STATUS, profile.getInfoStatus(FieldType.NAME_FULL));
         Assert.assertEquals(VerificationStatus.NO_STATUS, profile.getStreetAddressStatus());
         Assert.assertEquals(VerificationStatus.NO_STATUS, profile.getLocalityStatus());
 
         profile.setFullName("Homer Simpson");
-        Assert.assertEquals(VerificationStatus.USER_VERIFIED, profile.getFullNameStatus());
+        Assert.assertEquals(
+                VerificationStatus.USER_VERIFIED, profile.getInfoStatus(FieldType.NAME_FULL));
         profile.setStreetAddress("123 Main St.");
         Assert.assertEquals(VerificationStatus.USER_VERIFIED, profile.getStreetAddressStatus());
         profile.setLocality("Springfield");
@@ -603,7 +607,7 @@ public class PersonalDataManagerTest {
         Assert.assertEquals(1, mHelper.getNumberOfProfilesForSettings());
         AutofillProfile storedProfile1 = mHelper.getProfile(profileGuid1);
         Assert.assertEquals("PF", storedProfile1.getCountryCode());
-        Assert.assertEquals("Monsieur Jean DELHOURME", storedProfile1.getFullName());
+        Assert.assertEquals("Monsieur Jean DELHOURME", storedProfile1.getInfo(FieldType.NAME_FULL));
         Assert.assertEquals(streetAddress1, storedProfile1.getStreetAddress());
         Assert.assertEquals("Tahiti", storedProfile1.getRegion());
         Assert.assertEquals("Mahina", storedProfile1.getLocality());

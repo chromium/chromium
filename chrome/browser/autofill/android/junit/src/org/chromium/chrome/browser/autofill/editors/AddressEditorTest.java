@@ -356,7 +356,7 @@ public class AddressEditorTest {
         // Fields obtained from backend must be placed after the country dropdown.
         validateTextField(
                 editorFields.get(1),
-                profile.getFullName(),
+                profile.getInfo(FieldType.NAME_FULL),
                 FieldType.NAME_FULL,
                 /* label= */ "full name label",
                 shouldMarkFieldsRequired,

@@ -306,6 +306,16 @@ public class AutofillProfile {
         return mLabel;
     }
 
+    /**
+     * Returns the field value that corresponds to the provided {@code fieldType}. Returns an empty
+     * string if the profile doesn't contain the specified field type.
+     *
+     * <p>Note: make sure you're requesting the correct field type by looking at the field type
+     * descriptions in the components/autofill/core/browser/field_types.h.
+     *
+     * @return the field value corresponding to the {@code fieldType}, or empty string if the
+     *     profile doesn't have that field.
+     */
     @CalledByNative
     public @JniType("std::u16string") String getInfo(@FieldType int fieldType) {
         if (!mFields.containsKey(fieldType)) {
@@ -321,16 +331,6 @@ public class AutofillProfile {
             return VerificationStatus.NO_STATUS;
         }
         return mFields.get(fieldType).getStatus();
-    }
-
-    public String getFullName() {
-        return getInfo(FieldType.NAME_FULL);
-    }
-
-    @VisibleForTesting
-    @VerificationStatus
-    public int getFullNameStatus() {
-        return getInfoStatus(FieldType.NAME_FULL);
     }
 
     public String getCompanyName() {
