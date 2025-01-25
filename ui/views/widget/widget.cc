@@ -119,6 +119,19 @@ void NotifyCaretBoundsChanged(ui::InputMethod* input_method) {
   }
 }
 
+#if BUILDFLAG(IS_WIN)
+ui::mojom::WindowShowState GetShowState(views::Widget* widget) {
+  if (widget->IsMaximized()) [[unlikely]] {
+    return ui::mojom::WindowShowState::kMaximized;
+  } else if (widget->IsMinimized()) [[unlikely]] {
+    return ui::mojom::WindowShowState::kMinimized;
+  } else if (widget->IsFullscreen()) [[unlikely]] {
+    return ui::mojom::WindowShowState::kFullscreen;
+  }
+  return ui::mojom::WindowShowState::kNormal;
+}
+#endif
+
 }  // namespace
 
 // static
@@ -1937,16 +1950,26 @@ void Widget::OnNativeWidgetSizeChanged(const gfx::Size& new_size) {
   }
 
   NotifyCaretBoundsChanged(GetInputMethod());
-  SaveWindowPlacementIfInitialized();
+  SaveWindowPlacementIfNeeded();
+
+  base::AutoReset auto_reset(&save_window_placement_allowed_, false);
 
   observers_.Notify(&WidgetObserver::OnWidgetBoundsChanged, this,
                     GetWindowBoundsInScreen());
+
+#if BUILDFLAG(IS_WIN)
+  ui::mojom::WindowShowState show_state = GetShowState(this);
+  if (saved_show_state_ != show_state) {
+    OnNativeWidgetWindowShowStateChanged();
+    saved_show_state_ = show_state;
+  }
+#endif
 }
 
 void Widget::OnNativeWidgetWorkspaceChanged() {}
 
 void Widget::OnNativeWidgetWindowShowStateChanged() {
-  SaveWindowPlacementIfInitialized();
+  SaveWindowPlacementIfNeeded();
 
   observers_.Notify(&WidgetObserver::OnWidgetShowStateChanged, this);
 }
@@ -2442,8 +2465,8 @@ void Widget::SaveWindowPlacement() {
   widget_delegate_->SaveWindowPlacement(bounds, show_state);
 }
 
-void Widget::SaveWindowPlacementIfInitialized() {
-  if (native_widget_initialized_) {
+void Widget::SaveWindowPlacementIfNeeded() {
+  if (native_widget_initialized_ && save_window_placement_allowed_) {
     SaveWindowPlacement();
   }
 }
