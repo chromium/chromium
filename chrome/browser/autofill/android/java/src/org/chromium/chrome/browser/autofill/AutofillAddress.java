@@ -282,7 +282,7 @@ public class AutofillAddress extends EditableOption {
         result.city = mProfile.getInfo(FieldType.ADDRESS_HOME_CITY);
         result.dependentLocality = mProfile.getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
         result.postalCode = mProfile.getInfo(FieldType.ADDRESS_HOME_ZIP);
-        result.sortingCode = mProfile.getSortingCode();
+        result.sortingCode = mProfile.getInfo(FieldType.ADDRESS_HOME_SORTING_CODE);
         result.organization = mProfile.getInfo(FieldType.COMPANY_NAME);
         result.recipient = mProfile.getInfo(FieldType.NAME_FULL);
         result.phone = mProfile.getPhoneNumber();

@@ -337,7 +337,7 @@ public class AddressEditorTest {
 
         validateTextField(
                 editorFields.get(6),
-                profile.getSortingCode(),
+                profile.getInfo(FieldType.ADDRESS_HOME_SORTING_CODE),
                 FieldType.ADDRESS_HOME_SORTING_CODE,
                 /* label= */ "sorting code label",
                 /* isRequired= */ false,
@@ -744,7 +744,7 @@ public class AddressEditorTest {
         assertEquals("", profile.getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY));
         assertEquals("Google", profile.getInfo(FieldType.COMPANY_NAME));
         assertEquals("90291", profile.getInfo(FieldType.ADDRESS_HOME_ZIP));
-        assertEquals("", profile.getSortingCode());
+        assertEquals("", profile.getInfo(FieldType.ADDRESS_HOME_SORTING_CODE));
     }
 
     @Test

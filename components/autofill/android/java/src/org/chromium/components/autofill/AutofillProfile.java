@@ -333,14 +333,6 @@ public class AutofillProfile {
         return mFields.get(fieldType).getStatus();
     }
 
-    public String getSortingCode() {
-        return getInfo(FieldType.ADDRESS_HOME_SORTING_CODE);
-    }
-
-    private @VerificationStatus int getSortingCodeStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_SORTING_CODE);
-    }
-
     @CalledByNative
     public @JniType("std::string") String getCountryCode() {
         return getInfo(FieldType.ADDRESS_HOME_COUNTRY);

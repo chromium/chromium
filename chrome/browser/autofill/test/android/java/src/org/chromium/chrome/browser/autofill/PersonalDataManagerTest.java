@@ -630,7 +630,8 @@ public class PersonalDataManagerTest {
         Assert.assertEquals(
                 "Orofara", storedProfile1.getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY));
         Assert.assertEquals("98709", storedProfile1.getInfo(FieldType.ADDRESS_HOME_ZIP));
-        Assert.assertEquals("CEDEX 98703", storedProfile1.getSortingCode());
+        Assert.assertEquals(
+                "CEDEX 98703", storedProfile1.getInfo(FieldType.ADDRESS_HOME_SORTING_CODE));
         Assert.assertEquals("44.71.53", storedProfile1.getPhoneNumber());
         Assert.assertEquals("john@acme.inc", storedProfile1.getEmailAddress());
 
