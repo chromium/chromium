@@ -801,7 +801,7 @@ TEST_F(BodyStreamBufferTest,
 TEST_F(BodyStreamBufferTest, CachedMetadataHandler) {
   V8TestingScope scope;
   Persistent<BodyStreamBuffer> buffer;
-  WeakPersistent<ScriptCachedMetadataHandler> weak_handler;
+  WeakPersistent<CachedMetadataHandler> weak_handler;
   {
     BytesConsumer* src = MakeGarbageCollected<ReplayingBytesConsumer>(
         scope.GetDocument().GetTaskRunner(TaskType::kNetworking));

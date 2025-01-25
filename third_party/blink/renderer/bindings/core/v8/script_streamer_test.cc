@@ -391,10 +391,8 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
 
   CachedMetadataHandler* cache_handler = resource_->CacheHandler();
   EXPECT_TRUE(cache_handler);
-  cache_handler->DisableSendToPlatformForTesting();
-  // CodeCacheHost can be nullptr since we disabled sending data to
-  // GeneratedCodeCacheHost for testing.
-  cache_handler->SetCachedMetadata(/*code_cache_host*/ nullptr,
+  // The sender will no-op sending data to the code_cache_host if null.
+  cache_handler->SetCachedMetadata(/*code_cache_host=*/nullptr,
                                    V8CodeCache::TagForCodeCache(cache_handler),
                                    base::byte_span_from_cstring("X"));
 
@@ -425,9 +423,6 @@ TEST_F(ScriptStreamingTest, ConsumeLocalCompileHints) {
 
   CachedMetadataHandler* cache_handler = resource_->CacheHandler();
   EXPECT_TRUE(cache_handler);
-  cache_handler->DisableSendToPlatformForTesting();
-  // CodeCacheHost can be nullptr since we disabled sending data to
-  // GeneratedCodeCacheHost for testing.
 
   // Create fake compile hints (what the real compile hints are is internal to
   // v8).
@@ -438,8 +433,9 @@ TEST_F(ScriptStreamingTest, ConsumeLocalCompileHints) {
       v8_compile_hints::V8LocalCompileHintsProducer::
           CreateCompileHintsCachedDataForScript(compile_hints, timestamp));
 
+  // The sender will no-op sending data to the code_cache_host if null.
   cache_handler->SetCachedMetadata(
-      /*code_cache_host*/ nullptr,
+      /*code_cache_host=*/nullptr,
       V8CodeCache::TagForCompileHints(cache_handler), ToSpan(*cached_data));
 
   // Checks for debugging failures in this test.
@@ -922,7 +918,7 @@ class DummyCachedMetadataSender : public CachedMetadataSender {
 };
 
 mojo_base::BigBuffer CreateDummyCodeCacheData() {
-  ScriptCachedMetadataHandler* cache_handler =
+  CachedMetadataHandler* cache_handler =
       MakeGarbageCollected<ScriptCachedMetadataHandler>(
           UTF8Encoding(), std::make_unique<DummyCachedMetadataSender>());
   uint32_t data_type_id = V8CodeCache::TagForCodeCache(cache_handler);
@@ -937,7 +933,7 @@ mojo_base::BigBuffer CreateDummyCodeCacheData() {
 }
 
 mojo_base::BigBuffer CreateDummyTimeStampData() {
-  ScriptCachedMetadataHandler* cache_handler =
+  CachedMetadataHandler* cache_handler =
       MakeGarbageCollected<ScriptCachedMetadataHandler>(
           UTF8Encoding(), std::make_unique<DummyCachedMetadataSender>());
   uint32_t data_type_id = V8CodeCache::TagForTimeStamp(cache_handler);

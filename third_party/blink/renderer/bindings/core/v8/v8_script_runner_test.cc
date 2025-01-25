@@ -176,9 +176,7 @@ class V8ScriptRunnerTest : public testing::Test {
     ClassicScript* classic_script =
         CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
     // Set timestamp to simulate a warm run.
-    ScriptCachedMetadataHandler* cache_handler =
-        static_cast<ScriptCachedMetadataHandler*>(
-            classic_script->CacheHandler());
+    CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
     ExecutionContext* execution_context =
         ExecutionContext::From(scope.GetScriptState());
     SetCacheTimeStamp(
@@ -419,10 +417,12 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
                             *classic_script_1,
                             mojom::blink::V8CacheOptions::kDefault));
-  EXPECT_TRUE(
-      cache_handler_1->GetCachedMetadata(TagForTimeStamp(cache_handler_1)));
-  EXPECT_FALSE(
-      cache_handler_1->GetCachedMetadata(TagForCodeCache(cache_handler_1)));
+  EXPECT_TRUE(cache_handler_1->GetCachedMetadata(
+      TagForTimeStamp(cache_handler_1),
+      CachedMetadataHandler::kCrashIfUnchecked));
+  EXPECT_FALSE(cache_handler_1->GetCachedMetadata(
+      TagForCodeCache(cache_handler_1),
+      CachedMetadataHandler::kCrashIfUnchecked));
 
   // A second script with matching script text, using the state of
   // the ScriptCachedMetadataHandler from the first script.
@@ -438,8 +438,9 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
                             *classic_script_2,
                             mojom::blink::V8CacheOptions::kDefault));
-  EXPECT_TRUE(
-      cache_handler_2->GetCachedMetadata(TagForCodeCache(cache_handler_2)));
+  EXPECT_TRUE(cache_handler_2->GetCachedMetadata(
+      TagForCodeCache(cache_handler_2),
+      CachedMetadataHandler::kCrashIfUnchecked));
 
   // A third script with different script text, using the state of
   // the ScriptCachedMetadataHandler from the second script.
@@ -457,10 +458,12 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
                             *classic_script_3,
                             mojom::blink::V8CacheOptions::kDefault));
-  EXPECT_TRUE(
-      cache_handler_3->GetCachedMetadata(TagForTimeStamp(cache_handler_3)));
-  EXPECT_FALSE(
-      cache_handler_3->GetCachedMetadata(TagForCodeCache(cache_handler_3)));
+  EXPECT_TRUE(cache_handler_3->GetCachedMetadata(
+      TagForTimeStamp(cache_handler_3),
+      CachedMetadataHandler::kCrashIfUnchecked));
+  EXPECT_FALSE(cache_handler_3->GetCachedMetadata(
+      TagForCodeCache(cache_handler_3),
+      CachedMetadataHandler::kCrashIfUnchecked));
 
   // A fourth script with matching script text, using the state of
   // the ScriptCachedMetadataHandler from the third script.
@@ -477,10 +480,12 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
                             *classic_script_4,
                             mojom::blink::V8CacheOptions::kDefault));
-  EXPECT_TRUE(
-      cache_handler_4->GetCachedMetadata(TagForTimeStamp(cache_handler_4)));
-  EXPECT_FALSE(
-      cache_handler_4->GetCachedMetadata(TagForCodeCache(cache_handler_4)));
+  EXPECT_TRUE(cache_handler_4->GetCachedMetadata(
+      TagForTimeStamp(cache_handler_4),
+      CachedMetadataHandler::kCrashIfUnchecked));
+  EXPECT_FALSE(cache_handler_4->GetCachedMetadata(
+      TagForCodeCache(cache_handler_4),
+      CachedMetadataHandler::kCrashIfUnchecked));
 }
 
 namespace {
