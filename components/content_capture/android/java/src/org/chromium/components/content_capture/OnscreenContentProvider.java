@@ -98,18 +98,6 @@ public class OnscreenContentProvider {
     }
 
     @CalledByNative
-    private void flushCaptureContent(Object[] session, ContentCaptureFrame data) {
-        FrameSession frameSession = toFrameSession(session);
-        String[] urls = buildUrls(frameSession, data);
-        for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
-            if (consumer.shouldCapture(urls)) {
-                consumer.onContentCaptureFlushed(frameSession, data);
-            }
-        }
-        if (sDump.booleanValue()) Log.i(TAG, "Flushed Capturing Content");
-    }
-
-    @CalledByNative
     private void didCaptureContent(Object[] session, ContentCaptureFrame data) {
         FrameSession frameSession = toFrameSession(session);
         String[] urls = buildUrls(frameSession, data);

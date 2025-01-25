@@ -21,8 +21,6 @@ void FakeContentCaptureSender::Bind(content::RenderFrameHost* frame) {
       frame);
 }
 
-void FakeContentCaptureSender::DidCompleteBatchCaptureContent() {}
-
 void FakeContentCaptureSender::DidCaptureContent(
     const ContentCaptureData& captured_content,
     bool first_data) {
@@ -63,10 +61,6 @@ ContentCaptureConsumerHelper::ContentCaptureConsumerHelper(
     : session_removed_test_helper_(session_removed_test_helper) {}
 
 ContentCaptureConsumerHelper::~ContentCaptureConsumerHelper() = default;
-
-void ContentCaptureConsumerHelper::FlushCaptureContent(
-    const ContentCaptureSession& session,
-    const ContentCaptureFrame& data) {}
 
 void ContentCaptureConsumerHelper::DidCaptureContent(
     const ContentCaptureSession& parent_session,

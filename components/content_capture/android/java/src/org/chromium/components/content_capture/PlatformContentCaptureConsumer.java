@@ -54,19 +54,6 @@ public class PlatformContentCaptureConsumer implements ContentCaptureConsumer {
     }
 
     @Override
-    public void onContentCaptureFlushed(
-            FrameSession parentFrame, ContentCaptureFrame contentCaptureFrame) {
-        if (mPlatformSession == null) {
-            View view = mView.get();
-            if (view == null) return;
-            mPlatformSession = PlatformSession.fromView(view);
-            if (mPlatformSession == null) return;
-        }
-        new ContentCaptureFlushTask(parentFrame, contentCaptureFrame, mPlatformSession)
-                .executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-    }
-
-    @Override
     public void onContentCaptured(
             FrameSession parentFrame, ContentCaptureFrame contentCaptureFrame) {
         if (mPlatformSession == null) {
