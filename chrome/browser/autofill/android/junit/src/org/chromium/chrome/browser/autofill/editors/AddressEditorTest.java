@@ -383,7 +383,7 @@ public class AddressEditorTest {
         // profiles.
         validateTextField(
                 editorFields.get(4),
-                profile.getDependentLocality(),
+                profile.getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY),
                 FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
                 /* label= */ "dependent locality label",
                 shouldMarkFieldsRequiredWhenAddressFieldEmpty,
@@ -1115,7 +1115,9 @@ public class AddressEditorTest {
         AutofillAddress address = mAddressCapture.getValue();
         assertNotNull(address);
         assertEquals("New locality", address.getProfile().getInfo(FieldType.ADDRESS_HOME_CITY));
-        assertEquals("New dependent locality", address.getProfile().getDependentLocality());
+        assertEquals(
+                "New dependent locality",
+                address.getProfile().getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY));
         assertEquals("New organization", address.getProfile().getInfo(FieldType.COMPANY_NAME));
     }
 
@@ -1158,7 +1160,7 @@ public class AddressEditorTest {
         assertNotNull(address);
         AutofillProfile profile = address.getProfile();
         assertEquals("111 First St", profile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS));
-        assertEquals("", profile.getDependentLocality());
+        assertEquals("", profile.getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY));
         assertEquals("Google", profile.getInfo(FieldType.COMPANY_NAME));
         assertEquals("90291", profile.getPostalCode());
         assertEquals("", profile.getSortingCode());

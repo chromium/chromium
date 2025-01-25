@@ -333,14 +333,6 @@ public class AutofillProfile {
         return mFields.get(fieldType).getStatus();
     }
 
-    public String getDependentLocality() {
-        return getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
-    }
-
-    private @VerificationStatus int getDependentLocalityStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
-    }
-
     public String getPostalCode() {
         return getInfo(FieldType.ADDRESS_HOME_ZIP);
     }
