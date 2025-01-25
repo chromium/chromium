@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/pattern.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -24,8 +24,10 @@
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
 namespace {
 
 using ::media::EmeConfig;
@@ -452,12 +454,12 @@ class KeySystemConfigSelectorTest : public testing::Test {
     web_frame_delegate_ = std::make_unique<FakeWebLocalFrameDelegate>();
 
     key_system_config_selector.SetIsSupportedMediaTypeCBForTesting(
-        base::BindRepeating(&IsSupportedMediaType));
+        WTF::BindRepeating(&IsSupportedMediaType));
 
     key_system_config_selector.SelectConfig(
         key_system_, configs_,
-        base::BindOnce(&KeySystemConfigSelectorTest::OnConfigSelected,
-                       base::Unretained(this)));
+        WTF::BindOnce(&KeySystemConfigSelectorTest::OnConfigSelected,
+                      WTF::Unretained(this)));
   }
 
   void SelectConfigReturnsConfig() {

@@ -11,8 +11,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "media/base/pipeline_metadata.h"
 #include "services/device/public/mojom/battery_status.mojom-blink.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
 PowerStatusHelper::PowerStatusHelper(
     CreateBatteryMonitorCB create_battery_monitor_cb)
     : create_battery_monitor_cb_(std::move(create_battery_monitor_cb)) {}
@@ -209,8 +211,8 @@ void PowerStatusHelper::QueryNextStatus() {
 
   // Remember that overlapping calls are not allowed by BatteryMonitor, and are
   // treated as a connection error.  Unretained since we own |battery_monitor_|.
-  battery_monitor_->QueryNextStatus(base::BindOnce(
-      &PowerStatusHelper::OnBatteryStatus, base::Unretained(this)));
+  battery_monitor_->QueryNextStatus(WTF::BindOnce(
+      &PowerStatusHelper::OnBatteryStatus, WTF::Unretained(this)));
 }
 
 }  // namespace blink

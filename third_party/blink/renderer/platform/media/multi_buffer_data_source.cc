@@ -9,8 +9,6 @@
 #include <utility>
 
 #include "base/containers/adapters.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -19,9 +17,15 @@
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_reader.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "url/gurl.h"
 
 namespace blink {
+
 namespace {
 
 // Minimum preload buffer.
@@ -143,7 +147,7 @@ MultiBufferDataSource::MultiBufferDataSource(
   DCHECK(url_data_.get());
   url_data_->Use();
   url_data_->OnRedirect(
-      base::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
+      WTF::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
 }
 
 MultiBufferDataSource::~MultiBufferDataSource() {
@@ -173,7 +177,7 @@ void MultiBufferDataSource::CreateResourceLoader(int64_t first_byte_position,
   SetReader(std::make_unique<MultiBufferReader>(
       url_data_->multibuffer(), first_byte_position, last_byte_position,
       is_client_audio_element_,
-      base::BindRepeating(&MultiBufferDataSource::ProgressCallback, weak_ptr_),
+      WTF::BindRepeating(&MultiBufferDataSource::ProgressCallback, weak_ptr_),
       render_task_runner_));
   UpdateBufferSizes();
 }
@@ -187,7 +191,7 @@ void MultiBufferDataSource::CreateResourceLoader_Locked(
   reader_ = std::make_unique<MultiBufferReader>(
       url_data_->multibuffer(), first_byte_position, last_byte_position,
       is_client_audio_element_,
-      base::BindRepeating(&MultiBufferDataSource::ProgressCallback, weak_ptr_),
+      WTF::BindRepeating(&MultiBufferDataSource::ProgressCallback, weak_ptr_),
       render_task_runner_);
   UpdateBufferSizes();
 }
@@ -203,20 +207,21 @@ void MultiBufferDataSource::Initialize(InitializeCB init_cb) {
 
   // We're not allowed to call Wait() if data is already available.
   if (reader_->Available()) {
-    render_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
+    PostCrossThreadTask(
+        *render_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
 
     // When the entire file is already in the cache, we won't get any more
     // progress callbacks, which breaks some expectations. Post a task to
     // make sure that the client gets at least one call each for the progress
     // and loading callbacks.
-    render_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&MultiBufferDataSource::UpdateProgress,
-                                  weak_factory_.GetWeakPtr()));
+    PostCrossThreadTask(
+        *render_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&MultiBufferDataSource::UpdateProgress,
+                            weak_factory_.GetWeakPtr()));
   } else {
     reader_->Wait(
-        1, base::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
+        1, WTF::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
   }
 }
 
@@ -226,9 +231,10 @@ void MultiBufferDataSource::OnRedirected(
     // A failure occurred.
     failed_ = true;
     if (init_cb_) {
-      render_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
+      PostCrossThreadTask(
+          *render_task_runner_, FROM_HERE,
+          CrossThreadBindOnce(&MultiBufferDataSource::StartCallback,
+                              weak_ptr_));
     } else {
       base::AutoLock auto_lock(lock_);
       StopInternal_Locked();
@@ -244,27 +250,28 @@ void MultiBufferDataSource::OnRedirected(
   url_data_ = std::move(new_destination);
 
   url_data_->OnRedirect(
-      base::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
+      WTF::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
 
   if (init_cb_) {
     CreateResourceLoader(0, kPositionNotSpecified);
     if (reader_->Available()) {
-      render_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
+      PostCrossThreadTask(
+          *render_task_runner_, FROM_HERE,
+          CrossThreadBindOnce(&MultiBufferDataSource::StartCallback,
+                              weak_ptr_));
     } else {
       reader_->Wait(
-          1, base::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
+          1, WTF::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
     }
   } else if (read_op_) {
     CreateResourceLoader(read_op_->position(), kPositionNotSpecified);
     if (reader_->Available()) {
-      render_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
+      PostCrossThreadTask(
+          *render_task_runner_, FROM_HERE,
+          CrossThreadBindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
     } else {
-      reader_->Wait(
-          1, base::BindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
+      reader_->Wait(1,
+                    WTF::BindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
     }
   }
 
@@ -362,9 +369,9 @@ void MultiBufferDataSource::Stop() {
     }
   }
 
-  render_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&MultiBufferDataSource::StopLoader,
-                                weak_factory_.GetWeakPtr()));
+  PostCrossThreadTask(*render_task_runner_, FROM_HERE,
+                      CrossThreadBindOnce(&MultiBufferDataSource::StopLoader,
+                                          weak_factory_.GetWeakPtr()));
 }
 
 void MultiBufferDataSource::Abort() {
@@ -379,9 +386,10 @@ void MultiBufferDataSource::Abort() {
 }
 
 void MultiBufferDataSource::SetBitrate(int bitrate) {
-  render_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&MultiBufferDataSource::SetBitrateTask,
-                                weak_factory_.GetWeakPtr(), bitrate));
+  PostCrossThreadTask(
+      *render_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&MultiBufferDataSource::SetBitrateTask,
+                          weak_factory_.GetWeakPtr(), bitrate));
 }
 
 void MultiBufferDataSource::OnBufferingHaveEnough(bool always_cancel) {
@@ -440,10 +448,10 @@ void MultiBufferDataSource::Read(int64_t position,
         bytes_read_ += bytes_read;
         seek_positions_.push_back(position + bytes_read);
         if (seek_positions_.size() == 1) {
-          render_task_runner_->PostDelayedTask(
-              FROM_HERE,
-              base::BindOnce(&MultiBufferDataSource::SeekTask,
-                             weak_factory_.GetWeakPtr()),
+          PostDelayedCrossThreadTask(
+              *render_task_runner_, FROM_HERE,
+              CrossThreadBindOnce(&MultiBufferDataSource::SeekTask,
+                                  weak_factory_.GetWeakPtr()),
               kSeekDelay);
         }
 
@@ -455,9 +463,9 @@ void MultiBufferDataSource::Read(int64_t position,
                                                std::move(read_cb));
   }
 
-  render_task_runner_->PostTask(FROM_HERE,
-                                base::BindOnce(&MultiBufferDataSource::ReadTask,
-                                               weak_factory_.GetWeakPtr()));
+  PostCrossThreadTask(*render_task_runner_, FROM_HERE,
+                      CrossThreadBindOnce(&MultiBufferDataSource::ReadTask,
+                                          weak_factory_.GetWeakPtr()));
 }
 
 bool MultiBufferDataSource::GetSize(int64_t* size_out) {
@@ -515,8 +523,8 @@ void MultiBufferDataSource::ReadTask() {
     SeekTask_Locked();
   } else {
     reader_->Seek(read_op_->position());
-    reader_->Wait(1, base::BindOnce(&MultiBufferDataSource::ReadTask,
-                                    weak_factory_.GetWeakPtr()));
+    reader_->Wait(1, WTF::BindOnce(&MultiBufferDataSource::ReadTask,
+                                   weak_factory_.GetWeakPtr()));
     UpdateLoadingState_Locked(false);
   }
 }
@@ -654,8 +662,8 @@ void MultiBufferDataSource::StartCallback() {
         url_data_->range_supported());
   }
 
-  render_task_runner_->PostTask(FROM_HERE,
-                                base::BindOnce(std::move(init_cb_), success));
+  PostCrossThreadTask(*render_task_runner_, FROM_HERE,
+                      CrossThreadBindOnce(std::move(init_cb_), success));
 
   UpdateBufferSizes();
 
