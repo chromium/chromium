@@ -8285,7 +8285,8 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ 
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-exit.html [ Failure Pass ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-ident.html [ Failure Pass ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-multiple-wildcard.html [ Failure Pass ]
-[ Mac14 ] webexposed/global-interface-listing.html [ Skip Timeout ]
+
+crbug.com/392121635 webexposed/global-interface-listing.html [ Failure Skip Timeout ]
 
 # Temporarily disable for DevTools change
 crbug.com/325443331 http/tests/devtools/a11y-axe-core/sources/dom-breakpoints-pane-a11y-test.js [ Failure Pass ]
