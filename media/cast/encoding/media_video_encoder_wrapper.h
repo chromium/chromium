@@ -31,7 +31,6 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
       const FrameSenderConfig& video_config,
       std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
       StatusChangeCallback status_change_cb,
-      FrameEncodedCallback output_cb,
       GpuVideoAcceleratorFactories* gpu_factories);
 
   MediaVideoEncoderWrapper(const MediaVideoEncoderWrapper&) = delete;
@@ -41,7 +40,8 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
 
   // media::cast::VideoEncoder implementation.
   bool EncodeVideoFrame(scoped_refptr<VideoFrame> video_frame,
-                        base::TimeTicks reference_time) final;
+                        base::TimeTicks reference_time,
+                        FrameEncodedCallback frame_encoded_callback) final;
   void SetBitRate(int new_bit_rate) final;
   void GenerateKeyFrame() final;
 
@@ -105,7 +105,6 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   scoped_refptr<CastEnvironment> cast_environment_;
   const std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider_;
   StatusChangeCallback status_change_cb_;
-  FrameEncodedCallback output_cb_;
   raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_;
   const bool is_hardware_encoder_;
   const VideoCodec codec_;

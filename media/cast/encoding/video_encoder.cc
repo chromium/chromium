@@ -22,28 +22,27 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
     const FrameSenderConfig& video_config,
     std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
     StatusChangeCallback status_change_cb,
-    FrameEncodedCallback output_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
   // Use the media::VideoEncoder wrapper, if the feature is enabled.
   if (base::FeatureList::IsEnabled(media::kCastStreamingMediaVideoEncoder)) {
     return std::make_unique<MediaVideoEncoderWrapper>(
         cast_environment, video_config, std::move(metrics_provider),
-        std::move(status_change_cb), std::move(output_cb), gpu_factories);
+        std::move(status_change_cb), gpu_factories);
   }
 
   // If the system provides a hardware-accelerated encoder, use it.
   if (video_config.use_hardware_encoder) {
     return std::make_unique<SizeAdaptableExternalVideoEncoder>(
         cast_environment, video_config, std::move(metrics_provider),
-        std::move(status_change_cb), std::move(output_cb), create_vea_cb);
+        std::move(status_change_cb), create_vea_cb);
   }
 
   // Otherwise we must have a software configuration.
   CHECK(encoding_support::IsSoftwareEnabled(video_config.video_codec()));
-  return std::make_unique<VideoEncoderImpl>(
-      cast_environment, video_config, std::move(metrics_provider),
-      status_change_cb, std::move(output_cb));
+  return std::make_unique<VideoEncoderImpl>(cast_environment, video_config,
+                                            std::move(metrics_provider),
+                                            status_change_cb);
 }
 
 }  // namespace media::cast

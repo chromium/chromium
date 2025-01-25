@@ -127,13 +127,9 @@ VideoSender::VideoSender(
       max_playout_delay_(video_config.max_playout_delay),
       playout_delay_change_cb_(std::move(playout_delay_change_cb)),
       feedback_cb_(feedback_cb) {
-  // NOTE: we bind to the `output_cb` of the video encoder using a weak pointer
-  // because encoding occurs on a separate thread.
   video_encoder_ = VideoEncoder::Create(
       cast_environment_, video_config, std::move(encoder_metrics_provider),
-      status_change_cb,
-      base::BindRepeating(&VideoSender::OnEncodedVideoFrame, AsWeakPtr()),
-      create_vea_cb, gpu_factories);
+      status_change_cb, create_vea_cb, gpu_factories);
   CHECK(video_encoder_);
 }
 
@@ -278,10 +274,12 @@ void VideoSender::InsertRawVideoFrame(
         last_reported_lossiness_, std::move(video_frame));
   }
 
-  if (video_encoder_->EncodeVideoFrame(video_frame, reference_time)) {
+  if (video_encoder_->EncodeVideoFrame(
+          video_frame, reference_time,
+          base::BindOnce(&VideoSender::OnEncodedVideoFrame, AsWeakPtr(),
+                         video_frame, reference_time))) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-        "cast.stream", "Video Encode",
-        TRACE_ID_LOCAL((reference_time - base::TimeTicks()).InMicroseconds()),
+        "cast.stream", "Video Encode", TRACE_ID_LOCAL(video_frame.get()),
         "rtp_timestamp", rtp_timestamp.lower_32_bits());
     frames_in_encoder_++;
     duration_in_encoder_ += duration_added_by_next_frame;
@@ -319,31 +317,25 @@ base::TimeDelta VideoSender::GetEncoderBacklogDuration() const {
 }
 
 void VideoSender::OnEncodedVideoFrame(
+    scoped_refptr<media::VideoFrame> video_frame,
+    const base::TimeTicks reference_time,
     std::unique_ptr<SenderEncodedFrame> encoded_frame) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
 
   frames_in_encoder_--;
   CHECK_GE(frames_in_encoder_, 0);
-  // The encoder decided to drop a frame. This is likely due to a major error
-  // that will be reported through the status change callback.
-  if (!encoded_frame) {
-    DVLOG(3) << "Dropped frame";
-    return;
-  }
 
   // Update |duration_in_encoder_| so that |frame_sender_| doesn't regard the
   // encoder as really slow.
-  duration_in_encoder_ =
-      last_enqueued_frame_reference_time_ - encoded_frame->reference_time;
+  duration_in_encoder_ = last_enqueued_frame_reference_time_ - reference_time;
 
   TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "cast.stream", "Video Encode",
-      TRACE_ID_LOCAL(
-          (encoded_frame->reference_time - base::TimeTicks()).InMicroseconds()),
+      "cast.stream", "Video Encode", TRACE_ID_LOCAL(video_frame.get()),
       "encoder_utilization", last_reported_encoder_utilization_, "lossiness",
       last_reported_lossiness_);
-  if (encoded_frame->data.empty()) {
-    DVLOG(3) << "Frame with no data";
+  // The encoder drops a frame.
+  if (!encoded_frame || encoded_frame->data.empty()) {
+    DVLOG(3) << "Drop frame";
     return;
   }
 
