@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -230,7 +231,7 @@ class SavedTabGroupInteractiveTest
                                         kFaviconLoadObserver);
 
     return Steps(
-        PollView(kFaviconLoadObserver, SavedTabGroupUtils::kTab,
+        PollView(kFaviconLoadObserver, STGTabsMenuModel::kTab,
                  [](const views::MenuItemView* menu_item_view) -> bool {
                    auto actual_image = menu_item_view->GetIcon();
                    auto expected_image = favicon::GetDefaultFaviconModel(
@@ -471,8 +472,8 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
       // Flush events and select the delete group menu item.
-      EnsurePresent(SavedTabGroupUtils::kDeleteGroupMenuItem),
-      SelectMenuItem(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      EnsurePresent(STGTabsMenuModel::kDeleteGroupMenuItem),
+      SelectMenuItem(STGTabsMenuModel::kDeleteGroupMenuItem),
       // Accept the deletion dialog.
       Do([&]() {
         browser()
@@ -556,9 +557,9 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest, UnpinGroupFromButtonMenu) {
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
       // Flush events and select the unpin group menu item.
-      EnsurePresent(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
+      EnsurePresent(STGTabsMenuModel::kToggleGroupPinStateMenuItem),
 
-      SelectMenuItem(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
+      SelectMenuItem(STGTabsMenuModel::kToggleGroupPinStateMenuItem),
       FinishTabstripAnimations(), WaitForHide(kSavedTabGroupButtonElementId),
       // Ensure the tab group is unpinned.
       CheckIfSavedGroupIsPinned(group_id, /*is_pinned=*/false));
@@ -585,10 +586,10 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                 AsView<views::View>(el)->GetBoundsInScreen().CenterPoint());
             event_generator.ClickRightButton();
           }),
-      EnsurePresent(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
-      EnsurePresent(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
-      EnsurePresent(SavedTabGroupUtils::kDeleteGroupMenuItem),
-      EnsurePresent(SavedTabGroupUtils::kTabsTitleItem));
+      EnsurePresent(STGTabsMenuModel::kMoveGroupToNewWindowMenuItem),
+      EnsurePresent(STGTabsMenuModel::kToggleGroupPinStateMenuItem),
+      EnsurePresent(STGTabsMenuModel::kDeleteGroupMenuItem),
+      EnsurePresent(STGTabsMenuModel::kTabsTitleItem));
 }
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
@@ -605,12 +606,12 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       WaitForShow(AppMenuModel::kTabGroupsMenuItem),
       SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
       SelectMenuItem(STGEverythingMenu::kTabGroup),
-      EnsurePresent(STGEverythingMenu::kOpenGroup),
-      EnsurePresent(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
-      EnsurePresent(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
-      EnsurePresent(SavedTabGroupUtils::kDeleteGroupMenuItem),
-      EnsurePresent(SavedTabGroupUtils::kTabsTitleItem),
-      EnsurePresent(SavedTabGroupUtils::kTab));
+      EnsurePresent(STGTabsMenuModel::kOpenGroup),
+      EnsurePresent(STGTabsMenuModel::kMoveGroupToNewWindowMenuItem),
+      EnsurePresent(STGTabsMenuModel::kToggleGroupPinStateMenuItem),
+      EnsurePresent(STGTabsMenuModel::kDeleteGroupMenuItem),
+      EnsurePresent(STGTabsMenuModel::kTabsTitleItem),
+      EnsurePresent(STGTabsMenuModel::kTab));
 }
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
@@ -650,7 +651,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       PressButton(kToolbarAppMenuButtonElementId),
       SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
       SelectMenuItem(STGEverythingMenu::kTabGroup),
-      SelectMenuItem(STGEverythingMenu::kOpenGroup), FinishTabstripAnimations(),
+      SelectMenuItem(STGTabsMenuModel::kOpenGroup), FinishTabstripAnimations(),
       WaitForShow(kTabGroupHeaderElementId));
 }
 
@@ -678,7 +679,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       PressButton(kToolbarAppMenuButtonElementId),
       SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
       SelectMenuItem(STGEverythingMenu::kTabGroup),
-      SelectMenuItem(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
+      SelectMenuItem(STGTabsMenuModel::kMoveGroupToNewWindowMenuItem),
       FinishTabstripAnimations(),
       // Expect the original browser has 1 less tab.
       CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 1),
@@ -710,7 +711,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       WaitForShow(AppMenuModel::kTabGroupsMenuItem),
       SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
       SelectMenuItem(STGEverythingMenu::kTabGroup),
-      SelectMenuItem(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
+      SelectMenuItem(STGTabsMenuModel::kToggleGroupPinStateMenuItem),
       WaitForHide(kSavedTabGroupButtonElementId),
       CheckIfSavedGroupIsPinned(group_id, /*is_pinned=*/false));
 }
@@ -740,7 +741,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
       SelectMenuItem(STGEverythingMenu::kTabGroup),
       // Selecting the menu item will spanw a dialog instead
-      SelectMenuItem(SavedTabGroupUtils::kDeleteGroupMenuItem), Do([&]() {
+      SelectMenuItem(STGTabsMenuModel::kDeleteGroupMenuItem), Do([&]() {
         browser()
             ->tab_group_deletion_dialog_controller()
             ->SimulateOkButtonForTesting();
@@ -782,7 +783,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       PressButton(kToolbarAppMenuButtonElementId),
       SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
       SelectMenuItem(STGEverythingMenu::kTabGroup),
-      SelectMenuItem(SavedTabGroupUtils::kTab),
+      SelectMenuItem(STGTabsMenuModel::kTab),
       WaitForHide(AppMenuModel::kTabGroupsMenuItem), FinishTabstripAnimations(),
 
       // Expect the original browser has 1 more tab.
@@ -837,9 +838,9 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
       // Flush events and select the move group to new window menu item.
-      EnsurePresent(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
+      EnsurePresent(STGTabsMenuModel::kMoveGroupToNewWindowMenuItem),
 
-      SelectMenuItem(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
+      SelectMenuItem(STGTabsMenuModel::kMoveGroupToNewWindowMenuItem),
       // Ensure the button is no longer present.
       FinishTabstripAnimations(),
       // Expect the original browser has 1 less tab.
@@ -878,9 +879,9 @@ IN_PROC_BROWSER_TEST_P(
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
       // Flush events and select the move group to new window menu item.
-      EnsurePresent(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
+      EnsurePresent(STGTabsMenuModel::kMoveGroupToNewWindowMenuItem),
 
-      SelectMenuItem(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
+      SelectMenuItem(STGTabsMenuModel::kMoveGroupToNewWindowMenuItem),
       // Ensure the button is no longer present.
       FinishTabstripAnimations(),
       // Expect the original browser has 1 less tab.
@@ -1116,8 +1117,8 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
       // Flush events and select the delete group menu item.
-      EnsurePresent(SavedTabGroupUtils::kDeleteGroupMenuItem),
-      SelectMenuItem(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      EnsurePresent(STGTabsMenuModel::kDeleteGroupMenuItem),
+      SelectMenuItem(STGTabsMenuModel::kDeleteGroupMenuItem),
       // Accept the deletion dialog.
       Do([&]() {
         browser()
@@ -1215,7 +1216,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       WaitForShow(STGEverythingMenu::kTabGroup),
       SelectMenuItem(STGEverythingMenu::kTabGroup),
       // Validate if the menu item view loaded a favicon from the database
-      WaitForShow(SavedTabGroupUtils::kTab), WaitForTabMenuItemToLoadFavicon());
+      WaitForShow(STGTabsMenuModel::kTab), WaitForTabMenuItemToLoadFavicon());
 }
 
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
