@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files.mojom.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,8 +38,12 @@ class MicrosoftFilesPageHandler
   void GetFiles(GetFilesCallback callback) override;
 
  private:
+  void CreateTrendingFiles(GetFilesCallback callback, base::Value::Dict result);
+  void CreateRecentlyUsedAndSharedFiles(GetFilesCallback callback,
+                                        base::Value::Dict result);
   // Retrieves trending files from the Microsoft Graph API.
   void GetTrendingFiles(GetFilesCallback callback);
+  void GetRecentlyUsedAndSharedFiles(GetFilesCallback callback);
   void OnJsonReceived(GetFilesCallback callback,
                       std::unique_ptr<std::string> response_body);
   void OnJsonParsed(GetFilesCallback callback,

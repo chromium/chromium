@@ -198,6 +198,9 @@ extern const base::FeatureParam<int> kNtpMobilePromoImpressionLimit;
 // Parameter determining the type of data to render.
 extern const base::FeatureParam<NtpSharepointModuleDataType>
     kNtpSharepointModuleDataParam;
+// Parameter determining the max number of files to display on the Microsoft
+// files module.
+extern const base::FeatureParam<int> kNtpMicrosoftFilesModuleMaxFilesParam;
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
