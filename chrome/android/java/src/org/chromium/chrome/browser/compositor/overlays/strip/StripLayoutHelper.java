@@ -123,6 +123,7 @@ import org.chromium.ui.widget.RectProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -336,7 +337,7 @@ public class StripLayoutHelper
 
                     // dismiss the iph text bubble when the synced tab group is unsynced.
                     if (oldRootId == mLastSyncedGroupId) {
-                        dismissTabGroupSyncIph();
+                        dismissTabStripSyncIph();
                     }
                 }
             };
@@ -496,6 +497,12 @@ public class StripLayoutHelper
 
     // IPH on tab strip.
     private TabStripIphController mTabStripIphController;
+    private List<QueuedIph> mQueuedIphList = new ArrayList<>();
+
+    @FunctionalInterface
+    interface QueuedIph {
+        boolean attemptToShow();
+    }
 
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
@@ -941,7 +948,7 @@ public class StripLayoutHelper
         mTabMenu.dismiss();
 
         // Dismiss iph on orientation change, as its position might become incorrect.
-        dismissTabGroupSyncIph();
+        dismissTabStripSyncIph();
 
         if ((orientationChanged && wasSelectedTabVisible) || !mTabStateInitialized) {
             bringSelectedTabToVisibleArea(time, mTabStateInitialized);
@@ -1091,6 +1098,20 @@ public class StripLayoutHelper
             mDataSharingService.addObserver(mDataSharingObserver);
         }
 
+        // Prepare to show tab strip IPH for tab group sync and share notification bubble. Skip
+        // initialization if testing value has been set.
+        if (mTabStripIphController == null && !mIncognito) {
+            UserEducationHelper userEducationHelper =
+                    new UserEducationHelper(
+                            mWindowAndroid.getActivity().get(),
+                            mModel.getProfile(),
+                            new Handler(Looper.getMainLooper()));
+            Tracker tracker = TrackerFactory.getTrackerForProfile(mModel.getProfile());
+            mTabStripIphController =
+                    new TabStripIphController(
+                            mContext.getResources(), userEducationHelper, tracker);
+        }
+
         updateTitleCacheForInit();
         rebuildStripViews();
     }
@@ -1128,11 +1149,10 @@ public class StripLayoutHelper
         }
     }
 
-    /** Dismiss the iph text bubble for synced tab group. */
-    private void dismissTabGroupSyncIph() {
-        if (mLastSyncedGroupId != Tab.INVALID_TAB_ID && mTabStripIphController != null) {
+    /** Dismiss iph on the tab strip. */
+    private void dismissTabStripSyncIph() {
+        if (mTabStripIphController != null) {
             mTabStripIphController.dismissTextBubble();
-            mLastSyncedGroupId = Tab.INVALID_TAB_ID;
         }
     }
 
@@ -1166,49 +1186,68 @@ public class StripLayoutHelper
             mIsFirstLayoutPass = false;
         }
 
-        // 4. Show iph text bubble for synced tab group if necessary.
+        // Show IPH on the last synced tab group, so place it at the front of the queue.
+        if (mLastSyncedGroupId != Tab.INVALID_TAB_ID
+                && mTabStripIphController.wouldTriggerIph(IphType.TAB_GROUP_SYNC)) {
+            final StripLayoutGroupTitle groupTitle = findGroupTitle(mLastSyncedGroupId);
+            mQueuedIphList.add(
+                    0,
+                    () ->
+                            attemptToShowTabStripIph(
+                                    groupTitle, /* tab= */ null, IphType.TAB_GROUP_SYNC));
+            mLastSyncedGroupId = Tab.INVALID_TAB_ID;
+        }
+
+        // 4. Attempt to show one iph text bubble at a time on tab strip.
         if (doneAnimating && mScrollDelegate.isFinished()) {
-            showTabGroupSyncIph();
+            Iterator<QueuedIph> iterator = mQueuedIphList.iterator();
+            while (iterator.hasNext()) {
+                QueuedIph iphCallback = iterator.next();
+                // Remove iph callback from list when the run is successful.
+                if (iphCallback.attemptToShow()) {
+                    iterator.remove();
+                    break;
+                }
+            }
         }
         return doneAnimating;
     }
 
+    /**
+     * Attempt to show IPH for a group title or a tab.
+     *
+     * @param groupTitle The group title or its related tab where the IPH should be shown.
+     * @param tab The tab to show the IPH on. Pass in {@code null} if the IPH is not tied to a
+     *     particular tab.
+     * @param iphType The type of the IPH to be shown.
+     * @return true if {@code showIphOnTabStrip} should be executed immediately; false to retry at a
+     *     later time.
+     */
     // TODO:(crbug.com/375271955) Ensure sync IPH doesn't show when joining a collaboration group.
-    private void showTabGroupSyncIph() {
-        // Return early if no tab group is being synced, or profile is invalid, or if in incognito
-        // mode.
-        if (mLastSyncedGroupId == Tab.INVALID_TAB_ID
-                || mModel.isIncognito()
-                || mModel.getProfile() == null) {
-            return;
+    private boolean attemptToShowTabStripIph(
+            StripLayoutGroupTitle groupTitle, @Nullable StripLayoutTab tab, @IphType int iphType) {
+        // Remove the showTabStrip callback from the queue, as showing IPH is not applicable in
+        // these cases.
+        if (mModel.isIncognito()
+                || mModel.getProfile() == null
+                || groupTitle == null
+                || !mTabStripIphController.wouldTriggerIph(iphType)) {
+            return true;
         }
         // Return early if the tab strip is not visible on screen.
         if (Boolean.FALSE.equals(mTabStripVisibleSupplier.get())) {
-            return;
-        }
-        // Skip initialization if testing value has been set.
-        if (mTabStripIphController == null) {
-            UserEducationHelper userEducationHelper =
-                    new UserEducationHelper(
-                            mWindowAndroid.getActivity().get(),
-                            mModel.getProfile(),
-                            new Handler(Looper.getMainLooper()));
-            Tracker tracker = TrackerFactory.getTrackerForProfile(mModel.getProfile());
-            mTabStripIphController =
-                    new TabStripIphController(
-                            mContext.getResources(), userEducationHelper, tracker);
-        }
-        StripLayoutGroupTitle groupTitle = findGroupTitle(mLastSyncedGroupId);
-
-        // Display iph only when synced tab group title is fully visible.
-        if (groupTitle == null || !isViewCompletelyVisible(groupTitle)) {
-            return;
+            return false;
         }
 
-        if (groupTitle != null) {
-            mTabStripIphController.maybeShowIphOnTabStrip(
-                    groupTitle, mToolbarContainerView, IphType.TAB_GROUP_SYNC, mHeight);
+        // Display iph only when the target view is fully visible.
+        StripLayoutView view = tab == null ? (StripLayoutView) groupTitle : tab;
+        if (!view.isVisible() || !isViewCompletelyVisible(view)) {
+            return false;
         }
+
+        mTabStripIphController.showIphOnTabStrip(
+                groupTitle, tab, mToolbarContainerView, iphType, mHeight);
+        return true;
     }
 
     void setLastSyncedGroupIdForTesting(int id) {
@@ -3894,23 +3933,43 @@ public class StripLayoutHelper
     @Override
     public void updateTabStripNotificationBubble(
             @NonNull Set<Integer> tabIdsToBeUpdated, boolean hasUpdate) {
-        int rootId = Tab.INVALID_TAB_ID;
+        boolean updateForCollapsedGroup = false;
+        boolean showIph =
+                mTabStripIphController.wouldTriggerIph(IphType.GROUP_TITLE_NOTIFICATION_BUBBLE);
 
         for (int tabId : tabIdsToBeUpdated) {
             Tab tab = getTabById(tabId);
-            StripLayoutTab stripTab = findTabById(tabId);
+            final StripLayoutTab stripTab = findTabById(tabId);
 
             // Skip invalid tabs or selected tabs when showing updates.
-            if (stripTab == null || (isSelectedTab(tabId) && hasUpdate)) continue;
+            if (tab == null || stripTab == null || (isSelectedTab(tabId) && hasUpdate)) continue;
 
-            // Show bubble on collapsed group title.
-            if (stripTab.isCollapsed() && rootId == Tab.INVALID_TAB_ID) {
-                rootId = tab.getRootId();
-                StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
+            int rootId = tab.getRootId();
+            final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
+            assert groupTitle != null;
+
+            // Show bubble and iph on group title if collapsed, otherwise show iph on the updated
+            // tab.
+            if (groupTitle.isCollapsed() && !updateForCollapsedGroup) {
                 groupTitle.setShowBubble(hasUpdate);
                 updateGroupTextAndSharedState(rootId);
+                if (hasUpdate && showIph) {
+                    mQueuedIphList.add(
+                            () ->
+                                    attemptToShowTabStripIph(
+                                            groupTitle,
+                                            /* tab= */ null,
+                                            IphType.GROUP_TITLE_NOTIFICATION_BUBBLE));
+                }
+                updateForCollapsedGroup = true;
+            } else if (!groupTitle.isCollapsed()) {
+                if (hasUpdate && showIph) {
+                    mQueuedIphList.add(
+                            () ->
+                                    attemptToShowTabStripIph(
+                                            groupTitle, stripTab, IphType.TAB_NOTIFICATION_BUBBLE));
+                }
             }
-
             // Update bubble on tab favicon.
             mLayerTitleCache.updateTabBubble(tabId, hasUpdate);
         }

@@ -137,6 +137,7 @@ public class StripLayoutTab extends StripLayoutView {
 
     // Visibility Constants.
     private static final float FAVICON_WIDTH = 16.f;
+    private static final float FAVICON_PADDING = 26.f;
     protected static final float MIN_WIDTH = FAVICON_WIDTH + (FOLIO_FOOT_LENGTH_DP * 2);
 
     // Divider Constants
@@ -622,6 +623,20 @@ public class StripLayoutTab extends StripLayoutView {
      */
     public float getTopMargin() {
         return TOP_MARGIN_DP;
+    }
+
+    /**
+     * @return The padding between the start of a tab and its favicon.
+     */
+    public float getFaviconPadding() {
+        return FAVICON_PADDING;
+    }
+
+    /**
+     * @return The size of the tab favicon.
+     */
+    public float getFaviconSize() {
+        return FAVICON_WIDTH;
     }
 
     /**
