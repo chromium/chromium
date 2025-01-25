@@ -412,10 +412,10 @@ ContextProperties ContextImplDml::GetProperties(
        // DML_ELEMENT_WISE_MULTIPLY_OPERATOR_DESC,
        // DML_ELEMENT_WISE_BIT_AND_OPERATOR_DESC,
        // DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC and DML_SLICE_OPERATOR_DESC
-       // when the feature level is less than 5.1, so the data type limit is set
-       // based on these ops.
+       // when the feature level is less than 5.1, or for ranks higher than 4
+       // so the data type limit is set based on these ops.
        // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_diagonal_matrix1_operator_desc#tensor-support
-       /*triangular_input=*/{kFloat16To32Ints32, {2, 4}},
+       /*triangular_input=*/{kFloat16To32Ints32, {2, 8}},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_if_operator_desc
        /*where_condition=*/{DataTypeConstraint::kUint8, kMaxRank},
