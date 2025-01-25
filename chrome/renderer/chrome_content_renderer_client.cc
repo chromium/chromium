@@ -9,6 +9,7 @@
 #include <optional>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -308,6 +309,12 @@ const char* const kPredefinedAllowedCameraDeviceOrigins[] = {
     "6EAED1924DB611B6EEF2A664BD077BE7EAD33B8F",
     "4EB74897CB187C7633357C2FE832E0AD6A44883A"};
 #endif
+
+#if BUILDFLAG(ENABLE_PDF)
+std::vector<url::Origin> GetAdditionalPdfInternalPluginAllowedOrigins() {
+  return {url::Origin::Create(GURL(chrome::kChromeUIPrintURL))};
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 void AppendParams(
@@ -854,7 +861,8 @@ bool ChromeContentRendererClient::IsPluginHandledExternally(
     // used within an origin allowed to create the internal PDF plugin;
     // otherwise, let Blink try to create the in-process PDF plugin.
     if (IsPdfInternalPluginAllowedOrigin(
-            render_frame->GetWebFrame()->GetSecurityOrigin())) {
+            render_frame->GetWebFrame()->GetSecurityOrigin(),
+            GetAdditionalPdfInternalPluginAllowedOrigins())) {
       return true;
     }
   }

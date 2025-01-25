@@ -4,6 +4,7 @@
 
 #include "components/pdf/common/pdf_util.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/public/common/url_utils.h"
 #include "extensions/buildflags/buildflags.h"
@@ -44,12 +45,14 @@ bool IsPdfExtensionOrigin(const url::Origin& origin) {
 #endif
 }
 
-bool IsPdfInternalPluginAllowedOrigin(const url::Origin& origin) {
+bool IsPdfInternalPluginAllowedOrigin(
+    const url::Origin& origin,
+    base::span<const url::Origin> additional_allowed_origins) {
   // Only allow the PDF plugin in the known, trustworthy origins that are
   // allowlisted. See also https://crbug.com/520422 and
   // https://crbug.com/1027173.
   return IsPdfExtensionOrigin(origin) ||
-         content::IsPdfInternalPluginAllowedOrigin(origin);
+         base::Contains(additional_allowed_origins, origin);
 }
 
 SkColor GetPdfBackgroundColor() {
