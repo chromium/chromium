@@ -153,11 +153,6 @@ constexpr int kPanelWorkAreaSpacing = 10;
 // available).
 constexpr int kPanelButtonSpacing = 10;
 
-// The name of a boolean pref that records whether the sunfish consent
-// disclaimer has been accepted.
-inline constexpr char kSunfishConsentDisclaimerAccepted[] =
-    "ash.capture_mode.sunfish_consent_disclaimer_accepted";
-
 // The ID for the nudge anchored to the Sunfish button in the launcher.
 inline constexpr char kSunfishLauncherNudgeId[] = "kSunfishLauncherNudge";
 
