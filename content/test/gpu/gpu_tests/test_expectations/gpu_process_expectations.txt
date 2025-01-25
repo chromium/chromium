@@ -154,6 +154,8 @@ crbug.com/1378476 [ mac mac-arm64 ] GpuProcess_no_swiftshader_for_webgl_without_
 crbug.com/380269801 [ android android-sm-s911u1 ] GpuProcess_visibility [ Failure ]
 crbug.com/380269801 [ android android-sm-a137f ] GpuProcess_visibility [ RetryOnFailure ]
 crbug.com/380269801 [ android android-sm-a235m ] GpuProcess_visibility [ RetryOnFailure ]
+crbug.com/380269801 [ android android-pixel-4 ] GpuProcess_visibility [ RetryOnFailure ]
+
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
