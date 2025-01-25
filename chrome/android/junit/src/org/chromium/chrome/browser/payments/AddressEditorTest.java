@@ -309,7 +309,7 @@ public class AddressEditorTest {
         // Locality field is forced to occupy full line.
         validateTextField(
                 editorFields.get(3),
-                profile.getLocality(),
+                profile.getInfo(FieldType.ADDRESS_HOME_CITY),
                 FieldType.ADDRESS_HOME_CITY,
                 /* label= */ "locality label",
                 /* isRequired= */ true,
@@ -694,7 +694,7 @@ public class AddressEditorTest {
         verify(mCancelCallback, times(0)).onResult(any());
         AutofillAddress address = mAddressCapture.getValue();
         assertNotNull(address);
-        assertEquals("New locality", address.getProfile().getLocality());
+        assertEquals("New locality", address.getProfile().getInfo(FieldType.ADDRESS_HOME_CITY));
         assertEquals("New dependent locality", address.getProfile().getDependentLocality());
         assertEquals("New organization", address.getProfile().getInfo(FieldType.COMPANY_NAME));
     }

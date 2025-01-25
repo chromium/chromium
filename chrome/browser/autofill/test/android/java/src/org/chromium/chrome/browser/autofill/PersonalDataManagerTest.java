@@ -159,7 +159,7 @@ public class PersonalDataManagerTest {
         AutofillProfile storedProfile = mHelper.getProfile(profileOneGUID);
         Assert.assertEquals(profileOneGUID, storedProfile.getGUID());
         Assert.assertEquals("CA", storedProfile.getCountryCode());
-        Assert.assertEquals("San Francisco", storedProfile.getLocality());
+        Assert.assertEquals("San Francisco", storedProfile.getInfo(FieldType.ADDRESS_HOME_CITY));
         Assert.assertNotNull(mHelper.getProfile(profileTwoGUID));
     }
 
@@ -308,7 +308,7 @@ public class PersonalDataManagerTest {
         Assert.assertEquals(profileOneGUID, storedProfile2.getGUID());
         Assert.assertEquals("en", storedProfile2.getLanguageCode());
         Assert.assertEquals("US", storedProfile2.getCountryCode());
-        Assert.assertEquals("San Francisco", storedProfile2.getLocality());
+        Assert.assertEquals("San Francisco", storedProfile2.getInfo(FieldType.ADDRESS_HOME_CITY));
     }
 
     @Test
@@ -561,7 +561,9 @@ public class PersonalDataManagerTest {
         Assert.assertEquals(
                 VerificationStatus.OBSERVED,
                 storedProfile.getInfoStatus(FieldType.ADDRESS_HOME_STATE));
-        Assert.assertEquals(VerificationStatus.USER_VERIFIED, storedProfile.getLocalityStatus());
+        Assert.assertEquals(
+                VerificationStatus.USER_VERIFIED,
+                storedProfile.getInfoStatus(FieldType.ADDRESS_HOME_CITY));
         Assert.assertEquals(VerificationStatus.SERVER_PARSED, storedProfile.getPostalCodeStatus());
     }
 
@@ -575,7 +577,8 @@ public class PersonalDataManagerTest {
         Assert.assertEquals(
                 VerificationStatus.NO_STATUS,
                 profile.getInfoStatus(FieldType.ADDRESS_HOME_STREET_ADDRESS));
-        Assert.assertEquals(VerificationStatus.NO_STATUS, profile.getLocalityStatus());
+        Assert.assertEquals(
+                VerificationStatus.NO_STATUS, profile.getInfoStatus(FieldType.ADDRESS_HOME_CITY));
 
         profile.setFullName("Homer Simpson");
         Assert.assertEquals(
@@ -585,7 +588,9 @@ public class PersonalDataManagerTest {
                 VerificationStatus.USER_VERIFIED,
                 profile.getInfoStatus(FieldType.ADDRESS_HOME_STREET_ADDRESS));
         profile.setLocality("Springfield");
-        Assert.assertEquals(VerificationStatus.USER_VERIFIED, profile.getLocalityStatus());
+        Assert.assertEquals(
+                VerificationStatus.USER_VERIFIED,
+                profile.getInfoStatus(FieldType.ADDRESS_HOME_CITY));
     }
 
     @Test
@@ -619,7 +624,7 @@ public class PersonalDataManagerTest {
         Assert.assertEquals(
                 streetAddress1, storedProfile1.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS));
         Assert.assertEquals("Tahiti", storedProfile1.getInfo(FieldType.ADDRESS_HOME_STATE));
-        Assert.assertEquals("Mahina", storedProfile1.getLocality());
+        Assert.assertEquals("Mahina", storedProfile1.getInfo(FieldType.ADDRESS_HOME_CITY));
         Assert.assertEquals("Orofara", storedProfile1.getDependentLocality());
         Assert.assertEquals("98709", storedProfile1.getPostalCode());
         Assert.assertEquals("CEDEX 98703", storedProfile1.getSortingCode());
