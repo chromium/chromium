@@ -46,8 +46,8 @@ class ModuleSnapshotIOSIntermediateDump final : public ModuleSnapshot {
 
   //! \brief Initialize the snapshot
   //!
-  //! \param[in] exception_data The intermediate dump map used to initialize
-  //!     this object.
+  //! \param[in] image_data The intermediate dump map used to initialize this
+  //!     object.
   //!
   //! \return `true` if the snapshot could be created.
   bool Initialize(const IOSIntermediateDumpMap* image_data);

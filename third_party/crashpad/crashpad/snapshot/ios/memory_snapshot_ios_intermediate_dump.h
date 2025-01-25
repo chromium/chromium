@@ -39,6 +39,7 @@ class MemorySnapshotIOSIntermediateDump final : public MemorySnapshot {
   //! \brief Initializes the object.
   //!
   //! \param[in] address The base address of the memory region to snapshot.
+  //! \param[in] data The destination address where the snapshot will be stored.
   //! \param[in] size The size of the memory region to snapshot.
   void Initialize(vm_address_t address, vm_address_t data, vm_size_t size);
 
