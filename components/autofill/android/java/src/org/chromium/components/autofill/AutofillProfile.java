@@ -338,14 +338,6 @@ public class AutofillProfile {
         return getInfo(FieldType.ADDRESS_HOME_COUNTRY);
     }
 
-    public String getPhoneNumber() {
-        return getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER);
-    }
-
-    private @VerificationStatus int getPhoneNumberStatus() {
-        return getInfoStatus(FieldType.PHONE_HOME_WHOLE_NUMBER);
-    }
-
     public String getEmailAddress() {
         return getInfo(FieldType.EMAIL_ADDRESS);
     }

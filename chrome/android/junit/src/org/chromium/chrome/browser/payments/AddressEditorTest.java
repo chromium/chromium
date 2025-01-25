@@ -358,7 +358,7 @@ public class AddressEditorTest {
                 /* isFullLine= */ true);
         validateTextField(
                 editorFields.get(9),
-                profile.getPhoneNumber(),
+                profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER),
                 FieldType.PHONE_HOME_WHOLE_NUMBER,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number),
                 /* isRequired= */ true,
@@ -452,7 +452,7 @@ public class AddressEditorTest {
 
         validateTextField(
                 editorFields.get(1),
-                sProfile.getPhoneNumber(),
+                sProfile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER),
                 FieldType.PHONE_HOME_WHOLE_NUMBER,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number),
                 /* isRequired= */ true,

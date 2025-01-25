@@ -74,7 +74,7 @@ public class AutofillAddress extends EditableOption {
                 profile.getGUID(),
                 profile.getInfo(FieldType.NAME_FULL),
                 profile.getLabel(),
-                profile.getPhoneNumber(),
+                profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER),
                 null);
         mContext = context;
         mProfile = profile;
@@ -118,7 +118,7 @@ public class AutofillAddress extends EditableOption {
                 mProfile.getGUID(),
                 mProfile.getInfo(FieldType.NAME_FULL),
                 mProfile.getLabel(),
-                mProfile.getPhoneNumber());
+                mProfile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER));
         checkAndUpdateAddressCompleteness();
     }
 
@@ -235,7 +235,8 @@ public class AutofillAddress extends EditableOption {
         }
 
         if (!PhoneNumberUtils.isGlobalPhoneNumber(
-                PhoneNumberUtils.stripSeparators(profile.getPhoneNumber().toString()))) {
+                PhoneNumberUtils.stripSeparators(
+                        profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER).toString()))) {
             completionStatus |= CompletionStatus.INVALID_PHONE_NUMBER;
         }
 
@@ -285,7 +286,7 @@ public class AutofillAddress extends EditableOption {
         result.sortingCode = mProfile.getInfo(FieldType.ADDRESS_HOME_SORTING_CODE);
         result.organization = mProfile.getInfo(FieldType.COMPANY_NAME);
         result.recipient = mProfile.getInfo(FieldType.NAME_FULL);
-        result.phone = mProfile.getPhoneNumber();
+        result.phone = mProfile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER);
 
         return result;
     }

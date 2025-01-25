@@ -465,7 +465,9 @@ public class ContactEditorTest {
         assertNull(contact.getPayerName());
         assertEquals("Payer phone", contact.getPayerPhone());
         assertNull(contact.getPayerEmail());
-        assertEquals(sProfile.getPhoneNumber(), contact.getProfile().getPhoneNumber());
+        assertEquals(
+                sProfile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER),
+                contact.getProfile().getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER));
     }
 
     @Test
@@ -579,7 +581,8 @@ public class ContactEditorTest {
         assertNull(contact.getPayerName());
         assertEquals("+490111111111", contact.getPayerPhone());
         assertNull(contact.getPayerEmail());
-        assertEquals("+490111111111", contact.getProfile().getPhoneNumber());
+        assertEquals(
+                "+490111111111", contact.getProfile().getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER));
     }
 
     @Test
@@ -658,7 +661,8 @@ public class ContactEditorTest {
         assertEquals("+490111111111", contact.getPayerPhone());
         assertEquals("modified@gmail.com", contact.getPayerEmail());
         assertEquals("Modified name", contact.getProfile().getInfo(FieldType.NAME_FULL));
-        assertEquals("+490111111111", contact.getProfile().getPhoneNumber());
+        assertEquals(
+                "+490111111111", contact.getProfile().getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER));
         assertEquals("modified@gmail.com", contact.getProfile().getEmailAddress());
     }
 

@@ -539,7 +539,7 @@ public class PaymentUiService
                 if (getContactEditor()
                                 .checkContactCompletionStatus(
                                         profile.getInfo(FieldType.NAME_FULL),
-                                        profile.getPhoneNumber(),
+                                        profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER),
                                         profile.getEmailAddress())
                         == ContactEditor.COMPLETE) {
                     haveCompleteContactInfo = true;
@@ -1232,7 +1232,8 @@ public class PaymentUiService
                 PersonalDataManagerFactory.getForProfile(Profile.fromWebContents(mWebContents));
         for (int i = 0; i < mAutofillProfiles.size(); i++) {
             AutofillProfile profile = mAutofillProfiles.get(i);
-            mAddressEditor.addPhoneNumberIfValid(profile.getPhoneNumber());
+            mAddressEditor.addPhoneNumberIfValid(
+                    profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER));
 
             // Only suggest addresses that have a street address.
             if (!TextUtils.isEmpty(profile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS))) {
