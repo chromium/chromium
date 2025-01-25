@@ -42,9 +42,6 @@ using ::testing::Matcher;
 using ::testing::MatcherInterface;
 using ::testing::MatchResultListener;
 
-std::string kSystemPermissoinDeniedErrorMessage =
-    GeolocationProviderImpl::kSystemPermissionDeniedErrorMessage;
-
 class GeolocationObserver {
  public:
   virtual ~GeolocationObserver() = default;
@@ -176,8 +173,8 @@ class GeolocationProviderTest : public testing::Test {
   device::mojom::GeopositionResultPtr error_result_ =
       mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
           mojom::GeopositionErrorCode::kPermissionDenied,
-          kSystemPermissoinDeniedErrorMessage,
-          ""));
+          GeolocationProviderImpl::kSystemPermissionDeniedErrorMessage,
+          GeolocationProviderImpl::kSystemPermissionDeniedErrorTechnical));
 
  private:
   // Called on provider thread.
