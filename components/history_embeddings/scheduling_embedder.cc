@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/time/time.h"
-#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/vector_database.h"
 
 namespace history_embeddings {
@@ -114,9 +113,7 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
     }
     job_index++;
   }
-  if (GetFeatureParameters().erase_non_ascii_characters) {
-    EraseNonAsciiCharacters(passages);
-  }
+
   embedder_->ComputePassagesEmbeddings(
       priority, std::move(passages),
       base::BindOnce(&SchedulingEmbedder::OnEmbeddingsComputed,

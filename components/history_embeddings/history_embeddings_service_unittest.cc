@@ -203,9 +203,10 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
                                     ComputeEmbeddingsStatus status) {
     for (const std::string& passage : passages) {
       url_passages.passages.add_passages(passage);
+      url_passages.embeddings.emplace_back(std::vector<float>{});
     }
     service_->OnPassagesEmbeddingsComputed(
-        /*embedding_cache=*/{}, std::move(url_passages), std::move(passages),
+        std::move(url_passages), std::move(passages),
         std::move(passages_embeddings), SchedulingEmbedder::kInvalidTaskId,
         status);
   }
@@ -1215,10 +1216,11 @@ TEST_F(HistoryEmbeddingsServiceTest, UseDatabaseBeforeEmbedder) {
   base::Time now = base::Time::Now();
   AddTestHistoryPage("http://test1.com");
 
-  // TODO(crbug.com/390241271): Enable erasing non-ascii characters.
+  FeatureParameters feature_parameters = GetFeatureParameters();
+  feature_parameters.erase_non_ascii_characters = true;
+  SetFeatureParametersForTesting(feature_parameters);
 
   {
-    // TODO(crbug.com/390241271): Test with an empty passage.
     base::HistogramTester histogram_tester;
     service_->ComputeAndStorePassageEmbeddings(
         /*url_id=*/1,
@@ -1228,30 +1230,32 @@ TEST_F(HistoryEmbeddingsServiceTest, UseDatabaseBeforeEmbedder) {
             "test passage 1",
             "test passage ß",
             "ßßß",
+            "",
         });
 
     UrlData url_data = store_future.Take();
-    ASSERT_EQ(url_data.passages.passages_size(), 3);
-    ASSERT_EQ(url_data.embeddings.size(), 3u);
+    ASSERT_EQ(url_data.passages.passages_size(), 4);
+    ASSERT_EQ(url_data.embeddings.size(), 4u);
     ASSERT_EQ(url_data.passages.passages(0), "test passage 1");
     ASSERT_EQ(url_data.embeddings[0].Dimensions(), 768u);
     ASSERT_EQ(url_data.passages.passages(1), "test passage ß");
     ASSERT_EQ(url_data.embeddings[1].Dimensions(), 768u);
     ASSERT_EQ(url_data.passages.passages(2), "ßßß");
     ASSERT_EQ(url_data.embeddings[2].Dimensions(), 768u);
+    ASSERT_EQ(url_data.passages.passages(3), "");
+    ASSERT_EQ(url_data.embeddings[3].Dimensions(), 768u);
 
     // The cache wasn't used because there was no existing data.
     histogram_tester.ExpectTotalCount(
         "History.Embeddings.DatabaseCachedPassageTryCount", 1);
     histogram_tester.ExpectBucketCount(
-        "History.Embeddings.DatabaseCachedPassageTryCount", 3, 1);
+        "History.Embeddings.DatabaseCachedPassageTryCount", 4, 1);
     histogram_tester.ExpectTotalCount(
         "History.Embeddings.DatabaseCachedPassageHitCount", 1);
     histogram_tester.ExpectBucketCount(
         "History.Embeddings.DatabaseCachedPassageHitCount", 0, 1);
   }
   {
-    // TODO(crbug.com/390241271): Test with an empty passage.
     base::HistogramTester histogram_tester;
     service_->ComputeAndStorePassageEmbeddings(
         /*url_id=*/1,
@@ -1261,27 +1265,30 @@ TEST_F(HistoryEmbeddingsServiceTest, UseDatabaseBeforeEmbedder) {
             "test passage 1",
             "test passage ßßß",
             "ßßß",
+            "",
         });
 
     UrlData url_data = store_future.Take();
-    ASSERT_EQ(url_data.passages.passages_size(), 3);
-    ASSERT_EQ(url_data.embeddings.size(), 3u);
+    ASSERT_EQ(url_data.passages.passages_size(), 4);
+    ASSERT_EQ(url_data.embeddings.size(), 4u);
     ASSERT_EQ(url_data.passages.passages(0), "test passage 1");
     ASSERT_EQ(url_data.embeddings[0].Dimensions(), 768u);
     ASSERT_EQ(url_data.passages.passages(1), "test passage ßßß");
     ASSERT_EQ(url_data.embeddings[1].Dimensions(), 768u);
     ASSERT_EQ(url_data.passages.passages(2), "ßßß");
     ASSERT_EQ(url_data.embeddings[2].Dimensions(), 768u);
+    ASSERT_EQ(url_data.passages.passages(3), "");
+    ASSERT_EQ(url_data.embeddings[3].Dimensions(), 768u);
 
     // The cache was used because there was existing data.
     histogram_tester.ExpectTotalCount(
         "History.Embeddings.DatabaseCachedPassageTryCount", 1);
     histogram_tester.ExpectBucketCount(
-        "History.Embeddings.DatabaseCachedPassageTryCount", 3, 1);
+        "History.Embeddings.DatabaseCachedPassageTryCount", 4, 1);
     histogram_tester.ExpectTotalCount(
         "History.Embeddings.DatabaseCachedPassageHitCount", 1);
     histogram_tester.ExpectBucketCount(
-        "History.Embeddings.DatabaseCachedPassageHitCount", 2, 1);
+        "History.Embeddings.DatabaseCachedPassageHitCount", 3, 1);
   }
 }
 
@@ -1292,24 +1299,28 @@ TEST_F(HistoryEmbeddingsServiceTest, RebuildAbsentEmbeddings) {
   service_->SetPassagesStoredCallbackForTesting(
       store_future.GetRepeatingCallback());
 
-  // TODO(crbug.com/390241271): Enable erasing non-ascii characters.
-  // TODO(crbug.com/390241271): Test with an empty passage.
+  FeatureParameters feature_parameters = GetFeatureParameters();
+  feature_parameters.erase_non_ascii_characters = true;
+  SetFeatureParametersForTesting(feature_parameters);
 
   UrlData existing_url_data_1(1, 1, base::Time::Now());
   existing_url_data_1.passages.add_passages("test passage 1");
   existing_url_data_1.passages.add_passages("test passage ßßß");
   existing_url_data_1.passages.add_passages("ßßß");
+  existing_url_data_1.passages.add_passages("");
   service_->RebuildAbsentEmbeddings({existing_url_data_1});
 
   UrlData url_data = store_future.Take();
-  ASSERT_EQ(url_data.passages.passages_size(), 3);
-  ASSERT_EQ(url_data.embeddings.size(), 3u);
+  ASSERT_EQ(url_data.passages.passages_size(), 4);
+  ASSERT_EQ(url_data.embeddings.size(), 4u);
   ASSERT_EQ(url_data.passages.passages(0), "test passage 1");
   ASSERT_EQ(url_data.embeddings[0].Dimensions(), 768u);
   ASSERT_EQ(url_data.passages.passages(1), "test passage ßßß");
   ASSERT_EQ(url_data.embeddings[1].Dimensions(), 768u);
   ASSERT_EQ(url_data.passages.passages(2), "ßßß");
   ASSERT_EQ(url_data.embeddings[2].Dimensions(), 768u);
+  ASSERT_EQ(url_data.passages.passages(3), "");
+  ASSERT_EQ(url_data.embeddings[3].Dimensions(), 768u);
 }
 
 }  // namespace history_embeddings

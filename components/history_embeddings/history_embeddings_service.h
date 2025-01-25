@@ -331,7 +331,6 @@ class HistoryEmbeddingsService : public KeyedService,
   // Invoked after the embeddings for `passages` has been computed. Stores the
   // passages along with their embeddings in the database.
   void OnPassagesEmbeddingsComputed(
-      std::unordered_map<std::string, Embedding> embedding_cache,
       UrlData url_passages,
       std::vector<std::string> passages,
       std::vector<Embedding> embeddings,
