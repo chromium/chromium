@@ -25,6 +25,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/url_constants.h"
@@ -35,6 +36,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/back_gesture_event.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -316,6 +318,13 @@ constexpr static int kRRectSizeDip = 56;
 constexpr static float kRRectRadiusDip = 20.f;
 // Relative position of the favicon with respect to the rounded rectangle.
 constexpr static int kFaviconPosDip = 16;
+
+// Returns true for an internal url.
+bool IsInternalScheme(const GURL& url) {
+  ContentBrowserClient* content_browser_client = GetContentClient()->browser();
+  return url.SchemeIs(kChromeUIScheme) ||
+         content_browser_client->IsInternalScheme(url);
+}
 
 static constexpr LinearModelConfig<float, 4u> kRRectOpacityModel{
     .target_property = TargetProperty::kFaviconOpacity,
@@ -1710,11 +1719,19 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
   screenshot_layer_->AddChild(screenshot_scrim_);
   screenshot_scrim_->SetContentsOpaque(false);
 
+  SkBitmap favicon_bitmap;
+  if (IsInternalScheme(destination_entry->GetURL())) {
+    // If internal url, set a privileged internal icon as the favicon in the
+    // fallback ux and should draw rrect.
+    favicon_bitmap = animation_manager_
+                         ->GetBackForwardTransitionFallbackUXInternalPageIcon();
+  } else {
+    favicon_bitmap = destination_entry->navigation_transition_data().favicon();
+  }
+
   // Add the rounded rectangle and the favicon. We need to do this after setting
   // up the scrim because the scrim shouldn't be applied to the rounded
   // rectangle and the favicon.
-  const auto& favicon_bitmap =
-      destination_entry->navigation_transition_data().favicon();
   // Do not draw the rrect if we don't have a valid bitmap.
   bool should_draw_rrect = fallback_ux_ && !favicon_bitmap.drawsNothing();
   if (should_draw_rrect) {

@@ -269,6 +269,16 @@ public class WebContentsDelegateAndroid {
     }
 
     /**
+     * @return Null if the embedder fails to provide a privileged internal icon; otherwise, a bitmap
+     *     object for the icon.
+     */
+    @Nullable
+    @CalledByNative
+    public Bitmap getBackForwardTransitionFallbackUXInternalPageIcon() {
+        return null;
+    }
+
+    /**
      * @return The {@link DisplayMode} value.
      */
     public int getDisplayMode() {

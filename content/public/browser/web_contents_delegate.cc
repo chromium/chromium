@@ -453,6 +453,11 @@ SkBitmap WebContentsDelegate::MaybeCopyContentAreaAsBitmapSync() {
   return SkBitmap();
 }
 
+SkBitmap
+WebContentsDelegate::GetBackForwardTransitionFallbackUXInternalPageIcon() {
+  return SkBitmap();
+}
+
 BackForwardTransitionAnimationManager::FallbackUXConfig
 WebContentsDelegate::GetBackForwardTransitionFallbackUXConfig() {
   return BackForwardTransitionAnimationManager::FallbackUXConfig();

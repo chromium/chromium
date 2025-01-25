@@ -569,6 +569,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void GetAdditionalViewSourceSchemes(
       std::vector<std::string>* additional_schemes);
 
+  // Allow the embedder to return true for URLs with any additional schemes that
+  // should be considered as internal browser pages, beyond
+  // content::kChromeUIScheme. Unlike GetAdditionalWebUISchemes, this only needs
+  // to return true for pages that can be visible during back/forward
+  // navigations. Defaults to returning false.
+  virtual bool IsInternalScheme(const GURL& url);
+
   // Computes the IPAddressSpace of the given URL with embedder knowledge.
   // This is used to assign values to special schemes recognized only by the
   // embedders of content/. Returns kUnknown if no such scheme was found.

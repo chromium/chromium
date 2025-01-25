@@ -287,6 +287,14 @@ SkBitmap BackForwardTransitionAnimationManagerAndroid::
       ->MaybeCopyContentAreaAsBitmapSync();
 }
 
+SkBitmap BackForwardTransitionAnimationManagerAndroid::
+    GetBackForwardTransitionFallbackUXInternalPageIcon() {
+  return web_contents_view_android()
+      ->web_contents()
+      ->GetDelegate()
+      ->GetBackForwardTransitionFallbackUXInternalPageIcon();
+}
+
 void BackForwardTransitionAnimationManagerAndroid::MaybeRecordIgnoredInput(
     const blink::WebInputEvent& event) {
   if (animator_) {
