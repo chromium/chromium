@@ -623,14 +623,7 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
     }
   }
 
-  // Process deleted entities last. This is done for consistency. Since
-  // `entity_changes` is not guaranteed to be in order, it is possible that a
-  // user could add or remove tabs in a way that puts the group in an empty
-  // state. This will unintentionally delete the group and drop any additional
-  // add / update messages. By processing deletes last, we can give the groups
-  // an opportunity to resolve themselves before they become empty.
-  // TODO(crbug.com/351357559): fix the order of applying updates (groups after
-  // tabs).
+  // Process group and tab deletions first.
   for (const std::unique_ptr<syncer::EntityChange>& change : delete_changes) {
     GaiaId last_updated_by;
     if (change->data().collaboration_metadata) {

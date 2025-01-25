@@ -44,6 +44,7 @@
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -2021,6 +2022,38 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
               Put(StorageKeyForTab(tab),
                   Pointee(HasAttributionMetadata(kUpdatedBy2)), _));
   model()->UpdateTabInGroup(group.saved_guid(), tab, /*notify_observers=*/true);
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldKeepGroupWhenAllTabsAreUpdated) {
+  const CollaborationId kCollaborationId("collaboration");
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId(kCollaborationId);
+  SavedTabGroupTab tab = test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"Tab 1", group.saved_guid(), /*position=*/0);
+  group.AddTabLocally(tab);
+  model()->AddedLocally(group);
+
+  // Remote update replaces the existing tab with a new one.
+  sync_pb::SharedTabGroupDataSpecifics new_tab_specifics =
+      MakeTabSpecifics("Tab 2", GURL("http://google.com/2"), group.saved_guid(),
+                       GenerateRandomUniquePosition());
+  syncer::EntityChangeList change_list;
+  change_list.push_back(CreateDeleteEntityChange(StorageKeyForTab(tab)));
+  change_list.push_back(
+      CreateUpdateEntityChange(new_tab_specifics, kCollaborationId));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(change_list));
+
+  // The group should still be present in the model with the new tab.
+  ASSERT_THAT(
+      model()->saved_tab_groups(),
+      ElementsAre(HasSharedGroupMetadata(
+          "title", tab_groups::TabGroupColorId::kGrey, kCollaborationId)));
+  EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+              ElementsAre(HasTabMetadata("Tab 2", "http://google.com/2")));
 }
 
 // The number of tabs to test the correct ordering of remote updates.
