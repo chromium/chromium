@@ -231,7 +231,6 @@
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "chrome/renderer/pdf/chrome_pdf_internal_plugin_delegate.h"
 #include "components/pdf/renderer/internal_plugin_renderer_helpers.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -1156,7 +1155,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
         if (info.path.value() == ChromeContentClient::kPDFInternalPluginPath) {
           return pdf::CreateInternalPlugin(
               std::move(params), render_frame,
-              std::make_unique<ChromePdfInternalPluginDelegate>());
+              GetAdditionalPdfInternalPluginAllowedOrigins());
         }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
