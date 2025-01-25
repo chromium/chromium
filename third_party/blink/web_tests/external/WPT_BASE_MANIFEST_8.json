@@ -362749,6 +362749,10 @@
       "248915a1eb857416767910194dc4a88e7286c512",
       []
      ],
+     "interactivity-inert-click-002-expected.txt": [
+      "977b508171c3f9d2ab402f72cb02e8c2dc4a5f2a",
+      []
+     ],
      "negative-outline-offset-ref.html": [
       "acf1a6e0e8850f1b15aa94bc4feb869d22b35bf4",
       []
@@ -419836,7 +419840,7 @@
       []
      ],
      "urltestdata.json": [
-      "0ebaf4cd4c42e785bcfafd4a49faec318c8fee4a",
+      "7669217c470a4e8ccf35a9e48bd19ed13896e48d",
       []
      ]
     },
@@ -509862,6 +509866,15 @@
        {}
       ]
      ],
+     "interactivity-inert-click-002.html": [
+      "80772f0552be3fc7ede1be0ad7f73ec7119bcdbb",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "interactivity-inert-click.html": [
       "c1b882c70230ffab24249f5b67240aef2c8a1e9b",
       [
@@ -524426,7 +524439,7 @@
        ]
       ],
       "observable-from.any.js": [
-       "d90104ffcd6250fa2213b8801d761dcd1655c2c6",
+       "f305d2de670769bcc2f68cfc60639af3164d9099",
        [
         "dom/observable/tentative/observable-from.any.html",
         {}
