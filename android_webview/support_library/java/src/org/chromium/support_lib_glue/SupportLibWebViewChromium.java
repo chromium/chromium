@@ -235,8 +235,11 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                     .startPrerendering(
                             url,
                             null,
+                            callbackExecutor,
                             CallbackConverter.fromValueCallback(activationCallback),
                             CallbackConverter.fromValueCallback(errorCallback));
+        } catch (Exception e) {
+            callbackExecutor.execute(() -> errorCallback.onReceiveValue(e));
         }
     }
 
@@ -264,8 +267,11 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                                     .fromSpeculativeLoadingParametersBoundaryInterface(
                                             speculativeLoadingParametersBoundaryInterface)
                                     .toAwPrefetchParams(),
+                            callbackExecutor,
                             CallbackConverter.fromValueCallback(activationCallback),
                             CallbackConverter.fromValueCallback(errorCallback));
+        } catch (Exception e) {
+            callbackExecutor.execute(() -> errorCallback.onReceiveValue(e));
         }
     }
 }
