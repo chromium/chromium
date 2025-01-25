@@ -68,7 +68,7 @@ namespace tab_groups {
 namespace {
 
 constexpr char kTestCacheGuid[] = "test_cache_guid";
-constexpr char kDefaultGaiaId[] = "default_gaia_id";
+constexpr GaiaId::Literal kDefaultGaiaId("default_gaia_id");
 
 MATCHER_P(HasGuid, guid, "") {
   return arg.saved_guid() == guid;
@@ -217,7 +217,7 @@ class TabGroupSyncServiceTest : public testing::Test {
     ON_CALL(shared_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
     ON_CALL(shared_processor_, TrackedAccountId())
-        .WillByDefault(testing::Return(kDefaultGaiaId));
+        .WillByDefault(testing::Return(kDefaultGaiaId.ToString()));
     ON_CALL(*collaboration_finder_, IsCollaborationAvailable(_))
         .WillByDefault(testing::Return(true));
 
