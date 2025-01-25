@@ -363,7 +363,7 @@ public class AddressEditorTest {
                 /* isFullLine= */ true);
         validateTextField(
                 editorFields.get(2),
-                profile.getRegion(),
+                profile.getInfo(FieldType.ADDRESS_HOME_STATE),
                 FieldType.ADDRESS_HOME_STATE,
                 /* label= */ "admin area label",
                 /* isRequired= */ false,

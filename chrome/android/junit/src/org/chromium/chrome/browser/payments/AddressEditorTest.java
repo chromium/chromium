@@ -301,7 +301,7 @@ public class AddressEditorTest {
                 /* isFullLine= */ true);
         validateTextField(
                 editorFields.get(2),
-                profile.getRegion(),
+                profile.getInfo(FieldType.ADDRESS_HOME_STATE),
                 FieldType.ADDRESS_HOME_STATE,
                 /* label= */ "admin area label",
                 /* isRequired= */ true,
@@ -509,7 +509,7 @@ public class AddressEditorTest {
                 adminAreas,
                 containsInAnyOrder(adminAreaDropdown.get(DROPDOWN_KEY_VALUE_LIST).toArray()));
 
-        assertEquals(adminAreaDropdown.get(VALUE), sProfile.getRegion());
+        assertEquals(adminAreaDropdown.get(VALUE), sProfile.getInfo(FieldType.ADDRESS_HOME_STATE));
         assertEquals("admin area label", adminAreaDropdown.get(LABEL));
     }
 
