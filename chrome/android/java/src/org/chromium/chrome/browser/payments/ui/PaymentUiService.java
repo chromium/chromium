@@ -540,7 +540,7 @@ public class PaymentUiService
                                 .checkContactCompletionStatus(
                                         profile.getInfo(FieldType.NAME_FULL),
                                         profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER),
-                                        profile.getEmailAddress())
+                                        profile.getInfo(FieldType.EMAIL_ADDRESS))
                         == ContactEditor.COMPLETE) {
                     haveCompleteContactInfo = true;
                     break;

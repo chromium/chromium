@@ -175,8 +175,8 @@ public class ContactDetailsSection extends SectionInformation {
                         ? profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER)
                         : null;
         String email =
-                requestPayerEmail && !TextUtils.isEmpty(profile.getEmailAddress())
-                        ? profile.getEmailAddress()
+                requestPayerEmail && !TextUtils.isEmpty(profile.getInfo(FieldType.EMAIL_ADDRESS))
+                        ? profile.getInfo(FieldType.EMAIL_ADDRESS)
                         : null;
 
         if (name != null || phone != null || email != null) {

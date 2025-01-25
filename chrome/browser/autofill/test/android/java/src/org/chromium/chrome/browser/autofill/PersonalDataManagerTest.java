@@ -633,7 +633,7 @@ public class PersonalDataManagerTest {
         Assert.assertEquals(
                 "CEDEX 98703", storedProfile1.getInfo(FieldType.ADDRESS_HOME_SORTING_CODE));
         Assert.assertEquals("44.71.53", storedProfile1.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER));
-        Assert.assertEquals("john@acme.inc", storedProfile1.getEmailAddress());
+        Assert.assertEquals("john@acme.inc", storedProfile1.getInfo(FieldType.EMAIL_ADDRESS));
 
         profile.setStreetAddress(streetAddress2);
         String profileGuid2 = mHelper.setProfile(profile);

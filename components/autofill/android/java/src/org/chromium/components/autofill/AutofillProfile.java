@@ -338,14 +338,6 @@ public class AutofillProfile {
         return getInfo(FieldType.ADDRESS_HOME_COUNTRY);
     }
 
-    public String getEmailAddress() {
-        return getInfo(FieldType.EMAIL_ADDRESS);
-    }
-
-    private @VerificationStatus int getEmailAddressStatus() {
-        return getInfoStatus(FieldType.EMAIL_ADDRESS);
-    }
-
     @CalledByNative
     public @JniType("std::string") String getLanguageCode() {
         return mLanguageCode;
