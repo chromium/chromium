@@ -144,8 +144,9 @@ def main():
 
     for target_cpu in ['arm64', 'x64', 'x86']:
         for idl_target in [
+                'chrome/windows_services/elevated_tracing_service:' + \
+                'tracing_service_idl',
                 'chrome/windows_services/service_program:test_service_idl',
-                'components/tracing:tracing_service_idl',
                 'elevation_service_idl',
                 'gaia_credential_provider_idl',
                 'iaccessible2',

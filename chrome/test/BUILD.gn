@@ -7037,7 +7037,7 @@ test("unit_tests") {
       "//chrome/services/util_win:lib",
       "//chrome/test:credential_provider_test_utils",
       "//chrome/updater:browser_sources",
-      "//components/tracing:tracing_service_idl",
+      "//chrome/windows_services/elevated_tracing_service:tracing_service_idl",
       "//third_party/iaccessible2",
       "//third_party/isimpledom",
       "//third_party/wtl",

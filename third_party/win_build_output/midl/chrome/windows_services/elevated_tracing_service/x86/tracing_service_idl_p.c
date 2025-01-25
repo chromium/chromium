@@ -6,8 +6,8 @@
  /* File created by MIDL compiler version 8.xx.xxxx */
 /* at a redacted point in time
  */
-/* Compiler settings for ../../components/tracing/common/tracing_service_idl.idl:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0628 
+/* Compiler settings for ../../chrome/windows_services/elevated_tracing_service/tracing_service_idl.idl:
+    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.xx.xxxx 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -16,7 +16,7 @@
 */
 /* @@MIDL_FILE_HEADING(  ) */
 
-#if defined(_M_ARM64)
+#if !defined(_M_IA64) && !defined(_M_AMD64) && !defined(_ARM_)
 
 
 #pragma warning( disable: 4049 )  /* more than 64k source lines */
@@ -28,6 +28,9 @@
 #pragma warning( disable: 4232 )  /* dllimport identity*/
 #pragma warning( disable: 4024 )  /* array to pointer mapping*/
 #pragma warning( disable: 4152 )  /* function/data pointer conversion in expression */
+#pragma warning( disable: 4100 ) /* unreferenced arguments in x86 call */
+
+#pragma optimize("", off ) 
 
 #define USE_STUBLESS_PROXY
 
@@ -47,7 +50,7 @@
 #include "tracing_service_idl.h"
 
 #define TYPE_FORMAT_STRING_SIZE   11                                
-#define PROC_FORMAT_STRING_SIZE   49                                
+#define PROC_FORMAT_STRING_SIZE   43                                
 #define EXPR_FORMAT_STRING_SIZE   1                                 
 #define TRANSMIT_AS_TABLE_SIZE    0            
 #define WIRE_MARSHAL_TABLE_SIZE   0            
@@ -213,9 +216,17 @@ extern const MIDL_STUBLESS_PROXY_INFO ISystemTraceSessionChromeCanary_ProxyInfo;
 
 
 
-#if !defined(__RPC_ARM64__)
+#if !defined(__RPC_WIN32__)
 #error  Invalid build platform for this stub.
 #endif
+
+#if !(TARGET_IS_NT50_OR_LATER)
+#error You need Windows 2000 or later to run this stub because it uses these features:
+#error   /robust command line switch.
+#error However, your C/C++ compilation flags indicate you intend to run this app on earlier systems.
+#error This app will fail with the RPC_X_WRONG_STUB_VERSION error.
+#endif
+
 
 static const tracing_service_idl_MIDL_PROC_FORMAT_STRING tracing_service_idl__MIDL_ProcFormatString =
     {
@@ -228,40 +239,35 @@ static const tracing_service_idl_MIDL_PROC_FORMAT_STRING tracing_service_idl__MI
 			0x6c,		/* Old Flags:  object, Oi2 */
 /*  2 */	NdrFcLong( 0x0 ),	/* 0 */
 /*  6 */	NdrFcShort( 0x3 ),	/* 3 */
-/*  8 */	NdrFcShort( 0x20 ),	/* ARM64 Stack size/offset = 32 */
+/*  8 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
 /* 10 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 12 */	NdrFcShort( 0x24 ),	/* 36 */
 /* 14 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
 			0x3,		/* 3 */
-/* 16 */	0xe,		/* 14 */
+/* 16 */	0x8,		/* 8 */
 			0x1,		/* Ext Flags:  new corr desc, */
 /* 18 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 20 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 22 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 24 */	NdrFcShort( 0x3 ),	/* 3 */
-/* 26 */	0x3,		/* 3 */
-			0x80,		/* 128 */
-/* 28 */	0x81,		/* 129 */
-			0x82,		/* 130 */
 
 	/* Parameter server_name */
 
-/* 30 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 32 */	NdrFcShort( 0x8 ),	/* ARM64 Stack size/offset = 8 */
-/* 34 */	NdrFcShort( 0x4 ),	/* Type Offset=4 */
+/* 24 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 26 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 28 */	NdrFcShort( 0x4 ),	/* Type Offset=4 */
 
 	/* Parameter pid */
 
-/* 36 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
-/* 38 */	NdrFcShort( 0x10 ),	/* ARM64 Stack size/offset = 16 */
-/* 40 */	0x8,		/* FC_LONG */
+/* 30 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
+/* 32 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 34 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Return value */
 
-/* 42 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 44 */	NdrFcShort( 0x18 ),	/* ARM64 Stack size/offset = 24 */
-/* 46 */	0x8,		/* FC_LONG */
+/* 36 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 38 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 40 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 			0x0
@@ -737,5 +743,5 @@ EXTERN_C const ExtendedProxyFileInfo tracing_service_idl_ProxyFileInfo =
 #endif
 
 
-#endif /* defined(_M_ARM64) */
+#endif /* !defined(_M_IA64) && !defined(_M_AMD64) && !defined(_ARM_) */
 

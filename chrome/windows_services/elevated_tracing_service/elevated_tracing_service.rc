@@ -35,6 +35,6 @@ END
 
 #endif    // English (United States) resources
 
-1 TYPELIB "components/tracing/tracing_service_idl.tlb"
+1 TYPELIB "chrome/windows_services/elevated_tracing_service/tracing_service_idl.tlb"
 
 /////////////////////////////////////////////////////////////////////////////
