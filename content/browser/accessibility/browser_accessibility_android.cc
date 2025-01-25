@@ -2128,12 +2128,11 @@ int BrowserAccessibilityAndroid::CountChildrenWithRole(
 
 std::u16string BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
     const {
-  int message_id = -1;
-
   if (!IsContentInvalid()) {
     return std::u16string();
   }
 
+  int message_id = -1;
   switch (GetData().GetInvalidState()) {
     case ax::mojom::InvalidState::kNone:
     case ax::mojom::InvalidState::kFalse:
@@ -2170,11 +2169,28 @@ std::u16string BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
       break;
   }
 
+  std::vector<std::u16string> error_messages;
   if (message_id != -1) {
-    return GetLocalizedString(message_id);
+    error_messages.push_back(GetLocalizedString(message_id));
   }
 
-  return std::u16string();
+  for (int error_message_id :
+       GetIntListAttribute(ax::mojom::IntListAttribute::kErrormessageIds)) {
+    BrowserAccessibility* node = manager()->GetFromID(error_message_id);
+    if (!node || !node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+      continue;
+    }
+
+    const auto& name =
+        node->GetString16Attribute(ax::mojom::StringAttribute::kName);
+    if (name.empty()) {
+      continue;
+    }
+
+    error_messages.push_back(name);
+  }
+
+  return base::JoinString(error_messages, u" ");
 }
 
 std::u16string
