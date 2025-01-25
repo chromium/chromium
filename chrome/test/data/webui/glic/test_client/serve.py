@@ -15,10 +15,14 @@ import sys
 
 
 def build(outdir: str):
-    subprocess.check_output([
+    subprocess.run([
         'autoninja', '-C', outdir,
         'chrome/test/data/webui/glic:generate_test_files'
-    ])
+    ],
+                   stdout=sys.stdout,
+                   stderr=sys.stderr,
+                   check=True)
+
 
 
 class RequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -52,7 +56,11 @@ def main():
 
     RequestHandler.directory = f'{args.outdir}/gen/chrome/test/data/webui/glic'
     if not args.nobuild:
-        build(args.outdir)
+        try:
+            build(args.outdir)
+        except subprocess.CalledProcessError as e:
+            print("Test client build error; check build output above.")
+            sys.exit(1)
 
     if not os.path.isdir(RequestHandler.directory):
         print(f'Directory does not exist: {RequestHandler.directory}',
