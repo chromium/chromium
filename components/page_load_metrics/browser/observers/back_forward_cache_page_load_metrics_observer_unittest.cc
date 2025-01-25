@@ -686,6 +686,37 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest, UserInteractionLatency) {
       0);
 }
 
+TEST_F(BackForwardCachePageLoadMetricsObserverTest, MaxCumulativeShiftScore) {
+  auto fake_bfcache_restore =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, base::TimeTicks());
+
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+  fake_delegate_->normalized_cls_data_
+      .session_windows_gap1000ms_max5000ms_max_cls = 1.42;
+
+  observer_with_fake_delegate_->OnRestoreFromBackForwardCache(
+      timing_, &navigation_handle_);
+
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore,
+      1);
+  EXPECT_THAT(
+      tester()->histogram_tester().GetAllSamples(
+          internal::
+              kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore),
+      testing::ElementsAre(base::Bucket(13439, 1)));
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore_Incognito,
+      0);
+}
+
 class BackForwardCachePageLoadMetricsObserverIncognitoTest
     : public BackForwardCachePageLoadMetricsObserverTest {
  public:
@@ -763,5 +794,33 @@ TEST_F(BackForwardCachePageLoadMetricsObserverIncognitoTest,
            kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore_Incognito}) {
     EXPECT_THAT(tester()->histogram_tester().GetAllSamples(histogram),
                 testing::ElementsAre(base::Bucket(2964, 1)));
+  }
+}
+
+TEST_F(BackForwardCachePageLoadMetricsObserverIncognitoTest,
+       MaxCumulativeShiftScoreIncognito) {
+  auto fake_bfcache_restore =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, base::TimeTicks());
+
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+  fake_delegate_->normalized_cls_data_
+      .session_windows_gap1000ms_max5000ms_max_cls = 1.42;
+
+  observer_with_fake_delegate_->OnRestoreFromBackForwardCache(
+      timing_, &navigation_handle_);
+
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  for (
+      auto histogram :
+      {internal::
+           kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore,
+       internal::
+           kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore_Incognito}) {
+    tester()->histogram_tester().ExpectTotalCount(histogram, 1);
+    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(histogram),
+                testing::ElementsAre(base::Bucket(13439, 1)));
   }
 }

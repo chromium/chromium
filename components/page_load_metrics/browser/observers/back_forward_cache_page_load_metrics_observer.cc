@@ -62,6 +62,16 @@ const char
              "WorstUserInteractionLatency."
              "MaxEventDuration.AfterBackForwardCacheRestore";
 
+const char
+    kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore[] =
+        "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+        "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2";
+const char
+    kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore_Incognito
+        [] = "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+             "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2."
+             "Incognito";
+
 // Enables to emit zero values for some key metrics when back-forward cache is
 // used.
 //
@@ -451,12 +461,19 @@ void BackForwardCachePageLoadMetricsObserver::
             page_load_metrics::LayoutShiftUkmValue(
                 normalized_cls_data
                     .session_windows_gap1000ms_max5000ms_max_cls));
+    auto sample = page_load_metrics::LayoutShiftUmaValue10000(
+        normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls);
     base::UmaHistogramCustomCounts(
-        "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
-        "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2",
-        page_load_metrics::LayoutShiftUmaValue10000(
-            normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls),
-        1, 24000, 50);
+        internal::
+            kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore,
+        sample, 1, 24000, 50);
+
+    if (is_incognito_) {
+      base::UmaHistogramCustomCounts(
+          internal::
+              kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore_Incognito,
+          sample, 1, 24000, 50);
+    }
   }
 
   builder.Record(ukm::UkmRecorder::Get());
