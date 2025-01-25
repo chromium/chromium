@@ -333,16 +333,6 @@ public class AutofillProfile {
         return mFields.get(fieldType).getStatus();
     }
 
-    public String getStreetAddress() {
-        return getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS);
-    }
-
-    @VisibleForTesting
-    @VerificationStatus
-    public int getStreetAddressStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_STREET_ADDRESS);
-    }
-
     public String getRegion() {
         return getInfo(FieldType.ADDRESS_HOME_STATE);
     }

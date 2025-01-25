@@ -277,7 +277,7 @@ public class AutofillAddress extends EditableOption {
         PaymentAddress result = new PaymentAddress();
 
         result.country = getCountryCode(mProfile, mPersonalDataManager);
-        result.addressLine = mProfile.getStreetAddress().split("\n");
+        result.addressLine = mProfile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS).split("\n");
         result.region = mProfile.getRegion();
         result.city = mProfile.getLocality();
         result.dependentLocality = mProfile.getDependentLocality();

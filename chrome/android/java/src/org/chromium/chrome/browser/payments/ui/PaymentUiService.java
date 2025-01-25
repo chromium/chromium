@@ -1235,7 +1235,7 @@ public class PaymentUiService
             mAddressEditor.addPhoneNumberIfValid(profile.getPhoneNumber());
 
             // Only suggest addresses that have a street address.
-            if (!TextUtils.isEmpty(profile.getStreetAddress())) {
+            if (!TextUtils.isEmpty(profile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS))) {
                 addresses.add(new AutofillAddress(context, profile, personalDataManager));
             }
         }

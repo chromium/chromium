@@ -413,7 +413,7 @@ public class AddressEditorTest {
                 /* isFullLine= */ false);
         validateTextField(
                 editorFields.get(8),
-                profile.getStreetAddress(),
+                profile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS),
                 FieldType.ADDRESS_HOME_STREET_ADDRESS,
                 /* label= */ "street address label",
                 shouldMarkFieldsRequired,
@@ -1157,7 +1157,7 @@ public class AddressEditorTest {
         AutofillAddress address = mAddressCapture.getValue();
         assertNotNull(address);
         AutofillProfile profile = address.getProfile();
-        assertEquals("111 First St", profile.getStreetAddress());
+        assertEquals("111 First St", profile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS));
         assertEquals("", profile.getDependentLocality());
         assertEquals("Google", profile.getInfo(FieldType.COMPANY_NAME));
         assertEquals("90291", profile.getPostalCode());
