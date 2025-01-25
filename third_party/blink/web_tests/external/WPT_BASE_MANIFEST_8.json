@@ -371671,7 +371671,7 @@
    },
    "digital-credentials": {
     "META.yml": [
-     "fc8f6a62cda5062676e1fb27324739c17ac0f91e",
+     "7273f019d78464df10e4ee48f9babd1ccbc1a112",
      []
     ],
     "create.tentative.https-expected.txt": [
@@ -683932,6 +683932,13 @@
        ],
        [
         "selection/shadow-dom/tentative/Selection-getComposedRanges-dom-mutations-removal.html?mode=open",
+        {}
+       ]
+      ],
+      "Selection-getComposedRanges-range-update.html": [
+       "15f07305b0dfd507a4b22f7ad950f602a39f6c5a",
+       [
+        null,
         {}
        ]
       ],
