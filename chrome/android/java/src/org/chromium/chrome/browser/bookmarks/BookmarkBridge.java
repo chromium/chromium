@@ -46,6 +46,7 @@ class BookmarkBridge {
     private boolean mIsDoingExtensiveChanges;
     private boolean mIsNativeBookmarkModelLoaded;
 
+    private boolean mPartnerBookmarkIteratorInitialized;
     private Supplier<PartnerBookmark.BookmarkIterator> mPartnerBookmarkIteratorSupplier;
 
     // Lazily set pseudo-constants. These should never change at runtime. Used to avoid crossing
@@ -100,6 +101,7 @@ class BookmarkBridge {
     /** Sets a pre-configured runnable which loads the parter bookmarks shim. */
     public void setPartnerBookmarkIteratorSupplier(
             Supplier<PartnerBookmark.BookmarkIterator> partnerBookmarkIteratorSupplier) {
+        mPartnerBookmarkIteratorInitialized = true;
         mPartnerBookmarkIteratorSupplier = partnerBookmarkIteratorSupplier;
     }
 
@@ -179,13 +181,16 @@ class BookmarkBridge {
                     public void bookmarkModelChanged() {}
                 });
 
-        assert mPartnerBookmarkIteratorSupplier != null;
-        // Start reading as a fail-safe measure to avoid waiting forever if the caller forgets to
-        // call kickOffReading().
-        PartnerBookmarksShim.kickOffReading(
-                ContextUtils.getApplicationContext(),
-                mProfile,
-                mPartnerBookmarkIteratorSupplier.get());
+        assert mPartnerBookmarkIteratorInitialized;
+        if (mPartnerBookmarkIteratorSupplier != null
+                && mPartnerBookmarkIteratorSupplier.hasValue()) {
+            // Start reading as a fail-safe measure to avoid waiting forever if the caller forgets
+            // to call kickOffReading().
+            PartnerBookmarksShim.kickOffReading(
+                    ContextUtils.getApplicationContext(),
+                    mProfile,
+                    mPartnerBookmarkIteratorSupplier.get());
+        }
         return false;
     }
 
