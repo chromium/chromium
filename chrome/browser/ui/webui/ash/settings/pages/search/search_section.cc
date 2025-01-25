@@ -12,6 +12,7 @@
 #include "ash/lobster/lobster_controller.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
+#include "ash/scanner/scanner_controller.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -91,6 +92,12 @@ bool IsMagicBoostNoticeBannerVisible(Profile* profile) {
 bool IsLobsterSettingsToggleVisible(Profile* profile) {
   return ash::features::IsLobsterEnabled() &&
          LobsterServiceProvider::GetForProfile(profile) != nullptr;
+}
+
+bool IsScannerSettingsToggleVisible() {
+  ash::Shell* shell = ash::Shell::HasInstance() ? Shell::Get() : nullptr;
+  return shell && shell->scanner_controller() &&
+         shell->scanner_controller()->CanShowFeatureSettingsToggle();
 }
 
 base::span<const SearchConcept> GetSearchPageSearchConcepts() {
@@ -428,7 +435,8 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           IsLobsterSettingsToggleVisible(profile()));
 
   html_source->AddBoolean("isSunfishSettingsToggleVisible",
-                          ash::IsSunfishOrScannerEnabled());
+                          ash::features::IsSunfishFeatureEnabled() ||
+                              IsScannerSettingsToggleVisible());
 
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);

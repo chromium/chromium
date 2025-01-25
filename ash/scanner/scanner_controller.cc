@@ -268,6 +268,27 @@ void ScannerController::OnActiveUserSessionChanged(
   command_delegate_ = nullptr;
 }
 
+bool ScannerController::CanShowFeatureSettingsToggle() {
+  ScannerProfileScopedDelegate* profile_scoped_delegate =
+      delegate_->GetProfileScopedDelegate();
+
+  if (profile_scoped_delegate == nullptr) {
+    return false;
+  }
+
+  specialized_features::FeatureAccessFailureSet checks =
+      profile_scoped_delegate->CheckFeatureAccess();
+
+  // Show settings toggle even if the setting is disabled or consent not
+  // accepted.
+  // Hence we ignore these checks if they have failed.
+  checks.Remove(
+      specialized_features::FeatureAccessFailure::kDisabledInSettings);
+  checks.Remove(
+      specialized_features::FeatureAccessFailure::kConsentNotAccepted);
+  return checks.empty();
+}
+
 bool ScannerController::CanStartSession() {
   ScannerProfileScopedDelegate* profile_scoped_delegate =
       delegate_->GetProfileScopedDelegate();

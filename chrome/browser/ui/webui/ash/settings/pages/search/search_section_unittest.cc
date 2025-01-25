@@ -8,6 +8,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/scanner/scanner_delegate.h"
+#include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
+#include "ash/scanner/scanner_controller.h"
+#include "ash/shell.h"
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
@@ -20,6 +24,7 @@
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "chromeos/components/magic_boost/test/fake_magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
@@ -27,6 +32,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::settings {
+namespace {
+using ::specialized_features::FeatureAccessFailure;
+using ::testing::Return;
+
+FakeScannerProfileScopedDelegate* GetFakeScannerProfileScopedDelegate(
+    ScannerController& scanner_controller) {
+  return static_cast<FakeScannerProfileScopedDelegate*>(
+      scanner_controller.delegate_for_testing()->GetProfileScopedDelegate());
+}
+
+}  // namespace
 
 // Test for the search settings page.
 class SearchSectionTest : public ChromeAshTestBase {
@@ -115,21 +131,6 @@ TEST_F(SearchSectionTest, IncludesSunfishSettingsWhenSunfishEnabled) {
                   .value());
 }
 
-TEST_F(SearchSectionTest, IncludesSunfishSettingsWhenScannerEnabled) {
-  base::test::ScopedFeatureList feature_list(features::kScannerUpdate);
-  search_section_ =
-      std::make_unique<SearchSection>(profile(), search_tag_registry());
-  std::unique_ptr<content::TestWebUIDataSource> html_source =
-      content::TestWebUIDataSource::Create("test-search-section");
-  chromeos::test::FakeMagicBoostState magic_boost_state;
-
-  search_section_->AddLoadTimeData(html_source->GetWebUIDataSource());
-
-  EXPECT_TRUE(html_source->GetLocalizedStrings()
-                  ->FindBool("isSunfishSettingsToggleVisible")
-                  .value());
-}
-
 // MagicBoost availability check requires an async operation. There is a short
 // period where `MagicBoostState` returns false for its availability even if a
 // user/device is eligible.
@@ -168,6 +169,101 @@ TEST_F(SearchSectionTest,
             search_tag_registry()->GetTagMetadata(quick_answers_result_id))
       << "Quick Answers tag should not be found as the current feature type is "
          "set to kHmr";
+}
+
+class SearchSectionTestWithScannerEnabled : public ChromeAshTestBase {
+ public:
+  SearchSectionTestWithScannerEnabled()
+      : local_search_service_proxy_(
+            std::make_unique<
+                ash::local_search_service::LocalSearchServiceProxy>(
+                /*for_testing=*/true)),
+        search_tag_registry_(local_search_service_proxy_.get()) {}
+
+  ~SearchSectionTestWithScannerEnabled() override = default;
+
+  TestingProfile* profile() { return &profile_; }
+  ash::settings::SearchTagRegistry* search_tag_registry() {
+    return &search_tag_registry_;
+  }
+
+ protected:
+  void SetUp() override { ChromeAshTestBase::SetUp(); }
+  void TearDown() override { ChromeAshTestBase::TearDown(); }
+
+ private:
+  // Required to force the scanner controller to be set up with dogfood
+  // config.
+  base::test::ScopedFeatureList feature_list_{features::kScannerDogfood};
+  std::unique_ptr<ash::local_search_service::LocalSearchServiceProxy>
+      local_search_service_proxy_;
+  ash::settings::SearchTagRegistry search_tag_registry_;
+  TestingProfile profile_;
+};
+
+TEST_F(SearchSectionTestWithScannerEnabled,
+       DoesNotIncludeSunfishSettingsWhenScannerDisabledByAccessChecker) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
+          FeatureAccessFailure::kDisabledInKioskModeCheckFailed}));
+
+  auto search_section =
+      std::make_unique<SearchSection>(profile(), search_tag_registry());
+  std::unique_ptr<content::TestWebUIDataSource> html_source =
+      content::TestWebUIDataSource::Create("test-search-section");
+  chromeos::test::FakeMagicBoostState magic_boost_state;
+
+  search_section->AddLoadTimeData(html_source->GetWebUIDataSource());
+
+  EXPECT_FALSE(html_source->GetLocalizedStrings()
+                   ->FindBool("isSunfishSettingsToggleVisible")
+                   .value());
+}
+
+TEST_F(
+    SearchSectionTestWithScannerEnabled,
+    IncludesSunfishSettingsWhenFeatureAccessCheckFailsConsentOrSettingsCheck) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
+          FeatureAccessFailure::kConsentNotAccepted,
+          FeatureAccessFailure::kDisabledInSettings,
+      }));
+
+  auto search_section =
+      std::make_unique<SearchSection>(profile(), search_tag_registry());
+  std::unique_ptr<content::TestWebUIDataSource> html_source =
+      content::TestWebUIDataSource::Create("test-search-section");
+  chromeos::test::FakeMagicBoostState magic_boost_state;
+
+  search_section->AddLoadTimeData(html_source->GetWebUIDataSource());
+
+  EXPECT_TRUE(html_source->GetLocalizedStrings()
+                  ->FindBool("isSunfishSettingsToggleVisible")
+                  .value());
+}
+
+TEST_F(SearchSectionTestWithScannerEnabled,
+       IncludeSunfishSettingsWhenNoChecksFail) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+
+  auto search_section =
+      std::make_unique<SearchSection>(profile(), search_tag_registry());
+  std::unique_ptr<content::TestWebUIDataSource> html_source =
+      content::TestWebUIDataSource::Create("test-search-section");
+  chromeos::test::FakeMagicBoostState magic_boost_state;
+
+  search_section->AddLoadTimeData(html_source->GetWebUIDataSource());
+
+  EXPECT_TRUE(html_source->GetLocalizedStrings()
+                  ->FindBool("isSunfishSettingsToggleVisible")
+                  .value());
 }
 
 }  // namespace ash::settings

@@ -190,6 +190,54 @@ TEST_F(ScannerControllerTest, CanNotStartSessionIfFeatureChecksFail) {
   EXPECT_FALSE(scanner_controller->StartNewSession());
 }
 
+TEST_F(ScannerControllerTest, CanShowFeatureSettingsToggleIfNoChecksFail) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+
+  EXPECT_TRUE(scanner_controller->CanShowFeatureSettingsToggle());
+}
+
+TEST_F(ScannerControllerTest,
+       CanShowFeatureSettingsToggleIfDisabledInSettingsOnly) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::kDisabledInSettings}));
+
+  EXPECT_TRUE(scanner_controller->CanShowFeatureSettingsToggle());
+}
+
+TEST_F(ScannerControllerTest,
+       CanShowFeatureSettingsToggleIfConsentNotAcceptedOnly) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::kConsentNotAccepted}));
+
+  EXPECT_TRUE(scanner_controller->CanShowFeatureSettingsToggle());
+}
+
+TEST_F(ScannerControllerTest,
+       CannotShowFeatureSettingsToggleIfDisabledIfOtherCheckFail) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::kDisabledInSettings,
+          specialized_features::FeatureAccessFailure::
+              kFeatureManagementCheckFailed}));
+
+  EXPECT_FALSE(scanner_controller->CanShowFeatureSettingsToggle());
+}
+
 TEST_F(ScannerControllerTest, FetchesActionsDuringActiveSession) {
   base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();

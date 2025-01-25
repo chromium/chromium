@@ -39,6 +39,10 @@ class ASH_EXPORT ScannerController : public SessionObserver {
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
+  // Checks system level constraints (e.g. feature flags) and returns
+  // true if the constraints allow a Scanner settings toggle to be shown.
+  bool CanShowFeatureSettingsToggle();
+
   // Checks system level constraints (e.g. prefs, feature flags) and returns
   // true if the constraints allow a Scanner session to be created.
   bool CanStartSession();
