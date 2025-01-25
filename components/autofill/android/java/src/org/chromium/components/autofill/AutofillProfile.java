@@ -334,12 +334,8 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    public @JniType("std::string") String getCountryCode() {
+    private @JniType("std::string") String getCountryCode() {
         return getInfo(FieldType.ADDRESS_HOME_COUNTRY);
-    }
-
-    private @VerificationStatus int getCountryCodeStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_COUNTRY);
     }
 
     public String getPhoneNumber() {

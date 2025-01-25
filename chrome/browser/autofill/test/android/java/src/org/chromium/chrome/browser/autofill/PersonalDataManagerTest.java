@@ -158,7 +158,7 @@ public class PersonalDataManagerTest {
 
         AutofillProfile storedProfile = mHelper.getProfile(profileOneGUID);
         Assert.assertEquals(profileOneGUID, storedProfile.getGUID());
-        Assert.assertEquals("CA", storedProfile.getCountryCode());
+        Assert.assertEquals("CA", storedProfile.getInfo(FieldType.ADDRESS_HOME_COUNTRY));
         Assert.assertEquals("San Francisco", storedProfile.getInfo(FieldType.ADDRESS_HOME_CITY));
         Assert.assertNotNull(mHelper.getProfile(profileTwoGUID));
     }
@@ -298,7 +298,7 @@ public class PersonalDataManagerTest {
         AutofillProfile storedProfile = mHelper.getProfile(profileOneGUID);
         Assert.assertEquals(profileOneGUID, storedProfile.getGUID());
         Assert.assertEquals("fr", storedProfile.getLanguageCode());
-        Assert.assertEquals("US", storedProfile.getCountryCode());
+        Assert.assertEquals("US", storedProfile.getInfo(FieldType.ADDRESS_HOME_COUNTRY));
 
         profile.setGUID(profileOneGUID);
         profile.setLanguageCode("en");
@@ -307,7 +307,7 @@ public class PersonalDataManagerTest {
         AutofillProfile storedProfile2 = mHelper.getProfile(profileOneGUID);
         Assert.assertEquals(profileOneGUID, storedProfile2.getGUID());
         Assert.assertEquals("en", storedProfile2.getLanguageCode());
-        Assert.assertEquals("US", storedProfile2.getCountryCode());
+        Assert.assertEquals("US", storedProfile2.getInfo(FieldType.ADDRESS_HOME_COUNTRY));
         Assert.assertEquals("San Francisco", storedProfile2.getInfo(FieldType.ADDRESS_HOME_CITY));
     }
 
@@ -489,7 +489,7 @@ public class PersonalDataManagerTest {
     @Feature({"Autofill"})
     public void testRespectCountryCodes() throws TimeoutException {
         // The constructor should accept country names and ISO 3166-1-alpha-2 country codes.
-        // getCountryCode() should return a country code.
+        // getInfo(FieldType.ADDRESS_HOME_CONTRY) should return a country code.
         AutofillProfile profile1 =
                 AutofillProfile.builder()
                         .setFullName("John Smith")
@@ -521,10 +521,10 @@ public class PersonalDataManagerTest {
         Assert.assertEquals(2, mHelper.getNumberOfProfilesForSettings());
 
         AutofillProfile storedProfile1 = mHelper.getProfile(profileGuid1);
-        Assert.assertEquals("CA", storedProfile1.getCountryCode());
+        Assert.assertEquals("CA", storedProfile1.getInfo(FieldType.ADDRESS_HOME_COUNTRY));
 
         AutofillProfile storedProfile2 = mHelper.getProfile(profileGuid2);
-        Assert.assertEquals("CA", storedProfile2.getCountryCode());
+        Assert.assertEquals("CA", storedProfile2.getInfo(FieldType.ADDRESS_HOME_COUNTRY));
     }
 
     @Test
@@ -621,7 +621,7 @@ public class PersonalDataManagerTest {
         String profileGuid1 = mHelper.setProfile(profile);
         Assert.assertEquals(1, mHelper.getNumberOfProfilesForSettings());
         AutofillProfile storedProfile1 = mHelper.getProfile(profileGuid1);
-        Assert.assertEquals("PF", storedProfile1.getCountryCode());
+        Assert.assertEquals("PF", storedProfile1.getInfo(FieldType.ADDRESS_HOME_COUNTRY));
         Assert.assertEquals("Monsieur Jean DELHOURME", storedProfile1.getInfo(FieldType.NAME_FULL));
         Assert.assertEquals(
                 streetAddress1, storedProfile1.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS));
