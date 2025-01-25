@@ -391,7 +391,7 @@ public class AddressEditorTest {
 
         validateTextField(
                 editorFields.get(5),
-                profile.getCompanyName(),
+                profile.getInfo(FieldType.COMPANY_NAME),
                 FieldType.COMPANY_NAME,
                 /* label= */ "organization label",
                 /* isRequired= */ false,
@@ -1116,7 +1116,7 @@ public class AddressEditorTest {
         assertNotNull(address);
         assertEquals("New locality", address.getProfile().getLocality());
         assertEquals("New dependent locality", address.getProfile().getDependentLocality());
-        assertEquals("New organization", address.getProfile().getCompanyName());
+        assertEquals("New organization", address.getProfile().getInfo(FieldType.COMPANY_NAME));
     }
 
     @Test
@@ -1159,7 +1159,7 @@ public class AddressEditorTest {
         AutofillProfile profile = address.getProfile();
         assertEquals("111 First St", profile.getStreetAddress());
         assertEquals("", profile.getDependentLocality());
-        assertEquals("Google", profile.getCompanyName());
+        assertEquals("Google", profile.getInfo(FieldType.COMPANY_NAME));
         assertEquals("90291", profile.getPostalCode());
         assertEquals("", profile.getSortingCode());
     }

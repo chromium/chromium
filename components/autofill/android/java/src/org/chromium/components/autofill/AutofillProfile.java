@@ -333,15 +333,6 @@ public class AutofillProfile {
         return mFields.get(fieldType).getStatus();
     }
 
-    public String getCompanyName() {
-        return getInfo(FieldType.COMPANY_NAME);
-    }
-
-    @VerificationStatus
-    int getCompanyNameStatus() {
-        return getInfoStatus(FieldType.COMPANY_NAME);
-    }
-
     public String getStreetAddress() {
         return getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS);
     }
