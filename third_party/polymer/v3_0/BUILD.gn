@@ -94,7 +94,7 @@ ts_library("library") {
     #
     # [1] https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/web/web.md#Lit
     # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/web/web.md#Polymer
-    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md
+    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/webui_using_lit.md
 
     # Use Lit instead of Polymer (see //third_party/lit/v3_0:build_ts). Consult
     # with //ui/webui/PLATFORM_OWNERS or g/chrome-webui if you think there is a

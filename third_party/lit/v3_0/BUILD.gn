@@ -16,7 +16,7 @@ ts_library("build_ts") {
     # Polymer) for new WebUI code, see [1] and [2]
     #
     # [1] https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/web/web.md#Lit
-    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md
+    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/webui_using_lit.md
     #
     # Explicitly tracking targets that can depend on third_party/lit is still
     # useful to audit UIs that depend on Lit, and to prevent adding Lit as a
