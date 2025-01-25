@@ -5340,6 +5340,14 @@ const char kUserDisplayModeSyncStandaloneMitigationDescription[] =
     "Enables a mitigation during web app install on CrOS for syncing "
     "user_display_mode: kStandalone to non-CrOS devices.";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+const char kWasmTtsComponentUpdaterEnabledName[] =
+    "Enable Wasm TTS Extension Component";
+const char kWasmTtsComponentUpdaterEnabledDescription[] =
+    "Enable updating the wasm TTS extension resource files through the "
+    "Component Updater.";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 const char kWebAppSystemMediaControlsName[] = "Web App System Media Controls";
 const char kWebAppSystemMediaControlsDescription[] =

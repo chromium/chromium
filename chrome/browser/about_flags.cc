@@ -7407,6 +7407,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"support-tool-screenshot", flag_descriptions::kSupportToolScreenshot,
      flag_descriptions::kSupportToolScreenshotDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSupportToolScreenshot)},
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+    {"wasm-tts-component-updater-enabled",
+     flag_descriptions::kWasmTtsComponentUpdaterEnabledName,
+     flag_descriptions::kWasmTtsComponentUpdaterEnabledDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWasmTtsComponentUpdaterEnabled)},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"enable-auto-disable-accessibility",
