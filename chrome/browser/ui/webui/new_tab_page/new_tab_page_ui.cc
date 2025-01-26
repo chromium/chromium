@@ -452,15 +452,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       base::NumberToString(
           ntp_features::kNtpCalendarModuleWindowEndDeltaParam.Get().InHours()));
 
-  // TODO(crbug.com/372722777): Add equivalent to IsOutlookCalendarModuleEnabled
-  // call for Sharepoint, once created.
-  source->AddBoolean(
-      "microsoftAuthEnabled",
-      base::FeatureList::IsEnabled(
-          ntp_features::kNtpMicrosoftAuthenticationModule) &&
-          (IsOutlookCalendarModuleEnabled(
-               NewTabPageUI::IsManagedProfile(profile)) ||
-           base::FeatureList::IsEnabled(ntp_features::kNtpSharepointModule)));
+  source->AddBoolean("microsoftModuleEnabled",
+                     IsMicrosoftModuleEnabledForProfile(profile));
 
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,

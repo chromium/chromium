@@ -764,7 +764,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
   Object.values(AuthState).forEach((state) => {
     test(`Silent auth when auth state ${state}`, async () => {
       // Arrange.
-      loadTimeData.overrideValues({microsoftAuthEnabled: true});
+      loadTimeData.overrideValues({microsoftModuleEnabled: true});
       handler.setResultFor('getMicrosoftAuthState', {state});
       const modulesElement =
           await createModulesElement([], true, SAMPLE_SCREEN_WIDTH);

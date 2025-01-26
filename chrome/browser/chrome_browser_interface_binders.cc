@@ -1154,19 +1154,21 @@ void PopulateChromeWebUIFrameBinders(
         ntp::calendar::mojom::GoogleCalendarPageHandler, NewTabPageUI>(map);
   }
 
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpOutlookCalendarModule)) {
+  if (IsOutlookCalendarModuleEnabledForProfile(Profile::FromBrowserContext(
+          render_frame_host->GetBrowserContext()))) {
     RegisterWebUIControllerInterfaceBinder<
         ntp::calendar::mojom::OutlookCalendarPageHandler, NewTabPageUI>(map);
   }
 
-  if (base::FeatureList::IsEnabled(
-          ntp_features::kNtpMicrosoftAuthenticationModule)) {
+  if (IsMicrosoftModuleEnabledForProfile(Profile::FromBrowserContext(
+          render_frame_host->GetBrowserContext()))) {
     RegisterWebUIControllerInterfaceBinder<
         ntp::authentication::mojom::MicrosoftAuthPageHandler, NewTabPageUI>(
         map);
   }
 
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpSharepointModule)) {
+  if (IsMicrosoftFilesModuleEnabledForProfile(Profile::FromBrowserContext(
+          render_frame_host->GetBrowserContext()))) {
     RegisterWebUIControllerInterfaceBinder<
         file_suggestion::mojom::MicrosoftFilesPageHandler, NewTabPageUI>(map);
   }
