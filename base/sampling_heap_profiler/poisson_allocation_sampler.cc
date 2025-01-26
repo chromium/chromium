@@ -236,6 +236,7 @@ size_t PoissonAllocationSampler::SamplingInterval() const {
 }
 
 PoissonAllocationSamplerStats PoissonAllocationSampler::GetAndResetStats() {
+  ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
   return PoissonAllocationSamplerStats(
       address_cache_hits_.exchange(0, std::memory_order_relaxed),
