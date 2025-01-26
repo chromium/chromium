@@ -14,7 +14,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "chrome/windows_services/elevated_tracing_service/session_registry.h"
-#include "components/tracing/tracing_service_idl.h"
+#include "chrome/windows_services/elevated_tracing_service/tracing_service_idl.h"
 
 namespace base {
 class SequencedTaskRunner;

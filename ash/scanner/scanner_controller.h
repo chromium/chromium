@@ -39,6 +39,15 @@ class ASH_EXPORT ScannerController : public SessionObserver {
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
+  // Checks system level constraints (e.g. feature flags) and returns
+  // true if the constraints allow the scanner UI that allows a user to enter
+  // the consent screen. (i.e. needs to show even if consent isn't accepted).
+  bool CanShowConsentScreenEntryPoints();
+
+  // Checks system level constraints (e.g. feature flags) and returns
+  // true if the constraints allow a Scanner settings toggle to be shown.
+  bool CanShowFeatureSettingsToggle();
+
   // Checks system level constraints (e.g. prefs, feature flags) and returns
   // true if the constraints allow a Scanner session to be created.
   bool CanStartSession();

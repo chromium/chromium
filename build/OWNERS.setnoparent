@@ -92,3 +92,6 @@ file://ui/views/VIEWS_OWNERS
 
 # ChromeOS dependencies reviews
 file://chrome/browser/ash/REFACTORING_OWNERS
+
+# Crashpad
+file://third_party/crashpad/crashpad/CRASHPAD_OWNERS

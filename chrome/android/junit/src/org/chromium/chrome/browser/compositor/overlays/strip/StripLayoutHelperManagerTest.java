@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
@@ -96,6 +97,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -141,6 +143,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
+    @Mock private Tracker mTracker;
     @Captor private ArgumentCaptor<List<Rect>> mSystemExclusionRectCaptor;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
@@ -187,6 +190,7 @@ public class StripLayoutHelperManagerTest {
     private void initializeTest() {
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
                 .thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mStandardTabModel);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mStandardTabModel);
         when(mTabModelSelector.getTabGroupModelFilterProvider())
                 .thenReturn(mTabGroupModelFilterProvider);
@@ -201,6 +205,7 @@ public class StripLayoutHelperManagerTest {
         mToolbarPrimaryColor = SemanticColorUtils.getToolbarBackgroundPrimary(mActivity);
         when(mToolbarManager.getTabStripHeightSupplier()).thenReturn(mTabStripHeightSupplier);
         when(mToolbarManager.getPrimaryColor()).thenReturn(mToolbarPrimaryColor);
+        TrackerFactory.setTrackerForTests(mTracker);
 
         mStripLayoutHelperManager =
                 new StripLayoutHelperManager(

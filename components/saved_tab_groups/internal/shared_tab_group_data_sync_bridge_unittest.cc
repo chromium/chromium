@@ -44,6 +44,7 @@
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -73,7 +74,7 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using testing::WithArg;
 
-constexpr char kDefaultGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kDefaultGaiaId("1234567890");
 
 // Creator is not verified for the local changes because this field is not used
 // in the processor for updates.
@@ -269,8 +270,8 @@ std::unique_ptr<syncer::EntityChange> CreateAddEntityChange(
   const std::string& storage_key = specifics.guid();
   return syncer::EntityChange::CreateAdd(
       storage_key,
-      CreateEntityData(specifics, collaboration_id, GaiaId(kDefaultGaiaId),
-                       /*updated_by=*/GaiaId(kDefaultGaiaId), creation_time));
+      CreateEntityData(specifics, collaboration_id, kDefaultGaiaId,
+                       /*updated_by=*/kDefaultGaiaId, creation_time));
 }
 
 std::unique_ptr<syncer::EntityChange> CreateUpdateEntityChange(
@@ -280,8 +281,8 @@ std::unique_ptr<syncer::EntityChange> CreateUpdateEntityChange(
   const std::string& storage_key = specifics.guid();
   return syncer::EntityChange::CreateUpdate(
       storage_key,
-      CreateEntityData(specifics, collaboration_id, GaiaId(kDefaultGaiaId),
-                       /*updated_by=*/GaiaId(kDefaultGaiaId), creation_time));
+      CreateEntityData(specifics, collaboration_id, kDefaultGaiaId,
+                       /*updated_by=*/kDefaultGaiaId, creation_time));
 }
 
 std::unique_ptr<syncer::EntityChange> CreateDeleteEntityChange(
@@ -532,8 +533,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnClientTag) {
   sync_pb::SharedTabGroupDataSpecifics group_specifics =
       MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
   EXPECT_EQ(bridge()->GetClientTag(CreateEntityData(
-                group_specifics, kCollaborationId, GaiaId(kDefaultGaiaId),
-                /*updated_by=*/GaiaId(kDefaultGaiaId))),
+                group_specifics, kCollaborationId, kDefaultGaiaId,
+                /*updated_by=*/kDefaultGaiaId)),
             group_specifics.guid() + "|" + kCollaborationId.value());
 }
 
@@ -826,8 +827,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldCheckValidEntities) {
 
   EXPECT_TRUE(bridge()->IsEntityDataValid(CreateEntityData(
       MakeTabGroupSpecifics("test title", sync_pb::SharedTabGroup::GREEN),
-      kCollaborationId, GaiaId(kDefaultGaiaId),
-      /*updated_by=*/GaiaId(kDefaultGaiaId))));
+      kCollaborationId, kDefaultGaiaId,
+      /*updated_by=*/kDefaultGaiaId)));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldRemoveLocalGroupsOnDisableSync) {
@@ -1186,13 +1187,13 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
   group.SetCollaborationId(kCollaborationId);
-  group.SetUpdatedByAttribution(GaiaId(kDefaultGaiaId));
+  group.SetUpdatedByAttribution(kDefaultGaiaId);
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
-  tab1.SetUpdatedByAttribution(GaiaId(kDefaultGaiaId));
+  tab1.SetUpdatedByAttribution(kDefaultGaiaId);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
       "http://google.com/2", u"tab 2", group.saved_guid(), /*position=*/1);
-  tab2.SetUpdatedByAttribution(GaiaId(kDefaultGaiaId));
+  tab2.SetUpdatedByAttribution(kDefaultGaiaId);
 
   group.AddTabLocally(tab1);
   group.AddTabLocally(tab2);
@@ -1944,26 +1945,24 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   change_list.push_back(syncer::EntityChange::CreateAdd(
       group_specifics.guid(),
       CreateEntityData(group_specifics, kCollaborationId,
-                       /*created_by=*/GaiaId(kDefaultGaiaId),
-                       GaiaId(kUpdatedBy1),
+                       /*created_by=*/kDefaultGaiaId, kUpdatedBy1,
                        /*creation_time=*/base::Time::Now())));
   change_list.push_back(syncer::EntityChange::CreateAdd(
       tab_specifics.guid(),
       CreateEntityData(tab_specifics, kCollaborationId,
-                       /*created_by=*/GaiaId(kDefaultGaiaId),
-                       GaiaId(kUpdatedBy1),
+                       /*created_by=*/kDefaultGaiaId, kUpdatedBy1,
                        /*creation_time=*/base::Time::Now())));
   bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
                               std::move(change_list));
 
   const SavedTabGroup* group = model()->Get(group_guid);
   ASSERT_THAT(group, NotNull());
-  EXPECT_EQ(group->shared_attribution().created_by, GaiaId(kDefaultGaiaId));
+  EXPECT_EQ(group->shared_attribution().created_by, kDefaultGaiaId);
   EXPECT_EQ(group->shared_attribution().updated_by, kUpdatedBy1);
 
   ASSERT_THAT(group->saved_tabs(), SizeIs(1));
   EXPECT_EQ(group->saved_tabs()[0].shared_attribution().created_by,
-            GaiaId(kDefaultGaiaId));
+            kDefaultGaiaId);
   EXPECT_EQ(group->saved_tabs()[0].shared_attribution().updated_by,
             kUpdatedBy1);
 
@@ -1971,23 +1970,21 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   change_list.push_back(syncer::EntityChange::CreateUpdate(
       group_specifics.guid(),
       CreateEntityData(group_specifics, kCollaborationId,
-                       /*created_by=*/GaiaId(kDefaultGaiaId),
-                       GaiaId(kUpdatedBy2),
+                       /*created_by=*/kDefaultGaiaId, kUpdatedBy2,
                        /*creation_time=*/base::Time::Now())));
   change_list.push_back(syncer::EntityChange::CreateUpdate(
       tab_specifics.guid(),
       CreateEntityData(tab_specifics, kCollaborationId,
-                       /*created_by=*/GaiaId(kDefaultGaiaId),
-                       GaiaId(kUpdatedBy2),
+                       /*created_by=*/kDefaultGaiaId, kUpdatedBy2,
                        /*creation_time=*/base::Time::Now())));
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         std::move(change_list));
 
-  EXPECT_EQ(group->shared_attribution().created_by, GaiaId(kDefaultGaiaId));
+  EXPECT_EQ(group->shared_attribution().created_by, kDefaultGaiaId);
   EXPECT_EQ(group->shared_attribution().updated_by, kUpdatedBy2);
   ASSERT_THAT(group->saved_tabs(), SizeIs(1));
   EXPECT_EQ(group->saved_tabs()[0].shared_attribution().created_by,
-            GaiaId(kDefaultGaiaId));
+            kDefaultGaiaId);
   EXPECT_EQ(group->saved_tabs()[0].shared_attribution().updated_by,
             kUpdatedBy2);
 }
@@ -2002,12 +1999,12 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
   group.SetCollaborationId(kCollaborationId);
-  group.SetCreatedByAttribution(GaiaId(kDefaultGaiaId));
+  group.SetCreatedByAttribution(kDefaultGaiaId);
   group.SetUpdatedByAttribution(kUpdatedBy1);
 
   SavedTabGroupTab tab = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0);
-  tab.SetCreatedByAttribution(GaiaId(kDefaultGaiaId));
+  tab.SetCreatedByAttribution(kDefaultGaiaId);
   tab.SetUpdatedByAttribution(kUpdatedBy1);
   group.AddTabLocally(tab);
 
@@ -2025,6 +2022,38 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
               Put(StorageKeyForTab(tab),
                   Pointee(HasAttributionMetadata(kUpdatedBy2)), _));
   model()->UpdateTabInGroup(group.saved_guid(), tab, /*notify_observers=*/true);
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldKeepGroupWhenAllTabsAreUpdated) {
+  const CollaborationId kCollaborationId("collaboration");
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId(kCollaborationId);
+  SavedTabGroupTab tab = test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"Tab 1", group.saved_guid(), /*position=*/0);
+  group.AddTabLocally(tab);
+  model()->AddedLocally(group);
+
+  // Remote update replaces the existing tab with a new one.
+  sync_pb::SharedTabGroupDataSpecifics new_tab_specifics =
+      MakeTabSpecifics("Tab 2", GURL("http://google.com/2"), group.saved_guid(),
+                       GenerateRandomUniquePosition());
+  syncer::EntityChangeList change_list;
+  change_list.push_back(CreateDeleteEntityChange(StorageKeyForTab(tab)));
+  change_list.push_back(
+      CreateUpdateEntityChange(new_tab_specifics, kCollaborationId));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(change_list));
+
+  // The group should still be present in the model with the new tab.
+  ASSERT_THAT(
+      model()->saved_tab_groups(),
+      ElementsAre(HasSharedGroupMetadata(
+          "title", tab_groups::TabGroupColorId::kGrey, kCollaborationId)));
+  EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+              ElementsAre(HasTabMetadata("Tab 2", "http://google.com/2")));
 }
 
 // The number of tabs to test the correct ordering of remote updates.

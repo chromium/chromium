@@ -473,6 +473,16 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     }
 
     /**
+     * @return Notification bubble drawX accounting for padding.
+     */
+    public float getBubbleDrawX() {
+        assert mShowBubble;
+        return LocalizationUtils.isLayoutRtl()
+                ? getPaddedX() + getTitleEndPadding()
+                : getPaddedX() + getPaddedWidth() - getTitleEndPadding() - getBubbleSize();
+    }
+
+    /**
      * @return The tint of the notification bubble.
      */
     public @ColorInt int getBubbleTint() {

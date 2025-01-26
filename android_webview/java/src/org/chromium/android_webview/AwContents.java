@@ -151,6 +151,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1838,6 +1839,7 @@ public class AwContents implements SmartClipProvider {
     public void startPrerendering(
             @NonNull String prerenderingUrl,
             @Nullable AwPrefetchParameters prefetchParameters,
+            @NonNull Executor callbackExecutor,
             @NonNull Callback<Void> activationCallback,
             @NonNull Callback<Throwable> errorCallback) {
         if (isDestroyed(NO_WARN)) return;
@@ -1859,8 +1861,10 @@ public class AwContents implements SmartClipProvider {
                         mNativeAwContents,
                         prerenderingUrl,
                         prefetchParameters,
-                        activationCallback.bind(null),
-                        errorCallback.bind(new Exception("Prerendering fails.")));
+                        () -> callbackExecutor.execute(activationCallback.bind(null)),
+                        () ->
+                                callbackExecutor.execute(
+                                        errorCallback.bind(new Exception("Prerendering fails."))));
     }
 
     public void cancelAllPrerendering() {

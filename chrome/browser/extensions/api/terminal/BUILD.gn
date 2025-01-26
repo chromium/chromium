@@ -1,0 +1,61 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+source_set("terminal") {
+  sources = [
+    "terminal_private_api.cc",
+    "terminal_private_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/cicerone:cicerone_proto_lib",
+    "//extensions/browser",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/extensions",
+    "//chrome/browser/extensions/api/terminal:startup_status",
+    "//chrome/browser/policy:system_features_disable_list",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common:non_code_constants",
+    "//chrome/common/extensions/api",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/experiences/guest_os/virtual_machines",
+    "//chromeos/process_proxy",
+    "//components/prefs",
+    "//extensions/common:common_constants",
+    "//ui/display/types",
+  ]
+}
+
+source_set("startup_status") {
+  sources = [
+    "startup_status.cc",
+    "startup_status.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/app:generated_resources_grit",
+    "//content/public/browser",
+  ]
+}

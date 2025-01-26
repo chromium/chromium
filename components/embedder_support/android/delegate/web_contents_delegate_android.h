@@ -129,6 +129,7 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   bool MaybeCopyContentAreaAsBitmap(
       base::OnceCallback<void(const SkBitmap&)> callback) override;
   SkBitmap MaybeCopyContentAreaAsBitmapSync() override;
+  SkBitmap GetBackForwardTransitionFallbackUXInternalPageIcon() override;
   void DidBackForwardTransitionAnimationChange() override;
   content::BackForwardTransitionAnimationManager::FallbackUXConfig
   GetBackForwardTransitionFallbackUXConfig() override;

@@ -31,8 +31,8 @@ class PruneCondition;
 //!     dumps.
 //!
 //! After the thread is started, the database is pruned using the condition
-//! every 24 hours. Upon calling Start(), the thread waits 5 seconds before
-//! performing the initial prune operation.
+//! every 24 hours. Upon calling Start(), the thread waits before performing
+//! the initial prune operation.
 //!
 //! Locked intermediate dump files are unlocked only once, not periodically.
 //! Locked dumps that match this bundle id can be unlocked if they are over a
@@ -48,8 +48,11 @@ class PruneIntermediateDumpsAndCrashReportsThread
   //!     pruning.
   //! \param[in] pending_path The path to any locked intermediate dump files.
   //! \param[in] bundle_identifier_and_seperator The identifier for this client,
-  //!  used to determine when locked files are considered stale, with a
-  //!  seperator at the end to allow for substring searches.
+  //!     used to determine when locked files are considered stale, with a
+  //!     seperator at the end to allow for substring searches.
+  //! \param[in] is_extension Whether the process is an app extension. If
+  //!     `true`, the inital prune will occur after a 5-second delay. If
+  //!     `false`, the initial prune will occur after a 60-second delay.
   PruneIntermediateDumpsAndCrashReportsThread(
       CrashReportDatabase* database,
       std::unique_ptr<PruneCondition> condition,

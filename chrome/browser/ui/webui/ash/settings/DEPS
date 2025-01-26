@@ -78,6 +78,12 @@ specific_include_rules = {
   ],
   'search_section\.(cc|h)': [
     "+ash/lobster",
+    "+ash/scanner",
+    "+ash/shell.h",
+  ],
+  'search_section_unittest\.(cc|h)': [
+    "+ash/scanner",
+    "+ash/shell.h",
   ],
   'select_to_speak_handler\.cc': [
     '+content/public/browser/tts_controller.h',

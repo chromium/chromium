@@ -11,6 +11,12 @@
 
 namespace base {
 
+std::optional<int> func();
+std::optional<std::string> ReturnsDifferentOptional() {
+  RETURN_IF_ERROR(func());  // expected-error-re {{conversion function {{.*}} invokes a deleted function}}
+  return "Hello";
+}
+
 base::expected<void, int> TernaryInAssignOrReturn() {
   base::expected<int, int> e = base::ok(1);
   int a, b;

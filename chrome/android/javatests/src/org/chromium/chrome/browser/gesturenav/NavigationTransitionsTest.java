@@ -893,4 +893,37 @@ public class NavigationTransitionsTest {
         callbackHelper.waitForOnly();
         Assert.assertNull("Should capture a null when navigating between native pages", mBitmap);
     }
+
+    /** Tests that the favicon bitmap when navigating back to a native page is not null. */
+    @Test
+    @MediumTest
+    public void testFallbackUxFaviconForNativePages() throws TimeoutException {
+        // This test is for both 3-button and gesture nav mode.
+        if (mTestNavigationMode == NAVIGATION_MODE_GESTURAL
+                && VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE) return;
+        // 1. Load NTP.
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
+        // 2. Load url1.
+        String url1 = mTestServer.getURL("/chrome/test/data/android/blue.html");
+        mActivityTestRule.loadUrl(url1);
+        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        mScreenshotCaptureTestHelper.setNavScreenshotCallbackForTesting(
+                (navIndex, bitmap, requested) -> {
+                    mBitmap = bitmap;
+                    callbackHelper.notifyCalled();
+                    return mBitmap;
+                });
+
+        // 3. Swipe back to the NTP.
+        performNavigationTransition(UrlConstants.NTP_URL, BackEventCompat.EDGE_LEFT);
+        waitForTransitionFinished();
+        Assert.assertEquals(UrlConstants.NTP_URL, getCurrentUrl());
+
+        Assert.assertNotNull(
+                "The favicon bitmap in the fallback ux of a native page should not be null.",
+                mBitmap);
+    }
 }

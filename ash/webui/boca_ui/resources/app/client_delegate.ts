@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {Value} from '//resources/mojo/mojo/public/mojom/base/values.mojom-webui.js'
+
 import {Config, ControlledTab as ControlledTabMojom, Course, IdentifiedActivity as Activity, Identity as IdentityMojom, NetworkInfo as NetworkInfoMojom, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
 
-import {CaptionConfig, ClientApiDelegate, ControlledTab, IdentifiedActivity, Identity, NetworkInfo, OnTaskConfig, SessionConfig, SubmitAccessCodeResult} from './boca_app.js';
-
+import {BocaValidPref, CaptionConfig, ClientApiDelegate, ControlledTab, IdentifiedActivity, Identity, NetworkInfo, OnTaskConfig, SessionConfig, SubmitAccessCodeResult} from './boca_app.js';
 
 const MICRO_SECS_IN_MINUTES: bigint = 60000000n;
 
@@ -231,6 +232,12 @@ export class ClientDelegateFactory {
       viewStudentScreen: async (id: string) => {
         const result = await pageHandler.viewStudentScreen(id);
         return !resultHasError(result);
+      },
+      getUserPref: async (pref: BocaValidPref) => {
+        return (await pageHandler.getUserPref(pref.valueOf())).value;
+      },
+      setUserPref: async (pref: BocaValidPref, value: Value) => {
+        await pageHandler.setUserPref(pref.valueOf(), value);
       }
     };
   }

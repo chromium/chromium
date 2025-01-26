@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
+using blink::CachedMetadataHandler::kCrashIfUnchecked;
 using ::testing::_;
 
 namespace blink {
@@ -300,14 +301,18 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
     // called.
     switch (nth_load) {
       case 1:
-        EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_TRUE(
+            cache_handler->GetCachedMetadata(kTimeStampTag, kCrashIfUnchecked));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kCodeTag, kCrashIfUnchecked));
         EXPECT_CALL(*sender_ptr, Send(_, _));
         break;
 
       case 3:
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_TRUE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kTimeStampTag, kCrashIfUnchecked));
+        EXPECT_TRUE(
+            cache_handler->GetCachedMetadata(kCodeTag, kCrashIfUnchecked));
         EXPECT_CALL(*sender_ptr, Send(_, _));
         break;
     }
@@ -338,8 +343,10 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
       case 0:
         // For the first time, the cache handler doesn't contain any data, and
         // we'll set timestamp in ProduceCache() below.
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kTimeStampTag, kCrashIfUnchecked));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kCodeTag, kCrashIfUnchecked));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kSetTimeStamp,
                   GetProduceCacheOptions(module_script));
         EXPECT_CALL(*sender_ptr, Send(_, _));
@@ -348,8 +355,10 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
       case 1:
         // For the second time, the timestamp has been cleared and will be
         // replaced by another timestamp because the content didn't match.
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kTimeStampTag, kCrashIfUnchecked));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kCodeTag, kCrashIfUnchecked));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kSetTimeStamp,
                   GetProduceCacheOptions(module_script));
         EXPECT_CALL(*sender_ptr, Send(_, _));
@@ -358,8 +367,10 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
       case 2:
         // For the third time, as timestamp is already set, we'll produce code
         // cache in ProduceCache() below.
-        EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_TRUE(
+            cache_handler->GetCachedMetadata(kTimeStampTag, kCrashIfUnchecked));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kCodeTag, kCrashIfUnchecked));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kProduceCodeCache,
                   GetProduceCacheOptions(module_script));
         EXPECT_CALL(*sender_ptr, Send(_, _));
@@ -369,8 +380,10 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
         // For the fourth time, the code cache has been cleared and will get
         // replaced with a timestamp in ProduceCache() due to a content
         // mismatch.
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kTimeStampTag, kCrashIfUnchecked));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kCodeTag, kCrashIfUnchecked));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kSetTimeStamp,
                   GetProduceCacheOptions(module_script));
         EXPECT_CALL(*sender_ptr, Send(_, _));
@@ -379,8 +392,10 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
       case 4:
         // For the fifth time, as timestamp is already set, we'll produce code
         // cache in ProduceCache() below.
-        EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_TRUE(
+            cache_handler->GetCachedMetadata(kTimeStampTag, kCrashIfUnchecked));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kCodeTag, kCrashIfUnchecked));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kProduceCodeCache,
                   GetProduceCacheOptions(module_script));
         EXPECT_CALL(*sender_ptr, Send(_, _));
@@ -389,8 +404,10 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
       case 5:
         // For the sixth time, the code cache is already there and we've
         // consumed the code cache and won't do anything in ProduceCache().
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_TRUE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kTimeStampTag, kCrashIfUnchecked));
+        EXPECT_TRUE(
+            cache_handler->GetCachedMetadata(kCodeTag, kCrashIfUnchecked));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kNoProduceCache,
                   GetProduceCacheOptions(module_script));
         break;
@@ -404,33 +421,45 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
 
     switch (nth_load) {
       case 0:
-        EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_TRUE(
+            cache_handler->GetCachedMetadata(kTimeStampTag, kCrashIfUnchecked));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kCodeTag, kCrashIfUnchecked));
         break;
 
       case 1:
-        EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_TRUE(
+            cache_handler->GetCachedMetadata(kTimeStampTag, kCrashIfUnchecked));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kCodeTag, kCrashIfUnchecked));
         break;
 
       case 2:
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_TRUE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kTimeStampTag, kCrashIfUnchecked));
+        EXPECT_TRUE(
+            cache_handler->GetCachedMetadata(kCodeTag, kCrashIfUnchecked));
         break;
 
       case 3:
-        EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_TRUE(
+            cache_handler->GetCachedMetadata(kTimeStampTag, kCrashIfUnchecked));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kCodeTag, kCrashIfUnchecked));
         break;
 
       case 4:
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_TRUE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kTimeStampTag, kCrashIfUnchecked));
+        EXPECT_TRUE(
+            cache_handler->GetCachedMetadata(kCodeTag, kCrashIfUnchecked));
         break;
 
       case 5:
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_TRUE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_FALSE(
+            cache_handler->GetCachedMetadata(kTimeStampTag, kCrashIfUnchecked));
+        EXPECT_TRUE(
+            cache_handler->GetCachedMetadata(kCodeTag, kCrashIfUnchecked));
         break;
     }
   }

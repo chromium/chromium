@@ -34,7 +34,6 @@
 #include "chrome/common/media/cdm_registration.h"
 #include "chrome/common/ppapi_utils.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/common_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crash/core/common/crash_key.h"
@@ -190,11 +189,6 @@ void ChromeContentClient::AddPlugins(
     plugins->push_back(nacl);
   }
 #endif  // BUILDFLAG(ENABLE_NACL)
-}
-
-std::vector<url::Origin>
-ChromeContentClient::GetPdfInternalPluginAllowedOrigins() {
-  return {url::Origin::Create(GURL(chrome::kChromeUIPrintURL))};
 }
 
 void ChromeContentClient::AddContentDecryptionModules(

@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VerificationStatus;
@@ -157,8 +158,8 @@ public class PersonalDataManagerTest {
 
         AutofillProfile storedProfile = mHelper.getProfile(profileOneGUID);
         Assert.assertEquals(profileOneGUID, storedProfile.getGUID());
-        Assert.assertEquals("CA", storedProfile.getCountryCode());
-        Assert.assertEquals("San Francisco", storedProfile.getLocality());
+        Assert.assertEquals("CA", storedProfile.getInfo(FieldType.ADDRESS_HOME_COUNTRY));
+        Assert.assertEquals("San Francisco", storedProfile.getInfo(FieldType.ADDRESS_HOME_CITY));
         Assert.assertNotNull(mHelper.getProfile(profileTwoGUID));
     }
 
@@ -297,7 +298,7 @@ public class PersonalDataManagerTest {
         AutofillProfile storedProfile = mHelper.getProfile(profileOneGUID);
         Assert.assertEquals(profileOneGUID, storedProfile.getGUID());
         Assert.assertEquals("fr", storedProfile.getLanguageCode());
-        Assert.assertEquals("US", storedProfile.getCountryCode());
+        Assert.assertEquals("US", storedProfile.getInfo(FieldType.ADDRESS_HOME_COUNTRY));
 
         profile.setGUID(profileOneGUID);
         profile.setLanguageCode("en");
@@ -306,8 +307,8 @@ public class PersonalDataManagerTest {
         AutofillProfile storedProfile2 = mHelper.getProfile(profileOneGUID);
         Assert.assertEquals(profileOneGUID, storedProfile2.getGUID());
         Assert.assertEquals("en", storedProfile2.getLanguageCode());
-        Assert.assertEquals("US", storedProfile2.getCountryCode());
-        Assert.assertEquals("San Francisco", storedProfile2.getLocality());
+        Assert.assertEquals("US", storedProfile2.getInfo(FieldType.ADDRESS_HOME_COUNTRY));
+        Assert.assertEquals("San Francisco", storedProfile2.getInfo(FieldType.ADDRESS_HOME_CITY));
     }
 
     @Test
@@ -488,7 +489,7 @@ public class PersonalDataManagerTest {
     @Feature({"Autofill"})
     public void testRespectCountryCodes() throws TimeoutException {
         // The constructor should accept country names and ISO 3166-1-alpha-2 country codes.
-        // getCountryCode() should return a country code.
+        // getInfo(FieldType.ADDRESS_HOME_CONTRY) should return a country code.
         AutofillProfile profile1 =
                 AutofillProfile.builder()
                         .setFullName("John Smith")
@@ -520,10 +521,10 @@ public class PersonalDataManagerTest {
         Assert.assertEquals(2, mHelper.getNumberOfProfilesForSettings());
 
         AutofillProfile storedProfile1 = mHelper.getProfile(profileGuid1);
-        Assert.assertEquals("CA", storedProfile1.getCountryCode());
+        Assert.assertEquals("CA", storedProfile1.getInfo(FieldType.ADDRESS_HOME_COUNTRY));
 
         AutofillProfile storedProfile2 = mHelper.getProfile(profileGuid2);
-        Assert.assertEquals("CA", storedProfile2.getCountryCode());
+        Assert.assertEquals("CA", storedProfile2.getInfo(FieldType.ADDRESS_HOME_COUNTRY));
     }
 
     @Test
@@ -552,11 +553,20 @@ public class PersonalDataManagerTest {
         AutofillProfile storedProfile = mHelper.getProfile(guid);
         // When converted to C++ and back the verification statuses for name and address components
         // should be preserved.
-        Assert.assertEquals(VerificationStatus.PARSED, storedProfile.getFullNameStatus());
-        Assert.assertEquals(VerificationStatus.FORMATTED, storedProfile.getStreetAddressStatus());
-        Assert.assertEquals(VerificationStatus.OBSERVED, storedProfile.getRegionStatus());
-        Assert.assertEquals(VerificationStatus.USER_VERIFIED, storedProfile.getLocalityStatus());
-        Assert.assertEquals(VerificationStatus.SERVER_PARSED, storedProfile.getPostalCodeStatus());
+        Assert.assertEquals(
+                VerificationStatus.PARSED, storedProfile.getInfoStatus(FieldType.NAME_FULL));
+        Assert.assertEquals(
+                VerificationStatus.FORMATTED,
+                storedProfile.getInfoStatus(FieldType.ADDRESS_HOME_STREET_ADDRESS));
+        Assert.assertEquals(
+                VerificationStatus.OBSERVED,
+                storedProfile.getInfoStatus(FieldType.ADDRESS_HOME_STATE));
+        Assert.assertEquals(
+                VerificationStatus.USER_VERIFIED,
+                storedProfile.getInfoStatus(FieldType.ADDRESS_HOME_CITY));
+        Assert.assertEquals(
+                VerificationStatus.SERVER_PARSED,
+                storedProfile.getInfoStatus(FieldType.ADDRESS_HOME_ZIP));
     }
 
     @Test
@@ -564,16 +574,25 @@ public class PersonalDataManagerTest {
     @Feature({"Autofill"})
     public void testValuesSetInProfileGainUserVerifiedStatus() {
         AutofillProfile profile = AutofillProfile.builder().build();
-        Assert.assertEquals(VerificationStatus.NO_STATUS, profile.getFullNameStatus());
-        Assert.assertEquals(VerificationStatus.NO_STATUS, profile.getStreetAddressStatus());
-        Assert.assertEquals(VerificationStatus.NO_STATUS, profile.getLocalityStatus());
+        Assert.assertEquals(
+                VerificationStatus.NO_STATUS, profile.getInfoStatus(FieldType.NAME_FULL));
+        Assert.assertEquals(
+                VerificationStatus.NO_STATUS,
+                profile.getInfoStatus(FieldType.ADDRESS_HOME_STREET_ADDRESS));
+        Assert.assertEquals(
+                VerificationStatus.NO_STATUS, profile.getInfoStatus(FieldType.ADDRESS_HOME_CITY));
 
         profile.setFullName("Homer Simpson");
-        Assert.assertEquals(VerificationStatus.USER_VERIFIED, profile.getFullNameStatus());
+        Assert.assertEquals(
+                VerificationStatus.USER_VERIFIED, profile.getInfoStatus(FieldType.NAME_FULL));
         profile.setStreetAddress("123 Main St.");
-        Assert.assertEquals(VerificationStatus.USER_VERIFIED, profile.getStreetAddressStatus());
+        Assert.assertEquals(
+                VerificationStatus.USER_VERIFIED,
+                profile.getInfoStatus(FieldType.ADDRESS_HOME_STREET_ADDRESS));
         profile.setLocality("Springfield");
-        Assert.assertEquals(VerificationStatus.USER_VERIFIED, profile.getLocalityStatus());
+        Assert.assertEquals(
+                VerificationStatus.USER_VERIFIED,
+                profile.getInfoStatus(FieldType.ADDRESS_HOME_CITY));
     }
 
     @Test
@@ -602,22 +621,26 @@ public class PersonalDataManagerTest {
         String profileGuid1 = mHelper.setProfile(profile);
         Assert.assertEquals(1, mHelper.getNumberOfProfilesForSettings());
         AutofillProfile storedProfile1 = mHelper.getProfile(profileGuid1);
-        Assert.assertEquals("PF", storedProfile1.getCountryCode());
-        Assert.assertEquals("Monsieur Jean DELHOURME", storedProfile1.getFullName());
-        Assert.assertEquals(streetAddress1, storedProfile1.getStreetAddress());
-        Assert.assertEquals("Tahiti", storedProfile1.getRegion());
-        Assert.assertEquals("Mahina", storedProfile1.getLocality());
-        Assert.assertEquals("Orofara", storedProfile1.getDependentLocality());
-        Assert.assertEquals("98709", storedProfile1.getPostalCode());
-        Assert.assertEquals("CEDEX 98703", storedProfile1.getSortingCode());
-        Assert.assertEquals("44.71.53", storedProfile1.getPhoneNumber());
-        Assert.assertEquals("john@acme.inc", storedProfile1.getEmailAddress());
+        Assert.assertEquals("PF", storedProfile1.getInfo(FieldType.ADDRESS_HOME_COUNTRY));
+        Assert.assertEquals("Monsieur Jean DELHOURME", storedProfile1.getInfo(FieldType.NAME_FULL));
+        Assert.assertEquals(
+                streetAddress1, storedProfile1.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS));
+        Assert.assertEquals("Tahiti", storedProfile1.getInfo(FieldType.ADDRESS_HOME_STATE));
+        Assert.assertEquals("Mahina", storedProfile1.getInfo(FieldType.ADDRESS_HOME_CITY));
+        Assert.assertEquals(
+                "Orofara", storedProfile1.getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY));
+        Assert.assertEquals("98709", storedProfile1.getInfo(FieldType.ADDRESS_HOME_ZIP));
+        Assert.assertEquals(
+                "CEDEX 98703", storedProfile1.getInfo(FieldType.ADDRESS_HOME_SORTING_CODE));
+        Assert.assertEquals("44.71.53", storedProfile1.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER));
+        Assert.assertEquals("john@acme.inc", storedProfile1.getInfo(FieldType.EMAIL_ADDRESS));
 
         profile.setStreetAddress(streetAddress2);
         String profileGuid2 = mHelper.setProfile(profile);
         Assert.assertEquals(2, mHelper.getNumberOfProfilesForSettings());
         AutofillProfile storedProfile2 = mHelper.getProfile(profileGuid2);
-        Assert.assertEquals(streetAddress2, storedProfile2.getStreetAddress());
+        Assert.assertEquals(
+                streetAddress2, storedProfile2.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS));
     }
 
     @Test

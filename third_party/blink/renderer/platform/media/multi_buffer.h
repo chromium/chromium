@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/containers/lru_cache.h"
-#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"

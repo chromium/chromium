@@ -30,10 +30,10 @@ namespace collaboration {
 
 namespace {
 
-const char kUserGaia[] = "gaia_id";
-const char kUserEmail[] = "test@email.com";
-const char kGroupId[] = "/?-group_id";
-const char kAccessToken[] = "/?-access_token";
+constexpr GaiaId::Literal kUserGaia("gaia_id");
+constexpr char kUserEmail[] = "test@email.com";
+constexpr char kGroupId[] = "/?-group_id";
+constexpr char kAccessToken[] = "/?-access_token";
 
 }  // namespace
 
@@ -71,7 +71,7 @@ TEST_F(CollaborationServiceImplTest, ConstructionAndEmptyServiceCheck) {
 TEST_F(CollaborationServiceImplTest, GetCurrentUserRoleForGroup) {
   GroupData group_data = GroupData();
   GroupMember group_member = GroupMember();
-  group_member.gaia_id = GaiaId(kUserGaia);
+  group_member.gaia_id = kUserGaia;
   group_member.role = MemberRole::kOwner;
   group_data.members.push_back(group_member);
 
@@ -93,7 +93,7 @@ TEST_F(CollaborationServiceImplTest, GetCurrentUserRoleForGroup) {
   identity_test_env_.MakeAccountAvailable(
       kUserEmail,
       {.primary_account_consent_level = signin::ConsentLevel::kSignin,
-       .gaia_id = GaiaId(kUserGaia)});
+       .gaia_id = kUserGaia});
   EXPECT_EQ(service_->GetCurrentUserRoleForGroup(group_id), MemberRole::kOwner);
 }
 

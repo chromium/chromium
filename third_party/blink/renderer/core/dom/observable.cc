@@ -1987,6 +1987,28 @@ class OperatorFromIterableSubscribeDelegate final
         return;
       }
 
+      // This happens if the `@@iterator` implementation is undefined or null.
+      // When `ScriptIterator::FromIterable()` encounters this, instead of
+      // throwing as ECMAScript's `GetIterator()` [1] calls for, it silently
+      // returns a null iterator to give embedders a chance to override the
+      // behavior. We do not want to override the behavior in this case, so we
+      // throw, which is called for in the Observable spec [2].
+      //
+      // [1]: https://tc39.es/ecma262/#sec-getiterator.
+      // [2]: http://wicg.github.io/observable/#from-iterable-conversion
+      if (iterator_.IsNull()) {
+        v8::Local<v8::Value> type_error = V8ThrowException::CreateTypeError(
+            script_state->GetIsolate(),
+            "@@iterator must not be undefined or null");
+        ApplyContextToException(
+            script_state_, type_error,
+            ExceptionContext(v8::ExceptionContext::kOperation, "Observable",
+                             "subscribe"));
+        subscriber->error(script_state,
+                          ScriptValue(script_state->GetIsolate(), type_error));
+        return;
+      }
+
       // This happens if `ScriptIterator::FromIterable()`, which runs script,
       // aborts the subscription. In that case, we respect the abort and leave
       // the iterator alone.
@@ -1996,17 +2018,14 @@ class OperatorFromIterableSubscribeDelegate final
 
       abort_algorithm_handle_ = subscriber->signal()->AddAlgorithm(this);
 
-      if (!iterator_.IsNull()) {
-        while (
-            iterator_.Next(execution_context, PassThroughException(isolate))) {
-          CHECK(!try_catch.HasCaught());
+      while (iterator_.Next(execution_context, PassThroughException(isolate))) {
+        CHECK(!try_catch.HasCaught());
 
-          v8::Local<v8::Value> value = iterator_.GetValue().ToLocalChecked();
-          subscriber->next(ScriptValue(isolate, value));
+        v8::Local<v8::Value> value = iterator_.GetValue().ToLocalChecked();
+        subscriber->next(ScriptValue(isolate, value));
 
-          if (subscriber->signal()->aborted()) {
-            break;
-          }
+        if (subscriber->signal()->aborted()) {
+          break;
         }
       }
 

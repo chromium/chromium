@@ -63,6 +63,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "components/manta/scanner_provider.h"
@@ -88,6 +89,7 @@ namespace ash {
 
 using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
+using ::specialized_features::FeatureAccessFailure;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AnyOf;
@@ -101,6 +103,7 @@ using ::testing::Matcher;
 using ::testing::Not;
 using ::testing::NotNull;
 using ::testing::Property;
+using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::WithArg;
 
@@ -2937,6 +2940,60 @@ TEST_F(ScannerTest, OnSelectCaptureRegionRecordTextDetectionTimer) {
 
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.Timer.OnDeviceTextDetection", 500, 1);
+}
+
+TEST_F(ScannerTest,
+       SmartActionsButtonShownForDetectedTextWhenConsentNotAccepted) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
+          FeatureAccessFailure::kConsentNotAccepted,
+      }));
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  detect_text_future.Take().Run("detected text");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+
+  EXPECT_TRUE(session_test_api.GetButtonWithViewID(
+      ActionButtonViewID::kSmartActionsButton));
+}
+
+TEST_F(ScannerTest,
+       SmartActionsButtonNotShownForDetectedTextButWithAccessCheckFailure) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
+          FeatureAccessFailure::kDisabledInSettings,
+      }));
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  detect_text_future.Take().Run("detected text");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+
+  EXPECT_FALSE(session_test_api.GetButtonWithViewID(
+      ActionButtonViewID::kSmartActionsButton));
 }
 
 // Tests that the smart actions button is shown in default capture mode if text

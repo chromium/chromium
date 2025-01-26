@@ -35,6 +35,12 @@ extern const char
     kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore
         [];
 
+extern const char
+    kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore[];
+extern const char
+    kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore_Incognito
+        [];
+
 extern const char kHistogramFirstPaintAfterBackForwardCacheRestore[];
 extern const char
     kHistogramFirstRequestAnimationFrameAfterBackForwardCacheRestore[];

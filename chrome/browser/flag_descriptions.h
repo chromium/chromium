@@ -3127,6 +3127,11 @@ extern const char kUserDisplayModeSyncBrowserMitigationDescription[];
 extern const char kUserDisplayModeSyncStandaloneMitigationName[];
 extern const char kUserDisplayModeSyncStandaloneMitigationDescription[];
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+extern const char kWasmTtsComponentUpdaterEnabledName[];
+extern const char kWasmTtsComponentUpdaterEnabledDescription[];
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 extern const char kWebAppSystemMediaControlsName[];
 extern const char kWebAppSystemMediaControlsDescription[];

@@ -510,6 +510,31 @@ SkBitmap WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmapSync() {
   return skbitmap;
 }
 
+SkBitmap WebContentsDelegateAndroid::
+    GetBackForwardTransitionFallbackUXInternalPageIcon() {
+  TRACE_EVENT("content",
+              "WebContentsDelegateAndroid::"
+              "GetBackForwardTransitionFallbackUXInternalPageIcon");
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return SkBitmap();
+  }
+  // Call Java's #getBackForwardTransitionFallbackUXInternalPageIcon via JNI.
+  ScopedJavaLocalRef<jobject> bitmap =
+      Java_WebContentsDelegateAndroid_getBackForwardTransitionFallbackUXInternalPageIcon(
+          env, obj);
+  if (bitmap.is_null()) {
+    return SkBitmap();
+  }
+
+  // Covert bitmap to SkBitmap.
+  gfx::JavaBitmap java_bitmap_lock(bitmap);
+  SkBitmap skbitmap = gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
+  skbitmap.setImmutable();
+  return skbitmap;
+}
+
 void WebContentsDelegateAndroid::DidBackForwardTransitionAnimationChange() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);

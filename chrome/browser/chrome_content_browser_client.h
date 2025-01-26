@@ -225,6 +225,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       network::mojom::URLLoaderFactoryParams* factory_params) override;
   void GetAdditionalWebUISchemes(
       std::vector<std::string>* additional_schemes) override;
+  bool IsInternalScheme(const GURL& url) override;
   void GetAdditionalViewSourceSchemes(
       std::vector<std::string>* additional_schemes) override;
   network::mojom::IPAddressSpace DetermineAddressSpaceFromURL(

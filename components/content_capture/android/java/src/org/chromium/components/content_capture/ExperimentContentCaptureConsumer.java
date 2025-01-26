@@ -17,12 +17,6 @@ public class ExperimentContentCaptureConsumer implements ContentCaptureConsumer 
     public ExperimentContentCaptureConsumer() {}
 
     @Override
-    public void onContentCaptureFlushed(
-            FrameSession parentFrame, ContentCaptureFrame contentCaptureFrame) {
-        if (sDump) Log.d(TAG, "onContentCaptureFlushed" + contentCaptureFrame.toString());
-    }
-
-    @Override
     public void onContentCaptured(
             FrameSession parentFrame, ContentCaptureFrame contentCaptureFrame) {
         if (sDump) Log.d(TAG, "onContentCaptured " + contentCaptureFrame.toString());

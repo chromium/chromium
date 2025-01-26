@@ -37,10 +37,6 @@ base::TimeDelta ContentCaptureSender::GetTaskInitialDelay() const {
   return base::Milliseconds(features::TaskInitialDelayInMilliseconds());
 }
 
-void ContentCaptureSender::DidCompleteBatchCaptureContent() {
-  GetContentCaptureReceiver()->DidCompleteBatchCaptureContent();
-}
-
 void ContentCaptureSender::DidCaptureContent(
     const blink::WebVector<blink::WebContentHolder>& data,
     bool first_data) {

@@ -306,6 +306,16 @@ public class AutofillProfile {
         return mLabel;
     }
 
+    /**
+     * Returns the field value that corresponds to the provided {@code fieldType}. Returns an empty
+     * string if the profile doesn't contain the specified field type.
+     *
+     * <p>Note: make sure you're requesting the correct field type by looking at the field type
+     * descriptions in the components/autofill/core/browser/field_types.h.
+     *
+     * @return the field value corresponding to the {@code fieldType}, or empty string if the
+     *     profile doesn't have that field.
+     */
     @CalledByNative
     public @JniType("std::u16string") String getInfo(@FieldType int fieldType) {
         if (!mFields.containsKey(fieldType)) {
@@ -323,104 +333,9 @@ public class AutofillProfile {
         return mFields.get(fieldType).getStatus();
     }
 
-    public String getFullName() {
-        return getInfo(FieldType.NAME_FULL);
-    }
-
-    @VisibleForTesting
-    @VerificationStatus
-    public int getFullNameStatus() {
-        return getInfoStatus(FieldType.NAME_FULL);
-    }
-
-    public String getCompanyName() {
-        return getInfo(FieldType.COMPANY_NAME);
-    }
-
-    @VerificationStatus
-    int getCompanyNameStatus() {
-        return getInfoStatus(FieldType.COMPANY_NAME);
-    }
-
-    public String getStreetAddress() {
-        return getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS);
-    }
-
-    @VisibleForTesting
-    @VerificationStatus
-    public int getStreetAddressStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_STREET_ADDRESS);
-    }
-
-    public String getRegion() {
-        return getInfo(FieldType.ADDRESS_HOME_STATE);
-    }
-
-    @VisibleForTesting
-    @VerificationStatus
-    public int getRegionStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_STATE);
-    }
-
-    public String getLocality() {
-        return getInfo(FieldType.ADDRESS_HOME_CITY);
-    }
-
-    @VisibleForTesting
-    @VerificationStatus
-    public int getLocalityStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_CITY);
-    }
-
-    public String getDependentLocality() {
-        return getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
-    }
-
-    private @VerificationStatus int getDependentLocalityStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
-    }
-
-    public String getPostalCode() {
-        return getInfo(FieldType.ADDRESS_HOME_ZIP);
-    }
-
-    @VisibleForTesting
-    @VerificationStatus
-    public int getPostalCodeStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_ZIP);
-    }
-
-    public String getSortingCode() {
-        return getInfo(FieldType.ADDRESS_HOME_SORTING_CODE);
-    }
-
-    private @VerificationStatus int getSortingCodeStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_SORTING_CODE);
-    }
-
     @CalledByNative
-    public @JniType("std::string") String getCountryCode() {
+    private @JniType("std::string") String getCountryCode() {
         return getInfo(FieldType.ADDRESS_HOME_COUNTRY);
-    }
-
-    private @VerificationStatus int getCountryCodeStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_COUNTRY);
-    }
-
-    public String getPhoneNumber() {
-        return getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER);
-    }
-
-    private @VerificationStatus int getPhoneNumberStatus() {
-        return getInfoStatus(FieldType.PHONE_HOME_WHOLE_NUMBER);
-    }
-
-    public String getEmailAddress() {
-        return getInfo(FieldType.EMAIL_ADDRESS);
-    }
-
-    private @VerificationStatus int getEmailAddressStatus() {
-        return getInfoStatus(FieldType.EMAIL_ADDRESS);
     }
 
     @CalledByNative

@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.chrome.R;
@@ -17,6 +18,7 @@ import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.LocalizationUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -64,18 +66,24 @@ public class TabStripIphController {
         mTracker = tracker;
     }
 
-    public void maybeShowIphOnTabStrip(
+    /**
+     * Calculates the anchor rect and display an In-Product Help (IPH) on the tab strip.
+     *
+     * @param groupTitle The group title or its related tab where the IPH should be shown on.
+     * @param tab The tab to show the IPH on. Pass in {@code null} if the IPH is not tied to a
+     *     particular tab. param iphType The type of the IPH to be shown.
+     * @param toolbarContainerView Used to get the anchor view for the IPH.
+     * @param iphType The type of IPH to display.
+     * @param tabStripHeight The height of the tab strip, used to calculate the anchor rect.
+     */
+    public void showIphOnTabStrip(
             StripLayoutGroupTitle groupTitle,
+            @Nullable StripLayoutTab tab,
             View toolbarContainerView,
             @IphType int iphType,
             float tabStripHeight) {
-        // Return early when the IPH triggering criteria is not satisfied.
-        if (mTracker == null && !mTracker.wouldTriggerHelpUi(getIphFeature(iphType))) {
-            return;
-        }
-
         Rect anchorRect =
-                calculateAnchorRect(toolbarContainerView, groupTitle, iphType, tabStripHeight);
+                calculateAnchorRect(toolbarContainerView, groupTitle, tab, iphType, tabStripHeight);
         IphCommand iphCommand =
                 new IphCommandBuilder(
                                 mResources,
@@ -96,12 +104,32 @@ public class TabStripIphController {
         }
     }
 
+    /**
+     * Determines whether the IPH would be triggered. IPH wo
+     *
+     * @param iphType The type of IPH.
+     * @return {@code true} if the IPH bubble for the given type would be triggered.
+     */
+    public boolean wouldTriggerIph(@IphType int iphType) {
+        return mTracker != null && mTracker.wouldTriggerHelpUi(getIphFeature(iphType));
+    }
+
+    /**
+     * @param toolbarContainerView The view where the IPH will be shown on.
+     * @param groupTitle The group title or its related tab where the IPH should be shown on.
+     * @param tab The tab to show the IPH on. Pass in {@code null} if the IPH is not tied to a
+     *     particular tab.
+     * @param iphType The type of the IPH to be shown.
+     * @return the anchor area where the IPH should be positioned underneath.
+     */
     private Rect calculateAnchorRect(
             View toolbarContainerView,
             StripLayoutGroupTitle groupTitle,
+            @Nullable StripLayoutTab tab,
             @IphType int iphType,
             float tabStripHeight) {
         float dpToPx = mResources.getDisplayMetrics().density;
+        boolean isRtl = LocalizationUtils.isLayoutRtl();
         int[] toolbarCoordinates = new int[2];
         toolbarContainerView.getLocationInWindow(toolbarCoordinates);
         float xOffset = 0f;
@@ -117,10 +145,22 @@ public class TabStripIphController {
                 anchorRect.bottom = (int) (tabStripHeight * dpToPx);
                 break;
             case IphType.GROUP_TITLE_NOTIFICATION_BUBBLE:
-                // TODO(crbug.com/348728701): implement.
+                anchorRect.left = (int) (groupTitle.getBubbleDrawX() * dpToPx);
+                anchorRect.right =
+                        (int) ((groupTitle.getBubbleDrawX() + groupTitle.getBubbleSize()) * dpToPx);
                 break;
             case IphType.TAB_NOTIFICATION_BUBBLE:
-                // TODO(crbug.com/348728701): implement
+                float left =
+                        isRtl
+                                ? -tab.getFaviconPadding() - tab.getFaviconSize()
+                                : tab.getFaviconPadding();
+                float right =
+                        isRtl
+                                ? -tab.getFaviconPadding()
+                                : tab.getFaviconPadding() + tab.getFaviconSize();
+                xOffset = (isRtl ? tab.getDrawX() + tab.getWidth() : tab.getDrawX()) * dpToPx;
+                anchorRect.left = (int) (left * dpToPx);
+                anchorRect.right = (int) (right * dpToPx);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid IPH type");
@@ -145,10 +185,9 @@ public class TabStripIphController {
         switch (iphType) {
             case IphType.TAB_GROUP_SYNC:
                 return R.string.newly_synced_tab_group_iph;
-            case IphType.GROUP_TITLE_NOTIFICATION_BUBBLE:
+            case IphType.GROUP_TITLE_NOTIFICATION_BUBBLE: // Fallthrough.
             case IphType.TAB_NOTIFICATION_BUBBLE:
-                // TODO(crbug.com/348728701): Implement notification bubble iph string.
-                return -1;
+                return R.string.tab_group_share_notification_bubble_iph;
             default:
                 throw new IllegalArgumentException("Invalid IPH type");
         }

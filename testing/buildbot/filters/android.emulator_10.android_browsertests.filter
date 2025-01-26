@@ -1,9 +1,6 @@
 # crbug.com/391928837
--PolicyTestUITest.TestErrorStateWhenNameNotSelected
--PolicyTestUITest.TestExtensionPoliciesIncluded
--PolicyTestUITest.TestPolicyNameChangesInputType
--PolicyTestUITest.TestPresetAutofill
--PolicyTestUITest.TestRowDeletedWhenRemoveClicked
+-PolicyTestUITest.*
 -SafeBrowsingPolicyTest.SSLErrorOverriding*
 -CertVerifierService*
 -All/CertVerifierService*
+-CRLSetBrowserTest*

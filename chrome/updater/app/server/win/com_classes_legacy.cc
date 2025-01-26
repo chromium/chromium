@@ -525,7 +525,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
                 if (result != kErrorOk) {
                   LOG(ERROR) << "FetchPolicies failed: " << result;
                   std::move(complete_callback)
-                      .Run(UpdateService::Result::kServiceStopped);
+                      .Run(UpdateService::Result::kFetchPoliciesFailed);
                   return;
                 }
 

@@ -1428,7 +1428,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Invokes SaveWindowPlacement() if the native widget has been initialized.
   // This is called at times when the native widget may not have been
   // initialized.
-  void SaveWindowPlacementIfInitialized();
+  void SaveWindowPlacementIfNeeded();
 
   // Sizes and positions the window just after it is created.
   void SetInitialBounds(const gfx::Rect& bounds);
@@ -1592,6 +1592,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // True if capture losses should be ignored.
   bool ignore_capture_loss_ = false;
+
+  // True if allow saving window placement.
+  bool save_window_placement_allowed_ = true;
 
   // TODO(beng): Remove NativeWidgetGtk's dependence on these:
   // The following are used to detect duplicate mouse move events and not

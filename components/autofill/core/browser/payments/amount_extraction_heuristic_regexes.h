@@ -45,10 +45,15 @@ class AmountExtractionHeuristicRegexes final {
   void ResetRegexStringPatternsForTesting() {
     keyword_pattern_.clear();
     amount_pattern_.clear();
-    number_of_ancestor_levels_to_search_ = 0;
+    number_of_ancestor_levels_to_search_ =
+        kDefaultNumberOfAncestorLevelsToSearch;
   }
 
  private:
+  static constexpr char kDefaultKeywordPattern[] = "^(Order Total|Total):?$";
+  static constexpr char kDefaultAmountPatternPattern[] =
+      R"regexp((?:\$)\s*\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)regexp";
+  static constexpr uint32_t kDefaultNumberOfAncestorLevelsToSearch = 6;
   // A keyword pattern string used for amount extraction from DOM search
   // process.
   std::string keyword_pattern_;
@@ -56,7 +61,8 @@ class AmountExtractionHeuristicRegexes final {
   // process.
   std::string amount_pattern_;
   // The number of ancestor levels to search in the amount extraction process.
-  uint32_t number_of_ancestor_levels_to_search_;
+  uint32_t number_of_ancestor_levels_to_search_ =
+      kDefaultNumberOfAncestorLevelsToSearch;
 };
 
 }  // namespace autofill::payments

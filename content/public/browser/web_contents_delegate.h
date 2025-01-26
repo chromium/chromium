@@ -834,6 +834,11 @@ class CONTENT_EXPORT WebContentsDelegate {
   // empty bitmap if embedder is not showing any custom view.
   virtual SkBitmap MaybeCopyContentAreaAsBitmapSync();
 
+  // Return an icon to use for privileged internal pages, if no screenshot of
+  // the page is available during back forward transition animations. An empty
+  // bitmap can be returned if the embedder wants to leave the preview empty.
+  virtual SkBitmap GetBackForwardTransitionFallbackUXInternalPageIcon();
+
   // Notifies the delegate that the back forward transition animation state
   // has changed. If necessary, the delegate should use this notification to
   // hold on its animation until the back forward transition has completed.

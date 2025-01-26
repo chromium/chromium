@@ -370,6 +370,12 @@ SearchResult HistoryEmbeddingsService::Search(
       GetFeatureParameters().erase_non_ascii_characters;
   result.search_params.word_match_search_non_ascii_passages =
       GetFeatureParameters().word_match_search_non_ascii_passages;
+  // TODO(crbug.com/390241271): Move this inside Embedder implementations once
+  //  they are no longer wrapped inside the SchedulingEmbedder.
+  //  Note that removing the non-ascii characters in the Embedder could result
+  //  in a query that contains a non-ascii character to be rejected in
+  //  `QueryIsFiltered()` below reducing the chances of the user getting
+  //  meaningful results from that query.
   if (result.search_params.erase_non_ascii_characters) {
     EraseNonAsciiCharacters(query);
   }
@@ -814,21 +820,20 @@ void HistoryEmbeddingsService::ComputeAndStorePassageEmbeddingsWithExistingData(
   if (database_access_timer.has_value()) {
     base::UmaHistogramTimes(
         "History.Embeddings.DatabaseAsCacheAccessTime.TotalWait",
-        database_access_timer.value().Elapsed());
+        database_access_timer->Elapsed());
   }
 
   // Move existing passages and associated embeddings into map for quick
   // hash-based lookup instead of many string comparisons.
   std::unordered_map<std::string, Embedding> embedding_cache;
   if (existing_url_data.has_value()) {
-    size_t n = existing_url_data.value().passages.passages_size();
+    size_t passages_size = existing_url_data->passages.passages_size();
     // It's possible to get passages but no embeddings if the model version
     // changed and caused embeddings to be deleted, and they're not rebuilt yet.
-    if (n == existing_url_data.value().embeddings.size()) {
-      auto passages_iter =
-          existing_url_data.value().passages.passages().begin();
-      auto embeddings_iter = existing_url_data.value().embeddings.begin();
-      for (size_t i = 0; i < n; i++) {
+    if (passages_size == existing_url_data->embeddings.size()) {
+      auto passages_iter = existing_url_data->passages.passages().begin();
+      auto embeddings_iter = existing_url_data->embeddings.begin();
+      for (size_t i = 0; i < passages_size; i++) {
         embedding_cache.emplace(std::move(*passages_iter),
                                 std::move(*embeddings_iter));
         passages_iter++;
@@ -840,87 +845,81 @@ void HistoryEmbeddingsService::ComputeAndStorePassageEmbeddingsWithExistingData(
   // Check the map for identical passages, which can reuse stored embeddings
   // instead of recomputing them with the embedder. Preserve the structure
   // in `url_data` and remove already-embedded passages from the `passages`
-  // that get sent to the embedder. Then piece them all together in
-  // `OnPassagesEmbeddingsComputed` using the cache plus new embeddings.
-  for (std::string& passage : passages) {
+  // that get sent to the embedder. The missing embeddings will be filled in
+  // with the computed embeddings in `OnPassagesEmbeddingsComputed()`.
+  size_t passages_size_before = passages.size();
+  for (auto passages_iter = passages.begin();
+       passages_iter != passages.end();) {
+    const auto& passage = *passages_iter;
+    url_data.passages.add_passages(passage);
     if (embedding_cache.contains(passage)) {
       VLOG(5) << "Cached passage: " << passage;
-      url_data.passages.add_passages(std::move(passage));
-      passage.clear();
+      // Reuse the embeddings from the cache.
+      url_data.embeddings.emplace_back(embedding_cache[passage]);
+      passages_iter = passages.erase(passages_iter);
     } else {
       VLOG(5) << "Noncached passage: " << passage;
-      url_data.passages.add_passages(passage);
+      // Reserve room for the embeddings to be filled in once computed.
+      url_data.embeddings.emplace_back(std::vector<float>{});
+      passages_iter++;
     }
   }
-  size_t old_size = passages.size();
-  if (old_size > 0 && GetFeatureParameters().use_database_before_embedder) {
-    // Erase all the blanks that were cleared by cache check above.
-    std::erase(passages, "");
-    size_t new_size = passages.size();
+  size_t passages_size_after = passages.size();
+
+  if (passages_size_before > 0) {
     base::UmaHistogramPercentage(
         "History.Embeddings.DatabaseCachedPassageRatio",
-        100 * (old_size - new_size) / old_size);
+        100 * (passages_size_before - passages_size_after) /
+            passages_size_before);
     base::UmaHistogramCounts100(
         "History.Embeddings.DatabaseCachedPassageHitCount",
-        old_size - new_size);
+        passages_size_before - passages_size_after);
     base::UmaHistogramCounts100(
-        "History.Embeddings.DatabaseCachedPassageTryCount", old_size);
-    for (size_t i = 0; i < old_size; i++) {
+        "History.Embeddings.DatabaseCachedPassageTryCount",
+        passages_size_before);
+    for (size_t i = 0; i < passages_size_before; i++) {
       base::UmaHistogramBoolean("History.Embeddings.DatabaseCacheHit",
-                                i >= new_size);
-    }
-
-    VLOG(4) << "All " << passages.size() << " non-cached passages for url_id "
-            << url_data.url_id << ":";
-    for (size_t i = 0; i < passages.size(); i++) {
-      VLOG(5) << i << ": \"" << passages[i] << '"';
+                                i >= passages_size_after);
     }
   }
 
+  VLOG(4) << "All " << passages.size() << " non-cached passages for url_id "
+          << url_data.url_id << ":";
+  for (size_t i = 0; i < passages.size(); i++) {
+    VLOG(5) << i << ": \"" << passages[i] << '"';
+  }
+
+  // TODO(crbug.com/390241271): Move this inside Embedder implementations once
+  //  they are no longer wrapped inside the SchedulingEmbedder.
+  if (GetFeatureParameters().erase_non_ascii_characters) {
+    EraseNonAsciiCharacters(passages);
+  }
   embedder_->ComputePassagesEmbeddings(
       passage_embeddings::PassagePriority::kPassive, std::move(passages),
       base::BindOnce(&HistoryEmbeddingsService::OnPassagesEmbeddingsComputed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(embedding_cache),
-                     std::move(url_data)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(url_data)));
 }
 
 void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
-    std::unordered_map<std::string, Embedding> embedding_cache,
     UrlData url_passages,
     std::vector<std::string> passages,
     std::vector<Embedding> embeddings,
     SchedulingEmbedder::TaskId task_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
-  // Merge new and cached embeddings, expanding the `embeddings`
-  // vector to fit the passages structure of `url_passages.passages`.
-  size_t passages_index = 0;
+  if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
+    return;
+  }
+
+  // Merge the new and the existing embeddings.
   size_t embeddings_index = 0;
-  for (int i = 0; i < url_passages.passages.passages_size(); i++) {
-    const std::string& passage = url_passages.passages.passages(i);
-    if (passages_index < passages.size() &&
-        passage == passages[passages_index]) {
-      // New embedding for non-cached passage; advance both.
-      CHECK(!embedding_cache.contains(passage));
-      passages_index++;
-      embeddings_index++;
-    } else {
-      // Cached embedding for existing passage; insert and advance on embeddings
-      // only.
-      auto cached_embedding = embedding_cache.find(passage);
-      CHECK(cached_embedding != embedding_cache.end());
-      CHECK_EQ(embedder_metadata_->output_size,
-               cached_embedding->second.Dimensions());
-      embeddings.insert(embeddings.begin() + embeddings_index,
-                        cached_embedding->second);
-      embeddings_index++;
+  for (auto& embedding : url_passages.embeddings) {
+    if (embedding.Dimensions() == 0) {
+      embedding = embeddings[embeddings_index++];
     }
   }
-  CHECK_EQ(passages_index, passages.size());
+  // Make sure all the new embeddings are accounted for.
   CHECK_EQ(embeddings_index, embeddings.size());
-  CHECK_EQ(embeddings_index,
-           static_cast<size_t>(url_passages.passages.passages_size()));
 
-  url_passages.embeddings = std::move(embeddings);
   storage_.AsyncCall(&Storage::ProcessAndStorePassages)
       .WithArgs(url_passages)
       .Then(base::BindOnce(passages_stored_callback_for_tests_, url_passages));
@@ -1208,11 +1207,20 @@ void HistoryEmbeddingsService::RebuildAbsentEmbeddings(
                                       url_passages.passages.passages().end());
     VLOG(3) << "Rebuild scheduled for url_id " << url_passages.url_id
             << " with " << passages.size() << " passages";
+
+    // Reserve room for the embeddings to be filled in once computed.
+    url_passages.embeddings = std::vector<Embedding>(
+        url_passages.passages.passages_size(), Embedding(std::vector<float>{}));
+
+    // TODO(crbug.com/390241271): Move this inside Embedder implementations once
+    //  they are no longer wrapped inside the SchedulingEmbedder.
+    if (GetFeatureParameters().erase_non_ascii_characters) {
+      EraseNonAsciiCharacters(passages);
+    }
     embedder_->ComputePassagesEmbeddings(
         passage_embeddings::PassagePriority::kLatent, std::move(passages),
         base::BindOnce(&HistoryEmbeddingsService::OnPassagesEmbeddingsComputed,
                        weak_ptr_factory_.GetWeakPtr(),
-                       std::unordered_map<std::string, Embedding>(),
                        std::move(url_passages)));
   }
 }

@@ -866,6 +866,9 @@
       <message name="IDS_TAB_GROUP_MENU_ACCESSIBILITY_TEXT" desc="Content description for accessibility to describe the action of tapping on the more menu button.">
         <ph name="TITLE_OF_GROUP">%s<ex>shopping</ex></ph> tab group options
       </message>
+      <message name="IDS_TAB_GROUP_SHARE_NOTIFICATION_BUBBLE_IPH" desc="IPH text highlighting notification bubble displayed on the tablet tab strip when a shared tab group receives updates from other members.">
+        Changes made are seen by everyone in the group
+      </message>
 
       <!-- Tabs Settings Strings -->
       <message name="IDS_TABS_SETTINGS_TITLE" desc="A title to show in the top toolbar when the Tabs settings page is open.">

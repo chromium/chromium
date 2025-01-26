@@ -14,13 +14,10 @@
 #include "base/functional/callback_forward.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -28,6 +25,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_button_util.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_drag_data.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
@@ -39,9 +37,6 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/dialog_model.h"
-#include "ui/base/models/dialog_model_field.h"
-#include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/theme_provider.h"
@@ -92,18 +87,12 @@ SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
                                          Browser* browser,
                                          bool animations_enabled)
     : MenuButton(std::move(callback), group.title()),
+      browser_(browser),
       is_shared_(group.is_shared_tab_group()),
       tab_group_color_id_(group.color()),
       guid_(group.saved_guid()),
       local_group_id_(group.local_group_id()),
-      tabs_(group.saved_tabs()),
-      context_menu_controller_(
-          this,
-          base::BindRepeating(
-              &SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel,
-              browser,
-              group.saved_guid()),
-          views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED) {
+      tabs_(group.saved_tabs()) {
   GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
   GetViewAccessibility().SetName(GetAccessibleNameForButton());
   GetViewAccessibility().SetRoleDescription(l10n_util::GetStringUTF16(
@@ -133,6 +122,7 @@ SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   set_drag_controller(this);
+  set_context_menu_controller(this);
 
   UpdateCachedTooltipText();
 }
@@ -314,6 +304,39 @@ bool SavedTabGroupButton::CanStartDragForView(View* sender,
   // vertically - downward drag.
   gfx::Vector2d move_offset = p - press_pt;
   return View::ExceededDragThreshold(move_offset);
+}
+
+int SavedTabGroupButton::GetAndIncrementLatestCommandId() {
+  return latest_command_id_ += 1;
+}
+
+void SavedTabGroupButton::ShowContextMenuForViewImpl(
+    View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
+  TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
+
+  const std::optional<SavedTabGroup> saved_group =
+      tab_group_service->GetGroup(guid_);
+  // If the group has been deleted remotely.
+  if (!saved_group.has_value()) {
+    return;
+  }
+
+  menu_model_ = std::make_unique<STGTabsMenuModel>(browser_);
+  menu_model_->Build(
+      saved_group.value(),
+      base::BindRepeating(&SavedTabGroupButton::GetAndIncrementLatestCommandId,
+                          base::Unretained(this)));
+
+  context_menu_runner_ = std::make_unique<views::MenuRunner>(
+      menu_model_.get(),
+      views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
+  context_menu_runner_->RunMenuAt(
+      source->GetWidget(),
+      /*button_controller=*/nullptr, gfx::Rect(point, gfx::Size()),
+      views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
 BEGIN_METADATA(SavedTabGroupButton)

@@ -44,7 +44,6 @@ class SystemSnapshotIOSIntermediateDump final : public SystemSnapshot {
   //!
   //! \param[in] system_data An intermediate dump map containing various system
   //!     data points.
-  //! \return `true` if the snapshot could be created.
   void Initialize(const IOSIntermediateDumpMap* system_data);
 
   // SystemSnapshot:

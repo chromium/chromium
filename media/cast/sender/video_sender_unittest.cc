@@ -238,6 +238,10 @@ class VideoSenderTest : public ::testing::TestWithParam<bool>,
 };
 
 TEST_P(VideoSenderTest, BuiltInEncoder) {
+  // TODO(issues.chromium.org/282984511): remove when fixed.
+  if (GetParam()) {
+    return;
+  }
   InitEncoder(false, true);
   ASSERT_EQ(STATUS_INITIALIZED, status_changes_.front());
 

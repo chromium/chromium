@@ -7037,7 +7037,7 @@ test("unit_tests") {
       "//chrome/services/util_win:lib",
       "//chrome/test:credential_provider_test_utils",
       "//chrome/updater:browser_sources",
-      "//components/tracing:tracing_service_idl",
+      "//chrome/windows_services/elevated_tracing_service:tracing_service_idl",
       "//third_party/iaccessible2",
       "//third_party/isimpledom",
       "//third_party/wtl",
@@ -8462,6 +8462,7 @@ test("unit_tests") {
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/wallpaper_handlers:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
+      "//chrome/browser/extensions/api/terminal:startup_status",
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/nearby_sharing:share_target",
       "//chrome/browser/nearby_sharing/certificates",
@@ -8748,6 +8749,11 @@ test("unit_tests") {
       "../common/extensions/manifest_tests/extension_manifests_webview_accessible_resources_unittest.cc",
       "../common/extensions/manifest_tests/permissions_parser_unittest.cc",
       "../common/extensions/manifest_unittest.cc",
+      "../common/extensions/permissions/chrome_api_permissions_unittest.cc",
+      "../common/extensions/permissions/chrome_permission_message_provider_unittest.cc",
+      "../common/extensions/permissions/chrome_permission_message_rules_unittest.cc",
+      "../common/extensions/permissions/permissions_data_unittest.cc",
+      "../common/extensions/permissions/settings_override_permission_unittest.cc",
     ]
     deps += [
       "//chrome/browser/extensions:test_support",
@@ -9017,12 +9023,7 @@ test("unit_tests") {
 
       # Platform apps are not supported on desktop Android.
       "../common/extensions/manifest_tests/extension_manifests_platformapp_unittest.cc",
-      "../common/extensions/permissions/chrome_api_permissions_unittest.cc",
-      "../common/extensions/permissions/chrome_permission_message_provider_unittest.cc",
-      "../common/extensions/permissions/chrome_permission_message_rules_unittest.cc",
       "../common/extensions/permissions/permission_set_unittest.cc",
-      "../common/extensions/permissions/permissions_data_unittest.cc",
-      "../common/extensions/permissions/settings_override_permission_unittest.cc",
       "../common/extensions/sync_type_unittest.cc",
       "../renderer/extensions/api/extension_hooks_delegate_unittest.cc",
       "../renderer/extensions/api/identity_hooks_delegate_unittest.cc",

@@ -495,7 +495,8 @@ void GeolocationProviderImpl::NotifyClientsSystemPermissionDenied() {
   auto error_result =
       mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
           mojom::GeopositionErrorCode::kPermissionDenied,
-          kSystemPermissionDeniedErrorMessage, ""));
+          kSystemPermissionDeniedErrorMessage,
+          kSystemPermissionDeniedErrorTechnical));
   NotifyClients(std::move(error_result));
 }
 #endif

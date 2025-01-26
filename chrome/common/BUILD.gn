@@ -654,7 +654,7 @@ static_library("test_support") {
     "//testing/gtest",
   ]
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     sources += [
       "extensions/extension_test_util.cc",
       "extensions/extension_test_util.h",

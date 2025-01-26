@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -184,7 +185,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         for (AutofillProfile profile : personalDataManager.getProfilesForSettings()) {
             // Add a preference for the profile.
             Preference pref = new AutofillProfileEditorPreference(getStyledContext());
-            pref.setTitle(profile.getFullName());
+            pref.setTitle(profile.getInfo(FieldType.NAME_FULL));
             pref.setSummary(profile.getLabel());
             pref.setKey(pref.getTitle().toString()); // For testing.
             if (shouldShowLocalProfileIcon(profile)) {

@@ -158,6 +158,9 @@ import "mojo/public/mojom/base/file_path.mojom";
     kAllowed,
   };
 
+  // Update the `UpdateService::Result` `enum` in `update_service.h` when adding
+  // new values.
+  // Next version: 2
   [Stable, Extensible]
   enum Result {
     // Indicates that the service successfully handled the non-blocking function
@@ -198,12 +201,23 @@ import "mojo/public/mojom/base/file_path.mojom";
     // Failed to run app installer.
     kInstallFailed,
 
-    // The server received the request and rejected the requestor as
+    // The server received the request and rejected the requester as
     // unauthorized to make it.
     kPermissionDenied,
 
     // The remote transmitted a value unknown to this version of the app.
     [Default] kUnknown,
+
+    // The service has been stopped, because the system is shutting down, or
+    // any other reason.
+    [MinVersion=1] kServiceStopped,
+
+    // The request could not be serviced, either because no user has accepted
+    // the terms of service, or OEM mode is in effect.
+    [MinVersion=1] kEulaRequiredOrOemMode,
+
+    // The service failed to fetch policies.
+    [MinVersion=1] kFetchPoliciesFailed,
   };
 
   // Run time errors are organized in specific categories to indicate the

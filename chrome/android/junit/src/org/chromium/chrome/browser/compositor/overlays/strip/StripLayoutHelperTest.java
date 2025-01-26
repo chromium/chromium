@@ -186,6 +186,7 @@ public class StripLayoutHelperTest {
     @Mock private ServiceStatus mServiceStatus;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private Bitmap mAvatarBitmap;
+    @Mock TabStripIphController mController;
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<Callback<Boolean>> mSharedImageTilesCaptor;
     @Captor private ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
@@ -2843,7 +2844,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testTabGroupDeleteDialog_Reorder_Collaboration() {
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupForDialog(0, 1);
+        setupTabGroup(0, 1);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Start dragging tab out of group.
@@ -2878,7 +2879,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testTabGroupDeleteDialog_Reorder_Sync_ImmediateContinue() {
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupForDialog(0, 1);
+        setupTabGroup(0, 1);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Start dragging tab out of group.
@@ -2912,7 +2913,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testTabGroupDeleteDialog_Reorder_Sync_Positive() {
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupForDialog(0, 1);
+        setupTabGroup(0, 1);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Start dragging tab out of group.
@@ -2945,7 +2946,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testTabGroupDeleteDialog_Reorder_Sync_Negative() {
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupForDialog(0, 1);
+        setupTabGroup(0, 1);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Start dragging tab out of group.
@@ -2980,7 +2981,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testTabGroupDeleteDialog_DragOffStrip_NotLastTab() {
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupForDialog(0, 2);
+        setupTabGroup(0, 2);
         setTabDragSourceMock();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
@@ -3001,7 +3002,7 @@ public class StripLayoutHelperTest {
         when(mActionConfirmationManager.willSkipUngroupTabAttempt()).thenReturn(true);
 
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupForDialog(0, 1);
+        setupTabGroup(0, 1);
         setTabDragSourceMock();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
@@ -3023,7 +3024,7 @@ public class StripLayoutHelperTest {
         when(mActionConfirmationManager.willSkipUngroupTabAttempt()).thenReturn(true);
 
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupForDialog(0, 1);
+        setupTabGroup(0, 1);
         setTabDragSourceMock();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
@@ -3067,7 +3068,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testTabGroupDeleteDialog_DragOffStrip_Sync_Positive() {
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupForDialog(0, 1);
+        setupTabGroup(0, 1);
         setTabDragSourceMock();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
@@ -3105,7 +3106,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testTabGroupDeleteDialog_DragOffStrip_Sync_Negative() {
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupForDialog(0, 1);
+        setupTabGroup(0, 1);
         setTabDragSourceMock();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
@@ -3146,7 +3147,7 @@ public class StripLayoutHelperTest {
         mModel.setTabRemover(tabRemover);
 
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupForDialog(0, 1);
+        setupTabGroup(0, 1);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Close the first tab.
@@ -3191,7 +3192,7 @@ public class StripLayoutHelperTest {
         mModel.setTabRemover(tabRemover);
 
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupForDialog(0, 1);
+        setupTabGroup(0, 1);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Close the first tab.
@@ -3232,7 +3233,7 @@ public class StripLayoutHelperTest {
         mModel.setTabRemover(tabRemover);
 
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupForDialog(0, 1);
+        setupTabGroup(0, 1);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Close the first tab.
@@ -3273,7 +3274,7 @@ public class StripLayoutHelperTest {
         mModel.setTabRemover(tabRemover);
 
         // Set up resources for testing tab group delete dialog.
-        setUpTabGroupForDialog(0, 1);
+        setupTabGroup(0, 1);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Close the first tab.
@@ -3305,12 +3306,13 @@ public class StripLayoutHelperTest {
         assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
     }
 
-    private void setUpTabGroupForDialog(int groupStartIndex, int groupEndIndex) {
+    private void setupTabGroup(int groupStartIndex, int groupEndIndex) {
         // Mock 5 tabs. Group tab from start to endIndex.
         initializeTest(false, false, 0, 5);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         groupTabs(groupStartIndex, groupEndIndex);
+        mStripLayoutHelper.setTabModel(mModel, mTabCreator, false);
 
         // Assert: View should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -4190,6 +4192,8 @@ public class StripLayoutHelperTest {
         }
         mModel.setIndex(tabIndex);
         mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
+        mStripLayoutHelper.setTabStripIphControllerForTesting(mController);
+        when(mController.wouldTriggerIph(anyInt())).thenReturn(true);
         mStripLayoutHelper.setTabGroupModelFilter(mTabGroupModelFilter);
         mStripLayoutHelper.setLayerTitleCache(mLayerTitleCache);
         mStripLayoutHelper.tabSelected(0, tabIndex, 0);
@@ -5005,21 +5009,78 @@ public class StripLayoutHelperTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE,
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+        ChromeFeatureList.DATA_SHARING
     })
-    public void testTabGroupSyncIph_Show() {
-        // Setup tab group and Tab Group Sync iph.
-        TabStripIphController controller = setupTabGroupSyncIphOnTablet(4, 5);
+    public void testTabGroupSyncIph_GroupTitleBubbleIph_ShowSequentially() {
+        // Setup tab group.
+        setupTabGroup(3, 5);
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[4]);
+        StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) views[3];
+        // Set last synced tab group.
+        mStripLayoutHelper.setLastSyncedGroupIdForTesting(mModel.getTabAt(3).getId());
+        // Show notification bubble on collapsed tab group.
+        groupTitle.setCollapsed(true);
+        int tabId = mModel.getTabAt(3).getId();
+        Set<Integer> tabIds = new HashSet<>(Arrays.asList(tabId));
+        mStripLayoutHelper.updateTabStripNotificationBubble(tabIds, /* hasUpdate= */ true);
 
-        // Trigger show iph.
+        // Trigger show iph the first time.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
+        // Verify tab group sync iph is first displayed.
+        verify(mController)
+                .showIphOnTabStrip(
+                        eq(groupTitle), eq(null), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
 
-        // Verify iph is displayed at the correct horizontal position.
-        verify(controller)
-                .maybeShowIphOnTabStrip(
-                        eq(groupTitle), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
+        // Trigger show iph the second time.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        // Verify iph on group title bubble is displayed.
+        verify(mController)
+                .showIphOnTabStrip(
+                        eq(groupTitle),
+                        eq(null),
+                        any(),
+                        eq(IphType.GROUP_TITLE_NOTIFICATION_BUBBLE),
+                        anyFloat());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE,
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+        ChromeFeatureList.DATA_SHARING
+    })
+    public void testTabGroupSyncIph_TabBubbleIph_ShowSequentially() {
+        // Setup tab group.
+        setupTabGroup(3, 5);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) views[3];
+        StripLayoutTab tab = (StripLayoutTab) views[4];
+        // Set last synced tab group.
+        mStripLayoutHelper.setLastSyncedGroupIdForTesting(mModel.getTabAt(3).getId());
+        // Show notification bubble on the updated tab.
+        groupTitle.setCollapsed(false);
+        int tabId = mModel.getTabAt(3).getId();
+        Set<Integer> tabIds = new HashSet<>(Arrays.asList(tabId));
+        mStripLayoutHelper.updateTabStripNotificationBubble(tabIds, /* hasUpdate= */ true);
+
+        // Trigger show iph the first time.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        // Verify tab group sync iph is first displayed.
+        verify(mController)
+                .showIphOnTabStrip(
+                        eq(groupTitle), eq(null), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
+
+        // Trigger show iph the second time.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        // Verify iph on tab bubble is displayed.
+        verify(mController)
+                .showIphOnTabStrip(
+                        eq(groupTitle),
+                        eq(tab),
+                        any(),
+                        eq(IphType.TAB_NOTIFICATION_BUBBLE),
+                        anyFloat());
     }
 
     @Test
@@ -5029,7 +5090,9 @@ public class StripLayoutHelperTest {
     })
     public void testTabGroupSyncIph_DismissOnOrientationChanged() {
         // Setup tab group and Tab Group Sync iph.
-        TabStripIphController controller = setupTabGroupSyncIphOnTablet(4, 5);
+        setupTabGroup(4, 5);
+        mStripLayoutHelper.setLastSyncedGroupIdForTesting(
+                mModel.getTabAt(mModel.getCount() - 1).getId());
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[4]);
 
@@ -5037,32 +5100,16 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify iph is displayed at the correct horizontal position.
-        verify(controller)
-                .maybeShowIphOnTabStrip(
-                        eq(groupTitle), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
+        verify(mController)
+                .showIphOnTabStrip(
+                        eq(groupTitle), eq(null), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
 
         // Change orientation.
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_HEIGHT, SCREEN_WIDTH, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
 
-        // Verify iph text bubble is dismissed on orientation change.
-        verify(controller).dismissTextBubble();
-    }
-
-    private TabStripIphController setupTabGroupSyncIphOnTablet(int startTabIndex, int endTabIndex) {
-        initializeTest(false, false, 0, 5);
-        groupTabs(startTabIndex, endTabIndex);
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-
-        // Prepare iph and required objects.
-        TabStripIphController controller = mock(TabStripIphController.class);
-        mStripLayoutHelper.setTabModel(mModel, mTabCreator, false);
-        mStripLayoutHelper.setLastSyncedGroupIdForTesting(tabs[tabs.length - 1].getTabId());
-        mStripLayoutHelper.setTabStripIphControllerForTesting(controller);
-
-        return controller;
+        // Verify iph text bubble is dismissed on screen size change.
+        verify(mController, times(2)).dismissTextBubble();
     }
 
     @Test

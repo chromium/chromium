@@ -10,13 +10,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
                   WaitForShow(AppMenuModel::kTabGroupsMenuItem),
                   SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
                   SelectMenuItem(STGEverythingMenu::kTabGroup),
-                  SelectMenuItem(STGEverythingMenu::kOpenGroup),
+                  SelectMenuItem(STGTabsMenuModel::kOpenGroup),
                   FinishTabstripAnimations(),
                   // Close the app menu to prevent flakes on mac.
                   HoverTabAt(0), ClickMouse(),
@@ -478,8 +478,8 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
       WaitForShow(AppMenuModel::kTabGroupsMenuItem),
       SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
       SelectMenuItem(STGEverythingMenu::kTabGroup),
-      EnsurePresent(SavedTabGroupUtils::kLeaveGroupMenuItem),
-      SelectMenuItem(SavedTabGroupUtils::kLeaveGroupMenuItem),
+      EnsurePresent(STGTabsMenuModel::kLeaveGroupMenuItem),
+      SelectMenuItem(STGTabsMenuModel::kLeaveGroupMenuItem),
       WaitForShow(kDeletionDialogOkButtonId),
       PressButton(kDeletionDialogOkButtonId), FinishTabstripAnimations(),
       WaitForHide(kTabGroupHeaderElementId));

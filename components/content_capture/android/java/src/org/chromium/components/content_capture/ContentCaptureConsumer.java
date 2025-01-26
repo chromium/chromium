@@ -11,14 +11,6 @@ package org.chromium.components.content_capture;
  * removeConsumer if the content is no longer needed.
  */
 public interface ContentCaptureConsumer {
-
-    /**
-     * Invoked when the content captured needs to be flushed.
-     * @param parentFrame is the parent of the frame from that the content captured.
-     * @param contentCaptureFrame is the captured content tree, its root is the frame.
-     */
-    void onContentCaptureFlushed(FrameSession parentFrame, ContentCaptureFrame contentCaptureFrame);
-
     /**
      * Invoked when the content is captured from a frame.
      * @param parentFrame is the parent of the frame from that the content captured.

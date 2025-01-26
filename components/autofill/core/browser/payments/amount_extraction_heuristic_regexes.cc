@@ -13,12 +13,6 @@ using ::autofill::core::browser::payments::HeuristicRegexes;
 
 namespace autofill::payments {
 
-namespace {
-const char* kDefaultKeywordPattern = "^(Order Total|Total):?$";
-const char* kDefaultAmountPatternPattern =
-    R"regexp((?:\$)\s*\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)regexp";
-}  // namespace
-
 // static
 AmountExtractionHeuristicRegexes&
 AmountExtractionHeuristicRegexes::GetInstance() {

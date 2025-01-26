@@ -224,13 +224,12 @@ void AppBannerManagerDesktop::OnWebAppInstalledWithOsHooks(
     return;
   }
   std::optional<webapps::AppId> app_id = registrar().FindBestAppWithUrlInScope(
-      validated_url().value(), web_app::WebAppFilter::InstalledInChrome());
-  if (app_id.has_value() && *app_id == installed_app_id &&
-      registrar().GetAppUserDisplayMode(*app_id) ==
-          web_app::mojom::UserDisplayMode::kStandalone) {
-    OnInstall(registrar().GetEffectiveDisplayModeFromManifest(*app_id),
-              /*set_current_web_app_not_installable=*/true);
+      validated_url().value(), web_app::WebAppFilter::OpensInDedicatedWindow());
+  if (installed_app_id != app_id) {
+    return;
   }
+  OnInstall(registrar().GetEffectiveDisplayModeFromManifest(*app_id),
+            /*set_current_web_app_not_installable=*/true);
 }
 
 void AppBannerManagerDesktop::OnWebAppWillBeUninstalled(

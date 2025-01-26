@@ -33,6 +33,7 @@
 #include "ash/capture_mode/recording_type_menu_view.h"
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/capture_mode/user_nudge_controller.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -1472,7 +1473,7 @@ void CaptureModeSession::OnScannerActionsFetched(
 void CaptureModeSession::MaybeShowDisclaimer(
     base::RepeatingClosure accept_callback) {
   if (capture_mode_util::GetActiveUserPrefService()->GetBoolean(
-          capture_mode::kSunfishConsentDisclaimerAccepted)) {
+          prefs::kSunfishConsentDisclaimerAccepted)) {
     if (accept_callback) {
       std::move(accept_callback).Run();
     }
@@ -1499,7 +1500,7 @@ void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kConsentDisclaimerAccepted);
   capture_mode_util::GetActiveUserPrefService()->SetBoolean(
-      capture_mode::kSunfishConsentDisclaimerAccepted, true);
+      prefs::kSunfishConsentDisclaimerAccepted, true);
 
   disclaimer_.reset();
   if (callback) {

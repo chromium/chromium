@@ -57,8 +57,8 @@ class InProcessIntermediateDumpHandler final {
   //!
   //! \param[in] writer The dump writer
   //! \param[in] system_data An object containing various system data points.
-  //! \param[in] report_time Report creation time in nanoseconds as returned by
-  //!     ClockMonotonicNanoseconds().
+  //! \param[in] report_time_nanos Report creation time in nanoseconds as
+  //!     returned by ClockMonotonicNanoseconds().
   static void WriteSystemInfo(IOSIntermediateDumpWriter* writer,
                               const IOSSystemDataCollector& system_data,
                               uint64_t report_time_nanos);
@@ -103,11 +103,10 @@ class InProcessIntermediateDumpHandler final {
   //! \brief Write an ExceptionSnapshot from a mach exception to the
   //!     intermediate dump.
   //!
-  //!  Only one of the WriteExceptionFromSignal, WriteExceptionFromMachException
-  //!  and WriteExceptionFromNSException should be called per intermediate dump.
+  //! Only one of the WriteExceptionFromSignal, WriteExceptionFromMachException
+  //! and WriteExceptionFromNSException should be called per intermediate dump.
   //!
   //! \param[in] writer The dump writer
-  //! \param[in] system_data An object containing various system data points.
   //! \param[in] behavior
   //! \param[in] thread
   //! \param[in] exception

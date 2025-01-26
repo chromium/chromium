@@ -244,6 +244,10 @@ void ContentBrowserClient::GetAdditionalViewSourceSchemes(
   GetAdditionalWebUISchemes(additional_schemes);
 }
 
+bool ContentBrowserClient::IsInternalScheme(const GURL& url) {
+  return false;
+}
+
 network::mojom::IPAddressSpace
 ContentBrowserClient::DetermineAddressSpaceFromURL(const GURL& url) {
   return network::mojom::IPAddressSpace::kUnknown;

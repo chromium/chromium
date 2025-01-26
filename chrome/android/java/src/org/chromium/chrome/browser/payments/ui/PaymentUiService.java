@@ -46,6 +46,7 @@ import org.chromium.components.autofill.AddressNormalizer.NormalizedAddressReque
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.autofill.EditableOption;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.ErrorStrings;
@@ -537,9 +538,9 @@ public class PaymentUiService
                 AutofillProfile profile = getAutofillProfiles().get(i);
                 if (getContactEditor()
                                 .checkContactCompletionStatus(
-                                        profile.getFullName(),
-                                        profile.getPhoneNumber(),
-                                        profile.getEmailAddress())
+                                        profile.getInfo(FieldType.NAME_FULL),
+                                        profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER),
+                                        profile.getInfo(FieldType.EMAIL_ADDRESS))
                         == ContactEditor.COMPLETE) {
                     haveCompleteContactInfo = true;
                     break;
@@ -1231,10 +1232,11 @@ public class PaymentUiService
                 PersonalDataManagerFactory.getForProfile(Profile.fromWebContents(mWebContents));
         for (int i = 0; i < mAutofillProfiles.size(); i++) {
             AutofillProfile profile = mAutofillProfiles.get(i);
-            mAddressEditor.addPhoneNumberIfValid(profile.getPhoneNumber());
+            mAddressEditor.addPhoneNumberIfValid(
+                    profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER));
 
             // Only suggest addresses that have a street address.
-            if (!TextUtils.isEmpty(profile.getStreetAddress())) {
+            if (!TextUtils.isEmpty(profile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS))) {
                 addresses.add(new AutofillAddress(context, profile, personalDataManager));
             }
         }

@@ -55,16 +55,31 @@ TEST_F(AmountExtractionHeuristicRegexesTest, ParsingSuccessful) {
   HeuristicRegexes regexes_proto;
   regexes_proto.mutable_generic_details()->set_keyword_pattern("Total Amount");
   regexes_proto.mutable_generic_details()->set_amount_pattern("$123.00");
+  regexes_proto.mutable_generic_details()
+      ->set_number_of_ancestor_levels_to_search(4);
+
   ASSERT_TRUE(heuristic_regexes_.PopulateStringFromComponent(
       regexes_proto.SerializeAsString()));
 
   EXPECT_EQ(heuristic_regexes_.keyword_pattern(), "Total Amount");
   EXPECT_EQ(heuristic_regexes_.amount_pattern(), "$123.00");
+  EXPECT_EQ(heuristic_regexes_.number_of_ancestor_levels_to_search(),
+            static_cast<unsigned int>(4));
   histogram_tester.ExpectBucketCount(
       kAmountExtractionComponentInstallationResult,
       autofill::autofill_metrics::AmountExtractionComponentInstallationResult::
           kSuccessful,
       1);
+}
+
+TEST_F(AmountExtractionHeuristicRegexesTest,
+       ParsingSuccessful_WithDefaultValues) {
+  heuristic_regexes_.ResetRegexStringPatternsForTesting();
+
+  EXPECT_EQ(heuristic_regexes_.keyword_pattern(), "^(Order Total|Total):?$");
+  EXPECT_EQ(heuristic_regexes_.amount_pattern(),
+            R"regexp((?:\$)\s*\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)regexp");
+  EXPECT_EQ(heuristic_regexes_.number_of_ancestor_levels_to_search(), 6u);
 }
 
 }  // namespace autofill::payments

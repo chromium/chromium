@@ -96,8 +96,6 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
     response_.SetResponseTime(base::Time::Now());
   }
 
-  static const size_t kSha256Bytes = 256 / 8;
-
   std::vector<uint8_t> MakeSerializedCodeCacheData(base::span<uint8_t> data) {
     const size_t kSerializedDataSize =
         sizeof(CachedMetadataHeader) + data.size();
@@ -125,8 +123,10 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
     if (source_text.has_value()) {
       std::unique_ptr<ParkableStringImpl::SecureDigest> hash =
           ParkableStringImpl::HashString(source_text->Impl());
-      CHECK_EQ(hash->size(), kSha256Bytes);
-      memcpy(outer_header->hash, hash->data(), kSha256Bytes);
+      CHECK_EQ(hash->size(),
+               ScriptCachedMetadataHandlerWithHashing::kSha256Bytes);
+      memcpy(outer_header->hash, hash->data(),
+             ScriptCachedMetadataHandlerWithHashing::kSha256Bytes);
     }
     CachedMetadataHeader* inner_header =
         reinterpret_cast<CachedMetadataHeader*>(

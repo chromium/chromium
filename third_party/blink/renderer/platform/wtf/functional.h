@@ -175,7 +175,7 @@ struct CheckGCedTypeRestriction {
                 "Raw pointers are not allowed to bind into WTF::Function. Wrap "
                 "it with either WrapPersistent, WrapWeakPersistent, "
                 "WrapCrossThreadPersistent, WrapCrossThreadWeakPersistent, "
-                "RefPtr or unretained.");
+                "RetainedRef or Unretained.");
   static_assert(!WTF::IsMemberOrWeakMemberType<T>::value,
                 "Member and WeakMember are not allowed to bind into "
                 "WTF::Function. Wrap it with either WrapPersistent, "

@@ -2237,6 +2237,13 @@ void ChromeContentBrowserClient::GetAdditionalWebUISchemes(
   additional_schemes->emplace_back(content::kChromeDevToolsScheme);
 }
 
+bool ChromeContentBrowserClient::IsInternalScheme(const GURL& url) {
+  if (!url.is_valid()) {
+    return false;
+  }
+  return url.SchemeIs(chrome::kChromeNativeScheme);
+}
+
 void ChromeContentBrowserClient::GetAdditionalViewSourceSchemes(
     std::vector<std::string>* additional_schemes) {
   GetAdditionalWebUISchemes(additional_schemes);

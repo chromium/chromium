@@ -285,10 +285,15 @@ public class AwPrerenderTest extends AwParameterizedTest {
             Callback<Void> activationCallback,
             Callback<Throwable> errorCallback)
             throws Exception {
+        Executor callbackExecutor = (Runnable r) -> r.run();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAwContents.startPrerendering(
-                            url, prefetchParameters, activationCallback, errorCallback);
+                            url,
+                            prefetchParameters,
+                            callbackExecutor,
+                            activationCallback,
+                            errorCallback);
                 });
     }
 
@@ -422,6 +427,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                         invalidAdditionalHeaders,
                         /* expectedNoVarySearch= */ null,
                         /* isJavascriptEnabled= */ true);
+        Executor callbackExecutor = (Runnable r) -> r.run();
 
         Assert.assertTrue(
                 ThreadUtils.runOnUiThreadBlocking(
@@ -430,6 +436,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                                 mAwContents.startPrerendering(
                                         mPrerenderingUrl,
                                         prefetchParameters,
+                                        callbackExecutor,
                                         mActivationCallbackHelper.getCallback(),
                                         mPrerenderErrorCallbackHelper.getCallback());
                                 return false;

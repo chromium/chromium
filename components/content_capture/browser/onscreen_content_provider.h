@@ -51,8 +51,6 @@ class OnscreenContentProvider
   void RemoveConsumer(ContentCaptureConsumer& consumer);
 
   // The methods called by ContentCaptureReceiver.
-  void FlushCaptureContent(ContentCaptureReceiver* content_capture_receiver,
-                           const ContentCaptureFrame& data);
   void DidCaptureContent(ContentCaptureReceiver* content_capture_receiver,
                          const ContentCaptureFrame& data);
   void DidUpdateContent(ContentCaptureReceiver* content_capture_receiver,

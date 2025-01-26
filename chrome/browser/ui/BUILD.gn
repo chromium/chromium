@@ -3850,6 +3850,8 @@ static_library("ui") {
       "views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h",
       "views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.cc",
       "views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h",
+      "views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.cc",
+      "views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h",
       "views/browser_commands_views.cc",
       "views/browser_dialogs_views.cc",
       "views/bubble_anchor_util_views.cc",

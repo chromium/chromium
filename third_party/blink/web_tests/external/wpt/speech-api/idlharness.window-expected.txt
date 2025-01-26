@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 125 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 136 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SpeechRecognition interface: existence and properties of interface object
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface object length
@@ -22,11 +22,19 @@ Found 125 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: attribute maxAlternatives
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
+[FAIL] SpeechRecognition interface: attribute mode
+  assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: operation start()
+  assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
+[FAIL] SpeechRecognition interface: operation start(MediaStreamTrack)
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: operation stop()
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: operation abort()
+  assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
+[FAIL] SpeechRecognition interface: operation onDeviceWebSpeechAvailable(DOMString)
+  assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
+[FAIL] SpeechRecognition interface: operation installOnDeviceSpeechRecognition(DOMString)
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface: attribute onaudiostart
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
@@ -64,11 +72,25 @@ Found 125 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "maxAlternatives" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
+[FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "mode" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "start()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
+[FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "start(MediaStreamTrack)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
+[FAIL] SpeechRecognition interface: calling start(MediaStreamTrack) on new SpeechRecognition() with too few arguments must throw TypeError
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "stop()" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "abort()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
+[FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "onDeviceWebSpeechAvailable(DOMString)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
+[FAIL] SpeechRecognition interface: calling onDeviceWebSpeechAvailable(DOMString) on new SpeechRecognition() with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
+[FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "installOnDeviceSpeechRecognition(DOMString)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
+[FAIL] SpeechRecognition interface: calling installOnDeviceSpeechRecognition(DOMString) on new SpeechRecognition() with too few arguments must throw TypeError
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
 [FAIL] SpeechRecognition interface: new SpeechRecognition() must inherit property "onaudiostart" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechRecognition is not defined"
