@@ -99,9 +99,11 @@ void TensorImplOrt::ReadTensorImpl(ReadTensorCallback callback) {
                 buffer_state->GetSharedLockedResource().tensor(),
                 &ort_tensor_raw_data));
             CHECK(ort_tensor_raw_data);
-            mojo_base::BigBuffer output_buffer(
+            // SAFETY: ORT guarantees that it has allocated enough memory to
+            // store tensor.
+            mojo_base::BigBuffer output_buffer(UNSAFE_BUFFERS(
                 base::span(static_cast<const uint8_t*>(ort_tensor_raw_data),
-                           bytes_to_read));
+                           bytes_to_read)));
 
             // Unlock the buffer contents.
             std::move(completion_closure).Run();
