@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">గ్రూప్‌నకు కొత్త ట్యాబ్‌ను జోడించండి</translation>
 <translation id="9216898458513705996">ఈ పరికరంలో ట్యాబ్‌లు తెరిచి ఉంటాయి కానీ <ph name="USER_EMAIL" />‌కు సైన్ ఇన్ చేసిన అన్ని పరికరాల నుండి గ్రూప్ తొలగించబడుతుంది</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌తో ఉన్న ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో విస్తరించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ఉన్న ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో విస్తరించండి.}}</translation>
+<translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="94870150074703282">గ్రూప్‌ను తొలగించాలా?</translation>
 <translation id="992256792861109788">గులాబి రంగు</translation>
 </translationbundle>

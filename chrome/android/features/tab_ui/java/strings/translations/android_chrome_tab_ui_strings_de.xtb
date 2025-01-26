@@ -192,6 +192,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="9169594135889675189">Der Gruppe einen neuen Tab hinzufügen</translation>
 <translation id="9216898458513705996">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird auf allen Geräten gelöscht, die mit <ph name="USER_EMAIL" /> angemeldet sind</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab maximieren, Farbe: <ph name="COLOR_NAME" />.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren, Farbe: <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Feedback geben</translation>
 <translation id="94870150074703282">Gruppe löschen?</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

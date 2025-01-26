@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">नयाँ ट्याबलाई समूहमा थप्नुहोस्</translation>
 <translation id="9216898458513705996">यी ट्याबहरू यो डिभाइसमा खुलै रहने छन् तर <ph name="USER_EMAIL" /> मा साइन इन गरिएका सबै डिभाइसहरूबाट यो समूह मेटाइने छ</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
+<translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="94870150074703282">समूह मेटाउने हो?</translation>
 <translation id="992256792861109788">गुलाबी</translation>
 </translationbundle>

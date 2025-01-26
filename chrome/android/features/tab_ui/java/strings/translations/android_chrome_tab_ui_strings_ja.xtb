@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">グループに新しいタブを追加</translation>
 <translation id="9216898458513705996">タブはこのデバイスで引き続き表示されますが、グループは <ph name="USER_EMAIL" /> にログインしているすべてのデバイスから削除されます</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{タブグループ（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />）を開きます。}other{タブグループ（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />）を開きます。}}</translation>
+<translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="94870150074703282">グループを削除しますか？</translation>
 <translation id="992256792861109788">ピンク</translation>
 </translationbundle>

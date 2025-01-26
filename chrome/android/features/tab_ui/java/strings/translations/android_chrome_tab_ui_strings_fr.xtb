@@ -192,6 +192,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="9169594135889675189">Ajouter un nouvel onglet au groupe</translation>
 <translation id="9216898458513705996">Les onglets resteront ouverts sur cet appareil, mais le groupe sera supprimé de tous les appareils connectés à <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
+<translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="94870150074703282">Supprimer le groupe ?</translation>
 <translation id="992256792861109788">Rose</translation>
 </translationbundle>

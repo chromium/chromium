@@ -192,6 +192,7 @@ Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="
 <translation id="9169594135889675189">Lägg till ny flik i gruppen</translation>
 <translation id="9216898458513705996">Flikarna förblir öppna på den här enheten men gruppen raderas från alla enheter där du är inloggad på <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Utöka flikgruppen med <ph name="TABS_COUNT_ONE" /> flik, färgen <ph name="COLOR_NAME" />.}other{Utöka flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar, färgen <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Skicka feedback</translation>
 <translation id="94870150074703282">Vill du ta bort gruppen?</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

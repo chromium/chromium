@@ -394,6 +394,7 @@
 <translation id="1260810365552581339">Linux'ta yeterli disk alanı olmayabilir. Linux disk alanınızı artırıp geri yükleme işlemini tekrar denemek için <ph name="LINK_START" />Ayarlar<ph name="LINK_END" /> bölümüne gidebilirsiniz.</translation>
 <translation id="1261380933454402672">Ölçülü</translation>
 <translation id="126156426083987769">Demo modu cihaz lisanslarıyla ilgili bir sorun oluştu.</translation>
+<translation id="1262564987698748643">Siteler, klavye girişimi geçersiz kılmak için izin isteyebilir</translation>
 <translation id="1263231323834454256">Okuma listesi</translation>
 <translation id="1263733306853729545">Öneri listesi sayfası için <ph name="MINUS" /> ve <ph name="EQUAL" /> tuşlarını kullan</translation>
 <translation id="126387934568812801">Bu ekran görüntüsünü ve açık sekmelerin başlıklarını dahil et</translation>
@@ -771,6 +772,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1536883206862903762">Bu işlem, uzantıları devre dışı bırakır ve ayarlarınızı güvenli varsayılan ayarlara sıfırlar. Sekmeler, dosyalar ve çerezler korunur. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Tam ekran büyüteci</translation>
 <translation id="15373452373711364">Büyük fare imleci</translation>
+<translation id="1539248305642687917">Sitelerin klavye girişimi geçersiz kılmasına izin verme</translation>
 <translation id="1539727654733007771">Kurulu mobil ağ yok. Yeni bir <ph name="BEGIN_LINK" />profil<ph name="END_LINK" /> indirin.</translation>
 <translation id="1540265419569299117">ChromeOS Uygulama Hizmeti</translation>
 <translation id="1540543470504988112">MacOS'ten içe aktarılan sertifikaları yönetin</translation>
@@ -982,6 +984,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="166278006618318542">Konu Ortak Anahtar Algoritması</translation>
 <translation id="1662801900924515589"><ph name="APP" /> yüklendi</translation>
 <translation id="1663698992894057019">En son güvenlik ve yazılım özelliklerini kullanmak için yeni bir Chromebook sürümüne geçin</translation>
+<translation id="166454475160289583">Klavye girişinizi geçersiz kılmasına izin verilmeyen siteler</translation>
 <translation id="1665328953287874063"><ph name="DEVICE_TYPE" /> cihazınızın kilidini açmak için bir şifre veya PIN kullanın</translation>
 <translation id="1665859804801131136">Ekspresyonizm</translation>
 <translation id="1667842670298352129">Seçilen metni sesli dinleyin. Ekranın alt kısmındaki Seç ve Dinle simgesini seçtikten sonra metni vurgulayın. Klavye kısayolu da kullanabilirsiniz: Metni vurguladıktan sonra Arama + S tuşlarına basın.</translation>
@@ -1213,6 +1216,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1832511806131704864">Telefon değişikliği güncellendi</translation>
 <translation id="1832848789136765277">Senkronize edilen verilerinize her zaman erişebileceğinizden emin olmak için kimliğinizi doğrulayın</translation>
 <translation id="1833059747301212935">Son dokümanlara ve yaklaşan takvim etkinliklerine kolayca erişin</translation>
+<translation id="183445248400150852">Siteler, örneğin oyunlarda veya uzaktan masaüstü uygulamalarında klavye girişinizi geçersiz kılmak için bu özellikten yararlanır</translation>
 <translation id="1834503245783133039">İndirme işlemi başarısız oldu: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux Yeni Sürüme Geçiriliyor</translation>
 <translation id="1837441256780906162">Microsoft OneDrive, isteği reddetti. Lütfen daha sonra tekrar deneyin.</translation>
@@ -6746,6 +6750,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5794700615121138172">Linux paylaşılan klasörler</translation>
 <translation id="5794786537412027208">Tüm Chrome Uygulamalarından Çık</translation>
 <translation id="5796485699458186843">Yeni Gizli sekme</translation>
+<translation id="5796956053441619942">Uzak cihazdan gelen URL desteklenmiyor</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; ve &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;'i nasıl kullanmaya başlayacağınızı öğrenin</translation>
 <translation id="5798079537501238810">Siteler ödeme işleyici yükleyebilir</translation>
 <translation id="5798086737841799234">Onay kodunu girin</translation>
@@ -7401,6 +7406,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6264485186158353794">Güvenliğe geri dön</translation>
 <translation id="6264520534872750757">Cihazı kullanmaya devam et</translation>
 <translation id="6264636978858465832">Şifre Yöneticisi'nin daha fazla erişime ihtiyacı var</translation>
+<translation id="626495329434552273">Klavye girişinizi geçersiz kılmasına izin verilen siteler</translation>
 <translation id="6265159465845424232">Microsoft dosyalarını Microsoft OneDrive'a kopyalamadan veya taşımadan önce sor</translation>
 <translation id="6265687851677020761">Bağlantı noktasını kaldır</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> cihazına bağlanılıyor</translation>

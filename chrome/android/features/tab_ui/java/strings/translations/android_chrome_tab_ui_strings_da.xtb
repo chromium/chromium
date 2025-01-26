@@ -192,6 +192,7 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="9169594135889675189">Føj en ny fane til gruppen</translation>
 <translation id="9216898458513705996">Fanerne forbliver åbne på denne enhed, men gruppen slettes fra alle enheder, hvor du er logget ind på <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Udvid fanegruppen i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_ONE" /> fane.}one{Udvid fanegruppen i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> fane.}other{Udvid fanegruppen i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
+<translation id="945522503751344254">Send feedback</translation>
 <translation id="94870150074703282">Vil du slette gruppen?</translation>
 <translation id="992256792861109788">Lyserød</translation>
 </translationbundle>

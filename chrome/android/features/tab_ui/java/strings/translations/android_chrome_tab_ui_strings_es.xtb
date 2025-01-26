@@ -192,6 +192,7 @@ Si lo eliminas, todos los usuarios perderán inmediatamente el acceso al grupo d
 <translation id="9169594135889675189">Añadir una pestaña al grupo</translation>
 <translation id="9216898458513705996">Las pestañas permanecerán abiertas en este dispositivo, pero el grupo se eliminará de todos los dispositivos en los que se haya iniciado sesión con <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Desplegar el grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña de color <ph name="COLOR_NAME" />.}other{Desplegar el grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas de color <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="94870150074703282">¿Eliminar grupo?</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

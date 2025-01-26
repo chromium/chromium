@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">समूह में नया टैब जोड़ें</translation>
 <translation id="9216898458513705996">ये टैब इस डिवाइस में खुले रहेंगे, लेकिन <ph name="USER_EMAIL" /> में साइन इन किए गए सभी डिवाइसों से यह ग्रुप मिटा दिया जाएगा</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_ONE" /> टैब वाले टैब ग्रुप को बड़ा करें.}one{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बड़ा करें.}other{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बड़ा करें.}}</translation>
+<translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="94870150074703282">क्या आपको टैब ग्रुप मिटाना है?</translation>
 <translation id="992256792861109788">गुलाबी</translation>
 </translationbundle>

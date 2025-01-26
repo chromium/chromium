@@ -192,6 +192,7 @@ Hvis du sletter den, mister alle umiddelbart tilgangen til fanegruppen «<ph nam
 <translation id="9169594135889675189">Legg til ny fane i gruppen</translation>
 <translation id="9216898458513705996">Fanene forblir åpne på denne enheten, men gruppen blir slettet fra alle enheter som er logget på <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Vis fanegruppe med <ph name="TABS_COUNT_ONE" /> fane og fargen <ph name="COLOR_NAME" />.}other{Vis fanegruppe med <ph name="TABS_COUNT_MANY" /> faner og fargen <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="94870150074703282">Vil du slette gruppen?</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">喺群組入面加新嘅分頁</translation>
 <translation id="9216898458513705996">分頁會在此裝置上保持開啟，但該群組會從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{展開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}other{展開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
+<translation id="945522503751344254">提供意見反映</translation>
 <translation id="94870150074703282">要刪除群組嗎？</translation>
 <translation id="992256792861109788">粉紅色</translation>
 </translationbundle>

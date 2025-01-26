@@ -192,6 +192,7 @@ Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan
 <translation id="9169594135889675189">Tambahkan tab baharu pada kumpulan</translation>
 <translation id="9216898458513705996">Tab akan kekal terbuka pada peranti ini tetapi kumpulan akan dipadamkan daripada semua peranti yang dilog masuk menggunakan <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Kembangkan kumpulan tab dengan <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Kembangkan kumpulan tab dengan <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Hantar maklum balas</translation>
 <translation id="94870150074703282">Padamkan kumpulan?</translation>
 <translation id="992256792861109788">Merah Jambu</translation>
 </translationbundle>

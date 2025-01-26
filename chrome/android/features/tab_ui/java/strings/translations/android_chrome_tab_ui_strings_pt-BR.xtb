@@ -192,6 +192,7 @@ Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de g
 <translation id="9169594135889675189">Adicionar nova guia ao grupo</translation>
 <translation id="9216898458513705996">As guias vão continuar abertas neste dispositivo, mas o grupo será excluído de todos os dispositivos conectados à conta <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Abrir o grupo de guias com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Abrir o grupo de guias com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Abrir o grupo de guias com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Enviar comentários</translation>
 <translation id="94870150074703282">Excluir grupo?</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

@@ -476,6 +476,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="3053332585453689122">Invia a Google Navigazione sicura gli URL che visiti e un piccolo campione di contenuti di pagine, download, attività delle estensioni e informazioni di sistema per controllare se questi URL sono dannosi.</translation>
 <translation id="3055102495753300780">Archiviazione delle informazioni</translation>
 <translation id="3059270601560379555">Nuova ricerca</translation>
+<translation id="3064547930554042309">Gestisci i download</translation>
 <translation id="3072279342064724558">La password esiste già</translation>
 <translation id="3076846064362030967">Non verrà eseguita la disconnessione dal tuo Account Google. <ph name="BEGIN_LINK" />Altri tipi di attività<ph name="END_LINK" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminarli in qualsiasi momento.
 
@@ -699,6 +700,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4154753961803534698">Cerca con la fotocamera</translation>
 <translation id="4158491215857439601">Gestore delle password</translation>
 <translation id="4163699139741158298">{count,plural, =1{Preferito salvato in "{title}", solo su questo dispositivo.}other{{count} preferiti salvati in "{title}" solo su questo dispositivo.}}</translation>
+<translation id="4164514562270305824">Eliminazione automatica dei download</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> che termina con <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Non consentire</translation>
 <translation id="4172051516777682613">Mostra sempre</translation>
@@ -1018,6 +1020,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5579012242779565775">Nascondi elenco di lettura</translation>
 <translation id="5585019845078534178">Schede</translation>
 <translation id="5595485650161345191">Modifica indirizzo</translation>
+<translation id="559567008082979829">Imposta l'eliminazione dei download dopo un mese.</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="560322036295180549">Opzione disattivata dall'organizzazione</translation>
 <translation id="5611107723541161735">Scorciatoie ai siti visitati di recente su questo dispositivo.</translation>

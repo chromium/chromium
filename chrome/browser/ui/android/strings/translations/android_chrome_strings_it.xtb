@@ -116,6 +116,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1435593198351412143">Apri automaticamente i PDF</translation>
 <translation id="1436784010935106834">Rimosso</translation>
 <translation id="1437543266176261764">Esecuzione in <ph name="APP_NAME" /></translation>
+<translation id="1448147069872048656">Verifica la tua identità per assicurarti di poter accedere a tutte le tue password su questo dispositivo</translation>
 <translation id="1448440926884431741">Organizza i tuoi prodotti monitorati in Segnalibri</translation>
 <translation id="1460751212339734034">Risparmia tempo e digita meno</translation>
 <translation id="1466383950273130737">Seleziona la lingua di Chrome</translation>
@@ -847,6 +848,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4910889077668685004">App per pagamenti</translation>
 <translation id="4912413785358399818">Sposta scheda</translation>
 <translation id="4913169188695071480">Interrompi aggiornamento</translation>
+<translation id="4913841543356834596">Accedi a tutte le tue password</translation>
 <translation id="4918086044614829423">Accetto</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Le tue password verranno esportate e scaricate in un file di testo. Saranno visibili a qualsiasi persona e app con accesso alla cartella di destinazione.</translation>
@@ -1330,6 +1332,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6987047470128880212">La modalità in incognito non è disponibile su questo dispositivo.</translation>
 <translation id="6991701761229081516">Le password verranno scaricate come file CSV. Saranno visibili a chiunque possa accedere al file, incluse le app. Le password esportate verranno eliminate da Chrome.</translation>
 <translation id="6996145122199359148">Scarica questa pagina</translation>
+<translation id="7013627768165542797">Verifica la tua identità per accedere alle password nel tuo Account Google</translation>
 <translation id="7013762323294215682">Questa passkey verrà salvata nel tuo gestore delle password. Chiunque abbia accesso al tuo gestore delle password potrà utilizzare questa passkey.</translation>
 <translation id="7020741890149022655">Aggiungi a Elenco lettura <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Apri nel browser</translation>
@@ -1348,6 +1351,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7085332316435785646">Scegli se includere la cronologia di Chrome per esperienze ancora più personalizzate nei servizi Google</translation>
 <translation id="7088681679121566888">Chrome è aggiornato</translation>
 <translation id="7094933634769755999">Contenuti imprecisi</translation>
+<translation id="7102843846294013537">Alcune password non sono disponibili su questo dispositivo</translation>
 <translation id="7106762743910369165">Il tuo browser è gestito dalla tua organizzazione</translation>
 <translation id="7111394291981742152">Chrome ti offre maggiore controllo sugli annunci che ti vengono mostrati e limita ciò che i siti possono imparare su di te quando ti mostrano annunci personalizzati.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Autorizzazioni esaminate per 1 sito}other{Autorizzazioni esaminate per # siti}}</translation>

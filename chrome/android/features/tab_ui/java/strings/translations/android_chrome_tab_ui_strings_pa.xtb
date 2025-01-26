@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">ਗਰੁੱਪ ਵਿੱਚ ਨਵੀਂ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="9216898458513705996">ਟੈਬਾਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਖੁੱਲ੍ਹੀਆਂ ਰਹਿਣਗੀਆਂ ਪਰ <ph name="USER_EMAIL" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}one{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}other{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}}</translation>
+<translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>
 <translation id="94870150074703282">ਕੀ ਗਰੁੱਪ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="992256792861109788">ਗੁਲਾਬੀ</translation>
 </translationbundle>

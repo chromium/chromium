@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">Добавить новую вкладку в группу</translation>
 <translation id="9216898458513705996">Хотя здесь вкладки останутся открытыми, группа будет удалена на всех устройствах, на которых выполнен вход в аккаунт <ph name="USER_EMAIL" />.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Развернуть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_ONE" /> вкладка.}one{Развернуть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_MANY" /> вкладка.}few{Развернуть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_MANY" /> вкладки.}many{Развернуть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_MANY" /> вкладок.}other{Развернуть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
+<translation id="945522503751344254">Отправить отзыв</translation>
 <translation id="94870150074703282">Удалить группу?</translation>
 <translation id="992256792861109788">Розовый</translation>
 </translationbundle>

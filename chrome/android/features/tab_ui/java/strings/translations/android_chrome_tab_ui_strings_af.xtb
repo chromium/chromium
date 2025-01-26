@@ -192,6 +192,7 @@ As jy dit uitvee sal almal onmiddellik toegang tot die “<ph name="TITLE_OF_GRO
 <translation id="9169594135889675189">Voeg nuwe oortjie by groep</translation>
 <translation id="9216898458513705996">Die oortjies sal oop bly op hierdie toestel, maar die groep sal uitgevee word van alle toestelle wat by <ph name="USER_EMAIL" /> aangemeld is</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Vou oortjiegroep met <ph name="TABS_COUNT_ONE" /> oortjie, kleur <ph name="COLOR_NAME" /> uit.}other{Vou oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies, kleur <ph name="COLOR_NAME" /> uit.}}</translation>
+<translation id="945522503751344254">Stuur terugvoer</translation>
 <translation id="94870150074703282">Vee groep uit?</translation>
 <translation id="992256792861109788">Pienk</translation>
 </translationbundle>

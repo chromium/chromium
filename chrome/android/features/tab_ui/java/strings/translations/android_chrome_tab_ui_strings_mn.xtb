@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">Бүлэгт шинэ таб нэмэх</translation>
 <translation id="9216898458513705996">Таб энэ төхөөрөмж дээр нээлттэй үлдэх хэдий ч бүлгийг <ph name="USER_EMAIL" />-д нэвтэрсэн бүх төхөөрөмжөөс устгана</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб, <ph name="COLOR_NAME" /> өнгөтэй табын бүлгийг дэлгэнэ үү.}other{<ph name="TABS_COUNT_MANY" /> таб, <ph name="COLOR_NAME" /> өнгөтэй табын бүлгийг дэлгэнэ үү.}}</translation>
+<translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="94870150074703282">Бүлгийг устгах уу?</translation>
 <translation id="992256792861109788">Ягаан</translation>
 </translationbundle>

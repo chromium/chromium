@@ -352,7 +352,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
-  'chromium_variations_revision': 'b33f33e105ccbaeebcb899d129a53fceecf43805',
+  'chromium_variations_revision': '31b8d00b77ecd0749abe7a3e85aa0d1a1f1d1d05',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'e838db144f1f7eacc95ee872c31245c9b3204ee6',
+  'dawn_revision': '539ed5c222e1059ad61ccef77e139025f3239eda',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'd3e105e602d5bad577cc626a1fa8fbfe86c693e8',
+    '4cf1d5f2f834e796e7e22002e4da68c75363c49e',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2941,7 +2941,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_app/app',
-        'version': 'OBy6zLLXrxqDwt_9yKTUZAqWjXaub4jf5odGGyMcY6wC',
+        'version': 'jnC3FlC3rmr9x-0UiV3NNd9RPMkeQ5OMuLx6PVwIKWgC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2952,7 +2952,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': '8nY3yFtPNhgqW6qgHBaHF5grtMSlTmfMAKHWD1DAcpIC',
+        'version': '1RffyhsP-kslgH1bPxKpmc9wGCxgYrmQuXVWBCd77gUC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4544,7 +4544,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '4b1e19e85357d9b11360eecf16499b6da830d55c',
+        'bd780e555b0cbd6b48ec9cf249daf15a2a8b8da9',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

@@ -395,6 +395,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1260810365552581339">L'espace disque Linux est peut-être insuffisant. Vous pouvez l'augmenter et renouveler la restauration dans <ph name="LINK_START" />Paramètres<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Modérée</translation>
 <translation id="126156426083987769">Un problème est survenu avec les licences d'appareils en mode de démonstration.</translation>
+<translation id="1262564987698748643">Les sites peuvent demander à remplacer la saisie au clavier</translation>
 <translation id="1263231323834454256">Liste de lecture</translation>
 <translation id="1263733306853729545">Utiliser les touches <ph name="MINUS" /> et <ph name="EQUAL" /> pour paginer une liste de candidats</translation>
 <translation id="126387934568812801">Inclure cette capture d'écran et les titres des onglets ouverts</translation>
@@ -772,6 +773,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1536883206862903762">Cette action désactivera les extensions et rétablira vos paramètres par défaut sécurisés. Les onglets, les fichiers et les cookies seront conservés. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Loupe plein écran</translation>
 <translation id="15373452373711364">Grand curseur</translation>
+<translation id="1539248305642687917">Ne pas autoriser les sites à remplacer la saisie au clavier</translation>
 <translation id="1539727654733007771">Aucun réseau mobile configuré. Téléchargez un nouveau <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">ChromeOS App Service</translation>
 <translation id="1540543470504988112">Gérer les certificats importés depuis macOS</translation>
@@ -983,6 +985,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="166278006618318542">Algorithme de clé publique de l'objet</translation>
 <translation id="1662801900924515589"><ph name="APP" /> installé</translation>
 <translation id="1663698992894057019">Passez à un nouveau Chromebook pour bénéficier des dernières mises à jour logicielles et de sécurité</translation>
+<translation id="166454475160289583">Non autorisé à remplacer la saisie au clavier</translation>
 <translation id="1665328953287874063">Utilisez un mot de passe ou un code pour déverrouiller votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Expressionnisme</translation>
 <translation id="1667842670298352129">En bas de l'écran, sélectionnez l'icône Sélectionner pour écouter, puis mettez en surbrillance le texte qui vous sera lu à voix haute. Vous pouvez aussi utiliser un raccourci clavier : mettez le texte en surbrillance, puis appuyer sur Recherche+S.</translation>
@@ -1214,6 +1217,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1832511806131704864">Changement de téléphone mis à jour</translation>
 <translation id="1832848789136765277">Pour toujours avoir accès à vos données synchronisées, confirmez votre identité</translation>
 <translation id="1833059747301212935">Accédez facilement aux documents récents et aux événements d'agenda à venir</translation>
+<translation id="183445248400150852">Les sites utilisent cette fonctionnalité pour remplacer la saisie au clavier, comme pour les jeux ou les applications de bureau à distance</translation>
 <translation id="1834503245783133039">Échec du téléchargement : <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Mettre à niveau Linux</translation>
 <translation id="1837441256780906162">Microsoft OneDrive a refusé la requête. Veuillez réessayer plus tard.</translation>
@@ -6748,6 +6752,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5794700615121138172">Dossiers partagés par Linux</translation>
 <translation id="5794786537412027208">Quitter toutes les applications Chrome</translation>
 <translation id="5796485699458186843">Nouvel ongle&amp;t de navigation privée</translation>
+<translation id="5796956053441619942">L'URL de l'appareil à distance n'est pas compatible</translation>
 <translation id="5797934230382081317">Découvrez comment faire vos premiers pas sur &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; et &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Les sites peuvent installer des gestionnaires de paiement</translation>
 <translation id="5798086737841799234">Saisissez le code de confirmation</translation>
@@ -7403,6 +7408,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6264485186158353794">Revenir en lieu sûr</translation>
 <translation id="6264520534872750757">Continuer à utiliser l'appareil</translation>
 <translation id="6264636978858465832">Le Gestionnaire de mots de passe a besoin d'un accès plus étendu</translation>
+<translation id="626495329434552273">Autorisé à remplacer la saisie au clavier</translation>
 <translation id="6265159465845424232">Demander avant de copier ou de déplacer des fichiers Microsoft vers Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Supprimer le port</translation>
 <translation id="6266532094411434237">Connexion à <ph name="DEVICE" />…</translation>

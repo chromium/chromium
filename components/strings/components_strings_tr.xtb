@@ -185,6 +185,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1310938305420497484">Öncelikle sekme açıp siteleri ziyaret edin</translation>
 <translation id="1314311879718644478">Artırılmış gerçeklik içeriğini görüntüleyin</translation>
 <translation id="1314509827145471431">Sağdan bağlı</translation>
+<translation id="1314784609072437689">klavye geçersiz kılma</translation>
 <translation id="1316805916535763484">Açık Online Dersler</translation>
 <translation id="1318023360584041678">Sekme grubuna kaydedildi</translation>
 <translation id="1319245136674974084">Bu uygulama için tekrar sorma</translation>
@@ -2920,6 +2921,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome, üçüncü taraf çerezlerini otomatik olarak sınırlandırır</translation>
 <translation id="6188479691141473408">ve <ph name="N_FIELDS" /> alan daha</translation>
+<translation id="6190518157737269631">Klavyenizdeki Esc gibi bazı tuşları geçersiz kılma</translation>
 <translation id="6194209731893739467">Takip edilen ürünlerinizin tamamını burada görün</translation>
 <translation id="6195163219142236913">Üçüncü taraf çerezleri sınırlı</translation>
 <translation id="6195371403461054755">Jeoloji</translation>
@@ -4193,6 +4195,7 @@ Ek ayrıntılar:
 <translation id="8421158157346464398">İş profili bilgileri (ör. iş profili kullanıcı adınız)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Değiştir</translation>
+<translation id="8426945547715537628">Klavye geçersiz kılmaya izin verilsin mi?</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8428634594422941299">Anladım</translation>
@@ -4279,6 +4282,7 @@ Ek ayrıntılar:
 <translation id="8574841453995331336">Buzdolapları ve Dondurucular</translation>
 <translation id="8577192028579836704">Tüm seçenekler genellikle <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Sanal kart kullanılamıyor</translation>
+<translation id="8579000896558714521">Klavye geçersiz kılma</translation>
 <translation id="8580265901435899937">Turistik Yerler</translation>
 <translation id="8581064022803799721">Bu sayfa <ph name="LAST_BOOKMARKS_FOLDER" /> klasörüne kaydedildi.</translation>
 <translation id="8586082901536468629">Squash ve Raketbol Gereçleri</translation>

@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">Дадаць у групу новую ўкладку</translation>
 <translation id="9216898458513705996">Укладкі застануцца адкрытымі на гэтай прыладзе, але група будзе выдалена з усіх прылад, на якіх выкананы ўваход ва ўліковы запіс <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_ONE" /> укладкай, колер: <ph name="COLOR_NAME" />.}one{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкай, колер: <ph name="COLOR_NAME" />.}few{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}many{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}other{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="94870150074703282">Выдаліць групу?</translation>
 <translation id="992256792861109788">Ружовы</translation>
 </translationbundle>

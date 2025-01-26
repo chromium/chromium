@@ -2991,7 +2991,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6304398603974202180">Phần mềm đa phương tiện</translation>
 <translation id="6305205051461490394">Không thể truy cập <ph name="URL" />.</translation>
 <translation id="6306713302480826305">Địa chỉ này sẽ bị xoá khỏi thiết bị hiện tại cũng như các thiết bị đã đăng nhập khác</translation>
-<translation id="6307968763353904914">Ngân hàng của bạn hiện không hỗ trợ thẻ ảo cho phương thức thanh toán này nhưng bạn vẫn có thể thanh toán trực tuyến bằng <ph name="CARD_LABEL" />.</translation>
+<translation id="6307968763353904914">Ngân hàng của bạn hiện không hỗ trợ thẻ ảo cho phương thức thanh toán này nhưng bạn vẫn có thể thanh toán trực tuyến bằng thẻ <ph name="CARD_LABEL" />.</translation>
 <translation id="6311410654831092784">Giấy nền trơn</translation>
 <translation id="6311642842034740437">Địa điểm được nêu tên</translation>
 <translation id="6312113039770857350">Trang web hiện không khả dụng</translation>

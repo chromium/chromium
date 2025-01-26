@@ -296,6 +296,7 @@
 <translation id="2240366984605217732">Commutateur de la disposition du clavier</translation>
 <translation id="2244834438220057800">vert</translation>
 <translation id="225692081236532131">État de l'activation</translation>
+<translation id="2265792117169966196">Sélectionner et télécharger le modèle de transcription pour la langue suivante : <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Ajouter une capture d'écran</translation>
 <translation id="2268044343513325586">Affiner</translation>
 <translation id="2271469253353559191">Programmation du mode sombre</translation>
@@ -774,6 +775,7 @@
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4744944742468440486">Renseignements concernant votre sélection</translation>
 <translation id="4750394297954878236">Suggestions</translation>
+<translation id="4763771683769971829">Liste des langues disponibles</translation>
 <translation id="4771607256327216405">augmenter la luminosité du clavier</translation>
 <translation id="4771923071974529837">demain</translation>
 <translation id="4773299976671772492">Arrêté</translation>
@@ -855,6 +857,7 @@
 <translation id="5095761549884461003">Débranchez le câble USB de l'appareil <ph name="DEVICE_NAME" />, puis réinsérez-le pour poursuivre le processus de mise à jour</translation>
 <translation id="5099354524039520280">haut</translation>
 <translation id="5107243100836678918">Un raccourci ne comprenant pas la touche de <ph name="META_KEY" /> peut entrer en conflit avec le raccourci de certaines applications. Appuyez à nouveau sur ce raccourci pour continuer à l'utiliser ou appuyez sur un nouveau raccourci à l'aide de la touche de <ph name="KEY" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">Impossible de télécharger le modèle de transcription pour cette langue : <ph name="LANGUAGE_NAME" />. Réessayez ou redémarrez votre Chromebook.</translation>
 <translation id="5108781503443873320">Mots de sens similaire :</translation>
 <translation id="5121677070210013200">Impossible de télécharger le modèle de transcription. Réessayez ou redémarrez votre Chromebook.</translation>
 <translation id="5130848777448318809">poneys</translation>
@@ -1278,6 +1281,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="7049916119678019302">Téléchargez le modèle de transcription dans les paramètres</translation>
 <translation id="7058278511608979688">Terminer et enregistrer</translation>
 <translation id="7059230779847288458">En recharge : <ph name="TIME_VALUE" /> avant que la pile soit rechargée</translation>
+<translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> sélectionné</translation>
 <translation id="7066538517128343186">la touche <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Préparer votre appareil</translation>
 <translation id="7076851914315147928">Choisir un fond d'écran</translation>
@@ -1371,6 +1375,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
 <translation id="7418738250896500352">Trop de mots pour simplifier</translation>
 <translation id="7425037327577270384">Aide à la rédaction</translation>
+<translation id="7425832472614771259">Modèle de transcription de la langue suivante : <ph name="LANGUAGE_NAME" />; téléchargé à <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossible de désactiver ou de retirer ce nom de point d'accès. Assurez-vous que les noms de points d'accès <ph name="ATTACH" /> activés sont désactivés ou retirés.</translation>
 <translation id="7453118953486228603">Cliquer pour résumer le texte sélectionné</translation>
@@ -1407,6 +1412,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7595982850646262331">Il reste <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">L'administrateur <ph name="MANAGER" /> a configuré quand l'appareil suivant peut être utilisé : <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Repositionnez avec la souris ou les touches fléchées.</translation>
+<translation id="7618216277886673749">Sélectionner la langue suivante : <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7620771111601174153">En savoir plus dans le centre d'aide</translation>
 <translation id="7625095758347640998">Fonds d'écran IA</translation>

@@ -192,6 +192,7 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="9169594135889675189">Adaugă o filă nouă în grup</translation>
 <translation id="9216898458513705996">Filele vor rămâne deschise pe acest dispozitiv, dar grupul va fi șters de pe toate dispozitivele conectate la <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Extinde grupul de file cu <ph name="TABS_COUNT_ONE" /> filă, culoarea <ph name="COLOR_NAME" />.}few{Extinde grupul de file cu <ph name="TABS_COUNT_MANY" /> file, culoarea <ph name="COLOR_NAME" />.}other{Extinde grupul de file cu <ph name="TABS_COUNT_MANY" /> de file, culoarea <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Trimite feedback</translation>
 <translation id="94870150074703282">Ștergi grupul?</translation>
 <translation id="992256792861109788">Roz</translation>
 </translationbundle>

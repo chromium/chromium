@@ -394,6 +394,7 @@
 <translation id="1260810365552581339">Linux मध्ये पुरेशी डिस्कमधील जागा नसू शकते. तुम्ही तुमची Linux डिस्कमधील जागा वाढवू शकता आणि <ph name="LINK_START" />सेटिंग्ज<ph name="LINK_END" /> मध्ये पुन्हा रिस्टोअर करण्याचा प्रयत्न करू शकता.</translation>
 <translation id="1261380933454402672">मर्यादित</translation>
 <translation id="126156426083987769">डेमो मोड डिव्हाइस परवान्यांना समस्या आली.</translation>
+<translation id="1262564987698748643">साइट तुमचे कीबोर्ड इनपुट ओव्हरराइड करण्याची विनंती करू शकतात</translation>
 <translation id="1263231323834454256">वाचन सूची</translation>
 <translation id="1263733306853729545">उमेदवारांची सूची पेजवर आणण्यासाठी, <ph name="MINUS" /> आणि <ph name="EQUAL" /> की वापरा</translation>
 <translation id="126387934568812801">हा स्क्रीनशॉट आणि उघड्या टॅबची शीर्षके समाविष्ट करा</translation>
@@ -773,6 +774,7 @@
 <translation id="1536883206862903762">यामुळे एक्स्टेंशन बंद होतील आणि तुमची सेटिंग्ज सुरक्षित डीफॉल्टवर रीसेट केली जातील. टॅब, फाइल आणि कुकी कायम ठेवली जातील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">क्षेत्रे भिंग</translation>
 <translation id="15373452373711364">मोठा माउस कर्सर</translation>
+<translation id="1539248305642687917">साइटना तुमचे कीबोर्ड इनपुट ओव्हरराइड करण्याची अनुमती देऊ नका</translation>
 <translation id="1539727654733007771">कोणतीही मोबाइल नेटवर्क सेट केलेली नाहीत. नवीन <ph name="BEGIN_LINK" />प्रोफाइल<ph name="END_LINK" /> डाउनलोड करा.</translation>
 <translation id="1540265419569299117">ChromeOS अ‍ॅप सेवा</translation>
 <translation id="1540543470504988112">MacOS वरून इंपोर्ट केलेली प्रमाणपत्रे व्यवस्थापित करा</translation>
@@ -983,6 +985,7 @@
 <translation id="166278006618318542">विषय सार्वजनिक की अल्गोरिदम</translation>
 <translation id="1662801900924515589"><ph name="APP" /> इंस्टॉल केले</translation>
 <translation id="1663698992894057019">नवीनतम सुरक्षेसाठी आणि सॉफ्टवेअरसाठी नवीन Chromebook वर अपग्रेड करा</translation>
+<translation id="166454475160289583">तुमचे कीबोर्ड इनपुट ओव्हरराइड करण्याची अनुमती नाही</translation>
 <translation id="1665328953287874063">तुमचे <ph name="DEVICE_TYPE" /> अनलॉक करण्यासाठी पासवर्ड किंवा पिन वापरा</translation>
 <translation id="1665859804801131136">एक्स्प्रेशनिझम</translation>
 <translation id="1667842670298352129">मोठ्याने वाचलेला विशिष्ट मजकूर ऐका. प्रथम, तुमच्या स्क्रीनच्या तळाशी असलेला बोलण्यासाठी निवडा आयकन निवडा, त्यानंतर मजकूर हायलाइट करा. तुम्ही कीबोर्ड शॉर्टकटदेखील वापरू शकता: मजकूर हायलाइट करा, त्यानंतर Search + S प्रेस करा.</translation>
@@ -1222,6 +1225,7 @@
 <translation id="1832511806131704864">फोन बदल अपडेट झाला</translation>
 <translation id="1832848789136765277">तुम्ही तुमचा सिंक डेटा कधीही ॲक्सेस करू शकता याची खात्री करण्यासाठी, हे तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="1833059747301212935">अलीकडील दस्तऐवज आणि आगामी कॅलेंडर इव्हेंटमध्ये सहजपणे अ‍ॅक्सेस करा</translation>
+<translation id="183445248400150852">साइट हे वैशिष्ट्य तुमच्या कीबोर्डचे इनपुट ओव्हरराइड करण्यासाठी वापरतात, जसे की गेम किंवा रिमोट डेस्कटॉप ॲप्स</translation>
 <translation id="1834503245783133039">डाउनलोड करता आले नाही: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux अपग्रेड करत आहे</translation>
 <translation id="1837441256780906162">Microsoft OneDrive ने विनंती नाकारली आहे. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
@@ -6775,6 +6779,7 @@
 <translation id="5794700615121138172">Linux ने शेअर केलेले फोल्डर</translation>
 <translation id="5794786537412027208">सर्व Chrome Apps मधून बाहेर पडा</translation>
 <translation id="5796485699458186843">नवीन गुप्त टॅब</translation>
+<translation id="5796956053441619942">रिमोट डिव्हाइसवरील URL ला सपोर्ट नाही</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; आणि &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; वर सुरुवात कशी करावी हे जाणून घ्या</translation>
 <translation id="5798079537501238810">साइट पेमेंट हँडलर इंस्टॉल करू शकतात</translation>
 <translation id="5798086737841799234">कन्फर्मेशन कोड एंटर करा</translation>
@@ -7435,6 +7440,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6264485186158353794">सुरक्षिततेकडे परत</translation>
 <translation id="6264520534872750757">डिव्हाइस वापरणे पुढे सुरू ठेवा</translation>
 <translation id="6264636978858465832">पासवर्ड व्यवस्थापकाला आणखी अ‍ॅक्सेस हवा आहे</translation>
+<translation id="626495329434552273">तुमचे कीबोर्ड इनपुट ओव्हरराइड करण्याची अनुमती आहे</translation>
 <translation id="6265159465845424232">Microsoft OneDrive वर Microsoft फाइल कॉपी करण्यापूर्वी किंवा हलवण्यापूर्वी विचारा</translation>
 <translation id="6265687851677020761">पोर्ट काढून टाका</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> शी कनेक्ट करत आहे</translation>

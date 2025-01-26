@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">တဘ်အသစ်ကို အုပ်စုသို့ ထည့်ရန်</translation>
 <translation id="9216898458513705996">တဘ်များကို ဤစက်တွင် ဆက်ဖွင့်ထားမည်ဖြစ်သော်လည်း <ph name="USER_EMAIL" /> သို့ လက်မှတ်ထိုးဝင်ထားသည့် စက်အားလုံးတွင် အုပ်စုကို ဖျက်လိုက်ပါမည်</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် တဘ်အုပ်စုကို ဖြန့်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် တဘ်အုပ်စုကို ဖြန့်ပါ။}}</translation>
+<translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 <translation id="94870150074703282">အုပ်စုကို ဖျက်မလား။</translation>
 <translation id="992256792861109788">ပန်းရောင်</translation>
 </translationbundle>

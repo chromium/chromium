@@ -192,6 +192,7 @@ Ukikifuta, papo hapo kila mtu hataweza kufikia kikundi cha vichupo cha "<ph name
 <translation id="9169594135889675189">Ongeza kichupo kipya kwenye kikundi</translation>
 <translation id="9216898458513705996">Vichupo havitafungwa kwenye kifaa hiki lakini kikundi kitafutwa kwenye vifaa vyote ulivyotumia kuingia katika akaunti ya <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Panua kikundi cha vichupo chenye kichupo <ph name="TABS_COUNT_ONE" />, cha rangi ya <ph name="COLOR_NAME" />.}other{Panua kikundi cha vichupo chenye vichupo <ph name="TABS_COUNT_MANY" />, vya rangi ya <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Tuma maoni</translation>
 <translation id="94870150074703282">Ungependa kufuta kikundi?</translation>
 <translation id="992256792861109788">Waridi</translation>
 </translationbundle>

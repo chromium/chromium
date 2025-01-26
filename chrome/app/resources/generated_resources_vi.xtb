@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Giải phóng dung lượng ổ đĩa để khởi chạy ứng dụng Android.</translation>
 <translation id="1033780634303702874">Truy cập thiết bị tuần tự của bạn</translation>
 <translation id="1034484273907870301">Dải thẻ hình thu nhỏ cho chế độ máy tính bảng</translation>
+<translation id="1035289631433631911">Công cụ Chuyển nội dung</translation>
 <translation id="1035875743511577452">Nhấp vào "Thay đổi giao diện" để khám phá các giao diện lấy cảm hứng từ nghệ sĩ, thiên nhiên và nhiều nội dung khác</translation>
 <translation id="1036348656032585052">Tắt</translation>
 <translation id="1036511912703768636">Truy cập bất kỳ trong số các thiết bị USB này</translation>
@@ -380,6 +381,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1246863218384630739">Không thể cài đặt <ph name="VM_NAME" />: URL của hình ảnh trả về mã lỗi <ph name="HTTP_ERROR" />. Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="1247372569136754018">Micrô (bên trong)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Không cho phép thông báo đối với 1 trang web}other{Không cho phép thông báo đối với {NUM_SITES} trang web}}</translation>
+<translation id="125097549534200450">xoá</translation>
 <translation id="1251366534849411931">Thiếu dấu ngoặc nhọn mở: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Đang quét tìm mạng dữ liệu di động...</translation>
 <translation id="125220115284141797">Mặc định</translation>
@@ -5946,6 +5948,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5177479852722101802">Tiếp tục chặn truy cập vào máy ảnh và micrô</translation>
 <translation id="5177549709747445269">Bạn đang sử dụng dữ liệu di động</translation>
 <translation id="5178667623289523808">Tìm Trước</translation>
+<translation id="5180276433875360121">Hiển thị <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">Đang tải xuống</translation>
 <translation id="5181172023548002891">Lưu mật khẩu của <ph name="ACCOUNT" /> vào Trình quản lý mật khẩu của Google</translation>
 <translation id="5181551096188687373">Mật khẩu này chỉ được lưu trên thiết bị này. Để sử dụng mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu vào Tài khoản Google <ph name="USER_EMAIL" /> của bạn.</translation>
@@ -8543,6 +8546,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7063311912041006059">URL có <ph name="SPECIAL_SYMBOL" /> thay thế truy vấn</translation>
 <translation id="706342288220489463">Cho phép Trợ lý sử dụng thông tin trên màn hình để trợ giúp</translation>
 <translation id="70641621694466590">Chuyển đến trang Mật khẩu</translation>
+<translation id="7064209589142995848">Chuyển nội dung</translation>
 <translation id="7064734931812204395">Đang định cấu hình vùng chứa Linux. Quá trình này có thể mất tối đa 30 phút.</translation>
 <translation id="7065223852455347715">Thiết bị này bị khóa trong chế độ ngăn đăng ký doanh nghiệp.  Nếu bạn muốn đăng ký thiết bị, trước tiên bạn cần khôi phục thiết bị.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{Đã nhập 1 mật khẩu vào <ph name="BRAND" /> cho <ph name="USER_EMAIL" />}other{Đã nhập {NUM_PASSWORDS} mật khẩu vào <ph name="BRAND" /> cho <ph name="USER_EMAIL" />}}</translation>
@@ -9582,6 +9586,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7810202088502699111">Cửa sổ bật lên đã bị chặn trên trang này.</translation>
 <translation id="7810367892333449285">Nội dung bạn nhập phải có định dạng <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ địa chỉ<ph name="LPA_2" />$<ph name="LPA_3" />mã nhận dạng để so khớp (không bắt buộc)<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Hãy thử lại hoặc chọn một trong những giao diện đã tạo ở bên dưới.</translation>
+<translation id="7811986034759500329">Thiết lập trong phần cài đặt hệ thống</translation>
 <translation id="7812170317334653156">Đã ẩn Lịch Google</translation>
 <translation id="7814090115158024843">Không bao giờ đề xuất hỗ trợ viết trên các trang web này</translation>
 <translation id="7814458197256864873">Sao &amp;chép</translation>

@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">සමූහයට නව පටිත්ත එක් කරන්න</translation>
 <translation id="9216898458513705996">පටිති මෙම උපාංගය මත විවෘතව පවතින නමුත් සමූහය <ph name="USER_EMAIL" /> වෙත පුරන ලද සියලුම උපාංගවලින් මකනු ලැබේ</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය පුළුල් කරන්න.}one{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය පුළුල් කරන්න.}other{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය පුළුල් කරන්න.}}</translation>
+<translation id="945522503751344254">අදහස් හා යෝජනා යවන්න</translation>
 <translation id="94870150074703282">සමූහය මකන්න ද?</translation>
 <translation id="992256792861109788">රෝස</translation>
 </translationbundle>

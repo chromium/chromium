@@ -192,6 +192,7 @@ Agar tark etsangiz, “<ph name="TITLE_OF_GROUP" />” varaqlar guruhiga boshqa 
 <translation id="9169594135889675189">Guruhga yangi varaq kiritish</translation>
 <translation id="9216898458513705996">Varaqlar bu qurilmada ochiq qoladi, ammo guruh <ph name="USER_EMAIL" /> hisobidan kirilgan barcha qurilmalardan oʻchirib tashlanadi</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Varaqlar guruhini yoyish, varaqlari: <ph name="TABS_COUNT_ONE" /> ta, rangi: <ph name="COLOR_NAME" />.}other{Varaqlar guruhini yoyish, varaqlari: <ph name="TABS_COUNT_MANY" /> ta, rangi: <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Fikr-mulohaza</translation>
 <translation id="94870150074703282">Guruh oʻchirilsinmi?</translation>
 <translation id="992256792861109788">Pushti</translation>
 </translationbundle>

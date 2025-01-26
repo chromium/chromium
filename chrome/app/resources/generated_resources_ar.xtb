@@ -486,6 +486,7 @@
 <translation id="1317637799698924700">‏سيتم تشغيل محطة الإرساء في وضع USB من نوع C المتوافق.</translation>
 <translation id="1319983966058170660">زر الرجوع إلى الصفحة الفرعية <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">عرض كلمات المرور المحفوظة وإدارتها في <ph name="SAVED_PASSWORDS_STORE" /></translation>
+<translation id="132539964543492755">‏لتغيير اختيار زر الماوس بين الزر الأيسر والزر الأيمن أو اختيار كليهما، يجب استخدام مفتاح "x"</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">‏تذاكر Kerberos</translation>
 <translation id="1327495825214193325">‏لتفعيل خيار "تصحيح الأخطاء عبر ADB"، يجب إعادة تشغيل <ph name="DEVICE_TYPE" />. ويتطلب إيقاف هذا الخيار إعادة ضبط الجهاز على الإعدادات الأصلية.</translation>
@@ -1684,6 +1685,7 @@
 <translation id="2155772377859296191">‏تبدو كـ <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">مشغّل الخدمات: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">المواقع الإلكترونية المسموح لها بالانتقال للأعلى أو للأسفل في محتوى علامات التبويب التي تمّت مشاركتها وتكبيره أو تصغيره</translation>
+<translation id="2157457598652721267">لاختيار زر الماوس الأيسر أو الأيمن، يجب استخدام مفتاحَي "/" و"-"، أو استخدام مفتاح "*" لاختيار كليهما.</translation>
 <translation id="2157474325782140681">‏للحصول على ميزات إضافية، يُرجى استخدام محطة إرساء Dell المصمّمة للعمل مع جهاز Chromebook هذا.</translation>
 <translation id="215753907730220065">إنهاء وضع ملء الشاشة</translation>
 <translation id="2157779167749714207">‏‫Gemini ضمن <ph name="DEVICE_TYPE" /></translation>
@@ -1788,6 +1790,7 @@
 <translation id="2233502537820838181">&amp;مزيد من المعلومات</translation>
 <translation id="223356358902285214">النشاط على الويب وفي التطبيقات</translation>
 <translation id="2234065144797002621">غدير</translation>
+<translation id="2234208862050358325">‏لتحريك المؤشر، يجب استخدام المفاتيح "1" و"2" و"3" و"q" و"e" و"a" و"s" و"d"</translation>
 <translation id="2234827758954819389">دليل الخصوصية</translation>
 <translation id="2234876718134438132">‏خدمات Google والمزامنة</translation>
 <translation id="2235344399760031203">تم حظر ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
@@ -1807,6 +1810,7 @@
 <translation id="2249111429176737533">فتح كنافذة ذات علامة تبويب</translation>
 <translation id="2249605167705922988">مثال: 1-5، 8، 11-13</translation>
 <translation id="2249635629516220541">تخصيص المعلومات التي تستخدمها المواقع الإلكترونية لعرض الإعلانات لك</translation>
+<translation id="22505994009453896">التحكّم في مؤشر الماوس باستخدام لوحة مفاتيح رقمية</translation>
 <translation id="2250624716625396929">تستخدم علامة التبويب هذه الكاميرا والميكروفون.</translation>
 <translation id="2251218783371366160">فتح باستخدام عارض النظام</translation>
 <translation id="225163402930830576">تحديث الشبكات</translation>
@@ -2000,6 +2004,7 @@
 <translation id="236939127352773362">عندما تشارك الأجهزة المجاورة محتوى</translation>
 <translation id="2371076942591664043">فتح الملفّ عند &amp;انتهاء التحميل</translation>
 <translation id="237336063998926520">‏استخدام عنوان IP لتحديد الموقع</translation>
+<translation id="2373499590298659902">للضغط مع الاستمرار على زر الماوس، يجب استخدام مفتاح "0"</translation>
 <translation id="2373666622366160481">ملاءمة حجم الورقة</translation>
 <translation id="2375406435414127095">الاتصال بهاتفك</translation>
 <translation id="2376056713414548745">القراءة بصوت عالٍ</translation>
@@ -2761,6 +2766,7 @@
 <translation id="2902312830803030883">مزيد من الإجراءات</translation>
 <translation id="2903457445916429186">فتح العناصر المحدّدة</translation>
 <translation id="2903882649406874750">حظر <ph name="HOST" /> دائمًا من الوصول إلى أجهزة الاستشعار</translation>
+<translation id="2903925626657991994">لتغيير اختيار زر الماوس بين الزر الأيسر والزر الأيمن أو اختيار كليهما، يجب استخدام مفتاح ","</translation>
 <translation id="290415756080113152">عدم السماح للمواقع الإلكترونية بالبحث عن الطابعات أو استخدامها والتي يمكن لجهازك الوصول إليها</translation>
 <translation id="2904210161403910217">تم تغيير كلمة المرور منذ آخر مرة سجّلت فيها الدخول</translation>
 <translation id="2904506722835398619">يجب تسجيل الدخول وتفعيل المزامنة</translation>
@@ -3115,6 +3121,7 @@
 <translation id="3170072451822350649">يمكنك أيضًا تخطي تسجيل الدخول و<ph name="LINK_START" />التصفح كضيف<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">القسم العلوي</translation>
 <translation id="3175862692832442091">غابة</translation>
+<translation id="3176347586396987181">‏للضغط مع الاستمرار على زر الماوس، يجب استخدام مفتاح "z"</translation>
 <translation id="3177430966804511955">إدارة تطبيقات الويب المعزولة (تجريبي)</translation>
 <translation id="31774765611822736">إضافة علامة تبويب جديدة على اليسار</translation>
 <translation id="3177909033752230686">لغة الصفحة:</translation>
@@ -4495,6 +4502,7 @@
 <translation id="412730574613779332">إسباندكس</translation>
 <translation id="4130199216115862831">سجل الجهاز</translation>
 <translation id="4130750466177569591">أوافق</translation>
+<translation id="4130877444234883490">‏للضغط مع الاستمرار على زر الماوس، يجب استخدام مفتاح "m"</translation>
 <translation id="413121957363593859">المكونات</translation>
 <translation id="4131283654370308898">السماح بالإضافة "<ph name="EXTENSION_NAME" />" على هذا الموقع الإلكتروني</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
@@ -4514,6 +4522,7 @@
 <translation id="413915106327509564">‏<ph name="WINDOW_TITLE" /> - متصّل بجهاز HID</translation>
 <translation id="4139326893730851150">تحديثات البرامج الثابتة</translation>
 <translation id="4142052906269098341">يمكنك فتح قفل جهاز <ph name="DEVICE_TYPE" /> باستخدام هاتفك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
+<translation id="4143606504420684845">يمكنك استكشاف كيفية تأثير الذكاء الاصطناعي في تجربتك واتخاذ قرارات مستنِدة إلى معلومات متوفّرة عن خصوصيتك</translation>
 <translation id="4146026355784316281">افتح دائمًا باستخدام عرض النظام</translation>
 <translation id="4146785383423576110">إعادة الضبط وإزالة البرامج الضارة</translation>
 <translation id="4147099377280085053">اختيار جدول بلغة برايل</translation>
@@ -4797,6 +4806,7 @@
 <translation id="4360738659108163902">النقر بزر الماوس الأيمن</translation>
 <translation id="4361142739114356624">المفتاح الخاص لشهادة العميل هذه مفقود أو غير صالح</translation>
 <translation id="4361745360460842907">فتح كعلامة تبويب</translation>
+<translation id="4362459470237309049">لتحرير زر الماوس، يجب استخدام مفتاح "."</translation>
 <translation id="4363262124589131906">‏ستتوقف تلقائيًا مزامنة الملفات الجديدة في "ملفاتي" مع جهاز Chromebook هذا.</translation>
 <translation id="4364327530094270451">شمام</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{‏تم حفظ عنصر واحد على هذا الجهاز فقط. ولاستخدامه على أجهزتك الأخرى، يجب حفظه في حسابك على Google.}zero{‏تم حفظ {ITEM_COUNT} عنصر على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}two{‏تم حفظ عنصرَين ({ITEM_COUNT}) على هذا الجهاز فقط. ولاستخدامهما على أجهزتك الأخرى، يجب حفظهما في حسابك على Google.}few{‏تم حفظ {ITEM_COUNT} عناصر على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}many{‏تم حفظ {ITEM_COUNT} عنصرًا على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}other{‏تم حفظ {ITEM_COUNT} عنصر على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}}</translation>
@@ -4822,6 +4832,7 @@
 <translation id="4378308539633073595">التمرير للأمام</translation>
 <translation id="4378551569595875038">جارٍ الاتصال...</translation>
 <translation id="4378556263712303865">طلب الجهاز</translation>
+<translation id="4378589147979399051">التحكّم في مؤشر الماوس باستخدام لوحة المفاتيح الأساسية</translation>
 <translation id="4379097572583973456">يمكن أن يتضمّن الموقع الإلكتروني أيضًا محتوى من مواقع إلكترونية أخرى، مثل الصور والإعلانات والنصوص. وبإمكان هذه المواقع الأخرى حفظ البيانات كذلك.</translation>
 <translation id="4379281552162875326">هل تريد إلغاء تثبيت "<ph name="APP_NAME" />"؟</translation>
 <translation id="4380055775103003110">في حال استمرار حدوث هذه المشكلة، يمكنك تجربة طرق أخرى للمتابعة على "<ph name="SITE_ETLD_PLUS_ONE" />".</translation>
@@ -5142,6 +5153,7 @@
 <translation id="4610493438923139095">غير موثوق بها</translation>
 <translation id="4610637590575890427">هل تقصد الانتقال إلى <ph name="SITE" />؟</translation>
 <translation id="4611114513649582138">اتصال البيانات متاح</translation>
+<translation id="4611619000650855880">في حال اختيار زر الماوس الأيسر، يجب استخدام مفتاح "/" للنقر مرّتين</translation>
 <translation id="4611759022973144129">يمكنك استخدام كلمة المرور هذه لتسجيل الدخول إلى جهاز <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4612841084470706111">منح إمكانية الوصول إلى كل المواقع الإلكترونية المطلوبة</translation>
 <translation id="4613144866899789710">‏جارٍ إلغاء عملية تثبيت Linux...</translation>
@@ -5267,6 +5279,7 @@
 <translation id="4694820450536519583">الأذونات</translation>
 <translation id="4695318956047767909">المظهر الداكن، وشاشة الاستراحة</translation>
 <translation id="4697071790493980729">لم يتم العثور على نتائج.</translation>
+<translation id="4697231114332146850">لتحريك المؤشر، يجب استخدام المفاتيح "7" و"8" و"9" و"4" و"6" و"1" و"2" و"3"</translation>
 <translation id="4697551882387947560">عند انتهاء جلسة التصفح</translation>
 <translation id="469838979880025581">السماح للمواقع الإلكترونية بطلب استخدام الميكروفون</translation>
 <translation id="4699172675775169585">الصور والملفات المخزنة مؤقتًا</translation>
@@ -6380,6 +6393,7 @@
 <translation id="5499453227627332024">‏هناك ترقية متاحة لحاوية نظام التشغيل Linux. يمكنك أيضًا الترقية لاحقًا من تطبيق "الإعدادات".</translation>
 <translation id="5499476581866658341">يمكنك الآن الاطّلاع على أحدث الصور والوسائط المتوفّرة على هاتفك</translation>
 <translation id="549957179819296104">رمز جديد</translation>
+<translation id="5500163593833085874">في حال اختيار زر الماوس الأيسر، يجب استخدام مفتاح "+" للنقر مرّتين</translation>
 <translation id="5500168250243071806">‏قد يتم حفظ <ph name="BEGIN_LINK_SEARCH" />سجلّ البحث<ph name="END_LINK_SEARCH" /> و<ph name="BEGIN_LINK_GOOGLE" />بيانات الأنشطة الأخرى<ph name="END_LINK_GOOGLE" /> في حسابك على Google عند تسجيل الدخول إليه. ويمكنك حذفها في أي وقت.</translation>
 <translation id="5501322521654567960">اللوحة الجانبية التي تمت محاذاتها إلى اليسار</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}zero{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}two{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}few{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}many{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}other{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}}</translation>
@@ -6677,6 +6691,7 @@
 <translation id="5733913382424854675">تجميع علامات التبويب باستخدام الذكاء الاصطناعي</translation>
 <translation id="5734362860645681824">الاتصالات</translation>
 <translation id="5734697361979786483">إضافة خادم مشاركة الملفات</translation>
+<translation id="573520097779121706">‏لتحريك المؤشر، يجب استخدام المفاتيح "7" و"8" و"9" و"u" و"o" و"j" و"k" و"l"</translation>
 <translation id="5735513236153491131">تعزيز الأداء الآن</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{لا تستوفي هذه البيانات أو جهازك متطلبات بعض سياسات الأمان لدى مؤسستك. يُرجى التواصل مع المشرف لمعرفة ما يجب تعديله.}=1{لا يستوفي هذا الملف أو جهازك متطلبات بعض سياسات الأمان لدى مؤسستك. يُرجى التواصل مع المشرف لمعرفة ما يجب تعديله.}two{لا يستوفي هذان الملفان متطلبات بعض سياسات الأمان لدى مؤسستك. يُرجى التواصل مع المشرف لمعرفة ما يجب تعديله.}few{لا تستوفي هذه الملفات متطلبات بعض سياسات الأمان لدى مؤسستك. يُرجى التواصل مع المشرف لمعرفة ما يجب تعديله.}many{لا تستوفي هذه الملفات متطلبات بعض سياسات الأمان لدى مؤسستك. يُرجى التواصل مع المشرف لمعرفة ما يجب تعديله.}other{لا تستوفي هذه الملفات متطلبات بعض سياسات الأمان لدى مؤسستك. يُرجى التواصل مع المشرف لمعرفة ما يجب تعديله.}}</translation>
 <translation id="5738093759615225354">يجب إدخال مفتاح المرور هذا لتسجيل الدخول إلى جهاز الكمبيوتر.</translation>
@@ -6910,6 +6925,7 @@
 <translation id="5901069264981746702">يتم تخزين بيانات بصمة الإصبع بشكل آمن وتظلّ محفوظة على جهاز <ph name="DEVICE_TYPE" /> فقط. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">التبديل إلى علامة التبويب التي تسجّل المحتوى</translation>
 <translation id="5901494423252125310">باب الطابعة مفتوح</translation>
+<translation id="5901526412306322179">سجل الأنشطة</translation>
 <translation id="5901630391730855834">أصفر</translation>
 <translation id="5902892210366342391">عرض تحذيرات قبل الانتقال إلى المواقع الإلكترونية غير الآمنة في "وضع التصفُّح المتخفي"</translation>
 <translation id="5904614460720589786">تعذّر إعداد <ph name="APP_NAME" /> بسبب مشكلة في الضبط. يُرجى التواصل مع مشرفك. رمز الخطأ: <ph name="ERROR_CODE" />.</translation>
@@ -7285,6 +7301,7 @@
 <translation id="6171779718418683144">السؤال عند كل زيارة للموقع الإلكتروني</translation>
 <translation id="617213288191670920">لم تتمّ إضافة أيّ لغة.</translation>
 <translation id="6173623053897475761">كتابة رقم التعريف الشخصي مرة أخرى</translation>
+<translation id="6174909075810107548">للضغط على زر الماوس، يجب استخدام مفتاح "5"</translation>
 <translation id="6175314957787328458">‏المعرّف الفريد العمومي لنطاق Microsoft</translation>
 <translation id="6175910054050815932">الحصول على رابط</translation>
 <translation id="6177412385419165772">جارٍ الإزالة…</translation>
@@ -7770,6 +7787,7 @@
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />ملاحظة:<ph name="END_BOLD" /> يُوصى بعدم التفعيل إلا إذا كنت تعرف ماذا تريد أو عندما يُطلب منك إجراء ذلك، ذلك أن جمع البيانات قد يقلل من مستوى الأداء.</translation>
 <translation id="6540488083026747005">لقد سمحت باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية في هذا الموقع الإلكتروني.</translation>
 <translation id="6541638731489116978">تم حظر الموقع الإلكتروني هذا من الوصول إلى مستشعرات الحركة.</translation>
+<translation id="654219396498297850">‏في حال اختيار زر الماوس الأيسر، يجب استخدام مفتاح "v" للنقر مرّتين</translation>
 <translation id="6542417422899025860">إزالة معظم المعلومات الشخصية تلقائيًا</translation>
 <translation id="6542521951477560771">البث على <ph name="RECEIVER_NAME" /></translation>
 <translation id="6544134392255015460">إيقاف/تفعيل الإضاءة الخلفية للوحة المفاتيح</translation>
@@ -8777,6 +8795,7 @@
 <translation id="7258225044283673131">التطبيق لا يستجيب. اختَر "فرض الإغلاق" لإغلاق التطبيق.</translation>
 <translation id="7260186537988033909">اكتمل تسجيل الجهاز في وضع الكشك واللوحات الرقمية.</translation>
 <translation id="7260206782629605806">إذا خفضت الحدّ، يمكنك استخدام حركة خفيفة. أمّا إذا رفعته، فقد تحتاج إلى حركة أقوى.</translation>
+<translation id="7260802376010589729">‏لتحرير زر الماوس، يجب استخدام مفتاح "c"</translation>
 <translation id="7261217796641151584">مشاركة المجموعة</translation>
 <translation id="7261612856573623172">اسم الصوت المستخدَم في ميزة "تحويل النص إلى كلام" في النظام</translation>
 <translation id="7262004276116528033">يستضيف <ph name="SAML_DOMAIN" /> خدمة تسجيل الدخول هذه.</translation>
@@ -9618,6 +9637,7 @@
 <translation id="78526636422538552">‏تم إيقاف إمكانية إضافة المزيد من حسابات Google.</translation>
 <translation id="785371335555334021">انقر للانتقال من صفحة "<ph name="TITLE" />"</translation>
 <translation id="7853747251428735">المزيد من الأد&amp;وات</translation>
+<translation id="7855258394151767387">‏للضغط على زر الماوس، يجب استخدام مفتاح "w"</translation>
 <translation id="7855678561139483478">نقل علامة التبويب إلى نافذة جديدة</translation>
 <translation id="7857004848504343806">‏يحتوي الكمبيوتر على وحدة آمنة يتم استخدامها لتنفيذ العديد من ميزات الأمان المُهمة في نظام التشغيل ChromeOS Flex. ويُمكنك الانتقال إلى مركز مساعدة Chromebook للتعرّف على مزيد من المعلومات: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">اقتراحات نصية</translation>
@@ -9990,6 +10010,7 @@
 <translation id="810362914482827094">البحث في مفاتيح المرور</translation>
 <translation id="8104088837833760645">‏تنزيل الملف الشخصي لشريحة eSIM</translation>
 <translation id="8105273883928376822">يُرجى تسجيل الدخول للمتابعة.</translation>
+<translation id="8106114112474206597">‏للضغط على زر الماوس، يجب استخدام مفتاح "i"</translation>
 <translation id="8107015733319732394">‏تثبيت متجر Google Play على <ph name="DEVICE_TYPE" />. قد يستغرق ذلك بضع دقائق.</translation>
 <translation id="810728361871746125">درجة دقة شاشة العرض</translation>
 <translation id="8108161424633979910">عدد الأعضاء: <ph name="NUM" /></translation>

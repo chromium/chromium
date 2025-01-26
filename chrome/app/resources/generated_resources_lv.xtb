@@ -396,6 +396,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1260810365552581339">Iespējams, operētājsistēmai Linux nav pietiekami daudz brīvas vietas diskā. <ph name="LINK_START" />Iestatījumos<ph name="LINK_END" /> varat palielināt operētājsistēmai Linux pieejamo brīvo vietu diskā un vēlreiz mēģināt atjaunot failus.</translation>
 <translation id="1261380933454402672">Mērena</translation>
 <translation id="126156426083987769">Radās problēma ar demonstrācijas režīma ierīces licencēm.</translation>
+<translation id="1262564987698748643">Atļaut vietnēm ignorēt ar tastatūru ievadītos datus</translation>
 <translation id="1263231323834454256">Lasīšanas saraksts</translation>
 <translation id="1263733306853729545">Lietot taustiņus “<ph name="MINUS" />” un “<ph name="EQUAL" />”, lai lapotu kandidātu sarakstu</translation>
 <translation id="126387934568812801">Ietvert šo ekrānuzņēmumu un atvērto ciļņu nosaukumus</translation>
@@ -773,6 +774,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1536883206862903762">Tādējādi tiks atspējoti paplašinājumi un jūsu iestatījumi tiks atiestatīti uz drošām noklusējuma vērtībām. Cilnes, faili un sīkfaili tiks saglabāti. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="1537254971476575106">Pilnekrāna lupa</translation>
 <translation id="15373452373711364">Liels peles kursors</translation>
+<translation id="1539248305642687917">Neļaut vietnēm ignorēt ar tastatūru ievadītos datus</translation>
 <translation id="1539727654733007771">Nav iestatīts neviens mobilais tīkls. Lejupielādējiet jaunu <ph name="BEGIN_LINK" />profilu<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">ChromeOS lietotņu pakalpojums</translation>
 <translation id="1540543470504988112">Pārvaldīt no operētājsistēmas MacOS importētos sertifikātus</translation>
@@ -984,6 +986,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="166278006618318542">Subjekta publiskās atslēgas algoritms</translation>
 <translation id="1662801900924515589">Lietotne <ph name="APP" /> ir instalēta.</translation>
 <translation id="1663698992894057019">Izmantojiet jaunu Chromebook datoru, lai iegūtu jaunākās drošības funkcijas un programmatūru</translation>
+<translation id="166454475160289583">Nedrīkst ignorēt ar tastatūru ievadītos datus</translation>
 <translation id="1665328953287874063"><ph name="DEVICE_TYPE" /> jāatbloķē, izmantojot paroli vai PIN</translation>
 <translation id="1665859804801131136">Ekspresionisms</translation>
 <translation id="1667842670298352129">Noklausieties konkrētu tekstu. Vispirms ekrāna apakšdaļā atlasiet ikonu “Atlasīt, lai izrunātu” un pēc tam iezīmējiet tekstu. Varat arī izmantot īsinājumtaustiņus: iezīmējiet tekstu un pēc tam nospiediet meklēšanas taustiņu + S.</translation>
@@ -1215,6 +1218,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1832511806131704864">Tālruņa iestatījumu izmaiņas atjauninātas</translation>
 <translation id="1832848789136765277">Lai vienmēr varētu piekļūt saviem sinhronizētajiem datiem, apstipriniet savu identitāti.</translation>
 <translation id="1833059747301212935">Viegli piekļūstiet jaunākajiem dokumentiem un gaidāmajiem kalendāra pasākumiem</translation>
+<translation id="183445248400150852">Vietnēs šī funkcija tiek izmantota, lai ignorētu ar tastatūru ievadītos datus, piemēram, spēlēs vai attālās darbvirsmas lietotnēs.</translation>
 <translation id="1834503245783133039">Nesekmīga lejupielāde: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Notiek Linux jaunināšana</translation>
 <translation id="1837441256780906162">Microsoft OneDrive noraidīja pieprasījumu. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
@@ -6747,6 +6751,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5794700615121138172">Linux koplietotās mapes</translation>
 <translation id="5794786537412027208">Aizvērt visas Chrome lietotnes</translation>
 <translation id="5796485699458186843">Jauna inkognito &amp;cilne</translation>
+<translation id="5796956053441619942">URL no attālās ierīces netiek atbalstīts.</translation>
 <translation id="5797934230382081317">Uzziniet, kā sākt darbu &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; vai &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; ierīcē</translation>
 <translation id="5798079537501238810">Atļaut vietnēm instalēt maksājumu apdarinātājus</translation>
 <translation id="5798086737841799234">Ievadiet apstiprinājuma kodu</translation>
@@ -7401,6 +7406,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6264485186158353794">Atpakaļ drošībā</translation>
 <translation id="6264520534872750757">Turpināt izmantot ierīci</translation>
 <translation id="6264636978858465832">Paroļu pārvaldniekam ir nepieciešama plašāka piekļuve</translation>
+<translation id="626495329434552273">Drīkst ignorēt ar tastatūru ievadītos datus</translation>
 <translation id="6265159465845424232">Jautāt pirms Microsoft failu kopēšanas vai pārvietošanas uz pakalpojumu Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Noņemt portu</translation>
 <translation id="6266532094411434237">Notiek savienojuma izveide ar ierīci “<ph name="DEVICE" />”…</translation>

@@ -110,6 +110,14 @@ bool SVGScriptElement::HaveLoadedRequiredResources() {
   return have_fired_load_;
 }
 
+String SVGScriptElement::IntegrityAttributeValue() const {
+  return FastGetAttribute(html_names::kIntegrityAttr);
+}
+
+String SVGScriptElement::SignatureAttributeValue() const {
+  return FastGetAttribute(html_names::kSignatureAttr);
+}
+
 String SVGScriptElement::SourceAttributeValue() const {
   return LegacyHrefString(*this);
 }

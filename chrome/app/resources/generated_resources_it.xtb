@@ -484,6 +484,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1317637799698924700">La dock station funzionerà alla modalità compatibile con USB Type-C.</translation>
 <translation id="1319983966058170660">Pulsante Indietro pagina secondaria <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Visualizza e gestisci le password salvate in <ph name="SAVED_PASSWORDS_STORE" /></translation>
+<translation id="132539964543492755">Utilizza il tasto "X" per cambiare la selezione dei tasti del mouse tra tasto sinistro, tasto destro ed entrambi</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Richieste di Kerberos</translation>
 <translation id="1327495825214193325">Per attivare il debug ADB è necessario riavviare questo <ph name="DEVICE_TYPE" />. Per disattivarlo è necessario ripristinare le impostazioni di fabbrica.</translation>
@@ -1681,6 +1682,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2155772377859296191">Risoluzione di <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">Scorrimento e zoom delle schede condivise consentito</translation>
+<translation id="2157457598652721267">Usa i caratteri "/" e "-" per selezionare il tasto sinistro del mouse o quello destro. Usa il carattere "*" per selezionare entrambi.</translation>
 <translation id="2157474325782140681">Per avere a disposizione funzionalità aggiuntive, usa una dock station Dell progettata per supportare questo Chromebook.</translation>
 <translation id="215753907730220065">Esci da schermo intero</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> insieme a Gemini</translation>
@@ -1785,6 +1787,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2233502537820838181">Ulteriori infor&amp;mazioni</translation>
 <translation id="223356358902285214">Attività web e app</translation>
 <translation id="2234065144797002621">Ruscello</translation>
+<translation id="2234208862050358325">Usa i tasti "1", "2", "3", "Q", "E", "A", "S" e "D" per spostare il cursore</translation>
 <translation id="2234827758954819389">Guida alla privacy</translation>
 <translation id="2234876718134438132">Sincronizzazione e servizi Google</translation>
 <translation id="2235344399760031203">I cookie di terze parti sono bloccati</translation>
@@ -1804,6 +1807,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2249111429176737533">Apri come finestra a schede</translation>
 <translation id="2249605167705922988">ad es. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Personalizza le informazioni usate dai siti per mostrarti annunci</translation>
+<translation id="22505994009453896">Controlla il cursore del mouse con la tastiera numerica</translation>
 <translation id="2250624716625396929">Questa scheda utilizza la videocamera o il microfono</translation>
 <translation id="2251218783371366160">Apri con visualizzatore di sistema</translation>
 <translation id="225163402930830576">Aggiorna reti</translation>
@@ -1997,6 +2001,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="236939127352773362">Quando i dispositivi stanno usando Condivisione nelle vicinanze</translation>
 <translation id="2371076942591664043">Apri al &amp;termine</translation>
 <translation id="237336063998926520">Utilizza l'indirizzo IP per stabilire la posizione</translation>
+<translation id="2373499590298659902">Usa il tasto "0" per tenere premuto un tasto del mouse</translation>
 <translation id="2373666622366160481">Adatta a dimensioni del foglio</translation>
 <translation id="2375406435414127095">Collegati al telefono</translation>
 <translation id="2376056713414548745">Leggi ad alta voce</translation>
@@ -2758,6 +2763,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2902312830803030883">Altre azioni</translation>
 <translation id="2903457445916429186">Apri gli elementi selezionati</translation>
 <translation id="2903882649406874750">Impedisci sempre a <ph name="HOST" /> di accedere ai sensori</translation>
+<translation id="2903925626657991994">Utilizza il carattere "," per cambiare la selezione dei tasti del mouse tra tasto sinistro, tasto destro ed entrambi</translation>
 <translation id="290415756080113152">I siti non possono cercare o utilizzare le stampanti accessibili al tuo dispositivo</translation>
 <translation id="2904210161403910217">La tua password è cambiata dall'ultima volta che hai eseguito l'accesso</translation>
 <translation id="2904506722835398619">Accesso e sincronizzazione necessari</translation>
@@ -3112,6 +3118,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3170072451822350649">Puoi anche saltare l'accesso e <ph name="LINK_START" />navigare come ospite<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Corpo</translation>
 <translation id="3175862692832442091">Foresta</translation>
+<translation id="3176347586396987181">Usa il tasto "Z" per tenere premuto un tasto del mouse</translation>
 <translation id="3177430966804511955">Gestisci le app web isolate (beta)</translation>
 <translation id="31774765611822736">Posizionamento nuova scheda a sinistra</translation>
 <translation id="3177909033752230686">Lingua della pagina:</translation>
@@ -4494,6 +4501,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Log dispositivo</translation>
 <translation id="4130750466177569591">Accetto</translation>
+<translation id="4130877444234883490">Usa il tasto "M" per tenere premuto un tasto del mouse</translation>
 <translation id="413121957363593859">Componenti</translation>
 <translation id="4131283654370308898">Consenti <ph name="EXTENSION_NAME" /> su questo sito</translation>
 <translation id="4131410914670010031">In bianco e nero</translation>
@@ -4513,6 +4521,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - Dispositivo HID connesso</translation>
 <translation id="4139326893730851150">Aggiornamenti del firmware</translation>
 <translation id="4142052906269098341">Sblocca <ph name="DEVICE_TYPE" /> con il telefono. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
+<translation id="4143606504420684845">Scopri in che modo l'AI definisce la tua esperienza e prendi decisioni consapevoli sulla tua privacy</translation>
 <translation id="4146026355784316281">Apri sempre con visualizzatore di sistema</translation>
 <translation id="4146785383423576110">Reimpostazione e pulizia</translation>
 <translation id="4147099377280085053">Seleziona una tabella braille</translation>
@@ -4796,6 +4805,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4360738659108163902">Fai clic con il tasto destro del mouse</translation>
 <translation id="4361142739114356624">La chiave privata per il certificato client manca o non è valida</translation>
 <translation id="4361745360460842907">Apri in una scheda</translation>
+<translation id="4362459470237309049">Usa il carattere "." per rilasciare un pulsante del mouse</translation>
 <translation id="4363262124589131906">La sincronizzazione automatica con questo Chromebook dei nuovi file in Il mio Drive verrà interrotta</translation>
 <translation id="4364327530094270451">Melone</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 elemento è salvato solo su questo dispositivo. Per usarlo sugli altri dispositivi, salvalo nel tuo Account Google.}other{{ITEM_COUNT} elementi sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google.}}</translation>
@@ -4821,6 +4831,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4378308539633073595">Scorri in avanti</translation>
 <translation id="4378551569595875038">Connessione...</translation>
 <translation id="4378556263712303865">Richiesta dispositivo</translation>
+<translation id="4378589147979399051">Controlla il cursore del mouse con la tastiera principale</translation>
 <translation id="4379097572583973456">Un sito può anche incorporare contenuti di altri siti, ad esempio immagini, annunci e testo. Anche questi altri siti possono salvare dati.</translation>
 <translation id="4379281552162875326">Vuoi disinstallare "<ph name="APP_NAME" />"?</translation>
 <translation id="4380055775103003110">Se il problema persiste, puoi provare altri metodi per continuare su <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -5141,6 +5152,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4610493438923139095">Non attendibile</translation>
 <translation id="4610637590575890427">Forse intendevi accedere a <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Connessione dati disponibile</translation>
+<translation id="4611619000650855880">Quando è selezionato il tasto sinistro del mouse, usa il carattere "/" per fare doppio clic</translation>
 <translation id="4611759022973144129">Puoi usare questa password per accedere al tuo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4612841084470706111">Concedi l'accesso a tutti i siti richiesti.</translation>
 <translation id="4613144866899789710">Annullamento dell'installazione di Linux…</translation>
@@ -5266,6 +5278,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4694820450536519583">autorizzazioni</translation>
 <translation id="4695318956047767909">Tema scuro, salvaschermo</translation>
 <translation id="4697071790493980729">Nessun risultato trovato</translation>
+<translation id="4697231114332146850">Usa i tasti "7", "8", "9", "4", "6", "1", "2" e "3" per spostare il cursore</translation>
 <translation id="4697551882387947560">Quando termina la sessione di navigazione</translation>
 <translation id="469838979880025581">I siti possono richiedere l'autorizzazione per utilizzare il microfono</translation>
 <translation id="4699172675775169585">Immagini e file memorizzati nella cache</translation>
@@ -6379,6 +6392,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5499453227627332024">È disponibile un upgrade per il tuo contenitore Linux. Puoi anche eseguire l'upgrade in un secondo momento dall'app Impostazioni.</translation>
 <translation id="5499476581866658341">Ora puoi visualizzare le foto recenti e i contenuti multimediali del tuo telefono</translation>
 <translation id="549957179819296104">Nuova icona</translation>
+<translation id="5500163593833085874">Quando è selezionato il tasto sinistro del mouse, usa il carattere "+" per fare doppio clic</translation>
 <translation id="5500168250243071806">La <ph name="BEGIN_LINK_SEARCH" />cronologia delle ricerche<ph name="END_LINK_SEARCH" /> e <ph name="BEGIN_LINK_GOOGLE" />altri tipi di attività<ph name="END_LINK_GOOGLE" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminarli in qualsiasi momento.</translation>
 <translation id="5501322521654567960">Riquadro laterale allineato a sinistra</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Impossibile ricevere <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" />}other{Impossibile ricevere <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" />}}</translation>
@@ -6674,6 +6688,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5733913382424854675">Raggruppa schede con l'AI</translation>
 <translation id="5734362860645681824">Comunicazioni</translation>
 <translation id="5734697361979786483">Aggiungi condivisione file</translation>
+<translation id="573520097779121706">Usa i tasti "7", "8", "9", "U", "O", "J", "K" e "L" per spostare il cursore</translation>
 <translation id="5735513236153491131">Aumenta prestazioni ora</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Questi dati o il tuo dispositivo non rispettano alcuni criteri di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}=1{Questo file o il tuo dispositivo non rispetta alcuni criteri di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}other{Questi file non rispettano alcuni criteri di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}}</translation>
 <translation id="5738093759615225354">Questa passkey è necessaria per accedere al tuo computer</translation>
@@ -6907,6 +6922,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5901069264981746702">I dati relativi alle tue impronte vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo dal tuo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">Passa alla scheda in fase di acquisizione</translation>
 <translation id="5901494423252125310">Sportello della stampante aperto</translation>
+<translation id="5901526412306322179">Log delle attività</translation>
 <translation id="5901630391730855834">Giallo</translation>
 <translation id="5902892210366342391">Visualizza gli avvisi prima di visitare siti non sicuri in modalità di navigazione in incognito</translation>
 <translation id="5904614460720589786">Impossibile installare <ph name="APP_NAME" /> a causa di un problema di configurazione. Contatta l'amministratore. Codice di errore: <ph name="ERROR_CODE" />.</translation>
@@ -7281,6 +7297,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6171779718418683144">Chiedi a ogni visita</translation>
 <translation id="617213288191670920">Nessuna lingua aggiunta</translation>
 <translation id="6173623053897475761">Digita di nuovo il PIN</translation>
+<translation id="6174909075810107548">Usa il tasto "5" per premere un tasto del mouse</translation>
 <translation id="6175314957787328458">GUID di dominio Microsoft</translation>
 <translation id="6175910054050815932">Ottieni un link</translation>
 <translation id="6177412385419165772">Rimozione in corso…</translation>
@@ -7766,6 +7783,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Nota.<ph name="END_BOLD" /> Attiva questa opzione soltanto se sei sicuro di ciò che fai o se ti è stato chiesto di farlo perché la raccolta di dati potrebbe peggiorare il rendimento.</translation>
 <translation id="6540488083026747005">Hai consentito i cookie di terze parti su questo sito</translation>
 <translation id="6541638731489116978">A questo sito è stato impedito l'accesso ai sensori di movimento.</translation>
+<translation id="654219396498297850">Quando è selezionato il tasto sinistro del mouse, usa il tasto "V" per fare doppio clic</translation>
 <translation id="6542417422899025860">Rimuovi automaticamente la maggior parte delle informazioni personali</translation>
 <translation id="6542521951477560771">Trasmissione di contenuti a <ph name="RECEIVER_NAME" /> in corso</translation>
 <translation id="6544134392255015460">pulsante di attivazione della retroilluminazione della tastiera</translation>
@@ -8765,6 +8783,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7258225044283673131">L'applicazione non risponde. Seleziona "Termina" per chiudere l'app.</translation>
 <translation id="7260186537988033909">Registrazione dei dispositivi kiosk e segnaletica completata</translation>
 <translation id="7260206782629605806">Se diminuisci la soglia, puoi usare un movimento impercettibile. Se aumenti la soglia, potresti aver bisogno di fare un movimento più esagerato.</translation>
+<translation id="7260802376010589729">Usa il tasto "C" per rilasciare un pulsante del mouse</translation>
 <translation id="7261217796641151584">Condividi gruppo</translation>
 <translation id="7261612856573623172">Voce del sistema per la sintesi vocale</translation>
 <translation id="7262004276116528033">Questo servizio di accesso è in hosting su <ph name="SAML_DOMAIN" /></translation>
@@ -9608,6 +9627,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="78526636422538552">L'aggiunta di altri Account Google è disattivata</translation>
 <translation id="785371335555334021">Fai clic per uscire da <ph name="TITLE" /></translation>
 <translation id="7853747251428735">Altri strume&amp;nti</translation>
+<translation id="7855258394151767387">Usa il tasto "W" per premere un tasto del mouse</translation>
 <translation id="7855678561139483478">Sposta scheda in una nuova finestra</translation>
 <translation id="7857004848504343806">Il computer contiene un modulo di sicurezza che viene utilizzato per implementare in ChromeOS Flex molte funzionalità di sicurezza fondamentali. Per saperne di più, visita il Centro assistenza Chromebook all'indirizzo: https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="7857093393627376423">Suggerimenti testuali</translation>
@@ -9980,6 +10000,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="810362914482827094">Cerca nelle passkey</translation>
 <translation id="8104088837833760645">Scarica profilo eSIM</translation>
 <translation id="8105273883928376822">Accedi per continuare.</translation>
+<translation id="8106114112474206597">Usa il tasto "I" per premere un tasto del mouse</translation>
 <translation id="8107015733319732394">Installazione in corso del Google Play Store sul tuo dispositivo <ph name="DEVICE_TYPE" />. L'operazione potrebbe richiedere alcuni minuti.</translation>
 <translation id="810728361871746125">Risoluzione del display</translation>
 <translation id="8108161424633979910"><ph name="NUM" /> membri</translation>

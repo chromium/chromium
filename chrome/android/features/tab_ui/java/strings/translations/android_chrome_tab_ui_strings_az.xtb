@@ -192,6 +192,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="9169594135889675189">Qrupa yeni tab əlavə edin</translation>
 <translation id="9216898458513705996">Tablar bu cihazda açıq qalacaq, lakin qrup <ph name="USER_EMAIL" /> hesabına giriş edilmiş bütün cihazlardan silinəcək</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət tab qrupunu genişləndirin, rəng <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət tab qrupunu genişləndirin, rəng <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="94870150074703282">Qrup silinsin?</translation>
 <translation id="992256792861109788">Çəhrayı</translation>
 </translationbundle>

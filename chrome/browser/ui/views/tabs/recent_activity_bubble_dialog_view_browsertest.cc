@@ -4,20 +4,37 @@
 
 #include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/collaboration/public/features.h"
 #include "components/collaboration/public/messaging/activity_log.h"
+#include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 using collaboration::messaging::ActivityLogItem;
@@ -28,7 +45,27 @@ using collaboration::messaging::TabGroupMessageMetadata;
 using collaboration::messaging::TabMessageMetadata;
 using data_sharing::GroupMember;
 
+namespace tab_groups {
 namespace {
+
+const int kAvatarSize = 32;
+constexpr char kAvatarUrl[] = "/avatar=s32-cc-ns";
+
+// Create mock gfx::Image and convert to a string.
+std::string CreateSerializedAvatar() {
+  auto avatar = gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+      kAvatarSize,
+      gfx::test::CreateImage(kAvatarSize, SK_ColorBLUE).AsImageSkia());
+
+  std::optional<std::vector<uint8_t>> compressed_avatar =
+      gfx::PNGCodec::EncodeBGRASkBitmap(*avatar.bitmap(),
+                                        /*discard_transparency=*/false);
+
+  std::string avatar_string(base::as_string_view(compressed_avatar.value()));
+
+  return avatar_string;
+}
+
 // Copied from
 // components/collaboration/internal/messaging/messaging_backend_service_impl.cc
 RecentActivityAction GetRecentActivityActionFromCollaborationEvent(
@@ -53,6 +90,18 @@ RecentActivityAction GetRecentActivityActionFromCollaborationEvent(
       return RecentActivityAction::kManageSharing;
     case CollaborationEvent::UNDEFINED:
       return RecentActivityAction::kNone;
+  }
+}
+
+// On tab events will show the favicon.
+bool GetShowFaviconFromCollaborationEvent(CollaborationEvent event) {
+  switch (event) {
+    case CollaborationEvent::TAB_ADDED:
+    case CollaborationEvent::TAB_UPDATED:
+    case CollaborationEvent::TAB_REMOVED:
+      return true;
+    default:
+      return false;
   }
 }
 
@@ -249,3 +298,316 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewBrowserTest,
   EXPECT_EQ(bubble->GetRowForTesting(4)->metadata_text(),
             u"expedia.com \u2022 2d ago");
 }
+
+class RecentActivityBubbleDialogViewActionBrowserTest
+    : public RecentActivityBubbleDialogViewBrowserTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {tab_groups::kTabGroupsSaveV2,
+         tab_groups::kTabGroupSyncServiceDesktopMigration,
+         data_sharing::features::kDataSharingFeature,
+         collaboration::features::kCollaborationMessaging},
+        {});
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &RecentActivityBubbleDialogViewActionBrowserTest::HandleRequest,
+        base::Unretained(this)));
+    RecentActivityBubbleDialogViewBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    DialogBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
+  void TearDownOnMainThread() override {
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    DialogBrowserTest::TearDownOnMainThread();
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
+    if (absolute_url.path() != kAvatarUrl) {
+      return nullptr;
+    }
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content(CreateSerializedAvatar());
+    return http_response;
+  }
+
+  void WaitForAvatar(int log_index) {
+    CHECK(!run_loop_);
+    run_loop_ = std::make_unique<base::RunLoop>();
+    PollForAvatarLoaded(10, log_index);
+    run_loop_->Run();
+    run_loop_.reset();
+  }
+
+  void PollForAvatarLoaded(int tries_left, int log_index) {
+    auto* bubble = BubbleCoordinator()->GetBubble();
+
+    CHECK(tries_left > 0);
+    CHECK(run_loop_);
+    CHECK(bubble);
+
+    // If activity row should show avatar, loading is complete.
+    if (bubble->GetRowForTesting(log_index)->image_view()->ShouldShowAvatar()) {
+      run_loop_->Quit();
+    } else {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&RecentActivityBubbleDialogViewActionBrowserTest::
+                             PollForAvatarLoaded,
+                         base::Unretained(this), tries_left - 1, log_index),
+          base::Milliseconds(200));
+    }
+  }
+
+  tabs::TabInterface* CreateTab(
+      GURL tab_url = GURL(chrome::kChromeUINewTabPageURL)) {
+    auto index = browser()->tab_strip_model()->count();
+    CHECK(AddTabAtIndex(index, tab_url, ui::PAGE_TRANSITION_TYPED));
+    auto* tab = browser()->tab_strip_model()->GetTabAtIndex(index);
+    CHECK(tab);
+    return tab;
+  }
+
+  void CloseTab(tabs::TabInterface* tab) {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    auto* tabstrip_controller = browser_view->tabstrip()->controller();
+    tabstrip_controller->CloseTab(TabIndex(tab));
+  }
+
+  LocalTabID TabId(tabs::TabInterface* tab) {
+    return tab->GetHandle().raw_value();
+  }
+
+  int TabIndex(tabs::TabInterface* tab) {
+    return browser()->tab_strip_model()->GetIndexOfTab(tab);
+  }
+
+  const TabGroupId CreateTabGroup(std::vector<tabs::TabInterface*> tabs) {
+    std::vector<int> tab_indices = {};
+    for (auto* tab : tabs) {
+      tab_indices.emplace_back(
+          browser()->tab_strip_model()->GetIndexOfTab(tab));
+    }
+    return browser()->tab_strip_model()->AddToNewGroup(tab_indices);
+  }
+
+  SavedTabGroup ShareTabGroup(TabGroupId group_id) {
+    std::string collaboration_id = "fake_collaboration_id";
+    TabGroupSyncServiceImpl* tab_group_sync_service =
+        static_cast<TabGroupSyncServiceImpl*>(
+            TabGroupSyncServiceFactory::GetForProfile(browser()->profile()));
+    tab_group_sync_service->MakeTabGroupSharedForTesting(group_id,
+                                                         collaboration_id);
+    auto saved_tab_group = tab_group_sync_service->GetGroup(group_id);
+    CHECK(saved_tab_group.has_value());
+    return saved_tab_group.value();
+  }
+
+  GURL GetAvatarURL() { return embedded_test_server()->GetURL(kAvatarUrl); }
+
+  // Create a mock message for the group and tab. This fills in just
+  // enough information for RecentActivity to behave correctly.
+  ActivityLogItem CreateActivityForTab(
+      SavedTabGroup group,
+      tabs::TabInterface* tab,
+      CollaborationEvent collaboration_event = CollaborationEvent::TAB_ADDED,
+      bool force_no_favicon = false) {
+    GroupMember member;
+    member.avatar_url = GetAvatarURL();
+
+    TabMessageMetadata tab_metadata;
+    tab_metadata.last_known_url = tab->GetContents()->GetURL().spec();
+    tab_metadata.local_tab_id = TabId(tab);
+
+    TabGroupMessageMetadata tab_group_metadata;
+    tab_group_metadata.local_tab_group_id = group.local_group_id();
+
+    MessageAttribution attribution;
+    attribution.triggering_user = member;
+    attribution.affected_user = member;
+    attribution.tab_metadata = tab_metadata;
+    attribution.tab_group_metadata = tab_group_metadata;
+    attribution.collaboration_id =
+        data_sharing::GroupId(group.collaboration_id().value().value());
+
+    ActivityLogItem item;
+    item.collaboration_event = collaboration_event;
+    item.title_text = u"User added this tab";
+    item.description_text = u"google.com";
+    item.time_delta_text = u"2h ago";
+    item.show_favicon =
+        force_no_favicon
+            ? false
+            : GetShowFaviconFromCollaborationEvent(collaboration_event);
+    item.action =
+        GetRecentActivityActionFromCollaborationEvent(collaboration_event);
+    item.activity_metadata = attribution;
+
+    return item;
+  }
+
+ private:
+  std::unique_ptr<base::RunLoop> run_loop_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Trigger kFocusTab action from the recent activity dialog.
+IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewActionBrowserTest,
+                       HandlesActionFocusTab) {
+  GURL tab1_url = GURL("chrome://about");
+  GURL tab2_url = GURL("chrome://settings");
+
+  auto* tab1 = CreateTab(tab1_url);
+  auto* tab2 = CreateTab(tab2_url);
+
+  TabGroupId group_id = CreateTabGroup({tab1, tab2});
+  auto saved_group = ShareTabGroup(group_id);
+
+  std::vector<ActivityLogItem> activity_log = {
+      // TAB_ADDED will contain the action to focus the specified tab.
+      CreateActivityForTab(saved_group, tab1, CollaborationEvent::TAB_ADDED,
+                           /*force_no_favicon=*/true),
+  };
+  ShowLog(activity_log);
+  WaitForAvatar(/*log_index=*/0);
+
+  auto* bubble = BubbleCoordinator()->GetBubble();
+  EXPECT_TRUE(bubble);
+
+  // Tab 2 starts active.
+  EXPECT_EQ(tab2_url,
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+
+  bubble->GetRowForTesting(0)->FocusTab();
+
+  // Now tab 1 is active.
+  EXPECT_EQ(tab1_url,
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+// Trigger kReopenTab action from the recent activity dialog.
+IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewActionBrowserTest,
+                       HandlesActionReopenTab) {
+  GURL tab1_url = GURL("chrome://about");
+  GURL tab2_url = GURL("chrome://settings");
+
+  auto* tab1 = CreateTab(tab1_url);
+  auto* tab2 = CreateTab(tab2_url);
+  CreateTab();  // Not used in group.
+
+  TabGroupId group_id = CreateTabGroup({tab1, tab2});
+  auto saved_group = ShareTabGroup(group_id);
+
+  std::vector<ActivityLogItem> activity_log = {
+      // TAB_REMOVED will contain the action to reopen the specified tab.
+      CreateActivityForTab(saved_group, tab1, CollaborationEvent::TAB_REMOVED,
+                           /*force_no_favicon=*/true),
+  };
+  ShowLog(activity_log);
+  WaitForAvatar(/*log_index=*/0);
+
+  auto* bubble = BubbleCoordinator()->GetBubble();
+  EXPECT_TRUE(bubble);
+
+  auto* group =
+      browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
+
+  // 4 tabs including 2 grouped.
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
+  EXPECT_EQ(group->tab_count(), 2);
+
+  // Tab order is as it was created.
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+            tab1_url);
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(2)->GetURL(),
+            tab2_url);
+
+  // Close the first tab in the group.
+  CloseTab(tab1);
+
+  // 3 tabs including only 1 grouped.
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 3);
+  EXPECT_EQ(group->tab_count(), 1);
+
+  bubble->GetRowForTesting(0)->ReopenTab();
+
+  // Tab order has switched because tab1 was opened at the end of the group.
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+            tab2_url);
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(2)->GetURL(),
+            tab1_url);
+
+  // 4 tabs including 2 grouped. Both tabs are grouped again.
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
+  EXPECT_EQ(group->tab_count(), 2);
+}
+
+// Trigger kOpenTabGroupEditDialog action from the recent activity dialog.
+IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewActionBrowserTest,
+                       HandlesActionOpenTabGroupEditDialog) {
+  auto* tab1 = CreateTab();
+  TabGroupId group_id = CreateTabGroup({tab1});
+  auto saved_group = ShareTabGroup(group_id);
+
+  std::vector<ActivityLogItem> activity_log = {
+      // TAB_GROUP_COLOR_UPDATED will contain the action to open the
+      // group editor dialog.
+      CreateActivityForTab(saved_group, tab1,
+                           CollaborationEvent::TAB_GROUP_COLOR_UPDATED,
+                           /*force_no_favicon=*/true),
+  };
+  ShowLog(activity_log);
+  WaitForAvatar(/*log_index=*/0);
+
+  auto* bubble = BubbleCoordinator()->GetBubble();
+  EXPECT_TRUE(bubble);
+
+  bubble->GetRowForTesting(0)->OpenTabGroupEditDialog();
+
+  auto* editor_dialog =
+      ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+          kTabGroupEditorBubbleId);
+
+  EXPECT_TRUE(editor_dialog);
+}
+
+// Trigger kManageSharing action from the recent activity dialog.
+IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewActionBrowserTest,
+                       HandlesActionManageSharing) {
+  auto* tab1 = CreateTab();
+  TabGroupId group_id = CreateTabGroup({tab1});
+  auto saved_group = ShareTabGroup(group_id);
+
+  std::vector<ActivityLogItem> activity_log = {
+      // COLLABORATION_MEMBER_ADDED will contain the action to open the
+      // manage sharing dialog.
+      CreateActivityForTab(saved_group, tab1,
+                           CollaborationEvent::COLLABORATION_MEMBER_ADDED,
+                           /*force_no_favicon=*/true),
+  };
+  ShowLog(activity_log);
+  WaitForAvatar(/*log_index=*/0);
+
+  auto* bubble = BubbleCoordinator()->GetBubble();
+  EXPECT_TRUE(bubble);
+
+  bubble->GetRowForTesting(0)->ManageSharing();
+
+  auto sharing_bubble =
+      DataSharingBubbleController::GetOrCreateForBrowser(browser())
+          ->BubbleViewForTesting();
+
+  EXPECT_TRUE(sharing_bubble.get());
+}
+
+}  // namespace tab_groups

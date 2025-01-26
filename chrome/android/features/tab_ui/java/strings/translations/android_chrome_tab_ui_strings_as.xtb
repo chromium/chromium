@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">গোটত নতুন টেব যোগ কৰক</translation>
 <translation id="9216898458513705996">টেবসমূহ এই ডিভাইচত খোলা থাকিব কিন্তু গোটটো <ph name="USER_EMAIL" />ত ছাইন ইন কৰা আটাইবোৰ ডিভাইচৰ পৰা মচি পেলোৱা হ’ব</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{টেবৰ গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}one{টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}other{টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}}</translation>
+<translation id="945522503751344254">মতামত পঠিয়াওক</translation>
 <translation id="94870150074703282">গোট মচিবনে?</translation>
 <translation id="992256792861109788">গুলপীয়া</translation>
 </translationbundle>

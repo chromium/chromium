@@ -185,6 +185,7 @@
 <translation id="1310938305420497484">ဦးစွာ တဘ်များဖွင့်ပြီး ဝဘ်ဆိုက်များကို ဝင်ကြည့်ပါ</translation>
 <translation id="1314311879718644478">လွန်ကဲပကတိအသွင် အကြောင်းအရာများကို ကြည့်ပါ</translation>
 <translation id="1314509827145471431">ညာဘက်တွင် တွဲချုပ်ရန်</translation>
+<translation id="1314784609072437689">ကီးဘုတ် အစားထိုးခြင်း</translation>
 <translation id="1316805916535763484">အများတက်နိုင်သော အွန်လိုင်းသင်တန်း</translation>
 <translation id="1318023360584041678">တဘ်အုပ်စုတွင် သိမ်းထားသည်</translation>
 <translation id="1319245136674974084">ဤအက်ပ်အတွက် ထပ်မမေးပါနှင့်</translation>
@@ -2920,6 +2921,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome က ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို အလိုအလျောက် ကန့်သတ်သည်</translation>
 <translation id="6188479691141473408">နှင့် နောက်ထပ်အကွက် <ph name="N_FIELDS" /> ခု</translation>
+<translation id="6190518157737269631">Esc ကဲ့သို့သော သင့်ကီးဘုတ်ရှိ ကီးအချို့ကို အစားထိုးခြင်း</translation>
 <translation id="6194209731893739467">စောင့်ကြည့်ထားသည့် ထုတ်ကုန်များကို ဤနေရာတွင် ကြည့်နိုင်သည်</translation>
 <translation id="6195163219142236913">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ကန့်သတ်ထားသည်</translation>
 <translation id="6195371403461054755">ဘူမိဗေဒ</translation>
@@ -4194,6 +4196,7 @@
 <translation id="8421158157346464398">အလုပ်ပရိုဖိုင် အချက်အလက် (သင့်အလုပ်ပရိုဖိုင် အသုံးပြုသူအမည်ကဲ့သို့)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">ပြောင်းရန်</translation>
+<translation id="8426945547715537628">ကီးဘုတ် အစားထိုးခြင်း ခွင့်ပြုမလား။</translation>
 <translation id="8427848540066057481">၅၀၀ x ၇၅၀ မီလီမီတာ</translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
 <translation id="8428634594422941299">ရပါပြီ</translation>
@@ -4280,6 +4283,7 @@
 <translation id="8574841453995331336">ရေခဲသေတ္တာနှင့် ရေခဲခံအခန်း</translation>
 <translation id="8577192028579836704">ပုံမှန်အားဖြင့် ရွေးစရာအားလုံးသည် <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ပကတိအသွင်ကတ် မရနိုင်ပါ</translation>
+<translation id="8579000896558714521">ကီးဘုတ် အစားထိုးခြင်း</translation>
 <translation id="8580265901435899937">ကမ္ဘာလှည့်ခရီးသည် လည်ပတ်စရာ</translation>
 <translation id="8581064022803799721">ဤစာမျက်နှာကို <ph name="LAST_BOOKMARKS_FOLDER" /> တွင် သိမ်းသည်။</translation>
 <translation id="8586082901536468629">စကွပ်ရှ်တင်းနစ်နှင့် ရက်ကက်ဘောလုံးဆိုင်ရာ ကိရိယာ</translation>

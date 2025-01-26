@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">그룹에 새 탭 추가</translation>
 <translation id="9216898458513705996">이 기기에서의 탭은 열린 상태로 유지되지만 <ph name="USER_EMAIL" />에 로그인된 모든 기기에서는 그룹이 삭제됩니다.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 탭 그룹을 펼칩니다.}other{<ph name="TABS_COUNT_MANY" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 탭 그룹을 펼칩니다.}}</translation>
+<translation id="945522503751344254">의견 보내기</translation>
 <translation id="94870150074703282">그룹을 삭제하시겠습니까?</translation>
 <translation id="992256792861109788">분홍색</translation>
 </translationbundle>

@@ -185,6 +185,7 @@
 <translation id="1310938305420497484">ಮೊದಲು, ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="1314311879718644478">ಆಗ್‌ಮೆಂಟೆಡ್ ರಿಯಾಲಿಟಿ ವಿಷಯವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="1314509827145471431">ಬಲಗಡೆ ಬೈಂಡ್ ಮಾಡಿ</translation>
+<translation id="1314784609072437689">ಕೀಬೋರ್ಡ್ ಓವರ್‌ರೈಡ್</translation>
 <translation id="1316805916535763484">ಆನ್‌ಲೈನ್ ಕೋರ್ಸ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1318023360584041678">ಟ್ಯಾಬ್ ಗ್ರೂಪ್‌ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1319245136674974084">ಈ ಆ್ಯಪ್‌ಗಾಗಿ ಪುನಃ ಕೇಳಬೇಡಿ</translation>
@@ -2916,6 +2917,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಮಿತಿಗೊಳಿಸುತ್ತದೆ</translation>
 <translation id="6188479691141473408"><ph name="N_FIELDS" /> ಮತ್ತು ಹೆಚ್ಚಿನ ಫೀಲ್ಡ್‌ಗಳು</translation>
+<translation id="6190518157737269631">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ Esc ನಂತಹ ಕೆಲವು ಕೀಗಳನ್ನು ಓವರ್‌ರೈಡ್ ಮಾಡಿ</translation>
 <translation id="6194209731893739467">ನೀವು ಟ್ರ್ಯಾಕ್ ಮಾಡಿದ ಎಲ್ಲಾ ಉತ್ಪನ್ನಗಳನ್ನು ಇಲ್ಲಿ ನೋಡಿ</translation>
 <translation id="6195163219142236913">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳು ಸೀಮಿತವಾಗಿವೆ</translation>
 <translation id="6195371403461054755">ಭೂವಿಜ್ಞಾನ</translation>
@@ -4189,6 +4191,7 @@
 <translation id="8421158157346464398">ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ಮಾಹಿತಿ (ಉದಾಹರಣೆಗೆ ನಿಮ್ಮ ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ಬಳಕೆದಾರರ ಹೆಸರು)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">ಬದಲಿಸಿ</translation>
+<translation id="8426945547715537628">ಕೀಬೋರ್ಡ್ ಓವರ್‌ರೈಡ್ ಅನ್ನು ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="8427848540066057481">500 x 750 ಮಿಮೀ</translation>
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8428634594422941299">ಅರ್ಥವಾಯಿತು</translation>
@@ -4275,6 +4278,7 @@
 <translation id="8574841453995331336">ರೆಫ್ರಿಜರೇಟರ್‌ಗಳು ಮತ್ತು ಫ್ರೀಝರ್‌ಗಳು</translation>
 <translation id="8577192028579836704">ಎಲ್ಲಾ ಆಯ್ಕೆಗಳು ಸಾಮಾನ್ಯವಾಗಿ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಲಭ್ಯವಿಲ್ಲ</translation>
+<translation id="8579000896558714521">ಕೀಬೋರ್ಡ್ ಓವರ್‌ರೈಡ್</translation>
 <translation id="8580265901435899937">ಪ್ರವಾಸಿ ತಾಣಗಳು</translation>
 <translation id="8581064022803799721">ಈ ಪುಟವನ್ನು <ph name="LAST_BOOKMARKS_FOLDER" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="8586082901536468629">ಸ್ಕ್ವಾಷ್ ಮತ್ತು ರಾಕೆಟ್‌ಬಾಲ್ ಉಪಕರಣ</translation>

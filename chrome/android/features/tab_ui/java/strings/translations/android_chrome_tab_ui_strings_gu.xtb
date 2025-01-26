@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">ગ્રૂપમાં નવું ટૅબ ઉમેરો</translation>
 <translation id="9216898458513705996">આ ડિવાઇસ પર ટૅબ ખુલ્લા રહેશે, પરંતુ <ph name="USER_EMAIL" />માં સાઇન ઇન કરેલા બધા ડિવાઇસમાંથી ગ્રૂપ ડિલીટ કરવામાં આવશે</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને મોટું કરો.}one{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને મોટું કરો.}other{<ph name="COLOR_NAME" /> રંગના <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને મોટું કરો.}}</translation>
+<translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="94870150074703282">ગ્રૂપ ડિલીટ કરીએ?</translation>
 <translation id="992256792861109788">ગુલાબી</translation>
 </translationbundle>

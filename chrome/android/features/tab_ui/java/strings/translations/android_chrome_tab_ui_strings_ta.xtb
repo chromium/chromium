@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">குழுவில் புதிய பக்கத்தைச் சேர்</translation>
 <translation id="9216898458513705996">இந்தச் சாதனத்தில் பக்கங்கள் திறந்தே இருக்கும். ஆனால், நீங்கள் <ph name="USER_EMAIL" /> கணக்கின் மூலம் உள்நுழைந்துள்ள சாதனங்கள் அனைத்திலும் குழு நீக்கப்படும்.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கத்துடன் உள்ள பக்கக் குழுவை விரிவாக்கும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்களுடன் உள்ள பக்கக் குழுவை விரிவாக்கும்.}}</translation>
+<translation id="945522503751344254">கருத்தை அனுப்பு</translation>
 <translation id="94870150074703282">குழுவை நீக்கவா?</translation>
 <translation id="992256792861109788">பிங்க்</translation>
 </translationbundle>

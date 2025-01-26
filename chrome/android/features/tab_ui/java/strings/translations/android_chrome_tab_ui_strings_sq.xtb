@@ -192,6 +192,7 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="9169594135889675189">Shto skedë të re te grupi</translation>
 <translation id="9216898458513705996">Skedat do të qëndrojnë të hapura në këtë pajisje, por grupi do të fshihet nga të gjitha pajisjet ku je identifikuar me <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Zgjero grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Dërgo komente</translation>
 <translation id="94870150074703282">Të fshihet grupi?</translation>
 <translation id="992256792861109788">Rozë</translation>
 </translationbundle>

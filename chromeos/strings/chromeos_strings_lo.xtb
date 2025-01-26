@@ -200,6 +200,7 @@
 <translation id="1815850098929213707">ປຸ່ມທີ່ເລືອກແມ່ນ <ph name="KEYS" />. ແຕະປຸ່ມເພື່ອແກ້ໄຂຕົວຄວບຄຸມ</translation>
 <translation id="1823120442877418684">ຕົວອັກສອນ</translation>
 <translation id="1827738518074806965">ຫ້ອງສະແດງງານສິນລະປະ</translation>
+<translation id="1834032517784994783">ເລືອກພາສາຂອງການຖອດຖ່າຍຂໍ້ຄວາມ</translation>
 <translation id="1836553715834333258">ສີຂອງລະບົບ</translation>
 <translation id="183675228220305365">ສົມຈິງ</translation>
 <translation id="1838374766361614909">ລຶບ​ການ​ຊອກ​ຫາ</translation>
@@ -296,6 +297,7 @@
 <translation id="2240366984605217732">ສະວິດໂຄງຮ່າງ</translation>
 <translation id="2244834438220057800">ຂຽວ</translation>
 <translation id="225692081236532131">ສະຖານະການເປີດນຳໃຊ້</translation>
+<translation id="2265792117169966196">ເລືອກ ແລະ ດາວໂຫຼດໂມເດວການຖອດຖ່າຍຂໍ້ຄວາມຂອງພາສາ <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">ເພີ່ມຮູບໜ້າຈໍ</translation>
 <translation id="2268044343513325586">ກັ່ນ​ຕອງ</translation>
 <translation id="2271469253353559191">ກຳນົດເວລາໂໝດມືດ</translation>
@@ -726,6 +728,7 @@
 <translation id="4483049906298469269">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
 <translation id="4483498983731992167">ບໍ່ສາມາດສ້າງຖອດຂໍ້ຄວາມຈາກສຽງໄດ້</translation>
 <translation id="4486524074141928967">ທ່ານຈະອອກຈາກລະບົບໃນເວລາ <ph name="TIME" /></translation>
+<translation id="4487890678161807486">ເປີດຕົວເລືອກພາສາຂອງການຖອດຖ່າຍຂໍ້ຄວາມ</translation>
 <translation id="4500722292849917410">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດຄີລັດໃໝ່ໂດຍໃຊ້ປຸ່ມຕົວດັດແປງ (ctrl, alt, shift ຫຼື <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">ສີຂອງສ່ວນຕິດຕໍ່</translation>
 <translation id="4503223151711056411">ລູກສອນຊ້າຍ</translation>
@@ -774,6 +777,7 @@
 <translation id="473775607612524610">ອັບເດດ</translation>
 <translation id="4744944742468440486">ຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ</translation>
 <translation id="4750394297954878236">ຄໍາ​ແນະ​ນໍາ</translation>
+<translation id="4763771683769971829">ລາຍຊື່ພາສາທີ່ພ້ອມໃຫ້ບໍລິການ</translation>
 <translation id="4771607256327216405">ແປ້ນພິມແຈ້ງ</translation>
 <translation id="4771923071974529837">ມື້ອື່ນ</translation>
 <translation id="4773299976671772492">ຢຸດ​ແລ້ວ</translation>
@@ -855,6 +859,7 @@
 <translation id="5095761549884461003">ຖອດປລັກສາຍ USB <ph name="DEVICE_NAME" /> ອອກ ແລ້ວສຽບຄືນໃໝ່ເພື່ອສືບຕໍ່ຂັ້ນຕອນການອັບເດດ</translation>
 <translation id="5099354524039520280">ຂຶ້ນ</translation>
 <translation id="5107243100836678918">ຄີລັດທີ່ບໍ່ມີປຸ່ມ <ph name="META_KEY" /> ອາດຂັດແຍ່ງກັບທາງລັດຂອງບາງແອັບ. ກົດທາງລັດນີ້ອີກຄັ້ງເພື່ອສືບຕໍ່ໃຊ້ມັນ ຫຼື ກົດທາງລັດໃໝ່ໂດຍໃຊ້ປຸ່ມ <ph name="KEY" />. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">ບໍ່ສາມາດດາວໂຫຼດໂມເດວການຖອດຖ່າຍຂໍ້ຄວາມຂອງພາສາ <ph name="LANGUAGE_NAME" /> ໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຣີສະຕາດ Chromebook ຂອງທ່ານ</translation>
 <translation id="5108781503443873320">ຄ້າຍກັນ:</translation>
 <translation id="5121677070210013200">ບໍ່ສາມາດດາວໂຫຼດໂມເດວການຖອດຖ່າຍຂໍ້ຄວາມໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຣີສະຕາດ Chromebook ຂອງທ່ານ.</translation>
 <translation id="5130848777448318809">ມ້າແຄະ</translation>
@@ -1279,6 +1284,7 @@
 <translation id="7058278511608979688">ສິ້ນສຸດ ແລະ ບັນທຶກ</translation>
 <translation id="7059230779847288458">ກໍາລັງສາກ
 <ph name="TIME_VALUE" />: ຈົນເຕັມ</translation>
+<translation id="7065336548231472971">ເລືອກ <ph name="LANGUAGE_NAME" /> ແລ້ວ</translation>
 <translation id="7066538517128343186">ກະແຈ <ph name="KEY" /></translation>
 <translation id="7068619307603204412">ກະກຽມອຸປະກອນຂອງທ່ານ</translation>
 <translation id="7076851914315147928">ເລືອກຮູບພື້ນຫຼັງ</translation>
@@ -1372,6 +1378,7 @@
 <translation id="7415801143053185905">ການຕອບສະໜອງ HTTP ສູງຫຼາຍ</translation>
 <translation id="7418738250896500352">ຄຳສັບຫຼາຍເກີນໄປເພື່ອເຮັດໃຫ້ງ່າຍ</translation>
 <translation id="7425037327577270384">ຊ່ວຍຂ້ອຍຂຽນ</translation>
+<translation id="7425832472614771259">ດາວໂຫຼດໂມເດວການຖອດຖ່າຍຂໍ້ຄວາມຂອງພາສາ <ph name="LANGUAGE_NAME" /> ແລ້ວ <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ບໍ່ສາມາດປິດການນຳໃຊ້ ຫຼື ລຶບ APN ນີ້ອອກໄດ້. ກະລຸນາກວດສອບວ່າ APN ແບບ <ph name="ATTACH" /> ທີ່ເປີດການນຳໃຊ້ນັ້ນຖືກປິດການນຳໃຊ້ ຫຼື ລຶບອອກແລ້ວ.</translation>
 <translation id="7453118953486228603">ຄລິກເພື່ອສະຫຼຸບຂໍ້ຄວາມທີ່ເລືອກໄວ້</translation>
@@ -1408,6 +1415,7 @@
 <translation id="7595982850646262331">ຍັງເຫຼືອ <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">ຜູ້ເບິ່ງແຍງລະບົບ <ph name="MANAGER" /> ໄດ້ກຳນົດເວລາທີ່ຈະສາມາດໃຊ້ <ph name="DEVICE_TYPE" /> ເຄື່ອງນີ້ໄດ້.</translation>
 <translation id="7613724632293948900">ປ່ຽນຕຳແໜ່ງດ້ວຍເມົ້າ ຫຼື ປຸ່ມລູກສອນ.</translation>
+<translation id="7618216277886673749">ເລືອກ <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">ປານກາງ</translation>
 <translation id="7620771111601174153">ສຶກສາເພີ່ມເຕີມໃນສູນຊ່ວຍເຫຼືອ</translation>
 <translation id="7625095758347640998">ຮູບພື້ນຫຼັງ AI</translation>

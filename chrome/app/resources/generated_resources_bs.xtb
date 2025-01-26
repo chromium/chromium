@@ -396,7 +396,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1260810365552581339">Moguće je da Linux nema dovoljno prostora na disku. Možete povećati prostor na disku za Linux i ponovo pokušati vratiti u <ph name="LINK_START" />Postavkama<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Srednje</translation>
 <translation id="126156426083987769">Došlo je do problema s licencama uređaja u demo načinu rada.</translation>
-<translation id="1262564987698748643">Web-lokacije mogu tražiti dopuštenje za nadjačavanje unosa pomoću tipkovnice</translation>
+<translation id="1262564987698748643">Web lokacije mogu zatražiti da nadjačavaju unos tastaturom</translation>
 <translation id="1263231323834454256">Lista za čitanje</translation>
 <translation id="1263733306853729545">Koristi tipke <ph name="MINUS" /> i <ph name="EQUAL" /> za prikaz liste kandidata</translation>
 <translation id="126387934568812801">Obuhvati ovaj snimak ekrana i naslove otvorenih kartica</translation>
@@ -776,7 +776,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1536883206862903762">Ovim će se onemogućiti ekstenzije i postavke vratiti na sigurne zadane. Zadržat će se kartice, fajlovi i kolačići. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Povećalo za cijeli ekran</translation>
 <translation id="15373452373711364">Veliki kursor miša</translation>
-<translation id="1539248305642687917">Ne dopuštaj web-lokacijama nadjačavanje unosa pomoću tipkovnice</translation>
+<translation id="1539248305642687917">Nemoj dozvoliti web lokacijama da nadjačaju unos tastaturom</translation>
 <translation id="1539727654733007771">Nije postavljena nijedna mobilna mreža. Preuzmite novi <ph name="BEGIN_LINK" />profil.<ph name="END_LINK" /></translation>
 <translation id="1540265419569299117">Usluga aplikacije ChromeOS-a</translation>
 <translation id="1540543470504988112">Upravljajte uvezenim certifikatima iz MacOS-a</translation>
@@ -988,7 +988,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="166278006618318542">Algoritam javnog ključa subjekta</translation>
 <translation id="1662801900924515589">Aplikacija <ph name="APP" /> je instalirana</translation>
 <translation id="1663698992894057019">Pređite na novi Chromebook za najnovije sigurnosne i softverske funkcije</translation>
-<translation id="166454475160289583">Nadjačavanje unosa pomoću tipkovnice nije dopušteno</translation>
+<translation id="166454475160289583">Nije dozvoljeno nadjačavanje unosa tastaturom</translation>
 <translation id="1665328953287874063">Koristite lozinku ili PIN da otključate svoj uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Ekspresionizam</translation>
 <translation id="1667842670298352129">Slušajte određeni tekst koji se čita naglas. Najprije odaberite ikonu Odaberite za govor na dnu ekrana, a zatim istaknite tekst. Možete koristiti i prečicu na tastaturi: Istaknite tekst, a zatim pritisnite tipku za pretraživanje + S.</translation>
@@ -1225,7 +1225,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1832511806131704864">Promjena telefona je ažurirana</translation>
 <translation id="1832848789136765277">Potvrdite svoj identitet da uvijek možete pristupati sinhroniziranim podacima</translation>
 <translation id="1833059747301212935">Lako pristupajte nedavnim dokumentima i predstojećim događajima u kalendaru</translation>
-<translation id="183445248400150852">Web-lokacije upotrebljavaju tu značajku kako bi nadjačale unose pomoću tipkovnice, primjerice za igre ili aplikacije udaljene radne površine</translation>
+<translation id="183445248400150852">Web lokacije koriste ovu funkciju da nadjačaju unos tastaturom, naprimjer za igre ili aplikacije za udaljeni računar</translation>
 <translation id="1834503245783133039">Preuzimanje nije uspjelo: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Nadogradnja Linuxa</translation>
 <translation id="1837441256780906162">Microsoft OneDrive je odbio zahtjev. Pokušajte ponovo kasnije.</translation>
@@ -7439,7 +7439,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6264485186158353794">Nazad na sigurno</translation>
 <translation id="6264520534872750757">Nastavi s korištenjem uređaja</translation>
 <translation id="6264636978858465832">Upravitelj lozinki treba više pristupa</translation>
-<translation id="626495329434552273">Nadjačavanje unosa pomoću tipkovnice je dopušteno</translation>
+<translation id="626495329434552273">Dozvoljeno je nadjačavanje unosa tastaturom</translation>
 <translation id="6265159465845424232">Pitaj prije kopiranja ili premještanja Microsoft fajlova na Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Ukloni priključak</translation>
 <translation id="6266532094411434237">Povezivanje s uređajem <ph name="DEVICE" /></translation>

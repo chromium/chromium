@@ -19,8 +19,14 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/collaboration_messaging_page_action_icon_view.h"
+#include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/tab_group_header.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
@@ -29,6 +35,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -36,6 +43,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -46,8 +54,11 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
+#include "url/gurl.h"
 
 using collaboration::messaging::ActivityLogItem;
+using collaboration::messaging::TabGroupMessageMetadata;
+using collaboration::messaging::TabMessageMetadata;
 
 namespace {
 
@@ -101,6 +112,70 @@ std::u16string GetMetadataText(ActivityLogItem item) {
   }
 }
 
+// TODO(crbug.com/392150086): Refactor this into utilities.
+std::optional<tab_groups::LocalTabGroupID> UnwrapGroupId(ActivityLogItem item) {
+  if (std::optional<TabGroupMessageMetadata> tab_group_metadata =
+          item.activity_metadata.tab_group_metadata) {
+    return tab_group_metadata->local_tab_group_id;
+  }
+  return std::nullopt;
+}
+
+// TODO(crbug.com/392150086): Refactor this into utilities.
+std::optional<tab_groups::LocalTabID> UnwrapTabId(ActivityLogItem item) {
+  if (std::optional<TabMessageMetadata> tab_metadata =
+          item.activity_metadata.tab_metadata) {
+    return tab_metadata->local_tab_id;
+  }
+  return std::nullopt;
+}
+
+// TODO(crbug.com/392150086): Refactor this into utilities.
+std::optional<std::string> UnwrapTabUrl(ActivityLogItem item) {
+  if (std::optional<TabMessageMetadata> tab_metadata =
+          item.activity_metadata.tab_metadata) {
+    return tab_metadata->last_known_url;
+  }
+  return std::nullopt;
+}
+
+// TODO(crbug.com/392150086): Refactor this into utilities.
+std::optional<int> GetTabStripIndex(tab_groups::LocalTabGroupID group_id,
+                                    tab_groups::LocalTabID tab_id) {
+  auto* browser =
+      tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
+  if (!browser) {
+    return std::nullopt;
+  }
+
+  auto group_offset_in_tabstrip = browser->tab_strip_model()
+                                      ->group_model()
+                                      ->GetTabGroup(group_id)
+                                      ->GetFirstTab();
+  if (!group_offset_in_tabstrip.has_value()) {
+    return std::nullopt;
+  }
+
+  auto* tab_group_sync_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
+  if (!tab_group_sync_service) {
+    return std::nullopt;
+  }
+
+  auto saved_tab_group = tab_group_sync_service->GetGroup(group_id);
+  if (!saved_tab_group.has_value()) {
+    return std::nullopt;
+  }
+  auto tab_offset_in_group = saved_tab_group->GetIndexOfTab(tab_id);
+  if (!tab_offset_in_group.has_value()) {
+    return std::nullopt;
+  }
+
+  auto tabstrip_index =
+      group_offset_in_tabstrip.value() + tab_offset_in_group.value();
+  return tabstrip_index;
+}
+
 }  // namespace
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kRecentActivityBubbleDialogId);
@@ -127,12 +202,18 @@ RecentActivityBubbleDialogView::RecentActivityBubbleDialogView(
   const auto num_rows =
       std::min(static_cast<int>(activity_log.size()), kMaxNumberRows);
   for (int i = 0; i < num_rows; i++) {
-    auto item = activity_log.at(i);
-    AddChildView(std::make_unique<RecentActivityRowView>(item, profile));
+    AddChildView(std::make_unique<RecentActivityRowView>(
+        activity_log.at(i), profile,
+        base::BindOnce(&RecentActivityBubbleDialogView::Close,
+                       weak_factory_.GetWeakPtr())));
   }
 }
 
 RecentActivityBubbleDialogView::~RecentActivityBubbleDialogView() = default;
+
+void RecentActivityBubbleDialogView::Close() {
+  LocationBarBubbleDelegateView::CloseBubble();
+}
 
 RecentActivityRowView* RecentActivityBubbleDialogView::GetRowForTesting(int n) {
   CHECK(n < static_cast<int>(children().size()));
@@ -142,13 +223,22 @@ RecentActivityRowView* RecentActivityBubbleDialogView::GetRowForTesting(int n) {
 BEGIN_METADATA(RecentActivityBubbleDialogView)
 END_METADATA
 
-RecentActivityRowView::RecentActivityRowView(ActivityLogItem item,
-                                             Profile* profile) {
+RecentActivityRowView::RecentActivityRowView(
+    ActivityLogItem item,
+    Profile* profile,
+    base::OnceCallback<void()> close_callback)
+    : item_(item),
+      profile_(profile),
+      close_callback_(std::move(close_callback)) {
   SetLayoutManager(
       std::make_unique<views::BoxLayout>(views::LayoutOrientation::kHorizontal))
       ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetProperty(views::kMarginsKey, ChromeLayoutProvider::Get()->GetInsetsMetric(
                                       INSETS_RECENT_ACTIVITY_ROW_MARGIN));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kRow);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_DATA_SHARING_RECENT_ACTIVITY_TITLE));
+  SetFocusBehavior(FocusBehavior::ALWAYS);
 
   image_view_ =
       AddChildView(std::make_unique<RecentActivityRowImageView>(item, profile));
@@ -173,6 +263,99 @@ RecentActivityRowView::RecentActivityRowView(ActivityLogItem item,
 }
 
 RecentActivityRowView::~RecentActivityRowView() = default;
+
+bool RecentActivityRowView::OnMousePressed(const ui::MouseEvent& event) {
+  using collaboration::messaging::RecentActivityAction;
+
+  switch (item_.action) {
+    case RecentActivityAction::kFocusTab:
+      FocusTab();
+      break;
+    case RecentActivityAction::kReopenTab:
+      ReopenTab();
+      break;
+    case RecentActivityAction::kOpenTabGroupEditDialog:
+      OpenTabGroupEditDialog();
+      break;
+    case RecentActivityAction::kManageSharing:
+      ManageSharing();
+      break;
+    case RecentActivityAction::kNone:
+      break;
+  }
+
+  std::move(close_callback_).Run();
+
+  return true;
+}
+
+void RecentActivityRowView::FocusTab() {
+  std::optional<tab_groups::LocalTabGroupID> group_id = UnwrapGroupId(item_);
+  std::optional<tab_groups::LocalTabID> tab_id = UnwrapTabId(item_);
+  if (!group_id.has_value() || !tab_id.has_value()) {
+    return;
+  }
+
+  auto* browser = tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
+      group_id.value());
+  if (!browser) {
+    return;
+  }
+
+  std::optional<int> tab_index =
+      GetTabStripIndex(group_id.value(), tab_id.value());
+  if (tab_index.has_value()) {
+    browser->tab_strip_model()->ActivateTabAt(tab_index.value());
+  }
+}
+
+void RecentActivityRowView::ReopenTab() {
+  std::optional<tab_groups::LocalTabGroupID> group_id = UnwrapGroupId(item_);
+  std::optional<std::string> tab_url = UnwrapTabUrl(item_);
+  if (!group_id.has_value() || !tab_url.has_value()) {
+    return;
+  }
+
+  if (auto* browser = tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
+          group_id.value())) {
+    tab_groups::SavedTabGroupUtils::OpenTabInBrowser(
+        GURL(tab_url.value()), browser, browser->profile(),
+        WindowOpenDisposition::NEW_BACKGROUND_TAB, std::nullopt,
+        group_id.value());
+  }
+}
+
+void RecentActivityRowView::OpenTabGroupEditDialog() {
+  std::optional<tab_groups::LocalTabGroupID> group_id = UnwrapGroupId(item_);
+  if (!group_id.has_value()) {
+    return;
+  }
+
+  auto* browser = tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
+      group_id.value());
+  if (!browser) {
+    return;
+  }
+
+  if (auto* tab_group_header = BrowserView::GetBrowserViewForBrowser(browser)
+                                   ->tabstrip()
+                                   ->group_header(group_id.value())) {
+    TabGroupEditorBubbleView::Show(browser, group_id.value(), tab_group_header);
+  }
+}
+
+void RecentActivityRowView::ManageSharing() {
+  std::optional<tab_groups::LocalTabGroupID> group_id = UnwrapGroupId(item_);
+  if (!group_id.has_value()) {
+    return;
+  }
+
+  if (auto* browser = tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
+          group_id.value())) {
+    DataSharingBubbleController::GetOrCreateForBrowser(browser)->Show(
+        group_id.value());
+  }
+}
 
 BEGIN_METADATA(RecentActivityRowView)
 END_METADATA

@@ -46,6 +46,9 @@ class RecentActivityBubbleDialogView : public LocationBarBubbleDelegateView {
   RecentActivityRowView* GetRowForTesting(int n);
 
  private:
+  // Close this bubble.
+  void Close();
+
   const GURL url_;
 
   base::WeakPtrFactory<RecentActivityBubbleDialogView> weak_factory_{this};
@@ -58,19 +61,34 @@ class RecentActivityRowView : public views::View {
 
  public:
   RecentActivityRowView(collaboration::messaging::ActivityLogItem item,
-                        Profile* profile);
+                        Profile* profile,
+                        base::OnceCallback<void()> close_callback);
   ~RecentActivityRowView() override;
 
+  // views::Views
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+
   RecentActivityRowImageView* image_view() const { return image_view_; }
-
   const std::u16string& activity_text() const { return activity_text_; }
-
   const std::u16string& metadata_text() const { return metadata_text_; }
+
+  // RecentActivityAction handlers.
+  // Focuses the open tab in the tab strip.
+  void FocusTab();
+  // Reopens the tab at the end of the group.
+  void ReopenTab();
+  // Opens the Tab Group editor bubble for the group.
+  void OpenTabGroupEditDialog();
+  // Opens the Data Sharing management bubble for the group.
+  void ManageSharing();
 
  private:
   std::u16string activity_text_;
   std::u16string metadata_text_;
   raw_ptr<RecentActivityRowImageView> image_view_ = nullptr;
+  collaboration::messaging::ActivityLogItem item_;
+  const raw_ptr<Profile> profile_ = nullptr;
+  base::OnceCallback<void()> close_callback_;
 };
 
 // View containing the avatar image and, if the event refers to a tab, the

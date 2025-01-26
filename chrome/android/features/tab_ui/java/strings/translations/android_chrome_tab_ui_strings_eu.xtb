@@ -192,6 +192,7 @@ Ezabatzen baduzu, berehala galduko dute denek "<ph name="TITLE_OF_GROUP" />" fit
 <translation id="9169594135889675189">Gehitu beste fitxa bat taldean</translation>
 <translation id="9216898458513705996">Fitxak irekita mantenduko dira gailu honetan, baina <ph name="USER_EMAIL" /> kontuan saioa hasita daukaten gailu guztietan ezabatuko da taldea</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Zabaldu <ph name="TABS_COUNT_ONE" /> fitxa duen fitxa taldea, <ph name="COLOR_NAME" /> kolorekoa.}other{Zabaldu <ph name="TABS_COUNT_MANY" /> fitxa dituen fitxa taldea, <ph name="COLOR_NAME" /> kolorekoa.}}</translation>
+<translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="94870150074703282">Taldea ezabatu nahi duzu?</translation>
 <translation id="992256792861109788">Arrosa</translation>
 </translationbundle>

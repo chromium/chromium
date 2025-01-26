@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">गटामध्ये नवीन टॅब जोडा</translation>
 <translation id="9216898458513705996">टॅब या डिव्हाइसवर खुले राहतील, पण गट हा <ph name="USER_EMAIL" /> मध्ये साइन इन केलेल्या सर्व डिव्हाइसवरून हटवला जाईल</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{टॅब गटाचा <ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून विस्तार करा.}other{टॅब गटाचा <ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून विस्तार करा.}}</translation>
+<translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="94870150074703282">गट हटवायचा आहे का?</translation>
 <translation id="992256792861109788">गुलाबी</translation>
 </translationbundle>
