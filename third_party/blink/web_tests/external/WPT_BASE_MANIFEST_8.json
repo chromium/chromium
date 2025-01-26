@@ -371683,7 +371683,7 @@
      []
     ],
     "dc-types.ts": [
-     "6ea100c6727d6d0ca1d24cffa00eb443fe028321",
+     "30284e7fad68ea31854bef5e1a47364b11e46d19",
      []
     ],
     "digital-credentials-static-methods.tentative.https-expected.txt": [
@@ -371691,7 +371691,7 @@
      []
     ],
     "disabled-by-permissions-policy.https.sub-expected.txt": [
-     "f97bf6f85b138a137e8525b61eed52cceb4c9b2a",
+     "7973ebcc6e6738b1dc1c61b0a1fa1236002c43b9",
      []
     ],
     "disabled-by-permissions-policy.https.sub.html.headers": [
@@ -371699,7 +371699,7 @@
      []
     ],
     "enabled-on-self-origin-by-permissions-policy.https.sub-expected.txt": [
-     "c5f2c23035bc575dd0d8df64642f784cf6a2702e",
+     "662d7e196ed5d0d196be0ef082d952d7c01d99ac",
      []
     ],
     "enabled-on-self-origin-by-permissions-policy.https.sub.html.headers": [
@@ -371707,16 +371707,16 @@
      []
     ],
     "get-user-activation.https-expected.txt": [
-     "9d1ddbd20e8bba99e6daee06bba38e256f5761b1",
+     "ee7047c70a0d0a12c04a1eb69c3a06b61b43529e",
      []
     ],
     "get.tentative.https-expected.txt": [
-     "e887eb95b0d5ec013de07eea6425412bfe868643",
+     "13dfa2bc1c68d5786c8cf02a7cc4c487ee2836fe",
      []
     ],
     "support": {
      "helper.js": [
-      "0b71ae9822a7272caa7bb5e317e597330a857692",
+      "71022432652c19ccb7272b02f723dcf748d9e7b3",
       []
      ],
      "iframe.html": [
@@ -519749,7 +519749,7 @@
    },
    "digital-credentials": {
     "allow-attribute.https.html": [
-     "d988e94cd23547803873616432359ebd572e1242",
+     "667b84bc704c23602b481538ea16f6f77f801902",
      [
       null,
       {
@@ -519810,7 +519810,7 @@
      ]
     ],
     "get.tentative.https.html": [
-     "6de3ed8e90ab4d26190337c64c5d067ad78336a8",
+     "a090e1b14321bd31ea3e1d5470bbe9442a99dd08",
      [
       null,
       {
@@ -707330,7 +707330,7 @@
        ]
       ],
       "inline.html": [
-       "f40a8f127c7b07d8d0314d747a014a9b262cf48d",
+       "ec5ff72a00d9c71c97eab7a788b742f3f2265b00",
        [
         null,
         {}
