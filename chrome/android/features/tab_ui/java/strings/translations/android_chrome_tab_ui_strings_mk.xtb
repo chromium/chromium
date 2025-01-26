@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">Додај нова картичка во групата</translation>
 <translation id="9216898458513705996">Картичките ќе останат отворени на овој уред, но групата ќе се избрише од сите уреди најавени на <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Прошири ја групата картички со <ph name="TABS_COUNT_ONE" /> картичка, во <ph name="COLOR_NAME" /> боја.}one{Прошири ја групата картички со <ph name="TABS_COUNT_MANY" /> картичка, во <ph name="COLOR_NAME" /> боја.}other{Прошири ја групата картички со <ph name="TABS_COUNT_MANY" /> картички, во <ph name="COLOR_NAME" /> боја.}}</translation>
+<translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="94870150074703282">Да се избрише групата?</translation>
 <translation id="992256792861109788">Розова</translation>
 </translationbundle>

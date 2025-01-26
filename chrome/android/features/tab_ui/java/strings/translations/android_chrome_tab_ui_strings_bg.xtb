@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">Добавяне на нов раздел към групата</translation>
 <translation id="9216898458513705996">Разделите ще останат отворени на това устройство, но групата ще бъде изтрита от всички устройства, на които сте влезли в профила <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Разгъване на групата раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_ONE" /> раздел.}other{Разгъване на групата раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
+<translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="94870150074703282">Да се изтрие ли групата?</translation>
 <translation id="992256792861109788">розово</translation>
 </translationbundle>

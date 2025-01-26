@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">Топко жаңы өтмөк кошуу</translation>
 <translation id="9216898458513705996">Өтмөктөр бул түзмөктө ачык бойдон калып, бирок топ <ph name="USER_EMAIL" /> аккаунтуна кирип турган бардык түзмөктөрдөн өчүрүлөт</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Пикириңизди билдириңиз</translation>
 <translation id="94870150074703282">Топту өчүрөсүзбү?</translation>
 <translation id="992256792861109788">Кызгылтым</translation>
 </translationbundle>

@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">เพิ่มแท็บใหม่ลงในกลุ่ม</translation>
 <translation id="9216898458513705996">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ขยายกลุ่มแท็บที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
+<translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="94870150074703282">ลบกลุ่มไหม</translation>
 <translation id="992256792861109788">สีชมพู</translation>
 </translationbundle>

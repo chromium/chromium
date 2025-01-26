@@ -192,6 +192,7 @@ Grubu silerseniz herkes "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişimini 
 <translation id="9169594135889675189">Gruba yeni sekme ekler</translation>
 <translation id="9216898458513705996">Sekmeler bu cihazda açık kalır ancak grup, <ph name="USER_EMAIL" /> hesabında oturum açılmış tüm cihazlardan silinir</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu genişletin.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu genişletin.}}</translation>
+<translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="94870150074703282">Grup silinsin mi?</translation>
 <translation id="992256792861109788">Pembe</translation>
 </translationbundle>

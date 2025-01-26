@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">አዲስ ትር ወደ ቡድን አክል</translation>
 <translation id="9216898458513705996">ትሮቹ በዚህ መሣሪያ ላይ ክፍት እንደሆኑ ይቆያሉ፣ ነገር ግን ቡድኑ ወደ <ph name="USER_EMAIL" /> ከገቡ ሁሉም መሣሪያዎች ይሰረዛል</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{የትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}one{የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}other{የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}}</translation>
+<translation id="945522503751344254">ግብረመልስ ላክ</translation>
 <translation id="94870150074703282">ቡድን ይሰረዝ?</translation>
 <translation id="992256792861109788">ሮዝ</translation>
 </translationbundle>

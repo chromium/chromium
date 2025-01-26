@@ -192,6 +192,7 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="9169594135889675189">Thêm thẻ mới vào nhóm</translation>
 <translation id="9216898458513705996">Thẻ sẽ vẫn mở trên thiết bị này nhưng nhóm sẽ bị xoá khỏi mọi thiết bị đã đăng nhập vào <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />.}other{Mở rộng nhóm thẻ có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="94870150074703282">Xoá nhóm này?</translation>
 <translation id="992256792861109788">Màu hồng</translation>
 </translationbundle>

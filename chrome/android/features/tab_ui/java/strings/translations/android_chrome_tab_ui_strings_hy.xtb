@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">Ավելացնել նոր ներդիր խմբում</translation>
 <translation id="9216898458513705996">Այս սարքում ներդիրները կմնան բացված, սակայն խումբը կջնջվի բոլոր սարքերից, որոնցում մուտք եք գործել <ph name="USER_EMAIL" /> հաշիվ</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Ծավալել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծավալել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}other{Ծավալել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}}</translation>
+<translation id="945522503751344254">Կարծիք հայտնել</translation>
 <translation id="94870150074703282">Ջնջե՞լ խումբը</translation>
 <translation id="992256792861109788">Վարդագույն</translation>
 </translationbundle>

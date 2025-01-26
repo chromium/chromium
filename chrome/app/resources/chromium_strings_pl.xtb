@@ -364,6 +364,7 @@
 <translation id="6145820983052037069">Tu możesz przełączać się między profilami Chromium</translation>
 <translation id="615103374448673771">Jeśli zezwolisz na pliki cookie, Chromium może ich używać podczas wstępnego wczytywania</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
+<translation id="6173308241973263798">Wyczyść dane Chromium na swoim koncie</translation>
 <translation id="6174920971222007286">Ten plik może być niebezpieczny<ph name="LINE_BREAK" />Chromium może go sprawdzić, jeśli podasz hasło. Informacje o pliku są wysyłane do Bezpiecznego przeglądania Google, ale zawartość pliku i hasło pozostają na urządzeniu.</translation>
 <translation id="6182736845697986886">Instalacja się nie udała z powodu wewnętrznego błędu serwera aktualizacji.</translation>
 <translation id="6183079672144801177">Najpierw zaloguj się w Chromium na swoim urządzeniu <ph name="TARGET_DEVICE_NAME" />, a potem ponów próbę wysyłania.</translation>
@@ -430,6 +431,7 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="684888714667046800">Nie można połączyć się z internetem. Jeśli używasz zapory sieciowej, sprawdź, czy adres <ph name="PRODUCT_EXE_NAME" /> znajduje się na liście dozwolonych.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Przeglądarka Chromium wykryła, że rozszerzenie „<ph name="EXTENSION_NAME" />” zawiera złośliwe oprogramowanie</translation>
+<translation id="6877631896957360295">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="SETTINGS_LINK" /> dane Chromium na swoim koncie.</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6929417474050522668">Gdy testy są włączone, w ramach pomiaru skuteczności reklam odwiedzane przez Ciebie witryny mogą prosić Chromium o dostęp do potrzebnych w tym celu informacji. Pomiar skuteczności reklam ogranicza śledzenie w witrynach, ponieważ pomiędzy poszczególnymi stronami przenoszona jest możliwie najmniejsza ilość informacji.</translation>
 <translation id="6940431691900807093">Witryna, którą później odwiedzisz, może zapytać o Twoje zainteresowania i na tej podstawie spersonalizować wyświetlane reklamy. Chromium może udostępnić do 3 zainteresowań.</translation>

@@ -394,6 +394,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1260810365552581339">Es posible que Linux no tenga suficiente espacio en el disco. Puedes aumentar el espacio del disco de Linux y volver a intentar restablecer la copia de seguridad en <ph name="LINK_START" />Configuración<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Moderada</translation>
 <translation id="126156426083987769">Hubo un problema con las licencias del dispositivo en el modo de demostración.</translation>
+<translation id="1262564987698748643">Los sitios pueden solicitar permiso para anular la entrada del teclado</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1263733306853729545">Utilizar las teclas <ph name="MINUS" /> y <ph name="EQUAL" /> para alternar entre las opciones posibles</translation>
 <translation id="126387934568812801">Incluir esta captura de pantalla y los títulos de las pestañas abiertas</translation>
@@ -768,6 +769,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1536883206862903762">Esta acción inhabilitará las extensiones y restablecerá tu configuración a valores predeterminados seguros. Se conservarán las pestañas, los archivos y las cookies. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Lupa de pantalla completa</translation>
 <translation id="15373452373711364">Cursor del mouse grande</translation>
+<translation id="1539248305642687917">No permitir que los sitios anulen la entrada del teclado</translation>
 <translation id="1539727654733007771">No se configuró ninguna red móvil. Descarga un <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" /> nuevo.</translation>
 <translation id="1540265419569299117">Servicio de apps de ChromeOS</translation>
 <translation id="1540543470504988112">Administrar certificados importados desde macOS</translation>
@@ -979,6 +981,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="166278006618318542">Algoritmo de clave pública del sujeto</translation>
 <translation id="1662801900924515589">Se instaló <ph name="APP" /></translation>
 <translation id="1663698992894057019">Cambia tu Chromebook por una nueva para obtener la seguridad y el software más recientes</translation>
+<translation id="166454475160289583">No pueden anular la entrada del teclado</translation>
 <translation id="1665328953287874063">Usa una contraseña o un PIN para desbloquear tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Expresionismo</translation>
 <translation id="1667842670298352129">Escucha un texto específico en voz alta. Primero, elige el ícono de Seleccionar para pronunciar en la parte inferior de la pantalla y, luego, destaca el texto. También puedes usar una combinación de teclas: destaca el texto y, luego, presiona Búsqueda + S.</translation>
@@ -1210,6 +1213,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1832511806131704864">Cambio de teléfono actualizado</translation>
 <translation id="1832848789136765277">Para asegurarte de que siempre puedas acceder a tus datos sincronizados, verifica tu identidad.</translation>
 <translation id="1833059747301212935">Accede fácilmente a los documentos recientes y a los próximos eventos del calendario</translation>
+<translation id="183445248400150852">Los sitios usan esta función para anular la entrada de tu teclado; por ejemplo, para juegos o apps de escritorio remoto</translation>
 <translation id="1834503245783133039">No se pudo realizar la descarga: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Actualizando Linux</translation>
 <translation id="1837441256780906162">Microsoft OneDrive rechazó la solicitud. Vuelve a intentarlo más tarde.</translation>
@@ -6747,6 +6751,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5794700615121138172">Carpetas compartidas de Linux</translation>
 <translation id="5794786537412027208">Salir de todas las aplicaciones de Chrome</translation>
 <translation id="5796485699458186843">Nueva pestaña de incógnito</translation>
+<translation id="5796956053441619942">La URL del dispositivo remoto no es compatible</translation>
 <translation id="5797934230382081317">Aprende a usarlo con &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; and &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Los sitios pueden instalar controladores de pago.</translation>
 <translation id="5798086737841799234">Ingresa el código de confirmación</translation>
@@ -7402,6 +7407,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6264485186158353794">Volver a un sitio seguro</translation>
 <translation id="6264520534872750757">Seguir usando el dispositivo</translation>
 <translation id="6264636978858465832">El Administrador de contraseñas necesita más acceso</translation>
+<translation id="626495329434552273">Pueden anular la entrada del teclado</translation>
 <translation id="6265159465845424232">Preguntar antes de copiar o mover archivos de Microsoft a Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Quitar puerto</translation>
 <translation id="6266532094411434237">Conectando a <ph name="DEVICE" /></translation>

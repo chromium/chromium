@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">ჯგუფში ახალი ჩანართის დამატება</translation>
 <translation id="9216898458513705996">ჩანართები დარჩება გახსნილი ამ მოწყობილობაზე, მაგრამ ჯგუფი წაიშლება ყველა მოწყობილობიდან, რომელიც შესულია ანგარიშში: <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}other{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}}</translation>
+<translation id="945522503751344254">შეფასების გაგზავნა</translation>
 <translation id="94870150074703282">წაშლით ჯგუფს?</translation>
 <translation id="992256792861109788">ვარდისფერი</translation>
 </translationbundle>

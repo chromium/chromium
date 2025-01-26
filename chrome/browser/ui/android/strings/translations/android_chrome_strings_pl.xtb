@@ -116,6 +116,7 @@ W <ph name="BEGIN_LINK2" />usługach Google<ph name="END_LINK2" /> znajdziesz w
 <translation id="1435593198351412143">Automatycznie otwieraj pliki PDF</translation>
 <translation id="1436784010935106834">Usunięto</translation>
 <translation id="1437543266176261764">Działa w <ph name="APP_NAME" /></translation>
+<translation id="1448147069872048656">Aby mieć dostęp do wszystkich haseł na tym urządzeniu, potwierdź swoją tożsamość</translation>
 <translation id="1448440926884431741">Porządkuj obserwowane produkty w Zakładkach</translation>
 <translation id="1460751212339734034">Oszczędzaj czas, pisz mniej</translation>
 <translation id="1466383950273130737">Wybierz język Chrome</translation>
@@ -847,6 +848,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4910889077668685004">Aplikacje do płatności</translation>
 <translation id="4912413785358399818">Przenieś kartę</translation>
 <translation id="4913169188695071480">Zatrzymaj odświeżanie</translation>
+<translation id="4913841543356834596">Uzyskaj dostęp do wszystkich swoich haseł</translation>
 <translation id="4918086044614829423">Akceptuj</translation>
 <translation id="4925120120285606924">Zrzut ekranu <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Twoje hasła zostaną wyeksportowane i pobrane jako plik tekstowy. Twoje hasła będą widoczne dla każdej osoby i aplikacji, która ma dostęp do folderu docelowego.</translation>
@@ -1330,6 +1332,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6987047470128880212">Na tym urządzeniu tryb incognito jest niedostępny</translation>
 <translation id="6991701761229081516">Hasła zostaną pobrane jako plik CSV. Będą one widoczne dla każdego, kto może uzyskać dostęp do pliku (w tym dla aplikacji). Wyeksportowane hasła zostaną usunięte z Chrome.</translation>
 <translation id="6996145122199359148">Pobierz tę stronę</translation>
+<translation id="7013627768165542797">Aby mieć dostęp do haseł na koncie Google, potwierdź swoją tożsamość</translation>
 <translation id="7013762323294215682">Ten klucz dostępu zostanie zapisany w Menedżerze haseł. Każdy, kto ma do niego dostęp, będzie mógł użyć tego klucza.</translation>
 <translation id="7020741890149022655">Dodaj do listy Do przeczytania <ph name="BEGIN_NEW" />Nowe<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Otwórz w przeglądarce</translation>
@@ -1348,6 +1351,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7085332316435785646">Określ, czy chcesz uwzględniać historię Chrome w celu lepszego dostosowania usług Google</translation>
 <translation id="7088681679121566888">Masz aktualną wersję Chrome</translation>
 <translation id="7094933634769755999">Niedokładne</translation>
+<translation id="7102843846294013537">Niektóre hasła nie są dostępne na tym urządzeniu</translation>
 <translation id="7106762743910369165">Przeglądarka jest zarządzana przez Twoją organizację</translation>
 <translation id="7111394291981742152">Chrome daje Ci większą kontrolę nad wyświetlanymi reklamami i ogranicza ilość informacji o Tobie, jakie są dostępne dla witryn wyświetlających Ci reklamy spersonalizowane.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Sprawdzono uprawnienia 1 witryny}few{Sprawdzono uprawnienia # witryn}many{Sprawdzono uprawnienia # witryn}other{Sprawdzono uprawnienia # witryny}}</translation>

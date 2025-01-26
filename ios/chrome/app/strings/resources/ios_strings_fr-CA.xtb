@@ -476,6 +476,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="3053332585453689122">Envoie les URL que vous visitez et des échantillons du contenu de la page, des téléchargements, des activités des extensions et des données système à la navigation sécurisée Google pour qu'elle vérifie s'ils sont dangereux.</translation>
 <translation id="3055102495753300780">Stockage des informations</translation>
 <translation id="3059270601560379555">Nouvelle recherche</translation>
+<translation id="3064547930554042309">Gérer les téléchargements</translation>
 <translation id="3072279342064724558">Le mot de passe existe déjà</translation>
 <translation id="3076846064362030967">Vous ne serez pas déconnecté de votre compte Google. <ph name="BEGIN_LINK" />D'autres formes d'activités<ph name="END_LINK" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.
 
@@ -698,6 +699,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4154753961803534698">Rechercher avec l'appareil photo</translation>
 <translation id="4158491215857439601">Gestionnaire de mots de passe</translation>
 <translation id="4163699139741158298">{count,plural, =1{Favori enregistré dans « {title} ». Il est enregistré uniquement sur cet appareil.}one{{count} favori enregistré dans « {title} ». Il est enregistré uniquement sur cet appareil.}other{{count} favoris enregistrés dans « {title} ». Ils sont enregistrés uniquement sur cet appareil.}}</translation>
+<translation id="4164514562270305824">Suppression automatique des téléchargements</translation>
 <translation id="4168651806173792090">Réseau <ph name="NETWORK_NAME" /> se terminant par <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Ne pas autoriser</translation>
 <translation id="4172051516777682613">Toujours afficher</translation>
@@ -1016,6 +1018,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5579012242779565775">Masquer la Liste de lecture</translation>
 <translation id="5585019845078534178">Cartes</translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
+<translation id="559567008082979829">Faites en sorte que vos téléchargements soient supprimés après un mois.</translation>
 <translation id="5596627076506792578">Autres options</translation>
 <translation id="560322036295180549">Option désactivée par votre organisation</translation>
 <translation id="5611107723541161735">Raccourcis vers les sites que vous avez visités récemment sur cet appareil.</translation>

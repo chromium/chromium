@@ -192,6 +192,7 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="9169594135889675189">Luo ryhmään uusi välilehti</translation>
 <translation id="9216898458513705996">Välilehdet pysyvät auki tällä laitteella, mutta ryhmä poistetaan kaikilta laitteilta, jotka ovat kirjautuneena tilille <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Laajenna välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Laajenna välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="94870150074703282">Poistetaanko ryhmä?</translation>
 <translation id="992256792861109788">Vaaleanpunainen</translation>
 </translationbundle>

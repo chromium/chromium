@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">افزودن برگه جدید به گروه</translation>
 <translation id="9216898458513705996">برگه‌ها در این دستگاه باز می‌ماند اما گروه از همه دستگاه‌های واردشده به حساب <ph name="USER_EMAIL" /> حذف خواهد شد</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه برگه با <ph name="TABS_COUNT_ONE" /> برگه، رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="94870150074703282">گروه حذف شود؟</translation>
 <translation id="992256792861109788">صورتی</translation>
 </translationbundle>

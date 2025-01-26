@@ -395,6 +395,7 @@
 <translation id="1260810365552581339">Linux හි ප්‍රමාණවත් තැටි ඉඩක් නොමැති විය හැකිය. ඔබට ඔබගේ Linux තැටි ඉඩ වැඩි කර <ph name="LINK_START" />සැකසීම්<ph name="LINK_END" /> තුළ නැවත ප්‍රතිසාධනය කිරීමට උත්සාහ කළ හැකිය.</translation>
 <translation id="1261380933454402672">මධ්‍යස්ථ</translation>
 <translation id="126156426083987769">ආදර්ශන ආකාර උපාංග බලපත්‍ර සමඟ ප්‍රශ්නයක් විය</translation>
+<translation id="1262564987698748643">අඩවි ඔබේ යතුරු පුවරු ආදානය අභිබවා යාමට ඉල්ලිය හැක</translation>
 <translation id="1263231323834454256">කියවීම් ලැයිස්තුව</translation>
 <translation id="1263733306853729545">අයදුම්කරු ලැයිස්තුවක් පිටුගත කිරීමට <ph name="MINUS" /> සහ <ph name="EQUAL" /> යතුරු භාවිත කරන්න</translation>
 <translation id="126387934568812801">මෙම තිර රුව සහ විවෘත පටිතිවල මාතෘකා ඇතුළු කරන්න</translation>
@@ -769,6 +770,7 @@
 <translation id="1536883206862903762">මෙය දිගු අබල කර ඔබේ සැකසීම් ආරක්‍ෂිත පෙරනිමි වෙත නැවත සකසයි. පටිති, ගොනු සහ කුකී සංරක්ෂණ කෙරේ. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">පූර්ණ තිර විශාලකය</translation>
 <translation id="15373452373711364">විශාල මවුස කර්සරය</translation>
+<translation id="1539248305642687917">ඔබේ යතුරු පුවරු ආදානය අභිබවා යාමට අඩවි වලට ඉඩ නොදෙන්න</translation>
 <translation id="1539727654733007771">ජංගම ජාල සකසා නැත නව <ph name="BEGIN_LINK" />පැතිකඩක්<ph name="END_LINK" /> බාගන්න.</translation>
 <translation id="1540265419569299117">ChromeOS යෙදුම් සේවාව</translation>
 <translation id="1540543470504988112">MacOS වෙතින් ආයාත කළ සහතික කළමනාකරණය කරන්න</translation>
@@ -980,6 +982,7 @@
 <translation id="166278006618318542">පොදු යතුරු ඇල්ගොරිතම විෂය</translation>
 <translation id="1662801900924515589"><ph name="APP" /> ස්ථාපනය කරන ලදී</translation>
 <translation id="1663698992894057019">නවතම ආරක්ෂාව සහ මෘදුකාංග සඳහා නව Chromebook එකක් වෙත උත්ශ්‍රේණි කරන්න</translation>
+<translation id="166454475160289583">ඔබේ යතුරු පුවරු ආදානය අභිබවා යාමට ඉඩ දී නැත</translation>
 <translation id="1665328953287874063">ඔබේ <ph name="DEVICE_TYPE" /> අගුළු හැරීමට මුරපදයක් හෝ PIN එකක් භාවිතා කරන්න</translation>
 <translation id="1665859804801131136">ප්‍රකාශනවාදය</translation>
 <translation id="1667842670298352129">නිශ්චිත පෙළ ශබ්ද නඟා කියවීමට සවන් දෙන්න. පළමුව, ඔබේ තිරයෙහි පහළින් ඇති කථා කිරීමට තෝරන්න නිරූපකය තෝරා, ඉන්පසු පෙළ උද්දීපනය කරන්න. ඔබට යතුරු පුවරු කෙටිමඟක් ද භාවිතා කළ හැක: පෙළ උද්දීපනය කර, ඉන්පසු සෙවීම + S ඔබන්න.</translation>
@@ -1211,6 +1214,7 @@
 <translation id="1832511806131704864">දුරකථන වෙනස යාවත්කාලීන කරන ලදි</translation>
 <translation id="1832848789136765277">ඔබට සැම විටම ඔබගේ සමමුහුර්ත දත්ත වෙත ප්‍රවේශ විය හැකි බව සහතික කර ගැනීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="1833059747301212935">මෑත ලේඛන සහ ඉදිරි දින දර්ශන සිදුවීම් වෙත පහසුවෙන් ප්‍රවේශ වන්න</translation>
+<translation id="183445248400150852">ක්‍රීඩා හෝ දුරස්ථ ඩෙස්ක්ටොප් යෙදුම් වැනි ඔබේ යතුරු පුවරුවේ ආදානය අභිබවා යාමට අඩවි මෙම විශේෂාංගය භාවිතා කරයි</translation>
 <translation id="1834503245783133039">බාගැනීම අසාර්ථකයි: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">ලිනක්ස් උත්ශ්‍රේණි කෙරේ</translation>
 <translation id="1837441256780906162">Microsoft OneDrive ඉල්ලීම ප්‍රතික්ෂේප කරන ලදි. පසුව නැවත උත්සාහ කරන්න.</translation>
@@ -6751,6 +6755,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5794700615121138172">ලිනක්ස් බෙදාගත් ෆෝල්ඩර</translation>
 <translation id="5794786537412027208">සියලු Chrome යෙදුම්වලින් ඉවත් වන්න</translation>
 <translation id="5796485699458186843">නව අප්‍රකට &amp;ටැබය</translation>
+<translation id="5796956053441619942">දුරස්ථ උපාංගයෙන් වන URL එකට සහය නොදක්වයි</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; සහ &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; මත පටන් ගන්නා ආකාරය දැන ගන්න</translation>
 <translation id="5798079537501238810">අඩවිවලට ගෙවීම් හසුරු ස්ථාපනය කළ හැකිය</translation>
 <translation id="5798086737841799234">තහවුරු කිරීමේ කේතය ඇතුළු කරන්න</translation>
@@ -7406,6 +7411,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6264485186158353794">ආරක්ෂාව වෙත ආපසු</translation>
 <translation id="6264520534872750757">උපාංගය භාවිතා කිරීම දිගටම කරගෙන යන්න</translation>
 <translation id="6264636978858465832">මුරපද කළමනාකරුට තවත් ප්‍රවේශයක් අවශ්‍යයි</translation>
+<translation id="626495329434552273">ඔබේ යතුරු පුවරු ආදානය අභිබවා යාමට ඉඩ දී ඇත</translation>
 <translation id="6265159465845424232">Microsoft ගොනු Microsoft OneDrive වෙත පිටපත් කිරීමට හෝ ගෙන යාමට පෙර විමසන්න</translation>
 <translation id="6265687851677020761">තොට ඉවත් කරන්න</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> වෙත සබැඳෙමින්</translation>

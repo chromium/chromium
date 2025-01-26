@@ -185,6 +185,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1310938305420497484">Në fillim hap skedat dhe vizito sajtet</translation>
 <translation id="1314311879718644478">Shiko përmbajtjen e realitetit të zgjeruar</translation>
 <translation id="1314509827145471431">Lidhje djathtas</translation>
+<translation id="1314784609072437689">zëvendësimi i tastierës</translation>
 <translation id="1316805916535763484">Kurse të hapura online</translation>
 <translation id="1318023360584041678">Ruajtur në grupin e skedave</translation>
 <translation id="1319245136674974084">Mos pyet përsëri për këtë aplikacion</translation>
@@ -2919,6 +2920,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome i kufizon automatikisht kukit e palëve të treta</translation>
 <translation id="6188479691141473408">dhe <ph name="N_FIELDS" /> fusha të tjera</translation>
+<translation id="6190518157737269631">Zëvendëso disa teste në tastierën tënde, si p.sh. Esc</translation>
 <translation id="6194209731893739467">Shiko të gjitha produktet e tua të monitoruara këtu</translation>
 <translation id="6195163219142236913">Kukit e palëve të treta janë të kufizuara</translation>
 <translation id="6195371403461054755">Gjeologjia</translation>
@@ -4191,6 +4193,7 @@ Detaje shtesë:
 <translation id="8421158157346464398">Informacionet e profilit të punës (si p.sh. emri i përdoruesit i profilit të punës)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Ndrysho</translation>
+<translation id="8426945547715537628">Të lejohet zëvendësimi i tastierës?</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8428634594422941299">E kuptova</translation>
@@ -4277,6 +4280,7 @@ Detaje shtesë:
 <translation id="8574841453995331336">Frigoriferë dhe ngrirës</translation>
 <translation id="8577192028579836704">Të gjitha opsionet zakonisht <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Karta virtuale nuk ofrohet</translation>
+<translation id="8579000896558714521">Zëvendësimi i tastierës</translation>
 <translation id="8580265901435899937">Destinacione turistike</translation>
 <translation id="8581064022803799721">Kjo faqe është ruajtur te "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="8586082901536468629">Pajisja për skuash dhe raketboll</translation>

@@ -192,6 +192,7 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="9169594135889675189">Engadir nova pestana ao grupo</translation>
 <translation id="9216898458513705996">As pestanas permanecerán abertas neste dispositivo, pero o grupo eliminarase de todos os dispositivos nos que teñas a sesión iniciada con <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Desprega o grupo de pestanas de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_ONE" /> pestana.}other{Desprega o grupo de pestanas de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
+<translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="94870150074703282">Queres eliminar o grupo?</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">إضافة علامة تبويب جديدة للمجموعة</translation>
 <translation id="9216898458513705996">ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعة من جميع الأجهزة التي تم تسجيل الدخول إلى حساب <ph name="USER_EMAIL" /> عليها</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
+<translation id="945522503751344254">إرسال ملاحظات</translation>
 <translation id="94870150074703282">هل المطلوب حذف المجموعة؟</translation>
 <translation id="992256792861109788">وردي</translation>
 </translationbundle>

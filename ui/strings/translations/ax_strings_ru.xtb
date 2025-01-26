@@ -18,6 +18,7 @@
 <translation id="1650423536718072820">цитата в виде врезки</translation>
 <translation id="1681022320378710418">текущее время</translation>
 <translation id="1727839386348365796">Пипетка</translation>
+<translation id="1771761307086386028">Вправо</translation>
 <translation id="1787192514241997742">общее время: <ph name="REMAINING_TIME" /></translation>
 <translation id="1821985195704844674">сетка в виде дерева</translation>
 <translation id="1822429046913737220">AM/PM</translation>
@@ -70,6 +71,7 @@
 <translation id="3924558731517983934">приложение</translation>
 <translation id="3944740393230681990">пролог</translation>
 <translation id="3960700977367013758">полоса прокрутки</translation>
+<translation id="4021716437419160885">Прокрутить вниз</translation>
 <translation id="4103419683916926126">Миллисекунды</translation>
 <translation id="4151657705144244502">изображение</translation>
 <translation id="4160057747563657758">телефон</translation>
@@ -96,6 +98,7 @@
 <translation id="492244087561876220">комментарий</translation>
 <translation id="4924138096460353083">Не определено</translation>
 <translation id="4950364064308314478">Показать окно выбора даты и местного времени</translation>
+<translation id="495046168593986294">Прокрутить вверх</translation>
 <translation id="4971739861736909480">Выбрано: <ph name="ACCNAME" /></translation>
 <translation id="5022314756875057021">группа рядов</translation>
 <translation id="5034860022980953847">индикатор хода выполнения</translation>
@@ -133,6 +136,7 @@
 <translation id="5987525920412732405">кнопка счетчика</translation>
 <translation id="6011459053400940133">регулятор громкости</translation>
 <translation id="6015796118275082299">Год</translation>
+<translation id="602001110135236999">Влево</translation>
 <translation id="6023896073578205740">список</translation>
 <translation id="6119846243427417423">активировать</translation>
 <translation id="6150588977291308318">библиография</translation>

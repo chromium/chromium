@@ -192,6 +192,7 @@ Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep
 <translation id="9169594135889675189">Nieuw tabblad aan groep toevoegen</translation>
 <translation id="9216898458513705996">De tabbladen blijven geopend op dit apparaat, maar de groep wordt verwijderd van alle apparaten die zijn ingelogd bij <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Tabbladgroep met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen, kleur <ph name="COLOR_NAME" />.}other{Tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen, kleur <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Feedback sturen</translation>
 <translation id="94870150074703282">Groep verwijderen?</translation>
 <translation id="992256792861109788">Roze</translation>
 </translationbundle>

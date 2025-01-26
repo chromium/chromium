@@ -395,6 +395,7 @@
 <translation id="1260810365552581339">Linux-এ ডিস্ক স্টোরেজে হয়ত পর্যাপ্ত খালি জায়গা নেই। Linux ডিস্ক স্টোরেজে খালি জায়গা বাড়িয়ে, <ph name="LINK_START" />সেটিংস<ph name="LINK_END" /> থেকে আবার ফিরিয়ে আনার চেষ্টা করুন।</translation>
 <translation id="1261380933454402672">মাঝারি রকমের</translation>
 <translation id="126156426083987769">ডেমো মোড ডিভাইস লাইসেন্স নিয়ে সমস্যা হয়েছে।</translation>
+<translation id="1262564987698748643">সাইট আপনার কীবোর্ডের ইনপুট ওভাররাইড করার জন্য বলতে পারে</translation>
 <translation id="1263231323834454256">পড়ার তালিকা</translation>
 <translation id="1263733306853729545">প্রার্থী তালিকা পৃষ্ঠাতে সূচীবদ্ধ করার জন্য <ph name="MINUS" /> এবং <ph name="EQUAL" /> কী ব্যবহার করুন</translation>
 <translation id="126387934568812801">এই স্ক্রিনশট এবং খোলা ট্যাবের শীর্ষক অন্তর্ভুক্ত করুন</translation>
@@ -774,6 +775,7 @@
 <translation id="1536883206862903762">এর ফলে এক্সটেনশন বন্ধ করা হবে এবং আপনার ডিভাইসের সেটিংসকে সুরক্ষিত ডিফল্ট সেটিংসে রিসেট করা হবে। এই সময় ট্যাব, ফাইল এবং কুকি সেভ করা হবে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">ফুলস্ক্রিন ম্যাগনিফায়ার</translation>
 <translation id="15373452373711364">বড় মাউস কার্সার</translation>
+<translation id="1539248305642687917">আপনার কীবোর্ডের ইনপুট ওভাররাইড করার জন্য সাইটকে অনুমতি দেবেন না</translation>
 <translation id="1539727654733007771">কোনও মোবাইল নেটওয়ার্ক সেট-আপ করা নেই। একটি নতুন <ph name="BEGIN_LINK" />প্রোফাইল<ph name="END_LINK" /> ডাউনলোড করুন।</translation>
 <translation id="1540265419569299117">ChromeOS App Service</translation>
 <translation id="1540543470504988112">MacOS থেকে ইমপোর্ট করা সার্টিফিকেট ম্যানেজ করুন</translation>
@@ -985,6 +987,7 @@
 <translation id="166278006618318542">বিষয় সর্বজনীন কী অ্যালগারিদম</translation>
 <translation id="1662801900924515589"><ph name="APP" /> ইনস্টল করা হয়ে গেছে</translation>
 <translation id="1663698992894057019">সর্বশেষ নিরাপত্তা এবং সফ্টওয়্যারের জন্য একটি নতুন Chromebook-এ আপগ্রেড করুন</translation>
+<translation id="166454475160289583">আপনার কীবোর্ডের ইনপুট ওভাররাইড করার জন্য অনুমতি দেওয়া হয়নি</translation>
 <translation id="1665328953287874063">আপনার <ph name="DEVICE_TYPE" /> আনলক করতে পাসওয়ার্ড বা পিন ব্যবহার করুন</translation>
 <translation id="1665859804801131136">এক্সপ্রেশনিজম</translation>
 <translation id="1667842670298352129">নির্দিষ্ট কিছু টেক্সট জোরে শুনুন। প্রথমে, স্ক্রিনের নিচে থাকা 'বাছুন ও শুনুন' আইকন বেছে নিন, তারপরে টেক্সট হাইলাইট করুন। এছাড়াও আপনি কীবোর্ড শর্টকাট ব্যবহার করতে পারেন: টেক্সট হাইলাইট করে 'Search + S' কী ব্যবহার করুন।</translation>
@@ -1224,6 +1227,7 @@
 <translation id="1832511806131704864">ফোন পরিবর্তন আপডেট হয়েছে</translation>
 <translation id="1832848789136765277">আপনার সিঙ্ক করা ডেটা সবসময় যাতে অ্যাক্সেস করতে পারেন তা নিশ্চিত করতে, নিজের পরিচয় যাচাই করুন</translation>
 <translation id="1833059747301212935">সাম্প্রতিক ডকুমেন্ট ও আসন্ন ক্যালেন্ডার ইভেন্ট সহজে অ্যাক্সেস করুন</translation>
+<translation id="183445248400150852">সাইট এই ফিচার আপনার কীবোর্ডের ইনপুট ওভাররাইড করতে ব্যবহার করে, যেমন গেম বা রিমোট ডেস্কটপ অ্যাপের জন্য</translation>
 <translation id="1834503245783133039">ডাউনলোড হয়নি: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux আপগ্রেড করা হচ্ছে</translation>
 <translation id="1837441256780906162">Microsoft OneDrive অনুরোধ বাতিল করে দিয়েছে। পরে আবার চেষ্টা করে দেখুন।</translation>
@@ -6780,6 +6784,7 @@
 <translation id="5794700615121138172">Linux-এর শেয়ার করা ফোল্ডার</translation>
 <translation id="5794786537412027208">সব Chrome অ্যাপ বন্ধ করুন</translation>
 <translation id="5796485699458186843">নতুন ছদ্মবেশী ট্যাব</translation>
+<translation id="5796956053441619942">রিমোট ডিভাইসের URL কাজ করে না</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; এবং &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;-এ কীভাবে শুরু করবেন তা জানুন</translation>
 <translation id="5798079537501238810">সাইট, পেমেন্ট হ্যান্ডলার ইনস্টল করতে পারে</translation>
 <translation id="5798086737841799234">কনফার্মেশন কোড লিখুন</translation>
@@ -7437,6 +7442,7 @@
 <translation id="6264485186158353794">সুরক্ষাতে ফিরুন</translation>
 <translation id="6264520534872750757">ডিভাইসটি ব্যবহার করা চালিয়ে যান</translation>
 <translation id="6264636978858465832">Password Manager-এর আরও বেশি অ্যাক্সেস প্রয়োজন</translation>
+<translation id="626495329434552273">আপনার কীবোর্ডের ইনপুট ওভাররাইড করার জন্য অনুমতি দেওয়া হয়েছে</translation>
 <translation id="6265159465845424232">Microsoft OneDrive-এ Microsoft-এর ফাইল কপি করা বা সরানোর আগে জিজ্ঞেস করুন</translation>
 <translation id="6265687851677020761">পোর্ট সরান</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" />-এর সাথে কানেক্ট করা হচ্ছে</translation>

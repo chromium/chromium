@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">Προσθήκη νέας καρτέλας στην ομάδα</translation>
 <translation id="9216898458513705996">Οι καρτέλες θα παραμείνουν ανοιχτές σε αυτή τη συσκευή, αλλά η ομάδα θα διαγραφεί από όλες τις συσκευές που είναι συνδεδεμένες στον λογαριασμό <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Ανάπτυξη ομάδας καρτελών με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" />.}other{Ανάπτυξη ομάδας καρτελών με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Αποστολή σχολίων</translation>
 <translation id="94870150074703282">Διαγραφή ομάδας;</translation>
 <translation id="992256792861109788">Ροζ</translation>
 </translationbundle>

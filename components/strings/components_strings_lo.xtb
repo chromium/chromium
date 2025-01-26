@@ -961,6 +961,7 @@
 <translation id="2674170444375937751">ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການລຶບໜ້າ​ເຫຼົ່າ​ນີ້​ຈາກປະ​ຫວັດຂອງ​ທ່ານ?</translation>
 <translation id="2674524144218093528">ການທາສີ ແລະ ຕົກແຕ່ງເຮືອນ</translation>
 <translation id="2674804415323431591">ເຊື່ອງການແນະນຳ</translation>
+<translation id="26774279487328902">ກຸ່ມແຖບ <ph name="GROUP_COUNT" /> ລາຍການບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ</translation>
 <translation id="2677748264148917807">ອອກ​ໄປ</translation>
 <translation id="2683195745483370038">ພົບຜົນການຊອກຫາອື່ນໆ</translation>
 <translation id="2686919536310834199">ສົ່ງຄຳຕິຊົມສຳລັບການຊ່ວຍຂ້ອຍຂຽນ.</translation>
@@ -2264,6 +2265,7 @@
 <translation id="5001526427543320409">ຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="5002932099480077015">ຖ້າ​ໝາຍ​ຕິກ​ເອົາ​ແລ້ວ, Chrome ຈະ​ຮັກ​ສາ​ສຳ​ເນົາ​ຂອງ​ບັດ​ຂອງ​ທ່ານ​ຢູ່​ເທິງ​ອຸ​ປະ​ກອນ​ນີ້ ເພື່ອ​ການ​ປະ​ກອບ​ແບບ​ຟອມ​ໃຫ້​ໄວ​ຂຶ້ນ.</translation>
 <translation id="5007392906805964215">ກວດສອບ</translation>
+<translation id="500790844453430087">ກຸ່ມແຖບ "<ph name="GROUP_TITLE_1" />" ແລະ "<ph name="GROUP_TITLE_2" />" ບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ</translation>
 <translation id="5011561501798487822">ພາສາທີ່ກວດພົບ</translation>
 <translation id="5015510746216210676">ຊື່ເຄື່ອງ:</translation>
 <translation id="5017554619425969104">ຂໍ້ຄວາມທີ່ທ່ານສຳເນົາ</translation>
@@ -2736,6 +2738,7 @@
 <translation id="5866898949289125849">ທ່ານກຳລັງເບິ່ງໜ້າເຄື່ອງມືສຳລັບຜູ້ພັດທະນາ</translation>
 <translation id="5869405914158311789">ບໍ່ສາມາດເຂົ້າເຖິງເວັບໄຊນີ້ໄດ້</translation>
 <translation id="5869522115854928033">ລະ​ຫັດ​ຜ່ານ​ທີ່ບັນທຶກໄວ້</translation>
+<translation id="5872215789867188990">ກຸ່ມແຖບ "<ph name="GROUP_TITLE" />" ບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ</translation>
 <translation id="5872692522325383488">ບັນທຶກ IBAN ແລ້ວ</translation>
 <translation id="5873297634595728366">ຍານພາຫະນະກາຊວນ</translation>
 <translation id="5877359070305966420">ຊັບພະຍາກອນມະນຸດ</translation>

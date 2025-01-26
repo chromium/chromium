@@ -396,6 +396,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1260810365552581339">Linux možná nemá dostatek místa na disku. Systému Linux můžete zvětšit místo na disku a potom znovu spustit obnovení v <ph name="LINK_START" />Nastavení<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Mírné</translation>
 <translation id="126156426083987769">Došlo k problému s licencemi pro zařízení v ukázkovém režimu.</translation>
+<translation id="1262564987698748643">Weby mohou žádat o přepsání vstupu z klávesnice</translation>
 <translation id="1263231323834454256">Seznam četby</translation>
 <translation id="1263733306853729545">K vyvolání seznamu návrhů použít klávesy <ph name="MINUS" /> a <ph name="EQUAL" /></translation>
 <translation id="126387934568812801">Zahrnout tento snímek obrazovky a názvy otevřených karet</translation>
@@ -773,6 +774,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1536883206862903762">Tímto deaktivujete rozšíření a resetujete nastavení na bezpečné výchozí hodnoty. Karty, soubory a cookies zůstanou zachovány. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Zvětšení obrazovky</translation>
 <translation id="15373452373711364">Velký kurzor myši</translation>
+<translation id="1539248305642687917">Nepovolovat webům přepisovat vstup z klávesnice</translation>
 <translation id="1539727654733007771">Nejsou nastaveny žádné mobilní sítě. Stáhněte nový <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">Služba aplikace ChromeOS</translation>
 <translation id="1540543470504988112">Spravovat certifikáty importované z MacOS</translation>
@@ -984,6 +986,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="166278006618318542">Algoritmus veřejného klíče subjektu</translation>
 <translation id="1662801900924515589">Aplikace <ph name="APP" /> je nainstalována</translation>
 <translation id="1663698992894057019">Pokud chcete mít nejnovější zabezpečení a software, upgradujte na nový Chromebook</translation>
+<translation id="166454475160289583">Zákaz přepisovat vstup z klávesnice</translation>
 <translation id="1665328953287874063">Odemykejte svůj <ph name="DEVICE_TYPE" /> heslem nebo kódem PIN</translation>
 <translation id="1665859804801131136">Expresionismus</translation>
 <translation id="1667842670298352129">Nechte si nahlas přečíst konkrétní text. V dolní části obrazovky vyberte ikonu Poslech vybraného textu a potom zvýrazněte text. Můžete také použít klávesovou zkratku: zvýrazněte text a potom stiskněte klávesu Hledat + S.</translation>
@@ -1215,6 +1218,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1832511806131704864">Změna telefonu aktualizována</translation>
 <translation id="1832848789136765277">Aby bylo zajištěno, že budete mít vždy přístup k synchronizovaným datům, ověřte svoji totožnost</translation>
 <translation id="1833059747301212935">Mějte snadno přístup k nejnovějším dokumentům a nadcházejícím událostem v kalendáři</translation>
+<translation id="183445248400150852">Weby tuto funkci používají k přepsání vstupu z klávesnice, například pro hry nebo aplikace vzdálené plochy</translation>
 <translation id="1834503245783133039">Stažení se nezdařilo: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Upgradování Linuxu</translation>
 <translation id="1837441256780906162">Služba Microsoft OneDrive žádost odmítla. Zkuste to znovu později.</translation>
@@ -6745,6 +6749,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5794700615121138172">Sdílené složky Linuxu</translation>
 <translation id="5794786537412027208">Ukončit všechny aplikace Chrome</translation>
 <translation id="5796485699458186843">Nová anonymní kar&amp;ta</translation>
+<translation id="5796956053441619942">Adresa URL ze vzdáleného zařízení není podporována</translation>
 <translation id="5797934230382081317">Přečtěte si, jak začít v systému &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; nebo &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Weby mohou instalovat obslužné nástroje plateb</translation>
 <translation id="5798086737841799234">Zadejte potvrzovací kód</translation>
@@ -7399,6 +7404,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6264485186158353794">Zpět na bezpečnější stránku</translation>
 <translation id="6264520534872750757">Pokračovat v používání zařízení</translation>
 <translation id="6264636978858465832">Správce hesel potřebuje širší přístupová oprávnění</translation>
+<translation id="626495329434552273">Povolení přepisovat vstup z klávesnice</translation>
 <translation id="6265159465845424232">Před zkopírováním nebo přesunutím souborů Microsoft do úložiště Microsoft OneDrive se zeptat</translation>
 <translation id="6265687851677020761">Odebrat port</translation>
 <translation id="6266532094411434237">Připojování k zařízení <ph name="DEVICE" /></translation>

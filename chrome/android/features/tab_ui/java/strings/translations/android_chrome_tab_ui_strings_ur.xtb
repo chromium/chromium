@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">گروپ میں نیا ٹیب شامل کریں</translation>
 <translation id="9216898458513705996">اس آلے پر ٹیبز کھلے رہیں گے لیکن گروپ کو ان تمام آلات سے حذف کر دیا جائے گا جو <ph name="USER_EMAIL" /> میں سائن ان ہیں</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو پھیلائیں۔}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو پھیلائیں۔}}</translation>
+<translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="94870150074703282">گروپ حذف کریں؟</translation>
 <translation id="992256792861109788">گلابی</translation>
 </translationbundle>

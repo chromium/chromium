@@ -192,6 +192,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica "<ph name="TITLE
 <translation id="9169594135889675189">Dodaj novu karticu u grupu</translation>
 <translation id="9216898458513705996">Kartice će ostati otvorene na uređaju, ali će se grupa izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Proširivanje grupe kartica s <ph name="TABS_COUNT_ONE" /> karticom, boja <ph name="COLOR_NAME" />.}one{Proširivanje grupe kartica s <ph name="TABS_COUNT_MANY" /> karticom, boja <ph name="COLOR_NAME" />.}few{Proširivanje grupe kartica s <ph name="TABS_COUNT_MANY" /> kartice, boja <ph name="COLOR_NAME" />.}other{Proširivanje grupe kartica s <ph name="TABS_COUNT_MANY" /> kartica, boja <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="94870150074703282">Izbrisati grupu?</translation>
 <translation id="992256792861109788">Ružičasta</translation>
 </translationbundle>

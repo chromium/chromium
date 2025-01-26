@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">Додајте нову картицу у групу</translation>
 <translation id="9216898458513705996">Картице ће остати отворене на овом уређају, али ће се група избрисати са свих уређаја пријављених на <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Проширите групу картица са <ph name="TABS_COUNT_ONE" /> картицом, боје <ph name="COLOR_NAME" />.}one{Проширите групу картица са <ph name="TABS_COUNT_MANY" /> картицом, боје <ph name="COLOR_NAME" />.}few{Проширите групу картица са <ph name="TABS_COUNT_MANY" /> картице, боје <ph name="COLOR_NAME" />.}other{Проширите групу картица са <ph name="TABS_COUNT_MANY" /> картица, боје <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Пошаљи повратне информације</translation>
 <translation id="94870150074703282">Желите да избришете групу?</translation>
 <translation id="992256792861109788">Ружичаста</translation>
 </translationbundle>

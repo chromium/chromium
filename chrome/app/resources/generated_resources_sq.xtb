@@ -394,6 +394,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1260810365552581339">Linux mund të mos ketë hapësirë disku të mjaftueshme. Mund të rritësh hapësirën e diskut të Linux dhe të provosh ta restaurosh përsëri te <ph name="LINK_START" />Cilësimet<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Modest</translation>
 <translation id="126156426083987769">Ndodhi një problem me licencat e pajisjes të modalitetit të demonstrimit.</translation>
+<translation id="1262564987698748643">Sajtet mund të kërkojnë që të zëvendësojnë hyrjen e tastierës sate</translation>
 <translation id="1263231323834454256">Lista e leximit</translation>
 <translation id="1263733306853729545">Përdor tastet <ph name="MINUS" /> dhe <ph name="EQUAL" /> për të shfaqur në faqe një listë të kandidatëve</translation>
 <translation id="126387934568812801">Përfshi këtë pamje ekrani dhe titujt e skedave të hapura</translation>
@@ -768,6 +769,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1536883206862903762">Kjo do të çaktivizojë shtesat dhe do t'i rivendosë cilësimet te parazgjedhjet e sigurta. Skedat, skedarët dhe kukit do të ruhen. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Zmadhuesi i ekranit të plotë</translation>
 <translation id="15373452373711364">Kursor i madh</translation>
+<translation id="1539248305642687917">Mos lejo që sajtet të zëvendësojnë hyrjen e tastierës sate</translation>
 <translation id="1539727654733007771">Nuk ka asnjë rrjet celular të konfiguruar. Shkarko një <ph name="BEGIN_LINK" />profil<ph name="END_LINK" /> të ri.</translation>
 <translation id="1540265419569299117">Shërbimi i aplikacioneve të ChromeOS</translation>
 <translation id="1540543470504988112">Menaxho certifikatat e importuara nga MacOS</translation>
@@ -979,6 +981,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="166278006618318542">Algoritmi i çelësit publik të subjektit</translation>
 <translation id="1662801900924515589"><ph name="APP" /> u instalua</translation>
 <translation id="1663698992894057019">Përmirësoje me një pajisje të re Chromebook për sigurinë dhe softuerët më të fundit</translation>
+<translation id="166454475160289583">Nuk lejohen që të zëvendësojnë hyrjen e tastierës sate</translation>
 <translation id="1665328953287874063">Përdor një fjalëkalim ose kod PIN për ta shkyçur pajisjen <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Ekspresionizëm</translation>
 <translation id="1667842670298352129">Dëgjoje tekstin specifik të lexuar me zë të lartë. Në fillim zgjidh ikonën e veçorisë "Zgjidh që të thuhet" në fund të ekranit dhe më pas thekso tekstin. Mund të përdorësh një shkurtore të tastierës: Thekso tekstin dhe më pas shtyp "Kërko" + S.</translation>
@@ -1210,6 +1213,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1832511806131704864">Ndryshimi i telefonit u përditësua</translation>
 <translation id="1832848789136765277">Për t'u siguruar që mund të qasesh gjithmonë te të dhënat e tua të sinkronizuara, verifiko që je ti</translation>
 <translation id="1833059747301212935">Qasu me lehtësi te dokumentet e fundit dhe ngjarjet e ardhshme të kalendarit</translation>
+<translation id="183445248400150852">Sajtet e përdorin këtë veçori për të zëvendësuar hyrjen e tastierës sate, si p.sh. për lojërat ose aplikacionet e desktopit në distancë.</translation>
 <translation id="1834503245783133039">Shkarkimi ishte i pasuksesshëm: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Po përmirëson Linux</translation>
 <translation id="1837441256780906162">Microsoft OneDrive e refuzoi kërkesën. Provo përsëri më vonë.</translation>
@@ -6744,6 +6748,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5794700615121138172">Skedarët e ndarë të Linux</translation>
 <translation id="5794786537412027208">Dil nga të gjitha aplikacionet e Chrome</translation>
 <translation id="5796485699458186843">Skedë &amp;e re "e fshehtë"</translation>
+<translation id="5796956053441619942">URL-ja nga pajisja në distancë nuk mbështetet</translation>
 <translation id="5797934230382081317">Mëso se si të fillosh në &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; dhe &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Sajtet mund të instalojnë përpunuesit e pagesave</translation>
 <translation id="5798086737841799234">Fut kodin e konfirmimit</translation>
@@ -7399,6 +7404,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6264485186158353794">Kthehu aty ku je i sigurt</translation>
 <translation id="6264520534872750757">Vazhdo të përdorësh pajisjen</translation>
 <translation id="6264636978858465832">"Menaxheri i fjalëkalimeve" ka nevojë për më shumë qasje</translation>
+<translation id="626495329434552273">Lejohen që të zëvendësojnë hyrjen e tastierës sate</translation>
 <translation id="6265159465845424232">Pyet përpara se të kopjosh ose zhvendosësh skedarët e Microsoft te OneDrive</translation>
 <translation id="6265687851677020761">Hiq portën</translation>
 <translation id="6266532094411434237">Po lidhet me <ph name="DEVICE" /></translation>

@@ -18,6 +18,7 @@
 <translation id="1650423536718072820">인용문</translation>
 <translation id="1681022320378710418">현재 시간</translation>
 <translation id="1727839386348365796">스포이트</translation>
+<translation id="1771761307086386028">오른쪽으로 스크롤</translation>
 <translation id="1787192514241997742">총 시간: <ph name="REMAINING_TIME" /></translation>
 <translation id="1821985195704844674">트리 격자</translation>
 <translation id="1822429046913737220">오전/오후</translation>
@@ -70,6 +71,7 @@
 <translation id="3924558731517983934">애플리케이션</translation>
 <translation id="3944740393230681990">프롤로그</translation>
 <translation id="3960700977367013758">스크롤바</translation>
+<translation id="4021716437419160885">아래로 스크롤</translation>
 <translation id="4103419683916926126">밀리초</translation>
 <translation id="4151657705144244502">그래픽</translation>
 <translation id="4160057747563657758">전화번호</translation>
@@ -96,6 +98,7 @@
 <translation id="492244087561876220">댓글</translation>
 <translation id="4924138096460353083">알 수 없음</translation>
 <translation id="4950364064308314478">현지 날짜 및 시간 선택도구 표시</translation>
+<translation id="495046168593986294">위로 스크롤</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> 선택됨</translation>
 <translation id="5022314756875057021">행 그룹</translation>
 <translation id="5034860022980953847">진행률 표시기</translation>
@@ -133,6 +136,7 @@
 <translation id="5987525920412732405">스핀 버튼</translation>
 <translation id="6011459053400940133">볼륨 슬라이더</translation>
 <translation id="6015796118275082299">연도</translation>
+<translation id="602001110135236999">왼쪽으로 스크롤</translation>
 <translation id="6023896073578205740">목록 상자</translation>
 <translation id="6119846243427417423">활성화</translation>
 <translation id="6150588977291308318">참고문헌</translation>

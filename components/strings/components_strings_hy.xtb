@@ -189,6 +189,7 @@
 <translation id="1310938305420497484">Նախ բացեք ներդիրներ և անցեք կայքեր</translation>
 <translation id="1314311879718644478">Դիտել բովանդակությունը լրացված իրականության ռեժիմում</translation>
 <translation id="1314509827145471431">Ամրակար աջ կողմում</translation>
+<translation id="1314784609072437689">ստեղնաշարի փոխարինում</translation>
 <translation id="1316805916535763484">Բաց առցանց դասընթացներ</translation>
 <translation id="1318023360584041678">Պահվել է ներդիրների խմբում</translation>
 <translation id="1319245136674974084">Այլևս չհարցնել այս հավելվածի համար</translation>
@@ -2929,6 +2930,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome-ն ավտոմատ սահմանափակում է երրորդ կողմի քուքիները</translation>
 <translation id="6188479691141473408">ու ևս <ph name="N_FIELDS" /> դաշտ</translation>
+<translation id="6190518157737269631">Ստեղնաշարի կամ որոշ ստեղների, օրինակ՝ Esc-ի, փոխարինում</translation>
 <translation id="6194209731893739467">Տեսեք բոլոր ապրանքները, որոնք հետագծում եք, այստեղ</translation>
 <translation id="6195163219142236913">Երրորդ կողմի քուքիները սահմանափակված են</translation>
 <translation id="6195371403461054755">Երկրաբանություն</translation>
@@ -4201,6 +4203,7 @@
 <translation id="8421158157346464398">Աշխատանքային պրոֆիլի մասին տեղեկություններ (օր․՝ ձեր աշխատանքային պրոֆիլի օգտանունը)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Փոխել</translation>
+<translation id="8426945547715537628">Թույլատրե՞լ ստեղնաշարի փոխարինումը</translation>
 <translation id="8427848540066057481">500 x 750 մմ</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8428634594422941299">Պարզ է</translation>
@@ -4287,6 +4290,7 @@
 <translation id="8574841453995331336">Սառնարաններ և սառցարաններ</translation>
 <translation id="8577192028579836704">Բոլոր տարբերակները սովորաբար <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Վիրտուալ քարտն անհասանելի է</translation>
+<translation id="8579000896558714521">Ստեղնաշարի փոխարինում</translation>
 <translation id="8580265901435899937">Զբոսաշրջային ուղղություններ</translation>
 <translation id="8581064022803799721">Այս էջը պահված է «<ph name="LAST_BOOKMARKS_FOLDER" />» պանակում։</translation>
 <translation id="8586082901536468629">Սկվոշի և թիագնդակի սարքավորումներ</translation>

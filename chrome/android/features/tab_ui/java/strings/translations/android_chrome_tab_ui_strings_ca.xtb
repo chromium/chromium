@@ -192,6 +192,7 @@ Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<
 <translation id="9169594135889675189">Afegeix una pestanya nova al grup</translation>
 <translation id="9216898458513705996">Les pestanyes continuaran obertes en aquest dispositiu, però el grup se suprimirà de tots els dispositius en què s'hagi iniciat la sessió amb <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Desplega el grup de pestanyes de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup de pestanyes de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
+<translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="94870150074703282">Vols suprimir el grup?</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

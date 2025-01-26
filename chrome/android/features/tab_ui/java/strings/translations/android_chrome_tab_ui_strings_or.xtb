@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">ଗୋଷ୍ଠୀରେ ନୂଆ ଟାବ୍‍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="9216898458513705996">ଏହି ଡିଭାଇସରେ ଥିବା ଟାବ ଖୋଲା ରହିବ, କିନ୍ତୁ <ph name="USER_EMAIL" />ରେ ସାଇନ ଇନ କରାଯାଇଥିବା ସମସ୍ତ ଡିଭାଇସରୁ ଗ୍ରୁପକୁ ଡିଲିଟ କରାଯିବ</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_ONE" /> ଟାବ ଥିବା ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}other{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_MANY" /> ଟାବ ଥିବା ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}}</translation>
+<translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="94870150074703282">ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="992256792861109788">ଗୋଲାପି</translation>
 </translationbundle>

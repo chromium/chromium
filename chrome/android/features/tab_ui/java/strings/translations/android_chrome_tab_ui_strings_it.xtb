@@ -192,6 +192,7 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="9169594135889675189">Aggiungi una nuova scheda al gruppo</translation>
 <translation id="9216898458513705996">Le schede rimarranno aperte su questo dispositivo, ma il gruppo verrà eliminato da tutti i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Espandi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Invia feedback</translation>
 <translation id="94870150074703282">Eliminare il gruppo?</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

@@ -192,6 +192,7 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="9169594135889675189">Magdagdag ng bagong tab sa grupo</translation>
 <translation id="9216898458513705996">Mananatiling nakabukas ang mga tab sa device na ito pero made-delete ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="94870150074703282">I-delete ang grupo?</translation>
 <translation id="992256792861109788">Pink</translation>
 </translationbundle>

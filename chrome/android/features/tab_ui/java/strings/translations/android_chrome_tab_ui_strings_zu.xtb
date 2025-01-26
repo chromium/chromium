@@ -192,6 +192,7 @@ Uma ulisula, wonke umuntu ngokushesha uzolahlekelwa ukufinyelela eqenjini letheb
 <translation id="9169594135889675189">Engeza ithebhu entsha kuqembu</translation>
 <translation id="9216898458513705996">Amathebhu azohlala evuliwe kule divayisi kodwa iqembu lizosulwa kuwo wonke amadivayisi angeniswe ku-<ph name="USER_EMAIL" /> ngemvume</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Nweba iqembu lethebhu ngethebhu le-<ph name="TABS_COUNT_ONE" />, umbala <ph name="COLOR_NAME" />.}one{Nweba iqembu lethebhu ngamathebhu we-<ph name="TABS_COUNT_MANY" />, umbala <ph name="COLOR_NAME" />.}other{Nweba iqembu lethebhu ngamathebhu we-<ph name="TABS_COUNT_MANY" />, umbala <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Thumela impendulo</translation>
 <translation id="94870150074703282">Usula iqembu?</translation>
 <translation id="992256792861109788">Okuphinki</translation>
 </translationbundle>

@@ -192,6 +192,7 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="9169594135889675189">Lisa gruppi uus vaheleht</translation>
 <translation id="9216898458513705996">Vahelehegrupid jäävad selles seadmes avatuks, aga grupp kustutatakse kõikidest teistest seadmetest, mis on kontoga <ph name="USER_EMAIL" /> sisse logitud</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Laienda <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegruppi, värv on <ph name="COLOR_NAME" />.}other{Laienda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegruppi, värv on <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Tagasiside saatmine</translation>
 <translation id="94870150074703282">Kas soovite grupi kustutada?</translation>
 <translation id="992256792861109788">Roosa</translation>
 </translationbundle>

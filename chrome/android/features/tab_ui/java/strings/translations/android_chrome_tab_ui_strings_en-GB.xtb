@@ -192,6 +192,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="9169594135889675189">Add new tab to group</translation>
 <translation id="9216898458513705996">The tabs will remain open on this device but the group will be deleted from all devices signed in to <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Expand tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />.}other{Expand tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Send feedback</translation>
 <translation id="94870150074703282">Delete group?</translation>
 <translation id="992256792861109788">Pink</translation>
 </translationbundle>

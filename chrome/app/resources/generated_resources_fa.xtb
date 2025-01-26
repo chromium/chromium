@@ -395,6 +395,7 @@
 <translation id="1260810365552581339">‏Linux ممکن است فضای دیسک کافی نداشته باشد. می‌توانید در <ph name="LINK_START" />تنظیمات<ph name="LINK_END" /> فضای دیسک Linux را افزایش دهید و بازیابی را دوباره امتحان کنید.</translation>
 <translation id="1261380933454402672">متوسط</translation>
 <translation id="126156426083987769">مشکلی در رابطه با مجوزهای حالت نمایشی دستگاه پیش آمد.</translation>
+<translation id="1262564987698748643">سایت‌ها می‌توانند برای ملغی کردن ورودی صفحه‌کلید درخواست دهند</translation>
 <translation id="1263231323834454256">فهرست خواندن</translation>
 <translation id="1263733306853729545">استفاده از کلیدهای <ph name="MINUS" /> و <ph name="EQUAL" /> برای پی‌جویی فهرست کاندیداها</translation>
 <translation id="126387934568812801">این نماگرفت و عنوان برگه‌های باز اضافه شوند</translation>
@@ -770,6 +771,7 @@
 <translation id="1536883206862903762">با این کار افزونه‌ها غیرفعال خواهد شد و تنظیماتتان به تنظیمات پیش‌فرض ایمن بازنشانی می‌شود. برگه‌ها، فایل‌ها، و کوکی‌ها حفظ خواهند شد. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">ذره‌بین تمام‌صفحه</translation>
 <translation id="15373452373711364">نشانگر موشواره بزرگ</translation>
+<translation id="1539248305642687917">به سایت‌ها اجازه داده نشود ورودی صفحه‌کلید را ملغی کنند</translation>
 <translation id="1539727654733007771">هیچ شبکه تلفن همراهی راه‌اندازی نشده است. <ph name="BEGIN_LINK" />نمایه<ph name="END_LINK" /> جدیدی بارگیری کنید.</translation>
 <translation id="1540265419569299117">‏سرویس برنامه ChromeOS</translation>
 <translation id="1540543470504988112">‏مدیریت گواهینامه‌های واردشده از MacOS</translation>
@@ -981,6 +983,7 @@
 <translation id="166278006618318542">الگوریتم کلید عمومی موضوع</translation>
 <translation id="1662801900924515589"><ph name="APP" /> نصب شد</translation>
 <translation id="1663698992894057019">‏برای دریافت آخرین ویژگی‌های امنیتی و نرم‌افزاری، دستگاهتان را به Chromebook جدیدی ارتقا دهید.</translation>
+<translation id="166454475160289583">سایت‌هایی که مجاز نیستند ورودی صفحه‌کلید را ملغی کنند</translation>
 <translation id="1665328953287874063">برای باز کردن قفل <ph name="DEVICE_TYPE" />، از گذرواژه یا پین استفاده کنید</translation>
 <translation id="1665859804801131136">اکسپرسیونیسم</translation>
 <translation id="1667842670298352129">‏نوشتار موردنظرتان بلند خوانده می‌شود. ابتدا نماد «انتخاب برای شنیدن» را در پایین صفحه‌نمایش انتخاب کنید، سپس نوشتار را برجسته کنید. همچنین می‌توانید از «میان‌بر صفحه‌کلید» استفاده کنید: نوشتار موردنظر را برجسته کنید، سپس کلیدهای «جستجو + S» را فشار دهید.</translation>
@@ -1220,6 +1223,7 @@
 <translation id="1832511806131704864">تغییر تلفن به‌روزرسانی شد</translation>
 <translation id="1832848789136765277">برای اینکه مطمئن شوید همیشه می‌توانید به داده‌های همگام‌سازی دسترسی داشته باشید، هویتتان را به‌تأیید برسانید</translation>
 <translation id="1833059747301212935">به‌راحتی به اسناد اخیر و رویدادهای آتی تقویم دسترسی پیدا کنید</translation>
+<translation id="183445248400150852">سایت‌ها از این ویژگی برای ملغی کردن ورودی صفحه‌کلید استفاده می‌کنند، مثلاً برای بازی‌ها یا برنامه‌های رایانه از دور</translation>
 <translation id="1834503245783133039">بارگیری ناموفق بود: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">‏درحال ارتقای Linux</translation>
 <translation id="1837441256780906162">‏‫Microsoft OneDrive درخواست را رد کرد. لطفاً بعداً دوباره امتحان کنید.</translation>
@@ -6760,6 +6764,7 @@
 <translation id="5794700615121138172">‏پوشه‌های هم‌رسانی‌شده Linux</translation>
 <translation id="5794786537412027208">‏خروج از همه برنامه‌های Chrome</translation>
 <translation id="5796485699458186843">برگه ناشناس جدید</translation>
+<translation id="5796956053441619942">نشانی وب از دستگاه دور پشتیبانی نمی‌شود</translation>
 <translation id="5797934230382081317">‏با نحوه شروع به کار در &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; و &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; آشنا شوید</translation>
 <translation id="5798079537501238810">سایت‌ها می‌توانند کنترل‌کننده پرداخت نصب کنند</translation>
 <translation id="5798086737841799234">کد تأیید را وارد کنید</translation>
@@ -7415,6 +7420,7 @@
 <translation id="6264485186158353794">بازگشت به ایمنی</translation>
 <translation id="6264520534872750757">ادامه استفاده از دستگاه</translation>
 <translation id="6264636978858465832">«مدیر گذرواژه» نیاز به دسترسی بیشتری دارد</translation>
+<translation id="626495329434552273">سایت‌هایی که مجاز هستند ورودی صفحه‌کلید را ملغی کنند</translation>
 <translation id="6265159465845424232">‏پیش‌از کپی یا منتقل کردن فایل‌های Microsoft به Microsoft OneDrive سؤال شود</translation>
 <translation id="6265687851677020761">برداشتن درگاه</translation>
 <translation id="6266532094411434237">درحال اتصال به <ph name="DEVICE" /></translation>

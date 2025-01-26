@@ -192,6 +192,7 @@ Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<p
 <translation id="9169594135889675189">Pridėti naują skirtuką prie grupės</translation>
 <translation id="9216898458513705996">Skirtukai liks atidaryti šiame įrenginyje, bet grupė bus ištrinta iš visų įrenginių, kuriuose prisijungta prie <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_ONE" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}one{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}few{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukais, kurių spalva <ph name="COLOR_NAME" />.}many{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuko, kurių spalva <ph name="COLOR_NAME" />.}other{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukų, kurių spalva <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Siųsti atsiliepimą</translation>
 <translation id="94870150074703282">Ištrinti grupę?</translation>
 <translation id="992256792861109788">Rožinė</translation>
 </translationbundle>

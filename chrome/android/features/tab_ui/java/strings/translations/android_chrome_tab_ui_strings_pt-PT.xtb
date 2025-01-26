@@ -192,6 +192,7 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="9169594135889675189">Adicionar um novo separador ao grupo</translation>
 <translation id="9216898458513705996">Os separadores vão permanecer abertos neste dispositivo, mas o grupo vai ser eliminado de todos os dispositivos com sessão iniciada com o endereço <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Expanda o grupo de separadores com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Expanda o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Enviar feedback</translation>
 <translation id="94870150074703282">Eliminar o grupo?</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

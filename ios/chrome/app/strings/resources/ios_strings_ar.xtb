@@ -476,6 +476,7 @@
 <translation id="3053332585453689122">‏يُرسِل هذا الوضع إلى "التصفّح الآمن من Google" عناوين URL التي تزورها وعيّنة صغيرة من محتوى الصفحة وعمليات التنزيل ونشاط الإضافات ومعلومات النظام للتحقّق ممّا إذا كانت ضارة.</translation>
 <translation id="3055102495753300780">تخزين المعلومات</translation>
 <translation id="3059270601560379555">بحث جديد</translation>
+<translation id="3064547930554042309">إدارة عمليات التنزيل</translation>
 <translation id="3072279342064724558">سبق أن تم نقل كلمة المرور هذه</translation>
 <translation id="3076846064362030967">‏لن يتم تسجيل خروجك من حساب Google. قد يتم حفظ <ph name="BEGIN_LINK" />بيانات الأنشطة الأخرى<ph name="END_LINK" /> في حسابك على Google عند تسجيل الدخول إليه. ويمكنك حذفها في أي وقت.
 
@@ -698,6 +699,7 @@
 <translation id="4154753961803534698">البحث باستخدام الكاميرا</translation>
 <translation id="4158491215857439601">مدير كلمات المرور</translation>
 <translation id="4163699139741158298">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" على هذا الجهاز فقط.}zero{تم حفظ {count} إشارة مرجعية في "{title}" على هذا الجهاز فقط.}two{تم حفظ إشارتَين مرجعيتَين ({count}) في "{title}" على هذا الجهاز فقط.}few{تم حفظ {count} إشارات مرجعية في "{title}" على هذا الجهاز فقط.}many{تم حفظ {count} إشارة مرجعية في "{title}" على هذا الجهاز فقط.}other{تم حفظ {count} إشارة مرجعية في "{title}" على هذا الجهاز فقط.}}</translation>
+<translation id="4164514562270305824">حذف عمليات التنزيل تلقائيًا</translation>
 <translation id="4168651806173792090">بطاقة ائتمان من النوع <ph name="NETWORK_NAME" /> تنتهي بالرقم <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">عدم السماح</translation>
 <translation id="4172051516777682613">الإظهار دائمًا</translation>
@@ -1014,6 +1016,7 @@
 <translation id="5579012242779565775">إخفاء "قائمة القراءة"</translation>
 <translation id="5585019845078534178">بطاقات</translation>
 <translation id="5595485650161345191">تعديل العنوان</translation>
+<translation id="559567008082979829">يمكنك ضبط عمليات التنزيل بحيث يتم حذفها بعد شهر واحد.</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="560322036295180549">أوقفت مؤسستك هذا الخيار.</translation>
 <translation id="5611107723541161735">احصل على اختصارات للمواقع الإلكترونية التي انتقلت إليها مؤخرًا على هذا الجهاز.</translation>

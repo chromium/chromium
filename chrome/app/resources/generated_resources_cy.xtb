@@ -398,6 +398,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1260810365552581339">Mae'n bosib na fydd gan Linux ddigon o le storio. Gallwch gynyddu eich lle ar y disg Linux a rhowch gynnig arall ar adfer yn y <ph name="LINK_START" />Gosodiadau<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Cymedrol</translation>
 <translation id="126156426083987769">Bu problem gyda thrwyddedau dyfais y modd demo.</translation>
+<translation id="1262564987698748643">Gall gwefannau ofyn am ddiystyru eich mewnbwn bysellfwrdd</translation>
 <translation id="1263231323834454256">Rhestr ddarllen</translation>
 <translation id="1263733306853729545">Defnyddiwch y bysellau <ph name="MINUS" /> a <ph name="EQUAL" /> i dudalennu rhestr o ymgeiswyr</translation>
 <translation id="126387934568812801">Cynhwyswch y sgrinlun hwn a theitlau tabiau sydd ar agor</translation>
@@ -775,6 +776,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1536883206862903762">Bydd hyn yn analluogi estyniadau ac yn ailosod eich gosodiadau i'r gosodiadau diofyn diogel. Bydd tabiau, ffeiliau a chwcis yn cael eu cadw. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Chwyddwr sgrîn lawn</translation>
 <translation id="15373452373711364">Cyrchwr llygoden mawr</translation>
+<translation id="1539248305642687917">Peidiwch â gadael i wefannau ddiystyru eich mewnbwn bysellfwrdd</translation>
 <translation id="1539727654733007771">Ni osodwyd unrhyw rwydweithiau symudol. Lawrlwytho <ph name="BEGIN_LINK" />proffil<ph name="END_LINK" /> newydd.</translation>
 <translation id="1540265419569299117">Gwasanaeth Ap ChromeOS</translation>
 <translation id="1540543470504988112">Rheoli tystysgrifau a fewnforiwyd o MacOS</translation>
@@ -986,6 +988,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="166278006618318542">Algorithm Allwedd Gyhoeddus y Goddrych</translation>
 <translation id="1662801900924515589">Wedi gosod <ph name="APP" /></translation>
 <translation id="1663698992894057019">Uwchraddiwch i Chromebook newydd ar gyfer y diogelwch a'r feddalwedd ddiweddaraf</translation>
+<translation id="166454475160289583">Ni chaniateir diystyru mewnbwn eich bysellfwrdd</translation>
 <translation id="1665328953287874063">Defnyddiwch gyfrinair neu PIN i ddatgloi eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Mynegiadaeth</translation>
 <translation id="1667842670298352129">Clywed testun penodol yn cael ei ddarllen yn uchel. Yn gyntaf, dewiswch yr eicon Dewis i siarad ar waelod eich sgrîn, yna amlygwch y testun. Gallwch hefyd ddefnyddio llwybr byr bysellfwrdd: Amlygu testun, yna pwyswch Search + S.</translation>
@@ -1225,6 +1228,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1832511806131704864">Newid ffôn wedi'i ddiweddaru</translation>
 <translation id="1832848789136765277">I wneud yn siŵr eich bod bob amser yn gallu cael mynediad at eich data cysoni, cadarnhewch mai chi sydd yno</translation>
 <translation id="1833059747301212935">Cael mynediad hawdd at ddogfennau diweddar a digwyddiadau calendr sydd i ddod</translation>
+<translation id="183445248400150852">Mae gwefannau'n defnyddio'r nodwedd hon i ddiystyru mewnbwn eich bysellfwrdd, fel ar gyfer gemau neu apiau bwrdd gwaith o bell</translation>
 <translation id="1834503245783133039">Heb lwyddo i lawrlwytho: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Wrthi'n uwchraddio Linux</translation>
 <translation id="1837441256780906162">Mae Microsoft OneDrive wedi gwrthod y cais. Rhowch gynnig arall arni'n nes ymlaen.</translation>
@@ -6765,6 +6769,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5794700615121138172">Ffolderi cyffredin Linux</translation>
 <translation id="5794786537412027208">Cau pob Ap Chrome</translation>
 <translation id="5796485699458186843">Tab Anhysbys &amp;newydd</translation>
+<translation id="5796956053441619942">Nid yw'r URL o'r ddyfais o bell yn cael ei gefnogi</translation>
 <translation id="5797934230382081317">Dysgu sut i ddechrau arni ar &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; ac &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Gall gwefannau osod trinyddion taliadau</translation>
 <translation id="5798086737841799234">Rhowch y cod cadarnhau</translation>
@@ -7420,6 +7425,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6264485186158353794">Yn ôl i dudalen ddiogel</translation>
 <translation id="6264520534872750757">Parhau i ddefnyddio'r ddyfais</translation>
 <translation id="6264636978858465832">Mae angen mwy o fynediad ar Reolwr Cyfrineiriau</translation>
+<translation id="626495329434552273">Caniateir i chi ddiystyru eich mewnbwn bysellfwrdd</translation>
 <translation id="6265159465845424232">Gofynnwch cyn copïo neu symud ffeiliau Microsoft i Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Tynnu'r porth</translation>
 <translation id="6266532094411434237">Wrthi'n cysylltu â <ph name="DEVICE" /></translation>

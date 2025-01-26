@@ -185,6 +185,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1310938305420497484">Primeiro, abra guias e visite sites</translation>
 <translation id="1314311879718644478">Ver conteúdo de realidade aumentada</translation>
 <translation id="1314509827145471431">Encadernação do lado direito</translation>
+<translation id="1314784609072437689">substituição do teclado</translation>
 <translation id="1316805916535763484">Cursos on-line abertos</translation>
 <translation id="1318023360584041678">Salvo no grupo de guias</translation>
 <translation id="1319245136674974084">Não perguntar novamente para este app</translation>
@@ -2920,6 +2921,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">O Chrome limita automaticamente os cookies de terceiros</translation>
 <translation id="6188479691141473408">e mais <ph name="N_FIELDS" /> campos</translation>
+<translation id="6190518157737269631">Substituir algumas teclas do teclado, como Esc</translation>
 <translation id="6194209731893739467">Veja todos os seus produtos monitorados aqui</translation>
 <translation id="6195163219142236913">Cookies de terceiros limitados</translation>
 <translation id="6195371403461054755">Geologia</translation>
@@ -4193,6 +4195,7 @@ Mais detalhes:
 <translation id="8421158157346464398">Informações do perfil de trabalho (como nome de usuário)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Alterar</translation>
+<translation id="8426945547715537628">Permitir a substituição do teclado?</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8428634594422941299">Entendi</translation>
@@ -4279,6 +4282,7 @@ Mais detalhes:
 <translation id="8574841453995331336">Geladeiras e freezers</translation>
 <translation id="8577192028579836704">Todas as opções normalmente <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Cartão virtual indisponível</translation>
+<translation id="8579000896558714521">Substituição do teclado</translation>
 <translation id="8580265901435899937">Destinos turísticos</translation>
 <translation id="8581064022803799721">Esta página foi salva em <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Equipamentos de squash e raquetebol</translation>

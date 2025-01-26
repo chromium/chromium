@@ -192,6 +192,7 @@ Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pe
 <translation id="9169594135889675189">Agrega una pestaña nueva al grupo</translation>
 <translation id="9216898458513705996">Las pestañas permanecerán abiertas en este dispositivo, pero se borrará el grupo de todos los dispositivos en los que accediste a <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Expandir el grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña, en color <ph name="COLOR_NAME" />.}other{Expandir el grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas, en color <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="94870150074703282">¿Quieres borrar el grupo?</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

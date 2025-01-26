@@ -192,6 +192,7 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="9169594135889675189">Dodaj nową kartę do grupy</translation>
 <translation id="9216898458513705996">Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie usunięta ze wszystkich urządzeń zalogowanych na konto <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Rozwiń grupę kart z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />.}few{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}many{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}other{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />.}}</translation>
+<translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="94870150074703282">Usunąć grupę?</translation>
 <translation id="992256792861109788">Różowy</translation>
 </translationbundle>

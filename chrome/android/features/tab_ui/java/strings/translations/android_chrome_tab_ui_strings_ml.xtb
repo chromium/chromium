@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">ഗ്രൂപ്പിലേക്ക് പുതിയ ടാബ് ചേർക്കുക</translation>
 <translation id="9216898458513705996">ഈ ഉപകരണത്തിൽ ടാബുകൾ തുറന്നിരിക്കും, എന്നാൽ <ph name="USER_EMAIL" /> എന്നതിലേക്ക് സൈൻ ചെയ്‌തിരിക്കുന്ന എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഗ്രൂപ്പ് ഇല്ലാതാക്കും</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_ONE" /> ടാബ് ഉൾപ്പെടുത്തി ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}other{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഉൾപ്പെടുത്തി ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}}</translation>
+<translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="94870150074703282">ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="992256792861109788">പിങ്ക്</translation>
 </translationbundle>

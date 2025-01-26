@@ -192,6 +192,7 @@ Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name
 <translation id="9169594135889675189">Új lap hozzáadása a csoporthoz</translation>
 <translation id="9216898458513705996">A lapok nyitva maradnak ezen az eszközön, de a csoport törlődni fog minden olyan eszközről, amelyen be van jelentkezve a(z) <ph name="USER_EMAIL" /> fiókba.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport kibontása.}other{<ph name="TABS_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport kibontása.}}</translation>
+<translation id="945522503751344254">Visszajelzés küldése</translation>
 <translation id="94870150074703282">Törli a csoportot?</translation>
 <translation id="992256792861109788">Rózsaszín</translation>
 </translationbundle>

@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
 <translation id="9216898458513705996">এই ডিভাইসে ট্যাব খোলা থাকবে কিন্তু <ph name="USER_EMAIL" /> ব্যবহার করে সাইন-ইন করা হয়েছে এমন সবকটি ডিভাইস থেকে গ্রুপ মুছে ফেলা হবে</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বড় করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বড় করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বড় করুন।}}</translation>
+<translation id="945522503751344254">মতামত জানান</translation>
 <translation id="94870150074703282">গ্রুপটি মুছবেন?</translation>
 <translation id="992256792861109788">গোলাপী</translation>
 </translationbundle>

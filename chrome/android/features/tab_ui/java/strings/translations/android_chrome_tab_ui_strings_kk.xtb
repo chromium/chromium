@@ -192,6 +192,7 @@
 <translation id="9169594135889675189">Топқа жаңа қойынды енгізу</translation>
 <translation id="9216898458513705996">Қойындылар осы құрылғыда ашық қалады, бірақ топ <ph name="USER_EMAIL" /> аккаунтына кірген барлық құрылғыдан жойылады.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар тобын жаю.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар тобын жаю.}}</translation>
+<translation id="945522503751344254">Пікір жіберу</translation>
 <translation id="94870150074703282">Топты жою қажет пе?</translation>
 <translation id="992256792861109788">Қызғылт</translation>
 </translationbundle>

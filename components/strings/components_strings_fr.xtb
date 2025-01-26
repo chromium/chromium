@@ -185,6 +185,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1310938305420497484">Commencez par ouvrir des onglets et consulter des sites</translation>
 <translation id="1314311879718644478">Afficher les contenus en réalité augmentée</translation>
 <translation id="1314509827145471431">Reliure à droite</translation>
+<translation id="1314784609072437689">remplacement du clavier</translation>
 <translation id="1316805916535763484">Cours en ligne sans frais ouverts à tous</translation>
 <translation id="1318023360584041678">Enregistré dans le groupe d'onglets</translation>
 <translation id="1319245136674974084">Ne plus me demander pour cette appli</translation>
@@ -2920,6 +2921,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome limite automatiquement les cookies tiers</translation>
 <translation id="6188479691141473408">et <ph name="N_FIELDS" /> autres champs</translation>
+<translation id="6190518157737269631">Remplacer certaines touches du clavier, comme Échap</translation>
 <translation id="6194209731893739467">Retrouvez tous vos produits suivis ici</translation>
 <translation id="6195163219142236913">Cookies tiers limités</translation>
 <translation id="6195371403461054755">Géologie</translation>
@@ -4194,6 +4196,7 @@ Informations supplémentaires :
 <translation id="8421158157346464398">Informations sur votre profil professionnel (nom d'utilisateur, par exemple)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Modifier</translation>
+<translation id="8426945547715537628">Autoriser le remplacement du clavier ?</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8428634594422941299">OK</translation>
@@ -4280,6 +4283,7 @@ Informations supplémentaires :
 <translation id="8574841453995331336">Réfrigérateurs et congélateurs</translation>
 <translation id="8577192028579836704">Prix habituel pour toutes les options : <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Carte virtuelle non disponible</translation>
+<translation id="8579000896558714521">Remplacement du clavier</translation>
 <translation id="8580265901435899937">Destinations touristiques</translation>
 <translation id="8581064022803799721">Cette page est enregistrée dans <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Équipement de squash et de racquetball</translation>

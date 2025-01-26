@@ -395,6 +395,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1260810365552581339">O Linux pode não ter espaço em disco suficiente. Você pode aumentar o espaço disponível e tentar restaurar o backup novamente nas <ph name="LINK_START" />Configurações<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Moderada</translation>
 <translation id="126156426083987769">Ocorreu um problema com as licenças do dispositivo no modo de demonstração.</translation>
+<translation id="1262564987698748643">Os sites podem pedir para substituir a entrada do teclado</translation>
 <translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1263733306853729545">Usar as teclas <ph name="MINUS" /> e <ph name="EQUAL" /> para numerar uma lista de candidatos</translation>
 <translation id="126387934568812801">Incluir esta captura de tela e os títulos das guias abertas</translation>
@@ -774,6 +775,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1536883206862903762">Isso vai desativar as extensões e redefinir as configurações para os padrões seguros. Guias, arquivos e cookies serão preservados. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Lupa de tela cheia</translation>
 <translation id="15373452373711364">Cursor grande do mouse</translation>
+<translation id="1539248305642687917">Não permitir que os sites substituam a entrada do teclado</translation>
 <translation id="1539727654733007771">Nenhuma rede móvel configurada. Baixe um novo <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">Serviço de app ChromeOS</translation>
 <translation id="1540543470504988112">Gerenciar certificados importados do MacOS</translation>
@@ -985,6 +987,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="166278006618318542">Algoritmo da chave pública do requerente</translation>
 <translation id="1662801900924515589">O app <ph name="APP" /> foi instalado</translation>
 <translation id="1663698992894057019">Compre um novo Chromebook e tenha a segurança e o software mais recentes</translation>
+<translation id="166454475160289583">Não podem substituir a entrada do teclado</translation>
 <translation id="1665328953287874063">Use uma senha ou um PIN para desbloquear o <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Expressionismo</translation>
 <translation id="1667842670298352129">Ouvir um texto específico lido em voz alta. Primeiro, selecione o ícone do recurso "Selecionar para ouvir" na parte de baixo da tela e depois destaque o texto. Você também pode usar um atalho do teclado, destacando texto e depois pressionando as teclas Pesquisa + S.</translation>
@@ -1224,6 +1227,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1832511806131704864">Atualização da alteração do smartphone</translation>
 <translation id="1832848789136765277">Para garantir o acesso aos seus dados sincronizados, confirme sua identidade</translation>
 <translation id="1833059747301212935">Acesse documentos recentes e eventos da agenda com facilidade</translation>
+<translation id="183445248400150852">Os sites usam esse recurso para substituir a entrada do teclado, como em jogos ou apps da Área de trabalho remota</translation>
 <translation id="1834503245783133039">Falha no download: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Fazendo upgrade do Linux</translation>
 <translation id="1837441256780906162">O Microsoft OneDrive recusou a solicitação. Tente de novo mais tarde.</translation>
@@ -6780,6 +6784,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5794700615121138172">Pastas compartilhadas do Linux</translation>
 <translation id="5794786537412027208">Sair de todos os aplicativos do Google Chrome</translation>
 <translation id="5796485699458186843">Nova guia anônima</translation>
+<translation id="5796956053441619942">O URL do dispositivo remoto não é compatível</translation>
 <translation id="5797934230382081317">Aprenda como começar a usar no &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; ou &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Os sites podem instalar gerenciadores de pagamento</translation>
 <translation id="5798086737841799234">Digite o código de confirmação</translation>
@@ -7263,7 +7268,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6141988275892716286">Confirmar download</translation>
 <translation id="6143186082490678276">Receber ajuda</translation>
 <translation id="6143366292569327983">Escolha o idioma da página que você gostaria de traduzir</translation>
-<translation id="6144938890088808325">Ajudar a melhorar os Chromebooks</translation>
+<translation id="6144938890088808325">Ajude a melhorar os Chromebooks</translation>
 <translation id="6145363037359279595">Olá, <ph name="CHILD_NAME" /></translation>
 <translation id="6146409560350811147">A sincronização não está funcionando. Tente fazer login novamente.</translation>
 <translation id="6147020289383635445">A visualização de impressão falhou.</translation>
@@ -7375,7 +7380,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="622125358038862905">{NUM_OF_FILES,plural, =1{Não é possível copiar o arquivo para o <ph name="CLOUD_PROVIDER" />}one{Não é possível copiar o arquivo para o <ph name="CLOUD_PROVIDER" />}other{Não é possível copiar os arquivos para o <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="6224481128663248237">A formatação foi concluída.</translation>
 <translation id="622474711739321877">Esse contêiner já existe.</translation>
-<translation id="622484624075952240">Seta para baixo</translation>
+<translation id="622484624075952240">Para baixo</translation>
 <translation id="622537739776246443">O perfil será excluído</translation>
 <translation id="6225475702458870625">Conexão de dados disponível a partir do seu <ph name="PHONE_NAME" /></translation>
 <translation id="6226777517901268232">Arquivo de chaves particulares (opcional)</translation>
@@ -7437,6 +7442,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6264485186158353794">Voltar à segurança</translation>
 <translation id="6264520534872750757">Continuar usando o dispositivo</translation>
 <translation id="6264636978858465832">O Gerenciador de senhas precisa de mais acesso</translation>
+<translation id="626495329434552273">Podem substituir a entrada do teclado</translation>
 <translation id="6265159465845424232">Perguntar antes de copiar ou mover arquivos da Microsoft para o Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Remover porta</translation>
 <translation id="6266532094411434237">Conectando ao <ph name="DEVICE" /></translation>
