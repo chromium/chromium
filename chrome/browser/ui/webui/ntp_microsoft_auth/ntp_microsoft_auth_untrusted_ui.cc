@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.h"
 
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/common/url_constants.h"
@@ -21,11 +22,8 @@ NtpMicrosoftAuthUntrustedUIConfig::NtpMicrosoftAuthUntrustedUIConfig()
 
 bool NtpMicrosoftAuthUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(
-             ntp_features::kNtpMicrosoftAuthenticationModule) &&
-         (base::FeatureList::IsEnabled(
-              ntp_features::kNtpOutlookCalendarModule) ||
-          base::FeatureList::IsEnabled(ntp_features::kNtpSharepointModule));
+  return IsMicrosoftModuleEnabledForProfile(
+      Profile::FromBrowserContext(browser_context));
 }
 
 NtpMicrosoftAuthUntrustedUI::NtpMicrosoftAuthUntrustedUI(content::WebUI* web_ui)

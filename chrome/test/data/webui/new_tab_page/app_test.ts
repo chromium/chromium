@@ -1387,17 +1387,17 @@ suite('NewTabPageAppTest', () => {
 
   suite('MicrosoftAuth', () => {
     [true, false].forEach(
-        (microsoftAuthEnabled) =>
-            suite(`microsoftAuthEnabled ${microsoftAuthEnabled}`, () => {
+        (microsoftModuleEnabled) =>
+            suite(`microsoftModuleEnabled ${microsoftModuleEnabled}`, () => {
               suiteSetup(() => {
-                loadTimeData.overrideValues({microsoftAuthEnabled});
+                loadTimeData.overrideValues({microsoftModuleEnabled});
               });
 
               test('Show iframe when appropriate', () => {
                 const iframe =
                     $$<HTMLIFrameElement>(app, 'iframe#microsoftAuth');
 
-                if (!microsoftAuthEnabled) {
+                if (!microsoftModuleEnabled) {
                   assertFalse(!!iframe);
                   return;
                 }

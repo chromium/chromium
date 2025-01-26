@@ -9,9 +9,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
 #include "chrome/browser/new_tab_page/modules/test_support.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_test.h"
 
@@ -358,15 +364,32 @@ class NewTabPageModulesInteractiveMicrosoftAuthUiTest
       delete;
 
   void SetUp() override {
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
     features.InitWithFeatures({ntp_features::kNtpMicrosoftAuthenticationModule,
                                ntp_features::kNtpSharepointModule},
                               {});
     InteractiveBrowserTest::SetUp();
   }
+
+  policy::MockConfigurationPolicyProvider& policy_provider() {
+    return policy_provider_;
+  }
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveMicrosoftAuthUiTest,
                        LoadMicrosoftAuthIframe) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kNTPSharepointCardVisible,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_PLATFORM, base::Value(true), nullptr);
+  policy_provider().UpdateChromePolicy(policies);
   RunTestSequence(
       // 1. Wait for new tab page to load.
       LoadNewTabPage(),

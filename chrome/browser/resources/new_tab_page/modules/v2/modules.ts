@@ -118,8 +118,8 @@ export class ModulesV2Element extends AppElementBase {
   private setDisabledModulesListenerId_: number|null = null;
   private containerObserver_: MutationObserver|null = null;
   private templateInstances_: TemplateInstanceBase[] = [];
-  private microsoftAuthEnabled_: boolean =
-      loadTimeData.getBoolean('microsoftAuthEnabled');
+  private microsoftModuleEnabled_: boolean =
+      loadTimeData.getBoolean('microsoftModuleEnabled');
 
   private handler_: PageHandlerRemote;
 
@@ -216,7 +216,7 @@ export class ModulesV2Element extends AppElementBase {
         this.maxColumnCount_ * SUPPORTED_MODULE_WIDTHS[0].value +
         (this.maxColumnCount_ - 1) * CONTAINER_GAP_WIDTH;
 
-    if (this.microsoftAuthEnabled_) {
+    if (this.microsoftModuleEnabled_) {
       this.startMicrosoftAuth();
     }
     // TODO(crbug.com/390713116): If Microsoft Auth is enabled and silent

@@ -210,7 +210,7 @@ export class AppElement extends AppElementBase {
         reflect: true,
       },
 
-      microsoftAuthEnabled_: {type: Boolean},
+      microsoftModuleEnabled_: {type: Boolean},
       microsoftAuthIframePath_: {type: String},
 
       /**
@@ -280,8 +280,8 @@ export class AppElement extends AppElementBase {
   private middleSlotPromoLoaded_: boolean = false;
   private modulesLoaded_: boolean = false;
   protected modulesShownToUser: boolean;
-  protected microsoftAuthEnabled_: boolean =
-      loadTimeData.getBoolean('microsoftAuthEnabled');
+  protected microsoftModuleEnabled_: boolean =
+      loadTimeData.getBoolean('microsoftModuleEnabled');
   protected microsoftAuthIframePath_: string = MSAL_IFRAME_ORIGIN;
   protected promoAndModulesLoaded_: boolean = false;
   protected lazyRender_: boolean;
