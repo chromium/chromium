@@ -309,10 +309,10 @@ const base::FeatureParam<int> kGlicPreLoadingTimeMs{
     &kGlic, "glic-pre-loading-time-ms", 200};
 
 const base::FeatureParam<int> kGlicMinLoadingTimeMs{
-    &kGlic, "glic-max-loading-time-ms", 1000};
+    &kGlic, "glic-min-loading-time-ms", 1000};
 
 const base::FeatureParam<int> kGlicMaxLoadingTimeMs{
-    &kGlic, "glic-min-loading-time-ms", 15000};
+    &kGlic, "glic-max-loading-time-ms", 15000};
 
 BASE_FEATURE(kGlicURLConfig,
              "GlicURLConfig",
