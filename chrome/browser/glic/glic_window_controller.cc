@@ -628,6 +628,7 @@ std::unique_ptr<views::Widget> GlicWindowController::CreateGlicWidget(
 #if BUILDFLAG(IS_WIN)
   params.dont_show_in_taskbar = true;
   params.force_system_menu_for_frameless = true;
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 #endif
   params.bounds = initial_bounds;
 
