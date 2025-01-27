@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
@@ -23,6 +24,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
@@ -56,12 +58,12 @@ constexpr char kProfile[] = "Default";
 constexpr char16_t kProfile16[] = u"Profile";
 constexpr char kIdleProfile[] = "IdleProfile";
 constexpr char16_t kIdleProfile16[] = u"IdleProfile";
+constexpr char kFakeProfileId[] = "fake-profile-id";
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 constexpr char kAffiliationId1[] = "affiliation-id-1";
 constexpr char kAffiliationId2[] = "affiliation-id-2";
 #endif
-
 
 #if !BUILDFLAG(IS_ANDROID)
 const int kMaxNumberOfExtensionRequest = 1000;
@@ -82,6 +84,11 @@ constexpr char kBlockedExtensionSettings[] = R"({
   }
 })";
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+std::unique_ptr<KeyedService> CreateProfileIdService(
+    content::BrowserContext* context) {
+  return std::make_unique<enterprise::ProfileIdService>(kFakeProfileId);
+}
 
 }  // namespace
 
@@ -112,6 +119,9 @@ class ProfileReportGeneratorTest : public ::testing::Test {
             GetIdentityTestEnvironmentFactories(),
         /*is_supervised_profile=*/false, std::nullopt,
         std::move(policy_service_));
+
+    enterprise::ProfileIdServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&CreateProfileIdService));
   }
 
   void InitMockPolicyService() {
@@ -304,7 +314,12 @@ TEST_F(ProfileReportGeneratorTest, PoliciesHidden) {
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ProfileReportGeneratorTest, ProfileId) {
+  std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
+  EXPECT_EQ(kFakeProfileId, report->profile_id());
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileReportGeneratorTest, IsAffiliated) {
   profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
       {kAffiliationId1});
@@ -333,7 +348,7 @@ TEST_F(ProfileReportGeneratorTest, NotAffiliated) {
   EXPECT_EQ(em::AffiliationState_UnaffiliationReason_USER_UNMANAGED,
             report->affiliation().unaffiliation_reason());
 }
-#endif // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(ProfileReportGeneratorTest, PendingRequest) {
@@ -417,9 +432,10 @@ TEST_F(ProfileReportGeneratorTest, TooManyRequests) {
 
   // And the filter is stable.
   auto report2 = GenerateReport();
-  for (int id = 0; id < kMaxNumberOfExtensionRequest; id += 1)
+  for (int id = 0; id < kMaxNumberOfExtensionRequest; id += 1) {
     EXPECT_EQ(report->extension_requests(id).id(),
               report2->extension_requests(id).id());
+  }
 }
 
 TEST_F(ProfileReportGeneratorTest, DisableExtensionInfo) {

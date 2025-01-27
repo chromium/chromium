@@ -56,6 +56,9 @@ class ProfileReportGenerator {
     // Sets extension requests information in the report.
     virtual void GetExtensionRequest(
         enterprise_management::ChromeUserProfileInfo* report) = 0;
+    // Sets profile id in the report.
+    virtual void GetProfileId(
+        enterprise_management::ChromeUserProfileInfo* report) = 0;
 
     // Returns a new platform-specific policy conversions client.
     virtual std::unique_ptr<policy::PolicyConversionsClient>
