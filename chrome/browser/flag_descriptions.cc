@@ -3502,6 +3502,12 @@ const char kSiteInstanceGroupsForDataUrlsDescription[] =
     "Put data: URL subframes in a separate SiteInstance from the initiator, "
     "but in the same SiteInstanceGroup, and thus the same process.";
 
+const char kDefaultSiteInstanceGroupsName[] = "Default SiteInstanceGroups";
+const char kDefaultSiteInstanceGroupsDescription[] =
+    "Put sites that don't need isolation in their own SiteInstance in a default"
+    "SiteInstanceGroup (per BrowsingContextGroup) instead of in a default "
+    "SiteInstance.";
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 const char kPwaNavigationCapturingName[] = "Desktop PWA Link Capturing";

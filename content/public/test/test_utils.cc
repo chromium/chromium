@@ -209,12 +209,14 @@ bool IsOriginAgentClusterEnabledForOrigin(SiteInstance* site_instance,
 
 bool AreStrictSiteInstancesEnabled() {
   return AreAllSitesIsolatedForTesting() ||
+         ShouldUseDefaultSiteInstanceGroup() ||
          base::FeatureList::IsEnabled(
              features::kProcessSharingWithStrictSiteInstances);
 }
 
 bool IsIsolatedOriginRequiredToGuaranteeDedicatedProcess() {
   return !AreAllSitesIsolatedForTesting() ||
+         ShouldUseDefaultSiteInstanceGroup() ||
          base::FeatureList::IsEnabled(
              features::kProcessSharingWithStrictSiteInstances);
 }

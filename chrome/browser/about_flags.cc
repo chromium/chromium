@@ -9980,6 +9980,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSiteInstanceGroupsForDataUrlsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kSiteInstanceGroupsForDataUrls)},
 
+    {"default-site-instance-groups",
+     flag_descriptions::kDefaultSiteInstanceGroupsName,
+     flag_descriptions::kDefaultSiteInstanceGroupsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kDefaultSiteInstanceGroups)},
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     {"cws-info-fast-check", flag_descriptions::kCWSInfoFastCheckName,
      flag_descriptions::kCWSInfoFastCheckDescription, kOsDesktop,

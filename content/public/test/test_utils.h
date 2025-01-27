@@ -88,6 +88,7 @@ bool IsOriginAgentClusterEnabledForOrigin(SiteInstance* site_instance,
 
 // Returns true if the process model only allows a SiteInstance to contain
 // a single site.
+// TODO(crbug.com/390571607): Rename this to reflect SiteInstanceGroup state.
 bool AreStrictSiteInstancesEnabled();
 
 // Returns true if a test needs to register an origin for isolation to ensure

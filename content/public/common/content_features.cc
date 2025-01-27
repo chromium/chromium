@@ -988,6 +988,13 @@ BASE_FEATURE(kSiteInstanceGroupsForDataUrls,
              "SiteInstanceGroupsForDataUrls",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, puts non-isolated sites in separate SiteInstances in a default
+// SiteInstanceGroup (per BrowsingInstance), rather than sharing a default
+// SiteInstance.
+BASE_FEATURE(kDefaultSiteInstanceGroups,
+             "DefaultSiteInstanceGroups",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to isolate sites of documents that specify an eligible
 // Cross-Origin-Opener-Policy header.  Note that this is only intended to be
 // used on Android, which does not use strict site isolation. See
