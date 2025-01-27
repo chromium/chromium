@@ -153,6 +153,9 @@ class NET_EXPORT NSSCertDatabase {
 
   enum class NSSRootsHandling {
     kInclude,
+    // TODO(crbug.com/390333881): kExclude is only used by the old cert
+    // manager. Remove this and any other no-longer needed NSSCertDatabase
+    // features once the new cert manager is fully launched.
     kExclude,
   };
   // Asynchronously get a list of certificates along with additional

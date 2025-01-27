@@ -158,6 +158,9 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
     std::unique_ptr<net::SystemTrustStore> trust_store;
 #if BUILDFLAG(IS_CHROMEOS)
     if (user_slot_restriction_) {
+      // TODO(crbug.com/390333881): Remove this (and dependencies/dependants)
+      // once ServerCertificateDatabase has fully launched and NSS is not used
+      // for cert verification related certs on ChromeOS.
       trust_store =
           net::CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
               std::move(chrome_root), crypto::ScopedPK11Slot(PK11_ReferenceSlot(

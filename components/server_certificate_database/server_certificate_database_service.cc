@@ -66,6 +66,8 @@ void ServerCertificateDatabaseService::GetAllCertificates(
   // database. Migration will only be done once per profile. If called multiple
   // times before migration completes, all the callbacks will be queued and
   // processed once the migration is done.
+  // TODO(crbug.com/390333881): Remove the migration code once sufficient time
+  // has passed after the feature is launched.
   if (prefs_->GetInteger(prefs::kNSSCertsMigratedToServerCertDb) ==
       static_cast<int>(NSSMigrationResultPref::kNotMigrated)) {
     if (!nss_migrator_) {
