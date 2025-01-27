@@ -141,6 +141,11 @@ class EncryptorTestBase : public ::testing::Test {
     return base::ScopedClosureRunner(base::BindOnce([]() {
       OSCrypt::UseLockedMockKeychainForTesting(/*use_locked=*/false);
     }));
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+    OSCrypt::SetEncryptionAvailableForTesting(/*available=*/false);
+    return base::ScopedClosureRunner(base::BindOnce([]() {
+      OSCrypt::SetEncryptionAvailableForTesting(/*available=*/std::nullopt);
+    }));
 #else
     return std::nullopt;
 #endif
@@ -499,18 +504,8 @@ TEST_F(EncryptorTestBase, IsEncryptionAvailableFallback) {
 
 TEST_F(EncryptorTestWithOSCrypt, IsEncryptionAvailableFallback) {
   Encryptor encryptor = GetEncryptor();
-  // os_crypt_posix.cc always has encryption disabled. This preprocessor
-  // directive is a copy of the gn expression around that file in the build file
-  // for the os_crypt component.
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&         \
-        !(BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
-    BUILDFLAG(IS_FUCHSIA)
-  EXPECT_FALSE(encryptor.IsDecryptionAvailable());
-  EXPECT_FALSE(encryptor.IsEncryptionAvailable());
-#else
   EXPECT_TRUE(encryptor.IsDecryptionAvailable());
   EXPECT_TRUE(encryptor.IsEncryptionAvailable());
-#endif
 }
 
 TEST_F(EncryptorTestBase, IsEncryptionAvailable) {

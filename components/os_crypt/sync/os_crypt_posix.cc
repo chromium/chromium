@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
@@ -28,6 +29,9 @@ constexpr std::array<uint8_t, crypto::aes_cbc::kBlockSize> kIv{
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
 };
+
+std::optional<bool> g_encryption_available_for_testing;
+
 // clang-format on
 
 // Prefix for cypher text returned by obfuscation version.  We prefix the
@@ -36,6 +40,14 @@ constexpr std::array<uint8_t, crypto::aes_cbc::kBlockSize> kIv{
 constexpr char kObfuscationPrefix[] = "v10";
 
 }  // namespace
+
+namespace OSCrypt {
+
+void SetEncryptionAvailableForTesting(std::optional<bool> available) {
+  g_encryption_available_for_testing = available;
+}
+
+}  // namespace OSCrypt
 
 bool OSCrypt::EncryptString16(const std::u16string& plaintext,
                               std::string* ciphertext) {
@@ -108,7 +120,7 @@ bool OSCrypt::DecryptString(const std::string& ciphertext,
 
 // static
 bool OSCrypt::IsEncryptionAvailable() {
-  return false;
+  return g_encryption_available_for_testing.value_or(true);
 }
 
 // static

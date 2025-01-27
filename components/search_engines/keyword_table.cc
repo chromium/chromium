@@ -23,6 +23,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "components/database_utils/url_converter.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/search_engines/search_terms_data.h"
@@ -38,7 +40,23 @@ using base::Time;
 namespace features {
 BASE_FEATURE(kKeywordTableHashVerification,
              "KeywordTableHashVerification",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// OSCrypt::IsEncryptionAvailable from os_crypt_posix.cc historically returned
+// 'false' for IsEncryptionAvailable so hashes were never generated on these
+// platforms. Given this crypto isn't strong (fixed key), disable hash
+// verification on this platform, to allow IsEncryptionAvailable to now return
+// 'true' for consistency, without causing hash checks to start failing.
+//
+// This #if matches the os_crypt_posix.cc config in
+// components/os_crypt/sync/BUILD.gn.
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&         \
+        !(BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_FUCHSIA)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+
 }  // namespace features
 
 namespace {
