@@ -842,20 +842,19 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
  public:
   CanvasResourceProviderPassThrough(
       gfx::Size size,
-      SkColorType sk_color_type,
+      viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
       CanvasResourceHost* resource_host)
-      : CanvasResourceProvider(
-            kPassThrough,
-            size,
-            viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
-            alpha_type,
-            color_space,
-            std::move(context_provider_wrapper),
-            resource_host) {}
+      : CanvasResourceProvider(kPassThrough,
+                               size,
+                               format,
+                               alpha_type,
+                               color_space,
+                               std::move(context_provider_wrapper),
+                               resource_host) {}
 
   ~CanvasResourceProviderPassThrough() override = default;
   bool IsValid() const final { return true; }
@@ -1268,8 +1267,8 @@ CanvasResourceProvider::CreatePassThroughProvider(
   // fact that it simply delegates the internal parts of the resource to other
   // classes).
   auto provider = std::make_unique<CanvasResourceProviderPassThrough>(
-      size, sk_color_type, alpha_type, color_space, context_provider_wrapper,
-      resource_host);
+      size, viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
+      alpha_type, color_space, context_provider_wrapper, resource_host);
   CHECK(provider->IsValid());
   return provider;
 }
