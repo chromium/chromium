@@ -1,7 +1,5 @@
 . 7 4
 ash/ambient/managed 2 1
-ash/components/arc 1 1
-ash/components/arc/mojom 1 1
 ash/system/bluetooth/hid_preserving_controller 1 1
 ash/system/input_device_settings 18 1
 ash/webui/camera_app_ui/resources/js/lib 8 1
@@ -34,7 +32,7 @@ cc/input 2 2
 chrome/android/java/src/org/chromium/chrome/browser/omaha 2 2
 chrome/android/java/src/org/chromium/chrome/browser/tab 1 1
 chrome/android/junit/src/org/chromium/chrome/browser/payments 1 1
-chrome/browser 2 2
+chrome/browser 6 5
 chrome/browser/android/oom_intervention 1 1
 chrome/browser/ash/arc/file_system_watcher 1 1
 chrome/browser/ash/arc/policy 2 2
@@ -84,6 +82,8 @@ chrome/install_static 1 1
 chromeos/ash/components/carrier_lock 3 1
 chromeos/ash/components/network/onc 1 1
 chromeos/ash/components/telemetry_extension 2 1
+chromeos/ash/experiences/arc 1 1
+chromeos/ash/experiences/arc/mojom 1 1
 chromeos/ash/services/ime/public/cpp/shared_lib/proto 2 2
 chromeos/ash/services/ime/public/mojom 2 2
 chromeos/crosapi 2 1
@@ -180,7 +180,7 @@ content/test/gpu 1 1
 content/web_test/renderer 2 1
 device/gamepad 5 3
 device/vr/public/mojom 2 1
-docs 29 17
+docs 28 16
 docs/design 2 2
 docs/enterprise 1 1
 docs/experiments 1 1
@@ -201,6 +201,7 @@ docs/speed/metrics_changelog 1 1
 docs/telemetry_extension 2 1
 docs/testing 4 4
 docs/updater 7 3
+docs/webui 1 1
 extensions/browser 1 1
 extensions/common 2 2
 extensions/common/api 5 4
@@ -418,7 +419,6 @@ third_party/blink/tools/blinkpy/w3c 20 7
 third_party/blink/tools/blinkpy/web_tests 2 1
 third_party/blink/tools/blinkpy/web_tests/controllers 1 1
 third_party/blink/tools/blinkpy/web_tests/layout_package 7 2
-third_party/blink/tools/blinkpy/web_tests/models 1 1
 third_party/blink/tools/blinkpy/web_tests/port 1 1
 third_party/blink/tools/blinkpy/wpt_tests 1 1
 third_party/blink/web_tests/dom/domparsing 2 2
@@ -494,7 +494,6 @@ third_party/closure_compiler/compiler 1 1
 third_party/closure_compiler/externs 5 1
 third_party/crashpad/crashpad 1 1
 third_party/crashpad/crashpad/doc 1 1
-third_party/crashpad/crashpad/doc/support 1 1
 third_party/crashpad/crashpad/snapshot 1 1
 third_party/crashpad/crashpad/snapshot/fuchsia 1 1
 third_party/crashpad/crashpad/test/mac 1 1
@@ -725,8 +724,8 @@ third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3 1 1
 third_party/rust/chromium_crates_io/vendor/syn-2.0.96 1 1
 third_party/rust/chromium_crates_io/vendor/syn-2.0.96/src 2 1
 third_party/rust/chromium_crates_io/vendor/termcolor-1.4.1/.github/workflows 3 1
-third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.14 1 1
-third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.14/.github/workflows 2 1
+third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.15 1 1
+third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.15/.github/workflows 2 1
 third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/.github/workflows 4 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-0.52.0 1 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-0.52.0/src/Windows/Wdk/System/SystemServices 1 1

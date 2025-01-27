@@ -1,6 +1,4 @@
-// To run:
-//
-//     cargo criterion --features criterion/real_blackbox
+// To run: `cargo criterion`
 //
 // This benchmarks each of the different libraries at several ratios of ASCII to
 // non-ASCII content. There is one additional benchmark labeled "baseline" which
