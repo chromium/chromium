@@ -1111,6 +1111,14 @@ bool IsBlueDotOnToolsMenuButtoneEnabled() {
   return base::FeatureList::IsEnabled(kBlueDotOnToolsMenuButton);
 }
 
+BASE_FEATURE(kUseAccountListFromIdentityManager,
+             "UseAccountListFromIdentityManager",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsUseAccountListFromIdentityManagerEnabled() {
+  return base::FeatureList::IsEnabled(kUseAccountListFromIdentityManager);
+}
+
 BASE_FEATURE(kSeparateProfilesForManagedAccounts,
              "SeparateProfilesForManagedAccounts",
              base::FEATURE_DISABLED_BY_DEFAULT);
