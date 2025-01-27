@@ -2,6 +2,7 @@ include_rules = [
     "+base/barrier_callback.h",
     "+base/barrier_closure.h",
     "+base/functional/callback.h",
+    "+base/strings/to_string.h",
     "+base/functional/callback_forward.h",
     "+base/functional/callback_helpers.h",
     "+base/functional/function_ref.h",

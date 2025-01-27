@@ -9,6 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -983,7 +984,7 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
         {{features::kBackgroundResourceFetch,
           {{"background-script-response-processor", "true"},
            {"background-code-cache-decoder-start",
-            enable_background_code_cache_decode_start ? "true" : "false"}}}},
+            base::ToString(enable_background_code_cache_decode_start)}}}},
         {});
   }
   ~BackgroundResourceScriptStreamerTest() override = default;

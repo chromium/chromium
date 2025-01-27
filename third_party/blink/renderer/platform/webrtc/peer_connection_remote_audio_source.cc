@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -59,7 +60,7 @@ void PeerConnectionRemoteAudioTrack::SetEnabled(bool enabled) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   blink::WebRtcLogMessage(base::StringPrintf(
       "PCRAT::SetEnabled([id=%s] {enabled=%s})", track_interface_->id().c_str(),
-      (enabled ? "true" : "false")));
+      base::ToString(enabled).c_str()));
 
   // TODO(crbug.com/40849402): AudioTrackInterface::set_enabled() is not called
   // because doing so would set the volume to 0 for the source level in the

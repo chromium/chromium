@@ -36,6 +36,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
+#include "base/strings/to_string.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "cc/layers/layer.h"
@@ -190,10 +191,6 @@ String UrlForLoggingMedia(const KURL& url) {
     return url.GetString();
   return url.GetString().GetString().Substring(0, kMaximumURLLengthForLogging) +
          "...";
-}
-
-const char* BoolString(bool val) {
-  return val ? "true" : "false";
 }
 
 DocumentElementSetMap& DocumentToElementSetMap() {
@@ -3023,7 +3020,7 @@ bool HTMLMediaElement::Loop() const {
 }
 
 void HTMLMediaElement::SetLoop(bool b) {
-  DVLOG(3) << "setLoop(" << *this << ", " << BoolString(b) << ")";
+  DVLOG(3) << "setLoop(" << *this << ", " << base::ToString(b) << ")";
   SetBooleanAttribute(html_names::kLoopAttr, b);
 }
 
@@ -3122,7 +3119,7 @@ bool HTMLMediaElement::muted() const {
 }
 
 void HTMLMediaElement::setMuted(bool muted) {
-  DVLOG(2) << "setMuted(" << *this << ", " << BoolString(muted) << ")";
+  DVLOG(2) << "setMuted(" << *this << ", " << base::ToString(muted) << ")";
 
   if (muted_ == muted)
     return;
@@ -3239,8 +3236,8 @@ AudioTrackList& HTMLMediaElement::audioTracks() {
 void HTMLMediaElement::AudioTrackChanged(AudioTrack* track) {
   DVLOG(3) << "audioTrackChanged(" << *this
            << ") trackId= " << String(track->id())
-           << " enabled=" << BoolString(track->enabled())
-           << " exclusive=" << BoolString(track->IsExclusive());
+           << " enabled=" << base::ToString(track->enabled())
+           << " exclusive=" << base::ToString(track->IsExclusive());
 
   if (track->enabled()) {
     audioTracks().TrackEnabled(track->id(), track->IsExclusive());
@@ -3726,7 +3723,7 @@ void HTMLMediaElement::DurationChanged() {
 
 void HTMLMediaElement::DurationChanged(double duration, bool request_seek) {
   DVLOG(3) << "durationChanged(" << *this << ", " << duration << ", "
-           << BoolString(request_seek) << ")";
+           << base::ToString(request_seek) << ")";
 
   // Abort if duration unchanged.
   if (duration_ == duration)
@@ -3884,8 +3881,8 @@ void HTMLMediaElement::UpdatePlayState(bool pause_speech /* = true */) {
   bool should_be_playing = PotentiallyPlaying();
 
   DVLOG(3) << "updatePlayState(" << *this
-           << ") - shouldBePlaying = " << BoolString(should_be_playing)
-           << ", isPlaying = " << BoolString(is_playing);
+           << ") - shouldBePlaying = " << base::ToString(should_be_playing)
+           << ", isPlaying = " << base::ToString(is_playing);
 
   if (should_be_playing && !muted_)
     was_always_muted_ = false;
@@ -4287,7 +4284,7 @@ void HTMLMediaElement::SetShouldDelayLoadEvent(bool should_delay) {
     return;
 
   DVLOG(3) << "setShouldDelayLoadEvent(" << *this << ", "
-           << BoolString(should_delay) << ")";
+           << base::ToString(should_delay) << ")";
 
   should_delay_load_event_ = should_delay;
   if (should_delay)

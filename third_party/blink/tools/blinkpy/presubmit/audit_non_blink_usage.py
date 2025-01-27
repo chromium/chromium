@@ -155,6 +155,7 @@ _CONFIG = [
             'base::to_underlying',
             'base::Token',
             'base::ToVector',
+            'base::ToString',
             'base::trace_event::.*',
             'base::unexpected',
             'base::UnguessableToken',

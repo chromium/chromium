@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -92,7 +93,7 @@ void WebRtcAudioSink::OnEnabledChanged(bool enabled) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SendLogMessage(base::StringPrintf("OnEnabledChanged([label=%s] {enabled=%s})",
                                     adapter_->label().c_str(),
-                                    (enabled ? "true" : "false")));
+                                    base::ToString(enabled).c_str()));
   PostCrossThreadTask(
       *adapter_->signaling_task_runner(), FROM_HERE,
       CrossThreadBindOnce(
@@ -251,7 +252,7 @@ bool WebRtcAudioSink::Adapter::set_enabled(bool enable) {
          signaling_task_runner_->RunsTasksInCurrentSequence());
   SendLogMessage(
       base::StringPrintf("Adapter::set_enabled([label=%s] {enable=%s})",
-                         label_.c_str(), (enable ? "true" : "false")));
+                         label_.c_str(), base::ToString(enable).c_str()));
   return webrtc::MediaStreamTrack<webrtc::AudioTrackInterface>::set_enabled(
       enable);
 }

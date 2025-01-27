@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 
 #include "base/memory/values_equivalent.h"
+#include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/blink/renderer/platform/language.h"
@@ -690,7 +691,7 @@ String FontDescription::VariantLigatures::ToString() const {
 String FontDescription::Size::ToString() const {
   return String::Format(
       "keyword_size=%u, specified_size=%f, is_absolute_size=%s", keyword, value,
-      is_absolute ? "true" : "false");
+      base::ToString(is_absolute).c_str());
 }
 
 String FontDescription::FamilyDescription::ToString() const {
@@ -710,10 +711,6 @@ String FontDescription::ToString(FontVariantPosition variant_position) {
       return "Super";
   }
   return "Unknown";
-}
-
-static const char* ToBooleanString(bool value) {
-  return value ? "true" : "false";
 }
 
 String FontDescription::ToString() const {
@@ -752,15 +749,16 @@ String FontDescription::ToString() const {
       blink::ToString(Orientation()).Ascii().c_str(),
       blink::ToString(WidthVariant()).Ascii().c_str(),
       FontDescription::ToString(VariantCaps()).Ascii().c_str(),
-      ToBooleanString(IsAbsoluteSize()),
+      base::ToString(IsAbsoluteSize()).c_str(),
       FontDescription::ToString(GenericFamily()).Ascii().c_str(),
       FontDescription::ToString(Kerning()).Ascii().c_str(),
       GetVariantLigatures().ToString().Ascii().c_str(), KeywordSize(),
       blink::ToString(FontSmoothing()).Ascii().c_str(),
       blink::ToString(TextRendering()).Ascii().c_str(),
-      ToBooleanString(IsSyntheticBold()), ToBooleanString(IsSyntheticItalic()),
-      ToBooleanString(UseSubpixelPositioning()),
-      ToBooleanString(SubpixelAscentDescent()),
+      base::ToString(IsSyntheticBold()).c_str(),
+      base::ToString(IsSyntheticItalic()).c_str(),
+      base::ToString(UseSubpixelPositioning()).c_str(),
+      base::ToString(SubpixelAscentDescent()).c_str(),
       VariantNumeric().ToString().Ascii().c_str(),
       VariantEastAsian().ToString().Ascii().c_str(),
       blink::ToString(FontOpticalSizing()).Ascii().c_str(),

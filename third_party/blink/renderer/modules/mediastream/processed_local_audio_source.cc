@@ -13,6 +13,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -78,16 +79,15 @@ std::string GetAudioProcesingPropertiesLogString(
             return "system";
         }
       };
-  auto bool_to_string = [](bool value) { return value ? "true" : "false"; };
   auto str = base::StringPrintf(
       "aec: %s, "
       "disable_hw_ns: %s, "
       "auto_gain_control: %s, "
       "noise_suppression: %s",
       aec_to_string(properties.echo_cancellation_type),
-      bool_to_string(properties.disable_hw_noise_suppression),
-      bool_to_string(properties.auto_gain_control),
-      bool_to_string(properties.noise_suppression));
+      base::ToString(properties.disable_hw_noise_suppression).c_str(),
+      base::ToString(properties.auto_gain_control).c_str(),
+      base::ToString(properties.noise_suppression).c_str());
   return str;
 }
 
@@ -577,7 +577,7 @@ void ProcessedLocalAudioSource::OnCaptureError(
 
 void ProcessedLocalAudioSource::OnCaptureMuted(bool is_muted) {
   SendLogMessageWithSessionId(base::StringPrintf(
-      "OnCaptureMuted({is_muted=%s})", is_muted ? "true" : "false"));
+      "OnCaptureMuted({is_muted=%s})", base::ToString(is_muted).c_str()));
   SetMutedState(is_muted);
 }
 

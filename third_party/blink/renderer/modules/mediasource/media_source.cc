@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/to_string.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/logging_override_if_enabled.h"
@@ -524,7 +525,7 @@ bool MediaSource::isTypeSupported(ExecutionContext* context,
                                   const String& type) {
   bool result = IsTypeSupportedInternal(
       context, type, true /* Require fully specified mime and codecs */);
-  DVLOG(2) << __func__ << "(" << type << ") -> " << (result ? "true" : "false");
+  DVLOG(2) << __func__ << "(" << type << ") -> " << base::ToString(result);
   return result;
 }
 
@@ -538,7 +539,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // lack of support immediately without proceeding.
   if (!context) {
     DVLOG(1) << __func__ << "(" << type << ", "
-             << (enforce_codec_specificity ? "true" : "false")
+             << base::ToString(enforce_codec_specificity)
              << ") -> false (context is null)";
     return false;
   }
@@ -548,7 +549,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // 1. If type is an empty string, then return false.
   if (type.empty()) {
     DVLOG(1) << __func__ << "(" << type << ", "
-             << (enforce_codec_specificity ? "true" : "false")
+             << base::ToString(enforce_codec_specificity)
              << ") -> false (empty input)";
     return false;
   }
@@ -558,7 +559,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   String mime_type = content_type.GetType();
   if (mime_type.empty()) {
     DVLOG(1) << __func__ << "(" << type << ", "
-             << (enforce_codec_specificity ? "true" : "false")
+             << base::ToString(enforce_codec_specificity)
              << ") -> false (invalid mime type)";
     return false;
   }
@@ -637,7 +638,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
       HTMLMediaElement::GetSupportsType(filtered_content_type);
   if (get_supports_type_result == MIMETypeRegistry::kNotSupported) {
     DVLOG(1) << __func__ << "(" << type << ", "
-             << (enforce_codec_specificity ? "true" : "false")
+             << base::ToString(enforce_codec_specificity)
              << ") -> false (not supported by HTMLMediaElement)";
     RecordIdentifiabilityMetric(context, type, false);
     return false;
@@ -665,8 +666,8 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   bool result = supported == MIMETypeRegistry::kSupported;
 
   DVLOG(2) << __func__ << "(" << type << ", "
-           << (enforce_codec_specificity ? "true" : "false") << ") -> "
-           << (result ? "true" : "false");
+           << base::ToString(enforce_codec_specificity) << ") -> "
+           << base::ToString(result);
   RecordIdentifiabilityMetric(context, type, result);
   return result;
 }

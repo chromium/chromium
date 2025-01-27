@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "media/base/cdm_factory.h"
@@ -164,8 +165,8 @@ void CdmSessionAdapter::OnCdmCreated(
   DCHECK(!cdm_);
 
   TRACE_EVENT_NESTABLE_ASYNC_END2("media", "CdmSessionAdapter::CreateCdm",
-                                  trace_id_, "success",
-                                  (cdm ? "true" : "false"), "status", status);
+                                  trace_id_, "success", base::ToString(cdm),
+                                  "status", status);
 
   auto key_system_uma_prefix = GetUMAPrefixForCdm(cdm_config);
   ReportCreateCdmStatusUMA(key_system_uma_prefix, cdm != nullptr, status);
