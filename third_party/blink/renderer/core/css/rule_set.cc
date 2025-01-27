@@ -275,10 +275,7 @@ static void ExtractSelectorValues(const CSSSelector* selector,
       class_name = selector->Value();
       break;
     case CSSSelector::kTag:
-      if (selector->TagQName().LocalName() !=
-          CSSSelector::UniversalSelectorAtom()) {
-        tag_name = selector->TagQName().LocalName();
-      }
+      tag_name = selector->TagQName().LocalName();
       break;
     case CSSSelector::kPseudoClass:
     case CSSSelector::kPseudoElement:
@@ -675,7 +672,7 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
   // If we didn't find a specialized map to stick it in, file under universal
   // rules.
   MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
-    return selector.Match() == CSSSelector::kTag &&
+    return selector.Match() == CSSSelector::kUniversalTag &&
            selector.TagQName() == AnyQName();
   });
   AddToRuleSet(universal_rules_, rule_data);

@@ -16,6 +16,7 @@ namespace {
 bool SupportsInvalidation(CSSSelector::MatchType match) {
   switch (match) {
     case CSSSelector::kTag:
+    case CSSSelector::kUniversalTag:
     case CSSSelector::kId:
     case CSSSelector::kClass:
     case CSSSelector::kAttributeExact:
@@ -647,8 +648,7 @@ void RuleInvalidationDataVisitor<VisitorType>::
   features.has_features_for_rule_set_invalidation |=
       selector.IsIdClassOrAttributeSelector();
 
-  if (selector.Match() == CSSSelector::kTag &&
-      selector.TagQName().LocalName() != CSSSelector::UniversalSelectorAtom()) {
+  if (selector.Match() == CSSSelector::kTag) {
     features.NarrowToTag(selector.TagQName().LocalName());
     return;
   }
@@ -1108,8 +1108,7 @@ bool RuleInvalidationDataVisitor<VisitorType>::
     }
     return true;
   }
-  if (selector.Match() == CSSSelector::kTag &&
-      selector.TagQName().LocalName() != CSSSelector::UniversalSelectorAtom()) {
+  if (selector.Match() == CSSSelector::kTag) {
     if constexpr (is_builder()) {
       rule_invalidation_data_.tag_names_in_has_argument.insert(
           selector.TagQName().LocalName());

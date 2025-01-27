@@ -1254,8 +1254,7 @@ void ElementRuleCollector::DidMatchRule(
         universal =
             next->IsLastInComplexSelector() &&
             CSSSelector::GetPseudoId(next->GetPseudoType()) == dynamic_pseudo &&
-            selector.Match() == CSSSelector::kTag &&
-            selector.TagQName().LocalName().IsNull() &&
+            selector.Match() == CSSSelector::kUniversalTag &&
             selector.TagQName().Prefix() == g_star_atom;
       }
 

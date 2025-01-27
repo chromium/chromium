@@ -1056,9 +1056,11 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
     const CSSSelector* selector = list->First();
     for (auto sub_expectation : test_case.expectation) {
       ASSERT_TRUE(selector);
-      AtomicString selector_value = selector->Match() == CSSSelector::kTag
-                                        ? selector->TagQName().LocalName()
-                                        : selector->Value();
+      AtomicString selector_value =
+          (selector->Match() == CSSSelector::kTag ||
+           selector->Match() == CSSSelector::kUniversalTag)
+              ? selector->TagQName().LocalName()
+              : selector->Value();
       EXPECT_EQ(sub_expectation.first, selector_value);
       EXPECT_EQ(sub_expectation.second, selector->Relation());
       selector = selector->NextSimpleSelector();
