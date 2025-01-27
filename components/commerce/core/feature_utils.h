@@ -88,6 +88,11 @@ bool IsDiscountEligibleToShowOnNavigation(AccountChecker* account_checker);
 // enabled country and locale.
 bool IsMerchantViewerEnabled(AccountChecker* account_checker);
 
+// Returns whether the |IsShoppingPage| API is available for use. This considers
+// the user's region and locale and is not necessarily bound to any specific
+// user-facing feature.
+bool IsShoppingPageTypesApiEnabled(AccountChecker* account_checker);
+
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_FEATURE_UTILS_H_

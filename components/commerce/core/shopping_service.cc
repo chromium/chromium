@@ -232,7 +232,7 @@ ShoppingService::ShoppingService(
           optimization_guide::proto::OptimizationType::SHOPPING_DISCOUNTS);
     }
 
-    if (IsShoppingPageTypesApiEnabled()) {
+    if (IsShoppingPageTypesApiEnabled(account_checker_.get())) {
       types.push_back(
           optimization_guide::proto::OptimizationType::SHOPPING_PAGE_TYPES);
     }
@@ -842,11 +842,6 @@ bool ShoppingService::IsParcelTrackingEligible() {
     return false;
   }
   return account_checker_ && account_checker_->IsSignedIn();
-}
-
-bool ShoppingService::IsShoppingPageTypesApiEnabled() {
-  return IsRegionLockedFeatureEnabled(kShoppingPageTypes,
-                                      kShoppingPageTypesRegionLaunched);
 }
 
 const std::vector<UrlInfo> ShoppingService::GetUrlInfosForActiveWebWrappers() {

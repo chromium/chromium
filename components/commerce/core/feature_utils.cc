@@ -182,4 +182,11 @@ bool IsMerchantViewerEnabled(AccountChecker* account_checker) {
              kCommerceMerchantViewer, kCommerceMerchantViewerRegionLaunched,
              account_checker->GetCountry(), account_checker->GetLocale());
 }
+
+bool IsShoppingPageTypesApiEnabled(AccountChecker* account_checker) {
+  return account_checker &&
+         commerce::IsRegionLockedFeatureEnabled(
+             kShoppingPageTypes, kShoppingPageTypesRegionLaunched,
+             account_checker->GetCountry(), account_checker->GetLocale());
+}
 }  // namespace commerce
