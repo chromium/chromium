@@ -2136,6 +2136,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/html/canvas',
+        ],
+        'allowed': [
+            'viz::SharedImageFormat',
+            'viz::SkColorTypeToSinglePlaneSharedImageFormat',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/platform/graphics/view_transition_element_id.h'
         ],
         'allowed': ['cc::ViewTransitionElementId'],

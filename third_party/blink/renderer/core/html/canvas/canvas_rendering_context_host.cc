@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "third_party/blink/public/common/features.h"
@@ -353,6 +354,12 @@ SkAlphaType CanvasRenderingContextHost::GetRenderingContextAlphaType() const {
 SkColorType CanvasRenderingContextHost::GetRenderingContextSkColorType() const {
   return RenderingContext() ? RenderingContext()->GetSkColorType()
                             : kN32_SkColorType;
+}
+
+viz::SharedImageFormat CanvasRenderingContextHost::GetRenderingContextFormat()
+    const {
+  return viz::SkColorTypeToSinglePlaneSharedImageFormat(
+      GetRenderingContextSkColorType());
 }
 
 sk_sp<SkColorSpace>
