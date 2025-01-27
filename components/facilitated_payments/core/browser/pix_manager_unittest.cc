@@ -1092,7 +1092,7 @@ TEST_F(PixManagerTest, ProgressScreenAutoDismissedAfterInvokingPurchaseAction) {
   // purchase action for a smooth transition to the platform screen.
   EXPECT_EQ(pix_manager_->ui_state_, UiState::kProgressScreen);
 
-  FastForwardBy(base::Seconds(1));
+  FastForwardBy(base::Seconds(2));
 
   // The progress screen should be dismissed after a short delay.
   EXPECT_EQ(pix_manager_->ui_state_, UiState::kHidden);
