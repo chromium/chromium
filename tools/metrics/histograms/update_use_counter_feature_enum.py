@@ -37,7 +37,7 @@ if __name__ == '__main__':
       'third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom'
   WEBDX_START_MARKER = '^enum WebDXFeature {'
 
-  UpdateHistogramEnum('tools/metrics/histograms/enums.xml',
+  UpdateHistogramEnum('tools/metrics/histograms/metadata/blink/enums.xml',
                       histogram_enum_name='WebDXFeatureObserver',
                       source_enum_path=webdx_feature_source,
                       start_marker=WEBDX_START_MARKER,

@@ -891,4 +891,4 @@ enum CSSSampleId {
     //    to update the UMA histogram names.
 };
 
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:MappedCSSProperties)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:MappedCSSProperties)
