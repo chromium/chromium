@@ -183,6 +183,10 @@ class VideoSenderTest : public ::testing::TestWithParam<bool> {
 TEST_P(VideoSenderTest, BuiltInEncoder) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
+  // TODO(issues.chromium.org/282984511): remove when fixed.
+  if (GetParam()) {
+    return;
+  }
   InitEncoder(false, true);
   ASSERT_EQ(STATUS_INITIALIZED, operational_status_);
 

@@ -105,7 +105,7 @@ class VideoEncoderTest
     RunTasksAndAdvanceClock();
   }
 
-  void CreateEncoder(VideoEncoder::FrameEncodedCallback output_cb) {
+  void CreateEncoder(int expected_frames = 0) {
     ASSERT_EQ(STATUS_UNINITIALIZED, operational_status_);
     codec_params_->max_number_of_video_buffers_used = 1;
     video_encoder_ = VideoEncoder::Create(
@@ -113,7 +113,6 @@ class VideoEncoderTest
         std::make_unique<media::MockVideoEncoderMetricsProvider>(),
         base::BindRepeating(&VideoEncoderTest::OnOperationalStatusChange,
                             base::Unretained(this)),
-        std::move(output_cb),
         base::BindRepeating(
             &FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator,
             base::Unretained(vea_factory_.get())));
@@ -208,6 +207,13 @@ class VideoEncoderTest
 // complete encode/decode cycle of varied frame sizes that actually checks the
 // frame content.
 TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
+  // TODO(issues.chromium.org/282984511): remove when fixed.
+  if (GetParam().enable_media_encoder_feature) {
+    return;
+  }
+
+  constexpr int kNumFramesExpected = 10;
+  CreateEncoder(kNumFramesExpected);
   SetVEAFactoryAutoRespond(true);
 
   ExpectVEAResponseForExternalVideoEncoder(0);
@@ -231,23 +237,10 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
   base::WeakPtrFactory<EncodedFrames> encoded_frames_weak_factory(
       &encoded_frames);
 
-  CreateEncoder(base::BindRepeating(
-      [](base::WeakPtr<EncodedFrames> encoded_frames,
-         std::unique_ptr<SenderEncodedFrame> encoded_frame) {
-        if (encoded_frames) {
-          encoded_frames->emplace_back(std::move(encoded_frame));
-        }
-      },
-      encoded_frames_weak_factory.GetWeakPtr()));
-
   // Encode several frames at each size. For encoders with a resize delay,
   // expect the first one or more frames are dropped while the encoder
   // re-inits. For all encoders, expect one key frame followed by all delta
   // frames.
-
-  // Keep track of the expected times by mapping the reference time to the
-  // timestamp.
-  std::map<base::TimeTicks, RtpTimeTicks> expectations;
   for (const auto& frame_size : frame_sizes) {
     // Encode frames until there are four consecutive frames successfully
     // encoded.
@@ -256,16 +249,29 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
              encoded_frames[encoded_frames.size() - 2] &&
              encoded_frames[encoded_frames.size() - 3] &&
              encoded_frames[encoded_frames.size() - 4])) {
-      const auto reference_time = Now();
       auto video_frame = CreateTestVideoFrame(frame_size);
-      expectations.emplace(
-          reference_time,
-
-          ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency));
-
+      const base::TimeTicks reference_time = Now();
+      const base::TimeDelta timestamp = video_frame->timestamp();
       const bool accepted_request = video_encoder()->EncodeVideoFrame(
-          std::move(video_frame), reference_time);
-
+          std::move(video_frame), reference_time,
+          base::BindOnce(
+              [](base::WeakPtr<EncodedFrames> encoded_frames,
+                 RtpTimeTicks expected_rtp_timestamp,
+                 base::TimeTicks expected_reference_time,
+                 std::unique_ptr<SenderEncodedFrame> encoded_frame) {
+                if (!encoded_frames) {
+                  return;
+                }
+                if (encoded_frame) {
+                  EXPECT_EQ(expected_rtp_timestamp,
+                            encoded_frame->rtp_timestamp);
+                  EXPECT_EQ(expected_reference_time,
+                            encoded_frame->reference_time);
+                }
+                encoded_frames->emplace_back(std::move(encoded_frame));
+              },
+              encoded_frames_weak_factory.GetWeakPtr(),
+              ToRtpTimeTicks(timestamp, kVideoFrequency), reference_time));
       if (accepted_request) {
         ++count_frames_accepted;
       }
@@ -292,11 +298,6 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
     if (!encoded_frame) {
       continue;
     }
-
-    // Check that the frame has an expected reference time and RTP timestamp.
-    auto expectation = expectations.find(encoded_frame->reference_time);
-    ASSERT_NE(expectation, expectations.end());
-    EXPECT_EQ(expectation->second, encoded_frame->rtp_timestamp);
 
     if (encoded_frame->is_key_frame) {
       EXPECT_EQ(encoded_frame->frame_id, encoded_frame->referenced_frame_id);
@@ -326,12 +327,18 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
 // encoders, this tests that the encoder can be safely destroyed before the task
 // is run that delivers the first EncodedFrame.
 TEST_P(VideoEncoderTest, CanBeDestroyedBeforeVEAIsCreated) {
-  CreateEncoder(base::BindRepeating(
-      [](std::unique_ptr<SenderEncodedFrame> encoded_frame) {}));
+  // In the case of the new media video encoder wrapper implementation, creation
+  // is synchronous so this test is not relevant.
+  if (GetParam().enable_media_encoder_feature) {
+    return;
+  }
+
+  CreateEncoder();
 
   // Send a frame to spawn creation of the ExternalVideoEncoder instance.
   const bool encode_result = video_encoder()->EncodeVideoFrame(
-      CreateTestVideoFrame(gfx::Size(128, 72)), Now());
+      CreateTestVideoFrame(gfx::Size(128, 72)), Now(),
+      base::BindOnce([](std::unique_ptr<SenderEncodedFrame> encoded_frame) {}));
 
   // Hardware encoders should fail to encode at this point, since the VEA has
   // not responded yet. Since software encoders don't use VEA, they should

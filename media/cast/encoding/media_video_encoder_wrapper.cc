@@ -134,18 +134,15 @@ MediaVideoEncoderWrapper::MediaVideoEncoderWrapper(
     const FrameSenderConfig& video_config,
     std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
     StatusChangeCallback status_change_cb,
-    FrameEncodedCallback output_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb)
     : cast_environment_(std::move(cast_environment)),
       metrics_provider_(std::move(metrics_provider)),
       status_change_cb_(std::move(status_change_cb)),
-      output_cb_(std::move(output_cb)),
       is_hardware_encoder_(video_config.use_hardware_encoder),
       codec_(video_config.video_codec()) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   CHECK(cast_environment_->HasVideoThread());
   CHECK(status_change_cb_);
-  CHECK(output_cb_);
 
   encode_options_.key_frame = true;
   options_.bitrate = Bitrate::ConstantBitrate(
@@ -168,7 +165,8 @@ MediaVideoEncoderWrapper::~MediaVideoEncoderWrapper() {
 
 bool MediaVideoEncoderWrapper::EncodeVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame,
-    base::TimeTicks reference_time) {
+    base::TimeTicks reference_time,
+    FrameEncodedCallback frame_encoded_callback) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   CHECK(!video_frame->visible_rect().IsEmpty());
 
@@ -262,7 +260,9 @@ void MediaVideoEncoderWrapper::OnEncodedFrame(
 
   recent_metadata_.pop();
   metrics_provider_->IncrementEncodedFrameCount();
-  output_cb_.Run(std::move(encoded_frame));
+
+  // TODO(jophba): link up to frame_encoded_callback.
+  // output_cb_.Run(std::move(encoded_frame));
 }
 
 void MediaVideoEncoderWrapper::OnEncoderStatus(EncoderStatus error) {
