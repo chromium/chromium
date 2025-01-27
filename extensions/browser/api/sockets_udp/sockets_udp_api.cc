@@ -240,7 +240,7 @@ ExtensionFunction::ResponseAction SocketsUdpSendFunction::Work() {
 
   io_buffer_ =
       base::MakeRefCounted<net::IOBufferWithSize>(params_->data.size());
-  base::ranges::copy(params_->data, io_buffer_->data());
+  std::ranges::copy(params_->data, io_buffer_->data());
 
   ResumableUDPSocket* socket = GetUdpSocket(params_->socket_id);
   if (!socket) {

@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -139,7 +139,7 @@ void RulesRegistryService::RemoveRulesRegistriesByID(int rules_registry_id) {
 }
 
 bool RulesRegistryService::HasAnyRegisteredRules() const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       cache_delegates_,
       [](const std::unique_ptr<RulesCacheDelegate>& delegate) {
         return delegate->HasRules();

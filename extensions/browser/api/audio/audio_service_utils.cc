@@ -4,7 +4,7 @@
 
 #include "extensions/browser/api/audio/audio_service_utils.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
 
 namespace extensions {
 
@@ -137,9 +137,9 @@ std::unique_ptr<api::audio::DeviceFilter> ConvertDeviceFilterFromMojom(
 
   if (filter->includedStreamTypes) {
     result->stream_types.emplace(filter->includedStreamTypes->size());
-    base::ranges::transform(*filter->includedStreamTypes,
-                            result->stream_types->begin(),
-                            ConvertStreamTypeFromMojom);
+    std::ranges::transform(*filter->includedStreamTypes,
+                           result->stream_types->begin(),
+                           ConvertStreamTypeFromMojom);
   }
 
   return result;
@@ -166,9 +166,9 @@ crosapi::mojom::DeviceFilterPtr ConvertDeviceFilterToMojom(
   if (filter->stream_types) {
     result->includedStreamTypes =
         std::vector<crosapi::mojom::StreamType>(filter->stream_types->size());
-    base::ranges::transform(*filter->stream_types,
-                            result->includedStreamTypes->begin(),
-                            ConvertStreamTypeToMojom);
+    std::ranges::transform(*filter->stream_types,
+                           result->includedStreamTypes->begin(),
+                           ConvertStreamTypeToMojom);
   }
   return result;
 }

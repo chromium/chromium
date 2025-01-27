@@ -4,12 +4,13 @@
 
 #include "extensions/renderer/script_context.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -301,7 +302,7 @@ Feature::Availability ScriptContext::GetAvailability(
         "runtime.connect",
     };
 
-    if (base::ranges::find(kMessagingApis, api_name) !=
+    if (std::ranges::find(kMessagingApis, api_name) !=
         std::end(kMessagingApis)) {
       bool is_available =
           IsolatedWorldManager::GetInstance()

@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/device_permissions_prompt.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/i18n/message_formatter.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -318,7 +318,7 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
   // Returns true if `device` contains at least one unprotected report in any
   // collection.
   bool HasUnprotectedReports(const device::mojom::HidDeviceInfo& device) {
-    return base::ranges::any_of(device.collections, [](const auto& collection) {
+    return std::ranges::any_of(device.collections, [](const auto& collection) {
       return device::CollectionHasUnprotectedReports(*collection);
     });
   }

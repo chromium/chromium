@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -1003,7 +1002,7 @@ bool ContentVerifier::ShouldVerifyAnyPathsForTesting(
   }
   VerifiedFileTypeHelper helper(*data);
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       relative_unix_paths, [&helper](const base::FilePath& path) {
         return helper.GetVerifiedFileType(path) != VerifiedFileType::kNone;
       });

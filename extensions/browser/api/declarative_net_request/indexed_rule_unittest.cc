@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <optional>
@@ -12,7 +13,6 @@
 #include "base/containers/flat_set.h"
 #include "base/format_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -998,12 +998,12 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
     EXPECT_EQ(dnr_api::RuleActionType::kModifyHeaders,
               indexed_rule.action_type);
 
-    EXPECT_TRUE(base::ranges::equal(expected_request_headers,
-                                    indexed_rule.request_headers_to_modify,
-                                    EqualsForTesting));
-    EXPECT_TRUE(base::ranges::equal(expected_response_headers,
-                                    indexed_rule.response_headers_to_modify,
-                                    EqualsForTesting));
+    EXPECT_TRUE(std::ranges::equal(expected_request_headers,
+                                   indexed_rule.request_headers_to_modify,
+                                   EqualsForTesting));
+    EXPECT_TRUE(std::ranges::equal(expected_response_headers,
+                                   indexed_rule.response_headers_to_modify,
+                                   EqualsForTesting));
   }
 }
 

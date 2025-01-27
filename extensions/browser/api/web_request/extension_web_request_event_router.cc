@@ -1012,7 +1012,7 @@ int WebRequestEventRouter::OnBeforeRequest(
           // Unlike other actions, allow web request extensions to intercept
           // the request here. The headers will be modified during subsequent
           // request stages.
-          DCHECK(base::ranges::all_of(
+          DCHECK(std::ranges::all_of(
               *request->dnr_actions, [](const auto& action) {
                 return action.type == DNRRequestAction::Type::MODIFY_HEADERS;
               }));
@@ -1061,7 +1061,7 @@ int WebRequestEventRouter::OnBeforeSendHeaders(
                               request, ON_BEFORE_SEND_HEADERS, nullptr);
 
   CHECK(request->dnr_actions);
-  initialize_blocked_requests |= base::ranges::any_of(
+  initialize_blocked_requests |= std::ranges::any_of(
       *request->dnr_actions, [](const DNRRequestAction& action) {
         return action.type == DNRRequestAction::Type::MODIFY_HEADERS &&
                !action.request_headers_to_modify.empty();
@@ -1237,7 +1237,7 @@ int WebRequestEventRouter::OnHeadersReceived(
           // Modify header actions can only combine with actions of the same
           // type, see RulesetManager::EvaluateRequestInternal for the
           // implementation.
-          DCHECK(base::ranges::all_of(actions, [](const auto& action) {
+          DCHECK(std::ranges::all_of(actions, [](const auto& action) {
             return action.type == DNRRequestAction::Type::MODIFY_HEADERS;
           }));
 
@@ -1269,7 +1269,7 @@ int WebRequestEventRouter::OnHeadersReceived(
             // Verify that if `request->dnr_actions` contains any modify headers
             // actions, then all actions in `request->dnr_actions` must be
             // modify headers actions.
-            DCHECK(base::ranges::all_of(
+            DCHECK(std::ranges::all_of(
                 *request->dnr_actions, [](const auto& action) {
                   return action.type == DNRRequestAction::Type::MODIFY_HEADERS;
                 }));
@@ -1280,7 +1280,7 @@ int WebRequestEventRouter::OnHeadersReceived(
     }
   }
 
-  initialize_blocked_requests |= base::ranges::any_of(
+  initialize_blocked_requests |= std::ranges::any_of(
       *request->dnr_actions, [](const DNRRequestAction& action) {
         return action.type == DNRRequestAction::Type::MODIFY_HEADERS &&
                !action.response_headers_to_modify.empty();

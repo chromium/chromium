@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "extensions/common/extension_features.h"
 
 namespace extensions {
@@ -37,13 +36,13 @@ constinit base::span<const base::Feature*> g_feature_flags_test_override;
 
 const base::Feature* GetFeature(const std::string& feature_flag) {
   if (!g_feature_flags_test_override.empty()) [[unlikely]] {
-    auto iter = base::ranges::find(g_feature_flags_test_override, feature_flag,
-                                   &base::Feature::name);
+    auto iter = std::ranges::find(g_feature_flags_test_override, feature_flag,
+                                  &base::Feature::name);
     return iter == g_feature_flags_test_override.end() ? nullptr : *iter;
   }
 
   const base::Feature** feature =
-      base::ranges::find(kFeatureFlags, feature_flag, &base::Feature::name);
+      std::ranges::find(kFeatureFlags, feature_flag, &base::Feature::name);
 
   return feature == std::end(kFeatureFlags) ? nullptr : *feature;
 }

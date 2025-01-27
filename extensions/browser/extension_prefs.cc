@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <iterator>
 #include <string_view>
 #include <utility>
@@ -18,7 +19,6 @@
 #include "base/containers/flat_set.h"
 #include "base/json/values_util.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1951,8 +1951,8 @@ ExtensionIdList ExtensionPrefs::GetExtensions() const {
 
   const ExtensionsInfo infos = GetInstalledExtensionsInfo();
   result.reserve(infos.size());
-  base::ranges::transform(infos, std::back_inserter(result),
-                          [](const auto& info) { return info.extension_id; });
+  std::ranges::transform(infos, std::back_inserter(result),
+                         [](const auto& info) { return info.extension_id; });
 
   return result;
 }
@@ -2658,7 +2658,7 @@ void ExtensionPrefs::MigrateToNewExternalUninstallPref() {
   base::Value::List& current_ids = update.Get();
   for (const auto& id : uninstalled_ids) {
     auto existing_entry =
-        base::ranges::find_if(current_ids, [&id](const base::Value& value) {
+        std::ranges::find_if(current_ids, [&id](const base::Value& value) {
           return value.is_string() && value.GetString() == id;
         });
     if (existing_entry == current_ids.end())
@@ -2672,7 +2672,7 @@ bool ExtensionPrefs::ShouldInstallObsoleteComponentExtension(
     const ExtensionId& extension_id) {
   ScopedListPrefUpdate update(prefs_, pref_names::kDeletedComponentExtensions);
   base::Value::List& current_ids = update.Get();
-  auto existing_entry = base::ranges::find_if(
+  auto existing_entry = std::ranges::find_if(
       current_ids, [&extension_id](const base::Value& value) {
         return value.is_string() && value.GetString() == extension_id;
       });
@@ -2684,7 +2684,7 @@ void ExtensionPrefs::MarkObsoleteComponentExtensionAsRemoved(
     const ManifestLocation location) {
   ScopedListPrefUpdate update(prefs_, pref_names::kDeletedComponentExtensions);
   base::Value::List& current_ids = update.Get();
-  auto existing_entry = base::ranges::find_if(
+  auto existing_entry = std::ranges::find_if(
       current_ids, [&extension_id](const base::Value& value) {
         return value.is_string() && value.GetString() == extension_id;
       });

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <limits>
@@ -21,7 +22,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
@@ -72,7 +72,7 @@ bool IsReportIdProtected(const device::mojom::HidDeviceInfo& device,
     // an error in the device's report descriptor, but the device may still be
     // usable. Consider the report protected if `device` has any collection with
     // a protected usage.
-    return base::ranges::any_of(device.collections, [](const auto& collection) {
+    return std::ranges::any_of(device.collections, [](const auto& collection) {
       return IsAlwaysProtected(*collection->usage, HidReportType::kInput) ||
              IsAlwaysProtected(*collection->usage, HidReportType::kOutput) ||
              IsAlwaysProtected(*collection->usage, HidReportType::kFeature);
@@ -101,11 +101,11 @@ void PopulateHidDeviceInfo(hid::HidDeviceInfo* output,
 
     // Omit IDs only used by protected reports.
     std::vector<int> filtered_report_ids;
-    base::ranges::copy_if(collection->report_ids,
-                          std::back_inserter(filtered_report_ids),
-                          [&input](int report_id) {
-                            return !IsReportIdProtected(input, report_id);
-                          });
+    std::ranges::copy_if(collection->report_ids,
+                         std::back_inserter(filtered_report_ids),
+                         [&input](int report_id) {
+                           return !IsReportIdProtected(input, report_id);
+                         });
 
     hid::HidCollectionInfo api_collection;
     api_collection.usage_page = collection->usage->usage_page;

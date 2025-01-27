@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <map>
 #include <optional>
@@ -14,7 +15,6 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
@@ -379,8 +379,8 @@ void VerifyExtensionMetadata(
         [](const ::flatbuffers::Vector<
                ::flatbuffers::Offset<flat::ModifyHeaderInfo>>* metadata_headers,
            const std::vector<dnr_api::ModifyHeaderInfo>& indexed_headers) {
-          return base::ranges::equal(
-              indexed_headers, ToVector(metadata_headers), EqualsForTesting);
+          return std::ranges::equal(indexed_headers, ToVector(metadata_headers),
+                                    EqualsForTesting);
         };
 
     EXPECT_TRUE(are_header_modifications_equal(

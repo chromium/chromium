@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -17,7 +18,6 @@
 #include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -598,7 +598,7 @@ void MessageService::OpenChannelToExtension(
         "extension.onRequestExternal",
     };
     const bool has_event_listener =
-        base::ranges::any_of(events, [&](const char* event) {
+        std::ranges::any_of(events, [&](const char* event) {
           return event_router->ExtensionHasEventListener(target_extension_id,
                                                          event);
         });
