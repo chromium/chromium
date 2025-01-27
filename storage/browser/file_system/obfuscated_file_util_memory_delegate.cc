@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
@@ -522,7 +521,7 @@ int ObfuscatedFileUtilMemoryDelegate::ReadFile(const base::FilePath& path,
   if (buf_len > remaining)
     buf_len = static_cast<int>(remaining);
 
-  base::ranges::copy(
+  std::ranges::copy(
       base::span(dp->entry->file_content)
           .subspan(static_cast<size_t>(offset), static_cast<size_t>(buf_len)),
       buf->data());

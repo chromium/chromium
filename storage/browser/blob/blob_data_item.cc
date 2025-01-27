@@ -4,11 +4,11 @@
 
 #include "storage/browser/blob/blob_data_item.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/file_access/scoped_file_access_delegate.h"
@@ -282,7 +282,7 @@ bool operator==(const BlobDataItem& a, const BlobDataItem& b) {
     return false;
   switch (a.type()) {
     case BlobDataItem::Type::kBytes:
-      return base::ranges::equal(a.bytes(), b.bytes());
+      return std::ranges::equal(a.bytes(), b.bytes());
     case BlobDataItem::Type::kBytesDescription:
       return true;
     case BlobDataItem::Type::kFile:

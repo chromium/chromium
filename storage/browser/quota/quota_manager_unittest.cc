@@ -135,8 +135,8 @@ StorageKey ToStorageKey(const std::string& url) {
 const storage::mojom::BucketTableEntry* FindBucketTableEntry(
     const std::vector<storage::mojom::BucketTableEntryPtr>& bucket_entries,
     BucketId& id) {
-  auto it = base::ranges::find(bucket_entries, id.value(),
-                               &storage::mojom::BucketTableEntry::bucket_id);
+  auto it = std::ranges::find(bucket_entries, id.value(),
+                              &storage::mojom::BucketTableEntry::bucket_id);
   if (it == bucket_entries.end()) {
     return nullptr;
   }
