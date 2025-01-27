@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_projection_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_sub_image.h"
+#include "third_party/blink/renderer/modules/xr/xr_webgl_swap_chain.h"
+#include "third_party/blink/renderer/modules/xr/xr_webgl_texture_array_swap_chain.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "ui/gfx/geometry/size.h"
@@ -101,6 +103,16 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
     return nullptr;
   }
 
+  bool is_texture_array =
+      init->textureType().AsEnum() == V8XRTextureType::Enum::kTextureArray;
+
+  if (is_texture_array && !webgl2_) {
+    exception_state.ThrowTypeError(
+        "textureType of 'texture-array' is only available with WebGL 2 "
+        "contexts.");
+    return nullptr;
+  }
+
   // The max size will be either the native resolution or the default
   // if that happens to be larger than the native res. (That can happen on
   // desktop systems.)
@@ -138,16 +150,24 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
   color_desc.attachment_target = GL_COLOR_ATTACHMENT0;
   color_desc.width = static_cast<uint32_t>(texture_size.width());
   color_desc.height = static_cast<uint32_t>(texture_size.height());
-  color_desc.depth = 1;
+  color_desc.layers = 1;
 
-  XRWebGLSharedImageSwapChain* color_swap_chain =
+  XRWebGLSwapChain* color_swap_chain =
       MakeGarbageCollected<XRWebGLSharedImageSwapChain>(webgl_context_,
                                                         color_desc, webgl2_);
+
+  if (is_texture_array) {
+    // If a texture-array was requested, create a texture array wrapper for the
+    // side-by-side swap chain.
+    // TODO(crbug.com/359418629): Remove once array SharedImages are available.
+    color_swap_chain = MakeGarbageCollected<XRWebGLTextureArraySwapChain>(
+        color_swap_chain, session()->array_texture_layers());
+  }
 
   // TODO(crbug.com/40700985): Return a wrapped swap chain for texture-array
   // layers, like with the WebGPU layers.
 
-  XRWebGLStaticSwapChain* depth_stencil_swap_chain = nullptr;
+  XRWebGLSwapChain* depth_stencil_swap_chain = nullptr;
   if (init->depthFormat() != GL_NONE) {
     XRWebGLSwapChain::Descriptor depth_stencil_desc = {};
     depth_stencil_desc.format = FormatForLayerFormat(init->depthFormat());
@@ -155,9 +175,17 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
         InternalFormatForLayerFormat(init->depthFormat());
     depth_stencil_desc.type = TypeForLayerFormat(init->depthFormat());
     depth_stencil_desc.attachment_target = GL_DEPTH_ATTACHMENT;
+
+    if (is_texture_array) {
+      texture_size.set_width(texture_size.width() /
+                             session()->array_texture_layers());
+      depth_stencil_desc.layers = session()->array_texture_layers();
+    } else {
+      depth_stencil_desc.layers = 1;
+    }
+
     depth_stencil_desc.width = static_cast<uint32_t>(texture_size.width());
     depth_stencil_desc.height = static_cast<uint32_t>(texture_size.height());
-    depth_stencil_desc.depth = 1;
 
     depth_stencil_swap_chain = MakeGarbageCollected<XRWebGLStaticSwapChain>(
         webgl_context_, depth_stencil_desc, webgl2_);
@@ -424,15 +452,13 @@ bool XRWebGLBinding::ValidateLayerColorFormat(GLenum color_format,
     case GL_SRGB8:
     case GL_SRGB8_ALPHA8:
       if (!webgl2_) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kInvalidStateError,
+        exception_state.ThrowTypeError(
             "Specified colorFormat only available with WebGL 2 contexts.");
         return false;
       }
       return true;
     default:
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Invalid colorFormat.");
+      exception_state.ThrowTypeError("Invalid colorFormat.");
       return false;
   }
 }
@@ -442,21 +468,27 @@ bool XRWebGLBinding::ValidateLayerDepthStencilFormat(
     ExceptionState& exception_state) {
   switch (depth_stencil_format) {
     case GL_NONE:
+      return true;
     case GL_DEPTH_COMPONENT:
     case GL_DEPTH_STENCIL:
+      if (!webgl2_ && !webgl_context_->ExtensionsUtil()->IsExtensionEnabled(
+                          "WEBGL_depth_texture")) {
+        exception_state.ThrowTypeError(
+            "depthFormat can only be set with with WebGL 2 contexts or when "
+            "WEBGL_depth_texture is enabled.");
+        return false;
+      }
       return true;
     case GL_DEPTH_COMPONENT24:
     case GL_DEPTH24_STENCIL8:
       if (!webgl2_) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kInvalidStateError,
+        exception_state.ThrowTypeError(
             "Specified depthFormat only available with WebGL 2 contexts.");
         return false;
       }
       return true;
     default:
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
+      exception_state.ThrowTypeError(
           "depthFormat must be a valid depth format or GL_NONE.");
       return false;
   }

@@ -33,14 +33,8 @@ void XRWebGLSwapChain::ClearCurrentTexture() {
     return;
   }
 
-  if (!clear_framebuffer_) {
-    clear_framebuffer_ = webgl_context_->createFramebuffer();
-  }
-
   GLenum attachment = descriptor_.attachment_target;
-  gl->BindFramebuffer(GL_FRAMEBUFFER, clear_framebuffer_->Object());
-  gl->FramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D,
-                           texture->Object(), 0);
+  gl->BindFramebuffer(GL_FRAMEBUFFER, GetFramebuffer()->Object());
 
   GLbitfield clear_bits = 0;
   if (attachment == GL_COLOR_ATTACHMENT0) {
@@ -58,7 +52,18 @@ void XRWebGLSwapChain::ClearCurrentTexture() {
   }
 
   gl->Disable(GL_SCISSOR_TEST);
-  gl->Clear(clear_bits);
+
+  if (descriptor_.layers > 1) {
+    for (uint32_t i = 0; i < descriptor_.layers; ++i) {
+      gl->FramebufferTextureLayer(GL_FRAMEBUFFER, attachment, texture->Object(),
+                                  0, i);
+      gl->Clear(clear_bits);
+    }
+  } else {
+    gl->FramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D,
+                             texture->Object(), 0);
+    gl->Clear(clear_bits);
+  }
 
   // WebGLRenderingContextBase inherits from DrawingBuffer::Client, but makes
   // all the methods private. Downcasting allows us to access them.
@@ -70,9 +75,16 @@ void XRWebGLSwapChain::ClearCurrentTexture() {
   client->DrawingBufferClientRestoreFramebufferBinding();
 }
 
+WebGLFramebuffer* XRWebGLSwapChain::GetFramebuffer() {
+  if (!framebuffer_) {
+    framebuffer_ = webgl_context_->createFramebuffer();
+  }
+  return framebuffer_;
+}
+
 void XRWebGLSwapChain::Trace(Visitor* visitor) const {
   visitor->Trace(webgl_context_);
-  visitor->Trace(clear_framebuffer_);
+  visitor->Trace(framebuffer_);
   XRSwapChain::Trace(visitor);
 }
 
@@ -99,26 +111,37 @@ WebGLUnownedTexture* XRWebGLStaticSwapChain::ProduceTexture() {
     return nullptr;
   }
 
+  GLenum target = descriptor().layers > 1 ? GL_TEXTURE_2D_ARRAY : GL_TEXTURE_2D;
   gl->GenTextures(1, &owned_texture_);
-  gl->BindTexture(GL_TEXTURE_2D, owned_texture_);
-
-  if (webgl2()) {
-    gl->TexStorage2DEXT(GL_TEXTURE_2D, 1, descriptor().internal_format,
-                        descriptor().width, descriptor().height);
-  } else {
-    gl->TexImage2D(GL_TEXTURE_2D, 0, descriptor().format, descriptor().width,
-                   descriptor().height, 0, descriptor().format,
-                   descriptor().type, nullptr);
-  }
+  gl->BindTexture(target, owned_texture_);
 
   // WebGLRenderingContextBase inherits from DrawingBuffer::Client, but makes
   // all the methods private. Downcasting allows us to access them.
   DrawingBuffer::Client* client =
       static_cast<DrawingBuffer::Client*>(context());
-  client->DrawingBufferClientRestoreTexture2DBinding();
+
+  if (target == GL_TEXTURE_2D_ARRAY) {
+    CHECK(webgl2());  // Texture arrays are only available in WebGL 2
+    gl->TexStorage3D(target, 1, descriptor().internal_format,
+                     descriptor().width, descriptor().height,
+                     descriptor().layers);
+
+    client->DrawingBufferClientRestoreTexture2DArrayBinding();
+  } else {
+    if (webgl2()) {
+      gl->TexStorage2DEXT(target, 1, descriptor().internal_format,
+                          descriptor().width, descriptor().height);
+    } else {
+      gl->TexImage2D(target, 0, descriptor().format, descriptor().width,
+                     descriptor().height, 0, descriptor().format,
+                     descriptor().type, nullptr);
+    }
+
+    client->DrawingBufferClientRestoreTexture2DBinding();
+  }
 
   return MakeGarbageCollected<WebGLUnownedTexture>(context(), owned_texture_,
-                                                   GL_TEXTURE_2D);
+                                                   target);
 }
 
 void XRWebGLStaticSwapChain::OnFrameEnd() {
@@ -132,7 +155,10 @@ XRWebGLSharedImageSwapChain::XRWebGLSharedImageSwapChain(
     WebGLRenderingContextBase* context,
     const XRWebGLSwapChain::Descriptor& descriptor,
     bool webgl2)
-    : XRWebGLSwapChain(context, descriptor, webgl2) {}
+    : XRWebGLSwapChain(context, descriptor, webgl2) {
+  // SharedImages cannot have multiple layers yet.
+  CHECK_EQ(descriptor.layers, 1);
+}
 
 WebGLUnownedTexture* XRWebGLSharedImageSwapChain::ProduceTexture() {
   gpu::gles2::GLES2Interface* context_gl = context()->ContextGL();

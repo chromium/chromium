@@ -7307,6 +7307,17 @@ void WebGLRenderingContextBase::DrawingBufferClientRestoreTexture2DBinding() {
 }
 
 void WebGLRenderingContextBase::
+    DrawingBufferClientRestoreTexture2DArrayBinding() {
+  if (destruction_in_progress_) {
+    return;
+  }
+  if (!ContextGL()) {
+    return;
+  }
+  RestoreCurrentTexture2DArray();
+}
+
+void WebGLRenderingContextBase::
     DrawingBufferClientRestoreTextureCubeMapBinding() {
   if (destruction_in_progress_)
     return;
@@ -8797,6 +8808,13 @@ void WebGLRenderingContextBase::RestoreCurrentFramebuffer() {
 void WebGLRenderingContextBase::RestoreCurrentTexture2D() {
   bindTexture(GL_TEXTURE_2D,
               texture_units_[active_texture_unit_].texture2d_binding_.Get());
+}
+
+void WebGLRenderingContextBase::RestoreCurrentTexture2DArray() {
+  CHECK(IsWebGL2());
+  bindTexture(
+      GL_TEXTURE_2D_ARRAY,
+      texture_units_[active_texture_unit_].texture2d_array_binding_.Get());
 }
 
 void WebGLRenderingContextBase::RestoreCurrentTextureCubeMap() {
