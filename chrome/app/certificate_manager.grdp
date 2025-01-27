@@ -206,6 +206,11 @@
       Click to navigate away from <ph name="SUBPAGE_TITLE">$1<ex>Installed by your Administrator</ex> subpage</ph>.
     </message>
 
+    <!-- List -->
+    <message name="IDS_CERTIFICATE_MANAGER_V2_LIST_EXPAND_ARIA_LABEL" desc="Text read by screen readers when focusing on the expand certificate list button. If the button is activated, it will show or hide the certificate list. This text will only be announced by screen readers and will not be visible in the UI.">
+      Show <ph name="CERT_LIST">$1<ex>Trusted Certificates</ex></ph>
+    </message>
+
     <!-- Cert Entry -->
     <message name="IDS_CERTIFICATE_MANAGER_V2_CERT_ENTRY_VIEW_ARIA_LABEL" desc="Text read by screen readers when focusing on the view certficate details button. If the button is activated, it will open up a view certificate dialog. This text will only be announced by screen readers and will not be visible in the UI.">
       View certificate details for <ph name="CERT_NAME">$1<ex>GTS Root R2</ex></ph> in a new dialog
