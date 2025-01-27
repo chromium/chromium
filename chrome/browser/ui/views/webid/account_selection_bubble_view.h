@@ -70,8 +70,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list) override;
 
-  void OnAnchorBoundsChanged() override;
-
   std::string GetDialogTitle() const override;
 
   // views::BubbleDialogDelegateView:

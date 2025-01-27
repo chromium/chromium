@@ -433,18 +433,6 @@ std::string AccountSelectionBubbleView::GetDialogTitle() const {
   return base::UTF16ToUTF8(title_);
 }
 
-void AccountSelectionBubbleView::OnAnchorBoundsChanged() {
-  Browser* browser = chrome::FindBrowserWithTab(owner_->web_contents());
-  if (!browser || !browser->tab_strip_model()) {
-    return;
-  }
-
-  // This method is called only if we didn't early return because there is a
-  // crash (crbug.com/341240034) that is caused by calling this method and
-  // subsequently, calling GetBubbleBounds() when the web contents is invalid.
-  views::BubbleDialogDelegateView::OnAnchorBoundsChanged();
-}
-
 gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
   // Since the top right corner of the bubble is set as the arrow in the ctor,
   // the top right corner of the bubble will be anchored to the origin, which we
