@@ -40,7 +40,7 @@ class TestPrefServiceProvider;
 // SessionControllerClient created, e.g. InProcessBrowserTest based tests. On
 // the other hand, tests code in chrome can use this class as long as it does
 // not run BrowserMain, e.g. testing::Test based test.
-class TestSessionControllerClient : public SessionControllerClient {
+class TestSessionControllerClient final : public SessionControllerClient {
  public:
   TestSessionControllerClient(SessionControllerImpl* controller,
                               TestPrefServiceProvider* prefs_provider,
@@ -123,7 +123,7 @@ class TestSessionControllerClient : public SessionControllerClient {
   // Simulates screen unlocking. It is virtual so that test cases can override
   // it. The default implementation sets the session state of SessionController
   // to be ACTIVE.
-  virtual void UnlockScreen();
+  void UnlockScreen();
 
   // Spins message loop to finish pending lock screen request if any.
   void FlushForTest();
