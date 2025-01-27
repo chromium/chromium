@@ -15,14 +15,23 @@ warnings here: https://clang.llvm.org/docs/SafeBuffers.html
 
 [TOC]
 
-## Suppressions
+## Preventing OOB by removing unsafe libc calls.
+
+OOB bugs also commonly happen through C-style library calls such as
+memcpy() and memset(). In order to encourage safer alternatives, the
+Clang compiler can warn about unsafe calls which should be converted
+to safer C++ alternatives.
+
+These warnings are not yet enabled by default for chromium builds.
+
+## Unsafe buffer suppressions
 
 Our [compiler](../tools/clang/plugins/UnsafeBuffersPlugin.cpp) enables
 the `-Wunsafe-buffer-usage` warning on all files by default. Because the
 Chromium codebase is not yet compliant with these warnings, there are
 mechanisms to opt out code on a directory, file, or per-occurence basis.
 
-Entire directories are opted out of unsafe pointer usage warnings through
+Entire directories are opted out of unsafe buffer usage warnings through
 the [`//build/config/unsafe_buffers_paths.txt`](../build/config/unsafe_buffers_paths.txt)
 file. As work progresses, directories will be removed from this list, and
 non-compliant files marked on a per-file basis as below. Early results
@@ -55,6 +64,26 @@ using the `UNSAFE_TODO()` macro. This provides the same functionality as
 the `UNSAFE_BUFFERS()` macro, but allows easier searching for code in need
 of revision. Add TODO() comment, along the lines of
 `// TODO(crbug.com/xxxxxx): resolve safety issues`.
+
+## Unsafe libc call suppressions.
+
+The above mechanisms also suppress unsafe libc call warnings in addition
+to the unsafe buffer warnings.
+
+To prevent back-sliding on files which have been made safe with respect
+to unsafe buffers, there is now a per-file pragma which suppresses the
+libc warnings while still enforcing the unsafe buffer warnings.
+
+```
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/ABC): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_libc_calls
+#endif
+```
+
+An initial set of files containing these suppressions will be uploaded
+presently; please keep these in place until the pending libc enforcement
+is enabled for Chromium.
 
 ## Container-based ecosystem
 
