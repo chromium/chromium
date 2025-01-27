@@ -129,12 +129,12 @@ class PLATFORM_EXPORT FontFallbackList
   const Member<FontSelector> font_selector_;
   int family_index_ = 0;
   const uint16_t generation_;
-  bool has_loading_fallback_ : 1;
-  bool has_custom_font_ : 1;
-  bool can_shape_word_by_word_ : 1;
-  bool can_shape_word_by_word_computed_ : 1;
-  bool is_invalid_ : 1;
-  bool nullify_primary_font_data_for_test_ : 1;
+  bool has_loading_fallback_ : 1 = false;
+  bool has_custom_font_ : 1 = false;
+  bool can_shape_word_by_word_ : 1 = false;
+  bool can_shape_word_by_word_computed_ : 1 = false;
+  bool is_invalid_ : 1 = false;
+  bool nullify_primary_font_data_for_test_ : 1 = false;
 
   Member<NGShapeCache> ng_shape_cache_;
   Member<ShapeCache> shape_cache_;

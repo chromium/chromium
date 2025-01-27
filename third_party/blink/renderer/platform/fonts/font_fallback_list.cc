@@ -44,13 +44,7 @@ namespace blink {
 
 FontFallbackList::FontFallbackList(FontSelector* font_selector)
     : font_selector_(font_selector),
-      generation_(FontCache::Get().Generation()),
-      has_loading_fallback_(false),
-      has_custom_font_(false),
-      can_shape_word_by_word_(false),
-      can_shape_word_by_word_computed_(false),
-      is_invalid_(false),
-      nullify_primary_font_data_for_test_(false) {}
+      generation_(FontCache::Get().Generation()) {}
 
 void FontFallbackList::Trace(Visitor* visitor) const {
   visitor->Trace(font_list_);
