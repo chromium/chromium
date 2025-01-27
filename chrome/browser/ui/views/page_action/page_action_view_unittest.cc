@@ -260,25 +260,25 @@ TEST_F(PageActionViewWithMockModelTest, Visibility) {
   EXPECT_FALSE(page_action_view()->GetVisible());
 
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
-  page_action_view()->OnPageActionModelChanged(*model());
+  page_action_view()->OnPageActionModelChanged(model());
   EXPECT_TRUE(page_action_view()->GetVisible());
 
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(false));
-  page_action_view()->OnPageActionModelChanged(*model());
+  page_action_view()->OnPageActionModelChanged(model());
   EXPECT_FALSE(page_action_view()->GetVisible());
 }
 
 TEST_F(PageActionViewWithMockModelTest,
        UpdateStyleSetsTonalColorsAndBackgroundVisibility) {
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
-  page_action_view()->OnPageActionModelChanged(*model());
+  page_action_view()->OnPageActionModelChanged(model());
 
   EXPECT_TRUE(page_action_view()->is_using_tonal_colors());
   EXPECT_EQ(page_action_view()->background_visible(),
             IconLabelBubbleView::BackgroundVisibility::kAlways);
 
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
-  page_action_view()->OnPageActionModelChanged(*model());
+  page_action_view()->OnPageActionModelChanged(model());
 
   EXPECT_FALSE(page_action_view()->is_using_tonal_colors());
   EXPECT_EQ(page_action_view()->background_visible(),
@@ -287,13 +287,13 @@ TEST_F(PageActionViewWithMockModelTest,
 
 TEST_F(PageActionViewWithMockModelTest, SuggestionText) {
   EXPECT_CALL(*model(), GetText()).WillRepeatedly(Return(kTestText));
-  page_action_view()->OnPageActionModelChanged(*model());
+  page_action_view()->OnPageActionModelChanged(model());
   EXPECT_EQ(page_action_view()->GetText(), kTestText);
 }
 
 TEST_F(PageActionViewWithMockModelTest, TooltipText) {
   EXPECT_CALL(*model(), GetTooltipText()).WillRepeatedly(Return(kTestText));
-  page_action_view()->OnPageActionModelChanged(*model());
+  page_action_view()->OnPageActionModelChanged(model());
   EXPECT_EQ(page_action_view()->GetTooltipText(), kTestText);
 }
 
@@ -308,7 +308,7 @@ TEST_F(PageActionViewWithMockModelTest, OnThemeChangedUpdatesIconImage) {
   // If the default size is the intended icon size, this test is useless.
   EXPECT_GT(required_icon_size, kDefaultIconSize);
 
-  page_action_view()->OnPageActionModelChanged(*model());
+  page_action_view()->OnPageActionModelChanged(model());
   EXPECT_EQ(page_action_view()
                 ->GetImageModel(views::Button::STATE_NORMAL)
                 ->Size()

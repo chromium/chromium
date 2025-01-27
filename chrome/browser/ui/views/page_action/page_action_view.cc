@@ -48,16 +48,15 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
   }
 }
 
-void PageActionView::OnPageActionModelChanged(
-    const PageActionModelInterface& model) {
-  SetEnabled(model.GetVisible());
-  SetVisible(model.GetVisible());
-  SetText(model.GetText());
-  SetTooltipText(model.GetTooltipText());
+void PageActionView::OnPageActionModelChanged(PageActionModelInterface* model) {
+  SetEnabled(model->GetVisible());
+  SetVisible(model->GetVisible());
+  SetText(model->GetText());
+  SetTooltipText(model->GetTooltipText());
 
   UpdateIconImage();
   UpdateBorder();
-  UpdateStyle(model.GetShowSuggestionChip());
+  UpdateStyle(model->GetShowSuggestionChip());
 }
 
 void PageActionView::UpdateStyle(bool is_suggestion_chip) {
@@ -67,7 +66,7 @@ void PageActionView::UpdateStyle(bool is_suggestion_chip) {
 }
 
 void PageActionView::OnPageActionModelWillBeDeleted(
-    const PageActionModelInterface& model) {
+    PageActionModelInterface* model) {
   observation_.Reset();
   action_item_controller_subscription_ = {};
   SetVisible(false);

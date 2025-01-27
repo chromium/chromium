@@ -39,9 +39,8 @@ class PageActionView : public IconLabelBubbleView,
   void SetModel(PageActionModelInterface* model);
 
   // PageActionModelObserver
-  void OnPageActionModelChanged(const PageActionModelInterface& model) override;
-  void OnPageActionModelWillBeDeleted(
-      const PageActionModelInterface& model) override;
+  void OnPageActionModelChanged(PageActionModelInterface* model) override;
+  void OnPageActionModelWillBeDeleted(PageActionModelInterface* model) override;
 
   // IconLabelBubbleView
   void ViewHierarchyChanged(

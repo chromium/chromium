@@ -41,14 +41,13 @@ class PageActionTestObserver : public PageActionModelObserver {
   PageActionTestObserver() = default;
   ~PageActionTestObserver() override = default;
 
-  void OnPageActionModelChanged(
-      const PageActionModelInterface& model) override {
+  void OnPageActionModelChanged(PageActionModelInterface* model) override {
     ++model_change_count_;
 
-    visible_ = model.GetVisible();
-    text_ = model.GetText();
-    tooltip_text_ = model.GetTooltipText();
-    image_ = model.GetImage();
+    visible_ = model->GetVisible();
+    text_ = model->GetText();
+    tooltip_text_ = model->GetTooltipText();
+    image_ = model->GetImage();
   }
 
   int model_change_count() const { return model_change_count_; }
