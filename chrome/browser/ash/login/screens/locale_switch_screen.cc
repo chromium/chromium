@@ -378,12 +378,15 @@ void LocaleSwitchScreen::SwitchLocale() {
     return;
   }
 
+  auto* user_manager = user_manager::UserManager::Get();
+  const auto* user = user_manager->GetActiveUser();
+  // Set fetched locale into user's `user_manager::User::account_locale_`.
+  user_manager->UpdateUserAccountLocale(user->GetAccountId(), locale_);
+
   // Types of users that have a GAIA account and could be used during the
   // "Add Person" flow.
   static constexpr user_manager::UserType kAddPersonUserTypes[] = {
       user_manager::UserType::kRegular, user_manager::UserType::kChild};
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
   // Don't show notification for the ephemeral logins, proceed with the default
   // flow.
   if (!chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin() &&

@@ -365,6 +365,10 @@ class USER_MANAGER_EXPORT UserManager {
   virtual void UpdateUserAccountData(const AccountId& account_id,
                                      const UserAccountData& account_data) = 0;
 
+  // Sets account locale for user with id |account_id|.
+  virtual void UpdateUserAccountLocale(const AccountId& account_id,
+                                       const std::string& locale) = 0;
+
   // Saves user's displayed (non-canonical) email in local state preferences.
   // Ignored If there is no such user.
   virtual void SaveUserDisplayEmail(const AccountId& account_id,

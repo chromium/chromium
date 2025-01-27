@@ -194,6 +194,9 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   void RecordOwner(const AccountId& owner) override;
   void UpdateUserAccountData(const AccountId& account_id,
                              const UserAccountData& account_data) override;
+  void UpdateUserAccountLocale(const AccountId& account_id,
+                               const std::string& locale) override;
+
   bool IsOwnerUser(const User* user) const override;
   bool IsPrimaryUser(const User* user) const override;
   bool IsEphemeralUser(const User* user) const override;
@@ -440,10 +443,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
 
   // Sends metrics for multi user sign-in.
   void SendMultiUserSignInMetrics();
-
-  // Sets account locale for user with id |account_id|.
-  virtual void UpdateUserAccountLocale(const AccountId& account_id,
-                                       const std::string& locale);
 
   // Updates user account after locale was resolved.
   void DoUpdateAccountLocale(const AccountId& account_id,
