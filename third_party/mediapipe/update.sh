@@ -27,7 +27,7 @@ THIRD_PARTY_DEPS=(
 )
 # Patches to apply (<directory> <patch file>)
 THIRD_PARTY_DEPS_PATCHES=(
-  "third_party/mediapipe/src/third_party/com_google_audio_tools third_party/com_google_audio_tools_fixes.diff"
+  "third_party/com_google_audio_tools third_party/com_google_audio_tools_fixes.diff"
 )
 
 EXCLUDE_PATTERNS=(
