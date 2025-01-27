@@ -60,6 +60,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
     private final @Nullable @TabGroupColorId Integer mSelectedColor;
     private final SoftKeyboardFacility mSoftKeyboard;
     private ViewSpec mTitleInputSpec;
+    private ViewElement mDialog;
 
     /** Constructor. Expects no particular title or selected color. */
     public NewTabGroupDialogFacility(
@@ -85,7 +86,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareView(DIALOG, ViewElement.displayingAtLeastOption(80));
+        mDialog = elements.declareView(DIALOG, ViewElement.displayingAtLeastOption(80));
         elements.declareView(DIALOG_TITLE);
 
         String inputElementId = "Tab group title input showing " + mTitle;
@@ -132,14 +133,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
         // An empty name causes warning text to show up which could push the color picker container
         // out of view for small screen devices, so dismiss the keyboard.
         if (newTabGroupName.isEmpty()) {
-            if (mSoftKeyboard.getPhase() == Phase.ACTIVE) {
-                mSoftKeyboard.close();
-            } else if (mSoftKeyboard.getPhase() == Phase.FINISHED) {
-                // Do nothing as the soft keyboard has already been closed
-            } else {
-                throw new IllegalArgumentException(
-                        "SoftKeyboardFacility is in phase " + mSoftKeyboard.getPhase());
-            }
+            ensureSoftKeyboardClosed();
         }
 
         return mHostStation.swapFacilitySync(
@@ -159,14 +153,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
     /** Press "Done" to confirm the tab group name and color. */
     public TabSwitcherGroupCardFacility pressDone() {
-        if (mSoftKeyboard.getPhase() == Phase.ACTIVE) {
-            mSoftKeyboard.close();
-        } else if (mSoftKeyboard.getPhase() == Phase.FINISHED) {
-            // Do nothing as the soft keyboard has already been closed
-        } else {
-            throw new IllegalArgumentException(
-                    "SoftKeyboardFacility is in phase " + mSoftKeyboard.getPhase());
-        }
+        ensureSoftKeyboardClosed();
 
         // The reason we can pass an expected card index is because the tab group has already been
         // created.
@@ -180,14 +167,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
     /** Press "Done" to confirm the tab group name and color, but no-op from an invalid title. */
     public NewTabGroupDialogFacility pressDoneWithInvalidTitle() {
-        if (mSoftKeyboard.getPhase() == Phase.ACTIVE) {
-            mSoftKeyboard.close();
-        } else if (mSoftKeyboard.getPhase() == Phase.FINISHED) {
-            // Do nothing as the soft keyboard has already been closed
-        } else {
-            throw new IllegalArgumentException(
-                    "SoftKeyboardFacility is in phase " + mSoftKeyboard.getPhase());
-        }
+        ensureSoftKeyboardClosed();
 
         return mHostStation.swapFacilitySync(
                 this,
@@ -199,14 +179,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
     /** Press the system backpress to confirm the tab group name and color. */
     public TabSwitcherGroupCardFacility pressBack() {
-        if (mSoftKeyboard.getPhase() == Phase.ACTIVE) {
-            mSoftKeyboard.close();
-        } else if (mSoftKeyboard.getPhase() == Phase.FINISHED) {
-            // Do nothing as the soft keyboard has already been closed
-        } else {
-            throw new IllegalArgumentException(
-                    "SoftKeyboardFacility is in phase " + mSoftKeyboard.getPhase());
-        }
+        ensureSoftKeyboardClosed();
 
         // The reason we can pass an expected card index is because the tab group has already been
         // created.
@@ -218,5 +191,16 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
                 () -> {
                     Espresso.pressBack();
                 });
+    }
+
+    private void ensureSoftKeyboardClosed() {
+        if (mSoftKeyboard.getPhase() == Phase.ACTIVE) {
+            mSoftKeyboard.close(mDialog);
+        } else if (mSoftKeyboard.getPhase() == Phase.FINISHED) {
+            // Do nothing as the soft keyboard has already been closed
+        } else {
+            throw new IllegalArgumentException(
+                    "SoftKeyboardFacility is in phase " + mSoftKeyboard.getPhase());
+        }
     }
 }
