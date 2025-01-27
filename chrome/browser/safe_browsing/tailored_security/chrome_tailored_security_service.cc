@@ -103,7 +103,7 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
   SetSafeBrowsingState(profile_->GetPrefs(),
                        is_enabled ? SafeBrowsingState::ENHANCED_PROTECTION
                                   : SafeBrowsingState::STANDARD_PROTECTION,
-                       /*is_esb_enabled_in_sync=*/is_enabled);
+                       /*is_esb_enabled_by_account_integration=*/is_enabled);
   message_ = std::make_unique<TailoredSecurityConsentedModalAndroid>(
       web_contents, is_enabled,
       base::BindOnce(&ChromeTailoredSecurityService::MessageDismissed,
@@ -128,7 +128,7 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
   SetSafeBrowsingState(profile_->GetPrefs(),
                        is_enabled ? SafeBrowsingState::ENHANCED_PROTECTION
                                   : SafeBrowsingState::STANDARD_PROTECTION,
-                       /*is_esb_enabled_in_sync=*/is_enabled);
+                       /*is_esb_enabled_by_account_integration=*/is_enabled);
   DisplayDesktopDialog(browser, is_enabled);
 #endif
   SaveRetryState(TailoredSecurityRetryState::NO_RETRY_NEEDED);

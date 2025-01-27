@@ -89,7 +89,7 @@
       _prefService,
       enabled ? safe_browsing::SafeBrowsingState::STANDARD_PROTECTION
               : safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING,
-      /*is_esb_enabled_in_sync=*/false);
+      /*is_esb_enabled_by_account_integration=*/false);
 }
 
 - (BOOL)isSafeBrowsingEnabled {

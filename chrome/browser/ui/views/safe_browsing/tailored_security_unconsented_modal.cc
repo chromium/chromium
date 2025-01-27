@@ -52,7 +52,7 @@ void EnableEsbAndShowSettings(content::WebContents* web_contents) {
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   SetSafeBrowsingState(profile->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION,
-                       /*is_esb_enabled_in_sync=*/false);
+                       /*is_esb_enabled_by_account_integration=*/false);
   if (!chrome::FindBrowserWithTab(web_contents)) {
     return;
   }
