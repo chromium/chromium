@@ -94,19 +94,7 @@ bool ProcUtil::HasOpenDirectory(int proc_fd) {
 
     struct stat s;
     // It's OK to use proc_self_fd here, fstatat won't modify it.
-    int stat_res = fstatat(proc_self_fd, de->d_name, &s, 0);
-    // Check for stale symlinks and skip them if they meet certain criteria.
-    // See crbug.com/362595425
-    char filename[PATH_MAX];
-    if (stat_res == -1 && errno == ESTALE && de->d_type == DT_LNK &&
-        readlinkat(proc_self_fd, de->d_name, filename, sizeof(filename)) !=
-            -1) {
-      static constexpr std::string_view kStalePrefix = "/google/cog/";
-      if (strncmp(filename, kStalePrefix.data(), kStalePrefix.size()) == 0) {
-        continue;
-      }
-    }
-    PCHECK(stat_res == 0);
+    PCHECK(fstatat(proc_self_fd, de->d_name, &s, 0) == 0);
     if (S_ISDIR(s.st_mode)) {
       return true;
     }

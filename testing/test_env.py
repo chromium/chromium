@@ -38,6 +38,16 @@ def fix_python_path(cmd):
   return out
 
 
+# TODO: crbug.com/362595425 - Remove once Cog supports sandboxing. This is a
+# workaround to handle a crash caused by sandbox when running
+# content_browsertests in Cider.
+def is_sandboxed_on_cog(cmd):
+  """Checks the environment is cog."""
+  return cmd.endswith('content_browsertests') and os.getcwd().startswith(
+      '/google/cog/cloud')
+
+
+
 def get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag):
   """Returns the environment flags needed for sanitizer tools."""
 
@@ -379,7 +389,7 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
   if asan or lsan or msan or tsan or cfi_diag:
     extra_env.update(get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag))
 
-  if lsan or tsan:
+  if lsan or tsan or is_sandboxed_on_cog(cmd[0]):
     # LSan and TSan are not sandbox-friendly.
     cmd.append('--no-sandbox')
 
