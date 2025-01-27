@@ -79,25 +79,7 @@ void PointerLockController::RequestToLockPointer(WebContents* web_contents,
 
   content::GlobalRenderFrameHostId rfh_id =
       web_contents->GetPrimaryMainFrame()->GetGlobalId();
-
-  if (!base::FeatureList::IsEnabled(
-          permissions::features::kKeyboardAndPointerLockPrompt)) {
     LockPointer(web_contents->GetWeakPtr(), rfh_id, last_unlocked_by_target);
-    return;
-  }
-
-  DCHECK(!IsWaitingForPointerLockPrompt(web_contents));
-  hosts_waiting_for_pointer_lock_permission_prompt_.insert(rfh_id);
-
-  exclusive_access_manager()->permission_manager().QueuePermissionRequest(
-      blink::PermissionType::POINTER_LOCK,
-      base::BindOnce(&PointerLockController::LockPointer,
-                     weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr(),
-                     rfh_id, last_unlocked_by_target),
-      base::BindOnce(&PointerLockController::RejectRequestToLockPointer,
-                     weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr(),
-                     rfh_id),
-      web_contents);
 }
 
 bool PointerLockController::IsWaitingForPointerLockPrompt(
