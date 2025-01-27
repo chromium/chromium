@@ -119,6 +119,14 @@ MATCHER_P(ReceivedUserActivation,
                                      result_listener);
 }
 
+MATCHER_P(HadSuccessfulWebAuthnAssertion,
+          matcher,
+          "has had_successful_web_authn_assertion that " +
+              testing::DescribeMatcher<bool>(matcher, negation)) {
+  return testing::ExplainMatchResult(
+      matcher, arg.had_successful_web_authn_assertion, result_listener);
+}
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_DIPS_BTM_PAGE_VISIT_OBSERVER_TEST_UTILS_H_

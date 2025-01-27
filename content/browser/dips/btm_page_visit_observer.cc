@@ -189,4 +189,14 @@ void BtmPageVisitObserver::FrameReceivedUserActivation(
   current_page_.received_user_activation = true;
 }
 
+void BtmPageVisitObserver::WebAuthnAssertionRequestSucceeded(
+    RenderFrameHost* render_frame_host) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    CHECK(render_frame_host->GetOutermostMainFrameOrEmbedder()
+              ->IsInPrimaryMainFrame());
+    return;
+  }
+  current_page_.had_successful_web_authn_assertion = true;
+}
+
 }  // namespace content

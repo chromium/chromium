@@ -16,6 +16,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/network_session_configurator/common/network_switches.h"
+#include "content/public/browser/scoped_authenticator_environment_for_testing.h"
+#include "content/public/common/content_switches.h"
+#include "content/public/test/content_mock_cert_verifier.h"
+#include "device/fido/virtual_ctap2_device.h"
+#include "device/fido/virtual_fido_device_factory.h"
+#endif
+
 using testing::AllOf;
 using testing::ElementsAre;
 using testing::IsEmpty;
@@ -137,6 +146,126 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, UserActivation) {
           AllOf(PreviousPage(AllOf(HasUrl(url1), ReceivedUserActivation(true))),
                 HasUrl(url2))));
 }
+
+// WebAuthn tests do not work on Android because there is currently no way to
+// install a virtual authenticator.
+// TODO(crbug.com/40269763): Implement automated testing once the infrastructure
+// permits it (Requires mocking the Android Platform Authenticator i.e. GMS
+// Core).
+#if !BUILDFLAG(IS_ANDROID)
+class BtmPageVisitObserverWebAuthnTest : public ContentBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+
+    // Allowlist all certs for the HTTPS server.
+    mock_cert_verifier()->set_default_result(net::OK);
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_https_test_server().AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    ASSERT_TRUE(embedded_https_test_server().Start());
+
+    auto virtual_device_factory =
+        std::make_unique<device::test::VirtualFidoDeviceFactory>();
+
+    virtual_device_factory->mutable_state()->InjectResidentKey(
+        std::vector<uint8_t>{1, 2, 3, 4}, authn_hostname,
+        std::vector<uint8_t>{5, 6, 7, 8}, "Foo", "Foo Bar");
+
+    device::VirtualCtap2Device::Config config;
+    config.resident_key_support = true;
+    virtual_device_factory->SetCtap2Config(std::move(config));
+
+    auth_env_ = std::make_unique<ScopedAuthenticatorEnvironmentForTesting>(
+        std::move(virtual_device_factory));
+  }
+
+  void PostRunTestOnMainThread() override {
+    auth_env_.reset();
+    ContentBrowserTest::PostRunTestOnMainThread();
+  }
+
+  WebContents* GetActiveWebContents() { return shell()->web_contents(); }
+
+  void GetWebAuthnAssertion() {
+    ASSERT_EQ("OK", EvalJs(GetActiveWebContents(), R"(
+    let cred_id = new Uint8Array([1,2,3,4]);
+    navigator.credentials.get({
+      publicKey: {
+        challenge: cred_id,
+        userVerification: 'preferred',
+        allowCredentials: [{
+          type: 'public-key',
+          id: cred_id,
+          transports: ['usb', 'nfc', 'ble'],
+        }],
+        timeout: 10000
+      }
+    }).then(c => 'OK',
+      e => e.toString());
+  )",
+                           EXECUTE_SCRIPT_NO_USER_GESTURE));
+  }
+
+  ContentMockCertVerifier::CertVerifier* mock_cert_verifier() {
+    return mock_cert_verifier_.mock_cert_verifier();
+  }
+
+ protected:
+  const std::string authn_hostname = std::string("a.test");
+
+ private:
+  ContentMockCertVerifier mock_cert_verifier_;
+  std::unique_ptr<ScopedAuthenticatorEnvironmentForTesting> auth_env_;
+};
+
+IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverWebAuthnTest, SuccessfulWAA) {
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+  WebContents* web_contents = shell()->web_contents();
+  BtmPageVisitRecorder recorder(web_contents);
+
+  ASSERT_TRUE(NavigateToURL(web_contents, url1));
+  GetWebAuthnAssertion();
+  ASSERT_TRUE(NavigateToURL(web_contents, url2));
+  ASSERT_TRUE(NavigateToURL(web_contents, url3));
+  ASSERT_TRUE(recorder.WaitForSize(3));
+
+  EXPECT_THAT(
+      recorder.visits(),
+      ElementsAre(
+          AllOf(PreviousPage(AllOf(HasUrl(GURL()),
+                                   HadSuccessfulWebAuthnAssertion(false))),
+                HasUrl(url1)),
+          AllOf(PreviousPage(
+                    AllOf(HasUrl(url1), HadSuccessfulWebAuthnAssertion(true))),
+                HasUrl(url2)),
+          AllOf(PreviousPage(
+                    AllOf(HasUrl(url2), HadSuccessfulWebAuthnAssertion(false))),
+                HasUrl(url3))));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace content

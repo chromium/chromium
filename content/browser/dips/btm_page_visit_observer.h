@@ -20,6 +20,7 @@ struct CONTENT_EXPORT BtmPageVisitInfo {
   GURL url;
   bool had_qualifying_storage_access = false;
   bool received_user_activation = false;
+  bool had_successful_web_authn_assertion = false;
 };
 
 struct CONTENT_EXPORT BtmServerRedirectInfo {
@@ -59,6 +60,8 @@ class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
   void OnCookiesAccessed(NavigationHandle* navigation_handle,
                          const CookieAccessDetails& details) override;
   void FrameReceivedUserActivation(RenderFrameHost* render_frame_host) override;
+  void WebAuthnAssertionRequestSucceeded(
+      RenderFrameHost* render_frame_host) override;
 
  private:
   // Execute the visit callback with a tuple from the pending queue.
