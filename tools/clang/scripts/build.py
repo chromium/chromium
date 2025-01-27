@@ -1187,7 +1187,8 @@ def main():
     runtimes_triples_args['i386-unknown-linux-gnu'] = {
         "args": [
             'CMAKE_SYSROOT=%s' % sysroot_i386,
-            # TODO(crbug.com/40242553): pass proper flags to i386 tests so they compile correctly
+            # TODO(crbug.com/40242553): pass proper flags to i386 tests so they
+            # compile correctly
             'LLVM_INCLUDE_TESTS=OFF',
         ],
         "profile":
@@ -1275,11 +1276,13 @@ def main():
             'COMPILER_RT_ENABLE_MACCATALYST=ON',
             'COMPILER_RT_ENABLE_IOS=ON',
             'COMPILER_RT_ENABLE_WATCHOS=ON',
-            'COMPILER_RT_ENABLE_TVOS=OFF',
+            'COMPILER_RT_ENABLE_TVOS=ON',
             'COMPILER_RT_ENABLE_XROS=ON',
             'DARWIN_ios_ARCHS=arm64',
             'DARWIN_iossim_ARCHS=arm64;x86_64',
             'DARWIN_osx_ARCHS=arm64;x86_64',
+            'DARWIN_tvos_BUILTIN_ARCHS=arm64',
+            'DARWIN_tvossim_BUILTIN_ARCHS=arm64;x86_64',
             'DARWIN_watchos_BUILTIN_ARCHS=arm64',
             'DARWIN_watchossim_BUILTIN_ARCHS=arm64;x86_64',
         ],

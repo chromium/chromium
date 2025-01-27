@@ -316,6 +316,8 @@ def main():
         'lib/clang/$V/lib/darwin/libclang_rt.ios.a',
         'lib/clang/$V/lib/darwin/libclang_rt.iossim.a',
         'lib/clang/$V/lib/darwin/libclang_rt.osx.a',
+        'lib/clang/$V/lib/darwin/libclang_rt.tvos.a',
+        'lib/clang/$V/lib/darwin/libclang_rt.tvossim.a',
         'lib/clang/$V/lib/darwin/libclang_rt.watchos.a',
         'lib/clang/$V/lib/darwin/libclang_rt.watchossim.a',
         'lib/clang/$V/lib/darwin/libclang_rt.xros.a',
