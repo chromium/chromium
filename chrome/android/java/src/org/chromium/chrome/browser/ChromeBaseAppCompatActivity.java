@@ -455,7 +455,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                                     isDynamicColorAvailable ? "Enabled" : "Disabled");
                         });
 
-        if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()) {
+        // TODO(https://crbug.com/392634251): Explore setting elegantTextHeight to 'true' on older
+        // OS versions.
+        if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()
+                && Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
             int elegantTextHeightOverlay = R.style.ThemeOverlay_BrowserUI_ElegantTextHeight;
             getTheme().applyStyle(elegantTextHeightOverlay, true);
             mThemeResIds.add(elegantTextHeightOverlay);

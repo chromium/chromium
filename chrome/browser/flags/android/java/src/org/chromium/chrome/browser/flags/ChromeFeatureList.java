@@ -601,7 +601,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidBottomToolbar =
             newCachedFlag(ANDROID_BOTTOM_TOOLBAR, false, true);
     public static final CachedFlag sAndroidElegantTextHeight =
-            newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, false);
+            newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
     public static final CachedFlag sAndroidTabDeclutterDedupeTabIdsKillSwitch =
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, true);

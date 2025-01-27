@@ -194,7 +194,7 @@
   {
     "name": "android-elegant-text-height",
     "owners": [ "twellington@chromium.org", "clank-app-team@google.com" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 137
   },
   {
     "name": "android-extended-keyboard-shortcuts",
