@@ -33,10 +33,6 @@ MetricsProviderDesktop* g_metrics_provider = nullptr;
 
 uint64_t kBytesPerMb = 1024 * 1024;
 
-#if BUILDFLAG(IS_MAC)
-uint64_t kKilobytesPerMb = 1024;
-#endif
-
 #if SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 enum class CpuThroughputEstimatedStatus {
   kNormal,
@@ -357,11 +353,6 @@ MetricsProviderDesktop::MetricsProviderDesktop(PrefService* local_state)
   DCHECK(!g_metrics_provider);
   g_metrics_provider = this;
 
-  available_memory_metrics_timer_.Start(
-      FROM_HERE, base::Minutes(2),
-      base::BindRepeating(&MetricsProviderDesktop::RecordAvailableMemoryMetrics,
-                          base::Unretained(this)));
-
 #if SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
   ScheduleCpuFrequencyTask();
 #endif  // SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
@@ -423,32 +414,6 @@ MetricsProviderDesktop::ComputeCurrentMode() const {
 bool MetricsProviderDesktop::IsMemorySaverEnabled() const {
   return local_state_->GetInteger(kMemorySaverModeState) !=
          static_cast<int>(MemorySaverModeState::kDisabled);
-}
-
-void MetricsProviderDesktop::RecordAvailableMemoryMetrics() {
-  auto available_bytes = base::SysInfo::AmountOfAvailablePhysicalMemory();
-  auto total_bytes = base::SysInfo::AmountOfPhysicalMemory();
-
-  base::UmaHistogramMemoryLargeMB("Memory.Experimental.AvailableMemoryMB",
-                                  available_bytes / kBytesPerMb);
-  base::UmaHistogramPercentage("Memory.Experimental.AvailableMemoryPercent",
-                               available_bytes * 100 / total_bytes);
-
-#if BUILDFLAG(IS_MAC)
-  base::SystemMemoryInfoKB info;
-  if (base::GetSystemMemoryInfo(&info)) {
-    base::UmaHistogramMemoryLargeMB(
-        "Memory.Experimental.MacFileBackedMemoryMB2",
-        info.file_backed / kKilobytesPerMb);
-    // `info.file_backed` is in kb, so multiply it by 1024 to get the amount of
-    // bytes
-    base::UmaHistogramPercentage(
-        "Memory.Experimental.MacAvailableMemoryPercentFreePageCache2",
-        (available_bytes +
-         (base::checked_cast<uint64_t>(info.file_backed) * 1024u)) *
-            100u / total_bytes);
-  }
-#endif
 }
 
 void MetricsProviderDesktop::ResetTrackers() {
