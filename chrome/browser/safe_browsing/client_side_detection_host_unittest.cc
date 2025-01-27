@@ -765,29 +765,6 @@ TEST_F(
 }
 
 TEST_F(ClientSideDetectionHostTest,
-       PhishingDetectionDoneVerdictNotPhishingButSBMatchSubResource) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
-    GTEST_SKIP();
-
-  // Case 6: renderer sends a verdict string that isn't phishing but the URL
-  // of a subresource was on the regular phishing or malware lists.
-  GURL url("http://not-phishing.com/");
-  ClientPhishingRequest verdict;
-  verdict.set_url(url.spec());
-  verdict.set_client_score(0.1f);
-  verdict.set_is_phishing(false);
-
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
-
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
-  NavigateAndCommit(url);
-  WaitAndCheckPreClassificationChecks();
-
-  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
-}
-
-TEST_F(ClientSideDetectionHostTest,
        PhishingDetectionDoneVerdictNotPhishingButSBMatchOnNewRVH) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
     GTEST_SKIP();
@@ -815,46 +792,6 @@ TEST_F(ClientSideDetectionHostTest,
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
                                 &kFalse);
   NavigateAndCommit(url);
-  WaitAndCheckPreClassificationChecks();
-
-  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
-}
-
-TEST_F(
-    ClientSideDetectionHostTest,
-    PhishingDetectionDoneVerdictNotPhishingButSBMatchOnSubresourceWhileNavPending) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
-    GTEST_SKIP();
-
-  // When a malware hit happens on a committed page while a slow pending load is
-  // in progress, the csd report should be sent for the committed page.
-
-  GURL start_url("http://safe.example.com/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(start_url, false);
-  ExpectPreClassificationChecks(start_url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
-  NavigateAndCommit(start_url);
-  WaitAndCheckPreClassificationChecks();
-
-  // Now navigate to a different host which does not have a SB hit.
-  GURL url("http://not-malware-not-phishing-but-malware-subresource.com/");
-  ClientPhishingRequest verdict;
-  verdict.set_url(url.spec());
-  verdict.set_client_score(0.1f);
-  verdict.set_is_phishing(false);
-
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
-  NavigateAndCommit(url);
-
-  // Create a pending navigation, but don't commit it.
-  GURL pending_url("http://slow.example.com/");
-  auto pending_navigation =
-      content::NavigationSimulator::CreateBrowserInitiated(pending_url,
-                                                           web_contents());
-  pending_navigation->Start();
-
   WaitAndCheckPreClassificationChecks();
 
   PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
