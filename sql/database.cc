@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <algorithm>
 #include <cinttypes>
 #include <memory>
 #include <optional>
@@ -39,7 +40,6 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
@@ -180,8 +180,8 @@ bool ValidAttachmentPoint(std::string_view attachment_point) {
   // Chrome's constraint is easy to remember, and sufficient for the few
   // existing use cases. ATTACH is a discouraged feature, so no new use cases
   // are expected.
-  return base::ranges::all_of(attachment_point,
-                              [](char ch) { return base::IsAsciiLower(ch); });
+  return std::ranges::all_of(attachment_point,
+                             [](char ch) { return base::IsAsciiLower(ch); });
 }
 
 std::string AsUTF8ForSQL(const base::FilePath& path) {

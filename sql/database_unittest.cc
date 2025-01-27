@@ -14,6 +14,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -33,7 +34,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
