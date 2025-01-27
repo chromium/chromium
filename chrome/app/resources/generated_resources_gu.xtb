@@ -483,6 +483,7 @@
 <translation id="1317637799698924700">તમારું ડૉકિંગ સ્ટેશન USB Type-C સુસંગત મોડમાં ઑપરેટ થશે.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> સબપેજનું પાછળ જવા માટેનું બટન</translation>
 <translation id="1322046419516468189">સાચવેલા પાસવર્ડ તમારા <ph name="SAVED_PASSWORDS_STORE" />માં જુઓ અને મેનેજ કરો</translation>
+<translation id="132539964543492755">ડાબા બટન, જમણા બટન અને બન્ને બટન વચ્ચે માઉસના બટનની પસંદગી બદલવા માટે “x”નો ઉપયોગ કરો</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberosની ટિકિટ</translation>
 <translation id="1327495825214193325">ADB ડિબગીંગ ચાલુ કરવા માટે, આ <ph name="DEVICE_TYPE" />ને ફરી શરૂ કરવું જરૂરી છે. તેને બંધ કરવા ફેક્ટરી સેટિંગ પર રીસેટ કરવું જરૂરી છે.</translation>
@@ -1676,6 +1677,7 @@
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> જેવું લાગે છે</translation>
 <translation id="2156294658807918600">સર્વિસ વર્કર: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">શેર કરેલા ટૅબને સ્ક્રોલ અને નાનું-મોટું કરવાની મંજૂરી છે</translation>
+<translation id="2157457598652721267">માઉસનું ડાબા કે જમણા બટન પસંદ કરવા માટે “/” અને “-”નો ઉપયોગ કરો. બન્ને બટન પસંદ કરવા માટે “*”નો ઉપયોગ કરો.</translation>
 <translation id="2157474325782140681">વધારાની સુવિધાઓ મેળવવા માટે, આ Chromebookમાં કામ કરવા માટે ડિઝાઇન કરવામાં આવેલા Dell ડૉકિંગ સ્ટેશનનો ઉપયોગ કરો.</translation>
 <translation id="215753907730220065">પૂર્ણ સ્ક્રીનથી બહાર નીકળો</translation>
 <translation id="2157779167749714207">તમારું <ph name="DEVICE_TYPE" /> Gemini સાથે આવે છે</translation>
@@ -1780,6 +1782,7 @@
 <translation id="2233502537820838181">&amp;વધુ માહિતી</translation>
 <translation id="223356358902285214">વેબ અને ઍપ પ્રવૃત્તિ</translation>
 <translation id="2234065144797002621">ક્રિક</translation>
+<translation id="2234208862050358325">કર્સરને ખસેડવા માટે 1, 2, 3, q, e, a, s, d કીનો ઉપયોગ કરો</translation>
 <translation id="2234827758954819389">પ્રાઇવસી સંબંધિત માર્ગદર્શિકા</translation>
 <translation id="2234876718134438132">સિંક અને Google સેવાઓ</translation>
 <translation id="2235344399760031203">ત્રીજા પક્ષની કુકી બ્લૉક કરવામાં આવી છે</translation>
@@ -1799,6 +1802,7 @@
 <translation id="2249111429176737533">ટૅબવાળી વિંડો તરીકે ખોલો</translation>
 <translation id="2249605167705922988">ઉદા. ત. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">તમારી જાહેરાતો બતાવવા માટે સાઇટ દ્વારા ઉપયોગમાં લેવામાં આવતી માહિતી કસ્ટમાઇઝ કરો</translation>
+<translation id="22505994009453896">આંકડાના કીપેડ વડે તમારા માઉસનું કર્સર નિયંત્રિત કરો</translation>
 <translation id="2250624716625396929">આ ટૅબ તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરી રહ્યું છે</translation>
 <translation id="2251218783371366160">સિસ્ટમ દર્શક સાથે ખોલો</translation>
 <translation id="225163402930830576">નેટવર્ક રિફ્રેશ કરો</translation>
@@ -1993,6 +1997,7 @@
 <translation id="236939127352773362">જ્યારે નજીકના ડિવાઇસ શેર કરી રહ્યાં હોય</translation>
 <translation id="2371076942591664043">&amp;પૂર્ણ થાય ત્યારે ખોલો</translation>
 <translation id="237336063998926520">સ્થાન નક્કી કરવા માટે તમારા IP ઍડ્રેસનો ઉપયોગ કરો</translation>
+<translation id="2373499590298659902">માઉસનું બટન દબાવી રાખવા માટે “0”નો ઉપયોગ કરો</translation>
 <translation id="2373666622366160481">પેપરના કદ મુજબ પ્રિન્ટ કરો</translation>
 <translation id="2375406435414127095">તમારા ફોન સાથે કનેક્ટ કરો</translation>
 <translation id="2376056713414548745">મોટેથી વાંચો</translation>
@@ -2754,6 +2759,7 @@
 <translation id="2902312830803030883">વધુ ક્રિયાઓ</translation>
 <translation id="2903457445916429186">પસંદ કરેલ આઇટમ ખોલો</translation>
 <translation id="2903882649406874750"><ph name="HOST" />ને હંમેશાં સેન્સરને ઍક્સેસ કરવાથી બ્લૉક કરો</translation>
+<translation id="2903925626657991994">ડાબા બટન, જમણા બટન અને બન્ને બટન વચ્ચે માઉસના બટનની પસંદગી બદલવા માટે “,”નો ઉપયોગ કરો</translation>
 <translation id="290415756080113152">સાઇટ તમારા ડિવાઇસ માટે ઍક્સેસિબલ હોય તેવા પ્રિન્ટરને શોધી અથવા તેનો ઉપયોગ કરી શકશે નહીં</translation>
 <translation id="2904210161403910217">તમે છેલ્લે સાઇન ઇન કર્યા પછીથી તમારા પાસવર્ડમાં કોઈ ફેરફાર કરવામાં આવ્યો છે</translation>
 <translation id="2904506722835398619">સાઇન ઇન કરીને સિંક કરવું જરૂરી છે</translation>
@@ -3108,6 +3114,7 @@
 <translation id="3170072451822350649">તમે સાઇન ઇન કરવાનું છોડી અને <ph name="LINK_START" />અતિથિ તરીકે બ્રાઉઝ<ph name="LINK_END" /> પણ કરી શકો છો.</translation>
 <translation id="3175067642577044620">મુખ્ય ભાગ</translation>
 <translation id="3175862692832442091">જંગલ</translation>
+<translation id="3176347586396987181">માઉસનું બટન દબાવી રાખવા માટે “z”નો ઉપયોગ કરો</translation>
 <translation id="3177430966804511955">આઇસોલેટેડ વેબ ઍપ (બીટા)ને મેનેજ કરો</translation>
 <translation id="31774765611822736">ડાબી બાજુએ નવી ટૅબ</translation>
 <translation id="3177909033752230686">પેજની ભાષા:</translation>
@@ -4490,6 +4497,7 @@
 <translation id="412730574613779332">સ્પાંડેક્સ</translation>
 <translation id="4130199216115862831">ઉપકરણ લૉગ</translation>
 <translation id="4130750466177569591">હું સંમત છું</translation>
+<translation id="4130877444234883490">માઉસનું બટન દબાવી રાખવા માટે “m”નો ઉપયોગ કરો</translation>
 <translation id="413121957363593859">ઘટકો</translation>
 <translation id="4131283654370308898">આ સાઇટ પર <ph name="EXTENSION_NAME" />ને મંજૂરી આપો</translation>
 <translation id="4131410914670010031">કાળો અને સફેદ</translation>
@@ -4509,6 +4517,7 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID ડિવાઇસ કનેક્ટ કરેલું છે</translation>
 <translation id="4139326893730851150">ફર્મવેયરની અપડેટ</translation>
 <translation id="4142052906269098341">તમારા ફોન વડે તમારું <ph name="DEVICE_TYPE" /> અનલૉક કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
+<translation id="4143606504420684845">AI તમારા અનુભવને કેવી રીતે આકાર આપે છે તેના વિશે જાણકારી મેળવો અને તમારી પ્રાઇવસી વિશે માહિતીસભર પસંદગીઓ કરો</translation>
 <translation id="4146026355784316281">હંમેશા સિસ્ટમ દર્શક સાથે ખોલો</translation>
 <translation id="4146785383423576110">રીસેટ કરો અને સાફ કરો</translation>
 <translation id="4147099377280085053">બ્રેઇલ ટેબલ પસંદ કરો</translation>
@@ -4792,6 +4801,7 @@
 <translation id="4360738659108163902">માઉસ પર રાઇટ ક્લિક કરો</translation>
 <translation id="4361142739114356624">આ ક્લાઇન્ટ પ્રમાણપત્ર માટેની ખાનગી કી ખૂટે છે અથવા તો અમાન્ય છે</translation>
 <translation id="4361745360460842907">ટેબ તરીકે ખોલો</translation>
+<translation id="4362459470237309049">માઉસનું બટન રિલીઝ કરવા માટે “.”નો ઉપયોગ કરો</translation>
 <translation id="4363262124589131906">My Driveમાં રહેલી નવી ફાઇલોનું આ Chromebook સાથે સિંક થવાનું ઑટોમૅટિક રીતે બંધ થશે</translation>
 <translation id="4364327530094270451">ટેટી</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}one{{ITEM_COUNT} આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}other{{ITEM_COUNT} આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}}</translation>
@@ -4817,6 +4827,7 @@
 <translation id="4378308539633073595">આગળ સ્ક્રોલ કરો</translation>
 <translation id="4378551569595875038">કનેક્ટિંગ...</translation>
 <translation id="4378556263712303865">ઉપકરણની માગણી</translation>
+<translation id="4378589147979399051">તમારા પ્રાથમિક કીબોર્ડ વડે તમારા માઉસનું કર્સર નિયંત્રિત કરો</translation>
 <translation id="4379097572583973456">સાઇટ અન્ય સાઇટના કન્ટેન્ટને પણ શામેલ કરી શકે છે, ઉદાહરણ તરીકે છબીઓ, જાહેરાતો, અને ટેક્સ્ટ. આ અન્ય સાઇટ પણ ડેટા બચાવી શકે છે.</translation>
 <translation id="4379281552162875326">"<ph name="APP_NAME" />"ને અનઇન્સ્ટૉલ કરીએ?</translation>
 <translation id="4380055775103003110">જો આ સમસ્યા આવવાનું ચાલુ રહે, તો તમે <ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખવા માટે અન્ય રીતો અજમાવી શકો છો.</translation>
@@ -5115,7 +5126,6 @@
 <translation id="4593021220803146968"><ph name="URL" /> &amp;ના પર જાઓ</translation>
 <translation id="4593962599442730215">તમારી પસંદગીઓ બદલો</translation>
 <translation id="4594218792629569101">પેજને તમારી સૂચિમાં છેલ્લા ક્રમે ખસેડવા માટે, “વાંચેલાં તરીકે માર્ક કરો”ને પસંદ કરો</translation>
-<translation id="4594577641390224176">શું સિસ્ટમની માહિતી ધરાવતું પેજ શોધી રહ્યાં છો? મુલાકાત લો</translation>
 <translation id="4595560905247879544">ઍપ્લિકેશન્સ અને એક્સટેન્શન્સને માત્ર સંચાલક (<ph name="CUSTODIAN_NAME" />) દ્વારા જ સંશોધિત કરી શકાય છે.</translation>
 <translation id="4596295440756783523">તમારી પાસે ફાઇલ પર પ્રમાણપત્રો છે જે આ સર્વર્સને ઓળખે છે</translation>
 <translation id="4598345735110653698">પાસકી મેનેજ કરો</translation>
@@ -5137,6 +5147,7 @@
 <translation id="4610493438923139095">અવિશ્વસનીય</translation>
 <translation id="4610637590575890427">શું તમારી ઈચ્છા <ph name="SITE" /> પર જવાની હતી?</translation>
 <translation id="4611114513649582138">ડેટા કનેક્શન ઉપલબ્ધ</translation>
+<translation id="4611619000650855880">જ્યારે માઉસનું ડાબું બટન પસંદ કર્યુ હોય, ત્યારે બે વાર ક્લિક કરવા માટે “/”નો ઉપયોગ કરો</translation>
 <translation id="4611759022973144129">તમે તમારા <ph name="DEVICE_TYPE" />માં સાઇન ઇન કરવા માટે આ પાસવર્ડનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="4612841084470706111">વિનંતી કરવામાં આવેલી બધી સાઇટને ઍક્સેસ આપો.</translation>
 <translation id="4613144866899789710">Linuxનું ઇન્સ્ટૉલેશન રદ કરી રહ્યાં છીએ...</translation>
@@ -5262,6 +5273,7 @@
 <translation id="4694820450536519583">પરવાનગીઓ</translation>
 <translation id="4695318956047767909">ડાર્ક થીમ, સ્ક્રીન સેવર</translation>
 <translation id="4697071790493980729">કોઈ પરિણામ મળ્યું નથી</translation>
+<translation id="4697231114332146850">કર્સરને ખસેડવા માટે 7, 8, 9, 4, 6, 1, 2, 3 કીનો ઉપયોગ કરો</translation>
 <translation id="4697551882387947560">જ્યારે બ્રાઉઝિંગ સત્ર સમાપ્ત થાય</translation>
 <translation id="469838979880025581">સાઇટ તમારા માઇક્રોફોનનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
 <translation id="4699172675775169585">કૅશ કરેલી છબીઓ અને ફાઇલો</translation>
@@ -6375,6 +6387,7 @@
 <translation id="5499453227627332024">તમારા Linux Container માટે કોઈ અપગ્રેડ ઉપલબ્ધ છે. તમે થોડા સમય પછી સેટિંગ ઍપમાંથી પણ અપગ્રેડ કરી શકશો.</translation>
 <translation id="5499476581866658341">હવે તમે તમારા ફોનના તાજેતરના ફોટા અને મીડિયા જોઈ શકો છો</translation>
 <translation id="549957179819296104">નવું આઇકન</translation>
+<translation id="5500163593833085874">જ્યારે માઉસનું ડાબું બટન પસંદ કર્યુ હોય, ત્યારે બે વાર ક્લિક કરવા માટે “+”નો ઉપયોગ કરો</translation>
 <translation id="5500168250243071806">જ્યારે તમે સાઇન ઇન કર્યુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK_SEARCH" />શોધ ઇતિહાસ<ph name="END_LINK_SEARCH" /> અને <ph name="BEGIN_LINK_GOOGLE" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK_GOOGLE" /> સાચવવામાં આવી શકે છે. તમે તેમને કોઈપણ સમયે ડિલીટ કરી શકો છો.</translation>
 <translation id="5501322521654567960">ડાબેથી સંરેખિત બાજુની પૅનલ</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" />માંથી <ph name="ATTACHMENTS" /> મેળવવામાં નિષ્ફળ રહ્યાં}one{<ph name="DEVICE_NAME" />માંથી <ph name="ATTACHMENTS" /> મેળવવામાં નિષ્ફળ રહ્યાં}other{<ph name="DEVICE_NAME" />માંથી <ph name="ATTACHMENTS" /> મેળવવામાં નિષ્ફળ રહ્યાં}}</translation>
@@ -6673,6 +6686,7 @@
 <translation id="5733913382424854675">AI વડે ટૅબનું ગ્રૂપ બનાવો</translation>
 <translation id="5734362860645681824">સંચાર</translation>
 <translation id="5734697361979786483">ફાઇલ શેર ઉમેરો</translation>
+<translation id="573520097779121706">કર્સરને ખસેડવા માટે 7, 8, 9, u, o, j, k, l કીનો ઉપયોગ કરો</translation>
 <translation id="5735513236153491131">અત્યારે બૂસ્ટ કરો</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{તમારી સંસ્થાની અમુક સુરક્ષા પૉલિસીઓનું અનુપાલન આ ડેટા અથવા તમારા ડિવાઇસ દ્વારા કરવામાં આવ્યું નથી. શું ઠીક કરવું જરૂરી રહેશે, તે વિશે તમારા ઍડમિનનો સંપર્ક કરો.}=1{તમારી સંસ્થાની અમુક સુરક્ષા પૉલિસીઓનું અનુપાલન આ ફાઇલ અથવા તમારા ડિવાઇસ દ્વારા કરવામાં આવ્યું નથી. શું ઠીક કરવું જરૂરી રહેશે, તે વિશે તમારા ઍડમિનનો સંપર્ક કરો.}one{તમારી સંસ્થાની અમુક સુરક્ષા પૉલિસીઓનું અનુપાલન આ ફાઇલ દ્વારા કરવામાં આવ્યું નથી. શું ઠીક કરવું જરૂરી રહેશે, તે વિશે તમારા ઍડમિનનો સંપર્ક કરો.}other{તમારી સંસ્થાની અમુક સુરક્ષા પૉલિસીઓનું અનુપાલન આ ફાઇલો દ્વારા કરવામાં આવ્યું નથી. શું ઠીક કરવું જરૂરી રહેશે, તે વિશે તમારા ઍડમિનનો સંપર્ક કરો.}}</translation>
 <translation id="5738093759615225354">તમારા કમ્પ્યુટરમાં સાઇન ઇન કરવા, તમારા માટે આ પાસકી જરૂરી છે</translation>
@@ -6739,7 +6753,6 @@
 <translation id="5787420647064736989">ડિવાઇસનું નામ</translation>
 <translation id="5788367137662787332">માફ કરશો, ઉપકરણ <ph name="DEVICE_LABEL" /> પર ઓછામાં ઓછું એક પાર્ટિશન માઉન્ટ કરી શકાયું નથી.</translation>
 <translation id="5789581866075720267">આ ડિવાઇસ પર <ph name="BRAND" />માં પાસવર્ડ આયાત કરવા માટે, CSV ફાઇલ પસંદ કરો.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">સફળતા</translation>
 <translation id="5790651917470750848">પોર્ટ ફૉરવર્ડ પહેલેથી જ અસ્તિત્વમાં છે</translation>
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> માટે વધુ ક્રિયાઓ</translation>
@@ -6906,6 +6919,7 @@
 <translation id="5901069264981746702">તમારી ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને હંમેશાં તમારા <ph name="DEVICE_TYPE" />માં જ રહે છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">ટૅબ કૅપ્ચર કરવા પર સ્વિચ કરો</translation>
 <translation id="5901494423252125310">પ્રિન્ટરનું ઢાંકણ ખૂલ્લું છે</translation>
+<translation id="5901526412306322179">ઍક્ટિવિટી લૉગ</translation>
 <translation id="5901630391730855834">પીળો</translation>
 <translation id="5902892210366342391">છૂપા મોડમાં અસુરક્ષિત સાઇટ પર જતાં પહેલાં ચેતવણીઓ જુઓ</translation>
 <translation id="5904614460720589786">ગોઠવણીમાં સમસ્યાને લીધે <ph name="APP_NAME" />ને સેટઅપ કરી શક્યાં નહીં. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
@@ -7159,7 +7173,6 @@ USB ડિવાઇસ</translation>
 <translation id="6086418630711763366">તમે ટેક્સ્ટ કર્સર વડે કોઈપણ પેજ પર નૅવિગેટ કરી શકશો. બંધ કરવા માટે Ctrl + <ph name="KEY" /> દબાવો.</translation>
 <translation id="6086846494333236931">તમારા વ્યવસ્થાપક દ્વારા ઇન્સ્ટોલ કરાયું</translation>
 <translation id="6087286598828478206">ગ્રૂપને બ્લૉક કરીને છોડી દઈએ?</translation>
-<translation id="6087746524533454243">શું બ્રાઉઝરની માહિતી ધરાવતું પેજ શોધી રહ્યાં છો? મુલાકાત લો</translation>
 <translation id="6087960857463881712">અદ્ભુત ચહેરો</translation>
 <translation id="6088475950266477163">સેટિં&amp;ગ</translation>
 <translation id="608912389580139775">આ પેજને તમારી વાંચન સૂચિમાં ઉમેરવા માટે, બુકમાર્ક આઇકન પર ક્લિક કરો</translation>
@@ -7282,6 +7295,7 @@ USB ડિવાઇસ</translation>
 <translation id="6171779718418683144">દરેક મુલાકાત વખતે પૂછો</translation>
 <translation id="617213288191670920">કોઈ ભાષા ઉમેરી નથી</translation>
 <translation id="6173623053897475761">તમારો પિન ફરી ટાઇપ કરો</translation>
+<translation id="6174909075810107548">માઉસનું બટન દબાવવા માટે “5”નો ઉપયોગ કરો</translation>
 <translation id="6175314957787328458">Microsoft ડોમેન GUID</translation>
 <translation id="6175910054050815932">લિંક મેળવો</translation>
 <translation id="6177412385419165772">કાઢી નાખી રહ્યાં છીએ…</translation>
@@ -7767,6 +7781,7 @@ USB ડિવાઇસ</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" /> નોંધ: <ph name="END_BOLD" /> જો તમે શું કરી રહ્યાં છો તે તમે જાણતા હો અથવા જો તમને તેવું કરવા માટે કહેવામાં આવ્યું હોય તો જ ચાલુ કરો, કારણ કે ડેટાનો સંગ્રહ પ્રદર્શન પર અસર કરી શકે છે.</translation>
 <translation id="6540488083026747005">તમે આ સાઇટ માટે ત્રીજા પક્ષની કુકીને મંજૂરી આપી છે</translation>
 <translation id="6541638731489116978">આ સાઇટને તમારા મોશન સેન્સરને ઍક્સેસ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
+<translation id="654219396498297850">જ્યારે માઉસનું ડાબું બટન પસંદ કર્યુ હોય, ત્યારે બે વાર ક્લિક કરવા માટે “v”નો ઉપયોગ કરો</translation>
 <translation id="6542417422899025860">સૌથી વધુ વ્યક્તિગત માહિતી ઑટોમૅટિક રીતે કાઢી નાખો</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> પર કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6544134392255015460">કીબોર્ડની બૅકલાઇટ માટે ટૉગલ કી</translation>
@@ -8767,6 +8782,7 @@ USB ડિવાઇસ</translation>
 <translation id="7258225044283673131">ઍપ્લિકેશન ચાલી રહી નથી. ઍપ બંધ કરવા માટે "ફરજિયાત બંધ" પસંદ કરો.</translation>
 <translation id="7260186537988033909">કિઓસ્ક અને સાઇનેજ ડિવાઇસની નોંધણી પૂર્ણ થઈ</translation>
 <translation id="7260206782629605806">જો તમે મર્યાદા ઘટાડશો, તો તમે ચોકસાઈભરી હિલચાલ કરી શકશો. જો તમે મર્યાદા વધારશો, તો તમારે વધુ અતિશયોક્તિભરી હિલચાલ કરવી જરૂરી રહેશે.</translation>
+<translation id="7260802376010589729">માઉસનું બટન રિલીઝ કરવા માટે “c”નો ઉપયોગ કરો</translation>
 <translation id="7261217796641151584">ગ્રૂપ શેર કરો</translation>
 <translation id="7261612856573623172">સિસ્ટમ ટેક્સ્ટ-ટુ-સ્પીચ વૉઇસ</translation>
 <translation id="7262004276116528033">આ સાઇન-ઇન સેવા <ph name="SAML_DOMAIN" /> દ્વારા હોસ્ટ થયેલી છે.</translation>
@@ -9608,6 +9624,7 @@ USB ડિવાઇસ</translation>
 <translation id="78526636422538552">Googleના વધુ એકાઉન્ટ ઉમેરી શકાશે નહીં</translation>
 <translation id="785371335555334021"><ph name="TITLE" />થી દૂર નૅવિગેટ કરવા માટે ક્લિક કરો</translation>
 <translation id="7853747251428735">વધુ સા&amp;ધનો</translation>
+<translation id="7855258394151767387">માઉસનું બટન દબાવવા માટે “w”નો ઉપયોગ કરો</translation>
 <translation id="7855678561139483478">ટૅબને નવી વિંડોમાં ખસેડો</translation>
 <translation id="7857004848504343806">તમારું કમ્પ્યુટર સુરક્ષા મૉડ્યૂલ ધરાવે છે, જેનો ઉપયોગ ChromeOS Flexમાં ઘણી મહત્ત્વપૂર્ણ સુરક્ષા સુવિધાઓ લાગુ કરવા માટે કરવામાં આવે છે. વધુ જાણવા માટે Chromebook સહાયતા કેન્દ્રની મુલાકાત લો: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">ટેક્સ્ટ સૂચનો</translation>
@@ -9975,6 +9992,7 @@ USB ડિવાઇસ</translation>
 <translation id="810362914482827094">પાસકી શોધો</translation>
 <translation id="8104088837833760645">ઇ-સિમ પ્રોફાઇલ ડાઉનલોડ કરો</translation>
 <translation id="8105273883928376822">ચાલુ રાખવા માટે, કૃપા કરીને સાઇન ઇન કરો.</translation>
+<translation id="8106114112474206597">માઉસનું બટન દબાવવા માટે “i”નો ઉપયોગ કરો</translation>
 <translation id="8107015733319732394">તમારા <ph name="DEVICE_TYPE" /> પર Google Play Store ઇન્સ્ટૉલ કરી રહ્યાં છીએ. આમાં થોડી મિનિટ લાગી શકે છે.</translation>
 <translation id="810728361871746125">ડિસ્પ્લેનું રિઝોલ્યુશન</translation>
 <translation id="8108161424633979910"><ph name="NUM" /> સભ્ય</translation>

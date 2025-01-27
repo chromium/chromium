@@ -476,6 +476,7 @@
 <translation id="3053332585453689122">‏כתובות ה-URL שבהן ביקרת ודגימה קטנה של תוכן מהדפים, הורדות, פעילות של תוספים ופרטי מערכת נשלחים אל הגלישה הבטוחה של Google כדי לבדוק אם הם מזיקים.</translation>
 <translation id="3055102495753300780">אחסון מידע</translation>
 <translation id="3059270601560379555">חיפוש חדש</translation>
+<translation id="3064547930554042309">ניהול ההורדות</translation>
 <translation id="3072279342064724558">הסיסמה כבר קיימת</translation>
 <translation id="3076846064362030967">‏לא תתבצע יציאה מחשבון Google שלך. <ph name="BEGIN_LINK" />סוגי פעילות אחרים<ph name="END_LINK" /> יכולים להישמר בחשבון Google אחרי שנכנסים. אפשר למחוק אותם בכל שלב.
 
@@ -698,6 +699,7 @@
 <translation id="4154753961803534698">חיפוש באמצעות המצלמה</translation>
 <translation id="4158491215857439601">מנהל הסיסמאות</translation>
 <translation id="4163699139741158298">{count,plural, =1{הסימנייה נשמרה בתיקייה ‘{title}'. היא שמורה רק במכשיר הזה.}one{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}two{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}other{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}}</translation>
+<translation id="4164514562270305824">מחיקה אוטומטית של הורדות</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> המסתיים בספרות <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">לא לאפשר</translation>
 <translation id="4172051516777682613">להציג תמיד</translation>
@@ -1016,6 +1018,7 @@
 <translation id="5579012242779565775">הסתרה של רשימת הקריאה</translation>
 <translation id="5585019845078534178">כרטיסיות</translation>
 <translation id="5595485650161345191">עריכת כתובת</translation>
+<translation id="559567008082979829">אפשר להגדיר שההורדות יימחקו אחרי חודש.</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="560322036295180549">האפשרות הושבתה על ידי הארגון שלך</translation>
 <translation id="5611107723541161735">קיצורי דרך לאתרים שביקרת בהם לאחרונה במכשיר הזה.</translation>

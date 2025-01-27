@@ -43,6 +43,7 @@ Ezabatzen baduzu, berehala galduko dute denek "<ph name="TITLE_OF_GROUP" />" fit
 <translation id="2671423594960767771">Partekatu taldea</translation>
 <translation id="2677748264148917807">Irten</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fitxa gehitu da, <ph name="ANY_CHANGED" /> aldatu, eta <ph name="ANY_CLOSED" /> itxi}other{<ph name="MANY_ADDED" /> fitxa gehitu dira, <ph name="ANY_CHANGED" /> aldatu, eta <ph name="ANY_CLOSED" /> itxi}}</translation>
+<translation id="2755485474385016903">Egindako aldaketak taldeko guztiek ikusten dituzte</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Duela <ph name="NUM_HOURS_ONE" /> ordu sortua}other{Duela <ph name="NUM_HOURS_MANY" /> ordu sortua}}</translation>
 <translation id="2801787514987684416">Dendari buruzko informazioa ikusi nahi duzu?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> fitxa itxi da}other{<ph name="MANY_CLOSED" /> fitxa itxi dira}}</translation>

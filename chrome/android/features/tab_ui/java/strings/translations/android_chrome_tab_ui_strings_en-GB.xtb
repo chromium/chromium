@@ -43,6 +43,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="2671423594960767771">Share group</translation>
 <translation id="2677748264148917807">Leave</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab added, <ph name="ANY_CHANGED" /> changed, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_ADDED" /> tabs added, <ph name="ANY_CHANGED" /> changed, <ph name="ANY_CLOSED" /> closed}}</translation>
+<translation id="2755485474385016903">Changes made are seen by everyone in the group</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Created <ph name="NUM_HOURS_ONE" /> hour ago}other{Created <ph name="NUM_HOURS_MANY" /> hours ago}}</translation>
 <translation id="2801787514987684416">View shop info?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> tab closed}other{<ph name="MANY_CLOSED" /> tabs closed}}</translation>

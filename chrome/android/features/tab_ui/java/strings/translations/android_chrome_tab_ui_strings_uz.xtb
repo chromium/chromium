@@ -43,6 +43,7 @@ Agar tark etsangiz, “<ph name="TITLE_OF_GROUP" />” varaqlar guruhiga boshqa 
 <translation id="2671423594960767771">Guruhni ulashish</translation>
 <translation id="2677748264148917807">Tark etish</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ta varaq kiritildi, <ph name="ANY_CHANGED" /> tasi oʻzgardi, <ph name="ANY_CLOSED" /> tasi yopildi}other{<ph name="MANY_ADDED" /> ta varaq kiritildi, <ph name="ANY_CHANGED" /> tasi oʻzgardi, <ph name="ANY_CLOSED" /> tasi yopildi}}</translation>
+<translation id="2755485474385016903">Oʻzgarishlar guruhning barcha ishtirokchilariga koʻrinadi</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> soat oldin yaratilgan}other{<ph name="NUM_HOURS_MANY" /> soat oldin yaratilgan}}</translation>
 <translation id="2801787514987684416">Doʻkon axboroti ochilsinmi?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ta varaq yopildi}other{<ph name="MANY_CLOSED" /> ta varaq yopildi}}</translation>

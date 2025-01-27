@@ -123,7 +123,6 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" />已登入這個 Chrome 設定檔。如要分開保存你的瀏覽資料，建議在 Chrome 中建立專屬設定檔。</translation>
 <translation id="2580411288591421699">你無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome 然後再試一次。</translation>
 <translation id="2586406160782125153">登出後，系統會將你的瀏覽資料從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chrome。</translation>
-<translation id="2597976513418770460">從 <ph name="ACCOUNT_EMAIL" /> 中存取你在 Chrome 中的內容</translation>
 <translation id="259935314519650377">無法快取下載的安裝程式，錯誤碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2632707915638608719">運用 Chrome 的應用程式，讓你事半功倍</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -544,7 +543,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7845233973568007926">感謝你安裝本服務。你必須重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7852254990718225089">AI 可提升網路體驗，讓 Chrome 使用起來更快速、安全、方便</translation>
 <translation id="7872446069773932638">下載中... 還剩 <ph name="SECONDS" /> 秒</translation>
-<translation id="7880591377632733558">歡迎使用 Chrome，<ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7886087451482920026">使用 Google 智慧鏡頭選取文字</translation>
 <translation id="7890208801193284374">如果你與親朋好友共用電腦，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chrome。</translation>
 <translation id="7896673875602241923">先前已有其他使用者使用 <ph name="ACCOUNT_EMAIL_LAST" /> 在這部電腦上登入 Chrome。請建立新的 Chrome 使用者，以便另行保存你的資訊。</translation>
@@ -596,7 +594,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8429214465555795676">如要繼續，請使用 <ph name="EMAIL" /> 登入 Chrome，確保符合貴機構的政策。</translation>
 <translation id="8433638294851456451">如要將號碼從這裡傳送到 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
-<translation id="8451192282033883849">你的帳戶是由 <ph name="MANAGER_NAME" /> 管理。系統管理員可查看及編輯這個 Chrome 瀏覽器設定檔及其中的資料，例如書籤、歷史記錄和密碼。</translation>
 <translation id="8496177819998570653">Google 密碼管理工具(&amp;A)</translation>
 <translation id="8498858610309223613">Google Chrome 剛才套用了特殊的安全性更新。請立即重新啟動，系統會恢復你原先開啟的分頁。</translation>
 <translation id="8516431725144212809">Chrome 推測的興趣喜好</translation>

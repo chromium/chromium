@@ -5130,7 +5130,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4593021220803146968">&amp;Go to <ph name="URL" /></translation>
 <translation id="4593962599442730215">Change your preferences</translation>
 <translation id="4594218792629569101">Select ‘Mark as read’ to move the page to the bottom of your list</translation>
-<translation id="4594577641390224176">Looking for the system about page? Visit</translation>
 <translation id="4595560905247879544">Apps and extensions can only be modified by the manager (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">You have certificates on file that identify these servers</translation>
 <translation id="4598345735110653698">Manage passkeys</translation>
@@ -6753,7 +6752,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5787420647064736989">Device name</translation>
 <translation id="5788367137662787332">Sorry, at least one partition on the device <ph name="DEVICE_LABEL" /> could not be mounted.</translation>
 <translation id="5789581866075720267">To import passwords to <ph name="BRAND" /> on this device, select a CSV file.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Success</translation>
 <translation id="5790651917470750848">Port forward already exists</translation>
 <translation id="5792295754950501287">More actions for <ph name="CARD_DESCRIPTION" /></translation>
@@ -7172,7 +7170,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6086418630711763366">You can navigate pages with a text cursor. Press Ctrl + <ph name="KEY" /> to turn off.</translation>
 <translation id="6086846494333236931">Installed by your administrator</translation>
 <translation id="6087286598828478206">Block and leave group?</translation>
-<translation id="6087746524533454243">Looking for the browser about page? Visit</translation>
 <translation id="6087960857463881712">Awesome face</translation>
 <translation id="6088475950266477163">Settin&amp;gs</translation>
 <translation id="608912389580139775">To add this page to your reading list, click the Bookmark icon</translation>

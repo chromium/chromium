@@ -116,6 +116,7 @@
 <translation id="1435593198351412143">‏פתיחה אוטומטית של קובצי PDF</translation>
 <translation id="1436784010935106834">הוסר</translation>
 <translation id="1437543266176261764">הפעילות מתבצעת ב-<ph name="APP_NAME" /></translation>
+<translation id="1448147069872048656">צריך לאמת את הזהות שלך כדי לוודא שתהיה לך גישה לכל הסיסמאות במכשיר הזה</translation>
 <translation id="1448440926884431741">‏יש לך אפשרות לארגן את המוצרים שבמעקב ב-Bookmarks</translation>
 <translation id="1460751212339734034">חוסכים זמן, מקלידים פחות</translation>
 <translation id="1466383950273130737">‏בחירת השפה ב-Chrome</translation>
@@ -847,6 +848,7 @@
 <translation id="4910889077668685004">אפליקציות תשלום</translation>
 <translation id="4912413785358399818">העברת הכרטיסייה</translation>
 <translation id="4913169188695071480">הפסקת הרענון</translation>
+<translation id="4913841543356834596">איך לקבל גישה לכל הסיסמאות</translation>
 <translation id="4918086044614829423">אישור</translation>
 <translation id="4925120120285606924">צילום מסך <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">המערכת תייצא את הסיסמאות ותוריד אותן כקובץ טקסט. הן יהיו גלויות לכל המשתמשים והאפליקציות שיש להם גישה לתיקיית היעד.</translation>
@@ -1330,6 +1332,7 @@
 <translation id="6987047470128880212">מצב אנונימי לא זמין במכשיר הזה</translation>
 <translation id="6991701761229081516">‏המערכת תוריד את הסיסמאות כקובץ CSV. הן יהיו גלויות לכל מי שיש לו גישה לקובץ, כולל אפליקציות. הסיסמאות שיוצאו יימחקו מ-Chrome.</translation>
 <translation id="6996145122199359148">הורדת הדף הזה</translation>
+<translation id="7013627768165542797">‏צריך לאמת את הזהות כדי לקבל גישה לסיסמאות בחשבון Google</translation>
 <translation id="7013762323294215682">מפתח הגישה הזה יישמר במנהל הסיסמאות. כל מי שיש לו גישה למנהל הסיסמאות יוכל להשתמש בו.</translation>
 <translation id="7020741890149022655">הוספה לרשימת הקריאה <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">פתיחה בדפדפן</translation>
@@ -1348,6 +1351,7 @@
 <translation id="7085332316435785646">‏בוחרים אם לכלול את ההיסטוריה ב-Chrome להתאמה אישית מדויקת יותר בשירותי Google</translation>
 <translation id="7088681679121566888">‏Chrome מעודכן</translation>
 <translation id="7094933634769755999">לא מדויק</translation>
+<translation id="7102843846294013537">חלק מהסיסמאות שלך לא זמינות במכשיר הזה</translation>
 <translation id="7106762743910369165">הדפדפן מנוהל על ידי הארגון שלך</translation>
 <translation id="7111394291981742152">‏ב-Chrome יש לך יותר שליטה במודעות שמוצגות לך, וחלות הגבלות על המידע עליך שהאתרים יכולים לקבל בהצגת מודעות בהתאמה אישית.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{נבדקו הרשאות של אתר אחד}one{נבדקו ההרשאות של # אתרים}two{נבדקו ההרשאות של # אתרים}other{נבדקו ההרשאות של # אתרים}}</translation>

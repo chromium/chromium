@@ -5132,7 +5132,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4593021220803146968">&amp;Mine asukohta <ph name="URL" /></translation>
 <translation id="4593962599442730215">Muutke oma eelistusi</translation>
 <translation id="4594218792629569101">Tehke valik „Märgi loetuks“, et leht loendi lõppu teisaldada</translation>
-<translation id="4594577641390224176">Kas otsite süsteemi teabe lehte? Külastage saiti</translation>
 <translation id="4595560905247879544">Rakendusi ja laiendusi saab muuta ainult haldur (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Teil on neid servereid tuvastavad sertifikaadid</translation>
 <translation id="4598345735110653698">Pääsukoodide haldamine</translation>
@@ -6759,7 +6758,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5787420647064736989">Seadme nimi</translation>
 <translation id="5788367137662787332">Kahjuks ei õnnestunud seadmes <ph name="DEVICE_LABEL" /> vähemalt ühe kettapartitsiooni ühendamine.</translation>
 <translation id="5789581866075720267">Paroolide importimiseks selles seadmes teenusesse <ph name="BRAND" />, valige CSV-fail.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Õnnestus</translation>
 <translation id="5790651917470750848">Pordisiire on juba olemas</translation>
 <translation id="5792295754950501287">Rohkem toiminguid: <ph name="CARD_DESCRIPTION" /></translation>
@@ -7179,7 +7177,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6086418630711763366">Lehtedel saab navigeerida tekstikursoriga. Väljalülitamiseks vajutage klahve Ctrl + <ph name="KEY" />.</translation>
 <translation id="6086846494333236931">Selle installis administraator</translation>
 <translation id="6087286598828478206">Kas blokeerida ja grupist lahkuda?</translation>
-<translation id="6087746524533454243">Kas otsite brauseri teabe lehte? Külastage saiti</translation>
 <translation id="6087960857463881712">Lahe nägu</translation>
 <translation id="6088475950266477163">Sead&amp;ed</translation>
 <translation id="608912389580139775">Selle lehe lisamiseks lugemisloendisse klõpsake järjehoidjaikoonil</translation>

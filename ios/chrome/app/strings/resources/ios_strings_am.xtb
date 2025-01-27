@@ -476,6 +476,7 @@
 <translation id="3053332585453689122">ጎጂ መሆናቸውን ለመፈተሽ የሚጎበኟቸው ዩአርሎችን እና የገፅ ይዘት ትንሽ ናሙናን፣ ውርዶችን፣ የቅጥያ እንቅስቃሴን እና የሥርዓት መረጃን ወደ የGoogle ጥንቃቄ አሰሳ ይልካል።</translation>
 <translation id="3055102495753300780">የመረጃ ማከማቻ</translation>
 <translation id="3059270601560379555">አዲስ ፍለጋ</translation>
+<translation id="3064547930554042309">ውርዶችን ያስተዳድሩ</translation>
 <translation id="3072279342064724558">የይለፍ ቃል አስቀድሞ ነበር</translation>
 <translation id="3076846064362030967">ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም። በመለያ ሲገቡ <ph name="BEGIN_LINK" />ሌሎች የእንቅስቃሴ ዓይነቶች<ph name="END_LINK" /> በGoogle መለያዎ ውስጥ ሊቀመጡ ይችላሉ። በማንኛውም ጊዜ ሊሰርዟቸው ይችላሉ።
 
@@ -698,6 +699,7 @@
 <translation id="4154753961803534698">በካሜራ ፈልግ</translation>
 <translation id="4158491215857439601">የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="4163699139741158298">{count,plural, =1{ዕልባት ወደ «{title}» ተቀምጧል። የተቀመጠው በዚህ መሣሪያ ላይ ብቻ ነው።}one{{count} ዕልባት ወደ «{title}» ተቀምጧል። የተቀመጠው በዚህ መሣሪያ ላይ ብቻ ነው።}other{{count} ዕልባቶች ወደ «{title}» ተቀምጠዋል። የተቀመጡት በዚህ መሣሪያ ላይ ብቻ ነው።}}</translation>
+<translation id="4164514562270305824">ውርዶችን በራስ-ሰር ይሰርዙ</translation>
 <translation id="4168651806173792090">በ<ph name="LAST_FOUR_DIGITS" /> የሚያበቃ <ph name="NETWORK_NAME" /></translation>
 <translation id="4169535189173047238">አትፍቀድ</translation>
 <translation id="4172051516777682613">ሁልጊዜ አሳይ</translation>
@@ -1016,6 +1018,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5579012242779565775">የንባብ ዝርዝርን ደብቅ</translation>
 <translation id="5585019845078534178">ካርዶች</translation>
 <translation id="5595485650161345191">አድራሻ አርትዕ</translation>
+<translation id="559567008082979829">ውርዶችዎ ከአንድ ወር በኋላ እንዲሰረዙ ያቀናብሩ።</translation>
 <translation id="5596627076506792578">ተጨማሪ አማራጮች</translation>
 <translation id="560322036295180549">በድርጅትዎ ጠፍቷል</translation>
 <translation id="5611107723541161735">በቅርቡ በዚህ መሣሪያ ላይ የጎበኟቸው ወደ ጣቢያዎች የሚወስዱ አቋራጮች።</translation>

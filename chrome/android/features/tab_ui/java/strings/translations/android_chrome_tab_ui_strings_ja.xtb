@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">グループを共有</translation>
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 個のタブを追加、<ph name="ANY_CHANGED" /> 個のタブを変更、<ph name="ANY_CLOSED" /> 個のタブを閉じました}other{<ph name="MANY_ADDED" /> 個のタブを追加、<ph name="ANY_CHANGED" /> 個のタブを変更、<ph name="ANY_CLOSED" /> 個のタブを閉じました}}</translation>
+<translation id="2755485474385016903">変更内容はグループの全員に表示されます</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> 時間前に作成}other{<ph name="NUM_HOURS_MANY" /> 時間前に作成}}</translation>
 <translation id="2801787514987684416">ストア情報を表示しますか？</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> 個のタブを閉じました}other{<ph name="MANY_CLOSED" /> 個のタブを閉じました}}</translation>

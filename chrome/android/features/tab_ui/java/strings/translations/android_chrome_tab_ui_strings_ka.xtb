@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">ჯგუფის გაზიარება</translation>
 <translation id="2677748264148917807">დატოვება</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ჩანართი დაემატა, <ph name="ANY_CHANGED" /> შეიცვალა, <ph name="ANY_CLOSED" /> დაიხურა}other{<ph name="MANY_ADDED" /> ჩანართი დაემატა, <ph name="ANY_CHANGED" /> შეიცვალა, <ph name="ANY_CLOSED" /> დაიხურა}}</translation>
+<translation id="2755485474385016903">შეტანილ ცვლილებებს ნახავს ამ ჯგუფის ყველა წევრი</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{შეიქმნა <ph name="NUM_HOURS_ONE" /> საათის წინ}other{შეიქმნა <ph name="NUM_HOURS_MANY" /> საათის წინ}}</translation>
 <translation id="2801787514987684416">გსურთ მაღაზიის ინფორმაციის ნახვა?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ჩანართი დაიხურა}other{<ph name="MANY_CLOSED" /> ჩანართი დაიხურა}}</translation>

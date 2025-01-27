@@ -43,6 +43,7 @@ Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan
 <translation id="2671423594960767771">Kongsi kumpulan</translation>
 <translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab ditambahkan, <ph name="ANY_CHANGED" /> ditukar, <ph name="ANY_CLOSED" /> ditutup}other{<ph name="MANY_ADDED" /> tab ditambahkan, <ph name="ANY_CHANGED" /> ditukar, <ph name="ANY_CLOSED" /> ditutup}}</translation>
+<translation id="2755485474385016903">Perubahan yang dibuat dapat dilihat oleh semua orang dalam kumpulan</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Dibuat <ph name="NUM_HOURS_ONE" /> jam yang lalu}other{Dibuat <ph name="NUM_HOURS_MANY" /> jam yang lalu}}</translation>
 <translation id="2801787514987684416">Lihat maklumat kedai?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> tab ditutup}other{<ph name="MANY_CLOSED" /> tab ditutup}}</translation>

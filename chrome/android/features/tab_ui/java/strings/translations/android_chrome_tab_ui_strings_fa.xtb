@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">هم‌رسانی گروه</translation>
 <translation id="2677748264148917807">خروج</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}one{‫<ph name="MANY_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}other{‫<ph name="MANY_ADDED" /> برگه اضافه شد، <ph name="ANY_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}}</translation>
+<translation id="2755485474385016903">همه افراد گروه تغییرات ایجادشده را می‌بینند</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{‫<ph name="NUM_HOURS_ONE" /> ساعت پیش ایجاد شد}one{‫<ph name="NUM_HOURS_MANY" /> ساعت پیش ایجاد شد}other{‫<ph name="NUM_HOURS_MANY" /> ساعت پیش ایجاد شد}}</translation>
 <translation id="2801787514987684416">اطلاعات فروشگاه نمایش داده شود؟</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{‫<ph name="ONE_CLOSED" /> برگه بسته شد}one{‫<ph name="MANY_CLOSED" /> برگه بسته شد}other{‫<ph name="MANY_CLOSED" /> برگه بسته شد}}</translation>

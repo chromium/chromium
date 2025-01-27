@@ -476,6 +476,7 @@
 <translation id="3053332585453689122">మీరు చూసే URLలు, పేజీ కంటెంట్, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్ యాక్టివిటీ మరియు సిస్టమ్ సమాచారం తాలూకు చిన్న శాంపిల్‌ను Google సురక్షిత బ్రౌజింగ్‌కు పంపి, అవి హానికరంగా ఉన్నాయో లేదో చెక్ చేస్తుంది.</translation>
 <translation id="3055102495753300780">సమాచార స్టోరేజ్</translation>
 <translation id="3059270601560379555">కొత్త సెర్చ్</translation>
+<translation id="3064547930554042309">డౌన్‌లోడ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="3072279342064724558">పాస్‌వర్డ్ ఇప్పటికే ఉంది</translation>
 <translation id="3076846064362030967">మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు. మీరు సైన్ ఇన్ చేసినప్పుడు, <ph name="BEGIN_LINK" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు. మీరు వాటిని ఎప్పుడైనా తొలగించవచ్చు.
 
@@ -698,6 +699,7 @@
 <translation id="4154753961803534698">కెమెరాతో సెర్చ్ చేయండి</translation>
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4163699139741158298">{count,plural, =1{బుక్‌మార్క్ "{title}"కు సేవ్ చేయబడింది. ఇది ఈ పరికరంలో మాత్రమే సేవ్ చేయబడుతుంది.}other{{count} బుక్‌మార్క్‌లు "{title}"లో సేవ్ అయ్యాయి. అవి ఈ పరికరంలో మాత్రమే సేవ్ చేయబడతాయి.}}</translation>
+<translation id="4164514562270305824">డౌన్‌లోడ్‌లను ఆటోమేటిక్‌గా తొలగించండి</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" />తో ముగిసే <ph name="NETWORK_NAME" /></translation>
 <translation id="4169535189173047238">అనుమతించవద్దు</translation>
 <translation id="4172051516777682613">ఎల్లప్పుడూ చూపు</translation>
@@ -1016,6 +1018,7 @@
 <translation id="5579012242779565775">చదవాల్సిన లిస్ట్‌ను దాచండి</translation>
 <translation id="5585019845078534178">కార్డ్‌లు</translation>
 <translation id="5595485650161345191">అడ్రస్‌ను ఎడిట్ చేయండి</translation>
+<translation id="559567008082979829">మీ డౌన్‌లోడ్‌లను ఒక నెల తర్వాత తొలగించేలా సెట్ చేసుకోండి.</translation>
 <translation id="5596627076506792578">మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="560322036295180549">మీ సంస్థ ఆఫ్ చేసింది</translation>
 <translation id="5611107723541161735">ఈ పరికరంలో మీరు ఇటీవల సందర్శించిన సైట్‌లకు షార్ట్‌కట్‌లు.</translation>

@@ -5126,7 +5126,6 @@
 <translation id="4593021220803146968">&amp;Иди на <ph name="URL" /></translation>
 <translation id="4593962599442730215">Промените подешавања</translation>
 <translation id="4594218792629569101">Изаберите Означи као прочитано да бисте преместили страницу на дно листе</translation>
-<translation id="4594577641390224176">Тражите страницу са основним подацима о систему? Посетите</translation>
 <translation id="4595560905247879544">Апликације и додатке може да мења само менаџер (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Имате сачуване сертификате који идентификују ове сервере</translation>
 <translation id="4598345735110653698">Управљајте приступним кодовима</translation>
@@ -6752,7 +6751,6 @@
 <translation id="5787420647064736989">Назив уређаја</translation>
 <translation id="5788367137662787332">Жао нам је, најмање једну партицију на уређају <ph name="DEVICE_LABEL" /> није било могуће укључити.</translation>
 <translation id="5789581866075720267">Да бисте увезли лозинке у <ph name="BRAND" />, изаберите CSV фајл.</translation>
-<translation id="5789643057113097023">,</translation>
 <translation id="5790085346892983794">Успешно</translation>
 <translation id="5790651917470750848">Прослеђивање порта већ постоји</translation>
 <translation id="5792295754950501287">Још радњи за: <ph name="CARD_DESCRIPTION" /></translation>
@@ -7172,7 +7170,6 @@
 <translation id="6086418630711763366">Можете да се крећете страницама помоћу курсора за текст. Притисните Ctrl + <ph name="KEY" /> да бисте га искључили.</translation>
 <translation id="6086846494333236931">Инсталирао је администратор</translation>
 <translation id="6087286598828478206">Желите да блокирате члана и напустите групу?</translation>
-<translation id="6087746524533454243">Тражите страницу са основним подацима о прегледачу? Посетите</translation>
 <translation id="6087960857463881712">Задовољно лице</translation>
 <translation id="6088475950266477163">Подешавања</translation>
 <translation id="608912389580139775">Да бисте додали ову страницу на листу за читање, кликните на икону обележивача</translation>

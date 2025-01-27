@@ -43,6 +43,7 @@ Ef þú eyðir honum munu allir notendur umsvifalaust missa aðgang að flipahó
 <translation id="2671423594960767771">Deila hópi</translation>
 <translation id="2677748264148917807">Yfirgefa</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> flipa bætt við, <ph name="ANY_CHANGED" /> breytt, <ph name="ANY_CLOSED" /> lokað}one{<ph name="MANY_ADDED" /> flipa bætt við, <ph name="ANY_CHANGED" /> breytt, <ph name="ANY_CLOSED" /> lokað}other{<ph name="MANY_ADDED" /> flipum bætt við, <ph name="ANY_CHANGED" /> breytt, <ph name="ANY_CLOSED" /> lokað}}</translation>
+<translation id="2755485474385016903">Allir í hópnum geta séð breytingar sem gerðar eru</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Búinn til fyrir <ph name="NUM_HOURS_ONE" /> klukkustund}one{Búinn til fyrir <ph name="NUM_HOURS_MANY" /> klukkustund}other{Búinn til fyrir <ph name="NUM_HOURS_MANY" /> klukkustundum}}</translation>
 <translation id="2801787514987684416">Skoða upplýsingar verslunar?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> flipa lokað}one{<ph name="MANY_CLOSED" /> flipa lokað}other{<ph name="MANY_CLOSED" /> flipum lokað}}</translation>

@@ -43,6 +43,7 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="2671423594960767771">Ndaj grupin</translation>
 <translation id="2677748264148917807">Largohu</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> skedë u shtua, <ph name="ANY_CHANGED" /> u ndryshuan, <ph name="ANY_CLOSED" /> u mbyllën}other{<ph name="MANY_ADDED" /> skeda u shtuan, <ph name="ANY_CHANGED" /> u ndryshuan, <ph name="ANY_CLOSED" /> u mbyllën}}</translation>
+<translation id="2755485474385016903">Ndryshimet e bëra shikohen nga të gjithë në grup</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Krijuar <ph name="NUM_HOURS_ONE" /> orë më parë}other{Krijuar <ph name="NUM_HOURS_MANY" /> orë më parë}}</translation>
 <translation id="2801787514987684416">Të shikohen informacionet e dyqanit?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> skedë u mbyll}other{<ph name="MANY_CLOSED" /> skeda u mbyllën}}</translation>

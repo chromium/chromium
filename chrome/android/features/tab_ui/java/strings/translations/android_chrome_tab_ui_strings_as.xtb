@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">গোট শ্বেয়াৰ কৰক</translation>
 <translation id="2677748264148917807">ত্যাগ কৰক</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> টা টেব যোগ দিয়া হ’ল, <ph name="ANY_CHANGED" /> টা টেব সলনি কৰা হ'ল, <ph name="ANY_CLOSED" /> টা টেব বন্ধ কৰা হ'ল}one{<ph name="MANY_ADDED" /> টা টেব যোগ দিয়া হ’ল, <ph name="ANY_CHANGED" /> টা টেব সলনি কৰা হ'ল, <ph name="ANY_CLOSED" /> টা টেব বন্ধ কৰা হ'ল}other{<ph name="MANY_ADDED" /> টা টেব যোগ দিয়া হ’ল, <ph name="ANY_CHANGED" /> টা টেব সলনি কৰা হ'ল, <ph name="ANY_CLOSED" /> টা টেব বন্ধ কৰা হ'ল}}</translation>
+<translation id="2755485474385016903">এই গোটটোত থকা সকলোৱে সম্পন্ন কৰা সালসলনিসমূহ দেখা পায়</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> ঘণ্টা পূৰ্বে সৃষ্টি কৰা হৈছে}one{<ph name="NUM_HOURS_MANY" /> ঘণ্টা পূৰ্বে সৃষ্টি কৰা হৈছে}other{<ph name="NUM_HOURS_MANY" /> ঘণ্টা পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="2801787514987684416">ষ্ট’ৰৰ তথ্য চাব নেকি?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> টা টেব বন্ধ কৰা হ'ল}one{<ph name="MANY_CLOSED" /> টা টেব বন্ধ কৰা হ’ল}other{<ph name="MANY_CLOSED" /> টা টেব বন্ধ কৰা হ’ল}}</translation>

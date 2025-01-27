@@ -43,6 +43,7 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="2671423594960767771">Jaga gruppi</translation>
 <translation id="2677748264148917807">Lahku</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> vaheleht lisati, <ph name="ANY_CHANGED" /> muudeti, <ph name="ANY_CLOSED" /> suleti}other{<ph name="MANY_ADDED" /> vahelehte lisati, <ph name="ANY_CHANGED" /> muudeti, <ph name="ANY_CLOSED" /> suleti}}</translation>
+<translation id="2755485474385016903">Tehtud muudatusi näevad kõik grupi liikmed</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Loodud <ph name="NUM_HOURS_ONE" /> tund tagasi}other{Loodud <ph name="NUM_HOURS_MANY" /> tundi tagasi}}</translation>
 <translation id="2801787514987684416">Kas kuvada poe teave?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> vaheleht suleti}other{<ph name="MANY_CLOSED" /> vahelehte suleti}}</translation>

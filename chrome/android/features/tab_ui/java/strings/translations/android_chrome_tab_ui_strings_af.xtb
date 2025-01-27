@@ -43,6 +43,7 @@ As jy dit uitvee sal almal onmiddellik toegang tot die “<ph name="TITLE_OF_GRO
 <translation id="2671423594960767771">Deel groep</translation>
 <translation id="2677748264148917807">Gaan uit</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> oortjie is bygevoeg, <ph name="ANY_CHANGED" /> is verander, <ph name="ANY_CLOSED" /> is toegemaak}other{<ph name="MANY_ADDED" /> oortjies is bygevoeg, <ph name="ANY_CHANGED" /> is verander, <ph name="ANY_CLOSED" /> is toegemaak}}</translation>
+<translation id="2755485474385016903">Veranderinge wat gemaak word kan deur almal in die groep gesien word</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> uur gelede geskep}other{<ph name="NUM_HOURS_MANY" /> uur gelede geskep}}</translation>
 <translation id="2801787514987684416">Bekyk winkelinligting?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> oortjie is toegemaak}other{<ph name="MANY_CLOSED" /> oortjies is toegemaak}}</translation>

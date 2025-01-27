@@ -5133,7 +5133,6 @@
 <translation id="4593021220803146968">&amp;Перейти до <ph name="URL" /></translation>
 <translation id="4593962599442730215">Змінити налаштування</translation>
 <translation id="4594218792629569101">Виберіть "Позначити як прочитане", щоб перемістити сторінку в кінець списку</translation>
-<translation id="4594577641390224176">Шукаєте сторінку з інформацією про систему? Перейдіть на сторінку</translation>
 <translation id="4595560905247879544">Лише адміністратор (<ph name="CUSTODIAN_NAME" />) може змінювати додатки та розширення.</translation>
 <translation id="4596295440756783523">У вас є сертифікати, які ідентифікують ці сервери</translation>
 <translation id="4598345735110653698">Керувати ключами доступу</translation>
@@ -6752,7 +6751,6 @@
 <translation id="5787420647064736989">Назва пристрою</translation>
 <translation id="5788367137662787332">На жаль, підключити принаймні один розділ пристрою <ph name="DEVICE_LABEL" /> неможливо.</translation>
 <translation id="5789581866075720267">Щоб імпортувати паролі в <ph name="BRAND" /> на цей пристрій, виберіть файл CSV.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Готово</translation>
 <translation id="5790651917470750848">Така переадресація порту вже існує</translation>
 <translation id="5792295754950501287">Інші дії з карткою "<ph name="CARD_DESCRIPTION" />"</translation>
@@ -7170,7 +7168,6 @@
 <translation id="6086418630711763366">Ви можете оглядати сторінки за допомогою текстового курсора. Щоб вимкнути цю функцію, натисніть комбінацію клавіш Ctrl + <ph name="KEY" />.</translation>
 <translation id="6086846494333236931">Установив адміністратор</translation>
 <translation id="6087286598828478206">Заблокувати користувача й вийти з групи?</translation>
-<translation id="6087746524533454243">Шукаєте сторінку з інформацією про веб-переглядач? Перейдіть на сторінку</translation>
 <translation id="6087960857463881712">Гарне обличчя</translation>
 <translation id="6088475950266477163">Налашту&amp;вання</translation>
 <translation id="608912389580139775">Щоб додати цю сторінку в список читання, натисніть значок закладки</translation>

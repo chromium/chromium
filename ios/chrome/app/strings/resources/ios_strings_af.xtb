@@ -476,6 +476,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="3053332585453689122">Stuur die URL’e wat jy besoek en ’n klein steekproef van bladsyinhoud, aflaaie, uitbreidingaktiwiteit en stelselinligting na Google Veiligblaai toe om te kontroleer of dit skadelik is.</translation>
 <translation id="3055102495753300780">Inligtingberging</translation>
 <translation id="3059270601560379555">Nuwe soektog</translation>
+<translation id="3064547930554042309">Bestuur aflaaie</translation>
 <translation id="3072279342064724558">Wagwoord bestaan reeds</translation>
 <translation id="3076846064362030967">Jy sal nie uit jou Google-rekening afgemeld word nie. <ph name="BEGIN_LINK" />Ander soorte aktiwiteit<ph name="END_LINK" /> sal dalk in jou Google-rekening gestoor word wanneer jy aangemeld is. Jy kan hulle enige tyd uitvee.
 
@@ -698,6 +699,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4154753961803534698">Soek met kamera</translation>
 <translation id="4158491215857439601">Wagwoordbestuurder</translation>
 <translation id="4163699139741158298">{count,plural, =1{Boekmerk is gestoor na “{title}”. Dit word net op hierdie toestel gestoor.}other{{count} boekmerke is gestoor na “{title}”. Hulle word net op hierdie toestel gestoor.}}</translation>
+<translation id="4164514562270305824">Vee aflaaie outomaties uit</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> wat met <ph name="LAST_FOUR_DIGITS" /> eindig</translation>
 <translation id="4169535189173047238">Moenie toelaat nie</translation>
 <translation id="4172051516777682613">Wys altyd</translation>
@@ -1016,6 +1018,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5579012242779565775">Versteek leeslys</translation>
 <translation id="5585019845078534178">Kaarte</translation>
 <translation id="5595485650161345191">Wysig adres</translation>
+<translation id="559567008082979829">Stel aflaaie op om na een maand uitgevee te word.</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="560322036295180549">Afgeskakel deur jou organisasie</translation>
 <translation id="5611107723541161735">Kortpaaie na werwe wat jy onlangs op hierdie toestel besoek het.</translation>

@@ -5117,7 +5117,6 @@
 <translation id="4593021220803146968"><ph name="URL" /> に移動(&amp;G)</translation>
 <translation id="4593962599442730215">設定を変更</translation>
 <translation id="4594218792629569101">[既読にする] を選択すると、ページがリストの一番下に移動します</translation>
-<translation id="4594577641390224176">システム情報のページをお探しですか？次にアクセスしてください</translation>
 <translation id="4595560905247879544">アプリと拡張機能は管理者（<ph name="CUSTODIAN_NAME" />）だけが変更できます。</translation>
 <translation id="4596295440756783523">これらのサーバーを識別する証明書がファイルに格納されています</translation>
 <translation id="4598345735110653698">パスキーを管理</translation>
@@ -6739,7 +6738,6 @@
 <translation id="5787420647064736989">デバイス名</translation>
 <translation id="5788367137662787332">デバイス <ph name="DEVICE_LABEL" /> の少なくとも 1 つのパーティションがマウントできませんでした。</translation>
 <translation id="5789581866075720267">このデバイスの <ph name="BRAND" /> にパスワードをインポートするには、CSV ファイルを選択してください。</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">完了</translation>
 <translation id="5790651917470750848">ポート転送はすでに設定されています</translation>
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> に対するその他の操作</translation>
@@ -7159,7 +7157,6 @@
 <translation id="6086418630711763366">テキスト カーソルを使ってページ間を移動できます。オフにするには、Ctrl+<ph name="KEY" /> キーを押します。</translation>
 <translation id="6086846494333236931">管理者によりインストールされています</translation>
 <translation id="6087286598828478206">ブロックしてグループから退出しますか？</translation>
-<translation id="6087746524533454243">ブラウザ情報のページをお探しですか？次にアクセスしてください</translation>
 <translation id="6087960857463881712">エピック スマイリー</translation>
 <translation id="6088475950266477163">設定(&amp;G)</translation>
 <translation id="608912389580139775">リーディング リストにこのページを追加するには、ブックマーク アイコンをクリックしてください</translation>

@@ -43,6 +43,7 @@ Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<
 <translation id="2671423594960767771">Comparteix el grup</translation>
 <translation id="2677748264148917807">Surt</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{S'ha afegit <ph name="ONE_ADDED" /> pestanya, se n'ha canviat <ph name="ANY_CHANGED" /> i se n'ha tancat <ph name="ANY_CLOSED" />}other{S'han afegit <ph name="MANY_ADDED" /> pestanyes, se n'han canviat <ph name="ANY_CHANGED" /> i se n'han tancat <ph name="ANY_CLOSED" />}}</translation>
+<translation id="2755485474385016903">Tothom del grup podrà veure els canvis que es facin</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creat fa <ph name="NUM_HOURS_ONE" /> hora}other{Creat fa <ph name="NUM_HOURS_MANY" /> hores}}</translation>
 <translation id="2801787514987684416">Vols consultar la informació de la botiga?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{S'ha tancat <ph name="ONE_CLOSED" /> pestanya}other{S'han tancat <ph name="MANY_CLOSED" /> pestanyes}}</translation>

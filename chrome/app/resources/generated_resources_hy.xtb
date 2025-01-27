@@ -5115,7 +5115,6 @@
 <translation id="4593021220803146968">&amp;Անցնել <ph name="URL" /></translation>
 <translation id="4593962599442730215">Փոխել կարգավորումները</translation>
 <translation id="4594218792629569101">Ընտրեք «Նշել որպես կարդացված»՝ էջը ձեր ցանկի ներքևում տեղադրելու համար</translation>
-<translation id="4594577641390224176">Համակարգի մասին է՞ջն եք փնտրում։ Անցեք</translation>
 <translation id="4595560905247879544">Հավելվածներն ու ընդլայնումները միայն կառավարիչը (<ph name="CUSTODIAN_NAME" />) կարող է փոփոխել:</translation>
 <translation id="4596295440756783523">Դուք ունեք որոշ հավաստագրեր, որոնք նույնականացնում են այս սերվերները</translation>
 <translation id="4598345735110653698">Կառավարել մուտքի բանալիները</translation>
@@ -6735,7 +6734,6 @@
 <translation id="5787420647064736989">Սարքի անվանումը</translation>
 <translation id="5788367137662787332"><ph name="DEVICE_LABEL" /> սարքի առնվազն մեկ մասնաբաժին հնարավոր չէ միացնել:</translation>
 <translation id="5789581866075720267">Գաղտնաբառերը <ph name="BRAND" /> ներմուծելու համար ընտրեք CSV ֆայլ։</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Հաջողվեց</translation>
 <translation id="5790651917470750848">Միացքի վերահասցեավորում արդեն գոյություն ունի</translation>
 <translation id="5792295754950501287">«<ph name="CARD_DESCRIPTION" />» քարտին առնչվող այլ գործողություններ</translation>
@@ -7153,7 +7151,6 @@
 <translation id="6086418630711763366">Դուք կարող եք մեկ էջից անցնել մյուսը տեսքտի նշորդի միջոցով։ Սեղմեք Ctrl + <ph name="KEY" />՝ անջատելու համար։</translation>
 <translation id="6086846494333236931">Տեղադրվել է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="6087286598828478206">Արգելափակե՞լ և լքել խումբը</translation>
-<translation id="6087746524533454243">Դիտարկիչի մասին է՞ջն եք փնտրում։ Անցեք</translation>
 <translation id="6087960857463881712">Հիացած դեմք</translation>
 <translation id="6088475950266477163">Կարգավորումն&amp;եր</translation>
 <translation id="608912389580139775">Այս էջը ձեր ընթերցանության ցանկում ավելացնելու համար սեղմեք «Էջանիշ» պատկերակը</translation>

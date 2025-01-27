@@ -5133,7 +5133,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4593021220803146968">&amp;Gå til <ph name="URL" /></translation>
 <translation id="4593962599442730215">Endre innstillingene dine</translation>
 <translation id="4594218792629569101">Velg «Merk som lest» for å flytte siden til bunnen av listen</translation>
-<translation id="4594577641390224176">Ser du etter systemets Om-side? Gå til</translation>
 <translation id="4595560905247879544">Apper og utvidelser kan bare endres av administratoren (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Du har registrerte sertifikater som identifiserer disse tjenerne</translation>
 <translation id="4598345735110653698">Administrer passnøkler</translation>
@@ -6757,7 +6756,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5787420647064736989">Enhetsnavn</translation>
 <translation id="5788367137662787332">Beklager, men minst én partisjon på enheten <ph name="DEVICE_LABEL" /> kunne ikke tilkobles.</translation>
 <translation id="5789581866075720267">For å importere passord til <ph name="BRAND" /> på denne enheten, velg en CSV-fil.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Fullført</translation>
 <translation id="5790651917470750848">Porten er allerede viderekoblet</translation>
 <translation id="5792295754950501287">Flere handlinger for <ph name="CARD_DESCRIPTION" /></translation>
@@ -7177,7 +7175,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6086418630711763366">Du kan navigere på sider med en tekstmarkør. Trykk på Ctrl + <ph name="KEY" /> for å slå av dette.</translation>
 <translation id="6086846494333236931">Installert av administratoren din</translation>
 <translation id="6087286598828478206">Vil du blokkere og forlate gruppen?</translation>
-<translation id="6087746524533454243">Ser du etter nettleserens Om-side? Gå til</translation>
 <translation id="6087960857463881712">Fantastisk-fjes</translation>
 <translation id="6088475950266477163">Innstillin&amp;ger</translation>
 <translation id="608912389580139775">For å legge til denne siden på leselisten din, klikk på Bokmerke-ikonet</translation>

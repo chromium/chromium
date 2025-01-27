@@ -116,7 +116,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="1435593198351412143">Automatski otvaraj PDF-ove</translation>
 <translation id="1436784010935106834">Uklonjeno</translation>
 <translation id="1437543266176261764">Pokrenuto u aplikaciji <ph name="APP_NAME" /></translation>
-<translation id="1448147069872048656">Potvrdite da ste to vi da biste mogli pristupati svim svojim zaporkama na ovom uređaju</translation>
+<translation id="1448147069872048656">Potvrdite identitet da osigurate pristup svim svojim lozinkama na ovom uređaju</translation>
 <translation id="1448440926884431741">Organizirajte praćene proizvode u Oznakama</translation>
 <translation id="1460751212339734034">Uštedite vrijeme, pišite manje</translation>
 <translation id="1466383950273130737">Odaberite jezik Chromea</translation>
@@ -848,7 +848,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4910889077668685004">Aplikacije za plaćanje</translation>
 <translation id="4912413785358399818">Pomjeri karticu</translation>
 <translation id="4913169188695071480">Prestani osvježavati</translation>
-<translation id="4913841543356834596">Pristupajte svim svojim zaporkama</translation>
+<translation id="4913841543356834596">Dobijte pristup svim svojim lozinkama</translation>
 <translation id="4918086044614829423">Prihvati</translation>
 <translation id="4925120120285606924">Snimak ekrana <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Vaše lozinke će se izvesti i preuzeti kao tekstualni fajl. Bit će vidljive svima i svakoj aplikaciji s pristupom odredišnom folderu.</translation>
@@ -1332,7 +1332,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6987047470128880212">Anonimni način rada nije dostupan na ovom uređaju</translation>
 <translation id="6991701761229081516">Lozinke će se preuzeti kao CSV fajl. Bit će vidljive svakome ko može pristupiti fajlu, uključujući aplikacije. Izvezene lozinke će se izbrisati iz Chromea.</translation>
 <translation id="6996145122199359148">Preuzmi stranicu</translation>
-<translation id="7013627768165542797">Potvrdite svoj identitet da biste pristupali zaporkama na svojem Google računu</translation>
+<translation id="7013627768165542797">Potvrdite identitet da pristupite lozinkama na Google računu</translation>
 <translation id="7013762323294215682">Ovaj pristupni ključ će se sačuvati u upravitelj lozinki. Moći će ga koristiti svako ko ima pristup ovom pristupnom ključu.</translation>
 <translation id="7020741890149022655">Dodajte na listu za čitanje <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Otvori u pregledniku</translation>
@@ -1351,7 +1351,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7085332316435785646">Odaberite želite li uključiti historiju Chromea da dodatno personalizirate iskustva na Googleovim uslugama</translation>
 <translation id="7088681679121566888">Chrome je ažuriran</translation>
 <translation id="7094933634769755999">Netačno</translation>
-<translation id="7102843846294013537">Neke od vaših zaporki nisu dostupne na ovom uređaju</translation>
+<translation id="7102843846294013537">Neke od vaših lozinki nisu dostupne na ovom uređaju</translation>
 <translation id="7106762743910369165">Preglednikom upravlja vaša organizacija</translation>
 <translation id="7111394291981742152">Chrome vam daje veću kontrolu nad oglasima koji vam se prikazuju i ograničava koje web lokacije mogu saznati informacije o vama kada vam prikažu personalizirane oglase.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Pregledana su odobrenja za 1 web lokaciju}one{Pregledana su odobrenja za # web lokaciju}few{Pregledana su odobrenja za # web lokacije}other{Pregledana su odobrenja za # web lokacija}}</translation>

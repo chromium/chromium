@@ -121,7 +121,6 @@
 <translation id="264613044588233783">‏سيعمل Chromium بشكل أسرع ومن المفترض أن تعمل الميزات التي تستخدِم JavaScript على النحو المطلوب (خيار يُنصَح به).</translation>
 <translation id="2648074677641340862">‏حدث خطأ في نظام التشغيل أثناء عملية التثبيت. يُرجى إعادة تنزيل Chromium.</translation>
 <translation id="2661879430930417727">‏في حال مشاركة جهاز مع الأصدقاء والعائلة، يمكنهم الحصول على تجربة تصفّح منفصلة وإعداد Chromium على النحو المفضّل لديهم.</translation>
-<translation id="268602741124540128">‏مرحبًا بك في Chromium، <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">‏علامة تبويب Chromium</translation>
 <translation id="2718390899429598676">‏لمزيد من الأمان، سيشفر Chromium بياناتك</translation>
 <translation id="2721354645805494590">‏لإزالة حسابك على Google من Chromium، يجب تسجيل الخروج</translation>
@@ -204,14 +203,12 @@
 <translation id="3802055581630249637">‏يُحمِّل Chromium مسبقًا الصفحات التي من المرجَح أن تزورها، وذلك بهدف تحميلها بسرعة أكبر عند زيارتك لها.</translation>
 <translation id="3830894615770080216">‏نظام التشغيل Chromium</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="3871664619793219264">‏الحصول على بياناتك في متصفِّح Chromium من خلال <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3885770153807205175">أداة اختيار اللغة</translation>
 <translation id="388648406173476553">‏تخصيص Chromium والتحكُّم فيه معلومات مهمة - انقر للحصول على التفاصيل.</translation>
 <translation id="3889543394854987837">‏انقر على اسمك لفتح Chromium وبدء التصفح.</translation>
 <translation id="3892148308691398805">نسخ النص</translation>
 <translation id="390528597099634151">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chromium. لتوفير تجربة تصفّح منفصلة دائمًا، يمكن لمتصفِّح Chromium إنشاء ملف شخصي خاص بك.</translation>
 <translation id="3909353120217047026">‏تنتهك هذه الإضافة "سياسة سوق Chrome الإلكتروني"، وقد تكون غير آمنة. يُرجى إزالة هذه الإضافة من Chromium كي لا تتمكّن من الاطّلاع على بياناتك وتغييرها، بما في ذلك معلوماتك الشخصية، على المواقع الإلكترونية التي تزورها.</translation>
-<translation id="391789666908693569">‏تتم إدارة حسابك من قِبَل <ph name="MANAGER_NAME" />. وبإمكان المشرف الاطّلاع على الملف الشخصي لمتصفِّح Chromium وتعديل بياناته، مثل الإشارات المرجعية والسجلّ وكلمات المرور.</translation>
 <translation id="3941890832296813527">خطأ في التثبيت: اسم ملف أداة التثبيت غير صالح أو غير متوافق.</translation>
 <translation id="3945058413678539331">‏يحاول Chromium نسخ كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="3954172517175569325">‏ستتم إزالة كلمات المرور وطرق الدفع والعناوين التي حفظتها في حسابك على Google من هذا الجهاز. ولاستخدامها مرة أخرى في Chromium، عليك تسجيل الدخول مجددًا.</translation>

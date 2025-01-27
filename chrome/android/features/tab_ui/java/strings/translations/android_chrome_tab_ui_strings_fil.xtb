@@ -43,6 +43,7 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="2671423594960767771">Ibahagi ang pangkat</translation>
 <translation id="2677748264148917807">Umalis</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Idinagdag ang <ph name="ONE_ADDED" /> tab, binago ang <ph name="ANY_CHANGED" />, isinara ang <ph name="ANY_CLOSED" />}one{Idinagdag ang <ph name="MANY_ADDED" /> tab, binago ang <ph name="ANY_CHANGED" />, isinara ang <ph name="ANY_CLOSED" />}other{Idinagdag ang <ph name="MANY_ADDED" /> na tab, binago ang <ph name="ANY_CHANGED" />, isinara ang <ph name="ANY_CLOSED" />}}</translation>
+<translation id="2755485474385016903">Nakikita ng lahat ng nasa grupo ang mga pagbabagong ginawa</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Ginawa <ph name="NUM_HOURS_ONE" /> oras ang nakalipas}one{Ginawa <ph name="NUM_HOURS_MANY" /> oras ang nakalipas}other{Ginawa <ph name="NUM_HOURS_MANY" /> na oras ang nakalipas}}</translation>
 <translation id="2801787514987684416">Tingnan ang impormasyon ng store?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Isinara ang <ph name="ONE_CLOSED" />}one{Isinara ang <ph name="MANY_CLOSED" /> tab}other{Isinara ang <ph name="MANY_CLOSED" /> na tab}}</translation>

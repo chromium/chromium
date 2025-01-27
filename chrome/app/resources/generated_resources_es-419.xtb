@@ -5114,7 +5114,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4593021220803146968">&amp;Ir a <ph name="URL" /></translation>
 <translation id="4593962599442730215">Cambiar tus preferencias</translation>
 <translation id="4594218792629569101">Selecciona "Marcar como leído" para mover la página a la parte inferior de tu lista</translation>
-<translation id="4594577641390224176">¿Buscas la página de información del sistema? Visita</translation>
 <translation id="4595560905247879544">Solo el administrador (<ph name="CUSTODIAN_NAME" />) puede modificar las apps y extensiones.</translation>
 <translation id="4596295440756783523">Tienes certificados archivados que identifican estos servidores</translation>
 <translation id="4598345735110653698">Administrar llaves de acceso</translation>
@@ -6737,7 +6736,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5787420647064736989">Nombre del dispositivo</translation>
 <translation id="5788367137662787332">Lo sentimos, al menos una partición en el dispositivo <ph name="DEVICE_LABEL" /> no se pudo montar.</translation>
 <translation id="5789581866075720267">Si quieres importar contraseñas al <ph name="BRAND" /> en este dispositivo, selecciona un archivo CSV.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Completado correctamente</translation>
 <translation id="5790651917470750848">Ya se está redireccionado ese puerto</translation>
 <translation id="5792295754950501287">Más acciones para <ph name="CARD_DESCRIPTION" /></translation>
@@ -7156,7 +7154,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6086418630711763366">Puedes navegar por páginas con un cursor de texto. Presiona Ctrl + <ph name="KEY" /> para desactivar esta función.</translation>
 <translation id="6086846494333236931">Instalado por el administrador</translation>
 <translation id="6087286598828478206">¿Quieres bloquear a ese miembro y salir del grupo?</translation>
-<translation id="6087746524533454243">¿Buscas la página de información del navegador? Visita</translation>
 <translation id="6087960857463881712">Cara increíble</translation>
 <translation id="6088475950266477163">Configuración</translation>
 <translation id="608912389580139775">Para agregar esta página a tu lista de lectura, haz clic en el ícono de favoritos.</translation>

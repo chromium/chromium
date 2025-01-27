@@ -43,6 +43,7 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="2671423594960767771">Zdieľať skupinu</translation>
 <translation id="2677748264148917807">Odísť</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> karta bola pridaná, zmenené: <ph name="ANY_CHANGED" />, zavreté: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> karty boli pridané, zmenené: <ph name="ANY_CHANGED" />, zavreté: <ph name="ANY_CLOSED" />}many{<ph name="MANY_ADDED" /> tabs added, <ph name="ANY_CHANGED" /> changed, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_ADDED" /> kariet bolo pridaných, zmenené: <ph name="ANY_CHANGED" />, zavreté: <ph name="ANY_CLOSED" />}}</translation>
+<translation id="2755485474385016903">Zmeny vidí každý v skupine</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Vytvorená pred <ph name="NUM_HOURS_ONE" /> hodinou}few{Vytvorená pred <ph name="NUM_HOURS_MANY" /> hodinami}many{Vytvorená pred <ph name="NUM_HOURS_MANY" /> hodiny}other{Vytvorená pred <ph name="NUM_HOURS_MANY" /> hodinami}}</translation>
 <translation id="2801787514987684416">Chcete zobraziť informácie o obchode?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> karta bola zavretá}few{<ph name="MANY_CLOSED" /> karty boli zavreté}many{<ph name="MANY_CLOSED" /> tabs closed}other{<ph name="MANY_CLOSED" /> kariet bolo zavretých}}</translation>

@@ -43,6 +43,7 @@ Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="
 <translation id="2671423594960767771">Dela grupp</translation>
 <translation id="2677748264148917807">Lämna</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> flik har lagts till, <ph name="ANY_CHANGED" /> har ändrats, <ph name="ANY_CLOSED" /> har stängts}other{<ph name="MANY_ADDED" /> flikar har lagts till, <ph name="ANY_CHANGED" /> har ändrats, <ph name="ANY_CLOSED" /> har stängts}}</translation>
+<translation id="2755485474385016903">Alla i gruppen ser ändringar som görs</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Skapades för <ph name="NUM_HOURS_ONE" /> timme sedan}other{Skapades för <ph name="NUM_HOURS_MANY" /> timmar sedan}}</translation>
 <translation id="2801787514987684416">Vill du visa butiksinformation?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> flik har stängts}other{<ph name="MANY_CLOSED" /> flikar har stängts}}</translation>

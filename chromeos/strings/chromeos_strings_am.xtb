@@ -296,6 +296,7 @@
 <translation id="2240366984605217732">የአቀማመጥ መቀየሪያ</translation>
 <translation id="2244834438220057800">አረንጓዴ</translation>
 <translation id="225692081236532131">የገባሪነት ሁኔታ</translation>
+<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> ወደ ጽሑፍ ግልባጭ ሞዴልን ይምረጡ እና ያውርዱ</translation>
 <translation id="2267285889943769271">ቅጽበታዊ ገፅ እይታ አክል</translation>
 <translation id="2268044343513325586">አጽዳ</translation>
 <translation id="2271469253353559191">የጨለማ ሁነታ መርሐግብር</translation>
@@ -774,6 +775,7 @@
 <translation id="473775607612524610">አዘምን</translation>
 <translation id="4744944742468440486">ከእርስዎ ምርጫ ጋር የተዛመደ መረጃ</translation>
 <translation id="4750394297954878236">የአስተያየት ጥቆማዎች</translation>
+<translation id="4763771683769971829">የሚገኙ ቋንቋዎች ዝርዝር</translation>
 <translation id="4771607256327216405">የቁልፍ ሰሌዳ ፈካ ማለት</translation>
 <translation id="4771923071974529837">ነገ</translation>
 <translation id="4773299976671772492">ቆሟል</translation>
@@ -855,6 +857,7 @@
 <translation id="5095761549884461003">የማዘመን ሂደቱን ለመቀጠል የ<ph name="DEVICE_NAME" /> የዩኤስቢ ገመዱን ይንቀሉት እና ከዚያ እንደገና ይሰኩት</translation>
 <translation id="5099354524039520280">ላይ</translation>
 <translation id="5107243100836678918">የ<ph name="META_KEY" /> ቁልፍ የሌለው አቋራጭ ከተወሰነ የመተግበሪያ አቋራጭ ጋር ሊጋጭ ይችላል። ይህን አቋራጭ መጠቀም መቀጠል ከፈለጉ በድጋሚ ይጫኑት፣ ወይም ደግሞ የ<ph name="KEY" /> ቁልፉን በመጠቀም አዲስ አቋራጭ ይጫኑ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> ወደ ጽሑፍ ግልባጭ ሞዴልን ማውረድ አልተቻለም። እንደገና ይሞክሩ ወይም የእርስዎን Chromebook እንደገና ይጀምሩ</translation>
 <translation id="5108781503443873320">ተመሳሳይ፦</translation>
 <translation id="5121677070210013200">ወደ ጽሑፍ ግልባጭ ሞዴልን ማውረድ አልተቻለም። እንደገና ይሞክሩ ወይም የእርስዎን Chromebook እንደገና ይጀምሩ።</translation>
 <translation id="5130848777448318809">ትናንሽ ፈረሶች</translation>
@@ -1278,6 +1281,7 @@
 <translation id="7049916119678019302">ቅንብሮች ውስጥ ወደ ጽሑፍ ግልባጭን ያውርዱ</translation>
 <translation id="7058278511608979688">ጨርስ እና አስቀምጥ</translation>
 <translation id="7059230779847288458">በመሙላት ላይ፣ ሙሉ እስኪሆን ድረስ <ph name="TIME_VALUE" /></translation>
+<translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> ተመርጧል</translation>
 <translation id="7066538517128343186">የ<ph name="KEY" /> ቁልፍ</translation>
 <translation id="7068619307603204412">መሣሪያዎን ያዘጋጁ</translation>
 <translation id="7076851914315147928">ልጣፍ ይምረጡ</translation>
@@ -1371,6 +1375,7 @@
 <translation id="7415801143053185905">በጣም ከፍተኛ የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="7418738250896500352">ለማቀለል በጣም ብዙ ቃላት</translation>
 <translation id="7425037327577270384">ለመጻፍ አግዘኝ</translation>
+<translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> ወደ ጽሑፍ ግልባጭ ሞዴል <ph name="PROGRESS_PERCENTAGE" />% ወርዷል</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ይህን ኤፒኤን ማሰናከል ወይም ማስወገድ አልተቻለም። የነቁ <ph name="ATTACH" /> ኤፒኤኖች መሰናከላቸውን እና መወገዳቸውን ያረጋግጡ።</translation>
 <translation id="7453118953486228603">የተመረጠውን ጽሑፍ ለማጠቃለል ጠቅ ያድርጉ</translation>
@@ -1407,6 +1412,7 @@
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ቀርቷል</translation>
 <translation id="7600430297804876776">የ<ph name="MANAGER" /> አስተዳዳሪው <ph name="DEVICE_TYPE" /> መቼ ጥቅም ላይ መዋል እንደሚችል አቀናብረዋል።</translation>
 <translation id="7613724632293948900">በመዳፊት ወይም በቀስት ቁልፎች እንደገና ያስቀምጡ።</translation>
+<translation id="7618216277886673749"><ph name="LANGUAGE_NAME" />ን ምረጥ</translation>
 <translation id="7618774594543487847">ገለልተኛ</translation>
 <translation id="7620771111601174153">በእገዛ ማዕከል ውስጥ የበለጠ ይረዱ</translation>
 <translation id="7625095758347640998">ሰው ሠራሽ አስተውሎት ልጣፎች</translation>

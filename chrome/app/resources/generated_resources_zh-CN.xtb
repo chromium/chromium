@@ -5117,7 +5117,6 @@
 <translation id="4593021220803146968">转到 <ph name="URL" />(&amp;G)</translation>
 <translation id="4593962599442730215">更改您的偏好设置</translation>
 <translation id="4594218792629569101">选择“标记为已读”即可将相应页面移至清单底部</translation>
-<translation id="4594577641390224176">想要查看系统简介页面？请访问</translation>
 <translation id="4595560905247879544">只有管理员（<ph name="CUSTODIAN_NAME" />）可以修改应用和扩展程序。</translation>
 <translation id="4596295440756783523">您有证书可标识以下服务器</translation>
 <translation id="4598345735110653698">管理通行密钥</translation>
@@ -6740,7 +6739,6 @@
 <translation id="5787420647064736989">设备名称</translation>
 <translation id="5788367137662787332">抱歉，“<ph name="DEVICE_LABEL" />”设备上至少有一个分区无法加载。</translation>
 <translation id="5789581866075720267">如需将密码导入此设备上的 <ph name="BRAND" />，请选择一个 CSV 文件。</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">成功</translation>
 <translation id="5790651917470750848">端口转发已存在</translation>
 <translation id="5792295754950501287">显示可对“<ph name="CARD_DESCRIPTION" />”执行的更多操作</translation>
@@ -7159,7 +7157,6 @@
 <translation id="6086418630711763366">您可以使用文本光标浏览网页。按 Ctrl + <ph name="KEY" />即可关闭。</translation>
 <translation id="6086846494333236931">这是您的管理员安装的</translation>
 <translation id="6087286598828478206">屏蔽并退出分组？</translation>
-<translation id="6087746524533454243">想要查看浏览器简介页面？请访问</translation>
 <translation id="6087960857463881712">酷炫表情</translation>
 <translation id="6088475950266477163">设置(&amp;G)</translation>
 <translation id="608912389580139775">若要将此网页添加到您的阅读清单中，请点击“书签”图标</translation>

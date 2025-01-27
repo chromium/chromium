@@ -5115,7 +5115,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4593021220803146968">&amp;Joan hona: <ph name="URL" /></translation>
 <translation id="4593962599442730215">Aldatu hobespenak</translation>
 <translation id="4594218792629569101">Orria zerrendaren amaierara eramateko, hautatu Markatu irakurritako gisa</translation>
-<translation id="4594577641390224176">Sistemaren "Honi buruz" orriaren bila zabiltza? Joan helbide honetara:</translation>
 <translation id="4595560905247879544">Kudeatzaileak (<ph name="CUSTODIAN_NAME" />) soilik alda ditzake aplikazioak eta luzapenak.</translation>
 <translation id="4596295440756783523">Zerbitzari hauek identifikatzen dituzten ziurtagiriak dituzu erregistratuta</translation>
 <translation id="4598345735110653698">Kudeatu sarbide-gakoak</translation>
@@ -6734,7 +6733,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5787420647064736989">Gailuaren izena</translation>
 <translation id="5788367137662787332">Ezin izan da muntatu <ph name="DEVICE_LABEL" /> gailuaren partizio bat edo gehiago.</translation>
 <translation id="5789581866075720267">Pasahitzak <ph name="BRAND" /> zerbitzura inportatzeko gailu honetan, hautatu CSV fitxategi bat.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Behar bezala egin da</translation>
 <translation id="5790651917470750848">Ataka-birbideratzea badago dagoeneko</translation>
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> txartelarekin erlazionatuta egin daitezkeen ekintza gehiago</translation>
@@ -7152,7 +7150,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6086418630711763366">Nabigatu orrietatik testu-kurtsorea erabilita. Desaktibatzeko, sakatu Ktrl + <ph name="KEY" />.</translation>
 <translation id="6086846494333236931">Administratzaileak instalatu du</translation>
 <translation id="6087286598828478206">Taldea blokeatu, eta bertatik irten nahi duzu?</translation>
-<translation id="6087746524533454243">Arakatzailearen "Honi buruz" orriaren bila zabiltza? Joan helbide honetara:</translation>
 <translation id="6087960857463881712">Aurpegi zoragarria</translation>
 <translation id="6088475950266477163">Ezarpenak</translation>
 <translation id="608912389580139775">Orria irakurketa-zerrendan gehitzeko, sakatu laster-markaren ikonoa</translation>

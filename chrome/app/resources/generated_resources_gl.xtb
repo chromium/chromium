@@ -5119,7 +5119,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4593021220803146968">&amp;Ir a <ph name="URL" /></translation>
 <translation id="4593962599442730215">Cambiar as túas preferencias</translation>
 <translation id="4594218792629569101">Para desprazar a páxina á parte inferior da lista, selecciona Marcar como lido</translation>
-<translation id="4594577641390224176">Buscas a páxina de información do sistema? Visita</translation>
 <translation id="4595560905247879544">Só o xestor (<ph name="CUSTODIAN_NAME" />) pode modificar as aplicacións e as extensións.</translation>
 <translation id="4596295440756783523">Tes certificados arquivados que identifican estes servidores</translation>
 <translation id="4598345735110653698">Xestionar claves de acceso</translation>
@@ -6740,7 +6739,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5787420647064736989">Nome do dispositivo</translation>
 <translation id="5788367137662787332">É posible que polo menos unha partición do dispositivo <ph name="DEVICE_LABEL" /> non estea instalada.</translation>
 <translation id="5789581866075720267">Para importar os contrasinais a <ph name="BRAND" /> neste dispositivo, selecciona un ficheiro CSV.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Correcto</translation>
 <translation id="5790651917470750848">O encamiñamento de porto xa existe</translation>
 <translation id="5792295754950501287">Máis accións para <ph name="CARD_DESCRIPTION" /></translation>
@@ -7158,7 +7156,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6086418630711763366">Podes navegar polas páxinas cun cursor de texto. Preme Control + <ph name="KEY" /> para desactivala.</translation>
 <translation id="6086846494333236931">Extensión instalada polo administrador</translation>
 <translation id="6087286598828478206">Queres proceder ao bloqueo e saír do grupo?</translation>
-<translation id="6087746524533454243">Buscas a páxina de información do navegador? Visita</translation>
 <translation id="6087960857463881712">Cara de sorpresa</translation>
 <translation id="6088475950266477163">Configura&amp;ción</translation>
 <translation id="608912389580139775">Para engadir esta páxina á túa lista de lectura, fai clic na icona dos marcadores</translation>

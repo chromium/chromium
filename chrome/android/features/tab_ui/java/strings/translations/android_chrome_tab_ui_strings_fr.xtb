@@ -43,6 +43,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="2671423594960767771">Partager le groupe</translation>
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> onglet ajouté, <ph name="ANY_CHANGED" /> modifié(s), <ph name="ANY_CLOSED" /> fermé(s)}one{<ph name="MANY_ADDED" /> onglet ajouté, <ph name="ANY_CHANGED" /> modifié(s), <ph name="ANY_CLOSED" /> fermé(s)}other{<ph name="MANY_ADDED" /> onglets ajoutés, <ph name="ANY_CHANGED" /> modifié(s), <ph name="ANY_CLOSED" /> fermé(s)}}</translation>
+<translation id="2755485474385016903">Les modifications apportées sont visibles par tous les membres du groupe</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Créé il y a <ph name="NUM_HOURS_ONE" /> heure}one{Créé il y a <ph name="NUM_HOURS_MANY" /> heure}other{Créé il y a <ph name="NUM_HOURS_MANY" /> heures}}</translation>
 <translation id="2801787514987684416">Afficher les infos sur le magasin ?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> onglet fermé}one{<ph name="MANY_CLOSED" /> onglet fermé}other{<ph name="MANY_CLOSED" /> onglets fermés}}</translation>

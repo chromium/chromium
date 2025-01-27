@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">ແບ່ງປັນກຸ່ມ</translation>
 <translation id="2677748264148917807">ອອກ​ໄປ</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{ເພີ່ມ <ph name="ONE_ADDED" /> ແຖບ, ປ່ຽນ <ph name="ANY_CHANGED" /> ແຖບ, ປິດ <ph name="ANY_CLOSED" /> ແຖບແລ້ວ}other{ເພີ່ມ <ph name="MANY_ADDED" /> ແຖບ, ປ່ຽນ <ph name="ANY_CHANGED" /> ແຖບ, ປິດ <ph name="ANY_CLOSED" /> ແຖບແລ້ວ}}</translation>
+<translation id="2755485474385016903">ການປ່ຽນແປງທີ່ສ້າງຂຶ້ນຈະຖືກເບິ່ງເຫັນໄດ້ໂດຍທຸກຄົນໃນກຸ່ມ</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_HOURS_ONE" /> ຊົ່ວໂມງກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_HOURS_MANY" /> ຊົ່ວໂມງກ່ອນ}}</translation>
 <translation id="2801787514987684416">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າບໍ?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{ປິດ <ph name="ONE_CLOSED" /> ແຖບແລ້ວ}other{ປິດ <ph name="MANY_CLOSED" /> ແຖບແລ້ວ}}</translation>

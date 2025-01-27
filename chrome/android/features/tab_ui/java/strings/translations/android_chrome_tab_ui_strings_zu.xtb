@@ -43,6 +43,7 @@ Uma ulisula, wonke umuntu ngokushesha uzolahlekelwa ukufinyelela eqenjini letheb
 <translation id="2671423594960767771">Yabelana ngeqembu</translation>
 <translation id="2677748264148917807">Hamba</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Ithebhu engu-<ph name="ONE_ADDED" /> ifakiwe, kushintshwe engu-<ph name="ANY_CHANGED" />, kuvalwe okungu-<ph name="ANY_CLOSED" />}one{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe, kushintshwe angu-<ph name="ANY_CHANGED" />, kuvalwe okungu-<ph name="ANY_CLOSED" />}other{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe, kushintshwe angu-<ph name="ANY_CHANGED" />, kuvalwe okungu-<ph name="ANY_CLOSED" />}}</translation>
+<translation id="2755485474385016903">Izinguquko ezenziwe zibonwa yiwo wonke umuntu eqenjini</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Kusungulwe ehoreni elingu-<ph name="NUM_HOURS_ONE" /> eledlule}one{Kusungulwe emahoreni angu-<ph name="NUM_HOURS_MANY" /> adlule}other{Kusungulwe emahoreni angu-<ph name="NUM_HOURS_MANY" /> adlule}}</translation>
 <translation id="2801787514987684416">Buka ulwazi lwesitoreji?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Ithebhu engu-<ph name="ONE_CLOSED" /> ivaliwe}one{Amathebhu angu-<ph name="MANY_CLOSED" /> avaliwe}other{Amathebhu angu-<ph name="MANY_CLOSED" /> avaliwe}}</translation>

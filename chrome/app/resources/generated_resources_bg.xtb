@@ -5127,7 +5127,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4593021220803146968">&amp;Към <ph name="URL" /></translation>
 <translation id="4593962599442730215">Промяна на предпочитанията ви</translation>
 <translation id="4594218792629569101">Изберете „Означаване като прочетено“, за да преместите страницата най-долу в списъка</translation>
-<translation id="4594577641390224176">Търсите страницата с информация за системата? Посетете</translation>
 <translation id="4595560905247879544">Само мениджърът (<ph name="CUSTODIAN_NAME" />) може да променя приложенията и разширенията.</translation>
 <translation id="4596295440756783523">Разполагате със сертификати, които идентифицират тези сървъри</translation>
 <translation id="4598345735110653698">Управление на кодовете за достъп</translation>
@@ -6751,7 +6750,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5787420647064736989">Име на устройството</translation>
 <translation id="5788367137662787332">За съжаление поне един дял на устройството <ph name="DEVICE_LABEL" /> не можа да бъде свързан.</translation>
 <translation id="5789581866075720267">За да импортирате пароли в <ph name="BRAND" /> на това устройство, изберете CSV файл.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Успех</translation>
 <translation id="5790651917470750848">Пренасочването на порта вече съществува</translation>
 <translation id="5792295754950501287">Още действия за „<ph name="CARD_DESCRIPTION" />“</translation>
@@ -7170,7 +7168,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6086418630711763366">Можете да навигирате в страниците с помощта на текстов курсор. Натиснете Ctrl + <ph name="KEY" />, за да изключите функцията.</translation>
 <translation id="6086846494333236931">Инсталирано от администратора ви</translation>
 <translation id="6087286598828478206">Искате ли да блокирате потребителя и да напуснете групата?</translation>
-<translation id="6087746524533454243">Търсите страницата с информация за браузъра? Посетете</translation>
 <translation id="6087960857463881712">Страхотно лице</translation>
 <translation id="6088475950266477163">&amp;Настройки</translation>
 <translation id="608912389580139775">За да добавите тази страница към списъка си за четене, кликнете върху иконата на отметка</translation>

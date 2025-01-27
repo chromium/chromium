@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">Ուղարկել խումբը</translation>
 <translation id="2677748264148917807">Դուրս գալ էջից</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CHANGED" /> ներդիր փոփոխվել է, <ph name="ANY_CLOSED" />-ը՝ փակվել}one{<ph name="MANY_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CHANGED" /> ներդիր փոփոխվել է, <ph name="ANY_CLOSED" />-ը՝ փակվել}other{<ph name="MANY_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CHANGED" /> ներդիր փոփոխվել է, <ph name="ANY_CLOSED" />-ը՝ փակվել}}</translation>
+<translation id="2755485474385016903">Կատարված փոփոխությունները տեսանելի են խմբի բոլոր անդամներին</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Ստեղծվել է <ph name="NUM_HOURS_ONE" /> ժամ առաջ}one{Ստեղծվել է <ph name="NUM_HOURS_MANY" /> ժամ առաջ}other{Ստեղծվել է <ph name="NUM_HOURS_MANY" /> ժամ առաջ}}</translation>
 <translation id="2801787514987684416">Դիտե՞լ խանութի մասին տեղեկությունները։</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ներդիր փակվել է}one{<ph name="MANY_CLOSED" /> ներդիր փակվել է}other{<ph name="MANY_CLOSED" /> ներդիր փակվել է}}</translation>

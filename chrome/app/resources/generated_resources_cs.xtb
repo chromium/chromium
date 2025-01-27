@@ -5116,7 +5116,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4593021220803146968">&amp;Přejít na adresu <ph name="URL" /></translation>
 <translation id="4593962599442730215">Změnit předvolby</translation>
 <translation id="4594218792629569101">Výběrem možnosti Označit jako přečtené přesunete stránku na konec seznamu</translation>
-<translation id="4594577641390224176">Hledáte stránku s informacemi o systému? Přejděte na stránku</translation>
 <translation id="4595560905247879544">Aplikace a rozšíření může upravit pouze správce (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Máte založené certifikáty, které identifikují tyto servery</translation>
 <translation id="4598345735110653698">Spravovat přístupové klíče</translation>
@@ -6735,7 +6734,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5787420647064736989">Název zařízení</translation>
 <translation id="5788367137662787332">Je nám líto, minimálně jeden oddíl zařízení <ph name="DEVICE_LABEL" /> nelze připojit.</translation>
 <translation id="5789581866075720267">Pokud chcete importovat hesla do <ph name="BRAND" /> na tomto zařízení, vyberte soubor CSV.</translation>
-<translation id="5789643057113097023">,</translation>
 <translation id="5790085346892983794">Úspěšně provedeno</translation>
 <translation id="5790651917470750848">Přesměrování portů již existuje</translation>
 <translation id="5792295754950501287">Další akce pro <ph name="CARD_DESCRIPTION" /></translation>
@@ -7153,7 +7151,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6086418630711763366">Stránky můžete procházet pomocí textového kurzoru. Tuto funkci vypnete stisknutím kláves Ctrl + <ph name="KEY" />.</translation>
 <translation id="6086846494333236931">Nainstaloval administrátor</translation>
 <translation id="6087286598828478206">Zablokovat a opustit skupinu?</translation>
-<translation id="6087746524533454243">Hledáte stránku s informacemi o prohlížeči? Přejděte na stránku</translation>
 <translation id="6087960857463881712">Paráda</translation>
 <translation id="6088475950266477163">&amp;Nastavení</translation>
 <translation id="608912389580139775">Pokud tuto stránku chcete přidat do seznamu ke čtení, klikněte na ikonu záložky</translation>

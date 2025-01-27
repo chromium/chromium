@@ -5131,7 +5131,6 @@
 <translation id="4593021220803146968">&amp;انتقال إلى <ph name="URL" /></translation>
 <translation id="4593962599442730215">تغيير الإعدادات المفضّلة</translation>
 <translation id="4594218792629569101">انقر على "وضع علامة على الصفحة بأنّها مقروءة" لنقلها إلى أسفل القائمة.</translation>
-<translation id="4594577641390224176">هل تبحث عن صفحة "لمحة عن" الخاصة بالنظام؟ انتقِل إلى</translation>
 <translation id="4595560905247879544">لا يمكن تعديل التطبيقات والإضافات إلا من قِبل المدير (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">لديك شهادات في الملف تحدد هذه الخوادم</translation>
 <translation id="4598345735110653698">إدارة مفاتيح المرور</translation>
@@ -6758,7 +6757,6 @@
 <translation id="5787420647064736989">اسم الجهاز</translation>
 <translation id="5788367137662787332">عذرًا، تعذر تركيب جزء واحد على الأقل على الجهاز <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5789581866075720267">‏لاستيراد كلمات مرور إلى "<ph name="BRAND" />" على هذا الجهاز، اختَر أحد ملفات CSV.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">تم بنجاح</translation>
 <translation id="5790651917470750848">يتوفّر منفذ بهذا الرقم.</translation>
 <translation id="5792295754950501287">مزيد من الإجراءات للبطاقة <ph name="CARD_DESCRIPTION" /></translation>
@@ -7178,7 +7176,6 @@
 <translation id="6086418630711763366">‏بإمكانك التنقّل بين الصفحات باستخدام مؤشر النص. اضغط على Ctrl + <ph name="KEY" /> لإيقاف هذه الميزة.</translation>
 <translation id="6086846494333236931">تم التثبيت من قبل مشرفك</translation>
 <translation id="6087286598828478206">هل تريد حظر هذا الحساب ومغادرة المجموعة؟</translation>
-<translation id="6087746524533454243">هل تبحث عن صفحة "لمحة عن" الخاصة بالمتصفِّح؟ انتقِل إلى</translation>
 <translation id="6087960857463881712">وجه رائع</translation>
 <translation id="6088475950266477163">الإعدادات</translation>
 <translation id="608912389580139775">لإضافة هذه الصفحة إلى "قائمة القراءة"، انقر على رمز الإشارات المرجعية.</translation>

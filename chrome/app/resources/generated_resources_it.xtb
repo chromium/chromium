@@ -5130,7 +5130,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4593021220803146968">Vai alla pa&amp;gina <ph name="URL" /></translation>
 <translation id="4593962599442730215">Modificare le preferenze</translation>
 <translation id="4594218792629569101">Seleziona "Segna come letto" per spostare la pagina in fondo all'elenco</translation>
-<translation id="4594577641390224176">Stai cercando la pagina delle informazioni sul sistema? Visita la pagina</translation>
 <translation id="4595560905247879544">Le app e le estensioni possono essere modificate solo dal gestore (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Hai dei certificati su file che identificano questi server</translation>
 <translation id="4598345735110653698">Gestisci passkey</translation>
@@ -6755,7 +6754,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5787420647064736989">Nome dispositivo</translation>
 <translation id="5788367137662787332">Spiacenti, impossibile montare almeno una partizione del dispositivo <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5789581866075720267">Per importare password in <ph name="BRAND" /> su questo dispositivo, seleziona un file CSV.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Completato</translation>
 <translation id="5790651917470750848">Il port forwarding esiste già</translation>
 <translation id="5792295754950501287">Altre azioni per <ph name="CARD_DESCRIPTION" /></translation>
@@ -7174,7 +7172,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6086418630711763366">Puoi spostarti da una pagina all'altra con un cursore di testo. Premi Ctrl + <ph name="KEY" /> per disattivare.</translation>
 <translation id="6086846494333236931">Installata dall'amministratore</translation>
 <translation id="6087286598828478206">Bloccare e uscire dal gruppo?</translation>
-<translation id="6087746524533454243">Stai cercando la pagina delle informazioni sul browser? Visita la pagina</translation>
 <translation id="6087960857463881712">Faccina splendente</translation>
 <translation id="6088475950266477163">Impostazio&amp;ni</translation>
 <translation id="608912389580139775">Fai clic sull'icona dei preferiti per aggiungere questa pagina al tuo elenco di lettura</translation>

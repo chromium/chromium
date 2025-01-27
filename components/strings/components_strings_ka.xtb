@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">„<ph name="DATA_CONTROLS_FIRST_KEY_SET" />“ გასაღებები ვერ განისაზღვრება იმ ლექსიკონში, რომელშიც „<ph name="DATA_CONTROLS_SECOND_KEY_SET" />“ გასაღებებია</translation>
 <translation id="1455413310270022028">საშლელი</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{0 მიმოხილვის ნახვა}=1{1 მიმოხილვის ნახვა}other{#-ვე მიმოხილვის ნახვა}}</translation>
 <translation id="1458059624921545588">ხალხი და საზოგადოება</translation>
 <translation id="1458140305240870199">საცვლები</translation>
 <translation id="1459693405370120464">ამინდი</translation>
@@ -1956,6 +1957,7 @@
 <translation id="4407758156081352648">უსაფრთხოების დაცვის მიზნით, თქვენი ორგანიზაცია არ უშვებს პაროლების ხელახლა გამოყენებას Chrome-ში. პაროლები Chrome-ში დაშიფრულია, მომხმარებლის კონფიდენციალურობის დაცვის მიზნით.</translation>
 <translation id="4408413947728134509">ქუქი-ჩანაწერები <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">ამ კონფიგურაციისთვის მონიშნულია, რომ მისი ინსტალაცია შესაძლებელია, მაგრამ ამ არქიტექტურის სურათი არ არის მოწოდებული, რის გამოც მისი ინსტალაცია შეუძლებელია.</translation>
+<translation id="4412377069090572315">რას ამბობენ ადამიანები</translation>
 <translation id="4414452699610169758">გამოიყენეთ Google პაროლების მმართველი და Chrome-ის ავტომატური შევსება, რათა შეინახოთ და შეავსოთ პაროლები, გადახდის მეთოდები და მისამართები</translation>
 <translation id="4414515549596849729">ქუქი-ჩანაწერები და საიტების მონაცემები</translation>
 <translation id="4415156962929755728">პლასტმასა (ძალიან პრიალა)</translation>
@@ -2777,6 +2779,7 @@
 <translation id="5937560539988385583">გვერდი ითარგმნა</translation>
 <translation id="5938153366081463283">დაამატეთ ვირტუალური ბარათი</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">ამ ინფორმაციის წყაროა დამოუკიდებელი მიმოხილვის ვებსაიტები, როგორებიცაა Trustpilot, ScamAdviser, Google და სხვა. შეჯამებები შექმნილია ხელოვნური ინტელექტის გამოყენებით.</translation>
 <translation id="5944297261866530437">ქსოვილი (ძალიან პრიალა)</translation>
 <translation id="5950901984834744590">სამართებლები და საპარსები</translation>
 <translation id="5951495562196540101">მომხმარებლის ანგარიშით რეგისტრაცია ვერ ხერხდება (ხელმისაწვდომია პაკეტური ლიცენზია).</translation>
@@ -3143,6 +3146,7 @@
 <translation id="6567832540451970450">თქვენი ადმინისტრატორი უშვებს <ph name="PERMISSION" />-ის წვდომას ამ საიტზე</translation>
 <translation id="6568793038316600992">გადახდის მეთოდების მართვის ღილაკი, Chrome-ის პარამეტრებიდან საგადახდო და საკრედიტო ბარათების ინფორმაციის სამართავად გაააქტიურეთ ის</translation>
 <translation id="6569060085658103619">თქვენ ათვალიერებთ გაფართოების გვერდს</translation>
+<translation id="6572867903637058088">ეს სასარგებლოა?</translation>
 <translation id="6573200754375280815">ორმაგად გახვრეტა მარჯვნივ</translation>
 <translation id="6574762126505704998">შევსება</translation>
 <translation id="6575408526598156416">ანგარიშში შენახვა</translation>
@@ -4321,9 +4325,11 @@
 <translation id="8672535691554698269">კომპიუტერული ქსელები</translation>
 <translation id="8675446170353411473">თქვენი ფაილები მზადდება <ph name="CLOUD_PROVIDER" />-ზე ასატვირთად</translation>
 <translation id="8676424191133491403">დაყოვნების გარეშე</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} ცხრილი წაიშალა}other{{COUNT} ცხრილი წაიშალა}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, პასუხი, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />-ზე არსებული ვებგვერდის ჩატვირთვა ვერ ხერხდება, რადგან:</translation>
 <translation id="8682297334444610648">დინოზავრის თამაში, შეეხეთ და ითამაშეთ</translation>
+<translation id="8685225035093721011">მაღაზიის მიმოხილვები</translation>
 <translation id="8686424632716064939">კომპიუტერული უსაფრთხოება</translation>
 <translation id="8687278439622293018">ჩანაწერი <ph name="ENTRY_VOICEOVER" /> წაიშალა</translation>
 <translation id="8687429322371626002">თქვენს მოწყობილობასა და ანგარიშს მართავს <ph name="MANAGER" />.</translation>

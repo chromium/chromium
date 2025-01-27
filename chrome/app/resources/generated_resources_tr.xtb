@@ -5113,7 +5113,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4593021220803146968"><ph name="URL" /> adresine &amp;git</translation>
 <translation id="4593962599442730215">Tercihlerinizi değiştirin</translation>
 <translation id="4594218792629569101">Sayfayı listenizin en altına taşımak için "Okundu olarak işaretle"yi seçin</translation>
-<translation id="4594577641390224176">Sistem bilgisi sayfasını mı arıyorsunuz? Şu adresi ziyaret edin:</translation>
 <translation id="4595560905247879544">Uygulamalar ve uzantılar sadece yönetici (<ph name="CUSTODIAN_NAME" />) tarafından değiştirilebilir.</translation>
 <translation id="4596295440756783523">Dosyada şu sunucuları tanımlayan sertifikalarınız var</translation>
 <translation id="4598345735110653698">Geçiş anahtarlarını yönet</translation>
@@ -6736,7 +6735,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5787420647064736989">Cihaz adı</translation>
 <translation id="5788367137662787332">Maalesef, <ph name="DEVICE_LABEL" /> cihazındaki en az bir bölüm eklenemedi.</translation>
 <translation id="5789581866075720267">Şifreleri bu cihazdaki <ph name="BRAND" /> hizmetine aktarmak için bir CSV dosyası seçin</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Başarılı</translation>
 <translation id="5790651917470750848">Bağlantı noktası yönlendirme zaten var</translation>
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> ile ilgili diğer işlemler</translation>
@@ -7155,7 +7153,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6086418630711763366">Sayfalarda metin imleciyle gezinebilirsiniz. Kapatmak için Ctrl + <ph name="KEY" /> tuşlarına basın.</translation>
 <translation id="6086846494333236931">Yöneticiniz tarafından yüklendi</translation>
 <translation id="6087286598828478206">Kişiyi engelleyip gruptan ayrılmak istiyor musunuz?</translation>
-<translation id="6087746524533454243">Tarayıcı bilgisi sayfasını mı arıyorsunuz? Şu adresi ziyaret edin:</translation>
 <translation id="6087960857463881712">Çok beğenen</translation>
 <translation id="6088475950266477163">Ayar&amp;lar</translation>
 <translation id="608912389580139775">Bu sayfayı okuma listenize eklemek için Yer İşareti simgesini tıklayın</translation>

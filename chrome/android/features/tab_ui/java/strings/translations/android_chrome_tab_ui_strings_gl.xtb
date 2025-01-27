@@ -43,6 +43,7 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2677748264148917807">Saír</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestana engadida. Pestanas cambiadas: <ph name="ANY_CHANGED" />. Pestanas pechadas: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> pestanas engadidas. Pestanas cambiadas: <ph name="ANY_CHANGED" />. Pestanas pechadas: <ph name="ANY_CLOSED" />}}</translation>
+<translation id="2755485474385016903">Todos os membros do grupo poden ver os cambios realizados</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creouse hai <ph name="NUM_HOURS_ONE" /> hora}other{Creouse hai <ph name="NUM_HOURS_MANY" /> horas}}</translation>
 <translation id="2801787514987684416">Queres ver a información da tenda?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> pestana pechada}other{<ph name="MANY_CLOSED" /> pestanas pechadas}}</translation>

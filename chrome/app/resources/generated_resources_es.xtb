@@ -5117,7 +5117,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4593021220803146968">&amp;Ir a <ph name="URL" /></translation>
 <translation id="4593962599442730215">Cambiar las preferencias</translation>
 <translation id="4594218792629569101">Selecciona Marcar como leído para mover la página al final de la lista</translation>
-<translation id="4594577641390224176">¿Buscas la página de información del sistema? Visita</translation>
 <translation id="4595560905247879544">Únicamente el administrador (<ph name="CUSTODIAN_NAME" />) puede modificar las aplicaciones y las extensiones.</translation>
 <translation id="4596295440756783523">Tienes certificados registrados que identifican a estos servidores</translation>
 <translation id="4598345735110653698">Gestionar llaves de acceso</translation>
@@ -6738,7 +6737,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5787420647064736989">Nombre del dispositivo</translation>
 <translation id="5788367137662787332">Lo sentimos, pero no se ha podido activar al menos una partición del dispositivo <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5789581866075720267">Para importar contraseñas al <ph name="BRAND" /> en este dispositivo, selecciona un archivo CSV.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Completado correctamente</translation>
 <translation id="5790651917470750848">Esa redirección de puertos ya existe</translation>
 <translation id="5792295754950501287">Más acciones de <ph name="CARD_DESCRIPTION" /></translation>
@@ -7157,7 +7155,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6086418630711763366">Puedes desplazarte por las páginas con un cursor de texto. Pulsa Ctrl + <ph name="KEY" /> para desactivarla.</translation>
 <translation id="6086846494333236931">Instalada por tu administrador</translation>
 <translation id="6087286598828478206">¿Bloquear y salir del grupo?</translation>
-<translation id="6087746524533454243">¿Buscas la página de información del navegador? Visita</translation>
 <translation id="6087960857463881712">Cara de emoción</translation>
 <translation id="6088475950266477163">&amp;Configuración</translation>
 <translation id="608912389580139775">Para añadir esta página a tu lista de lectura, haz clic en el icono de marcadores</translation>

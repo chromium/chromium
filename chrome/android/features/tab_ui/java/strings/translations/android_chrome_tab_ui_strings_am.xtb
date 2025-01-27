@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">ቡድንን አጋራ</translation>
 <translation id="2677748264148917807">ለቅቀህ ውጣ</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ትር ታክሏል፣ <ph name="ANY_CHANGED" /> ተለውጧል፣ <ph name="ANY_CLOSED" /> ተዘግቷል}one{<ph name="MANY_ADDED" /> ትር ታክሏል፣ <ph name="ANY_CHANGED" /> ተለውጧል፣ <ph name="ANY_CLOSED" /> ተዘግቷል።}other{<ph name="MANY_ADDED" /> ትሮች ታክለዋል፣ <ph name="ANY_CHANGED" /> ተለውጧል፣ <ph name="ANY_CLOSED" /> ተዘግተዋል።}}</translation>
+<translation id="2755485474385016903">የተደረጉ ለውጦች በቡድኑ ውስጥ ባሉ ሁሉም ሰዎች ይታያሉ</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{ከ<ph name="NUM_HOURS_ONE" /> ሰዓት በፊት የተፈጠረ}one{ከ<ph name="NUM_HOURS_MANY" /> ሰዓት በፊት የተፈጠረ}other{ከ<ph name="NUM_HOURS_MANY" /> ሰዓቶች በፊት የተፈጠረ}}</translation>
 <translation id="2801787514987684416">የመደብር መረጃ ይታይ?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ትር ተዘግቷል}one{<ph name="MANY_CLOSED" /> ትር ተዘግቷል}other{<ph name="MANY_CLOSED" /> ትሮች ተዘግተዋል}}</translation>

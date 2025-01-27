@@ -476,6 +476,7 @@
 <translation id="3053332585453689122">將你瀏覽的網址和少量網頁內容、下載檔案、擴充程式活動和系統資料的樣本傳送給「Google 安全瀏覽」，檢查是否有害。</translation>
 <translation id="3055102495753300780">資料儲存空間</translation>
 <translation id="3059270601560379555">新搜尋</translation>
+<translation id="3064547930554042309">管理下載項目</translation>
 <translation id="3072279342064724558">密碼已存在</translation>
 <translation id="3076846064362030967">您不會因此登出 Google 帳戶。在您登入後，<ph name="BEGIN_LINK" />其他形式的活動<ph name="END_LINK" />可能會儲存至您的 Google 帳戶。您可以隨時刪除這些資料。
 
@@ -698,6 +699,7 @@
 <translation id="4154753961803534698">透過相機搜尋</translation>
 <translation id="4158491215857439601">密碼管理工具</translation>
 <translation id="4163699139741158298">{count,plural, =1{書籤已儲存至「{title}」，且只會儲存至此裝置。}other{{count} 個書籤已儲存至「{title}」，且只會儲存至此裝置。}}</translation>
+<translation id="4164514562270305824">自動刪除下載項目</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />，尾碼係 <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">不允許</translation>
 <translation id="4172051516777682613">永遠顯示</translation>
@@ -1016,6 +1018,7 @@
 <translation id="5579012242779565775">隱藏「閱讀清單」</translation>
 <translation id="5585019845078534178">付款卡</translation>
 <translation id="5595485650161345191">編輯地址</translation>
+<translation id="559567008082979829">設定下載項目在一個月後刪除。</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="560322036295180549">已由您的機構停用</translation>
 <translation id="5611107723541161735">「捷徑」讓你前往最近在此裝置上瀏覽過的網站。</translation>

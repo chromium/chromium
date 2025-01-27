@@ -55,6 +55,7 @@
 <translation id="103279545524624934">‏Android ایپس شروع کرنے کیلئے ڈسک اسپیس خالی کریں۔</translation>
 <translation id="1033780634303702874">اپنے سلسلہ وار آلات تک رسائی حاصل کریں</translation>
 <translation id="1034484273907870301">ٹیبلیٹ وضع کے لیے تھمب نیل ٹیب اسٹرپ</translation>
+<translation id="1035289631433631911">مواد کی منتقلی کا ٹول</translation>
 <translation id="1035875743511577452">فنکاران، فطرت اور بہت کچھ سے متاثر تھیمز کو دریافت کرنے کے لیے "تھیم تبدیل کریں" پر کلک کریں</translation>
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1036511912703768636">‏ان میں سے کسی بھی USB آلات تک رسائی حاصل کریں</translation>
@@ -380,6 +381,7 @@
 <translation id="1246863218384630739">‏<ph name="VM_NAME" /> کو انسٹال نہیں کیا جا سکا: تصویری URL نے <ph name="HTTP_ERROR" /> خرابی کا کوڈ واپس کر دیا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="1247372569136754018">مائیکروفون (داخلی)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 سائٹ کے لیے اطلاعات کی اجازت نہیں ہے}other{{NUM_SITES} سائٹس کے لیے اطلاعات کی اجازت نہیں ہے}}</translation>
+<translation id="125097549534200450">صاف کریں</translation>
 <translation id="1251366534849411931">ابتدائی خمیدہ قوسین کی توقع ہے: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">موبائل ڈیٹا نیٹ ورکس کو اسکین کیا جا رہا ہے...</translation>
 <translation id="125220115284141797">ڈیفالٹ</translation>
@@ -5117,7 +5119,6 @@
 <translation id="4593021220803146968"><ph name="URL" /> پر &amp;جائیں</translation>
 <translation id="4593962599442730215">اپنی ترجیحات کو تبدیل کریں</translation>
 <translation id="4594218792629569101">صفحہ کو اپنی فہرست کے نیچے لے جانے کے لیے "پڑھا ہوا کے بطور نشان زد کریں" کو منتخب کریں</translation>
-<translation id="4594577641390224176">سسٹم کے تعارف کا صفحہ تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="4595560905247879544">ایپس اور ایکسٹینشنز میں صرف مینیجر (<ph name="CUSTODIAN_NAME" />) ترمیم کر سکتا ہے۔</translation>
 <translation id="4596295440756783523">آپ کے پاس فائل پر ان سرورز کی شناخت کرنے والے سرٹیفیکیٹس ہیں</translation>
 <translation id="4598345735110653698">پاس کیز کا نظم کریں</translation>
@@ -5919,6 +5920,7 @@
 <translation id="5177479852722101802">کیمرا اور مائیکروفون رسائی کو مسدود کرنا جاری رکھیں</translation>
 <translation id="5177549709747445269">آپ موبائل ڈیٹا استعمال کر رہے ہیں</translation>
 <translation id="5178667623289523808">پچھلا تلاش کریں</translation>
+<translation id="5180276433875360121"><ph name="CERT_LIST" /> دکھائیں</translation>
 <translation id="5181140330217080051">ڈاؤن لوڈ کیا جا رہا ہے</translation>
 <translation id="5181172023548002891">‏<ph name="ACCOUNT" /> کے لیے Google پاس ورڈ مینیجر میں</translation>
 <translation id="5181551096188687373">‏یہ پاس ورڈ صرف اس آلے میں محفوظ ہے۔ اسے اپنے دیگر آلات پر استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں محفوظ کریں۔</translation>
@@ -6737,7 +6739,6 @@
 <translation id="5787420647064736989">آلہ کا نام</translation>
 <translation id="5788367137662787332">معذرت، کم از کم ایک حصہ آلہ <ph name="DEVICE_LABEL" /> پر ماؤنٹ نہیں کیا جا سکا۔</translation>
 <translation id="5789581866075720267">‏اس آلے پر <ph name="BRAND" /> میں پاس ورڈز درآمد کرنے کے لیے، ایک CSV فائل منتخب کریں۔</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">کامیاب</translation>
 <translation id="5790651917470750848">پورٹ فارورڈ پہلے سے ہی دستیاب ہے</translation>
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> کے لیے مزید کارروائیاں</translation>
@@ -7156,7 +7157,6 @@
 <translation id="6086418630711763366">‏آپ اپنے صفحات کو ٹیکسٹ کرسر سے نیویگیٹ کر سکتے ہیں۔ آف کرنے کے لیے Ctrl + <ph name="KEY" /> دبائیں۔</translation>
 <translation id="6086846494333236931">آپ کے منتظم نے انسٹال کیا ہے</translation>
 <translation id="6087286598828478206">مسدود کریں اور گروپ چھوڑ دیں؟</translation>
-<translation id="6087746524533454243">براؤزر کے تعارف کا صفحہ تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="6087960857463881712">زبردست چہرہ</translation>
 <translation id="6088475950266477163">ترتیبات</translation>
 <translation id="608912389580139775">اس صفحے کو اپنی پڑھنے کی فہرست میں شامل کرنے کیلئے بُک مارک آئیکن پر کلک کریں</translation>
@@ -8506,6 +8506,7 @@
 <translation id="7063311912041006059">‏استفسار کی جگہ <ph name="SPECIAL_SYMBOL" /> کے ساتھ URL</translation>
 <translation id="706342288220489463">مدد کرنے کیلئے اپنی اسسٹنٹ کو اپنی اسکرین پر معلومات استعمال کرنے کی اجازت دیں</translation>
 <translation id="70641621694466590">پاس ورڈز کے صفحے پر جائیں</translation>
+<translation id="7064209589142995848">مواد کی منتقلی</translation>
 <translation id="7064734931812204395">‏Linux کنٹینر کو کنفیگر کیا جا رہا ہے۔ اس میں 30 منٹس تک کا وقت لگ سکتا ہے۔</translation>
 <translation id="7065223852455347715">یہ آلہ ایسی وضع میں مقفل ہوا ہے جو انٹرپرائز اندراج کو روکتا ہے۔  اگر آپ آلہ کا اندراج کرنا چاہتے ہیں تو آپ کو سب سے پہلے آلہ کی بازیابی سے گزرنے کی ضرورت ہے۔</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> کیلئے <ph name="BRAND" /> میں 1 پاس ورڈ درآمد کیا گیا}other{<ph name="USER_EMAIL" /> کیلئے <ph name="BRAND" /> میں {NUM_PASSWORDS} پاس ورڈز درآمد کیے گئے}}</translation>
@@ -9544,6 +9545,7 @@
 <translation id="7810202088502699111">پاپ اپس کو اس صفحہ پر مسدود کر دیا گیا۔</translation>
 <translation id="7810367892333449285">‏آپ کے اندراج کا فارمیٹ <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address‏<ph name="LPA_2" />$<ph name="LPA_3" />اختیاری مماثلت والی ID<ph name="LPA_4" /> ہونا چاہیے</translation>
 <translation id="7811263553491007091">دوبارہ کوشش کریں یا ذیل میں پہلے سے تیار کردہ تھیمز میں سے کسی ایک کو منتخب کریں۔</translation>
+<translation id="7811986034759500329">سسٹم کی ترتیبات میں سیٹ کریں</translation>
 <translation id="7812170317334653156">‏‫Google کیلنڈر چھپا دیا گیا</translation>
 <translation id="7814090115158024843">ان سائٹس پر کبھی بھی لکھنے میں مدد کرنے کی پیشکش نہ کریں</translation>
 <translation id="7814458197256864873">&amp;کاپی کریں</translation>

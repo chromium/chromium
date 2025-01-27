@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">Сподели ја групата</translation>
 <translation id="2677748264148917807">Напушти</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Додадени картички: <ph name="ONE_ADDED" />, променети: <ph name="ANY_CHANGED" />, затворени: <ph name="ANY_CLOSED" />}one{Додадени картички: <ph name="MANY_ADDED" />, променети: <ph name="ANY_CHANGED" />, затворени: <ph name="ANY_CLOSED" />}other{Додадени картички: <ph name="MANY_ADDED" />, променети: <ph name="ANY_CHANGED" />, затворени: <ph name="ANY_CLOSED" />}}</translation>
+<translation id="2755485474385016903">Извршените промени ги гледаат сите во групата</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Создадено пред <ph name="NUM_HOURS_ONE" /> час}one{Создадено пред <ph name="NUM_HOURS_MANY" /> час}other{Создадено пред <ph name="NUM_HOURS_MANY" /> часа}}</translation>
 <translation id="2801787514987684416">Да се прикажат информации за продавницата?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Затворени картички: <ph name="ONE_CLOSED" />}one{Затворени картички: <ph name="MANY_CLOSED" />}other{Затворени картички: <ph name="MANY_CLOSED" />}}</translation>

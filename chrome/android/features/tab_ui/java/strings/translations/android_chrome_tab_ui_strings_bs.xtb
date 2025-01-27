@@ -43,6 +43,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica "<ph name="TITLE
 <translation id="2671423594960767771">Dijeli grupu</translation>
 <translation id="2677748264148917807">Napusti</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Dodana je <ph name="ONE_ADDED" /> kartica. Promijenjeno: <ph name="ANY_CHANGED" />; zatvoreno: <ph name="ANY_CLOSED" />}one{Dodana je <ph name="MANY_ADDED" /> kartica. Promijenjeno: <ph name="ANY_CHANGED" />; zatvoreno: <ph name="ANY_CLOSED" />}few{Dodane su <ph name="MANY_ADDED" /> kartice. Promijenjeno: <ph name="ANY_CHANGED" />; zatvoreno: <ph name="ANY_CLOSED" />}other{Dodano je <ph name="MANY_ADDED" /> kartica. Promijenjeno: <ph name="ANY_CHANGED" />; zatvoreno: <ph name="ANY_CLOSED" />}}</translation>
+<translation id="2755485474385016903">Unesene promjene vide svi u grupi</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Kreirano je prije <ph name="NUM_HOURS_ONE" /> sata}one{Kreirano je prije <ph name="NUM_HOURS_MANY" /> sata}few{Kreirano je prije <ph name="NUM_HOURS_MANY" /> sata}other{Kreirano je prije <ph name="NUM_HOURS_MANY" /> sati}}</translation>
 <translation id="2801787514987684416">Prikazati informacije o trgovini?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Zatvorena je <ph name="ONE_CLOSED" /> kartica}one{Zatvorena je <ph name="MANY_CLOSED" /> kartica}few{Zatvorene su <ph name="MANY_CLOSED" /> kartice}other{Zatvoreno je <ph name="MANY_CLOSED" /> kartica}}</translation>

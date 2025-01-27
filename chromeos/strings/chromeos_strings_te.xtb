@@ -296,6 +296,7 @@
 <translation id="2240366984605217732">లేఅవుట్ స్విచ్</translation>
 <translation id="2244834438220057800">ఆకుపచ్చ రంగు</translation>
 <translation id="225692081236532131">క్రియాశీలత స్థితి</translation>
+<translation id="2265792117169966196"><ph name="LANGUAGE_NAME" /> మాటల టైపింగ్ మోడల్‌ను ఎంచుకుని, డౌన్‌లోడ్ చేయండి</translation>
 <translation id="2267285889943769271">స్క్రీన్‌షాట్‌ను జోడించండి</translation>
 <translation id="2268044343513325586">మరింత మెరుగుపరచండి</translation>
 <translation id="2271469253353559191">డార్క్ మోడ్ షెడ్యూల్</translation>
@@ -774,6 +775,7 @@
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
 <translation id="4744944742468440486">మీ ఎంపికకు సంబంధించిన సమాచారం</translation>
 <translation id="4750394297954878236">సూచనలు</translation>
+<translation id="4763771683769971829">అందుబాటులో ఉన్న భాషల లిస్ట్</translation>
 <translation id="4771607256327216405">కీబోర్డ్ బ్రైట్‌నెస్ పెంచండి</translation>
 <translation id="4771923071974529837">రేపు</translation>
 <translation id="4773299976671772492">ఆపివేయబడింది</translation>
@@ -855,6 +857,7 @@
 <translation id="5095761549884461003">అప్‌డేట్ ప్రాసెస్‌ను కొనసాగించడానికి, <ph name="DEVICE_NAME" /> USB కేబుల్‌ను అన్‌ప్లగ్ చేసి, దాన్ని మళ్లీ ఇన్‌సర్ట్ చేయండి</translation>
 <translation id="5099354524039520280">పైకి</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> కీ లేని షార్ట్‌కట్ కొన్ని యాప్ షార్ట్‌కట్‌కు విరుద్ధంగా ఉండవచ్చు. దీన్ని ఉపయోగించడం కొనసాగించడానికి ఈ షార్ట్‌కట్‌ను మళ్లీ నొక్కండి లేదా <ph name="KEY" /> కీని ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" />లో మాటల టైపింగ్ మోడల్‌ను డౌన్‌లోడ్ చేయడం సాధ్యం కాదు. మళ్లీ ట్రై చేయండి లేదా మీ Chromebookను రీస్టార్ట్ చేయండి</translation>
 <translation id="5108781503443873320">పోలినవి:</translation>
 <translation id="5121677070210013200">మాటల టైపింగ్ మోడల్‌ను డౌన్‌లోడ్ చేయడం సాధ్యం కాదు. మళ్లీ ట్రై చేయండి లేదా మీ Chromebookను రీస్టార్ట్ చేయండి.</translation>
 <translation id="5130848777448318809">గుఱ్ఱం పిల్లలు</translation>
@@ -1278,6 +1281,7 @@
 <translation id="7049916119678019302">సెట్టింగ్‌లలో మాటల టైపింగ్ మోడల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7058278511608979688">ఆపివేసి, సేవ్ చేయండి</translation>
 <translation id="7059230779847288458">ఛార్జ్ అవుతోంది, పూర్తి కావడానికి <ph name="TIME_VALUE" /> సమయం పడుతుంది</translation>
+<translation id="7065336548231472971"><ph name="LANGUAGE_NAME" />‌ను ఎంచుకోవడం జరిగింది</translation>
 <translation id="7066538517128343186">కీ <ph name="KEY" /></translation>
 <translation id="7068619307603204412">మీ పరికరాన్ని సిద్ధం చేయండి</translation>
 <translation id="7076851914315147928">వాల్‌పేపర్‌ను ఎంచుకోండి</translation>
@@ -1371,6 +1375,7 @@
 <translation id="7415801143053185905">అత్యధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="7418738250896500352">సింప్లిఫై చేయడానికి చాలా ఎక్కువ పదాలు ఉన్నాయి</translation>
 <translation id="7425037327577270384">రాయడంలో నాకు సహాయపడండి</translation>
+<translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> మాటల టైపింగ్ మోడల్ <ph name="PROGRESS_PERCENTAGE" />% డౌన్‌లోడ్ అయింది</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ఈ APNను డిజేబుల్ చేయడం లేదా తీసివేయడం సాధ్యపడదు. ఎనేబుల్ చేసి ఉన్న <ph name="ATTACH" /> APNలు డిసేబుల్ చేయబడ్డాయని లేదా తీసివేయబడ్డాయని నిర్ధారించుకోండి.</translation>
 <translation id="7453118953486228603">ఎంచుకున్న టెక్స్ట్‌ను సమ్మరైజ్ చేయడానికి క్లిక్ చేయండి</translation>
@@ -1407,6 +1412,7 @@
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> మిగిలి ఉంది</translation>
 <translation id="7600430297804876776">ఈ <ph name="DEVICE_TYPE" />‌ను ఎప్పుడు ఉపయోగించవచ్చో <ph name="MANAGER" /> అడ్మినిస్ట్రేటర్ సెట్ చేశారు.</translation>
 <translation id="7613724632293948900">మౌస్ లేదా బాణం కీలతో స్థానాన్ని మార్చండి.</translation>
+<translation id="7618216277886673749"><ph name="LANGUAGE_NAME" />‌ను ఎంచుకోండి</translation>
 <translation id="7618774594543487847">తటస్థం</translation>
 <translation id="7620771111601174153">సహాయ కేంద్రంలో మరింత తెలుసుకోండి</translation>
 <translation id="7625095758347640998">AiWallpapers</translation>
