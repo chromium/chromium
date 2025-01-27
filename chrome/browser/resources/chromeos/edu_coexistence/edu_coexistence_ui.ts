@@ -102,10 +102,6 @@ export class EduCoexistenceUi extends EduCoexistenceUiBase {
     }));
   }
 
-  private closeDialog() {
-    EduCoexistenceBrowserProxyImpl.getInstance().dialogClose();
-  }
-
   private loadAuthenticator(data: AuthParams) {
     // Set up the controller.
     this.controller.loadAuthenticator(data);

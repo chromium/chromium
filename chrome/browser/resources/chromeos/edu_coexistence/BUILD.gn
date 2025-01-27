@@ -22,8 +22,6 @@ build_webui("build") {
   css_files = [ "common.css" ]
   ts_composite = true
   ts_definitions = [
-    "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
-    "//chrome/browser/resources/chromeos/arc_account_picker/arc_util.d.ts",
     "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
     "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
@@ -51,10 +49,6 @@ build_webui("build") {
     ts_path_mappings += [
       "chrome://chrome-signin/gaia_action_buttons/gaia_action_buttons.js|" + rebase_path(
               "${root_gen_dir}/chrome/browser/resources/chromeos/gaia_action_buttons/tsc/gaia_action_buttons.d.ts",
-              target_gen_dir),
-      "chrome://chrome-signin/arc_account_picker/*|" +
-          rebase_path(
-              "//chrome/browser/resources/chromeos/arc_account_picker/*",
               target_gen_dir),
       "/supervision/*|" + rebase_path(
               "${root_gen_dir}/chrome/browser/resources/chromeos/supervision/tsc/*",
