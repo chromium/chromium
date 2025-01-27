@@ -22,7 +22,7 @@
 #include "components/viz/service/display/output_surface_frame.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -345,17 +345,16 @@ gpu::SyncToken FakeSkiaOutputSurface::GenerateSyncToken() {
 bool FakeSkiaOutputSurface::GetGrBackendTexture(
     const ImageContext& image_context,
     GrBackendTexture* backend_texture) {
-  DCHECK(!image_context.mailbox_holder().mailbox.IsZero());
+  DCHECK(!image_context.mailbox().IsZero());
 
   auto* gl = context_provider()->ContextGL();
   gl->WaitSyncTokenCHROMIUM(image_context.sync_token().GetConstData());
   auto texture_id = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
-      image_context.mailbox_holder().mailbox.name);
+      image_context.mailbox().name);
   auto gl_format_desc = gpu::GLFormatCaps().ToGLFormatDesc(
       image_context.format(), /*plane_index=*/0);
-  GrGLTextureInfo gl_texture_info = {
-      image_context.mailbox_holder().texture_target, texture_id,
-      gl_format_desc.storage_internal_format};
+  GrGLTextureInfo gl_texture_info = {image_context.texture_target(), texture_id,
+                                     gl_format_desc.storage_internal_format};
   *backend_texture = GrBackendTextures::MakeGL(
       image_context.size().width(), image_context.size().height(),
       skgpu::Mipmapped::kNo, gl_texture_info);

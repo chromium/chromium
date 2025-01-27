@@ -319,10 +319,9 @@ bool ImageContextImpl::BeginRasterAccess(
     return true;
   }
 
-  auto raster =
-      raw_draw_if_possible_
-          ? representation_factory->ProduceRaster(mailbox_holder().mailbox)
-          : nullptr;
+  auto raster = raw_draw_if_possible_
+                    ? representation_factory->ProduceRaster(mailbox())
+                    : nullptr;
   if (!raster)
     return false;
 
@@ -366,8 +365,8 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
   }
 
   if (!representation_) {
-    auto representation = representation_factory->ProduceSkia(
-        mailbox_holder().mailbox, context_state);
+    auto representation =
+        representation_factory->ProduceSkia(mailbox(), context_state);
     if (!representation) {
       DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                      "mailbox not found in SharedImageManager.";

@@ -57,7 +57,8 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     // |image| is set, and (c) GPU thread only reads ImageContext after |image|
     // is set.
     //
-    const gpu::MailboxHolder& mailbox_holder() const { return mailbox_holder_; }
+    const gpu::Mailbox& mailbox() const { return mailbox_holder_.mailbox; }
+    uint32_t texture_target() const { return mailbox_holder_.texture_target; }
     const gpu::SyncToken& sync_token() const {
       return mailbox_holder_.sync_token;
     }

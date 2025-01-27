@@ -575,7 +575,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
     bool force_rgbx) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(current_paint_);
-  DCHECK(!image_context->mailbox_holder().mailbox.IsZero());
+  DCHECK(!image_context->mailbox().IsZero());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
                "SkiaOutputSurfaceImpl::MakePromiseSkImage");
 
@@ -583,11 +583,10 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
       static_cast<ImageContextImpl*>(image_context);
   images_in_current_paint_.push_back(image_context_impl);
 
-  const auto& mailbox_holder = image_context->mailbox_holder();
+  const auto& sync_token = image_context->sync_token();
 
   if (is_using_raw_draw_) {
     auto* sync_point_manager = dependency_->GetSyncPointManager();
-    auto const& sync_token = mailbox_holder.sync_token;
     if (sync_token.HasData() &&
         !sync_point_manager->IsSyncTokenReleased(sync_token)) {
       gpu_task_sync_tokens_.push_back(sync_token);
@@ -612,8 +611,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
     MakePromiseSkImageMultiPlane(image_context_impl, color_space);
   }
 
-  if (mailbox_holder.sync_token.HasData()) {
-    resource_sync_tokens_.push_back(mailbox_holder.sync_token);
+  if (sync_token.HasData()) {
+    resource_sync_tokens_.push_back(sync_token);
     image_context->mutable_sync_token()->Clear();
   }
 }
@@ -659,8 +658,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
   } else {
     CHECK(gr_context_thread_safe_);
     GrBackendFormat backend_format = GetGrBackendFormatForTexture(
-        format, /*plane_index=*/0,
-        image_context->mailbox_holder().texture_target,
+        format, /*plane_index=*/0, image_context->texture_target(),
         image_context->ycbcr_info(), color_space);
     auto image = SkImages::PromiseTextureFrom(
         gr_context_thread_safe_, backend_format,
@@ -734,7 +732,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
       // NOTE: To compute the format, it is necessary to pass the ColorSpace
       // that came originally from the TransferableResource.
       formats.push_back(GetGrBackendFormatForTexture(
-          format, plane_index, image_context->mailbox_holder().texture_target,
+          format, plane_index, image_context->texture_target(),
           image_context->ycbcr_info(), color_space));
       fulfills[plane_index] = new FulfillForPlane(image_context, plane_index);
     }
