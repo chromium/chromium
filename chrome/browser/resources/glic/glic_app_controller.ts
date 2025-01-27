@@ -196,6 +196,8 @@ export class GlicAppController {
     if (online) {
       this.beginLoadingSequence();
     } else {
+      clearTimeout(this.maxWaitTimer);
+      this.maxWaitTimer = undefined;
       this.destroyWebview();
       this.showPanel('offlinePanel');
     }
