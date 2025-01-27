@@ -1890,6 +1890,17 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.Surveys.SurfaceAttempts"
+    enum="PrivacySandboxSurveyTypes" expires_after="2025-06-01">
+  <owner>alvingo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the amount of times each survey was attempted to be shown on Clank.
+    Values do not indicate the amount of surveys shown as each attempt can fail
+    due to various factors.
+  </summary>
+</histogram>
+
 <histogram
     name="PrivacySandbox.TrackingProtection.OnboardingStartup.AckedSince"
     units="ms" expires_after="2024-09-30">

@@ -194,6 +194,10 @@ public class PrivacySandboxSurveyControllerTest {
                 SENTIMENT_SURVEY_TRIGGER,
                 /* psdBitFields= */ new String[0],
                 /* psdStringFields= */ new String[0]);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.SurfaceAttempts",
+                        PrivacySandboxSurveyController.PrivacySandboxSurveyType.SENTIMENT_SURVEY);
         MockTab startTab = new MockTab(0, mProfile);
         mActivityTabProvider.set(startTab);
         PrivacySandboxSurveyController controller =
@@ -219,6 +223,7 @@ public class PrivacySandboxSurveyControllerTest {
                         controller.getSentimentSurveyPsb(),
                         controller.getSentimentSurveyPsd());
         controller.destroy();
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -388,6 +393,10 @@ public class PrivacySandboxSurveyControllerTest {
                 CCT_ADS_NOTICE_EEA_ACCEPTED_TRIGGER,
                 /* psdBitFields= */ new String[0],
                 /* psdStringFields= */ new String[0]);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.SurfaceAttempts",
+                        PrivacySandboxSurveyController.PrivacySandboxSurveyType.CCT_EEA_ACCEPTED);
         PrivacySandboxSurveyController controller =
                 PrivacySandboxSurveyController.initialize(
                         mTabModelSelector,
@@ -407,6 +416,7 @@ public class PrivacySandboxSurveyControllerTest {
                         /* lifecycleDispatcher= */ mActivityLifecycleDispatcher,
                         /* surveyPsdBitValues= */ Collections.emptyMap(),
                         /* surveyPsdStringValues= */ Collections.emptyMap());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -478,6 +488,10 @@ public class PrivacySandboxSurveyControllerTest {
                 CCT_ADS_NOTICE_EEA_DECLINED_TRIGGER,
                 /* psdBitFields= */ new String[0],
                 /* psdStringFields= */ new String[0]);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.SurfaceAttempts",
+                        PrivacySandboxSurveyController.PrivacySandboxSurveyType.CCT_EEA_DECLINED);
         PrivacySandboxSurveyController controller =
                 PrivacySandboxSurveyController.initialize(
                         mTabModelSelector,
@@ -497,6 +511,7 @@ public class PrivacySandboxSurveyControllerTest {
                         /* lifecycleDispatcher= */ mActivityLifecycleDispatcher,
                         /* surveyPsdBitValues= */ Collections.emptyMap(),
                         /* surveyPsdStringValues= */ Collections.emptyMap());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -567,6 +582,11 @@ public class PrivacySandboxSurveyControllerTest {
                 CCT_ADS_NOTICE_ROW_ACKNOWLEDGED_TRIGGER,
                 /* psdBitFields= */ new String[0],
                 /* psdStringFields= */ new String[0]);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.SurfaceAttempts",
+                        PrivacySandboxSurveyController.PrivacySandboxSurveyType
+                                .CCT_ROW_ACKNOWLEDGED);
         PrivacySandboxSurveyController controller =
                 PrivacySandboxSurveyController.initialize(
                         mTabModelSelector,
@@ -585,6 +605,7 @@ public class PrivacySandboxSurveyControllerTest {
                         /* lifecycleDispatcher= */ mActivityLifecycleDispatcher,
                         /* surveyPsdBitValues= */ Collections.emptyMap(),
                         /* surveyPsdStringValues= */ Collections.emptyMap());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -656,6 +677,10 @@ public class PrivacySandboxSurveyControllerTest {
                 CCT_ADS_NOTICE_EEA_CONTROL_TRIGGER,
                 /* psdBitFields= */ new String[0],
                 /* psdStringFields= */ new String[0]);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.SurfaceAttempts",
+                        PrivacySandboxSurveyController.PrivacySandboxSurveyType.CCT_EEA_CONTROL);
         PrivacySandboxSurveyController controller =
                 PrivacySandboxSurveyController.initialize(
                         mTabModelSelector,
@@ -672,6 +697,7 @@ public class PrivacySandboxSurveyControllerTest {
                         /* lifecycleDispatcher= */ mActivityLifecycleDispatcher,
                         /* surveyPsdBitValues= */ Collections.emptyMap(),
                         /* surveyPsdStringValues= */ Collections.emptyMap());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -711,6 +737,10 @@ public class PrivacySandboxSurveyControllerTest {
                 CCT_ADS_NOTICE_ROW_CONTROL_TRIGGER,
                 /* psdBitFields= */ new String[0],
                 /* psdStringFields= */ new String[0]);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.SurfaceAttempts",
+                        PrivacySandboxSurveyController.PrivacySandboxSurveyType.CCT_ROW_CONTROL);
         PrivacySandboxSurveyController controller =
                 PrivacySandboxSurveyController.initialize(
                         mTabModelSelector,
@@ -727,6 +757,7 @@ public class PrivacySandboxSurveyControllerTest {
                         /* lifecycleDispatcher= */ mActivityLifecycleDispatcher,
                         /* surveyPsdBitValues= */ Collections.emptyMap(),
                         /* surveyPsdStringValues= */ Collections.emptyMap());
+        histogramWatcher.assertExpected();
     }
 
     @Test

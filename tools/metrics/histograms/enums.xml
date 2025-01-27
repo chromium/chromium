@@ -29665,6 +29665,20 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="kHasPreFirstTab"/>
 </enum>
 
+<!-- LINT.IfChange(PrivacySandboxSurveyTypesEnums) -->
+
+<enum name="PrivacySandboxSurveyTypes">
+  <int value="0" label="Unknown Survey"/>
+  <int value="1" label="Sentiment Survey"/>
+  <int value="2" label="Accepted EEA Survey"/>
+  <int value="3" label="Declined EEA Survey"/>
+  <int value="4" label="Control EEA Survey"/>
+  <int value="5" label="Acknowledged ROW Survey"/>
+  <int value="6" label="Control ROW Survey"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/android/java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyController.java:PrivacySandboxSurveyTypes) -->
+
 <enum name="ProbeResult">
   <int value="0" label="No internet"/>
   <int value="1" label="Server error"/>

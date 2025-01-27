@@ -50,32 +50,37 @@ import java.util.Random;
 
 /** Class that controls and manages when and if surveys should be shown. */
 public class PrivacySandboxSurveyController {
+    // LINT.IfChange(PrivacySandboxSurveyTypes)
     /** List of all the survey types that this controller manages. */
     @IntDef({
         PrivacySandboxSurveyType.UNKNOWN,
+        PrivacySandboxSurveyType.SENTIMENT_SURVEY,
         PrivacySandboxSurveyType.CCT_EEA_ACCEPTED,
         PrivacySandboxSurveyType.CCT_EEA_DECLINED,
         PrivacySandboxSurveyType.CCT_EEA_CONTROL,
         PrivacySandboxSurveyType.CCT_ROW_ACKNOWLEDGED,
         PrivacySandboxSurveyType.CCT_ROW_CONTROL,
-        PrivacySandboxSurveyType.SENTIMENT_SURVEY,
+        PrivacySandboxSurveyType.MAX_VALUE,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PrivacySandboxSurveyType {
         // Default survey type if we don't surey type not explicitly defined.
         int UNKNOWN = 0;
-        // Represents the surveys for the Ads CCT notice.
-        int CCT_EEA_ACCEPTED = 1;
-        int CCT_EEA_DECLINED = 2;
-        int CCT_EEA_CONTROL = 3;
-        int CCT_ROW_ACKNOWLEDGED = 4;
-        int CCT_ROW_CONTROL = 5;
         // Represents the always on sentiment survey.
-        int SENTIMENT_SURVEY = 6;
+        int SENTIMENT_SURVEY = 1;
+        // Represents the surveys for the Ads CCT notice.
+        int CCT_EEA_ACCEPTED = 2;
+        int CCT_EEA_DECLINED = 3;
+        int CCT_EEA_CONTROL = 4;
+        int CCT_ROW_ACKNOWLEDGED = 5;
+        int CCT_ROW_CONTROL = 6;
+
+        int MAX_VALUE = 7;
     }
 
-    // LINT.IfChange(PrivacySandboxCctAdsNoticeSurveyFailures)
+    // LINT.ThenChange(/tools/metrics/histograms/enums.xml:PrivacySandboxSurveyTypesEnums)
 
+    // LINT.IfChange(PrivacySandboxCctAdsNoticeSurveyFailures)
     /** Represents the possible failures when attempting to surface a CCT ads notice survey. */
     @IntDef({
         CctAdsNoticeSurveyFailures.FEATURE_NOT_ENABLED,
@@ -352,6 +357,7 @@ public class PrivacySandboxSurveyController {
     }
 
     private void showSurvey(@PrivacySandboxSurveyType int surveyType) {
+        recordSurveySurfaceAttempted(surveyType);
         SurveyClient surveyClient = constructSurveyClient(surveyType);
         if (surveyClient == null) {
             return;
@@ -499,6 +505,13 @@ public class PrivacySandboxSurveyController {
             default:
                 return;
         }
+    }
+
+    private static void recordSurveySurfaceAttempted(@PrivacySandboxSurveyType int surveyType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "PrivacySandbox.Surveys.SurfaceAttempts",
+                surveyType,
+                PrivacySandboxSurveyType.MAX_VALUE);
     }
 
     // Set whether to trigger the start up survey in tests.
