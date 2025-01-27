@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "components/account_id/account_id.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -53,9 +52,8 @@ class ActiveSessionAuthViewUnitTest : public AshTestBase {
     widget_->SetFullscreen(true);
     widget_->Show();
 
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     auto fake_user_manager =
-        std::make_unique<user_manager::FakeUserManager>(&local_state_);
+        std::make_unique<user_manager::FakeUserManager>(local_state());
 
     AccountId account_id =
         AccountId::FromUserEmailGaiaId(kTestAccount, GaiaId(kFakeGaia));
@@ -117,7 +115,6 @@ class ActiveSessionAuthViewUnitTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<MockActiveSessionAuthViewObserver> mock_observer_;
   std::unique_ptr<AuthInputRowView::TestApi> test_api_pin_input_;

@@ -12,7 +12,6 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -49,9 +48,8 @@ class AuthHeaderPixelTest : public AshTestBase {
     AshTestBase::SetUp();
     UpdateDisplay("600x800");
 
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     auto fake_user_manager =
-        std::make_unique<user_manager::FakeUserManager>(&local_state_);
+        std::make_unique<user_manager::FakeUserManager>(local_state());
     AccountId account_id =
         AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kFakeGaia));
     fake_user_manager->AddGaiaUser(account_id,
@@ -85,7 +83,6 @@ class AuthHeaderPixelTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<AuthHeaderView> header_view_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;

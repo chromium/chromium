@@ -63,7 +63,7 @@ class ActiveSessionAuthControllerTest
     SystemSaltGetter::Initialize();
     CryptohomeMiscClient::InitializeFake();
     UserDataAuthClient::InitializeFake();
-    auth_parts_ = AuthParts::Create(&local_state_);
+    auth_parts_ = AuthParts::Create(local_state());
 
     AshTestBase::SetUp();
 
@@ -88,9 +88,8 @@ class ActiveSessionAuthControllerTest
   }
 
   void InitializeUserManager() {
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     user_manager_ =
-        std::make_unique<user_manager::FakeUserManager>(&local_state_);
+        std::make_unique<user_manager::FakeUserManager>(local_state());
     user_manager_->Initialize();
   }
 
@@ -204,7 +203,6 @@ class ActiveSessionAuthControllerTest
 
  protected:
   AccountId account_id_;
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<user_manager::FakeUserManager> user_manager_;
   std::unique_ptr<AuthParts> auth_parts_;
 };
