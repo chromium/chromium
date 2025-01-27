@@ -25,7 +25,7 @@ class CallbackListSubscription;
 
 namespace page_actions {
 
-class PageActionModel;
+class PageActionModelFactory;
 class PageActionModelInterface;
 class PageActionModelObserver;
 
@@ -35,7 +35,8 @@ class PageActionModelObserver;
 class PageActionController : public PinnedToolbarActionsModel::Observer {
  public:
   explicit PageActionController(
-      PinnedToolbarActionsModel* pinned_actions_model);
+      PinnedToolbarActionsModel* pinned_actions_model,
+      PageActionModelFactory* page_action_model_factory = nullptr);
   PageActionController(const PageActionController&) = delete;
   PageActionController& operator=(const PageActionController&) = delete;
   ~PageActionController() override;
@@ -76,18 +77,24 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
 
  private:
   using PageActionModelsMap =
-      std::map<actions::ActionId, std::unique_ptr<PageActionModel>>;
+      std::map<actions::ActionId, std::unique_ptr<PageActionModelInterface>>;
 
-  PageActionModel& FindPageActionModel(actions::ActionId action_id) const;
+  PageActionModelInterface& FindPageActionModel(
+      actions::ActionId action_id) const;
 
   void ActionItemChanged(const actions::ActionItem* action_item);
   void PinnedActionsModelChanged();
+
+  std::unique_ptr<PageActionModelInterface> CreateModel(
+      actions::ActionId action_id);
 
   PageActionModelsMap page_actions_;
 
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>
       pinned_actions_observation_{this};
+
+  const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;
 };
 
 }  // namespace page_actions

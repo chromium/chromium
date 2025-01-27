@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 
+#include <map>
 #include <memory>
 #include <string>
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
+#include "chrome/browser/ui/views/page_action/mock_page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/test/base/testing_profile.h"
@@ -328,28 +330,58 @@ TEST_F(PageActionControllerTest, ClearOverrideText) {
   EXPECT_EQ(kText, observer.text());
 }
 
-TEST_F(PageActionControllerTest, MultipleTextOverrides) {
-  auto observer = PageActionTestObserver();
-  TestPageActionModelObservation observation(&observer);
-  controller()->Register(0);
-  auto action_item = BuildActionItem(0);
-  auto subscription =
-      controller()->CreateActionItemSubscription(action_item.get());
-  controller()->AddObserver(0, observation);
+class MockPageActionModelFactory : public PageActionModelFactory {
+ public:
+  // Interface used by PageActionController to create a model.
+  std::unique_ptr<PageActionModelInterface> Create(int action_id) override {
+    auto model = std::make_unique<MockPageActionModel>();
+    model_map_.emplace(action_id, model.get());
+    return model;
+  }
 
-  action_item->SetText(kText);
+  // Model getter for tests to set expectations.
+  MockPageActionModel& Get(int action_id) {
+    auto id_to_model = model_map_.find(action_id);
+    CHECK(id_to_model != model_map_.end());
+    CHECK_NE(id_to_model->second, nullptr);
+    return *id_to_model->second;
+  }
 
-  controller()->OverrideText(0, kOverrideOne);
-  EXPECT_EQ(kOverrideOne, observer.text());
+ private:
+  std::map<actions::ActionId, MockPageActionModel*> model_map_;
+};
 
-  controller()->OverrideText(0, kOverrideTwo);
-  EXPECT_EQ(kOverrideTwo, observer.text());
+class PageActionControllerMockModelTest : public ::testing::Test {
+ public:
+  PageActionControllerMockModelTest()
+      : controller_(/*pinned_actions_model=*/nullptr, &model_factory_) {}
 
-  controller()->OverrideText(0, kOverrideThree);
-  EXPECT_EQ(kOverrideThree, observer.text());
+  PageActionController& controller() { return controller_; }
+  MockPageActionModelFactory& models() { return model_factory_; }
 
-  controller()->ClearOverrideText(0);
-  EXPECT_EQ(kText, observer.text());
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  MockPageActionModelFactory model_factory_;
+  PageActionController controller_;
+};
+
+TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideText) {
+  constexpr int kActionItemId = 0;
+  controller().Register(kActionItemId);
+
+  // Set the text override.
+  EXPECT_CALL(models().Get(kActionItemId),
+              SetOverrideText(testing::_, std::optional<std::u16string>(kText)))
+      .Times(1);
+
+  controller().OverrideText(kActionItemId, kText);
+
+  // Clear the text override.
+  EXPECT_CALL(
+      models().Get(kActionItemId),
+      SetOverrideText(testing::_, std::optional<std::u16string>(std::nullopt)))
+      .Times(1);
+  controller().ClearOverrideText(0);
 }
 
 }  // namespace

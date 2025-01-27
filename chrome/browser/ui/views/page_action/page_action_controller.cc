@@ -13,7 +13,9 @@
 namespace page_actions {
 
 PageActionController::PageActionController(
-    PinnedToolbarActionsModel* pinned_actions_model) {
+    PinnedToolbarActionsModel* pinned_actions_model,
+    PageActionModelFactory* page_action_model_factory)
+    : page_action_model_factory_(page_action_model_factory) {
   if (pinned_actions_model) {
     pinned_actions_observation_.Observe(pinned_actions_model);
   }
@@ -32,7 +34,7 @@ void PageActionController::Initialize(
 }
 
 void PageActionController::Register(actions::ActionId action_id) {
-  page_actions_.emplace(action_id, std::make_unique<PageActionModel>());
+  page_actions_.emplace(action_id, CreateModel(action_id));
 }
 
 void PageActionController::Show(actions::ActionId action_id) {
@@ -103,12 +105,21 @@ void PageActionController::PinnedActionsModelChanged() {
   }
 }
 
-PageActionModel& PageActionController::FindPageActionModel(
+PageActionModelInterface& PageActionController::FindPageActionModel(
     actions::ActionId action_id) const {
   auto id_to_model = page_actions_.find(action_id);
   CHECK(id_to_model != page_actions_.end());
   CHECK(id_to_model->second.get());
   return *id_to_model->second.get();
+}
+
+std::unique_ptr<PageActionModelInterface> PageActionController::CreateModel(
+    actions::ActionId action_id) {
+  if (page_action_model_factory_ != nullptr) {
+    return page_action_model_factory_->Create(action_id);
+  } else {
+    return std::make_unique<PageActionModel>();
+  }
 }
 
 }  // namespace page_actions

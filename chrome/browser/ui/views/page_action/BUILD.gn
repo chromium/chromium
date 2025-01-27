@@ -42,6 +42,8 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "mock_page_action_model.cc",
+    "mock_page_action_model.h",
     "page_action_container_view_unittest.cc",
     "page_action_controller_unittest.cc",
     "page_action_icon_view_unittest.cc",

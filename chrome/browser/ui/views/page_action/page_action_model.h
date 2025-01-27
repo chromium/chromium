@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_MODEL_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_MODEL_H_
 
+#include <iterator>
+#include <memory>
 #include <string>
 
 #include "base/observer_list.h"
@@ -20,8 +22,8 @@ namespace page_actions {
 class PageActionController;
 class PageActionModelObserver;
 
-// Interface to PageActionModel, used for either the concrete implementation or
-// a mock for testing.
+// Interface to PageActionModel, used for either the concrete implementation
+// or a mock for testing.
 class PageActionModelInterface {
  public:
   PageActionModelInterface() = default;
@@ -105,6 +107,13 @@ class PageActionModel : public PageActionModelInterface {
   ui::ImageModel action_item_image_;
 
   base::ObserverList<PageActionModelObserver> observer_list_;
+};
+
+class PageActionModelFactory {
+ public:
+  virtual ~PageActionModelFactory() = default;
+
+  virtual std::unique_ptr<PageActionModelInterface> Create(int action_id) = 0;
 };
 
 }  // namespace page_actions
