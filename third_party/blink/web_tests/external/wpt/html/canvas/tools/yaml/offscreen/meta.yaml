@@ -102,13 +102,13 @@
     ctx.fillStyle = 'rgba%s';
     ctx.fillRect(0, 0, 100, 50);
     ctx.globalCompositeOperation = '%s';
-    const offscreenCanvas2 = new OffscreenCanvas(canvas.width, canvas.height);
-    const ctx2 = offscreenCanvas2.getContext('2d');
+    const canvas2 = new OffscreenCanvas(canvas.width, canvas.height);
+    const ctx2 = canvas2.getContext('2d');
     const response = await fetch('/images/yellow75.png')
     const blob = await response.blob();
     const bitmap = await createImageBitmap(blob);
     ctx2.drawImage(bitmap, 0, 0);
-    ctx.drawImage(offscreenCanvas2, 0, 0);
+    ctx.drawImage(canvas2, 0, 0);
     @assert pixel 50,25 ==~ %s +/- 5;
     """ % (dest, op, to_test(expected)),
             } )
@@ -166,8 +166,8 @@
     ctx.fillStyle = 'rgba%s';
     ctx.fillRect(0, 0, 100, 50);
     ctx.globalCompositeOperation = '%s';
-    var offscreenCanvas2 = new OffscreenCanvas(100, 50);
-    ctx.drawImage(offscreenCanvas2, 0, 0);
+    var canvas2 = new OffscreenCanvas(100, 50);
+    ctx.drawImage(canvas2, 0, 0);
     @assert pixel 50,25 ==~ %s +/- 5;
     t.done();
     """ % (dest, op, to_test(expected0)),

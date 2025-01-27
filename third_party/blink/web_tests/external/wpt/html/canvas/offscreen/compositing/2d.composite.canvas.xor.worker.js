@@ -13,13 +13,13 @@ promise_test(async t => {
   ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
   ctx.fillRect(0, 0, 100, 50);
   ctx.globalCompositeOperation = 'xor';
-  const offscreenCanvas2 = new OffscreenCanvas(canvas.width, canvas.height);
-  const ctx2 = offscreenCanvas2.getContext('2d');
+  const canvas2 = new OffscreenCanvas(canvas.width, canvas.height);
+  const ctx2 = canvas2.getContext('2d');
   const response = await fetch('/images/yellow75.png')
   const blob = await response.blob();
   const bitmap = await createImageBitmap(blob);
   ctx2.drawImage(bitmap, 0, 0);
-  ctx.drawImage(offscreenCanvas2, 0, 0);
+  ctx.drawImage(canvas2, 0, 0);
   _assertPixelApprox(canvas, 50,25, 191,255,64,128, 5);
 }, "");
 done();
