@@ -34,6 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
+#include "third_party/libgav1/src/src/utils/common.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
 #include "third_party/libgav1/src/src/utils/types.h"
 

@@ -14,6 +14,7 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 #include "media/parsers/ivf_parser.h"
+#include "third_party/libgav1/src/src/utils/common.h"
 #include "third_party/libgav1/src/src/warp_prediction.h"
 
 namespace media {

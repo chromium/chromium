@@ -21,6 +21,7 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libgav1/src/src/decoder_state.h"
 #include "third_party/libgav1/src/src/gav1/status_code.h"
+#include "third_party/libgav1/src/src/utils/common.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
 #include "ui/gfx/hdr_metadata.h"
 
