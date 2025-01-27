@@ -12,6 +12,25 @@ void RuleSetGroup::AddRuleSet(RuleSet* rule_set) {
   // Our bit in each of the bitmaps.
   const RuleSetBitmap rule_set_mask = RuleSetBitmap{1} << num_rule_sets_;
 
+  if (rule_set->HasAnyAttrRules()) {
+    has_any_attr_rules_ |= rule_set_mask;
+    if (rule_set->HasBucketForStyleAttribute()) {
+      need_style_synchronized_ = true;
+    }
+  }
+  if (!rule_set->UniversalRules().empty()) {
+    has_universal_rules_ |= rule_set_mask;
+  }
+  if (!rule_set->LinkPseudoClassRules().empty()) {
+    has_link_pseudo_class_rules_ |= rule_set_mask;
+  }
+  if (!rule_set->FocusPseudoClassRules().empty()) {
+    has_focus_pseudo_class_rules_ |= rule_set_mask;
+  }
+  if (!rule_set->FocusVisiblePseudoClassRules().empty()) {
+    has_focus_visible_pseudo_class_rules_ |= rule_set_mask;
+  }
+
   if (rule_set->SingleScope()) {
     single_scope_ |= rule_set_mask;
   } else {

@@ -840,17 +840,7 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
   }
 
   // Collect rules from attribute selector buckets, if we have any.
-  bool has_any_attr_rules = false;
-  bool need_style_synchronized = false;
-  for (const auto bundle : match_request.AllRuleSets()) {
-    if (bundle.rule_set->HasAnyAttrRules()) {
-      has_any_attr_rules = true;
-      if (bundle.rule_set->HasBucketForStyleAttribute()) {
-        need_style_synchronized = true;
-      }
-    }
-  }
-  if (has_any_attr_rules) {
+  if (match_request.HasAnyRuleSetsWithAttrRules()) {
     // HTML documents have case-insensitive attribute matching
     // (so we need to lowercase), non-HTML documents have
     // case-sensitive attribute matching (so we should _not_ lowercase).
@@ -880,7 +870,7 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
     // if we don't synchronize before the loop; we need to use
     // simple indexes and then refresh the span after every call.
     base::span<const Attribute> attributes =
-        GetAttributes(element, need_style_synchronized);
+        GetAttributes(element, match_request.NeedStyleSynchronized());
 
     for (unsigned attr_idx = 0; attr_idx < attributes.size(); ++attr_idx) {
       const AtomicString& attribute_name = attributes[attr_idx].LocalName();
@@ -895,10 +885,8 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
            attributes[attr_idx].NamespaceURI() == g_null_atom)
               ? attribute_name.LowerASCII()
               : attribute_name;
-      for (const auto bundle : match_request.AllRuleSets()) {
-        if (!bundle.rule_set->HasAnyAttrRules()) {
-          continue;
-        }
+
+      for (const auto bundle : match_request.RuleSetsWithAttrRules()) {
         base::span<const RuleData> list =
             bundle.rule_set->AttrRules(lower_name);
         if (list.empty() ||
@@ -921,7 +909,7 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
   }
 
   if (element.IsLink()) {
-    for (const auto bundle : match_request.AllRuleSets()) {
+    for (const auto bundle : match_request.RuleSetsWithLinkPseudoClassRules()) {
       if (CollectMatchingRulesForList<stop_at_first_match>(
               bundle.rule_set->LinkPseudoClassRules(), match_request,
               bundle.rule_set, bundle.style_sheet_index, checker,
@@ -931,17 +919,22 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
       }
     }
   }
-  if (SelectorChecker::MatchesFocusPseudoClass(element, kPseudoIdNone)) {
-    for (const auto bundle : match_request.AllRuleSets()) {
-      if (CollectMatchingRulesForList<stop_at_first_match>(
-              bundle.rule_set->FocusPseudoClassRules(), match_request,
-              bundle.rule_set, bundle.style_sheet_index, checker,
-              context.context) &&
-          stop_at_first_match) {
-        return true;
+
+  if (match_request.HasAnyRuleSetsWithFocusPseudoClassRules()) {
+    if (SelectorChecker::MatchesFocusPseudoClass(element, kPseudoIdNone)) {
+      for (const auto bundle :
+           match_request.RuleSetsWithFocusPseudoClassRules()) {
+        if (CollectMatchingRulesForList<stop_at_first_match>(
+                bundle.rule_set->FocusPseudoClassRules(), match_request,
+                bundle.rule_set, bundle.style_sheet_index, checker,
+                context.context) &&
+            stop_at_first_match) {
+          return true;
+        }
       }
     }
   }
+
   if (SelectorChecker::MatchesSelectorFragmentAnchorPseudoClass(element)) {
     for (const auto bundle : match_request.AllRuleSets()) {
       if (CollectMatchingRulesForList<stop_at_first_match>(
@@ -953,17 +946,22 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
       }
     }
   }
-  if (SelectorChecker::MatchesFocusVisiblePseudoClass(element)) {
-    for (const auto bundle : match_request.AllRuleSets()) {
-      if (CollectMatchingRulesForList<stop_at_first_match>(
-              bundle.rule_set->FocusVisiblePseudoClassRules(), match_request,
-              bundle.rule_set, bundle.style_sheet_index, checker,
-              context.context) &&
-          stop_at_first_match) {
-        return true;
+
+  if (match_request.HasAnyRuleSetsWithFocusVisiblePseudoClassRules()) {
+    if (SelectorChecker::MatchesFocusVisiblePseudoClass(element)) {
+      for (const auto bundle :
+           match_request.RuleSetsWithFocusVisiblePseudoClassRules()) {
+        if (CollectMatchingRulesForList<stop_at_first_match>(
+                bundle.rule_set->FocusVisiblePseudoClassRules(), match_request,
+                bundle.rule_set, bundle.style_sheet_index, checker,
+                context.context) &&
+            stop_at_first_match) {
+          return true;
+        }
       }
     }
   }
+
   if (element.GetDocument().documentElement() == element) {
     for (const auto bundle : match_request.AllRuleSets()) {
       if (CollectMatchingRulesForList<stop_at_first_match>(
@@ -987,7 +985,7 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
       return true;
     }
   }
-  for (const auto bundle : match_request.AllRuleSets()) {
+  for (const auto bundle : match_request.RuleSetsWithUniversalRules()) {
     if (CollectMatchingRulesForList<stop_at_first_match>(
             bundle.rule_set->UniversalRules(), match_request, bundle.rule_set,
             bundle.style_sheet_index, checker, context.context) &&

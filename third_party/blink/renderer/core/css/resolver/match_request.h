@@ -87,6 +87,14 @@ class CORE_EXPORT RuleSetGroup {
     }
     DCHECK_EQ(style_sheet_first_index_, other.style_sheet_first_index_);
     DCHECK_EQ(single_scope_, other.single_scope_);
+    DCHECK_EQ(has_any_attr_rules_, other.has_any_attr_rules_);
+    DCHECK_EQ(has_universal_rules_, other.has_universal_rules_);
+    DCHECK_EQ(need_style_synchronized_, other.need_style_synchronized_);
+    DCHECK_EQ(has_link_pseudo_class_rules_, other.has_link_pseudo_class_rules_);
+    DCHECK_EQ(has_focus_pseudo_class_rules_,
+              other.has_focus_pseudo_class_rules_);
+    DCHECK_EQ(has_focus_visible_pseudo_class_rules_,
+              other.has_focus_visible_pseudo_class_rules_);
   }
 #endif
 
@@ -105,6 +113,25 @@ class CORE_EXPORT RuleSetGroup {
   // Which RuleSets are limited to a single @scope, and their converse.
   RuleSetBitmap single_scope_ = 0;
   RuleSetBitmap not_single_scope_ = 0;
+
+  // Which RuleSets have any attribute rules at all.
+  RuleSetBitmap has_any_attr_rules_ = 0;
+
+  // Which RuleSets have any universal rules.
+  RuleSetBitmap has_universal_rules_ = 0;
+
+  // Which RuleSets have any :link pseudo-class rules.
+  RuleSetBitmap has_link_pseudo_class_rules_ = 0;
+
+  // Which RuleSets have any :focus pseudo-class rules.
+  RuleSetBitmap has_focus_pseudo_class_rules_ = 0;
+
+  // Which RuleSets have any :focus-visible pseudo-class rules.
+  RuleSetBitmap has_focus_visible_pseudo_class_rules_ = 0;
+
+  // Whether there are any attribute-bucketed rules that depend on the
+  // [style] attribute.
+  bool need_style_synchronized_ = false;
 
   friend class MatchRequest;
 };
@@ -218,6 +245,42 @@ class CORE_EXPORT MatchRequest {
 
   RuleSetIteratorProxy AllRuleSets() const {
     return RuleSetIteratorProxy(&rule_set_group_, enabled_);
+  }
+  bool HasAnyRuleSetsWithAttrRules() const {
+    return (rule_set_group_.has_any_attr_rules_ & enabled_) != 0;
+  }
+  RuleSetIteratorProxy RuleSetsWithAttrRules() const {
+    return RuleSetIteratorProxy(&rule_set_group_,
+                                rule_set_group_.has_any_attr_rules_ & enabled_);
+  }
+  RuleSetIteratorProxy RuleSetsWithUniversalRules() const {
+    return RuleSetIteratorProxy(
+        &rule_set_group_, rule_set_group_.has_universal_rules_ & enabled_);
+  }
+  RuleSetIteratorProxy RuleSetsWithLinkPseudoClassRules() const {
+    return RuleSetIteratorProxy(
+        &rule_set_group_,
+        rule_set_group_.has_link_pseudo_class_rules_ & enabled_);
+  }
+  bool HasAnyRuleSetsWithFocusPseudoClassRules() const {
+    return (rule_set_group_.has_focus_pseudo_class_rules_ & enabled_) != 0;
+  }
+  RuleSetIteratorProxy RuleSetsWithFocusPseudoClassRules() const {
+    return RuleSetIteratorProxy(
+        &rule_set_group_,
+        rule_set_group_.has_focus_pseudo_class_rules_ & enabled_);
+  }
+  bool HasAnyRuleSetsWithFocusVisiblePseudoClassRules() const {
+    return (rule_set_group_.has_focus_visible_pseudo_class_rules_ & enabled_) !=
+           0;
+  }
+  RuleSetIteratorProxy RuleSetsWithFocusVisiblePseudoClassRules() const {
+    return RuleSetIteratorProxy(
+        &rule_set_group_,
+        rule_set_group_.has_focus_visible_pseudo_class_rules_ & enabled_);
+  }
+  bool NeedStyleSynchronized() const {
+    return rule_set_group_.need_style_synchronized_;
   }
 
 #if DCHECK_IS_ON()
