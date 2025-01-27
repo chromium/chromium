@@ -118,6 +118,12 @@ LocationClassification ClassifySourceLocation(
     return LocationClassification::kSystem;
   }
 
+  // The Win SDK headers don't get categorized as system headers when building
+  // with DEPOT_TOOLS_WIN_TOOLCHAIN=0.
+  if (filename.find("Program Files (x86)/Windows Kits/") != std::string::npos) {
+    return LocationClassification::kSystem;
+  }
+
   // We need to special case scratch space; which is where clang does its macro
   // expansion. We explicitly want to allow people to do otherwise bad things
   // through macros that were defined due to third party libraries.
