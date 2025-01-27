@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -350,10 +351,15 @@ TEST_F(MerchantTrustServiceTest, ExperimentSurveyDisabled) {
 
 TEST_F(MerchantTrustServiceTest, RecordMerchantTrustInteractionFamiliarSite) {
   base::HistogramTester t;
+  base::UserActionTester user_action_tester;
+
   EXPECT_CALL(*delegate(), GetSiteEngagementScore(_))
       .WillOnce(Return(kMerchantFamiliarityThreshold));
   service()->RecordMerchantTrustInteraction(
       GURL("https://foo.com"), MerchantTrustInteraction::kPageInfoRowShown);
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+      "MerchantTrust.PageInfoRowSeen.FamiliarSite"));
   t.ExpectUniqueSample(
       "Security.PageInfo.MerchantTrustInteraction.FamiliarSite",
       MerchantTrustInteraction::kPageInfoRowShown, 1);
@@ -361,11 +367,16 @@ TEST_F(MerchantTrustServiceTest, RecordMerchantTrustInteractionFamiliarSite) {
 
 TEST_F(MerchantTrustServiceTest, RecordMerchantTrustInteractionUnfamiliarSite) {
   base::HistogramTester t;
+  base::UserActionTester user_action_tester;
+
   EXPECT_CALL(*delegate(), GetSiteEngagementScore(_))
       .WillOnce(Return(kMerchantFamiliarityThreshold - 0.1));
   service()->RecordMerchantTrustInteraction(
       GURL("https://foo.com"),
       MerchantTrustInteraction::kBubbleOpenedFromPageInfo);
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+      "MerchantTrust.BubbleOpenedFromPageInfo.UnfamiliarSite"));
   t.ExpectUniqueSample(
       "Security.PageInfo.MerchantTrustInteraction.UnfamiliarSite",
       MerchantTrustInteraction::kBubbleOpenedFromPageInfo, 1);

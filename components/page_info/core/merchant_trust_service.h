@@ -46,7 +46,9 @@ enum class MerchantTrustInteraction {
   kPageInfoRowShown = 0,
   kBubbleOpenedFromPageInfo = 1,
   kSidePanelOpened = 2,
-  kMaxValue = kSidePanelOpened
+  kBubbleClosed = 3,
+  kSidePanelClosed = 4,
+  kMaxValue = kSidePanelClosed
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/security/enums.xml:MerchantTrustInteraction)
 

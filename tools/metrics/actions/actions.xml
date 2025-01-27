@@ -21210,11 +21210,97 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MerchantTrust.BubbleClosed.FamiliarSite">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <description>
+    Triggered when user closes the merchant trust bubble on a familiar site.
+  </description>
+</action>
+
+<action name="MerchantTrust.BubbleClosed.UnfamiliarSite">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <description>
+    Triggered when user closes the merchant trust bubble on an unfamiliar site.
+  </description>
+</action>
+
+<action name="MerchantTrust.BubbleOpenedFromPageInfo.FamiliarSite">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <description>
+    Triggered when user opens the merchant trust bubble from the page info row
+    on a familiar site.
+  </description>
+</action>
+
+<action name="MerchantTrust.BubbleOpenedFromPageInfo.UnfamiliarSite">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <description>
+    Triggered when user opens the merchant trust bubble from the page info row
+    on an unfamiliar site.
+  </description>
+</action>
+
 <action name="MerchantTrust.Message.Tapped">
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>
     Triggered when user taps the merchant trust message.
+  </description>
+</action>
+
+<action name="MerchantTrust.PageInfoRowSeen.FamiliarSite">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <description>
+    Triggered when user sees the merchant trust page info row on a familiar
+    site.
+  </description>
+</action>
+
+<action name="MerchantTrust.PageInfoRowSeen.UnfamiliarSite">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <description>
+    Triggered when user sees the merchant trust page info row on an unfamiliar
+    site.
+  </description>
+</action>
+
+<action name="MerchantTrust.SidePanelClosed.FamiliarSite">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <description>
+    Triggered when user closes the merchant trust side panel on a familiar site.
+  </description>
+</action>
+
+<action name="MerchantTrust.SidePanelClosed.UnfamiliarSite">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <description>
+    Triggered when user closes the merchant trust side panel on an unfamiliar
+    site.
+  </description>
+</action>
+
+<action name="MerchantTrust.SidePanelOpened.FamiliarSite">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <description>
+    Triggered when user opens the merchant trust side panel on a familiar site.
+  </description>
+</action>
+
+<action name="MerchantTrust.SidePanelOpened.UnfamiliarSite">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <description>
+    Triggered when user opens the merchant trust side panel on an unfamiliar
+    site.
   </description>
 </action>
 
