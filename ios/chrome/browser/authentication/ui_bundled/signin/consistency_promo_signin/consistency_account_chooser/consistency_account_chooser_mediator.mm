@@ -148,7 +148,7 @@
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     // Listening to `onExtendedAccountInfoUpdated` instead.
     return;
   }
@@ -156,7 +156,7 @@
 }
 
 - (void)identityListChanged {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     // Listening to `onAccountsOnDeviceChanged` instead.
     return;
   }
@@ -172,7 +172,7 @@
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     // Listening to `identityListChanged` instead.
     return;
   }
@@ -180,7 +180,7 @@
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     // Listening to `identityUpdated` instead.
     return;
   }

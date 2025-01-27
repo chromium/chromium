@@ -1477,7 +1477,7 @@ using segmentation_platform::TipIdentifier;
 
 - (bool)hasIdentitiesOnDevice {
   ProfileIOS* profile = self.browser->GetProfile();
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     return !IdentityManagerFactory::GetForProfile(profile)
                 ->GetAccountsOnDevice()
                 .empty();

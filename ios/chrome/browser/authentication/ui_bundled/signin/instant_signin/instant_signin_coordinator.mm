@@ -96,7 +96,7 @@
   }
 
   bool hasAccountOnDevice = false;
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     signin::IdentityManager* identityManager =
         IdentityManagerFactory::GetForProfile(profile);
     hasAccountOnDevice = !identityManager->GetAccountsOnDevice().empty();

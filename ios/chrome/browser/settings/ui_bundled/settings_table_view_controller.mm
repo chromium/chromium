@@ -2360,7 +2360,7 @@ struct EnhancedSafeBrowsingActivePromoData
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     // Listening to `onExtendedAccountInfoUpdated` instead.
     return;
   }
@@ -2606,7 +2606,7 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     // Listening to `identityUpdated` instead.
     return;
   }

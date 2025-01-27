@@ -110,7 +110,7 @@ enum class SigninScreenState {
     _prefService = prefService;
     _syncService = syncService;
 
-    if (IsUseAccountListFromIdentityManagerEnabled()) {
+    if (AreSeparateProfilesForManagedAccountsEnabled()) {
       _hadIdentitiesAtStartup =
           !_identityManager->GetAccountsOnDevice().empty();
     } else {
@@ -310,7 +310,7 @@ enum class SigninScreenState {
     return;
   }
   // nil is allowed only if there is no other identity.
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     DCHECK(selectedIdentity || _identityManager->GetAccountsOnDevice().empty());
   } else {
     DCHECK(selectedIdentity || !_accountManagerService->HasIdentities());
@@ -323,7 +323,7 @@ enum class SigninScreenState {
 #pragma mark - Private
 
 - (bool)selectedIdentityIsValid {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     if (self.selectedIdentity) {
       GaiaId gaia(self.selectedIdentity.gaiaID);
       return base::Contains(_identityManager->GetAccountsOnDevice(), gaia,
@@ -374,7 +374,7 @@ enum class SigninScreenState {
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     // Listening to `onAccountsOnDeviceChanged` instead.
     return;
   }
@@ -382,7 +382,7 @@ enum class SigninScreenState {
 }
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     // Listening to `onExtendedAccountInfoUpdated` instead.
     return;
   }
@@ -398,7 +398,7 @@ enum class SigninScreenState {
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     // Listening to `identityListChanged` instead.
     return;
   }
@@ -406,7 +406,7 @@ enum class SigninScreenState {
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     // Listening to `identityUpdated` instead.
     return;
   }

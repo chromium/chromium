@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator.h"
 
-#import "base/containers/flat_map.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -55,15 +54,8 @@ class AccountMenuMediatorTest : public PlatformTest,
                                 public testing::WithParamInterface<bool> {
  public:
   AccountMenuMediatorTest() {
-    const bool separate_profiles = GetParam();
-    base::flat_map<base::test::FeatureRef, bool> feature_states;
-    feature_states[kSeparateProfilesForManagedAccounts] = separate_profiles;
-    // `kSeparateProfilesForManagedAccounts` depends on
-    // `kUseAccountListFromIdentityManager`.
-    if (separate_profiles) {
-      feature_states[kUseAccountListFromIdentityManager] = true;
-    }
-    feature_list_.InitWithFeatureStates(feature_states);
+    feature_list_.InitWithFeatureState(kSeparateProfilesForManagedAccounts,
+                                       GetParam());
   }
 
   void SetUp() override {
@@ -200,16 +192,16 @@ TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
 // consumer.
 TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
   // Expectations due to ChromeAccountManagerServiceObserver updates.
-  // If IsUseAccountListFromIdentityManagerEnabled() is true, the updates come
+  // If AreSeparateProfilesForManagedAccountsEnabled() is true, the updates come
   // from IdentityManager instead, which doesn't send no-op updates.
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     OCMExpect([consumer_
         updateAccountListWithGaiaIDsToAdd:@[]
                           gaiaIDsToRemove:@[]
                             gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
   }
   OCMExpect([consumer_ updatePrimaryAccount]);
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     OCMExpect([consumer_
         updateAccountListWithGaiaIDsToAdd:@[]
                           gaiaIDsToRemove:@[]
