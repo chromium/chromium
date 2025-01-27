@@ -152,18 +152,17 @@ class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
 class CanvasResourceProviderBitmap : public CanvasResourceProvider {
  public:
   CanvasResourceProviderBitmap(gfx::Size size,
-                               SkColorType sk_color_type,
+                               viz::SharedImageFormat format,
                                SkAlphaType alpha_type,
                                const gfx::ColorSpace& color_space,
                                CanvasResourceHost* resource_host)
-      : CanvasResourceProvider(
-            kBitmap,
-            size,
-            viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
-            alpha_type,
-            color_space,
-            /*context_provider_wrapper=*/nullptr,
-            resource_host) {}
+      : CanvasResourceProvider(kBitmap,
+                               size,
+                               format,
+                               alpha_type,
+                               color_space,
+                               /*context_provider_wrapper=*/nullptr,
+                               resource_host) {}
 
   ~CanvasResourceProviderBitmap() override = default;
 
@@ -1065,7 +1064,8 @@ CanvasResourceProvider::CreateBitmapProvider(
     ShouldInitialize should_initialize,
     CanvasResourceHost* resource_host) {
   auto provider = std::make_unique<CanvasResourceProviderBitmap>(
-      size, sk_color_type, alpha_type, color_space, resource_host);
+      size, viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
+      alpha_type, color_space, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
