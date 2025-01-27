@@ -149,6 +149,8 @@ bool IsBatchUploadDesktopEnabled();
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kProfilePickerGlicTesting);
 
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin);
 }  // namespace switches
 
 // TODO(crbug.com/337879458): Move switches below into the switches namespace.
