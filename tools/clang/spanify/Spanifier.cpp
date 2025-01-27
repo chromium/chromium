@@ -106,13 +106,6 @@ struct Node {
   //     field description for more details.
   bool is_dependent = false;
 
-  // This is true for the cases where the lhs node doesn't get rewritten while
-  // the rhs does. in that case, we create a special node that adds a `.data()`
-  // call to the rhs. Example: ptr[index] = something; => ptr is used as a
-  // buffer => gets spanified T* temp = ptr; => temp never used as a buffer =>
-  // need to add `.data()` The statement becomes: T* temp = ptr.data();
-  bool is_data_change = false;
-
   // This field is NOT serialized.
   // This is used to split this nodes into two. The second node, who's
   // replacement is `additional_replacement`, is dependent (is_dependent=true)
@@ -142,45 +135,36 @@ struct Node {
   }
 
   // The resulting string follows the following format:
-  // {is_buffer\,r:::<filepath>:::<offset>:::<length>:::<replacement_text>
-  //\,include-user-header:::<file path>:::-1:::-1:::<include
-  // text>\,size_info_available\,is_dependent\,is_data_change}
+  // {is_buffer\,
+  // r:::<filepath>:::<offset>:::<length>:::<replacement_text>\,
+  // include-user-header:::<file path>:::-1:::-1:::<include text>\,
+  // size_info_available\,
+  // is_dependent\}
   // where the booleans are represented as 0 or 1.
   std::string ToString() const {
-    return llvm::formatv("{{{0:d}\\,{1}\\,{2}\\,{3:d}\\,{4:d}\\,{5:d}}",
-                         is_buffer, replacement, include_directive,
-                         size_info_available, is_dependent, is_data_change);
+    return llvm::formatv("{{{0:d}\\,{1}\\,{2}\\,{3:d}\\,{4:d}}", is_buffer,
+                         replacement, include_directive, size_info_available,
+                         is_dependent);
   }
 };
 
-// Helper class to add edges to the set of node_pairs_;
-class OutputHelper {
- public:
-  OutputHelper() = default;
+void EmitEdge(const Node& lhs, const Node& rhs) {
+  llvm::outs() << llvm::formatv("e{0}@{1}\n", lhs.ToString(), rhs.ToString());
+}
 
-  void AddEdge(const Node& lhs, const Node& rhs) {
-    node_pairs_.insert(
-        llvm::formatv("{0}@{1}\n", lhs.ToString(), rhs.ToString()));
-  }
+void EmitSingleNode(const Node& lhs) {
+  llvm::outs() << llvm::formatv("s{0}\n", lhs.ToString());
+}
 
-  void AddSingleNode(const Node& lhs) {
-    node_pairs_.insert(llvm::formatv("{0}\n", lhs.ToString()));
-  }
-
-  void Emit() {
-    for (const auto& p : node_pairs_) {
-      llvm::outs() << p;
-    }
-  }
-
- private:
-  // This represents a line for every 2 adjacent nodes.
-  // The format is: {lhs};{rhs}\n where lhs & rhs are generated using
-  // Node::ToString().
-  // Buffer expressions are added to the graph as a single node
-  // in which case the line is {lhs};\n
-  std::set<std::string> node_pairs_;
-};
+// Emit `replacement` if `rhs_key` is rewritten, but `lhs_key` is not.
+//
+// `lhs_key` and `rhs_key` are the unique identifiers of the nodes.
+void EmitFrontier(const std::string& lhs_key,
+                  const std::string& rhs_key,
+                  const std::string& replacement) {
+  llvm::outs() << llvm::formatv("f{0}@{1}@{2}\n", lhs_key, rhs_key,
+                                replacement);
+}
 
 static std::string GetReplacementDirective(
     const clang::SourceRange& replacement_range,
@@ -619,8 +603,13 @@ static Node getNodeFromSizeOfArrayExpr(
   return n;
 }
 
-static Node getDataChangeNode(const std::string& lhs_replacement,
-                              const MatchFinder::MatchResult& result) {
+// Add `.data()` at the frontier of a span change. This is applied if the node
+// identified by `lhs_key` is not rewritten, but `rhs_key` is.
+//
+// This decays the span to a pointer.
+void AddSpanFrontierChange(const std::string& lhs_key,
+                           const std::string& rhs_key,
+                           const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
@@ -639,17 +628,9 @@ static Node getDataChangeNode(const std::string& lhs_replacement,
           .str();
   std::string replacement_text =
       initial_text.empty() ? ".data()" : "(" + initial_text + ").data()";
-  auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
-      rep_range, replacement_text, source_manager);
-  Node data_node;
-  data_node.replacement = replacement_and_include_pair.first;
-  // We need a way to check whether the lhs node was rewritten, in which
-  // case we don't need to add this change. We achieve this by storing the
-  // lhs key (the replacement which is unique) in the data_node's include
-  // directive.
-  data_node.include_directive = lhs_replacement;
-  data_node.is_data_change = true;
-  return data_node;
+  EmitFrontier(
+      lhs_key, rhs_key,
+      GetReplacementDirective(rep_range, replacement_text, source_manager));
 }
 
 // Generate a class name for rewriting unnamed struct/class types. This is
@@ -1174,13 +1155,13 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
 // The matches registered represent two categories:
 //   1- An adjacency relationship
 //      In that case, a node pair is created, using matched node ids, and added
-//      to the node_pair list using `OutputHelper::AddEdge`
+//      to the node_pair list using `EmitEdge`
 //   2- A single is_buffer node match
 //      In that case, a single node is created and added to the node_pair list
-//      using `OutputHelper::AddSingleNode`
+//      using `EmitSingleNode`
 class PotentialNodes : public MatchFinder::MatchCallback {
  public:
-  explicit PotentialNodes(OutputHelper& helper) : output_helper_(helper) {}
+  explicit PotentialNodes() = default;
 
   PotentialNodes(const PotentialNodes&) = delete;
   PotentialNodes& operator=(const PotentialNodes&) = delete;
@@ -1288,19 +1269,14 @@ class PotentialNodes : public MatchFinder::MatchCallback {
     // early in this case.
     if (result.Nodes.getNodeAs<clang::Expr>("buffer_expr")) {
       lhs.is_buffer = true;
-      output_helper_.AddSingleNode(lhs);
+      EmitSingleNode(lhs);
       return;
     }
 
     Node rhs = getRHSNodeFromMatchResult(result);
     auto* expr = result.Nodes.getNodeAs<clang::Expr>("span_frontier");
     if (expr && !lhs.is_dependent && !rhs.size_info_available) {
-      // Node to add `.data()`;
-      // This is needed in the case where rhs is rewritten and lhs is not.
-      // Adding `.data()` is thus needed to extract the pointer since lhs and
-      // rhs no longer have the same type.
-      Node data_node = getDataChangeNode(lhs.replacement, result);
-      output_helper_.AddEdge(data_node, rhs);
+      AddSpanFrontierChange(lhs.replacement, rhs.replacement, result);
     }
 
     if (!lhs.additional_replacement.empty()) {
@@ -1308,14 +1284,11 @@ class PotentialNodes : public MatchFinder::MatchCallback {
       n.replacement = lhs.additional_replacement;
       n.include_directive = kEmptyKeyword;
       n.is_dependent = true;
-      output_helper_.AddEdge(n, rhs);
+      EmitEdge(n, rhs);
     }
 
-    output_helper_.AddEdge(lhs, rhs);
+    EmitEdge(lhs, rhs);
   }
-
- private:
-  OutputHelper& output_helper_;
 };
 
 // Called when the registered Match is found in the AST.
@@ -1445,8 +1418,8 @@ class FunctionSignatureNodes : public MatchFinder::MatchCallback {
   // translationUnit, for each pair of function signatures, we iterate
   // concurrently through the two sets of Nodes creating edges between nodes
   // that appear at the same index.
-  // AddEdge(first function's node1, second function's node1)
-  // AddEdge(first function's node2, second function's node2)
+  // EmitEdge(first function's node1, second function's node1)
+  // EmitEdge(first function's node2, second function's node2)
   // and so on...
   std::map<std::string, std::set<Node>>& fct_sig_nodes_;
 
@@ -1460,11 +1433,9 @@ class Spanifier {
  public:
   explicit Spanifier(
       MatchFinder& finder,
-      OutputHelper& output_helper,
       std::map<std::string, std::set<Node>>& sig_nodes,
       std::vector<std::pair<std::string, std::string>>& sig_pairs)
       : match_finder_(finder),
-        potential_nodes_(output_helper),
         fct_sig_nodes_(sig_nodes, sig_pairs) {
     std::vector<std::string> paths_to_exclude_lines;
     paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
@@ -1956,9 +1927,8 @@ int main(int argc, const char* argv[]) {
   // Map related function signatures to each other, this is needed for functions
   // with separate definition and declaration, and for overridden functions.
   std::vector<std::pair<std::string, std::string>> fct_sig_pairs;
-  OutputHelper output_helper;
   MatchFinder match_finder;
-  Spanifier rewriter(match_finder, output_helper, fct_sig_nodes, fct_sig_pairs);
+  Spanifier rewriter(match_finder, fct_sig_nodes, fct_sig_pairs);
   rewriter.addMatchers();
 
   // Prepare and run the tool.
@@ -1988,14 +1958,12 @@ int main(int argc, const char* argv[]) {
     auto i1 = s1.begin();
     auto i2 = s2.begin();
     while (i1 != s1.end()) {
-      output_helper.AddEdge(*i1, *i2);
-      output_helper.AddEdge(*i2, *i1);
+      EmitEdge(*i1, *i2);
+      EmitEdge(*i2, *i1);
       i1++;
       i2++;
     }
   }
 
-  // Emits the list of edges.
-  output_helper.Emit();
   return result;
 }
