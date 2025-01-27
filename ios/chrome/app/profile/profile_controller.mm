@@ -14,8 +14,10 @@
 #import "base/functional/callback_helpers.h"
 #import "base/functional/concurrent_closures.h"
 #import "base/memory/scoped_refptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/ranges/algorithm.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/task_traits.h"
@@ -91,6 +93,7 @@
 #import "net/cookies/cookie_store.h"
 #import "net/url_request/url_request_context.h"
 #import "net/url_request/url_request_context_getter.h"
+#import "ui/base/device_form_factor.h"
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 #import "ios/chrome/browser/credential_provider/model/credential_provider_service_factory.h"  // nogncheck
@@ -186,6 +189,31 @@ ProfileAttributesIOS RemoveSessionsFromSessionsToDiscard(
   return attrs;
 }
 
+// Record whether data has been purged for a scene with the same identifier.
+//
+// This method is only called once per-Scene, either when it is connected to
+// the Profile (if InitStage is greater than  kPurgeDiscardedSessionsData) or
+// after the data has been purged.
+//
+// It is used to detect if data is lost due to the possible bug in UIKit where
+// the method -application:didDiscardSceneSessions: is called with references
+// to scenes that are still connected.
+//
+// See https://crbug.com/392575873 for more details.
+void RecordDiscardedSceneConnectedAfterBeingPurged(
+    const std::set<std::string>& purged_identifiers,
+    NSString* scene_identifier) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+
+  const auto iterator =
+      purged_identifiers.find(base::SysNSStringToUTF8(scene_identifier));
+  base::UmaHistogramBoolean(
+      "IOS.Sessions.DiscardedSceneConnectedAfterBeingPurged",
+      iterator != purged_identifiers.end());
+}
+
 }  // namespace
 
 @interface ProfileController () <ProfileStateObserver, SceneStateObserver>
@@ -205,6 +233,14 @@ ProfileAttributesIOS RemoveSessionsFromSessionsToDiscard(
 
   // Flag recording whether the cookies are currently being saved or not.
   BOOL _savingCookies;
+
+  // For RecordDiscardedSceneConnectedAfterBeingPurged(), removed once the
+  // investigation is complete (see https://crbug.com/392575873 for details).
+  //
+  // Contains the list of session identifiers whose data have been purged
+  // during the current profile startup (used to detect whether data loss
+  // occurred).
+  std::set<std::string> _purgedSessionIdentifiers;
 }
 
 - (instancetype)initWithAppState:(AppState*)appState
@@ -344,7 +380,13 @@ ProfileAttributesIOS RemoveSessionsFromSessionsToDiscard(
 
 - (void)profileState:(ProfileState*)profileState
       sceneConnected:(SceneState*)sceneState {
-  if (_state.initStage >= ProfileInitStage::kUIReady) {
+  const ProfileInitStage initStage = _state.initStage;
+  if (initStage > ProfileInitStage::kPurgeDiscardedSessionsData) {
+    RecordDiscardedSceneConnectedAfterBeingPurged(_purgedSessionIdentifiers,
+                                                  sceneState.sceneSessionID);
+  }
+
+  if (initStage >= ProfileInitStage::kUIReady) {
     return;
   }
 
@@ -540,12 +582,18 @@ ProfileAttributesIOS RemoveSessionsFromSessionsToDiscard(
   DCHECK(_state.profile);
   DCHECK(_profileManager);
   ProfileIOS* profile = _state.profile;
+  _purgedSessionIdentifiers = sessions;
 
   if (!sessions.empty()) {
     _profileManager->GetProfileAttributesStorage()
         ->UpdateAttributesForProfileWithName(
             profile->GetProfileName(),
             base::BindOnce(&RemoveSessionsFromSessionsToDiscard, sessions));
+  }
+
+  for (SceneState* sceneState in _state.connectedScenes) {
+    RecordDiscardedSceneConnectedAfterBeingPurged(_purgedSessionIdentifiers,
+                                                  sceneState.sceneSessionID);
   }
 
   // The profile manager is no longer used, clear the pointer so that it

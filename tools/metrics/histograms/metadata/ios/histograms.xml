@@ -4620,6 +4620,49 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.Sessions.DiscardedSceneConnectedAfterBeingPurged"
+    enum="Boolean" expires_after="2025-12-31">
+  <owner>sdefresne@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    This histogram is recorded each time a Scene is connected to a Profile. It
+    records a &quot;true&quot; value if the Scene identifier is present in the
+    recently purged Scene identifiers. This should not happen and this histogram
+    should only record &quot;false&quot;.
+
+    This exists to identify whether there is a bug in iOS where UIKit informs
+    the application that a Scene has been discarded (i.e. permanently dropped
+    and its data should be deleted) while still connected. If this histogram
+    records a non-zero value, then it is concerning as the data for the scene
+    will be deleted and the corresponding tabs lost.
+
+    This is only recorded on iPad (since iPhone only have one Scene and ignore
+    the message from UIKit). It is recorded once per Scene when it connects to a
+    Profile.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Sessions.DiscardedScenesStillConnectedCount"
+    units="sessions" expires_after="2025-12-31">
+  <owner>sdefresne@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    This histogram counts the number of sessions that are discarded while still
+    being connected (this should not happen and thus the values recorded should
+    always be zero).
+
+    This exists to identify whether there is a bug in iOS where UIKit informs
+    the application that a Scene has been discarded (i.e. permanently dropped
+    and its data should be deleted) while still connected. If this histogram
+    records a non-zero value, then it is concerning as the data for the scene
+    will be deleted and the corresponding tabs lost.
+
+    This is only recorded on iPad (since iPhone only have one Scene and ignore
+    the message from UIKit). It is recorded each time iOS informs the app that
+    some Scene have been discarded (i.e. infrequently).
+  </summary>
+</histogram>
+
 <histogram name="IOS.SetUpList.AllItemsCompleted" enum="Boolean"
     expires_after="2025-07-06">
   <owner>scottyoder@google.com</owner>
