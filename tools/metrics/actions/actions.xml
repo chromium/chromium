@@ -38296,8 +38296,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
-    avatar bubble.
-    (signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN).
+    avatar bubble. (signin_metrics::AccessPoint::kAvatarBubbleSignIn).
   </description>
 </action>
 
@@ -38307,8 +38306,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
-    bookmark bubble.
-    (signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE).
+    bookmark bubble. (signin_metrics::AccessPoint::kBookmarkBubble).
   </description>
 </action>
 
@@ -38318,8 +38316,7 @@ should be able to be added at any place in this file.
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
-    in the bookmark manager.
-    (signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER).
+    in the bookmark manager. (signin_metrics::AccessPoint::kBookmarkManager).
   </description>
 </action>
 
@@ -38330,7 +38327,7 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
     extension install bubble.
-    (signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE).
+    (signin_metrics::AccessPoint::kExtensionInstallBubble).
   </description>
 </action>
 
@@ -38341,8 +38338,7 @@ should be able to be added at any place in this file.
   <owner>battre@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
-    manage cards bubble.
-    (signin_metrics::AccessPoint::ACCESS_POINT_MANAGE_CARDS_BUBBLE).
+    manage cards bubble. (signin_metrics::AccessPoint::kManageCardsBubble).
   </description>
 </action>
 
@@ -38353,7 +38349,7 @@ should be able to be added at any place in this file.
   <description>
     Recorded when starting sign-in using the promo view, with a default account,
     from NTP content suggestions
-    (signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS).
+    (signin_metrics::AccessPoint::kNtpContentSuggestions).
   </description>
 </action>
 
@@ -38365,8 +38361,7 @@ should be able to be added at any place in this file.
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with a default account,
-    from NTP Feed top section
-    (signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO).
+    from NTP Feed top section (signin_metrics::AccessPoint::kNtpFeedTopPromo).
   </description>
 </action>
 
@@ -38376,8 +38371,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
-    password saved bubble.
-    (signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE).
+    password saved bubble. (signin_metrics::AccessPoint::kPasswordBubble).
   </description>
 </action>
 
@@ -38387,7 +38381,7 @@ should be able to be added at any place in this file.
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with a default account,
-    from recent tabs (signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS).
+    from recent tabs (signin_metrics::AccessPoint::kRecentTabs).
   </description>
 </action>
 
@@ -38398,8 +38392,7 @@ should be able to be added at any place in this file.
   <owner>battre@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
-    save card bubble.
-    (signin_metrics::AccessPoint::ACCESS_POINT_SAVE_CARD_BUBBLE).
+    save card bubble. (signin_metrics::AccessPoint::kSaveCardBubble).
   </description>
 </action>
 
@@ -38409,7 +38402,7 @@ should be able to be added at any place in this file.
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with a default account,
-    from settings (signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS).
+    from settings (signin_metrics::AccessPoint::kSettings).
   </description>
 </action>
 
@@ -38419,7 +38412,7 @@ should be able to be added at any place in this file.
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with a default account,
-    from tab switcher (signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER).
+    from tab switcher (signin_metrics::AccessPoint::kTabSwitcher).
   </description>
 </action>
 
@@ -38429,8 +38422,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with no account in the
-    avatar bubble.
-    (signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN).
+    avatar bubble. (signin_metrics::AccessPoint::kAvatarBubbleSignIn).
   </description>
 </action>
 
@@ -38440,8 +38432,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with no account in the
-    bookmark bubble.
-    (signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE).
+    bookmark bubble. (signin_metrics::AccessPoint::kBookmarkBubble).
   </description>
 </action>
 
@@ -38452,7 +38443,7 @@ should be able to be added at any place in this file.
   <description>
     Recorded when starting sign-in using the promo view, with no default
     account, from bookmarks manager
-    (signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER).
+    (signin_metrics::AccessPoint::kBookmarkManager).
   </description>
 </action>
 
@@ -38463,7 +38454,7 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the personalized sign-in promo is shown with no account in the
     extension install bubble.
-    (signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE).
+    (signin_metrics::AccessPoint::kExtensionInstallBubble).
   </description>
 </action>
 
@@ -38499,7 +38490,7 @@ should be able to be added at any place in this file.
   <description>
     Recorded when starting sign-in using the promo view, with no default
     account, from NTP content suggestions
-    (signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO).
+    (signin_metrics::AccessPoint::kNTPFeedTopPromo).
   </description>
 </action>
 
@@ -38509,8 +38500,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with no account in the
-    password saved bubble.
-    (signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE).
+    password saved bubble. (signin_metrics::AccessPoint::kPasswordBubble).
   </description>
 </action>
 
@@ -38520,8 +38510,7 @@ should be able to be added at any place in this file.
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with no default
-    account, from recent tabs
-    (signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS).
+    account, from recent tabs (signin_metrics::AccessPoint::kRecentTabs).
   </description>
 </action>
 
@@ -38543,7 +38532,7 @@ should be able to be added at any place in this file.
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with no default
-    account, from settings (signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS).
+    account, from settings (signin_metrics::AccessPoint::kSettings).
   </description>
 </action>
 
@@ -38553,8 +38542,7 @@ should be able to be added at any place in this file.
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with no default
-    account, from tab switcher
-    (signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER).
+    account, from tab switcher (signin_metrics::AccessPoint::kTabSwitcher).
   </description>
 </action>
 
@@ -38695,7 +38683,7 @@ should be able to be added at any place in this file.
   <owner>chrome-signin-team@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE.
+    signin_metrics::AccessPoint::kAccountConsistencyService.
   </description>
 </action>
 
@@ -38704,7 +38692,7 @@ should be able to be added at any place in this file.
   <owner>chrome-signin-team@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU.
+    signin_metrics::AccessPoint::kAccountMenu.
   </description>
 </action>
 
@@ -38713,7 +38701,7 @@ should be able to be added at any place in this file.
   <owner>chrome-signin-team@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH.
+    signin_metrics::AccessPoint::kAccountMenuFailedSwitch.
   </description>
 </action>
 
@@ -38721,7 +38709,7 @@ should be able to be added at any place in this file.
   <owner>amelies@chromium.com</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE.
+    signin_metrics::AccessPoint::kAddressBubble.
   </description>
 </action>
 
@@ -38740,7 +38728,7 @@ should be able to be added at any place in this file.
   <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN.
+    signin_metrics::AccessPoint::kAutofillDropdown.
   </description>
 </action>
 
@@ -38748,7 +38736,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN.
+    signin_metrics::AccessPoint::kAvatarBubbleSignIn.
   </description>
 </action>
 
@@ -38756,7 +38744,7 @@ should be able to be added at any place in this file.
   <owner>droger@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO.
+    signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo.
   </description>
 </action>
 
@@ -38764,7 +38752,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE.
+    signin_metrics::AccessPoint::kBookmarkBubble.
   </description>
 </action>
 
@@ -38772,7 +38760,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER.
+    signin_metrics::AccessPoint::kBookmarkManager.
   </description>
 </action>
 
@@ -38800,7 +38788,7 @@ should be able to be added at any place in this file.
   <owner>chrome-signin-team@google.com</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP.
+    signin_metrics::AccessPoint::kCollaborationTabGroup.
   </description>
 </action>
 
@@ -38817,8 +38805,7 @@ should be able to be added at any place in this file.
   <owner>wry@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW on Android
-    Only.
+    signin_metrics::AccessPoint::kCreatorFeedFollow on Android Only.
   </description>
 </action>
 
@@ -38826,7 +38813,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE.
+    signin_metrics::AccessPoint::kDevicesPage.
   </description>
 </action>
 
@@ -38842,7 +38829,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE.
+    signin_metrics::AccessPoint::kExtensionInstallBubble.
   </description>
 </action>
 
@@ -38850,7 +38837,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS.
+    signin_metrics::AccessPoint::kExtensions.
   </description>
 </action>
 
@@ -38903,7 +38890,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_MENU.
+    signin_metrics::AccessPoint::kMenu.
   </description>
 </action>
 
@@ -38912,7 +38899,7 @@ should be able to be added at any place in this file.
   <owner>scottyoder@google.com</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE.
+    signin_metrics::AccessPoint::kNotificationsOptInScreenContentToggle.
   </description>
 </action>
 
@@ -38920,7 +38907,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK.
+    signin_metrics::AccessPoint::kNTPLink.
   </description>
 </action>
 
@@ -38954,7 +38941,7 @@ should be able to be added at any place in this file.
   <owner>mrefaat@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO.
+    signin_metrics::AccessPoint::kNTPFeedTopPromo.
   </description>
 </action>
 
@@ -38962,7 +38949,7 @@ should be able to be added at any place in this file.
   <owner>treib@chromium.org</owner>
   <description>
     Recorded on signin start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC.
+    signin_metrics::AccessPoint::kNTPIdentityDisc.
   </description>
 </action>
 
@@ -38971,7 +38958,7 @@ should be able to be added at any place in this file.
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded on signin start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON.
+    signin_metrics::AccessPoint::kNTPSignedOutIcon.
   </description>
 </action>
 
@@ -38980,7 +38967,7 @@ should be able to be added at any place in this file.
   <owner>ydago@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION.
+    signin_metrics::AccessPoint::kOIDCRedirectionInterception.
   </description>
 </action>
 
@@ -38988,7 +38975,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE.
+    signin_metrics::AccessPoint::kPasswordBubble.
   </description>
 </action>
 
@@ -39013,7 +39000,7 @@ should be able to be added at any place in this file.
   <owner>bling-get-set-up@google.com</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO.
+    signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo.
   </description>
 </action>
 
@@ -39021,7 +39008,7 @@ should be able to be added at any place in this file.
   <owner>chrome-shopping@google.com</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS.
+    signin_metrics::AccessPoint::kProductSpecifications.
   </description>
 </action>
 
@@ -39030,7 +39017,7 @@ should be able to be added at any place in this file.
   <owner>chrome-signin-team@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST.
+    signin_metrics::AccessPoint::kReadingList.
   </description>
 </action>
 
@@ -39039,7 +39026,7 @@ should be able to be added at any place in this file.
   <owner>chrome-signin-team@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR.
+    signin_metrics::AccessPoint::kReauthInfoBar.
   </description>
 </action>
 
@@ -39047,7 +39034,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS.
+    signin_metrics::AccessPoint::kRecentTabs.
   </description>
 </action>
 
@@ -39055,7 +39042,7 @@ should be able to be added at any place in this file.
   <owner>bzanotti@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR.
+    signin_metrics::AccessPoint::kResigninInfobar.
   </description>
 </action>
 
@@ -39075,7 +39062,7 @@ should be able to be added at any place in this file.
   <owner>chrome-signin-team@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION.
+    signin_metrics::AccessPoint::kSearchCompanion.
   </description>
 </action>
 
@@ -39084,7 +39071,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO.
+    signin_metrics::AccessPoint::kSendTabToSelfPromo.
   </description>
 </action>
 
@@ -39092,7 +39079,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS.
+    signin_metrics::AccessPoint::kSettings.
   </description>
 </action>
 
@@ -39101,7 +39088,7 @@ should be able to be added at any place in this file.
   <owner>bling-get-set-up@google.com</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST. iOS only.
+    signin_metrics::AccessPoint::kSetUpList. iOS only.
   </description>
 </action>
 
@@ -39109,7 +39096,7 @@ should be able to be added at any place in this file.
   <owner>alexilin@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE.
+    signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience.
   </description>
 </action>
 
@@ -39117,7 +39104,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO.
+    signin_metrics::AccessPoint::kSigninPromo.
   </description>
 </action>
 
@@ -39125,7 +39112,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE.
+    signin_metrics::AccessPoint::kStartPage.
   </description>
 </action>
 
@@ -39133,7 +39120,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER.
+    signin_metrics::AccessPoint::kSupervisedUser.
   </description>
 </action>
 
@@ -39142,7 +39129,7 @@ should be able to be added at any place in this file.
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION.
+    signin_metrics::AccessPoint::kTabOrganization.
   </description>
 </action>
 
@@ -39150,7 +39137,7 @@ should be able to be added at any place in this file.
   <owner>bzanotti@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER.
+    signin_metrics::AccessPoint::kTabSwitcher.
   </description>
 </action>
 
@@ -39158,7 +39145,7 @@ should be able to be added at any place in this file.
   <owner>scottyoder@google.com</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION. iOS Only.
+    signin_metrics::AccessPoint::kTipsNotification. iOS Only.
   </description>
 </action>
 
@@ -39166,7 +39153,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN.
+    signin_metrics::AccessPoint::kUnknown.
   </description>
 </action>
 
@@ -39183,7 +39170,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER.
+    signin_metrics::AccessPoint::kUserManager.
   </description>
 </action>
 
@@ -39243,8 +39230,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN, with a new
-    account.
+    signin_metrics::AccessPoint::kAvatarBubbleSignIn, with a new account.
   </description>
 </action>
 
@@ -39254,8 +39240,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE, with a new
-    account.
+    signin_metrics::AccessPoint::kBookmarkBubble, with a new account.
   </description>
 </action>
 
@@ -39266,8 +39251,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER, with a new
-    account.
+    signin_metrics::AccessPoint::kBookmarkManager, with a new account.
   </description>
 </action>
 
@@ -39277,8 +39261,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE, with a
-    new account.
+    signin_metrics::AccessPoint::kExtensionInstallBubble, with a new account.
   </description>
 </action>
 
@@ -39299,8 +39282,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, with a new
-    account.
+    signin_metrics::AccessPoint::kPasswordBubble, with a new account.
   </description>
 </action>
 
@@ -39311,7 +39293,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS, with a new account.
+    signin_metrics::AccessPoint::kRecentTabs, with a new account.
   </description>
 </action>
 
@@ -39335,7 +39317,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, with a new account.
+    signin_metrics::AccessPoint::kSettings, with a new account.
   </description>
 </action>
 
@@ -39346,7 +39328,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER, with a new account.
+    signin_metrics::AccessPoint::kTabSwitcher, with a new account.
   </description>
 </action>
 
@@ -39356,8 +39338,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN, with a new
-    account, while Chrome already has other accounts.
+    signin_metrics::AccessPoint::kAvatarBubbleSignIn, with a new account, while
+    Chrome already has other accounts.
   </description>
 </action>
 
@@ -39367,8 +39349,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE, with a new
-    account, while Chrome already has other accounts.
+    signin_metrics::AccessPoint::kBookmarkBubble, with a new account, while
+    Chrome already has other accounts.
   </description>
 </action>
 
@@ -39379,8 +39361,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER, with a new
-    account, while Chrome already has other accounts.
+    signin_metrics::AccessPoint::kBookmarkManager, with a new account, while
+    Chrome already has other accounts.
   </description>
 </action>
 
@@ -39391,8 +39373,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE, with a
-    new account, while Chrome already has other accounts.
+    signin_metrics::AccessPoint::kExtensionInstallBubble, with a new account,
+    while Chrome already has other accounts.
   </description>
 </action>
 
@@ -39426,8 +39408,8 @@ should be able to be added at any place in this file.
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO, with a new
-    account, while Chrome already has other accounts.
+    signin_metrics::AccessPoint::kNTPFeedTopPromo, with a new account, while
+    Chrome already has other accounts.
   </description>
 </action>
 
@@ -39437,8 +39419,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, with a new
-    account, while Chrome already has other accounts.
+    signin_metrics::AccessPoint::kPasswordBubble, with a new account, while
+    Chrome already has other accounts.
   </description>
 </action>
 
@@ -39449,8 +39431,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS, with a new account,
-    while Chrome already has other accounts.
+    signin_metrics::AccessPoint::kRecentTabs, with a new account, while Chrome
+    already has other accounts.
   </description>
 </action>
 
@@ -39474,8 +39456,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, with a new account,
-    while Chrome already has other accounts.
+    signin_metrics::AccessPoint::kSettings, with a new account, while Chrome
+    already has other accounts.
   </description>
 </action>
 
@@ -39486,8 +39468,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER, with a new account,
-    while Chrome already has other accounts.
+    signin_metrics::AccessPoint::kTabSwitcher, with a new account, while Chrome
+    already has other accounts.
   </description>
 </action>
 
@@ -39497,8 +39479,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN, with a new
-    account, while Chrome does not have other accounts.
+    signin_metrics::AccessPoint::kAvatarBubbleSignIn, with a new account, while
+    Chrome does not have other accounts.
   </description>
 </action>
 
@@ -39508,8 +39490,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE, with a new
-    account, while Chrome does not have other accounts.
+    signin_metrics::AccessPoint::kBookmarkBubble, with a new account, while
+    Chrome does not have other accounts.
   </description>
 </action>
 
@@ -39520,8 +39502,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER, with a new
-    account, while Chrome does not have other accounts.
+    signin_metrics::AccessPoint::kBookmarkManager, with a new account, while
+    Chrome does not have other accounts.
   </description>
 </action>
 
@@ -39532,8 +39514,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE, with a
-    new account, while Chrome does not have other accounts.
+    signin_metrics::AccessPoint::kExtensionInstallBubble, with a new account,
+    while Chrome does not have other accounts.
   </description>
 </action>
 
@@ -39570,8 +39552,8 @@ should be able to be added at any place in this file.
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO, with a new
-    account, while Chrome does not have other accounts.
+    signin_metrics::AccessPoint::kNTPFeedTopPromo, with a new account, while
+    Chrome does not have other accounts.
   </description>
 </action>
 
@@ -39581,8 +39563,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, with a new
-    account, while Chrome does not have other accounts.
+    signin_metrics::AccessPoint::kPasswordBubble, with a new account, while
+    Chrome does not have other accounts.
   </description>
 </action>
 
@@ -39593,8 +39575,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS, with a new account,
-    while Chrome does not have other accounts.
+    signin_metrics::AccessPoint::kRecentTabs, with a new account, while Chrome
+    does not have other accounts.
   </description>
 </action>
 
@@ -39619,8 +39601,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, with a new account,
-    while Chrome does not have other accounts.
+    signin_metrics::AccessPoint::kSettings, with a new account, while Chrome
+    does not have other accounts.
   </description>
 </action>
 
@@ -39631,8 +39613,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER, with a new account,
-    while Chrome does not have other accounts.
+    signin_metrics::AccessPoint::kTabSwitcher, with a new account, while Chrome
+    does not have other accounts.
   </description>
 </action>
 
@@ -39642,8 +39624,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN, with a new
-    account, on desktop pre-Dice.
+    signin_metrics::AccessPoint::kAvatarBubbleSignIn, with a new account, on
+    desktop pre-Dice.
   </description>
 </action>
 
@@ -39653,8 +39635,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE, with a new
-    account, on desktop pre-Dice.
+    signin_metrics::AccessPoint::kBookmarkBubble, with a new account, on desktop
+    pre-Dice.
   </description>
 </action>
 
@@ -39665,8 +39647,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER, with a new
-    account, on desktop pre-Dice.
+    signin_metrics::AccessPoint::kBookmarkManager, with a new account, on
+    desktop pre-Dice.
   </description>
 </action>
 
@@ -39676,8 +39658,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE, with a
-    new account, on desktop pre-Dice.
+    signin_metrics::AccessPoint::kExtensionInstallBubble, with a new account, on
+    desktop pre-Dice.
   </description>
 </action>
 
@@ -39711,8 +39693,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, with a new
-    account, on desktop pre-Dice.
+    signin_metrics::AccessPoint::kPasswordBubble, with a new account, on desktop
+    pre-Dice.
   </description>
 </action>
 
@@ -39723,8 +39705,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS, with a new account,
-    on desktop pre-Dice.
+    signin_metrics::AccessPoint::kRecentTabs, with a new account, on desktop
+    pre-Dice.
   </description>
 </action>
 
@@ -39748,8 +39730,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, with a new account, on
-    desktop pre-Dice.
+    signin_metrics::AccessPoint::kSettings, with a new account, on desktop
+    pre-Dice.
   </description>
 </action>
 
@@ -39760,8 +39742,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER, with a new account,
-    on desktop pre-Dice.
+    signin_metrics::AccessPoint::kTabSwitcher, with a new account, on desktop
+    pre-Dice.
   </description>
 </action>
 
@@ -39771,8 +39753,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN, using
-    another account than the default one.
+    signin_metrics::AccessPoint::kAvatarBubbleSignIn, using another account than
+    the default one.
   </description>
 </action>
 
@@ -39782,8 +39764,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE, using another
-    account than the default one.
+    signin_metrics::AccessPoint::kBookmarkBubble, using another account than the
+    default one.
   </description>
 </action>
 
@@ -39794,8 +39776,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER, using another
-    account than the default one.
+    signin_metrics::AccessPoint::kBookmarkManager, using another account than
+    the default one.
   </description>
 </action>
 
@@ -39805,8 +39787,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE, using
-    another account than the default one.
+    signin_metrics::AccessPoint::kExtensionInstallBubble, using another account
+    than the default one.
   </description>
 </action>
 
@@ -39839,8 +39821,8 @@ should be able to be added at any place in this file.
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO, using another
-    account than the default one.
+    signin_metrics::AccessPoint::kNTPFeedTopPromo, using another account than
+    the default one.
   </description>
 </action>
 
@@ -39850,8 +39832,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, using another
-    account than the default one.
+    signin_metrics::AccessPoint::kPasswordBubble, using another account than the
+    default one.
   </description>
 </action>
 
@@ -39862,8 +39844,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS, using another account
-    than the default one.
+    signin_metrics::AccessPoint::kRecentTabs, using another account than the
+    default one.
   </description>
 </action>
 
@@ -39887,8 +39869,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, using another account
-    than the default one.
+    signin_metrics::AccessPoint::kSettings, using another account than the
+    default one.
   </description>
 </action>
 
@@ -39899,8 +39881,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER, using another
-    account than the default one.
+    signin_metrics::AccessPoint::kTabSwitcher, using another account than the
+    default one.
   </description>
 </action>
 
@@ -39920,8 +39902,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN, using the
-    default account.
+    signin_metrics::AccessPoint::kAvatarBubbleSignIn, using the default account.
   </description>
 </action>
 
@@ -39931,8 +39912,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE, using the default
-    account.
+    signin_metrics::AccessPoint::kBookmarkBubble, using the default account.
   </description>
 </action>
 
@@ -39943,8 +39923,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER, using the
-    default account.
+    signin_metrics::AccessPoint::kBookmarkManager, using the default account.
   </description>
 </action>
 
@@ -39954,8 +39933,8 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE, using
-    the default account.
+    signin_metrics::AccessPoint::kExtensionInstallBubble, using the default
+    account.
   </description>
 </action>
 
@@ -39988,8 +39967,7 @@ should be able to be added at any place in this file.
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO, using the
-    default account.
+    signin_metrics::AccessPoint::kNTPFeedTopPromo, using the default account.
   </description>
 </action>
 
@@ -39999,8 +39977,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, using the default
-    account.
+    signin_metrics::AccessPoint::kPasswordBubble, using the default account.
   </description>
 </action>
 
@@ -40011,8 +39988,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS, using the default
-    account.
+    signin_metrics::AccessPoint::kRecentTabs, using the default account.
   </description>
 </action>
 
@@ -40036,8 +40012,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, using the default
-    account.
+    signin_metrics::AccessPoint::kSettings, using the default account.
   </description>
 </action>
 
@@ -40048,8 +40023,7 @@ should be able to be added at any place in this file.
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER, using the default
-    account.
+    signin_metrics::AccessPoint::kTabSwitcher, using the default account.
   </description>
 </action>
 
