@@ -159,6 +159,10 @@ const CGFloat kResizeFactor = 4;
   }
 }
 
+- (void)disconnect {
+  _webStateList = nullptr;
+}
+
 #pragma mark - Properties
 
 - (void)setTopMargin:(CGFloat)topMargin {
@@ -429,7 +433,7 @@ const CGFloat kResizeFactor = 4;
   // because ActivateWebStateAt triggers behavior that depends on the view
   // hierarchy being reassembled, which happens in
   // sideSwipeViewDismissAnimationDidEnd.
-  if (destinationWebStateIndex < _webStateList->count()) {
+  if (_webStateList && destinationWebStateIndex < _webStateList->count()) {
     // It seems possible that sometimes `destinationWebStateIndex` is bigger
     // than the last tab, probably because tabs were programmatically closed
     // during the swipe. See crbug.com/333961615.
