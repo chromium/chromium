@@ -215,6 +215,10 @@ void ScriptedIdleTaskController::SchedulerIdleTask(
     return;
   }
 
+  // This probe needs to be called only when the Idle task is standalone, as in
+  // doesn't come from the FrameScheduler, to make sure it goes through
+  // performance monitoring channels.
+  probe::StandaloneIdleTask idle_task(GetExecutionContext());
   RunIdleTask(id, deadline, IdleDeadline::CallbackType::kCalledWhenIdle);
 }
 

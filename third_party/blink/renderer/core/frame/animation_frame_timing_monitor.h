@@ -95,6 +95,10 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void Did(const probe::InvokeCallback& probe_data) {
     PopScriptEntryPoint(&probe_data.script_state, &probe_data);
   }
+  void Will(const probe::StandaloneIdleTask& probe) {
+    probe.CaptureStartTime();
+  }
+  void Did(const probe::StandaloneIdleTask& probe);
   void Will(const probe::UserEntryPoint&);
   void Did(const probe::UserEntryPoint&);
   void Will(const probe::InvokeEventHandler&);
