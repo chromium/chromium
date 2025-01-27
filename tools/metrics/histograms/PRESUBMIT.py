@@ -1,7 +1,6 @@
 # Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
@@ -17,8 +16,9 @@ import sys
 def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
   """Runs pretty-print command for specified file."""
   args = [
-      input_api.python3_executable, 'pretty_print.py', rel_path, '--presubmit',
-      '--non-interactive'
+      input_api.python3_executable,
+      os.path.join(input_api.PresubmitLocalPath(), 'pretty_print.py'), rel_path,
+      '--presubmit', '--non-interactive'
   ]
   exit_code = input_api.subprocess.call(args, cwd=cwd)
 
@@ -30,8 +30,12 @@ def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
 
 def GetTokenErrors(input_api, output_api, cwd, rel_path, results):
   """Validates histogram tokens in specified file."""
-  exit_code = input_api.subprocess.call(
-      [input_api.python3_executable, 'validate_token.py', rel_path], cwd=cwd)
+  exit_code = input_api.subprocess.call([
+      input_api.python3_executable,
+      os.path.join(input_api.PresubmitLocalPath(), 'validate_token.py'),
+      rel_path
+  ],
+                                        cwd=cwd)
 
   if exit_code != 0:
     error_msg = (
@@ -42,8 +46,11 @@ def GetTokenErrors(input_api, output_api, cwd, rel_path, results):
 
 def GetValidateHistogramsError(input_api, output_api, cwd, results):
   """Validates histograms format and index file."""
-  exit_code = input_api.subprocess.call(
-      [input_api.python3_executable, 'validate_format.py'], cwd=cwd)
+  exit_code = input_api.subprocess.call([
+      input_api.python3_executable,
+      os.path.join(input_api.PresubmitLocalPath(), 'validate_format.py')
+  ],
+                                        cwd=cwd)
 
   if exit_code != 0:
     error_msg = (
@@ -51,17 +58,21 @@ def GetValidateHistogramsError(input_api, output_api, cwd, results):
         'and fix the reported errors.' % cwd)
     results.append(output_api.PresubmitError(error_msg))
 
-  exit_code = input_api.subprocess.call(
-      [input_api.python3_executable, 'validate_histograms_index.py'], cwd=cwd)
+  exit_code = input_api.subprocess.call([
+      input_api.python3_executable,
+      os.path.join(input_api.PresubmitLocalPath(),
+                   'validate_histograms_index.py')
+  ],
+                                        cwd=cwd)
 
   if exit_code != 0:
-    error_msg = (
-        'Histograms index file is not up-to-date. Please run '
-        '%s/histogram_paths.py to update it' % cwd)
+    error_msg = ('Histograms index file is not up-to-date. Please run '
+                 '%s/histogram_paths.py to update it' % cwd)
     results.append(output_api.PresubmitError(error_msg))
 
 
-def ValidateSingleFile(input_api, output_api, file_obj, cwd, results):
+def ValidateSingleFile(input_api, output_api, file_obj, cwd, results,
+                       allow_test_paths):
   """Does corresponding validations if histograms.xml or enums.xml is changed.
 
   Args:
@@ -70,6 +81,13 @@ def ValidateSingleFile(input_api, output_api, file_obj, cwd, results):
     file_obj: A file object of one of the changed files.
     cwd: Path to current working directory.
     results: The returned variable which is a list of output_api results.
+    allow_testing_paths: A boolean that determines if the test_data directory
+      changes should be validated. If it's False, all the files under
+      `test_data` directory will be ignored. This is needed as the `test_data`
+      xmls contains intentional errors to trip the presubmit checks and we want
+      to trip those presubmits in checks, but a the same time due to the nature
+      of how the input_api gives all changed files in the directory, we don't
+      want "production" checks to trip over those mistakes.
 
   Returns:
     A boolean that True if a histograms.xml or enums.xml file is changed.
@@ -80,7 +98,7 @@ def ValidateSingleFile(input_api, output_api, file_obj, cwd, results):
     return False
   filepath = input_api.os_path.relpath(p, cwd)
 
-  if 'test_data' in filepath:
+  if not allow_test_paths and 'test_data' in filepath:
     return False
 
   # If the changed file is histograms.xml or histogram_suffixes_list.xml,
@@ -99,8 +117,13 @@ def ValidateSingleFile(input_api, output_api, file_obj, cwd, results):
   return False
 
 
-def CheckHistogramFormatting(input_api, output_api):
-  """Checks that histograms.xml is pretty-printed and well-formatted."""
+def CheckHistogramFormatting(input_api, output_api, allow_test_paths=False):
+  """Checks that histograms.xml is pretty-printed and well-formatted.
+
+  This is a method that is called by the PRESUBMIT system and those it
+  represents a production check rather then a test one. This is why we
+  set allow_test_paths to False by default.
+  """
   results = []
   cwd = input_api.PresubmitLocalPath()
   xml_changed = False
@@ -108,8 +131,8 @@ def CheckHistogramFormatting(input_api, output_api):
   # Only for changed files, do corresponding checks if the file is
   # histograms.xml or enums.xml.
   for file_obj in input_api.AffectedFiles():
-    is_changed = ValidateSingleFile(
-        input_api, output_api, file_obj, cwd, results)
+    is_changed = ValidateSingleFile(input_api, output_api, file_obj, cwd,
+                                    results, allow_test_paths)
     xml_changed = xml_changed or is_changed
 
   # Run validate_format.py and validate_histograms_index.py, if changed files
@@ -120,12 +143,25 @@ def CheckHistogramFormatting(input_api, output_api):
   return results
 
 
-def CheckWebViewHistogramsAllowlistOnUpload(input_api, output_api):
+def CheckWebViewHistogramsAllowlistOnUpload(
+    input_api,
+    output_api,
+    xml_paths_override=None,
+):
   """Checks that histograms_allowlist.txt contains valid histograms."""
   xml_filter = lambda f: Path(f.LocalPath()).suffix == '.xml'
   xml_files = input_api.AffectedFiles(file_filter=xml_filter)
   if not xml_files:
     return []
+
+  sys.path.append(input_api.PresubmitLocalPath())
+  from histogram_paths import ALL_XMLS
+  if xml_paths_override is not None:
+    xml_files_paths = xml_paths_override
+  else:
+    xml_files_paths = ALL_XMLS
+
+  xml_files = [open(f, encoding='utf-8') for f in xml_files_paths]
 
   # src_path should point to chromium/src
   src_path = os.path.join(input_api.PresubmitLocalPath(), '..', '..', '..')
@@ -133,7 +169,10 @@ def CheckWebViewHistogramsAllowlistOnUpload(input_api, output_api):
                                                  'java', 'res', 'raw')
   sys.path.append(histograms_allowlist_check_path)
   from histograms_allowlist_check import CheckWebViewHistogramsAllowlist
-  return CheckWebViewHistogramsAllowlist(src_path, output_api)
+  result = CheckWebViewHistogramsAllowlist(src_path, output_api, xml_files)
+  for f in xml_files:
+    f.close()
+  return result
 
 
 def CheckBooleansAreEnums(input_api, output_api):

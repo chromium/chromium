@@ -27,4 +27,9 @@ def _CheckHistogramsAllowlist(input_api, output_api):
     # src_path should point to chromium/src
     src_path = os.path.join(input_api.PresubmitLocalPath(), '..', '..', '..',
                             '..')
-    return CheckWebViewHistogramsAllowlist(src_path, output_api)
+
+    histograms_path = os.path.join(src_path, 'tools', 'metrics', 'histograms')
+    sys.path.append(histograms_path)
+    import print_histogram_names
+    return CheckWebViewHistogramsAllowlist(
+        src_path, output_api, print_histogram_names.histogram_xml_files())

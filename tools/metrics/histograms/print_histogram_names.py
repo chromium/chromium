@@ -38,7 +38,6 @@ def get_names(xml_files):
   return set(extract_histograms.ExtractNames(histograms))
 
 
-# Used in android_webview/java/res/raw/histograms_allowlist_check.py.
 def histogram_xml_files():
   return [open(f, encoding="utf-8") for f in histogram_paths.ALL_XMLS]
 
@@ -100,7 +99,7 @@ def main(argv):
   if args.diff is not None:
     _print_diff_names(args.diff)
   else:
-    name_set = get_names(histogram_xml_files())
+    name_set = get_names(_histogram_xml_files())
     for name in sorted(list(name_set)):
       print(name)
 

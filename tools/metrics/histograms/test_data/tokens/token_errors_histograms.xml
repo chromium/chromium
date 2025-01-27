@@ -1,3 +1,9 @@
+<!--
+  This is a version of histograms.xml file that is an example of a histogram
+  that contains undefined tokens in the name. This file can be used to validate
+  test scenarios that rely on such circumstances.
+-->
+
 <histogram-configuration>
 
 <histograms>
