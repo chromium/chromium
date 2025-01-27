@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 
+#import "base/debug/dump_without_crashing.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"

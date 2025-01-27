@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
