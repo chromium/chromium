@@ -357,7 +357,7 @@ const blink::UserAgentBrandList GetUserAgentBrandMajorVersionList(
 
 const blink::UserAgentBrandList GetUserAgentBrandFullVersionList(
     std::optional<blink::UserAgentBrandVersion> additional_brand_version) {
-  return GetUserAgentBrandMajorVersionListInternal(
+  return GetUserAgentBrandFullVersionListInternal(
       /*enable_updated_grease_by_policy=*/true, additional_brand_version);
 }
 

@@ -866,6 +866,14 @@ TEST_F(UserAgentUtilsTest, GenerateBrandVersionListAdditionalBrandVersions) {
               testing::HasSubstr("Add Brand"));
   EXPECT_THAT(metadata.SerializeBrandFullVersionList(),
               testing::HasSubstr("Add Brand"));
+  // Confirm version is correct generated.
+  EXPECT_THAT(metadata.SerializeBrandMajorVersionList(),
+              testing::HasSubstr("v=\"" +
+                                 version_info::GetMajorVersionNumber() + "\""));
+  EXPECT_THAT(
+      metadata.SerializeBrandFullVersionList(),
+      testing::HasSubstr("v=\"" +
+                         std::string(version_info::GetVersionNumber()) + "\""));
 }
 
 TEST_F(UserAgentUtilsTest,
