@@ -59,6 +59,7 @@ ios_chrome_repack_scalables("repack_scalable_resources") {
 repack("repack_unscaled_resources") {
   visibility = [ ":packed_resources" ]
   sources = [
+    "$root_gen_dir/components/autofill_and_password_manager_internals_resources.pak",
     "$root_gen_dir/components/chrome_urls_resources.pak",
     "$root_gen_dir/components/commerce_internals_resources.pak",
     "$root_gen_dir/components/components_resources.pak",

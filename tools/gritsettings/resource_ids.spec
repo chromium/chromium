@@ -999,7 +999,10 @@
   "components/search_engine_descriptions_strings.grd": {
     "messages": [7280],
   },
-
+  "<(SHARED_INTERMEDIATE_DIR)/components/autofill/core/browser/autofill_and_password_manager_internals/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [7290],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/components/commerce/core/internals/resources/resources.grd": {
     "META": {"sizes": {"includes": [30]}},
     "includes": [7300],
