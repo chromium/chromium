@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
@@ -413,7 +413,7 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
       template_url_service_->GetTemplateURLs();
   TemplateURL* existing_play_api_turl = nullptr;
   auto found =
-      base::ranges::find_if(template_urls, &TemplateURL::created_from_play_api);
+      std::ranges::find_if(template_urls, &TemplateURL::created_from_play_api);
   if (found != template_urls.cend()) {
     // Migrate old Play API database entries that were incorrectly marked as
     // safe_for_autoreplace() before M89.
@@ -473,7 +473,7 @@ void TemplateUrlServiceAndroid::GetTemplateUrls(
   // Clean up duplication between a Play API template URL and a corresponding
   // prepopulated template URL.
   auto play_api_it =
-      base::ranges::find_if(template_urls, &TemplateURL::created_from_play_api);
+      std::ranges::find_if(template_urls, &TemplateURL::created_from_play_api);
   TemplateURL* play_api_turl =
       play_api_it != template_urls.end() ? *play_api_it : nullptr;
 

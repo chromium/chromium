@@ -4,6 +4,7 @@
 
 #include "components/permissions/permission_request_manager.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -16,7 +17,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -1261,7 +1261,7 @@ PermissionRequestManager::VisitDuplicateRequests(
 void PermissionRequestManager::PermissionGrantedIncludingDuplicates(
     PermissionRequest* request,
     bool is_one_time) {
-  DCHECK_EQ(1ul, base::ranges::count(requests_, request) +
+  DCHECK_EQ(1ul, std::ranges::count(requests_, request) +
                      pending_permission_requests_.Count(request))
       << "Only requests in [pending_permission_]requests_ can have duplicates";
   request->PermissionGranted(is_one_time);
@@ -1277,7 +1277,7 @@ void PermissionRequestManager::PermissionGrantedIncludingDuplicates(
 
 void PermissionRequestManager::PermissionDeniedIncludingDuplicates(
     PermissionRequest* request) {
-  DCHECK_EQ(1ul, base::ranges::count(requests_, request) +
+  DCHECK_EQ(1ul, std::ranges::count(requests_, request) +
                      pending_permission_requests_.Count(request))
       << "Only requests in [pending_permission_]requests_ can have duplicates";
   request->PermissionDenied();
@@ -1292,7 +1292,7 @@ void PermissionRequestManager::PermissionDeniedIncludingDuplicates(
 void PermissionRequestManager::CancelledIncludingDuplicates(
     PermissionRequest* request,
     bool is_final_decision) {
-  DCHECK_EQ(1ul, base::ranges::count(requests_, request) +
+  DCHECK_EQ(1ul, std::ranges::count(requests_, request) +
                      pending_permission_requests_.Count(request))
       << "Only requests in [pending_permission_]requests_ can have duplicates";
   request->Cancelled(is_final_decision);
@@ -1308,7 +1308,7 @@ void PermissionRequestManager::CancelledIncludingDuplicates(
 
 void PermissionRequestManager::RequestFinishedIncludingDuplicates(
     PermissionRequest* request) {
-  DCHECK_EQ(1ul, base::ranges::count(requests_, request) +
+  DCHECK_EQ(1ul, std::ranges::count(requests_, request) +
                      pending_permission_requests_.Count(request))
       << "Only requests in [pending_permission_]requests_ can have duplicates";
   auto duplicate_list = VisitDuplicateRequests(

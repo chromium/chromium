@@ -4,13 +4,13 @@
 
 #include "components/update_client/protocol_parser_json.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/json/json_reader.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -291,7 +291,7 @@ bool ParseApp(const base::Value& app_node_val,
   CHECK(result->status.empty() || result->status == "ok");
 
   if (const base::Value::List* data_node = app_node.FindList("data")) {
-    base::ranges::for_each(*data_node, [&result](const base::Value& data) {
+    std::ranges::for_each(*data_node, [&result](const base::Value& data) {
       ParseData(data, result);
     });
   }

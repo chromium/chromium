@@ -8,13 +8,13 @@
 // components/autofill/core/browser/autofill_regexes_unittest.cc.
 // Only these tests will be kept once the pattern provider launches.
 
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/ranges/ranges.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"

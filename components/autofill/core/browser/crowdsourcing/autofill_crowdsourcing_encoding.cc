@@ -14,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
@@ -89,8 +88,8 @@ std::deque<FieldSuggestion> MergeManualAndServerOverrides(
     }
   }
   // At most one override source is non-empty - preserve the values.
-  base::ranges::move(manual_overrides, std::back_inserter(result));
-  base::ranges::move(server_overrides, std::back_inserter(result));
+  std::ranges::move(manual_overrides, std::back_inserter(result));
+  std::ranges::move(server_overrides, std::back_inserter(result));
 
   return result;
 }
@@ -646,8 +645,8 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   }
 
   std::vector<AutofillField*> upload_fields(form.fields().size());
-  base::ranges::transform(form.fields(), upload_fields.begin(),
-                          &std::unique_ptr<AutofillField>::get);
+  std::ranges::transform(form.fields(), upload_fields.begin(),
+                         &std::unique_ptr<AutofillField>::get);
   EncodeFormFieldsForUpload(form, upload_fields, &upload);
   std::vector<AutofillUploadContents> uploads = {std::move(upload)};
 
@@ -660,8 +659,8 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
            field->host_form_signature() == form.form_signature();
   });
   // Partition `upload_fields` with respect to the forms' renderer id.
-  base::ranges::stable_sort(upload_fields, /*comp=*/{},
-                            &FormFieldData::renderer_form_id);
+  std::ranges::stable_sort(upload_fields, /*comp=*/{},
+                           &FormFieldData::renderer_form_id);
 
   for (auto subform_begin = upload_fields.begin();
        subform_begin != upload_fields.end();) {

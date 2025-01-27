@@ -4,10 +4,10 @@
 
 #include "components/search_engines/search_host_to_urls_map.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 
-#include "base/ranges/algorithm.h"
 #include "components/search_engines/template_url.h"
 
 SearchHostToURLsMap::SearchHostToURLsMap()
@@ -44,7 +44,7 @@ void SearchHostToURLsMap::Remove(const TemplateURL* template_url) {
   DCHECK_NE(TemplateURL::OMNIBOX_API_EXTENSION, template_url->type());
 
   // A given TemplateURL only occurs once in the map.
-  auto set_with_url = base::ranges::find_if(
+  auto set_with_url = std::ranges::find_if(
       host_to_urls_map_,
       [&](std::pair<const std::string, TemplateURLSet>& entry) {
         return entry.second.erase(template_url);

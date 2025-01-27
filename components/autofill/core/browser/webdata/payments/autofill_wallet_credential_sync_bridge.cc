@@ -4,11 +4,11 @@
 
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_credential_sync_bridge.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
@@ -158,11 +158,11 @@ std::unique_ptr<syncer::DataBatch>
 AutofillWalletCredentialSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ranges::sort(storage_keys);
+  std::ranges::sort(storage_keys);
   std::vector<std::unique_ptr<ServerCvc>> filtered_server_cvc_list;
   for (std::unique_ptr<ServerCvc>& server_cvc_from_list :
        GetAutofillTable()->GetAllServerCvcs()) {
-    if (base::ranges::binary_search(
+    if (std::ranges::binary_search(
             storage_keys,
             base::NumberToString(server_cvc_from_list->instrument_id))) {
       filtered_server_cvc_list.push_back(std::move(server_cvc_from_list));

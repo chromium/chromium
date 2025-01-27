@@ -221,7 +221,7 @@ void LocalBookmarkToAccountMerger::MoveAndMergeInternal(
   // `permanent_folder_child_ids_to_merge` is non-empty and excluded such node.
   for (const auto& [local_permanent_node, unused] :
        GetLocalAndAccountPermanentNodePairs(model_)) {
-    CHECK(base::ranges::all_of(
+    CHECK(std::ranges::all_of(
         local_permanent_node->children(),
         [&permanent_folder_child_ids_to_merge](const auto& child) {
           return permanent_folder_child_ids_to_merge.has_value() &&

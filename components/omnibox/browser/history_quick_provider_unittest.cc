@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <functional>
 #include <memory>
@@ -15,7 +16,6 @@
 
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -1126,9 +1126,8 @@ TEST_F(HQPDomainSuggestionsTest, DomainSuggestions) {
     provider().Start(input, false);
     auto matches = provider().matches();
     std::vector<std::u16string> match_titles;
-    base::ranges::transform(
-        matches, std::back_inserter(match_titles),
-        [](const auto& match) { return match.description; });
+    std::ranges::transform(matches, std::back_inserter(match_titles),
+                           [](const auto& match) { return match.description; });
     EXPECT_THAT(match_titles, testing::ElementsAreArray(expected_matches));
 
     EXPECT_EQ(client()

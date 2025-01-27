@@ -66,7 +66,7 @@ const RuleEntry* FindContentSetting(const GURL& primary_url,
                                     const Rules& settings,
                                     const base::Clock* clock,
                                     bool return_expired_settings_) {
-  const auto it = base::ranges::find_if(settings, [&](const auto& entry) {
+  const auto it = std::ranges::find_if(settings, [&](const auto& entry) {
     return entry.first.primary_pattern.Matches(primary_url) &&
            entry.first.secondary_pattern.Matches(secondary_url) &&
            (return_expired_settings_ ||

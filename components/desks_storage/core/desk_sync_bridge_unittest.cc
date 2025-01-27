@@ -1160,11 +1160,11 @@ TEST_F(DeskSyncBridgeTest, GetAllEntriesIncludesPolicyEntries) {
   EXPECT_EQ(result.entries.size(), 4ul);
 
   // Two of these templates should be from policy.
-  EXPECT_EQ(base::ranges::count_if(result.entries,
-                                   [](const ash::DeskTemplate* entry) {
-                                     return entry->source() ==
-                                            ash::DeskTemplateSource::kPolicy;
-                                   }),
+  EXPECT_EQ(std::ranges::count_if(result.entries,
+                                  [](const ash::DeskTemplate* entry) {
+                                    return entry->source() ==
+                                           ash::DeskTemplateSource::kPolicy;
+                                  }),
             2l);
 
   bridge()->SetPolicyDeskTemplates("");

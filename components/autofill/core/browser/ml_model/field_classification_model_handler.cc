@@ -10,7 +10,6 @@
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/heuristic_source.h"
@@ -47,7 +46,7 @@ bool AllFieldsClassifiedWithConfidence(
     size_t num_fields,
     float confidence_threshold) {
   for (size_t i = 0; i < num_fields; i++) {
-    if (base::ranges::max(output[i]) < confidence_threshold) {
+    if (std::ranges::max(output[i]) < confidence_threshold) {
       return false;
     }
   }
@@ -212,8 +211,7 @@ void FieldClassificationModelHandler::AssignMostLikelyTypes(
 std::pair<FieldType, float> FieldClassificationModelHandler::GetMostLikelyType(
     const std::vector<float>& model_output) const {
   CHECK(state_);
-  int max_index =
-      base::ranges::max_element(model_output) - model_output.begin();
+  int max_index = std::ranges::max_element(model_output) - model_output.begin();
   CHECK_LT(max_index, state_->metadata.output_type_size());
   if (!state_->metadata.postprocessing_parameters()
            .has_confidence_threshold_per_field() ||

@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -398,7 +397,7 @@ class SuffixGenerator {
     std::string suffix_str =
         base::Base64Encode(base::SHA1Hash(base::as_byte_span(input)));
     UniquePosition::Suffix suffix;
-    base::ranges::copy(suffix_str, suffix.begin());
+    std::ranges::copy(suffix_str, suffix.begin());
     return suffix;
   }
 
@@ -587,8 +586,8 @@ TEST_F(PositionFromIntTest, ConsistentOrdering) {
     original_ordering[i] = int64_ordering[i] = position_ordering[i] = i;
   }
 
-  base::ranges::sort(int64_ordering, IndexedLessThan<int64_t>(kTestValues));
-  base::ranges::sort(
+  std::ranges::sort(int64_ordering, IndexedLessThan<int64_t>(kTestValues));
+  std::ranges::sort(
       position_ordering,
       IndexedLessThan<UniquePosition, PositionLessThan>(positions));
   EXPECT_NE(original_ordering, int64_ordering);

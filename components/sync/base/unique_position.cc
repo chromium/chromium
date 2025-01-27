@@ -14,7 +14,6 @@
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -28,7 +27,7 @@ namespace {
 UniquePosition::Suffix StringToSuffix(std::string_view str) {
   CHECK_EQ(str.length(), UniquePosition::kSuffixLength);
   UniquePosition::Suffix suffix;
-  base::ranges::copy(str, suffix.begin());
+  std::ranges::copy(str, suffix.begin());
   return suffix;
 }
 

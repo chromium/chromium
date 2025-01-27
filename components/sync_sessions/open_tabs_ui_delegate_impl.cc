@@ -4,10 +4,10 @@
 
 #include "components/sync_sessions/open_tabs_ui_delegate_impl.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"
 
@@ -27,7 +27,7 @@ bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
     std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions) {
   *sessions = session_tracker_->LookupAllForeignSessions(
       SyncedSessionTracker::PRESENTABLE);
-  base::ranges::sort(
+  std::ranges::sort(
       *sessions, std::greater(),
       [](const SyncedSession* session) { return session->GetModifiedTime(); });
   return !sessions->empty();
@@ -70,7 +70,7 @@ bool OpenTabsUIDelegateImpl::GetForeignSessionTabs(
       tabs->push_back(tab.get());
     }
   }
-  base::ranges::stable_sort(
+  std::ranges::stable_sort(
       *tabs, std::greater(),
       [](const sessions::SessionTab* tab) { return tab->timestamp; });
   return true;

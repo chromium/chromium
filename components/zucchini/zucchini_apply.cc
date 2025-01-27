@@ -16,7 +16,6 @@
 
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/element_detection.h"
 #include "components/zucchini/equivalence_map.h"
@@ -57,7 +56,7 @@ bool ApplyEquivalenceAndExtraData(ConstBufferView old_image,
     LOG(ERROR) << "Error reading extra_data";
     return false;
   }
-  base::ranges::copy(*extra_data, dst_it);
+  std::ranges::copy(*extra_data, dst_it);
   if (!equiv_source.Done() || !extra_data_source.Done()) {
     LOG(ERROR) << "Found trailing equivalence and extra_data";
     return false;

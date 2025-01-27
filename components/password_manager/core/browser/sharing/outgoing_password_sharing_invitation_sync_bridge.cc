@@ -99,11 +99,11 @@ void OutgoingPasswordSharingInvitationSyncBridge::SendPasswordGroup(
   CHECK(!passwords.empty());
   // All `passwords` are expected to belong to the same group and hence have the
   // same `username_value` and `password_value`.
-  CHECK_EQ(base::ranges::count(passwords, passwords[0].username_value,
-                               &PasswordForm::username_value),
+  CHECK_EQ(std::ranges::count(passwords, passwords[0].username_value,
+                              &PasswordForm::username_value),
            static_cast<int>(passwords.size()));
-  CHECK_EQ(base::ranges::count(passwords, passwords[0].password_value,
-                               &PasswordForm::password_value),
+  CHECK_EQ(std::ranges::count(passwords, passwords[0].password_value,
+                              &PasswordForm::password_value),
            static_cast<int>(passwords.size()));
 
   if (!change_processor()->IsTrackingMetadata()) {

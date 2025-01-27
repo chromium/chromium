@@ -96,7 +96,7 @@ bool IsSupportedCountryForFeature(const std::string& country_code,
     return true;
   }
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       supported_countries, [&country_code](const auto& supported_country_code) {
         return base::EqualsCaseInsensitiveASCII(supported_country_code,
                                                 country_code);

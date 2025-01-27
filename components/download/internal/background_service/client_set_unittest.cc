@@ -4,7 +4,8 @@
 
 #include "components/download/internal/background_service/client_set.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "components/download/public/background_service/clients.h"
 #include "components/download/public/background_service/test/empty_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +35,7 @@ TEST(DownloadServiceClientSetTest, TestGetRegisteredClients) {
                                            DownloadClient::DEBUGGING};
   std::set<DownloadClient> actual_set = clients.GetRegisteredClients();
 
-  EXPECT_TRUE(base::ranges::equal(expected_set, actual_set));
+  EXPECT_TRUE(std::ranges::equal(expected_set, actual_set));
 }
 
 }  // namespace download

@@ -549,7 +549,7 @@ FilteringBehavior SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
   const std::string host = url.host();
   if (result != FilteringBehavior::kBlock) {
     // If there is a match with Block behaviour, set the result to Block.
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         blocked_host_list_, [&host](const std::string& host_entry) {
           return HostMatchesPattern(host, host_entry);
         });

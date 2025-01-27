@@ -421,7 +421,7 @@ void MakePipeline(
         if (install_data_index.empty() || result.data.empty()) {
           return "";
         }
-        const auto it = base::ranges::find(
+        const auto it = std::ranges::find(
             result.data, install_data_index,
             &ProtocolParser::Result::Data::install_data_index);
         return it != std::end(result.data) ? it->text : "";

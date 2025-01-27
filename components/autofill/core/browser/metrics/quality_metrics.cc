@@ -98,8 +98,8 @@ void LogDurationMetrics(const FormStructure& form,
                         base::TimeTicks interaction_time,
                         base::TimeTicks submission_time) {
   size_t num_detected_field_types =
-      base::ranges::count_if(form, &FieldHasMeaningfulPossibleFieldTypes,
-                             &std::unique_ptr<AutofillField>::operator*);
+      std::ranges::count_if(form, &FieldHasMeaningfulPossibleFieldTypes,
+                            &std::unique_ptr<AutofillField>::operator*);
   bool form_has_autofilled_fields = std::ranges::any_of(
       form, [](const auto& field) { return field->is_autofilled(); });
   bool has_observed_one_time_code_field =

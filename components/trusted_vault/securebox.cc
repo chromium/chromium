@@ -16,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "crypto/hkdf.h"
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"

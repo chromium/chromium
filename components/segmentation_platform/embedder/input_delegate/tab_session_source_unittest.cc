@@ -87,10 +87,10 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
       std::vector<raw_ptr<const sync_sessions::SyncedSession,
                           VectorExperimental>>* sessions) override {
     *sessions = foreign_sessions_;
-    base::ranges::sort(*sessions, std::greater(),
-                       [](const sync_sessions::SyncedSession* session) {
-                         return session->GetModifiedTime();
-                       });
+    std::ranges::sort(*sessions, std::greater(),
+                      [](const sync_sessions::SyncedSession* session) {
+                        return session->GetModifiedTime();
+                      });
 
     return !sessions->empty();
   }

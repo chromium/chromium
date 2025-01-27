@@ -9,7 +9,8 @@
 
 #include "components/zucchini/buffer_source.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "components/zucchini/algorithm.h"
 
 namespace zucchini {

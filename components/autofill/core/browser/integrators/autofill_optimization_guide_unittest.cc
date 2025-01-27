@@ -4,9 +4,9 @@
 
 #include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/country_type.h"

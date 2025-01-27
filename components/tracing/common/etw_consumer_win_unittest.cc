@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <queue>
 #include <utility>
@@ -19,7 +20,6 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/cstring_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/protozero/message.h"
@@ -109,11 +109,11 @@ base::HeapArray<uint8_t> EncodeProcess(const ProcessData& process,
   if (version == 0) {
     // ProcessId and ParentId are pointer-sized in version 0.
     uintptr_t value = process.process_id;
-    base::ranges::copy(base::byte_span_from_ref(value), iter);
+    std::ranges::copy(base::byte_span_from_ref(value), iter);
     value = process.parent_id;
-    base::ranges::copy(base::byte_span_from_ref(value), iter);
-    base::ranges::copy(EncodeSid(), iter);
-    base::ranges::copy(process.image_file_name, iter);
+    std::ranges::copy(base::byte_span_from_ref(value), iter);
+    std::ranges::copy(EncodeSid(), iter);
+    std::ranges::copy(process.image_file_name, iter);
     buffer.insert(buffer.end(), '\0');  // ImageFileName terminator
   } else {
     if (version == 1) {
@@ -123,18 +123,18 @@ base::HeapArray<uint8_t> EncodeProcess(const ProcessData& process,
       // UniqueProcessKey
       buffer.insert(buffer.end(), sizeof(void*), 0);
     }
-    base::ranges::copy(base::byte_span_from_ref(process.process_id), iter);
-    base::ranges::copy(base::byte_span_from_ref(process.parent_id), iter);
-    base::ranges::copy(base::byte_span_from_ref(process.session_id), iter);
+    std::ranges::copy(base::byte_span_from_ref(process.process_id), iter);
+    std::ranges::copy(base::byte_span_from_ref(process.parent_id), iter);
+    std::ranges::copy(base::byte_span_from_ref(process.session_id), iter);
     buffer.insert(buffer.end(), sizeof(int32_t), 0);  // ExitStatus
     if (version >= 3) {
       buffer.insert(buffer.end(), sizeof(void*), 0);  // DirectoryTableBase
     }
-    base::ranges::copy(EncodeSid(), iter);
-    base::ranges::copy(process.image_file_name, iter);
+    std::ranges::copy(EncodeSid(), iter);
+    std::ranges::copy(process.image_file_name, iter);
     buffer.insert(buffer.end(), '\0');  // ImageFileName terminator
     if (version >= 2) {
-      base::ranges::copy(base::as_byte_span(process.command_line), iter);
+      std::ranges::copy(base::as_byte_span(process.command_line), iter);
       buffer.insert(buffer.end(), sizeof(wchar_t), 0);  // terminator
     }
     if (version >= 4) {
@@ -151,33 +151,33 @@ base::HeapArray<uint8_t> EncodeThread(const ThreadData& thread,
   std::vector<uint8_t> buffer;
   auto iter = std::back_inserter(buffer);
   if (version == 0) {
-    base::ranges::copy(base::byte_span_from_ref(thread.thread_id), iter);
-    base::ranges::copy(base::byte_span_from_ref(thread.process_id), iter);
+    std::ranges::copy(base::byte_span_from_ref(thread.thread_id), iter);
+    std::ranges::copy(base::byte_span_from_ref(thread.process_id), iter);
   } else {
-    base::ranges::copy(base::byte_span_from_ref(thread.process_id), iter);
-    base::ranges::copy(base::byte_span_from_ref(thread.thread_id), iter);
+    std::ranges::copy(base::byte_span_from_ref(thread.process_id), iter);
+    std::ranges::copy(base::byte_span_from_ref(thread.thread_id), iter);
     uintptr_t a_pointer = 0;
     uint32_t an_int = 0;
     // StackBase
-    base::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
+    std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
     // StackLimit
-    base::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
+    std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
     // UserStackBase
-    base::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
+    std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
     // UserStackLimit
-    base::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
+    std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
     // StartAddr (1, 2) / Affinity (>=3)
-    base::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
+    std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
     // Win32StartAddr
-    base::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
+    std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
     if (version == 1) {
       // WaitMode
       buffer.insert(buffer.end(), 0x0a);
     } else if (version >= 2) {
       // TebBase
-      base::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
+      std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);
       // SubProcessTag
-      base::ranges::copy(base::byte_span_from_ref(++an_int), iter);
+      std::ranges::copy(base::byte_span_from_ref(++an_int), iter);
     }
     if (version >= 3) {
       buffer.insert(buffer.end(), 0x0a);  // BasePriority
@@ -186,7 +186,7 @@ base::HeapArray<uint8_t> EncodeThread(const ThreadData& thread,
       buffer.insert(buffer.end(), 0x0d);  // ThreadFlags
     }
     if (version >= 4 && thread.thread_name.has_value()) {
-      base::ranges::copy(base::as_byte_span(*thread.thread_name), iter);
+      std::ranges::copy(base::as_byte_span(*thread.thread_name), iter);
       buffer.insert(buffer.end(), sizeof(wchar_t), 0);  // ThreadName terminator
     }
   }
@@ -198,9 +198,9 @@ base::HeapArray<uint8_t> EncodeThreadSetName(uint32_t process_id,
                                              base::wcstring_view thread_name) {
   std::vector<uint8_t> buffer;
   auto iter = std::back_inserter(buffer);
-  base::ranges::copy(base::byte_span_from_ref(process_id), iter);
-  base::ranges::copy(base::byte_span_from_ref(thread_id), iter);
-  base::ranges::copy(base::as_byte_span(thread_name), iter);
+  std::ranges::copy(base::byte_span_from_ref(process_id), iter);
+  std::ranges::copy(base::byte_span_from_ref(thread_id), iter);
+  std::ranges::copy(base::as_byte_span(thread_name), iter);
   buffer.insert(buffer.end(), sizeof(wchar_t), 0);  // ThreadName terminator
   return base::HeapArray<uint8_t>::CopiedFrom({buffer});
 }
@@ -209,8 +209,8 @@ base::HeapArray<uint8_t> EncodeThreadSetName(uint32_t process_id,
 base::HeapArray<uint8_t> EncodeCSwitch(const CSwitchData& c_switch) {
   std::vector<uint8_t> buffer;
   auto iter = std::back_inserter(buffer);
-  base::ranges::copy(base::byte_span_from_ref(c_switch.new_thread_id), iter);
-  base::ranges::copy(base::byte_span_from_ref(c_switch.old_thread_id), iter);
+  std::ranges::copy(base::byte_span_from_ref(c_switch.new_thread_id), iter);
+  std::ranges::copy(base::byte_span_from_ref(c_switch.old_thread_id), iter);
   buffer.insert(buffer.end(), 0x01);  // NewThreadPriority
   buffer.insert(buffer.end(), 0x02);  // OldThreadPriority
   buffer.insert(buffer.end(), 0x03);  // PreviousCState
@@ -220,7 +220,7 @@ base::HeapArray<uint8_t> EncodeCSwitch(const CSwitchData& c_switch) {
   buffer.insert(buffer.end(), 7);     // OldThreadState = DEFERRED_READY
   buffer.insert(buffer.end(), 0x04);  // OldThreadWaitIdealProcessor
   const uint32_t new_thread_wait_time = 0x05;
-  base::ranges::copy(base::byte_span_from_ref(new_thread_wait_time), iter);
+  std::ranges::copy(base::byte_span_from_ref(new_thread_wait_time), iter);
   buffer.insert(buffer.end(), sizeof(uint32_t), 0x42);  // Reserved
   return base::HeapArray<uint8_t>::CopiedFrom({buffer});
 }

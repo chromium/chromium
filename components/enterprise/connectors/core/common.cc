@@ -4,8 +4,9 @@
 
 #include "components/enterprise/connectors/core/common.h"
 
+#include <algorithm>
+
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -292,7 +293,7 @@ GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
 #endif  // BUILDFLAG(USE_BLINK)
 
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response) {
-  return base::ranges::any_of(response.results(), [](const auto& result) {
+  return std::ranges::any_of(response.results(), [](const auto& result) {
     return result.tag() == kMalwareTag && !result.triggered_rules().empty();
   });
 }

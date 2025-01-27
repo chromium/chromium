@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
@@ -265,9 +264,9 @@ TEST(StringOrdinalTest, Sort) {
 
   std::vector<StringOrdinal> ordinals = sorted_ordinals;
   base::RandomShuffle(ordinals.begin(), ordinals.end());
-  base::ranges::sort(ordinals, StringOrdinal::LessThanFn());
-  EXPECT_TRUE(base::ranges::equal(ordinals, sorted_ordinals,
-                                  StringOrdinal::EqualsFn()));
+  std::ranges::sort(ordinals, StringOrdinal::LessThanFn());
+  EXPECT_TRUE(
+      std::ranges::equal(ordinals, sorted_ordinals, StringOrdinal::EqualsFn()));
 }
 
 }  // namespace

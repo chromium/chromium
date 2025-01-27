@@ -4,6 +4,7 @@
 
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 
+#include <algorithm>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
 #include "base/types/expected_macros.h"
@@ -576,8 +576,8 @@ void CastMessageHandler::PendingRequests::HandlePendingRequest(
     const base::Value::Dict& response) {
   // Look up an app availability request by its |request_id|.
   auto app_availability_it =
-      base::ranges::find(pending_app_availability_requests_, request_id,
-                         &GetAppAvailabilityRequest::request_id);
+      std::ranges::find(pending_app_availability_requests_, request_id,
+                        &GetAppAvailabilityRequest::request_id);
   // If we found a request, process and remove all requests with the same
   // |app_id|, which will of course include the one we just found.
   if (app_availability_it != pending_app_availability_requests_.end()) {
@@ -631,8 +631,8 @@ void CastMessageHandler::PendingRequests::AppAvailabilityTimedOut(
     int request_id) {
   DVLOG(1) << __func__ << ", request_id: " << request_id;
 
-  auto it = base::ranges::find(pending_app_availability_requests_, request_id,
-                               &GetAppAvailabilityRequest::request_id);
+  auto it = std::ranges::find(pending_app_availability_requests_, request_id,
+                              &GetAppAvailabilityRequest::request_id);
 
   CHECK(it != pending_app_availability_requests_.end());
   std::move((*it)->callback)

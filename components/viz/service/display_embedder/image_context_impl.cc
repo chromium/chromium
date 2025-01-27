@@ -222,7 +222,7 @@ void ImageContextImpl::CreateFallbackImage(
   if (context_state->graphite_context()) {
     const auto& tex_infos = texture_infos();
     if (tex_infos.size() != static_cast<size_t>(num_planes) ||
-        base::ranges::any_of(tex_infos, [](const auto& tex_info) {
+        std::ranges::any_of(tex_infos, [](const auto& tex_info) {
           return !tex_info.isValid();
         })) {
       DLOG(ERROR) << "Invalid Graphite texture infos for format: "

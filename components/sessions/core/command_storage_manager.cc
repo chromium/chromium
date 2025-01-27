@@ -4,13 +4,13 @@
 
 #include "components/sessions/core/command_storage_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -99,8 +99,8 @@ void CommandStorageManager::AppendRebuildCommands(
 }
 
 void CommandStorageManager::EraseCommand(SessionCommand* old_command) {
-  auto it = base::ranges::find(pending_commands_, old_command,
-                               &std::unique_ptr<SessionCommand>::get);
+  auto it = std::ranges::find(pending_commands_, old_command,
+                              &std::unique_ptr<SessionCommand>::get);
   CHECK(it != pending_commands_.end());
   pending_commands_.erase(it);
   DCHECK_GT(commands_since_reset_, 0);
@@ -110,8 +110,8 @@ void CommandStorageManager::EraseCommand(SessionCommand* old_command) {
 void CommandStorageManager::SwapCommand(
     SessionCommand* old_command,
     std::unique_ptr<SessionCommand> new_command) {
-  auto it = base::ranges::find(pending_commands_, old_command,
-                               &std::unique_ptr<SessionCommand>::get);
+  auto it = std::ranges::find(pending_commands_, old_command,
+                              &std::unique_ptr<SessionCommand>::get);
   CHECK(it != pending_commands_.end());
   *it = std::move(new_command);
 }

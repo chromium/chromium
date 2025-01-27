@@ -1111,7 +1111,7 @@ void SearchProvider::RemoveExtraAnswers(ACMatches* matches) {
 }
 
 void SearchProvider::DuplicateCardAnswer(ACMatches* matches) {
-  auto iter = base::ranges::find_if(*matches, [](const auto& match) {
+  auto iter = std::ranges::find_if(*matches, [](const auto& match) {
     return match.answer_template.has_value();
   });
 

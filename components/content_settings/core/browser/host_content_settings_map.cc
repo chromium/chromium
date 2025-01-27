@@ -21,7 +21,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -731,13 +730,12 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
       int max_requester =
           empty
               ? 0
-              : base::ranges::max_element(num_requester, {}, get_value)->second;
+              : std::ranges::max_element(num_requester, {}, get_value)->second;
       base::UmaHistogramCounts1000(histogram_name + ".MaxRequester",
                                    max_requester);
       int max_toplevel =
-          empty
-              ? 0
-              : base::ranges::max_element(num_toplevel, {}, get_value)->second;
+          empty ? 0
+                : std::ranges::max_element(num_toplevel, {}, get_value)->second;
       base::UmaHistogramCounts1000(histogram_name + ".MaxTopLevel",
                                    max_toplevel);
     }

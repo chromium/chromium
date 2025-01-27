@@ -4,6 +4,7 @@
 
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/is_origin_suitable.h"
@@ -82,8 +82,8 @@ class CoordinatorOrigins {
     if (origins_.empty()) {
       return false;
     }
-    return base::ranges::all_of(origins_,
-                                &attribution_reporting::IsOriginSuitable);
+    return std::ranges::all_of(origins_,
+                               &attribution_reporting::IsOriginSuitable);
   }
 
  private:

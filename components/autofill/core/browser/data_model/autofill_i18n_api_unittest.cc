@@ -4,11 +4,11 @@
 
 #include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 
+#include <algorithm>
 #include <string>
 #include <type_traits>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_formatting_expressions.h"

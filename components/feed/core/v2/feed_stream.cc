@@ -20,7 +20,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
@@ -496,8 +495,7 @@ void FeedStream::DestroySurface(SurfaceId surface) {
 void FeedStream::CleanupDestroyedSurfaces() {
   auto to_remove = std::ranges::remove_if(
       all_surfaces_, [&](const FeedStreamSurface& surface) {
-        return base::ranges::find(destroyed_surfaces_,
-                                  surface.GetSurfaceId()) !=
+        return std::ranges::find(destroyed_surfaces_, surface.GetSurfaceId()) !=
                destroyed_surfaces_.end();
       });
   all_surfaces_.erase(to_remove.begin(), to_remove.end());

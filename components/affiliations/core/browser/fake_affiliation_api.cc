@@ -9,7 +9,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace affiliations {
@@ -45,17 +44,17 @@ void FakeAffiliationAPI::ServeNextRequest() {
   std::unique_ptr<AffiliationFetcherDelegate::Result> fake_response(
       new AffiliationFetcherDelegate::Result);
   for (const auto& facets : preset_equivalence_relation_) {
-    bool had_intersection_with_request = base::ranges::any_of(
+    bool had_intersection_with_request = std::ranges::any_of(
         fetcher->GetRequestedFacetURIs(), [&facets](const auto& uri) {
-          return base::ranges::find(facets, uri, &Facet::uri) != facets.end();
+          return std::ranges::find(facets, uri, &Facet::uri) != facets.end();
         });
     if (had_intersection_with_request)
       fake_response->affiliations.push_back(facets);
   }
   for (const auto& group : groups_) {
-    bool had_intersection_with_request = base::ranges::any_of(
+    bool had_intersection_with_request = std::ranges::any_of(
         fetcher->GetRequestedFacetURIs(), [&group](const auto& uri) {
-          return base::ranges::find(group.facets, uri, &Facet::uri) !=
+          return std::ranges::find(group.facets, uri, &Facet::uri) !=
                  group.facets.end();
         });
     if (had_intersection_with_request)

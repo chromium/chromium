@@ -117,10 +117,10 @@ void PlusAddressSubmissionLogger::OnPlusAddressSuggestionShown(
     return;
   }
   auto it =
-      base::ranges::find_if(form_structure->fields(),
-                            [&field](const std::unique_ptr<AutofillField>& f) {
-                              return f->global_id() == field;
-                            });
+      std::ranges::find_if(form_structure->fields(),
+                           [&field](const std::unique_ptr<AutofillField>& f) {
+                             return f->global_id() == field;
+                           });
   if (it == form_structure->fields().end()) {
     return;
   }
@@ -130,7 +130,7 @@ void PlusAddressSubmissionLogger::OnPlusAddressSuggestionShown(
     managers_observation_.AddObservation(&manager);
   }
 
-  const size_t field_count_in_renderer_form = base::ranges::count_if(
+  const size_t field_count_in_renderer_form = std::ranges::count_if(
       form_structure->fields(),
       [renderer_form_id](
           const std::unique_ptr<autofill::AutofillField>& field) {

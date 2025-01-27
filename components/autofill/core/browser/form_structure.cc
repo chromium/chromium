@@ -30,7 +30,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -475,7 +474,7 @@ bool FormStructure::ShouldUploadUkm(bool require_classified_field) const {
                 field->html_type() != HtmlFieldType::kUnspecified);
       };
 
-  size_t num_text_fields = base::ranges::count_if(
+  size_t num_text_fields = std::ranges::count_if(
       fields(), require_classified_field ? is_focusable_predicted_text_field
                                          : is_focusable_text_field);
   if (num_text_fields == 0) {
@@ -486,7 +485,7 @@ bool FormStructure::ShouldUploadUkm(bool require_classified_field) const {
   // "search" in its name/id/placeholder, the function return false and the form
   // is not recorded into UKM. The form is considered a search box.
   if (num_text_fields == 1) {
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         fields(), require_classified_field ? is_focusable_predicted_text_field
                                            : is_focusable_text_field);
     if (base::ToLowerASCII((*it)->placeholder()).find(u"search") !=
@@ -831,7 +830,7 @@ size_t FormStructure::field_count() const {
 }
 
 const AutofillField* FormStructure::GetFieldById(FieldGlobalId field_id) const {
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       fields_, field_id, [](const auto& field) { return field->global_id(); });
   return it != fields_.end() ? it->get() : nullptr;
 }

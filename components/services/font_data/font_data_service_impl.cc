@@ -4,12 +4,12 @@
 
 #include "components/services/font_data/font_data_service_impl.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/heap_array.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/font_utils.h"
@@ -168,7 +168,7 @@ void FontDataServiceImpl::MatchFamilyName(const std::string& family_name,
       result->variation_position = mojom::VariationPosition::New();
       result->variation_position->coordinates.reserve(coordinate_list.size());
       result->variation_position->coordinateCount = axis_count;
-      base::ranges::transform(
+      std::ranges::transform(
           coordinate_list,
           std::back_inserter(result->variation_position->coordinates),
           [](const SkFontArguments::VariationPosition::Coordinate& coordinate) {

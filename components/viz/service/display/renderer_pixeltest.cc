@@ -22,7 +22,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -330,7 +329,7 @@ void CreateTestTwoColoredTextureDrawQuad(
         reinterpret_cast<uint32_t*>(mapping->GetMemoryForPlane(0).data());
     base::span<uint32_t> span = UNSAFE_BUFFERS(base::span(ptr, pixels.size()));
 
-    base::ranges::copy(pixels, span.begin());
+    std::ranges::copy(pixels, span.begin());
   }
 
   // Return the mapped resource id.
@@ -399,7 +398,7 @@ void CreateTestTextureDrawQuad(
         reinterpret_cast<uint32_t*>(mapping->GetMemoryForPlane(0).data());
     base::span<uint32_t> span = UNSAFE_BUFFERS(base::span(ptr, pixels.size()));
 
-    base::ranges::copy(pixels, span.begin());
+    std::ranges::copy(pixels, span.begin());
   }
 
   // Return the mapped resource id.

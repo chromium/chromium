@@ -4,10 +4,10 @@
 
 #include "components/data_sharing/internal/collaboration_group_sync_bridge.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"

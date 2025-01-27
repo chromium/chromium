@@ -4,9 +4,9 @@
 
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/password_form.h"

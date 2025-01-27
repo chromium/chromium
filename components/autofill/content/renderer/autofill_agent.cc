@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -25,7 +26,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1045,7 +1045,7 @@ void AutofillAgent::ApplyFieldsAction(
     auto host_form_is_connected = [](const FormFieldData::FillData& fill_data) {
       return !form_util::GetFormByRendererId(fill_data.host_form_id).IsNull();
     };
-    if (auto it = base::ranges::find_if(fields, host_form_is_connected);
+    if (auto it = std::ranges::find_if(fields, host_form_is_connected);
         it != fields.end()) {
       base::FeatureList::IsEnabled(
           features::kAutofillAcceptDomMutationAfterAutofillSubmission)
@@ -1937,8 +1937,8 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
     std::vector<FormFieldData> fields =
         provisionally_saved_form()->ExtractFields();
     if (auto it =
-            base::ranges::find(fields, form_util::GetFieldRendererId(element),
-                               &FormFieldData::renderer_id);
+            std::ranges::find(fields, form_util::GetFieldRendererId(element),
+                              &FormFieldData::renderer_id);
         it != fields.end()) {
       it->set_value(element.Value().Utf16());
       it->set_is_autofilled(element.IsAutofilled());

@@ -4,6 +4,7 @@
 
 #include "components/os_crypt/async/common/encryptor.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/sync/os_crypt.h"
@@ -276,7 +276,7 @@ std::optional<std::string> Encryptor::DecryptData(
     if (data.size() < provider.size()) {
       continue;
     }
-    if (base::ranges::equal(provider, data.first(provider.size()))) {
+    if (std::ranges::equal(provider, data.first(provider.size()))) {
       // This removes the provider prefix from the front of the data.
       auto ciphertext = data.subspan(provider.size());
       // The Key does the raw decrypt.

@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -202,8 +202,8 @@ class FormFillerTest : public testing::Test {
         /*ignorable_skip_reasons=*/{}, trigger_source);
     // Copy the filled data into the form.
     for (FormFieldData& field : test_api(form).fields()) {
-      if (auto it = base::ranges::find(filled_fields, field.global_id(),
-                                       &FormFieldData::global_id);
+      if (auto it = std::ranges::find(filled_fields, field.global_id(),
+                                      &FormFieldData::global_id);
           it != filled_fields.end()) {
         field = *it;
       }

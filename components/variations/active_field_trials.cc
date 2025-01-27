@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string_view>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/process/launch.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -153,8 +153,8 @@ bool HasSyntheticTrial(const std::string& trial_name) {
   std::vector<std::string> synthetic_trials;
   variations::GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
   std::string trial_hash = variations::HashNameAsHexString(trial_name);
-  return base::ranges::any_of(synthetic_trials, [&trial_hash](
-                                                    const auto& trial) {
+  return std::ranges::any_of(synthetic_trials, [&trial_hash](
+                                                   const auto& trial) {
     return base::StartsWith(trial, trial_hash, base::CompareCase::SENSITIVE);
   });
 }

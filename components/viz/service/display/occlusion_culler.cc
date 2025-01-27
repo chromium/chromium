@@ -183,7 +183,7 @@ bool ReduceComplexity(const cc::Region& region,
   CHECK(reduced_region_out.empty());
 
   for (gfx::Rect r : region) {
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         reduced_region_out,
         [&r](const gfx::Rect& a) { return a.SharesEdgeWith(r); });
 

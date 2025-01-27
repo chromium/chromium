@@ -24,7 +24,7 @@ bool IsSameField(const FieldInfo& lhs, const FieldInfo& rhs) {
 bool StoresPredictionsForInfo(const FormPredictions& predictions,
                               FieldInfo& field_info) {
   FieldRendererId field_id = field_info.field_id;
-  auto field = base::ranges::find_if(
+  auto field = std::ranges::find_if(
       predictions.fields, [field_id](const PasswordFieldPrediction& field) {
         return field.renderer_id == field_id;
       });

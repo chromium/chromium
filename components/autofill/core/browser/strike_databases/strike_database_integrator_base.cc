@@ -113,7 +113,7 @@ void StrikeDatabaseIntegratorBase::ClearAllStrikes() {
 }
 
 size_t StrikeDatabaseIntegratorBase::CountEntries() const {
-  return base::ranges::count_if(GetStrikeCache(), [&](const auto& entry) {
+  return std::ranges::count_if(GetStrikeCache(), [&](const auto& entry) {
     return strike_database_->GetPrefixFromKey(entry.first) ==
            GetProjectPrefix();
   });

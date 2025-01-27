@@ -4,11 +4,12 @@
 
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/functional/overloaded.h"
 #include "base/pickle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1040,7 +1041,7 @@ bool AreAnyItemsDifferent(const std::vector<std::unique_ptr<Item>>& old_data,
   auto compare_equal = [](const Item* lhs, const Item* rhs) {
     return lhs->Compare(*rhs) == 0;
   };
-  return !base::ranges::equal(old_ptrs, new_ptrs, compare_equal);
+  return !std::ranges::equal(old_ptrs, new_ptrs, compare_equal);
 }
 
 template bool AreAnyItemsDifferent<>(

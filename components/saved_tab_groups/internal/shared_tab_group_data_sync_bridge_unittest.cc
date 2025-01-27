@@ -4,6 +4,7 @@
 
 #include "components/saved_tab_groups/internal/shared_tab_group_data_sync_bridge.h"
 
+#include <algorithm>
 #include <array>
 #include <initializer_list>
 #include <memory>
@@ -12,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"

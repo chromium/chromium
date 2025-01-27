@@ -1034,8 +1034,8 @@ void SurfaceAggregator::EmitSurfaceContent(
       features::kAllowForceMergeRenderPassWithRequireOverlayQuads);
   const bool force_merge_pass =
       allow_forced_merge_pass && !merge_pass && pass_is_mergeable &&
-      base::ranges::any_of(dest_pass_list_->back()->quad_list,
-                           &OverlayCandidate::RequiresOverlay);
+      std::ranges::any_of(dest_pass_list_->back()->quad_list,
+                          &OverlayCandidate::RequiresOverlay);
 
   if (merge_pass || force_merge_pass) {
     // Compute a clip rect in |dest_pass| coordinate space to ensure merged

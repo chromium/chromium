@@ -4,8 +4,9 @@
 
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 
+#include <algorithm>
+
 #include "base/i18n/message_formatter.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -135,16 +136,16 @@ class CredentialLeakDialogUtilsTest
  public:
   static std::vector<LeakTypeParams> GetTestCases() {
     std::vector<LeakTypeParams> test_cases;
-    base::ranges::copy(kLeakTypesTestCases, std::back_inserter(test_cases));
+    std::ranges::copy(kLeakTypesTestCases, std::back_inserter(test_cases));
 #if BUILDFLAG(IS_ANDROID)
     if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-      base::ranges::copy(kPasswordCheckLeakTypesTestCasesAndroidAutomotive,
-                         std::back_inserter(test_cases));
+      std::ranges::copy(kPasswordCheckLeakTypesTestCasesAndroidAutomotive,
+                        std::back_inserter(test_cases));
       return test_cases;
     }
 #endif
-    base::ranges::copy(kPasswordCheckLeakTypesTestCases,
-                       std::back_inserter(test_cases));
+    std::ranges::copy(kPasswordCheckLeakTypesTestCases,
+                      std::back_inserter(test_cases));
     return test_cases;
   }
 };
@@ -201,16 +202,16 @@ class BulkCheckCredentialLeakDialogUtilsTest
  public:
   static std::vector<BulkCheckParams> GetTestCases() {
     std::vector<BulkCheckParams> test_cases;
-    base::ranges::copy(kBulkCheckTestCases, std::back_inserter(test_cases));
+    std::ranges::copy(kBulkCheckTestCases, std::back_inserter(test_cases));
 #if BUILDFLAG(IS_ANDROID)
     if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-      base::ranges::copy(kPasswordCheckBulkCheckTestCasesAndroidAutomotive,
-                         std::back_inserter(test_cases));
+      std::ranges::copy(kPasswordCheckBulkCheckTestCasesAndroidAutomotive,
+                        std::back_inserter(test_cases));
       return test_cases;
     }
 #endif
-    base::ranges::copy(kPasswordCheckBulkCheckTestCases,
-                       std::back_inserter(test_cases));
+    std::ranges::copy(kPasswordCheckBulkCheckTestCases,
+                      std::back_inserter(test_cases));
     return test_cases;
   }
 };
@@ -278,17 +279,16 @@ class PasswordChangeCredentialLeakDialogUtilsTest
 
   static std::vector<PasswordChangeParams> GetTestCases() {
     std::vector<PasswordChangeParams> test_cases;
-    base::ranges::copy(kPasswordChangeTestCases,
-                       std::back_inserter(test_cases));
+    std::ranges::copy(kPasswordChangeTestCases, std::back_inserter(test_cases));
 
     if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-      base::ranges::copy(kPasswordChangeTestCasesAuto,
-                         std::back_inserter(test_cases));
+      std::ranges::copy(kPasswordChangeTestCasesAuto,
+                        std::back_inserter(test_cases));
       return test_cases;
     }
 
-    base::ranges::copy(kPasswordChangeTestCasesNonAuto,
-                       std::back_inserter(test_cases));
+    std::ranges::copy(kPasswordChangeTestCasesNonAuto,
+                      std::back_inserter(test_cases));
     return test_cases;
   }
 };

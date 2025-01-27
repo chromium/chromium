@@ -750,7 +750,7 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
   }
 
   // Log the number of server cards that are enrolled with virtual cards.
-  size_t virtual_card_enabled_card_count = base::ranges::count_if(
+  size_t virtual_card_enabled_card_count = std::ranges::count_if(
       server_cards, [](const std::unique_ptr<CreditCard>& card) {
         return card->virtual_card_enrollment_state() ==
                CreditCard::VirtualCardEnrollmentState::kEnrolled;

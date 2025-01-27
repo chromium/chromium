@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -19,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -2429,16 +2429,16 @@ TEST_F(AutocompleteResultTest, ClipboardSuggestionOnTopOfSearchSuggestionTest) {
 TEST_F(AutocompleteResultTest, MaybeCullTailSuggestions) {
   auto test = [&](std::vector<CullTailTestMatch> input_matches) {
     ACMatches matches;
-    base::ranges::transform(input_matches, std::back_inserter(matches),
-                            [&](const CullTailTestMatch& test_match) {
-                              AutocompleteMatch match;
-                              match.contents = test_match.id;
-                              match.type = test_match.type;
-                              match.allowed_to_be_default_match =
-                                  test_match.allowed_default;
-                              match.relevance = 1000;
-                              return match;
-                            });
+    std::ranges::transform(input_matches, std::back_inserter(matches),
+                           [&](const CullTailTestMatch& test_match) {
+                             AutocompleteMatch match;
+                             match.contents = test_match.id;
+                             match.type = test_match.type;
+                             match.allowed_to_be_default_match =
+                                 test_match.allowed_default;
+                             match.relevance = 1000;
+                             return match;
+                           });
 
     auto page_classification = metrics::OmniboxEventProto::PageClassification::
         OmniboxEventProto_PageClassification_OTHER;
@@ -2446,7 +2446,7 @@ TEST_F(AutocompleteResultTest, MaybeCullTailSuggestions) {
         &matches, {page_classification});
 
     std::vector<CullTailTestMatch> output_matches;
-    base::ranges::transform(
+    std::ranges::transform(
         matches, std::back_inserter(output_matches), [](const auto& match) {
           return CullTailTestMatch{match.contents, match.type,
                                    match.allowed_to_be_default_match};

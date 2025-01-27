@@ -47,10 +47,10 @@ ScopedJavaLocalRef<jobject> BrowsingDataModelAndroid::GetBrowsingDataInfo(
 
   content::BrowserContext* browser_context =
       content::BrowserContextFromJavaHandle(jbrowser_context_handle);
-  base::ranges::transform(origin_to_data_map, important_notations.begin(),
-                          [](const auto& key_value) {
-                            return std::make_pair(key_value.first, false);
-                          });
+  std::ranges::transform(origin_to_data_map, important_notations.begin(),
+                         [](const auto& key_value) {
+                           return std::make_pair(key_value.first, false);
+                         });
   if (fetch_important) {
     permissions::PermissionsClient::Get()->AreSitesImportant(
         browser_context, &important_notations);

@@ -6,12 +6,12 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <optional>
 
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "base/win/sid.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

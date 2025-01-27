@@ -90,8 +90,8 @@ bool GoogleGroupsManager::IsFeatureEnabledForProfile(
     // No required Google Group for this experiment.
     return true;
   }
-  return base::ranges::any_of(group_strings, [&user_groups = google_group_ids_](
-                                                 std::string_view group) {
+  return std::ranges::any_of(group_strings, [&user_groups = google_group_ids_](
+                                                std::string_view group) {
     return user_groups.contains(group);
   });
 }

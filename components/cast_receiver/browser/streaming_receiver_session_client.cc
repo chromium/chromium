@@ -4,11 +4,11 @@
 
 #include "components/cast_receiver/browser/streaming_receiver_session_client.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast/message_port/platform_message_port.h"

@@ -4,10 +4,11 @@
 
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 
+#include <functional>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/functional.h"
 #include "base/strings/strcat.h"
 #include "components/content_settings/core/common/content_settings.h"
 
@@ -159,9 +160,9 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ContentType)
 
 constexpr int kkHistogramValueMax =
-    base::ranges::max_element(kHistogramValue,
-                              base::ranges::less{},
-                              &decltype(kHistogramValue)::value_type::second)
+    std::ranges::max_element(kHistogramValue,
+                             std::ranges::less{},
+                             &decltype(kHistogramValue)::value_type::second)
         ->second;
 
 std::string GetProviderNameForHistograms(

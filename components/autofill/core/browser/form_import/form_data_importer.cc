@@ -18,7 +18,6 @@
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -999,7 +998,7 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
         // the index of the option text in the select options and try the
         // corresponding value.
         if (auto it =
-                base::ranges::find(field.options(), value, &SelectOption::text);
+                std::ranges::find(field.options(), value, &SelectOption::text);
             it != field.options().end()) {
           result.card.SetInfo(field.Type(), it->value, app_locale);
         }

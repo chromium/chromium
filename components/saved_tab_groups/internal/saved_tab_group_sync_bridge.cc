@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -123,7 +122,7 @@ std::vector<proto::SavedTabGroupData> LoadStoredEntries(
 size_t CalculateIndexOfGroup(const std::vector<const SavedTabGroup*>& groups,
                              const base::Uuid& group_id) {
   auto iter =
-      base::ranges::find_if(groups, [&group_id](const SavedTabGroup* group) {
+      std::ranges::find_if(groups, [&group_id](const SavedTabGroup* group) {
         return group->saved_guid() == group_id;
       });
   CHECK(iter != groups.end());

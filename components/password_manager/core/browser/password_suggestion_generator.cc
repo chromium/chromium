@@ -4,12 +4,12 @@
 
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
 
+#include <functional>
 #include <set>
 
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
-#include "base/ranges/functional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -68,7 +68,7 @@ Suggestion CreateGenerationEntry() {
 }
 
 void MaybeAppendManagePasswordsEntry(std::vector<Suggestion>* suggestions) {
-  bool has_no_fillable_suggestions = base::ranges::none_of(
+  bool has_no_fillable_suggestions = std::ranges::none_of(
       *suggestions,
       [](SuggestionType id) {
         return id == SuggestionType::kPasswordEntry ||
@@ -81,7 +81,7 @@ void MaybeAppendManagePasswordsEntry(std::vector<Suggestion>* suggestions) {
     return;
   }
 
-  bool has_webauthn_credential = base::ranges::any_of(
+  bool has_webauthn_credential = std::ranges::any_of(
       *suggestions,
       [](SuggestionType type) {
         return type == SuggestionType::kWebauthnCredential;
@@ -282,7 +282,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 #if !BUILDFLAG(IS_ANDROID)
       uses_passkeys = true;
 #endif
-      base::ranges::transform(
+      std::ranges::transform(
           *delegate->GetPasskeys(), std::back_inserter(suggestions),
           [&page_favicon](const auto& passkey) {
             Suggestion suggestion(
@@ -394,7 +394,7 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
   for (const CredentialUIEntry& credential : credentials) {
     // Check if any credential in the "Suggested" section has the same singon
     // realm as this `CredentialUIEntry`.
-    const bool has_suggested_realm = base::ranges::any_of(
+    const bool has_suggested_realm = std::ranges::any_of(
         credential.facets,
         [&suggested_signon_realms](const std::string& signon_realm) {
           return suggested_signon_realms.count(signon_realm);
@@ -410,9 +410,9 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
         Suggestion::FiltrationPolicy::kFilterable);
   }
 
-  base::ranges::sort(
+  std::ranges::sort(
       suggestions.begin() + relevant_section_offset, suggestions.end(),
-      base::ranges::less(),
+      std::ranges::less(),
       [](const Suggestion& suggestion) { return suggestion.main_text.value; });
 
   // Add "Manage all passwords" link to settings.

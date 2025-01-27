@@ -32,7 +32,6 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -543,7 +542,7 @@ bool AttributeHasButtonFeature(const WebString& attribute) {
   if (attribute.IsNull())
     return false;
   std::string value = attribute.Utf8();
-  base::ranges::transform(value, value.begin(), ::tolower);
+  std::ranges::transform(value, value.begin(), ::tolower);
   for (const char* const button_feature : kButtonFeatures) {
     if (value.find(button_feature, 0) != std::string::npos)
       return true;
@@ -1402,15 +1401,15 @@ FormFieldData* SearchForFormControlByName(
     return nullptr;
 
   auto get_field_name = [](const auto& p) { return p.first->name(); };
-  auto it = base::ranges::find(fields, field_name, get_field_name);
+  auto it = std::ranges::find(fields, field_name, get_field_name);
   auto end = fields.end();
   if (it == end ||
-      base::ranges::find(it + 1, end, field_name, get_field_name) != end) {
+      std::ranges::find(it + 1, end, field_name, get_field_name) != end) {
     auto ShadowHostHasTargetName = [&](const auto& p) {
       return base::Contains(p.second.shadow_host_name_attributes, field_name) ||
              base::Contains(p.second.shadow_host_id_attributes, field_name);
     };
-    it = base::ranges::find_if(fields, ShadowHostHasTargetName);
+    it = std::ranges::find_if(fields, ShadowHostHasTargetName);
     if (it != end) {
       label_source =
           base::Contains(it->second.shadow_host_name_attributes, field_name)
@@ -2411,8 +2410,8 @@ FindFormAndFieldForFormControlElement(
     form->set_fields({std::move(field)});
   }
 
-  if (auto it = base::ranges::find(form->fields(), GetFieldRendererId(element),
-                                   &FormFieldData::renderer_id);
+  if (auto it = std::ranges::find(form->fields(), GetFieldRendererId(element),
+                                  &FormFieldData::renderer_id);
       it != form->fields().end()) {
     return std::make_optional(std::make_pair(std::move(*form), raw_ref(*it)));
   }
@@ -2767,12 +2766,12 @@ void TraverseDomForFourDigitCombinations(
   std::vector<WebFormControlElement> form_control_elements;
 
   for (const WebFormElement& form : document.GetTopLevelForms()) {
-    base::ranges::move(GetOwnedFormControls(document, form),
-                       std::back_inserter(form_control_elements));
+    std::ranges::move(GetOwnedFormControls(document, form),
+                      std::back_inserter(form_control_elements));
   }
 
-  base::ranges::move(GetOwnedFormControls(document, WebFormElement()),
-                     std::back_inserter(form_control_elements));
+  std::ranges::move(GetOwnedFormControls(document, WebFormElement()),
+                    std::back_inserter(form_control_elements));
 
   auto extract_four_digit_combinations = [&](WebNode node) {
     if (!node.IsTextNode()) {

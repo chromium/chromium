@@ -24,7 +24,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -178,7 +177,7 @@ bool IsOccludedByMaskCandidates(
     return false;
   }
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       mask_candidates.begin(), mask_candidates.end(),
       [&candidate](const auto& iter) {
         return candidate.occluding_mask_keys.contains(
@@ -518,7 +517,7 @@ gfx::Rect OverlayProcessorUsingStrategy::ComputeDamageExcludingOverlays(
       curr_surface_damage.Intersect(existing_damage);
 
       // Only add damage back in if it is not occluded by any overlays.
-      bool is_occluded = base::ranges::any_of(
+      bool is_occluded = std::ranges::any_of(
           occluding_rects, [&curr_surface_damage](const gfx::Rect& occluder) {
             return occluder.Contains(curr_surface_damage);
           });
@@ -959,7 +958,7 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
   // After sorting in `SortProposedOverlayCandidates()`, all the candidates with
   // display masks will be in the beginning of `sorted_candidates`.
   ConstOverlayProposedCandidateIterator first_candidate_without_masks =
-      base::ranges::find_if(
+      std::ranges::find_if(
           sorted_candidates.begin(), sorted_candidates.end(),
           [](const OverlayProposedCandidate& candidate) {
             return !candidate.candidate.has_rounded_display_masks;

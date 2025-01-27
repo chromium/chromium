@@ -4,6 +4,7 @@
 
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
@@ -13,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -30,7 +30,7 @@ syncer::UniquePosition::Suffix GetSuffix(const std::string& uuid) {
   std::string suffix_str = base::Base64Encode(base::SHA1HashString(uuid));
   syncer::UniquePosition::Suffix suffix;
   CHECK_EQ(suffix.size(), suffix_str.size());
-  base::ranges::copy(suffix_str, suffix.begin());
+  std::ranges::copy(suffix_str, suffix.begin());
   return suffix;
 }
 
@@ -99,7 +99,7 @@ std::vector<sync_pb::ProductComparisonSpecifics> CreateItemLevelSpecifics(
 
 void SortItemSpecifics(
     std::vector<sync_pb::ProductComparisonSpecifics>& item_specifics) {
-  base::ranges::sort(
+  std::ranges::sort(
       item_specifics, [](const auto& specifics_a, const auto& specifics_b) {
         return syncer::UniquePosition::FromProto(
                    specifics_a.product_comparison_item().unique_position())

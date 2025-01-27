@@ -4,12 +4,12 @@
 
 #include "components/browsing_data/content/cookie_helper.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -28,10 +28,10 @@ namespace {
 net::CookieAccessResultList ConvertCookieListToCookieAccessResultList(
     const net::CookieList& cookie_list) {
   net::CookieAccessResultList result;
-  base::ranges::transform(cookie_list, std::back_inserter(result),
-                          [](const net::CanonicalCookie& cookie) {
-                            return net::CookieWithAccessResult{cookie, {}};
-                          });
+  std::ranges::transform(cookie_list, std::back_inserter(result),
+                         [](const net::CanonicalCookie& cookie) {
+                           return net::CookieWithAccessResult{cookie, {}};
+                         });
   return result;
 }
 
@@ -112,14 +112,14 @@ class CookieHelperTest : public testing::Test {
     // For each cookie, look for a matching expectation.
     for (const auto& cookie : cookie_list_) {
       auto match =
-          base::ranges::find_if(cookie_expectations_, CookieMatcher(cookie));
+          std::ranges::find_if(cookie_expectations_, CookieMatcher(cookie));
       if (match != cookie_expectations_.end())
         match->matched_ = true;
     }
 
     // Check that each expectation has been matched.
     unsigned long match_count =
-        base::ranges::count_if(cookie_expectations_, ExpectationIsMatched);
+        std::ranges::count_if(cookie_expectations_, ExpectationIsMatched);
     EXPECT_EQ(cookie_expectations_.size(), match_count);
 
     cookie_expectations_.clear();

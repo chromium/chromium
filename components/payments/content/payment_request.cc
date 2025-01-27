@@ -4,6 +4,7 @@
 
 #include "components/payments/content/payment_request.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/has_enrolled_instrument_query_factory.h"
@@ -161,7 +161,7 @@ void PaymentRequest::Init(
     return;
   }
 
-  if (base::ranges::any_of(method_data, [](const auto& datum) {
+  if (std::ranges::any_of(method_data, [](const auto& datum) {
         return !datum || datum->supported_method.empty();
       })) {
     log_.Error(errors::kMethodNameRequired);
@@ -231,7 +231,7 @@ void PaymentRequest::Init(
     method_categories.push_back(
         JourneyLogger::PaymentMethodCategory::kSecurePaymentConfirmation);
   }
-  if (base::ranges::any_of(
+  if (std::ranges::any_of(
           spec_->url_payment_method_identifiers(), [&](const GURL& url) {
             return url != google_pay_url && url != android_pay_url &&
                    url != google_play_billing_url;

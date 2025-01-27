@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -20,7 +21,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -330,7 +330,7 @@ void ExpireHistoryTest::EnsureURLInfoGone(const URLRow& row, bool expired) {
     EXPECT_EQ(expired, info.is_from_expiration());
     const history::URLRows& rows(info.deleted_rows());
     auto it_row =
-        base::ranges::find_if(rows, history::URLRow::URLRowHasURL(row.url()));
+        std::ranges::find_if(rows, history::URLRow::URLRowHasURL(row.url()));
     if (it_row != rows.end()) {
       // Further verify that the ID is set to what had been in effect in the
       // main database before the deletion. The InMemoryHistoryBackend relies
@@ -342,7 +342,7 @@ void ExpireHistoryTest::EnsureURLInfoGone(const URLRow& row, bool expired) {
   for (const auto& pair : urls_modified_notifications_) {
     const auto& rows = pair.second;
     EXPECT_TRUE(
-        base::ranges::none_of(rows, history::URLRow::URLRowHasURL(row.url())));
+        std::ranges::none_of(rows, history::URLRow::URLRowHasURL(row.url())));
   }
   EXPECT_TRUE(found_delete_notification);
 }
@@ -364,7 +364,7 @@ bool ExpireHistoryTest::ModifiedNotificationSent(
     const bool is_from_expiration = pair.first;
     const auto& rows = pair.second;
     if (is_from_expiration == should_be_from_expiration &&
-        base::ranges::any_of(rows, history::URLRow::URLRowHasURL(url))) {
+        std::ranges::any_of(rows, history::URLRow::URLRowHasURL(url))) {
       return true;
     }
   }

@@ -460,7 +460,7 @@ TEST_F(DefaultSearchManagerTest,
   auto all_engines = TemplateURLPrepopulateData::GetPrepopulatedEngines(
       pref_service(), search_engine_choice_service());
   const auto& builtin_engine =
-      *base::ranges::find_if(all_engines, [](const auto& engine) {
+      *std::ranges::find_if(all_engines, [](const auto& engine) {
         GURL url(engine->url());
         return url.is_valid() && url.host_piece() == "emea.search.yahoo.com";
       });

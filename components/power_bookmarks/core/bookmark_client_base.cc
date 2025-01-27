@@ -49,7 +49,7 @@ void BookmarkClientBase::AddSuggestedSaveLocationProvider(
 
 void BookmarkClientBase::RemoveSuggestedSaveLocationProvider(
     SuggestedSaveLocationProvider* suggestion_provider) {
-  auto it = base::ranges::find(save_location_providers_, suggestion_provider);
+  auto it = std::ranges::find(save_location_providers_, suggestion_provider);
   if (it != save_location_providers_.end()) {
     save_location_providers_.erase(it);
   }

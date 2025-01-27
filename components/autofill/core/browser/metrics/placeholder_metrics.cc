@@ -4,10 +4,11 @@
 
 #include "components/autofill/core/browser/metrics/placeholder_metrics.h"
 
+#include <algorithm>
+
 #include "base/containers/adapters.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/field_types.h"

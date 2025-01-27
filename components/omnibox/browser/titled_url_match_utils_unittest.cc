@@ -4,11 +4,11 @@
 
 #include "components/omnibox/browser/titled_url_match_utils.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -43,7 +43,7 @@ class MockTitledUrlNode : public bookmarks::TitledUrlNode {
   std::vector<std::u16string_view> GetTitledUrlNodeAncestorTitles()
       const override {
     std::vector<std::u16string_view> ancestors;
-    base::ranges::transform(
+    std::ranges::transform(
         ancestors_, std::back_inserter(ancestors),
         [](auto& ancestor) { return std::u16string_view(ancestor); });
     return ancestors;
@@ -118,14 +118,14 @@ TEST_F(TitledUrlMatchUtilsTest, TitledUrlMatchToAutocompleteMatch) {
   EXPECT_EQ(relevance, autocomplete_match.relevance);
   EXPECT_EQ(match_url, autocomplete_match.destination_url);
   EXPECT_EQ(u"google.com", autocomplete_match.contents);
-  EXPECT_TRUE(base::ranges::equal(expected_contents_class,
-                                  autocomplete_match.contents_class))
+  EXPECT_TRUE(std::ranges::equal(expected_contents_class,
+                                 autocomplete_match.contents_class))
       << "EXPECTED: " << ACMatchClassificationsAsString(expected_contents_class)
       << "ACTUAL:   "
       << ACMatchClassificationsAsString(autocomplete_match.contents_class);
   EXPECT_EQ(match_title, autocomplete_match.description);
-  EXPECT_TRUE(base::ranges::equal(expected_description_class,
-                                  autocomplete_match.description_class));
+  EXPECT_TRUE(std::ranges::equal(expected_description_class,
+                                 autocomplete_match.description_class));
   EXPECT_EQ(u"https://www.google.com", autocomplete_match.fill_into_edit);
   EXPECT_TRUE(autocomplete_match.allowed_to_be_default_match);
   EXPECT_EQ(expected_inline_autocompletion,
@@ -176,8 +176,8 @@ TEST_F(TitledUrlMatchUtilsTest, DoTrimHttpScheme) {
 
   EXPECT_EQ(match_url, autocomplete_match.destination_url);
   EXPECT_EQ(expected_contents, autocomplete_match.contents);
-  EXPECT_TRUE(base::ranges::equal(expected_contents_class,
-                                  autocomplete_match.contents_class))
+  EXPECT_TRUE(std::ranges::equal(expected_contents_class,
+                                 autocomplete_match.contents_class))
       << "EXPECTED: " << ACMatchClassificationsAsString(expected_contents_class)
       << "ACTUAL:   "
       << ACMatchClassificationsAsString(autocomplete_match.contents_class);
@@ -204,8 +204,8 @@ TEST_F(TitledUrlMatchUtilsTest, DontTrimHttpSchemeIfInputHasScheme) {
 
   EXPECT_EQ(match_url, autocomplete_match.destination_url);
   EXPECT_EQ(expected_contents, autocomplete_match.contents);
-  EXPECT_TRUE(base::ranges::equal(expected_contents_class,
-                                  autocomplete_match.contents_class))
+  EXPECT_TRUE(std::ranges::equal(expected_contents_class,
+                                 autocomplete_match.contents_class))
       << "EXPECTED: " << ACMatchClassificationsAsString(expected_contents_class)
       << "ACTUAL:   "
       << ACMatchClassificationsAsString(autocomplete_match.contents_class);
@@ -228,8 +228,8 @@ TEST_F(TitledUrlMatchUtilsTest, DoTrimHttpsScheme) {
 
   EXPECT_EQ(match_url, autocomplete_match.destination_url);
   EXPECT_EQ(expected_contents, autocomplete_match.contents);
-  EXPECT_TRUE(base::ranges::equal(expected_contents_class,
-                                  autocomplete_match.contents_class))
+  EXPECT_TRUE(std::ranges::equal(expected_contents_class,
+                                 autocomplete_match.contents_class))
       << "EXPECTED: " << ACMatchClassificationsAsString(expected_contents_class)
       << "ACTUAL:   "
       << ACMatchClassificationsAsString(autocomplete_match.contents_class);
@@ -256,8 +256,8 @@ TEST_F(TitledUrlMatchUtilsTest, DontTrimHttpsSchemeIfInputHasScheme) {
 
   EXPECT_EQ(match_url, autocomplete_match.destination_url);
   EXPECT_EQ(expected_contents, autocomplete_match.contents);
-  EXPECT_TRUE(base::ranges::equal(expected_contents_class,
-                                  autocomplete_match.contents_class))
+  EXPECT_TRUE(std::ranges::equal(expected_contents_class,
+                                 autocomplete_match.contents_class))
       << "EXPECTED: " << ACMatchClassificationsAsString(expected_contents_class)
       << "ACTUAL:   "
       << ACMatchClassificationsAsString(autocomplete_match.contents_class);
@@ -310,14 +310,14 @@ TEST_F(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
   EXPECT_EQ(relevance, autocomplete_match.relevance);
   EXPECT_EQ(match_url, autocomplete_match.destination_url);
   EXPECT_EQ(u"gmail.com/google", autocomplete_match.contents);
-  EXPECT_TRUE(base::ranges::equal(expected_contents_class,
-                                  autocomplete_match.contents_class))
+  EXPECT_TRUE(std::ranges::equal(expected_contents_class,
+                                 autocomplete_match.contents_class))
       << "EXPECTED: " << ACMatchClassificationsAsString(expected_contents_class)
       << "ACTUAL:   "
       << ACMatchClassificationsAsString(autocomplete_match.contents_class);
   EXPECT_EQ(match_title, autocomplete_match.description);
-  EXPECT_TRUE(base::ranges::equal(expected_description_class,
-                                  autocomplete_match.description_class));
+  EXPECT_TRUE(std::ranges::equal(expected_description_class,
+                                 autocomplete_match.description_class));
   EXPECT_EQ(u"www.gmail.com/google", autocomplete_match.fill_into_edit);
   EXPECT_FALSE(autocomplete_match.allowed_to_be_default_match);
   EXPECT_TRUE(autocomplete_match.inline_autocompletion.empty());

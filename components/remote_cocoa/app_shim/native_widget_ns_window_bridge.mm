@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 
@@ -25,7 +26,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #import "components/remote_cocoa/app_shim/NSToolbar+Private.h"
@@ -1738,7 +1738,7 @@ void NativeWidgetNSWindowBridge::RedispatchKeyEvent(
 
 void NativeWidgetNSWindowBridge::RemoveChildWindow(
     NativeWidgetNSWindowBridge* child) {
-  auto location = base::ranges::find(child_windows_, child);
+  auto location = std::ranges::find(child_windows_, child);
   DCHECK(location != child_windows_.end());
   child_windows_.erase(location);
 

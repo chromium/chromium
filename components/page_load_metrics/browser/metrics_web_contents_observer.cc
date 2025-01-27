@@ -13,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/page_load_metrics/browser/metrics_lifecycle_observer.h"
@@ -567,7 +566,7 @@ void MetricsWebContentsObserver::OnCookiesAccessedImpl(
     PageLoadTracker& tracker,
     const content::CookieAccessDetails& details) {
   // TODO(altimin): Propagate `CookieAccessDetails` further.
-  bool is_partitioned_access = base::ranges::all_of(
+  bool is_partitioned_access = std::ranges::all_of(
       details.cookie_access_result_list,
       [](const net::CookieWithAccessResult& cookie_with_access_result) {
         return cookie_with_access_result.cookie.IsPartitioned();

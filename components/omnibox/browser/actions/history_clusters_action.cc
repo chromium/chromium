@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -11,7 +12,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -66,14 +66,14 @@ int TopRelevance(std::vector<AutocompleteMatch>::const_iterator matches_begin,
   if (matches_begin == matches_end)
     return 0;
   std::vector<int> relevances(matches_end - matches_begin);
-  base::ranges::transform(
+  std::ranges::transform(
       matches_begin, matches_end, relevances.begin(), [&](const auto& match) {
         return AutocompleteMatch::IsSearchType(match.type) ==
                        (filter == TopRelevanceFilter::FILTER_FOR_SEARCH_MATCHES)
                    ? match.relevance
                    : 0;
       });
-  return base::ranges::max(relevances);
+  return std::ranges::max(relevances);
 }
 
 bool IsNavigationIntent(int top_search_relevance,
@@ -167,7 +167,7 @@ void AttachHistoryClustersActions(
   // If there's any action in `result`, don't add a history cluster action to
   // avoid over-crowding.
   if (!GetConfig().omnibox_action_with_pedals &&
-      base::ranges::any_of(
+      std::ranges::any_of(
           result, [](const auto& match) { return !match.actions.empty(); })) {
     return;
   }

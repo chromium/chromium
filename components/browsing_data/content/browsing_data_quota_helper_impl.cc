@@ -92,7 +92,7 @@ void BrowsingDataQuotaHelperImpl::GotStorageKeys(
     StorageType type,
     const std::set<blink::StorageKey>& storage_keys) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  int storage_key_count = base::ranges::count_if(
+  int storage_key_count = std::ranges::count_if(
       storage_keys, [](const blink::StorageKey& storage_key) {
         return browsing_data::IsWebScheme(storage_key.origin().scheme());
       });

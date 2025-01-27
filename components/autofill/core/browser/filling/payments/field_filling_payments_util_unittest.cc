@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -97,7 +97,7 @@ AutofillField CreateTestSelectAutofillField(
 size_t GetIndexOfValue(const std::vector<SelectOption>& values,
                        const std::u16string& value) {
   size_t i =
-      base::ranges::find(values, value, &SelectOption::value) - values.begin();
+      std::ranges::find(values, value, &SelectOption::value) - values.begin();
   CHECK_LT(i, values.size()) << "Passing invalid arguments to GetIndexOfValue";
   return i;
 }
@@ -245,7 +245,7 @@ TEST_F(FieldFillingPaymentsUtilTest, FillFormField_Preview_CreditCardField) {
   CreditCard credit_card;
   credit_card.SetNumber(u"4111111111111111");
   // Verify that the field contains 4 but no more than 4 digits.
-  size_t num_digits = base::ranges::count_if(
+  size_t num_digits = std::ranges::count_if(
       GetFillingValueForCreditCard(credit_card, kAppLocale,
                                    mojom::ActionPersistence::kPreview, field),
       &base::IsAsciiDigit<char16_t>);

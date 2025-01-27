@@ -4,6 +4,7 @@
 
 #include "components/ukm/ukm_service.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -20,7 +21,6 @@
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

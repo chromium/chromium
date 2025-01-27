@@ -4,11 +4,11 @@
 
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -172,7 +172,7 @@ void PreferredAppsList::ApplyBulkUpdate(apps::PreferredAppChangesPtr changes) {
     }
 
     bool has_supported_link =
-        base::ranges::any_of(filters, [&app_id](const auto& filter) {
+        std::ranges::any_of(filters, [&app_id](const auto& filter) {
           return apps_util::IsSupportedLinkForApp(app_id, filter);
         });
 

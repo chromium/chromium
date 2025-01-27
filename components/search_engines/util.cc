@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <map>
 #include <set>
@@ -18,7 +19,6 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
@@ -658,5 +658,5 @@ bool DeDupeEncodings(std::vector<std::string>* encodings) {
 TemplateURLService::OwnedTemplateURLVector::iterator FindTemplateURL(
     TemplateURLService::OwnedTemplateURLVector* urls,
     const TemplateURL* url) {
-  return base::ranges::find(*urls, url, &std::unique_ptr<TemplateURL>::get);
+  return std::ranges::find(*urls, url, &std::unique_ptr<TemplateURL>::get);
 }

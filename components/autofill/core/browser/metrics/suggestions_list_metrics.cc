@@ -4,10 +4,11 @@
 
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"

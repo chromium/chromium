@@ -9,7 +9,8 @@
 
 #include "components/history/core/browser/url_utils.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/string_util.h"
 #include "url/gurl.h"
 

@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
@@ -133,8 +132,8 @@ std::vector<raw_ptr<const PasswordForm, VectorExperimental>> MatchesInStore(
 bool AccountStoreMatchesContainForm(
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
     const PasswordForm& form) {
-  DCHECK(base::ranges::all_of(matches, &PasswordForm::IsUsingAccountStore));
-  return base::ranges::any_of(matches, [&form](const PasswordForm* match) {
+  DCHECK(std::ranges::all_of(matches, &PasswordForm::IsUsingAccountStore));
+  return std::ranges::any_of(matches, [&form](const PasswordForm* match) {
     return ArePasswordFormUniqueKeysEqual(*match, form) &&
            match->password_value == form.password_value;
   });
@@ -235,10 +234,10 @@ PasswordForm UpdateFormPreservingDifferentFieldsAcrossStores(
 
 bool AlternativeElementsContainValue(const AlternativeElementVector& elements,
                                      const std::u16string& value) {
-  return base::ranges::any_of(elements,
-                              [&value](const AlternativeElement& element) {
-                                return element.value == value;
-                              });
+  return std::ranges::any_of(elements,
+                             [&value](const AlternativeElement& element) {
+                               return element.value == value;
+                             });
 }
 
 void PopulateAlternativeUsernames(base::span<const PasswordForm> best_matches,
@@ -257,8 +256,8 @@ std::vector<raw_ptr<const PasswordForm, VectorExperimental>> MakeWeakCopies(
     base::span<const PasswordForm> matches) {
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>> result(
       matches.size());
-  base::ranges::transform(matches, result.begin(),
-                          [](const PasswordForm& form) { return &form; });
+  std::ranges::transform(matches, result.begin(),
+                         [](const PasswordForm& form) { return &form; });
   return result;
 }
 

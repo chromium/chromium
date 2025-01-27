@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
 
+#include <algorithm>
+
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 
 namespace autofill {
@@ -91,7 +92,7 @@ std::vector<std::string> RenderEntries(const base::Value::List& entries) {
   for (const base::Value& entry : entries) {
     DCHECK(entry.is_dict());
     std::vector<std::string> rendered_entry = RenderEntry(entry.GetDict());
-    base::ranges::move(rendered_entry, std::back_inserter(result));
+    std::ranges::move(rendered_entry, std::back_inserter(result));
   }
   return result;
 }

@@ -13,7 +13,6 @@
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace query_parser {
@@ -139,7 +138,7 @@ bool QueryNodeWord::HasMatchIn(const QueryWordVector& words,
 }
 
 bool QueryNodeWord::HasMatchIn(const QueryWordVector& words, bool exact) const {
-  return base::ranges::any_of(words, [&](const auto& query_word) {
+  return std::ranges::any_of(words, [&](const auto& query_word) {
     return Matches(query_word.word, exact);
   });
 }
@@ -403,7 +402,7 @@ bool QueryParser::DoesQueryMatch(const QueryWordVector& find_in_words,
                                  bool exact) {
   if (find_nodes.empty() || find_in_words.empty())
     return false;
-  return base::ranges::all_of(find_nodes, [&](const auto& find_node) {
+  return std::ranges::all_of(find_nodes, [&](const auto& find_node) {
     return find_node->HasMatchIn(find_in_words, exact);
   });
 }

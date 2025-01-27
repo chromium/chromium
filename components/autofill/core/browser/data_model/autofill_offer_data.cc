@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/ranges/algorithm.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill {
@@ -134,7 +133,7 @@ bool AutofillOfferData::IsGPayPromoCodeOffer() const {
 
 bool AutofillOfferData::IsActiveAndEligibleForOrigin(const GURL& origin) const {
   return expiry_ > AutofillClock::Now() &&
-         base::ranges::count(merchant_origins_, origin) > 0;
+         std::ranges::count(merchant_origins_, origin) > 0;
 }
 
 AutofillOfferData::AutofillOfferData(

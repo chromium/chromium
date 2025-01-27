@@ -4,11 +4,11 @@
 
 #include "components/trusted_vault/download_keys_response_handler.h"
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"

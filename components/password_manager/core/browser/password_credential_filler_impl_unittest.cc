@@ -4,9 +4,10 @@
 
 #include "components/password_manager/core/browser/password_credential_filler_impl.h"
 
+#include <algorithm>
+
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -61,7 +62,7 @@ const FormData PrepareFormData(
     const std::vector<FormFieldFocusabilityType>& focusability_vector,
     bool has_captcha) {
   std::vector<FormFieldData> fields;
-  base::ranges::transform(
+  std::ranges::transform(
       focusability_vector, std::back_inserter(fields),
       [](FormFieldFocusabilityType type) {
         FormFieldData field;

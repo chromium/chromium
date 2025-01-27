@@ -4,10 +4,10 @@
 
 #include "components/history_clusters/core/similar_visit_deduper_cluster_finalizer.h"
 
+#include <algorithm>
 #include <unordered_map>
 
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 #include "components/history_clusters/core/similar_visit.h"

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <iterator>
 #include <string>
@@ -11,7 +12,6 @@
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1031,7 +1031,7 @@ void AddFieldPredictionsToForm(
     AutofillQueryResponse_FormSuggestion* form_suggestion) {
   std::vector<FieldPrediction> field_predictions;
   field_predictions.reserve(field_types.size());
-  base::ranges::transform(
+  std::ranges::transform(
       field_types, std::back_inserter(field_predictions),
       [](FieldType field_type) { return CreateFieldPrediction(field_type); });
   return AddFieldPredictionsToForm(field_data, field_predictions,

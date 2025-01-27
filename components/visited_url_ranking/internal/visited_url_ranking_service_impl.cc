@@ -183,7 +183,7 @@ ComputeURLVisitAggregates(
 void SortScoredAggregatesAndCallback(
     std::vector<URLVisitAggregate> scored_visits,
     VisitedURLRankingService::RankURLVisitAggregatesCallback callback) {
-  base::ranges::stable_sort(scored_visits, [](const auto& c1, const auto& c2) {
+  std::ranges::stable_sort(scored_visits, [](const auto& c1, const auto& c2) {
     // Sort such that higher scored entries precede lower scored entries.
     return c1.score > c2.score;
   });

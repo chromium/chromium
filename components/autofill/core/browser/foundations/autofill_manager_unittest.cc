@@ -4,13 +4,13 @@
 
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <tuple>
 #include <vector>
 
 #include "base/containers/to_vector.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -119,8 +119,8 @@ auto HaveSameFormIdAs(const FormData& form) {
 auto HaveSameFormIdsAs(const std::vector<FormData>& forms) {
   std::vector<decltype(HaveSameFormIdAs(forms.front()))> matchers;
   matchers.reserve(forms.size());
-  base::ranges::transform(forms, std::back_inserter(matchers),
-                          &HaveSameFormIdAs);
+  std::ranges::transform(forms, std::back_inserter(matchers),
+                         &HaveSameFormIdAs);
   return UnorderedElementsAreArray(matchers);
 }
 

@@ -159,8 +159,8 @@ std::optional<CreditCard> MakeCard(const base::Value::Dict& dict) {
 // collecting all GUIDs to remove first.
 void RemoveAllExistingProfiles(AddressDataManager& adm) {
   std::vector<std::string> existing_guids;
-  base::ranges::transform(adm.GetProfiles(), std::back_inserter(existing_guids),
-                          &AutofillProfile::guid);
+  std::ranges::transform(adm.GetProfiles(), std::back_inserter(existing_guids),
+                         &AutofillProfile::guid);
   for (const std::string& guid : existing_guids) {
     adm.RemoveProfile(guid);
   }

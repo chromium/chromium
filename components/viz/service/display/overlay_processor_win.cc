@@ -4,6 +4,8 @@
 
 #include "components/viz/service/display/overlay_processor_win.h"
 
+#include <algorithm>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -12,8 +14,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -264,12 +264,12 @@ DelegationStatus OverlayProcessorWin::ProcessOverlaysForDelegation(
         frames_since_using_dc_layers_map_,
         [&surface_content_render_passes](const auto& frames_since_kv) {
           const auto& [pass_id, _num_frames] = frames_since_kv;
-          return base::ranges::none_of(surface_content_render_passes,
-                                       [&pass_id](const auto& overlay_data_kv) {
-                                         const auto& [pass, _data] =
-                                             overlay_data_kv;
-                                         return pass_id == pass->id;
-                                       });
+          return std::ranges::none_of(surface_content_render_passes,
+                                      [&pass_id](const auto& overlay_data_kv) {
+                                        const auto& [pass, _data] =
+                                            overlay_data_kv;
+                                        return pass_id == pass->id;
+                                      });
         });
 
     for (auto& [render_pass, overlay_data] : surface_content_render_passes) {
@@ -562,8 +562,8 @@ OverlayProcessorWin::TryDelegatedCompositing(
     // compositing.
     if (dc_layer->rpdq) {
       auto render_pass_it =
-          base::ranges::find(render_passes, dc_layer->rpdq->render_pass_id,
-                             &AggregatedRenderPass::id);
+          std::ranges::find(render_passes, dc_layer->rpdq->render_pass_id,
+                            &AggregatedRenderPass::id);
       CHECK(render_pass_it != render_passes.end());
 
       result.promoted_render_passes_info.promoted_render_passes.insert(
@@ -623,7 +623,7 @@ DCLayerOverlayProcessor::RenderPassOverlayDataMap OverlayProcessorWin::
         }
 
         // Check if any embedders need to read the backing.
-        if (base::ranges::any_of(embedders, [](const auto& embedder) {
+        if (std::ranges::any_of(embedders, [](const auto& embedder) {
               if (!embedder.is_overlay) {
                 // Non-overlay embedders need to be read in viz
                 return true;
@@ -664,7 +664,7 @@ DCLayerOverlayProcessor::RenderPassOverlayDataMap OverlayProcessorWin::
     for (const auto* quad : pass->quad_list) {
       if (const auto* rpdq =
               quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
-        auto it = base::ranges::find(
+        auto it = std::ranges::find(
             promoted_render_passes_info.promoted_render_passes,
             rpdq->render_pass_id, &AggregatedRenderPass ::id);
         if (it == promoted_render_passes_info.promoted_render_passes.end()) {
@@ -675,7 +675,7 @@ DCLayerOverlayProcessor::RenderPassOverlayDataMap OverlayProcessorWin::
 
         embedders[(*it)->id].push_back(Embedder{
             .rpdq = rpdq,
-            .is_overlay = base::ranges::find(
+            .is_overlay = std::ranges::find(
                               promoted_render_passes_info.promoted_rpdqs, rpdq,
                               [](const auto& rpdq) { return &rpdq.get(); }) !=
                           promoted_render_passes_info.promoted_rpdqs.end(),
@@ -728,7 +728,7 @@ gfx::Rect OverlayProcessorWin::InsertSurfaceContentOverlaysAndSetPlaneZOrder(
          const OverlayCandidate& candidate)
       -> DCLayerOverlayProcessor::RenderPassOverlayDataMap::value_type* {
     if (candidate.rpdq) {
-      if (auto it = base::ranges::find(
+      if (auto it = std::ranges::find(
               surface_content_render_passes, candidate.rpdq->render_pass_id,
               [](const auto& kv) { return kv.first->id; });
           it != surface_content_render_passes.end()) {
@@ -809,8 +809,8 @@ gfx::Rect OverlayProcessorWin::InsertSurfaceContentOverlaysAndSetPlaneZOrder(
     auto& [render_pass, overlay_data] = *surface_content_overlay_data;
 
     // Sort the child overlays so we can iterate them back-to-front.
-    base::ranges::sort(overlay_data.promoted_overlays, base::ranges::less(),
-                       &OverlayCandidate::plane_z_order);
+    std::ranges::sort(overlay_data.promoted_overlays, std::ranges::less(),
+                      &OverlayCandidate::plane_z_order);
 
     const gfx::Rect surface_bounds_in_root = gfx::ToRoundedRect(
         OverlayCandidate::DisplayRectInTargetSpace(candidates[rpdq_index]));

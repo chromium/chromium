@@ -63,7 +63,7 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsByKeyword(
           pref_service_, search_engine_choice_service_);
 
   auto engine_iter =
-      base::ranges::find(prepopulated_urls, keyword, &TemplateURLData::keyword);
+      std::ranges::find(prepopulated_urls, keyword, &TemplateURLData::keyword);
 
   std::unique_ptr<TemplateURLData> result;
   if (engine_iter != prepopulated_urls.end()) {
@@ -88,8 +88,8 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
           pref_service_, search_engine_choice_service_);
 
-  auto engine_iter = base::ranges::find(prepopulated_urls, prepopulate_id,
-                                        &TemplateURLData::prepopulate_id);
+  auto engine_iter = std::ranges::find(prepopulated_urls, prepopulate_id,
+                                       &TemplateURLData::prepopulate_id);
 
   std::unique_ptr<TemplateURLData> result;
   if (engine_iter != prepopulated_urls.end()) {

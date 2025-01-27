@@ -314,7 +314,7 @@ base::Time ExtractCreationTimeFromMetadata(
 void SortStoredEntriesByUniquePosition(
     std::vector<proto::SharedTabGroupData>& stored_entries,
     const syncer::EntityMetadataMap& sync_metadata) {
-  base::ranges::stable_sort(
+  std::ranges::stable_sort(
       stored_entries, [&sync_metadata](const proto::SharedTabGroupData& left,
                                        const proto::SharedTabGroupData& right) {
         // Tabs are sorted before groups.
@@ -540,7 +540,7 @@ bool ReversedUniquePositionComparison(
 // unique position, they are placed to the end in an unspecified order.
 void SortByUniquePositionFromRightToLeft(
     std::vector<std::unique_ptr<syncer::EntityChange>>& tab_changes) {
-  base::ranges::sort(tab_changes, &ReversedUniquePositionComparison);
+  std::ranges::sort(tab_changes, &ReversedUniquePositionComparison);
 }
 
 }  // namespace

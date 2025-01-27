@@ -2439,7 +2439,7 @@ std::vector<ClusterVisit> HistoryBackend::ToClusterVisits(
       visit_ids, /*compute_redirect_chain_start_properties=*/false);
   std::vector<ClusterVisit> cluster_visits;
   std::set<VisitID> seen_duplicate_ids;
-  base::ranges::for_each(annotated_visits, [&](const auto& annotated_visit) {
+  std::ranges::for_each(annotated_visits, [&](const auto& annotated_visit) {
     ClusterVisit cluster_visit =
         db_->GetClusterVisit(annotated_visit.visit_row.visit_id);
     // `cluster_visit` should be valid in the normal flow, but DB corruption can
@@ -2451,7 +2451,7 @@ std::vector<ClusterVisit> HistoryBackend::ToClusterVisits(
       cluster_visit.duplicate_visits = ToDuplicateClusterVisits(
           db_->GetDuplicateClusterVisitIdsForClusterVisit(
               annotated_visit.visit_row.visit_id));
-      base::ranges::for_each(
+      std::ranges::for_each(
           cluster_visit.duplicate_visits, [&](const auto& duplicate_visit) {
             seen_duplicate_ids.insert(duplicate_visit.visit_id);
           });

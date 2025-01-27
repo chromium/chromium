@@ -4,8 +4,9 @@
 
 #include "components/password_manager/content/browser/password_form_classification_util.h"
 
+#include <ranges>
+
 #include "base/containers/to_vector.h"
-#include "base/ranges/ranges.h"
 #include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/form_data.h"
@@ -29,14 +30,14 @@ autofill::PasswordFormClassification ClassifyAsPasswordForm(
   }
 
   // Find the form to which `field_id` belongs.
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       renderer_forms.value(),
       [field_id](
           const std::pair<autofill::FormData, content::GlobalRenderFrameHostId>&
               form_rfh_pair) {
         const autofill::FormData& form = form_rfh_pair.first;
-        return base::ranges::find(form.fields(), field_id,
-                                  &autofill::FormFieldData::global_id) !=
+        return std::ranges::find(form.fields(), field_id,
+                                 &autofill::FormFieldData::global_id) !=
                form.fields().end();
       });
   if (it == renderer_forms.value().end()) {

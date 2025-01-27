@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/country_codes/country_codes.h"
 #include "components/pref_registry/pref_registry_syncable.h"

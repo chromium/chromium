@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <iterator>
 #include <limits>
@@ -26,7 +27,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1352,17 +1352,17 @@ TEST_F(HistoryBackendTest, AddPagesWithDetails) {
   EXPECT_EQ(3u, changed_urls.size());
 
   auto it_row1 =
-      base::ranges::find_if(changed_urls, URLRow::URLRowHasURL(row1.url()));
+      std::ranges::find_if(changed_urls, URLRow::URLRowHasURL(row1.url()));
   ASSERT_NE(changed_urls.end(), it_row1);
   EXPECT_EQ(stored_row1.id(), it_row1->id());
 
   auto it_row2 =
-      base::ranges::find_if(changed_urls, URLRow::URLRowHasURL(row2.url()));
+      std::ranges::find_if(changed_urls, URLRow::URLRowHasURL(row2.url()));
   ASSERT_NE(changed_urls.end(), it_row2);
   EXPECT_EQ(stored_row2.id(), it_row2->id());
 
   auto it_row3 =
-      base::ranges::find_if(changed_urls, URLRow::URLRowHasURL(row3.url()));
+      std::ranges::find_if(changed_urls, URLRow::URLRowHasURL(row3.url()));
   ASSERT_NE(changed_urls.end(), it_row3);
   EXPECT_EQ(stored_row3.id(), it_row3->id());
 }

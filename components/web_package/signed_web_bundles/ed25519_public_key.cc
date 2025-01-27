@@ -4,7 +4,8 @@
 
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -47,7 +48,7 @@ base::expected<Ed25519PublicKey, std::string> Ed25519PublicKey::Create(
 Ed25519PublicKey Ed25519PublicKey::Create(
     base::span<const uint8_t, kLength> key) {
   std::array<uint8_t, kLength> bytes;
-  base::ranges::copy(key, bytes.begin());
+  std::ranges::copy(key, bytes.begin());
 
   return Ed25519PublicKey(std::move(bytes));
 }

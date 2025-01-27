@@ -103,7 +103,7 @@ void TrimUsernameOnlyCredentials(std::vector<PasswordForm>& credentials) {
   });
 
   // Set "skip_zero_click" on federated credentials.
-  base::ranges::for_each(credentials, [](PasswordForm& form) {
+  std::ranges::for_each(credentials, [](PasswordForm& form) {
     if (form.scheme == PasswordForm::Scheme::kUsernameOnly) {
       form.skip_zero_click = true;
     }

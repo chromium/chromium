@@ -4,6 +4,7 @@
 
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <list>
 #include <memory>
@@ -18,7 +19,6 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
@@ -108,9 +108,9 @@ void PartitionedLockManager::AcquireLocks(
 bool PartitionedLockManager::RequestsAreOverlapping(
     const base::flat_set<PartitionedLockRequest>& requests_a,
     const base::flat_set<PartitionedLockRequest>& requests_b) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       requests_a, [&requests_b](const PartitionedLockRequest& lock_request_a) {
-        return base::ranges::any_of(
+        return std::ranges::any_of(
             requests_b,
             [&lock_request_a](const PartitionedLockRequest& lock_request_b) {
               return (lock_request_a.type == LockType::kExclusive ||
@@ -127,15 +127,15 @@ PartitionedLockManager::MaybeGrantLocksAndIterate(
   // Do nothing if we can't grant *every* lock. Note that it's important this is
   // `any_of` and not `all_of` (with an inverted predicate) in order to support
   // empty lock requests.
-  if (base::ranges::any_of(requests_iter->lock_requests,
-                           [this](PartitionedLockRequest& request) {
-                             auto it = locks_.find(request.lock_id);
-                             if (it == locks_.end()) {
-                               return false;
-                             }
+  if (std::ranges::any_of(requests_iter->lock_requests,
+                          [this](PartitionedLockRequest& request) {
+                            auto it = locks_.find(request.lock_id);
+                            if (it == locks_.end()) {
+                              return false;
+                            }
 
-                             return !it->second.CanBeAcquired(request.type);
-                           })) {
+                            return !it->second.CanBeAcquired(request.type);
+                          })) {
     return ++requests_iter;
   }
 
@@ -246,7 +246,7 @@ void PartitionedLockManager::LockReleased(PartitionedLockId released_lock_id) {
 
   for (auto iter = request_queue_.begin(); iter != request_queue_.end();) {
     bool exclusive = false;
-    if (!base::ranges::any_of(
+    if (!std::ranges::any_of(
             iter->lock_requests, [&released_lock_id, &exclusive](
                                      PartitionedLockRequest& lock_request) {
               // We found an interesting lock in the given request. Is the

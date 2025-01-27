@@ -17,7 +17,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1497,7 +1496,7 @@ bool AutocompleteMatch::IsVerbatimType() const {
 
 bool AutocompleteMatch::IsVerbatimUrlSuggestion() const {
   return type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
-         base::ranges::any_of(duplicate_matches, [](const auto& match) {
+         std::ranges::any_of(duplicate_matches, [](const auto& match) {
            return match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED;
          });
 }
@@ -1619,7 +1618,7 @@ bool AutocompleteMatch::IsMlScoringEligible() const {
   // If any of the duplicates under this match are ineligible for ML scoring,
   // then the top-level match (this) is also considered ineligible for ML
   // scoring.
-  if (base::ranges::any_of(duplicate_matches, [](const auto& match) {
+  if (std::ranges::any_of(duplicate_matches, [](const auto& match) {
         return !match.IsMlScoringEligible();
       })) {
     return false;
@@ -1645,7 +1644,7 @@ void AutocompleteMatch::FilterOmniboxActions(
 
   // Find the type of object we can keep.
   auto allowed_action_id_iter =
-      base::ranges::find_if(allowed_action_ids, [this](auto allowed_action_id) {
+      std::ranges::find_if(allowed_action_ids, [this](auto allowed_action_id) {
         return GetActionWhere([allowed_action_id](const auto& action) {
                  return action->ActionId() == allowed_action_id;
                }) != nullptr;
@@ -1709,9 +1708,9 @@ bool AutocompleteMatch::IsTrivialAutocompletion() const {
 }
 
 bool AutocompleteMatch::SupportsDeletion() const {
-  return deletable ||
-         base::ranges::any_of(duplicate_matches,
-                              [](const auto& m) { return m.deletable; });
+  return deletable || std::ranges::any_of(duplicate_matches, [](const auto& m) {
+           return m.deletable;
+         });
 }
 
 AutocompleteMatch

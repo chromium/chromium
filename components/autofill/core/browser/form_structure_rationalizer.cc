@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"

@@ -4,13 +4,13 @@
 
 #include "components/password_manager/core/browser/store_metrics_reporter.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -327,8 +327,8 @@ void ReportPasswordNotesMetrics(
       GetMetricsSuffixForStore(is_account_store);
 
   int credentials_with_non_empty_notes_count =
-      base::ranges::count_if(forms, [](const auto& form) {
-        return base::ranges::any_of(
+      std::ranges::count_if(forms, [](const auto& form) {
+        return std::ranges::any_of(
             form->notes, [](const auto& note) { return !note.value.empty(); });
       });
 
@@ -340,7 +340,7 @@ void ReportPasswordNotesMetrics(
   const std::string histogram_name =
       base::StrCat({kPasswordManager, suffix_for_store,
                     ".PasswordNotes.CountNotesPerCredential3"});
-  base::ranges::for_each(forms, [histogram_name](const auto& form) {
+  std::ranges::for_each(forms, [histogram_name](const auto& form) {
     if (!form->notes.empty()) {
       base::UmaHistogramCounts100(histogram_name, form->notes.size());
     }
@@ -399,7 +399,7 @@ void ReportSyncingAccountStateMetrics(
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
   const GURL gaia_signon_realm =
       GaiaUrls::GetInstance()->gaia_origin().GetURL();
-  bool syncing_account_saved = base::ranges::any_of(
+  bool syncing_account_saved = std::ranges::any_of(
       forms, [&gaia_signon_realm, &sync_username](const auto& form) {
         return gaia_signon_realm == GURL(form->signon_realm) &&
                gaia::AreEmailsSame(sync_username,
@@ -463,14 +463,14 @@ void ReportDuplicateCredentialsMetrics(
 
 void ReportPasswordIssuesMetrics(
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
-  int count_leaked = base::ranges::count_if(forms, [](const auto& form) {
+  int count_leaked = std::ranges::count_if(forms, [](const auto& form) {
     return form->password_issues.contains(InsecureType::kLeaked);
   });
   base::UmaHistogramCounts100(
       base::StrCat({kPasswordManager, ".CompromisedCredentials3.CountLeaked"}),
       count_leaked);
 
-  int count_phished = base::ranges::count_if(forms, [](const auto& form) {
+  int count_phished = std::ranges::count_if(forms, [](const auto& form) {
     return form->password_issues.contains(InsecureType::kPhished);
   });
   base::UmaHistogramCounts100(

@@ -20,7 +20,6 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
-#import "base/ranges/algorithm.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"

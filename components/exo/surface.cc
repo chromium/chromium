@@ -4,6 +4,7 @@
 
 #include "components/exo/surface.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/display/output_protection_delegate.h"
@@ -18,7 +19,6 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
@@ -100,7 +100,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kStylusOnlyKey, false)
 // with |key|.
 template <typename T, typename U>
 typename T::iterator FindListEntry(T& list, U key) {
-  return base::ranges::find(list, key, &T::value_type::first);
+  return std::ranges::find(list, key, &T::value_type::first);
 }
 
 // Helper function that returns true if |list| contains an entry with |key|.

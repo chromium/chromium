@@ -4,13 +4,13 @@
 
 #include "components/signin/core/browser/dice_account_reconcilor_delegate.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
@@ -116,8 +116,8 @@ void DiceAccountReconcilorDelegate::MatchTokensWithAccountsInCookie(
   auto* accounts_mutator = identity_manager_->GetAccountsMutator();
   for (const CoreAccountInfo& account_info :
        identity_manager_->GetAccountsWithRefreshTokens()) {
-    auto it = base::ranges::find(gaia_accounts, account_info.account_id,
-                                 &gaia::ListedAccount::id);
+    auto it = std::ranges::find(gaia_accounts, account_info.account_id,
+                                &gaia::ListedAccount::id);
     if (it == gaia_accounts.end() || !it->valid) {
       // Account not in the cookie or the account is not valid (session
       // expired) and requires the user to reauth.
@@ -170,9 +170,9 @@ DiceAccountReconcilorDelegate::GetInconsistencyReason(
   std::vector<CoreAccountId> sorted_chrome_accounts(chrome_accounts);
   std::sort(sorted_chrome_accounts.begin(), sorted_chrome_accounts.end());
   bool missing_token =
-      !base::ranges::includes(sorted_chrome_accounts, valid_gaia_accounts_ids);
+      !std::ranges::includes(sorted_chrome_accounts, valid_gaia_accounts_ids);
   bool missing_cookie =
-      !base::ranges::includes(valid_gaia_accounts_ids, sorted_chrome_accounts);
+      !std::ranges::includes(valid_gaia_accounts_ids, sorted_chrome_accounts);
 
   if (missing_token && missing_cookie) {
     return InconsistencyReason::kCookieTokenMismatch;

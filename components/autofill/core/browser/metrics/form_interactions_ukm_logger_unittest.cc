@@ -1685,7 +1685,7 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<
         LogFocusedComplexFormAtFormRemoveTest::ParamType>& info) {
       std::string name = info.param.test_name;
-      base::ranges::replace_if(
+      std::ranges::replace_if(
           name, [](char c) { return !std::isalnum(c); }, '_');
       return name;
     });

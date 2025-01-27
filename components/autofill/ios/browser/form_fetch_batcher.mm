@@ -4,11 +4,12 @@
 
 #import "components/autofill/ios/browser/form_fetch_batcher.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #import "base/task/task_runner.h"
 #import "base/time/time.h"
 #import "components/autofill/core/common/form_data.h"
@@ -30,7 +31,7 @@ std::optional<std::vector<FormData>> ApplyFormFilterIfNeeded(
   }
 
   std::vector<FormData> filtered_forms;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       *forms, std::back_inserter(filtered_forms),
       [&](const std::u16string& name) { return name == *form_name; },
       &FormData::name);

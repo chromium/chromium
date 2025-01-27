@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_sync_bridge.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/base64.h"
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -704,8 +704,8 @@ void AutofillWalletSyncBridge::LogVirtualCardMetadataChanges(
     const std::vector<CreditCard>& new_data) {
   for (const CreditCard& new_card : new_data) {
     // Try to find the old card with same server id.
-    auto old_data_iterator = base::ranges::find(old_data, new_card.server_id(),
-                                                &CreditCard::server_id);
+    auto old_data_iterator = std::ranges::find(old_data, new_card.server_id(),
+                                               &CreditCard::server_id);
 
     // No existing card with the same ID found.
     if (old_data_iterator == old_data.end()) {

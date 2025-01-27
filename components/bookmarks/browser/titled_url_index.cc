@@ -15,7 +15,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/unicodestring.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -238,7 +237,7 @@ std::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
   const std::u16string clean_url =
       CleanUpUrlForMatching(node->GetTitledUrlNodeUrl(), &adjustments);
   std::vector<std::u16string> lower_ancestor_titles;
-  base::ranges::transform(
+  std::ranges::transform(
       node->GetTitledUrlNodeAncestorTitles(),
       std::back_inserter(lower_ancestor_titles),
       [](const auto& ancestor_title) {
@@ -250,7 +249,7 @@ std::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
   // faster, so if it returns false, early exit and avoid the expensive
   // `ExtractQueryWords()` calls.
   bool approximate_match =
-      base::ranges::all_of(query_terms, [&](const auto& word) {
+      std::ranges::all_of(query_terms, [&](const auto& word) {
         if (lower_title.find(word) != std::u16string::npos)
           return true;
         if (clean_url.find(word) != std::u16string::npos)
@@ -342,10 +341,10 @@ TitledUrlIndex::FlatNodeSet TitledUrlIndex::RetrieveNodesMatchingAnyTerms(
   // same, since all terms must either title, URL, or path match; but there'll
   // be much fewer nodes returned.
   std::vector<std::u16string> terms_not_path;
-  base::ranges::copy_if(terms, std::back_inserter(terms_not_path),
-                        [&](const std::u16string& term) {
-                          return !DoesTermMatchPath(term, matching_algorithm);
-                        });
+  std::ranges::copy_if(terms, std::back_inserter(terms_not_path),
+                       [&](const std::u16string& term) {
+                         return !DoesTermMatchPath(term, matching_algorithm);
+                       });
   if (!terms_not_path.empty())
     return RetrieveNodesMatchingAllTerms(terms_not_path, matching_algorithm);
 
@@ -365,7 +364,7 @@ TitledUrlIndex::FlatNodeSet TitledUrlIndex::RetrieveNodesMatchingAnyTerms(
 
   // Sort `matches_per_term` least frequent first. This prevents terms like
   // 'https', which match a lot of nodes, from wasting `max_nodes` capacity.
-  base::ranges::sort(
+  std::ranges::sort(
       matches_per_term,
       [](size_t first, size_t second) { return first < second; },
       [](const auto& matches) { return matches.size(); });

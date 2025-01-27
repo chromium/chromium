@@ -619,7 +619,7 @@ void ShellSurface::OnDidProcessDisplayChanges(
 
   // Keep client surface coordinates in sync with the server when display
   // layouts change.
-  const bool should_update_window_position = base::ranges::any_of(
+  const bool should_update_window_position = std::ranges::any_of(
       configuration_change.display_metrics_changes,
       [id = output_display_id()](
           const DisplayManagerObserver::DisplayMetricsChange& change) {

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/foundations/form_forest.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -18,7 +19,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/foundations/form_forest_util_inl.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -54,8 +54,8 @@ FormData* FormForest::GetFormData(FormGlobalId form, FrameData* frame_data) {
   if (!frame_data) {
     return nullptr;
   }
-  auto it = base::ranges::find(frame_data->child_forms, form.renderer_id,
-                               &FormData::renderer_id);
+  auto it = std::ranges::find(frame_data->child_forms, form.renderer_id,
+                              &FormData::renderer_id);
   return it != frame_data->child_forms.end() ? &*it : nullptr;
 }
 
@@ -63,8 +63,8 @@ FormForest::FrameAndForm FormForest::GetRoot(FormGlobalId form) {
   for (;;) {
     FrameData* frame = GetFrameData(form.frame_token);
     if (!frame->parent_form) {
-      auto it = base::ranges::find(frame->child_forms, form.renderer_id,
-                                   &FormData::renderer_id);
+      auto it = std::ranges::find(frame->child_forms, form.renderer_id,
+                                  &FormData::renderer_id);
       CHECK(it != frame->child_forms.end());
       return {raw_ref(*frame), raw_ref(*it)};
     }
@@ -550,9 +550,9 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserFields(
     // Finds or creates the renderer form from which `browser_field` originated.
     // The form with `form_id` may have been removed from the tree, for example,
     // between a fill and a refill.
-    auto renderer_form = base::ranges::find(result.renderer_forms.rbegin(),
-                                            result.renderer_forms.rend(),
-                                            form_id, &FormData::global_id);
+    auto renderer_form = std::ranges::find(result.renderer_forms.rbegin(),
+                                           result.renderer_forms.rend(),
+                                           form_id, &FormData::global_id);
     if (renderer_form == result.renderer_forms.rend()) {
       const FormData* original_form = mutable_this.GetFormData(form_id);
       if (!original_form) {  // The form with |form_id| may have been removed.

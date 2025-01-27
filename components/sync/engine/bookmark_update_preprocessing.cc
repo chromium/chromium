@@ -116,7 +116,7 @@ UniquePosition::Suffix GenerateUniquePositionSuffixForBookmark(
   std::string suffix_str =
       base::Base64Encode(base::SHA1Hash(base::as_byte_span(hash_input)));
   CHECK_EQ(suffix.size(), suffix_str.size());
-  base::ranges::copy(suffix_str, suffix.begin());
+  std::ranges::copy(suffix_str, suffix.begin());
   return suffix;
 }
 

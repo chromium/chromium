@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <set>
@@ -14,7 +15,6 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -1571,7 +1571,7 @@ CreditCardAccessManager::GetCardUnmaskChallengeOptionForChallengeId(
         card_record_type == CreditCard::RecordType::kMaskedServerCard);
   std::vector<CardUnmaskChallengeOption>& challenge_options =
       risk_based_authentication_response_.card_unmask_challenge_options;
-  auto card_unmask_challenge_options_it = base::ranges::find(
+  auto card_unmask_challenge_options_it = std::ranges::find(
       challenge_options,
       CardUnmaskChallengeOption::ChallengeOptionId(challenge_id),
       &CardUnmaskChallengeOption::id);

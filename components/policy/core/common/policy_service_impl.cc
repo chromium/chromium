@@ -24,7 +24,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -323,7 +322,7 @@ void PolicyServiceImpl::UseLocalTestPolicyProvider(
 }
 
 void PolicyServiceImpl::OnUpdatePolicy(ConfigurationPolicyProvider* provider) {
-  DCHECK_EQ(1, base::ranges::count(providers_, provider));
+  DCHECK_EQ(1, std::ranges::count(providers_, provider));
   refresh_pending_.erase(provider);
   provider_update_pending_.insert(provider);
 
@@ -582,7 +581,7 @@ void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
   // domain status changes to ready. Ignore if scope is unspecified.
   if (policy_domain_status_[POLICY_DOMAIN_CHROME] ==
           PolicyDomainStatus::kPolicyReady &&
-      base::ranges::find(updated_domains, POLICY_DOMAIN_CHROME) !=
+      std::ranges::find(updated_domains, POLICY_DOMAIN_CHROME) !=
           updated_domains.end()) {
     RecordInitializationTime(
         scope_for_metrics_,

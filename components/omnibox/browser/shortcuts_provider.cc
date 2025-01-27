@@ -21,7 +21,6 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -81,14 +80,14 @@ class DestinationURLEqualsURL {
 // Helpers for extracting aggregated factors from a vector of shortcuts.
 const ShortcutsDatabase::Shortcut* ShortestShortcutText(
     const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts) {
-  return *base::ranges::min_element(shortcuts, {}, [](const auto* shortcut) {
+  return *std::ranges::min_element(shortcuts, {}, [](const auto* shortcut) {
     return shortcut->text.length();
   });
 }
 
 const ShortcutsDatabase::Shortcut* MostRecentShortcut(
     const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts) {
-  return *base::ranges::max_element(shortcuts, {}, [](const auto* shortcut) {
+  return *std::ranges::max_element(shortcuts, {}, [](const auto* shortcut) {
     return shortcut->last_access_time;
   });
 }
@@ -103,7 +102,7 @@ int SumNumberOfHits(
 
 const ShortcutsDatabase::Shortcut* ShortestShortcutContent(
     const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts) {
-  return *base::ranges::min_element(shortcuts, {}, [](const auto* shortcut) {
+  return *std::ranges::min_element(shortcuts, {}, [](const auto* shortcut) {
     return shortcut->match_core.contents.length();
   });
 }
@@ -347,7 +346,7 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
     // slot in the URL grouped suggestions. This won't affect the scores of
     // other shortcuts, as they're already scored less than
     // `kShortcutsProviderDefaultMaxRelevance`.
-    const auto best_match = base::ranges::max_element(
+    const auto best_match = std::ranges::max_element(
         shortcut_matches, {}, [](const auto& shortcut_match) {
           return shortcut_match.aggregate_number_of_hits;
         });
@@ -381,7 +380,7 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
   // Create and initialize autocomplete matches from shortcut matches.
   matches_.reserve(shortcut_matches.size() +
                    history_cluster_shortcut_matches.size());
-  base::ranges::transform(
+  std::ranges::transform(
       shortcut_matches, std::back_inserter(matches_),
       [&](const auto& shortcut_match) {
         // Guarantee that all relevance scores are decreasing (but do not assign
@@ -399,7 +398,7 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
       });
 
   ResizeMatches(provider_max_matches_, ignore_provider_limit);
-  base::ranges::transform(
+  std::ranges::transform(
       history_cluster_shortcut_matches, std::back_inserter(matches_),
       [&](const auto& shortcut_match) {
         auto match =

@@ -4,11 +4,11 @@
 
 #include "components/autofill/core/common/dense_set.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -615,7 +615,7 @@ TEST(DenseSetTest, std_set) {
   auto expect_equivalence = [&] {
     EXPECT_EQ(dense_set.empty(), std_set.empty());
     EXPECT_EQ(dense_set.size(), std_set.size());
-    EXPECT_TRUE(base::ranges::equal(dense_set, std_set));
+    EXPECT_TRUE(std::ranges::equal(dense_set, std_set));
   };
 
   auto random_insert = [&] {

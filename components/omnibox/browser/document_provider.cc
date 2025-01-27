@@ -26,7 +26,6 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -185,7 +184,7 @@ bool IsOwnedByUser(const std::string& user, const base::Value::Dict& result) {
   std::vector<const std::string*> owner_emails = ExtractResultList(
       result, "metadata.owner.emailAddresses", "emailAddress");
   const auto lower_user = base::i18n::ToLower(base::UTF8ToUTF16(user));
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       owner_emails,
       [&](const std::u16string& email) { return lower_user == email; },
       [&](const std::string* email) {
@@ -222,7 +221,7 @@ bool IsCompletelyMatchedInTitleOrOwner(const std::u16string& input,
     // It's possible `input` contained 'owner' as a word, as opposed to
     // 'owner:...' as an operator. Ignore this rare edge case for simplicity.
     if (input_word != u"owner" &&
-        base::ranges::none_of(
+        std::ranges::none_of(
             title_and_owner_words, [&](const std::u16string& title_word) {
               return base::StartsWith(title_word, input_word,
                                       base::CompareCase::INSENSITIVE_ASCII);
@@ -861,7 +860,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
 }
 
 void DocumentProvider::CopyCachedMatchesToMatches() {
-  base::ranges::transform(
+  std::ranges::transform(
       matches_cache_, std::back_inserter(matches_),
       [this](auto match) {
         match.allowed_to_be_default_match = false;
@@ -877,7 +876,7 @@ void DocumentProvider::CopyCachedMatchesToMatches() {
 }
 
 void DocumentProvider::SetCachedMatchesScoresTo0() {
-  base::ranges::for_each(matches_cache_, [&](auto& cache_key_match_pair) {
+  std::ranges::for_each(matches_cache_, [&](auto& cache_key_match_pair) {
     cache_key_match_pair.second.relevance = 0;
   });
 }

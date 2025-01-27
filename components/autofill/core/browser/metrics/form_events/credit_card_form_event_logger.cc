@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -11,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"

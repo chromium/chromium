@@ -4,6 +4,7 @@
 
 #include "components/web_package/web_bundle_parser_factory.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/files/file.h"
@@ -11,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -196,8 +196,8 @@ TEST_F(WebBundleParserFactoryTest, GetParserForFileWithRelativeUrls) {
 
   std::vector<GURL> requests;
   requests.reserve(metadata->requests.size());
-  base::ranges::transform(metadata->requests, std::back_inserter(requests),
-                          [](const auto& entry) { return entry.first; });
+  std::ranges::transform(metadata->requests, std::back_inserter(requests),
+                         [](const auto& entry) { return entry.first; });
   EXPECT_THAT(requests, UnorderedElementsAreArray(
                             {GURL("https://test.example.org/absolute-url"),
                              GURL("https://example.com/relative-url-1"),

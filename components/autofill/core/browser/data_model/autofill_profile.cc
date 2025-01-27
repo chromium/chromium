@@ -24,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -1234,7 +1233,7 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
   FieldTypeSet field_types_to_print;
   profile.GetSupportedTypes(&field_types_to_print);
 
-  base::ranges::for_each(field_types_to_print, print_values_lambda);
+  std::ranges::for_each(field_types_to_print, print_values_lambda);
 
   return os;
 }

@@ -4,12 +4,12 @@
 
 #include "components/browsing_data/core/counters/autofill_counter.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -76,7 +76,7 @@ void AutofillCounter::Count() {
                              : period_end_for_testing_;
 
   // Credit cards.
-  num_credit_cards_ = base::ranges::count_if(
+  num_credit_cards_ = std::ranges::count_if(
       personal_data_manager_->payments_data_manager().GetLocalCreditCards(),
       [start, end](const autofill::CreditCard* card) {
         return (card->usage_history().modification_date() >= start &&
@@ -84,7 +84,7 @@ void AutofillCounter::Count() {
       });
 
   // Addresses.
-  num_addresses_ = base::ranges::count_if(
+  num_addresses_ = std::ranges::count_if(
       personal_data_manager_->address_data_manager().GetProfilesByRecordType(
           autofill::AutofillProfile::RecordType::kLocalOrSyncable),
       [start, end](const autofill::AutofillProfile* address) {

@@ -4,7 +4,8 @@
 
 #include "components/web_package/test_support/signed_web_bundles/ed25519_key_pair.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 namespace web_package::test {
@@ -24,7 +25,7 @@ Ed25519KeyPair::Ed25519KeyPair(
     : public_key(Ed25519PublicKey::Create(public_key_bytes)),
       produce_invalid_signature(produce_invalid_signature) {
   std::array<uint8_t, ED25519_PRIVATE_KEY_LEN> private_key_array;
-  base::ranges::copy(private_key_bytes, private_key_array.begin());
+  std::ranges::copy(private_key_bytes, private_key_array.begin());
   private_key = std::move(private_key_array);
 }
 

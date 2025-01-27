@@ -284,7 +284,7 @@ SecurityDelegate* SurfaceTreeHost::GetSecurityDelegate() {
 void SurfaceTreeHost::OnDidProcessDisplayChanges(
     const DisplayConfigurationChange& configuration_change) {
   // The output of the surface may change when the primary display changes.
-  const bool primary_changed = base::ranges::any_of(
+  const bool primary_changed = std::ranges::any_of(
       configuration_change.display_metrics_changes,
       [](const DisplayManagerObserver::DisplayMetricsChange& change) {
         return change.changed_metrics &

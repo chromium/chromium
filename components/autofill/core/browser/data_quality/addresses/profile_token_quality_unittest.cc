@@ -4,12 +4,12 @@
 
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -349,7 +349,7 @@ TEST_P(ProfileTokenQualityObservationDroppingTest,
   EXPECT_TRUE(quality.AddObservationsForFilledForm(
       *bam_.FindCachedFormById(form.global_id()), form, adm()));
   EXPECT_EQ(test.expected_number_of_observations,
-            base::ranges::count_if(test.form_types, [&](FieldType type) {
+            std::ranges::count_if(test.form_types, [&](FieldType type) {
               return !quality.GetObservationTypesForFieldType(type).empty();
             }));
 }

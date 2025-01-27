@@ -4,11 +4,11 @@
 
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -70,7 +70,7 @@ bool IsSectionable(const AutofillField& field) {
 void AssignCreditCardSections(
     base::span<const std::unique_ptr<AutofillField>> fields,
     base::flat_map<LocalFrameToken, size_t>& frame_token_ids) {
-  auto first_cc_field = base::ranges::find_if(
+  auto first_cc_field = std::ranges::find_if(
       fields, [](const std::unique_ptr<AutofillField>& field) {
         return field->Type().group() == FieldTypeGroup::kCreditCard &&
                !field->section();

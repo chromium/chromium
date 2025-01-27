@@ -99,7 +99,7 @@ void FormAutofillHistory::EraseFormFillEntry(FillOperation fill_operation) {
 FormAutofillHistory::FillOperation
 FormAutofillHistory::GetLastFillingOperationForField(
     FieldGlobalId field_id) const {
-  return FillOperation(base::ranges::find_if(
+  return FillOperation(std::ranges::find_if(
       history_, [&field_id](const FormFillingEntry& operation) {
         return operation.field_filling_entries.contains(field_id);
       }));

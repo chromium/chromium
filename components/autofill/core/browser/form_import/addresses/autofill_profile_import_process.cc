@@ -4,11 +4,11 @@
 
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 
+#include <algorithm>
 #include <map>
 
 #include "base/check_deref.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"

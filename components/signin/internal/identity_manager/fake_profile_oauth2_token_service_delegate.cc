@@ -4,13 +4,13 @@
 
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 
+#include <algorithm>
 #include <list>
 #include <memory>
 #include <optional>
 #include <vector>
 
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -150,7 +150,7 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
     FireRefreshTokenRevoked(account_id);
   } else {
     // Look for the account ID in the list, and if it is not present append it.
-    if (base::ranges::find(account_ids_, account_id) == account_ids_.end()) {
+    if (std::ranges::find(account_ids_, account_id) == account_ids_.end()) {
       account_ids_.push_back(account_id);
     }
     refresh_tokens_[account_id] = token;

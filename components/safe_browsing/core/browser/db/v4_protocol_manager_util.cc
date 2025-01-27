@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/base64.h"
@@ -11,7 +12,6 @@
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -611,9 +611,9 @@ void V4ProtocolManagerUtil::SetClientInfoFromConfig(
 void V4ProtocolManagerUtil::GetListClientStatesFromStoreStateMap(
     const std::unique_ptr<StoreStateMap>& store_state_map,
     std::vector<std::string>* list_client_states) {
-  base::ranges::transform(*store_state_map,
-                          std::back_inserter(*list_client_states),
-                          &StoreStateMap::value_type::second);
+  std::ranges::transform(*store_state_map,
+                         std::back_inserter(*list_client_states),
+                         &StoreStateMap::value_type::second);
 }
 
 }  // namespace safe_browsing

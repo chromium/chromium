@@ -4,13 +4,13 @@
 
 #include "components/permissions/permission_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -41,8 +41,8 @@ void PermissionStatusVectorCallbackWrapper(
     base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback,
     const std::vector<ContentSetting>& content_settings) {
   std::vector<PermissionStatus> permission_statuses;
-  base::ranges::transform(content_settings, back_inserter(permission_statuses),
-                          PermissionUtil::ContentSettingToPermissionStatus);
+  std::ranges::transform(content_settings, back_inserter(permission_statuses),
+                         PermissionUtil::ContentSettingToPermissionStatus);
   std::move(callback).Run(permission_statuses);
 }
 
@@ -226,9 +226,9 @@ void PermissionManager::RequestPermissionsInternal(
     base::OnceCallback<void(const std::vector<PermissionStatus>&)>
         permission_status_callback) {
   std::vector<ContentSettingsType> permissions;
-  base::ranges::transform(request_description.permissions,
-                          back_inserter(permissions),
-                          PermissionUtil::PermissionTypeToContentSettingsType);
+  std::ranges::transform(request_description.permissions,
+                         back_inserter(permissions),
+                         PermissionUtil::PermissionTypeToContentSettingsType);
 
   base::OnceCallback<void(const std::vector<ContentSetting>&)> callback =
       base::BindOnce(&PermissionStatusVectorCallbackWrapper,

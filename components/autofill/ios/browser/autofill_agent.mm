@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <algorithm>
 #import <cstdint>
 #import <memory>
 #import <optional>
@@ -26,7 +27,6 @@
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/field_trial.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -136,7 +136,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
 bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   auto it =
-      base::ranges::find(form.fields(), field_id, &FormFieldData::renderer_id);
+      std::ranges::find(form.fields(), field_id, &FormFieldData::renderer_id);
   return it != form.fields().end() && it->is_focusable();
 }
 

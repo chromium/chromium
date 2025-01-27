@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_manager_util.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -12,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -389,7 +389,7 @@ TEST(PasswordManagerUtil, FindBestMatches) {
             test_case.expected_best_matches_indices.at(username);
         size_t actual_index = std::distance(
             matches.begin(),
-            base::ranges::find_if(matches, [&match](const auto& non_federated) {
+            std::ranges::find_if(matches, [&match](const auto& non_federated) {
               return non_federated == match;
             }));
         EXPECT_EQ(expected_index, actual_index);

@@ -184,7 +184,7 @@ void HttpsOnlyModeEnforcelist::RecordMetrics(bool is_nondefault_storage) {
       host_content_settings_map_->GetSettingsForOneType(
           ContentSettingsType::HTTPS_ENFORCED);
   size_t accumulated_host_count = output.size();
-  size_t current_host_count = base::ranges::count_if(
+  size_t current_host_count = std::ranges::count_if(
       output, [](const ContentSettingPatternSource setting) {
         if (!setting.setting_value.is_dict()) {
           return false;

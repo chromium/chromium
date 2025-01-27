@@ -493,7 +493,7 @@ bool AutofillManager::GetCachedFormAndField(
   }
   *form_structure = cached_form;
   auto field_it =
-      base::ranges::find(*cached_form, field_id, &AutofillField::global_id);
+      std::ranges::find(*cached_form, field_id, &AutofillField::global_id);
   *autofill_field = field_it == cached_form->end() ? nullptr : field_it->get();
   return *autofill_field != nullptr;
 }
@@ -609,7 +609,7 @@ void AutofillManager::ParseFormsAsync(
   // Remove duplicates by their FormGlobalId. Otherwise, after moving the forms
   // into `form_structures_`, duplicates may be destroyed and we'd end up with
   // dangling pointers.
-  base::ranges::sort(form_structures, {}, &FormStructure::global_id);
+  std::ranges::sort(form_structures, {}, &FormStructure::global_id);
   auto repeated =
       std::ranges::unique(form_structures, {}, &FormStructure::global_id);
   form_structures.erase(repeated.begin(), repeated.end());
