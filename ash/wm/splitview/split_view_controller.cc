@@ -62,6 +62,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"

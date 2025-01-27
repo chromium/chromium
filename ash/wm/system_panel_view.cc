@@ -4,6 +4,7 @@
 
 #include "ash/wm/system_panel_view.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"

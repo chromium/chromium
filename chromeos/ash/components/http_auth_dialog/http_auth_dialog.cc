@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"

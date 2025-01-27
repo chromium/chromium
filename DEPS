@@ -253,7 +253,7 @@ vars = {
   'screen_ai_windows_386': 'version:127.9',
 
   # siso CIPD package version.
-  'siso_version': 'git_revision:6e20453c920920cade25e28fc443472eb22ddb41',
+  'siso_version': 'git_revision:250e61b595d4f46eeff5901d3218bb2eaecf575b',
 
   # download libaom test data
   'download_libaom_testdata': False,
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'a9957ad88492e09f2701e004d184384d3362f20c',
+    '4dbfbc3d869ffaad055cf4d6b607c8af352efd85',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2889,7 +2889,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-amd64',
-          'version': 'aGSV8FRvSVFoQndmtzdgxKhvRR5fHzqV4Out1xJ8IdQC',
+          'version': 'Cb2Fx5W46eaNENhgoYiw8Tabe1JjHh7MEjab7fYNmjEC',
         },
       ],
       'dep_type': 'cipd',
@@ -4544,7 +4544,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'bd780e555b0cbd6b48ec9cf249daf15a2a8b8da9',
+        'b16022384a86c084a107c1373cf8e4033b723104',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

@@ -8,6 +8,7 @@
 
 #include <math.h>
 
+#include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

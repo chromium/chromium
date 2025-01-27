@@ -7,6 +7,7 @@
 #include <map>
 
 #include "base/check.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"

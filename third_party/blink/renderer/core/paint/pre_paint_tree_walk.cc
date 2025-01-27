@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/pre_paint_tree_walk.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
