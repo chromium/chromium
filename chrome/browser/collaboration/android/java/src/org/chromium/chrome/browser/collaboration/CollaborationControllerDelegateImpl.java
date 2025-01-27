@@ -318,8 +318,19 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
      */
     @CalledByNative
     void onUrlReadyToShare(String groupId, GURL url, long resultCallback) {
-        CollaborationControllerDelegateImplJni.get()
-                .runResultCallback(Outcome.FAILURE, resultCallback);
+        if (mCloseScreenRunnable == null) return;
+        Callback<Boolean> onFinishCallback =
+                (result) -> {
+                    // Close the share dialog that is waiting to finish.
+                    closeScreenIfNeeded();
+                    if (!result) {
+                        CollaborationControllerDelegateImplJni.get()
+                                .runResultCallback(Outcome.FAILURE, resultCallback);
+                    }
+                    CollaborationControllerDelegateImplJni.get()
+                            .runResultCallback(Outcome.SUCCESS, resultCallback);
+                };
+        mDataSharingTabManager.showShareSheet(mActivity, groupId, url, onFinishCallback);
     }
 
     /**
