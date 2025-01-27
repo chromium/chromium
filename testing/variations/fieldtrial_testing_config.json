@@ -4842,14 +4842,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled5MinutesKillDelay",
+                    "name": "EnabledZeroProtectedDiscards_20250124",
                     "params": {
-                        "critical_threshold_percentage": "800",
-                        "priority_app_lmk_delay_list": "com.mojang.minecraftpe,com.cisco.anyconnect.vpn.android.avf,com.cisco.anyconnect.vpn.android.avf:nchs,com.cisco.anyconnect.vpn.android.avf:umbrella,zscaler.com.zschromeosapp,net.openvpn.openvpn,net.openvpn.openvpn:openvpn_service,com.checkpoint.VPN,com.fortinet.forticlient_vpn,com.fast.free.unblock.secure.vpn,com.zscaler.doeprod4522",
-                        "priority_app_lmk_delay_sec": "300"
+                        "critical_protected_threshold_percentage": "0"
                     },
                     "enable_features": [
-                        "ArcPriorityAppLmkDelay",
                         "ChromeOSMemoryPressureSignalStudyArc"
                     ]
                 }
@@ -4863,8 +4860,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Disabled",
-                    "disable_features": [
+                    "name": "EnabledZeroProtectedDiscards_20250124",
+                    "params": {
+                        "critical_protected_threshold_percentage": "0"
+                    },
+                    "enable_features": [
                         "ChromeOSMemoryPressureSignalStudyNonArc"
                     ]
                 }
