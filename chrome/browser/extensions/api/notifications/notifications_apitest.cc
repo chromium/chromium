@@ -241,11 +241,10 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker,
   EXPECT_EQ(kButtonTitle, notification->buttons()[0].title);
 }
 
-// TODO(crbug.com/371431032): Fix the tests below on Android.
-#if !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-
 // Native notifications don't support (or use) observers.
-#if !BUILDFLAG(IS_MAC)
+// TODO(crbug.com/371431032): Port to desktop Android. LoadExtensionAndWait()
+// times out. Also, the test extensions may need to move to manifest V3.
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestByUser) {
   const extensions::Extension* extension =
       LoadExtensionAndWait("notifications/api/by_user");
@@ -331,6 +330,9 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestGetPermissionLevel) {
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/371431032): Port to desktop Android. LoadExtensionAndWait()
+// times out. Also, the test extensions may need to move to manifest V3.
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestOnPermissionLevelChanged) {
   const extensions::Extension* extension =
       LoadExtensionAndWait("notifications/api/permission");
@@ -545,4 +547,4 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestSmallImage) {
   EXPECT_TRUE(notification->small_image_needs_additional_masking());
 }
 
-#endif  // !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_ANDROID)
