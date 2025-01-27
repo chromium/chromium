@@ -4834,6 +4834,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.PictureInPicture.Window.TotalTime" units="ms"
+    expires_after="2025-07-01">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Total time spent on a Picture in Picture window. The timer starts counting
+    every time the Picture in Picture window manager receives a call to enter
+    Picture in Picture; the time elapsed is recorded when the Picture in Picture
+    window manager receives a call to exit Picture in Picture. This metric is
+    recorded regardless of the Picture in Picture window type (document vs
+    video), and of the reason for closing the window (UI interaction, returning
+    back to opener tab, etc.).
+  </summary>
+</histogram>
+
 <histogram name="Media.PipelineStatus.AudioVideo.{VideoCodec}.{Pipeline}"
     enum="PipelineStatus" expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
