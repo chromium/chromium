@@ -176,7 +176,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                         tabGroupModelFilter,
                         dataSharingTabManager,
                         onSuccess);
-            } else if (collaborationEvent == CollaborationEvent.COLLABORATION_REMOVED) {
+            } else if (collaborationEvent == CollaborationEvent.TAB_GROUP_REMOVED) {
                 showCollaborationRemoved(
                         message, activity, messageDispatcher, tabGroupModelFilter, onSuccess);
             } else {

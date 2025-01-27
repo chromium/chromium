@@ -327,7 +327,7 @@ public class InstantMessageDelegateImplUnitTest {
     @Test
     public void testCollaborationRemoved() {
         mDelegate.displayInstantaneousMessage(
-                newInstantMessage(CollaborationEvent.COLLABORATION_REMOVED), mSuccessCallback);
+                newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED), mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
@@ -346,7 +346,7 @@ public class InstantMessageDelegateImplUnitTest {
         when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(TAB_ID);
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt()))
                 .thenReturn(TAB_COUNT_IN_GROUP);
-        InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_REMOVED);
+        InstantMessage message = newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED);
         message.attribution.tabGroupMetadata.lastKnownTitle = "";
         mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
 
