@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.privacy_sandbox;
+package org.chromium.chrome.browser.privacy_sandbox;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -42,6 +42,8 @@ import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.privacy_sandbox.TrackingProtectionDelegate;
+import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** Tests for TrackingProtectionSettings. */
