@@ -423,7 +423,7 @@ void PasswordSaveManagerImpl::Save(const FormData* observed_form,
 
 void PasswordSaveManagerImpl::Blocklist(const PasswordFormDigest& form_digest) {
   CHECK(!client_->IsOffTheRecord());
-  if (IsOptedInForAccountStorage() && AccountStoreIsDefault()) {
+  if (IsOptedInForAccountStorage()) {
     account_store_form_saver_->Blocklist(form_digest);
   } else {
     // For users who aren't yet opted-in to the account storage, we store their
@@ -925,12 +925,6 @@ bool PasswordSaveManagerImpl::IsOptedInForAccountStorage() const {
          client_->GetPasswordFeatureManager()->IsOptedInForAccountStorage();
 }
 
-bool PasswordSaveManagerImpl::AccountStoreIsDefault() const {
-  return account_store_form_saver_ &&
-         client_->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
-             PasswordForm::Store::kAccountStore;
-}
-
 bool PasswordSaveManagerImpl::ShouldStoreGeneratedPasswordsInAccountStore()
     const {
   if (IsOptedInForAccountStorage()) {
@@ -957,13 +951,11 @@ PasswordForm::Store PasswordSaveManagerImpl::GetPasswordStoreForSavingImpl(
       states.account_store_state == PendingCredentialsState::NEW_LOGIN) {
     // If the credential is new to both stores, store it only in the default
     // store.
-    if (AccountStoreIsDefault()) {
+    if (IsOptedInForAccountStorage()) {
       // TODO(crbug.com/40102239): Record UMA for how many passwords get dropped
       // here. In rare cases it could happen that the user *was* opted in when
       // the save dialog was shown, but now isn't anymore.
-      if (IsOptedInForAccountStorage()) {
-        result = result | PasswordForm::Store::kAccountStore;
-      }
+      result = result | PasswordForm::Store::kAccountStore;
     } else {
       result = result | PasswordForm::Store::kProfileStore;
     }

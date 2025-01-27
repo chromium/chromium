@@ -42,11 +42,6 @@ class PasswordFeatureManager {
   // syncer::SyncUserSettings::SetSelectedType().
   virtual bool IsOptedInForAccountStorage() const = 0;
 
-  // Returns the default storage location for signed-in but non-syncing users
-  // (i.e. will new passwords be saved to locally or to the account by default).
-  // Always returns an actual value, never kNotSet.
-  virtual PasswordForm::Store GetDefaultPasswordStore() const = 0;
-
   // Returns the "usage level" of the account-scoped password storage. See
   // definition of PasswordAccountStorageUsageLevel.
   virtual features_util::PasswordAccountStorageUsageLevel

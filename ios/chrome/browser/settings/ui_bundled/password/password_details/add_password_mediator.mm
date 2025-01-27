@@ -140,8 +140,10 @@ bool CheckForDuplicates(
   credential.password = SysNSStringToUTF16(password);
   credential.note = SysNSStringToUTF16(note);
   credential.stored_in = {
-      password_manager::features_util::GetDefaultPasswordStore(_prefService,
-                                                               _syncService)};
+      password_manager::features_util::IsOptedInForAccountStorage(_prefService,
+                                                                  _syncService)
+          ? password_manager::PasswordForm::Store::kAccountStore
+          : password_manager::PasswordForm::Store::kProfileStore};
 
   password_manager::CredentialFacet facet;
   facet.url = self.URL;

@@ -237,8 +237,7 @@ void SaveUpdateBubbleController::ShouldRevealPasswords(
 }
 
 bool SaveUpdateBubbleController::IsUsingAccountStore() {
-  return delegate_->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
-         Store::kAccountStore;
+  return delegate_->GetPasswordFeatureManager()->IsOptedInForAccountStorage();
 }
 
 std::u16string SaveUpdateBubbleController::GetTitle() const {

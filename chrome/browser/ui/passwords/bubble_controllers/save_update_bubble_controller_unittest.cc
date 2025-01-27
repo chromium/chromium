@@ -301,9 +301,8 @@ TEST_F(SaveUpdateBubbleControllerTest, CloseWithoutInteraction) {
 }
 
 TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInLocalStore) {
-  ON_CALL(*password_feature_manager(), GetDefaultPasswordStore)
-      .WillByDefault(
-          Return(password_manager::PasswordForm::Store::kProfileStore));
+  ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
+      .WillByDefault(Return(false));
   PretendPasswordWaiting();
 
   EXPECT_FALSE(controller()->IsCurrentStateUpdate());
@@ -320,9 +319,6 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInLocalStore) {
 }
 
 TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInAccountStoreWhileOptedIn) {
-  ON_CALL(*password_feature_manager(), GetDefaultPasswordStore)
-      .WillByDefault(
-          Return(password_manager::PasswordForm::Store::kAccountStore));
   ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
   PretendPasswordWaiting();
@@ -343,9 +339,6 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInAccountStoreWhileOptedIn) {
 TEST_F(SaveUpdateBubbleControllerTest, ClickUpdateWhileNotOptedIn) {
   // This is testing that updating a password should not trigger an account
   // store opt in flow even if the user isn't opted in.
-  ON_CALL(*password_feature_manager(), GetDefaultPasswordStore)
-      .WillByDefault(
-          Return(password_manager::PasswordForm::Store::kAccountStore));
   ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
       .WillByDefault(Return(false));
   PretendUpdatePasswordWaiting();
@@ -737,9 +730,8 @@ TEST_F(SaveUpdateBubbleControllerTest, UpdateBothStoresAffectsTheAccountStore) {
 TEST_F(SaveUpdateBubbleControllerTest,
        SaveInAccountStoreAffectsTheAccountStore) {
   SetupAccountPasswordStore(sync_service(), prefs());
-  ON_CALL(*password_feature_manager(), GetDefaultPasswordStore)
-      .WillByDefault(
-          Return(password_manager::PasswordForm::Store::kAccountStore));
+  ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
+      .WillByDefault(Return(true));
   PretendPasswordWaiting();
   EXPECT_TRUE(
       controller()->IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount());
@@ -748,9 +740,8 @@ TEST_F(SaveUpdateBubbleControllerTest,
 TEST_F(SaveUpdateBubbleControllerTest,
        SaveInProfileStoreDoesntAffectTheAccountStore) {
   SetupAccountPasswordStore(sync_service(), prefs());
-  ON_CALL(*password_feature_manager(), GetDefaultPasswordStore)
-      .WillByDefault(
-          Return(password_manager::PasswordForm::Store::kProfileStore));
+  ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
+      .WillByDefault(Return(false));
   PretendPasswordWaiting();
   EXPECT_FALSE(
       controller()->IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount());

@@ -112,10 +112,6 @@ bool PasswordManagerClientHelper::ShouldPromptToMovePasswordToAccount(
   if (!feature_manager->IsOptedInForAccountStorage()) {
     return false;
   }
-  if (feature_manager->GetDefaultPasswordStore() ==
-      PasswordForm::Store::kProfileStore) {
-    return false;
-  }
   if (!submitted_manager.IsMovableToAccountStore()) {
     return false;
   }

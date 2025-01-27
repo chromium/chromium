@@ -1185,12 +1185,14 @@ TEST_F(PasswordsPrivateDelegateImplTest, IsAccountStoreDefault) {
 
   auto delegate = CreateDelegate();
 
-  EXPECT_CALL(*(client->GetPasswordFeatureManager()), GetDefaultPasswordStore)
-      .WillOnce(Return(PasswordForm::Store::kAccountStore));
+  EXPECT_CALL(*(client->GetPasswordFeatureManager()),
+              IsOptedInForAccountStorage)
+      .WillOnce(Return(true));
   EXPECT_TRUE(delegate->IsAccountStoreDefault(web_contents.get()));
 
-  EXPECT_CALL(*(client->GetPasswordFeatureManager()), GetDefaultPasswordStore)
-      .WillOnce(Return(PasswordForm::Store::kProfileStore));
+  EXPECT_CALL(*(client->GetPasswordFeatureManager()),
+              IsOptedInForAccountStorage)
+      .WillOnce(Return(false));
   EXPECT_FALSE(delegate->IsAccountStoreDefault(web_contents.get()));
 }
 

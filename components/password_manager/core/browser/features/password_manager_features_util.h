@@ -87,17 +87,6 @@ bool CanCreateAccountStore(const PrefService* pref_service);
 bool IsOptedInForAccountStorage(const PrefService* pref_service,
                                 const syncer::SyncService* sync_service);
 
-// Returns the default storage location for signed-in but non-syncing users
-// (i.e. will new passwords be saved to locally or to the account by default).
-// Always returns an actual value, never kNotSet.
-// |pref_service| must not be null.
-// |sync_service| may be null (commonly the case in incognito mode), in which
-// case this will return kProfileStore.
-// See PasswordFeatureManager::GetDefaultPasswordStore.
-PasswordForm::Store GetDefaultPasswordStore(
-    const PrefService* pref_service,
-    const syncer::SyncService* sync_service);
-
 // See definition of PasswordAccountStorageUserState.
 PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
     const PrefService* pref_service,

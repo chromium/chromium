@@ -871,8 +871,7 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
 
   // If we just saved a password to the account store, notify the IPH tracker
   // about it (so it can decide not to show the IPH again).
-  if (GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
-      password_manager::PasswordForm::Store::kAccountStore) {
+  if (GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
     feature_engagement::TrackerFactory::GetForBrowserContext(
         Profile::FromBrowserContext(web_contents()->GetBrowserContext()))
         ->NotifyEvent("passwords_account_storage_used");

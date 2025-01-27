@@ -69,12 +69,6 @@ bool PasswordFeatureManagerImpl::IsOptedInForAccountStorage() const {
                                                    sync_service_);
 }
 
-PasswordForm::Store PasswordFeatureManagerImpl::GetDefaultPasswordStore()
-    const {
-  DCHECK(pref_service_);
-  return features_util::GetDefaultPasswordStore(pref_service_, sync_service_);
-}
-
 features_util::PasswordAccountStorageUsageLevel
 PasswordFeatureManagerImpl::ComputePasswordAccountStorageUsageLevel() const {
   return features_util::ComputePasswordAccountStorageUsageLevel(pref_service_,

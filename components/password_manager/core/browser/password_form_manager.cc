@@ -416,8 +416,7 @@ bool PasswordFormManager::IsBlocklisted() const {
 }
 
 bool PasswordFormManager::IsMovableToAccountStore() const {
-  if (client_->GetPasswordFeatureManager()->GetDefaultPasswordStore() !=
-      PasswordForm::Store::kAccountStore) {
+  if (!client_->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
     return false;
   }
 
