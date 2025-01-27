@@ -60,6 +60,7 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
  public:
   static constexpr base::TimeDelta kDownloadAccountStateTimeout =
       base::Seconds(1);
+  static constexpr base::TimeDelta kLoadingTimeout = base::Milliseconds(500);
 
   enum class AccountState {
     // There isn't a primary account, or enclave support is disabled.
@@ -205,6 +206,14 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   // Called when the user completes forgot pin flow.
   void OnGpmPinChanged(bool success);
 
+  // Called when the user selects a GPM option, but the enclave is still loading
+  // or the account data hasn't finished downloading yet.
+  void OnGpmSelectedWhileLoading();
+
+  // Called when the enclave is still loading and |loading_timeout_| is
+  // triggered.
+  void OnLoadingTimeout();
+
   // AuthenticatorRequestDialogModel::Observer:
   void OnTrustThisComputer() override;
   void OnGPMPinOptionChanged(bool is_arbitrary) override;
@@ -320,6 +329,11 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
 
   // A timeout to prevent waiting for the security domain service forever.
   std::unique_ptr<base::OneShotTimer> account_state_timeout_;
+
+  // A timeout to prevent waiting for the enclave to load forever. If triggered
+  // while still loading, the user is sent to the mechanism selection screen.
+  // Loading the enclave and downloading account data are not interrupted.
+  base::OneShotTimer loading_timeout_;
 
   // Set to true when the user initiates reset GPM pin flow during UV.
   bool changing_gpm_pin_ = false;

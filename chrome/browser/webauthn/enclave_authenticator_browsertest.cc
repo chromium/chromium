@@ -2310,6 +2310,69 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(browser()->tab_strip_model()->GetTabCount(), 2);
 }
 
+// Tests that if the enclave is the default, but loading takes too long, the
+// user is sent to the mechanism selection screen instead.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       EnclaveIsDefaultButTakesTooLong) {
+  // Set up a trusted vault connection that lets us control the time it
+  // resolves.
+  base::OnceCallback<void(
+      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult)>
+      connection_cb;
+  std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection =
+      std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
+  EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
+                               testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&connection_cb](
+              const CoreAccountInfo&,
+              base::OnceCallback<void(
+                  trusted_vault::
+                      DownloadAuthenticationFactorsRegistrationStateResult)>
+                  callback,
+              base::RepeatingClosure _) mutable {
+            connection_cb = std::move(callback);
+            return std::make_unique<
+                trusted_vault::TrustedVaultConnection::Request>();
+          });
+  delegate_observer_->SetPendingTrustedVaultConnection(std::move(connection));
+
+  // Execute a make credential request.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+
+  // The UI should be made ready, but not shown yet.
+  delegate_observer()->WaitForUI();
+  ASSERT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kNotStarted);
+
+  // Wait for time it takes to decide to jump to the mechanism selection screen.
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  timer_task_runner_->FastForwardBy(GPMEnclaveController::kLoadingTimeout);
+  model_observer()->WaitForStep();
+  EXPECT_FALSE(dialog_model()->ui_disabled_);
+
+  // Select Google Password Manager. This should trigger the loading UI.
+  dialog_model()->OnGPMSelected();
+  EXPECT_TRUE(dialog_model()->ui_disabled_);
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+
+  // Resolve the connection.
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  std::move(connection_cb).Run(std::move(registration_state_result));
+  model_observer()->WaitForStep();
+}
+
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                        GpmEnclaveNeedsReauthOnGoogleCom) {
   // Set the account state to a recoverable signin error.

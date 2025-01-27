@@ -895,6 +895,7 @@ void GPMEnclaveController::SetAccountState(AccountState account_state) {
     pin_is_arbitrary_ = enclave_manager_->has_wrapped_pin() &&
                         enclave_manager_->wrapped_pin_is_arbitrary();
   }
+  loading_timeout_.Stop();
   if (waiting_for_account_state_) {
     std::move(waiting_for_account_state_).Run();
   }
@@ -975,10 +976,7 @@ void GPMEnclaveController::OnGPMSelected() {
     case AccountState::kChecking:
       waiting_for_account_state_ = base::BindOnce(
           &GPMEnclaveController::OnGPMSelected, weak_ptr_factory_.GetWeakPtr());
-      // TODO(rgod): If the model step is `kNotStarted`, no UI is visible yet.
-      // Display a loading dialog after a delay, so it doesn't flicker in case
-      // the account state is fetched quickly.
-      model_->DisableUiOrShowLoadingDialog();
+      OnGpmSelectedWhileLoading();
       break;
 
     case AccountState::kNone:
@@ -1057,10 +1055,10 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 
     case AccountState::kLoading:
     case AccountState::kChecking:
-      model_->DisableUiOrShowLoadingDialog();
       waiting_for_account_state_ =
           base::BindOnce(&GPMEnclaveController::OnGPMPasskeySelected,
                          weak_ptr_factory_.GetWeakPtr(), *selected_cred_id_);
+      OnGpmSelectedWhileLoading();
       break;
 
     case AccountState::kNone:
@@ -1110,6 +1108,25 @@ void GPMEnclaveController::OnGpmPinChanged(bool success) {
   StartTransaction();
   ChangePinControllerImpl::RecordHistogram(
       ChangePinEvent::kCompletedSuccessfully);
+}
+
+void GPMEnclaveController::OnGpmSelectedWhileLoading() {
+  CHECK(waiting_for_account_state_);
+  if (!base::FeatureList::IsEnabled(device::kWebAuthnNoAccountTimeout) ||
+      model_->step() != AuthenticatorRequestDialogModel::Step::kNotStarted) {
+    model_->DisableUiOrShowLoadingDialog();
+    return;
+  }
+  loading_timeout_.Start(FROM_HERE, kLoadingTimeout,
+                         base::BindOnce(&GPMEnclaveController::OnLoadingTimeout,
+                                        weak_ptr_factory_.GetWeakPtr()));
+  return;
+}
+
+void GPMEnclaveController::OnLoadingTimeout() {
+  device::enclave::RecordEvent(device::enclave::Event::kLoadingTimeout);
+  waiting_for_account_state_.Reset();
+  model_->SetStep(AuthenticatorRequestDialogModel::Step::kMechanismSelection);
 }
 
 void GPMEnclaveController::OnTrustThisComputer() {
