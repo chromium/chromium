@@ -567,11 +567,10 @@ DocumentProvider::DocumentProvider(AutocompleteProviderClient* client,
                                    AutocompleteProviderListener* listener)
     : AutocompleteProvider(AutocompleteProvider::TYPE_DOCUMENT),
       client_(client),
+      debouncer_(std::make_unique<AutocompleteProviderDebouncer>(true, 300)),
       matches_cache_(20),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   AddListener(listener);
-
-  debouncer_ = std::make_unique<AutocompleteProviderDebouncer>(true, 300);
 }
 
 DocumentProvider::~DocumentProvider() = default;
