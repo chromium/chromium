@@ -1523,7 +1523,7 @@ chromium-metrics-reviews@google.com.
   <token key="SafeSitesFilter" variants="SafeSitesFilterType"/>
 </histogram>
 
-<histogram name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfLCP"
+<histogram name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfLCP2"
     units="%" expires_after="2025-08-01">
   <owner>chikamune@chromium.org</owner>
   <owner>
@@ -1537,7 +1537,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfNonLCP"
+<histogram
+    name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfNonLCP2"
     units="%" expires_after="2025-08-01">
   <owner>chikamune@chromium.org</owner>
   <owner>

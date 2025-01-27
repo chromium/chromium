@@ -43,9 +43,9 @@ const char kHistogramLCPPImageLoadingPriorityFrequencyOfLCP[] =
 const char kHistogramLCPPImageLoadingPriorityFrequencyOfNonLCP[] =
     HISTOGRAM_PREFIX "ImageLoadingPriority.FrequencyOfNonLCP";
 const char kHistogramLCPPImageLoadingPriorityConfidenceOfLCP[] =
-    HISTOGRAM_PREFIX "ImageLoadingPriority.ConfidenceOfLCP";
+    HISTOGRAM_PREFIX "ImageLoadingPriority.ConfidenceOfLCP2";
 const char kHistogramLCPPImageLoadingPriorityConfidenceOfNonLCP[] =
-    HISTOGRAM_PREFIX "ImageLoadingPriority.ConfidenceOfNonLCP";
+    HISTOGRAM_PREFIX "ImageLoadingPriority.ConfidenceOfNonLCP2";
 }  // namespace internal
 
 namespace {
@@ -151,11 +151,11 @@ void MaybeReportLcpElementLocatorUMA(
     if (lcp_element_locator == actual_lcp_element_locator) {
       base::UmaHistogramPercentage(
           internal::kHistogramLCPPImageLoadingPriorityConfidenceOfLCP,
-          confidence);
+          100 * confidence);
     } else {
       base::UmaHistogramPercentage(
           internal::kHistogramLCPPImageLoadingPriorityConfidenceOfNonLCP,
-          confidence);
+          100 * confidence);
     }
   }
 }
