@@ -104,6 +104,9 @@ class PageActionModel : public PageActionModelInterface {
   std::u16string tooltip_;
   ui::ImageModel action_item_image_;
 
+  // Flag used to disallow reentrant behaviour.
+  bool is_notifying_observers_ = false;
+
   base::ObserverList<PageActionModelObserver> observer_list_;
 };
 
