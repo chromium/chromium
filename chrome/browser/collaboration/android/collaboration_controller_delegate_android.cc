@@ -149,8 +149,20 @@ void CollaborationControllerDelegateAndroid::ShowShareDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultWithGroupTokenCallback result) {
   JNIEnv* env = base::android::AttachCurrentThread();
+
+  if (std::holds_alternative<base::Uuid>(either_id)) {
+    Java_CollaborationControllerDelegateImpl_showShareDialog(
+        env, java_obj_,
+        tab_groups::UuidToJavaString(env, std::get<base::Uuid>(either_id)),
+        /*localId=*/nullptr,
+        conversion::GetJavaResultWithGroupTokenCallbackPtr(std::move(result)));
+    return;
+  }
+
   Java_CollaborationControllerDelegateImpl_showShareDialog(
-      env, java_obj_,
+      env, java_obj_, /*syncId=*/nullptr,
+      tab_groups::TabGroupSyncConversionsBridge::ToJavaTabGroupId(
+          env, std::get<tab_groups::LocalTabGroupID>(either_id)),
       conversion::GetJavaResultWithGroupTokenCallbackPtr(std::move(result)));
 }
 

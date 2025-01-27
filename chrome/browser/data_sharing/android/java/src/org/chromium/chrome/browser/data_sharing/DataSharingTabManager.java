@@ -739,20 +739,6 @@ public class DataSharingTabManager {
             return;
         }
 
-        DataSharingUIDelegate uiDelegate = mDataSharingService.getUiDelegate();
-        DataSharingStringConfig stringConfig =
-                new DataSharingStringConfig.Builder()
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.CREATE_TITLE,
-                                R.string.collaboration_share_group_title)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.CREATE_DESCRIPTION,
-                                R.string.collaboration_share_group_body)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
-                                R.string.collaboration_learn_about_shared_groups)
-                        .build();
-
         DataSharingCreateUiConfig.CreateCallback createCallback =
                 new DataSharingCreateUiConfig.CreateCallback() {
                     @Override
@@ -785,6 +771,37 @@ public class DataSharingTabManager {
                         // TODO(haileywang) : Implement this.
                     }
                 };
+        showShareDialog(activity, tabGroupDisplayName, existingGroup, createCallback);
+    }
+
+    /**
+     * Show the share dialog screen.
+     *
+     * @param activity The activity to show the UI for.
+     * @param tabGroupDisplayName The title of the tab group.
+     * @param existingGroup The {@link SavedTabGroup} instance of the tab group.
+     * @param createCallback The callbacks for the share ui.
+     * @return The session id of the share screen.
+     */
+    public String showShareDialog(
+            Activity activity,
+            String tabGroupDisplayName,
+            SavedTabGroup existingGroup,
+            DataSharingCreateUiConfig.CreateCallback createCallback) {
+        DataSharingUIDelegate uiDelegate = mDataSharingService.getUiDelegate();
+
+        DataSharingStringConfig stringConfig =
+                new DataSharingStringConfig.Builder()
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.CREATE_TITLE,
+                                R.string.collaboration_share_group_title)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.CREATE_DESCRIPTION,
+                                R.string.collaboration_share_group_body)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
+                                R.string.collaboration_learn_about_shared_groups)
+                        .build();
 
         String sessionId =
                 uiDelegate.showCreateFlow(
@@ -799,6 +816,8 @@ public class DataSharingTabManager {
                 sessionId,
                 convertToTabsPreviewList(existingGroup.savedTabs),
                 /* maxFaviconsToFetch= */ 4);
+
+        return sessionId;
     }
 
     private void showShareSheet(

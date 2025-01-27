@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -36,8 +37,10 @@ import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
+import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
@@ -276,5 +279,41 @@ public class CollaborationControllerDelegateImplUnitTest {
         finishCallbackCaptor.getValue().run();
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
+    }
+
+    @Test
+    public void testShowShareDialog() {
+        createDelegate(FlowType.SHARE_OR_MANAGE);
+        long resultCallback = 1;
+        LocalTabGroupId localId = new LocalTabGroupId(new Token(1L, 2L));
+        String collaborationId = "collaborationId";
+        String accessToken = "accessToken";
+        String title = "title";
+
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.localId = localId;
+        savedGroup.collaborationId = collaborationId;
+        savedGroup.title = title;
+
+        doReturn(savedGroup).when(mTabGroupSyncService).getGroup(localId);
+        mCollaborationControllerDelegateImpl.showShareDialog(null, localId, resultCallback);
+        ArgumentCaptor<DataSharingCreateUiConfig.CreateCallback> createCallbackCaptor =
+                ArgumentCaptor.forClass(DataSharingCreateUiConfig.CreateCallback.class);
+        verify(mDataSharingTabManager)
+                .showShareDialog(
+                        eq(mActivity), eq(title), eq(savedGroup), createCallbackCaptor.capture());
+
+        org.chromium.components.sync.protocol.GroupData groupData =
+                org.chromium.components.sync.protocol.GroupData.newBuilder()
+                        .setGroupId(collaborationId)
+                        .setAccessToken(accessToken)
+                        .build();
+        createCallbackCaptor.getValue().onGroupCreatedWithWait(groupData, null);
+        verify(mCollaborationControllerDelegateImplNativeMock)
+                .runResultWithGroupTokenCallback(
+                        eq(Outcome.SUCCESS),
+                        eq(collaborationId),
+                        eq(accessToken),
+                        eq(resultCallback));
     }
 }
