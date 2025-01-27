@@ -4799,7 +4799,7 @@ InterestGroupAuction::LeaderInfo::~LeaderInfo() = default;
 
 InterestGroupAuction::ScoreAdClientData::ScoreAdClientData(
     std::unique_ptr<Bid> bid,
-    scoped_refptr<TrustedSignalsCacheImpl::Handle> cache_handle)
+    std::unique_ptr<TrustedSignalsCacheImpl::Handle> cache_handle)
     : bid(std::move(bid)), cache_handle(std::move(cache_handle)) {}
 
 InterestGroupAuction::ScoreAdClientData::ScoreAdClientData(
@@ -5573,7 +5573,7 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
   seller_worklet_handle_->AuthorizeSubresourceUrls(*url_builder);
 
   auction_worklet::mojom::TrustedSignalsCacheKeyPtr cache_key;
-  scoped_refptr<TrustedSignalsCacheImpl::Handle> cache_handle;
+  std::unique_ptr<TrustedSignalsCacheImpl::Handle> cache_handle;
   // If KVv2 scoring signals are required, the TrustedSignalsCache is enabled,
   // and trusted scoring signals are allowed for the worklet, start fethcing the
   // scoring signals, so can pass the key to retrieve them from the cache to

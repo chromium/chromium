@@ -728,6 +728,13 @@ TrustedSignalsCacheImpl::Handle::Handle(
   compression_group_data_->OnHandleCreated();
 }
 
+TrustedSignalsCacheImpl::Handle::~Handle() {
+  if (compression_group_data_->OnHandleDestroyed() == 0u) {
+    trusted_signals_cache_->OnLastHandleDestroyed(
+        std::move(compression_group_data_));
+  }
+}
+
 base::UnguessableToken
 TrustedSignalsCacheImpl::Handle::compression_group_token() const {
   return compression_group_data_->compression_group_token();
@@ -735,13 +742,6 @@ TrustedSignalsCacheImpl::Handle::compression_group_token() const {
 
 void TrustedSignalsCacheImpl::Handle::StartFetch() {
   compression_group_data_->StartFetch();
-}
-
-TrustedSignalsCacheImpl::Handle::~Handle() {
-  if (compression_group_data_->OnHandleDestroyed() == 0u) {
-    trusted_signals_cache_->OnLastHandleDestroyed(
-        std::move(compression_group_data_));
-  }
 }
 
 bool TrustedSignalsCacheImpl::ReceiverRestrictions::operator==(
@@ -776,7 +776,7 @@ TrustedSignalsCacheImpl::CreateRemote(SignalsType signals_type,
   return out;
 }
 
-scoped_refptr<TrustedSignalsCacheImpl::Handle>
+std::unique_ptr<TrustedSignalsCacheImpl::Handle>
 TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
     const url::Origin& main_frame_origin,
     network::mojom::IPAddressSpace ip_address_space,
@@ -816,8 +816,8 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
       cache_entry->AddInterestGroup(interest_group_name,
                                     trusted_bidding_signals_keys);
       partition_id = cache_entry->partition_id;
-      return base::MakeRefCounted<Handle>(
-          this, scoped_refptr(compression_group_data));
+      return std::make_unique<Handle>(this,
+                                      scoped_refptr(compression_group_data));
     }
 
     // Otherwise, check if the entry is not expired and all necessary values
@@ -827,7 +827,7 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
         cache_entry->ContainsInterestGroup(interest_group_name,
                                            trusted_bidding_signals_keys)) {
       partition_id = cache_entry->partition_id;
-      return base::MakeRefCounted<Handle>(this, compression_group_data);
+      return std::make_unique<Handle>(this, compression_group_data);
     }
 
     // Otherwise, delete the cache entry. Even if its `compression_group_data`
@@ -879,10 +879,10 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
   compression_group_data->AddBiddingEntry(cache_entry_it);
 
   partition_id = cache_entry_it->second.partition_id;
-  return base::MakeRefCounted<Handle>(this, std::move(compression_group_data));
+  return std::make_unique<Handle>(this, std::move(compression_group_data));
 }
 
-scoped_refptr<TrustedSignalsCacheImpl::Handle>
+std::unique_ptr<TrustedSignalsCacheImpl::Handle>
 TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
     const url::Origin& main_frame_origin,
     network::mojom::IPAddressSpace ip_address_space,
@@ -914,8 +914,8 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
     if (!compression_group_data->has_data() ||
         !compression_group_data->IsExpired()) {
       partition_id = cache_entry->partition_id;
-      return base::MakeRefCounted<Handle>(
-          this, scoped_refptr(compression_group_data));
+      return std::make_unique<Handle>(this,
+                                      scoped_refptr(compression_group_data));
     }
 
     // Otherwise, delete the cache entry. Even if its `compression_group_data`
@@ -960,8 +960,7 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
   compression_group_data->AddScoringEntry(cache_entry_it);
 
   partition_id = cache_entry_it->second.partition_id;
-  return base::MakeRefCounted<Handle>(this,
-                                      scoped_refptr(compression_group_data));
+  return std::make_unique<Handle>(this, scoped_refptr(compression_group_data));
 }
 
 scoped_refptr<TrustedSignalsCacheImpl::CompressionGroupData>
