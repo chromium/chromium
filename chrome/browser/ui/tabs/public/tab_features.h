@@ -19,6 +19,7 @@ class PinnedTranslateActionListener;
 class Profile;
 class ReadAnythingSidePanelController;
 class SidePanelRegistry;
+class TranslatePageActionController;
 
 namespace commerce {
 class CommerceUiTabHelper;
@@ -246,8 +247,13 @@ class TabFeatures {
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
-  // Responsible for managing page actions of a tab.
+  // Responsible for managing all page actions of a tab. Other controllers
+  // interact with this to have their feature's page action shown.
   std::unique_ptr<page_actions::PageActionController> page_action_controller_;
+
+  // Responsible for managing the "Translate" page action.
+  std::unique_ptr<TranslatePageActionController>
+      translate_page_action_controller_;
 
   // Contains the recent collaboration message for a shared tab.
   std::unique_ptr<tab_groups::CollaborationMessagingTabData>

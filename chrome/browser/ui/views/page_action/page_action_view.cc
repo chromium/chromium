@@ -42,6 +42,7 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
     // observation. See bug for more explanation.
     action_item_controller_subscription_ =
         controller->CreateActionItemSubscription(action_item_.get());
+    OnPageActionModelChanged(observation_.GetSource());
   } else {
     SetVisible(false);
   }

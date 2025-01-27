@@ -4744,6 +4744,8 @@ static_library("ui") {
       "views/translate/translate_bubble_view.h",
       "views/translate/translate_icon_view.cc",
       "views/translate/translate_icon_view.h",
+      "views/translate/translate_page_action_controller.cc",
+      "views/translate/translate_page_action_controller.h",
       "views/update_recommended_message_box.cc",
       "views/update_recommended_message_box.h",
       "views/upgrade_notification_controller.cc",

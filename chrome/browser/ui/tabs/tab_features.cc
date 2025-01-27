@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
+#include "chrome/browser/ui/views/translate/translate_page_action_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -182,6 +183,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           pinned_actions_model);
   page_action_controller_->Initialize(std::vector<actions::ActionId>(
       page_actions::kActionIds.begin(), page_actions::kActionIds.end()));
+  translate_page_action_controller_ =
+      std::make_unique<TranslatePageActionController>(tab);
 
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);

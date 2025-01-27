@@ -140,6 +140,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_indicator_icon.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
@@ -3264,9 +3265,15 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
     return ShowTranslateBubbleResult::BROWSER_WINDOW_MINIMIZED;
   }
 
-  views::Button* translate_icon =
-      toolbar_button_provider()->GetPageActionIconView(
-          PageActionIconType::kTranslate);
+  views::Button* translate_icon;
+  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    translate_icon =
+        toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
+  } else {
+    translate_icon = toolbar_button_provider()->GetPageActionIconView(
+        PageActionIconType::kTranslate);
+  }
+
   views::View* anchor_view =
       toolbar_button_provider()->GetAnchorView(kActionShowTranslate);
   if (features::IsToolbarPinningEnabled() &&
@@ -3292,12 +3299,19 @@ void BrowserView::StartPartialTranslate(const std::string& source_language,
       ->GetLanguageState()
       ->SetTranslateEnabled(true);
 
+  views::Button* translate_icon;
+  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    translate_icon =
+        toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
+  } else {
+    translate_icon = toolbar_button_provider()->GetPageActionIconView(
+        PageActionIconType::kTranslate);
+  }
+
   TranslateBubbleController::GetOrCreate(GetActiveWebContents())
       ->StartPartialTranslate(
           toolbar_button_provider()->GetAnchorView(kActionShowTranslate),
-          toolbar_button_provider()->GetPageActionIconView(
-              PageActionIconType::kTranslate),
-          source_language, target_language, text_selection);
+          translate_icon, source_language, target_language, text_selection);
 }
 
 void BrowserView::ShowOneClickSigninConfirmation(

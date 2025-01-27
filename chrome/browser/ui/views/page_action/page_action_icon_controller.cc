@@ -61,6 +61,11 @@
 
 namespace {
 
+static constexpr std::array<PageActionIconType, 2> kMigratedPageActionTypes = {
+    PageActionIconType::kLensOverlay,
+    PageActionIconType::kTranslate,
+};
+
 void RecordCTRMetrics(const char* name, PageActionCTREvent event) {
   base::UmaHistogramEnumeration(
       base::StrCat({"PageActionController.", name, ".Icon.CTR2"}), event);
@@ -104,6 +109,13 @@ void PageActionIconController::Init(const PageActionIconParams& params,
   };
 
   for (PageActionIconType type : params.types_enabled) {
+    // When the page action migration is enabled, the new
+    // PageActionContainerView will contain the migrated page action icon.
+    if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+      if (base::Contains(kMigratedPageActionTypes, type)) {
+        continue;
+      }
+    }
     switch (type) {
       case PageActionIconType::kPaymentsOfferNotification:
         add_page_action_icon(
@@ -279,13 +291,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                                              params.page_action_icon_delegate));
         break;
       case PageActionIconType::kLensOverlay:
-        // When the page action migration is enabled, the new
-        // PageActionContainerView will contain the page action icon. To avoid a
-        // duplicated icon, we don't add the LensOverlayPageActionIconView.
-        if (base::FeatureList::IsEnabled(::features::kPageActionsMigration)) {
-          break;
-        }
-
         add_page_action_icon(
             type, std::make_unique<LensOverlayPageActionIconView>(
                       params.browser, params.icon_label_bubble_delegate,
