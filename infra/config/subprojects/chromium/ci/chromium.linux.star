@@ -783,6 +783,97 @@ ci.builder(
 )
 
 ci.builder(
+    name = "linux-oi-rel",
+    description_html = "This builder runs key test suites with OriginKeyedProcessesByDefault (OriginIsolation) enabled, to provide test coverage with the feature enabled.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "linux",
+            "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        name = "linux_oi_tests",
+        targets = [
+            "browser_tests",
+            "unit_tests",
+            "content_browsertests",
+            "content_unittests",
+            "blink_web_tests",
+            "blink_wpt_tests",
+            "chrome_wpt_tests",
+        ],
+        mixins = [
+            "linux-jammy",
+        ],
+        per_test_modifications = {
+            "browser_tests": targets.mixin(
+                args = [
+                    "--enable-feature=OriginKeyedProcessesByDefault",
+                ],
+            ),
+            "unit_tests": targets.mixin(
+                args = [
+                    "--enable-feature=OriginKeyedProcessesByDefault",
+                ],
+            ),
+            "content_browsertests": targets.mixin(
+                args = [
+                    "--enable-feature=OriginKeyedProcessesByDefault",
+                ],
+            ),
+            "content_unittests": targets.mixin(
+                args = [
+                    "--enable-feature=OriginKeyedProcessesByDefault",
+                ],
+            ),
+            "blink_web_tests": targets.mixin(
+                args = [
+                    "--additional-driver-flag=--enable-feature=OriginKeyedProcessesByDefault",
+                ],
+            ),
+            "blink_wpt_tests": targets.mixin(
+                args = [
+                    "--additional-driver-flag=--enable-feature=OriginKeyedProcessesByDefault",
+                ],
+            ),
+            "chrome_wpt_tests": targets.mixin(
+                args = [
+                    "--additional-driver-flag=--enable-feature=OriginKeyedProcessesByDefault",
+                ],
+            ),
+        },
+    ),
+    # Remove the following two lines once the bot is running and green.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "OriginIsolation",
+        short_name = "oi",
+    ),
+    contact_team_email = "chrome-security-architecture@google.com",
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
+)
+
+ci.builder(
     name = "linux-bfcache-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
