@@ -97,8 +97,6 @@ source_set("channel_info") {
   } else if (is_chromeos_ash) {
     sources += [ "channel_info_chromeos.cc" ]
     deps += [ "//chromeos/ash/components/channel" ]
-  } else if (is_chromeos_lacros) {
-    sources += [ "channel_info_lacros.cc" ]
   } else if (is_posix) {
     sources += [ "channel_info_posix.cc" ]
   }
@@ -337,8 +335,6 @@ static_library("common_lib") {
     assert(enable_extensions)
     public_deps += [ "//ash/keyboard/ui" ]
     deps += [ "//ash/constants" ]
-  } else if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
   }
 
   if (is_chromeos) {

@@ -3709,7 +3709,6 @@ if (!is_android) {
         "//chrome/browser/chromeos/video_conference",
         "//chrome/browser/ui/ash:test_support",
         "//chrome/browser/web_applications/app_service",
-        "//chrome/browser/web_applications/app_service:test_support",
         "//chromeos/constants",
         "//chromeos/dbus/dlp:dlp",
         "//chromeos/dbus/regmon",

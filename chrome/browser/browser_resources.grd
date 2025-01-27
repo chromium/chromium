@@ -194,7 +194,7 @@
       </if>
 
       <!-- Desk API extension, enabled on managed ChromeOS devices -->
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="chromeos_ash">
         <include name="IDR_DESK_API_MANIFEST" file="resources\chromeos\desk_api\manifest.json" type="BINDATA" />
       </if>
 

@@ -83,11 +83,7 @@ group("resources") {
     ]
   }
 
-  if (is_chromeos_lacros && enable_extensions) {
-    public_deps += [ "accessibility:extension_resources" ]
-  }
-
-  if (!is_chromeos_lacros && enable_extensions) {
+  if (enable_extensions) {
     public_deps += [ "accessibility:reading_mode_gdocs_extension_resources" ]
   }
 

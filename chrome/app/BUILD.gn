@@ -214,17 +214,6 @@ static_library("test_support") {
     public_deps += [ "//ui/lottie" ]
   }
 
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/cpp:crosapi_constants",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//chromeos/lacros:lacros_paths",
-      "//chromeos/lacros/dbus",
-      "//chromeos/startup",
-    ]
-  }
-
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
     if (is_linux) {

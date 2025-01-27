@@ -172,7 +172,7 @@ source_set("test_support") {
     ]
   }
 
-  if (enable_dice_support || is_chromeos_lacros) {
+  if (enable_dice_support) {
     sources += [
       "cloud/user_policy_signin_service_test_util.cc",
       "cloud/user_policy_signin_service_test_util.h",

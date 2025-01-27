@@ -464,9 +464,6 @@ static_library("safe_browsing") {
           "//chromeos/ash/components/browser_context_helper:browser_context_helper",
         ]
       }
-      if (is_chromeos_lacros) {
-        deps += [ "//chromeos/lacros:lacros" ]
-      }
       if (is_chromeos) {
         deps += [ "//chromeos/components/mgs:mgs" ]
       }

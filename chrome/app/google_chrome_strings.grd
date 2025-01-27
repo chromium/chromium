@@ -1032,7 +1032,7 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- about:browser-switch strings -->
-      <if expr="toolkit_views and not chromeos_lacros and not chromeos_ash">
+      <if expr="toolkit_views and not chromeos_ash">
         <message name="IDS_ABOUT_BROWSER_SWITCH_DESCRIPTION_UNKNOWN_BROWSER" desc="Description shown while waiting for an alternative browser to open, when the browser name is not auto-detected">
           Your system administrator has configured Google Chrome to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME">$1<ex>example.com</ex></ph>.
         </message>
@@ -1076,7 +1076,7 @@ Google Chrome is unable to recover your settings.
           Use Chrome Without an Account
         </message>
       </if>
-      <if expr="not chromeos_ash and not is_android and not chromeos_lacros">
+      <if expr="not chromeos_ash and not is_android">
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE" desc="Title of the web signin interception bubble">
           Continue in a new Chrome profile?
         </message>
@@ -2292,26 +2292,10 @@ Google Chrome is unable to recover your settings.
         </message>
 
         <!-- First Run Experience -->
-        <if expr="chromeos_lacros">
-          <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_TITLE" desc="Title of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
-            Welcome to Chrome, <ph name="ACCOUNT_FIRST_NAME">$1<ex>Jane</ex></ph>
-          </message>
-          <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_NO_NAME_TITLE" desc="Title of the screen shown when the user runs Chrome for the first time. A simple, generic welcome message.">
-            Welcome to Chrome
-          </message>
-          <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_SUBTITLE" desc="Subtitle of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
-            Get your Chrome browser stuff from <ph name="ACCOUNT_EMAIL">$1<ex>Jane.Doe@gmail.com</ex></ph>
-          </message>
-          <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_SESSION_MANAGED_BY_DESCRIPTION" desc="Disclaimer on the landing screen in first run experience for the primary profile, informing that the session is managed by an administrator.">
-            Your account is managed by <ph name="MANAGER_NAME">$1<ex>example.com</ex></ph>. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history, and passwords.
-          </message>
-        </if>
-        <if expr="not chromeos_lacros">
-          <message name="IDS_FRE_SIGN_IN_TITLE_0"
-            desc="This string appears as a heading on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. The tone should be inviting and alluring.">
-            Sign in to Chrome
-          </message>
-        </if>
+        <message name="IDS_FRE_SIGN_IN_TITLE_0"
+          desc="This string appears as a heading on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. The tone should be inviting and alluring.">
+          Sign in to Chrome
+        </message>
 
         <!-- Default Browser Promo -->
         <message name="IDS_FRE_DEFAULT_BROWSER_TITLE" desc="Title for the page that prompts user to set Chrome as their default browser in the first run experience.">
