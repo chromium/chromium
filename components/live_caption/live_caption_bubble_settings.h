@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "caption_bubble_settings.h"
 #include "components/live_caption/caption_bubble_settings.h"
 
 class PrefChangeRegistrar;
