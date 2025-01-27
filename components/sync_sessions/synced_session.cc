@@ -96,8 +96,18 @@ SerializedNavigationEntry SessionNavigationFromSyncData(
 sync_pb::TabNavigation SessionNavigationToSyncData(
     const SerializedNavigationEntry& navigation) {
   sync_pb::TabNavigation sync_data;
-  sync_data.set_virtual_url(navigation.virtual_url().spec());
-  sync_data.set_referrer(navigation.referrer_url().spec());
+  // Note that `virtual_url()` may return an empty or invalid URL. Although
+  // syncable tabs are required to contain at least one valid and syncable URL,
+  // it is possible that navigations earlier in the tab controller history may
+  // contain invalid URLs. The same is true for session data restored from
+  // local storage: SessionStore does not enforce this so it is necessary to
+  // handle empty or invalid URLs here.
+  sync_data.set_virtual_url(navigation.virtual_url().is_valid()
+                                ? navigation.virtual_url().spec()
+                                : std::string());
+  sync_data.set_referrer(navigation.referrer_url().is_valid()
+                             ? navigation.referrer_url().spec()
+                             : std::string());
   sync_data.set_correct_referrer_policy(navigation.referrer_policy());
   sync_data.set_title(base::UTF16ToUTF8(navigation.title()));
 
