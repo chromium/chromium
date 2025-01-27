@@ -473,8 +473,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         updateEmptyLayerColor(mPaneManager.getFocusedPaneSupplier().get());
 
         @ColorInt
-        int backgroundColor =
-                NewTabAnimationsUtils.getBackgroundColor(getContext(), newIsIncognito);
+        int backgroundColor = NewTabAnimationUtils.getBackgroundColor(getContext(), newIsIncognito);
         SyncOneshotSupplierImpl<ShrinkExpandAnimationData> animationDataSupplier =
                 new SyncOneshotSupplierImpl<>();
         HubLayoutAnimatorProvider animatorProvider =

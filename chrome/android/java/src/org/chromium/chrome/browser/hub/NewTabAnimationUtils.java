@@ -11,7 +11,7 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /** Utilities related to new tab animations. */
-public class NewTabAnimationsUtils {
+public class NewTabAnimationUtils {
 
     /**
      * Returns the color for new tab animation background.

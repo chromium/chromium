@@ -37,6 +37,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/PaneOrderController.java",
     "android/java/src/org/chromium/chrome/browser/hub/PresetHubLayoutAnimatorProvider.java",
     "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonData.java",
+    "android/java/src/org/chromium/chrome/browser/hub/RoundedCornerAnimatorUtil.java",
     "android/java/src/org/chromium/chrome/browser/hub/ScrimController.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimationData.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimator.java",
