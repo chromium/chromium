@@ -71,9 +71,10 @@ class FieldClassificationModelHandler
       const FieldClassificationModelEncoder::ModelOutput& output) const;
 
   // Given the confidences returned by the ML model, returns the most likely
-  // type. This is currently just the argmax of `model_output`, mapped to the
-  // corresponding FieldType.
-  FieldType GetMostLikelyType(const std::vector<float>& model_output) const;
+  // type and the confidence in it. This is currently just the argmax of
+  // `model_output`, mapped to the corresponding FieldType.
+  std::pair<FieldType, float> GetMostLikelyType(
+      const std::vector<float>& model_output) const;
 
   // Returns true if the `output` allows to return predictions for `form`.
   bool ShouldEmitPredictions(
