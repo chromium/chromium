@@ -23,6 +23,11 @@ bool ShouldDiscardVisit(const URLVisitAggregate& visit,
                         base::Time current_time,
                         const FetchOptions& options) {
   URLVisitAggregate::URLTypeSet types = visit.GetURLTypes();
+  if (!options.exclude_results_containing_types.empty() &&
+      types.HasAny(options.exclude_results_containing_types)) {
+    return true;
+  }
+
   bool should_discard = true;
   for (URLVisitAggregate::URLType current_url_type : types) {
     auto it = options.result_sources.find(current_url_type);

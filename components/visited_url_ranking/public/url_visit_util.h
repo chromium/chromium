@@ -53,7 +53,9 @@ scoped_refptr<segmentation_platform::InputContext> AsInputContext(
 
 // Returns tab data if it exists for a `URLVisitAggregate`.
 const URLVisitAggregate::TabData* GetTabDataIfExists(
-    const URLVisitAggregate& url_visit_aggregate);
+    const URLVisitAggregate& url_visit_aggregate,
+    const std::vector<Fetcher>& fetchers = std::vector<Fetcher>{
+        Fetcher::kTabModel, Fetcher::kSession});
 
 // Returns a tab if it exists for a `URLVisitAggregate`.
 const URLVisitAggregate::Tab* GetTabIfExists(
