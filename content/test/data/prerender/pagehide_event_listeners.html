@@ -1,0 +1,12 @@
+<html>
+<head></head>
+<body>This page has no title.</body>
+<script>
+    localStorage.clear();
+    addEventListener("pagehide",
+        (event) => {
+            window.localStorage.setItem('pagehideFired', location.href);
+        }
+    );
+</script>
+</html>

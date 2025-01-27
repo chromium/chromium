@@ -7675,6 +7675,7 @@ data/prerender/session_storage.html
 data/prerender/simple_prerender.html
 data/prerender/sw_fallback.js
 data/prerender/test_utils.js
+data/prerender/pagehide_event_listeners.html
 data/prerender/viewport.html
 data/private_aggregation/aggregatable_report_goldens/latest/private_key.txt
 data/private_aggregation/aggregatable_report_goldens/latest/public_key.json

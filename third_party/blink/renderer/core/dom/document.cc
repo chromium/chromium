@@ -4260,9 +4260,11 @@ void Document::DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info) {
     parser_->StopParsing();
   }
 
-  if (IsPrerendering()) {
-    // We do not dispatch unload event while prerendering.
-    return;
+  if (!base::FeatureList::IsEnabled(features::kPageHideEventForPrerender2)) {
+    if (IsPrerendering()) {
+      // We do not dispatch unload event while prerendering.
+      return;
+    }
   }
 
   if (load_event_progress_ == kLoadEventNotRun ||
