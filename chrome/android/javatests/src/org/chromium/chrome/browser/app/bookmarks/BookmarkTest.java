@@ -32,6 +32,7 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.checkHighlightOff;
 import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.checkHighlightPulse;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.Build;
 import android.text.TextUtils;
@@ -109,6 +110,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.MenuUtils;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -162,6 +164,10 @@ public class BookmarkTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    // Use SigninTestRule to ensure accounts are always considered loaded, to ensure the sign-in
+    // promo's visibility. See https://crbug.com/389733589.
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Mock private SyncService mSyncService;
     @Mock private ShoppingService mShoppingService;
@@ -1036,7 +1042,6 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/389733589 - the test is flaky")
     public void testPromoDraggability() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
 
@@ -1044,6 +1049,8 @@ public class BookmarkTest {
         openBookmarkManager();
         BookmarkTestUtil.openMobileBookmarks(mItemsContainer, mDelegate, mBookmarkModel);
 
+        // Ensure that the sign-in promo is visible before testing its draggability.
+        onViewWaiting(withId(R.id.signin_promo_view_container));
         ViewHolder promo = getViewHolderAtIndex(1);
         ImprovedBookmarkRow row = getNthBookmarkRow(1);
         startSelectionThroughMoreMenu(row);
