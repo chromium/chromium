@@ -2720,6 +2720,10 @@ void Browser::SetWebContentsBlocked(content::WebContents* web_contents,
   if (!blocked && contents_is_active && browser_active) {
     web_contents->Focus();
   }
+
+  if (contents_is_active) {
+    window_->SetContentScrimVisibility(/*visible=*/blocked);
+  }
 }
 
 web_modal::WebContentsModalDialogHost*
@@ -2909,6 +2913,9 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
   // Update the bookmark state, since the BrowserWindow may query it during
   // OnActiveTabChanged() below.
   UpdateBookmarkBarState(BOOKMARK_BAR_STATE_CHANGE_TAB_SWITCH);
+
+  bool is_blocked = tab_strip_model_->IsTabBlocked(index);
+  window_->SetContentScrimVisibility(/*visible=*/is_blocked);
 
   // Let the BrowserWindow do its handling.  On e.g. views this changes the
   // focused object, which should happen before we update the toolbar below,
