@@ -31,3 +31,15 @@ promise_test(async (t) => {
   await promise_rejects_dom(
       t, 'InvalidStateError', translator.translate('hello'));
 }, 'AITranslator.translate() fails after destroyed');
+
+promise_test(async t => {
+  const controller = new AbortController();
+  controller.abort();
+
+  const translator =
+      await ai.translator.create({sourceLanguage: 'en', targetLanguage: 'ja'});
+  const translatePromise =
+      translator.translate('hello', {signal: controller.signal});
+
+  await promise_rejects_dom(t, 'AbortError', translatePromise);
+})
