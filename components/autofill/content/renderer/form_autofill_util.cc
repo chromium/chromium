@@ -36,7 +36,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/content/renderer/timing.h"
@@ -2293,8 +2292,6 @@ FormControlType ToAutofillFormControlType(blink::mojom::FormControlType type) {
     case blink::mojom::FormControlType::kTextArea:
       return FormControlType::kTextArea;
     default:
-      SCOPED_CRASH_KEY_NUMBER("Autofill", "form_control_type",
-                              base::to_underlying(type));
       NOTREACHED();
   }
 }
