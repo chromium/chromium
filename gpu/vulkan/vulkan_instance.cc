@@ -432,7 +432,7 @@ bool VulkanInstance::CollectDeviceInfo(VkPhysicalDevice physical_device) {
     static_assert(kVulkanRequiredApiVersion >= VK_API_VERSION_1_1, "");
     if (info.properties.apiVersion >= kVulkanRequiredApiVersion) {
       bool has_drm_extension =
-          base::ranges::any_of(info.extensions, [](const auto& ext) {
+          std::ranges::any_of(info.extensions, [](const auto& ext) {
             return strcmp(ext.extensionName,
                           VK_EXT_PHYSICAL_DEVICE_DRM_EXTENSION_NAME) == 0;
           });

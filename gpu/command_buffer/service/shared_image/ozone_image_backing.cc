@@ -242,7 +242,7 @@ OzoneImageBacking::RetainGLTexturePerContextCache() {
   // fail when doing multiple reimport of dmas (and creating multiple textures
   // from a single image). See https://crbug.com/1498703.
   scoped_refptr<OzoneImageGLTexturesHolder> new_holder;
-  const auto context_cache_pair = base::ranges::find_if(
+  const auto context_cache_pair = std::ranges::find_if(
       per_context_cached_textures_holders_.begin(),
       per_context_cached_textures_holders_.end(),
       [current_context](const auto& holder_per_context) {

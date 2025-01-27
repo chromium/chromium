@@ -9,11 +9,11 @@
 
 #include "gpu/vulkan/vulkan_util.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -267,7 +267,7 @@ bool IsVulkanV2EnabledForAdreno(
   };
 
   const bool is_slow_gpu_for_v2 =
-      base::ranges::any_of(slow_gpus_for_v2, [&](const char* pattern) {
+      std::ranges::any_of(slow_gpus_for_v2, [&](const char* pattern) {
         return base::MatchPattern(device_properties.device_name, pattern);
       });
 
@@ -294,7 +294,7 @@ bool IsVulkanV3EnabledForAdreno(
   };
 
   const bool is_slow_gpu_for_v3 =
-      base::ranges::any_of(slow_gpus_for_v3, [&](const char* pattern) {
+      std::ranges::any_of(slow_gpus_for_v3, [&](const char* pattern) {
         return base::MatchPattern(device_properties.device_name, pattern);
       });
 

@@ -14,6 +14,7 @@
 #include <dawn/native/DawnNative.h>
 #include <dawn/webgpu_cpp.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -21,7 +22,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"

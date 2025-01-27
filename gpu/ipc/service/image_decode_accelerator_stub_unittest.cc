@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -22,7 +23,6 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -114,8 +114,8 @@ uint64_t GetMemoryDumpByteSize(
     const std::string& entry_name) {
   DCHECK(dump);
   auto entry_it =
-      base::ranges::find(dump->entries(), entry_name,
-                         &base::trace_event::MemoryAllocatorDump::Entry::name);
+      std::ranges::find(dump->entries(), entry_name,
+                        &base::trace_event::MemoryAllocatorDump::Entry::name);
   if (entry_it != dump->entries().cend()) {
     EXPECT_EQ(std::string(base::trace_event::MemoryAllocatorDump::kUnitsBytes),
               entry_it->units);

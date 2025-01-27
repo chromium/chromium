@@ -4,6 +4,7 @@
 
 #include "gpu/vulkan/vulkan_device_queue.h"
 
+#include <algorithm>
 #include <array>
 #include <bit>
 #include <cstring>
@@ -13,7 +14,6 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -226,11 +226,11 @@ bool VulkanDeviceQueue::Initialize(
 
   std::vector<const char*> enabled_extensions;
   for (const char* extension : required_extensions) {
-    if (base::ranges::none_of(physical_device_info.extensions,
-                              [extension](const VkExtensionProperties& p) {
-                                return std::strcmp(extension,
-                                                   p.extensionName) == 0;
-                              })) {
+    if (std::ranges::none_of(physical_device_info.extensions,
+                             [extension](const VkExtensionProperties& p) {
+                               return std::strcmp(extension, p.extensionName) ==
+                                      0;
+                             })) {
       // On Fuchsia, some device extensions are provided by layers.
       // TODO(penghuang): checking extensions against layer device extensions
       // too.
@@ -244,11 +244,11 @@ bool VulkanDeviceQueue::Initialize(
   }
 
   for (const char* extension : optional_extensions) {
-    if (base::ranges::none_of(physical_device_info.extensions,
-                              [extension](const VkExtensionProperties& p) {
-                                return std::strcmp(extension,
-                                                   p.extensionName) == 0;
-                              })) {
+    if (std::ranges::none_of(physical_device_info.extensions,
+                             [extension](const VkExtensionProperties& p) {
+                               return std::strcmp(extension, p.extensionName) ==
+                                      0;
+                             })) {
       DLOG(ERROR) << "Optional Vulkan extension " << extension
                   << " is not supported.";
     } else {
