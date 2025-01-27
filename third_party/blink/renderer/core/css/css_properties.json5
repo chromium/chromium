@@ -3431,6 +3431,15 @@
       invalidate: ["layout", "paint"],
     },
     {
+      name: "interest-target-delay",
+      runtime_flag: "HTMLInterestTargetAttribute",
+      longhands: [
+        "interest-target-show-delay", "interest-target-hide-delay"
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      supports_incremental_style: true,
+    },
+    {
       name: "interest-target-show-delay",
       runtime_flag: "HTMLInterestTargetAttribute",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],

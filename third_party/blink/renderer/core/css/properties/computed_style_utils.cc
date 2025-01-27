@@ -4077,9 +4077,8 @@ CSSValuePair* ComputedStyleUtils::ValuesForInlineBlockShorthand(
       shorthand.properties()[1]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
   // Both properties must be specified.
-  if (!start_value || !end_value) {
-    return nullptr;
-  }
+  CHECK(start_value);
+  CHECK(end_value);
 
   auto* pair = MakeGarbageCollected<CSSValuePair>(
       start_value, end_value, CSSValuePair::kDropIdenticalValues);
@@ -4111,6 +4110,24 @@ static CSSValue* ExpandNoneLigaturesValue() {
   list->Append(*CSSIdentifierValue::Create(CSSValueID::kNoHistoricalLigatures));
   list->Append(*CSSIdentifierValue::Create(CSSValueID::kNoContextual));
   return list;
+}
+
+CSSValue* ComputedStyleUtils::ValuesForInterestTargetDelayShorthand(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) {
+  const CSSValue* show_delay =
+      interestTargetDelayShorthand().properties()[0]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  const CSSValue* hide_delay =
+      interestTargetDelayShorthand().properties()[1]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  // Both properties must be specified.
+  CHECK(show_delay);
+  CHECK(hide_delay);
+  return MakeGarbageCollected<CSSValuePair>(show_delay, hide_delay,
+                                            CSSValuePair::kDropIdenticalValues);
 }
 
 CSSValue* ComputedStyleUtils::ValuesForFontVariantProperty(
