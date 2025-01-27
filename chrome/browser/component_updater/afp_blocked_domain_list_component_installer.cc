@@ -135,7 +135,26 @@ AntiFingerprintingBlockedDomainListComponentInstallerPolicy::GetName() const {
 update_client::InstallerAttributes
 AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
     GetInstallerAttributes() const {
-  return update_client::InstallerAttributes();
+  std::string experimental_version = "";
+
+  if (fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionEnabledForIncognitoState(
+              /*is_incognito=*/true)) {
+    experimental_version =
+        fingerprinting_protection_filter::features::kExperimentVersionIncognito
+            .Get();
+  } else if (fingerprinting_protection_filter::features::
+                 IsFingerprintingProtectionEnabledForIncognitoState(
+                     /*is_incognito=*/false)) {
+    experimental_version = fingerprinting_protection_filter::features::
+                               kExperimentVersionNonIncognito.Get();
+  }
+  return {
+      {
+          kExperimentalVersionAttributeName,
+          experimental_version,
+      },
+  };
 }
 
 void RegisterAntiFingerprintingBlockedDomainListComponent(
