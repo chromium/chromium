@@ -22,7 +22,8 @@ infrastructure.
     trigger builds on other builders. When the parent build only compiles and
     the child build only runs tests, we call this model a "builder/tester
     split". The child is referred to as the tester, and the parent (confusingly)
-    referred to as the builder.
+    referred to as the builder. The child might also be referred to as a "thin
+    tester" if it only runs tests remotely.
   * __CI Builder__ or __Post-submit Builder__: A builder that compiles/tests a
     branch of Chromium. Often triggered when changes to the branch are
     submitted, these post-submit builders run on a continuous basis.
