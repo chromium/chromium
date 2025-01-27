@@ -1581,8 +1581,6 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
       sync_service->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
           base::ToVector(gaia_ids, &signin::GaiaIdHash::FromGaiaId));
     }
-    password_manager::features_util::KeepAccountStorageSettingsOnlyForUsers(
-        profile_->GetPrefs(), std::move(gaia_ids).extract());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

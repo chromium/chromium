@@ -75,31 +75,11 @@ PasswordForm::Store PasswordFeatureManagerImpl::GetDefaultPasswordStore()
   return features_util::GetDefaultPasswordStore(pref_service_, sync_service_);
 }
 
-bool PasswordFeatureManagerImpl::IsDefaultPasswordStoreSet() const {
-  return features_util::IsDefaultPasswordStoreSet(pref_service_, sync_service_);
-}
-
 features_util::PasswordAccountStorageUsageLevel
 PasswordFeatureManagerImpl::ComputePasswordAccountStorageUsageLevel() const {
   return features_util::ComputePasswordAccountStorageUsageLevel(pref_service_,
                                                                 sync_service_);
 }
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-void PasswordFeatureManagerImpl::OptInToAccountStorage() {
-  features_util::OptInToAccountStorage(pref_service_, sync_service_);
-}
-
-void PasswordFeatureManagerImpl::OptOutOfAccountStorage() {
-  features_util::OptOutOfAccountStorage(pref_service_, sync_service_);
-}
-
-void PasswordFeatureManagerImpl::SetDefaultPasswordStore(
-    const PasswordForm::Store& store) {
-  features_util::SetDefaultPasswordStore(pref_service_, sync_service_, store);
-}
-
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
 bool PasswordFeatureManagerImpl::ShouldUpdateGmsCore() {

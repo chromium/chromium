@@ -16,7 +16,9 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_prefs.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -162,7 +164,8 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
             PasswordForm::Store::kProfileStore);
 
   // Opt in!
-  OptInToAccountStorage(&pref_service_, &sync_service_);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
   EXPECT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
   // Now the default is saving to the account.
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
@@ -247,7 +250,8 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
   ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
 
   // Opt in.
-  OptInToAccountStorage(&pref_service_, &sync_service_);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   ASSERT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
@@ -289,7 +293,8 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
   // Even if the user is opted in (e.g. from a previous browser run, before
   // local-sync was enabled), the account-scoped storage should remain
   // unavailable.
-  OptInToAccountStorage(&pref_service_, &sync_service_);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
   // The user is *not* considered opted in (even though the corresponding pref
   // is set) since the account storage is completely unavailable.
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
@@ -310,11 +315,13 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account);
 
   // Opt in.
-  OptInToAccountStorage(&pref_service_, &sync_service_);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
   ASSERT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
 
   // Opt out.
-  OptOutOfAccountStorage(&pref_service_, &sync_service_);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, false);
 
   // The default store should be the profile store.
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));

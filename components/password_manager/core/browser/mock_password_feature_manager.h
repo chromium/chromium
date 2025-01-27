@@ -22,7 +22,6 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
               GetDefaultPasswordStore,
               (),
               (override, const));
-  MOCK_METHOD(bool, IsDefaultPasswordStoreSet, (), (override, const));
 
   MOCK_METHOD(features_util::PasswordAccountStorageUsageLevel,
               ComputePasswordAccountStorageUsageLevel,
@@ -32,15 +31,6 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
               IsBiometricAuthenticationBeforeFillingEnabled,
               (),
               (override, const));
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD(void, OptInToAccountStorage, (), (override));
-  MOCK_METHOD(void, OptOutOfAccountStorage, (), (override));
-  MOCK_METHOD(void,
-              SetDefaultPasswordStore,
-              (const PasswordForm::Store& store),
-              (override));
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(bool, ShouldUpdateGmsCore, (), (override));

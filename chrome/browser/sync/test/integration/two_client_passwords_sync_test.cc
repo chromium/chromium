@@ -24,7 +24,10 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/network_change_notifier.h"
@@ -95,12 +98,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
     ASSERT_TRUE(GetClient(i)->SignInPrimaryAccount());
     ASSERT_TRUE(GetClient(i)->AwaitSyncTransportActive());
     ASSERT_FALSE(GetSyncService(i)->IsSyncFeatureEnabled());
-
     // The PASSWORDS are active only if the signin was explicit.
     if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
       // Opt in. PASSWORDS should become active.
-      password_manager::features_util::OptInToAccountStorage(
-          GetProfile(i)->GetPrefs(), GetSyncService(i));
+      GetSyncService(i)->GetUserSettings()->SetSelectedType(
+          syncer::UserSelectableType::kPasswords, true);
     }
     PasswordSyncActiveChecker(GetSyncService(i)).Wait();
   }

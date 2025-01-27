@@ -71,6 +71,8 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/navigation_handle.h"
@@ -857,12 +859,9 @@ void PasswordsPrivateDelegateImpl::SetAccountStorageEnabled(
       client->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
     return;
   }
-  if (!enabled) {
-    client->GetPasswordFeatureManager()->OptOutOfAccountStorage();
-    return;
-  }
-
-  client->GetPasswordFeatureManager()->OptInToAccountStorage();
+  SyncServiceFactory::GetForProfile(profile_)
+      ->GetUserSettings()
+      ->SetSelectedType(syncer::UserSelectableType::kPasswords, enabled);
 }
 
 std::vector<api::passwords_private::PasswordUiEntry>

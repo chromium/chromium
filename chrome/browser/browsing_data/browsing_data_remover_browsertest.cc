@@ -53,6 +53,8 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/clear_site_data_utils.h"
@@ -885,12 +887,10 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
                                       signin::ConsentLevel::kSignin);
 
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    password_manager::features_util::OptOutOfAccountStorage(prefs,
-                                                            sync_service);
-  } else {
-    password_manager::features_util::OptInToAccountStorage(prefs, sync_service);
-  }
+  // TODO(crbug.com/375024026): Revisit.
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords,
+      !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
   ASSERT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
                 prefs, sync_service),
             !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
@@ -917,12 +917,9 @@ IN_PROC_BROWSER_TEST_F(
   signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
                                       signin::ConsentLevel::kSignin);
 
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    password_manager::features_util::OptOutOfAccountStorage(prefs,
-                                                            sync_service);
-  } else {
-    password_manager::features_util::OptInToAccountStorage(prefs, sync_service);
-  }
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords,
+      !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
   ASSERT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
                 prefs, sync_service),
             !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
@@ -1026,13 +1023,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, ClearSiteData) {
     SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
     const auto& test_case = test_cases[i];
 
-    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-      password_manager::features_util::OptOutOfAccountStorage(prefs,
-                                                              sync_service);
-    } else {
-      password_manager::features_util::OptInToAccountStorage(prefs,
-                                                             sync_service);
-    }
+    sync_service->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPasswords,
+        !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
     ASSERT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
                   prefs, sync_service),
               !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
