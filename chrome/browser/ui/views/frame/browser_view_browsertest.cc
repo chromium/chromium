@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -67,7 +66,6 @@
 #include "ui/accessibility/platform/ax_platform_node_test_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
-#include "url/url_constants.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/client/focus_client.h"
@@ -429,36 +427,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
             nullptr);
 }
 #endif  // !BUILDFLAG(IS_MAC)
-
-// Tests that a content area scrim is shown when a tab modal dialog is active.
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForTabModal) {
-  if (base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
-    GTEST_SKIP();
-  }
-
-  content::WebContents* contents = browser_view()->GetActiveWebContents();
-  auto delegate = std::make_unique<TestTabModalConfirmDialogDelegate>(contents);
-
-  // Showing a tab modal dialog will enable the content scrim.
-  TabModalConfirmDialog::Create(std::move(delegate), contents);
-  EXPECT_TRUE(browser_view()->contents_scrim_view()->GetVisible());
-
-  // Goes to a second tab will disable the content scrim.
-  ASSERT_TRUE(
-      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_LINK));
-  EXPECT_FALSE(browser_view()->contents_scrim_view()->GetVisible());
-
-  // Switch back to the page that has a modal dialog.
-  browser()->tab_strip_model()->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kMouse));
-  EXPECT_TRUE(browser_view()->contents_scrim_view()->GetVisible());
-
-  // Closing the tab disables the content scrim.
-  chrome::CloseWebContents(browser(),
-                           browser()->tab_strip_model()->GetActiveWebContents(),
-                           /*add_to_history=*/false);
-}
 
 namespace {
 

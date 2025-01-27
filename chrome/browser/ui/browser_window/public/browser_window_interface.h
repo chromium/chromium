@@ -199,17 +199,6 @@ class BrowserWindowInterface : public content::PageNavigator {
   // migrating a large chunk of code to BrowserWindowInterface, to allow
   // incremental migration.
   virtual Browser* GetBrowserForMigrationOnly() = 0;
-
-  // Changes the blocked state of |web_contents|. WebContentses are considered
-  // blocked while displaying a web contents modal dialog. During that time
-  // renderer host will ignore any UI interaction within WebContents outside of
-  // the currently displaying dialog.
-  // Note that this is a duplicate of the same method in
-  // WebContentsModalDialogManagerDelegate. This is because there are two ways
-  // to open tab-modal dialogs, either via TabDialogManager or via
-  // //components/web_modal. See crbug.com/377820808.
-  virtual void SetWebContentsBlocked(content::WebContents* web_contents,
-                                     bool blocked) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_

@@ -183,12 +183,6 @@ BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// When enabled, a scrim is shown behind tab modal dialogs to cover the content
-// area. This gives user a visual cue that the content area is not interactable.
-BASE_FEATURE(KScrimForTabModal,
-             "ScrimForTabModal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSideBySide, "SideBySide", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSidePanelResizing,

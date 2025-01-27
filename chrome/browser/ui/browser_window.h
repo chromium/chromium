@@ -330,9 +330,6 @@ class BrowserWindow : public ui::BaseWindow,
   // transition if |animate| is true.
   virtual void UpdateCustomTabBarVisibility(bool visible, bool animate) = 0;
 
-  // Updates the visibility of the scrim that covers the content area.
-  virtual void SetContentScrimVisibility(bool visible) = 0;
-
   // Resets the toolbar's tab state for |contents|.
   virtual void ResetToolbarTabState(content::WebContents* contents) = 0;
 
