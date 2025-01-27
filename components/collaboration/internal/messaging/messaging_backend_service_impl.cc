@@ -522,25 +522,21 @@ void MessagingBackendServiceImpl::OnTabGroupChangeNotifierInitialized() {
 }
 
 void MessagingBackendServiceImpl::SetCurrentlySelectedTabOnStartup() {
-  std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
-      selected_tab_id_pair =
-          tab_group_sync_service_->GetCurrentlySelectedTabID();
-  std::optional<base::Uuid> tab_group_id = selected_tab_id_pair.first;
-  std::optional<base::Uuid> tab_id = selected_tab_id_pair.second;
-  if (!tab_group_id || !tab_id) {
+  auto selected_tab = tab_group_sync_service_->GetCurrentlySelectedTabInfo();
+  if (!selected_tab.tab_group_id || !selected_tab.tab_id) {
     // We are missing tab group ID or tab ID, so we will be unable to find the
     // tab.
     return;
   }
   std::optional<tab_groups::SavedTabGroup> tab_group =
-      tab_group_sync_service_->GetGroup(*tab_group_id);
+      tab_group_sync_service_->GetGroup(*selected_tab.tab_group_id);
   if (!tab_group) {
     // This should not happen, but since the API returns an std::optional, we
     // should still do this check to ensure we do not crash when dereferencing
     // `tab_group`.
     return;
   }
-  tab_groups::SavedTabGroupTab* tab = tab_group->GetTab(*tab_id);
+  tab_groups::SavedTabGroupTab* tab = tab_group->GetTab(*selected_tab.tab_id);
   if (!tab) {
     // Just as with the `tab_group`, this is not expected to happen, but in case
     // there is an invariant we are not currently aware of we return early here.
@@ -548,6 +544,7 @@ void MessagingBackendServiceImpl::SetCurrentlySelectedTabOnStartup() {
   }
 
   last_selected_tab_ = *tab;
+  last_selected_tab_->SetTitle(selected_tab.tab_title.value_or(u""));
 }
 
 void MessagingBackendServiceImpl::OnTabGroupAdded(
@@ -714,8 +711,8 @@ void MessagingBackendServiceImpl::OnTabRemoved(
   if (source == tab_groups::TriggerSource::REMOTE && last_selected_tab_ &&
       last_selected_tab_->saved_tab_guid() == removed_tab.saved_tab_guid() &&
       instant_message_delegate_) {
-    InstantMessage instant_message =
-        CreateInstantMessage(message, /*tab_group=*/std::nullopt, removed_tab);
+    InstantMessage instant_message = CreateInstantMessage(
+        message, /*tab_group=*/std::nullopt, *last_selected_tab_);
     instant_message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
 
     // TODO(crbug.com/390794240): Remove the id argument to
@@ -767,7 +764,7 @@ void MessagingBackendServiceImpl::OnTabUpdated(
       instant_message_delegate_) {
     InstantMessage instant_message_base;
     instant_message_base.attribution = CreateMessageAttributionForTabUpdates(
-        message, std::nullopt, updated_tab);
+        message, std::nullopt, *last_selected_tab_);
     instant_message_base.collaboration_event = CollaborationEvent::TAB_UPDATED;
     // TODO(crbug.com/391941212): CONFLICT_TAB_REMOVED and UNDEFINED don't seem
     // to be used. In that case, remove them.

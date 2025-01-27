@@ -176,7 +176,8 @@ public class TabGroupSyncLocalObserverUnitTest {
         mTabModelObserverCaptor
                 .getValue()
                 .didSelectTab(mTab2, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
-        verify(mTabGroupSyncService).onTabSelected(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_2));
+        verify(mTabGroupSyncService)
+                .onTabSelected(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_2), eq(TAB_TITLE_1));
         for (String action : actions) {
             assertEquals(
                     "Expected one action for " + action, 1, mActionTester.getActionCount(action));
@@ -201,14 +202,15 @@ public class TabGroupSyncLocalObserverUnitTest {
                 .getValue()
                 .didSelectTab(mTab2, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
         assertEquals(1, mActionTester.getActionCount(action));
-        verify(mTabGroupSyncService).onTabSelected(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_2));
+        verify(mTabGroupSyncService)
+                .onTabSelected(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_2), eq(TAB_TITLE_1));
 
         // Select a non-grouped tab.
         mTabModelObserverCaptor
                 .getValue()
                 .didSelectTab(mTab3, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
         assertEquals(1, mActionTester.getActionCount(action));
-        verify(mTabGroupSyncService).onTabSelected(eq(null), eq(TAB_ID_3));
+        verify(mTabGroupSyncService).onTabSelected(eq(null), eq(TAB_ID_3), eq(TAB_TITLE_1));
     }
 
     @Test

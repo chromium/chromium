@@ -1576,8 +1576,11 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabAtStartupGetsRemoved) {
   tab_groups::SavedTabGroupTab* tab1 = tab_group.GetTab(tab1_sync_id);
 
   // This will make tab1 be selected at startup.
-  EXPECT_CALL(*mock_tab_group_sync_service_, GetCurrentlySelectedTabID())
-      .WillOnce(Return(std::pair(tab_group.saved_guid(), tab1_sync_id)));
+  tab_groups::SelectedTabInfo selected_tab_info;
+  selected_tab_info.tab_group_id = tab_group.saved_guid();
+  selected_tab_info.tab_id = tab1_sync_id;
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetCurrentlySelectedTabInfo())
+      .WillOnce(Return(selected_tab_info));
 
   InitializeService();
   SetupInstantMessageDelegate();

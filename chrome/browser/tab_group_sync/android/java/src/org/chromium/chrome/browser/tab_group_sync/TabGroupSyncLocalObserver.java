@@ -125,7 +125,7 @@ public final class TabGroupSyncLocalObserver {
                 // We notify TabGroupSyncService of the currently selected tab regardless of
                 // whether it's part of a tab group or not. The accurate tracking of currently
                 // selected tab is required for the MessagingBackendService.
-                mTabGroupSyncService.onTabSelected(localTabGroupId, tab.getId());
+                mTabGroupSyncService.onTabSelected(localTabGroupId, tab.getId(), tab.getTitle());
 
                 // The rest of the method is required for metrics only.
                 if (localTabGroupId == null) return;

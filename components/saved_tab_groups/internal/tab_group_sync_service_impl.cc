@@ -510,23 +510,25 @@ void TabGroupSyncServiceImpl::MoveTab(const LocalTabGroupID& group_id,
 
 void TabGroupSyncServiceImpl::OnTabSelected(
     const std::optional<LocalTabGroupID>& group_id,
-    const LocalTabID& tab_id) {
+    const LocalTabID& tab_id,
+    const std::u16string& title) {
   if (!group_id) {
-    currently_selected_tab_id_ = {std::nullopt, std::nullopt};
+    currently_selected_tab_info_ = SelectedTabInfo();
+
     NotifyTabSelected();
     return;
   }
 
   const SavedTabGroup* group = model_->Get(*group_id);
   if (!group) {
-    currently_selected_tab_id_ = {std::nullopt, std::nullopt};
+    currently_selected_tab_info_ = SelectedTabInfo();
     NotifyTabSelected();
     return;
   }
 
   const SavedTabGroupTab* tab = group->GetTab(tab_id);
   if (!tab) {
-    currently_selected_tab_id_ = {std::nullopt, std::nullopt};
+    currently_selected_tab_info_ = SelectedTabInfo();
     NotifyTabSelected();
     return;
   }
@@ -535,19 +537,20 @@ void TabGroupSyncServiceImpl::OnTabSelected(
   model_->UpdateLastUserInteractionTimeLocally(*group_id);
   LogEvent(TabGroupEvent::kTabSelected, *group_id, tab_id);
 
-  currently_selected_tab_id_ = {group->saved_guid(), tab->saved_tab_guid()};
+  currently_selected_tab_info_.tab_group_id = group->saved_guid();
+  currently_selected_tab_info_.tab_id = tab->saved_tab_guid();
+  currently_selected_tab_info_.tab_title = title;
+
   NotifyTabSelected();
 }
 
-std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
-TabGroupSyncServiceImpl::GetCurrentlySelectedTabID() {
-  return currently_selected_tab_id_;
+SelectedTabInfo TabGroupSyncServiceImpl::GetCurrentlySelectedTabInfo() {
+  return currently_selected_tab_info_;
 }
 
 void TabGroupSyncServiceImpl::NotifyTabSelected() {
   for (auto& observer : observers_) {
-    observer.OnTabSelected(currently_selected_tab_id_.first,
-                           currently_selected_tab_id_.second);
+    observer.OnTabSelected(currently_selected_tab_info_);
   }
 }
 

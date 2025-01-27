@@ -49,8 +49,8 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
                          tab_groups::TriggerSource source) override;
   void OnTabGroupRemoved(const base::Uuid& sync_id,
                          tab_groups::TriggerSource source) override;
-  void OnTabSelected(const std::optional<base::Uuid>& sync_tab_group_id,
-                     const std::optional<base::Uuid>& sync_tab_id) override;
+  void OnTabSelected(
+      const tab_groups::SelectedTabInfo& selected_tab_info) override;
   void OnTabGroupLocalIdChanged(
       const base::Uuid& sync_id,
       const std::optional<tab_groups::LocalTabGroupID>& local_id) override;

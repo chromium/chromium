@@ -194,7 +194,8 @@ void SavedTabGroupModelListener::OnTabStripModelChanged(
             << "Selection change detected but no new tab was selected.";
         service_->OnTabSelected(
             /*group_id=*/selection.new_tab->GetGroup(),
-            /*tab_id=*/selection.new_tab->GetHandle().raw_value());
+            /*tab_id=*/selection.new_tab->GetHandle().raw_value(),
+            /*tab_title=*/selection.new_tab->GetContents()->GetTitle());
       }
       return;
     }

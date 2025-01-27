@@ -215,17 +215,20 @@ void TabGroupChangeNotifierImpl::OnTabGroupRemoved(
 }
 
 void TabGroupChangeNotifierImpl::OnTabSelected(
-    const std::optional<base::Uuid>& sync_tab_group_id,
-    const std::optional<base::Uuid>& sync_tab_id) {
+    const tab_groups::SelectedTabInfo& selected_tab_info) {
   if (!is_initialized_) {
     return;
   }
 
-  std::optional<tab_groups::SavedTabGroupTab> selected_tab =
-      GetSelectedSharedTabForPublishing(sync_tab_group_id, sync_tab_id);
+  std::optional<tab_groups::SavedTabGroupTab> selected_saved_tab =
+      GetSelectedSharedTabForPublishing(selected_tab_info.tab_group_id,
+                                        selected_tab_info.tab_id);
+  if (selected_saved_tab) {
+    selected_saved_tab->SetTitle(selected_tab_info.tab_title.value_or(u""));
+  }
 
   for (auto& observer : observers_) {
-    observer.OnTabSelected(selected_tab);
+    observer.OnTabSelected(selected_saved_tab);
   }
 }
 

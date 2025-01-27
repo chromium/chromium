@@ -54,10 +54,10 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(void, MoveTab, (const LocalTabGroupID&, const LocalTabID&, int));
   MOCK_METHOD(void,
               OnTabSelected,
-              (const std::optional<LocalTabGroupID>&, const LocalTabID&));
-  MOCK_METHOD((std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>),
-              GetCurrentlySelectedTabID,
-              ());
+              (const std::optional<LocalTabGroupID>&,
+               const LocalTabID&,
+               const std::u16string&));
+  MOCK_METHOD((SelectedTabInfo), GetCurrentlySelectedTabInfo, ());
   MOCK_METHOD(void, SaveGroup, (SavedTabGroup));
   MOCK_METHOD(void, UnsaveGroup, (const LocalTabGroupID&));
   MOCK_METHOD(void,
