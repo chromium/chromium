@@ -28,6 +28,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/overloaded.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/mac/mac_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
@@ -3325,18 +3326,26 @@ GraphBuilderCoreml::AddOperationForLayerNormalization(
     return NewNotSupportedError("Axes must be ordered for layerNormalization.");
   }
 
-  // TODO: crbug.com/391423301: CoreML crashes for kCpu when axes are not
-  // consecutive, needs emulation.
-  if (device_ == mojom::CreateContextOptions::Device::kCpu) {
-    bool is_consecutive =
-        std::ranges::adjacent_find(operation.axes, [](auto a, auto b) {
-          return (a + 1) != b;
-        }) == operation.axes.end();
-    if (!is_consecutive) {
+  // TODO: crbug.com/391423301: When axes are not consecutive, CoreML crashes
+  // for all device targets with macOS 15 on Intel devices and kCpu for other
+  // macOS versions, needs emulation.
+  bool is_consecutive =
+      base::ranges::adjacent_find(operation.axes, [](auto a, auto b) {
+        return (a + 1) != b;
+      }) == operation.axes.end();
+  if (!is_consecutive) {
+    if (base::mac::GetCPUType() != base::mac::CPUType::kArm) {
+      if (__builtin_available(macOS 15, *)) {
+        return NewNotSupportedError(
+            "Axes must be consecutive for layerNormalization.");
+      }
+    }
+    if (device_ == mojom::CreateContextOptions::Device::kCpu) {
       return NewNotSupportedError(
           "Axes must be consecutive for layerNormalization on cpu.");
     }
   }
+
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpLayerNormalizationTypeName);
   RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
