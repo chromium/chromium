@@ -4490,6 +4490,14 @@ if (is_android) {
     resources_package = "org.chromium.base"
 
     proguard_configs = [ "android/proguard/shared_with_cronet.flags" ]
+
+    # DO NOT ADD TO THIS LIST.
+    # base_java is a blob of targets that are being consumed by almost every product and
+    # library in Chromium, adding new java modules here means that all consumers will be
+    # impacted (eg: This could have severe consequences as Cronet can't depend on Guava /
+    # AndroidX).
+    #
+    # The current list were grandfathered during the refactoring of base_java.
     public_deps = [
       ":activity_state_java",
       ":base_switches_java",
