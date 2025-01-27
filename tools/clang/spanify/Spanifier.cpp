@@ -75,8 +75,6 @@ AST_MATCHER(clang::ParmVarDecl, isArrayParm) {
 }
 
 struct Node {
-  bool is_buffer = false;
-
   // A replacement follows the following format:
   // `r:::<file path>:::<offset>:::<length>:::<replacement text>`
   std::string replacement;
@@ -135,25 +133,28 @@ struct Node {
   }
 
   // The resulting string follows the following format:
-  // {is_buffer\,
-  // r:::<filepath>:::<offset>:::<length>:::<replacement_text>\,
+  // {r:::<filepath>:::<offset>:::<length>:::<replacement_text>\,
   // include-user-header:::<file path>:::-1:::-1:::<include text>\,
   // size_info_available\,
   // is_dependent\}
   // where the booleans are represented as 0 or 1.
   std::string ToString() const {
-    return llvm::formatv("{{{0:d}\\,{1}\\,{2}\\,{3:d}\\,{4:d}}", is_buffer,
-                         replacement, include_directive, size_info_available,
-                         is_dependent);
+    return llvm::formatv("{{{0}\\,{1}\\,{2:d}\\,{3:d}}", replacement,
+                         include_directive, size_info_available, is_dependent);
   }
 };
 
+// Emits an edge between two nodes.
 void EmitEdge(const Node& lhs, const Node& rhs) {
   llvm::outs() << llvm::formatv("e{0}@{1}\n", lhs.ToString(), rhs.ToString());
 }
 
-void EmitSingleNode(const Node& lhs) {
-  llvm::outs() << llvm::formatv("s{0}\n", lhs.ToString());
+// Emits a source node.
+//
+// A source node is a node that triggers the rewrite. All rewrites will start
+// from sources.
+void EmitSource(const std::string source) {
+  llvm::outs() << llvm::formatv("s{0}\n", source);
 }
 
 // Emit `replacement` if `rhs_key` is rewritten, but `lhs_key` is not.
@@ -1143,11 +1144,12 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
       source_manager, include_path,
       /* is_system_include_header =*/true);
   Node n;
-  n.is_buffer = true;
   n.replacement = replacement_and_include_pair.first;
   n.include_directive = replacement_and_include_pair.second;
   n.size_info_available = true;
   n.additional_replacement = additional_replacement;
+
+  EmitSource(n.replacement);
   return n;
 }
 
@@ -1158,7 +1160,7 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
 //      to the node_pair list using `EmitEdge`
 //   2- A single is_buffer node match
 //      In that case, a single node is created and added to the node_pair list
-//      using `EmitSingleNode`
+//      using `EmitSource`
 class PotentialNodes : public MatchFinder::MatchCallback {
  public:
   explicit PotentialNodes() = default;
@@ -1265,11 +1267,10 @@ class PotentialNodes : public MatchFinder::MatchCallback {
   void run(const MatchFinder::MatchResult& result) override {
     Node lhs = getLHSNodeFromMatchResult(result);
 
-    // Buffer usage expressions are added as a single node, return
-    // early in this case.
+    // Buffer usage expressions are added as sources of the graph. This is what
+    // triggers the rewrite.
     if (result.Nodes.getNodeAs<clang::Expr>("buffer_expr")) {
-      lhs.is_buffer = true;
-      EmitSingleNode(lhs);
+      EmitSource(lhs.replacement);
       return;
     }
 

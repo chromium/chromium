@@ -10,22 +10,22 @@ The edits have the following format:
     e{lhs_node2}@{rhs_node3}           # Edge from node 2 to node 3.
     e{lhs_node3}@{rhs_node4}           # Edge from node 3 to node 4.
     ...
-    s{node_4}                          # Single node.
+    s{node_1}                          # Source node of the graph that triggers
+                                       # a rewrite (i.e. buffer usage)
     ...
     f{lhs_key}@{rhs_key}@{replacement} # Span frontier replacement applied if
                                        # lhs_key is not rewritten but rhs_key
                                        # is.
     ...
-    ...
 Where lhs_node, rhs_node, and node_n represent a node's text representation
 generated using the spanification tool's Node::ToString() function.
 
 The string representation has the following format:
-`{is_buffer\,r:::<file path>:::<offset>:::<length>
+`{r:::<file path>:::<offset>:::<length>
 :::<replacement text>\,include-user-header:::<file path>:::-1:::-1
 :::<include text>\,size_info_available\,is_dependent}`
 
-where `is_buffer`,`size_info_available`, and `is_dependent`
+where `size_info_available`, and `is_dependent`
 are booleans represented as  0 or 1.
 
 extract_edits.py takes input that is concatenated from multiple tool
@@ -33,9 +33,9 @@ invocations and extract just the edits with the following steps:
 1- Construct the adjacency list of nodes
    (a pairs of nodes represents an edge in the directed graph)
 
-2- Determine whether size info is available for a given buffer node.
+2- Determine whether size info is available for a given source node.
 
-3- Run `DFS` starting from buffer nodes whose size info is available and emit
+3- Run `DFS` starting from source nodes whose size info is available and emit
    edits for reachable nodes.
 
 4- Adapt dereference expressions and add data changes where necessary.
@@ -81,9 +81,8 @@ class Node:
     # Mapping in between the node's key and the node.
     key_to_node = dict()
 
-    def __init__(self, is_buffer, replacement, include_directive,
-                 size_info_available, is_dependent) -> None:
-        self.is_buffer = is_buffer
+    def __init__(self, replacement, include_directive, size_info_available,
+                 is_dependent) -> None:
         self.replacement = replacement
         self.include_directive = include_directive
         self.is_dependent = is_dependent
@@ -93,7 +92,7 @@ class Node:
         self.neighbors_directed = set()
         self.neighbors_undirected = set()
 
-        # Property to tracker whether the node is "connected" to a buffer node.
+        # Property to track whether the node is "connected" to a source node.
         # This is set from DFS(...)
         self.visited = False
 
@@ -128,12 +127,11 @@ class Node:
 
         # Expect exactly 6 elements that correspond to the following node
         # attributes:
-        # - is_buffer
         # - replacement
         # - include_directive
         # - size_info_available
         # - is_dependent
-        assert len(x) == 5, txt
+        assert len(x) == 4, txt
 
         # Value are escaped to avoid conflicts with the separator. Unescape
         # them.
@@ -153,7 +151,6 @@ class Node:
     def __repr__(self) -> str:
         result = [
             f"Node {hash(self)} {{",
-            f"  is_buffer: {self.is_buffer}",
             f"  replacement: {self.replacement}",
             f"  include_directive: {self.include_directive}",
             f"  size_info_available: {self.size_info_available}",
@@ -197,7 +194,7 @@ def DFS(node: Node):
 
 def SizeInfoAvailable(node: Node):
     """
-    Determines whether size information is available for a buffer node and its
+    Determines whether size information is available for a source node and its
     neighbors_directed. Updates the node's size_info_available attribute.
 
     Args:
@@ -241,7 +238,13 @@ def SizeInfoAvailable(node: Node):
 
 
 def main():
-    # A set to deduplicate the frontiers emitted from multiple compile units.
+    # Since the tool is invoked from multiple compile units, we are using sets
+    # to deduplicate what was visible from multiple compile units.
+
+    # A set of source nodes that trigger the rewrite.
+    sources = set()
+
+    # Change to apply at the edge in between rewritten and non-rewritten nodes.
     frontiers = set()
 
     # Collect from every compile units the nodes and edges of the graph:
@@ -250,16 +253,14 @@ def main():
 
         # The first character of the line denotes the type of the line:
         # - 'e': Edge in between two nodes.
-        # - 's': Single node.
+        # - 's': Source node of the graph triggering the rewrite.
         # - 'f': Span frontier change.
         assert line[0] in ['e', 's', 'f'], "Unknown line type: " +\
                line[0] + " in line: " + line
 
-        # Single node:
+        # Source node:
         if line[0] == 's':
-            node = line[1:]
-            buffer_node = Node.get_or_create(node)
-            buffer_node.is_buffer = '1'
+            sources.add(line[1:])
             continue
 
         # Edge in between two nodes:
@@ -284,10 +285,15 @@ def main():
 
         assert False, "Unreachable code"
 
-    # Determine whether size information is available for each buffer node:
-    for node in Node.all():
-        if node.is_buffer == '1':
-            SizeInfoAvailable(node)
+    # Mark the source nodes:
+    source_nodes = []
+    for source in sources:
+        source_node = Node.from_key(source)
+        assert source_node is not None
+        source_nodes.append(source_node)
+
+        # Determine whether size information is available from this source.
+        SizeInfoAvailable(source_node)
 
     # Identify all the connected components in the undirected graph. This is
     # exploring the graph in depth-first search and assigning the same component
@@ -305,20 +311,15 @@ def main():
             for neighbor in current.neighbors_undirected:
                 stack.append(neighbor)
 
-    # Collect the changes to apply. Starting from buffers nodes whose size info
+    # Collect the changes to apply. Starting from sources nodes whose size info
     # could be determined.
-    for node in Node.all():
-
-        # We only want to rewrite components connected to a buffer node.
-        if node.is_buffer != '1':
-            continue
-
-        # Some buffers might not have their size info available. We can't
+    for node in source_nodes:
+        # Some sources might not have their size info available. We can't
         # rewrite those.
         if node.size_info_available != '1':
             continue
 
-        # Collect the changes to apply. We start from buffer nodes whose size
+        # Collect the changes to apply. We start from sources nodes whose size
         # info is available and explore the graph in depth-first search.
         DFS(node)
 
