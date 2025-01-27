@@ -1100,23 +1100,15 @@
   },
 
   {
-    "prefix": "block-cross-partition-blob-url-fetching",
+    "prefix": "cross-partition-blob-url",
     "platforms": ["Linux"],
     "bases": [
       "external/wpt/FileAPI/BlobURL/cross-partition.https.html",
-      "external/wpt/FileAPI/BlobURL/cross-partition-worker-creation.https.html"],
-    "args": ["--enable-features=BlockCrossPartitionBlobUrlFetching"],
-    "expires": "Feb 4, 2025",
-    "owners": ["janiceliu@chromium.org"]
-  },
-
-  {
-    "prefix": "enforce-noopener-on-blob-url-navigation",
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html"],
-    "args": ["--enable-features=EnforceNoopenerOnBlobURLNavigation"],
-    "expires": "Feb 4, 2025",
+      "external/wpt/FileAPI/BlobURL/cross-partition-worker-creation.https.html",
+      "external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html"
+    ],
+    "args": ["--enable-features=BlockCrossPartitionBlobUrlFetching,EnforceNoopenerOnBlobURLNavigation"],
+    "expires": "Mar 1, 2025",
     "owners": ["janiceliu@chromium.org"]
   },
 
