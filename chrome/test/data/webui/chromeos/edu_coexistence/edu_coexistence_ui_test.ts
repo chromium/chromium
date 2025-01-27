@@ -40,8 +40,10 @@ suite('EduCoexistenceUiTest', function() {
       backCalled = true;
     };
 
-    const backButton = coexistenceUi.shadowRoot!.querySelector(
-                           '#gaia-back-button')! as EduCoexistenceButton;
+    const backButton =
+        coexistenceUi.shadowRoot!.querySelector<EduCoexistenceButton>(
+            '#gaia-back-button');
+    assertTrue(!!backButton);
     // Simulate being on the Gaia signin page by enabling the
     // Gaia back button
     backButton.disabled = false;

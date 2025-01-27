@@ -275,10 +275,10 @@ suite('WallpaperSelectedElementTest', function() {
     wallpaperSelectedElement = initElement(WallpaperSelectedElement);
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    const img = wallpaperSelectedElement.shadowRoot!.querySelector('img') as
-        HTMLImageElement;
+    const img = wallpaperSelectedElement.shadowRoot!.querySelector('img');
+    assertTrue(!!img);
     assertStringContains(
-        img!.src,
+        img.src,
         `chrome://personalization/wallpaper.jpg?key=${
             wallpaperProvider.currentWallpaper.key}`);
 
@@ -498,17 +498,18 @@ suite('WallpaperSelectedElementTest', function() {
 
     // Verify layout options are *not* shown when not on Google Photos path.
     const selector = '#wallpaperOptions';
-    const shadowRoot = wallpaperSelectedElement.shadowRoot;
-    assertEquals(shadowRoot?.querySelector(selector), null);
+    const shadowRoot = wallpaperSelectedElement.shadowRoot!;
+    assertEquals(shadowRoot.querySelector(selector), null);
 
     // Set Google Photos path and verify layout options *are* shown.
     wallpaperSelectedElement.path = Paths.GOOGLE_PHOTOS_COLLECTION;
     await waitAfterNextRender(wallpaperSelectedElement);
-    assertNotEquals(shadowRoot?.querySelector(selector), null);
+    assertNotEquals(shadowRoot.querySelector(selector), null);
 
     // Verify that clicking layout |button| results in mojo API call.
-    const button = shadowRoot?.querySelector('#center') as HTMLElement | null;
-    button?.click();
+    const button = shadowRoot.querySelector<HTMLElement>('#center');
+    assertTrue(!!button);
+    button.click();
     assertDeepEquals(
         await wallpaperProvider.whenCalled('setCurrentWallpaperLayout'),
         WallpaperLayout.kCenter);

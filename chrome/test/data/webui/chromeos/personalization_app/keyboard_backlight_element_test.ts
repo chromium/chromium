@@ -44,8 +44,8 @@ suite('KeyboardBacklightElementTest', function() {
         keyboardBacklightElement.i18n('keyboardBacklightTitle'),
         text.textContent);
     const colorSelectorElement =
-        keyboardBacklightElement.shadowRoot!.querySelector('color-selector') as
-        HTMLElement;
+        keyboardBacklightElement.shadowRoot!.querySelector<HTMLElement>(
+            'color-selector');
     assertTrue(
         !!colorSelectorElement, 'color-selector element should be displayed.');
     const selectorContainer =
@@ -58,8 +58,8 @@ suite('KeyboardBacklightElementTest', function() {
   test('sets backlight color when a color preset is clicked', async () => {
     keyboardBacklightElement = initElement(KeyboardBacklightElement);
     const colorSelectorElement =
-        keyboardBacklightElement.shadowRoot!.querySelector('color-selector') as
-        HTMLElement;
+        keyboardBacklightElement.shadowRoot!.querySelector<HTMLElement>(
+            'color-selector');
     assertTrue(
         !!colorSelectorElement, 'color-selector element should be displayed.');
     const selectorContainer =
@@ -135,8 +135,8 @@ suite('KeyboardBacklightElementTest', function() {
         KeyboardBacklightActionName.SET_SHOULD_SHOW_NUDGE);
     keyboardBacklightElement = initElement(KeyboardBacklightElement);
     const colorSelectorElement =
-        keyboardBacklightElement.shadowRoot!.querySelector('color-selector') as
-        HTMLElement;
+        keyboardBacklightElement.shadowRoot!.querySelector<HTMLElement>(
+            'color-selector');
     assertTrue(
         !!colorSelectorElement, 'color-selector element should be displayed.');
     const action = await personalizationStore.waitForAction(
@@ -159,8 +159,8 @@ suite('KeyboardBacklightElementTest', function() {
 
     keyboardBacklightElement = initElement(KeyboardBacklightElement);
     const colorSelectorElement =
-        keyboardBacklightElement.shadowRoot!.querySelector('color-selector') as
-        HTMLElement;
+        keyboardBacklightElement.shadowRoot!.querySelector<HTMLElement>(
+            'color-selector');
     assertTrue(
         !!colorSelectorElement, 'color-selector element should be displayed.');
 
@@ -226,8 +226,8 @@ suite('KeyboardBacklightElementTest', function() {
 
     keyboardBacklightElement = initElement(KeyboardBacklightElement);
     const colorSelectorElement =
-        keyboardBacklightElement.shadowRoot!.querySelector('color-selector') as
-        HTMLElement;
+        keyboardBacklightElement.shadowRoot!.querySelector<HTMLElement>(
+            'color-selector');
     assertTrue(
         !!colorSelectorElement, 'color-selector element should be displayed.');
 
@@ -237,7 +237,8 @@ suite('KeyboardBacklightElementTest', function() {
     const colorContainers = selectorContainer!.querySelectorAll('.selectable');
     assertEquals(9, colorContainers!.length);
     const wallpaperColorIcon =
-        colorContainers[8]!.querySelector('color-icon') as HTMLElement;
+        colorContainers[8]!.querySelector<HTMLElement>('color-icon');
+    assertTrue(!!wallpaperColorIcon);
     assertEquals('Wallpaper color', wallpaperColorIcon.ariaLabel);
     assertEquals(0, selectorContainer!.querySelectorAll('.divider').length);
     assertTrue(!!colorSelectorElement?.shadowRoot!.getElementById(
@@ -251,8 +252,8 @@ suite('KeyboardBacklightElementTest', function() {
 
         keyboardBacklightElement = initElement(KeyboardBacklightElement);
         const colorSelectorElement =
-            keyboardBacklightElement.shadowRoot!.querySelector(
-                'color-selector') as HTMLElement;
+            keyboardBacklightElement.shadowRoot!.querySelector<HTMLElement>(
+                'color-selector');
         assertTrue(
             !!colorSelectorElement,
             'color-selector element should be displayed.');
@@ -264,7 +265,8 @@ suite('KeyboardBacklightElementTest', function() {
             selectorContainer!.querySelectorAll('.selectable');
         assertEquals(9, colorContainers!.length);
         const wallpaperColorIcon =
-            colorContainers[0]!.querySelector('color-icon') as HTMLElement;
+            colorContainers[0]!.querySelector<HTMLElement>('color-icon');
+        assertTrue(!!wallpaperColorIcon);
         assertEquals('Wallpaper color', wallpaperColorIcon.ariaLabel);
         assertEquals(1, selectorContainer!.querySelectorAll('.divider').length);
         assertFalse(!!keyboardBacklightElement?.shadowRoot!.getElementById(

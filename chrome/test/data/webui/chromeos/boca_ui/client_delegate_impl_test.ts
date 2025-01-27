@@ -441,7 +441,7 @@ suite('ClientDelegateTest', function() {
                 id: '3',
                 name: 'cat1',
                 email: 'cat1@gmail.com',
-                photoUrl: 'cdn3'
+                photoUrl: 'cdn3',
               },
             ],
             accessCode: 'testCode',

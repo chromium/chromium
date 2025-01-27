@@ -158,7 +158,7 @@ suite('SeaPenInputQueryElementTest', function() {
 
     seaPenSuggestions =
         seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
-            SeaPenSuggestionsElement.is) as HTMLElement;
+            SeaPenSuggestionsElement.is);
     assertFalse(!!seaPenSuggestions, 'suggestions element should be hidden');
   });
 

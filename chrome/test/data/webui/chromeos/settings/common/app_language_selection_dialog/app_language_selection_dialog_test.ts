@@ -78,8 +78,7 @@ suite('<app-language-selection-dialog>', () => {
     const suggestedList = getSuggestedList();
     assertTrue(!!suggestedList, '#suggestedItemsList not found');
     const searchFieldTemp =
-        appLanguageSelectionDialog.shadowRoot!
-            .querySelector<CrSearchFieldElement>('cr-search-field');
+        appLanguageSelectionDialog.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!searchFieldTemp);
     searchField = searchFieldTemp;
 

@@ -573,9 +573,9 @@ suite('PersonalizationBreadcrumbElementTest', function() {
       'seaPenTemplateId': SeaPenTemplateId.kFlower.toString(),
     });
 
-    const breadcrumb = (breadcrumbElement.shadowRoot!.querySelector(
-                            '#seaPenDropdown') as HTMLElement)
-                           .parentElement;
+    const breadcrumb =
+        breadcrumbElement.shadowRoot!
+            .querySelector<HTMLElement>('#seaPenDropdown')!.parentElement;
     breadcrumb!.click();
 
     const dropdownMenu =
@@ -596,8 +596,9 @@ suite('PersonalizationBreadcrumbElementTest', function() {
       'path': Paths.SEA_PEN_RESULTS,
       'seaPenTemplateId': SeaPenTemplateId.kFlower.toString(),
     });
-    const dropdownIcon = breadcrumbElement.shadowRoot!.querySelector(
-                             '#seaPenDropdown') as HTMLElement;
+    const dropdownIcon =
+        breadcrumbElement.shadowRoot!.querySelector<HTMLElement>(
+            '#seaPenDropdown');
     dropdownIcon!.click();
     const dropdownMenu =
         breadcrumbElement.shadowRoot!.querySelector('cr-action-menu');

@@ -37,8 +37,8 @@ suite('allInputsDisabledTest', function() {
 
       component.allButtonsDisabled = true;
       for (const inputType of INPUT_TYPES) {
-        const inputElements = component.shadowRoot!.querySelectorAll(
-                                  inputType) as NodeListOf<HTMLInputElement>;
+        const inputElements =
+            component.shadowRoot!.querySelectorAll<HTMLInputElement>(inputType);
         for (const inputElement of inputElements) {
           // Skip buttons in the dialogs because they're not expected to be
           // disabled.

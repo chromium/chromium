@@ -78,7 +78,7 @@ suite('FeedbackFlowTestSuite', () => {
       SearchPageElement|ShareDataPageElement|ConfirmationPageElement;
 
   function getActivePage<T extends ActivePageElement>(): T {
-    return page!.shadowRoot!.querySelector('.iron-selected') as T;
+    return page!.shadowRoot!.querySelector<T>('.iron-selected')!;
   }
 
   function verifyRecordExitPathCalled(

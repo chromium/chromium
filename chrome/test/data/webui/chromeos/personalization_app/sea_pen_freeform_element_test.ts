@@ -61,8 +61,9 @@ suite('SeaPenFreeformElementTest', function() {
         !!freeformElement.shadowRoot!.querySelector(SeaPenSamplesElement.is),
         'sample prompts element shown on freeform page');
 
-    const tabContainer = freeformElement.shadowRoot!.querySelector(
-                             '#tabContainer') as HTMLElement;
+    const tabContainer =
+        freeformElement.shadowRoot!.querySelector<HTMLElement>('#tabContainer');
+    assertTrue(!!tabContainer);
     assertTrue(!!tabContainer.hidden, 'tab container is not shown');
     assertTrue(
         !!freeformElement.shadowRoot!.querySelector('#promptingGuide'),

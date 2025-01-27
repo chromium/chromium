@@ -65,8 +65,10 @@ suite('ShortcutInputKey', function() {
     shortcutInputKeyElement.key = 'PrintScreen';
     await flushTasks();
 
-    const iconElement = shortcutInputKeyElement.shadowRoot!.querySelector(
-                            '#key-icon') as IronIconElement;
+    const iconElement =
+        shortcutInputKeyElement.shadowRoot!.querySelector<IronIconElement>(
+            '#key-icon');
+    assertTrue(!!iconElement);
     assertTrue(isVisible(iconElement));
     assertEquals('shortcut-input-keys:screenshot', iconElement.icon);
 
@@ -81,8 +83,8 @@ suite('ShortcutInputKey', function() {
     await flushTasks();
 
     const iconWrapperElement =
-        shortcutInputKeyElement.shadowRoot!.querySelector('#key > div') as
-        HTMLDivElement;
+        shortcutInputKeyElement.shadowRoot!.querySelector<HTMLDivElement>(
+            '#key > div');
     assertTrue(isVisible(iconWrapperElement));
 
     assertEquals(
@@ -98,11 +100,13 @@ suite('ShortcutInputKey', function() {
     await flushTasks();
 
     // Should show launcher icon when metaKey is kLauncher.
-    const iconElement = shortcutInputKeyElement.shadowRoot!.querySelector(
-                            '#key-icon') as IronIconElement;
+    const iconElement =
+        shortcutInputKeyElement.shadowRoot!.querySelector<IronIconElement>(
+            '#key-icon');
+    assertTrue(!!iconElement);
     const iconWrapperElement =
-        shortcutInputKeyElement.shadowRoot!.querySelector('#key > div') as
-        HTMLDivElement;
+        shortcutInputKeyElement.shadowRoot!.querySelector<HTMLDivElement>(
+            '#key > div');
     assertTrue(isVisible(iconElement));
     assertTrue(isVisible(iconWrapperElement));
     assertEquals('shortcut-input-keys:launcher', iconElement.icon);
@@ -120,11 +124,13 @@ suite('ShortcutInputKey', function() {
     await flushTasks();
 
     // Should show search icon when metaKey is kSearch.
-    const iconElement = shortcutInputKeyElement.shadowRoot!.querySelector(
-                            '#key-icon') as IronIconElement;
+    const iconElement =
+        shortcutInputKeyElement.shadowRoot!.querySelector<IronIconElement>(
+            '#key-icon');
+    assertTrue(!!iconElement);
     const iconWrapperElement =
-        shortcutInputKeyElement.shadowRoot!.querySelector('#key > div') as
-        HTMLDivElement;
+        shortcutInputKeyElement.shadowRoot!.querySelector<HTMLDivElement>(
+            '#key > div');
     assertTrue(isVisible(iconElement));
     assertTrue(isVisible(iconWrapperElement));
     assertEquals('shortcut-input-keys:search', iconElement.icon);
@@ -143,8 +149,10 @@ suite('ShortcutInputKey', function() {
     await flushTasks();
 
     // Should show launcher icon when metaKey is kLauncher.
-    const iconElement = shortcutInputKeyElement.shadowRoot!.querySelector(
-                            '#key-icon') as IronIconElement;
+    const iconElement =
+        shortcutInputKeyElement.shadowRoot!.querySelector<IronIconElement>(
+            '#key-icon');
+    assertTrue(!!iconElement);
     assertEquals('shortcut-input-keys:launcher', iconElement.icon);
     // Lwin key should be treated as a search modifier key.
     assertEquals(

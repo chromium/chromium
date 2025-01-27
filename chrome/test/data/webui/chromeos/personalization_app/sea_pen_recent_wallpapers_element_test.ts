@@ -94,8 +94,8 @@ suite('SeaPenRecentWallpapersElementTest', function() {
     assertEquals(3, actionMenus!.length, 'should be 3 action menus available.');
     actionMenus.forEach(function(actionMenu: Element, i: number) {
       const menuDialog =
-          (actionMenu as HTMLElement).shadowRoot!.querySelector('dialog') as
-          HTMLDialogElement;
+          (actionMenu as HTMLElement)
+              .shadowRoot!.querySelector<HTMLDialogElement>('dialog');
       assertFalse(!!menuDialog!.open, `menu dialog ${i} should be closed.`);
     });
   });
@@ -313,8 +313,8 @@ suite('SeaPenRecentWallpapersElementTest', function() {
     assertEquals(3, actionMenus!.length, 'should be 3 action menus available.');
     actionMenus.forEach(function(actionMenu: Element, i: number) {
       const menuDialog =
-          (actionMenu as HTMLElement).shadowRoot!.querySelector('dialog') as
-          HTMLDialogElement;
+          (actionMenu as HTMLElement)
+              .shadowRoot!.querySelector<HTMLDialogElement>('dialog');
       if (i === 1) {
         assertTrue(!!menuDialog!.open, `menu dialog ${i} should be opened.`);
       } else {
@@ -479,8 +479,8 @@ suite('SeaPenRecentWallpapersElementTest', function() {
 
         // Menu dialog for the 3rd image should be opened.
         const actionMenu2 = actionMenus[2] as HTMLElement;
-        const menuDialog2 = actionMenu2.shadowRoot!.querySelector('dialog') as
-            HTMLDialogElement;
+        const menuDialog2 =
+            actionMenu2.shadowRoot!.querySelector<HTMLDialogElement>('dialog');
         assertTrue(
             !!menuDialog2!.open,
             `menu dialog for the 3rd image should be opened.`);
@@ -605,12 +605,12 @@ suite('SeaPenRecentWallpapersElementTest', function() {
     // Menu dialog for the first image should be opened.
     const actionMenu = actionMenus[0] as HTMLElement;
     const menuDialog =
-        actionMenu.shadowRoot!.querySelector('dialog') as HTMLDialogElement;
+        actionMenu.shadowRoot!.querySelector<HTMLDialogElement>('dialog');
     assertTrue(!!menuDialog!.open, `menu dialog 0 should be opened.`);
 
     // Wallpaper Info menu option is available. Click on this option.
     const deleteWallpaperOption =
-        actionMenu.querySelector('.delete-wallpaper-option') as HTMLElement;
+        actionMenu.querySelector<HTMLElement>('.delete-wallpaper-option');
     assertTrue(
         !!deleteWallpaperOption, 'delete wallpaper option should display.');
 

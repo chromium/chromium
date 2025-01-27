@@ -42,9 +42,9 @@ suite('<customize-button-dropdown-item>', () => {
 
   function getOptionElement(): HTMLElement {
     const option =
-        dropdownItem.shadowRoot!.querySelector('#container')! as HTMLElement;
+        dropdownItem.shadowRoot!.querySelector<HTMLElement>('#container');
     assertTrue(!!option);
-    return option!;
+    return option;
   }
 
   test('Initialize customize button dropdown item', async () => {
