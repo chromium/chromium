@@ -372,6 +372,9 @@ bool MatchScrollButton(const Element& element,
     result.dynamic_pseudo = kPseudoIdScrollButton;
     return true;
   }
+  if (!element.IsScrollButtonPseudoElement()) {
+    return false;
+  }
   const ComputedStyle* style = element.ParentComputedStyle();
   CHECK(style);
   PseudoId pseudo_id =
