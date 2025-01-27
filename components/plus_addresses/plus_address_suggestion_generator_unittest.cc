@@ -303,9 +303,6 @@ TEST_F(PlusAddressSuggestionGeneratorTest, NoSuggestionsOnLoginForm) {
 // they have name or address fields included.
 TEST_F(PlusAddressSuggestionGeneratorTest,
        SuggestionsOnLoginFormWithNameFields) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressRefinedPasswordFormClassification};
-
   PlusAddressSuggestionGenerator generator(
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")));
