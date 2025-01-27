@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -41,6 +42,7 @@ class RTCEncodedAudioFrameDelegate
   std::optional<uint16_t> SequenceNumber() const;
   Vector<uint32_t> ContributingSources() const;
   std::optional<uint64_t> AbsCaptureTime() const;
+  std::optional<base::TimeTicks> ReceiveTime() const;
   std::unique_ptr<webrtc::TransformableAudioFrameInterface> PassWebRtcFrame();
   std::unique_ptr<webrtc::TransformableAudioFrameInterface> CloneWebRtcFrame();
 

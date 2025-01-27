@@ -13,4 +13,7 @@ dictionary RTCEncodedAudioFrameMetadata {
     unsigned short? sequenceNumber;
     [RuntimeEnabled=RTCEncodedAudioFrameAbsCaptureTime] unsigned long long absCaptureTime;
     unsigned long rtpTimestamp;
+    [RuntimeEnabled=RTCEncodedFrameTimestamps] DOMHighResTimeStamp receiveTime;
+    [RuntimeEnabled=RTCEncodedFrameTimestamps] DOMHighResTimeStamp captureTime;
+    //[RuntimeEnabled=RTCEncodedTimestamps]DOMHighResTimeStamp senderCaptureTimeOffset
 };

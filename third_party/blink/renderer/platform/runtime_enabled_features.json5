@@ -3654,6 +3654,10 @@
       origin_trial_feature_name: "RTCEncodedFrameSetMetadata",
     },
     {
+      name: "RTCEncodedFrameTimestamps",
+      status: "experimental",
+    },
+    {
       name: "RTCEncodedVideoFrameAdditionalMetadata",
       status: "experimental",
     },
