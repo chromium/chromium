@@ -75,7 +75,8 @@ def blockingFifo(fifo_path='/tmp/.fast_local_dev_server_test.fifo'):
 class ServerStartedTest(unittest.TestCase):
 
   def setUp(self):
-    self._TTY_FILE = '/tmp/fast_local_dev_server_test_tty'
+    self._TTY_FILE = pathlib.Path('/tmp/fast_local_dev_server_test_tty')
+    self._TTY_FILE.touch()
     if pollServer():
       # TODO(mheikal): Support overriding the standard named pipe for
       # communicating with the server so that we can run an instance just for
@@ -95,8 +96,7 @@ class ServerStartedTest(unittest.TestCase):
       time.sleep(0.05)
 
   def tearDown(self):
-    if os.path.exists(self._TTY_FILE):
-      os.unlink(self._TTY_FILE)
+    self._TTY_FILE.unlink(missing_ok=True)
     self._process.terminate()
     stdout, _ = self._process.communicate()
     if stdout != '':
@@ -115,13 +115,13 @@ class ServerStartedTest(unittest.TestCase):
         'cmd': cmd,
         # So that logfiles do not clutter cwd.
         'cwd': '/tmp/',
-        'tty': self._TTY_FILE,
+        'tty': str(self._TTY_FILE),
         'build_id': self.id(),
         'stamp_file': _stamp_file.name,
     })
 
   def getTtyContents(self):
-    if os.path.exists(self._TTY_FILE):
+    if self._TTY_FILE.exists():
       with open(self._TTY_FILE, 'rt') as tty:
         return tty.read()
     return ''
@@ -144,9 +144,8 @@ class ServerStartedTest(unittest.TestCase):
       current_time = datetime.datetime.now()
       duration = current_time - start_time
       if duration > timeout_duration:
-        raise TimeoutError(
-            f'Timed out waiting for pending tasks [{pending_tasks}/{pending_tasks+completed_tasks}]'
-        )
+        raise TimeoutError('Timed out waiting for pending tasks ' +
+                           f'[{pending_tasks}/{pending_tasks+completed_tasks}]')
       time.sleep(0.1)
 
   def testRunsQuietTask(self):
