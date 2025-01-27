@@ -48,7 +48,8 @@ GpuMemoryBufferImplDXGI::CreateFromHandle(
   return base::WrapUnique(new GpuMemoryBufferImplDXGI(
       handle.id, size, format, std::move(callback),
       std::move(handle.dxgi_handle), std::move(handle.dxgi_token.value()),
-      gpu_memory_buffer_manager, std::move(pool), premapped_memory));
+      std::move(handle.region), gpu_memory_buffer_manager, std::move(pool),
+      premapped_memory));
 }
 
 base::OnceClosure GpuMemoryBufferImplDXGI::AllocateForTesting(
@@ -264,6 +265,14 @@ const gfx::DXGIHandleToken& GpuMemoryBufferImplDXGI::GetToken() const {
   return dxgi_token_;
 }
 
+void GpuMemoryBufferImplDXGI::UsePreMappedMemory(bool use_premapped_memory) {
+  use_premapped_memory_ = use_premapped_memory;
+
+  // Not used currently until the media capture code is converted to use
+  // MappableSI.
+  NOTREACHED();
+}
+
 GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(
     gfx::GpuMemoryBufferId id,
     const gfx::Size& size,
@@ -271,21 +280,36 @@ GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(
     DestructionCallback callback,
     base::win::ScopedHandle dxgi_handle,
     gfx::DXGIHandleToken dxgi_token,
+    base::UnsafeSharedMemoryRegion region,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool,
     base::span<uint8_t> premapped_memory)
     : GpuMemoryBufferImpl(id, size, format, std::move(callback)),
       dxgi_handle_(std::move(dxgi_handle)),
       dxgi_token_(std::move(dxgi_token)),
+      region_(std::move(region)),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       shared_memory_pool_(std::move(pool)),
       premapped_memory_(premapped_memory) {
+  if (use_premapped_memory_) {
+    // Not reached until media capture code is converted to use MappableSI.
+    // Also note that this will replace |premapped_memory_| which is provided by
+    // the client above in GpuMemoryBufferImplDXGI(). |region_| will be used to
+    // create the pre mapped memory instead.
+    CHECK(region_.IsValid());
+    region_mapping_ = region_.Map();
+    CHECK(region_mapping_.IsValid());
+    premapped_memory_ = region_mapping_.GetMemoryAsSpan<uint8_t>();
+  }
+
   if (premapped_memory_.data() &&
       premapped_memory_.size() <
           gfx::BufferSizeForBufferFormat(size_, format_)) {
     LOG(ERROR)
         << "GpuMemoryBufferImplDXGI: Premapped memory has insufficient size.";
     premapped_memory_ = base::span<uint8_t>();
+    region_mapping_ = base::WritableSharedMemoryMapping();
+    use_premapped_memory_ = false;
   }
 }
 }  // namespace gpu
