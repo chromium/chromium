@@ -18,7 +18,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/numerics/clamped_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "printing/backend/cups_connection.h"
@@ -813,7 +812,7 @@ void FilterMediaColSizes(ScopedIppPtr& attributes) {
   // Finally, update the attribute that was passed in with the new entries.
   ippDeleteAttribute(attributes.get(), media_col_db);
   std::vector<const ipp_t*> raw_entries(new_entries.size());
-  base::ranges::transform(new_entries, raw_entries.begin(), &ScopedIppPtr::get);
+  std::ranges::transform(new_entries, raw_entries.begin(), &ScopedIppPtr::get);
   ippAddCollections(attributes.get(), IPP_TAG_PRINTER, kIppMediaColDatabase,
                     raw_entries.size(), raw_entries.data());
 }
