@@ -606,10 +606,8 @@ bool TemplateURLService::BothPolicySetKeywordsNotOverriden(
 }
 
 void TemplateURLService::AddMatchingKeywords(const std::u16string& prefix,
-                                             bool supports_replacement_only,
                                              TemplateURLVector* matches) {
-  AddMatchingKeywordsHelper(keyword_to_turl_, prefix, supports_replacement_only,
-                            matches);
+  AddMatchingKeywordsHelper(keyword_to_turl_, prefix, matches);
 }
 
 TemplateURL* TemplateURLService::GetTemplateURLForKeyword(
@@ -3065,7 +3063,6 @@ template <typename Container>
 void TemplateURLService::AddMatchingKeywordsHelper(
     const Container& keyword_to_turl,
     const std::u16string& prefix,
-    bool supports_replacement_only,
     TemplateURLVector* matches) {
   // Sanity check args.
   if (prefix.empty()) {
@@ -3083,8 +3080,7 @@ void TemplateURLService::AddMatchingKeywordsHelper(
   // Add to vector of matching keywords.
   for (typename Container::const_iterator i(match_range.first);
        i != match_range.second; ++i) {
-    if (!supports_replacement_only ||
-        i->second->url_ref().SupportsReplacement(search_terms_data())) {
+    if (i->second->url_ref().SupportsReplacement(search_terms_data())) {
       matches->push_back(i->second);
     }
   }

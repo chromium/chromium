@@ -922,7 +922,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, SearchDisabledDontCrashOnQuestionMark) {
   ASSERT_EQ(u"?", omnibox_view->GetText());
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonSubstitutingKeywordTest) {
+IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonDefaultSubstitutingKeywordTest) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
@@ -935,8 +935,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonSubstitutingKeywordTest) {
   data.SetShortName(u"Search abc");
   data.SetKeyword(kSearchText);
   data.SetURL("http://abc.com/{searchTerms}");
-  TemplateURL* template_url =
-      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->Add(std::make_unique<TemplateURL>(data));
 
   omnibox_view->SetUserText(std::u16string());
 
@@ -961,28 +960,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonSubstitutingKeywordTest) {
   omnibox_view->SetUserText(std::u16string());
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   ASSERT_FALSE(omnibox_view->model()->PopupIsOpen());
-
-  // Try a non-substituting keyword.
-  template_url_service->Remove(template_url);
-  data.SetShortName(u"abc");
-  data.SetURL("http://abc.com/");
-  template_url_service->Add(std::make_unique<TemplateURL>(data));
-
-  // We always allow exact matches for non-substituting keywords.
-  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
-  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
-  ASSERT_EQ(AutocompleteMatchType::HISTORY_KEYWORD,
-            omnibox_view->controller()
-                ->autocomplete_controller()
-                ->result()
-                .default_match()
-                ->type);
-  ASSERT_EQ("http://abc.com/", omnibox_view->controller()
-                                   ->autocomplete_controller()
-                                   ->result()
-                                   .default_match()
-                                   ->destination_url.spec());
 }
 
 // Flaky. See https://crbug.com/751031.
