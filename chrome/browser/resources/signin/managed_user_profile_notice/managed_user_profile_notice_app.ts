@@ -81,6 +81,9 @@ export class ManagedUserProfileNoticeAppElement extends
       proceedLabel_: {type: String},
       cancelLabel_: {type: String},
 
+      errorTitle_: {type: String},
+      errorSubtitle_: {type: String},
+
       disableProceedButton_: {type: Boolean},
       currentState_: {type: Number},
       showDisclosure_: {type: Boolean},
@@ -112,6 +115,8 @@ export class ManagedUserProfileNoticeAppElement extends
   protected isModalDialog_: boolean = loadTimeData.getBoolean('isModalDialog');
   protected proceedLabel_: string = '';
   protected cancelLabel_: string = '';
+  protected errorTitle_: string = '';
+  protected errorSubtitle_: string = '';
   protected disableProceedButton_: boolean = false;
   private currentState_: State = State.DISCLOSURE;
   protected showValueProposition_: boolean = false;
@@ -149,6 +154,13 @@ export class ManagedUserProfileNoticeAppElement extends
     super.firstUpdated(changedProperties);
     this.addWebUiListener(
         'on-state-changed', (state: State) => this.updateCurrentState_(state));
+
+    this.addWebUiListener(
+        'on-state-changed-to-error',
+        (errorTitle: string, errorSubTitle: string) => {
+          this.updateErrorStrings_(errorTitle, errorSubTitle);
+          this.updateCurrentState_(State.ERROR);
+        });
 
     this.addWebUiListener(
         'on-profile-info-changed',
@@ -199,6 +211,11 @@ export class ManagedUserProfileNoticeAppElement extends
     this.showError_ = state === State.ERROR;
     this.showUserDataHandling_ = state === State.USER_DATA_HANDLING;
     this.disableProceedButton_ = false;
+  }
+
+  private updateErrorStrings_(errorTitle: string, errorSubTitle: string) {
+    this.errorTitle_ = errorTitle;
+    this.errorSubtitle_ = errorSubTitle;
   }
 
   protected allowCancel_() {

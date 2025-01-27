@@ -2493,6 +2493,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="OIDC profile registration failure"/>
   <int value="5" label="Can't start enrollment from Guest or OTR profile"/>
   <int value="6" label="OIDC profile registration timeout"/>
+  <int value="7" label="No enrollment due to browser sign in being disabled"/>
 </enum>
 
 <enum name="OidcProfileCreationFunnelStep">

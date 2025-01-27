@@ -51,12 +51,20 @@ enum SigninChoiceOperationResult {
   SIGNIN_CONFIRM_SUCCESS = 3
 };
 
+enum class SigninChoiceErrorType {
+  kNoError = 0,
+  kUnknown = 1,
+  kSigninDisabled = 2,
+};
+
 // Callback with the signin choice and a handler for when the choice has been
 // handled.
 using SigninChoiceOperationDoneCallback =
-    base::OnceCallback<void(SigninChoiceOperationResult)>;
+    base::OnceCallback<void(SigninChoiceOperationResult,
+                            SigninChoiceErrorType)>;
 using SigninChoiceOperationRetryCallback =
-    base::RepeatingCallback<void(SigninChoiceOperationResult)>;
+    base::RepeatingCallback<void(SigninChoiceOperationResult,
+                                 SigninChoiceErrorType)>;
 using SigninChoiceWithConfirmAndRetryCallback =
     base::OnceCallback<void(SigninChoice,
                             SigninChoiceOperationDoneCallback,

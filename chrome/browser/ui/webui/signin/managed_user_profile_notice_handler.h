@@ -123,7 +123,11 @@ class ManagedUserProfileNoticeHandler
   ProfileAttributesEntry* GetProfileEntry() const;
 
   std::string GetPictureUrl();
-  void OnUserChoiceHandled(signin::SigninChoiceOperationResult result);
+  void OnUserChoiceHandled(signin::SigninChoiceOperationResult result,
+                           signin::SigninChoiceErrorType error_type =
+                               signin::SigninChoiceErrorType::kNoError);
+
+  void FireErrorEvent(signin::SigninChoiceErrorType error);
 
   base::FilePath profile_path_;
   base::ScopedObservation<ProfileAttributesStorage,

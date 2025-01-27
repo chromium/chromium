@@ -171,10 +171,6 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
                              IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_TITLE);
   source->AddLocalizedString("timeoutSubtitle",
                              IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_SUBTITLE);
-  source->AddLocalizedString("errorTitle",
-                             IDS_ENTERPRISE_OIDC_WELCOME_ERROR_TITLE);
-  source->AddLocalizedString("errorSubtitle",
-                             IDS_ENTERPRISE_OIDC_WELCOME_ERROR_SUBTITLE);
   source->AddLocalizedString(
       "separateBrowsingDataTitle",
       IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_WORK_TITLE);

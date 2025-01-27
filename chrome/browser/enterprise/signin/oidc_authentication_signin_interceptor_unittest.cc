@@ -112,14 +112,16 @@ class FakeBubbleHandle : public ScopedWebSigninInterceptionBubbleHandle {
         base::BindOnce(
             [](base::OnceClosure done,
                signin::SigninChoiceOperationResult expected_result,
-               signin::SigninChoiceOperationResult result) {
+               signin::SigninChoiceOperationResult result,
+               signin::SigninChoiceErrorType error_type) {
               CHECK_EQ(result, expected_result);
               std::move(done).Run();
             },
             std::move(done_callback_), expected_operation_result_),
         base::BindRepeating(
             [](signin::SigninChoiceOperationResult expected_result,
-               signin::SigninChoiceOperationResult result) {
+               signin::SigninChoiceOperationResult result,
+               signin::SigninChoiceErrorType error_type) {
               CHECK_EQ(result, expected_result);
               // Retry callback should only be used in case of registration
               // timeout.

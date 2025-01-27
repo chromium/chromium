@@ -680,6 +680,12 @@
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_SUBTITLE" desc="Subtitle of a section telling the user that there was an error while creating their work profile.">
       You can try again or contact your administrator for help
     </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_NO_SIGNIN_TITLE" desc="Title of a section telling the user that there was an error while creating their work profile.">
+      Work profile setup is disabled by your organization
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_NO_SIGNIN_SUBTITLE" desc="Subtitle of a section telling the user that there was an error while creating their work profile.">
+      Contact your administrator for more information
+    </message>
     <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
       Sign in to get your passwords and more on all your devices
     </message>
