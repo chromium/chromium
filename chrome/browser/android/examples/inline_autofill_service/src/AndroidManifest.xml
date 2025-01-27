@@ -51,4 +51,24 @@
 
   </application>
 
+  <uses-permission android:name="android.permission.READ_USER_DICTIONARY"/>
+  <queries>
+    <!-- To query Chrome Canary: -->
+    <package android:name="com.chrome.canary" />
+
+    <!-- To query Chrome Dev: -->
+    <package android:name="com.chrome.dev" />
+
+    <!-- To query Chrome Beta: -->
+    <package android:name="com.chrome.beta" />
+
+    <!-- To query Chrome Developer Build: -->
+    <package android:name="com.google.android.apps.chrome" />
+
+    <!-- To query Chromium Builds: -->
+    <package android:name="org.chromium.chrome" />
+
+    <!-- To query Chrome Stable: -->
+    <package android:name="com.android.chrome" />
+  </queries>
 </manifest>
