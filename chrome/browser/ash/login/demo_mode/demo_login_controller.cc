@@ -70,6 +70,10 @@ const char kClientID[] = "client_id";
 // Maximum accepted size of an ItemSuggest response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
 
+const char kErrorCodePath[] = "error.code";
+const char kErrorMessagePath[] = "error.message";
+const char kErrorStatusPath[] = "error.status";
+
 constexpr net::NetworkTrafficAnnotationTag kSetupAccountTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("demo_login_controller", R"(
           semantics: {
@@ -225,6 +229,29 @@ void SendDemoAccountRequest(
   url_loader->SetTimeoutDuration(kDemoAccountRequestTimeout);
   url_loader->DownloadToString(GetUrlLoaderFactory().get(), std::move(callback),
                                kMaxResponseSize);
+}
+
+void LogServerResponseError(std::string error_response, bool is_setup) {
+  if (error_response.empty()) {
+    return;
+  }
+
+  std::optional<base::Value::Dict> error(
+      base::JSONReader::ReadDict(error_response));
+  const std::string response_name =
+      base::StringPrintf("%s response error:", is_setup ? "Setup" : "Clean up");
+  if (!error) {
+    LOG(ERROR) << base::StringPrintf("%s Cannot parse response.",
+                                     response_name);
+    return;
+  }
+  const std::optional<int> code = error->FindIntByDottedPath(kErrorCodePath);
+  const auto* msg = error->FindStringByDottedPath(kErrorMessagePath);
+  const auto* status = error->FindStringByDottedPath(kErrorStatusPath);
+
+  LOG(ERROR) << base::StringPrintf(
+      "%s error code: %d; message: %s; status: %s.", response_name,
+      code ? *code : -1, msg ? *msg : "", status ? *status : "");
 }
 
 DemoLoginController::ResultCode GetDemoAccountRequestResult(
@@ -385,6 +412,7 @@ void DemoLoginController::OnSetupDemoAccountComplete(
                                   std::move(response_body));
   } else {
     OnSetupDemoAccountError(result);
+    LogServerResponseError(*response_body, /*is_setup*/ true);
   }
 }
 
@@ -501,6 +529,7 @@ void DemoLoginController::OnCleanUpDemoAccountComplete(
       std::move(clean_up_failed_callback_for_testing_).Run(result);
     } else {
       OnCleanUpDemoAccountError(result);
+      LogServerResponseError(*response_body, /*is_setup*/ false);
     }
   }
 
