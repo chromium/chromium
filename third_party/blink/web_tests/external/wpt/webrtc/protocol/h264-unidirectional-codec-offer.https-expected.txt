@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] Offering a recvonly codec on a sendrecv transceiver
-  assert_equals: Two codecs are offered (H264, VP8). expected 2 but got 1
 [FAIL] Offer to send a sendonly H264 codec on a sendonly transceiver
   assert_true: The first offered codec's sdpFmtpLine is the sendonly one. expected true got false
 Harness: the test ran to completion.

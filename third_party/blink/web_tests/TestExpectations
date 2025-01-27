@@ -8984,9 +8984,10 @@ crbug.com/380323589 [ Win11 ] external/wpt/pointerevents/pointerevent_sequence_a
 crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-creation-with-gc.html [ Crash Failure Pass ]
 crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-setcert-with-gc.html [ Crash Failure Pass ]
 
-# Tests temporarily disabled to unblock a WebRTC roll that make more tests pass
-crbug.com/381407888 external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
-crbug.com/381407888 fast/peerconnection/RTCRtpSender-setParameters.html [ Failure Pass ]
+# This test will [PRECONDITION_FAILED] on some bots and not others based on its HW capabilities, skip the test on such bots.
+# TODO(crbug.com/381407888): See if we can replace Pass/Failure with platform-specific -expected.txt files and remove this.
+crbug.com/381407888 [ Win11-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
+crbug.com/381407888 [ Mac13 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
 # Will pass or fail depending on bot's HW capabilities, allow either while this feature is behind flag.
 crbug.com/388299759 virtual/webrtc-h265/external/wpt/webrtc/protocol/h265-level-id.https.html [ Failure Pass ]
 
