@@ -81,10 +81,8 @@ CAGradientLayer* CarouselBackgroundGradientLayer() {
   gradientLayer.startPoint = CGPointMake(0, 0.5);
   gradientLayer.endPoint = CGPointMake(1, 0.5);
   UIColor* gradientStartColor =
-      [[UIColor colorNamed:@"omnibox_suggestion_row_highlight_color"]
-          colorWithAlphaComponent:0.85];
-  UIColor* gradientEndColor =
-      [UIColor colorNamed:@"omnibox_suggestion_row_highlight_color"];
+      [[UIColor colorNamed:kStaticBlueColor] colorWithAlphaComponent:0.85];
+  UIColor* gradientEndColor = [UIColor colorNamed:kStaticBlueColor];
   gradientLayer.colors =
       @[ (id)[gradientStartColor CGColor], (id)[gradientEndColor CGColor] ];
   gradientLayer.cornerRadius = kBackgroundCornerRadius;

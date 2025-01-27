@@ -85,12 +85,9 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
     // Background.
     self.backgroundColor = UIColor.clearColor;
     _selectedBackgroundView = [[GradientView alloc]
-        initWithTopColor:
-            [[UIColor colorNamed:@"omnibox_suggestion_row_highlight_color"]
-                colorWithAlphaComponent:kTopGradientColorOpacity]
-             bottomColor:
-                 [UIColor
-                     colorNamed:@"omnibox_suggestion_row_highlight_color"]];
+        initWithTopColor:[[UIColor colorNamed:kStaticBlueColor]
+                             colorWithAlphaComponent:kTopGradientColorOpacity]
+             bottomColor:[UIColor colorNamed:kStaticBlueColor]];
     _selectedBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
     _selectedBackgroundView.layer.zPosition = -1;
     _selectedBackgroundView.hidden = YES;
