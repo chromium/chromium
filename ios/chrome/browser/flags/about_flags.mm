@@ -2362,6 +2362,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSetUpListWithoutSignInItemDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(set_up_list::kSetUpListWithoutSignInItem)},
+    {"lens-ink-multi-sample-mode-disabled",
+     flag_descriptions::kLensInkMultiSampleModeDisabledName,
+     flag_descriptions::kLensInkMultiSampleModeDisabledDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensInkMultiSampleModeDisabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

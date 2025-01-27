@@ -580,6 +580,11 @@ extern const char kLensClearcutLoggerFastQosEnabledDescription[];
 extern const char kLensFiltersAblationModeEnabledName[];
 extern const char kLensFiltersAblationModeEnabledDescription[];
 
+// Title and description for the flag to disable Lens ink library's multi-sample
+// mode.
+extern const char kLensInkMultiSampleModeDisabledName[];
+extern const char kLensInkMultiSampleModeDisabledDescription[];
+
 // Title and description for the flag to force show lens overlay onboarding
 // screen.
 extern const char kLensOverlayForceShowOnboardingScreenName[];
