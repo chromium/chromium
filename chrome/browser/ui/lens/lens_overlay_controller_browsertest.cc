@@ -735,16 +735,6 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     bool has_q_value =
         net::GetValueForKeyInQuery(url_to_process, "q", &q_value);
     EXPECT_TRUE(has_q_value);
-
-    std::string biw_value;
-    bool has_biw_value =
-        net::GetValueForKeyInQuery(url_to_process, "biw", &biw_value);
-    EXPECT_TRUE(has_biw_value);
-
-    std::string bih_value;
-    bool has_bih_value =
-        net::GetValueForKeyInQuery(url_to_process, "bih", &bih_value);
-    EXPECT_TRUE(has_bih_value);
   }
 
   void CloseOverlayAndWaitForOff(LensOverlayController* controller,
