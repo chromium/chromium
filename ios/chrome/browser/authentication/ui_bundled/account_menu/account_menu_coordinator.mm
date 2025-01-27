@@ -99,7 +99,6 @@ void ChangeProfileSignOutIfMismatchContinuation(
 
   authentication_service->SignOut(
       signin_metrics::ProfileSignout::kChangeAccountInAccountMenu,
-      /*force_clear_browsing_data=*/false,
       base::CallbackToBlock(std::move(closure)));
 }
 

@@ -146,7 +146,7 @@ class AccountMenuMediatorTest : public PlatformTest,
     base::RunLoop run_loop;
     base::RepeatingClosure closure = run_loop.QuitClosure();
     authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest,
-                                     /*force_clear_browsing_data=*/false, ^() {
+                                     ^() {
                                        closure.Run();
                                      });
     run_loop.Run();
@@ -240,7 +240,6 @@ TEST_P(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
   OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest,
-                                   /*force_clear_browsing_data=*/false,
                                    ^(){
                                    });
 }

@@ -223,16 +223,14 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
   // different profile.
   __weak __typeof(_delegate) weakDelegate = _delegate;
   AuthenticationServiceFactory::GetForProfile(profile)->SignOut(
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-      /*force_clear_browsing_data=*/false, ^{
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings, ^{
         [weakDelegate didSignOut];
       });
 }
 
 - (void)signOutImmediatelyFromProfile:(ProfileIOS*)profile {
   AuthenticationServiceFactory::GetForProfile(profile)->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/false, nil);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
 }
 
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
@@ -329,7 +327,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
       signin::MultiProfileSignOut(
           browser,
           signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn,
-          /*force_clear_data=*/false, /*force_snackbar_over_toolbar=*/false,
+          /*force_snackbar_over_toolbar=*/false,
           /*snackbar_message=*/nil, /*signout_completion=*/nil);
     }
   };

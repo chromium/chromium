@@ -41,7 +41,6 @@ void SignoutDone(base::WeakPtr<Browser> weak_browser,
 // Implementation of the continuation that sign-out the profile.
 void ChangeProfileSignoutContinuation(
     signin_metrics::ProfileSignout signout_source_metric,
-    BOOL force_clear_data,
     BOOL force_snackbar_over_toolbar,
     MDCSnackbarMessage* snackbar_message,
     base::OnceClosure signout_completion,
@@ -63,24 +62,25 @@ void ChangeProfileSignoutContinuation(
 
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
-  authentication_service->SignOut(signout_source_metric, force_clear_data,
+  authentication_service->SignOut(signout_source_metric,
                                   base::CallbackToBlock(std::move(completion)));
 
-  signin_metrics::RecordSignoutForceClearDataChoice(force_clear_data);
-  signin_metrics::RecordSignoutUserAction(force_clear_data);
+  // TODO(crbug.com/40066949): Remove buckets related to sync-the-feature, and
+  // maybe rename histogram.
+  signin_metrics::RecordSignoutForceClearDataChoice(/*force_clear_data=*/false);
+  signin_metrics::RecordSignoutUserAction(/*force_clear_data=*/false);
 }
 
 }  // namespace
 
 ChangeProfileContinuation CreateChangeProfileSignoutContinuation(
     signin_metrics::ProfileSignout signout_source_metric,
-    BOOL force_clear_data,
     BOOL force_snackbar_over_toolbar,
     MDCSnackbarMessage* snackbar_message,
     ProceduralBlock signout_completion) {
   return base::BindOnce(&ChangeProfileSignoutContinuation,
-                        signout_source_metric, force_clear_data,
-                        force_snackbar_over_toolbar, snackbar_message,
+                        signout_source_metric, force_snackbar_over_toolbar,
+                        snackbar_message,
                         signout_completion ? base::BindOnce(signout_completion)
                                            : base::DoNothing());
 }

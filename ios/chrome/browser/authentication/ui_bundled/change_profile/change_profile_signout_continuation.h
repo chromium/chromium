@@ -20,7 +20,6 @@ enum class ProfileSignout;
 // a snackbar, and then runs `signout_completion`.
 ChangeProfileContinuation CreateChangeProfileSignoutContinuation(
     signin_metrics::ProfileSignout signout_source_metric,
-    BOOL force_clear_data,
     BOOL force_snackbar_over_toolbar,
     MDCSnackbarMessage* snackbar_message,
     ProceduralBlock signout_completion);

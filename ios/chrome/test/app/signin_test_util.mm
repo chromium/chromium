@@ -111,7 +111,6 @@ void SignOutAndClearIdentities(ProceduralBlock completion) {
     if (authentication_service->HasPrimaryIdentity(
             signin::ConsentLevel::kSignin)) {
       authentication_service->SignOut(signin_metrics::ProfileSignout::kTest,
-                                      /*force_clear_browsing_data=*/true,
                                       tasks_completion);
     } else {
       tasks_completion();

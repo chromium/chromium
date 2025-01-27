@@ -496,7 +496,6 @@ void AuthenticationService::GrantSyncConsent(
 
 void AuthenticationService::SignOut(
     signin_metrics::ProfileSignout signout_source,
-    bool force_clear_browsing_data,
     ProceduralBlock completion) {
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     if (completion) {
@@ -538,9 +537,6 @@ void AuthenticationService::SignOut(
 
   if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts) &&
       is_managed) {
-    // TODO(crbug.com/375605174): Unify the decision to clear data on signout.
-    // Currently, this is done twice: in SignoutActionSheetCoordinator and again
-    // here based on the account state.
     if (completion) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(callback_closure));
@@ -548,8 +544,7 @@ void AuthenticationService::SignOut(
     return;
   }
 
-  if (force_clear_browsing_data ||
-      (is_managed && is_initial_sync_feature_setup_complete) ||
+  if ((is_managed && is_initial_sync_feature_setup_complete) ||
       (is_managed && is_migrated_from_syncing)) {
     // If `is_clear_data_feature_for_managed_users_enabled` is false, browsing
     // data for managed account needs to be cleared only if sync has started at
@@ -656,8 +651,7 @@ void AuthenticationService::MDMErrorHandled(id<SystemIdentity> identity,
     return;
   }
 
-  SignOut(signin_metrics::ProfileSignout::kAbortSignin,
-          /*force_clear_browsing_data*/ false, nil);
+  SignOut(signin_metrics::ProfileSignout::kAbortSignin, nil);
 }
 
 void AuthenticationService::OnRefreshTokenUpdated(id<SystemIdentity> identity) {
@@ -761,7 +755,7 @@ void AuthenticationService::HandleForgottenIdentity(
   }
 
   // Sign the user out.
-  SignOut(signout_source, /*force_clear_browsing_data=*/false, nil);
+  SignOut(signout_source, nil);
 
   NSString* gaia_id = account_info.gaia.ToNSString();
   // Should prompt the user if the identity was not removed by the user.
