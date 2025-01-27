@@ -1006,6 +1006,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelToBeInstalledReason.{ModelExecutionFeature}"
+    enum="OptimizationGuideOnDeviceModelStatus" expires_after="2026-01-24">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the OptimizationGuideOnDeviceModelStatus when it is determined that
+    the device is eligible but the model has not been installed yet. This is
+    logged when it is checked if an on-device session can be created for a given
+    feature usually when a session is created or when an eligibility check is
+    conducted.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelValidationResult"
     enum="OnDeviceModelValidationResult" expires_after="2025-06-05">
   <owner>cduvall@chromium.org</owner>
