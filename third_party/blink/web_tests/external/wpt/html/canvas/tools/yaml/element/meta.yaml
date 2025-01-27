@@ -189,7 +189,9 @@
     ctx.fillStyle = 'rgba%s';
     ctx.fillRect(0, 0, 100, 50);
     ctx.globalCompositeOperation = '%s';
-    var canvas2 = document.createElement('canvas');
+    const canvas2 = document.createElement('canvas');
+    canvas2.width = canvas.width;
+    canvas2.height = canvas.height;
     ctx.drawImage(canvas2, 0, 0);
     @assert pixel 50,25 ==~ %s +/- 5;
     """ % (dest, op, to_test(expected0)),

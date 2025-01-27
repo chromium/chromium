@@ -166,7 +166,7 @@
     ctx.fillStyle = 'rgba%s';
     ctx.fillRect(0, 0, 100, 50);
     ctx.globalCompositeOperation = '%s';
-    var canvas2 = new OffscreenCanvas(100, 50);
+    const canvas2 = new OffscreenCanvas(canvas.width, canvas.height);
     ctx.drawImage(canvas2, 0, 0);
     @assert pixel 50,25 ==~ %s +/- 5;
     t.done();
