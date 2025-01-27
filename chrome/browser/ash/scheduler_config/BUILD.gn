@@ -13,8 +13,8 @@ static_library("scheduler_config") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
-    "//chrome/common",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/system",
     "//components/prefs",
@@ -28,8 +28,8 @@ source_set("unit_tests") {
 
   deps = [
     ":scheduler_config",
+    "//ash/constants",
     "//base/test:test_support",
-    "//chrome/common",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//components/prefs:test_support",
     "//testing/gtest",

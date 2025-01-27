@@ -1127,13 +1127,6 @@ const base::FeatureParam<base::TimeDelta>
 const base::FeatureParam<base::TimeDelta> kSafeBrowsingNotificationInterval{
     &kSafetyHub, kSafeBrowsingNotificationIntervalName, base::Days(90)};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enable support for multiple scheduler configurations.
-BASE_FEATURE(kSchedulerConfiguration,
-             "SchedulerConfiguration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Controls whether SCT audit reports are queued and the rate at which they
 // should be sampled. Default sampling rate is 1/10,000 certificates.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_ANDROID)

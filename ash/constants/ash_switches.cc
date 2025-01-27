@@ -966,6 +966,15 @@ const char kSealKey[] = "seal-key";
 const char kScheduledRebootGracePeriodInSecondsForTesting[] =
     "scheduled-reboot-grace-period-in-seconds-for-testing";
 
+// Selects the scheduler configuration specified in the parameter.
+const char kSchedulerConfiguration[] = "scheduler-configuration";
+const char kSchedulerConfigurationConservative[] = "conservative";
+const char kSchedulerConfigurationPerformance[] = "performance";
+
+// Specifies what the default scheduler configuration value is if the user does
+// not set one.
+const char kSchedulerConfigurationDefault[] = "scheduler-configuration-default";
+
 // If true, the developer tool overlay will be shown for the login/lock screen.
 // This makes it easier to test layout logic.
 const char kShowLoginDevOverlay[] = "show-login-dev-overlay";

@@ -1049,11 +1049,11 @@ const FeatureEntry::Choice kIpProtectionProxyOptOutChoices[] = {
 const FeatureEntry::Choice kSchedulerConfigurationChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kSchedulerConfigurationConservative,
-     switches::kSchedulerConfiguration,
-     switches::kSchedulerConfigurationConservative},
+     ash::switches::kSchedulerConfiguration,
+     ash::switches::kSchedulerConfigurationConservative},
     {flag_descriptions::kSchedulerConfigurationPerformance,
-     switches::kSchedulerConfiguration,
-     switches::kSchedulerConfigurationPerformance},
+     ash::switches::kSchedulerConfiguration,
+     ash::switches::kSchedulerConfigurationPerformance},
 };
 
 const FeatureEntry::FeatureParam kDynamicSearchUpdateAnimationDuration_50[] = {

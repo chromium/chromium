@@ -326,6 +326,13 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kScannerUpdateKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSealKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kScheduledRebootGracePeriodInSecondsForTesting[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSchedulerConfigurationConservative[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSchedulerConfigurationDefault[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSchedulerConfigurationPerformance[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSchedulerConfiguration[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfHotseat[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowLoginDevOverlay[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowOobeDevOverlay[];

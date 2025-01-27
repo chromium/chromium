@@ -1404,7 +1404,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kReportArcStatusEnabled,
     base::Value::Type::BOOLEAN },
   { key::kSchedulerConfiguration,
-    prefs::kSchedulerConfiguration,
+    ash::prefs::kSchedulerConfiguration,
     base::Value::Type::STRING },
   { key::kExternalPrintServersAllowlist,
     prefs::kExternalPrintServersAllowlist,

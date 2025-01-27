@@ -225,10 +225,6 @@ extern const char kCroshCommand[];
 extern const char kDisableLoggingRedirect[];
 extern const char kDisableLoginScreenApps[];
 extern const char kShortMergeSessionTimeoutForTest[];
-extern const char kSchedulerConfiguration[];
-extern const char kSchedulerConfigurationConservative[];
-extern const char kSchedulerConfigurationPerformance[];
-extern const char kSchedulerConfigurationDefault[];
 #else
 extern const char kSavePageAsMHTML[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
