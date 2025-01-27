@@ -16,7 +16,7 @@ import {request_options_with_mediation_required,
 fedcm_test(async t => {
   await mark_signed_in();
 
-  let test_options = request_options_with_mediation_required("manifest_with_variable_accounts.json");
+  let test_options = request_options_with_mediation_required("manifest_broken_login.json");
   await select_manifest(t, test_options);
 
   let cred_promise = navigator.credentials.get(test_options);
@@ -30,12 +30,8 @@ fedcm_test(async t => {
   await select_manifest(t, test_options);
   await window.test_driver.click_fedcm_dialog_button("ConfirmIdpLoginContinue");
 
-  // Now wait for the account chooser.
-  type = await fedcm_get_dialog_type_promise(t);
-  assert_equals(type, "AccountChooser");
-  window.test_driver.select_fedcm_account(0);
-
-  let cred = await cred_promise;
-  assert_equals(cred.token, "account_id=1234");
-}, 'Tests the IDP login dialog and subsequent account chooser.');
+  // Because the login page never sends a signin status header, we
+  // expect a promise rejection.
+  return promise_rejects_dom(t, 'NetworkError', cred_promise);
+}, 'Tests that the promise does get resolved if a login page does not send a signin status header.');
 </script>
