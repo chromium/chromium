@@ -88,7 +88,7 @@ class VideoCaptureManager::CaptureDeviceStartRequest {
   }
 
  private:
-  scoped_refptr<VideoCaptureController> controller_;
+  const scoped_refptr<VideoCaptureController> controller_;
   const base::UnguessableToken session_id_;
   const media::VideoCaptureParams params_;
   mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
@@ -221,7 +221,7 @@ void VideoCaptureManager::Close(
     return;
   }
 
-  scoped_refptr<VideoCaptureController> existing_device =
+  VideoCaptureController* const existing_device =
       LookupControllerByMediaTypeAndDeviceId(session_it->second.type,
                                              session_it->second.id);
   if (existing_device) {
@@ -263,7 +263,7 @@ void VideoCaptureManager::ApplySubCaptureTarget(
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  scoped_refptr<VideoCaptureController> controller =
+  VideoCaptureController* const controller =
       LookupControllerBySessionId(session_id);
   if (!controller || !controller->IsDeviceAlive()) {
     std::move(callback).Run(
@@ -292,8 +292,7 @@ void VideoCaptureManager::QueueStartDevice(
     ProcessDeviceStartRequestQueue();
 }
 
-void VideoCaptureManager::DoStopDevice(
-    scoped_refptr<VideoCaptureController> controller) {
+void VideoCaptureManager::DoStopDevice(VideoCaptureController* controller) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureManager::DoStopDevice");
@@ -322,7 +321,8 @@ void VideoCaptureManager::DoStopDevice(
   // Since we may be removing |controller| from |controllers_| while
   // ReleaseDeviceAsnyc() is executing, we pass it shared ownership to
   // |controller|.
-  controller->ReleaseDeviceAsync(base::DoNothingWithBoundArgs(controller));
+  controller->ReleaseDeviceAsync(
+      base::DoNothingWithBoundArgs(GetControllerSharedRef(controller)));
 }
 
 void VideoCaptureManager::ProcessDeviceStartRequestQueue() {
@@ -333,7 +333,8 @@ void VideoCaptureManager::ProcessDeviceStartRequestQueue() {
   if (request == device_start_request_queue_.end())
     return;
 
-  scoped_refptr<VideoCaptureController> controller = request->controller();
+  scoped_refptr<VideoCaptureController> const controller =
+      request->controller();
 
   EmitLogMessage("VideoCaptureManager::ProcessDeviceStartRequestQueue", 3);
   // The unit test VideoCaptureManagerTest.OpenNotExisting requires us to fail
@@ -377,8 +378,7 @@ void VideoCaptureManager::ProcessDeviceStartRequestQueue() {
       request->TakeReadonlyVideoEffectsManager());
 }
 
-void VideoCaptureManager::OnDeviceLaunched(
-    scoped_refptr<VideoCaptureController> controller) {
+void VideoCaptureManager::OnDeviceLaunched(VideoCaptureController* controller) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   std::ostringstream string_stream;
   string_stream << "Launching device has succeeded. device_id = "
@@ -397,7 +397,7 @@ void VideoCaptureManager::OnDeviceLaunched(
 
   auto it = photo_request_queue_.begin();
   while (it != photo_request_queue_.end()) {
-    scoped_refptr<VideoCaptureController> maybe_entry =
+    VideoCaptureController* maybe_entry =
         LookupControllerBySessionId(it->first);
     if (maybe_entry && maybe_entry->IsDeviceAlive()) {
       std::move(it->second).Run();
@@ -412,7 +412,7 @@ void VideoCaptureManager::OnDeviceLaunched(
 }
 
 void VideoCaptureManager::OnDeviceLaunchFailed(
-    scoped_refptr<VideoCaptureController> controller,
+    VideoCaptureController* controller,
     media::VideoCaptureError error) {
   std::ostringstream string_stream;
   string_stream << "Launching device has failed. device_id = "
@@ -431,7 +431,7 @@ void VideoCaptureManager::OnDeviceLaunchAborted() {
 }
 
 void VideoCaptureManager::OnDeviceConnectionLost(
-    scoped_refptr<VideoCaptureController> controller) {
+    VideoCaptureController* controller) {
   std::ostringstream string_stream;
   string_stream << "Lost connection to device. device_id = "
                 << controller->device_id();
@@ -535,7 +535,7 @@ void VideoCaptureManager::ConnectClient(
 }
 
 void VideoCaptureManager::DisconnectClient(
-    scoped_refptr<VideoCaptureController> controller,
+    VideoCaptureController* controller,
     VideoCaptureControllerID client_id,
     VideoCaptureControllerEventHandler* client_handler,
     media::VideoCaptureError error) {
@@ -544,7 +544,7 @@ void VideoCaptureManager::DisconnectClient(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(controller);
   DCHECK(client_handler);
-  CHECK(HasController(controller.get()));
+  CHECK(IsControllerPointerValid(controller));
 
   if (error != media::VideoCaptureError::kNone) {
     LogVideoCaptureError(error);
@@ -558,9 +558,8 @@ void VideoCaptureManager::DisconnectClient(
         for (auto& listener : listeners_)
           listener.Aborted(it.second.type, it.first);
         // Aborted() call might synchronously destroy |controller|, recheck.
-        if (!HasController(controller.get())) {
+        if (!IsControllerPointerValid(controller))
           return;
-        }
         break;
       }
     }
@@ -584,7 +583,7 @@ void VideoCaptureManager::PauseCaptureForClient(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(controller);
   DCHECK(client_handler);
-  if (!HasController(controller)) {
+  if (!IsControllerPointerValid(controller)) {
     NOTREACHED() << "Got Null controller while pausing capture";
   }
 
@@ -607,7 +606,7 @@ void VideoCaptureManager::ResumeCaptureForClient(
   DCHECK(controller);
   DCHECK(client_handler);
 
-  if (!HasController(controller)) {
+  if (!IsControllerPointerValid(controller)) {
     NOTREACHED() << "Got Null controller while resuming capture";
   }
 
@@ -623,7 +622,7 @@ void VideoCaptureManager::RequestRefreshFrameForClient(
     VideoCaptureController* controller) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (HasController(controller)) {
+  if (IsControllerPointerValid(controller)) {
     if (!controller->IsDeviceAlive())
       return;
     controller->RequestRefreshFrame();
@@ -686,7 +685,7 @@ VideoCaptureManager::GetDeviceFormatInUse(
     const std::string& device_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // Return the currently in-use format of the device, if it's started.
-  scoped_refptr<VideoCaptureController> device_in_use =
+  VideoCaptureController* device_in_use =
       LookupControllerByMediaTypeAndDeviceId(stream_type, device_id);
   return device_in_use ? device_in_use->GetVideoCaptureFormat() : std::nullopt;
 }
@@ -695,7 +694,7 @@ GlobalRenderFrameHostId VideoCaptureManager::GetGlobalRenderFrameHostId(
     const base::UnguessableToken& session_id) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  scoped_refptr<VideoCaptureController> controller =
+  VideoCaptureController* const controller =
       LookupControllerBySessionId(session_id);
   if (!controller || !controller->IsDeviceAlive() ||
       !blink::IsVideoDesktopCaptureMediaType(controller->stream_type())) {
@@ -736,7 +735,7 @@ void VideoCaptureManager::MaybePostDesktopCaptureWindowId(
   if (session_it == sessions_.end())
     return;
 
-  scoped_refptr<VideoCaptureController> existing_device =
+  VideoCaptureController* const existing_device =
       LookupControllerByMediaTypeAndDeviceId(session_it->second.type,
                                              session_it->second.id);
   if (!existing_device) {
@@ -771,8 +770,7 @@ void VideoCaptureManager::GetPhotoState(
     media::VideoCaptureDevice::GetPhotoStateCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  scoped_refptr<VideoCaptureController> controller =
-      LookupControllerBySessionId(session_id);
+  VideoCaptureController* controller = LookupControllerBySessionId(session_id);
   if (!controller)
     return;
   if (controller->IsDeviceAlive()) {
@@ -792,8 +790,7 @@ void VideoCaptureManager::SetPhotoOptions(
     media::VideoCaptureDevice::SetPhotoOptionsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  scoped_refptr<VideoCaptureController> controller =
-      LookupControllerBySessionId(session_id);
+  VideoCaptureController* controller = LookupControllerBySessionId(session_id);
   if (!controller)
     return;
   if (controller->IsDeviceAlive()) {
@@ -814,8 +811,7 @@ void VideoCaptureManager::TakePhoto(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureManager::TakePhoto");
 
-  scoped_refptr<VideoCaptureController> controller =
-      LookupControllerBySessionId(session_id);
+  VideoCaptureController* controller = LookupControllerBySessionId(session_id);
   if (!controller)
     return;
   if (controller->IsDeviceAlive()) {
@@ -897,7 +893,7 @@ void VideoCaptureManager::OnDeviceInfosReceived(
 
 void VideoCaptureManager::DestroyControllerIfNoClients(
     const base::UnguessableToken& capture_session_id,
-    scoped_refptr<VideoCaptureController> controller) {
+    VideoCaptureController* controller) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // Removal of the last client stops the device.
   if (!controller->HasActiveClient() && !controller->HasPausedClient()) {
@@ -913,13 +909,11 @@ void VideoCaptureManager::DestroyControllerIfNoClients(
         DesktopMediaID::Parse(controller->device_id()));
 
     // The VideoCaptureController is removed from |controllers_| immediately.
-    // In order to allow the controller to be deleted immediately (in case this
-    // is the last reference), we invalidate any weak ptrs. Deleting the device
-    // happens asynchronously and after this point, subsequent requests to open
-    // this same device ID will create a new VideoCaptureController and
-    // VideoCaptureDevice.
+    // The controller is deleted immediately, and the device is freed
+    // asynchronously. After this point, subsequent requests to open this same
+    // device ID will create a new VideoCaptureController,
+    // VideoCaptureController, and VideoCaptureDevice.
     DoStopDevice(controller);
-    controller->InvalidateWeakPtrsOnIOThread();
     // TODO(mcasas): use a helper function https://crbug.com/624854.
     auto controller_iter = base::ranges::find(
         controllers_, controller, &scoped_refptr<VideoCaptureController>::get);
@@ -932,8 +926,7 @@ void VideoCaptureManager::DestroyControllerIfNoClients(
   }
 }
 
-scoped_refptr<VideoCaptureController>
-VideoCaptureManager::LookupControllerBySessionId(
+VideoCaptureController* VideoCaptureManager::LookupControllerBySessionId(
     const base::UnguessableToken& session_id) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   SessionMap::const_iterator session_it = sessions_.find(session_id);
@@ -944,7 +937,7 @@ VideoCaptureManager::LookupControllerBySessionId(
                                                 session_it->second.id);
 }
 
-scoped_refptr<VideoCaptureController>
+VideoCaptureController*
 VideoCaptureManager::LookupControllerByMediaTypeAndDeviceId(
     blink::mojom::MediaStreamType type,
     const std::string& device_id) const {
@@ -957,10 +950,23 @@ VideoCaptureManager::LookupControllerByMediaTypeAndDeviceId(
   return nullptr;
 }
 
-bool VideoCaptureManager::HasController(
+bool VideoCaptureManager::IsControllerPointerValid(
+    const VideoCaptureController* controller) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  return base::Contains(controllers_, controller,
+                        &scoped_refptr<VideoCaptureController>::get);
+}
+
+scoped_refptr<VideoCaptureController>
+VideoCaptureManager::GetControllerSharedRef(
     VideoCaptureController* controller) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  return base::Contains(controllers_, controller);
+
+  for (const auto& entry : controllers_) {
+    if (entry.get() == controller)
+      return entry;
+  }
+  return nullptr;
 }
 
 media::VideoCaptureDeviceInfo* VideoCaptureManager::GetDeviceInfoById(
@@ -985,7 +991,7 @@ VideoCaptureManager::GetOrCreateController(
 
   // Check if another session has already opened this device. If so, just
   // use that opened device.
-  scoped_refptr<VideoCaptureController> existing_device =
+  VideoCaptureController* const existing_device =
       LookupControllerByMediaTypeAndDeviceId(device_info.type, device_info.id);
   if (existing_device) {
     DCHECK_EQ(device_info.type, existing_device->stream_type());

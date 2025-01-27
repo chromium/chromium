@@ -120,9 +120,9 @@ class MockVideoCaptureControllerEventHandler
     DoBufferReady(ControllerIDAndSize(id, buffer.frame_info->coded_size));
     if (enable_auto_return_buffer_on_buffer_ready_) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&VideoCaptureController::ReturnBuffer, controller_, id,
-                         this, buffer.buffer_id, feedback_));
+          FROM_HERE, base::BindOnce(&VideoCaptureController::ReturnBuffer,
+                                    base::Unretained(controller_), id, this,
+                                    buffer.buffer_id, feedback_));
     }
   }
   void OnEnded(const VideoCaptureControllerID& id) override {
@@ -131,10 +131,10 @@ class MockVideoCaptureControllerEventHandler
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(base::IgnoreResult(
                                       &VideoCaptureController::RemoveClient),
-                                  controller_, id, this));
+                                  base::Unretained(controller_), id, this));
   }
 
-  scoped_refptr<VideoCaptureController> controller_;
+  raw_ptr<VideoCaptureController, DanglingUntriaged> controller_;
   media::VideoPixelFormat expected_pixel_format_ = media::PIXEL_FORMAT_I420;
   gfx::ColorSpace expected_color_space_ = gfx::ColorSpace::CreateREC709();
   media::VideoCaptureFeedback feedback_;
@@ -184,10 +184,7 @@ class VideoCaptureControllerTest
         controller_.get());
   }
 
-  void TearDown() override {
-    controller_->InvalidateWeakPtrsOnIOThread();
-    base::RunLoop().RunUntilIdle();
-  }
+  void TearDown() override { base::RunLoop().RunUntilIdle(); }
 
   void InitializeNewDeviceClientAndBufferPoolInstances() {
     buffer_pool_ = new media::VideoCaptureBufferPoolImpl(
@@ -589,11 +586,6 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(client_a_.get());
   Mock::VerifyAndClearExpectations(client_b_.get());
-
-  controller_->RemoveClient(client_a_route_1, client_a_.get());
-  controller_->RemoveClient(client_b_route_1, client_b_.get());
-  controller_->RemoveClient(client_a_route_2, client_a_.get());
-  controller_->RemoveClient(client_b_route_2, client_b_.get());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -658,8 +650,6 @@ TEST_F(VideoCaptureControllerTest, ErrorBeforeDeviceCreation) {
       /*metadata=*/std::nullopt);
 
   base::RunLoop().RunUntilIdle();
-  controller_->RemoveClient(route_id, client_a_.get());
-  controller_->RemoveClient(route_id, client_b_.get());
 }
 
 // Exercises the OnError() codepath of VideoCaptureController, and tests the
@@ -722,10 +712,6 @@ TEST_F(VideoCaptureControllerTest, ErrorAfterDeviceCreation) {
                          base::UnguessableToken::Create(), session_params_2,
                          std::nullopt);
   Mock::VerifyAndClearExpectations(client_b_.get());
-
-  base::RunLoop().RunUntilIdle();
-  controller_->RemoveClient(route_id, client_a_.get());
-  controller_->RemoveClient(route_id, client_b_.get());
 }
 
 // Tests that frame feedback provided by consumers is correctly reported back
@@ -785,7 +771,6 @@ TEST_F(VideoCaptureControllerTest, FrameFeedbackIsReportedForSequenceOfFrames) {
     Mock::VerifyAndClearExpectations(client_a_.get());
     Mock::VerifyAndClearExpectations(mock_launched_device_);
   }
-  controller_->RemoveClient(route_id, client_a_.get());
 }
 
 TEST_F(VideoCaptureControllerTest,
@@ -802,7 +787,6 @@ TEST_F(VideoCaptureControllerTest,
   device_client_.reset();
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(client_a_.get());
-  controller_->RemoveClient(arbitrary_route_id_, client_a_.get());
 }
 
 TEST_F(VideoCaptureControllerTest,
@@ -834,7 +818,6 @@ TEST_F(VideoCaptureControllerTest,
   device_client_.reset();
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(client_a_.get());
-  controller_->RemoveClient(arbitrary_route_id_, client_a_.get());
 }
 
 TEST_F(VideoCaptureControllerTest,
@@ -875,7 +858,6 @@ TEST_F(VideoCaptureControllerTest,
                             buffer_id_reported_to_client, arbitrary_feedback);
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(client_a_.get());
-  controller_->RemoveClient(arbitrary_route_id_, client_a_.get());
 }
 
 TEST_F(VideoCaptureControllerTest,
@@ -945,7 +927,6 @@ TEST_F(VideoCaptureControllerTest,
                             second_buffer_id, arbitrary_feedback);
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(client_a_.get());
-  controller_->RemoveClient(arbitrary_route_id_, client_a_.get());
 }
 
 // Tests that the VideoCaptureController reports OnStarted() to all clients,
@@ -987,11 +968,6 @@ TEST_F(VideoCaptureControllerTest, OnStartedForMultipleClients) {
                            base::UnguessableToken::Create(), session_params_2,
                            std::nullopt);
   }
-
-  base::RunLoop().RunUntilIdle();
-  controller_->RemoveClient(client_a_route_1, client_a_.get());
-  controller_->RemoveClient(client_b_route_1, client_b_.get());
-  controller_->RemoveClient(client_a_route_2, client_a_.get());
 }
 
 TEST_F(VideoCaptureControllerTest, OnFrameDroppedIsForwarded) {
@@ -1004,9 +980,6 @@ TEST_F(VideoCaptureControllerTest, OnFrameDroppedIsForwarded) {
   controller_->OnFrameDropped(
       media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded);
   Mock::VerifyAndClearExpectations(client_a_.get());
-
-  base::RunLoop().RunUntilIdle();
-  controller_->RemoveClient(arbitrary_route_id_, client_a_.get());
 }
 
 TEST_F(VideoCaptureControllerTest, DeviceClientWithColorSpace) {
@@ -1046,8 +1019,6 @@ TEST_F(VideoCaptureControllerTest, DeviceClientWithColorSpace) {
   device_client_.reset();
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(client_a_.get());
-
-  controller_->RemoveClient(arbitrary_route_id_, client_a_.get());
 }
 
 }  // namespace
