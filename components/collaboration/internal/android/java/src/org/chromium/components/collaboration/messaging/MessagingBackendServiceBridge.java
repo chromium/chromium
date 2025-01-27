@@ -201,19 +201,24 @@ import java.util.Optional;
 
     @CalledByNative
     private void displayInstantaneousMessage(InstantMessage message, long nativeCallback) {
-        if (mInstantMessageDelegate != null) {
-            mInstantMessageDelegate.displayInstantaneousMessage(
-                    message,
-                    (Boolean success) -> {
-                        assert success != null;
-                        MessagingBackendServiceBridgeJni.get()
-                                .runInstantaneousMessageSuccessCallback(
-                                        mNativeMessagingBackendServiceBridge,
-                                        this,
-                                        nativeCallback,
-                                        success);
-                    });
+        if (mInstantMessageDelegate == null) {
+            MessagingBackendServiceBridgeJni.get()
+                    .runInstantaneousMessageSuccessCallback(
+                            mNativeMessagingBackendServiceBridge, this, nativeCallback, false);
+            return;
         }
+
+        mInstantMessageDelegate.displayInstantaneousMessage(
+                message,
+                (Boolean success) -> {
+                    assert success != null;
+                    MessagingBackendServiceBridgeJni.get()
+                            .runInstantaneousMessageSuccessCallback(
+                                    mNativeMessagingBackendServiceBridge,
+                                    this,
+                                    nativeCallback,
+                                    success);
+                });
     }
 
     @NativeMethods

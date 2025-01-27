@@ -74,6 +74,26 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         }
     }
 
+    /** Helper class similar to Runnable, but can only run once. */
+    private static class OnceRunnable implements Runnable {
+        private final Runnable mRunnable;
+        private boolean mHasRun;
+
+        public OnceRunnable(Runnable runnable) {
+            mRunnable = runnable;
+        }
+
+        @Override
+        public void run() {
+            if (!mHasRun) {
+                mRunnable.run();
+                mHasRun = true;
+            } else {
+                assert false;
+            }
+        }
+    }
+
     private final List<AttachedWindowInfo> mAttachList = new ArrayList<>();
     private final DataSharingUIDelegate mDataSharingUiDelegate;
     private final TabGroupSyncService mTabGroupSyncService;
@@ -162,7 +182,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 return;
             }
 
-            Runnable onSuccess = successCallback.bind(true);
+            OnceRunnable onSuccess = new OnceRunnable(successCallback.bind(true));
             if (collaborationEvent == CollaborationEvent.TAB_REMOVED) {
                 showTabRemoved(
                         message, activity, messageDispatcher, tabGroupModelFilter, onSuccess);
