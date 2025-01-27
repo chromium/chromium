@@ -37,7 +37,7 @@ class GlicProfileManagerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(GlicProfileManagerTest, OnUILaunching_SameProfile) {
+TEST_F(GlicProfileManagerTest, SetActiveGlic_SameProfile) {
   content::BrowserTaskEnvironment task_environment;
   GlicProfileManager profile_manager;
   signin::IdentityTestEnvironment identity_test_environment;
@@ -45,14 +45,14 @@ TEST_F(GlicProfileManagerTest, OnUILaunching_SameProfile) {
   MockGlicKeyedService service(
       &profile, identity_test_environment.identity_manager(), &profile_manager);
 
-  profile_manager.OnUILaunching(&service);
+  profile_manager.SetActiveGlic(&service);
 
   // Opening glic twice for the same profile shouldn't cause it to close.
   EXPECT_CALL(service, ClosePanel()).Times(0);
-  profile_manager.OnUILaunching(&service);
+  profile_manager.SetActiveGlic(&service);
 }
 
-TEST_F(GlicProfileManagerTest, OnUILaunching_DifferentProfiles) {
+TEST_F(GlicProfileManagerTest, SetActiveGlic_DifferentProfiles) {
   content::BrowserTaskEnvironment task_environment;
   GlicProfileManager profile_manager;
   signin::IdentityTestEnvironment identity_test_environment;
@@ -65,12 +65,12 @@ TEST_F(GlicProfileManagerTest, OnUILaunching_DifferentProfiles) {
                                 identity_test_environment.identity_manager(),
                                 &profile_manager);
 
-  profile_manager.OnUILaunching(&service1);
+  profile_manager.SetActiveGlic(&service1);
 
   // Opening glic from a second profile should make the profile manager close
   // the first one.
   EXPECT_CALL(service1, ClosePanel());
-  profile_manager.OnUILaunching(&service2);
+  profile_manager.SetActiveGlic(&service2);
 }
 
 class GlicProfileManagerPreloadingTest : public testing::TestWithParam<bool> {

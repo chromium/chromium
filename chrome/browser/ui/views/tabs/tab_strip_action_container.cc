@@ -398,7 +398,7 @@ void TabStripActionContainer::OnGlicNudgeButtonClicked() {
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicKeyedServiceFactory::GetGlicKeyedService(
       tab_strip_controller_->GetProfile())
-      ->LaunchUI(tab_strip_controller_->GetBrowserWindowInterface());
+      ->ToggleUI(tab_strip_controller_->GetBrowserWindowInterface());
 #endif  // BUILDFLAG(ENABLE_GLIC)
   ExecuteHideTabStripNudge(glic_nudge_button_);
 }

@@ -20,6 +20,15 @@ GlicInitializedStateObserver::GlicInitializedStateObserver(
           [&controller]() { return controller.web_client() != nullptr; }) {}
 GlicInitializedStateObserver::~GlicInitializedStateObserver() = default;
 
+GlicWindowControllerStateObserver::GlicWindowControllerStateObserver(
+    const GlicWindowController& controller)
+    : PollingStateObserver([&controller]() { return controller.state(); }) {}
+GlicWindowControllerStateObserver::~GlicWindowControllerStateObserver() =
+    default;
+
+DEFINE_STATE_IDENTIFIER_VALUE(GlicWindowControllerStateObserver,
+                              kGlicWindowControllerState);
+
 }  // namespace internal
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);

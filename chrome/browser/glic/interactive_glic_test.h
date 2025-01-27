@@ -39,6 +39,18 @@ class GlicInitializedStateObserver
 DECLARE_STATE_IDENTIFIER_VALUE(GlicInitializedStateObserver,
                                kGlicInitializedState);
 
+// Observes `controller` for changes to state().
+class GlicWindowControllerStateObserver
+    : public ui::test::PollingStateObserver<GlicWindowController::State> {
+ public:
+  explicit GlicWindowControllerStateObserver(
+      const GlicWindowController& controller);
+  ~GlicWindowControllerStateObserver() override;
+};
+
+DECLARE_STATE_IDENTIFIER_VALUE(GlicWindowControllerStateObserver,
+                               kGlicWindowControllerState);
+
 }  // namespace internal
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
@@ -125,24 +137,49 @@ class InteractiveGlicTestT : public T {
     return steps;
   }
 
-  // Opens the glic window. It should not already be open.
+  // Activate one of the glic entrypoints.
   // Also instruments the glic UI as `kGlicContentsElementId`.
-  auto OpenGlicWindow(GlicWindowMode mode) {
-    // NOTE: The use of "Api::" here is required because this is a template
-    // class with weakly-specified base class; it is not necessary in derived
-    // test classes.
-    Api::MultiStep steps;
+  auto ToggleGlicWindow(GlicWindowMode mode) {
+    // TODO steps = Api::Steps(std::move(steps), WaitForAndInstrumentGlic());
     switch (mode) {
       case GlicWindowMode::kAttached:
-        steps.emplace_back(Api::PressButton(kGlicButtonElementId));
-        break;
+        return Api::PressButton(kGlicButtonElementId);
       case GlicWindowMode::kDetached:
-        steps.emplace_back(
-            Api::Do([this] { window_controller().Show(nullptr); }));
-        break;
+        return Api::Do([this] { window_controller().Toggle(nullptr); });
     }
-    steps = Api::Steps(std::move(steps), WaitForAndInstrumentGlic());
-    Api::AddDescriptionPrefix(steps, "OpenGlicWindow");
+  }
+
+  auto ForceShowDetached() {
+    return Api::Do([this] { window_controller().ShowDetachedForTesting(); });
+  }
+
+  // Activate a glic entrypoint and wait for the window to open.
+  auto ToggleGlicWindowAndWaitForShow(GlicWindowMode mode) {
+    auto steps = Api::Steps(
+        Api::ObserveState(internal::kGlicWindowControllerState,
+                          std::ref(window_controller())),
+        // TODO: figure out how to deactivate browser so Toggle(nullptr) doesn't
+        // try to attach
+        mode == GlicWindowMode::kDetached ? ForceShowDetached()
+                                          : ToggleGlicWindow(mode),
+        WaitForAndInstrumentGlic(),
+        Api::WaitForState(internal::kGlicWindowControllerState,
+                          GlicWindowController::State::kOpen),
+        Api::StopObservingState(internal::kGlicWindowControllerState), );
+    Api::AddDescriptionPrefix(steps, "ToggleGlicWindowAndWaitForShow");
+    return steps;
+  }
+
+  // Activate a glic entrypoint and wait for the window to hide.
+  auto ToggleGlicWindowAndWaitForHide(GlicWindowMode mode) {
+    auto steps = Api::Steps(
+        Api::ObserveState(internal::kGlicWindowControllerState,
+                          std::ref(window_controller())),
+        ToggleGlicWindow(mode),
+        Api::WaitForState(internal::kGlicWindowControllerState,
+                          GlicWindowController::State::kClosed),
+        Api::StopObservingState(internal::kGlicWindowControllerState), );
+    Api::AddDescriptionPrefix(steps, "ToggleGlicWindowAndWaitForHide");
     return steps;
   }
 

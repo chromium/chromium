@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -259,34 +260,92 @@ void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
   }
 }
 
-void GlicWindowController::Show(BrowserWindowInterface* bwi) {
-  Browser* browser = bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
-  GlicButton* glic_button_view = browser ? browser->window()
-                                               ->AsBrowserView()
-                                               ->tab_strip_region_view()
-                                               ->GetGlicButton()
-                                         : nullptr;
+void GlicWindowController::Toggle(BrowserWindowInterface* bwi) {
+  // If `bwi` is non-null, the glic button was clicked on a specific window and
+  // glic should be attached to that window. Otherwise glic was invoked from the
+  // hotkey or other OS-level entrypoint.
+  Browser* new_attached_browser =
+      bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
+
+  // In the case where the user invokes the hotkey, and the most recently used
+  // window for the glic profile is active, treat this as if the user clicked
+  // the glic button on that window.
+  // TODO(392644541): There may be edge cases w.r.t. multi-glic-profile.
+  if (!new_attached_browser) {
+    Browser* last_active_browser = chrome::FindLastActiveWithProfile(profile_);
+    if (last_active_browser && last_active_browser->IsActive()) {
+      new_attached_browser = last_active_browser;
+    }
+  }
 
   if (state_ == State::kOpen) {
-    if (browser) {
-      if (attached_browser_ == browser) {
-        // glic is already showing and attached to the right browser. Nothing to
-        // do.
+    if (new_attached_browser) {
+      if (new_attached_browser == attached_browser_) {
+        // Button was clicked on same browser: close.
+        // There are three ways for this to happen. Normally the glic window
+        // obscures the glic button. Either the user used keyboard navigation to
+        // click the glic button, the user clicked the button early and the
+        // button click was eventually processed asynchronously after the button
+        // was obscured, or the user invokes the glic hotkey while glic is
+        // attached to the active window.
+        Close();
+      } else {
+        // Button clicked on a different browser: attach to that one.
+        AttachToBrowser(new_attached_browser);
+      }
+      return;
+    }
+
+    // Everything else in this block handles the case where the user invokes the
+    // hotkey and the most recently used window from the glic profile is not
+    // active.
+
+    // Already attached?
+    if (attached_browser_) {
+      if (IsActive()) {
+        // Hotkey when glic active and attached: close.
+        Close();
         return;
       }
-      // glic is already showing but either detached or not attached to the
-      // right browser.
-      AttachToBrowser(browser);
+
+      // Hotkey when glic is inactive and attached:
+      if (attached_browser_->IsActive()) {
+        // Hotkey when glic inactive but attached to active browser: close.
+        // Note: this should not be possible, since if the attached browser is
+        // active, new_attached_browser must not have been null.
+        Close();
+      } else {
+        // Hotkey when neither attached browser nor glic are active: open
+        // detached.
+        CloseAndReopenDetached();
+      }
       return;
-    } else {
-      // TODO(crbug.com/379943498): Handle os entry point when already open.
     }
-    return;
+
+    // Below here: hotkey invoked when glic is already detached and will remain
+    // detached.
+    if (IsActive()) {
+      // Hotkey when glic is open, detached and active: close.
+      // TODO(392158646): This causes the browser to activate on Mac.
+      Close();
+    } else {
+      // Glic already open detached but not active: activate.
+      GetGlicWidget()->Activate();
+    }
+
   } else if (state_ != State::kClosed) {
     // Currently in the process of showing the widget, allow that to finish.
     return;
+  } else {
+    Show(new_attached_browser);
   }
+}
 
+void GlicWindowController::ShowDetachedForTesting() {
+  Show(nullptr);
+}
+
+void GlicWindowController::Show(Browser* browser) {
   // At this point State must be kClosed, and all glic window state must be
   // unset.
   CHECK(!attached_browser_);
@@ -299,7 +358,7 @@ void GlicWindowController::Show(BrowserWindowInterface* bwi) {
   }
 
   if (browser) {
-    OpenAttached(browser, glic_button_view);
+    OpenAttached(browser);
   } else {
     OpenDetached();
   }
@@ -334,8 +393,13 @@ gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
   return initial_rect;
 }
 
-void GlicWindowController::OpenAttached(Browser* browser,
-                                        views::View* glic_button_view) {
+void GlicWindowController::OpenAttached(Browser* browser) {
+  GlicButton* glic_button_view = browser ? browser->window()
+                                               ->AsBrowserView()
+                                               ->tab_strip_region_view()
+                                               ->GetGlicButton()
+                                         : nullptr;
+
   // When opening attached, we always go through the standard opening animation.
   gfx::Size widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
   gfx::Rect glic_window_widget_initial_rect;
@@ -656,6 +720,9 @@ void GlicWindowController::Close() {
   if (state_ == State::kClosed) {
     return;
   }
+
+  const bool reopen_detached = state_ == State::kClosingToReopenDetached;
+
   state_ = State::kClosed;
   attached_browser_ = nullptr;
   attached_browser_widget_observation_.Reset();
@@ -670,6 +737,19 @@ void GlicWindowController::Close() {
     // The webview is kept alive by default, no need to use this callback.
     web_client_->PanelWasClosed(base::DoNothing());
   }
+
+  if (reopen_detached) {
+    Show(nullptr);
+  }
+}
+
+void GlicWindowController::CloseAndReopenDetached() {
+  if (state_ != State::kOpen) {
+    return;
+  }
+
+  state_ = State::kClosingToReopenDetached;
+  Close();
 }
 
 void GlicWindowController::ShowTitleBarContextMenuAt(gfx::Point event_loc) {

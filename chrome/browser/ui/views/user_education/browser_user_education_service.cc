@@ -576,7 +576,7 @@ void MaybeRegisterChromeFeaturePromos(
                         views::ElementTrackerViews::GetInstance()
                             ->GetUniqueViewAs<glic::GlicButton>(
                                 kGlicButtonElementId, context)) {
-                  button->LaunchUI();
+                  button->ToggleUI();
                 }
               }))
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)

@@ -31,13 +31,13 @@ class GlicControllerBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicControllerBrowserTest, ShowAndHide) {
-  EXPECT_FALSE(GlicProfileManager::GetInstance()->HasActiveGlicWindow());
+  EXPECT_FALSE(GlicProfileManager::GetInstance()->HasActiveGlicService());
 
   glic_controller().Show();
-  EXPECT_TRUE(GlicProfileManager::GetInstance()->HasActiveGlicWindow());
+  EXPECT_TRUE(GlicProfileManager::GetInstance()->HasActiveGlicService());
 
   glic_controller().Hide();
-  EXPECT_FALSE(GlicProfileManager::GetInstance()->HasActiveGlicWindow());
+  EXPECT_FALSE(GlicProfileManager::GetInstance()->HasActiveGlicService());
 }
 
 }  // namespace glic

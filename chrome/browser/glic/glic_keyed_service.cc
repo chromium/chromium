@@ -46,15 +46,15 @@ void GlicKeyedService::Shutdown() {
   window_controller_.Shutdown();
 }
 
-void GlicKeyedService::LaunchUI(BrowserWindowInterface* bwi) {
+void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi) {
   // Glic may be disabled for certain user profiles (the user is browsing in
   // incognito or guest mode, policy, etc). In those cases, the entry points to
   // this method should already have been removed.
   CHECK(GlicEnabling::IsEnabledForProfile(
       Profile::FromBrowserContext(browser_context_)));
 
-  profile_manager_->OnUILaunching(this);
-  window_controller_.Show(bwi);
+  profile_manager_->SetActiveGlic(this);
+  window_controller_.Toggle(bwi);
 }
 
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
@@ -146,7 +146,7 @@ void GlicKeyedService::ShowProfilePicker() {
         if (profile) {
           GlicKeyedService* service =
               GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-          service->LaunchUI(nullptr);
+          service->ToggleUI(nullptr);
         }
       });
   ProfilePicker::Show(
