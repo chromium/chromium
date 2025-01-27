@@ -15,7 +15,8 @@
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/display/external_use_client.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -45,7 +46,9 @@ namespace viz {
 // SkiaOutputSurfaceImplOnGpu. {Begin,End}Access is called from the GPU thread.
 class ImageContextImpl final : public ExternalUseClient::ImageContext {
  public:
-  ImageContextImpl(const gpu::MailboxHolder& mailbox_holder,
+  ImageContextImpl(const gpu::Mailbox& mailbox,
+                   const gpu::SyncToken& sync_token,
+                   uint32_t texture_target,
                    const gfx::Size& size,
                    SharedImageFormat format,
                    bool maybe_concurrent_reads,

@@ -119,7 +119,9 @@ SkColor4f GetFallbackColorForPlane(viz::SharedImageFormat format,
 namespace viz {
 
 ImageContextImpl::ImageContextImpl(
-    const gpu::MailboxHolder& mailbox_holder,
+    const gpu::Mailbox& mailbox,
+    const gpu::SyncToken& sync_token,
+    uint32_t texture_target,
     const gfx::Size& size,
     SharedImageFormat format,
     bool maybe_concurrent_reads,
@@ -127,7 +129,13 @@ ImageContextImpl::ImageContextImpl(
     sk_sp<SkColorSpace> color_space,
     bool is_for_render_pass,
     bool raw_draw_if_possible)
-    : ImageContext(mailbox_holder, size, format, ycbcr_info, color_space),
+    : ImageContext(mailbox,
+                   sync_token,
+                   texture_target,
+                   size,
+                   format,
+                   ycbcr_info,
+                   color_space),
       maybe_concurrent_reads_(maybe_concurrent_reads),
       is_for_render_pass_(is_for_render_pass),
       raw_draw_if_possible_(raw_draw_if_possible) {}

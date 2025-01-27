@@ -119,7 +119,9 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   gpu::SyncToken ReleaseImageContexts(
       const std::vector<std::unique_ptr<ImageContext>> image_contexts) override;
   std::unique_ptr<ImageContext> CreateImageContext(
-      const gpu::MailboxHolder& holder,
+      const gpu::Mailbox& mailbox,
+      const gpu::SyncToken& sync_token,
+      uint32_t texture_target,
       const gfx::Size& size,
       SharedImageFormat format,
       bool concurrent_reads,

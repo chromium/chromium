@@ -765,7 +765,9 @@ gpu::SyncToken SkiaOutputSurfaceImpl::ReleaseImageContexts(
 
 std::unique_ptr<ExternalUseClient::ImageContext>
 SkiaOutputSurfaceImpl::CreateImageContext(
-    const gpu::MailboxHolder& holder,
+    const gpu::Mailbox& mailbox,
+    const gpu::SyncToken& sync_token,
+    uint32_t texture_target,
     const gfx::Size& size,
     SharedImageFormat format,
     bool maybe_concurrent_reads,
@@ -773,8 +775,8 @@ SkiaOutputSurfaceImpl::CreateImageContext(
     sk_sp<SkColorSpace> color_space,
     bool raw_draw_if_possible) {
   return std::make_unique<ImageContextImpl>(
-      holder, size, format, maybe_concurrent_reads, ycbcr_info,
-      std::move(color_space),
+      mailbox, sync_token, texture_target, size, format, maybe_concurrent_reads,
+      ycbcr_info, std::move(color_space),
       /*is_for_render_pass=*/false, raw_draw_if_possible);
 }
 
@@ -982,9 +984,9 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
 
   auto& image_context = render_pass_image_cache_[id];
   if (!image_context) {
-    gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), GL_TEXTURE_2D);
     image_context = std::make_unique<ImageContextImpl>(
-        mailbox_holder, size, format, /*maybe_concurrent_reads=*/false,
+        mailbox, gpu::SyncToken(), GL_TEXTURE_2D, size, format,
+        /*maybe_concurrent_reads=*/false,
         /*ycbcr_info=*/std::nullopt, std::move(color_space),
         /*is_for_render_pass=*/true);
   }

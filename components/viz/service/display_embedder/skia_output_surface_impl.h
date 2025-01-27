@@ -177,7 +177,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   gpu::SyncToken ReleaseImageContexts(
       std::vector<std::unique_ptr<ImageContext>> image_contexts) override;
   std::unique_ptr<ExternalUseClient::ImageContext> CreateImageContext(
-      const gpu::MailboxHolder& holder,
+      const gpu::Mailbox& mailbox,
+      const gpu::SyncToken& sync_token,
+      uint32_t texture_target,
       const gfx::Size& size,
       SharedImageFormat format,
       bool maybe_concurrent_reads,

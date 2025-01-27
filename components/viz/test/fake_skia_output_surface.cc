@@ -146,7 +146,9 @@ gpu::SyncToken FakeSkiaOutputSurface::ReleaseImageContexts(
 
 std::unique_ptr<ExternalUseClient::ImageContext>
 FakeSkiaOutputSurface::CreateImageContext(
-    const gpu::MailboxHolder& holder,
+    const gpu::Mailbox& mailbox,
+    const gpu::SyncToken& sync_token,
+    uint32_t texture_target,
     const gfx::Size& size,
     SharedImageFormat format,
     bool concurrent_reads,
@@ -154,7 +156,8 @@ FakeSkiaOutputSurface::CreateImageContext(
     sk_sp<SkColorSpace> color_space,
     bool raw_draw_if_possible) {
   return std::make_unique<ExternalUseClient::ImageContext>(
-      holder, size, format, ycbcr_info, std::move(color_space));
+      mailbox, sync_token, texture_target, size, format, ycbcr_info,
+      std::move(color_space));
 }
 
 SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
