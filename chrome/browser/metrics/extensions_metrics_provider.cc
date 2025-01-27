@@ -194,10 +194,15 @@ ExtensionInstallProto::InstallLocation GetInstallLocation(
 
 ExtensionInstallProto::ActionType GetActionType(const Manifest& manifest) {
   // Arbitrary order; each of these is mutually exclusive.
-  if (manifest.FindKey(extensions::manifest_keys::kBrowserAction))
+  if (manifest.FindKey(extensions::manifest_keys::kBrowserAction)) {
     return ExtensionInstallProto::BROWSER_ACTION;
-  if (manifest.FindKey(extensions::manifest_keys::kPageAction))
+  }
+  if (manifest.FindKey(extensions::manifest_keys::kPageAction)) {
     return ExtensionInstallProto::PAGE_ACTION;
+  }
+  if (manifest.FindKey(extensions::manifest_keys::kAction)) {
+    return ExtensionInstallProto::ACTION;
+  }
   return ExtensionInstallProto::NO_ACTION;
 }
 
@@ -268,7 +273,8 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::UNSUPPORTED_MANIFEST_VERSION},
       {extensions::disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION,
        ExtensionInstallProto::UNSUPPORTED_DEVELOPER_EXTENSION},
-      // TODO(crbug.com/372186532): Add an entry for `DISABLE_UNKNOWN` here.
+      {extensions::disable_reason::DISABLE_UNKNOWN,
+       ExtensionInstallProto::UNKNOWN},
   };
 
   int disable_reasons = prefs->GetDisableReasons(id);

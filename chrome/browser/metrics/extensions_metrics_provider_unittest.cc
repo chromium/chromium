@@ -364,6 +364,19 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
   }
 
   {
+    // Test the extension action as an MV3 action.
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("action")
+            .SetLocation(ManifestLocation::kInternal)
+            .SetManifestVersion(3)
+            .SetAction(extensions::ActionInfo::Type::kAction)
+            .Build();
+    add_extension(extension.get());
+    ExtensionInstallProto install = ConstructProto(*extension);
+    EXPECT_EQ(ExtensionInstallProto::ACTION, install.action_type());
+  }
+
+  {
     // Test the disable reasons field.
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("disable_reasons")
