@@ -60,6 +60,10 @@ class SessionStorageManager : public KeyedService,
   // Retrieves the factory instance for the SessionStorageManager.
   static BrowserContextKeyedServiceFactory* GetFactory();
 
+  // Returns a vector with all keys found in storage for the given
+  // `extension_id`.
+  std::vector<std::string> GetKeys(const ExtensionId& extension_id) const;
+
   // Returns the value for the given `extension_id` and `key`, or null if none
   // exists.
   const base::Value* Get(const ExtensionId& extension_id,
@@ -132,6 +136,9 @@ class SessionStorageManager : public KeyedService,
    public:
     explicit ExtensionStorage(size_t quota_bytes);
     ~ExtensionStorage();
+
+    // Returns a vector with keys found in storage.
+    std::vector<std::string> GetKeys() const;
 
     // Returns a map with keys and values found in storage.
     std::map<std::string, const base::Value*> Get(
