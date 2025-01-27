@@ -29,6 +29,14 @@
   [_defaultBrowserBannerAppAgent removeObserver:self];
 }
 
+- (void)setConsumer:(id<PrimaryToolbarConsumer>)consumer {
+  _consumer = consumer;
+
+  if (_defaultBrowserBannerAppAgent.promoCurrentlyShown) {
+    [self.consumer showBannerPromo];
+  }
+}
+
 #pragma mark - DefaultBrowserBannerAppAgentObserver
 
 - (void)displayPromoFromAppAgent:(DefaultBrowserBannerPromoAppAgent*)appAgent {

@@ -64,9 +64,6 @@ struct SceneStateData {
 
   // Number of times the promo has been displayed in this promo session.
   int _sessionDisplayCount;
-
-  // Whether the promo is currently shown.
-  BOOL _promoCurrentlyShown;
 }
 
 - (instancetype)init {
@@ -137,10 +134,17 @@ struct SceneStateData {
   if (_sceneStateDatas[sceneState].isForeground &&
       !_sceneStateDatas[sceneState].isIncognitoContentVisible) {
     webStateList->AddObserver(_webStateListObserverBridge.get());
-    [self startObservingWebState:activeMainWebState];
+    // Sometimes, like when opening a link in a new window, the scene state
+    // doesn't start with an active web state. In this case, the first active
+    // web state will be observed via the WebStateList observer methods.
+    if (activeMainWebState) {
+      [self startObservingWebState:activeMainWebState];
+    }
   } else {
     webStateList->RemoveObserver(_webStateListObserverBridge.get());
-    [self stopObservingWebState:activeMainWebState];
+    if (activeMainWebState) {
+      [self stopObservingWebState:activeMainWebState];
+    }
   }
 
   [self updatePromoState];
@@ -149,8 +153,8 @@ struct SceneStateData {
 // Makes sure the promo is shown and alerts observers if this causes a state
 // change.
 - (void)ensurePromoShown {
-  if (!_promoCurrentlyShown) {
-    _promoCurrentlyShown = YES;
+  if (!self.promoCurrentlyShown) {
+    self.promoCurrentlyShown = YES;
     [_observers displayPromoFromAppAgent:self];
   }
 }
@@ -158,7 +162,7 @@ struct SceneStateData {
 // Makes sure the promo is hidden and alerts observers if this causes a state
 // change.
 - (void)ensurePromoHidden {
-  if (_promoCurrentlyShown) {
+  if (self.promoCurrentlyShown) {
     feature_engagement::Tracker* engagementTracker =
         feature_engagement::TrackerFactory::GetForProfile(
             _mainProfileState.profile);
@@ -166,7 +170,7 @@ struct SceneStateData {
       engagementTracker->Dismissed(
           feature_engagement::kIPHiOSDefaultBrowserBannerPromoFeature);
     }
-    _promoCurrentlyShown = NO;
+    self.promoCurrentlyShown = NO;
     [_observers hidePromoFromAppAgent:self];
   }
 }
@@ -183,7 +187,7 @@ struct SceneStateData {
 
 // Updates the promo state based on the current active URLs.
 - (void)updatePromoState {
-  if (_promoCurrentlyShown) {
+  if (self.promoCurrentlyShown) {
     // Check if session is over.
     if (IsChromeLikelyDefaultBrowser() ||
         [self promoIsSuppressedOnCurrentURLs] ||
