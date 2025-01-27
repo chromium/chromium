@@ -40,9 +40,9 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
     return false;
   }
 
-  // For now, only start if mock engines are valid.
-  if (!omnibox_feature_configs::SearchAggregatorProvider::Get()
-           .AreMockEnginesValid()) {
+  // There can be an aggregator set either through the feature params or through
+  // a policy JSON. Both require this feature to be enabled.
+  if (!omnibox_feature_configs::SearchAggregatorProvider::Get().enabled) {
     return false;
   }
 

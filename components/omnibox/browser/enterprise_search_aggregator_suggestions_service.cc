@@ -15,6 +15,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -127,7 +128,9 @@ void EnterpriseSearchAggregatorSuggestionsService::
   // Create and fetch an OAuth2 token.
   signin::ScopeSet scopes;
 
-  // TODO(crbug.com/380631529): Add scope once access is provided.
+  // TODO(crbug.com/380631529): This is a temporary scope used for testing.
+  //   Update once final scope is setup.
+  scopes.insert(GaiaConstants::kCloudSearchQueryOAuth2Scope);
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       "enterprise_search_aggregator_suggestions_service", identity_manager_,
       scopes,
