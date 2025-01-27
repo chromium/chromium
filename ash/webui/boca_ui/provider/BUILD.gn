@@ -45,5 +45,6 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }

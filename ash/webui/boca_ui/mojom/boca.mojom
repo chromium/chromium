@@ -46,6 +46,31 @@ struct Course {
   string section;
 };
 
+// The assignment material type.
+enum MaterialType {
+  kUnknown,
+  kSharedDriveFile,
+  kYoutubeVideo,
+  kLink,
+  kForm,
+};
+
+// Represents a material attached to a course assignment.
+struct Material {
+  string title;
+  MaterialType type;
+};
+
+// Represents a course assignment.
+struct Assignment {
+  string title;
+  // Absolute link to this assignment for students to open.
+  url.mojom.Url url;
+  mojo_base.mojom.JSTime last_update_time;
+  // Assignment materials.
+  array<Material> materials;
+};
+
 // Represents a browser window.
 struct Window {
   // User-customized window name.
@@ -206,6 +231,8 @@ interface PageHandler {
   // course. Must be called on a course_id received from the most recent
   // ListCourses call.
   ListStudents(string course_id) => (array<Identity> students);
+  // Fetch a list of assignments for the courses.
+  ListAssignments(string course_id) => (array<Assignment> assignments);
   // Create a session with `config`.
   CreateSession(Config config) => (bool success);
   // Retrieves the current session.

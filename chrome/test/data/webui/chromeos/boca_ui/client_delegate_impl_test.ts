@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import type {BocaValidPref, CaptionConfig, Config, Course, Identity, OnTaskConfig, RemoveStudentError, SessionResult, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import type {Assignment, BocaValidPref, CaptionConfig, Config, Course, Identity, OnTaskConfig, RemoveStudentError, SessionResult, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {PageHandlerRemote, SubmitAccessCodeError} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {Value} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import type {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -48,6 +48,32 @@ class MockRemoteHandler extends PageHandlerRemote {
       students: [
         {id: '1', name: 'cat', email: 'email1', photoUrl: {url: 'cdn1'}},
         {id: '2', name: 'dog', email: 'email2', photoUrl: {url: 'cdn2'}},
+      ],
+    });
+  }
+  override listAssignments(id: string): Promise<{assignments: Assignment[]}> {
+    // Dummy action get around with unused variable check.
+    id;
+    return Promise.resolve({
+      assignments: [
+        {
+          title: 'assignment-title1',
+          url: {url: 'url1'},
+          lastUpdateTime: new Date(1000000),
+          materials: [
+            {title: 'material-title-1', type: 0},
+            {title: 'material-title-2', type: 1},
+          ]
+        },
+        {
+          title: 'assignment-title2',
+          url: {url: 'url2'},
+          lastUpdateTime: new Date(2000000),
+          materials: [
+            {title: 'material-title-3', type: 2},
+            {title: 'material-title-4', type: 3},
+          ]
+        }
       ],
     });
   }
@@ -315,6 +341,37 @@ suite('ClientDelegateTest', function() {
             [
               {id: '1', name: 'cat', email: 'email1', photoUrl: 'cdn1'},
               {id: '2', name: 'dog', email: 'email2', photoUrl: 'cdn2'},
+            ],
+            result);
+      });
+
+  test(
+      'client delegate should properly translate mojom layer data for' +
+          'assignment list',
+      async () => {
+        const result =
+            await clientDelegateImpl.getInstance().getAssignmentList('1');
+
+        assertDeepEquals(
+            [
+              {
+                title: 'assignment-title1',
+                url: 'url1',
+                lastUpdateTime: new Date(1000000),
+                materials: [
+                  {title: 'material-title-1', type: 0},
+                  {title: 'material-title-2', type: 1},
+                ]
+              },
+              {
+                title: 'assignment-title2',
+                url: 'url2',
+                lastUpdateTime: new Date(2000000),
+                materials: [
+                  {title: 'material-title-3', type: 2},
+                  {title: 'material-title-4', type: 3},
+                ]
+              }
             ],
             result);
       });

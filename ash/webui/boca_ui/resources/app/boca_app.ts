@@ -45,6 +45,24 @@ export declare interface Course {
 }
 
 /**
+ * Declare a classroom course assignment information
+ */
+export declare interface Assignment {
+  title: string;
+  url: string;
+  lastUpdateTime: Date;
+  materials: Material[];
+}
+
+/**
+ * Declare an assignment material information
+ */
+export declare interface Material {
+  title: string;
+  type: MaterialType;
+}
+
+/**
  * Declare navigation enum type
  */
 export enum NavigationType {
@@ -94,6 +112,17 @@ export enum NetworkType {
 export enum BocaValidPref {
   NAVIGATION_SETTING = 0,
   CAPTION_ENABLEMENT_SETTING = 1,
+}
+
+/**
+ * Declare course assignment material type enum type
+ */
+export enum MaterialType {
+  UNKNOWN = 0,
+  SHARED_DRIVE_FILE = 1,
+  YOUTUBE_VIDEO = 2,
+  LINK = 3,
+  FORM = 4,
 }
 
 /**
@@ -200,6 +229,11 @@ export declare interface ClientApiDelegate {
    * Get list of students in a course.
    */
   getStudentList(courseId: string): Promise<Identity[]>;
+
+  /**
+   * Get list of assignments in a course.
+   */
+  getAssignmentList(courseId: string): Promise<Assignment[]>;
 
   /**
    * Create a new session.
