@@ -139,6 +139,23 @@ void TestSessionControllerClient::AddUserSession(
   bool is_ephemeral = user_type == user_manager::UserType::kGuest ||
                       user_type == user_manager::UserType::kPublicAccount;
 
+  if (std::holds_alternative<bool>(provide_or_pref_service)) {
+    bool provide = std::get<bool>(provide_or_pref_service);
+    if (provide && prefs_provider_ && default_provide_pref_service_ &&
+        !controller_->GetUserPrefServiceForUser(account_id)) {
+      ProvidePrefServiceForUser(account_id, /*notify*=*/false);
+    }
+  } else {
+    CHECK(std::holds_alternative<std::unique_ptr<PrefService>>(
+        provide_or_pref_service));
+    auto& pref_service =
+        std::get<std::unique_ptr<PrefService>>(provide_or_pref_service);
+    CHECK(pref_service);
+    CHECK(!controller_->GetUserPrefServiceForUser(account_id));
+
+    prefs_provider_->SetUserPrefs(account_id, std::move(pref_service));
+  }
+
   UserSession session;
   session.session_id = ++fake_session_id_;
   session.user_info.type = user_type;
@@ -153,33 +170,19 @@ void TestSessionControllerClient::AddUserSession(
       !account_id.GetGaiaId().empty();
   session.user_info.is_managed = is_account_managed;
   controller_->UpdateUserSession(std::move(session));
-  if (std::holds_alternative<bool>(provide_or_pref_service)) {
-    bool provide = std::get<bool>(provide_or_pref_service);
-    if (provide && prefs_provider_ && default_provide_pref_service_ &&
-        !controller_->GetUserPrefServiceForUser(account_id)) {
-      ProvidePrefServiceForUser(account_id);
-    }
-  } else {
-    CHECK(std::holds_alternative<std::unique_ptr<PrefService>>(
-        provide_or_pref_service));
-    auto& pref_service =
-        std::get<std::unique_ptr<PrefService>>(provide_or_pref_service);
-    CHECK(pref_service);
-    CHECK(!controller_->GetUserPrefServiceForUser(account_id));
-
-    prefs_provider_->SetUserPrefs(account_id, std::move(pref_service));
-    MaybeNotifyUserPrefServiceInitialized(account_id);
-  }
 
   MaybeNotifyFirstSessionReady();
 }
 
 PrefService* TestSessionControllerClient::ProvidePrefServiceForUser(
-    const AccountId& account_id) {
+    const AccountId& account_id,
+    bool notify) {
   CHECK(!controller_->GetUserPrefServiceForUser(account_id));
 
   prefs_provider_->CreateUserPrefs(account_id);
-  MaybeNotifyUserPrefServiceInitialized(account_id);
+  if (notify) {
+    NotifyUserPrefServiceInitialized(account_id);
+  }
   return GetUserPrefService(account_id);
 }
 
@@ -210,7 +213,7 @@ void TestSessionControllerClient::SetUnownedUserPrefService(
 
   prefs_provider_->SetUnownedUserPrefs(account_id,
                                        std::move(unowned_pref_service));
-  MaybeNotifyUserPrefServiceInitialized(account_id);
+  NotifyUserPrefServiceInitialized(account_id);
 }
 
 void TestSessionControllerClient::RequestLockScreen() {
@@ -363,12 +366,11 @@ void TestSessionControllerClient::MaybeNotifyFirstSessionReady() {
   }
 }
 
-void TestSessionControllerClient::MaybeNotifyUserPrefServiceInitialized(
+void TestSessionControllerClient::NotifyUserPrefServiceInitialized(
     const AccountId& account_id) {
-  if (controller_->IsActiveUserSessionStarted()) {
-    controller_->OnProfilePrefServiceInitialized(
-        account_id, prefs_provider_->GetUserPrefs(account_id));
-  }
+  CHECK(controller_->IsActiveUserSessionStarted());
+  controller_->OnProfilePrefServiceInitialized(
+      account_id, prefs_provider_->GetUserPrefs(account_id));
 }
 
 }  // namespace ash

@@ -489,12 +489,20 @@ display::Display AshTestHelper::GetSecondaryDisplay() const {
       .GetSecondaryDisplay();
 }
 
-void AshTestHelper::SimulateUserLogin(const AccountId& account_id,
-                                      user_manager::UserType user_type,
-                                      bool is_new_profile) {
+void AshTestHelper::SimulateUserLogin(
+    const AccountId& account_id,
+    user_manager::UserType user_type,
+    bool is_new_profile,
+    std::unique_ptr<PrefService> pref_service) {
+  std::variant<bool, std::unique_ptr<PrefService>> provide_or_pref_service =
+      true;
+  if (pref_service) {
+    provide_or_pref_service = std::move(pref_service);
+  }
+
   session_controller_client_->AddUserSession(
       account_id, account_id.GetUserEmail(), user_type,
-      /*provide_pref_service=*/true, is_new_profile);
+      std::move(provide_or_pref_service), is_new_profile);
   session_controller_client_->SwitchActiveUser(account_id);
   session_controller_client_->SetSessionState(
       session_manager::SessionState::ACTIVE);

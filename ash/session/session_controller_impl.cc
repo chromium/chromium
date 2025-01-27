@@ -423,10 +423,10 @@ void SessionControllerImpl::UpdateUserSession(const UserSession& user_session) {
 void SessionControllerImpl::SetUserSessionOrder(
     const std::vector<uint32_t>& user_session_order) {
   DCHECK_EQ(user_sessions_.size(), user_session_order.size());
+  // The user_sessions must not be empty.
+  CHECK(!user_sessions_.empty());
 
-  AccountId last_active_account_id;
-  if (user_sessions_.size())
-    last_active_account_id = user_sessions_[0]->user_info.account_id;
+  AccountId last_active_account_id = user_sessions_[0]->user_info.account_id;
 
   // Adjusts |user_sessions_| to match the given order.
   std::vector<std::unique_ptr<UserSession>> sessions;
@@ -622,8 +622,9 @@ void SessionControllerImpl::SetSessionState(SessionState state) {
 
   EnsureSigninScreenPrefService();
 
-  if (was_user_session_blocked && !IsUserSessionBlocked())
+  if (was_user_session_blocked && !IsUserSessionBlocked()) {
     EnsureActiveWindowAfterUnblockingUserSession();
+  }
 }
 
 void SessionControllerImpl::AddUserSession(const UserSession& user_session) {
@@ -635,8 +636,9 @@ void SessionControllerImpl::AddUserSession(const UserSession& user_session) {
   const AccountId account_id(user_session.user_info.account_id);
   PrefService* user_prefs = GetUserPrefServiceForUser(account_id);
   // |user_prefs| could be null in tests.
-  if (user_prefs)
+  if (user_prefs) {
     OnProfilePrefServiceInitialized(account_id, user_prefs);
+  }
 
   UpdateLoginStatus();
   for (auto& observer : observers_)

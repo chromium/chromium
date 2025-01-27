@@ -113,8 +113,10 @@ class TestSessionControllerClient final : public SessionControllerClient {
       const std::string& given_name = std::string(),
       bool is_account_managed = false);
 
-  // Creates a test PrefService and associates it with the user.
-  PrefService* ProvidePrefServiceForUser(const AccountId& account_id);
+  // Creates a test PrefService and associates it with the user. When `notify`
+  // is true, it will call `SessionController::OnProfilePrefServiceInitialized`.
+  PrefService* ProvidePrefServiceForUser(const AccountId& account_id,
+                                         bool notify = true);
 
   // Synchronously lock screen by requesting screen lock and waiting for the
   // request to complete.
@@ -182,7 +184,7 @@ class TestSessionControllerClient final : public SessionControllerClient {
   void MaybeNotifyFirstSessionReady();
 
   // Notify user prefs initialized if user session has started.
-  void MaybeNotifyUserPrefServiceInitialized(const AccountId& account_id);
+  void NotifyUserPrefServiceInitialized(const AccountId& account_id);
 
   const raw_ptr<SessionControllerImpl, DanglingUntriaged> controller_;
   const raw_ptr<TestPrefServiceProvider> prefs_provider_;

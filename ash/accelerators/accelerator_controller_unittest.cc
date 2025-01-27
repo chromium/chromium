@@ -2727,10 +2727,8 @@ class SystemShortcutBehaviorTest : public AcceleratorControllerTest {
     user_prefs_ = user_prefs.get();
     RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
                              /*for_test=*/true);
-    auto* session_controller = GetSessionControllerClient();
-    session_controller->AddUserSession(
-        kUserEmail, user_manager::UserType::kRegular, std::move(user_prefs));
-    SimulateUserLogin(AccountId::FromUserEmail(kUserEmail));
+    SimulateUserLogin(AccountId::FromUserEmail(kUserEmail),
+                      user_manager::UserType::kRegular, std::move(user_prefs));
   }
 
   void TearDown() override {
