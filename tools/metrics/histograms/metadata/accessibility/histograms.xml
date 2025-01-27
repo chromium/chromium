@@ -703,6 +703,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.CrosBounceKeysDelay" units="ms"
+    expires_after="2026-01-22">
+  <owner>aluh@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The bounce keys delay duration in milliseconds set by the user if Bounce
+    Keys is turned on. Logged once after startup.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosCaretBlinkInterval" units="ms"
     expires_after="2025-05-25">
   <owner>katie@chromium.org</owner>
@@ -1198,6 +1208,7 @@ chromium-metrics-reviews@google.com.
   <token key="FeatureName" variants="BaseCrosAccessibilityFeatures">
     <variant name="AlwaysShowScrollbar"/>
     <variant name="Autoclick"/>
+    <variant name="BounceKeys"/>
     <variant name="CursorColor"/>
     <variant name="DisableTouchpad"/>
     <variant name="FlashNotifications"/>
@@ -1233,6 +1244,9 @@ even if they fit the naming pattern. -->
         summary="- Warning: this histogram was expired 2021-12-31 to
                  2022-07-07, and 2023-11-30 to 2024-02-29, data might be
                  missing."/>
+    <variant name="BounceKeys"
+        summary="Bounce Keys, which ignores quickly repeated presses of the
+                 same keyboard key."/>
     <variant name="CursorColor" summary="colorize the cursor"/>
     <variant name="FlashNotifications"
         summary="flash the screen for notifications"/>
