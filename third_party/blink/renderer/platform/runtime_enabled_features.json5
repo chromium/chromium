@@ -4507,6 +4507,10 @@
       },
     },
     {
+      name: "UsePositionForPointInFlexibleBoxWithSingleChildElement",
+      status: "stable",
+    },
+    {
       name: "UserDefinedEntryPointTiming",
       status: "experimental",
     },
