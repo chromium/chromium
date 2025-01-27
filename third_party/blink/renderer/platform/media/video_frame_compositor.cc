@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -15,10 +17,6 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
-#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -40,26 +38,23 @@ VideoFrameCompositor::VideoFrameCompositor(
       background_rendering_timer_(
           FROM_HERE,
           base::Milliseconds(kBackgroundRenderingTimeoutMs),
-          ConvertToBaseRepeatingCallback(
-              CrossThreadBindRepeating(&VideoFrameCompositor::BackgroundRender,
-                                       CrossThreadUnretained(this),
-                                       RenderingMode::kBackground))),
+          base::BindRepeating(&VideoFrameCompositor::BackgroundRender,
+                              base::Unretained(this),
+                              RenderingMode::kBackground)),
       force_begin_frames_timer_(
           FROM_HERE,
           base::Milliseconds(kForceBeginFramesTimeoutMs),
-          ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-              &VideoFrameCompositor::StopForceBeginFrames,
-              CrossThreadUnretained(this)))),
+          base::BindRepeating(&VideoFrameCompositor::StopForceBeginFrames,
+                              base::Unretained(this))),
       submitter_(std::move(submitter)) {
   if (submitter_) {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&VideoFrameCompositor::InitializeSubmitter,
-                            weak_ptr_factory_.GetWeakPtr()));
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&VideoFrameCompositor::InitializeSubmitter,
+                                  weak_ptr_factory_.GetWeakPtr()));
     update_submission_state_callback_ = base::BindPostTask(
-        task_runner_, ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-                          &VideoFrameCompositor::SetIsSurfaceVisible,
-                          weak_ptr_factory_.GetWeakPtr())));
+        task_runner_,
+        base::BindRepeating(&VideoFrameCompositor::SetIsSurfaceVisible,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -227,10 +222,9 @@ void VideoFrameCompositor::Start(RenderCallback* callback) {
   base::AutoLock lock(callback_lock_);
   DCHECK(!callback_);
   callback_ = callback;
-  PostCrossThreadTask(
-      *task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&VideoFrameCompositor::OnRendererStateUpdate,
-                          weak_ptr_factory_.GetWeakPtr(), true));
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&VideoFrameCompositor::OnRendererStateUpdate,
+                                weak_ptr_factory_.GetWeakPtr(), true));
 }
 
 void VideoFrameCompositor::Stop() {
@@ -240,21 +234,19 @@ void VideoFrameCompositor::Stop() {
   base::AutoLock lock(callback_lock_);
   DCHECK(callback_);
   callback_ = nullptr;
-  PostCrossThreadTask(
-      *task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&VideoFrameCompositor::OnRendererStateUpdate,
-                          weak_ptr_factory_.GetWeakPtr(), false));
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&VideoFrameCompositor::OnRendererStateUpdate,
+                                weak_ptr_factory_.GetWeakPtr(), false));
 }
 
 void VideoFrameCompositor::PaintSingleFrame(
     scoped_refptr<media::VideoFrame> frame,
     bool repaint_duplicate_frame) {
   if (!task_runner_->BelongsToCurrentThread()) {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&VideoFrameCompositor::PaintSingleFrame,
-                            weak_ptr_factory_.GetWeakPtr(), std::move(frame),
-                            repaint_duplicate_frame));
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&VideoFrameCompositor::PaintSingleFrame,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(frame), repaint_duplicate_frame));
     return;
   }
   if (ProcessNewFrame(std::move(frame), tick_clock_->NowTicks(),
@@ -311,10 +303,9 @@ void VideoFrameCompositor::SetOnFramePresentedCallback(
   base::AutoLock lock(current_frame_lock_);
   new_presented_frame_cb_ = std::move(present_cb);
 
-  PostCrossThreadTask(
-      *task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&VideoFrameCompositor::StartForceBeginFrames,
-                          weak_ptr_factory_.GetWeakPtr()));
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&VideoFrameCompositor::StartForceBeginFrames,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void VideoFrameCompositor::StartForceBeginFrames() {

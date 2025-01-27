@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -316,7 +317,7 @@ TEST_F(WebAudioSourceProviderImplTest, CopyAudioCB) {
   testing::InSequence s;
   wasp_impl_->Initialize(params_, &fake_callback_);
   wasp_impl_->SetCopyAudioCallback(WTF::BindRepeating(
-      &WebAudioSourceProviderImplTest::DoCopyAudioCB, WTF::Unretained(this)));
+      &WebAudioSourceProviderImplTest::DoCopyAudioCB, base::Unretained(this)));
 
   const auto bus1 = media::AudioBus::Create(params_);
   EXPECT_CALL(*this, DoCopyAudioCB(_, 0, params_.sample_rate())).Times(1);
@@ -334,7 +335,7 @@ TEST_F(WebAudioSourceProviderImplTest, CopyAudioCBTainted) {
   testing::InSequence s;
   wasp_impl_->Initialize(params_, &fake_callback_);
   wasp_impl_->SetCopyAudioCallback(WTF::BindRepeating(
-      &WebAudioSourceProviderImplTest::DoCopyAudioCB, WTF::Unretained(this)));
+      &WebAudioSourceProviderImplTest::DoCopyAudioCB, base::Unretained(this)));
 
   const auto bus1 = media::AudioBus::Create(params_);
   EXPECT_CALL(*this,
@@ -444,8 +445,8 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInputDifferentChannelCount) {
 TEST_F(WebAudioSourceProviderImplTest, SetClientCallback) {
   wasp_impl_ = base::MakeRefCounted<WebAudioSourceProviderImpl>(
       mock_sink_, &media_log_,
-      WTF::BindOnce(&WebAudioSourceProviderImplTest::OnClientSet,
-                    weak_factory_.GetWeakPtr()));
+      base::BindOnce(&WebAudioSourceProviderImplTest::OnClientSet,
+                     weak_factory_.GetWeakPtr()));
   // SetClient with a nullptr client should not trigger the callback if no
   // client is set.
   EXPECT_CALL(*this, OnClientSet()).Times(0);
