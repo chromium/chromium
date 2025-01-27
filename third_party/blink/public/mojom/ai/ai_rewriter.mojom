@@ -36,6 +36,9 @@ struct AIRewriterCreateOptions {
   AIRewriterTone tone;
   AIRewriterFormat format;
   AIRewriterLength length;
+  array<string> expected_input_languages;
+  array<string> expected_context_languages;
+  string output_language;
 };
 
 // Interface for AIRewriter that can stream the output string.

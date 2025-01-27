@@ -14,7 +14,8 @@ dictionary AIRewriterCreateCoreOptions {
   AIRewriterFormat format = "as-is";
   AIRewriterLength length = "as-is";
 
-  sequence<DOMString> expectedInputLanguages;
+  sequence<DOMString> expectedInputLanguages = [];
+  sequence<DOMString> expectedContextLanguages = [];
   DOMString outputLanguage;
 };
 

@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
@@ -74,7 +75,10 @@ blink::mojom::AIRewriterCreateOptionsPtr GetDefaultOptions() {
   return blink::mojom::AIRewriterCreateOptions::New(
       kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
       blink::mojom::AIRewriterFormat::kAsIs,
-      blink::mojom::AIRewriterLength::kAsIs);
+      blink::mojom::AIRewriterLength::kAsIs,
+      /*expected_input_languages=*/std::vector<std::string>(),
+      /*expected_context_languages=*/std::vector<std::string>(),
+      /*output_language=*/std::string());
 }
 
 std::unique_ptr<optimization_guide::proto::WritingAssistanceApiOptions>
@@ -90,7 +94,10 @@ class AIRewriterTest : public AITestUtils::AITestBase {
                             blink::mojom::AIRewriterFormat format,
                             blink::mojom::AIRewriterLength length) {
     const auto options = blink::mojom::AIRewriterCreateOptions::New(
-        kSharedContextString, tone, format, length);
+        kSharedContextString, tone, format, length,
+        /*expected_input_languages=*/std::vector<std::string>(),
+        /*expected_context_languages=*/std::vector<std::string>(),
+        /*output_language=*/std::string());
 
     EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .WillOnce(testing::Invoke([&](optimization_guide::
@@ -338,6 +345,49 @@ TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
   run_loop_for_remove_observer.Run();
 }
 
+TEST_F(AIRewriterTest, CanCreateDefaultOptions) {
+  SetupMockOptimizationGuideKeyedService();
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(_))
+      .WillOnce(testing::Return(
+          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  base::MockCallback<AIManager::CanCreateRewriterCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
+  GetAIManagerInterface()->CanCreateRewriter(GetDefaultOptions(),
+                                             callback.Get());
+}
+
+TEST_F(AIRewriterTest, CanCreateSupportedLanguages) {
+  SetupMockOptimizationGuideKeyedService();
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(_))
+      .WillRepeatedly(testing::Return(
+          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  auto options = GetDefaultOptions();
+  options->output_language = "en";
+  options->expected_input_languages = {"en-US", ""};
+  options->expected_context_languages = {"en-GB", ""};
+  base::MockCallback<AIManager::CanCreateRewriterCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
+  GetAIManagerInterface()->CanCreateRewriter(std::move(options),
+                                             callback.Get());
+}
+
+TEST_F(AIRewriterTest, CanCreateUnsupportedLanguages) {
+  SetupMockOptimizationGuideKeyedService();
+  auto options = GetDefaultOptions();
+  options->output_language = "es-ES";
+  options->expected_input_languages = {"en", "fr", "jp"};
+  options->expected_context_languages = {"ar", "zh", "hi"};
+  base::MockCallback<AIManager::CanCreateRewriterCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::kNoUnknown));
+  GetAIManagerInterface()->CanCreateRewriter(std::move(options),
+                                             callback.Get());
+}
+
 TEST_F(AIRewriterTest, RewriteDefault) {
   SetupMockOptimizationGuideKeyedService();
   RunSimpleRewriteTest(blink::mojom::AIRewriterTone::kAsIs,
@@ -418,10 +468,7 @@ TEST_F(AIRewriterTest, RewriteError) {
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateRewriter(
         mock_create_rewriter_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIRewriterCreateOptions::New(
-            kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
-            blink::mojom::AIRewriterFormat::kAsIs,
-            blink::mojom::AIRewriterLength::kAsIs));
+        GetDefaultOptions());
     run_loop.Run();
   }
   AITestUtils::MockModelStreamingResponder mock_responder;

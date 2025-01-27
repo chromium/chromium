@@ -14,7 +14,8 @@ dictionary AIWriterCreateCoreOptions {
   AIWriterFormat format = "plain-text";
   AIWriterLength length = "medium";
 
-  sequence<DOMString> expectedInputLanguages;
+  sequence<DOMString> expectedInputLanguages = [];
+  sequence<DOMString> expectedContextLanguages = [];
   DOMString outputLanguage;
 };
 
