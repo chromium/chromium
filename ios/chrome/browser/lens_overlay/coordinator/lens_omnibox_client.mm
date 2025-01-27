@@ -7,8 +7,6 @@
 #import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/string_util.h"
-#import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -33,6 +31,7 @@
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -146,7 +145,7 @@ gfx::Image LensOmniboxClient::GetIconIfExtensionMatch(
 
 std::u16string LensOmniboxClient::GetFormattedFullURL() const {
   if (omnibox_steady_state_text_) {
-    return base::SysNSStringToUTF16(omnibox_steady_state_text_);
+    return omnibox_steady_state_text_.cr_UTF16String;
   }
   return u"";
 }
