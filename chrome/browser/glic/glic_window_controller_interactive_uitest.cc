@@ -32,10 +32,10 @@
 
 namespace glic {
 
-class GlicWindowControllerTest : public test::InteractiveGlicTest {
+class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
  public:
-  GlicWindowControllerTest() = default;
-  ~GlicWindowControllerTest() override = default;
+  GlicWindowControllerUiTest() = default;
+  ~GlicWindowControllerUiTest() override = default;
 
   auto CheckControllerHasWidget(bool expect_widget) {
     return CheckResult(
@@ -50,32 +50,32 @@ class GlicWindowControllerTest : public test::InteractiveGlicTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, ShowAndCloseAttachedWidget) {
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseAttachedWidget) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
                   CheckControllerHasWidget(true),
                   CheckControllerWidgetMode(GlicWindowMode::kAttached),
                   CloseGlicWindow(), CheckControllerHasWidget(false));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, ShowAndCloseDetachedWidget) {
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseDetachedWidget) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
                   CheckControllerHasWidget(true),
                   CheckControllerWidgetMode(GlicWindowMode::kDetached),
                   CloseGlicWindow(), CheckControllerHasWidget(false));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashOnBrowserClose) {
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DoNotCrashOnBrowserClose) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached));
   chrome::CloseAllBrowsers();
   ui_test_utils::WaitForBrowserToClose();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashWhenReopening) {
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DoNotCrashWhenReopening) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached), CloseGlicWindow(),
                   OpenGlicWindow(GlicWindowMode::kAttached));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest,
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        OpenDetachedAndThenAttachWithButton) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
                   CheckControllerHasWidget(true),
@@ -86,27 +86,27 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest,
                   CheckControllerWidgetMode(GlicWindowMode::kAttached));
 }
 
-class GlicWindowControllerWithMemoryPressureTest
-    : public GlicWindowControllerTest {
+class GlicWindowControllerWithMemoryPressureUiTest
+    : public GlicWindowControllerUiTest {
  public:
-  GlicWindowControllerWithMemoryPressureTest() {
+  GlicWindowControllerWithMemoryPressureUiTest() {
     features_.InitWithFeatures(
         /*enabled_features=*/
         {features::kGlicWarming},
         /*disabled_features=*/{});
   }
-  ~GlicWindowControllerWithMemoryPressureTest() override = default;
+  ~GlicWindowControllerWithMemoryPressureUiTest() override = default;
 
   void SetUp() override {
     // This will temporarily disable preloading to ensure that we don't load the
     // web client before we've initialized the embedded test server and can set
     // the correct URL.
     GlicProfileManager::ForceMemoryPressureForTesting(&forced_memory_pressure_);
-    GlicWindowControllerTest::SetUp();
+    GlicWindowControllerUiTest::SetUp();
   }
 
   void TearDown() override {
-    GlicWindowControllerTest::TearDown();
+    GlicWindowControllerUiTest::TearDown();
     GlicProfileManager::ForceMemoryPressureForTesting(nullptr);
   }
 
@@ -124,7 +124,7 @@ class GlicWindowControllerWithMemoryPressureTest
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithMemoryPressureTest, Preload) {
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithMemoryPressureUiTest, Preload) {
   ResetMemoryPressure();
   glic_service()->TryPreload();
   EXPECT_TRUE(window_controller().IsWarmed());

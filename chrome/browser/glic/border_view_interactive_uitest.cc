@@ -4,12 +4,11 @@
 
 #define _USE_MATH_DEFINES  // To get M_PI on Windows.
 
-#include "chrome/browser/glic/border_view.h"
-
 #include <math.h>
 
 #include "base/path_service.h"
 #include "cc/test/pixel_test_utils.h"
+#include "chrome/browser/glic/border_view.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -39,14 +38,14 @@ static const SkColor kBlack = SkColors::kBlack.toSkColor();
 // 128). We allow one-off in each channel for comparison.
 static constexpr int kPxComparisonTolerance = 3;
 
-class BorderViewBrowserTest : public InteractiveBrowserTest {
+class GlicBorderViewUiTest : public InteractiveBrowserTest {
  public:
-  BorderViewBrowserTest() {
+  GlicBorderViewUiTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
         /*disabled_features=*/{});
   }
-  ~BorderViewBrowserTest() override = default;
+  ~GlicBorderViewUiTest() override = default;
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
@@ -142,7 +141,7 @@ class BorderViewBrowserTest : public InteractiveBrowserTest {
 
 // Exercise that, the border is resized correctly whenever the browser's size
 // changes.
-IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, BorderResize) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, BorderResize) {
   // TODO(crbug.com/385828490): We should exercise the proper closing flow.
   // Currently the BookmarkModel has a dangling observer during destruction, if
   // the glic UI is toggled.
@@ -173,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, BorderResize) {
 // Regression test for https://crbug.com/387458471: The border shouldn't be
 // visible before StartAnimation is called, and shouldn't be visible after
 // CancelAnimation is called.
-IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, Visibility) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, Visibility) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   EXPECT_FALSE(border->GetVisible());
@@ -187,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, Visibility) {
 
 // Ensures that the border width is correct in various timestamps during the
 // animation.
-IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationSteps) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationSteps) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   gfx::Rect capture_rect = GetContentsRectForWindow(browser());
@@ -284,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationSteps) {
 
 // Ensures that the border animation state is reset after canceling the
 // animation.
-IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationStateReset) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateReset) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
 
@@ -297,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationStateReset) {
 }
 
 // Ensures that the border animation is restarted when tab focus changes.
-IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedTabChange) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   gfx::Rect capture_rect = GetContentsRectForWindow(browser());
@@ -389,8 +388,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedTabChange) {
   EXPECT_FALSE(border->compositor_for_testing());
 }
 
-IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedWindowChange) {
-
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   gfx::Rect capture_rect = GetContentsRectForWindow(browser());
@@ -463,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedWindowChange) {
 }
 
 namespace {
-class BorderViewFeatureDisabledBrowserTest : public BorderViewBrowserTest {
+class BorderViewFeatureDisabledBrowserTest : public GlicBorderViewUiTest {
  public:
   BorderViewFeatureDisabledBrowserTest() {
     scoped_feature_list_.Reset();
@@ -481,13 +479,13 @@ IN_PROC_BROWSER_TEST_F(BorderViewFeatureDisabledBrowserTest, NoBorder) {
 }
 
 namespace {
-class BorderViewPrefersReducedMotionBrowserTest : public BorderViewBrowserTest {
+class GlicBorderViewPrefersReducedMotionUiTest : public GlicBorderViewUiTest {
  public:
-  BorderViewPrefersReducedMotionBrowserTest() = default;
-  ~BorderViewPrefersReducedMotionBrowserTest() override = default;
+  GlicBorderViewPrefersReducedMotionUiTest() = default;
+  ~GlicBorderViewPrefersReducedMotionUiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    BorderViewBrowserTest::SetUpCommandLine(command_line);
+    GlicBorderViewUiTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kForcePrefersReducedMotion);
   }
 };
@@ -495,7 +493,7 @@ class BorderViewPrefersReducedMotionBrowserTest : public BorderViewBrowserTest {
 
 // Ensures that in prefers-reduced-motion cases, the border appears in its
 // maximum width and opacity from the very beginning without any animation.
-IN_PROC_BROWSER_TEST_F(BorderViewPrefersReducedMotionBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
                        PrefersReducedMotion) {
   ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
   auto* border = browser()->window()->AsBrowserView()->glic_border();
