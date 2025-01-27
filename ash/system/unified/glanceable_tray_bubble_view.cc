@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 
@@ -28,7 +29,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/constants/chromeos_features.h"

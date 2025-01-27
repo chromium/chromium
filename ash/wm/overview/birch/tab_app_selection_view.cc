@@ -550,7 +550,7 @@ void TabAppSelectionView::ProcessKeyEvent(ui::KeyEvent* event) {
 
 void TabAppSelectionView::RemoveItemBySystem(std::string_view identifier) {
   auto iter =
-      base::ranges::find_if(item_views_, [&identifier](const auto& item_view) {
+      std::ranges::find_if(item_views_, [&identifier](const auto& item_view) {
         return item_view->identifier() == identifier;
       });
   if (iter != item_views_.end()) {

@@ -311,7 +311,7 @@ int QuickInsertSearchResultsView::GetIndex(
   if (top_results_.empty()) {
     return -1;
   }
-  auto it = base::ranges::find(top_results_, inserted_result);
+  auto it = std::ranges::find(top_results_, inserted_result);
   if (it == top_results_.end()) {
     return kMaxIndexForMetrics;
   }

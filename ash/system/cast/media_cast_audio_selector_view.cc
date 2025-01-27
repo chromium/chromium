@@ -4,6 +4,7 @@
 
 #include "ash/system/cast/media_cast_audio_selector_view.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/system/audio/output_audio_sliders_view.h"
@@ -11,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/vector_icons/vector_icons.h"

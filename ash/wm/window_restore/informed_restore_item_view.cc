@@ -156,10 +156,10 @@ void InformedRestoreItemView::OnOneFaviconLoaded(IndexedImageCallback callback,
 
 void InformedRestoreItemView::OnAllFaviconsLoaded(
     std::vector<IndexedImagePair> indexed_favicons) {
-  base::ranges::sort(indexed_favicons,
-                     [](const auto& element_a, const auto& element_b) {
-                       return element_a.first < element_b.first;
-                     });
+  std::ranges::sort(indexed_favicons,
+                    [](const auto& element_a, const auto& element_b) {
+                      return element_a.first < element_b.first;
+                    });
 
   bool needs_layout = false;
   const size_t elements = indexed_favicons.size();

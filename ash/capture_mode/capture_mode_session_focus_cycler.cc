@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/accessibility/magnifier/magnifier_utils.h"
@@ -30,7 +31,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/base/class_property.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -747,7 +747,7 @@ CaptureModeSessionFocusCycler::GetNextGroup(bool reverse) const {
 
   const std::vector<FocusGroup>& groups_list = GetCurrentGroupList();
   const int increment = reverse ? -1 : 1;
-  const auto iter = base::ranges::find(groups_list, current_focus_group_);
+  const auto iter = std::ranges::find(groups_list, current_focus_group_);
   DCHECK(iter != groups_list.end());
   size_t next_group_index = std::distance(groups_list.begin(), iter);
   const auto group_size = groups_list.size();
@@ -981,7 +981,7 @@ bool CaptureModeSessionFocusCycler::FindFocusedViewAndUpdateFocusIndex(
     return true;
 
   const size_t current_focus_index =
-      base::ranges::find(
+      std::ranges::find(
           views, true,
           &CaptureModeSessionFocusCycler::HighlightableView::has_focus) -
       views.begin();

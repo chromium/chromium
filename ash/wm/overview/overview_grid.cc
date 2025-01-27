@@ -93,7 +93,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -721,7 +720,7 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
 
   if (birch_bar_widget_) {
     // Shutdown the selection widget so its ownership is not passed as well.
-    base::ranges::for_each(
+    std::ranges::for_each(
         birch_bar_view_->chips(), [](BirchChipButtonBase* chip) {
           if (auto* chip_button = views::AsViewClass<CoralChipButton>(chip)) {
             chip_button->ShutdownSelectionWidget();
@@ -1061,8 +1060,8 @@ void OverviewGrid::RemoveItem(OverviewItemBase* overview_item,
   EndNudge();
 
   // Use reverse iterator to be efficient when removing all.
-  auto iter = base::ranges::find(base::Reversed(item_list_), overview_item,
-                                 &std::unique_ptr<OverviewItemBase>::get);
+  auto iter = std::ranges::find(base::Reversed(item_list_), overview_item,
+                                &std::unique_ptr<OverviewItemBase>::get);
   CHECK(iter != item_list_.rend());
 
   UpdateNumSavedDeskUnsupportedWindows(overview_item->GetWindows(),
@@ -3238,8 +3237,8 @@ void OverviewGrid::MaybeCenterOverviewItems(
 }
 
 size_t OverviewGrid::GetOverviewItemIndex(OverviewItemBase* item) const {
-  auto iter = base::ranges::find(item_list_, item,
-                                 &std::unique_ptr<OverviewItemBase>::get);
+  auto iter = std::ranges::find(item_list_, item,
+                                &std::unique_ptr<OverviewItemBase>::get);
   CHECK(iter != item_list_.end());
   return iter - item_list_.begin();
 }
@@ -3444,7 +3443,7 @@ void OverviewGrid::RefreshDesksWidgets(bool visible) {
         desks_widget_.get(), saved_desk_library_widget_.get(),
         save_desk_button_container_widget_.get()};
     aura::Window::Windows hide_windows;
-    base::ranges::for_each(
+    std::ranges::for_each(
         desks_widgets, [&hide_windows](views::Widget* widget) {
           if (widget) {
             hide_windows.emplace_back(widget->GetNativeWindow());

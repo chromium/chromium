@@ -4,6 +4,7 @@
 
 #include "ash/quick_insert/views/quick_insert_image_item_row_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "ash/quick_insert/views/quick_insert_pseudo_focus.h"
 #include "ash/quick_insert/views/quick_insert_traversable_item_container.h"
 #include "ash/style/icon_button.h"
-#include "base/ranges/algorithm.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"

@@ -4,6 +4,7 @@
 
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -33,7 +34,6 @@
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -1195,7 +1195,7 @@ TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableLookup) {
       std::vector<ui::Accelerator> actual_accelerators =
           GetNonConfigurableAcceleratorsForActionId(
               static_cast<uint32_t>(ambient_action_id));
-      EXPECT_TRUE(base::ranges::is_permutation(
+      EXPECT_TRUE(std::ranges::is_permutation(
           actual_accelerators, accelerators_details.accelerators.value()));
     }
   }

@@ -256,7 +256,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/audio/system_sounds_delegate.h"
@@ -1866,8 +1865,8 @@ void Shell::Init(
         if (clipboard_history_util::IsEnabledInCurrentMode()) {
           const auto& items = controller->history()->GetItems();
           descriptors.reserve(items.size());
-          base::ranges::transform(items, std::back_inserter(descriptors),
-                                  &clipboard_history_util::ItemToDescriptor);
+          std::ranges::transform(items, std::back_inserter(descriptors),
+                                 &clipboard_history_util::ItemToDescriptor);
         }
         return descriptors;
       },

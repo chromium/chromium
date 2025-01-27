@@ -4,11 +4,11 @@
 
 #include "ash/rounded_display/rounded_display_gutter_factory.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "ash/rounded_display/rounded_display_gutter.h"
-#include "base/ranges/algorithm.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -32,7 +32,7 @@ auto GutterWithMatchingCorners(Matchers&&... positions) {
       [](const std::unique_ptr<RoundedDisplayGutter>& gutter) {
         std::vector<RoundedCornerPosition> positions;
         const std::vector<RoundedCorner>& corners = gutter->GetGutterCorners();
-        base::ranges::transform(
+        std::ranges::transform(
             corners.begin(), corners.end(), std::back_inserter(positions),
             [](const RoundedCorner& corner) { return corner.position(); });
         return positions;

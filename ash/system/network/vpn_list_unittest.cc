@@ -4,11 +4,11 @@
 
 #include "ash/system/network/vpn_list.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/test/ash_test_base.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -139,8 +139,8 @@ TEST_F(VpnListTest, ThirdPartyProviders) {
   }
 
   // The first Arc VPN gets uninstalled.
-  auto iter = base::ranges::find(third_party_providers, "package.name.foo1",
-                                 &VpnProvider::provider_id);
+  auto iter = std::ranges::find(third_party_providers, "package.name.foo1",
+                                &VpnProvider::provider_id);
   ASSERT_NE(iter, third_party_providers.end());
   third_party_providers.erase(iter);
   vpn_list.SetVpnProvidersForTest(CopyProviders(third_party_providers));

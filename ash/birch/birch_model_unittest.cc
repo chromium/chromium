@@ -4,6 +4,7 @@
 
 #include "ash/birch/birch_model.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "ash/birch/birch_coral_provider.h"
@@ -24,7 +25,6 @@
 #include "ash/wm/coral/coral_controller.h"
 #include "ash/wm/coral/coral_test_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -42,11 +42,11 @@ namespace {
 // Returns true if `items` contains BirchItems of each of `types` in any order.
 bool HasItemTypes(const std::vector<std::unique_ptr<BirchItem>>& items,
                   const std::vector<BirchItemType>& types) {
-  return base::ranges::all_of(types, [&](BirchItemType type) {
-    return base::ranges::any_of(items,
-                                [&](const std::unique_ptr<BirchItem>& item) {
-                                  return item->GetType() == type;
-                                });
+  return std::ranges::all_of(types, [&](BirchItemType type) {
+    return std::ranges::any_of(items,
+                               [&](const std::unique_ptr<BirchItem>& item) {
+                                 return item->GetType() == type;
+                               });
   });
 }
 

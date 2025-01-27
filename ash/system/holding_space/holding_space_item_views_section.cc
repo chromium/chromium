@@ -4,6 +4,8 @@
 
 #include "ash/system/holding_space/holding_space_item_views_section.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
@@ -12,7 +14,6 @@
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -291,7 +292,7 @@ void HoldingSpaceItemViewsSection::ViewHierarchyChanged(
 void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
   const bool needs_update =
-      base::ranges::any_of(items, [this](const HoldingSpaceItem* item) {
+      std::ranges::any_of(items, [this](const HoldingSpaceItem* item) {
         return item->IsInitialized() &&
                base::Contains(section_->supported_types, item->type());
       });
@@ -302,7 +303,7 @@ void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsAdded(
 void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {
   const bool needs_update =
-      base::ranges::any_of(items, [this](const HoldingSpaceItem* item) {
+      std::ranges::any_of(items, [this](const HoldingSpaceItem* item) {
         return base::Contains(views_by_item_id_, item->id());
       });
   if (needs_update)
@@ -437,7 +438,7 @@ void HoldingSpaceItemViewsSection::AnimateOut(
   if (animate_out_header) {
     HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
     if (model) {
-      animate_out_header = base::ranges::none_of(
+      animate_out_header = std::ranges::none_of(
           section_->supported_types,
           [&model](HoldingSpaceItem::Type supported_type) {
             return model->ContainsInitializedItemOfType(supported_type);

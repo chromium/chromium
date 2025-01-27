@@ -4,11 +4,12 @@
 
 #include "ash/system/time/calendar_utils.h"
 
+#include <algorithm>
+
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/rtl.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -501,7 +502,7 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<CalendarUtilsMidnightTest::ParamType>&
            info) {
       std::string name = info.param.timezone;
-      base::ranges::replace_if(
+      std::ranges::replace_if(
           name, [](unsigned char c) { return !absl::ascii_isalnum(c); }, '_');
       return name;
     });

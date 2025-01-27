@@ -96,7 +96,7 @@ CoralChipButton* GetFirstCoralButton() {
 }
 
 size_t GetCoralButtonNum() {
-  return base::ranges::count_if(
+  return std::ranges::count_if(
       OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips(),
       [](auto& chip) {
         return chip->GetItem()->GetType() == BirchItemType::kCoral;

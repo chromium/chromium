@@ -234,14 +234,14 @@ bool ShouldShowResponse(CoralResponse* response) {
   // apps on the active desk, we only need to check if the number of group
   // entities equals to the total number of tabs and apps on the active desk.
   Shell* shell = Shell::Get();
-  const size_t tab_num = base::ranges::count_if(
+  const size_t tab_num = std::ranges::count_if(
       shell->tab_cluster_ui_controller()->tab_items(),
       [](const auto& tab_item) {
         aura::Window* window = tab_item->current_info().browser_window;
         return IsBrowserWindow(window) &&
                desks_util::BelongsToActiveDesk(window);
       });
-  const size_t app_num = base::ranges::count_if(
+  const size_t app_num = std::ranges::count_if(
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk),
       [](const auto& window) {
         return !wm::GetTransientParent(window) && !IsBrowserWindow(window);
@@ -766,7 +766,7 @@ void BirchCoralProvider::ObserveAllWindowsInResponse() {
 
   // Observe browser windows containing the tabs with the same urls in the
   // response.
-  base::ranges::for_each(
+  std::ranges::for_each(
       Shell::Get()->tab_cluster_ui_controller()->tab_items(),
       [&](const auto& tab_item) {
         if (IsValidTab(tab_item.get()) &&
@@ -779,7 +779,7 @@ void BirchCoralProvider::ObserveAllWindowsInResponse() {
       });
 
   // Observe all the apps with the app id in the response.
-  base::ranges::for_each(
+  std::ranges::for_each(
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk),
       [&](const auto& window) {
         if (IsValidApp(window) &&
@@ -795,7 +795,7 @@ void BirchCoralProvider::OnTabRemovedFromSourceDesk(
 
   // Don't modify the groups if there are multiple tabs with the same url to be
   // removed.
-  if (base::ranges::count_if(
+  if (std::ranges::count_if(
           Shell::Get()->tab_cluster_ui_controller()->tab_items(),
           [&](const auto& tab) {
             return windows_observation_.IsObservingSource(
@@ -813,7 +813,7 @@ void BirchCoralProvider::OnAppWindowRemovedFromSourceDesk(
   // Don't modify groups if there are multiple of the same app on the active
   // desk.
   const std::string app_id = *(app_window->GetProperty(kAppIDKey));
-  if (base::ranges::count_if(
+  if (std::ranges::count_if(
           windows_observation_.sources(), [&app_id](const auto& window) {
             return *(window->GetProperty(kAppIDKey)) == app_id;
           }) == 1) {

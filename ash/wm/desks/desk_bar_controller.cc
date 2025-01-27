@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/desk_bar_controller.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -27,7 +28,6 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
@@ -326,15 +326,15 @@ void DeskBarController::OnDisplayMetricsChanged(const display::Display& display,
 }
 
 DeskBarViewBase* DeskBarController::GetDeskBarView(aura::Window* root) {
-  auto it = base::ranges::find_if(desk_bars_,
-                                  [root](const BarWidgetAndView& desk_bar) {
-                                    return desk_bar.bar_view->root() == root;
-                                  });
+  auto it = std::ranges::find_if(desk_bars_,
+                                 [root](const BarWidgetAndView& desk_bar) {
+                                   return desk_bar.bar_view->root() == root;
+                                 });
   return it != desk_bars_.end() ? it->bar_view : nullptr;
 }
 
 bool DeskBarController::IsShowingDeskBar() const {
-  return base::ranges::any_of(desk_bars_, [](const BarWidgetAndView& desk_bar) {
+  return std::ranges::any_of(desk_bars_, [](const BarWidgetAndView& desk_bar) {
     return desk_bar.bar_view->GetVisible();
   });
 }

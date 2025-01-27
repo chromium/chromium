@@ -4,9 +4,10 @@
 
 #include "ash/wm/raster_scale/raster_scale_controller.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
-#include "base/ranges/algorithm.h"
 #include "ui/aura/client/aura_constants.h"
 
 namespace ash {
@@ -110,7 +111,7 @@ void RasterScaleController::PopRasterScale(aura::Window* window,
 
   auto& scales = iter->second;
   DCHECK(base::Contains(scales, raster_scale));
-  auto scale_iter = base::ranges::find(scales, raster_scale);
+  auto scale_iter = std::ranges::find(scales, raster_scale);
   if (scale_iter != scales.end()) {
     scales.erase(scale_iter);
   }

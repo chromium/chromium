@@ -22,7 +22,7 @@ namespace {
 // nullptr if a matching task does not exist in `tasks`.
 FocusModeTask* FindTaskById(const TaskId& task_id,
                             std::vector<FocusModeTask>& tasks) {
-  auto iter = base::ranges::find(tasks, task_id, &FocusModeTask::task_id);
+  auto iter = std::ranges::find(tasks, task_id, &FocusModeTask::task_id);
   return (iter == tasks.end()) ? nullptr : &(*iter);
 }
 
@@ -127,7 +127,7 @@ void FocusModeTasksModel::RequestUpdate() {
 
 bool FocusModeTasksModel::SetSelectedTask(const TaskId& task_id) {
   CHECK(!task_id.empty());
-  auto iter = base::ranges::find(tasks_, task_id, &FocusModeTask::task_id);
+  auto iter = std::ranges::find(tasks_, task_id, &FocusModeTask::task_id);
 
   if (iter == tasks_.end()) {
     // 'task_id' was not found in the task list. Task cannot be selected.
@@ -188,8 +188,8 @@ void FocusModeTasksModel::ClearSelectedTask() {
   // If there is still a pending task, we clear it and also remove it from
   // `tasks_` in order to prevent potentially having multiple pending tasks.
   if (pending_task_) {
-    auto iter = base::ranges::find(tasks_, pending_task_->task_id,
-                                   &FocusModeTask::task_id);
+    auto iter = std::ranges::find(tasks_, pending_task_->task_id,
+                                  &FocusModeTask::task_id);
     CHECK(iter != tasks_.end());
     pending_task_ = nullptr;
     tasks_.erase(iter);
@@ -304,7 +304,7 @@ void FocusModeTasksModel::UpdateTask(const TaskUpdate& task_update) {
   if (task_update.completed.has_value()) {
     CHECK(task_update.task_id);
     const TaskId& id = *task_update.task_id;
-    auto iter = base::ranges::find(tasks_, id, &FocusModeTask::task_id);
+    auto iter = std::ranges::find(tasks_, id, &FocusModeTask::task_id);
     CHECK(iter != tasks_.end());
 
     NotifyCompletedTask(observers_, *iter);
@@ -403,7 +403,7 @@ void FocusModeTasksModel::OnPrefTaskFetched(
   // Controls if the list update is emitted.
   bool list_updated = true;
 
-  auto iter = base::ranges::find(tasks_, task_id, &FocusModeTask::task_id);
+  auto iter = std::ranges::find(tasks_, task_id, &FocusModeTask::task_id);
   if (iter != tasks_.end()) {
     if (fetched_task->completed) {
       tasks_.erase(iter);

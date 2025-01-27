@@ -39,7 +39,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
@@ -188,7 +187,7 @@ class DragWindowFromShelfController::WindowsHider
   // minimize asynchronously so they may not be truly minimized after |this| is
   // constructed.
   bool WindowsMinimized() {
-    return base::ranges::all_of(hidden_windows_, [](const aura::Window* w) {
+    return std::ranges::all_of(hidden_windows_, [](const aura::Window* w) {
       return WindowState::Get(w)->IsMinimized();
     });
   }
@@ -196,7 +195,7 @@ class DragWindowFromShelfController::WindowsHider
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
     window->RemoveObserver(this);
-    hidden_windows_.erase(base::ranges::find(hidden_windows_, window));
+    hidden_windows_.erase(std::ranges::find(hidden_windows_, window));
   }
 
  private:

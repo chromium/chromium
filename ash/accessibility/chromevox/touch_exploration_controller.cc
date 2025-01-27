@@ -4,6 +4,7 @@
 
 #include "ash/accessibility/chromevox/touch_exploration_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "ash/wm/container_finder.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/cursor_client.h"
@@ -177,7 +177,7 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
   } else if (type == ui::EventType::kTouchReleased ||
              type == ui::EventType::kTouchCancelled) {
     std::vector<int>::iterator it =
-        base::ranges::find(current_touch_ids_, touch_id);
+        std::ranges::find(current_touch_ids_, touch_id);
 
     // Can happen if touch exploration is enabled while fingers were down
     // or if an additional press occurred within the exclusion bounds.
@@ -204,7 +204,7 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
     touch_locations_.erase(touch_id);
   } else if (type == ui::EventType::kTouchMoved) {
     std::vector<int>::iterator it =
-        base::ranges::find(current_touch_ids_, touch_id);
+        std::ranges::find(current_touch_ids_, touch_id);
 
     // Can happen if touch exploration is enabled while fingers were down.
     if (it == current_touch_ids_.end())

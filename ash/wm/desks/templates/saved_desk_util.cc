@@ -182,12 +182,12 @@ void UpdateTemplateActivationIndicesRelativeOrder(DeskTemplate& saved_desk) {
   }
   // Sort in descending order so that we maintain the relative window
   // stacking order.
-  base::ranges::sort(relative_window_stack_order,
-                     [](app_restore::AppRestoreData* data1,
-                        app_restore::AppRestoreData* data2) {
-                       return data1->window_info.activation_index.value_or(0) >
-                              data2->window_info.activation_index.value_or(0);
-                     });
+  std::ranges::sort(relative_window_stack_order,
+                    [](app_restore::AppRestoreData* data1,
+                       app_restore::AppRestoreData* data2) {
+                      return data1->window_info.activation_index.value_or(0) >
+                             data2->window_info.activation_index.value_or(0);
+                    });
   for (auto* app_restore_data : relative_window_stack_order) {
     app_restore_data->window_info.activation_index =
         g_template_next_activation_index--;

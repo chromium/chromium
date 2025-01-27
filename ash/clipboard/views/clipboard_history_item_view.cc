@@ -53,7 +53,7 @@ const ClipboardHistoryItem* GetClipboardHistoryItemImpl(
     const ClipboardHistory* clipboard_history) {
   const auto& items = clipboard_history->GetItems();
   const auto& item_iter =
-      base::ranges::find(items, item_id, &ClipboardHistoryItem::id);
+      std::ranges::find(items, item_id, &ClipboardHistoryItem::id);
   return item_iter == items.cend() ? nullptr : &(*item_iter);
 }
 

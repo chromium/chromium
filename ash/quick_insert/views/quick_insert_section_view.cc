@@ -4,6 +4,7 @@
 
 #include "ash/quick_insert/views/quick_insert_section_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -30,7 +31,6 @@
 #include "ash/style/typography.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/icon.h"
@@ -182,7 +182,7 @@ const gfx::VectorIcon& GetIconForClipboardData(
 
 template <typename Range>
 auto FindContainerForItem(Range&& containers, views::View* item) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       containers, [item](QuickInsertTraversableItemContainer* container) {
         return container->ContainsItem(item);
       });

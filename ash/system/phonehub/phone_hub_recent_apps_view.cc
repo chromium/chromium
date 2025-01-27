@@ -25,7 +25,6 @@
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/webui/eche_app_ui/system_info_provider.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -87,7 +86,7 @@ constexpr int kRecentAppsTransitionDurationMs = 200;
 void LayoutAppButtonsView(views::View* buttons_view) {
   const gfx::Rect child_area = buttons_view->GetContentsBounds();
   views::View::Views visible_children;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       buttons_view->children(), std::back_inserter(visible_children),
       [](const views::View* v) {
         return v->GetVisible() && (v->GetPreferredSize().width() > 0);

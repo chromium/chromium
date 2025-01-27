@@ -305,10 +305,10 @@ void GroupContainerCycleView::OnAccessibleIgnoredStateChanged(
 }
 
 bool GroupContainerCycleView::Contains(aura::Window* window) const {
-  return base::ranges::any_of(mini_views_,
-                              [window](const WindowCycleItemView* mini_view) {
-                                return mini_view->Contains(window);
-                              });
+  return std::ranges::any_of(mini_views_,
+                             [window](const WindowCycleItemView* mini_view) {
+                               return mini_view->Contains(window);
+                             });
 }
 
 aura::Window* GroupContainerCycleView::GetWindowAtPoint(

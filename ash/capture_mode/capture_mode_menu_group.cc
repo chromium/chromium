@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_menu_group.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -17,7 +18,6 @@
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -492,7 +492,7 @@ CaptureModeMenuGroup::CaptureModeMenuGroup(
 }
 
 CaptureModeOption* CaptureModeMenuGroup::GetOptionById(int option_id) const {
-  auto iter = base::ranges::find(options_, option_id, &CaptureModeOption::id);
+  auto iter = std::ranges::find(options_, option_id, &CaptureModeOption::id);
   return iter == options_.end() ? nullptr : *iter;
 }
 

@@ -4,6 +4,7 @@
 
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
@@ -79,7 +79,7 @@ void ClipboardHistoryResourceManager::OnHistoryQueryComplete(
     const base::UnguessableToken& item_id,
     std::optional<std::u16string> maybe_title) {
   auto& items = clipboard_history_->GetItems();
-  auto item = base::ranges::find(items, item_id, &ClipboardHistoryItem::id);
+  auto item = std::ranges::find(items, item_id, &ClipboardHistoryItem::id);
   if (item == items.end()) {
     return;
   }
@@ -100,7 +100,7 @@ void ClipboardHistoryResourceManager::SetOrRequestHtmlPreview(
   auto& items = clipboard_history_->GetItems();
 
   // See if we have an `existing` item that will render the same as `item`.
-  auto it = base::ranges::find_if(items, [&](const auto& existing) {
+  auto it = std::ranges::find_if(items, [&](const auto& existing) {
     return &existing != &item &&
            existing.display_format() ==
                crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml &&
@@ -152,7 +152,7 @@ void ClipboardHistoryResourceManager::SetOrRequestHtmlPreview(
   } else {
     // If rendering has finished, set `item` to have the same preview.
     auto mutable_item =
-        base::ranges::find(items, item.id(), &ClipboardHistoryItem::id);
+        std::ranges::find(items, item.id(), &ClipboardHistoryItem::id);
     DCHECK(mutable_item != items.end());
 
     const auto& existing_preview = it->display_image();
@@ -165,7 +165,7 @@ void ClipboardHistoryResourceManager::SetOrRequestHtmlPreview(
 void ClipboardHistoryResourceManager::OnImageModelRendered(
     const base::UnguessableToken& id,
     ui::ImageModel image_model) {
-  auto image_model_request = base::ranges::find(
+  auto image_model_request = std::ranges::find(
       image_model_requests_, id,
       &ClipboardHistoryResourceManager::ImageModelRequest::id);
   if (image_model_request == image_model_requests_.end()) {
@@ -202,7 +202,7 @@ void ClipboardHistoryResourceManager::CancelUnfinishedRequests() {
 std::vector<ClipboardHistoryResourceManager::ImageModelRequest>::iterator
 ClipboardHistoryResourceManager::GetImageModelRequestForItem(
     const ClipboardHistoryItem& item) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       image_model_requests_, [&](const auto& image_model_request) {
         return base::Contains(image_model_request.clipboard_history_item_ids,
                               item.id());

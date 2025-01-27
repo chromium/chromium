@@ -266,7 +266,7 @@ MATCHER_P(TutorialDescriptionEqInternal, tutorial_description, "") {
   return std::tie(arg.can_be_restarted, arg.complete_button_text_id) ==
              std::tie(tutorial_description->data.can_be_restarted,
                       tutorial_description->data.complete_button_text_id) &&
-         base::ranges::equal(
+         std::ranges::equal(
              arg.steps, tutorial_description->data.steps,
              [](auto& a, auto& b) { return Matches(StepEq(a))(b); });
 }

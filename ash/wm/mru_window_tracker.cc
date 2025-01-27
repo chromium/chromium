@@ -4,6 +4,7 @@
 
 #include "ash/wm/mru_window_tracker.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/focus/ash_focus_rules.h"
@@ -22,7 +23,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/window_properties.h"
@@ -179,7 +179,7 @@ MruWindowTracker::WindowList BuildWindowListInternal(
   // this so that the top-most windows in the active root window will be added
   // first to |windows|.
   aura::Window* active_root = Shell::GetRootWindowForNewWindows();
-  auto iter = base::ranges::find(roots, active_root);
+  auto iter = std::ranges::find(roots, active_root);
   // When switching to/from Unified Mode, the active root window controller
   // might be in the process of shutting down, and its windows are being moved
   // to another root window before the root window for new windows is updated.
@@ -291,7 +291,7 @@ void MruWindowTracker::SetIgnoreActivations(bool ignore) {
 void MruWindowTracker::OnWindowMovedOutFromRemovingDesk(aura::Window* window) {
   DCHECK(window);
 
-  auto iter = base::ranges::find(mru_windows_, window);
+  auto iter = std::ranges::find(mru_windows_, window);
   if (iter != mru_windows_.end()) {
     mru_windows_.erase(iter);
     mru_windows_.insert(mru_windows_.begin(), window);
@@ -327,7 +327,7 @@ void MruWindowTracker::SetActiveWindow(aura::Window* active_window) {
   if (!active_window)
     return;
 
-  auto iter = base::ranges::find(mru_windows_, active_window);
+  auto iter = std::ranges::find(mru_windows_, active_window);
   // Observe all newly tracked windows.
   if (iter == mru_windows_.end())
     active_window->AddObserver(this);

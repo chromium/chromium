@@ -67,7 +67,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -161,10 +160,9 @@ bool InTabletMode() {
 bool IsExactlyOneRootInSplitView() {
   const aura::Window::Windows all_root_windows = Shell::GetAllRootWindows();
   return 1 ==
-         base::ranges::count_if(
-             all_root_windows, [](aura::Window* root_window) {
-               return SplitViewController::Get(root_window)->InSplitViewMode();
-             });
+         std::ranges::count_if(all_root_windows, [](aura::Window* root_window) {
+           return SplitViewController::Get(root_window)->InSplitViewMode();
+         });
 }
 
 ui::InputMethod* GetCurrentInputMethod() {

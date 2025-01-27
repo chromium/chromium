@@ -4,7 +4,9 @@
 
 #include "ash/public/cpp/input_device_settings_controller.h"
 
+#include <algorithm>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <optional>
 
@@ -36,8 +38,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"

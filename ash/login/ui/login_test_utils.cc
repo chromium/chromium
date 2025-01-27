@@ -4,9 +4,10 @@
 
 #include "ash/login/ui/login_test_utils.h"
 
+#include <algorithm>
+
 #include "ash/login/ui/login_big_user_view.h"
 #include "base/containers/adapters.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
@@ -88,7 +89,7 @@ LoginUserInfo CreatePublicAccountUser(const std::string& email) {
 
 bool HasFocusInAnyChildView(const views::View* view) {
   return view->HasFocus() ||
-         base::ranges::any_of(view->children(), [](const views::View* v) {
+         std::ranges::any_of(view->children(), [](const views::View* v) {
            return HasFocusInAnyChildView(v);
          });
 }

@@ -41,7 +41,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/parameter_pack.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -442,10 +441,10 @@ void QuickInsertSearchRequest::MaybeCallDoneClosure() {
   if (!can_call_done_closure_) {
     return;
   }
-  if (base::ranges::any_of(search_starts_,
-                           [](std::optional<base::TimeTicks>& start) {
-                             return start.has_value();
-                           })) {
+  if (std::ranges::any_of(search_starts_,
+                          [](std::optional<base::TimeTicks>& start) {
+                            return start.has_value();
+                          })) {
     return;
   }
 
