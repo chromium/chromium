@@ -143,6 +143,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return last_user_action_;
   }
 
+  const int& num_full_image_requests_sent() const {
+    return num_full_image_requests_sent_;
+  }
+
   const int& num_interaction_requests_sent() const {
     return num_interaction_requests_sent_;
   }
@@ -314,6 +318,9 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   // The last user action sent by the query controller.
   std::optional<lens::mojom::UserAction> last_user_action_;
+
+  // The number of full image objects requests sent by the query controller.
+  int num_full_image_requests_sent_ = 0;
 
   // The number of interaction requests sent by the query controller.
   int num_interaction_requests_sent_ = 0;

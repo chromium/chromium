@@ -440,6 +440,12 @@ void LensOverlayQueryController::EndQuery() {
   query_controller_state_ = QueryControllerState::kOff;
 }
 
+void LensOverlayQueryController::MaybeRestartQueryFlow() {
+  if (query_controller_state_ == QueryControllerState::kClusterInfoExpired) {
+    PrepareAndFetchFullImageRequest();
+  }
+}
+
 void LensOverlayQueryController::SendFullPageTranslateQuery(
     const std::string& source_language,
     const std::string& target_language) {
@@ -1079,7 +1085,15 @@ void LensOverlayQueryController::RunFullImageCallbackForError() {
 }
 
 void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
-  if (!cluster_info_ || underlying_content_bytes_.empty()) {
+  if (query_controller_state_ == QueryControllerState::kClusterInfoExpired) {
+    // If the cluster info has expired, we need to refetch the cluster info. The
+    // full image request will recall this method once the cluster info is
+    // fetched.
+    MaybeRestartQueryFlow();
+    return;
+  }
+
+  if (underlying_content_bytes_.empty()) {
     // Cannot send this request without cluster info. No need to send the
     // request without underlying content bytes.
     return;
@@ -1265,9 +1279,8 @@ void LensOverlayQueryController::SendInteraction(
   additional_search_query_params =
       AddStartTimeQueryParam(additional_search_query_params);
 
-  // If the cluster info is missing and the full image response has already been
-  // received, we must restart the query flow by resending the full image
-  // request.
+  // If the cluster info is missing add the interaction to the pending callback
+  // to be sent once the cluster info is available.
   if (!cluster_info_.has_value()) {
     pending_interaction_callback_ =
         base::BindOnce(&LensOverlayQueryController::SendInteraction,
@@ -1275,12 +1288,9 @@ void LensOverlayQueryController::SendInteraction(
                        query_text, object_id, selection_type,
                        additional_search_query_params, region_bytes);
 
-    if (query_controller_state_ ==
-            QueryControllerState::kReceivedFullImageResponse ||
-        query_controller_state_ ==
-            QueryControllerState::kReceivedFullImageErrorResponse) {
-      PrepareAndFetchFullImageRequest();
-    }
+    // If the cluster info is expired, restart a new query flow so the pending
+    // interaction request will be sent once the cluster info is available.
+    MaybeRestartQueryFlow();
     return;
   }
 
@@ -1834,7 +1844,8 @@ LensOverlayQueryController::CreateInteractionRequest(
 void LensOverlayQueryController::ResetRequestClusterInfoState() {
   pending_interaction_callback_.Reset();
   interaction_endpoint_fetcher_.reset();
-  cluster_info_ = std::nullopt;
+  cluster_info_.reset();
+  query_controller_state_ = QueryControllerState::kClusterInfoExpired;
   request_id_generator_->ResetRequestId();
   parent_query_sent_ = false;
   page_contents_request_sent_ = false;

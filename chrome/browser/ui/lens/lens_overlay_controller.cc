@@ -1782,6 +1782,11 @@ void LensOverlayController::UpdatePageContextualization(
   const float new_size = bytes.size();
   const float percent_changed = abs((new_size - old_size) / old_size);
   if (percent_changed < kByteChangeTolerancePercent) {
+    // Notify the query controller that the user may be issuing a search
+    // request, and therefore the query should be restarted if TTL expired. If
+    // the bytes did change, this will happen automatically as a result of the
+    // SendPageContentUpdateRequest call below.
+    lens_overlay_query_controller_->MaybeRestartQueryFlow();
     return;
   }
 
