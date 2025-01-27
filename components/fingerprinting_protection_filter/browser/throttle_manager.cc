@@ -280,7 +280,7 @@ void ThrottleManager::DidFinishLoad(content::RenderFrameHost* render_frame_host,
   if (!statistics_ || render_frame_host != &page_->GetMainDocument()) {
     return;
   }
-  statistics_->OnDidFinishLoad();
+  statistics_->OnDidFinishLoad(/*record_incognito_metrics=*/is_incognito_);
 }
 
 void ThrottleManager::DidBecomePrimaryPage() {

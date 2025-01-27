@@ -214,6 +214,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Disallowed.Incognito"
+    units="resource loads" expires_after="2025-08-05">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a page load associated with an incognito profile is finished with
+    subresource filtering activated, records the total number of subresource
+    loads that have been disallowed. This only differs from `MatchedRules` when
+    filtering is performed in dry-run mode.
+  </summary>
+</histogram>
+
+<histogram
     name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Evaluated"
     units="resource loads" expires_after="2025-08-05">
   <owner>rizvis@google.com</owner>
@@ -225,6 +240,22 @@ chromium-metrics-reviews@google.com.
     records the total number of subresource loads that have been evaluated. This
     only differs from 'Total' when some of subdocuments is subject to a
     deactivating rule with DOCUMENT activation type.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Evaluated.Incognito"
+    units="resource loads" expires_after="2025-08-05">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a page load associated with an incognito profile is finished with
+    subresource filtering activated, records the total number of subresource
+    loads that have been evaluated. This only differs from 'Total' when some of
+    subdocuments is subject to a deactivating rule with DOCUMENT activation
+    type.
   </summary>
 </histogram>
 
@@ -243,6 +274,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="FingerprintingProtection.PageLoad.NumSubresourceLoads.MatchedRules.Incognito"
+    units="resource loads" expires_after="2025-08-05">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a page load associated with an incognito profile is finished with
+    subresource filtering activated, records the total number of subresource
+    loads that have matched filtering rules. This only differs from `Disallowed`
+    when filtering is performed in dry-run mode.
+  </summary>
+</histogram>
+
 <histogram name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Total"
     units="resource loads" expires_after="2025-08-05">
   <owner>rizvis@google.com</owner>
@@ -250,9 +296,23 @@ chromium-metrics-reviews@google.com.
   <owner>tanub@google.com</owner>
   <owner>trishalfonso@google.com</owner>
   <summary>
-    Whenever a page load is finished with subresource filtering activated,
-    records the total number of subresource loads that have gone through the
-    subresource filtering pipeline.
+    Whenever a page load associated is finished with subresource filtering
+    activated, records the total number of subresource loads that have gone
+    through the subresource filtering pipeline.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Total.Incognito"
+    units="resource loads" expires_after="2025-08-05">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a page load associated with an incognito profile is finished with
+    subresource filtering activated, records the total number of subresource
+    loads that have gone through the subresource filtering pipeline.
   </summary>
 </histogram>
 

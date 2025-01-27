@@ -39,8 +39,27 @@ void PageLoadStatistics::OnDocumentLoadStatistics(
       statistics.evaluation_total_cpu_duration;
 }
 
-void PageLoadStatistics::OnDidFinishLoad() {
+void PageLoadStatistics::OnDidFinishLoad(bool record_incognito_metrics) {
   if (activation_state_.activation_level != mojom::ActivationLevel::kDisabled) {
+    if (record_incognito_metrics) {
+      base::UmaHistogramCounts1000(
+          base::StrCat({uma_filter_tag_,
+                        ".PageLoad.NumSubresourceLoads.Total.Incognito"}),
+          aggregated_document_statistics_.num_loads_total);
+      base::UmaHistogramCounts1000(
+          base::StrCat({uma_filter_tag_,
+                        ".PageLoad.NumSubresourceLoads.Evaluated.Incognito"}),
+          aggregated_document_statistics_.num_loads_evaluated);
+      base::UmaHistogramCounts1000(
+          base::StrCat(
+              {uma_filter_tag_,
+               ".PageLoad.NumSubresourceLoads.MatchedRules.Incognito"}),
+          aggregated_document_statistics_.num_loads_matching_rules);
+      base::UmaHistogramCounts1000(
+          base::StrCat({uma_filter_tag_,
+                        ".PageLoad.NumSubresourceLoads.Disallowed.Incognito"}),
+          aggregated_document_statistics_.num_loads_disallowed);
+    }
     base::UmaHistogramCounts1000(
         base::StrCat({uma_filter_tag_, ".PageLoad.NumSubresourceLoads.Total"}),
         aggregated_document_statistics_.num_loads_total);
@@ -59,9 +78,23 @@ void PageLoadStatistics::OnDidFinishLoad() {
   }
 
   if (activation_state_.measure_performance) {
-    CHECK(
-        activation_state_.activation_level != mojom::ActivationLevel::kDisabled,
-        base::NotFatalUntil::M129);
+    CHECK(activation_state_.activation_level !=
+          mojom::ActivationLevel::kDisabled);
+    if (record_incognito_metrics) {
+      base::UmaHistogramCustomTimes(
+          base::StrCat(
+              {uma_filter_tag_,
+               ".PageLoad.SubresourceEvaluation.TotalWallDuration.Incognito"}),
+          aggregated_document_statistics_.evaluation_total_wall_duration,
+          base::Microseconds(1), base::Seconds(10), 50);
+
+      base::UmaHistogramCustomTimes(
+          base::StrCat(
+              {uma_filter_tag_,
+               ".PageLoad.SubresourceEvaluation.TotalCPUDuration.Incognito"}),
+          aggregated_document_statistics_.evaluation_total_cpu_duration,
+          base::Microseconds(1), base::Seconds(10), 50);
+    }
     base::UmaHistogramCustomTimes(
         base::StrCat({uma_filter_tag_,
                       ".PageLoad.SubresourceEvaluation.TotalWallDuration"}),
