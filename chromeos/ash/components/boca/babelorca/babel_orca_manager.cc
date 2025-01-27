@@ -39,10 +39,10 @@ namespace ash::boca {
 void BabelOrcaManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   constexpr char kEnglish[] = "en";
-  registry->RegisterBooleanPref(babelorca::prefs::kLiveCaptionBubbleExpanded,
+  registry->RegisterBooleanPref(babelorca::prefs::kCaptionBubbleExpanded,
                                 false);
-  registry->RegisterStringPref(
-      babelorca::prefs::kLiveTranslateTargetLanguageCode, kEnglish);
+  registry->RegisterStringPref(babelorca::prefs::kTranslateTargetLanguageCode,
+                               kEnglish);
 }
 
 // static

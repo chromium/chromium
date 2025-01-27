@@ -7,11 +7,11 @@
 
 namespace ash::babelorca::prefs {
 
-inline constexpr char kLiveCaptionBubbleExpanded[] =
-    "ash.babelorca.live_caption_bubble_expanded";
+inline constexpr char kCaptionBubbleExpanded[] =
+    "ash.babelorca.caption_bubble_expanded";
 
-inline constexpr char kLiveTranslateTargetLanguageCode[] =
-    "ash.babelorca.live_translate_target_language_code";
+inline constexpr char kTranslateTargetLanguageCode[] =
+    "ash.babelorca.translate_target_language_code";
 
 }  // namespace ash::babelorca::prefs
 
