@@ -688,24 +688,7 @@ void MenuListSelectType::ManuallyAssignSlots() {
   if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     CHECK(button_slot_);
     button_slot_->Assign(first_button);
-    // The IsInTopLayer check here is needed in order to support the case that a
-    // top layer exit animation is running, in which case popoverOpen() will
-    // return false but the popover is still being rendered.
-    // TODO(crbug.com/1511354): It would be a good idea to invalidate slot
-    // assignment after being removed from the top layer, but this is an edge
-    // case which would require switching appearance values after the user has
-    // opened the select.
-    if (popover_->IsInTopLayer()) {
-      popover_options_slot_->Assign(all_children_except_first_button);
-      option_slot_->Assign(nullptr);
-    } else {
-      // When the popover is closed, we need to assign the <option>s into
-      // option_slot_ in order to prevent the closed popover's display:none from
-      // preventing computed style reaching the <option>s which is needed for
-      // appearance:auto.
-      popover_options_slot_->Assign(nullptr);
-      option_slot_->Assign(option_nodes);
-    }
+    popover_options_slot_->Assign(all_children_except_first_button);
   } else {
     option_slot_->Assign(option_nodes);
   }
