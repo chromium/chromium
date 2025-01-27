@@ -752,7 +752,7 @@ void AnimationFrameTimingMonitor::Will(
                               : probe_data.function)};
 }
 
-void AnimationFrameTimingMonitor::Did(const probe::StandaloneIdleTask& probe) {
+void AnimationFrameTimingMonitor::Did(const probe::FrameRelatedTask& probe) {
   if (auto* window = DynamicTo<LocalDOMWindow>(probe.context)) {
     OnTaskCompleted(probe.CaptureStartTime(), probe.CaptureEndTime(),
                     window->GetFrame());
