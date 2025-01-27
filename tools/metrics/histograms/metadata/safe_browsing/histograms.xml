@@ -888,6 +888,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </token>
 </histogram>
 
+<histogram name="SafeBrowsing.ExtensionSafetyHub.ThreeDotDetails"
+    units="Navigation" expires_after="2025-10-19">
+  <owner>psarouthakis@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Extensions that trigger a safety check review are displayed to the user via
+    a panel on the chrome://extensions/ page. If a user clicks the three dot
+    menu's get more details button, we record it here.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.ExtensionSafetyHub.Trigger.{Action}"
     enum="SafetyCheckWarningReason" expires_after="2026-01-26">
   <owner>psarouthakis@google.com</owner>

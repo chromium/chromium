@@ -967,6 +967,10 @@ BASE_FEATURE(kSafetyHubExtensionsOffStoreTrigger,
 // Enables Safety Hub feature.
 BASE_FEATURE(kSafetyHub, "SafetyHub", base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafetyHubThreeDotDetails,
+             "SafetyHubThreeDotDetails",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables Safety Hub card in magic stack.
 BASE_FEATURE(kSafetyHubMagicStack,

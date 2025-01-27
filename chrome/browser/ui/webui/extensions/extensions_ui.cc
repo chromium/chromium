@@ -390,6 +390,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"viewIframe", IDS_EXTENSIONS_VIEW_IFRAME},
       {"viewServiceWorker", IDS_EXTENSIONS_SERVICE_WORKER_BACKGROUND},
       {"safetyCheckKeepExtension", IDS_EXTENSIONS_SC_KEEP_EXT},
+      {"safetyCheckExtensionThreeDotDetails",
+       IDS_EXTENSIONS_SC_THREEDOT_DETAILS},
       {"safetyCheckRemoveAll", IDS_EXTENSIONS_SC_REMOVE_ALL},
       {"safetyHubHeader", IDS_SETTINGS_SAFETY_HUB},
       {"safetyCheckRemoveButtonA11yLabel",
@@ -463,6 +465,9 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       "enableUserPermittedSites",
       base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControlWithPermittedSites));
+  source->AddBoolean(
+      "safetyHubThreeDotDetails",
+      base::FeatureList::IsEnabled(features::kSafetyHubThreeDotDetails));
 
   // MV2 deprecation.
   auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile);
