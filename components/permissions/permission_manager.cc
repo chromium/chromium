@@ -618,7 +618,7 @@ content::PermissionResult PermissionManager::GetPermissionStatusInternal(
   } else {
     // Give the context an opportunity to still check the device status and
     // maybe notify observers.
-    context->MaybeUpdatePermissionStatusWithDeviceStatus();
+    context->MaybeUpdateCachedHasDevicePermission();
   }
   DCHECK(result.status == PermissionStatus::GRANTED ||
          result.status == PermissionStatus::ASK ||

@@ -225,6 +225,8 @@ GeolocationPermissionContextAndroid::UpdatePermissionStatusWithDeviceStatus(
     content::PermissionResult result,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
+  MaybeUpdateCachedHasDevicePermission();
+
   if (result.status != PermissionStatus::DENIED) {
     if (!location_settings_->IsSystemLocationSettingEnabled()) {
       // As this is returning the status for possible future permission

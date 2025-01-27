@@ -380,7 +380,7 @@ PermissionContextBase::UpdatePermissionStatusWithDeviceStatus(
     content::PermissionResult result,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  MaybeUpdatePermissionStatusWithDeviceStatus();
+  MaybeUpdateCachedHasDevicePermission();
 
   // If the site content setting is ASK/BLOCKED the device-level permission
   // won't affect it.
@@ -555,7 +555,7 @@ void PermissionContextBase::RemoveObserver(
   }
 }
 
-void PermissionContextBase::MaybeUpdatePermissionStatusWithDeviceStatus() {
+void PermissionContextBase::MaybeUpdateCachedHasDevicePermission() {
   const bool has_device_permission =
       has_device_permission_for_test_.has_value()
           ? has_device_permission_for_test_.value()
@@ -621,7 +621,7 @@ void PermissionContextBase::CleanUpRequest(
   // `OnPermissionChanged` here. We should remove this line once the device
   // status change observer is implemented.
   if (embedded_permission_element_initiated) {
-    MaybeUpdatePermissionStatusWithDeviceStatus();
+    MaybeUpdateCachedHasDevicePermission();
   }
   DCHECK(success == 1) << "Missing request " << id.ToString();
 }

@@ -140,7 +140,9 @@ class PermissionContextBase : public content_settings::Observer {
   void AddObserver(permissions::Observer* permission_observer);
   void RemoveObserver(permissions::Observer* permission_observer);
 
-  void MaybeUpdatePermissionStatusWithDeviceStatus();
+  // Update the value of `last_has_device_permission_result_` and notify
+  // observers if it changes.
+  void MaybeUpdateCachedHasDevicePermission();
 
   ContentSettingsType content_settings_type() const {
     return content_settings_type_;
