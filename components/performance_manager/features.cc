@@ -54,12 +54,6 @@ const base::FeatureParam<base::TimeDelta>
         &kPerformanceControlsBatteryPerformanceSurvey, "battery_lookback",
         base::Days(8)};
 
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kPrefetchVirtualMemoryPolicy,
-             "PrefetchVirtualMemoryPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kPerformanceInterventionUI,
              "PerformanceInterventionUI",
              base::FEATURE_ENABLED_BY_DEFAULT);
