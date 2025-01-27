@@ -28,8 +28,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_image_resource_style_image.h"
 
-#include "third_party/blink/renderer/core/layout/layout_replaced.h"
-#include "third_party/blink/renderer/core/layout/list/layout_list_marker_image.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 
@@ -68,13 +67,6 @@ scoped_refptr<Image> LayoutImageResourceStyleImage::GetImage(
     return nullptr;
   return style_image_->GetImage(*layout_object_, layout_object_->GetDocument(),
                                 layout_object_->StyleRef(), size);
-}
-
-gfx::SizeF LayoutImageResourceStyleImage::ConcreteObjectSize(
-    float multiplier,
-    const gfx::SizeF& default_object_size) const {
-  return style_image_->ImageSize(multiplier, default_object_size,
-                                 ImageOrientation());
 }
 
 NaturalSizingInfo LayoutImageResourceStyleImage::GetNaturalDimensions(
