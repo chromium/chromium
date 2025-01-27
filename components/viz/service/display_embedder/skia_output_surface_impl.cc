@@ -592,7 +592,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
         !sync_point_manager->IsSyncTokenReleased(sync_token)) {
       gpu_task_sync_tokens_.push_back(sync_token);
       FlushGpuTasks(SyncMode::kWaitForTasksStarted);
-      image_context->mutable_mailbox_holder()->sync_token.Clear();
+      image_context->mutable_sync_token()->Clear();
     }
     CHECK(representation_factory_);
     if (image_context_impl->BeginRasterAccess(representation_factory_.get())) {
@@ -614,7 +614,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
 
   if (mailbox_holder.sync_token.HasData()) {
     resource_sync_tokens_.push_back(mailbox_holder.sync_token);
-    image_context->mutable_mailbox_holder()->sync_token.Clear();
+    image_context->mutable_sync_token()->Clear();
   }
 }
 

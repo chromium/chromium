@@ -58,7 +58,12 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     // is set.
     //
     const gpu::MailboxHolder& mailbox_holder() const { return mailbox_holder_; }
-    gpu::MailboxHolder* mutable_mailbox_holder() { return &mailbox_holder_; }
+    const gpu::SyncToken& sync_token() const {
+      return mailbox_holder_.sync_token;
+    }
+    gpu::SyncToken* mutable_sync_token() {
+      return &(mailbox_holder_.sync_token);
+    }
     const gfx::Size& size() const { return size_; }
     SharedImageFormat format() const { return format_; }
     sk_sp<SkColorSpace> color_space() const;

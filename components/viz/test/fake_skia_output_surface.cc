@@ -348,8 +348,7 @@ bool FakeSkiaOutputSurface::GetGrBackendTexture(
   DCHECK(!image_context.mailbox_holder().mailbox.IsZero());
 
   auto* gl = context_provider()->ContextGL();
-  gl->WaitSyncTokenCHROMIUM(
-      image_context.mailbox_holder().sync_token.GetConstData());
+  gl->WaitSyncTokenCHROMIUM(image_context.sync_token().GetConstData());
   auto texture_id = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
       image_context.mailbox_holder().mailbox.name);
   auto gl_format_desc = gpu::GLFormatCaps().ToGLFormatDesc(
