@@ -90,6 +90,7 @@
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/print_preview/policy_settings.h"
+#include "components/page_info/core/merchant_trust_service.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/privacy_sandbox/tpcd_pref_names.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"
@@ -1982,6 +1983,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   media_device_salt::MediaDeviceIDSalt::RegisterProfilePrefs(registry);
   MediaEngagementService::RegisterProfilePrefs(registry);
   MediaStorageIdSalt::RegisterProfilePrefs(registry);
+  page_info::MerchantTrustService::RegisterProfilePrefs(registry);
   metrics::RegisterDemographicsProfilePrefs(registry);
   NotificationDisplayServiceImpl::RegisterProfilePrefs(registry);
   NotifierStateTracker::RegisterProfilePrefs(registry);

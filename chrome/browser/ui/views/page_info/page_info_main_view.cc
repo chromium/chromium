@@ -404,7 +404,11 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
       }
     }
 
-    if (merchant_trust_section_) {
+    // Fetch the data when the UI is enabled or if the control survey may be
+    // shown.
+    if (merchant_trust_section_ ||
+        base::FeatureList::IsEnabled(
+            page_info::kMerchantTrustEvaluationControlSurvey)) {
       ui_delegate_->GetMerchantTrustInfo(
           base::BindOnce(&PageInfoMainView::OnMerchantTrustDataFetched,
                          base::Unretained(this)));
@@ -554,7 +558,11 @@ void PageInfoMainView::OnMerchantTrustDataFetched(
     return;
   }
 
-  DCHECK(merchant_trust_section_);
+  ui_delegate_->RecordPageInfoWithMerchantTrustOpenTime();
+
+  if (!merchant_trust_section_) {
+    return;
+  }
   merchant_trust_section_->RemoveAllChildViews();
   merchant_trust_section_->AddChildView(
       CreateMerchantTrustButton(merchant_data.value()));

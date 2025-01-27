@@ -10,6 +10,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
@@ -23,6 +25,10 @@ namespace optimization_guide {
 class OptimizationGuideDecider;
 class OptimizationMetadata;
 }  // namespace optimization_guide
+
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
 
 namespace page_info {
 
@@ -49,6 +55,8 @@ static constexpr double kMerchantFamiliarityThreshold = 5;
 // Provides merchant information for a web site.
 class MerchantTrustService : public KeyedService {
  public:
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
   class Delegate {
    public:
     // Launches the evaluation survey based on the experiment state.
@@ -84,12 +92,15 @@ class MerchantTrustService : public KeyedService {
   void RecordMerchantTrustInteraction(GURL url,
                                       MerchantTrustInteraction interaction);
 
+  void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
+
  private:
   std::unique_ptr<Delegate> delegate_;
   const raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_;
   const bool is_off_the_record_;
   const raw_ptr<PrefService> prefs_;
+  raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
 
   base::WeakPtrFactory<MerchantTrustService> weak_ptr_factory_;
 
