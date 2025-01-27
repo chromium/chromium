@@ -137,8 +137,7 @@ public class LanguageSettingsTest {
                         .itemView;
         LanguageItem languageItem =
                 ((LanguageListBaseAdapter) acceptLanguageList.getAdapter())
-                        .getLanguageItemList()
-                        .get(originalAcceptLanguageCount);
+                        .getItemByPosition(originalAcceptLanguageCount);
 
         // Turn on "offer to translate".
         ThreadUtils.runOnUiThreadBlocking(

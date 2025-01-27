@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
@@ -29,7 +28,6 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -152,7 +150,7 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
     LanguageListBaseAdapter(Context context, Profile profile) {
         super(context);
         mProfile = profile;
-        setDragStateDelegate(new LanguageDragStateDelegate());
+        initDragStateDelegate(new LanguageDragStateDelegate());
     }
 
     /** Return the Profile associated with the displayed data. */
@@ -190,7 +188,7 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        ((LanguageRowViewHolder) viewHolder).updateLanguageInfo(mElements.get(i));
+        ((LanguageRowViewHolder) viewHolder).updateLanguageInfo(getItemByPosition(i));
     }
 
     @Override
@@ -204,14 +202,13 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
     }
 
     /**
-     * Sets the displayed languages (not the order of the user's preferred languages;
-     * see setOrder above).
+     * Sets the displayed languages (not the order of the user's preferred languages; see setOrder
+     * above).
      *
      * @param languages The language items to show.
      */
     void setDisplayedLanguages(Collection<LanguageItem> languages) {
-        mElements = new ArrayList<>(languages);
-        notifyDataSetChanged();
+        setItems(languages);
     }
 
     @Override
@@ -222,10 +219,5 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
     @Override
     protected boolean isPassivelyDraggable(ViewHolder viewHolder) {
         return viewHolder instanceof LanguageRowViewHolder;
-    }
-
-    @VisibleForTesting
-    public List<LanguageItem> getLanguageItemList() {
-        return mElements;
     }
 }
