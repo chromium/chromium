@@ -75,6 +75,14 @@ std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
   return render_frame_info;
 }
 
+int CountContentNodes(const optimization_guide::proto::ContentNode& node) {
+  int node_count = 1;
+  for (const auto& child : node.children_nodes()) {
+    node_count += CountContentNodes(child);
+  }
+  return node_count;
+}
+
 void OnGotAIPageContentForAllFrames(
     base::TimeTicks start_time,
     content::GlobalRenderFrameHostToken main_frame_token,
@@ -86,8 +94,15 @@ void OnGotAIPageContentForAllFrames(
           base::BindRepeating(&GetRenderFrameInfo), &proto)) {
     UMA_HISTOGRAM_TIMES("OptimizationGuide.AIPageContent.TotalLatency",
                         base::TimeTicks::Now() - start_time);
-    UMA_HISTOGRAM_MEMORY_KB("OptimizationGuide.AnnotatedPageContent.TotalSize",
-                            proto.ByteSizeLong() / 1024);
+    // 10KB bucket up to 5MB.
+    // TODO(crbug.com/392115749): Use provided metrics when available.
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
+        "OptimizationGuide.AnnotatedPageContent.TotalSize2",
+        proto.ByteSizeLong() / 1024, 10, 5000, 50);
+    auto node_count = CountContentNodes(proto.root_node());
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
+        "OptimizationGuide.AnnotatedPageContent.TotalNodeCount", node_count, 1,
+        100000, 50);
     std::move(done_callback).Run(std::move(proto));
     return;
   }

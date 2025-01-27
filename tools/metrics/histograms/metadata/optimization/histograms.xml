@@ -484,13 +484,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OptimizationGuide.AnnotatedPageContent.TotalSize" units="KB"
+<histogram name="OptimizationGuide.AnnotatedPageContent.TotalNodeCount"
+    units="nodes" expires_after="2025-12-15">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Records the number of nodes of AnnotatedPageContent proto extracted from 1
+    WebContents instance. Recorded once per extraction. Max of 100,000 nodes.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.AnnotatedPageContent.TotalSize2" units="KB"
     expires_after="2025-12-15">
   <owner>khushalsagar@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <summary>
     Records the size of AnnotatedPageContent proto extracted from 1 WebContents
-    instance. Recorded once per extraction.
+    instance. Recorded once per extraction. Reversioned the bucket size to 10KB
+    up to 5MB in Jan 2025.
   </summary>
 </histogram>
 
@@ -744,14 +755,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OptimizationGuide.InnerText.TotalSize" units="KB"
+<histogram name="OptimizationGuide.InnerText.TotalSize2" units="KB"
     expires_after="2025-12-15">
   <owner>khushalsagar@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <summary>
     Records the size of InnerText extracted from 1 WebContents instance. The
     metric is only recorded when the extraction is triggered by
-    PageContentAnnotationsService. Recorded once per extraction.
+    PageContentAnnotationsService. Recorded once per extraction. Reversioned the
+    bucket size to 10KB up to 5MB in Jan 2025.
   </summary>
 </histogram>
 
