@@ -145,9 +145,7 @@
         initWithWebState:_webStateList->GetActiveWebState()
       completionCallback:std::move(page_context_completion_callback)];
   [_pageContextWrapper setShouldGetInnerText:YES];
-  // TODO(crbug.com/387511338): Set this to YES when images are fixed on the
-  // config/MES side.
-  [_pageContextWrapper setShouldGetSnapshot:NO];
+  [_pageContextWrapper setShouldGetSnapshot:YES];
   [_pageContextWrapper populatePageContextFieldsAsync];
 }
 
