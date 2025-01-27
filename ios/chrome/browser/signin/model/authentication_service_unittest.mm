@@ -229,7 +229,7 @@ class AuthenticationServiceTestBase : public PlatformTest {
 
   // Returns the n-th identity on the device, identified by `index`.
   id<SystemIdentity> identity(NSUInteger index) {
-    if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    if (IsUseAccountListFromIdentityManagerEnabled()) {
       std::vector<AccountInfo> accountInfos =
           identity_manager()->GetAccountsOnDevice();
       CHECK_LT(index, accountInfos.size());
