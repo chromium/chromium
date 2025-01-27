@@ -932,7 +932,7 @@ Document::Document(const DocumentInit& initializer,
 
   UpdateThemeColorCache();
 
-  if (IsFetchLaterUseDeferredFetchPolicyEnabled() && GetFrame()) {
+  if (GetFrame() && IsFetchLaterUseDeferredFetchPolicyEnabled()) {
     if (auto* owner = DynamicTo<HTMLFrameOwnerElement>(GetFrame()->Owner());
         owner) {
       owner->MaybeClearDeferredFetchPolicy();
