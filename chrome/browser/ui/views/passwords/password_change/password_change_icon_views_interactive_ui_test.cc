@@ -4,6 +4,7 @@
 
 #include "base/test/run_until.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller_mock.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
