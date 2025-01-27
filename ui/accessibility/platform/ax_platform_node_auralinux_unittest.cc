@@ -2892,4 +2892,28 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestDialogActiveWhenChildFocused) {
   EXPECT_FALSE(AtkObjectHasState(dialog_obj, ATK_STATE_ACTIVE));
 }
 
+TEST_F(AXPlatformNodeAuraLinuxTest, AccessibleURL) {
+  const std::string& test_url = "https://example.com";
+
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kWindow;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kUrl, test_url);
+  root.child_ids.push_back(2);
+
+  AXNodeData child;
+  child.id = 2;
+  child.role = ax::mojom::Role::kGenericContainer;
+  Init(root, child);
+
+  AXPlatformNodeAuraLinux* root_obj = GetPlatformNode(GetRoot());
+  ASSERT_TRUE(root_obj);
+  EXPECT_EQ(root_obj->GetRootURL(), test_url);
+
+  AXPlatformNodeAuraLinux* child_obj =
+      GetPlatformNode(GetRoot()->children()[0]);
+  ASSERT_TRUE(child_obj);
+  EXPECT_EQ(child_obj->GetRootURL(), test_url);
+}
+
 }  // namespace ui

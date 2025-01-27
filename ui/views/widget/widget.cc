@@ -2406,6 +2406,12 @@ void Widget::UpdateAccessibleNameForRootView() {
   }
 }
 
+void Widget::UpdateAccessibleURLForRootView(const GURL& url) {
+  if (root_view_) {
+    root_view_->UpdateAccessibleURL(url);
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, protected:
 

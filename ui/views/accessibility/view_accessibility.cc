@@ -1130,6 +1130,13 @@ void ViewAccessibility::SetRootViewIsReadyToNotifyEvents() {
   ready_to_notify_events_ = true;
 }
 
+void ViewAccessibility::SetRootViewURL(const std::string& url) {
+  CHECK(!view_->parent())
+      << "This method should only be called on the RootView.";
+  data_.AddStringAttribute(ax::mojom::StringAttribute::kUrl, url);
+  OnStringAttributeChanged(ax::mojom::StringAttribute::kUrl, url);
+}
+
 void ViewAccessibility::UpdateInvisibleState() {
   bool is_invisible =
       !view_->GetVisible() && data_.role != ax::mojom::Role::kAlert;

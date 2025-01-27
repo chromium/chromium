@@ -921,6 +921,18 @@ TEST_F(RootViewDesktopNativeWidgetTest, SingleLayoutDuringInit) {
   widget->CloseNow();
 }
 
+TEST_F(RootViewTest, UpdateAccessibleURL) {
+  RootViewTestState state(this, {.bounds = {100, 100, 100, 100}});
+  internal::RootView* root_view = state.GetRootView();
+  const GURL test_url("https://example.com");
+  root_view->UpdateAccessibleURL(test_url);
+
+  ui::AXNodeData node_data;
+  root_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            test_url);
+}
+
 #if !BUILDFLAG(IS_MAC)
 
 // Tests that AnnounceAlert sets up the correct text value on the hidden

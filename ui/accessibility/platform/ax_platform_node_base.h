@@ -103,6 +103,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 
+  // Returns the top-level URL for the active document. This should generally
+  // correspond to what would be shown in the Omnibox.
+  std::string GetRootURL() const override;
+
 #if BUILDFLAG(IS_APPLE)
   void AnnounceTextAs(const std::u16string& text,
                       AnnouncementType announcement_type) override;

@@ -449,6 +449,11 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // This should only ever be called on the RootView.
   void SetRootViewIsReadyToNotifyEvents();
 
+  // Sets the displayed, top-level URL for the active document. This should
+  // generally correspond to what would be shown in the Omnibox. Setting the
+  // value should only be done on the `RootView`.
+  void SetRootViewURL(const std::string& url);
+
   // Updates the invisible state of the `data_` object. The view is considered
   // invisible if it is not visible and its role is not kAlert.
   void UpdateInvisibleState();

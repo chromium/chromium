@@ -765,6 +765,10 @@ void RootView::UpdateAccessibleName() {
   }
 }
 
+void RootView::UpdateAccessibleURL(const GURL& url) {
+  GetViewAccessibility().SetRootViewURL(url.spec());
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // RootView, protected:
 

@@ -687,6 +687,9 @@ class BrowserView : public BrowserWindow,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void TabChangedAt(content::WebContents* contents,
+                    int index,
+                    TabChangeType change_type) override;
   void TabStripEmpty() override;
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
   void CloseAllTabsStopped(TabStripModel* tab_strip_model,
@@ -1102,6 +1105,7 @@ class BrowserView : public BrowserWindow,
   void FrameColorsChanged();
 
   void UpdateAccessibleNameForRootView();
+  void UpdateAccessibleURLForRootView(const GURL& url);
 
   // |allowed_without_policy| represents whether or not the browser is allowed
   // to enter fullscreen, irrespective of policy. This is is necessary to

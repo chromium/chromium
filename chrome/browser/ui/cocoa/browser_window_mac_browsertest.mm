@@ -16,6 +16,7 @@
 #include "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest_mac.h"
 #include "ui/accessibility/accessibility_switches.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/test/ns_ax_tree_validator.h"
@@ -131,15 +132,11 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacA11yTest,
 
   NSWindow* window = browser()->window()->GetNativeWindow().GetNativeNSWindow();
   ASSERT_NE(nullptr, window);
-  // TODO(crbug.com/363275809): Update this after the URL is made available,
-  // e.g. via `ViewAccessibility`. The expected result is that the URL is
-  // the same string as `url_before`.
-  EXPECT_EQ(nil, [window accessibilityDocument]);
+  EXPECT_NSEQ([NSString stringWithUTF8String:url_before.spec().c_str()],
+              [window accessibilityDocument]);
 
   GURL url_after(R"HTML(data:text/html,after)HTML");
   EXPECT_TRUE(AddTabAtIndex(1, url_after, ui::PAGE_TRANSITION_TYPED));
-  // TODO(crbug.com/363275809): Update this after the URL is made available,
-  // e.g. via `ViewAccessibility`. The expected result is that the URL is
-  // the same string as `url_after`.
-  EXPECT_EQ(nil, [window accessibilityDocument]);
+  EXPECT_NSEQ([NSString stringWithUTF8String:url_after.spec().c_str()],
+              [window accessibilityDocument]);
 }

@@ -624,6 +624,30 @@ TEST_F(BrowserViewTest, AccessibleProperties) {
       browser_view()->GetAccessibleWindowTitle());
 }
 
+TEST_F(BrowserViewTest, UpdateAccessibleURL) {
+  const GURL before_url(u"data:text/html,before");
+  AddTab(browser(), before_url);
+
+  ui::AXNodeData node_data;
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            before_url);
+
+  const GURL after_url(u"data:text/html,after");
+  AddTab(browser(), after_url);
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            after_url);
+}
+
 //  Macs do not have fullscreen policy.
 #if !BUILDFLAG(IS_MAC)
 

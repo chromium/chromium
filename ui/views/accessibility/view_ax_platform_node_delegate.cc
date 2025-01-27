@@ -649,18 +649,6 @@ bool ViewAXPlatformNodeDelegate::IsFocused() const {
   return GetFocus() == GetNativeObject();
 }
 
-bool ViewAXPlatformNodeDelegate::IsToplevelBrowserWindow() {
-  // Note: only used on Desktop Linux. Other platforms don't have an application
-  // node so this would never return true.
-  ui::AXNodeData data = GetData();
-  if (data.role != ax::mojom::Role::kWindow) {
-    return false;
-  }
-
-  AXPlatformNodeDelegate* parent = GetParentDelegate();
-  return parent && parent->GetData().role == ax::mojom::Role::kApplication;
-}
-
 gfx::Rect ViewAXPlatformNodeDelegate::GetBoundsRect(
     const ui::AXCoordinateSystem coordinate_system,
     const ui::AXClippingBehavior clipping_behavior,

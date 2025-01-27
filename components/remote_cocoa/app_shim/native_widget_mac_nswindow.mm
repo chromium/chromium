@@ -26,6 +26,7 @@
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
 #import "components/remote_cocoa/app_shim/window_touch_bar_delegate.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #import "ui/base/cocoa/user_interface_item_command_handler.h"
 #import "ui/base/cocoa/window_size_constants.h"
 
@@ -801,8 +802,11 @@ void OrderChildWindow(NSWindow* child_window,
 // NSWindow overrides (NSAccessibility informal protocol implementation).
 
 - (NSString*)accessibilityDocument {
-  // TODO(crbug.com/363275809): Implement this after the URL is made available,
-  // e.g. via `ViewAccessibility`.
+  if (id root = [self rootAccessibilityObject]) {
+    if (auto* cocoaNode = ui::AXPlatformNode::FromNativeViewAccessible(root)) {
+      return [NSString stringWithUTF8String:cocoaNode->GetRootURL().c_str()];
+    }
+  }
   return nil;
 }
 

@@ -324,7 +324,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Returns true if this is a top-level browser window that doesn't have a
   // parent accessible node, or its parent is the application accessible node on
   // platforms that have one.
-  virtual bool IsToplevelBrowserWindow();
+  bool IsToplevelBrowserWindow() const;
 
   // If this object is exposed to the platform's accessibility layer, returns
   // this object. Otherwise, returns the platform leaf or lowest unignored
@@ -553,6 +553,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Returns empty string if no appropriate language was found or if this node
   // uses the default interface language.
   std::string GetLanguage() const;
+
+  // Returns the URL associated with the root of the tree containing this node.
+  std::string GetRootURL() const;
 
   //
   // Tables. All of these should be called on a node that has a table-like
