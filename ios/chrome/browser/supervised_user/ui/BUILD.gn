@@ -9,9 +9,18 @@ source_set("ui") {
     "parent_access_consumer.h",
   ]
   deps = [
+    ":constants",
     "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
 }
