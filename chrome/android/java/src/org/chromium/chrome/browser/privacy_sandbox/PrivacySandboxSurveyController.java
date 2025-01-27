@@ -150,12 +150,8 @@ public class PrivacySandboxSurveyController {
     private boolean mHasSeenNtp;
     private boolean mOverrideChannelForTesting;
     private int mChannelForTesting;
-    private static long sAdsCctDelayOverrideMilliseconds;
     private static final int DEFAULT_ADS_CCT_DELAY_MS = 20_000;
 
-    // TODO(crbug.com/379930582): Remove usage of the testing flag and rely on the feature parameter
-    // to set the delay.
-    private static boolean sOverrideAdsCctDelay;
     private static boolean sEnableForTesting;
 
     PrivacySandboxSurveyController(
@@ -225,9 +221,6 @@ public class PrivacySandboxSurveyController {
 
     @VisibleForTesting
     public long getAdsCctDelayMilliseconds() {
-        if (sOverrideAdsCctDelay) {
-            return sAdsCctDelayOverrideMilliseconds;
-        }
         // Use the 20 second default if the conversion of the parameter fails.
         return Long.valueOf(
                 ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
@@ -530,12 +523,5 @@ public class PrivacySandboxSurveyController {
     public void setChannelForTesting(int channel) {
         mChannelForTesting = channel;
         ResettersForTesting.register(() -> mChannelForTesting = Channel.DEFAULT);
-    }
-
-    // Overrides the survey delay
-    public static void overrideAdsCctSurveyDelayForTesting(long delayMilliseconds) {
-        sAdsCctDelayOverrideMilliseconds = delayMilliseconds;
-        sOverrideAdsCctDelay = true;
-        ResettersForTesting.register(() -> sOverrideAdsCctDelay = false);
     }
 }
