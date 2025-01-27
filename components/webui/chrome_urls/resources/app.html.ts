@@ -34,13 +34,14 @@ ${this.internalUrlInfos_.length ? html`
         html`<li>${info.url.url}</li>`
       }`)}
   </ul>` : ''}
-<h2>Command URLs for Debug</h2>
-<p>
-The following URLs are for debugging purposes only. Because they crash or hang
-the renderer, they're not linked directly; you can type them into the address
-bar if you need them.
-</p>
-<ul>
-  ${this.commandUrls_.map(url => html`<li>${url.url}</li>`)}
-</ul>`;
+${this.commandUrls_.length ? html`
+  <h2>Command URLs for Debug</h2>
+  <p>
+    The following URLs are for debugging purposes only. Because they crash or
+    hang the renderer, they're not linked directly; you can type them into the
+    address bar if you need them.
+  </p>
+  <ul>
+    ${this.commandUrls_.map(url => html`<li>${url.url}</li>`)}
+  </ul>` : ''}`;
 }

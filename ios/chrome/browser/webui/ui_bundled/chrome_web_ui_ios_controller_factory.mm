@@ -13,19 +13,25 @@
 #import "components/commerce/ios/browser/commerce_internals_ui.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
+#import "components/prefs/pref_service.h"
 #import "components/version_info/channel.h"
+#import "components/webui/chrome_urls/features.h"
+#import "components/webui/chrome_urls/pref_names.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/webui/ui_bundled/about/about_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/autofill_and_password_manager_internals/autofill_internals_ui_ios.h"
 #import "ios/chrome/browser/webui/ui_bundled/autofill_and_password_manager_internals/password_manager_internals_ui_ios.h"
+#import "ios/chrome/browser/webui/ui_bundled/chrome_urls/chrome_urls_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/crashes_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/download_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/flags_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/gcm/gcm_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/inspect/inspect_ui.h"
+#import "ios/chrome/browser/webui/ui_bundled/internal_debug_pages_disabled/internal_debug_pages_disabled_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/interstitials/interstitial_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/local_state/local_state_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/management/management_ui.h"
@@ -75,6 +81,14 @@ std::unique_ptr<WebUIIOSController> NewWebUIIOS<commerce::CommerceInternalsUI>(
       commerce::ShoppingServiceFactory::GetForProfile(profile));
 }
 
+bool InternalDebugPagesEnabled() {
+  // Debug pages are enabled if the feature flag guarding placing them behind
+  // a pref is off, or if the pref is enabled.
+  return !base::FeatureList::IsEnabled(chrome_urls::kInternalOnlyUisPref) ||
+         GetApplicationContext()->GetLocalState()->GetBoolean(
+             chrome_urls::kInternalOnlyUisEnabled);
+}
+
 // Returns a function that can be used to create the right type of WebUIIOS for
 // a tab, based on its URL. Returns NULL if the URL doesn't have WebUIIOS
 // associated with it.
@@ -91,12 +105,19 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
   if (url_host == kChromeUIAutofillInternalsHost) {
     return &NewWebUIIOS<AutofillInternalsUIIOS>;
   }
+  if (base::FeatureList::IsEnabled(chrome_urls::kInternalOnlyUisPref) &&
+      url_host == kChromeUIChromeURLsHost) {
+    // New ChromeUrlsUI is behind the kInternalOnlyUisPref feature flag.
+    return &NewWebUIIOS<chrome_urls::ChromeUrlsUI>;
+  }
   if (url_host == kChromeUIChromeURLsHost ||
       url_host == kChromeUIHistogramHost || url_host == kChromeUICreditsHost) {
     return &NewWebUIIOS<AboutUI>;
   }
   if (url_host == commerce::kChromeUICommerceInternalsHost) {
-    return &NewWebUIIOS<commerce::CommerceInternalsUI>;
+    return InternalDebugPagesEnabled()
+               ? &NewWebUIIOS<commerce::CommerceInternalsUI>
+               : &NewWebUIIOS<InternalDebugPagesDisabledUI>;
   }
   if (url_host == kChromeUICrashesHost) {
     return &NewWebUIIOS<CrashesUI>;
@@ -133,7 +154,9 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
   }
   if (url_host ==
       optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost) {
-    return &NewWebUIIOS<OptimizationGuideInternalsUI>;
+    return InternalDebugPagesEnabled()
+               ? &NewWebUIIOS<OptimizationGuideInternalsUI>
+               : &NewWebUIIOS<InternalDebugPagesDisabledUI>;
   }
   if (url_host == kChromeUIPasswordManagerInternalsHost) {
     return &NewWebUIIOS<PasswordManagerInternalsUIIOS>;

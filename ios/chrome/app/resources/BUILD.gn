@@ -59,12 +59,14 @@ ios_chrome_repack_scalables("repack_scalable_resources") {
 repack("repack_unscaled_resources") {
   visibility = [ ":packed_resources" ]
   sources = [
+    "$root_gen_dir/components/chrome_urls_resources.pak",
     "$root_gen_dir/components/commerce_internals_resources.pak",
     "$root_gen_dir/components/components_resources.pak",
     "$root_gen_dir/components/crashes_resources.pak",
     "$root_gen_dir/components/dev_ui_components_resources.pak",
     "$root_gen_dir/components/download_internals_resources.pak",
     "$root_gen_dir/components/flags_ui_resources.pak",
+    "$root_gen_dir/components/internal_debug_pages_disabled_resources.pak",
     "$root_gen_dir/components/management_resources.pak",
     "$root_gen_dir/components/metrics/metrics_server_urls.pak",
     "$root_gen_dir/components/ntp_tiles_internals_resources.pak",
@@ -92,6 +94,7 @@ repack("repack_unscaled_resources") {
     "//components/resources",
     "//components/sync/service/resources",
     "//components/ukm/debug:resources",
+    "//components/webui/chrome_urls/resources",
     "//ios/web:resources",
     "//mojo/public/js:resources",
     "//net:net_resources",

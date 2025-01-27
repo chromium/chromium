@@ -2,6 +2,7 @@ include_rules = [
   "+mojo/public",
   "+ios/components/webui",
   "+components/account_id",
+  "+components/webui/chrome_urls",
   "+ios/chrome/browser/autofill/model/autofill_log_router_factory.h",
   "+ios/chrome/browser/commerce/model/shopping_service_factory.h",
   "+ios/chrome/browser/crash_report/model/crash_upload_list.h",
