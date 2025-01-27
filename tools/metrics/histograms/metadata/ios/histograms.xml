@@ -2218,7 +2218,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.Tips" units="index"
-    expires_after="2025-01-26">
+    expires_after="2025-04-30">
   <owner>bwwilliams@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -5358,7 +5358,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.UpgradeCenter.UpgradeFailed"
-    enum="IOSUpgradeCenterFailureReason" expires_after="2025-01-01">
+    enum="IOSUpgradeCenterFailureReason" expires_after="2025-10-31">
   <owner>bwwilliams@google.com</owner>
   <owner>bling-team@google.com</owner>
   <summary>
