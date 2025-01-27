@@ -279,8 +279,11 @@ static bool ConsumeIfReference(CSSParserTokenStream& stream,
       return false;
     }
     stream.ConsumeIncludingWhitespace();
+    if (stream.AtEnd()) {
+      return true;
+    }
   }
-  return stream.AtEnd();
+  return false;
 }
 
 static bool ConsumeInternalAppearanceAutoBaseSelect(

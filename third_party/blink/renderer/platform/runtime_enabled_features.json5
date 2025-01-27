@@ -1111,6 +1111,7 @@
       // queries in conditions.
       // https://github.com/w3c/csswg-drafts/issues/10064.
       name: "CSSInlineIfForStyleQueries",
+      status: "test",
     },
     {
       // https://chromestatus.com/feature/6289894144212992
