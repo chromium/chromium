@@ -82,7 +82,6 @@ class GCM_EXPORT GCMStoreImpl : public GCMStore {
 
   // Sets last device's checkin information.
   void SetLastCheckinInfo(const base::Time& time,
-                          const std::set<std::string>& accounts,
                           UpdateCallback callback) override;
 
   // G-service settings handling.
