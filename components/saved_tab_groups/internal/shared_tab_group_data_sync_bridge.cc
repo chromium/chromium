@@ -478,6 +478,10 @@ std::string StorageKeyForTab(const SavedTabGroupTab& tab) {
   return tab.saved_tab_guid().AsLowercaseString();
 }
 
+std::string StorageKeyForGroup(const SavedTabGroup& group) {
+  return group.saved_guid().AsLowercaseString();
+}
+
 syncer::ClientTagHash ClientTagHashForTab(const SavedTabGroupTab& tab) {
   return syncer::ClientTagHash::FromUnhashed(
       syncer::SHARED_TAB_GROUP_DATA, /*client_tag=*/StorageKeyForTab(tab));
@@ -687,6 +691,9 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
   // and store data to the store.
   DestroyOngoingWriteBatch(/*store_write_batch_on_destroy=*/true);
 
+  // Notify the model on committed tab groups.
+  ProcessCommittedTabGroups();
+
   return std::nullopt;
 }
 
@@ -836,6 +843,8 @@ void SharedTabGroupDataSyncBridge::ApplyDisableSyncChanges(
     }
   }
 
+  tab_groups_waiting_for_commit_.clear();
+
   // Delete all shared tabs and sync metadata from the store.
   // `delete_metadata_change_list` is not used because all the metadata is
   // deleted anyway.
@@ -920,6 +929,11 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupAddedLocally(
                tab.creation_time_windows_epoch_micros(),
                ongoing_write_batch_->GetMetadataChangeList());
   }
+
+  if (group->is_transitioning_to_shared()) {
+    // The group needs to be notified when committed to the server.
+    tab_groups_waiting_for_commit_.emplace_back(group->saved_guid());
+  }
 }
 
 void SharedTabGroupDataSyncBridge::SavedTabGroupUpdatedLocally(
@@ -981,6 +995,8 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupRemovedLocally(
   // TODO(crbug.com/372210380): consider if this is required for shared tab
   // groups.
   RemoveEntitySpecifics(removed_group.saved_guid(), *ongoing_write_batch_);
+
+  std::erase(tab_groups_waiting_for_commit_, removed_group.saved_guid());
 
   // TODO(crbug.com/370719750): handle tabs missing groups.
 }
@@ -1215,6 +1231,7 @@ void SharedTabGroupDataSyncBridge::DeleteDataFromLocalStorage(
   // Check if the model contains the group guid. If so, remove that group and
   // all of its tabs.
   if (model_wrapper_->GetGroup(guid)) {
+    std::erase(tab_groups_waiting_for_commit_, guid);
     model_wrapper_->RemoveGroup(guid);
     return;
   }
@@ -1407,6 +1424,29 @@ void SharedTabGroupDataSyncBridge::DestroyOngoingWriteBatch(
 bool SharedTabGroupDataSyncBridge::IsReadyToSync() const {
   return model_wrapper_->IsInitialized() &&
          change_processor()->IsTrackingMetadata();
+}
+
+void SharedTabGroupDataSyncBridge::ProcessCommittedTabGroups() {
+  for (const base::Uuid& group_guid : tab_groups_waiting_for_commit_) {
+    const SavedTabGroup* group = model_wrapper_->GetGroup(group_guid);
+    CHECK(group);
+    CHECK(group->is_shared_tab_group());
+
+    if (change_processor()->IsEntityUnsynced(StorageKeyForGroup(*group))) {
+      // The group is not committed yet, wait for the commit to finish.
+      continue;
+    }
+
+    for (const SavedTabGroupTab& tab : group->saved_tabs()) {
+      if (change_processor()->IsEntityUnsynced(StorageKeyForTab(tab))) {
+        // The tab is not committed yet, wait for the commit to finish.
+        continue;
+      }
+    }
+
+    model_wrapper_->MarkTransitionedToShared(group->saved_guid());
+    std::erase(tab_groups_waiting_for_commit_, group_guid);
+  }
 }
 
 }  // namespace tab_groups

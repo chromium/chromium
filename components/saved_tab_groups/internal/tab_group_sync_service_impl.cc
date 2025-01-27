@@ -5,6 +5,7 @@
 #include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
@@ -258,6 +259,11 @@ CollaborationFinder*
 TabGroupSyncServiceImpl::GetCollaborationFinderForTesting() {
   return collaboration_finder_.get();
 }
+
+TabGroupSyncServiceImpl::TabGroupSharingTimeoutInfo::
+    TabGroupSharingTimeoutInfo() = default;
+TabGroupSyncServiceImpl::TabGroupSharingTimeoutInfo::
+    ~TabGroupSharingTimeoutInfo() = default;
 
 void TabGroupSyncServiceImpl::Shutdown() {
   metrics_logger_.reset();
@@ -583,18 +589,35 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   SavedTabGroup shared_group = saved_group->CloneAsSharedTabGroup(
       CollaborationId(std::string(collaboration_id)));
   shared_group.SetUpdatedByAttribution(account_id.value());
+
+  // The shared group must never be empty.
+  CHECK(!shared_group.saved_tabs().empty());
   for (SavedTabGroupTab& tab : shared_group.saved_tabs()) {
     UpdateTabTitleIfNeeded(shared_group, tab, opt_guide_,
                            stats::TitleSanitizationType::kShareTabGroup);
     tab.SetUpdatedByAttribution(account_id.value());
   }
 
-  model_->AddedLocally(std::move(shared_group));
-  // TODO(crbug.com/382557489): use `callback` when provided, simulate success
-  // for now.
+  // TODO(crbug.com/382557489): replace with CHECK once all call sites are
+  // updated.
   if (callback) {
-    std::move(callback).Run(TabGroupSharingResult::kSuccess);
+    // The same group must never be shared twice at the same time.
+    CHECK(shared_group.is_transitioning_to_shared());
+    CHECK(!tab_group_sharing_timeout_info_.contains(shared_group.saved_guid()));
+    tab_group_sharing_timeout_info_[shared_group.saved_guid()].callback =
+        std::move(callback);
+    tab_group_sharing_timeout_info_[shared_group.saved_guid()].timer.Start(
+        FROM_HERE, base::Seconds(10),
+        base::BindOnce(&TabGroupSyncServiceImpl::OnTabGroupSharingTimeout,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       shared_group.saved_guid()));
+  } else {
+    // Keep the existing behavior and mark the shared group as transitioned
+    // immediately.
+    shared_group.MarkTransitionedToShared();
   }
+
+  model_->AddedLocally(std::move(shared_group));
 }
 
 void TabGroupSyncServiceImpl::AboutToUnShareTabGroup(
@@ -940,6 +963,11 @@ void TabGroupSyncServiceImpl::HandleTabGroupAdded(const base::Uuid& guid,
     return;
   }
 
+  if (saved_tab_group->is_transitioning_to_shared()) {
+    // Wait for the shared group to be committed to the server before notifying.
+    return;
+  }
+
   if (saved_tab_group->collaboration_id()) {
     const CollaborationId& collaboration_id =
         saved_tab_group->collaboration_id().value();
@@ -993,6 +1021,11 @@ void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
     return;
   }
 
+  if (saved_tab_group->is_transitioning_to_shared()) {
+    // The group is in the process of sharing, ignore any updates to it.
+    return;
+  }
+
   if (base::Contains(empty_groups_, group_guid)) {
     empty_groups_.erase(group_guid);
     // This is the first time we are notifying the observers about the group as
@@ -1001,6 +1034,14 @@ void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
         FROM_HERE,
         base::BindOnce(&TabGroupSyncServiceImpl::NotifyTabGroupAdded,
                        weak_ptr_factory_.GetWeakPtr(), group_guid, source));
+    return;
+  }
+
+  if (tab_group_sharing_timeout_info_.contains(group_guid)) {
+    // The group has been created in MakeTabGroupShared() and was waiting for
+    // the server commit to complete. Now it has been committed, so the rest of
+    // the flow can continue.
+    HandleTabGroupAdded(group_guid, source);
     return;
   }
 
@@ -1031,6 +1072,12 @@ void TabGroupSyncServiceImpl::NotifyTabGroupAdded(const base::Uuid& guid,
 
   bool group_migrated_to_saved =
       TransitionSharedToSavedTabGroupIfNeeded(*saved_tab_group);
+
+  // Remove the group from the list of groups waiting for committing to the
+  // server and notify that sharing succeeded.
+  if (tab_group_sharing_timeout_info_.contains(guid)) {
+    NotifyTabGroupSharingResult(guid, TabGroupSharingResult::kSuccess);
+  }
 
   if (group_migrated_to_shared || group_migrated_to_saved) {
     NotifyTabGroupMigrated(saved_tab_group->saved_guid(), source);
@@ -1508,6 +1555,38 @@ void TabGroupSyncServiceImpl::UpdateTransitionedSavedTabGroupsList() {
           group.originating_tab_group_guid().value());
     }
   }
+}
+
+void TabGroupSyncServiceImpl::OnTabGroupSharingTimeout(
+    const base::Uuid& group_guid) {
+  if (!tab_group_sharing_timeout_info_.contains(group_guid)) {
+    return;
+  }
+
+  NotifyTabGroupSharingResult(group_guid, TabGroupSharingResult::kTimedOut);
+
+  const SavedTabGroup* group = model_->Get(group_guid);
+  if (!group) {
+    // This might happen in a corner case when the group was removed by a remote
+    // device.
+    return;
+  }
+
+  CHECK(group->is_shared_tab_group());
+
+  // Remove the shared group after timeout.
+  model_->RemovedLocally(group->saved_guid());
+}
+
+void TabGroupSyncServiceImpl::NotifyTabGroupSharingResult(
+    const base::Uuid& group_guid,
+    TabGroupSharingResult result) {
+  CHECK(tab_group_sharing_timeout_info_.contains(group_guid));
+
+  TabGroupSharingCallback callback =
+      std::move(tab_group_sharing_timeout_info_[group_guid].callback);
+  tab_group_sharing_timeout_info_.erase(group_guid);
+  std::move(callback).Run(result);
 }
 
 }  // namespace tab_groups

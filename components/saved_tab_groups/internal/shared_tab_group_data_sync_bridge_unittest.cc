@@ -165,6 +165,9 @@ class MockTabGroupModelObserver : public SavedTabGroupModelObserver {
   MOCK_METHOD(void,
               SavedTabGroupUpdatedFromSync,
               (const base::Uuid&, const std::optional<base::Uuid>&));
+  MOCK_METHOD(void,
+              SavedTabGroupUpdatedLocally,
+              (const base::Uuid&, const std::optional<base::Uuid>&));
 
  private:
   base::ScopedObservation<SavedTabGroupModel, SavedTabGroupModelObserver>
@@ -2054,6 +2057,84 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldKeepGroupWhenAllTabsAreUpdated) {
           "title", tab_groups::TabGroupColorId::kGrey, kCollaborationId)));
   EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
               ElementsAre(HasTabMetadata("Tab 2", "http://google.com/2")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldNotifyWhenCommittedNewTabGroup) {
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  SavedTabGroup saved_group(u"title", tab_groups::TabGroupColorId::kGrey,
+                            /*urls=*/{}, /*position=*/std::nullopt);
+
+  SavedTabGroup shared_group =
+      saved_group.CloneAsSharedTabGroup(CollaborationId("collaboration"));
+  SavedTabGroupTab tab1 =
+      test::CreateSavedTabGroupTab("http://google.com/1", u"tab 1",
+                                   shared_group.saved_guid(), /*position=*/0);
+  SavedTabGroupTab tab2 =
+      test::CreateSavedTabGroupTab("http://google.com/2", u"tab 2",
+                                   shared_group.saved_guid(), /*position=*/1);
+  shared_group.AddTabLocally(tab1);
+  shared_group.AddTabLocally(tab2);
+  model()->AddedLocally(shared_group);
+
+  ASSERT_THAT(model()->Get(shared_group.saved_guid()), NotNull());
+  ASSERT_TRUE(
+      model()->Get(shared_group.saved_guid())->is_transitioning_to_shared());
+
+  // Simulate commit completion but the group is not committed yet.
+  EXPECT_CALL(mock_processor(), IsEntityUnsynced).WillOnce(Return(true));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        syncer::EntityChangeList());
+  testing::Mock::VerifyAndClearExpectations(&mock_processor());
+  EXPECT_TRUE(
+      model()->Get(shared_group.saved_guid())->is_transitioning_to_shared());
+
+  // Simulate that the group is committed. IsEntityUnsynced() should be called
+  // for the group and all its tabs.
+  EXPECT_CALL(mock_processor(), IsEntityUnsynced)
+      .Times(3)
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(mock_model_observer(),
+              SavedTabGroupUpdatedLocally(Eq(shared_group.saved_guid()),
+                                          /*tab_guid=*/Eq(std::nullopt)));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        syncer::EntityChangeList());
+
+  EXPECT_FALSE(
+      model()->Get(shared_group.saved_guid())->is_transitioning_to_shared());
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldNotNotifyWhenRemovedBeforeCommitted) {
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  SavedTabGroup saved_group(u"title", tab_groups::TabGroupColorId::kGrey,
+                            /*urls=*/{}, /*position=*/std::nullopt);
+
+  SavedTabGroup shared_group =
+      saved_group.CloneAsSharedTabGroup(CollaborationId("collaboration"));
+  SavedTabGroupTab tab1 =
+      test::CreateSavedTabGroupTab("http://google.com/1", u"tab 1",
+                                   shared_group.saved_guid(), /*position=*/0);
+  SavedTabGroupTab tab2 =
+      test::CreateSavedTabGroupTab("http://google.com/2", u"tab 2",
+                                   shared_group.saved_guid(), /*position=*/1);
+  shared_group.AddTabLocally(tab1);
+  shared_group.AddTabLocally(tab2);
+  model()->AddedLocally(shared_group);
+
+  ASSERT_THAT(model()->Get(shared_group.saved_guid()), NotNull());
+  ASSERT_TRUE(
+      model()->Get(shared_group.saved_guid())->is_transitioning_to_shared());
+
+  // Remove the group locally before it's successfully committed.
+  model()->RemovedLocally(shared_group.saved_guid());
+
+  // On the commit completion, no entity should be checked for syncing. There is
+  // no other way to verify this case, so use only this expectation.
+  EXPECT_CALL(mock_processor(), IsEntityUnsynced).Times(0);
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        syncer::EntityChangeList());
 }
 
 // The number of tabs to test the correct ordering of remote updates.

@@ -834,6 +834,16 @@ void SavedTabGroupModel::MigrateTabGroupSavesUIUpdate() {
   }
 }
 
+void SavedTabGroupModel::MarkTransitionedToShared(const base::Uuid& group_id) {
+  SavedTabGroup* group = GetMutableGroup(group_id);
+  CHECK(group);
+  group->MarkTransitionedToShared();
+  for (SavedTabGroupModelObserver& observer : observers_) {
+    observer.SavedTabGroupUpdatedLocally(group->saved_guid(),
+                                         /*tab_guid=*/std::nullopt);
+  }
+}
+
 SavedTabGroup* SavedTabGroupModel::MutableGroupContainingTab(
     const base::Uuid& saved_tab_guid) {
   return const_cast<SavedTabGroup*>(GetGroupContainingTab(saved_tab_guid));
