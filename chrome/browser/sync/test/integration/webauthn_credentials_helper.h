@@ -189,10 +189,10 @@ MATCHER_P(PasskeySpecificsEq, expected, "") {
   return arg.sync_id() == expected.sync_id() &&
          arg.credential_id() == expected.credential_id() &&
          arg.rp_id() == expected.rp_id() &&
-         base::ranges::equal(arg.newly_shadowed_credential_ids().begin(),
-                             arg.newly_shadowed_credential_ids().end(),
-                             expected.newly_shadowed_credential_ids().begin(),
-                             expected.newly_shadowed_credential_ids().end()) &&
+         std::ranges::equal(arg.newly_shadowed_credential_ids().begin(),
+                            arg.newly_shadowed_credential_ids().end(),
+                            expected.newly_shadowed_credential_ids().begin(),
+                            expected.newly_shadowed_credential_ids().end()) &&
          arg.creation_time() == expected.creation_time() &&
          arg.user_name() == expected.user_name() &&
          arg.user_display_name() == expected.user_display_name() &&

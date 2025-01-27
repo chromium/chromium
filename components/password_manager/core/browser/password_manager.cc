@@ -18,7 +18,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -167,7 +166,7 @@ bool ShouldShowManualFallbackForGeneratedPassword(
 }
 
 bool HasSingleUsernameVote(const FormPredictions& form) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       form.fields,
       [](const auto& type) {
         return password_manager_util::IsSingleUsernameType(type);
@@ -182,8 +181,8 @@ bool HasNewPasswordVote(const FormPredictions& form) {
     return type == ACCOUNT_CREATION_PASSWORD || type == NEW_PASSWORD;
   };
 
-  return base::ranges::any_of(form.fields, is_creation_password_or_new_password,
-                              &PasswordFieldPrediction::type);
+  return std::ranges::any_of(form.fields, is_creation_password_or_new_password,
+                             &PasswordFieldPrediction::type);
 }
 
 // Returns true iff `form` is not recognized as a password form by the renderer,
@@ -209,7 +208,7 @@ bool IsMutedInsecureCredential(const PasswordForm& credential,
 
 bool HasMutedCredentials(base::span<const PasswordForm> credentials,
                          const std::u16string& username) {
-  return base::ranges::any_of(credentials, [&username](const auto& credential) {
+  return std::ranges::any_of(credentials, [&username](const auto& credential) {
     return credential.username_value == username &&
            (IsMutedInsecureCredential(credential, InsecureType::kLeaked) ||
             IsMutedInsecureCredential(credential, InsecureType::kPhished));
@@ -261,7 +260,7 @@ bool StoreResultFilterAllowsSaving(PasswordFormManager* form_manager,
 
 bool ModelPredictionsContainCredentialTypes(
     const base::flat_map<FieldRendererId, FieldType>& predictions) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       predictions,
       [](const std::pair<FieldRendererId, FieldType>& field_prediction) {
         autofill::FieldTypeGroup type_category =
@@ -345,7 +344,7 @@ void SignalFormSubmissionIfEligibleForSaving(PasswordFormManager* manager,
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool HasManuallyFilledFields(const PasswordForm& form) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       form.form_data.fields(), [&](const autofill::FormFieldData& field) {
         return field.properties_mask() &
                autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger;
@@ -643,10 +642,10 @@ void PasswordManager::UpdateFormManagers() {
   }
 
   // Remove the duplicates.
-  base::ranges::sort(fetchers);
+  std::ranges::sort(fetchers);
   auto repeated_fetchers = std::ranges::unique(fetchers);
   fetchers.erase(repeated_fetchers.begin(), repeated_fetchers.end());
-  base::ranges::sort(drivers);
+  std::ranges::sort(drivers);
   auto repeated_drivers = std::ranges::unique(drivers);
   drivers.erase(repeated_drivers.begin(), repeated_drivers.end());
   // Refetch credentials for all the forms and update the drivers.
@@ -776,8 +775,8 @@ void PasswordManager::OnPasswordFormCleared(
   // verified that fields are relevant.
   FieldRendererId new_password_field_id =
       manager->GetSubmittedForm()->new_password_element_renderer_id;
-  auto it = base::ranges::find(form_data.fields(), new_password_field_id,
-                               &autofill::FormFieldData::renderer_id);
+  auto it = std::ranges::find(form_data.fields(), new_password_field_id,
+                              &autofill::FormFieldData::renderer_id);
   if (it != form_data.fields().end() && it->value().empty()) {
     manager->UpdateSubmissionIndicatorEvent(
         SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
@@ -1095,8 +1094,8 @@ void PasswordManager::UpdateStateOnUserInput(
   }
 
   // Get the field that corresponds to `field_id`.
-  auto it = base::ranges::find(observed_form->fields(), field_id,
-                               &autofill::FormFieldData::renderer_id);
+  auto it = std::ranges::find(observed_form->fields(), field_id,
+                              &autofill::FormFieldData::renderer_id);
   if (it == observed_form->fields().end()) {
     return;
   }
@@ -1164,7 +1163,7 @@ void PasswordManager::OnPasswordFormsRemoved(
   auto* submitted_manager = GetSubmittedManager();
   if (submitted_manager) {
     // Check if the submitted manager corresponds to one of the removed forms.
-    bool removed_submitted_form = base::ranges::any_of(
+    bool removed_submitted_form = std::ranges::any_of(
         removed_forms_copy, [&](const auto& removed_form_id) {
           return submitted_manager->DoesManage(removed_form_id, driver);
         });
@@ -1180,11 +1179,10 @@ void PasswordManager::OnPasswordFormsRemoved(
   // have data that we can save.
   // If the submitted manager observes one of the removed forms, just
   // ignore it as it was already inspected above.
-  if (base::ranges::any_of(
-          removed_forms_copy, [&](const auto& removed_form_id) {
-            auto* manager = GetMatchedManagerForForm(driver, removed_form_id);
-            return manager != submitted_manager && detect_submission(manager);
-          })) {
+  if (std::ranges::any_of(removed_forms_copy, [&](const auto& removed_form_id) {
+        auto* manager = GetMatchedManagerForForm(driver, removed_form_id);
+        return manager != submitted_manager && detect_submission(manager);
+      })) {
     return;
   }
 }
@@ -1763,7 +1761,7 @@ void PasswordManager::ShowManualFallbackForSaving(
 
 bool PasswordManager::NewFormsParsed(PasswordManagerDriver* driver,
                                      const std::vector<FormData>& form_data) {
-  return base::ranges::any_of(form_data, [driver, this](const FormData& form) {
+  return std::ranges::any_of(form_data, [driver, this](const FormData& form) {
     return !GetMatchedManagerForForm(driver, form.renderer_id());
   });
 }

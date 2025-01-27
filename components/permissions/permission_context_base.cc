@@ -50,6 +50,11 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/permissions/android/android_permission_util.h"
+#include "ui/android/window_android.h"
+#endif
+
 namespace permissions {
 namespace {
 
@@ -377,10 +382,11 @@ bool PermissionContextBase::IsPermissionAvailableToOrigins(
 
 content::PermissionResult
 PermissionContextBase::UpdatePermissionStatusWithDeviceStatus(
+    content::WebContents* web_contents,
     content::PermissionResult result,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  MaybeUpdatePermissionStatusWithDeviceStatus();
+  MaybeUpdateCachedHasDevicePermission(web_contents);
 
   // If the site content setting is ASK/BLOCKED the device-level permission
   // won't affect it.
@@ -389,17 +395,28 @@ PermissionContextBase::UpdatePermissionStatusWithDeviceStatus(
   }
 
   // If the device-level permission is granted, it has no effect on the result.
-  if (last_has_device_permission_result_.value()) {
+  if (last_has_device_permission_result_.has_value() &&
+      last_has_device_permission_result_.value()) {
     return result;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  if (!web_contents || !web_contents->GetNativeView() ||
+      !web_contents->GetNativeView()->GetWindowAndroid()) {
+    return result;
+  }
+  result.status =
+      CanRequestSystemPermission(content_settings_type(), web_contents)
+          ? blink::mojom::PermissionStatus::ASK
+          : blink::mojom::PermissionStatus::DENIED;
+#else
   // Otherwise the result will be "ASK" if the browser can ask for the
   // device-level permission, and "BLOCKED" otherwise.
   result.status = PermissionsClient::Get()->CanRequestDevicePermission(
                       content_settings_type())
                       ? blink::mojom::PermissionStatus::ASK
                       : blink::mojom::PermissionStatus::DENIED;
-
+#endif
   return result;
 }
 
@@ -471,9 +488,10 @@ void PermissionContextBase::DecidePermission(
       &PermissionContextBase::PermissionDecided, weak_factory_.GetWeakPtr(),
       request_data.id, request_data.requesting_origin,
       request_data.embedding_origin);
-  auto cleanup_cb = base::BindOnce(
-      &PermissionContextBase::CleanUpRequest, weak_factory_.GetWeakPtr(),
-      request_data.id, request_data.embedded_permission_element_initiated);
+  auto cleanup_cb =
+      base::BindOnce(&PermissionContextBase::CleanUpRequest,
+                     weak_factory_.GetWeakPtr(), web_contents, request_data.id,
+                     request_data.embedded_permission_element_initiated);
   PermissionRequestID permission_request_id = request_data.id;
 
   std::unique_ptr<PermissionRequest> request_ptr =
@@ -555,12 +573,25 @@ void PermissionContextBase::RemoveObserver(
   }
 }
 
-void PermissionContextBase::MaybeUpdatePermissionStatusWithDeviceStatus() {
+void PermissionContextBase::MaybeUpdateCachedHasDevicePermission(
+    content::WebContents* web_contents) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!web_contents || !web_contents->GetNativeView() ||
+      !web_contents->GetNativeView()->GetWindowAndroid()) {
+    return;
+  }
+  const bool has_device_permission =
+      has_device_permission_for_test_.has_value()
+          ? has_device_permission_for_test_.value()
+          : HasSystemPermission(content_settings_type(), web_contents);
+#else
   const bool has_device_permission =
       has_device_permission_for_test_.has_value()
           ? has_device_permission_for_test_.value()
           : PermissionsClient::Get()->HasDevicePermission(
                 content_settings_type());
+#endif
+
   const bool should_notify_observers =
       last_has_device_permission_result_.has_value() &&
       has_device_permission != last_has_device_permission_result_;
@@ -612,6 +643,7 @@ void PermissionContextBase::NotifyPermissionSet(
 }
 
 void PermissionContextBase::CleanUpRequest(
+    content::WebContents* web_contents,
     const PermissionRequestID& id,
     bool embedded_permission_element_initiated) {
   size_t success = pending_requests_.erase(id.ToString());
@@ -621,7 +653,7 @@ void PermissionContextBase::CleanUpRequest(
   // `OnPermissionChanged` here. We should remove this line once the device
   // status change observer is implemented.
   if (embedded_permission_element_initiated) {
-    MaybeUpdatePermissionStatusWithDeviceStatus();
+    MaybeUpdateCachedHasDevicePermission(web_contents);
   }
   DCHECK(success == 1) << "Missing request " << id.ToString();
 }

@@ -10,6 +10,7 @@
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/drag_event_rewriter.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/shell.h"
@@ -84,7 +85,8 @@ const base::flat_map<ui::DomCode, MouseKeysController::MouseKey> kNumPadKeys({
 
 }  // namespace
 
-MouseKeysController::MouseKeysController() {
+MouseKeysController::MouseKeysController()
+    : drag_event_rewriter_(std::make_unique<DragEventRewriter>()) {
   SetMaxSpeed(kDefaultMaxSpeed);
   for (int c = 0; c < kKeyCount; ++c) {
     pressed_keys_[c] = false;
@@ -92,11 +94,30 @@ MouseKeysController::MouseKeysController() {
   Shell::Get()->AddAccessibilityEventHandler(
       this, AccessibilityEventHandlerManager::HandlerType::kMouseKeys);
   mouse_keys_bubble_controller_ = std::make_unique<MouseKeysBubbleController>();
+  Shell::GetPrimaryRootWindow()->GetHost()->GetEventSource()->AddEventRewriter(
+      drag_event_rewriter_.get());
 }
 
 MouseKeysController::~MouseKeysController() {
   Shell* shell = Shell::Get();
   shell->RemoveAccessibilityEventHandler(this);
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  if (!root_window) {
+    return;
+  }
+
+  auto* host = root_window->GetHost();
+  if (!host) {
+    return;
+  }
+
+  auto* event_source = host->GetEventSource();
+  if (!event_source) {
+    return;
+  }
+
+  event_source->RemoveEventRewriter(drag_event_rewriter_.get());
 }
 
 void MouseKeysController::Toggle() {
@@ -286,12 +307,14 @@ void MouseKeysController::PressKey(MouseKey key) {
                                last_mouse_position_dips_);
       dragging_ = true;
       if (key == kKeyDragStart) {
+        drag_event_rewriter_->SetEnabled(true);
         UpdateMouseKeysBubble(true, MouseKeysBubbleIconType::kMouseDrag,
                               drag_resource);
       }
       break;
     case kKeyDragStop:
       if (dragging_) {
+        drag_event_rewriter_->SetEnabled(false);
         SendMouseEventToLocation(ui::EventType::kMouseReleased,
                                  last_mouse_position_dips_);
         dragging_ = false;

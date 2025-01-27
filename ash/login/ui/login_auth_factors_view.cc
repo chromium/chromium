@@ -4,6 +4,8 @@
 
 #include "ash/login/ui/login_auth_factors_view.h"
 
+#include <algorithm>
+
 #include "ash/login/resources/grit/login_resources.h"
 #include "ash/login/ui/animated_auth_factors_label_wrapper.h"
 #include "ash/login/ui/arrow_button_view.h"
@@ -15,7 +17,6 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -395,7 +396,7 @@ void LoginAuthFactorsView::UpdateState() {
       // their password.
       ShowReadyAndDisabledAuthFactors();
 
-      num_factors_in_error_background_state = base::ranges::count(
+      num_factors_in_error_background_state = std::ranges::count(
           auth_factors_, PrioritizedAuthFactorViewState::kErrorBackground,
           [](const auto& factor) {
             return GetPrioritizedAuthFactorViewState(*factor);

@@ -198,6 +198,9 @@ chromium-metrics-reviews@google.com.
   <int value="11"
       label="Recoverable sign in error, user needs to reauth to use the
              enclave"/>
+  <int value="12"
+      label="The enclave was the default but loading took too long, so Chrome
+             jumped to the mechanism selection screen instead"/>
 </enum>
 
 <enum name="WebAuthenticationEnclaveRequestResult">

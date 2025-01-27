@@ -1098,6 +1098,26 @@ BUILDERS = {
         'platform': 'linux',
         'perf_processor': True,
     },
+    'win-11_laptop_low_end-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Windows-11',
+            'gpu': '8086:46b3-32.0.101.6297',
+            'synthetic_product_name': 'Inspiron 15 3520 (Dell Inc.)'
+        },
+    },
     'win-11-perf': {
         'tests': [
             {

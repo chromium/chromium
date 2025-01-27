@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">റദ്ദാക്കി</translation>
 <translation id="1020274983236703756">എക്സ്ക്ലൂസീവ് <ph name="PRODUCT_NAME" /> അസറ്റുകൾ ഇപ്പോൾ ലഭ്യമാണ്</translation>
 <translation id="1022628058306505708">എർത്ത് ഫ്ലോ</translation>
+<translation id="102432830749687801">ആക്‌സസ് നഷ്ടപ്പെടുന്നതിന് മുമ്പ്, സ്‌കൂൾ അക്കൗണ്ട് ഡാറ്റ നിങ്ങളുടെ വ്യക്തിഗത അക്കൗണ്ടിലേക്ക് നീക്കുന്നതിന് Google-ന്റെ ഉള്ളടക്ക കൈമാറ്റ ആപ്പ് ഉപയോഗിക്കുന്ന കാര്യം ഉറപ്പാക്കുക.</translation>
 <translation id="1026212596705997935">കുറുക്കുവഴി "<ph name="CONFLICT_ACCEL_NAME" />" എന്നതിനായി നിലവിൽ ഉപയോഗിക്കുന്നു. പുതിയൊരു കുറുക്കുവഴി അമർത്തുക. നിലവിലുള്ള കുറുക്കുവഴിക്ക് പകരം മറ്റൊന്ന് നൽകാൻ, ഈ കുറുക്കുവഴി വീണ്ടും അമർത്തുക.</translation>
 <translation id="1030856839388844477">ഡാറ്റ ഉപയോഗം റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ത്രെഡുകൾ, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">ഉപകരണത്തിന്റെ കെയ്‌സിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
 <translation id="1397738625398125236">ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാൻ കഴിയും</translation>
 <translation id="1398634363027580500">വളരെ ഉയർന്ന HTTPS പ്രതികരണ സമയം</translation>
+<translation id="1406389211945506521">നിങ്ങളുടെ അനുഭവം പങ്കിട്ടതിന് നന്ദി. കൂടുതൽ കൃത്യതയുള്ളതും പ്രയോജനകരവുമായ ഉള്ളടക്കം സൃഷ്ടിക്കാൻ നിങ്ങളുടെ ഫീഡ്ബാക്ക് ഞങ്ങളെ സഹായിക്കുന്നു.</translation>
 <translation id="1407069428457324124">ഡാർക്ക് തീം</translation>
 <translation id="1413240736185167732">പ്രിന്റ് ചെയ്യാനായില്ല - ഫിൽട്ടർ പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">ക്ലാസിക് ആർട്ട്</translation>
 <translation id="181434555916624618">നിലവിൽ, ആളുകൾ ഉള്ള ഫലങ്ങൾ കാണിക്കില്ല. മറ്റൊരു പ്രോംപ്റ്റ് പരീക്ഷിക്കൂ.</translation>
 <translation id="1815850098929213707">തിരഞ്ഞെടുത്ത കീ <ph name="KEYS" /> ആണ്. നിയന്ത്രണം എഡിറ്റ് ചെയ്യാൻ ബട്ടണിൽ ടാപ്പ് ചെയ്യുക</translation>
+<translation id="1818174214124933000">നിങ്ങൾ 'അയയ്ക്കുക' തിരഞ്ഞെടുക്കുമ്പോൾ, നിങ്ങളുടെ ഫീഡ്ബാക്കും ഉള്ളടക്കവും (താഴെ കാണിച്ചിരിക്കുന്നത്) Google-ന് അയയ്ക്കും, മനുഷ്യർ ഇത് അവലോകനം ചെയ്യും, <ph name="LINK_POLICY_BEGIN" />സ്വകാര്യതാ നയം<ph name="LINK_POLICY_END" />, <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google സേവന നിബന്ധനകൾ<ph name="LINK_TERMS_OF_SERVICE_END" /> എന്നിവയ്ക്ക് അനുസൃതമായി ഞങ്ങളുടെ ഉൽപ്പന്നങ്ങൾക്കും സേവനങ്ങൾക്കും പരിശീലനം നൽകാനും മെച്ചപ്പെടുത്താനും ഉപയോഗിക്കുകയും ചെയ്യും.</translation>
 <translation id="1823120442877418684">പ്രതീകങ്ങൾ</translation>
 <translation id="1827738518074806965">ആര്‍ട്ട് ഗ്യാലറി</translation>
+<translation id="183287940576828840">നിന്ദ്യമായത്/സുരക്ഷിതമല്ലാത്തത്</translation>
 <translation id="1836553715834333258">സിസ്റ്റം നിറം</translation>
 <translation id="183675228220305365">റിയലിസ്റ്റ്</translation>
 <translation id="1838374766361614909">തിരയൽ മായ്ക്കുക</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">പരാജയപ്പെട്ട UDP അഭ്യർത്ഥനകൾ</translation>
 <translation id="1908394185991500139">ഇടത്തേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="1914144885717544695">വെള്ളിയാഴ്ച</translation>
+<translation id="1915960750806557358">നിങ്ങളുടെ ഫീഡ്ബാക്ക് പങ്കിടുക അല്ലെങ്കിൽ പ്രശ്നം വിവരിക്കുക. വ്യക്തിപരമോ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ടതോ രഹസ്യാത്മകമോ ആയ കാര്യങ്ങളൊന്നും ഉൾപ്പെടുത്തുന്നില്ലെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="1923388006036088459">ആക്സന്റ് നിറങ്ങൾ</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">പ്രിന്റ് ചെയ്‌തു</translation>
@@ -595,6 +600,7 @@
 <translation id="387301095347517405">നിങ്ങളുടെ ബാറ്ററി പൂർണ്ണമായി ചാർജ് ചെയ്തതിന്റെ എണ്ണം</translation>
 <translation id="3877066159641251281">വിവർത്തനം ശ്രവിക്കുക</translation>
 <translation id="3880601782712134623">സവിശേഷമായ ശബ്ദങ്ങൾ സ്വയമേവ കണ്ടെത്തി അവ ഓരോന്നിനും സ്പീക്കർ 1, സ്പീക്കർ 2 പോലുള്ള പൊതു ലേബൽ നൽകുക</translation>
+<translation id="38811596981744338">നിയമ പ്രശ്‌നം</translation>
 <translation id="3885327323343477505">സ്ക്രീൻ സേവർ മാറ്റുക</translation>
 <translation id="3889914174935857450">തീയതി റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="3897092660631435901">മെനു</translation>
@@ -819,6 +825,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> സെക്കന്റിൽ <ph name="RATE" /> ചാർജ് ചെയ്‌തു.</translation>
 <translation id="4930320165497208503">കണക്ഷൻ സജ്ജീകരിക്കാനോ അപ്ഡേറ്റ് ചെയ്യാനോ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിലേക്ക്<ph name="END_LINK" /> പോകുക.</translation>
 <translation id="4932733599132424254">തീയതി</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, പുതിയൊരു ടാബിൽ തുറക്കുന്നു</translation>
 <translation id="4946927805998996217">സംഗ്രഹം ജനറേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="4950314376641394653"><ph name="VERSION" /> എന്ന പതിപ്പിലേക്ക് ഫേംവെയര്‍ <ph name="DEVICE_NAME" /> അപ്ഡേറ്റ് ചെയ്തു</translation>
 <translation id="4950893758552030541">മരങ്ങൾ സൃഷ്ടിക്കുന്ന ടണൽ</translation>
@@ -1205,6 +1212,7 @@
 <translation id="6692996468359469499">നിങ്ങളുടെ തിരഞ്ഞെടുക്കലുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ നേടുക</translation>
 <translation id="6694534975463174713">ലോക്ക്</translation>
 <translation id="6700703207451721535">ഈ ലിങ്കിന് ആക്‌സസ് അനുവദനീയമല്ല. ആക്‌സസ് ആവശ്യമാണെങ്കിൽ നിങ്ങളുടെ അധ്യാപകരെ ബന്ധപ്പെട്ട് പരിശോധിക്കുക.</translation>
+<translation id="6703179086771097594">മികച്ചതല്ല എന്ന് തോന്നിയ കാര്യങ്ങൾ എന്തൊക്കെയാണ്?</translation>
 <translation id="6704062477274546131">DNS റെസല്യൂഷൻ</translation>
 <translation id="6712933881624804031">താഴ്വര</translation>
 <translation id="6716013206176357696">സ്ട്രോബെറികൾ</translation>
@@ -1278,6 +1286,7 @@
 <translation id="7049916119678019302">ക്രമീകരണത്തിൽ ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7058278511608979688">അവസാനിപ്പിച്ച് സംരക്ഷിക്കുക</translation>
 <translation id="7059230779847288458">ചാർജ് ചെയ്യുന്നു, പൂർത്തിയാകാൻ <ph name="TIME_VALUE" /> ശേഷിക്കുന്നു</translation>
+<translation id="7064209589142995848">ഉള്ളടക്ക കൈമാറ്റം</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> കീ</translation>
 <translation id="7068619307603204412">നിങ്ങളുടെ ഉപകരണം തയ്യാറാക്കുക</translation>
 <translation id="7076851914315147928">വാൾപേപ്പർ തിരഞ്ഞെടുക്കുക</translation>
@@ -1586,6 +1595,7 @@
 <translation id="8476942730579767658">വിൻഡോകളും ഡെസ്ക്കുകളും</translation>
 <translation id="8477536061607044749">ഗ്രാഫിക് ഡിസൈൻ</translation>
 <translation id="8477551185774834963">DNS പ്രതികരണ സമയം അനുവദിക്കപ്പെട്ട പരിധിയേക്കാൾ അൽപ്പം മുകളിലാണ്</translation>
+<translation id="8481308460877552925">വസ്തുതാപരമായി തെറ്റാണ്</translation>
 <translation id="8482376765267780829">ലളിതമാക്കാൻ ചില ടെക്സ്റ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8483248364096924578">IP വിലാസം</translation>
 <translation id="8491311378305535241">Android ആപ്പുകളിൽ നിന്ന് HTTPS വെബ്സൈറ്റുകളിലേക്ക് ഫയര്‍വാള്‍ മുഖേന കണക്റ്റ് ചെയ്യാനാകുന്നില്ല</translation>

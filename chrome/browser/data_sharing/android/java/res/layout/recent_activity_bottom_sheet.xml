@@ -23,12 +23,29 @@ found in the LICENSE file.
         android:layout_marginStart="@dimen/list_item_default_margin"
         android:text="@string/data_sharing_recent_activity_bottom_sheet_title"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recent_activity_recycler_view"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="@dimen/recent_activity_recycler_view_top_margin"
-        android:orientation="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        android:minHeight="@dimen/recent_activity_content_area_min_height">
+
+        <TextView
+            android:id="@+id/recent_activity_empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/recent_activity_empty_view_top_margin"
+            android:gravity="center"
+            android:text="@string/data_sharing_recent_activity_empty"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recent_activity_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/recent_activity_recycler_view_top_margin"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+    </FrameLayout>
 </LinearLayout>

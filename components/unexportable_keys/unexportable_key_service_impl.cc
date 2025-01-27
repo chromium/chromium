@@ -4,11 +4,12 @@
 
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -240,7 +241,7 @@ void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey(
   // `key` must be non-null if `key_or_error` holds a value.
   CHECK(key);
   DCHECK(
-      base::ranges::equal(pending_entry_it->first, key->key().GetWrappedKey()));
+      std::ranges::equal(pending_entry_it->first, key->key().GetWrappedKey()));
 
   UnexportableKeyId key_id = key->id();
   // A newly created key ID must be unique.

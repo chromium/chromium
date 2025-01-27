@@ -325,8 +325,9 @@ suite('WallpaperFullscreenElementTest', function() {
         FullscreenPreviewState.VISIBLE;
     personalizationStore.notifyObservers();
 
-    let button = wallpaperFullscreenElement.shadowRoot!.querySelector(
-                     'cr-button[data-layout="FILL"]')! as HTMLButtonElement;
+    let button =
+        wallpaperFullscreenElement.shadowRoot!.querySelector<HTMLButtonElement>(
+            'cr-button[data-layout="FILL"]')!;
     button.click();
 
     const [fillImage, fillLayout, fillPreviewMode] =
@@ -337,8 +338,9 @@ suite('WallpaperFullscreenElementTest', function() {
     assertEquals(WallpaperLayout.kCenterCropped, fillLayout);
     assertTrue(fillPreviewMode);
 
-    button = wallpaperFullscreenElement.shadowRoot!.querySelector(
-                 'cr-button[data-layout="CENTER"]') as HTMLButtonElement;
+    button =
+        wallpaperFullscreenElement.shadowRoot!.querySelector<HTMLButtonElement>(
+            'cr-button[data-layout="CENTER"]')!;
     button.click();
 
     const [centerImage, centerLayout, centerPreviewMode] =

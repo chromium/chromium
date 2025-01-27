@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ash/extensions/autotest_private/autotest_private_api.h"
 
+#include <algorithm>
 #include <deque>
 #include <map>
 #include <memory>
@@ -66,7 +67,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -803,7 +803,7 @@ arc::mojom::ThemeStyleType ToThemeStyleType(
 
 aura::Window* FindAppWindowById(const int64_t id) {
   auto list = ash::GetAppWindowList();
-  auto iter = base::ranges::find(list, id, &aura::Window::GetId);
+  auto iter = std::ranges::find(list, id, &aura::Window::GetId);
   if (iter == list.end()) {
     return nullptr;
   }
@@ -815,7 +815,7 @@ Browser* GetFirstRegularBrowser() {
   const BrowserList* list = BrowserList::GetInstance();
   const web_app::AppBrowserController* (Browser::*app_controller)() const =
       &Browser::app_controller;
-  auto iter = base::ranges::find(*list, nullptr, app_controller);
+  auto iter = std::ranges::find(*list, nullptr, app_controller);
   if (iter == list->end()) {
     return nullptr;
   }
@@ -6848,8 +6848,8 @@ AutotestPrivateIsFeatureEnabledFunction::Run() {
       &kEnabledFeatureForTest,
       // clang-format on
   };
-  auto* const* it = base::ranges::find(kAllowList, params->feature_name,
-                                       &base::Feature::name);
+  auto* const* it =
+      std::ranges::find(kAllowList, params->feature_name, &base::Feature::name);
   if (it == std::end(kAllowList)) {
     std::string error = base::StrCat(
         {"feature ", params->feature_name,

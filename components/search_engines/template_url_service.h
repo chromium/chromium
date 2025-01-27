@@ -197,11 +197,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
   bool BothPolicySetKeywordsNotOverriden(const TemplateURL* template_url) const;
 
   // Adds to |matches| all TemplateURLs whose keywords begin with |prefix|,
-  // sorted shortest-keyword-first. If |supports_replacement_only| is true, only
-  // TemplateURLs that support replacement are returned. This method must be
+  // sorted shortest-keyword-first. This method must be
   // efficient, since it's run roughly once per omnibox keystroke.
   void AddMatchingKeywords(const std::u16string& prefix,
-                           bool supports_replacement_only,
                            TemplateURLVector* matches);
 
   // Looks up |keyword| and returns the best TemplateURL for it.  Returns
@@ -816,13 +814,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   void MaybeSetIsActiveSearchEngines(OwnedTemplateURLVector* template_urls);
 
   // Adds to |matches| all TemplateURLs stored in |keyword_to_turl|
-  // whose keywords begin with |prefix|, sorted shortest-keyword-first.  If
-  // |supports_replacement_only| is true, only TemplateURLs that support
-  // replacement are returned.
+  // whose keywords begin with |prefix|, sorted shortest-keyword-first.
   template <typename Container>
   void AddMatchingKeywordsHelper(const Container& keyword_to_turl,
                                  const std::u16string& prefix,
-                                 bool supports_replacement_only,
                                  TemplateURLVector* matches);
 
   // Returns the TemplateURL corresponding to |prepopulated_id|, if any.

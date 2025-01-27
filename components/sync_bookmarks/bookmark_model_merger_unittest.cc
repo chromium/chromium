@@ -4,12 +4,12 @@
 
 #include "components/sync_bookmarks/bookmark_model_merger.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -260,7 +260,7 @@ bool PositionsInTrackerMatchModel(const bookmarks::BookmarkNode* node,
     }
     last_pos = pos;
   }
-  return base::ranges::all_of(node->children(), [&tracker](const auto& child) {
+  return std::ranges::all_of(node->children(), [&tracker](const auto& child) {
     return PositionsInTrackerMatchModel(child.get(), tracker);
   });
 }

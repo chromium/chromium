@@ -318,6 +318,19 @@ ci.thin_tester(
                 ],
             ),
         ],
+        per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 10,
+                ),
+            ),
+            "chrome_public_unit_test_apk": targets.mixin(
+                args = [
+                    # https://crbug.com/392649074
+                    "--gtest_filter=-org.chromium.chrome.browser.ui.appmenu.AppMenuTest.testShowAppMenu_AnchorTop",
+                ],
+            ),
+        },
     ),
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,

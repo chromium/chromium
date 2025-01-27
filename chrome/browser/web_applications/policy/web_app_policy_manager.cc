@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -21,7 +22,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/values.h"
@@ -157,7 +157,7 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(
       pref_service_->GetList(prefs::kWebAppInstallForceList);
   const auto& web_apps_list = web_apps;
 
-  const auto it = base::ranges::find(
+  const auto it = std::ranges::find(
       web_apps_list, url.spec(), [](const base::Value& entry) {
         return CHECK_DEREF(entry.GetDict().FindString(kUrlKey));
       });
@@ -372,8 +372,8 @@ void WebAppPolicyManager::ParsePolicySettings() {
   default_settings_ = WebAppPolicyManager::WebAppSetting();
 
   // Read default policy, if provided.
-  const auto it = base::ranges::find(
-      web_apps_list, kWildcard, [](const base::Value& entry) {
+  const auto it =
+      std::ranges::find(web_apps_list, kWildcard, [](const base::Value& entry) {
         return CHECK_DEREF(entry.GetDict().FindString(kManifestId));
       });
 

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <optional>
 #include <string_view>
@@ -22,7 +23,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -127,7 +127,7 @@ void RecordDNRRequestHeaderChanged(RequestHeaderType type) {
 }
 
 bool IsStringLowerCaseASCII(std::string_view s) {
-  return base::ranges::none_of(s, base::IsAsciiUpper<char>);
+  return std::ranges::none_of(s, base::IsAsciiUpper<char>);
 }
 
 constexpr auto kRequestHeaderEntries =
@@ -1314,9 +1314,9 @@ void MergeOnBeforeSendHeadersResponses(
   };
 
   // Some sanity checks.
-  DCHECK(base::ranges::all_of(*removed_headers, IsStringLowerCaseASCII));
-  DCHECK(base::ranges::all_of(*set_headers, IsStringLowerCaseASCII));
-  DCHECK(base::ranges::includes(
+  DCHECK(std::ranges::all_of(*removed_headers, IsStringLowerCaseASCII));
+  DCHECK(std::ranges::all_of(*set_headers, IsStringLowerCaseASCII));
+  DCHECK(std::ranges::includes(
       *set_headers,
       base::STLSetUnion<std::set<std::string>>(
           web_request_added_headers, web_request_overridden_headers)));
@@ -1326,7 +1326,7 @@ void MergeOnBeforeSendHeadersResponses(
   DCHECK(base::STLSetIntersection<std::set<std::string>>(*removed_headers,
                                                          *set_headers)
              .empty());
-  DCHECK(base::ranges::includes(*removed_headers, web_request_removed_headers));
+  DCHECK(std::ranges::includes(*removed_headers, web_request_removed_headers));
 
   // Record request header removals, additions and modifications.
   record_request_headers(web_request_removed_headers,
@@ -1761,9 +1761,9 @@ void MergeOnHeadersReceivedResponses(
       }
     }
 
-    DCHECK(base::ranges::all_of(modified_header_names, IsStringLowerCaseASCII));
-    DCHECK(base::ranges::all_of(added_header_names, IsStringLowerCaseASCII));
-    DCHECK(base::ranges::all_of(removed_header_names, IsStringLowerCaseASCII));
+    DCHECK(std::ranges::all_of(modified_header_names, IsStringLowerCaseASCII));
+    DCHECK(std::ranges::all_of(added_header_names, IsStringLowerCaseASCII));
+    DCHECK(std::ranges::all_of(removed_header_names, IsStringLowerCaseASCII));
 
     record_response_headers(modified_header_names,
                             &RecordResponseHeaderChanged);

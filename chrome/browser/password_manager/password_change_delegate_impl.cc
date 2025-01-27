@@ -125,9 +125,9 @@ class ParsedPasswordFormWaiter
 std::u16string GeneratePassword(
     const PasswordForm& form,
     password_manager::PasswordGenerationFrameHelper* generation_helper) {
-  auto iter = base::ranges::find(form.form_data.fields(),
-                                 form.new_password_element_renderer_id,
-                                 &autofill::FormFieldData::renderer_id);
+  auto iter = std::ranges::find(form.form_data.fields(),
+                                form.new_password_element_renderer_id,
+                                &autofill::FormFieldData::renderer_id);
   CHECK(iter != form.form_data.fields().end());
 
   return generation_helper->GeneratePassword(

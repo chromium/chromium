@@ -61,11 +61,6 @@ export interface EduCoexistenceBrowserProxy {
    * Sends 'error' message to handler.
    */
   onError(msg: string[]): void;
-
-  /**
-   * Returns JSON-encoded dialog arguments.
-   */
-  getDialogArguments(): string;
 }
 
 export class EduCoexistenceBrowserProxyImpl implements
@@ -109,10 +104,6 @@ export class EduCoexistenceBrowserProxyImpl implements
 
   onError(msg: string[]) {
     chrome.send('error', msg);
-  }
-
-  getDialogArguments() {
-    return chrome.getVariableValue('dialogArguments');
   }
 
   static getInstance(): EduCoexistenceBrowserProxy {

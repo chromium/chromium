@@ -2514,6 +2514,11 @@ BASE_FEATURE(kFeatureManagementScanner,
              "FeatureManagementScanner",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable support for multiple scheduler configurations.
+BASE_FEATURE(kSchedulerConfiguration,
+             "SchedulerConfiguration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables sea pen feature in the personalization app.
 BASE_FEATURE(kSeaPen, "SeaPen", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeatureManagementSeaPen,

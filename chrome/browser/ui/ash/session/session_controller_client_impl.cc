@@ -14,7 +14,6 @@
 #include "ash/public/cpp/session/session_types.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -510,8 +509,7 @@ void SessionControllerClientImpl::DoCycleActiveUser(
   AccountId account_id = UserManager::Get()->GetActiveUser()->GetAccountId();
 
   // Get an iterator positioned at the active user.
-  auto it =
-      base::ranges::find(logged_in_users, account_id, &User::GetAccountId);
+  auto it = std::ranges::find(logged_in_users, account_id, &User::GetAccountId);
 
   // Active user not found.
   if (it == logged_in_users.end()) {

@@ -4,8 +4,9 @@
 
 #include "chrome/services/media_gallery_util/ipc_data_source.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 
 IPCDataSource::IPCDataSource(
@@ -81,7 +82,7 @@ void IPCDataSource::ReadDone(uint8_t* destination,
                              const std::vector<uint8_t>& data) {
   DCHECK_CALLED_ON_VALID_THREAD(utility_thread_checker_);
 
-  base::ranges::copy(data, destination);
+  std::ranges::copy(data, destination);
   std::move(callback).Run(data.size());
 }
 

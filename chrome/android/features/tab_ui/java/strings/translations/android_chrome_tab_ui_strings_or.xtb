@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">ଗୋଷ୍ଠୀ ସେୟାର୍‌ କରନ୍ତୁ</translation>
 <translation id="2677748264148917807">ଛାଡ଼ନ୍ତୁ</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ଟାବ ଯୋଗ କରାଯାଇଛି, <ph name="ANY_CHANGED" /> ପରିବର୍ତ୍ତନ କରାଯାଇଛି, <ph name="ANY_CLOSED" /> ବନ୍ଦ କରାଯାଇଛି}other{<ph name="MANY_ADDED" /> ଟାବ ଯୋଗ କରାଯାଇଛି, <ph name="ANY_CHANGED" /> ପରିବର୍ତ୍ତନ କରାଯାଇଛି, <ph name="ANY_CLOSED" /> ବନ୍ଦ କରାଯାଇଛି}}</translation>
+<translation id="2755485474385016903">କରାଯାଇଥିବା ପରିବର୍ତ୍ତନଗୁଡ଼ିକୁ ଗୋଷ୍ଠୀରେ ସମସ୍ତେ ଦେଖିଛନ୍ତି</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> ଘଣ୍ଟା ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{<ph name="NUM_HOURS_MANY" /> ଘଣ୍ଟା ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="2801787514987684416">ଷ୍ଟୋରର ସୂଚନା ଦେଖିବେ କି?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ଟାବକୁ ବନ୍ଦ କରାଯାଇଛି}other{<ph name="MANY_CLOSED" /> ଟାବକୁ ବନ୍ଦ କରାଯାଇଛି}}</translation>

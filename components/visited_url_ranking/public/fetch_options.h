@@ -6,6 +6,7 @@
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_FETCH_OPTIONS_H_
 
 #include <map>
+#include <set>
 #include <vector>
 
 #include "base/containers/enum_set.h"
@@ -80,6 +81,10 @@ struct FetchOptions {
   // The source of expected results. A visit can have multiple types, if any of
   // the types match the `result_sources`, then the visit can be returned.
   std::map<URLVisitAggregate::URLType, ResultOption> result_sources;
+
+  // A visit can have multiple types, if any of the types matches the
+  // `exclude_result_sources` , the visit will be discarded.
+  URLVisitAggregate::URLTypeSet exclude_results_containing_types;
 
   // The set of data fetchers that should participate in the data fetching and
   // computation of URLVisit data, including their data source characteristics.

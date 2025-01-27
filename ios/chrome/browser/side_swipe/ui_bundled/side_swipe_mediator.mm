@@ -144,6 +144,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
                                 webStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
+    CHECK(webStateList);
     _webStateList = webStateList;
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserver.get());
@@ -168,10 +169,12 @@ const CGFloat kIpadTabSwipeDistance = 100;
 - (void)disconnect {
   if (_webStateList) {
     _webStateList->RemoveObserver(_webStateListObserver.get());
+    _webStateList = nullptr;
   }
   _scopedWebStateObservation.reset();
   _webStateObserverBridge.reset();
   _fullscreenController = nullptr;
+  [_tabSideSwipeView disconnect];
 }
 
 - (void)addHorizontalGesturesToView:(UIView*)view {

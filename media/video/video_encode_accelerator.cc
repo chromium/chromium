@@ -6,8 +6,9 @@
 
 #include <inttypes.h>
 
+#include <algorithm>
+
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -188,7 +189,7 @@ std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
 }
 
 bool VideoEncodeAccelerator::Config::HasTemporalLayer() const {
-  return base::ranges::any_of(spatial_layers, [](const SpatialLayer& sl) {
+  return std::ranges::any_of(spatial_layers, [](const SpatialLayer& sl) {
     return sl.num_of_temporal_layers > 1u;
   });
 }

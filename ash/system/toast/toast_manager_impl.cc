@@ -4,13 +4,14 @@
 
 #include "ash/system/toast/toast_manager_impl.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/system/scoped_toast_pause.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 
@@ -129,7 +130,7 @@ void ToastManagerImpl::Show(ToastData data) {
     return;
   }
 
-  auto existing_toast = base::ranges::find(queue_, id, &ToastData::id);
+  auto existing_toast = std::ranges::find(queue_, id, &ToastData::id);
 
   if (existing_toast != queue_.end()) {
     LOG(ERROR)
@@ -169,7 +170,7 @@ void ToastManagerImpl::Cancel(std::string_view id) {
     return;
   }
 
-  auto cancelled_toast = base::ranges::find(queue_, id, &ToastData::id);
+  auto cancelled_toast = std::ranges::find(queue_, id, &ToastData::id);
   if (cancelled_toast != queue_.end())
     queue_.erase(cancelled_toast);
 }
@@ -249,8 +250,8 @@ void ToastManagerImpl::ShowLatest() {
   DCHECK(!HasActiveToasts());
   DCHECK(!current_toast_data_);
 
-  auto it = locked_ ? base::ranges::find(queue_, true,
-                                         &ToastData::visible_on_lock_screen)
+  auto it = locked_ ? std::ranges::find(queue_, true,
+                                        &ToastData::visible_on_lock_screen)
                     : queue_.begin();
   if (it == queue_.end()) {
     LOG(ERROR) << "Toast Queue empty.";

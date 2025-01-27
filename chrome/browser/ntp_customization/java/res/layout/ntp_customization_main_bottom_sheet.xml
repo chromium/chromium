@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="UnusedResources">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ntp_customization_bottom_sheet_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom">
+
+        <ImageView
+            android:id="@+id/drag_handle_bar"
+            android:layout_height="@dimen/default_browser_bottom_sheet_drag_handel_bar_height"
+            android:layout_width="@dimen/default_browser_bottom_sheet_drag_handel_bar_width"
+            android:layout_marginVertical="@dimen/default_browser_bottom_sheet_drag_handel_bar_margin_vertical"
+            android:importantForAccessibility="no"
+            android:src="@drawable/drag_handlebar"
+            app:tint="@macro/drag_handlebar_color"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:id="@+id/edit_icon"
+            android:layout_width="@dimen/ntp_customization_edit_icon_with_background_size"
+            android:layout_height="@dimen/ntp_customization_edit_icon_with_background_size"
+            android:layout_marginTop="@dimen/ntp_customization_edit_icon_margin"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/edit_icon_with_background"
+            app:layout_constraintTop_toBottomOf="@id/drag_handle_bar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/bottom_sheet_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.Headline.Primary"
+            android:layout_marginTop="@dimen/ntp_customization_edit_icon_margin"
+            android:layout_marginStart="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+            android:layout_marginEnd="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+            app:layout_constraintTop_toBottomOf="@id/edit_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/ntp_customization_title"/>
+
+        <TextView
+            android:id="@+id/bottom_sheet_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            app:layout_constraintTop_toBottomOf="@id/bottom_sheet_title"
+            app:layout_constraintStart_toStartOf="@id/bottom_sheet_title"
+            app:layout_constraintEnd_toEndOf="@id/bottom_sheet_title"
+            android:text="@string/ntp_customization_subtitle" />
+
+        <View
+            android:id="@+id/new_tab_page_cards_list_item_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/ntp_customization_bottom_sheet_list_item_background_top"
+            android:layout_marginTop="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+            android:layout_marginStart="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+            android:layout_marginEnd="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+            app:layout_constraintTop_toBottomOf="@id/bottom_sheet_description"
+            app:layout_constraintBottom_toBottomOf="@id/new_tab_page_cards_list_item_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/new_tab_page_cards_list_item_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/home_modules_configuration"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:layout_marginTop="@dimen/ntp_customization_edit_icon_margin"
+            android:layout_marginStart="@dimen/ntp_customization_edit_icon_margin"
+            android:paddingBottom="@dimen/ntp_customization_edit_icon_margin"
+            app:layout_constraintTop_toTopOf="@id/new_tab_page_cards_list_item_container"
+            app:layout_constraintStart_toStartOf="@id/new_tab_page_cards_list_item_container"
+            app:layout_constraintEnd_toStartOf="@id/new_tab_page_cards_forward_arrow_icon" />
+
+        <ImageView
+            android:id="@+id/new_tab_page_cards_forward_arrow_icon"
+            android:layout_width="@dimen/ntp_customization_forward_arrow_icon_size"
+            android:layout_height="@dimen/ntp_customization_forward_arrow_icon_size"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/forward_arrow_icon"
+            android:layout_marginEnd="@dimen/ntp_customization_edit_icon_margin"
+            app:layout_constraintTop_toTopOf="@id/new_tab_page_cards_list_item_container"
+            app:layout_constraintBottom_toBottomOf="@id/new_tab_page_cards_list_item_container"
+            app:layout_constraintEnd_toEndOf="@id/new_tab_page_cards_list_item_container"
+            app:layout_constraintStart_toEndOf="@id/new_tab_page_cards_list_item_title" />
+
+        <View
+            android:id="@+id/discover_feed_list_item_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/ntp_customization_bottom_sheet_list_item_background_bottom"
+            android:layout_marginTop="@dimen/ntp_customization_discover_feed_margin_top"
+            app:layout_constraintTop_toBottomOf="@id/new_tab_page_cards_list_item_container"
+            app:layout_constraintBottom_toBottomOf="@id/discover_feed_status"
+            app:layout_constraintStart_toStartOf="@id/new_tab_page_cards_list_item_container"
+            app:layout_constraintEnd_toEndOf="@id/new_tab_page_cards_list_item_container" />
+
+        <TextView
+            android:id="@+id/discover_feed_list_item_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/ntp_customization_feed_setting_title"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:layout_marginTop="@dimen/ntp_customization_edit_icon_margin"
+            android:layout_marginStart="@dimen/ntp_customization_edit_icon_margin"
+            app:layout_constraintTop_toTopOf="@id/discover_feed_list_item_container"
+            app:layout_constraintStart_toStartOf="@id/discover_feed_list_item_container"
+            app:layout_constraintEnd_toStartOf="@id/discover_feed_setting_forward" />
+
+        <!-- The status of the feed section is hardcoded for demonstration -->
+        <TextView
+            android:id="@+id/discover_feed_status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/ntp_customization_feed_section_on"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:paddingBottom="@dimen/ntp_customization_edit_icon_margin"
+            app:layout_constraintTop_toBottomOf="@id/discover_feed_list_item_title"
+            app:layout_constraintStart_toStartOf="@id/discover_feed_list_item_title"
+            app:layout_constraintEnd_toStartOf="@id/discover_feed_setting_forward" />
+
+        <ImageView
+            android:id="@+id/discover_feed_setting_forward"
+            android:layout_width="@dimen/ntp_customization_forward_arrow_icon_size"
+            android:layout_height="@dimen/ntp_customization_forward_arrow_icon_size"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/forward_arrow_icon"
+            android:layout_marginEnd="@dimen/ntp_customization_edit_icon_margin"
+            app:layout_constraintTop_toTopOf="@id/discover_feed_list_item_container"
+            app:layout_constraintBottom_toBottomOf="@id/discover_feed_list_item_container"
+            app:layout_constraintStart_toEndOf="@id/discover_feed_list_item_title"
+            app:layout_constraintEnd_toEndOf="@id/discover_feed_list_item_container" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

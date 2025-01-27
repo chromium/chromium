@@ -39,7 +39,6 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       const std::u16string& rp_for_display,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
-      content::WebContents* web_contents,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       FedCmAccountSelectionView* owner);
   ~AccountSelectionModalView() override;

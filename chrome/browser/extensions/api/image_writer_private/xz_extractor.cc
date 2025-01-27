@@ -39,7 +39,7 @@ bool XzExtractor::IsXzFile(const base::FilePath& image_path) {
   constexpr size_t kExpectedSize = sizeof(kExpectedMagic);
   uint8_t actual_magic[kExpectedSize] = {};
   return src_file.ReadAtCurrentPosAndCheck(actual_magic) &&
-         base::ranges::equal(kExpectedMagic, actual_magic);
+         std::ranges::equal(kExpectedMagic, actual_magic);
 }
 
 // static

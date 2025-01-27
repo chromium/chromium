@@ -55,12 +55,37 @@ extern bool IsMerchantTrustFeatureEnabled(const std::string& country_code,
 // (as probability).
 BASE_DECLARE_FEATURE(kMerchantTrustEvaluationControlSurvey);
 
+// A minimum amount of time, that has to pass after visiting a shopping page,
+// before trying to show a survey.
+extern const base::FeatureParam<base::TimeDelta>
+    kMerchantTrustEvaluationControlMinTimeToShowSurvey;
+
+// A maximum amount of time, that has passed after visiting a shopping page,
+// during which we can show a survey.
+extern const base::FeatureParam<base::TimeDelta>
+    kMerchantTrustEvaluationControlMaxTimeToShowSurvey;
+
 // Enables the 'Merchant trust' sentiment survey for experiment group. Used for
 // feature evaluation. The survey will be attempted to be shown on a new tab
 // when all the conditions apply. This should be set in the fieldtrial config
 // along with the trigger ID for the corresponding survey (as en_site_id) and
 // probability (as probability).
 BASE_DECLARE_FEATURE(kMerchantTrustEvaluationExperimentSurvey);
+
+// A minimum amount of time, that has to pass after seeing 'Merchant trust'
+// feature, before trying to show a survey.
+extern const base::FeatureParam<base::TimeDelta>
+    kMerchantTrustEvaluationExperimentMinTimeToShowSurvey;
+
+// A maximum amount of time, that has passed after seeing 'Merchant trust'
+// feature, during which we can show a survey.
+extern const base::FeatureParam<base::TimeDelta>
+    kMerchantTrustEvaluationExperimentMaxTimeToShowSurvey;
+
+// A minimal duration of the interaction with Merchant Trust UI required to show
+// the survey.
+extern const base::FeatureParam<base::TimeDelta>
+    kMerchantTrustRequiredInteractionDuration;
 
 }  // namespace page_info
 

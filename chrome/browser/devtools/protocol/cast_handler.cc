@@ -4,10 +4,10 @@
 
 #include "chrome/browser/devtools/protocol/cast_handler.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/media_router/media_router_ui_helper.h"
 #include "components/media_router/browser/media_router.h"
@@ -236,7 +236,7 @@ void CastHandler::StartPresentation(
 
 media_router::MediaSink::Id CastHandler::GetSinkIdByName(
     const std::string& sink_name) const {
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       sinks_, sink_name, [](const media_router::MediaSinkWithCastModes& sink) {
         return sink.sink.name();
       });
@@ -246,7 +246,7 @@ media_router::MediaSink::Id CastHandler::GetSinkIdByName(
 MediaRoute::Id CastHandler::GetRouteIdForSink(
     const media_router::MediaSink::Id& sink_id) const {
   const auto& routes = routes_observer_->routes();
-  auto it = base::ranges::find(routes, sink_id, &MediaRoute::media_sink_id);
+  auto it = std::ranges::find(routes, sink_id, &MediaRoute::media_sink_id);
   return it == routes.end() ? MediaRoute::Id() : it->media_route_id();
 }
 
@@ -277,9 +277,9 @@ void CastHandler::SendSinkUpdate() {
 
   auto protocol_sinks = std::make_unique<protocol::Array<Sink>>();
   for (const media_router::MediaSinkWithCastModes& sink_with_modes : sinks_) {
-    auto route_it = base::ranges::find(routes_observer_->routes(),
-                                       sink_with_modes.sink.id(),
-                                       &MediaRoute::media_sink_id);
+    auto route_it =
+        std::ranges::find(routes_observer_->routes(), sink_with_modes.sink.id(),
+                          &MediaRoute::media_sink_id);
     std::string session = route_it == routes_observer_->routes().end()
                               ? std::string()
                               : route_it->description();

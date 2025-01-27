@@ -283,6 +283,43 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
   sessions_storage_util::ResetDiscardedSessions();
 }
 
+// It was found that -application:didDiscardSceneSessions: may be called with
+// UISceneSession* corresponding to SceneState* that are still connected. It
+// caused flakyness of EarlGrey tests (see https://crbug.com/390108895). The
+// behaviour has only been confirmed for EarlGrey tests. Record an histogram
+// counting how many Scenes are discarded while still connected to detect if
+// the issue also reproduce in production (if it were to reproduce, it would
+// cause unexplained tab losses).
+//
+// See https://crbug.com/392575873 for details.
+void RecordDiscardSceneStillConnected(NSSet<UISceneSession*>* scene_sessions,
+                                      NSArray<SceneState*>* connected_scenes) {
+  // iPhone do not use -persistentIdentifier to identify the session data
+  // for a SceneState, so they will never delete data. Only record metric
+  // for iPad since even if the issue reproduce on iPhone, it won't have
+  // any impact.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+
+  NSUInteger count_discarded_scene_still_connected = 0;
+  NSMutableSet<NSString*>* connected_identifiers = [[NSMutableSet alloc] init];
+  for (SceneState* scene_state in connected_scenes) {
+    [connected_identifiers addObject:scene_state.sceneSessionID];
+  }
+
+  for (UISceneSession* scene_session in scene_sessions) {
+    NSString* persistent_identifier = scene_session.persistentIdentifier;
+    if ([connected_identifiers containsObject:persistent_identifier]) {
+      ++count_discarded_scene_still_connected;
+    }
+  }
+
+  base::UmaHistogramExactLinear(
+      "IOS.Sessions.DiscardedScenesStillConnectedCount",
+      count_discarded_scene_still_connected, 100);
+}
+
 // Helper used to call -unloadProfileMarkedForDeletion:completion: from
 // a callback.
 void UnloadProfileMarkedForDeletion(MainController* controller,
@@ -788,6 +825,7 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
       ->ApplicationDidDiscardSceneSessions(sceneSessions);
 
   MarkSessionsAsDiscardedForAllProfiles(sceneSessions);
+  RecordDiscardSceneStillConnected(sceneSessions, _appState.connectedScenes);
 
   crash_keys::SetConnectedScenesCount(_appState.connectedScenes.count);
 }

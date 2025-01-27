@@ -942,11 +942,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             return true;
         }
 
-        // Disable for Samsung devices.
-        if ("SAMSUNG".equalsIgnoreCase(Build.MANUFACTURER)) {
-            return false;
-        }
-
         // Don't enable on V+.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             return false;

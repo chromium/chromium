@@ -2391,6 +2391,10 @@ inline constexpr char kNtpDisabledModules[] = "NewTabPage.DisabledModules";
 // Time the Microsoft files module was last dismissed.
 inline constexpr char kNtpMicrosoftFilesModuleLastDismissedTime[] =
     "NewTabPage.MicrosoftFilesModuleLastDismissedTime";
+// The next time file suggestions can be requested after hitting a throttling
+// error.
+inline constexpr char kNtpMicrosoftFilesModuleRetryAfterTime[] =
+    "NewTabPage.MicrosoftFilesModuleRetryAfterTime";
 // List keeping track of NTP modules order.
 inline constexpr char kNtpModulesOrder[] = "NewTabPage.ModulesOrder";
 // Whether NTP modules are visible.
@@ -3044,11 +3048,6 @@ inline constexpr char kLogoutStartedLast[] = "chromeos.logout-started";
 // A boolean preference controlling Android status reporting.
 inline constexpr char kReportArcStatusEnabled[] =
     "arc.status_reporting_enabled";
-
-// A string preference indicating the name of the OS level task scheduler
-// configuration to use.
-inline constexpr char kSchedulerConfiguration[] =
-    "chromeos.scheduler_configuration";
 
 // Dictionary indicating current network bandwidth throttling settings.
 // Contains a boolean (is throttling enabled) and two integers (upload rate

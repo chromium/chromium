@@ -289,15 +289,15 @@ suite('SeaPenRouterElementTest', function() {
         !!seaPenOptionsElement,
         'the options chips should show after clicking a chip');
 
-    const seaPenImages = routerElement.shadowRoot!.querySelector(
-                             'sea-pen-images') as HTMLElement;
+    const seaPenImages =
+        routerElement.shadowRoot!.querySelector<HTMLElement>('sea-pen-images');
     assertTrue(!!seaPenImages);
     seaPenImages.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const selectedOption =
-        seaPenOptionsElement.shadowRoot!.querySelector(
-            '#options cr-button[aria-selected]') as HTMLElement;
+        seaPenOptionsElement.shadowRoot!.querySelector<HTMLElement>(
+            '#options cr-button[aria-selected]');
     assertTrue(
         !selectedOption,
         'Clicking anywhere else on the router container will hide options.');

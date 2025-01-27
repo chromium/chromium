@@ -227,7 +227,8 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetURLVisits) {
           [](const FetchOptions& options,
              VisitedURLRankingService::GetURLVisitAggregatesCallback callback) {
             ExpectURLTypesInFetchOptions(
-                options, {URLType::kActiveRemoteTab, URLType::kRemoteVisit});
+                options, {URLType::kActiveLocalTab, URLType::kActiveRemoteTab,
+                          URLType::kRemoteVisit});
 
             std::vector<URLVisitAggregate> url_visit_aggregates = {};
             url_visit_aggregates.emplace_back(

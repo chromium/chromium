@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <tuple>
@@ -24,7 +25,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -237,7 +237,7 @@ TEST_P(SqlRecoveryTest, RecoverCorruptTable) {
     ASSERT_EQ(db_.page_size(), kDbPageSize)
         << "Page overflow relies on specific size";
     large_buffer.resize(kDbPageSize * 2);
-    base::ranges::fill(large_buffer, '8');
+    std::ranges::fill(large_buffer, '8');
     sql::Statement insert(db_.GetUniqueStatement(
         "INSERT INTO rows(indexed,unindexed,filler) VALUES(8,8,?)"));
     insert.BindBlob(0, large_buffer);
@@ -477,7 +477,7 @@ void TestRecoverDatabase(Database& db,
   // Save aside a copy of the original schema, verifying that it has the created
   // items plus the sqlite_sequence table.
   const std::string original_schema = GetSchema(&db);
-  ASSERT_EQ(with_meta ? 6 : 4, base::ranges::count(original_schema, '\n'))
+  ASSERT_EQ(with_meta ? 6 : 4, std::ranges::count(original_schema, '\n'))
       << original_schema;
 
   static constexpr char kTable1Sql[] = "SELECT * FROM table1 ORDER BY 1";
@@ -659,7 +659,7 @@ TEST_P(SqlRecoveryTest, RecoverDatabaseWithView) {
   // Save aside a copy of the original schema, verifying that it has the created
   // items plus the sqlite_sequence table.
   const std::string original_schema = GetSchema(&db);
-  ASSERT_EQ(4, base::ranges::count(original_schema, '\n')) << original_schema;
+  ASSERT_EQ(4, std::ranges::count(original_schema, '\n')) << original_schema;
 
   // Database handle is valid before recovery, poisoned after.
   static constexpr char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_schema";

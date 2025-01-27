@@ -127,7 +127,6 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> Chrome-н энэ профайлд аль хэдийн нэвтэрсэн байна. Таны хөтчийн үзэлтийг тусад нь байлгахын тулд Chrome танд өөрийн гэсэн профайл үүсгэж өгөх боломжтой.</translation>
 <translation id="2580411288591421699">Одоо ажиллаж байгаа Google Chrome-ийн хувилбарыг суурьлуулах боломжгүй. Google Chrome-оо хаагаад, дахин оролдоно уу.</translation>
 <translation id="2586406160782125153">Энэ нь төхөөрөмжөөс таны хайлтын өгөгдлийг устгах болно. Өгөгдлөө дараа нь сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
-<translation id="2597976513418770460">Chrome хөтчийн зүйлсээ <ph name="ACCOUNT_EMAIL" />-с авна уу</translation>
 <translation id="259935314519650377">Татсан суулгагчийг завсрын санах ойд хадгалж чадсангүй. Алдаа: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2632707915638608719">Chrome-д зориулсан өргөтгөлүүдээр илүү ихийг хийгээрэй</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -551,7 +550,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7845233973568007926">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө компьютероо дахин эхлүүлэх ёстой.</translation>
 <translation id="7852254990718225089">Chrome-н ХОУ нь вебийг илүү хурдан, аюулгүй бөгөөд илүү хүртээмжтэй болгоход тусалдаг</translation>
 <translation id="7872446069773932638">Татаж байна... <ph name="SECONDS" /> секунд үлдсэн</translation>
-<translation id="7880591377632733558">Chrome-д тавтай морил, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7886087451482920026">Google Lens-р текст сонгох</translation>
 <translation id="7890208801193284374">Нэг компьютерыг олон хэрэглэгч хуваан хэрэглэж байгаа тохиолдолд хэрэглэгч бүр өөрийн хүссэнээр Chrome-ыг тохируулж, хайлт хийх боломжтой.</translation>
 <translation id="7896673875602241923">Өмнө нь хэн нэгэн энэ компьютероос Chrome-д <ph name="ACCOUNT_EMAIL_LAST" /> бүртгэлээр нэвтэрсэн байна. Мэдээллээ тусaд нь байлгахын тулд Chrome-н шинэ хэрэглэгч үүсгэнэ үү.</translation>
@@ -603,7 +601,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8429214465555795676">Үргэлжлүүлэхийн тулд та <ph name="EMAIL" />-р Chrome-д нэвтрэх шаардлагатай болно. Энэ нь танай байгууллагын бодлогыг дагаж мөрдөж байгааг баталгаажуулна.</translation>
 <translation id="8433638294851456451">Та эндээс Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийн аль алинаас нь Chrome-д нэвтэрнэ үү.</translation>
-<translation id="8451192282033883849">Таны бүртгэлийг <ph name="MANAGER_NAME" /> удирддаг. Танай администратор энэ Chrome хөтчийн профайл болон үүний хавчуурга, түүх, нууц үг зэрэг өгөгдлийг харах болон засах боломжтой.</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>
 <translation id="8498858610309223613">Google Chrome-н аюулгүй байдлын тусгай шинэчлэлтийг хийж дууслаа. Одоо дахин эхлүүлнэ үү. Бид таны табыг сэргээх болно.</translation>
 <translation id="8516431725144212809">Chrome-с тооцоолсон таны сонирхол</translation>

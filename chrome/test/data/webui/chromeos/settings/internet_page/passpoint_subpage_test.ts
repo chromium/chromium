@@ -5,7 +5,6 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import type {SettingsPasspointSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import type {CrLinkRowElement} from 'chrome://os-settings/os_settings.js';
 import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
@@ -320,7 +319,7 @@ suite('PasspointSubpage', () => {
 
     const list = getListItems('passpointNetworksList');
     assertEquals(2, list.length);
-    const row = list[0]!.querySelector<CrLinkRowElement>('cr-link-row');
+    const row = list[0]!.querySelector('cr-link-row');
     assertTrue(!!row);
 
     const showDetailPromise = eventToPromise('show-detail', window);

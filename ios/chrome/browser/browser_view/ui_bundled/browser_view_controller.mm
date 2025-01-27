@@ -2623,6 +2623,10 @@ enum HeaderBehaviour {
 #pragma mark - ToolbarHeightDelegate
 
 - (void)toolbarsHeightChanged {
+  if (![self isViewLoaded]) {
+    return;
+  }
+
   // Toolbar state must be updated before `updateForFullscreenProgress` as the
   // later uses the insets from fullscreen model.
   [self updateToolbarState];

@@ -883,6 +883,7 @@ enum CSSSampleId {
     kInterestTargetHideDelay = 824,
     kAnimationTriggerRange = 825,
     kAnimationTriggerExitRange = 826,
+    kInterestTargetDelay = 827,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
@@ -890,4 +891,4 @@ enum CSSSampleId {
     //    to update the UMA histogram names.
 };
 
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:MappedCSSProperties)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:MappedCSSProperties)

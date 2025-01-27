@@ -42,10 +42,10 @@ void BoundSessionCookieController::Initialize() {}
 
 base::Time BoundSessionCookieController::min_cookie_expiration_time() const {
   CHECK(!bound_cookies_info_.empty());
-  return base::ranges::min_element(bound_cookies_info_, {},
-                                   [](const auto& bound_cookie_info) {
-                                     return bound_cookie_info.second;
-                                   })
+  return std::ranges::min_element(bound_cookies_info_, {},
+                                  [](const auto& bound_cookie_info) {
+                                    return bound_cookie_info.second;
+                                  })
       ->second;
 }
 

@@ -4,13 +4,13 @@
 
 #include "device/bluetooth/emulation/fake_remote_gatt_service.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/emulation/fake_remote_gatt_characteristic.h"
@@ -32,7 +32,7 @@ FakeRemoteGattService::FakeRemoteGattService(
 FakeRemoteGattService::~FakeRemoteGattService() = default;
 
 bool FakeRemoteGattService::AllResponsesConsumed() {
-  return base::ranges::all_of(characteristics_, [](const auto& e) {
+  return std::ranges::all_of(characteristics_, [](const auto& e) {
     return static_cast<FakeRemoteGattCharacteristic*>(e.second.get())
         ->AllResponsesConsumed();
   });

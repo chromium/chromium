@@ -9,9 +9,10 @@
 #include <wayland-server-core.h>
 #include <xdg-output-unstable-v1-server-protocol.h>
 
+#include <algorithm>
+
 #include "ash/shell.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "components/exo/wayland/output_configuration_change.h"
 #include "components/exo/wayland/wayland_display_output.h"
 #include "components/exo/wayland/wl_output.h"
@@ -132,8 +133,8 @@ WaylandDisplayOutput* OutputController::GetWaylandDisplayOutput(
 
 WaylandOutputList OutputController::GetActiveOutputs() const {
   WaylandOutputList output_list;
-  base::ranges::transform(outputs_, std::back_inserter(output_list),
-                          [](auto& pair) { return pair.second.get(); });
+  std::ranges::transform(outputs_, std::back_inserter(output_list),
+                         [](auto& pair) { return pair.second.get(); });
   return output_list;
 }
 
@@ -141,13 +142,12 @@ bool OutputController::ProcessDisplayChangesForAuraOutputManager(
     const DisplayConfigurationChange& configuration_change) {
   OutputConfigurationChange output_config_change;
 
-  base::ranges::transform(
-      configuration_change.added_displays,
-      std::back_inserter(output_config_change.added_outputs),
-      [this](const display::Display& display) {
-        return GetWaylandDisplayOutput(display.id());
-      });
-  base::ranges::transform(
+  std::ranges::transform(configuration_change.added_displays,
+                         std::back_inserter(output_config_change.added_outputs),
+                         [this](const display::Display& display) {
+                           return GetWaylandDisplayOutput(display.id());
+                         });
+  std::ranges::transform(
       configuration_change.removed_displays,
       std::back_inserter(output_config_change.removed_outputs),
       [this](const display::Display& display) {

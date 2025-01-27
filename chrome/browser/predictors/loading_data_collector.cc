@@ -4,12 +4,12 @@
 
 #include "chrome/browser/predictors/loading_data_collector.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/predictors/loading_stats_collector.h"
 #include "chrome/browser/predictors/predictors_features.h"
@@ -61,7 +61,7 @@ network::mojom::RequestDestination GetRequestDestinationFromMimeType(
   } else if (net::MatchesMimeType("text/css", mime_type)) {
     return network::mojom::RequestDestination::kStyle;
   } else {
-    bool found = base::ranges::any_of(
+    bool found = std::ranges::any_of(
         kFontMimeTypes, [&mime_type](const std::string& mime) {
           return net::MatchesMimeType(mime, mime_type);
         });

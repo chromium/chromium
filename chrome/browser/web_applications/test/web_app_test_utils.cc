@@ -32,7 +32,6 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/clamped_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -567,7 +566,7 @@ std::optional<IsolatedWebAppIntegrityBlockData> CreateIntegrityBlockData(
   auto signatures = CreateSignatures();
 
   std::mt19937 rng(random.next_uint());
-  base::ranges::shuffle(signatures, rng);
+  std::ranges::shuffle(signatures, rng);
 
   size_t signatures_count = random.next_uint(signatures.size()) + 1;
   signatures.erase(signatures.begin() + signatures_count, signatures.end());
@@ -869,12 +868,12 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
       CreateRandomScopeExtensions(random.next_uint(), random));
 
   ScopeExtensions validated_scope_extensions;
-  base::ranges::copy_if(app->scope_extensions(),
-                        std::inserter(validated_scope_extensions,
-                                      validated_scope_extensions.begin()),
-                        [&random](const ScopeExtensionInfo& extension) {
-                          return random.next_bool();
-                        });
+  std::ranges::copy_if(app->scope_extensions(),
+                       std::inserter(validated_scope_extensions,
+                                     validated_scope_extensions.begin()),
+                       [&random](const ScopeExtensionInfo& extension) {
+                         return random.next_bool();
+                       });
   app->SetValidatedScopeExtensions(validated_scope_extensions);
 
   if (random.next_bool()) {

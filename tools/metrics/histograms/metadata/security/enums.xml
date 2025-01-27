@@ -184,9 +184,15 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kSidePanelOpened">
     The merchant trust side panel was opened.
   </int>
+  <int value="3" label="kBubbleClosed">
+    The merchant trust bubble was closed.
+  </int>
+  <int value="4" label="kSidePanelClosed">
+    The merchant trust side panel was closed.
+  </int>
 </enum>
 
-<!-- LINT.ThenChange(/components/page_info/core/merchant_trust_service.h) -->
+<!-- LINT.ThenChange(//components/page_info/core/merchant_trust_service.h) -->
 
 <enum name="MerchantTrustStatus">
   <int value="0" label="kValid">A valid response.</int>

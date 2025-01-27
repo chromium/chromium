@@ -141,8 +141,9 @@ suite('acceleratorSubsectionTest', function() {
         manager!.getAcceleratorSubcategory(/*source=*/ 0, /*action=*/ 5)!,
         AcceleratorSubcategory.kApps);
     let shortcutsAssignedElement =
-        rowListElement[1]!.shadowRoot!.querySelector(
-            '#noShortcutAssignedContainer') as HTMLDivElement;
+        rowListElement[1]!.shadowRoot!.querySelector<HTMLDivElement>(
+            '#noShortcutAssignedContainer');
+    assertTrue(!!shortcutsAssignedElement);
     assertTrue(shortcutsAssignedElement.hidden);
 
     // Second accelerator row in General -> Apps subcategory corresponds to
@@ -155,8 +156,9 @@ suite('acceleratorSubsectionTest', function() {
         AcceleratorSubcategory.kApps);
     // Expect the `noShortcutsAssigned` view to be available.
     shortcutsAssignedElement =
-        rowListElement[0]!.shadowRoot!.querySelector(
-            '#noShortcutAssignedContainer') as HTMLDivElement;
+        rowListElement[0]!.shadowRoot!.querySelector<HTMLDivElement>(
+            '#noShortcutAssignedContainer');
+    assertTrue(!!shortcutsAssignedElement);
     assertFalse(shortcutsAssignedElement.hidden);
 
     // Expect 'noShortcutsAssigned' has an edit button.

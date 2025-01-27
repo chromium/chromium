@@ -204,6 +204,8 @@ class WTF_EXPORT String {
     return StringImpl::Create(converter.Span());
   }
 
+  static String Boolean(bool value) { return String(value ? "true" : "false"); }
+
   [[nodiscard]] static String Number(float);
 
   [[nodiscard]] static String Number(double, unsigned precision = 6);

@@ -2515,6 +2515,14 @@ const char kMojoLinuxChannelSharedMemDescription[] =
     "If enabled Mojo on Linux based platforms can use shared memory as an "
     "alternate channel for most messages.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kMostVisitedTilesCustomizationName[] =
+    "Customize Most Visiteid Tiles";
+const char kMostVisitedTilesCustomizationDescription[] =
+    "Adds long-click menu to fix the title and URL of a Most Visited Tile; "
+    "enables MVT reordering.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kMostVisitedTilesReselectName[] = "Most Visited Tiles Reselect";
 const char kMostVisitedTilesReselectDescription[] =
     "When MV tiles is clicked, scans for a tab with a matching URL. "
@@ -3493,6 +3501,12 @@ const char kSiteInstanceGroupsForDataUrlsName[] =
 const char kSiteInstanceGroupsForDataUrlsDescription[] =
     "Put data: URL subframes in a separate SiteInstance from the initiator, "
     "but in the same SiteInstanceGroup, and thus the same process.";
+
+const char kDefaultSiteInstanceGroupsName[] = "Default SiteInstanceGroups";
+const char kDefaultSiteInstanceGroupsDescription[] =
+    "Put sites that don't need isolation in their own SiteInstance in a default"
+    "SiteInstanceGroup (per BrowsingContextGroup) instead of in a default "
+    "SiteInstance.";
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

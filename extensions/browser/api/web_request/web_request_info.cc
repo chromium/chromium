@@ -323,7 +323,7 @@ bool WebRequestInfo::ShouldRecordMatchedAllowRuleInOnHeadersReceived(
   // should match since said actions are no longer relevant in
   // onHeadersReceived.
   bool only_request_headers_modified =
-      base::ranges::all_of(*dnr_actions, [](const auto& action) {
+      std::ranges::all_of(*dnr_actions, [](const auto& action) {
         return action.type == declarative_net_request::RequestAction::Type::
                                   MODIFY_HEADERS &&
                action.response_headers_to_modify.empty();

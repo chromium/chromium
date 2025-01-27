@@ -5130,7 +5130,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4593021220803146968">&amp;Idi na <ph name="URL" /></translation>
 <translation id="4593962599442730215">Promjena postavki</translation>
 <translation id="4594218792629569101">Odaberite Označi kao pročitano da biste premjestili stranicu na dno popisa</translation>
-<translation id="4594577641390224176">Tražite li stranicu s informacijama o sustavu? Otvorite</translation>
 <translation id="4595560905247879544">Aplikacije i proširenja može mijenjati samo voditelj (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">U arhivi imate certifikate koji identificiraju ove poslužitelje</translation>
 <translation id="4598345735110653698">Upravljaj pristupnim ključevima</translation>
@@ -6753,7 +6752,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5787420647064736989">Naziv uređaja</translation>
 <translation id="5788367137662787332">Žao nam je, nije bilo moguće postaviti najmanje jednu particiju na uređaju <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5789581866075720267">Da biste uvezli zaporke na uslugu <ph name="BRAND" /> na ovom uređaju, odaberite CSV datoteku.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Uspjeh</translation>
 <translation id="5790651917470750848">Prosljeđivanje priključka već postoji</translation>
 <translation id="5792295754950501287">Više radnji za: <ph name="CARD_DESCRIPTION" /></translation>
@@ -7172,7 +7170,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6086418630711763366">Stranicama se možete kretati pomoću pokazivača za tekst. Pritisnite Ctrl + <ph name="KEY" /> da biste isključili tu značajku.</translation>
 <translation id="6086846494333236931">Instalirao vaš administrator</translation>
 <translation id="6087286598828478206">Želite li blokirati i napustiti grupu?</translation>
-<translation id="6087746524533454243">Tražite li stranicu s informacijama o pregledniku? Otvorite</translation>
 <translation id="6087960857463881712">Oduševljeno lice</translation>
 <translation id="6088475950266477163">Postavke</translation>
 <translation id="608912389580139775">Da biste dodali ovu stranicu na popis za čitanje, kliknite ikonu Oznaka</translation>

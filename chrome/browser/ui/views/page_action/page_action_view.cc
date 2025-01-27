@@ -42,20 +42,22 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
     // observation. See bug for more explanation.
     action_item_controller_subscription_ =
         controller->CreateActionItemSubscription(action_item_.get());
+    OnPageActionModelChanged(*observation_.GetSource());
   } else {
     SetVisible(false);
   }
 }
 
-void PageActionView::OnPageActionModelChanged(PageActionModelInterface* model) {
-  SetEnabled(model->GetVisible());
-  SetVisible(model->GetVisible());
-  SetText(model->GetText());
-  SetTooltipText(model->GetTooltipText());
+void PageActionView::OnPageActionModelChanged(
+    const PageActionModelInterface& model) {
+  SetEnabled(model.GetVisible());
+  SetVisible(model.GetVisible());
+  SetText(model.GetText());
+  SetTooltipText(model.GetTooltipText());
 
   UpdateIconImage();
   UpdateBorder();
-  UpdateStyle(model->GetShowSuggestionChip());
+  UpdateStyle(model.GetShowSuggestionChip());
 }
 
 void PageActionView::UpdateStyle(bool is_suggestion_chip) {
@@ -65,7 +67,7 @@ void PageActionView::UpdateStyle(bool is_suggestion_chip) {
 }
 
 void PageActionView::OnPageActionModelWillBeDeleted(
-    PageActionModelInterface* model) {
+    const PageActionModelInterface& model) {
   observation_.Reset();
   action_item_controller_subscription_ = {};
   SetVisible(false);

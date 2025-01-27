@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/process_iterator.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -79,10 +79,10 @@ bool WaitForUpdaterExit() {
       GetTestProcessNames();
   return WaitFor(
       [&] {
-        return base::ranges::none_of(process_names,
-                                     [](const auto& process_name) {
-                                       return IsProcessRunning(process_name);
-                                     });
+        return std::ranges::none_of(process_names,
+                                    [](const auto& process_name) {
+                                      return IsProcessRunning(process_name);
+                                    });
       },
       [] { VLOG(0) << "Still waiting for updater to exit..."; });
 }

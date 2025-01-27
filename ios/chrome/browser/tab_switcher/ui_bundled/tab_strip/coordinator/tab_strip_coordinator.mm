@@ -280,6 +280,7 @@
         break;
     }
   };
+  _tabGroupConfirmationCoordinator.tabGroupName = tabGroupItem.title;
 
   [_tabGroupConfirmationCoordinator start];
   self.tabStripViewController.tabGroupConfirmationHandler =

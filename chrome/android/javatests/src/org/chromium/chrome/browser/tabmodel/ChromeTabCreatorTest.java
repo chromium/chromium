@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.IntentHandler;
@@ -171,7 +170,6 @@ public class ChromeTabCreatorTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @DisabledTest(message = "crbug.com/391842690")
     public void testCreateNewTabTakesPositonIndex() throws Throwable {
         ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {

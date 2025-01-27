@@ -578,13 +578,7 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kCaptureContentTime, 0u);
   histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kSendContentTime, 0u);
-  histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
-  histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 0u);
-  histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kTaskDelayInMs, 1u);
 
   // The task stops before sends the captured content out.
   GetContentCaptureTask()->SetTaskStopForTesting(
@@ -594,8 +588,6 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kCaptureContentTime, 1u);
   histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kSendContentTime, 0u);
-  histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
 
   // The task stops at kProcessRetryTask because the captured content
@@ -603,12 +595,9 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
   GetContentCaptureTask()->SetTaskStopForTesting(
       ContentCaptureTask::TaskState::kProcessRetryTask);
   RunContentCaptureTask();
-  // Verify has one CaptureContentTime, one SendContentTime and one
-  // CaptureContentDelayTime record.
+  // Verify has one CaptureContentTime record.
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kCaptureContentTime, 1u);
-  histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kSendContentTime, 1u);
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
 
@@ -617,24 +606,10 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
   GetContentCaptureTask()->SetTaskStopForTesting(
       ContentCaptureTask::TaskState::kStop);
   RunContentCaptureTask();
-  // Verify has two SendContentTime records.
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kCaptureContentTime, 1u);
   histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kSendContentTime, 2u);
-  histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
-
-  // Verify retry task won't count to TaskDelay metrics.
-  histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kTaskDelayInMs, 1u);
-
-  histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 1u);
-  // Verify the task ran 4 times, first run stopped before capturing content
-  // and 2nd run captured content, 3rd and 4th run sent the content out.
-  histograms.ExpectBucketCount(
-      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 4u, 1u);
 
   // Create a node and run task until it stops.
   CreateTextNodeAndNotifyManager();
@@ -644,32 +619,14 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kCaptureContentTime, 2u);
   histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kSendContentTime, 3u);
-  histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
-
-  histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 2u);
-  // Verify the task ran 1 times for this session because we didn't explicitly
-  // stop it.
-  histograms.ExpectBucketCount(
-      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 1u, 1u);
 
   GetContentCaptureTask()->ClearDocumentSessionsForTesting();
   ThreadState::Current()->CollectAllGarbageForTesting();
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kCaptureContentTime, 2u);
   histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kSendContentTime, 3u);
-  histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSentContentCount, 1u);
-  // Verify total content has been sent.
-  histograms.ExpectBucketCount(
-      ContentCaptureTaskHistogramReporter::kSentContentCount, 9u, 1u);
-
-  // Verify TaskDelay was recorded again for node change.
-  histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kTaskDelayInMs, 2u);
 }
 
 TEST_P(ContentCaptureTest, RescheduleTask) {

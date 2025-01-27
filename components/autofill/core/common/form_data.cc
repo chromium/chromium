@@ -118,9 +118,9 @@ bool FormData::DeepEqual(const FormData& a, const FormData& b) {
   // because we expect most inequalities to be due to them.
   if (a.renderer_id() != b.renderer_id() ||
       a.child_frames() != b.child_frames() ||
-      !base::ranges::equal(a.fields(), b.fields(), {},
-                           &FormFieldData::renderer_id,
-                           &FormFieldData::renderer_id)) {
+      !std::ranges::equal(a.fields(), b.fields(), {},
+                          &FormFieldData::renderer_id,
+                          &FormFieldData::renderer_id)) {
     return false;
   }
 
@@ -128,7 +128,7 @@ bool FormData::DeepEqual(const FormData& a, const FormData& b) {
       a.name_attribute() != b.name_attribute() || a.url() != b.url() ||
       a.action() != b.action() ||
       a.likely_contains_captcha() != b.likely_contains_captcha() ||
-      !base::ranges::equal(a.fields(), b.fields(), &FormFieldData::DeepEqual)) {
+      !std::ranges::equal(a.fields(), b.fields(), &FormFieldData::DeepEqual)) {
     return false;
   }
   return true;
@@ -157,7 +157,7 @@ std::ostream& operator<<(std::ostream& os, const FormData& form) {
 const FormFieldData* FormData::FindFieldByGlobalId(
     const FieldGlobalId& global_id) const {
   auto fields_it =
-      base::ranges::find(fields(), global_id, &FormFieldData::global_id);
+      std::ranges::find(fields(), global_id, &FormFieldData::global_id);
 
   // If the field is found, return a pointer to the field, otherwise return
   // nullptr.

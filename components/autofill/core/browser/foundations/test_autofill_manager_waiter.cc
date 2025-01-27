@@ -405,7 +405,7 @@ const FormStructure* WaitForMatchingForm(
     }
 
     FormStructure* FindForm() const {
-      auto it = base::ranges::find_if(
+      auto it = std::ranges::find_if(
           manager_->form_structures(),
           [&](const auto& p) { return pred_.Run(*p.second); });
       return it != manager_->form_structures().end() ? it->second.get()

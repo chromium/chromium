@@ -188,9 +188,9 @@ void GroupDataModel::ProcessGroupChanges(bool is_initial_load) {
 
   // Handle deletions synchronously, since they don't need SDK call.
   std::vector<GroupId> deleted_group_ids;
-  base::ranges::set_difference(store_groups.begin(), store_groups.end(),
-                               bridge_groups.begin(), bridge_groups.end(),
-                               std::back_inserter(deleted_group_ids));
+  std::ranges::set_difference(store_groups.begin(), store_groups.end(),
+                              bridge_groups.begin(), bridge_groups.end(),
+                              std::back_inserter(deleted_group_ids));
 
   std::unordered_map<GroupId, std::optional<GroupData>> deleted_groups;
   for (const auto& group_id : deleted_group_ids) {
@@ -358,13 +358,13 @@ void GroupDataModel::NotifyObserversAboutChangedMembers(
   }
 
   std::vector<GaiaId> added_members_gaia_ids;
-  base::ranges::set_difference(
+  std::ranges::set_difference(
       new_members_gaia_ids.begin(), new_members_gaia_ids.end(),
       old_members_gaia_ids.begin(), old_members_gaia_ids.end(),
       std::back_inserter(added_members_gaia_ids));
 
   std::vector<GaiaId> removed_members_gaia_ids;
-  base::ranges::set_difference(
+  std::ranges::set_difference(
       old_members_gaia_ids.begin(), old_members_gaia_ids.end(),
       new_members_gaia_ids.begin(), new_members_gaia_ids.end(),
       std::back_inserter(removed_members_gaia_ids));

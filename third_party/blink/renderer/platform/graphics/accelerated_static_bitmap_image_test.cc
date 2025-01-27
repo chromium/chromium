@@ -61,8 +61,7 @@ scoped_refptr<StaticBitmapImage> CreateBitmap() {
       SkImageInfo::MakeN32Premul(100, 100),
       SharedGpuContext::ContextProviderWrapper(),
       base::PlatformThread::CurrentRef(),
-      base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing(),
-      /*supports_display_compositing=*/true);
+      base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing());
 }
 
 class AcceleratedStaticBitmapImageTest : public Test {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -28,7 +29,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
@@ -2515,7 +2515,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BluetoothPermissionPrompt) {
           AuthenticatorTransport::kUsbHumanInterfaceDevice};
       controller.StartFlow(std::move(transports_info));
 
-      base::ranges::find_if(
+      std::ranges::find_if(
           model->mechanisms,
           [click_specific_phone](const auto& m) -> bool {
             if (click_specific_phone) {
@@ -2735,7 +2735,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, HybridButtonLabel) {
 
     controller.StartFlow(std::move(transports_info));
     auto hybrid_button_it =
-        base::ranges::find_if(model->mechanisms, [](const auto& m) {
+        std::ranges::find_if(model->mechanisms, [](const auto& m) {
           return absl::holds_alternative<
               AuthenticatorRequestDialogModel::Mechanism::AddPhone>(m.type);
         });
@@ -3150,7 +3150,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 
     controller.StartFlow(std::move(transports_info));
     auto win_button_it =
-        base::ranges::find_if(model->mechanisms, [](const auto& m) {
+        std::ranges::find_if(model->mechanisms, [](const auto& m) {
           return absl::holds_alternative<
               AuthenticatorRequestDialogModel::Mechanism::WindowsAPI>(m.type);
         });
@@ -3217,7 +3217,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 
     controller.StartFlow(std::move(transports_info));
     auto win_button_it =
-        base::ranges::find_if(model->mechanisms, [](const auto& m) {
+        std::ranges::find_if(model->mechanisms, [](const auto& m) {
           return absl::holds_alternative<
               AuthenticatorRequestDialogModel::Mechanism::WindowsAPI>(m.type);
         });

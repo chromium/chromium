@@ -163,17 +163,17 @@ class OOFCandidateStyleIterator {
   bool MoveToNextStyle() {
     CHECK(position_try_fallbacks_);
     CHECK(element_);
-    if (!try_fallback_index_.has_value()) {
-      try_fallback_index_ = 0;
+    std::optional<wtf_size_t> new_index = try_fallback_index_;
+    if (!new_index.has_value()) {
+      new_index = 0;
     } else {
-      ++*try_fallback_index_;
+      ++*new_index;
     }
     // Need to loop in case a @position-try fallback does not exist.
-    for (;
-         *try_fallback_index_ < position_try_fallbacks_->GetFallbacks().size();
-         ++*try_fallback_index_) {
-      if (const ComputedStyle* style = UpdateStyle(*try_fallback_index_)) {
-        style_ = style;
+    for (; *new_index < position_try_fallbacks_->GetFallbacks().size();
+         ++*new_index) {
+      UpdateStyle(*new_index);
+      if (style_) {
         return true;
       }
       // @position-try fallback does not exist.
@@ -183,18 +183,16 @@ class OOFCandidateStyleIterator {
 
   void MoveToLastSuccessfulOrStyleWithoutFallbacks() {
     CHECK(element_);
-    const CSSPropertyValueSet* try_set = nullptr;
-    TryTacticList try_tactics = kNoTryTactics;
+    std::optional<wtf_size_t> index;
     if (OutOfFlowData* out_of_flow_data = element_->GetOutOfFlowData()) {
       // No successful fallbacks for this pass. Clear out the new successful
       // fallback candidate.
       out_of_flow_data->ClearPendingSuccessfulPositionFallback();
       if (out_of_flow_data->HasLastSuccessfulPositionFallback()) {
-        try_set = out_of_flow_data->GetLastSuccessfulTrySet();
-        try_tactics = out_of_flow_data->GetLastSuccessfulTryTactics();
+        index = out_of_flow_data->GetLastSuccessfulIndex();
       }
     }
-    style_ = UpdateStyle(try_set, try_tactics);
+    UpdateStyle(index);
   }
 
   std::optional<const CSSPropertyValueSet*> TrySetFromFallback(
@@ -219,15 +217,14 @@ class OOFCandidateStyleIterator {
 
   void MoveToChosenTryFallbackIndex(std::optional<wtf_size_t> index) {
     CHECK(element_);
-    const CSSPropertyValueSet* try_set = nullptr;
-    TryTacticList try_tactics = kNoTryTactics;
     bool may_invalidate_last_successful = false;
     if (index.has_value()) {
       CHECK(position_try_fallbacks_);
       CHECK_LE(index.value(), position_try_fallbacks_->GetFallbacks().size());
+      const CSSPropertyValueSet* try_set = nullptr;
       const PositionTryFallback& fallback =
           position_try_fallbacks_->GetFallbacks()[*index];
-      try_tactics = fallback.GetTryTactic();
+      TryTacticList try_tactics = fallback.GetTryTactic();
       std::optional<const CSSPropertyValueSet*> opt_try_set =
           TrySetFromFallback(fallback);
       CHECK(opt_try_set.has_value());
@@ -246,11 +243,7 @@ class OOFCandidateStyleIterator {
           .GetStyleEngine()
           .MarkLastSuccessfulPositionFallbackDirtyForElement(*element_);
     }
-    if (index == try_fallback_index_) {
-      // We're already at this position.
-      return;
-    }
-    style_ = UpdateStyle(try_set, try_tactics);
+    UpdateStyle(index);
   }
 
  private:
@@ -271,7 +264,7 @@ class OOFCandidateStyleIterator {
       // reach this function, regardless of whether or not anchor positioning
       // is actually used.
       if (ElementStyleDependsOnAnchor(*element_, *style_)) {
-        style_ = UpdateStyle(/* try_set */ nullptr, kNoTryTactics);
+        UpdateStyle(std::nullopt, /*initial_update=*/true);
       }
     }
   }
@@ -300,34 +293,46 @@ class OOFCandidateStyleIterator {
   // Update the style using the specified index into `position_try_fallbacks_`
   // (which must exist), and return that updated style. Returns nullptr if
   // the fallback references a @position-try rule which doesn't exist.
-  const ComputedStyle* UpdateStyle(wtf_size_t try_fallback_index) {
+  void UpdateStyle(std::optional<wtf_size_t> try_fallback_index,
+                   bool initial_update = false) {
+    if (!initial_update && try_fallback_index_ == try_fallback_index) {
+      // We're already at this position.
+      return;
+    }
+
+    try_fallback_index_ = try_fallback_index;
+    style_ = nullptr;
+
     // Previously evaluated anchor is not relevant if another position fallback
     // is applied.
     anchor_evaluator_.ClearAccessibilityAnchor();
-    CHECK(position_try_fallbacks_);
-    CHECK_LE(try_fallback_index,
-             position_try_fallbacks_->GetFallbacks().size());
-    const PositionTryFallback& fallback =
-        position_try_fallbacks_->GetFallbacks()[try_fallback_index];
-    std::optional<const CSSPropertyValueSet*> try_set =
-        TrySetFromFallback(fallback);
-    if (!try_set.has_value()) {
-      // @position-try fallback does not exist.
-      return nullptr;
-    }
-    return UpdateStyle(try_set.value(), fallback.GetTryTactic());
-  }
 
-  const ComputedStyle* UpdateStyle(const CSSPropertyValueSet* try_set,
-                                   const TryTacticList& tactic_list) {
+    const CSSPropertyValueSet* try_set = nullptr;
+    TryTacticList try_tactics = kNoTryTactics;
+    if (try_fallback_index) {
+      CHECK(position_try_fallbacks_);
+      CHECK_LE(*try_fallback_index,
+               position_try_fallbacks_->GetFallbacks().size());
+      const PositionTryFallback& fallback =
+          position_try_fallbacks_->GetFallbacks()[*try_fallback_index];
+      try_tactics = fallback.GetTryTactic();
+      std::optional<const CSSPropertyValueSet*> try_set_opt =
+          TrySetFromFallback(fallback);
+      if (!try_set_opt.has_value()) {
+        // @position-try fallback does not exist.
+        return;
+      }
+      try_set = try_set_opt.value();
+    }
+
     CHECK(element_);
     element_->GetDocument().GetStyleEngine().UpdateStyleForOutOfFlow(
-        *element_, try_set, tactic_list, &anchor_evaluator_);
+        *element_, try_set, try_tactics, &anchor_evaluator_);
     CHECK(element_->GetLayoutObject());
     // Returns LayoutObject ComputedStyle instead of element style for layout
     // purposes. The style may be different, in particular for body -> html
     // propagation of writing modes.
-    return element_->GetLayoutObject()->Style();
+    style_ = element_->GetLayoutObject()->Style();
   }
 
   Element* element_ = nullptr;

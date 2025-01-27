@@ -714,8 +714,8 @@ bool OperationValidationContext::ValidateCastOperation(
     // The unary operator is invalid.
     return false;
   }
-  if (!base::ranges::equal(output->descriptor.shape(),
-                           input->descriptor.shape())) {
+  if (!std::ranges::equal(output->descriptor.shape(),
+                          input->descriptor.shape())) {
     // The output shape is not expected.
     return false;
   }
@@ -1126,7 +1126,7 @@ bool OperationValidationContext::ValidateElementWiseBinary(
     // The input shapes are not broadcastable.
     return false;
   }
-  if (!base::ranges::equal(output->descriptor.shape(), dims_output.value())) {
+  if (!std::ranges::equal(output->descriptor.shape(), dims_output.value())) {
     // The output shape is not expected.
     return false;
   }
@@ -1246,7 +1246,7 @@ bool OperationValidationContext::ValidateExpand(const mojom::Expand& expand,
     // The input shape is not broadcastable to the output shape.
     return false;
   }
-  CHECK(base::ranges::equal(output_shape.value(), output->descriptor.shape()));
+  CHECK(std::ranges::equal(output_shape.value(), output->descriptor.shape()));
 
   return true;
 }

@@ -41,10 +41,13 @@ For [*every new incoming security bug*](#Every-New-Incoming-Security-Bug):
 * Make sure the report is [*valid and actionable*](#Confirm-Valid-and-Actionable)
   * Ideally, you’ll be able to do this by [reproducing the bug](#Reproduce-the-bug),
     more ideally, [with ClusterFuzz](clusterfuzz-for-shepherds.md).
-* Set [*severity*](#Set-severity).
-* Set [*oldest impacted active release channel*](#Set-oldest-impacted-active-release-channel) – AKA FoundIn.
-* Set [*impacted-operating-systems*](#Set-impacted-operating-systems).
 * [*Assign*](#Assign) to an appropriate or suitable owner or engineering team.
+* Set [*severity*](#Set-severity).
+
+For every new incoming security bug that is S2 or more severe:
+* Set [*oldest impacted active release channel*](#Set-oldest-impacted-active-release-channel) – AKA FoundIn.
+* Set [*impacted-operating-systems*](#Set-impacted-operating-systems). If the bug is known or
+understood to impact only specific platforms, set the OS field regardless of severity.
 
 All of the above should be completed as soon as possible during your shift,
 and at least, by the [shift-handoff](#shift-handoff).

@@ -128,7 +128,7 @@ FieldClassificationModelEncoder::EncodeField(const AutofillField& field) const {
   output.emplace_back(cls_token());
 
   for (int feature : encoding_parameters_.features()) {
-    base::ranges::move(encode(feature), std::back_inserter(output));
+    std::ranges::move(encode(feature), std::back_inserter(output));
   }
 
   // Pad the remaining space, if any, with zeroes.
@@ -170,7 +170,7 @@ FieldClassificationModelEncoder::EncodeFormFeatures(
   output.emplace_back(form_cls_token());
 
   for (int feature : encoding_parameters_.form_features()) {
-    base::ranges::move(encode(feature), std::back_inserter(output));
+    std::ranges::move(encode(feature), std::back_inserter(output));
   }
 
   // Pad the remaining space, if any, with zeroes.

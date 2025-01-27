@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -11,7 +12,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_animations.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
@@ -43,7 +43,7 @@ ash::ShelfAction ActivateOrAdvanceToNextAppWindow(
     const AppWindowShelfItemController::WindowList& windows) {
   DCHECK(window_to_show);
 
-  auto i = base::ranges::find(windows, window_to_show);
+  auto i = std::ranges::find(windows, window_to_show);
   if (i != windows.end()) {
     if (++i != windows.end()) {
       window_to_show = *i;
@@ -94,7 +94,7 @@ void AppWindowShelfItemController::AddWindow(AppWindowBase* app_window) {
 AppWindowShelfItemController::WindowList::iterator
 AppWindowShelfItemController::GetFromNativeWindow(aura::Window* window,
                                                   WindowList& list) {
-  return base::ranges::find(list, window, &AppWindowBase::GetNativeWindow);
+  return std::ranges::find(list, window, &AppWindowBase::GetNativeWindow);
 }
 
 void AppWindowShelfItemController::RemoveWindow(AppWindowBase* app_window) {
@@ -106,11 +106,11 @@ void AppWindowShelfItemController::RemoveWindow(AppWindowBase* app_window) {
   if (app_window == last_active_window_) {
     last_active_window_ = nullptr;
   }
-  auto iter = base::ranges::find(windows_, app_window);
+  auto iter = std::ranges::find(windows_, app_window);
   if (iter != windows_.end()) {
     windows_.erase(iter);
   } else {
-    iter = base::ranges::find(hidden_windows_, app_window);
+    iter = std::ranges::find(hidden_windows_, app_window);
     if (iter == hidden_windows_.end()) {
       return;
     }

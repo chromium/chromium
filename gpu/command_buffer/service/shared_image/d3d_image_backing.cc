@@ -1164,7 +1164,7 @@ void D3DImageBacking::BeginAccessCommon(bool write_access) {
 
 void D3DImageBacking::EndAccessCommon(
     const D3DSharedFenceSet& signaled_fences) {
-  DCHECK(base::ranges::all_of(
+  DCHECK(std::ranges::all_of(
       signaled_fences,
       [](const scoped_refptr<gfx::D3DSharedFence>& fence) { return !!fence; }));
   if (in_write_access_) {

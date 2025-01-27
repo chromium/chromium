@@ -25,7 +25,7 @@
 namespace payments::facilitated {
 namespace {
 
-static constexpr base::TimeDelta kProgressScreenDismissDelay = base::Seconds(1);
+static constexpr base::TimeDelta kProgressScreenDismissDelay = base::Seconds(2);
 static constexpr FacilitatedPaymentsType kPaymentsType =
     FacilitatedPaymentsType::kPix;
 // TODO(crbug.com/375501469): Remove logging after investigating the bug.

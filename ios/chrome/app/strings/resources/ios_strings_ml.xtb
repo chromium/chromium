@@ -562,6 +562,7 @@
 <translation id="3517216995152707259">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുന്നത് Google Account-ൽ നിന്ന് നിങ്ങളെ സൈൻ ഔട്ട് ആക്കില്ല. സൈൻ ഔട്ട് ചെയ്യാൻ, <ph name="BEGIN_LINK" />Chrome-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">വെബ് ബ്രൗസ് ചെയ്യാൻ ഒരു ടാബ് തുറക്കുക.</translation>
 <translation id="3519905498307021260">{count,plural, =1{ടാബ് തുറക്കുക}other{{count} ടാബുകൾ തുറക്കുക}}</translation>
+<translation id="3523513363815970085">"നിങ്ങളുടെ പ്രധാന സൈറ്റുകൾ" മറയ്ക്കുക</translation>
 <translation id="3523789730715594198">നിങ്ങൾക്ക് ക്രമീകരണത്തിൽ ഏതുസമയത്തും സമന്വയിപ്പിക്കൽ നിർത്താം. നിങ്ങളുടെ ചരിത്രം അടിസ്ഥാനമാക്കി Search-ഉം മറ്റ് സേവനങ്ങളും Google വ്യക്തിപരമാക്കിയേക്കാം.</translation>
 <translation id="3527085408025491307">ഫോൾഡർ</translation>
 <translation id="3529024052484145543">സുരക്ഷിതമല്ല</translation>
@@ -836,6 +837,7 @@
 <translation id="4769198578611055647">സംരക്ഷിച്ച പാസ്‌കീകൾ ഏതൊരു ഉപകരണത്തിലും ആക്‌സസ് ചെയ്യാൻ സഹായിക്കുന്നു</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">അദൃശ്യ മോഡിൽ തുറക്കണോ?</translation>
+<translation id="479208892659046780">നിങ്ങളുടെ പ്രധാന സൈറ്റുകൾ</translation>
 <translation id="4792385443586519711">കമ്പനി നാമം</translation>
 <translation id="479628432297359449">ഡൗൺലോഡ് നിർത്തണോ?</translation>
 <translation id="4796496140132859135">ടാബ് ഗ്രൂപ്പ്. ചുരുക്കി.</translation>

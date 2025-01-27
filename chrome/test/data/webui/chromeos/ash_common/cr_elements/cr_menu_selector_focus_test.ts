@@ -159,7 +159,7 @@ suite('CrMenuSelectorFocusTest', () => {
   test('ActivatesItemOnClick', async () => {
     const itemToSelect = getChild(1);
     const onActivate = eventToPromise('iron-activate', element);
-    itemToSelect.dispatchEvent(new Event('click', {bubbles: true}));
+    itemToSelect.click();
     await onActivate;
     assertTrue(itemToSelect.hasAttribute('selected'));
     assertEquals(itemToSelect.href, element.selected);

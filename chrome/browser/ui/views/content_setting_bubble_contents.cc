@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -165,7 +164,7 @@ void ContentSettingBubbleContents::ListItemContainer::AddItem(
     link->SetCallback(base::BindRepeating(
         [](const std::vector<Row>* items, const views::Link* link,
            ContentSettingBubbleContents* parent, const ui::Event& event) {
-          const auto it = base::ranges::find(*items, link, &Row::second);
+          const auto it = std::ranges::find(*items, link, &Row::second);
           DCHECK(it != items->cend());
           parent->LinkClicked(std::distance(items->cbegin(), it), event);
         },

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <map>
 #include <memory>
@@ -28,7 +29,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/one_shot_event.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
@@ -891,8 +891,8 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
   ExternalInstallError* GetError(const std::string& extension_id) {
     std::vector<ExternalInstallError*> errors =
         service_->external_install_manager()->GetErrorsForTesting();
-    auto found = base::ranges::find(errors, extension_id,
-                                    &ExternalInstallError::extension_id);
+    auto found = std::ranges::find(errors, extension_id,
+                                   &ExternalInstallError::extension_id);
     return found == errors.end() ? nullptr : *found;
   }
 

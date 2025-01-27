@@ -4,10 +4,11 @@
 
 #include "components/media_router/common/providers/cast/channel/cast_socket_service.h"
 
+#include <algorithm>
+
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket.h"
 #include "components/media_router/common/providers/cast/channel/logger.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -87,10 +88,10 @@ CastSocket* CastSocketServiceImpl::GetSocket(int channel_id) const {
 CastSocket* CastSocketServiceImpl::GetSocket(
     const net::IPEndPoint& ip_endpoint) const {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  auto it = base::ranges::find(sockets_, ip_endpoint,
-                               [](const Sockets::value_type& pair) {
-                                 return pair.second->ip_endpoint();
-                               });
+  auto it = std::ranges::find(sockets_, ip_endpoint,
+                              [](const Sockets::value_type& pair) {
+                                return pair.second->ip_endpoint();
+                              });
   return it == sockets_.end() ? nullptr : it->second.get();
 }
 

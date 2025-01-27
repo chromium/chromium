@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -11,7 +12,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
@@ -1091,7 +1091,7 @@ bool ContentSettingStorageAccessImageModel::UpdateAndGetVisibility(
     return false;
   }
   bool has_blocked_requests =
-      base::ranges::any_of(entries, [](auto& entry) { return !entry.second; });
+      std::ranges::any_of(entries, [](auto& entry) { return !entry.second; });
 
   SetIcon(ContentSettingsType::STORAGE_ACCESS,
           /*blocked=*/has_blocked_requests);

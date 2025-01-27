@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -58,15 +59,34 @@ bool HasControlClip(const PhysicalBoxFragment& self) {
   return box && box->HasControlClip();
 }
 
+bool IsFlexibleBoxWithSingleChildElement(const LayoutObject& layout_object) {
+  if (!RuntimeEnabledFeatures::
+          UsePositionForPointInFlexibleBoxWithSingleChildElementEnabled()) {
+    return false;
+  }
+  auto* node = layout_object.GetNode();
+  if (!node || !layout_object.IsFlexibleBox()) {
+    return false;
+  }
+  return ElementTraversal::FirstChild(*node) ==
+         ElementTraversal::LastChild(*node);
+}
+
 bool ShouldUsePositionForPointInBlockFlowDirection(
     const LayoutObject& layout_object) {
   const LayoutBlockFlow* const layout_block_flow =
       DynamicTo<LayoutBlockFlow>(layout_object);
-  if (!layout_block_flow) {
-    // For <tr>, see editing/selection/click-before-and-after-table.html
+  // If it is not a layout block flow,  it should return false to prevent table
+  // elements like `<tr>` from being included. See
+  // editing/selection/click-before-and-after-table.html for more details.
+  // Additionally, if it is a flex block and it has only one child element, it
+  // should also return false. See https://issues.chromium.org/issues/40889098
+  // for more details.
+  if (!layout_block_flow &&
+      !IsFlexibleBoxWithSingleChildElement(layout_object)) {
     return false;
   }
-  if (layout_block_flow->StyleRef().SpecifiesColumns()) {
+  if (layout_object.StyleRef().SpecifiesColumns()) {
     // Columns are laid out in inline direction.
     return false;
   }

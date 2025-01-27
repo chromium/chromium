@@ -9,6 +9,7 @@
 
 #include "components/js_injection/renderer/js_binding.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/overloaded.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/js_injection/common/interfaces.mojom-forward.h"
 #include "components/js_injection/renderer/js_communication.h"

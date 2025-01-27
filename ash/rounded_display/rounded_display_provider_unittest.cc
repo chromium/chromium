@@ -44,7 +44,7 @@ auto GutterWithMatchingCorners(Matchers&&... positions) {
       [](const RoundedDisplayGutter* gutter) {
         std::vector<RoundedCornerPosition> positions;
         const std::vector<RoundedCorner>& corners = gutter->GetGutterCorners();
-        base::ranges::transform(
+        std::ranges::transform(
             corners.begin(), corners.end(), std::back_inserter(positions),
             [](const RoundedCorner& corner) { return corner.position(); });
         return positions;

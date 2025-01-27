@@ -443,7 +443,7 @@ bool IntentHasFilesAndMimeTypes(const apps::IntentPtr& intent) {
   if (intent->files.empty()) {
     return false;
   }
-  bool all_files_have_mime_type = base::ranges::all_of(
+  bool all_files_have_mime_type = std::ranges::all_of(
       intent->files,
       [](apps::IntentFilePtr& file) { return file->mime_type.has_value(); });
   return all_files_have_mime_type || intent->mime_type.has_value();

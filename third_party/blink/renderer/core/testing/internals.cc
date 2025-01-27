@@ -1763,7 +1763,7 @@ String Internals::viewportAsText(Document* document,
   builder.Append(String::Number(constraints.maximum_scale));
 
   builder.Append("] and userScalable ");
-  builder.Append(description.user_zoom ? "true" : "false");
+  builder.Append(String::Boolean(description.user_zoom));
 
   return builder.ToString();
 }

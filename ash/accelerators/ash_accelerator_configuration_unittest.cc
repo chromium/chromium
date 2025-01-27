@@ -4,6 +4,7 @@
 
 #include "ash/accelerators/ash_accelerator_configuration.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -17,10 +18,10 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/optional_ref.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
@@ -28,8 +29,6 @@
 #include "ui/events/keycodes/dom/dom_codes_array.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
-
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 

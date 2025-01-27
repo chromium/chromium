@@ -259,7 +259,7 @@ TabGroupSyncDelegateDesktop::GetLocalTabGroupIds() {
         browser->tab_strip_model()->SupportsTabGroups()) {
       std::vector<LocalTabGroupID> local_groups =
           browser->tab_strip_model()->group_model()->ListTabGroups();
-      base::ranges::copy(local_groups, std::back_inserter(local_group_ids));
+      std::ranges::copy(local_groups, std::back_inserter(local_group_ids));
     }
   }
 

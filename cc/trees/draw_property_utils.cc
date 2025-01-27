@@ -19,7 +19,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/base/math_util.h"
@@ -1683,7 +1682,7 @@ bool LogDoubleBackgroundBlur(const LayerTreeImpl& layer_tree_impl,
           gfx::Rect screen_space_rect = MathUtil::MapEnclosingClippedRect(
               render_surface->screen_space_transform(),
               render_surface->content_rect());
-          auto it = base::ranges::find_if(
+          auto it = std::ranges::find_if(
               rects, [&screen_space_rect](
                          const std::pair<const LayerImpl*, gfx::Rect>& r) {
                 return r.second.Intersects(screen_space_rect);

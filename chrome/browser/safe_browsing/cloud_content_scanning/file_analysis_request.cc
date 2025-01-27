@@ -4,12 +4,12 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/file_util_service.h"
@@ -242,7 +242,7 @@ void FileAnalysisRequest::OnGotFileData(
                                      ? result_and_data.second.mime_type
                                      : cached_data_.mime_type;
   base::FilePath::StringType ext(file_name_.FinalExtension());
-  base::ranges::transform(ext, ext.begin(), tolower);
+  std::ranges::transform(ext, ext.begin(), tolower);
   if (IsZipFile(ext, mime_type)) {
     zip_analyzer_ = SandboxedZipAnalyzer::CreateAnalyzer(
         path_,

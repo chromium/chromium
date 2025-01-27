@@ -989,7 +989,7 @@ TEST_P(CreditCardOtpAuthenticatorCardMetadataTest, MetadataSignal) {
   if (MetadataEnabled() && CardNameAvailable() && CardArtAvailable()) {
     EXPECT_NE(
         signals.end(),
-        base::ranges::find(
+        std::ranges::find(
             signals,
             ClientBehaviorConstants::kShowingCardArtImageAndCardProductName));
   } else {
@@ -1059,8 +1059,8 @@ TEST_P(CreditCardOtpAuthenticatorCardBenefitsTest,
 
   std::vector<ClientBehaviorConstants> signals =
       payments_network_interface().unmask_request()->client_behavior_signals;
-  EXPECT_EQ(base::ranges::find(signals,
-                               ClientBehaviorConstants::kShowingCardBenefits) !=
+  EXPECT_EQ(std::ranges::find(signals,
+                              ClientBehaviorConstants::kShowingCardBenefits) !=
                 signals.end(),
             IsCreditCardBenefitsEnabled());
 }

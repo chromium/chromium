@@ -593,6 +593,9 @@
   <message name="IDS_EXTENSIONS_SC_KEEP_EXT" desc="The label on the overflow menu to keep an extension.">
     Keep this extension
   </message>
+  <message name="IDS_EXTENSIONS_SC_THREEDOT_DETAILS" desc="The label on the overflow menu to go to the extensions detail page.">
+    Get more details
+  </message>
   <message name="IDS_EXTENSIONS_SC_REMOVE_ALL" desc="The generic label for a button to remove all extensions.">
     Remove all
   </message>

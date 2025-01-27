@@ -24,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -466,7 +465,7 @@ void ThumbnailCache::MakeSpaceForNewItemIfNecessary(TabId tab_id) {
 }
 
 void ThumbnailCache::RemoveFromReadQueue(TabId tab_id) {
-  auto read_iter = base::ranges::find(read_queue_, tab_id);
+  auto read_iter = std::ranges::find(read_queue_, tab_id);
   if (read_iter != read_queue_.end()) {
     read_queue_.erase(read_iter);
   }
@@ -559,7 +558,7 @@ void ThumbnailCache::PostEtc1ReadTask(TabId tab_id,
                                       const gfx::Size& content_size) {
   read_in_progress_ = false;
 
-  auto iter = base::ranges::find(read_queue_, tab_id);
+  auto iter = std::ranges::find(read_queue_, tab_id);
   if (iter == read_queue_.end()) {
     ReadNextThumbnail();
     return;

@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
 
 #include "base/json/json_reader.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -197,5 +197,5 @@ bool BrowserInfo::IsGitHash(const std::string& revision) {
   constexpr int kFullGitHashLength = 40;
   return kShortGitHashLength <= revision.size() &&
          revision.size() <= kFullGitHashLength &&
-         base::ranges::all_of(revision, base::IsHexDigit<char>);
+         std::ranges::all_of(revision, base::IsHexDigit<char>);
 }

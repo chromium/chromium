@@ -38,18 +38,18 @@ class TemplateURLService;
 //
 // To construct these matches, the provider treats user input as a series of
 // whitespace-delimited tokens and tries to match the first token as the prefix
-// of a known "keyword".  A keyword is some string that maps to a search query
+// of a known "keyword". A keyword is some string that maps to a search query
 // URL; the rest of the user's input is taken as the input to the query.  For
 // example, the keyword "bug" might map to the URL "http://b/issue?id=%s", so
 // input like "bug 123" would become "http://b/issue?id=123".
 //
 // Because we do prefix matching, user input could match more than one keyword
-// at once.  (Example: the input "f jazz" matches all keywords starting with
-// "f".)  We return the best matches, up to three.
+// at once. (Example: the input "f jazz" matches all keywords starting with
+// "f".) We return the best matches, up to three.
 //
 // The resulting matches are shown with content specified by the keyword
-// (usually "Search [name] for %s"), description "(Keyword: [keyword])", and
-// action "[keyword] %s".  If the user has typed a (possibly partial) keyword
+// (usually "Search [name] for %s"), description ("Keyword: [keyword]"), and
+// action ("[keyword] %s"). If the user has typed a (possibly partial) keyword
 // but no search terms, the suggested result is shown greyed out, with
 // "<enter term(s)>" as the substituted input, and does nothing when selected.
 class KeywordProvider : public AutocompleteProvider {
@@ -81,13 +81,11 @@ class KeywordProvider : public AutocompleteProvider {
   ~KeywordProvider() override;
 
   // Determines the relevance for some input, given its type, whether the user
-  // typed the complete keyword, and whether the user is in
-  // "prefer keyword matches" mode, and whether the keyword supports
-  // replacement. If |allow_exact_keyword_match| is false, the relevance for
-  // keywords that support replacements is degraded.
+  // typed the complete keyword and whether the user is in
+  // "prefer keyword matches" mode. If |allow_exact_keyword_match| is false,
+  // the relevance for keywords that support replacements is degraded.
   static int CalculateRelevance(metrics::OmniboxInputType type,
                                 bool complete,
-                                bool support_replacement,
                                 bool prefer_keyword,
                                 bool allow_exact_keyword_match);
 

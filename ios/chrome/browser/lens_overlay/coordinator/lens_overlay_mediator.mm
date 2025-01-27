@@ -9,7 +9,6 @@
 #import "base/base64url.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/timer/elapsed_timer.h"
 #import "components/lens/lens_overlay_metrics.h"
 #import "components/lens/proto/server/lens_overlay_response.pb.h"
@@ -30,6 +29,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -123,7 +123,7 @@
     }
   } else {  // Multimodal query.
     // Setting the query text generates new results.
-    NSString* nsText = base::SysUTF16ToNSString(text);
+    NSString* nsText = [NSString cr_fromString16:text];
     [self updateOmniboxText:nsText];
     [self.lensHandler setQueryText:nsText clearSelection:_thumbnailRemoved];
   }

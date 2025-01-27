@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/crostini/crostini_reporting_util.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -67,8 +67,8 @@ std::string GetTerminaVersion(
   // Define a UTF16 version of imageloader::kTerminaComponentName for the string
   // comparison below. Assert that it is equal to the ASCII component name.
   static constexpr char16_t kTerminaComponentName16[] = u"cros-termina";
-  DCHECK(base::ranges::equal(imageloader::kTerminaComponentName,
-                             kTerminaComponentName16));
+  DCHECK(std::ranges::equal(imageloader::kTerminaComponentName,
+                            kTerminaComponentName16));
 
   const std::vector<component_updater::ComponentInfo> component_list =
       update_service->GetComponents();

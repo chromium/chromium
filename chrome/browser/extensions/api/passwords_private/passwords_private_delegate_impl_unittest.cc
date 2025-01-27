@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -18,7 +19,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -642,95 +642,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
   delegate->GetSavedPasswordsList(callback.Get());
 }
 
-TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordUpdatesDefaultStore) {
-  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  auto* client =
-      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  auto delegate = CreateDelegate();
-
-  // NOT update default store if not opted-in for account storage.
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
-      .WillByDefault(Return(false));
-  EXPECT_CALL(*(client->GetPasswordFeatureManager()), SetDefaultPasswordStore)
-      .Times(0);
-  EXPECT_TRUE(
-      delegate->AddPassword("example1.com", u"username1", u"password1", u"",
-                            /*use_account_store=*/false, web_contents.get()));
-
-  // Updates the default store if opted-in and operation succeeded.
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
-      .WillByDefault(Return(true));
-  EXPECT_TRUE(
-      delegate->AddPassword("example2.com", u"username2", u"password2", u"",
-                            /*use_account_store=*/true, web_contents.get()));
-
-  // NOT update default store if opted-in, but operation failed.
-  EXPECT_CALL(*(client->GetPasswordFeatureManager()), SetDefaultPasswordStore)
-      .Times(0);
-  EXPECT_FALSE(delegate->AddPassword("", u"", u"", u"",
-                                     /*use_account_store=*/false,
-                                     web_contents.get()));
-}
-
-TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordDoesNotUpdateDefaultStore) {
-  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  auto* client =
-      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  auto delegate = CreateDelegate();
-
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*(client->GetPasswordFeatureManager()), SetDefaultPasswordStore)
-      .Times(0);
-  EXPECT_TRUE(
-      delegate->AddPassword("example2.com", u"username2", u"password2", u"",
-                            /*use_account_store=*/true, web_contents.get()));
-}
-
-TEST_F(PasswordsPrivateDelegateImplTest,
-       ImportPasswordsDoesNotUpdateDefaultStore) {
-  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  auto* client =
-      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  auto delegate = CreateDelegate();
-
-  auto mock_porter = std::make_unique<MockPasswordManagerPorter>();
-  auto* mock_porter_ptr = mock_porter.get();
-
-  delegate->SetPorterForTesting(std::move(mock_porter));
-
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*(client->GetPasswordFeatureManager()), SetDefaultPasswordStore)
-      .Times(0);
-  EXPECT_CALL(*mock_porter_ptr, Import).Times(1);
-  delegate->ImportPasswords(api::passwords_private::PasswordStoreSet::kDevice,
-                            base::DoNothing(), web_contents.get());
-}
-
-TEST_F(PasswordsPrivateDelegateImplTest,
-       ImportPasswordsDoesntUpdateDefaultStore) {
-  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  auto* client =
-      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  auto delegate = CreateDelegate();
-
-  auto mock_porter = std::make_unique<MockPasswordManagerPorter>();
-  auto* mock_porter_ptr = mock_porter.get();
-
-  delegate->SetPorterForTesting(std::move(mock_porter));
-
-  // Updates the default store if opted-in and operation succeeded.
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*(client->GetPasswordFeatureManager()),
-              SetDefaultPasswordStore(_))
-      .Times(0);
-  EXPECT_CALL(*mock_porter_ptr, Import).Times(1);
-  delegate->ImportPasswords(api::passwords_private::PasswordStoreSet::kAccount,
-                            base::DoNothing(), web_contents.get());
-}
-
 TEST_F(PasswordsPrivateDelegateImplTest,
        ImportPasswordsLogsImportResultsStatus) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
@@ -917,7 +828,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   const PasswordsPrivateDelegate::UiEntries& credentials =
       GetCredentials(*delegate);
   EXPECT_EQ(credentials.size(), 2u);
-  const auto account_credential_it = base::ranges::find(
+  const auto account_credential_it = std::ranges::find(
       credentials, api::passwords_private::PasswordStoreSet::kAccount,
       &PasswordUiEntry::stored_in);
   ASSERT_NE(account_credential_it, credentials.end());
@@ -935,7 +846,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   const PasswordsPrivateDelegate::UiEntries& updated_credentials =
       GetCredentials(*delegate);
   EXPECT_EQ(updated_credentials.size(), 2u);
-  const auto refreshed_credential_it = base::ranges::find(
+  const auto refreshed_credential_it = std::ranges::find(
       updated_credentials, api::passwords_private::PasswordStoreSet::kAccount,
       &PasswordUiEntry::stored_in);
   ASSERT_NE(account_credential_it, updated_credentials.end());
@@ -1038,11 +949,14 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestShouldOptInToAccountStorage) {
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
       .WillByDefault(Return(false));
-
-  EXPECT_CALL(*client->GetPasswordFeatureManager(), OptInToAccountStorage);
+  sync_service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, false);
 
   auto delegate = CreateDelegate();
   delegate->SetAccountStorageEnabled(true, web_contents.get());
+
+  EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPasswords));
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, TestShouldOptOutOfAccountStorage) {
@@ -1053,11 +967,14 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestShouldOptOutOfAccountStorage) {
       client->GetPasswordFeatureManager();
   ON_CALL(*feature_manager, IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
-
-  EXPECT_CALL(*feature_manager, OptOutOfAccountStorage);
+  sync_service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
 
   auto delegate = CreateDelegate();
   delegate->SetAccountStorageEnabled(false, web_contents.get());
+
+  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPasswords));
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
@@ -1268,12 +1185,14 @@ TEST_F(PasswordsPrivateDelegateImplTest, IsAccountStoreDefault) {
 
   auto delegate = CreateDelegate();
 
-  EXPECT_CALL(*(client->GetPasswordFeatureManager()), GetDefaultPasswordStore)
-      .WillOnce(Return(PasswordForm::Store::kAccountStore));
+  EXPECT_CALL(*(client->GetPasswordFeatureManager()),
+              IsOptedInForAccountStorage)
+      .WillOnce(Return(true));
   EXPECT_TRUE(delegate->IsAccountStoreDefault(web_contents.get()));
 
-  EXPECT_CALL(*(client->GetPasswordFeatureManager()), GetDefaultPasswordStore)
-      .WillOnce(Return(PasswordForm::Store::kProfileStore));
+  EXPECT_CALL(*(client->GetPasswordFeatureManager()),
+              IsOptedInForAccountStorage)
+      .WillOnce(Return(false));
   EXPECT_FALSE(delegate->IsAccountStoreDefault(web_contents.get()));
 }
 

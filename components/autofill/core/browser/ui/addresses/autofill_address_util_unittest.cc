@@ -64,7 +64,7 @@ TEST_F(AddressFormattingTest, GetAddressComponentsWithExtensions) {
 
   // Expect to find a line consisting solely of a state field.
   // Because `include_literals=false`, accessing `.field` is valid.
-  auto state_line = base::ranges::find_if(lines, [](const auto& line) {
+  auto state_line = std::ranges::find_if(lines, [](const auto& line) {
     return line.size() == 1 &&
            line[0].field == i18n::TypeForField(
                                 ::i18n::addressinput::AddressField::ADMIN_AREA);

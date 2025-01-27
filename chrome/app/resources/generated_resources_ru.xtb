@@ -5130,7 +5130,6 @@
 <translation id="4593021220803146968">&amp;Перейти по адресу <ph name="URL" /></translation>
 <translation id="4593962599442730215">Изменить настройки</translation>
 <translation id="4594218792629569101">Выберите "Отметить как прочитанное", чтобы переместить страницу вниз списка</translation>
-<translation id="4594577641390224176">Ищете информацию о системе? Перейдите на страницу</translation>
 <translation id="4595560905247879544">Изменять приложения и расширения может только менеджер (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">У вас есть сертификаты, идентифицирующие эти серверы</translation>
 <translation id="4598345735110653698">Настроить ключи доступа</translation>
@@ -6756,7 +6755,6 @@
 <translation id="5787420647064736989">Название устройства</translation>
 <translation id="5788367137662787332">Не удалось добавить один или несколько разделов устройства <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5789581866075720267">Чтобы импортировать пароли в <ph name="BRAND" /> на этом устройстве, выберите CSV-файл</translation>
-<translation id="5789643057113097023">:</translation>
 <translation id="5790085346892983794">Выполнено</translation>
 <translation id="5790651917470750848">Такой порт уже существует.</translation>
 <translation id="5792295754950501287">Другие действия с картой "<ph name="CARD_DESCRIPTION" />"</translation>
@@ -7176,7 +7174,6 @@
 <translation id="6086418630711763366">Вы сможете использовать курсор для навигации по страницам. Чтобы выключить эту функцию, нажмите Ctrl + <ph name="KEY" />.</translation>
 <translation id="6086846494333236931">Установлено администратором</translation>
 <translation id="6087286598828478206">Заблокировать и выйти из группы?</translation>
-<translation id="6087746524533454243">Ищете информацию о браузере? Перейдите на страницу</translation>
 <translation id="6087960857463881712">Модник</translation>
 <translation id="6088475950266477163">Н&amp;астройки</translation>
 <translation id="608912389580139775">Чтобы добавить эту страницу в свой список для чтения, нажмите на значок закладки.</translation>

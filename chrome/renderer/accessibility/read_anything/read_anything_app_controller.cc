@@ -1861,10 +1861,10 @@ void ReadAnythingAppController::OnTreeAdded(ui::AXTree* tree) {
 }
 
 void ReadAnythingAppController::OnTreeRemoved(ui::AXTree* tree) {
-  auto it = base::ranges::find_if(tree_observers_,
-                                  [tree](const auto& observation) -> bool {
-                                    return observation->GetSource() == tree;
-                                  });
+  auto it = std::ranges::find_if(tree_observers_,
+                                 [tree](const auto& observation) -> bool {
+                                   return observation->GetSource() == tree;
+                                 });
   if (it != tree_observers_.end()) {
     tree_observers_.erase(it);
   }

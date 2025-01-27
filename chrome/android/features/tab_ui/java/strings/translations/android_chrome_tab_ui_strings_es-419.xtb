@@ -43,6 +43,7 @@ Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pe
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2677748264148917807">Abandonar</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Pestañas agregadas: <ph name="ONE_ADDED" />; pestañas modificadas: <ph name="ANY_CHANGED" />; pestañas cerradas: <ph name="ANY_CLOSED" />}other{Pestañas agregadas: <ph name="MANY_ADDED" />; pestañas modificadas: <ph name="ANY_CHANGED" />; pestañas cerradas: <ph name="ANY_CLOSED" />}}</translation>
+<translation id="2755485474385016903">Todos los integrantes del grupo verán los cambios que se realicen</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Se creó hace <ph name="NUM_HOURS_ONE" /> hora}other{Se creó hace <ph name="NUM_HOURS_MANY" /> horas}}</translation>
 <translation id="2801787514987684416">¿Deseas ver información de la tienda?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Se cerró <ph name="ONE_CLOSED" /> pestaña}other{Se cerraron <ph name="MANY_CLOSED" /> pestañas}}</translation>

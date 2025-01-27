@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ip_protection/ip_protection_core_host.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
@@ -12,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"

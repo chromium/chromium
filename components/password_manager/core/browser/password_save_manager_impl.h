@@ -153,7 +153,6 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   void CloneInto(PasswordSaveManagerImpl* clone);
 
   bool IsOptedInForAccountStorage() const;
-  bool AccountStoreIsDefault() const;
   bool ShouldStoreGeneratedPasswordsInAccountStore() const;
   PasswordForm::Store GetPasswordStoreForSavingImpl(
       const PendingCredentialsStates& states) const;

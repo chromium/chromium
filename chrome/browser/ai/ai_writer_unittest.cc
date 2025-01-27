@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
@@ -74,7 +75,10 @@ blink::mojom::AIWriterCreateOptionsPtr GetDefaultOptions() {
   return blink::mojom::AIWriterCreateOptions::New(
       kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
       blink::mojom::AIWriterFormat::kPlainText,
-      blink::mojom::AIWriterLength::kMedium);
+      blink::mojom::AIWriterLength::kMedium,
+      /*expected_input_languages=*/std::vector<std::string>(),
+      /*expected_context_languages=*/std::vector<std::string>(),
+      /*output_language=*/std::string());
 }
 
 std::unique_ptr<optimization_guide::proto::WritingAssistanceApiOptions>
@@ -90,7 +94,10 @@ class AIWriterTest : public AITestUtils::AITestBase {
                           blink::mojom::AIWriterFormat format,
                           blink::mojom::AIWriterLength length) {
     const auto options = blink::mojom::AIWriterCreateOptions::New(
-        kSharedContextString, tone, format, length);
+        kSharedContextString, tone, format, length,
+        /*expected_input_languages=*/std::vector<std::string>(),
+        /*expected_context_languages=*/std::vector<std::string>(),
+        /*output_language=*/std::string());
 
     EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .WillOnce(testing::Invoke([&](optimization_guide::
@@ -157,6 +164,46 @@ class AIWriterTest : public AITestUtils::AITestBase {
     run_loop.Run();
   }
 };
+
+TEST_F(AIWriterTest, CanCreateDefaultOptions) {
+  SetupMockOptimizationGuideKeyedService();
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(_))
+      .WillOnce(testing::Return(
+          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  base::MockCallback<AIManager::CanCreateWriterCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
+  GetAIManagerInterface()->CanCreateWriter(GetDefaultOptions(), callback.Get());
+}
+
+TEST_F(AIWriterTest, CanCreateSupportedLanguages) {
+  SetupMockOptimizationGuideKeyedService();
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(_))
+      .WillRepeatedly(testing::Return(
+          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  auto options = GetDefaultOptions();
+  options->output_language = "en";
+  options->expected_input_languages = {"en-US", ""};
+  options->expected_context_languages = {"en-GB", ""};
+  base::MockCallback<AIManager::CanCreateWriterCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
+  GetAIManagerInterface()->CanCreateWriter(std::move(options), callback.Get());
+}
+
+TEST_F(AIWriterTest, CanCreateUnsupportedLanguages) {
+  SetupMockOptimizationGuideKeyedService();
+  auto options = GetDefaultOptions();
+  options->output_language = "es-ES";
+  options->expected_input_languages = {"en", "fr", "jp"};
+  options->expected_context_languages = {"ar", "zh", "hi"};
+  base::MockCallback<AIManager::CanCreateWriterCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::kNoUnknown));
+  GetAIManagerInterface()->CanCreateWriter(std::move(options), callback.Get());
+}
 
 TEST_F(AIWriterTest, CreateWriterNoService) {
   SetupNullOptimizationGuideKeyedService();

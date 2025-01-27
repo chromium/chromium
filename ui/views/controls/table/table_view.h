@@ -13,9 +13,12 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/models/table_model.h"
 #include "ui/base/models/table_model_observer.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/render_text.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
@@ -56,6 +59,7 @@ struct TableHeaderStyle {
   std::optional<int> resize_bar_vertical_padding;
   std::optional<int> separator_horizontal_padding;
   std::optional<gfx::Font::Weight> font_weight;
+  std::optional<ui::ColorId> separator_horizontal_color_id;
 };
 
 // The cell's in the first column of a table can contain:
@@ -106,6 +110,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   using SortDescriptors = std::vector<SortDescriptor>;
 
+  static constexpr int kTextContext = style::CONTEXT_TABLE_ROW;
+  static constexpr int kTextStyle = style::STYLE_BODY_4;
+
   // Creates a new table using the model and columns specified.
   // The table type applies to the content of the first column (text, icon and
   // text, checkbox and text).
@@ -154,6 +161,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // Sets the TableGrouper. TableView does not own |grouper| (common use case is
   // to have TableModel implement TableGrouper).
   void SetGrouper(TableGrouper* grouper);
+
+  // Determines whether to draw the TableGrouper on the left side of the table.
+  void SetGrouperVisibility(bool visible);
 
   // Returns the number of rows in the TableView.
   size_t GetRowCount() const;
@@ -224,6 +234,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // Maps from the index in terms of the view to that of the model.
   size_t ViewToModel(size_t view_index) const;
 
+  void SetRowPadding(views::DistanceMetric distance_metric);
   int GetRowHeight() const { return row_height_; }
 
   bool GetSelectOnRemove() const;
@@ -610,6 +621,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // Keeps track whether a call to UpdateAccessibilityFocus is already
   // pending or not.
   bool update_accessibility_focus_pending_ = false;
+
+  // Draws the Grouper if one is present, and set to true.
+  bool grouper_visible_ = true;
 
   // Customization for the header. Includes options such as padding.
   TableHeaderStyle header_style_;

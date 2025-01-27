@@ -5733,6 +5733,21 @@ TEST_F(WidgetTest, NonClientViewAccessibilityProperties) {
   EXPECT_EQ(node_data.role, ax::mojom::Role::kClient);
 }
 
+TEST_F(WidgetTest, UpdateAccessibleURLForRootView) {
+  std::unique_ptr<Widget> widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  widget->Show();
+
+  const GURL test_url("https://example.com");
+  widget->UpdateAccessibleURLForRootView(test_url);
+
+  ui::AXNodeData node_data;
+  widget->GetRootView()->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            test_url);
+}
+
 class WidgetChildObserver : public WidgetObserver {
  public:
   explicit WidgetChildObserver(Widget* widget) { observation_.Observe(widget); }

@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -181,7 +181,7 @@ Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
     }
 
     // Check if we already attached to this target.
-    auto found = base::ranges::find(web_views_, view.id, &WebViewImpl::GetId);
+    auto found = std::ranges::find(web_views_, view.id, &WebViewImpl::GetId);
     if (found != web_views_.end()) {
       continue;
     }
@@ -714,7 +714,7 @@ Status ChromeImpl::CloseWebView(const std::string& id) {
     return status;
   }
 
-  auto it = base::ranges::find(web_views_, id, &WebViewImpl::GetId);
+  auto it = std::ranges::find(web_views_, id, &WebViewImpl::GetId);
   if (it != web_views_.end()) {
     web_views_.erase(it);
   }

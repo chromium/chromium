@@ -241,6 +241,19 @@ TEST_F(ViewAccessibilityTest, ViewUsesChildViewCharacterOffsets) {
           ax::mojom::IntListAttribute::kCharacterOffsets));
 }
 
+TEST_F(ViewAccessibilityTest, AccessibleURL) {
+  const std::string& test_url("https://example.com");
+  view()->GetViewAccessibility().SetRootViewURL(test_url);
+  ui::AXNodeData node_data;
+  view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            test_url);
+
+  // Setting the root view URL is only supported on the root view.
+  EXPECT_DCHECK_DEATH(
+      child_view()->GetViewAccessibility().SetRootViewURL(test_url));
+}
+
 TEST_F(ViewAccessibilityTest, LazyLoadingNoOverlap) {
   TestView* lazy_loading_view = new TestView();
   lazy_loading_view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);

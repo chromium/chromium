@@ -51,6 +51,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/render_text.h"
@@ -72,6 +73,8 @@
 #endif
 
 namespace {
+
+using GetBadgeTextCallback = base::RepeatingCallback<gfx::RenderText&()>;
 
 constexpr int kProgressRingRadius = 9;
 constexpr int kProgressRingRadiusTouchMode = 12;
@@ -262,6 +265,169 @@ gfx::Insets GetSecurityViewMargin() {
                          0);
 }
 
+// Helper class to draw a circular badge with text.
+class CircleBadgeImageSource : public gfx::CanvasImageSource {
+ public:
+  CircleBadgeImageSource(const gfx::Size& size,
+                         SkColor background_color,
+                         GetBadgeTextCallback get_text_callback)
+      : gfx::CanvasImageSource(size),
+        background_color_(background_color),
+        get_text_callback_(std::move(get_text_callback)) {}
+
+  CircleBadgeImageSource(const CircleBadgeImageSource&) = delete;
+  CircleBadgeImageSource& operator=(const CircleBadgeImageSource&) = delete;
+
+  ~CircleBadgeImageSource() override = default;
+
+  // gfx::CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    cc::PaintFlags flags;
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
+    flags.setColor(background_color_);
+
+    gfx::RenderText& render_text = get_text_callback_.Run();
+    const gfx::Rect& badge_rect = render_text.display_rect();
+    // Set the corner radius to make the rectangle appear like a circle.
+    const int corner_radius = badge_rect.height() / 2;
+    canvas->DrawRoundRect(badge_rect, corner_radius, flags);
+    render_text.Draw(canvas);
+  }
+
+ private:
+  const SkColor background_color_;
+  GetBadgeTextCallback get_text_callback_;
+};
+
+class DownloadsImageBadge : public views::ImageView {
+  METADATA_HEADER(DownloadsImageBadge, views::ImageView)
+ public:
+  DownloadsImageBadge(DownloadsImageBadge&) = delete;
+  DownloadsImageBadge& operator=(const DownloadsImageBadge&) = delete;
+  ~DownloadsImageBadge() override = default;
+
+  // Create a DownloadsImageBadge and adds it to |parent|. The
+  // returned badge is owned by the |parent|.
+  static DownloadsImageBadge* Install(ToolbarButton* parent) {
+    auto badge =
+        base::WrapUnique<DownloadsImageBadge>(new DownloadsImageBadge());
+    return parent->AddChildView(std::move(badge));
+  }
+
+  // Returns the image badge if it is a direct child of the `parent`.
+  static DownloadsImageBadge* GetImageBadge(ToolbarButton* parent) {
+    for (auto& child : parent->children()) {
+      if (views::IsViewClass<DownloadsImageBadge>(child)) {
+        return views::AsViewClass<DownloadsImageBadge>(child);
+      }
+    }
+    return nullptr;
+  }
+
+  void UpdateImage(bool is_active,
+                   int progress_download_count,
+                   SkColor badge_text_color,
+                   SkColor badge_background_color) {
+    // Only display the badge if there are multiple downloads.
+    if (!is_active || progress_download_count < 2) {
+      SetImage(ui::ImageModel());
+      return;
+    }
+    const int badge_height = bounds().height();
+    // base::Unretained is safe because this owns the ImageView to which the
+    // image source is applied.
+    SetImage(ui::ImageModel::FromImageSkia(
+        gfx::CanvasImageSource::MakeImageSkia<CircleBadgeImageSource>(
+            gfx::Size(badge_height, badge_height), badge_background_color,
+            base::BindRepeating(&DownloadsImageBadge::GetBadgeText,
+                                base::Unretained(this), progress_download_count,
+                                badge_text_color))));
+  }
+
+ private:
+  // Max download count to show in the badge. Any higher number of downloads
+  // results in a placeholder ("9+").
+  static constexpr int kMaxDownloadCountDisplayed = 9;
+
+  DownloadsImageBadge() {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+    SetCanProcessEventsWithinSubtree(false);
+  }
+
+  gfx::RenderText& GetBadgeText(int progress_download_count,
+                                SkColor badge_text_color) {
+    CHECK_GE(progress_download_count, 2);
+    const int badge_height = bounds().height();
+    bool use_placeholder = progress_download_count > kMaxDownloadCountDisplayed;
+    const int index = use_placeholder ? 0 : progress_download_count - 1;
+    gfx::RenderText* render_text = render_texts_.at(index).get();
+    if (render_text == nullptr) {
+      ui::ResourceBundle* bundle = &ui::ResourceBundle::GetSharedInstance();
+      gfx::FontList font = bundle->GetFontList(ui::ResourceBundle::BaseFont)
+                               .DeriveWithHeightUpperBound(badge_height);
+      std::u16string text =
+          use_placeholder
+              ? base::StrCat(
+                    {base::FormatNumber(kMaxDownloadCountDisplayed), u"+"})
+              : base::FormatNumber(progress_download_count);
+
+      std::unique_ptr<gfx::RenderText> new_render_text =
+          gfx::RenderText::CreateRenderText();
+      new_render_text->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+      new_render_text->SetCursorEnabled(false);
+      new_render_text->SetFontList(std::move(font));
+      new_render_text->SetText(std::move(text));
+      new_render_text->SetDisplayRect(
+          gfx::Rect(gfx::Point(), gfx::Size(badge_height, badge_height)));
+
+      render_text = new_render_text.get();
+      render_texts_[index] = std::move(new_render_text);
+    }
+    render_text->SetColor(badge_text_color);
+    return *render_text;
+  }
+
+  // View:
+  void Layout(PassKey) override {
+    LayoutSuperclass<views::ImageView>(this);
+    gfx::Size parent_size = parent()->GetPreferredSize();
+    const int badge_height =
+        std::min(parent_size.width(), parent_size.height()) / 2;
+    const int badge_offset_x = parent_size.width() - badge_height;
+    const int badge_offset_y = parent_size.height() - badge_height;
+    // If the badge height has changed, clear the cache of render_texts_.
+    if (badge_height != bounds().height()) {
+      render_texts_ = std::array<std::unique_ptr<gfx::RenderText>,
+                                 kMaxDownloadCountDisplayed>{};
+    }
+    SetBoundsRect(
+        gfx::Rect(badge_offset_x, badge_offset_y, badge_height, badge_height));
+  }
+
+  // RenderTexts used for the number in the badge. Stores the text for "n" at
+  // index n - 1, and stores the text for the placeholder ("9+") at index 0.
+  // This is done to avoid re-creating the same RenderText on each paint. Text
+  // color of each RenderText is reset upon each paint.
+  std::array<std::unique_ptr<gfx::RenderText>, kMaxDownloadCountDisplayed>
+      render_texts_{};
+};
+BEGIN_METADATA(DownloadsImageBadge)
+END_METADATA
+
+DownloadsImageBadge* GetImageBadge(BrowserView* browser_view) {
+  auto* button = GetDownloadsButton(browser_view);
+  if (!button) {
+    return nullptr;
+  }
+  auto* badge = DownloadsImageBadge::GetImageBadge(button);
+  if (!badge) {
+    badge = DownloadsImageBadge::Install(button);
+  }
+  return badge;
+}
+
 }  // namespace
 
 DownloadToolbarUIController::DownloadToolbarUIController(
@@ -372,6 +538,11 @@ void DownloadToolbarUIController::UpdateDownloadIcon(
     }
     progress_info_ = new_progress;
   }
+  // We need to redraw the ring constantly while the scanning animation is
+  // running.
+  if (ShouldShowScanningAnimation()) {
+    redraw_progress_soon_ = true;
+  }
 
   if (redraw_progress_soon_ || update_icon) {
     UpdateIcon();
@@ -468,6 +639,7 @@ void DownloadToolbarUIController::UpdateIcon() {
     return;
   }
 
+  int progress_download_count = progress_info_.download_count;
   bool is_disabled = !action_item_->GetEnabled() || is_dormant_;
   bool is_active = active_ == IconActive::kActive;
   SkColor disabled_color =
@@ -481,6 +653,8 @@ void DownloadToolbarUIController::UpdateIcon() {
                   : button->GetColorProvider()->GetColor(
                         is_active ? kColorDownloadToolbarButtonActive
                                   : kColorDownloadToolbarButtonInactive);
+  SkColor badge_background_color =
+      button->GetColorProvider()->GetColor(kColorToolbar);
 
   const gfx::VectorIcon* new_icon;
   SkColor icon_color =
@@ -493,18 +667,31 @@ void DownloadToolbarUIController::UpdateIcon() {
     new_icon = is_touch_mode ? &kDownloadToolbarButtonTouchIcon
                              : &kDownloadToolbarButtonChromeRefreshIcon;
   }
-  actions::ActionManager::Get()
-      .FindAction(
-          kActionShowDownloads,
-          browser_view_->browser()->browser_actions()->root_action_item())
-      ->SetProperty(kActionItemUnderlineIndicatorKey,
-                    (!is_dormant_ && (active_ == IconActive::kActive)));
+  action_item_->SetProperty(kActionItemUnderlineIndicatorKey,
+                            (!is_dormant_ && (active_ == IconActive::kActive)));
 
   action_item_->SetImage(ui::ImageModel::FromVectorIcon(*new_icon, icon_color));
+
+  // Update the toolbar button's tooltip.
+  std::u16string& tooltip_for_progress_count =
+      tooltip_texts_[progress_download_count];
+  if (tooltip_for_progress_count.empty()) {
+    // We already initialized the text for 0 downloads in the constructor.
+    CHECK_GT(progress_download_count, 0);
+    // "1 download in progress" or "N downloads in progress".
+    tooltip_for_progress_count = l10n_util::GetPluralStringFUTF16(
+        IDS_DOWNLOAD_BUBBLE_TOOLTIP_IN_PROGRESS_COUNT, progress_download_count);
+  }
+  action_item_->SetTooltipText(tooltip_texts_.at(progress_download_count));
 
   redraw_progress_soon_ = false;
 
   DownloadProgressRing* progress_ring = GetProgressRing(browser_view_);
+
+  GetImageBadge(browser_view_)
+      ->UpdateImage(is_active, progress_download_count, progress_color,
+                    badge_background_color);
+
   // Do not show the progress ring when there is no in progress download.
   if (state_ == IconState::kComplete || progress_info_.download_count == 0) {
     progress_ring->SetIdle();
@@ -620,6 +807,10 @@ bool DownloadToolbarUIController::IsProgressRingInDormantStateForTesting() {
            DownloadProgressRing::DownloadStatus::kDormant;
   }
   return false;
+}
+
+views::ImageView* DownloadToolbarUIController::GetImageBadgeForTesting() {
+  return GetImageBadge(browser_view_);
 }
 
 DownloadToolbarUIController::BubbleCloser::BubbleCloser(

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <optional>
 #include <string>
@@ -21,7 +22,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1271,7 +1271,7 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
 
   for (auto& task : new_locked_image_tasks) {
     auto decode_it =
-        base::ranges::find(graph_.nodes, task.get(), &TaskGraph::Node::task);
+        std::ranges::find(graph_.nodes, task.get(), &TaskGraph::Node::task);
     // If this task is already in the graph, then we don't have to insert it.
     if (decode_it != graph_.nodes.end())
       continue;
@@ -1545,7 +1545,7 @@ void TileManager::InsertNodesForRasterTask(TileTask* raster_task,
 
     // Add decode task if it doesn't already exist in graph_.
     auto decode_it =
-        base::ranges::find(graph_.nodes, decode_task, &TaskGraph::Node::task);
+        std::ranges::find(graph_.nodes, decode_task, &TaskGraph::Node::task);
 
     // In rare circumstances, a background category task may come in before a
     // foreground category task. In these cases, upgrade any background category

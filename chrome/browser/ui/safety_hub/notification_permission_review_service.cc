@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -13,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
@@ -175,7 +175,7 @@ bool NotificationPermissionsReviewService::NotificationPermissionsResult::
         *notification_permission.FindString(kSafetyHubOriginKey)));
   }
   std::set<ContentSettingsPattern> new_origins = GetOrigins();
-  return !base::ranges::includes(old_origins, new_origins);
+  return !std::ranges::includes(old_origins, new_origins);
 }
 
 std::u16string NotificationPermissionsReviewService::

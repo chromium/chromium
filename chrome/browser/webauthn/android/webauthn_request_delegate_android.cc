@@ -4,13 +4,13 @@
 
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
@@ -68,7 +68,7 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
   hybrid_callback_ = std::move(hybrid_callback);
 
   std::vector<PasskeyCredential> display_credentials;
-  base::ranges::transform(
+  std::ranges::transform(
       credentials, std::back_inserter(display_credentials),
       [](const auto& credential) {
         return PasskeyCredential(

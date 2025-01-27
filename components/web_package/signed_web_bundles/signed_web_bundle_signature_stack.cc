@@ -4,10 +4,11 @@
 
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 
+#include <algorithm>
+
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/overloaded.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
@@ -48,7 +49,7 @@ SignedWebBundleSignatureStack::Create(
     return base::unexpected("The signature stack needs at least one entry.");
   }
 
-  if (base::ranges::all_of(entries, [](const auto& signature) {
+  if (std::ranges::all_of(entries, [](const auto& signature) {
         return absl::holds_alternative<SignedWebBundleSignatureInfoUnknown>(
             signature.signature_info());
       })) {

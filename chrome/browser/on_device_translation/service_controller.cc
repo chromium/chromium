@@ -4,6 +4,8 @@
 
 #include "chrome/browser/on_device_translation/service_controller.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -11,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
@@ -366,11 +367,11 @@ void OnDeviceTranslationServiceController::MaybeRunPendingTasks() {
   const auto installed_packs = ComponentManager::GetInstalledLanguagePacks();
   std::vector<PendingTask> pending_tasks = std::move(pending_tasks_);
   for (auto& task : pending_tasks) {
-    if (base::ranges::all_of(task.required_packs.begin(),
-                             task.required_packs.end(),
-                             [&](const LanguagePackKey& key) {
-                               return installed_packs.contains(key);
-                             })) {
+    if (std::ranges::all_of(task.required_packs.begin(),
+                            task.required_packs.end(),
+                            [&](const LanguagePackKey& key) {
+                              return installed_packs.contains(key);
+                            })) {
       std::move(task.once_closure).Run();
     } else {
       pending_tasks_.push_back(std::move(task));
@@ -451,12 +452,11 @@ void OnDeviceTranslationServiceController::CalculateLanguagePackRequirements(
   CHECK(to_be_registered_packs.empty());
   required_packs = CalculateRequiredLanguagePacks(source_lang, target_lang);
   const auto installed_packs = ComponentManager::GetInstalledLanguagePacks();
-  base::ranges::set_difference(
-      required_packs, installed_packs,
-      std::back_inserter(required_not_installed_packs));
+  std::ranges::set_difference(required_packs, installed_packs,
+                              std::back_inserter(required_not_installed_packs));
   const auto registered_packs = ComponentManager::GetRegisteredLanguagePacks();
-  base::ranges::set_difference(required_not_installed_packs, registered_packs,
-                               std::back_inserter(to_be_registered_packs));
+  std::ranges::set_difference(required_not_installed_packs, registered_packs,
+                              std::back_inserter(to_be_registered_packs));
 }
 
 void OnDeviceTranslationServiceController::OnServiceIdle() {

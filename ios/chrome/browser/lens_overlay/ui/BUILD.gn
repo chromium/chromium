@@ -115,6 +115,7 @@ source_set("progress_bar") {
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/common:string_conversions",
     "//ios/third_party/material_components_ios",
     "//ui/base",
   ]

@@ -68,7 +68,7 @@ std::vector<SurfaceId> FrameEvictor::CollectSurfaceIdsForEviction() const {
     output_ids.push_back(ids.ui_compositor_id);
   }
 
-  base::ranges::sort(output_ids.begin(), output_ids.end());
+  std::ranges::sort(output_ids.begin(), output_ids.end());
 
   return output_ids;
 }

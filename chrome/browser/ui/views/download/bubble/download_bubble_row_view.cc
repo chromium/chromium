@@ -509,7 +509,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
 views::View::Views DownloadBubbleRowView::GetChildrenInZOrder() {
   auto children = views::View::GetChildrenInZOrder();
   const auto move_child_to_top = [&](View* child) {
-    auto it = base::ranges::find(children, child);
+    auto it = std::ranges::find(children, child);
     CHECK(it != children.end(), base::NotFatalUntil::M130);
     std::rotate(it, it + 1, children.end());
   };

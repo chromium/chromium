@@ -4,12 +4,12 @@
 
 #include "chrome/browser/nearby_sharing/nearby_per_session_discovery_manager.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/nearby_confirmation_manager.h"
@@ -169,10 +169,10 @@ void NearbyPerSessionDiscoveryManager::OnShareTargetDiscovered(
   // Dedup by the more stable device ID if possible.
   if (share_target.device_id) {
     auto it =
-        base::ranges::find(discovered_share_targets_, share_target.device_id,
-                           [](const auto& id_share_target_pair) {
-                             return id_share_target_pair.second.device_id;
-                           });
+        std::ranges::find(discovered_share_targets_, share_target.device_id,
+                          [](const auto& id_share_target_pair) {
+                            return id_share_target_pair.second.device_id;
+                          });
 
     if (it != discovered_share_targets_.end()) {
       CD_LOG(VERBOSE, Feature::NS)

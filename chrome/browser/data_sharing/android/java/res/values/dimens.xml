@@ -31,5 +31,7 @@ found in the LICENSE file.
     <dimen name="recent_activity_avatar_margin_end">16dp</dimen>
     <dimen name="recent_activity_title_top_margin">14dp</dimen>
     <dimen name="recent_activity_recycler_view_top_margin">7dp</dimen>
+    <dimen name="recent_activity_empty_view_top_margin">80dp</dimen>
+    <dimen name="recent_activity_content_area_min_height">200dp</dimen>
 
 </resources>

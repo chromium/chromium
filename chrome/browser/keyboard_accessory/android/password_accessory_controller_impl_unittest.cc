@@ -388,9 +388,6 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(*password_client()->GetPasswordFeatureManager(),
             IsOptedInForAccountStorage)
         .WillByDefault(Return(false));
-    ON_CALL(*password_client()->GetPasswordFeatureManager(),
-            GetDefaultPasswordStore)
-        .WillByDefault(Return(PasswordForm::Store::kProfileStore));
     window_android_.get()->get()->AddChild(web_contents()->GetNativeView());
   }
 
@@ -1360,9 +1357,6 @@ TEST_F(PasswordAccessoryControllerTest,
   ON_CALL(*password_client()->GetPasswordFeatureManager(),
           IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
-  ON_CALL(*password_client()->GetPasswordFeatureManager(),
-          GetDefaultPasswordStore)
-      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
   CreateSheetController();
   password_manager::PasswordFormDigest form_digest(
       PasswordForm::Scheme::kHtml, kExampleSignonRealm, GURL(kExampleSite));
@@ -1386,9 +1380,6 @@ TEST_F(PasswordAccessoryControllerTest,
   ON_CALL(*password_client()->GetPasswordFeatureManager(),
           IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
-  ON_CALL(*password_client()->GetPasswordFeatureManager(),
-          GetDefaultPasswordStore)
-      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
   CreateSheetController();
   PasswordForm expected_form;
   expected_form.blocked_by_user = true;

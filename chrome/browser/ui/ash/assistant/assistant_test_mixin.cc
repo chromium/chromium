@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/auto_reset.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_run_loop_timeout.h"

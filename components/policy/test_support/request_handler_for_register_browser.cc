@@ -64,9 +64,9 @@ RequestHandlerForRegisterBrowserOrPolicyAgent::HandleRequest(
       KeyValueFromUrl(request.GetURL(), dm_protocol::kParamDeviceID);
   client_info.device_token = device_token;
   client_info.machine_name = register_browser_request.machine_name();
-  base::ranges::copy(allowed_policy_types(),
-                     std::inserter(client_info.allowed_policy_types,
-                                   client_info.allowed_policy_types.end()));
+  std::ranges::copy(allowed_policy_types(),
+                    std::inserter(client_info.allowed_policy_types,
+                                  client_info.allowed_policy_types.end()));
   client_storage()->RegisterClient(std::move(client_info));
 
   return CreateHttpResponse(net::HTTP_OK, device_management_response);

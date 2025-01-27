@@ -195,7 +195,6 @@ class AccountHoverButtonSecondaryView : public views::View {
 class AccountSelectionViewBase {
  public:
   AccountSelectionViewBase(
-      content::WebContents* web_contents,
       FedCmAccountSelectionView* owner,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::u16string rp_for_display);
@@ -253,8 +252,6 @@ class AccountSelectionViewBase {
   // Returns the network traffic annotation tag for FedCM.
   static net::NetworkTrafficAnnotationTag GetTrafficAnnotation();
 
-  content::WebContents* web_contents() { return web_contents_.get(); }
-
  protected:
   void SetLabelProperties(views::Label* label);
 
@@ -289,11 +286,6 @@ class AccountSelectionViewBase {
 
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
-
-  // Web contents which the dialog is rendered on.
-  // TODO(https://crbug.com/377803489): WeakPtr is unnecessary and a symptom of
-  // owner_ bug below.
-  base::WeakPtr<content::WebContents> web_contents_;
 
   // The images for the brand icons. Stored so that they can be reused upon
   // pressing the back button after choosing an account.

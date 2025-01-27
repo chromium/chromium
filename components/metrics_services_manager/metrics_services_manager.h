@@ -110,6 +110,9 @@ class MetricsServicesManager {
   // Returns true iff UKM is allowed for all profiles.
   bool IsUkmAllowedForAllProfiles();
 
+  // Returns true iff DWA is allowed for all profiles.
+  bool IsDwaAllowedForAllProfiles();
+
   // Returns a low entropy provider.
   std::unique_ptr<const variations::EntropyProviders>
   CreateEntropyProvidersForTesting();

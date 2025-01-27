@@ -236,7 +236,7 @@ class CONTENT_EXPORT InterestGroupAuction
     std::optional<mojo::ReceiverId> generate_bid_client_receiver_id;
 
     // Trusted signals cache handle for the bidder signals.
-    scoped_refptr<TrustedSignalsCacheImpl::Handle> bidding_signals_handle;
+    std::unique_ptr<TrustedSignalsCacheImpl::Handle> bidding_signals_handle;
 
     // Mojo pipe to use to fill in potentially promise-provided arguments.
     // Only populated in between BeginGenerateBid and FinishGenerateBid().
@@ -926,7 +926,7 @@ class CONTENT_EXPORT InterestGroupAuction
   struct ScoreAdClientData {
     ScoreAdClientData(
         std::unique_ptr<Bid> bid,
-        scoped_refptr<TrustedSignalsCacheImpl::Handle> cache_handle);
+        std::unique_ptr<TrustedSignalsCacheImpl::Handle> cache_handle);
     ScoreAdClientData(ScoreAdClientData&&);
     ~ScoreAdClientData();
 
@@ -937,7 +937,7 @@ class CONTENT_EXPORT InterestGroupAuction
     // The cache Handle for keeping the TrustedSignalsCacheImpl request alive,
     // if there is one. Associating it directly with the ScoreAdClient receiver
     // means closing the pipe conveniently releases the cache entry as well.
-    scoped_refptr<TrustedSignalsCacheImpl::Handle> cache_handle;
+    std::unique_ptr<TrustedSignalsCacheImpl::Handle> cache_handle;
   };
 
   // ---------------------------------

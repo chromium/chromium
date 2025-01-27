@@ -307,7 +307,7 @@ bool UnusedSitePermissionsService::UnusedSitePermissionsResult::
   }
 
   std::set<ContentSettingsPattern> new_origins = GetRevokedOrigins();
-  return !base::ranges::includes(old_origins, new_origins);
+  return !std::ranges::includes(old_origins, new_origins);
 }
 
 std::u16string UnusedSitePermissionsService::UnusedSitePermissionsResult::

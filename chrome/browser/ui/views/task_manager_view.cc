@@ -618,9 +618,11 @@ void TaskManagerView::Init() {
                                          : DisplayCategory::kAll);
   tab_table->SetModel(table_model_.get());
   tab_table->SetGrouper(this);
+  tab_table->SetGrouperVisibility(!table_config_.layout_refresh);
   tab_table->SetSortOnPaint(true);
   if (table_config_.layout_refresh) {
     tab_table->SetMouseHoveringEnabled(true);
+    tab_table->SetRowPadding(views::DISTANCE_TABLE_VERTICAL_TEXT_PADDING);
   }
   tab_table->set_observer(this);
   tab_table->set_context_menu_controller(this);
@@ -636,11 +638,12 @@ void TaskManagerView::Init() {
 
   if (table_config_.header_padding) {
     views::TableHeaderStyle header_style = {
-        .cell_vertical_padding = 16,
+        .cell_vertical_padding = 14,
         .cell_horizontal_padding = 12,
         .resize_bar_vertical_padding = 16,
-        .separator_horizontal_padding = 6,
-        .font_weight = gfx::Font::Weight::MEDIUM};
+        .separator_horizontal_padding = 0,
+        .font_weight = gfx::Font::Weight::MEDIUM,
+        .separator_horizontal_color_id = ui::kColorSysDivider};
     tab_table->SetHeaderStyle(header_style);
   }
 

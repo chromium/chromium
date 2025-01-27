@@ -1254,6 +1254,20 @@
       <message name="IDS_CONFIRMATION_STOP_SHOWING" desc="Text next to a checkbox asking if confirmation should not be shown again. Used for various tab operations.">
         Don&apos;t ask again
       </message>
+
+      <!-- New Tab Page Customization strings -->
+      <message name="IDS_NTP_CUSTOMIZATION_TITLE" desc="Title of the new tab page customization bottom sheet">
+        Customize your new tab page
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_SUBTITLE" desc="Subtitle of the new tab page customization bottom sheet">
+        Quickly get to what matters to you
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_FEED_SETTING_TITLE" desc="Open setting page for feed section customization when clicked">
+        Discover feed
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_FEED_SECTION_ON" desc="This texts show the feed section is visible at the new tab page">
+        On
+      </message>
     </messages>
   </release>
 </grit>

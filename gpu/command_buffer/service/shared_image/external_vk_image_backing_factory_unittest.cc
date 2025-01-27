@@ -9,11 +9,11 @@
 
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing_factory.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/gpu/vulkan_in_process_context_provider.h"

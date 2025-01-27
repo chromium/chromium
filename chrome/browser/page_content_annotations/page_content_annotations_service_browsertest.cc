@@ -104,8 +104,10 @@ class GetContentAnnotationsTask : public history::HistoryDBTask {
     }
 
     history::VisitContentAnnotations annotations;
-    if (db->GetContentAnnotationsForVisit(visits.at(0).visit_id, &annotations))
+    if (db->GetContentAnnotationsForVisit(visits.at(0).visit_id,
+                                          &annotations)) {
       stored_content_annotations_ = annotations;
+    }
 
     return true;
   }
@@ -1168,11 +1170,11 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester, "OptimizationGuide.AIPageContent.TotalLatency", 1);
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.AnnotatedPageContent.TotalSize", 1);
+      "OptimizationGuide.AnnotatedPageContent.TotalSize2", 1);
 
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester, "OptimizationGuide.InnerText.TotalLatency", 1);
-  histogram_tester.ExpectTotalCount("OptimizationGuide.InnerText.TotalSize", 1);
+  histogram_tester.ExpectTotalCount("OptimizationGuide.InnerText.TotalSize2", 1);
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

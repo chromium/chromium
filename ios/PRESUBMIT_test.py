@@ -162,6 +162,33 @@ class _CheckCanImproveTestUsingExpectNSEQ(unittest.TestCase):
         self.assertTrue('ios/path/foo_unittest.mm:7' in errors[0].message)
         self.assertTrue('ios/path/foo_unittest.mm:8' in errors[0].message)
 
+class _CheckNotUsingNSUserDefaults(unittest.TestCase):
+    """Test the _CheckNotUsingNSUserDefaults presubmit. """
+
+    def testFindImprovableTestUsingExpectNSEQ(self):
+        good_lines = [
+          '[defaults dictionaryForKey:key_name];',
+          ]
+        bad_lines = [
+          '[[NSUserDefaults standardUserDefaults]',
+          'NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];',
+          '[[NSUserDefaults standardUserDefaults] setObject:object_name',
+        ]
+
+        mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile('ios/path/defaults_unittest.mm',
+                                          good_lines + bad_lines),
+        ]
+        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+        errors = PRESUBMIT._CheckNotUsingNSUserDefaults(
+            mock_input, mock_output)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('warning', errors[0].type)
+        self.assertFalse('ios/path/defaults_unittest.mm:1' in errors[0].message)
+        self.assertTrue('ios/path/defaults_unittest.mm:2' in errors[0].message)
+        self.assertTrue('ios/path/defaults_unittest.mm:3' in errors[0].message)
+        self.assertTrue('ios/path/defaults_unittest.mm:4' in errors[0].message)
 
 if __name__ == '__main__':
     unittest.main()

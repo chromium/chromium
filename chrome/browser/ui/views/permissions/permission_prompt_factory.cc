@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
@@ -107,7 +107,7 @@ bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
 
   std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
       requests = delegate->Requests();
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       requests, [](permissions::PermissionRequest* request) {
         return request
             ->GetRequestChipText(
@@ -126,7 +126,7 @@ bool ShouldCurrentRequestUseQuietChip(
     permissions::PermissionPrompt::Delegate* delegate) {
   std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
       requests = delegate->Requests();
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       requests, [](permissions::PermissionRequest* request) {
         return request->request_type() ==
                    permissions::RequestType::kNotifications ||
@@ -139,7 +139,7 @@ bool ShouldCurrentRequestUseExclusiveAccessUI(
     permissions::PermissionPrompt::Delegate* delegate) {
   std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
       requests = delegate->Requests();
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       requests, [](permissions::PermissionRequest* request) {
         return request->request_type() ==
                    permissions::RequestType::kPointerLock ||

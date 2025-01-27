@@ -141,7 +141,7 @@ TEST_P(GeminiAppTabHelperTest, RecordsPageVisitHistograms) {
   // (b) the profile is not off the record.
   bool record = IsGeminiAppPreinstallEnabled() && !IsProfileOffTheRecord();
   for (const auto& [url, page] : page_urls) {
-    auto histogram_buckets_it = base::ranges::find(
+    auto histogram_buckets_it = std::ranges::find(
         histogram_buckets, static_cast<base::HistogramBase::Sample32>(page),
         &Bucket::min);
     {

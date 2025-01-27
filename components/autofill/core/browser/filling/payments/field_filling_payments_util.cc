@@ -4,9 +4,9 @@
 
 #include "components/autofill/core/browser/filling/payments/field_filling_payments_util.h"
 
+#include <algorithm>
 #include <optional>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -15,8 +15,8 @@
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/select_control_util.h"
@@ -409,7 +409,7 @@ std::u16string GetFillingValueForCreditCardForInput(
 // Replaces the digits in `value` with dots. Used for credit card preview when
 // obfuscating card information to the user.
 std::u16string ReplaceDigitsWithCenterDots(std::u16string value) {
-  base::ranges::replace_if(
+  std::ranges::replace_if(
       value.begin(), value.end(),
       [](char16_t c) { return base::IsAsciiDigit(c); },
       kMidlineEllipsisPlainDot);
@@ -524,8 +524,8 @@ bool WillFillCreditCardNumberOrCvc(
   // exists in the renderer and whether it is fillable.
   auto IsFillableField =
       [&fields, &trigger_autofill_field](const AutofillField& autofill_field) {
-        auto field = base::ranges::find(fields, autofill_field.global_id(),
-                                        &FormFieldData::global_id);
+        auto field = std::ranges::find(fields, autofill_field.global_id(),
+                                       &FormFieldData::global_id);
         if (field == fields.end()) {
           return false;
         }

@@ -897,8 +897,8 @@ TEST_P(TopRowAliasTest, CheckTopRowAlias) {
 
   std::vector<ui::Accelerator> accelerator_alias =
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator_);
-  base::ranges::sort(accelerator_alias);
-  base::ranges::sort(expected_accelerators_);
+  std::ranges::sort(accelerator_alias);
+  std::ranges::sort(expected_accelerators_);
 
   ASSERT_EQ(expected_accelerators_.size(), accelerator_alias.size());
   for (size_t i = 0; i < expected_accelerators_.size(); i++) {
@@ -1752,8 +1752,8 @@ TEST_P(ActionKeyboardVariantsTest, CheckTopRowAlias) {
 
   std::vector<ui::Accelerator> accelerator_alias =
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator_);
-  base::ranges::sort(accelerator_alias);
-  base::ranges::sort(expected_accelerators_);
+  std::ranges::sort(accelerator_alias);
+  std::ranges::sort(expected_accelerators_);
 
   ASSERT_EQ(expected_accelerators_.size(), accelerator_alias.size());
   for (size_t i = 0; i < expected_accelerators_.size(); i++) {

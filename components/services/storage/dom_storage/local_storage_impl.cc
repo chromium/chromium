@@ -443,7 +443,7 @@ void LocalStorageImpl::NeedsFlushForTesting(
     return;
   }
 
-  std::move(callback).Run(base::ranges::any_of(areas_, [](const auto& iter) {
+  std::move(callback).Run(std::ranges::any_of(areas_, [](const auto& iter) {
     return iter.second->storage_area()->has_changes_to_commit();
   }));
 }

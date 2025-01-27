@@ -11,7 +11,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -227,7 +226,7 @@ class CableMockAdapter : public MockBluetoothAdapter {
 
     std::vector<uint8_t> service_data(18);
     service_data[0] = 1 << 5;
-    base::ranges::copy(authenticator_eid, service_data.begin() + 2);
+    std::ranges::copy(authenticator_eid, service_data.begin() + 2);
     BluetoothDevice::ServiceDataMap service_data_map;
     service_data_map.emplace(kGoogleCableUUID128, std::move(service_data));
 

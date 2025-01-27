@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/public/cpp/desk_template.h"
@@ -15,7 +16,6 @@
 #include "ash/wm/overview/overview_session.h"
 #include "base/i18n/string_compare.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -130,8 +130,8 @@ void SavedDeskGridView::AddOrUpdateEntries(
   std::vector<SavedDeskItemView*> new_grid_items;
 
   for (const DeskTemplate* entry : entries) {
-    auto iter = base::ranges::find(grid_items_, entry->uuid(),
-                                   &SavedDeskItemView::uuid);
+    auto iter =
+        std::ranges::find(grid_items_, entry->uuid(), &SavedDeskItemView::uuid);
 
     if (iter != grid_items_.end()) {
       (*iter)->UpdateSavedDesk(*entry);
@@ -158,7 +158,7 @@ void SavedDeskGridView::AddOrUpdateEntries(
 void SavedDeskGridView::DeleteEntries(const std::vector<base::Uuid>& uuids,
                                       bool delete_animation) {
   for (const base::Uuid& uuid : uuids) {
-    auto iter = base::ranges::find(grid_items_, uuid, &SavedDeskItemView::uuid);
+    auto iter = std::ranges::find(grid_items_, uuid, &SavedDeskItemView::uuid);
 
     if (iter == grid_items_.end())
       continue;
@@ -249,7 +249,7 @@ SavedDeskItemView* SavedDeskGridView::GetItemForUUID(const base::Uuid& uuid) {
   if (!uuid.is_valid())
     return nullptr;
 
-  auto it = base::ranges::find(grid_items_, uuid, &SavedDeskItemView::uuid);
+  auto it = std::ranges::find(grid_items_, uuid, &SavedDeskItemView::uuid);
   return it == grid_items_.end() ? nullptr : *it;
 }
 

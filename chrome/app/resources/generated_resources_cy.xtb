@@ -5132,7 +5132,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4593021220803146968">&amp;Mynd i <ph name="URL" /></translation>
 <translation id="4593962599442730215">Newid eich dewisiadau</translation>
 <translation id="4594218792629569101">Dewiswch “Marcio fel wedi'i darllen” i symud y dudalen i waelod eich rhestr</translation>
-<translation id="4594577641390224176">Chwilio am dudalen ynghylch y system? Ewch i</translation>
 <translation id="4595560905247879544">Dim ond y rheolwr (<ph name="CUSTODIAN_NAME" />) all newid apiau ac estyniadau.</translation>
 <translation id="4596295440756783523">Mae gennych dystysgrifau ar ffeil sy'n nodi'r gweinyddwyr hyn</translation>
 <translation id="4598345735110653698">Rheoli codau pas</translation>
@@ -6755,7 +6754,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5787420647064736989">Enw'r ddyfais</translation>
 <translation id="5788367137662787332">Mae'n ddrwg gennym, ni ellid gosod o leiaf un rhaniad ar y ddyfais <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5789581866075720267">I fewnforio cyfrineiriau i <ph name="BRAND" /> ar y ddyfais hon, dewiswch ffeil CSV.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Llwyddiant</translation>
 <translation id="5790651917470750848">Mae'r porth ymlaen eisoes yn bodoli</translation>
 <translation id="5792295754950501287">Rhagor o gamau gweithredu ar gyfer <ph name="CARD_DESCRIPTION" /></translation>
@@ -7174,7 +7172,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6086418630711763366">Gallwch lywio tudalennau gyda chyrchwr testun. Pwyswch Ctrl + <ph name="KEY" /> i'w ddiffodd.</translation>
 <translation id="6086846494333236931">Wedi'i osod gan eich gweinyddwr</translation>
 <translation id="6087286598828478206">Rhwystro a gadael y grŵp?</translation>
-<translation id="6087746524533454243">Chwilio am dudalen ynghylch y porwr? Ewch i</translation>
 <translation id="6087960857463881712">Wyneb anhygoel</translation>
 <translation id="6088475950266477163">Gosod&amp;iadau</translation>
 <translation id="608912389580139775">I ychwanegu'r dudalen hon at eich rhestr ddarllen, cliciwch yr eicon Nod Tudalen</translation>

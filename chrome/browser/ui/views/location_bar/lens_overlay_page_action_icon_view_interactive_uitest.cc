@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"

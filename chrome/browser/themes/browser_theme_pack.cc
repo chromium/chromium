@@ -12,6 +12,7 @@
 #include <limits.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <limits>
 #include <memory>
@@ -29,7 +30,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -168,15 +168,15 @@ constexpr PersistingImagesTable kPersistingImages[] = {
 };
 
 BrowserThemePack::PersistentID GetPersistentIDByName(const std::string& key) {
-  auto* it = base::ranges::find_if(kPersistingImages, [&](const auto& image) {
+  auto* it = std::ranges::find_if(kPersistingImages, [&](const auto& image) {
     return base::EqualsCaseInsensitiveASCII(key, image.key);
   });
   return it == std::end(kPersistingImages) ? PRS::kInvalid : it->persistent_id;
 }
 
 BrowserThemePack::PersistentID GetPersistentIDByIDR(int idr) {
-  auto* it = base::ranges::find(kPersistingImages, idr,
-                                &PersistingImagesTable::idr_id);
+  auto* it =
+      std::ranges::find(kPersistingImages, idr, &PersistingImagesTable::idr_id);
   return it == std::end(kPersistingImages) ? PRS::kInvalid : it->persistent_id;
 }
 
@@ -1532,7 +1532,7 @@ void BrowserThemePack::AddFileAtScaleToMap(const std::string& image_name,
 
 void BrowserThemePack::BuildSourceImagesArray(const FilePathMap& file_paths) {
   source_images_ = new SourceImage[file_paths.size() + 1];
-  base::ranges::transform(
+  std::ranges::transform(
       file_paths, source_images_.get(),
       [](const auto& pair) { return SourceImage{pair.first}; });
   source_images_[file_paths.size()].id = -1;

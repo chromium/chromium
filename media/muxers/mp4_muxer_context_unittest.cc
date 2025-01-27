@@ -25,7 +25,7 @@ TEST(Mp4MuxerContextTest, Default) {
   auto output_position_tracker =
       std::make_unique<OutputPositionTracker>(base::BindLambdaForTesting(
           [&written_data, &run_loop](base::span<const uint8_t> data) {
-            base::ranges::copy(data, std::back_inserter(written_data));
+            std::ranges::copy(data, std::back_inserter(written_data));
             run_loop.Quit();
           }));
 

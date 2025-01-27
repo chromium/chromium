@@ -6,7 +6,6 @@ import 'chrome://shortcut-customization/js/accelerator_edit_dialog.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
 import {FakeShortcutInputProvider} from 'chrome://resources/ash/common/shortcut_input_ui/fake_shortcut_input_provider.js';
 import type {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
@@ -83,8 +82,8 @@ suite('acceleratorEditDialogTest', function() {
     viewElement!.acceleratorInfos = accelerators;
     viewElement!.description = description;
     await flush();
-    const dialog =
-        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    const dialog = viewElement!.shadowRoot!.querySelector('cr-dialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
     const acceleratorElements =
         dialog.querySelectorAll('accelerator-edit-view');
@@ -132,7 +131,8 @@ suite('acceleratorEditDialogTest', function() {
         'g', keys3[2]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
 
     // Clicking on "Done" button will close the dialog.
-    const button = dialog!.querySelector('#doneButton') as CrButtonElement;
+    const button = dialog!.querySelector<CrButtonElement>('#doneButton');
+    assertTrue(!!button);
     button.click();
     assertFalse(dialog.open);
   });
@@ -161,7 +161,7 @@ suite('acceleratorEditDialogTest', function() {
     // The "Add Shortcut" button should be visible and the pending accelerator
     // should not be visible.
     const buttonContainer =
-        dialog!.querySelector('#addAcceleratorContainer') as HTMLDivElement;
+        dialog!.querySelector<HTMLDivElement>('#addAcceleratorContainer');
     assertTrue(!!buttonContainer);
     assertFalse(buttonContainer!.hidden);
     let pendingAccelerator: AcceleratorEditViewElement|null =
@@ -171,13 +171,13 @@ suite('acceleratorEditDialogTest', function() {
     // Clicking on the "Add Shortcut" button should hide the button and show
     // the pending shortcut.
     const addButton =
-        dialog!.querySelector('#addAcceleratorButton') as CrButtonElement;
+        dialog!.querySelector<CrButtonElement>('#addAcceleratorButton');
     addButton!.click();
     await flushTasks();
     assertTrue(buttonContainer!.hidden);
     // Expected the dialog's "done" button to be disabled when adding a new
     // accelerator.
-    const doneButton = dialog!.querySelector('#doneButton') as CrButtonElement;
+    const doneButton = dialog!.querySelector<CrButtonElement>('#doneButton');
     assertTrue(doneButton!.disabled);
 
     // Input hint should be shown when adding a new accelerator.
@@ -199,8 +199,10 @@ suite('acceleratorEditDialogTest', function() {
 
     // Click on the cancel button, expect the "Add Shortcut" button to be
     // visible and the pending accelerator to be hidden.
-    const cancelButton = pendingAccelerator!.shadowRoot!.querySelector(
-                             '#cancelButton') as CrButtonElement;
+    const cancelButton =
+        pendingAccelerator!.shadowRoot!.querySelector<CrButtonElement>(
+            '#cancelButton');
+    assertTrue(!!cancelButton);
     cancelButton.click();
     await flushTasks();
 
@@ -223,8 +225,8 @@ suite('acceleratorEditDialogTest', function() {
     viewElement!.acceleratorInfos = accelerators;
     viewElement!.description = description;
     await flush();
-    const dialog =
-        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    const dialog = viewElement!.shadowRoot!.querySelector('cr-dialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
     const acceleratorElements =
         dialog.querySelectorAll('accelerator-edit-view');
@@ -241,7 +243,8 @@ suite('acceleratorEditDialogTest', function() {
 
     await flushTasks();
     const restoreDefaultButton =
-        dialog!.querySelector('#restoreDefault') as CrButtonElement;
+        dialog!.querySelector<CrButtonElement>('#restoreDefault');
+    assertTrue(!!restoreDefaultButton);
     restoreDefaultButton.click();
     await flushTasks();
 
@@ -250,7 +253,8 @@ suite('acceleratorEditDialogTest', function() {
     assertEquals(UserAction.kResetAction, provider.getLatestRecordedAction());
 
     // Click done button.
-    const doneButton = dialog!.querySelector('#doneButton') as CrButtonElement;
+    const doneButton = dialog!.querySelector<CrButtonElement>('#doneButton');
+    assertTrue(!!doneButton);
     doneButton.click();
 
     // Wait until dialog is closed to make sure onDialogClose() is triggered.
@@ -274,8 +278,8 @@ suite('acceleratorEditDialogTest', function() {
     viewElement!.acceleratorInfos = accelerators;
     viewElement!.description = description;
     await flush();
-    const dialog =
-        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    const dialog = viewElement!.shadowRoot!.querySelector('cr-dialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
     const acceleratorElements =
         dialog.querySelectorAll('accelerator-edit-view');
@@ -292,7 +296,8 @@ suite('acceleratorEditDialogTest', function() {
 
     await flushTasks();
     const restoreDefaultButton =
-        dialog!.querySelector('#restoreDefault') as CrButtonElement;
+        dialog!.querySelector<CrButtonElement>('#restoreDefault');
+    assertTrue(!!restoreDefaultButton);
     restoreDefaultButton.click();
     await flushTasks();
 
@@ -348,8 +353,8 @@ suite('acceleratorEditDialogTest', function() {
     viewElement!.acceleratorInfos = accelerators;
     viewElement!.description = description;
     await flush();
-    const dialog =
-        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    const dialog = viewElement!.shadowRoot!.querySelector('cr-dialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
 
     const fakeResult: AcceleratorResultData = {
@@ -361,7 +366,8 @@ suite('acceleratorEditDialogTest', function() {
 
     await flushTasks();
     let restoreDefaultButton =
-        dialog!.querySelector('#restoreDefault') as CrButtonElement;
+        dialog!.querySelector<CrButtonElement>('#restoreDefault');
+    assertTrue(!!restoreDefaultButton);
     restoreDefaultButton.click();
     await flushTasks();
 
@@ -383,17 +389,18 @@ suite('acceleratorEditDialogTest', function() {
 
     // Verify that the add button and restore button are hidden.
     let addButtonContainer =
-        dialog!.querySelector('#addAcceleratorContainer') as HTMLDivElement;
+        dialog!.querySelector<HTMLDivElement>('#addAcceleratorContainer');
+    assertTrue(!!addButtonContainer);
 
     restoreDefaultButton =
-        dialog!.querySelector('#restoreDefault') as CrButtonElement;
+        dialog!.querySelector<CrButtonElement>('#restoreDefault');
+    assertTrue(!!restoreDefaultButton);
     assertTrue(restoreDefaultButton.hidden);
     assertTrue(addButtonContainer.hidden);
 
     // Click on the trash button to effectively ignore the conflict.
-    const cancelButton =
-        updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
-            '#deleteButton') as HTMLButtonElement;
+    const cancelButton = updatedAcceleratorElements[0]!.shadowRoot!
+                             .querySelector<HTMLButtonElement>('#deleteButton');
     cancelButton!.click();
 
     // Simulate `UpdateDialogAccelerators`.
@@ -407,10 +414,12 @@ suite('acceleratorEditDialogTest', function() {
 
     // Verify that the add button and restore button are shown.
     addButtonContainer =
-        dialog!.querySelector('#addAcceleratorContainer') as HTMLDivElement;
+        dialog!.querySelector<HTMLDivElement>('#addAcceleratorContainer');
+    assertTrue(!!addButtonContainer);
 
     restoreDefaultButton =
-        dialog!.querySelector('#restoreDefault') as CrButtonElement;
+        dialog!.querySelector<CrButtonElement>('#restoreDefault');
+    assertTrue(!!restoreDefaultButton);
     assertFalse(restoreDefaultButton.hidden);
     assertFalse(addButtonContainer.hidden);
   });
@@ -427,8 +436,8 @@ suite('acceleratorEditDialogTest', function() {
     viewElement!.acceleratorInfos = accelerators;
     viewElement!.description = description;
     await flush();
-    const dialog =
-        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    const dialog = viewElement!.shadowRoot!.querySelector('cr-dialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
 
     const fakeResult: AcceleratorResultData = {
@@ -440,7 +449,8 @@ suite('acceleratorEditDialogTest', function() {
 
     await flushTasks();
     const restoreDefaultButton =
-        dialog!.querySelector('#restoreDefault') as CrButtonElement;
+        dialog!.querySelector<CrButtonElement>('#restoreDefault');
+    assertTrue(!!restoreDefaultButton);
     restoreDefaultButton.click();
     await flushTasks();
 
@@ -461,8 +471,8 @@ suite('acceleratorEditDialogTest', function() {
     assertEquals(1, updatedAcceleratorElements.length);
 
     // Click on the edit button to attempt to fix the conflict.
-    const editButton = updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
-                           '#editButton') as HTMLButtonElement;
+    const editButton = updatedAcceleratorElements[0]!.shadowRoot!
+                           .querySelector<HTMLButtonElement>('#editButton');
     editButton!.click();
 
     await flushTasks();
@@ -520,8 +530,8 @@ suite('acceleratorEditDialogTest', function() {
     viewElement!.acceleratorInfos = accelerators;
     viewElement!.description = description;
     await flushTasks();
-    const dialog =
-        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    const dialog = viewElement!.shadowRoot!.querySelector('cr-dialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
 
     const fakeResult: AcceleratorResultData = {
@@ -531,7 +541,8 @@ suite('acceleratorEditDialogTest', function() {
 
     provider.setFakeRestoreDefaultResult(fakeResult);
     const restoreDefaultButton =
-        dialog!.querySelector('#restoreDefault') as CrButtonElement;
+        dialog!.querySelector<CrButtonElement>('#restoreDefault');
+    assertTrue(!!restoreDefaultButton);
     restoreDefaultButton.click();
     await flushTasks();
 
@@ -552,14 +563,13 @@ suite('acceleratorEditDialogTest', function() {
     assertEquals(1, updatedAcceleratorElements.length);
 
     // Click on the edit button to attempt to fix the conflict.
-    const editButton = updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
-                           '#editButton') as HTMLButtonElement;
+    const editButton = updatedAcceleratorElements[0]!.shadowRoot!
+                           .querySelector<HTMLButtonElement>('#editButton');
     editButton!.click();
 
     // Now cancel editing.
-    const cancelButton =
-        updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
-            '#cancelButton') as HTMLButtonElement;
+    const cancelButton = updatedAcceleratorElements[0]!.shadowRoot!
+                             .querySelector<HTMLButtonElement>('#cancelButton');
     cancelButton!.click();
 
     await flushTasks();
@@ -603,8 +613,8 @@ suite('acceleratorEditDialogTest', function() {
     viewElement!.acceleratorInfos = accelerators;
     viewElement!.description = description;
     await flush();
-    const dialog =
-        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    const dialog = viewElement!.shadowRoot!.querySelector('cr-dialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
     const acceleratorElements =
         dialog.querySelectorAll('accelerator-edit-view');
@@ -626,8 +636,8 @@ suite('acceleratorEditDialogTest', function() {
     viewElement!.description = description;
     await flush();
 
-    const dialog =
-        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    const dialog = viewElement!.shadowRoot!.querySelector('cr-dialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
     const acceleratorElements =
         dialog.querySelectorAll('accelerator-edit-view');
@@ -635,11 +645,13 @@ suite('acceleratorEditDialogTest', function() {
 
     // Expect maxAccelsReachedHint is hidden and addButton is visible.
     const maxAccelReachedHint =
-        viewElement!.shadowRoot!.querySelector('#maxAcceleratorsReached') as
-        HTMLDivElement;
+        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+            '#maxAcceleratorsReached');
+    assertTrue(!!maxAccelReachedHint);
     const addButtonContainer =
-        viewElement!.shadowRoot!.querySelector('#addAcceleratorContainer') as
-        HTMLDivElement;
+        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+            '#addAcceleratorContainer');
+    assertTrue(!!addButtonContainer);
     assertTrue(maxAccelReachedHint.hidden);
     assertFalse(addButtonContainer.hidden);
   });
@@ -680,8 +692,8 @@ suite('acceleratorEditDialogTest', function() {
     viewElement!.description = description;
     await flush();
 
-    const dialog =
-        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    const dialog = viewElement!.shadowRoot!.querySelector('cr-dialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
     const acceleratorElements =
         dialog.querySelectorAll('accelerator-edit-view');
@@ -689,11 +701,13 @@ suite('acceleratorEditDialogTest', function() {
 
     // Expect maxAccelsReachedHint is visible and addButton is hidden.
     const maxAccelReachedHint =
-        viewElement!.shadowRoot!.querySelector('#maxAcceleratorsReached') as
-        HTMLDivElement;
+        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+            '#maxAcceleratorsReached');
+    assertTrue(!!maxAccelReachedHint);
     const addButtonContainer =
-        viewElement!.shadowRoot!.querySelector('#addAcceleratorContainer') as
-        HTMLDivElement;
+        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+            '#addAcceleratorContainer');
+    assertTrue(!!addButtonContainer);
     assertFalse(maxAccelReachedHint.hidden);
     assertTrue(addButtonContainer.hidden);
   });
@@ -735,8 +749,8 @@ suite('acceleratorEditDialogTest', function() {
     viewElement!.description = description;
     await flush();
 
-    const dialog =
-        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    const dialog = viewElement!.shadowRoot!.querySelector('cr-dialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
     const acceleratorElements =
         dialog.querySelectorAll('accelerator-edit-view');
@@ -744,11 +758,13 @@ suite('acceleratorEditDialogTest', function() {
 
     // Expect maxAccelsReachedHint is not visible and addButton is visible.
     const maxAccelReachedHint =
-        viewElement!.shadowRoot!.querySelector('#maxAcceleratorsReached') as
-        HTMLDivElement;
+        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+            '#maxAcceleratorsReached');
+    assertTrue(!!maxAccelReachedHint);
     const addButtonContainer =
-        viewElement!.shadowRoot!.querySelector('#addAcceleratorContainer') as
-        HTMLDivElement;
+        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+            '#addAcceleratorContainer');
+    assertTrue(!!addButtonContainer);
     assertTrue(maxAccelReachedHint.hidden);
     assertFalse(addButtonContainer.hidden);
   });
@@ -766,12 +782,13 @@ suite('acceleratorEditDialogTest', function() {
     await flush();
 
     // Open dialog.
-    const dialog =
-        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    const dialog = viewElement!.shadowRoot!.querySelector('cr-dialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
 
-    let noShortcutAssigned = viewElement!.shadowRoot!.querySelector(
-                                 '#noShortcutAssigned') as HTMLDivElement;
+    let noShortcutAssigned =
+        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+            '#noShortcutAssigned');
 
     // Expect "No shortcut assigned" message is shown when there's no enabled
     // accelerators in the dialog.
@@ -781,15 +798,15 @@ suite('acceleratorEditDialogTest', function() {
 
     // Click add button, ViewState change to ADD.
     const addButton =
-        dialog!.querySelector('#addAcceleratorButton') as CrButtonElement;
+        dialog!.querySelector<CrButtonElement>('#addAcceleratorButton');
     assertTrue(!!addButton);
     addButton!.click();
     await flush();
 
     // Expect "No shortcut assigned" message is not displayed when ViewState
     // becomes ADD.
-    noShortcutAssigned = viewElement!.shadowRoot!.querySelector(
-                             '#noShortcutAssigned') as HTMLDivElement;
+    noShortcutAssigned = viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+        '#noShortcutAssigned');
     assertFalse(!!noShortcutAssigned);
   });
 
@@ -813,16 +830,19 @@ suite('acceleratorEditDialogTest', function() {
     viewElement!.acceleratorInfos = accelerators;
     viewElement!.description = description;
     await flush();
-    const dialog =
-        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    const dialog = viewElement!.shadowRoot!.querySelector('cr-dialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
 
     const addButtonContainer =
-        viewElement!.shadowRoot!.querySelector('#addAcceleratorContainer') as
-        HTMLDivElement;
+        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+            '#addAcceleratorContainer');
+    assertTrue(!!addButtonContainer);
     const restoreButton =
-        dialog!.querySelector('#restoreDefault') as CrButtonElement;
-    const doneButton = dialog!.querySelector('#doneButton') as CrButtonElement;
+        dialog!.querySelector<CrButtonElement>('#restoreDefault');
+    assertTrue(!!restoreButton);
+    const doneButton = dialog!.querySelector<CrButtonElement>('#doneButton');
+    assertTrue(!!doneButton);
 
     // When first open the dialog, addButton is visible, restoreButton is
     // hidden, doneButton is not disabled.
@@ -834,8 +854,9 @@ suite('acceleratorEditDialogTest', function() {
     // doneButton is disabled.
     const editViewElements = dialog.querySelectorAll('accelerator-edit-view');
     assertEquals(1, editViewElements.length);
-    const editButton = editViewElements[0]!.shadowRoot!.querySelector(
-                           '#editButton') as HTMLButtonElement;
+    const editButton =
+        editViewElements[0]!.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#editButton');
     editButton!.click();
     await flushTasks();
     assertFalse(addButtonContainer.hidden);
@@ -844,8 +865,9 @@ suite('acceleratorEditDialogTest', function() {
 
     // Click cancel button, addButton is visible, restoreButton is
     // hidden, doneButton is not disabled.
-    const cancelButton = editViewElements[0]!.shadowRoot!.querySelector(
-                             '#cancelButton') as HTMLButtonElement;
+    const cancelButton =
+        editViewElements[0]!.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#cancelButton');
     cancelButton!.click();
     await flushTasks();
     assertFalse(addButtonContainer.hidden);
@@ -855,7 +877,7 @@ suite('acceleratorEditDialogTest', function() {
     // Click add button, addButton is hidden, restoreButton is hidden,
     // doneButton is disabled.
     const addButton =
-        dialog!.querySelector('#addAcceleratorButton') as CrButtonElement;
+        dialog!.querySelector<CrButtonElement>('#addAcceleratorButton');
     addButton!.click();
     await flushTasks();
     assertTrue(addButtonContainer.hidden);
@@ -864,8 +886,10 @@ suite('acceleratorEditDialogTest', function() {
 
     // Click cancel button again.
     const pendingAccelerator = dialog!.querySelector('#pendingAccelerator');
-    const cancelButton2 = pendingAccelerator!.shadowRoot!.querySelector(
-                              '#cancelButton') as CrButtonElement;
+    const cancelButton2 =
+        pendingAccelerator!.shadowRoot!.querySelector<CrButtonElement>(
+            '#cancelButton');
+    assertTrue(!!cancelButton2);
     cancelButton2.click();
     await flushTasks();
     assertFalse(addButtonContainer.hidden);
@@ -931,8 +955,8 @@ suite('acceleratorEditDialogTest', function() {
     viewElement!.description = description;
     await flush();
 
-    const dialog =
-        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    const dialog = viewElement!.shadowRoot!.querySelector('cr-dialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
     const acceleratorElements =
         dialog.querySelectorAll('accelerator-edit-view');
@@ -940,11 +964,13 @@ suite('acceleratorEditDialogTest', function() {
 
     // Expect maxAccelsReachedHint is visible and addButton is hidden.
     const maxAccelReachedHint =
-        viewElement!.shadowRoot!.querySelector('#maxAcceleratorsReached') as
-        HTMLDivElement;
+        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+            '#maxAcceleratorsReached');
+    assertTrue(!!maxAccelReachedHint);
     const addButtonContainer =
-        viewElement!.shadowRoot!.querySelector('#addAcceleratorContainer') as
-        HTMLDivElement;
+        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+            '#addAcceleratorContainer');
+    assertTrue(!!addButtonContainer);
     assertTrue(maxAccelReachedHint.hidden);
     assertFalse(addButtonContainer.hidden);
   });

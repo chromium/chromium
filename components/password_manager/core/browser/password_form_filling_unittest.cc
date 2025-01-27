@@ -4,13 +4,13 @@
 
 #include "components/password_manager/core/browser/password_form_filling.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -91,8 +91,8 @@ MATCHER_P3(IsLogin, username, password, uses_account_store, std::string()) {
 PasswordFormFillData::LoginCollection::const_iterator FindPasswordByUsername(
     const std::vector<autofill::PasswordAndMetadata>& logins,
     const std::u16string& username) {
-  return base::ranges::find(logins, username,
-                            &autofill::PasswordAndMetadata::username_value);
+  return std::ranges::find(logins, username,
+                           &autofill::PasswordAndMetadata::username_value);
 }
 
 }  // namespace

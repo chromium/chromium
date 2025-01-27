@@ -4,6 +4,7 @@
 
 #include "ash/focus/focus_cycler.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/shelf/shelf.h"
@@ -16,7 +17,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -46,7 +46,7 @@ class PanedWidgetDelegate : public views::WidgetDelegate {
 
   // views::WidgetDelegate:
   void GetAccessiblePanes(std::vector<views::View*>* panes) override {
-    base::ranges::copy(accessible_panes_, std::back_inserter(*panes));
+    std::ranges::copy(accessible_panes_, std::back_inserter(*panes));
   }
   views::Widget* GetWidget() override { return widget_; }
   const views::Widget* GetWidget() const override { return widget_; }

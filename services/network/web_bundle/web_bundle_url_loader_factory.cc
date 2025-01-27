@@ -4,12 +4,12 @@
 
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -748,7 +748,7 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
     return;
   }
 
-  if (!base::ranges::all_of(metadata->requests, [this](const auto& entry) {
+  if (!std::ranges::all_of(metadata->requests, [this](const auto& entry) {
         return IsAllowedExchangeUrl(entry.first);
       })) {
     std::string error_message = "Exchange URL is not valid.";

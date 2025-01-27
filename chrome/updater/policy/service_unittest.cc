@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/service.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -13,7 +14,6 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -204,15 +204,15 @@ class FakePolicyManager : public PolicyManagerInterface {
 
   std::optional<std::vector<std::string>> GetAppsWithPolicy() const override {
     std::set<std::string> apps_with_policy;
-    base::ranges::transform(
+    std::ranges::transform(
         install_policies_,
         std::inserter(apps_with_policy, apps_with_policy.end()),
         [](const auto& kv) { return kv.first; });
-    base::ranges::transform(
+    std::ranges::transform(
         update_policies_,
         std::inserter(apps_with_policy, apps_with_policy.end()),
         [](const auto& kv) { return kv.first; });
-    base::ranges::transform(
+    std::ranges::transform(
         channels_, std::inserter(apps_with_policy, apps_with_policy.end()),
         [](const auto& kv) { return kv.first; });
     return std::vector<std::string>(apps_with_policy.begin(),

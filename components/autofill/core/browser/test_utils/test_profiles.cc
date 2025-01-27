@@ -16,7 +16,7 @@ void SetProfileTestValues(AutofillProfile* profile,
                           bool finalize) {
   DCHECK(profile);
 
-  base::ranges::for_each(
+  std::ranges::for_each(
       profile_test_data, [&](const ProfileTestData& test_data) {
         profile->SetRawInfoWithVerificationStatus(
             test_data.field_type, base::UTF8ToUTF16(test_data.value),
@@ -38,7 +38,7 @@ void SetProfileObservedTestValues(AutofillProfile* profile,
   // Make a copy of the test data with all verification statuses replaced with
   // 'kObserved'.
   std::vector<ProfileTestData> observed_test_data;
-  base::ranges::for_each(test_data, [&](const ProfileTestData& entry) {
+  std::ranges::for_each(test_data, [&](const ProfileTestData& entry) {
     observed_test_data.emplace_back(ProfileTestData{
         entry.field_type, entry.value, VerificationStatus::kObserved});
   });

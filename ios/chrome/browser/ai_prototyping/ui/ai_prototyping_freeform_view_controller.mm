@@ -112,7 +112,14 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
                     forControlEvents:UIControlEventTouchUpInside];
 
   _onDeviceSubmitButton = [UIButton buttonWithType:UIButtonTypeSystem];
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   _onDeviceSubmitButton.backgroundColor = [UIColor colorNamed:kBlueColor];
+  _onDeviceSubmitButton.enabled = YES;
+#else   // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  _onDeviceSubmitButton.backgroundColor =
+      [UIColor colorNamed:kDisabledTintColor];
+  _onDeviceSubmitButton.enabled = NO;
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   _onDeviceSubmitButton.layer.cornerRadius = kCornerRadius;
   [_onDeviceSubmitButton
       setTitle:l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_ON_DEVICE_SUBMIT)

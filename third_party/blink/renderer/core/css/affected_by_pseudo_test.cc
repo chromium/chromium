@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/strings/to_string.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -158,8 +159,8 @@ void AffectedByPseudoTest::CheckAffectedByFlagsForHasInternal(
     }
 
     ADD_FAILURE() << "#" << element_id << " : " << flag_name << " should be "
-                  << (iter.second ? "true" : "false") << " but "
-                  << (actual ? "true" : "false");
+                  << base::ToString(iter.second) << " but is "
+                  << base::ToString(actual);
   }
 }
 

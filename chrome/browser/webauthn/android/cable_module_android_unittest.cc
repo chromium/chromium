@@ -4,7 +4,8 @@
 
 #include "chrome/browser/webauthn/android/cable_module_android.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,9 +78,9 @@ TEST(CableModuleAndroidTest, PaaskInfoFromCBOR) {
   EXPECT_EQ(result->tunnel_server_domain, 0);
   EXPECT_EQ(result->id, 19508u);
   EXPECT_TRUE(
-      base::ranges::equal(result->peer_public_key_x962, kExpectedPublicKey));
-  EXPECT_TRUE(base::ranges::equal(result->secret, kExpectedSecret));
-  EXPECT_TRUE(base::ranges::equal(result->contact_id, kExpectedContactID));
+      std::ranges::equal(result->peer_public_key_x962, kExpectedPublicKey));
+  EXPECT_TRUE(std::ranges::equal(result->secret, kExpectedSecret));
+  EXPECT_TRUE(std::ranges::equal(result->contact_id, kExpectedContactID));
 
   const std::vector<uint8_t> reserialized =
       webauthn::authenticator::internal::CBORFromPaaskInfo(*result);
@@ -88,10 +89,10 @@ TEST(CableModuleAndroidTest, PaaskInfoFromCBOR) {
   CHECK(result2);
   EXPECT_EQ(result->tunnel_server_domain, result2->tunnel_server_domain);
   EXPECT_EQ(result->id, result2->id);
-  EXPECT_TRUE(base::ranges::equal(result->peer_public_key_x962,
-                                  result2->peer_public_key_x962));
-  EXPECT_TRUE(base::ranges::equal(result->secret, result2->secret));
-  EXPECT_TRUE(base::ranges::equal(result->contact_id, result2->contact_id));
+  EXPECT_TRUE(std::ranges::equal(result->peer_public_key_x962,
+                                 result2->peer_public_key_x962));
+  EXPECT_TRUE(std::ranges::equal(result->secret, result2->secret));
+  EXPECT_TRUE(std::ranges::equal(result->contact_id, result2->contact_id));
 }
 
 TEST(CableModuleAndroidTest, Cache) {

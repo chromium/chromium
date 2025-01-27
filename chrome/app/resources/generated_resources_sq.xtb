@@ -5113,7 +5113,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4593021220803146968">&amp;Shko te <ph name="URL" /></translation>
 <translation id="4593962599442730215">Ndrysho preferencat</translation>
 <translation id="4594218792629569101">Zgjidh “Shëno si të lexuar” për ta zhvendosur faqen në fund të listës</translation>
-<translation id="4594577641390224176">Po kërkon për faqen e informacioneve të sistemit? Vizito</translation>
 <translation id="4595560905247879544">Aplikacionet dhe shtesat mund të modifikohen vetëm nga menaxheri (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Ke certifikata në skedar që identifikojnë këta serverë</translation>
 <translation id="4598345735110653698">Menaxho çelësat e kalimit</translation>
@@ -6734,7 +6733,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5787420647064736989">Emri i pajisjes</translation>
 <translation id="5788367137662787332">Na vjen keq, të paktën një pjesë në pajisjen <ph name="DEVICE_LABEL" /> nuk mund të montohej.</translation>
 <translation id="5789581866075720267">Për t'i importuar fjalëkalimet te "<ph name="BRAND" />" në këtë pajisje, zgjidh një skedar CSV.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Me sukses</translation>
 <translation id="5790651917470750848">Porta transferuese ekziston tashmë</translation>
 <translation id="5792295754950501287">Më shumë veprime për "<ph name="CARD_DESCRIPTION" />"</translation>
@@ -7153,7 +7151,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6086418630711763366">Mund t'i navigosh faqet me një kursor teksti. Shtyp Ctrl + <ph name="KEY" /> për ta çaktivizuar.</translation>
 <translation id="6086846494333236931">Instaluar nga administratori yt</translation>
 <translation id="6087286598828478206">Dëshiron ta bllokosh grupin dhe të largohesh?</translation>
-<translation id="6087746524533454243">Po kërkon për faqen e informacioneve të sistemit? Vizito</translation>
 <translation id="6087960857463881712">Fytyrë e mrekullueshme</translation>
 <translation id="6088475950266477163">&amp;Cilësimet</translation>
 <translation id="608912389580139775">Për ta shtuar këtë faqe te lista jote e leximit, kliko ikonën "Faqeshënuesi"</translation>

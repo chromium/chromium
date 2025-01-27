@@ -4,15 +4,15 @@
 
 #include "chrome/browser/apps/app_service/policy_util.h"
 
+#include <algorithm>
 #include <array>
+#include <functional>
 #include <string_view>
 #include <utility>
 
 #include "ash/constants/web_app_id_constants.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -74,8 +74,8 @@ constexpr auto kSystemWebAppsMapping =
          {"graduation", ash::SystemWebAppType::GRADUATION}});
 
 constexpr ash::SystemWebAppType GetMaxSystemWebAppType() {
-  return base::ranges::max_element(
-             kSystemWebAppsMapping, base::ranges::less{},
+  return std::ranges::max_element(
+             kSystemWebAppsMapping, std::ranges::less{},
              &decltype(kSystemWebAppsMapping)::value_type::second)
       ->second;
 }

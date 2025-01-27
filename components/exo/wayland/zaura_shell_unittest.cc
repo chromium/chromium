@@ -813,7 +813,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
   };
 
   OutputHolder* GetOutputHolder(int64_t display_id) {
-    auto iter = base::ranges::find_if(
+    auto iter = std::ranges::find_if(
         output_holder_list_,
         [display_id](const std::unique_ptr<OutputHolder>& holder) {
           return holder->output->id() == display_id;

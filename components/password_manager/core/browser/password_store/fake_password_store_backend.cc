@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 #include <utility>
@@ -12,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -301,7 +301,7 @@ PasswordStoreChangeList FakePasswordStoreBackend::AddLoginInternal(
     const PasswordForm& form) {
   PasswordStoreChangeList changes;
   auto& passwords_for_signon_realm = stored_passwords_[form.signon_realm];
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       passwords_for_signon_realm, [&form](const auto& password) {
         return ArePasswordFormUniqueKeysEqual(form, password);
       });
@@ -394,7 +394,7 @@ FakePasswordStoreBackend::RemoveLoginsCreatedBetweenInternal(
   PasswordStoreChangeList list;
   for (const auto& form : all_logins) {
     if (delete_begin <= form.date_created && form.date_created < delete_end) {
-      base::ranges::move(RemoveLoginInternal(form), std::back_inserter(list));
+      std::ranges::move(RemoveLoginInternal(form), std::back_inserter(list));
     }
   }
   return list;

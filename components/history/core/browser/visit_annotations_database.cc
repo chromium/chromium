@@ -4,11 +4,11 @@
 
 #include "components/history/core/browser/visit_annotations_database.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/history/core/browser/history_types.h"
@@ -596,7 +596,7 @@ void VisitAnnotationsDatabase::AddClusters(
     DCHECK_GT(cluster_id, 0);
 
     // Insert each visit into 'clusters_and_visits'.
-    base::ranges::for_each(cluster.visits, [&](const auto& cluster_visit) {
+    std::ranges::for_each(cluster.visits, [&](const auto& cluster_visit) {
       const auto visit_id = cluster_visit.annotated_visit.visit_row.visit_id;
       DCHECK_GT(visit_id, 0);
       clusters_and_visits_statement.Reset(true);
@@ -687,7 +687,7 @@ void VisitAnnotationsDatabase::AddVisitsToCluster(
                                  "VALUES(?,?,?,?,?,?,?,?)"));
 
   // Insert each visit into 'clusters_and_visits'.
-  base::ranges::for_each(visits, [&](const auto& visit) {
+  std::ranges::for_each(visits, [&](const auto& visit) {
     DCHECK_GT(visit.annotated_visit.visit_row.visit_id, 0);
     clusters_and_visits_statement.Reset(true);
     clusters_and_visits_statement.BindInt64(0, cluster_id);
@@ -741,7 +741,7 @@ void VisitAnnotationsDatabase::UpdateClusterTriggerability(
       "(visit_id,duplicate_visit_id)"
       "VALUES(?,?)"));
 
-  base::ranges::for_each(clusters, [&](const auto& cluster) {
+  std::ranges::for_each(clusters, [&](const auto& cluster) {
     DCHECK_GT(cluster.cluster_id, 0);
 
     // Update cluster visibility.
@@ -782,7 +782,7 @@ void VisitAnnotationsDatabase::UpdateClusterTriggerability(
       }
     }
 
-    base::ranges::for_each(cluster.visits, [&](const auto& cluster_visit) {
+    std::ranges::for_each(cluster.visits, [&](const auto& cluster_visit) {
       const auto visit_id = cluster_visit.annotated_visit.visit_row.visit_id;
       DCHECK_GT(visit_id, 0);
       update_cluster_visit_scores_statement.Reset(true);

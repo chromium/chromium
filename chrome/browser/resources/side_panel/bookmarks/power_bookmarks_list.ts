@@ -298,7 +298,6 @@ export class PowerBookmarksListElement extends PolymerElement {
   private updatedElementIds_: string[] = [];
   private bookmarksTreeViewEnabled_: boolean =
       loadTimeData.getBoolean('bookmarksTreeViewEnabled');
-  private keyboardArrowServiceInitialized: boolean = false;
   private rebuildNavigationElementsDebouncer_: Debouncer|null = null;
 
   constructor() {

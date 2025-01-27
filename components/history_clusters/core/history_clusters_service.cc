@@ -14,7 +14,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -461,7 +460,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
       continue;
     }
     const size_t visible_visits =
-        base::ranges::count_if(cluster.visits, [](const auto& cluster_visit) {
+        std::ranges::count_if(cluster.visits, [](const auto& cluster_visit) {
           // Hidden visits shouldn't contribute to the keyword bag, but Done
           // visits still can, since they are searchable.
           return cluster_visit.score > 0 &&

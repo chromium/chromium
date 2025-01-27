@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "ash/shell.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -791,13 +791,13 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, LogicalWindowId) {
   auto is_hidden = [](const apps::Instance* instance) {
     return instance->Window()->GetProperty(ash::kHideInShelfKey);
   };
-  EXPECT_EQ(1, base::ranges::count_if(instances, is_hidden));
+  EXPECT_EQ(1, std::ranges::count_if(instances, is_hidden));
 
   // The hidden window should be task_id 2.
   aura::Window* window1 =
-      (*(base::ranges::find_if_not(instances, is_hidden)))->Window();
+      (*(std::ranges::find_if_not(instances, is_hidden)))->Window();
   aura::Window* window2 =
-      (*(base::ranges::find_if(instances, is_hidden)))->Window();
+      (*(std::ranges::find_if(instances, is_hidden)))->Window();
 
   apps::InstanceState latest_state =
       app_service_proxy_->InstanceRegistry().GetState(window1);
@@ -821,7 +821,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, LogicalWindowId) {
   app_host()->OnTaskDestroyed(1);
   instances = app_service_proxy_->InstanceRegistry().GetInstances(app_id);
   EXPECT_EQ(1u, instances.size());
-  EXPECT_EQ(0, base::ranges::count_if(instances, is_hidden));
+  EXPECT_EQ(0, std::ranges::count_if(instances, is_hidden));
 
   // Close second window.
   app_host()->OnTaskDestroyed(2);
@@ -861,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, PaymentApp) {
   auto is_hidden = [](const apps::Instance* instance) {
     return instance->Window()->GetProperty(ash::kHideInShelfKey);
   };
-  EXPECT_EQ(1, base::ranges::count_if(instances, is_hidden));
+  EXPECT_EQ(1, std::ranges::count_if(instances, is_hidden));
 
   // No windows should remain if we close the payment window
   payment_window->CloseNow();

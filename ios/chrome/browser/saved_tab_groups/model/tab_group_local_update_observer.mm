@@ -180,7 +180,8 @@ void TabGroupLocalUpdateObserver::WebStateListDidChange(
         tab_group ? std::make_optional<>(tab_group->tab_group_id())
                   : std::nullopt;
     sync_service_->OnTabSelected(local_tab_group_id,
-                                 web_state->GetUniqueIdentifier().identifier());
+                                 web_state->GetUniqueIdentifier().identifier(),
+                                 web_state->GetTitle());
   }
 }
 

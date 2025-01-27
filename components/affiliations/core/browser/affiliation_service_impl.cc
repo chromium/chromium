@@ -4,6 +4,7 @@
 
 #include "components/affiliations/core/browser/affiliation_service_impl.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
@@ -167,7 +167,7 @@ GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
     return it->second.change_password_url;
   }
 
-  if (base::ranges::any_of(pending_fetches_, [&uri](const auto& info) {
+  if (std::ranges::any_of(pending_fetches_, [&uri](const auto& info) {
         return base::Contains(info.requested_facets, uri);
       })) {
     LogFetchResult(GetChangePasswordUrlMetric::kNotFetchedYet);
@@ -181,8 +181,8 @@ void AffiliationServiceImpl::OnFetchSucceeded(
     AffiliationFetcherInterface* fetcher,
     std::unique_ptr<AffiliationFetcherDelegate::Result> result) {
   auto processed_fetch =
-      base::ranges::find(pending_fetches_, fetcher,
-                         [](const auto& info) { return info.fetcher.get(); });
+      std::ranges::find(pending_fetches_, fetcher,
+                        [](const auto& info) { return info.fetcher.get(); });
   if (processed_fetch == pending_fetches_.end())
     return;
 

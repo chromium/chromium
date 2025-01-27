@@ -8197,6 +8197,21 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
       return true;
     }
   }
+
+  // The ::picker(select) UA popover element is display:none by default because
+  // it's a popover which would prevent style from being calculated on it and
+  // its descendants without this check. We need it for multiple reasons:
+  // 1. The appearance:auto <select> rendering needs computed style for each of
+  //    its <option>s in order to correctly render the invoker button and for
+  //    option styles that get copied into the native picker.
+  // 2. ::picker(select) needs appearance:base-select from author styles in
+  //    order to opt in to customizable select, and there is a lot of code which
+  //    wants to know whether we have opted into customizable select or not
+  //    without being able to run EnsureComputedStyle to find out.
+  if (HTMLSelectElement::IsPopoverForAppearanceBase(this)) {
+    return true;
+  }
+
   return style.Display() == EDisplay::kContents;
 }
 
@@ -10263,6 +10278,7 @@ void Element::ScheduleInterestGainedTask() {
             target->EnsureElementRareData()
                 .EnsureInterestInvokerTargetData()
                 .setInterestInvoker(invoker);
+            invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
           },
           WrapWeakPersistent(this), WrapWeakPersistent(target)),
       base::Seconds(show_delay_seconds)));
@@ -10307,6 +10323,7 @@ void Element::ScheduleInterestLostTask() {
               target->EnsureElementRareData()
                   .EnsureInterestInvokerTargetData()
                   .setInterestInvoker(nullptr);
+              invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
             }
           },
           WrapWeakPersistent(this), WrapWeakPersistent(target)),
@@ -10327,6 +10344,14 @@ Element* Element::GetInterestInvoker() const {
     return nullptr;
   }
   return invoker;
+}
+
+bool Element::HasInterest() {
+  auto* target = interestTargetElement();
+  if (!target) {
+    return false;
+  }
+  return target->GetInterestInvoker() == this;
 }
 
 void Element::SetHovered(bool hovered) {
@@ -10389,10 +10414,12 @@ void Element::SetHovered(bool hovered) {
         ScheduleInterestGainedTask();
       }
     } else {
-      if (target) [[unlikely]] {
+      if (target && invoker_data) [[unlikely]] {
         // This is an interest invoker which was just de-hovered. Cancel any
         // pending InterestGained tasks, and schedule an InterestLost task if
-        // needed.
+        // needed. (We need to check that invoker_data is non-nullptr because
+        // the `invoketarget` attribute might have been added while this element
+        // was already hovered.)
         invoker_data->cancelInterestGainedTask();
         if (target->GetInterestInvoker() == this) {
           ScheduleInterestLostTask();

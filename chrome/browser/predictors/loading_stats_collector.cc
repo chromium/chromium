@@ -4,13 +4,13 @@
 
 #include "chrome/browser/predictors/loading_stats_collector.h"
 
+#include <algorithm>
 #include <set>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/preconnect_manager.h"
@@ -63,7 +63,7 @@ size_t ReportPreconnectPredictionAccuracy(
 
   const auto& actual_origins = summary.origins;
 
-  size_t correctly_predicted_count = base::ranges::count_if(
+  size_t correctly_predicted_count = std::ranges::count_if(
       prediction.requests, [&actual_origins](const PreconnectRequest& request) {
         return actual_origins.find(request.origin) != actual_origins.end();
       });
@@ -275,13 +275,13 @@ void LoadingStatsCollector::RecordPageRequestSummary(
       }
       builder.SetOptimizationGuidePredictionOrigins(
           std::min(ukm_cap, predicted_origins.size()));
-      size_t correctly_predicted_origins = base::ranges::count_if(
+      size_t correctly_predicted_origins = std::ranges::count_if(
           predicted_origins, [&summary](const url::Origin& subresource_origin) {
             return base::Contains(summary.origins, subresource_origin);
           });
       builder.SetOptimizationGuidePredictionCorrectlyPredictedOrigins(
           std::min(ukm_cap, correctly_predicted_origins));
-      size_t correctly_predicted_low_priority_origins = base::ranges::count_if(
+      size_t correctly_predicted_low_priority_origins = std::ranges::count_if(
           predicted_origins, [&summary](const url::Origin& subresource_origin) {
             return base::Contains(summary.low_priority_origins,
                                   subresource_origin) &&
@@ -298,7 +298,7 @@ void LoadingStatsCollector::RecordPageRequestSummary(
         std::min(ukm_cap, summary.preconnect_origins.size()));
     const auto& actual_subresource_origins = summary.origins;
     size_t correctly_predicted_subresource_origins_initiated =
-        base::ranges::count_if(
+        std::ranges::count_if(
             summary.preconnect_origins,
             [&actual_subresource_origins](
                 const url::Origin& subresource_origin) {
@@ -314,7 +314,7 @@ void LoadingStatsCollector::RecordPageRequestSummary(
         std::min(ukm_cap, summary.prefetch_urls.size()));
     const auto& actual_subresource_urls = summary.subresource_urls;
     size_t correctly_predicted_subresource_prefetches_initiated =
-        base::ranges::count_if(
+        std::ranges::count_if(
             summary.prefetch_urls,
             [&actual_subresource_urls](const GURL& subresource_url) {
               return actual_subresource_urls.find(subresource_url) !=

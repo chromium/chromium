@@ -43,6 +43,7 @@ Hvis du sletter den, mister alle umiddelbart tilgangen til fanegruppen «<ph nam
 <translation id="2671423594960767771">Del gruppe</translation>
 <translation id="2677748264148917807">Gå ut</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fane er lagt til, <ph name="ANY_CHANGED" /> er endret og <ph name="ANY_CLOSED" /> er lukket}other{<ph name="MANY_ADDED" /> faner er lagt til, <ph name="ANY_CHANGED" /> er endret, <ph name="ANY_CLOSED" /> er lukket}}</translation>
+<translation id="2755485474385016903">Alle i gruppen ser endringene du gjør</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Opprettet for <ph name="NUM_HOURS_ONE" /> time siden}other{Opprettet for <ph name="NUM_HOURS_MANY" /> timer siden}}</translation>
 <translation id="2801787514987684416">Vil du se informasjon om butikken?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> fane er lukket}other{<ph name="MANY_CLOSED" /> faner er lukket}}</translation>

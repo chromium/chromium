@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/v8_memory/web_memory_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -40,7 +40,7 @@ mojom::WebMemoryMeasurementPtr BuildMemoryUsageResult(
     const ProcessNode* process_node) {
   const auto& frame_nodes = process_node->GetFrameNodes();
   const auto it =
-      base::ranges::find(frame_nodes, frame_token, &FrameNode::GetFrameToken);
+      std::ranges::find(frame_nodes, frame_token, &FrameNode::GetFrameToken);
 
   if (it == frame_nodes.end()) {
     // The frame no longer exists.

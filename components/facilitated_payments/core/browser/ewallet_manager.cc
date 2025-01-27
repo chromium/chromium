@@ -180,7 +180,7 @@ void EwalletManager::OnEwalletPaymentPromptResult(
   ShowProgressScreen();
 
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
-  auto iter_ewallet = base::ranges::find_if(
+  auto iter_ewallet = std::ranges::find_if(
       supported_ewallets_, [&](const autofill::Ewallet& ewallet) {
         return ewallet.payment_instrument().instrument_id() ==
                selected_instrument_id;

@@ -4,9 +4,10 @@
 
 #include "components/history_embeddings/ml_answerer.h"
 
+#include <algorithm>
+
 #include "base/barrier_callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -152,7 +153,7 @@ class MlAnswerer::SessionManager {
 
     // Sort the inputs according to their indices in the original vector, so
     // we prioritize passages that are more relevant.
-    base::ranges::sort(
+    std::ranges::sort(
         inputs.begin(), inputs.end(),
         [](ModelInput& i1, ModelInput& i2) { return i1.index < i2.index; });
 

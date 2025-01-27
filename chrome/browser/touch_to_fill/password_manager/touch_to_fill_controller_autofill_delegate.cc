@@ -4,6 +4,7 @@
 
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_autofill_delegate.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/base64.h"
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
@@ -44,7 +44,7 @@ using password_manager::UiCredential;
 // Returns whether there is at least one credential with a non-empty username.
 bool ContainsNonEmptyUsername(
     const base::span<const UiCredential>& credentials) {
-  return base::ranges::any_of(credentials, [](const UiCredential& credential) {
+  return std::ranges::any_of(credentials, [](const UiCredential& credential) {
     return !credential.username().empty();
   });
 }

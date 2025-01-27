@@ -9,11 +9,11 @@
 
 #include "chrome/browser/enterprise/signals/context_info_fetcher.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -91,7 +91,7 @@ SettingValue GetUfwStatus() {
     return SettingValue::UNKNOWN;
   }
   base::SplitStringIntoKeyValuePairs(file_content, '=', '\n', &values);
-  auto is_ufw_enabled = base::ranges::find(
+  auto is_ufw_enabled = std::ranges::find(
       values, "ENABLED", &std::pair<std::string, std::string>::first);
   if (is_ufw_enabled == values.end())
     return SettingValue::UNKNOWN;

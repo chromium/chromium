@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">Дели групу</translation>
 <translation id="2677748264148917807">Затвори</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> картица је додата, промењених: <ph name="ANY_CHANGED" />, затворених: <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> картица је додата, промењених: <ph name="ANY_CHANGED" />, затворених: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> картице су додате, промењених: <ph name="ANY_CHANGED" />, затворених: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> картица је додато, промењених: <ph name="ANY_CHANGED" />, затворених: <ph name="ANY_CLOSED" />}}</translation>
+<translation id="2755485474385016903">Сви у групи виде унете промене</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Направљено је пре <ph name="NUM_HOURS_ONE" /> сат}one{Направљено је пре <ph name="NUM_HOURS_MANY" /> сат}few{Направљено је пре <ph name="NUM_HOURS_MANY" /> сата}other{Направљено је пре <ph name="NUM_HOURS_MANY" /> сати}}</translation>
 <translation id="2801787514987684416">Желите да прегледате информације о продавници?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> картица је затворена}one{<ph name="MANY_CLOSED" /> картица је затворена}few{<ph name="MANY_CLOSED" /> картице су затворене}other{<ph name="MANY_CLOSED" /> картица је затворено}}</translation>

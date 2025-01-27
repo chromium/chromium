@@ -4,13 +4,13 @@
 
 #include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
 
+#include <algorithm>
 #include <map>
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
@@ -381,7 +381,7 @@ void HandleDeviceSelection(WebContents* web_contents,
   }
 
   const auto it =
-      base::ranges::find(devices, device_guid, &SharingTargetDeviceInfo::guid);
+      std::ranges::find(devices, device_guid, &SharingTargetDeviceInfo::guid);
   CHECK(it != devices.end(), base::NotFatalUntil::M130);
   const SharingTargetDeviceInfo& device = *it;
 

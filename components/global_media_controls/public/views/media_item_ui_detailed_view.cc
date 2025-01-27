@@ -916,8 +916,8 @@ views::ImageView* MediaItemUIDetailedView::GetChevronIconForTesting() {
 
 views::Button* MediaItemUIDetailedView::GetActionButtonForTesting(
     media_session::mojom::MediaSessionAction action) {
-  const auto i = base::ranges::find(action_buttons_, static_cast<int>(action),
-                                    &views::View::GetID);
+  const auto i = std::ranges::find(action_buttons_, static_cast<int>(action),
+                                   &views::View::GetID);
   return (i == action_buttons_.end()) ? nullptr : *i;
 }
 

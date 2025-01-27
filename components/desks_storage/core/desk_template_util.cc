@@ -4,7 +4,7 @@
 
 #include "components/desks_storage/core/desk_template_util.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
 
 namespace desks_storage {
 
@@ -15,7 +15,7 @@ ash::DeskTemplate* FindOtherEntryWithName(
     const base::Uuid& uuid,
     const base::flat_map<base::Uuid, std::unique_ptr<ash::DeskTemplate>>&
         entries) {
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       entries,
       [name, uuid](const std::pair<base::Uuid,
                                    std::unique_ptr<ash::DeskTemplate>>& entry) {

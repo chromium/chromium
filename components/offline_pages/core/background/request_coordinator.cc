@@ -4,6 +4,7 @@
 
 #include "components/offline_pages/core/background/request_coordinator.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -16,7 +17,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -362,7 +362,7 @@ void RequestCoordinator::PauseRequests(
     const std::vector<int64_t>& request_ids) {
   // Remove the paused requests from prioritized list.
   for (int64_t id : request_ids) {
-    auto it = base::ranges::find(prioritized_requests_, id);
+    auto it = std::ranges::find(prioritized_requests_, id);
     if (it != prioritized_requests_.end())
       prioritized_requests_.erase(it);
   }

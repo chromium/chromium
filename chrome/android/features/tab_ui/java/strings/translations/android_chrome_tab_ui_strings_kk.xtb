@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">Топты бөлісу</translation>
 <translation id="2677748264148917807">Шығу</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> қойынды қосылды, <ph name="ANY_CHANGED" /> өзгертілді, <ph name="ANY_CLOSED" /> жабылды.}other{<ph name="MANY_ADDED" /> қойынды қосылды, <ph name="ANY_CHANGED" /> өзгертілді, <ph name="ANY_CLOSED" /> жабылды.}}</translation>
+<translation id="2755485474385016903">Енгізілетін өзгерістерді топтағы барлық адам көреді.</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> сағат бұрын жасалды.}other{<ph name="NUM_HOURS_MANY" /> сағат бұрын жасалды.}}</translation>
 <translation id="2801787514987684416">Дүкен туралы ақпаратты көресіз бе?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> қойынды жабылды.}other{<ph name="MANY_CLOSED" /> қойынды жабылды.}}</translation>

@@ -10,10 +10,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/keyboard_accessory/android/address_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/affiliated_plus_profiles_provider.h"
-#include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
@@ -26,7 +27,6 @@ class PlusAddressService;
 }  // namespace plus_addresses
 
 namespace autofill {
-class PersonalDataManager;
 
 // Use either AddressAccessoryController::GetOrCreate or
 // AddressAccessoryController::GetIfExisting to obtain instances of this class.
@@ -34,7 +34,7 @@ class PersonalDataManager;
 // contents of one of its frames.
 class AddressAccessoryControllerImpl
     : public AddressAccessoryController,
-      public PersonalDataManagerObserver,
+      public AddressDataManager::Observer,
       public AffiliatedPlusProfilesProvider::Observer,
       public content::WebContentsUserData<AddressAccessoryControllerImpl> {
  public:
@@ -60,8 +60,8 @@ class AddressAccessoryControllerImpl
   void RefreshSuggestions() override;
   base::WeakPtr<AddressAccessoryController> AsWeakPtr() override;
 
-  // PersonalDataManagerObserver:
-  void OnPersonalDataChanged() override;
+  // AddressDataManagerObserver:
+  void OnAddressDataChanged() override;
 
   // AffiliatedPlusProfilesProvider::Observer:
   void OnAffiliatedPlusProfilesFetched() override;
@@ -124,8 +124,9 @@ class AddressAccessoryControllerImpl
   // section for the frontend.
   base::WeakPtr<AffiliatedPlusProfilesProvider> plus_profiles_provider_;
 
-  // The data manager used to retrieve the profiles.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  // Responsible for observing the `AddressDataManager` of the current profile.
+  base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
+      adm_observation_{this};
 
   const raw_ptr<plus_addresses::PlusAddressService> plus_address_service_;
 

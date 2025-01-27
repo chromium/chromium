@@ -161,6 +161,10 @@ class FrameNodeImpl
                              bool same_document,
                              bool is_served_from_back_forward_cache);
 
+  // Traverses the frame tree and notifies all frames that their embedding
+  // primary page is about to be discarded.
+  void OnPrimaryPageAboutToBeDiscarded();
+
   // Invoked by |worker_node| when it starts/stops being a child of this frame.
   void AddChildWorker(WorkerNodeImpl* worker_node);
   void RemoveChildWorker(WorkerNodeImpl* worker_node);

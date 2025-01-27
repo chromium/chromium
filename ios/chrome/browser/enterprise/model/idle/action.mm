@@ -71,7 +71,6 @@ class SignOutAction : public Action {
       signout_start_time_ = base::TimeTicks::Now();
       authentication_service->SignOut(
           signin_metrics::ProfileSignout::kIdleTimeoutPolicyTriggeredSignOut,
-          /*force_clear_browsing_data=*/false,
           base::CallbackToBlock(
               base::BindOnce(&SignOutAction::OnSignOutCompleted,
                              base::Unretained(this), std::move(continuation))));

@@ -199,7 +199,7 @@ std::optional<CredentialUIEntry> GetConflictingCredential(
       // Check if `local_credential` has matching `signon_realm`, but different
       // `password`.
       if (local_credential.password != imported_credential.password &&
-          base::ranges::any_of(
+          std::ranges::any_of(
               local_credential.facets,
               [&imported_credential](const CredentialFacet& facet) {
                 return facet.signon_realm ==
@@ -220,7 +220,7 @@ std::vector<PasswordForm> GetMatchingPasswordForms(
   // forms with different `signon_realm`.
   CHECK(presenter);
   std::vector<PasswordForm> results;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       presenter->GetCorrespondingPasswordForms(credential),
       std::back_inserter(results), [&](const PasswordForm& form) {
         return form.signon_realm == credential.GetFirstSignonRealm() &&

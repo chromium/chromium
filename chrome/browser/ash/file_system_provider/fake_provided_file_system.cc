@@ -408,7 +408,7 @@ base::File::Error FakeProvidedFileSystem::DoDeleteEntry(
   // path in `entries_`.
   if (!recursive) {
     const Entries::const_iterator it =
-        base::ranges::find_if(entries_, [entry_path](auto& entry_it) {
+        std::ranges::find_if(entries_, [entry_path](auto& entry_it) {
           return entry_path.IsParent(entry_it.first);
         });
     if (it != entries_.end()) {

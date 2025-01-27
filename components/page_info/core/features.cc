@@ -87,8 +87,33 @@ BASE_FEATURE(kMerchantTrustEvaluationControlSurvey,
              "MerchantTrustEvaluationControlSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<base::TimeDelta>
+    kMerchantTrustEvaluationControlMinTimeToShowSurvey{
+        &kMerchantTrustEvaluationControlSurvey, "MinTimeToShowSurvey",
+        base::Minutes(2)};
+
+const base::FeatureParam<base::TimeDelta>
+    kMerchantTrustEvaluationControlMaxTimeToShowSurvey{
+        &kMerchantTrustEvaluationControlSurvey, "MaxTimeToShowSurvey",
+        base::Minutes(60)};
+
 BASE_FEATURE(kMerchantTrustEvaluationExperimentSurvey,
              "MerchantTrustEvaluationExperimentSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta>
+    kMerchantTrustEvaluationExperimentMinTimeToShowSurvey{
+        &kMerchantTrustEvaluationExperimentSurvey, "MinTimeToShowSurvey",
+        base::Minutes(2)};
+
+const base::FeatureParam<base::TimeDelta>
+    kMerchantTrustEvaluationExperimentMaxTimeToShowSurvey{
+        &kMerchantTrustEvaluationExperimentSurvey, "MaxTimeToShowSurvey",
+        base::Minutes(60)};
+
+const base::FeatureParam<base::TimeDelta>
+    kMerchantTrustRequiredInteractionDuration{
+        &kMerchantTrustEvaluationExperimentSurvey,
+        "RequiredInteractionDuration", base::Seconds(5)};
 
 }  // namespace page_info

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/login/login_handler.h"
 
+#include <algorithm>
 #include <list>
 #include <map>
 #include <tuple>
@@ -13,7 +14,6 @@
 #include "base/location.h"
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -902,7 +902,7 @@ void MultiRealmLoginPromptBrowserTest::RunTest(const F& for_each_realm_func) {
   for (int i = 0; i < kMultiRealmTestRealmCount; ++i) {
     auto handlers = LoginHandler::GetAllLoginHandlersForTest();
     auto it =
-        base::ranges::find_if(handlers, [&seen_realms](LoginHandler* handler) {
+        std::ranges::find_if(handlers, [&seen_realms](LoginHandler* handler) {
           return seen_realms.count(handler->auth_info().realm) == 0;
         });
     ASSERT_TRUE(it != handlers.end());

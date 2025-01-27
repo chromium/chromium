@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -17,7 +18,6 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -69,7 +69,7 @@ bool UpdateSpellcheckEnabled::Visit(content::RenderFrame* render_frame) {
 WebVector<WebString> ConvertToWebStringFromUtf8(
     const std::set<std::string>& words) {
   WebVector<WebString> result(words.size());
-  base::ranges::transform(words, result.begin(), [](const auto& word) {
+  std::ranges::transform(words, result.begin(), [](const auto& word) {
     return WebString::FromUTF8(word);
   });
   return result;
@@ -495,7 +495,7 @@ void SpellCheck::PerformSpellCheck(SpellcheckRequest* param) {
   }
 
   if (!host || languages_.empty() ||
-      !base::ranges::all_of(languages_, &SpellcheckLanguage::IsEnabled)) {
+      !std::ranges::all_of(languages_, &SpellcheckLanguage::IsEnabled)) {
     param->completion()->DidCancelCheckingText();
   } else {
     WebVector<blink::WebTextCheckingResult> results;
@@ -632,7 +632,7 @@ size_t SpellCheck::LanguageCount() {
 }
 
 size_t SpellCheck::EnabledLanguageCount() {
-  return base::ranges::count_if(languages_, &SpellcheckLanguage::IsEnabled);
+  return std::ranges::count_if(languages_, &SpellcheckLanguage::IsEnabled);
 }
 
 void SpellCheck::NotifyDictionaryObservers(
@@ -643,7 +643,7 @@ void SpellCheck::NotifyDictionaryObservers(
 }
 
 bool SpellCheck::IsWordInSupportedScript(const std::u16string& word) const {
-  return base::ranges::any_of(languages_, [word](const auto& language) {
+  return std::ranges::any_of(languages_, [word](const auto& language) {
     return language->IsTextInSameScript(word);
   });
 }

@@ -4,11 +4,12 @@
 
 #include "media/base/limiting_audio_queue.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "media/audio/simple_sources.h"
 #include "media/base/audio_bus.h"

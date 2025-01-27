@@ -4,10 +4,10 @@
 
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 
+#include <algorithm>
 #include <functional>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -94,10 +94,10 @@ void LogLocalProfileSupersetMetrics(
   // profile.
   base::UmaHistogramCounts100(
       "Autofill.Leipzig.Duplication.NumberOfLocalSupersetProfilesOnStartup",
-      base::ranges::count_if(profiles.begin(), account_profiles.begin(),
-                             [&](const AutofillProfile* local_profile) {
-                               return is_account_superset(local_profile);
-                             }));
+      std::ranges::count_if(profiles.begin(), account_profiles.begin(),
+                            [&](const AutofillProfile* local_profile) {
+                              return is_account_superset(local_profile);
+                            }));
 }
 
 void LogStoredProfileCountWithAlternativeName(

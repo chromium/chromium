@@ -10,7 +10,6 @@
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/heuristic_source.h"
@@ -47,7 +46,7 @@ bool AllFieldsClassifiedWithConfidence(
     size_t num_fields,
     float confidence_threshold) {
   for (size_t i = 0; i < num_fields; i++) {
-    if (base::ranges::max(output[i]) < confidence_threshold) {
+    if (std::ranges::max(output[i]) < confidence_threshold) {
       return false;
     }
   }
@@ -65,6 +64,18 @@ HeuristicSource GetHeuristicSource(
       return HeuristicSource::kPasswordManagerMachineLearning;
     default:
       NOTREACHED();
+  }
+}
+
+bool ParsingSupportsMultipleFieldsOfType(FieldType type) {
+  switch (type) {
+    case USERNAME:
+    case ACCOUNT_CREATION_PASSWORD:
+    case CONFIRMATION_PASSWORD:
+    case PASSWORD:
+      return false;
+    default:
+      return true;
   }
 }
 
@@ -166,26 +177,51 @@ void FieldClassificationModelHandler::AssignMostLikelyTypes(
   // `FieldClassificationModelEncoder::kModelMaxNumberOfFields`.
   size_t relevant_fields = std::min(form.field_count(), output.size());
   HeuristicSource heuristic_source = GetHeuristicSource(optimization_target_);
+
+  // Some field types and model metadata do not allow assigning the same type to
+  // multiple fields. If the type requires to pick a single field, track which
+  // field was assigned to the type, and with which confidence.
+  std::map<FieldType, std::pair<size_t, float>> unique_types_assignment;
+
   for (size_t i = 0; i < relevant_fields; i++) {
-    form.field(i)->set_heuristic_type(heuristic_source,
-                                      GetMostLikelyType(output[i]));
+    auto [most_likely_type, current_confidence] = GetMostLikelyType(output[i]);
+
+    if (state_->metadata.postprocessing_parameters()
+            .disallow_same_type_predictions() &&
+        !ParsingSupportsMultipleFieldsOfType(most_likely_type) &&
+        unique_types_assignment.contains(most_likely_type)) {
+      auto [previous_field_index, previous_field_confidence] =
+          unique_types_assignment[most_likely_type];
+      if (current_confidence > previous_field_confidence) {
+        // Remove the type assignment from the previously selected field.
+        form.field(previous_field_index)
+            ->set_heuristic_type(heuristic_source, NO_SERVER_DATA);
+      } else {
+        most_likely_type = NO_SERVER_DATA;
+      }
+    }
+
+    form.field(i)->set_heuristic_type(heuristic_source, most_likely_type);
+    if (!ParsingSupportsMultipleFieldsOfType(most_likely_type)) {
+      unique_types_assignment[most_likely_type] = {i, current_confidence};
+    }
   }
 }
 
-FieldType FieldClassificationModelHandler::GetMostLikelyType(
+std::pair<FieldType, float> FieldClassificationModelHandler::GetMostLikelyType(
     const std::vector<float>& model_output) const {
   CHECK(state_);
-  int max_index =
-      base::ranges::max_element(model_output) - model_output.begin();
+  int max_index = std::ranges::max_element(model_output) - model_output.begin();
   CHECK_LT(max_index, state_->metadata.output_type_size());
   if (!state_->metadata.postprocessing_parameters()
            .has_confidence_threshold_per_field() ||
       model_output[max_index] >= state_->metadata.postprocessing_parameters()
                                      .confidence_threshold_per_field()) {
-    return ToSafeFieldType(state_->metadata.output_type(max_index),
-                           UNKNOWN_TYPE);
+    return {
+        ToSafeFieldType(state_->metadata.output_type(max_index), UNKNOWN_TYPE),
+        model_output[max_index]};
   }
-  return NO_SERVER_DATA;
+  return {NO_SERVER_DATA, 0.0};
 }
 
 bool FieldClassificationModelHandler::ShouldEmitPredictions(

@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">แชร์กลุ่ม</translation>
 <translation id="2677748264148917807">ออก</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{เพิ่มแล้ว <ph name="ONE_ADDED" /> แท็บ เปลี่ยนแล้ว <ph name="ANY_CHANGED" /> แท็บ ปิดแล้ว <ph name="ANY_CLOSED" /> แท็บ}other{เพิ่มแล้ว <ph name="MANY_ADDED" /> แท็บ เปลี่ยนแล้ว <ph name="ANY_CHANGED" /> แท็บ ปิดแล้ว <ph name="ANY_CLOSED" /> แท็บ}}</translation>
+<translation id="2755485474385016903">ทุกคนในกลุ่มจะเห็นการเปลี่ยนแปลงที่ทํา</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{สร้างเมื่อ <ph name="NUM_HOURS_ONE" /> ชั่วโมงที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_HOURS_MANY" /> ชั่วโมงที่ผ่านมา}}</translation>
 <translation id="2801787514987684416">ดูข้อมูลร้านค้าไหม</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{ปิดแล้ว <ph name="ONE_CLOSED" /> แท็บ}other{ปิดแล้ว <ph name="MANY_CLOSED" /> แท็บ}}</translation>

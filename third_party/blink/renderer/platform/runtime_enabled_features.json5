@@ -788,8 +788,10 @@
       status: "stable",
     },
     {
+      // Correctly inherit after-change style without animations applied.
+      // https://crbug.com/40337057
       name: "CascadedAfterChangeStyle",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Kill switch for changes to RenderFrameMetadataObserverImpl in connection with Engagement
@@ -1109,6 +1111,7 @@
       // queries in conditions.
       // https://github.com/w3c/csswg-drafts/issues/10064.
       name: "CSSInlineIfForStyleQueries",
+      status: "test",
     },
     {
       // https://chromestatus.com/feature/6289894144212992
@@ -1574,6 +1577,12 @@
       name: "DisplayCutoutAPI",
       base_feature: "none",
       public: true,
+    },
+    {
+      // Scale very large height and width of HTML Element
+      // to allow DnD.
+      name: "DnDScaleHeightAndWidthToMaxDimension",
+      status: "stable",
     },
     {
       name: "DocumentCookie",
@@ -3645,6 +3654,10 @@
       origin_trial_feature_name: "RTCEncodedFrameSetMetadata",
     },
     {
+      name: "RTCEncodedFrameTimestamps",
+      status: "experimental",
+    },
+    {
       name: "RTCEncodedVideoFrameAdditionalMetadata",
       status: "experimental",
     },
@@ -4505,6 +4518,10 @@
         "Android": "stable",
         "default": "",
       },
+    },
+    {
+      name: "UsePositionForPointInFlexibleBoxWithSingleChildElement",
+      status: "stable",
     },
     {
       name: "UserDefinedEntryPointTiming",

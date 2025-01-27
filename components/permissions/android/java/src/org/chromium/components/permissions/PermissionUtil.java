@@ -194,6 +194,18 @@ public class PermissionUtil {
     }
 
     @CalledByNative
+    public static boolean canRequestSystemPermission(
+            int contentSettingType, WindowAndroid windowAndroid) {
+        String[] permissions = getRequiredAndroidPermissionsForContentSetting(contentSettingType);
+        for (String permission : permissions) {
+            if (!windowAndroid.canRequestPermission(permission)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @CalledByNative
     public static boolean needsLocationPermissionForBluetooth(WindowAndroid windowAndroid) {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.S
                 && !windowAndroid.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION);

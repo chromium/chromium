@@ -23,7 +23,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/display/screen.h"
@@ -433,7 +432,7 @@ void SplitViewDivider::MaybeAddObservedWindow(aura::Window* window) {
 }
 
 void SplitViewDivider::MaybeRemoveObservedWindow(aura::Window* window) {
-  auto iter = base::ranges::find(observed_windows_, window);
+  auto iter = std::ranges::find(observed_windows_, window);
   if (iter != observed_windows_.end()) {
     window->RemoveObserver(this);
     observed_windows_.erase(iter);

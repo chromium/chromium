@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(iframe.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   const auto& iframe_data = iframe.content_attributes().iframe_data();
-  AssertValidURL(iframe_data.url(), "a.com");
+  EXPECT_TRUE(iframe_data.url().empty());
   EXPECT_FALSE(iframe_data.likely_ad_frame());
 
   EXPECT_EQ(iframe.children_nodes().size(), 1);
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(iframe.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   const auto& iframe_data = iframe.content_attributes().iframe_data();
-  AssertValidURL(iframe_data.url(), "a.com");
+  EXPECT_TRUE(iframe_data.url().empty());
   EXPECT_FALSE(iframe_data.likely_ad_frame());
 
   EXPECT_EQ(iframe.children_nodes().size(), 1);

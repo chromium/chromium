@@ -4,12 +4,13 @@
 
 #include "chrome/browser/extensions/pending_extension_manager.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/version.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
@@ -75,7 +76,7 @@ bool PendingExtensionManager::HasPendingExtensions() const {
 }
 
 bool PendingExtensionManager::HasPendingExtensionFromSync() const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       pending_extensions_,
       [](const std::pair<const std::string, PendingExtensionInfo>& it) {
         return it.second.is_from_sync();
@@ -83,7 +84,7 @@ bool PendingExtensionManager::HasPendingExtensionFromSync() const {
 }
 
 bool PendingExtensionManager::HasHighPriorityPendingExtension() const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       pending_extensions_,
       [](const std::pair<const std::string, PendingExtensionInfo>& it) {
         return it.second.install_source() ==

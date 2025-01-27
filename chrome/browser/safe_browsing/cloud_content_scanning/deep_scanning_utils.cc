@@ -4,8 +4,9 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -158,7 +159,7 @@ void MaybeReportDeepScanningVerdict(
     BinaryUploadService::Result result,
     const enterprise_connectors::ContentAnalysisResponse& response,
     EventResult event_result) {
-  DCHECK(base::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
+  DCHECK(std::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
   if (!router)
@@ -212,7 +213,7 @@ void ReportAnalysisConnectorWarningBypass(
     const int64_t content_size,
     const enterprise_connectors::ContentAnalysisResponse& response,
     std::optional<std::u16string> user_justification) {
-  DCHECK(base::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
+  DCHECK(std::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
   if (!router)

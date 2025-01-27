@@ -112,8 +112,10 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
     if (!on_device_component_state_manager_) {
       return OnDeviceModelEligibilityReason::kModelNotEligible;
     }
+    optimization_guide::OnDeviceModelStatus on_device_model_status =
+        on_device_component_state_manager_->GetOnDeviceModelStatus();
 
-    switch (on_device_component_state_manager_->GetOnDeviceModelStatus()) {
+    switch (on_device_model_status) {
       case optimization_guide::OnDeviceModelStatus::kNotEligible:
         return OnDeviceModelEligibilityReason::kModelNotEligible;
       case optimization_guide::OnDeviceModelStatus::kInsufficientDiskSpace:
@@ -124,9 +126,13 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
       case optimization_guide::OnDeviceModelStatus::kModelInstalledTooLate:
       case optimization_guide::OnDeviceModelStatus::kNotReadyForUnknownReason:
       case optimization_guide::OnDeviceModelStatus::kNoOnDeviceFeatureUsed:
-        return OnDeviceModelEligibilityReason::kModelToBeInstalled;
       case optimization_guide::OnDeviceModelStatus::kReady:
         // The model is downloaded but the installation is not completed yet.
+        base::UmaHistogramEnumeration(
+            base::StrCat({"OptimizationGuide.ModelExecution."
+                          "OnDeviceModelToBeInstalledReason.",
+                          GetStringNameForModelExecutionFeature(feature)}),
+            on_device_model_status);
         return OnDeviceModelEligibilityReason::kModelToBeInstalled;
     }
   }

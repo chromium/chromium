@@ -823,19 +823,19 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabSelection) {
 
   // Select tab 1.
   EXPECT_CALL(*notifier_observer_, OnTabSelected(TabGuidEq(tab1))).Times(1);
-  tgss_observer_->OnTabSelected(tab_group_1.saved_guid(),
-                                tab1.saved_tab_guid());
+  tgss_observer_->OnTabSelected(tab_groups::SelectedTabInfo(
+      tab_group_1.saved_guid(), tab1.saved_tab_guid(), tab1.title()));
 
   // Select tab 2.
   EXPECT_CALL(*notifier_observer_, OnTabSelected(TabGuidEq(tab2))).Times(1);
-  tgss_observer_->OnTabSelected(tab_group_1.saved_guid(),
-                                tab2.saved_tab_guid());
+  tgss_observer_->OnTabSelected(tab_groups::SelectedTabInfo(
+      tab_group_1.saved_guid(), tab2.saved_tab_guid(), tab2.title()));
 
   // Select a tab outside tab groups.
   EXPECT_CALL(*notifier_observer_, OnTabSelected(testing::Eq(std::nullopt)))
       .Times(1);
-  tgss_observer_->OnTabSelected(base::Uuid::GenerateRandomV4(),
-                                base::Uuid::GenerateRandomV4());
+  tgss_observer_->OnTabSelected(tab_groups::SelectedTabInfo(
+      base::Uuid::GenerateRandomV4(), base::Uuid::GenerateRandomV4(), u""));
 
   // Add another tab group.
   tab_groups::SavedTabGroup tab_group_2 = CreateTestSharedTabGroupWithNoTabs();
@@ -850,13 +850,13 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabSelection) {
 
   // Select tab 3 from the new group.
   EXPECT_CALL(*notifier_observer_, OnTabSelected(TabGuidEq(tab3))).Times(1);
-  tgss_observer_->OnTabSelected(tab_group_2.saved_guid(),
-                                tab3.saved_tab_guid());
+  tgss_observer_->OnTabSelected(tab_groups::SelectedTabInfo(
+      tab_group_2.saved_guid(), tab3.saved_tab_guid(), tab3.title()));
 
   // Select the first tab again.
   EXPECT_CALL(*notifier_observer_, OnTabSelected(TabGuidEq(tab1))).Times(1);
-  tgss_observer_->OnTabSelected(tab_group_1.saved_guid(),
-                                tab1.saved_tab_guid());
+  tgss_observer_->OnTabSelected(tab_groups::SelectedTabInfo(
+      tab_group_1.saved_guid(), tab1.saved_tab_guid(), tab1.title()));
 }
 
 TEST_F(TabGroupChangeNotifierImplTest, TestTabSelectionReadsLiveData) {
@@ -889,7 +889,8 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabSelectionReadsLiveData) {
   // Select the tab: This should lead to our notifier reading the live data.
   EXPECT_CALL(*notifier_observer_, OnTabSelected(TabGuidEq(tab)))
       .WillOnce(SaveArg<0>(&tab_selection_received));
-  tgss_observer_->OnTabSelected(tab_group.saved_guid(), tab.saved_tab_guid());
+  tgss_observer_->OnTabSelected(tab_groups::SelectedTabInfo(
+      tab_group.saved_guid(), tab.saved_tab_guid(), tab.title()));
   EXPECT_EQ(42, tab_selection_received->local_tab_id());
 }
 

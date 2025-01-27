@@ -4,6 +4,7 @@
 
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 
@@ -64,7 +65,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -1401,8 +1401,8 @@ void WallpaperControllerImpl::LoadPreviewImage(
 
   auto variants = current_wallpaper_->wallpaper_info().variants;
   auto it =
-      base::ranges::find(variants, backdrop::Image::IMAGE_TYPE_PREVIEW_MODE,
-                         &OnlineWallpaperVariant::type);
+      std::ranges::find(variants, backdrop::Image::IMAGE_TYPE_PREVIEW_MODE,
+                        &OnlineWallpaperVariant::type);
   // No image with |backdrop::Image::IMAGE_TYPE_PREVIEW_MODE|, fallback to
   // |resized|.
   if (it == variants.end()) {

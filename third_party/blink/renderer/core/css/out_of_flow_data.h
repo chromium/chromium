@@ -61,6 +61,10 @@ class CORE_EXPORT OutOfFlowData final
     return last_successful_position_fallback_.try_tactics_;
   }
 
+  std::optional<size_t> GetLastSuccessfulIndex() const {
+    return last_successful_position_fallback_.index_;
+  }
+
   std::optional<size_t> GetNewSuccessfulPositionFallbackIndex() const {
     if (new_successful_position_fallback_.index_ != std::nullopt) {
       return new_successful_position_fallback_.index_;

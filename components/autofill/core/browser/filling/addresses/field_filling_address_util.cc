@@ -4,13 +4,13 @@
 
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/unicodestring.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -162,10 +162,10 @@ std::u16string GetStateSelectControlValue(
 
   // Remove `abbreviations` from the `full_names` as a precautionary measure in
   // case the `AlternativeStateNameMap` contains bad data.
-  base::ranges::sort(abbreviations);
+  std::ranges::sort(abbreviations);
   std::erase_if(full_names, [&](const std::u16string& full_name) {
     return full_name.empty() ||
-           base::ranges::binary_search(abbreviations, full_name);
+           std::ranges::binary_search(abbreviations, full_name);
   });
 
   // Try an exact match of the abbreviation first.
@@ -414,7 +414,7 @@ std::u16string GetPhoneCountryCodeSelectControlValue(
                phone_country_code;
   };
   auto first_match =
-      base::ranges::find_if(field_options, value_or_content_matches);
+      std::ranges::find_if(field_options, value_or_content_matches);
 
   if (base::FeatureList::IsEnabled(
           features::
@@ -440,7 +440,7 @@ std::u16string GetPhoneCountryCodeSelectControlValue(
       }
       // If the <option>s do contain phone country codes, we pick the current
       // option only if the phone country code matches.
-      auto selected_option = base::ranges::find_if(
+      auto selected_option = std::ranges::find_if(
           field_options,
           [&](const SelectOption& o) { return o.value == option; });
       if (value_or_content_matches(*selected_option)) {

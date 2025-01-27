@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string_view>
@@ -26,7 +27,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -1786,7 +1786,7 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
       content::WebContents* web_contents = tab_strip->GetWebContentsAt(i);
       GURL tab_url = web_contents->GetLastCommittedURL();
       const bool tab_is_same_origin = url::IsSameOriginWith(origin, tab_url);
-      const bool tab_might_embed_origin = base::ranges::any_of(
+      const bool tab_might_embed_origin = std::ranges::any_of(
           additional_patterns_for_infobar, [&](const auto& additional_pattern) {
             return additional_pattern.Matches(tab_url);
           });

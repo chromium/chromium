@@ -403,7 +403,7 @@ enum class PermissionAutoRevocationHistory {
 
 // This enum backs up the `AutoDSEPermissionRevertTransition` histogram enum.
 // Never reuse values and mirror any updates to it.
-// Describes the transition that has occured for the setting of a DSE origin
+// Describes the transition that has occurred for the setting of a DSE origin
 // when DSE autogrant becomes disabled.
 enum class AutoDSEPermissionRevertTransition {
   // The user has not previously made any decision so it results in an `ASK` end
@@ -436,11 +436,12 @@ enum class AutoDSEPermissionRevertTransition {
 // indicates whether the permission prediction was done by the local on device
 // model or by the server side model.
 enum class PermissionPredictionSource {
-  ON_DEVICE = 0,
+  ON_DEVICE_TFLITE = 0,
   SERVER_SIDE = 1,
+  SERVER_SIDE_AND_ON_DEVICE_GENAI = 2,
 
   // Always keep at the end.
-  kMaxValue = SERVER_SIDE,
+  kMaxValue = SERVER_SIDE_AND_ON_DEVICE_GENAI,
 };
 
 // This enum backs up the 'PageInfoDialogAccessType' histogram enum.

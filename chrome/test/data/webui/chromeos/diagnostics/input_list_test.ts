@@ -24,7 +24,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -434,8 +434,8 @@ suite('inputListTestSuite', function() {
         provider.getMoveAppToTestingScreenCalled());
 
     // Click get stated button to open canvas dialog.
-    const getStartedButton =
-        introDialog.querySelector('cr-button') as CrButtonElement;
+    const getStartedButton = introDialog.querySelector('cr-button');
+    assertTrue(!!getStartedButton);
     getStartedButton.click();
     await flushTasks();
     assertFalse(introDialog.open);

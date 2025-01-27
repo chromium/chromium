@@ -9,13 +9,13 @@
 
 #include "components/browsing_topics/annotator_impl.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -110,7 +110,7 @@ LoadOverrideListFromFile(const base::FilePath& path) {
 int MeaninglessPrefixLength(const std::string& host) {
   size_t len = host.size();
 
-  int dots = base::ranges::count(host, '.');
+  int dots = std::ranges::count(host, '.');
   if (dots < 2) {
     return 0;
   }

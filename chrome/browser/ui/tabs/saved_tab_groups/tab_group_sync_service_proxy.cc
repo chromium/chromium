@@ -177,13 +177,13 @@ void TabGroupSyncServiceProxy::MoveTab(const LocalTabGroupID& group_id,
 
 void TabGroupSyncServiceProxy::OnTabSelected(
     const std::optional<LocalTabGroupID>& group_id,
-    const LocalTabID& tab_id) {
+    const LocalTabID& tab_id,
+    const std::u16string& tab_title) {
   NOTIMPLEMENTED();
 }
 
-std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
-TabGroupSyncServiceProxy::GetCurrentlySelectedTabID() {
-  return {std::nullopt, std::nullopt};
+SelectedTabInfo TabGroupSyncServiceProxy::GetCurrentlySelectedTabInfo() {
+  return SelectedTabInfo();
 }
 
 void TabGroupSyncServiceProxy::SaveGroup(SavedTabGroup group) {

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -17,7 +18,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/usb/usb_device.h"
@@ -173,8 +173,8 @@ bool DeviceImpl::HasControlTransferPermission(
     interface = device_handle_->FindInterfaceByEndpoint(index & 0xff);
   } else {
     auto interface_it =
-        base::ranges::find(config->interfaces, index & 0xff,
-                           &mojom::UsbInterfaceInfo::interface_number);
+        std::ranges::find(config->interfaces, index & 0xff,
+                          &mojom::UsbInterfaceInfo::interface_number);
     if (interface_it != config->interfaces.end())
       interface = interface_it->get();
   }
@@ -267,8 +267,8 @@ void DeviceImpl::ClaimInterface(uint8_t interface_number,
   }
 
   auto interface_it =
-      base::ranges::find(config->interfaces, interface_number,
-                         &mojom::UsbInterfaceInfo::interface_number);
+      std::ranges::find(config->interfaces, interface_number,
+                        &mojom::UsbInterfaceInfo::interface_number);
   if (interface_it == config->interfaces.end()) {
     std::move(callback).Run(mojom::UsbClaimInterfaceResult::kFailure);
     return;

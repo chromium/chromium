@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <set>
@@ -26,7 +27,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -357,8 +357,8 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
 
   if (active_user_->HasGaiaAccount()) {
     // Move the user to the front of the list.
-    auto it = base::ranges::find(users_, account_id,
-                                 [](auto& ptr) { return ptr->GetAccountId(); });
+    auto it = std::ranges::find(users_, account_id,
+                                [](auto& ptr) { return ptr->GetAccountId(); });
     if (it != users_.end()) {
       std::rotate(users_.begin(), it, it + 1);
       ScopedListPrefUpdate prefs_users_update(local_state_.get(),
@@ -490,7 +490,7 @@ bool UserManagerImpl::UpdateDeviceLocalAccountUser(
       // Non device local account is not a target to be removed.
       continue;
     }
-    if (base::ranges::any_of(
+    if (std::ranges::any_of(
             device_local_accounts, [user](const DeviceLocalAccountInfo& info) {
               return info.user_id == user->GetAccountId().GetUserEmail() &&
                      info.type == user->GetType();
@@ -1499,8 +1499,8 @@ bool UserManagerImpl::OnUserProfileCreated(const AccountId& account_id,
   // Find a User from `user_storage_`.
   // FindUserAndModify may overlook some existing User instance, because
   // the list may not contain ephemeral users that are getting stale.
-  auto it = base::ranges::find(user_storage_, account_id,
-                               [](auto& ptr) { return ptr->GetAccountId(); });
+  auto it = std::ranges::find(user_storage_, account_id,
+                              [](auto& ptr) { return ptr->GetAccountId(); });
   auto* user = it == user_storage_.end() ? nullptr : it->get();
   CHECK(user);
   if (user->is_profile_created()) {
@@ -1529,8 +1529,8 @@ void UserManagerImpl::OnUserProfileWillBeDestroyed(
     const AccountId& account_id) {
   // Find from user_stroage_. See OnUserProfileCreated for the reason why not
   // using FindUserAndModify.
-  auto it = base::ranges::find(user_storage_, account_id,
-                               [](auto& ptr) { return ptr->GetAccountId(); });
+  auto it = std::ranges::find(user_storage_, account_id,
+                              [](auto& ptr) { return ptr->GetAccountId(); });
   auto* user = it == user_storage_.end() ? nullptr : it->get();
   CHECK(user);
 
@@ -1702,7 +1702,7 @@ void UserManagerImpl::SetLRUUser(User* user) {
                           user->GetAccountId().GetUserEmail());
   local_state_->CommitPendingWrite();
 
-  UserList::iterator it = base::ranges::find(lru_logged_in_users_, user);
+  UserList::iterator it = std::ranges::find(lru_logged_in_users_, user);
   if (it != lru_logged_in_users_.end()) {
     lru_logged_in_users_.erase(it);
   }

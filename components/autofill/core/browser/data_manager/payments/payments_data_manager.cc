@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/containers/span.h"
@@ -12,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/i18n/timezone.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_shared_storage_handler.h"
@@ -98,7 +98,7 @@ template <typename T>
 typename std::vector<T>::const_iterator FindElementByGUID(
     const std::vector<T>& container,
     std::string_view guid) {
-  return base::ranges::find(container, guid, [](const auto& element) {
+  return std::ranges::find(container, guid, [](const auto& element) {
     return Deref(element).guid();
   });
 }
@@ -125,7 +125,7 @@ std::vector<const CreditCard*> DeduplicatedCreditCardsForSuggestions(
     CHECK_NE(card->record_type(), CreditCard::RecordType::kFullServerCard);
     // Masked server cards are preferred over their local duplicates.
     if (!CreditCard::IsLocalCard(card) ||
-        base::ranges::none_of(
+        std::ranges::none_of(
             cards_to_suggest, [&card](const CreditCard* other_card) {
               return card != other_card &&
                      card->IsLocalOrServerDuplicateOf(*other_card);
@@ -777,12 +777,11 @@ std::vector<Iban> PaymentsDataManager::GetOrderedIbansToSuggest() const {
                });
   });
 
-  base::ranges::sort(available_ibans,
-                     [comparison_time = AutofillClock::Now()](
-                         const Iban* iban0, const Iban* iban1) {
-                       return iban0->usage_history().HasGreaterRankingThan(
-                           iban1->usage_history(), comparison_time);
-                     });
+  std::ranges::sort(available_ibans, [comparison_time = AutofillClock::Now()](
+                                         const Iban* iban0, const Iban* iban1) {
+    return iban0->usage_history().HasGreaterRankingThan(iban1->usage_history(),
+                                                        comparison_time);
+  });
 
   std::vector<Iban> ibans_to_suggest;
   ibans_to_suggest.reserve(available_ibans.size());
@@ -863,7 +862,7 @@ PaymentsDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
     return {};
   }
   std::vector<const AutofillOfferData*> promo_code_offers_for_origin;
-  base::ranges::for_each(
+  std::ranges::for_each(
       autofill_offer_data_,
       [&](const std::unique_ptr<AutofillOfferData>& autofill_offer_data) {
         if (autofill_offer_data.get()->IsPromoCodeOffer() &&
@@ -1099,7 +1098,7 @@ const CreditCard* PaymentsDataManager::GetServerCardForLocalCard(
 
   std::vector<const CreditCard*> server_cards = GetServerCreditCards();
   auto it =
-      base::ranges::find_if(server_cards, [&](const CreditCard* server_card) {
+      std::ranges::find_if(server_cards, [&](const CreditCard* server_card) {
         return local_card->IsLocalOrServerDuplicateOf(*server_card);
       });
   return it != server_cards.end() ? *it : nullptr;
@@ -1280,7 +1279,7 @@ std::vector<const CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest(
                                                 : GetLocalCreditCards());
   // Rank the cards by ranking score (see UsageHistoryInformation for details).
   // All expired cards should be suggested last, also by ranking score.
-  base::ranges::sort(
+  std::ranges::sort(
       cards_to_suggest,
       [comparison_time = base::Time::Now(), should_use_legacy_algorithm](
           const CreditCard* a, const CreditCard* b) {
@@ -2088,7 +2087,7 @@ void PaymentsDataManager::OnServerCreditCardsRefreshed() {
 }
 
 size_t PaymentsDataManager::GetServerCardWithArtImageCount() const {
-  return base::ranges::count_if(
+  return std::ranges::count_if(
       server_credit_cards_.begin(), server_credit_cards_.end(),
       [](const auto& card) { return card->card_art_url().is_valid(); });
 }

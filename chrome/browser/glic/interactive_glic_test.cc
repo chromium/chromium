@@ -27,5 +27,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
 
 const InteractiveBrowserTestApi::DeepQuery kPathToMockGlicCloseButton = {
     "#closebn"};
+const InteractiveBrowserTestApi::DeepQuery kPathToGuestPanel = {
+    ".panel#guestPanel"};
 
 }  // namespace glic::test

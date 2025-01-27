@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
 
+#include <algorithm>
+
 #include "base/containers/flat_set.h"
-#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"

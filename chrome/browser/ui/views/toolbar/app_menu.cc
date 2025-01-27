@@ -1338,7 +1338,7 @@ void AppMenu::OnMenuClosed(views::MenuItemView* menu) {
   static constexpr auto kSafetyHubCommandIds =
       std::array{IDC_OPEN_SAFETY_HUB, IDC_SAFETY_HUB_MANAGE_EXTENSIONS,
                  IDC_SAFETY_HUB_SHOW_PASSWORD_CHECKUP};
-  const bool has_safety_hub_notification = base::ranges::any_of(
+  const bool has_safety_hub_notification = std::ranges::any_of(
       kSafetyHubCommandIds,
       [&](int id) { return command_id_to_entry_.contains(id); });
   if (has_safety_hub_notification &&

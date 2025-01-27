@@ -4,11 +4,11 @@
 
 #include "device/fido/authenticator_get_info_response.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -161,10 +161,10 @@ std::vector<uint8_t> AuthenticatorGetInfoResponse::EncodeToCBOR(
 
 bool AuthenticatorGetInfoResponse::SupportsAtLeast(
     Ctap2Version ctap2_version) const {
-  return base::ranges::any_of(ctap2_versions,
-                              [ctap2_version](const Ctap2Version& version) {
-                                return version >= ctap2_version;
-                              });
+  return std::ranges::any_of(ctap2_versions,
+                             [ctap2_version](const Ctap2Version& version) {
+                               return version >= ctap2_version;
+                             });
 }
 
 }  // namespace device

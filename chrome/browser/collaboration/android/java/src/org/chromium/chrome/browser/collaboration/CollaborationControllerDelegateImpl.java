@@ -28,6 +28,7 @@ import org.chromium.components.collaboration.Outcome;
 import org.chromium.components.collaboration.Type;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
+import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -256,16 +257,58 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     /**
      * Show the share dialog screen.
      *
+     * @param syncId The sync id of the tab group
+     * @param localId The local id of the tab group.
      * @param resultCallback The callback to notify the outcome of the UI screen.
      */
     @CalledByNative
-    void showShareDialog(long resultWithGroupTokenCallback) {
-        CollaborationControllerDelegateImplJni.get()
-                .runResultWithGroupTokenCallback(
-                        Outcome.FAILURE,
-                        /* groupId= */ null,
-                        /* accessToken= */ null,
-                        resultWithGroupTokenCallback);
+    void showShareDialog(
+            String syncId, LocalTabGroupId localId, long resultWithGroupTokenCallback) {
+        DataSharingCreateUiConfig.CreateCallback createCallback =
+                new DataSharingCreateUiConfig.CreateCallback() {
+                    @Override
+                    public void onGroupCreatedWithWait(
+                            org.chromium.components.sync.protocol.GroupData result,
+                            Callback<Boolean> onCreateFinished) {
+                        DataSharingMetrics.recordShareActionFlowState(
+                                DataSharingMetrics.ShareActionStateAndroid.GROUP_CREATE_SUCCESS);
+                        mCloseScreenRunnable =
+                                () -> {
+                                    onCreateFinished.onResult(true);
+                                };
+
+                        CollaborationControllerDelegateImplJni.get()
+                                .runResultWithGroupTokenCallback(
+                                        Outcome.SUCCESS,
+                                        result.getGroupId(),
+                                        result.getAccessToken(),
+                                        resultWithGroupTokenCallback);
+                    }
+
+                    @Override
+                    public void onCancelClicked() {
+                        DataSharingMetrics.recordShareActionFlowState(
+                                DataSharingMetrics.ShareActionStateAndroid.BOTTOM_SHEET_DISMISSED);
+                    }
+
+                    @Override
+                    public void onSessionFinished() {
+                        CollaborationControllerDelegateImplJni.get()
+                                .runResultWithGroupTokenCallback(
+                                        Outcome.CANCEL, null, null, resultWithGroupTokenCallback);
+                    }
+                };
+
+        SavedTabGroup existingGroup = getSavedTabGroupForEitherId(syncId, localId);
+
+        String sessionId =
+                mDataSharingTabManager.showShareDialog(
+                        mActivity, existingGroup.title, existingGroup, createCallback);
+
+        mCloseScreenRunnable =
+                () -> {
+                    mDataSharingTabManager.getUiDelegate().destroyFlow(sessionId);
+                };
     }
 
     /**
@@ -275,8 +318,19 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
      */
     @CalledByNative
     void onUrlReadyToShare(String groupId, GURL url, long resultCallback) {
-        CollaborationControllerDelegateImplJni.get()
-                .runResultCallback(Outcome.FAILURE, resultCallback);
+        if (mCloseScreenRunnable == null) return;
+        Callback<Boolean> onFinishCallback =
+                (result) -> {
+                    // Close the share dialog that is waiting to finish.
+                    closeScreenIfNeeded();
+                    if (!result) {
+                        CollaborationControllerDelegateImplJni.get()
+                                .runResultCallback(Outcome.FAILURE, resultCallback);
+                    }
+                    CollaborationControllerDelegateImplJni.get()
+                            .runResultCallback(Outcome.SUCCESS, resultCallback);
+                };
+        mDataSharingTabManager.showShareSheet(mActivity, groupId, url, onFinishCallback);
     }
 
     /**
@@ -288,17 +342,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
      */
     @CalledByNative
     void showManageDialog(String syncId, LocalTabGroupId localId, long resultCallback) {
-        TabGroupSyncService tabGroupSyncService =
-                TabGroupSyncServiceFactory.getForProfile(mDataSharingTabManager.getProfile());
-        assert tabGroupSyncService != null;
-
-        SavedTabGroup existingGroup = null;
-        if (syncId != null) {
-            existingGroup = tabGroupSyncService.getGroup(syncId);
-        } else {
-            existingGroup = tabGroupSyncService.getGroup(localId);
-        }
-        assert existingGroup != null;
+        SavedTabGroup existingGroup = getSavedTabGroupForEitherId(syncId, localId);
 
         String sessionId =
                 mDataSharingTabManager.showManageSharing(
@@ -313,6 +357,22 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 () -> {
                     mDataSharingTabManager.getUiDelegate().destroyFlow(sessionId);
                 };
+    }
+
+    private SavedTabGroup getSavedTabGroupForEitherId(String syncId, LocalTabGroupId localId) {
+        TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(mDataSharingTabManager.getProfile());
+        assert tabGroupSyncService != null;
+
+        SavedTabGroup existingGroup = null;
+        if (syncId != null) {
+            existingGroup = tabGroupSyncService.getGroup(syncId);
+        } else {
+            existingGroup = tabGroupSyncService.getGroup(localId);
+        }
+        assert existingGroup != null;
+
+        return existingGroup;
     }
 
     /**

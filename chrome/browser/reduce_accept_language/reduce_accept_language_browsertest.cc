@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
@@ -10,7 +11,6 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -262,7 +262,7 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
   std::string GetResponseContentLanguage(
       const std::string& accept_language,
       const std::vector<std::string>& avail_languages) {
-    auto iter = base::ranges::find(avail_languages, accept_language);
+    auto iter = std::ranges::find(avail_languages, accept_language);
     return iter != avail_languages.end() ? *iter : avail_languages[0];
   }
 

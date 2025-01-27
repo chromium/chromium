@@ -9,6 +9,7 @@
 
 #include "components/web_package/web_bundle_parser.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
@@ -17,7 +18,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -717,7 +717,7 @@ TEST_F(WebBundleParserTest,
 TEST_F(WebBundleParserTest, RandomAccessContextLengthSmallerThanWebBundle) {
   std::vector<uint8_t> bundle = CreateSmallBundle();
   std::vector<uint8_t> invalid_length = {0, 0, 0, 0, 0, 0, 0, 10};
-  base::ranges::copy(invalid_length, bundle.end() - 8);
+  std::ranges::copy(invalid_length, bundle.end() - 8);
   TestDataSource data_source(bundle, /*is_random_access_context=*/true);
 
   ExpectFormatError(ParseUnsignedBundle(&data_source));
@@ -733,7 +733,7 @@ TEST_F(WebBundleParserTest, RandomAccessContextFileSmallerThanLengthField) {
 TEST_F(WebBundleParserTest, RandomAccessContextLengthBiggerThanFile) {
   std::vector<uint8_t> bundle = CreateSmallBundle();
   std::vector<uint8_t> invalid_length = {0xff, 0, 0, 0, 0, 0, 0, 0};
-  base::ranges::copy(invalid_length, bundle.end() - 8);
+  std::ranges::copy(invalid_length, bundle.end() - 8);
   TestDataSource data_source(bundle, /*is_random_access_context=*/true);
 
   ExpectFormatError(ParseUnsignedBundle(&data_source));

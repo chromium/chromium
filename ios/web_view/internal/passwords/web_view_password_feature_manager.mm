@@ -27,16 +27,6 @@ bool WebViewPasswordFeatureManager::IsOptedInForAccountStorage() const {
       pref_service_, sync_service_);
 }
 
-password_manager::PasswordForm::Store
-WebViewPasswordFeatureManager::GetDefaultPasswordStore() const {
-  // ios/web_view should never write to the profile password store.
-  return password_manager::PasswordForm::Store::kAccountStore;
-}
-
-bool WebViewPasswordFeatureManager::IsDefaultPasswordStoreSet() const {
-  return false;
-}
-
 password_manager::features_util::PasswordAccountStorageUsageLevel
 WebViewPasswordFeatureManager::ComputePasswordAccountStorageUsageLevel() const {
   // ios/web_view doesn't support either the profile password store or sync, so

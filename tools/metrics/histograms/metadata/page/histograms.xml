@@ -1523,7 +1523,7 @@ chromium-metrics-reviews@google.com.
   <token key="SafeSitesFilter" variants="SafeSitesFilterType"/>
 </histogram>
 
-<histogram name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfLCP"
+<histogram name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfLCP2"
     units="%" expires_after="2025-08-01">
   <owner>chikamune@chromium.org</owner>
   <owner>
@@ -1537,7 +1537,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfNonLCP"
+<histogram
+    name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfNonLCP2"
     units="%" expires_after="2025-08-01">
   <owner>chikamune@chromium.org</owner>
   <owner>
@@ -3075,17 +3076,6 @@ chromium-metrics-reviews@google.com.
     marked as indeterminate. Frames that are render-throttled will not have an
     FCP. Ad frames with indeterminate creative origin status are broken out as
     throttled or not.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.FrameCounts.AdFrames.PerFrame.DeferredForTagging"
-    enum="Boolean" expires_after="2025-02-05">
-  <owner>jdh@chromium.org</owner>
-  <owner>src/chrome/browser/tpcd/OWNERS</owner>
-  <summary>
-    Records whether the start of a child frame navigation was deferred to allow
-    ad tagging to be completed first or not. Recorded only when the
-    TPCDAdHeuristicSubframeRequestTagging feature is enabled.
   </summary>
 </histogram>
 

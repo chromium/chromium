@@ -1463,11 +1463,11 @@ TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
   ASSERT_NE(value1, value2);
   ASSERT_NE(status1, status2);
   std::vector<AddressCountryCode> country_codes;
-  base::ranges::transform(country_data_map->country_codes(),
-                          back_inserter(country_codes),
-                          [](const std::string& country_code) {
-                            return AddressCountryCode(country_code);
-                          });
+  std::ranges::transform(country_data_map->country_codes(),
+                         back_inserter(country_codes),
+                         [](const std::string& country_code) {
+                           return AddressCountryCode(country_code);
+                         });
   // Include the legacy country code as well.
   country_codes.push_back(i18n_model_definition::kLegacyHierarchyCountryCode);
 

@@ -4,6 +4,7 @@
 
 #include "components/update_client/component.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -22,7 +23,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"

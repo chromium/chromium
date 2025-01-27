@@ -4,11 +4,11 @@
 
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

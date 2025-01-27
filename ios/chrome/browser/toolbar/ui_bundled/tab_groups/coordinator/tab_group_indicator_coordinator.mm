@@ -119,8 +119,13 @@
   [tabGroupsHandler showRecentActivityForGroup:tabGroup];
 }
 
-- (void)showTabGroupIndicatorConfirmationForAction:
-    (TabGroupActionType)actionType {
+- (void)
+    showTabGroupIndicatorConfirmationForAction:(TabGroupActionType)actionType
+                                         group:(base::WeakPtr<const TabGroup>)
+                                                   tabGroup {
+  if (!tabGroup) {
+    return;
+  }
   [self stopTabGroupConfirmationCoordinator];
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
@@ -142,6 +147,7 @@
         break;
     }
   };
+  _tabGroupConfirmationCoordinator.tabGroupName = tabGroup->GetTitle();
 
   [_tabGroupConfirmationCoordinator start];
 }

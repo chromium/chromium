@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/autocomplete_result.h"
 
+#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <optional>
@@ -23,7 +24,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -354,7 +354,7 @@ void AutocompleteResult::Sort(
     const auto default_match_fields =
         GetMatchComparisonFields(default_match_to_preserve.value());
     const auto preserved_default_match =
-        base::ranges::find_if(matches_, [&](const AutocompleteMatch& match) {
+        std::ranges::find_if(matches_, [&](const AutocompleteMatch& match) {
           // Find a duplicate match. Don't preserve suggestions that are not
           // default-able; e.g., typing 'xy' shouldn't preserve default
           // 'xz.com/xy'.
@@ -404,7 +404,7 @@ void AutocompleteResult::SortAndCull(
   // matches will instead set IDs here to keep providers 'dumb' and the
   // type->group mapping consistent between providers.
   if (use_grouping) {
-    base::ranges::for_each(matches_, [&](auto& match) {
+    std::ranges::for_each(matches_, [&](auto& match) {
       if (!match.suggestion_group_id.has_value()) {
         match.suggestion_group_id =
             AutocompleteMatch::GetDefaultGroupId(match.type);
@@ -456,7 +456,7 @@ void AutocompleteResult::SortAndCull(
       } else if (omnibox::IsNTPPage(page_classification)) {
         // IPH is shown for NTP ZPS in the Omnibox only.  If it is shown, reduce
         // the limit of the normal NTP ZPS Section to make room for the IPH.
-        bool has_iph_match = base::ranges::any_of(
+        bool has_iph_match = std::ranges::any_of(
             matches_, [](auto match) { return match.IsIPHSuggestion(); });
         bool add_iph_section =
             page_classification != OmniboxEventProto::NTP_REALBOX &&
@@ -477,7 +477,7 @@ void AutocompleteResult::SortAndCull(
           sections.push_back(std::make_unique<DesktopSecondaryNTPZpsSection>(
               suggestion_groups_map_));
           // Report whether secondary zero-prefix suggestions were triggered.
-          if (base::ranges::any_of(
+          if (std::ranges::any_of(
                   suggestion_groups_map_, [](const auto& entry) {
                     return entry.second.side_type() ==
                            omnibox::GroupConfig_SideType_SECONDARY;
@@ -655,7 +655,7 @@ void AutocompleteResult::TrimOmniboxActions(bool is_zero_suggest) {
     std::vector<OmniboxActionId> include_only_answer_actions{
         OmniboxActionId::ANSWER_ACTION};
 
-    bool has_url = base::ranges::any_of(matches_, [](const auto& match) {
+    bool has_url = std::ranges::any_of(matches_, [](const auto& match) {
       return !AutocompleteMatch::IsSearchType(match.type);
     });
     bool hide_answer_actions_when_url_present =
@@ -741,7 +741,7 @@ void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
   // 2) Suggestions in SECTION_DEFAULT (0) and suggestions whose groups are not
   //    in `suggestion_groups_map_` are sorted 2nd.
   // 3) Remaining suggestions are sorted by section.
-  base::ranges::stable_sort(
+  std::ranges::stable_sort(
       matches_, [](int a, int b) { return a < b; },
       [&](const auto& m) {
         return m.suggestion_group_id.has_value()
@@ -984,8 +984,8 @@ ACMatches::iterator AutocompleteResult::FindTopMatch(
     }
     return best;
   }
-  return base::ranges::find_if(*matches,
-                               &AutocompleteMatch::allowed_to_be_default_match);
+  return std::ranges::find_if(*matches,
+                              &AutocompleteMatch::allowed_to_be_default_match);
 }
 
 // static
@@ -1498,7 +1498,7 @@ void AutocompleteResult::MergeMatchesByProvider(ACMatches* old_matches,
   // Prevent old matches from this provider from outranking new ones and
   // becoming the default match by capping old matches' scores to be less than
   // the highest-scoring allowed-to-be-default match from this provider.
-  auto i = base::ranges::find_if(
+  auto i = std::ranges::find_if(
       new_matches, &AutocompleteMatch::allowed_to_be_default_match);
 
   // If the provider doesn't have any matches that are allowed-to-be-default,
@@ -1551,7 +1551,7 @@ void AutocompleteResult::LimitNumberOfURLsShown(
     size_t max_url_count,
     const CompareWithDemoteByType<AutocompleteMatch>& comparing_object) {
   size_t search_count =
-      base::ranges::count_if(matches_, [&](const AutocompleteMatch& m) {
+      std::ranges::count_if(matches_, [&](const AutocompleteMatch& m) {
         return AutocompleteMatch::IsSearchType(m.type) &&
                // Don't count if would be removed.
                comparing_object.GetDemotedRelevance(m) > 0;
@@ -1581,6 +1581,6 @@ void AutocompleteResult::GroupSuggestionsBySearchVsURL(iterator begin,
   if (begin == end)
     return;
 
-  base::ranges::stable_sort(begin, end, {},
-                            [](const auto& m) { return m.GetSortingOrder(); });
+  std::ranges::stable_sort(begin, end, {},
+                           [](const auto& m) { return m.GetSortingOrder(); });
 }

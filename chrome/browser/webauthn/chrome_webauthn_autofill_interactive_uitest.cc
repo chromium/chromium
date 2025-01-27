@@ -126,9 +126,9 @@ sync_pb::WebauthnCredentialSpecifics CreatePasskey() {
 syncer::DeviceInfo CreateDeviceInfo() {
   syncer::DeviceInfo::PhoneAsASecurityKeyInfo paask_info;
   paask_info.contact_id = std::vector<uint8_t>({1, 2, 3});
-  base::ranges::fill(paask_info.peer_public_key_x962, 0);
+  std::ranges::fill(paask_info.peer_public_key_x962, 0);
   paask_info.peer_public_key_x962[0] = 1;
-  base::ranges::fill(paask_info.secret, 0);
+  std::ranges::fill(paask_info.secret, 0);
   paask_info.secret[0] = 2;
   paask_info.id = device::cablev2::sync::IDNow();
   paask_info.tunnel_server_domain = 0;

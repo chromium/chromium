@@ -4,13 +4,13 @@
 
 #include "chrome/browser/media/router/providers/dial/dial_activity_manager.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 #include "chrome/browser/media/router/providers/dial/dial_internal_message_util.h"
@@ -161,10 +161,9 @@ const DialActivity* DialActivityManager::GetActivity(
 const DialActivity* DialActivityManager::GetActivityBySinkId(
     const MediaSink::Id& sink_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto record_it =
-      base::ranges::find(records_, sink_id, [](const auto& record) {
-        return record.second->activity.route.media_sink_id();
-      });
+  auto record_it = std::ranges::find(records_, sink_id, [](const auto& record) {
+    return record.second->activity.route.media_sink_id();
+  });
   return record_it != records_.end() ? &(record_it->second->activity) : nullptr;
 }
 
@@ -173,7 +172,7 @@ const DialActivity* DialActivityManager::GetActivityToJoin(
     const MediaSource& media_source,
     const url::Origin& client_origin) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto record_it = base::ranges::find_if(
+  auto record_it = std::ranges::find_if(
       records_,
       [&presentation_id, &media_source, &client_origin](const auto& record) {
         const auto& route = record.second->activity.route;

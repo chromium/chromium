@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/to_string.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -645,7 +646,7 @@ void WebMediaPlayerMS::TrackRemoved(const WebString& track_id) {
 void WebMediaPlayerMS::ActiveStateChanged(bool is_active) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SendLogMessage(String::Format("%s({is_active=%s})", __func__,
-                                is_active ? "true" : "false"));
+                                base::ToString(is_active).c_str()));
   // The case when the stream becomes active is handled by TrackAdded().
   if (is_active)
     return;

@@ -44,7 +44,6 @@ android_library("javatests") {
   sources = [
     "javatests/src/org/chromium/components/privacy_sandbox/FingerprintingProtectionSettingsFragmentTest.java",
     "javatests/src/org/chromium/components/privacy_sandbox/IpProtectionSettingsFragmentTest.java",
-    "javatests/src/org/chromium/components/privacy_sandbox/TrackingProtectionSettingsTest.java",
     "javatests/src/org/chromium/components/privacy_sandbox/WebsiteExceptionRowPreferenceTest.java",
   ]
   deps = [

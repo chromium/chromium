@@ -2274,9 +2274,6 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
   if (ParentObjectIfPresent() && ParentObjectIfPresent()->RoleValue() ==
                                      ax::mojom::blink::Role::kComboBoxSelect) {
-    // Only the UA popover element should get the MenuListPopup role.
-    CHECK(!RuntimeEnabledFeatures::CustomizableSelectEnabled() ||
-          HTMLSelectElement::IsPopoverForAppearanceBase(GetNode()));
     return ax::mojom::blink::Role::kMenuListPopup;
   }
 
@@ -5862,37 +5859,15 @@ void AXNodeObject::AddNodeChildren() {
 
 void AXNodeObject::AddMenuListChildren() {
   auto* select = To<HTMLSelectElement>(GetNode());
-
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-    CHECK(select->UsesMenuList());
-    // When CustomizableSelect is enabled, there will always be one
-    // MenuListPopup child which is the UA popover element.
-    AddNodeChild(select->PopoverForAppearanceBase());
-    return;
-  }
-
-  AddNodeChildren();
-}
-
-void AXNodeObject::AddMenuListPopupChildren() {
-  auto* select = To<HTMLSelectElement>(ParentObject()->GetNode());
-
-  // With CustomizableSelect, MenuListPopups can have more interesting children.
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-    for (Node* child = NodeTraversal::FirstChild(*select); child;
-         child = NodeTraversal::NextSibling(*child)) {
-      if (child == select->SlottedButton()) {
-        // The displayed button does not need to be part of the a11y tree. It
-        // is not in the popup, and for accessibility purposes it is redundant
-        // with the <select>.
-        continue;
-      }
-      AddNodeChild(child);
-    }
-    return;
-  }
-
-  AddNodeChildren();
+  CHECK(select);
+  CHECK(select->UsesMenuList());
+  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+  // For select elements, we don't want to include the replaced button which is
+  // redundant with the select itself or the ::picker-icon pseudo-element. All
+  // of the options and everything else that gets rendered in the popup are
+  // slotted into PopoverForAppearanceBase, regardless of whether the select is
+  // in base appearance mode.
+  AddNodeChild(select->PopoverForAppearanceBase());
 }
 
 void AXNodeObject::AddOwnedChildren() {
@@ -5947,12 +5922,6 @@ void AXNodeObject::AddChildrenImpl() {
     // tree structure for select elements even if the author changed the select
     // element's role by setting the role attribute.
     AddMenuListChildren();
-  } else if (RoleValue() == ax::mojom::blink::Role::kMenuListPopup) {
-    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-      // Only the UA popover element should have the MenuListPopup mapping.
-      CHECK(HTMLSelectElement::IsPopoverForAppearanceBase(GetNode()));
-    }
-    AddMenuListPopupChildren();
   } else if (HasValidHTMLTableStructureAndLayout()) {
     AddTableChildren();
   } else if (GetNode() && GetNode()->IsScrollMarkerGroupPseudoElement()) {
@@ -6058,6 +6027,20 @@ void AXNodeObject::AddChildren() {
 void AXNodeObject::AddNodeChild(Node* node) {
   if (!node)
     return;
+
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    if (auto* slot = DynamicTo<HTMLSlotElement>(node)) {
+      if (slot->IsInUserAgentShadowRoot() &&
+          IsA<HTMLSelectElement>(slot->OwnerShadowHost()) &&
+          slot->GetIdAttribute() == shadow_element_names::kSelectButton) {
+        // This is necessary in order to prevent the select's replaced button or
+        // the slot for it from getting included in the accessibility tree. The
+        // replaced button is redundant with the select element itself for
+        // accessibility and layout purposes and is hard coded to inert.
+        return;
+      }
+    }
+  }
 
   AXObject* ax_child = AXObjectCache().Get(node);
   CHECK(!ax_child || !ax_child->IsDetached());

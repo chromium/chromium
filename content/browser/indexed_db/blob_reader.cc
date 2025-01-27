@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -61,8 +62,10 @@ void BlobReader::ReadSideData(
 }
 
 void BlobReader::CaptureSnapshot(CaptureSnapshotCallback callback) {
-  // Only used for `File`.
-  NOTREACHED();
+  // Should only used for `File`, but we may be hitting this function.
+  // See crbug.com/390586616
+  base::debug::DumpWithoutCrashing();
+  std::move(callback).Run(0, std::nullopt);
 }
 
 void BlobReader::GetInternalUUID(GetInternalUUIDCallback callback) {

@@ -172,7 +172,7 @@ BASE_FEATURE(kWebViewInvokeZoomPickerOnGSU,
 // Whether to use WebView's own Context for resource related lookups.
 BASE_FEATURE(kWebViewSeparateResourceContext,
              "WebViewSeparateResourceContext",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to use initial network state during initialization to speed up
 // startup.

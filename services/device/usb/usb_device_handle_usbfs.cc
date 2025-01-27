@@ -13,6 +13,7 @@
 #include <linux/usbdevice_fs.h>
 #include <sys/ioctl.h>
 
+#include <algorithm>
 #include <numeric>
 #include <tuple>
 #include <utility>
@@ -26,7 +27,6 @@
 #include "base/not_fatal_until.h"
 #include "base/numerics/checked_math.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -992,8 +992,8 @@ void UsbDeviceHandleUsbfs::OnTimeout(Transfer* transfer) {
 std::unique_ptr<UsbDeviceHandleUsbfs::Transfer>
 UsbDeviceHandleUsbfs::RemoveFromTransferList(Transfer* transfer_ptr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = base::ranges::find(transfers_, transfer_ptr,
-                               &std::unique_ptr<Transfer>::get);
+  auto it = std::ranges::find(transfers_, transfer_ptr,
+                              &std::unique_ptr<Transfer>::get);
   CHECK(it != transfers_.end(), base::NotFatalUntil::M130);
   std::unique_ptr<Transfer> transfer = std::move(*it);
   transfers_.erase(it);

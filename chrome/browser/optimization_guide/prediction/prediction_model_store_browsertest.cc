@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
@@ -204,7 +205,7 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
     EXPECT_EQ(request.method, net::test_server::METHOD_POST);
     EXPECT_TRUE(get_models_request.ParseFromString(request.content));
     response->set_code(net::HTTP_OK);
-    if (!base::ranges::any_of(
+    if (!std::ranges::any_of(
             get_models_request.requested_models(),
             [](const proto::ModelInfo& model_info) {
               return model_info.optimization_target() ==

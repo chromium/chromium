@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/preferences/preferences.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -13,7 +14,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"

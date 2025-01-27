@@ -13,7 +13,7 @@ import {DataPointElement} from 'chrome://diagnostics/data_point.js';
 import type {DiagnosticsCardElement} from 'chrome://diagnostics/diagnostics_card.js';
 import {EthernetInfoElement} from 'chrome://diagnostics/ethernet_info.js';
 import type {MemoryCardElement} from 'chrome://diagnostics/memory_card.js';
-import type {NetworkInfoElement} from 'chrome://diagnostics/network_info';
+import type {NetworkInfoElement} from 'chrome://diagnostics/network_info.js';
 import {PercentBarChartElement} from 'chrome://diagnostics/percent_bar_chart.js';
 import {RealtimeCpuChartElement} from 'chrome://diagnostics/realtime_cpu_chart.js';
 import {RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';

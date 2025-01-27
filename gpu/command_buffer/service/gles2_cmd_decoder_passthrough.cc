@@ -9,6 +9,7 @@
 
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -17,7 +18,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -2211,7 +2211,7 @@ bool GLES2DecoderPassthroughImpl::IsEmulatedQueryTarget(GLenum target) const {
 }
 
 bool GLES2DecoderPassthroughImpl::OnlyHasPendingProgramCompletionQueries() {
-  return base::ranges::all_of(pending_queries_, [](const auto& query) {
+  return std::ranges::all_of(pending_queries_, [](const auto& query) {
     return query.target == GL_PROGRAM_COMPLETION_QUERY_CHROMIUM;
   });
 }
@@ -2401,8 +2401,8 @@ error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
 }
 
 void GLES2DecoderPassthroughImpl::RemovePendingQuery(GLuint service_id) {
-  auto pending_iter = base::ranges::find(pending_queries_, service_id,
-                                         &PendingQuery::service_id);
+  auto pending_iter = std::ranges::find(pending_queries_, service_id,
+                                        &PendingQuery::service_id);
   if (pending_iter != pending_queries_.end()) {
     QuerySync* sync = pending_iter->sync;
     sync->result = 0;

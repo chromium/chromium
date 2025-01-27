@@ -18,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
@@ -762,19 +763,19 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SharedImage) {
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SwapChain) {
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
-      gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), kN32_SkColorType,
+      gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), GetN32FormatForCanvas(),
       kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateSwapChainProvider(
-      gfx::Size(kMaxTextureSize, kMaxTextureSize), kN32_SkColorType,
+      gfx::Size(kMaxTextureSize, kMaxTextureSize), GetN32FormatForCanvas(),
       kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateSwapChainProvider(
-      gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), kN32_SkColorType,
+      gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), GetN32FormatForCanvas(),
       kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_);
@@ -810,7 +811,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
       SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
 
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
-      kSize, kInfo.colorType(), kInfo.alphaType(),
+      kSize, GetN32FormatForCanvas(), kInfo.alphaType(),
       gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_);
@@ -833,7 +834,7 @@ TEST_F(
       10, 10, kPremul_SkAlphaType, SkColorSpace::MakeSRGBLinear());
 
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
-      kSize, kInfo.colorType(), kInfo.alphaType(),
+      kSize, GetN32FormatForCanvas(), kInfo.alphaType(),
       gfx::ColorSpace::CreateSRGBLinear(),
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_);

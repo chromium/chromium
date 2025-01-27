@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -28,12 +29,9 @@
 #include "media/base/test_random.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_reader.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-
 namespace {
-
 class FakeMultiBufferDataProvider;
 
 const int kBlockSizeShift = 8;
@@ -543,7 +541,7 @@ class ReadHelper {
     read_size_ = std::min(1 + rnd_->Rand() % (max_read_size_ - 1), end_ - pos_);
     if (!Read()) {
       reader_.Wait(read_size_,
-                   WTF::BindOnce(&ReadHelper::WaitCB, WTF::Unretained(this)));
+                   base::BindOnce(&ReadHelper::WaitCB, base::Unretained(this)));
     }
   }
 

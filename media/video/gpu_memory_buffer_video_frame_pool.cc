@@ -14,6 +14,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <atomic>
 #include <list>
@@ -33,7 +34,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -982,7 +982,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
     // Drop the resource if there was an error with it. If we're not in
     // shutdown we also need to remove the pool entry for the resource.
     if (!in_shutdown_) {
-      auto it = base::ranges::find(resources_pool_, frame_resource);
+      auto it = std::ranges::find(resources_pool_, frame_resource);
       CHECK(it != resources_pool_.end(), base::NotFatalUntil::M130);
       resources_pool_.erase(it);
     }

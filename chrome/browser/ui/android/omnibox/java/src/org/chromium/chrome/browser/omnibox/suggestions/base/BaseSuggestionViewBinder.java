@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -66,7 +67,7 @@ public final class BaseSuggestionViewBinder<T extends View>
     }
 
     /** Drawable ConstantState used to expedite creation of Focus ripples. */
-    private static Drawable.ConstantState sFocusableDrawableState;
+    @VisibleForTesting static Drawable.ConstantState sFocusableDrawableState;
 
     private static @BrandedColorScheme int sFocusableDrawableStateTheme;
     private static boolean sFocusableDrawableStateInNightMode;
@@ -297,7 +298,9 @@ public final class BaseSuggestionViewBinder<T extends View>
 
         // Background color to be used for suggestions
         var ctx = view.getContext();
-        var background = new ColorDrawable(getSuggestionBackgroundColor(model, view.getContext()));
+        var background = new ColorDrawable(getSuggestionBackgroundColor(model, ctx));
+        var hover = new ColorDrawable(getSuggestionHoverColor(model, ctx));
+
         // Ripple effect to use when the user interacts with the suggestion.
         var ripple =
                 OmniboxResourceProvider.resolveAttributeToDrawable(
@@ -305,7 +308,12 @@ public final class BaseSuggestionViewBinder<T extends View>
                         model.get(SuggestionCommonProperties.COLOR_SCHEME),
                         R.attr.selectableItemBackground);
 
-        var layer = new LayerDrawable(new Drawable[] {background, ripple});
+        var statefulBackground = new StateListDrawable();
+        statefulBackground.addState(new int[] {android.R.attr.state_selected}, hover);
+        statefulBackground.addState(new int[] {android.R.attr.state_hovered}, hover);
+        statefulBackground.addState(new int[] {}, background);
+
+        var layer = new LayerDrawable(new Drawable[] {statefulBackground, ripple});
 
         // Cache the drawable state for faster retrieval.
         // See go/omnibox:drawables for more details.
@@ -325,6 +333,19 @@ public final class BaseSuggestionViewBinder<T extends View>
         return isIncognito(model)
                 ? ctx.getColor(R.color.omnibox_suggestion_bg_incognito)
                 : OmniboxResourceProvider.getStandardSuggestionBackgroundColor(ctx);
+    }
+
+    /**
+     * Retrieve the hover color to be applied to suggestion.
+     *
+     * @param model A property model to look up relevant properties.
+     * @param ctx Context used to retrieve appropriate color value.
+     * @return The @ColorInt value representing the color to be applied.
+     */
+    public static @ColorInt int getSuggestionHoverColor(PropertyModel model, Context ctx) {
+        return isIncognito(model)
+                ? ctx.getColor(R.color.default_bg_color_dark_elev_1_baseline)
+                : OmniboxResourceProvider.getHoverSuggestionBackgroundColor(ctx);
     }
 
     /**

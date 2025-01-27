@@ -4,6 +4,8 @@
 
 #include "ui/display/manager/display_manager.h"
 
+#include <algorithm>
+
 #include "ash/accelerators/accelerator_commands.h"
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/accelerometer/accelerometer_types.h"
@@ -35,7 +37,6 @@
 #include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -146,9 +147,9 @@ class DisplayManagerObserverValidator : public display::DisplayObserver,
       const DisplayConfigurationChange& configuration_change) override {
     EXPECT_TRUE(processing_display_changes_);
 
-    EXPECT_TRUE(base::ranges::is_permutation(
+    EXPECT_TRUE(std::ranges::is_permutation(
         added_displays_, configuration_change.added_displays));
-    EXPECT_TRUE(base::ranges::is_permutation(
+    EXPECT_TRUE(std::ranges::is_permutation(
         removed_displays_, configuration_change.removed_displays));
 
     EXPECT_EQ(changed_metrics_.size(),
@@ -5441,18 +5442,18 @@ TEST_F(DisplayManagerTest, DisplayManagerObserverNestedChangesOrdering) {
 
       // Update the set of tracked display ids communicated through did
       // process changes.
-      base::ranges::transform(
+      std::ranges::transform(
           configuration_change.added_displays,
           std::inserter(tracked_display_ids_, tracked_display_ids_.begin()),
           [](const display::Display& display) { return display.id(); });
 
       // If correctly ordered observers should be notified of added displays
       // before any changes to the metrics for these displays.
-      base::ranges::for_each(configuration_change.display_metrics_changes,
-                             [this](const auto& change) {
-                               EXPECT_TRUE(base::Contains(
-                                   tracked_display_ids_, change.display->id()));
-                             });
+      std::ranges::for_each(configuration_change.display_metrics_changes,
+                            [this](const auto& change) {
+                              EXPECT_TRUE(base::Contains(tracked_display_ids_,
+                                                         change.display->id()));
+                            });
 
       if (on_processed_cb_) {
         std::move(on_processed_cb_).Run();

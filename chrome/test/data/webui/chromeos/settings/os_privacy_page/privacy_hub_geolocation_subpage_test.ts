@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import type {SettingsPrivacyHubGeolocationSubpage} from 'chrome://os-settings/lazy_load.js';
 import {PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import type {appPermissionHandlerMojom, ControlledButtonElement, ControlledRadioButtonElement, CrDialogElement, CrLinkRowElement, CrTooltipIconElement, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
+import type {appPermissionHandlerMojom, ControlledButtonElement, ControlledRadioButtonElement, CrDialogElement, CrLinkRowElement, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
 import {GeolocationAccessLevel, OpenWindowProxyImpl, Router, routes, ScheduleType, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
@@ -813,7 +813,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     assertTrue(changeButton.disabled);
 
     // Managed icon with tooltip should be present.
-    assertTrue(!!privacyHubGeolocationSubpage.shadowRoot!
-                     .querySelector<CrTooltipIconElement>('cr-tooltip-icon'));
+    assertTrue(!!privacyHubGeolocationSubpage.shadowRoot!.querySelector(
+        'cr-tooltip-icon'));
   });
 });

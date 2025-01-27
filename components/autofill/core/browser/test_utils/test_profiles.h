@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_TEST_PROFILES_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_TEST_PROFILES_H_
 
-#include "base/ranges/ranges.h"
+#include <ranges>
+
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"

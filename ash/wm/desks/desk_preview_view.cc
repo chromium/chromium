@@ -31,7 +31,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -225,7 +224,7 @@ void MirrorLayerTree(
         continue;
       }
 
-      if (base::ranges::find(mru_windows, window) == mru_windows.end()) {
+      if (std::ranges::find(mru_windows, window) == mru_windows.end()) {
         continue;
       }
 
@@ -254,7 +253,7 @@ void MirrorLayerTree(
 
     // Step 3: Sort all child layers based on `LayerOrderData` and write to
     // `children` for further recursion.
-    base::ranges::sort(
+    std::ranges::sort(
         layer_orders, [](const LayerOrderData& lhs, const LayerOrderData& rhs) {
           return (lhs.primary_key > rhs.primary_key) ||
                  (lhs.primary_key == rhs.primary_key &&

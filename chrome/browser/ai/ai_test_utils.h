@@ -117,6 +117,7 @@ class AITestUtils {
     virtual void SetupMockOptimizationGuideKeyedService();
     virtual void SetupNullOptimizationGuideKeyedService();
 
+    blink::mojom::AIManager* GetAIManagerInterface();
     mojo::Remote<blink::mojom::AIManager> GetAIManagerRemote();
     size_t GetAIManagerContextBoundObjectSetSize();
     size_t GetAIManagerDownloadProgressObserversSize();

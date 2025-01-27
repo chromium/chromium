@@ -4,9 +4,9 @@
 
 #include "components/history_embeddings/vector_database.h"
 
+#include <algorithm>
 #include <queue>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -398,8 +398,8 @@ SearchInfo VectorDatabase::FindNearest(
     search_info.word_match_scored_urls.push_back(top_by_word_match_score.top());
     top_by_word_match_score.pop();
   }
-  base::ranges::reverse(search_info.scored_urls);
-  base::ranges::reverse(search_info.word_match_scored_urls);
+  std::ranges::reverse(search_info.scored_urls);
+  std::ranges::reverse(search_info.word_match_scored_urls);
   return search_info;
 }
 

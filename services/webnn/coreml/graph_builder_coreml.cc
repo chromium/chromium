@@ -28,12 +28,12 @@
 #include "base/files/file_util.h"
 #include "base/functional/overloaded.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/mac/mac_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -632,7 +632,7 @@ std::string_view GetActivationParam(
 
 base::FixedArray<int32_t> Ui32ToI32(base::span<const uint32_t> data) {
   base::FixedArray<int32_t> output(data.size());
-  base::ranges::transform(data, output.begin(), [](uint32_t val) {
+  std::ranges::transform(data, output.begin(), [](uint32_t val) {
     return base::checked_cast<int32_t>(val);
   });
   return output;
@@ -1205,7 +1205,7 @@ GraphBuilderCoreml::GraphBuilderCoreml(
       context_properties_(std::move(context_properties)),
       device_(device),
       internal_operand_id_(
-          base::ranges::max_element(
+          std::ranges::max_element(
               graph_info_->id_to_operand_map,
               {},
               [](const auto& id_operand) { return id_operand.first; })
@@ -1978,7 +1978,7 @@ GraphBuilderCoreml::AddOperationForConcat(
     uint32_t axis,
     CoreML::Specification::MILSpec::Block& block) {
   CHECK(
-      base::ranges::all_of(input_operand_ids, [&](uint64_t input_operand_id) {
+      std::ranges::all_of(input_operand_ids, [&](uint64_t input_operand_id) {
         return context_properties_.data_type_limits.concat_inputs.Has(
             MILDataTypeToOperandType(
                 GetOperandInfo(input_operand_id).mil_data_type));
@@ -3322,20 +3322,30 @@ GraphBuilderCoreml::AddOperationForLayerNormalization(
   }
 
   // TODO: crbug.com/356905058: Figure out if unordered axes should be allowed.
-  if (!base::ranges::is_sorted(operation.axes)) {
+  if (!std::ranges::is_sorted(operation.axes)) {
     return NewNotSupportedError("Axes must be ordered for layerNormalization.");
   }
 
-  // TODO: crbug.com/391423301: CoreML crashes for kCpu when axes are not
-  // consecutive, needs emulation.
-  if (device_ == mojom::CreateContextOptions::Device::kCpu) {
-    bool is_consecutive = base::ranges::adjacent_find(operation.axes,
-        [](auto a, auto b) { return (a + 1) != b; }) == operation.axes.end();
-    if (!is_consecutive) {
+  // TODO: crbug.com/391423301: When axes are not consecutive, CoreML crashes
+  // for all device targets with macOS 15 on Intel devices and kCpu for other
+  // macOS versions, needs emulation.
+  bool is_consecutive =
+      base::ranges::adjacent_find(operation.axes, [](auto a, auto b) {
+        return (a + 1) != b;
+      }) == operation.axes.end();
+  if (!is_consecutive) {
+    if (base::mac::GetCPUType() != base::mac::CPUType::kArm) {
+      if (__builtin_available(macOS 15, *)) {
+        return NewNotSupportedError(
+            "Axes must be consecutive for layerNormalization.");
+      }
+    }
+    if (device_ == mojom::CreateContextOptions::Device::kCpu) {
       return NewNotSupportedError(
           "Axes must be consecutive for layerNormalization on cpu.");
     }
   }
+
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpLayerNormalizationTypeName);
   RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
@@ -4219,7 +4229,7 @@ GraphBuilderCoreml::AddOperationForResample2d(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   const std::array<size_t, 2> supported_axes = {2, 3};
-  CHECK(base::ranges::equal(operation.axes, supported_axes));
+  CHECK(std::ranges::equal(operation.axes, supported_axes));
 
   static constexpr char kParamScaleFactorHeight[] = "scale_factor_height";
   static constexpr char kParamScaleFactorWidth[] = "scale_factor_width";

@@ -55,8 +55,7 @@ class PriceAlertUtilTest : public PlatformTest {
   }
 
   void SignOut() {
-    auth_service_->SignOut(signin_metrics::ProfileSignout::kTest,
-                           /*force_clear_browsing_data=*/false, nil);
+    auth_service_->SignOut(signin_metrics::ProfileSignout::kTest, nil);
   }
 
  protected:

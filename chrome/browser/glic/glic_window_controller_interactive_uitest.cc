@@ -1,0 +1,135 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "base/memory/memory_pressure_monitor.h"
+#include "base/path_service.h"
+#include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/glic_view.h"
+#include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/interactive_glic_test.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/glic_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/button_test_api.h"
+
+namespace glic {
+
+class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
+ public:
+  GlicWindowControllerUiTest() = default;
+  ~GlicWindowControllerUiTest() override = default;
+
+  auto CheckControllerHasWidget(bool expect_widget) {
+    return CheckResult(
+        [this]() { return window_controller().GetGlicWidget() != nullptr; },
+        expect_widget, "CheckControllerHasWidget");
+  }
+
+  auto CheckControllerWidgetMode(GlicWindowMode mode) {
+    bool check_mode = mode == GlicWindowMode::kAttached;
+    return CheckResult([this]() { return window_controller().IsAttached(); },
+                       check_mode, "CheckControllerWidgetMode");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseAttachedWidget) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
+                  CloseGlicWindow(), CheckControllerHasWidget(false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseDetachedWidget) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached),
+                  CloseGlicWindow(), CheckControllerHasWidget(false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DoNotCrashOnBrowserClose) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached));
+  chrome::CloseAllBrowsers();
+  ui_test_utils::WaitForBrowserToClose();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DoNotCrashWhenReopening) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached), CloseGlicWindow(),
+                  OpenGlicWindow(GlicWindowMode::kAttached));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       OpenDetachedAndThenAttachWithButton) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached),
+                  PressButton(kGlicButtonElementId),
+                  WaitForEvent(kGlicButtonElementId, kGlicWidgetAttached),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kAttached));
+}
+
+class GlicWindowControllerWithMemoryPressureUiTest
+    : public GlicWindowControllerUiTest {
+ public:
+  GlicWindowControllerWithMemoryPressureUiTest() {
+    features_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kGlicWarming},
+        /*disabled_features=*/{});
+  }
+  ~GlicWindowControllerWithMemoryPressureUiTest() override = default;
+
+  void SetUp() override {
+    // This will temporarily disable preloading to ensure that we don't load the
+    // web client before we've initialized the embedded test server and can set
+    // the correct URL.
+    GlicProfileManager::ForceMemoryPressureForTesting(&forced_memory_pressure_);
+    GlicWindowControllerUiTest::SetUp();
+  }
+
+  void TearDown() override {
+    GlicWindowControllerUiTest::TearDown();
+    GlicProfileManager::ForceMemoryPressureForTesting(nullptr);
+  }
+
+ protected:
+  void ResetMemoryPressure() {
+    forced_memory_pressure_ = base::MemoryPressureMonitor::MemoryPressureLevel::
+        MEMORY_PRESSURE_LEVEL_NONE;
+  }
+
+ private:
+  base::MemoryPressureMonitor::MemoryPressureLevel forced_memory_pressure_ =
+      base::MemoryPressureMonitor::MemoryPressureLevel::
+          MEMORY_PRESSURE_LEVEL_CRITICAL;
+
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithMemoryPressureUiTest, Preload) {
+  ResetMemoryPressure();
+  glic_service()->TryPreload();
+  EXPECT_TRUE(window_controller().IsWarmed());
+  RunTestSequence(PressButton(kGlicButtonElementId),
+                  InAnyContext(WaitForShow(kGlicViewElementId)));
+}
+
+}  // namespace glic

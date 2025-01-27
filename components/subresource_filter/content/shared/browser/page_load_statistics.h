@@ -26,7 +26,9 @@ class PageLoadStatistics {
 
   void OnDocumentLoadStatistics(
       const mojom::DocumentLoadStatistics& statistics);
-  void OnDidFinishLoad();
+  // Only collects incognito-specific metrics for a page load when
+  // `record_incognito_metrics` = true.
+  void OnDidFinishLoad(bool record_incognito_metrics = false);
 
  private:
   mojom::ActivationState activation_state_;

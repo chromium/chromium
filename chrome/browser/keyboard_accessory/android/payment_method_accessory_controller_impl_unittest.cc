@@ -95,18 +95,18 @@ class PaymentMethodAccessoryControllerTestBase
         .set_credit_card_access_manager(
             std::make_unique<TestAccessManager>(&autofill_manager(), nullptr));
     PaymentMethodAccessoryControllerImpl::CreateForWebContentsForTesting(
-        web_contents(), mock_mf_controller_.AsWeakPtr(), &data_manager_,
+        web_contents(), mock_mf_controller_.AsWeakPtr(), &paydm(),
         &autofill_manager(), &autofill_driver());
     controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
-    data_manager_.SetPrefService(profile()->GetPrefs());
-    data_manager_.SetSyncServiceForTest(&sync_service_);
+    paydm().SetPrefService(profile()->GetPrefs());
+    paydm().SetSyncServiceForTest(&sync_service_);
   }
 
   void TearDown() override {
-    data_manager_.SetSyncServiceForTest(nullptr);
-    data_manager_.SetPrefService(nullptr);
-    data_manager_.test_payments_data_manager().ClearCreditCards();
-    data_manager_.test_payments_data_manager().ClearCreditCardOfferData();
+    paydm().SetSyncServiceForTest(nullptr);
+    paydm().SetPrefService(nullptr);
+    paydm().ClearCreditCards();
+    paydm().ClearCreditCardOfferData();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -135,13 +135,14 @@ class PaymentMethodAccessoryControllerTestBase
                 ->GetIbanAccessManager();
   }
 
-  syncer::TestSyncService sync_service_;
-  TestPersonalDataManager data_manager_;
-  testing::NiceMock<MockManualFillingController> mock_mf_controller_;
+  TestPaymentsDataManager& paydm() { return paydm_; }
+
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
-
  private:
+  syncer::TestSyncService sync_service_;
+  TestPaymentsDataManager paydm_;
+  testing::NiceMock<MockManualFillingController> mock_mf_controller_;
   GURL url_;
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
@@ -161,7 +162,7 @@ class PaymentMethodAccessoryControllerTest
 
 TEST_F(PaymentMethodAccessoryControllerTest, RefreshSuggestions) {
   CreditCard card = test::GetCreditCard();
-  data_manager_.payments_data_manager().AddCreditCard(card);
+  paydm().AddCreditCard(card);
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
@@ -202,7 +203,7 @@ class PaymentMethodAccessoryControllerTest_Insecure
 TEST_F(PaymentMethodAccessoryControllerTest_Insecure,
        PreventsFillingInsecureContexts) {
   CreditCard card = test::GetCreditCard();
-  data_manager_.payments_data_manager().AddCreditCard(card);
+  paydm().AddCreditCard(card);
 
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
@@ -278,7 +279,7 @@ class PaymentMethodAccessoryControllerCardUnmaskTest
 
 TEST_P(PaymentMethodAccessoryControllerCardUnmaskTest, CardUnmask) {
   CreditCard card = GetCreditCard();
-  data_manager_.payments_data_manager().AddCreditCard(card);
+  paydm().AddCreditCard(card);
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
@@ -320,7 +321,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
        RefreshSuggestionsAddsCachedVirtualCards) {
   // Add a masked card to PersonalDataManager.
   CreditCard unmasked_card = test::GetCreditCard();
-  data_manager_.payments_data_manager().AddCreditCard(unmasked_card);
+  paydm().AddCreditCard(unmasked_card);
   // Update the record type to kVirtualCard and add it to the unmasked cards
   // cache.
   unmasked_card.set_record_type(CreditCard::RecordType::kVirtualCard);
@@ -386,7 +387,7 @@ TEST_F(
   CreditCard masked_card = test::GetMaskedServerCard();
   masked_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  data_manager_.payments_data_manager().AddCreditCard(masked_card);
+  paydm().AddCreditCard(masked_card);
 
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
@@ -443,7 +444,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   CreditCard unmasked_card = test::GetCreditCard();
   unmasked_card.set_card_info_retrieval_enrollment_state(
       CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
-  data_manager_.payments_data_manager().AddCreditCard(unmasked_card);
+  paydm().AddCreditCard(unmasked_card);
   // Update the record type and add it to the unmasked cards cache.
   unmasked_card.set_record_type(CreditCard::RecordType::kFullServerCard);
   std::u16string cvc = u"123";
@@ -489,7 +490,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   masked_card.set_card_art_url(GURL("http://www.example.com/image.png"));
   masked_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  data_manager_.payments_data_manager().AddCreditCard(masked_card);
+  paydm().AddCreditCard(masked_card);
 
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
@@ -511,7 +512,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
 TEST_F(PaymentMethodAccessoryControllerTest,
        RefreshSuggestionsWithPromoCodeOffers) {
   CreditCard card = test::GetCreditCard();
-  data_manager_.payments_data_manager().AddCreditCard(card);
+  paydm().AddCreditCard(card);
   // Getting a promo code whose |merchant_origins| contains AutofillClient's
   // |last_committed_url_|.
   AutofillOfferData promo_code_valid = test::GetPromoCodeOfferData(
@@ -523,12 +524,9 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   AutofillOfferData promo_code_expired = test::GetPromoCodeOfferData(
       /*origin=*/GURL(url()),
       /*is_expired=*/true);
-  data_manager_.test_payments_data_manager().AddAutofillOfferData(
-      promo_code_valid);
-  data_manager_.test_payments_data_manager().AddAutofillOfferData(
-      promo_code_origin_mismatch);
-  data_manager_.test_payments_data_manager().AddAutofillOfferData(
-      promo_code_expired);
+  paydm().AddAutofillOfferData(promo_code_valid);
+  paydm().AddAutofillOfferData(promo_code_origin_mismatch);
+  paydm().AddAutofillOfferData(promo_code_expired);
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
                             /*user_info_title=*/std::u16string(),
                             /*plus_address_title=*/std::u16string());
@@ -570,11 +568,11 @@ TEST_F(PaymentMethodAccessoryControllerTest,
 TEST_F(PaymentMethodAccessoryControllerTest,
        RefreshSuggestionsWithCreditCardAndIbans) {
   CreditCard card = test::GetCreditCard();
-  data_manager_.payments_data_manager().AddCreditCard(card);
+  paydm().AddCreditCard(card);
 
   Iban iban;
   iban.set_value(std::u16string(test::kIbanValue16));
-  data_manager_.test_payments_data_manager().AddAsLocalIban(iban);
+  paydm().AddAsLocalIban(iban);
 
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
@@ -610,8 +608,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
 TEST_F(PaymentMethodAccessoryControllerTest, FetchLocalIban) {
   Iban iban;
   iban.set_value(std::u16string(test::kIbanValue16));
-  std::string guid =
-      data_manager_.test_payments_data_manager().AddAsLocalIban(iban);
+  std::string guid = paydm().AddAsLocalIban(iban);
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
@@ -640,7 +637,7 @@ TEST_F(PaymentMethodAccessoryControllerTest, FetchLocalIban) {
 
 TEST_F(PaymentMethodAccessoryControllerTest, FetchServerIban) {
   Iban iban = test::GetServerIban();
-  data_manager_.test_payments_data_manager().AddServerIban(iban);
+  paydm().AddServerIban(iban);
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());

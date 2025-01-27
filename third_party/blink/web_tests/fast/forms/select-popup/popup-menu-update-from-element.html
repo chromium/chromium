@@ -32,7 +32,7 @@ function test1() {
     function onUpdate() {
         setTimeout(function() {
             shouldBeEqualToString('picker.selectElement_.style.color', 'rgb(123, 0, 0)');
-            shouldBeEqualToString('picker.selectElement_.options[0].style.color', '');
+            shouldBeEqualToString('picker.selectElement_.options[0].style.color', 'rgb(0, 0, 0)');
             picker.removeListener("didUpdate", onUpdate);
             test2();
         });

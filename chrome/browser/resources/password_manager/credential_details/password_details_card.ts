@@ -133,11 +133,6 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   private showShareButton_: boolean;
   private showMovePasswordDialog_: boolean;
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.unregisterHelpBubble(PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID);
-  }
-
   private isFederated_(): boolean {
     return !!this.password.federationText;
   }

@@ -15,7 +15,7 @@ import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict
 import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {PaperProgressElement} from 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
-import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -259,8 +259,10 @@ suite('FirmwareUpdateDialogTest', () => {
     assertEquals(
         getTextContent('#updateDialogBody'),
         loadTimeData.getString('updatingInfo'));
-    const percentBar = updateDialogElement.shadowRoot.querySelector(
-                           '#updateProgressBar') as PaperProgressElement;
+    const percentBar =
+        updateDialogElement.shadowRoot.querySelector<PaperProgressElement>(
+            '#updateProgressBar');
+    assertTrue(!!percentBar);
     const percentBarStatus = percentBar.value;
     assertEquals(1, percentBarStatus);
 
@@ -393,8 +395,10 @@ suite('FirmwareUpdateDialogTest', () => {
     assertEquals(
         getTextContent('#updateDialogBody'),
         loadTimeData.getString('updatingInfo'));
-    const percentBar = updateDialogElement.shadowRoot.querySelector(
-                           '#updateProgressBar') as PaperProgressElement;
+    const percentBar =
+        updateDialogElement.shadowRoot.querySelector<PaperProgressElement>(
+            '#updateProgressBar');
+    assertTrue(!!percentBar);
     const percentBarStatus = percentBar.value;
     assertEquals(70, percentBarStatus);
   });
@@ -427,8 +431,10 @@ suite('FirmwareUpdateDialogTest', () => {
         assertEquals(
             getTextContent('#updateDialogBody'),
             loadTimeData.getString('updatingInfo'));
-        let percentBar = updateDialogElement.shadowRoot.querySelector(
-                             '#updateProgressBar') as PaperProgressElement;
+        let percentBar =
+            updateDialogElement.shadowRoot.querySelector<PaperProgressElement>(
+                '#updateProgressBar');
+        assertTrue(!!percentBar);
         let percentBarStatus = percentBar.value;
         assertEquals(70, percentBarStatus);
 
@@ -446,8 +452,10 @@ suite('FirmwareUpdateDialogTest', () => {
         assertEquals(
             getTextContent('#updateDialogBody'),
             loadTimeData.getString('updatingInfo'));
-        percentBar = updateDialogElement.shadowRoot.querySelector(
-                         '#updateProgressBar') as PaperProgressElement;
+        percentBar =
+            updateDialogElement.shadowRoot.querySelector<PaperProgressElement>(
+                '#updateProgressBar');
+        assertTrue(!!percentBar);
         percentBarStatus = percentBar.value;
         assertEquals(70, percentBarStatus);
       });

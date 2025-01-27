@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">গ্রুপ শেয়ার করুন</translation>
 <translation id="2677748264148917807">ছেড়ে চলে যান</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" />টি ট্যাব যোগ করা হয়েছে, <ph name="ANY_CHANGED" />টি পরিবর্তন করা হয়েছে, <ph name="ANY_CLOSED" />টি বন্ধ করা হয়েছে}one{<ph name="MANY_ADDED" />টি ট্যাব যোগ করা হয়েছে, <ph name="ANY_CHANGED" />টি পরিবর্তন করা হয়েছে, <ph name="ANY_CLOSED" />টি বন্ধ করা হয়েছে}other{<ph name="MANY_ADDED" />টি ট্যাব যোগ করা হয়েছে, <ph name="ANY_CHANGED" />টি পরিবর্তন করা হয়েছে, <ph name="ANY_CLOSED" />টি বন্ধ করা হয়েছে}}</translation>
+<translation id="2755485474385016903">যেসব পরিবর্তন করা হয়েছে তা গ্রুপের প্রত্যেকে দেখেছেন</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> ঘণ্টা আগে তৈরি করা হয়েছে}one{<ph name="NUM_HOURS_MANY" /> ঘণ্টা আগে তৈরি করা হয়েছে}other{<ph name="NUM_HOURS_MANY" /> ঘণ্টা আগে তৈরি করা হয়েছে}}</translation>
 <translation id="2801787514987684416">স্টোর সংক্রান্ত তথ্য দেখতে চান?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" />টি ট্যাব বন্ধ করা হয়েছে}one{<ph name="MANY_CLOSED" />টি ট্যাব বন্ধ করা হয়েছে}other{<ph name="MANY_CLOSED" />টি ট্যাব বন্ধ করা হয়েছে}}</translation>

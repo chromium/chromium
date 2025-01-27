@@ -155,6 +155,7 @@ _CONFIG = [
             'base::to_underlying',
             'base::Token',
             'base::ToVector',
+            'base::ToString',
             'base::trace_event::.*',
             'base::unexpected',
             'base::UnguessableToken',
@@ -2132,6 +2133,15 @@ _CONFIG = [
             'third_party/blink/renderer/core/html/canvas/html_canvas_element.h',
         ],
         'allowed': ['viz::ResourceId'],
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/html/canvas',
+        ],
+        'allowed': [
+            'viz::SharedImageFormat',
+            'viz::SkColorTypeToSinglePlaneSharedImageFormat',
+        ],
     },
     {
         'paths': [

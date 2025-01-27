@@ -4,6 +4,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/drag_event_rewriter.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/events/test_event_capturer.h"
@@ -1063,6 +1064,11 @@ TEST_F(MouseKeysTest, Dragging) {
   EXPECT_TRUE(IsMouseDraggedIconVisible());
   EXPECT_FALSE(IsButtonChangeIconVisible());
 
+  auto* drag_event_rewriter =
+      Shell::Get()->mouse_keys_controller()->GetDragEventRewriterForTest();
+  ASSERT_NE(drag_event_rewriter, nullptr);
+  ASSERT_TRUE(drag_event_rewriter->IsEnabled());
+
   auto mouse_events = CheckForMouseEvents();
   EXPECT_EQ(0u, CheckForKeyEvents().size());
   ASSERT_EQ(1u, mouse_events.size());
@@ -1093,6 +1099,7 @@ TEST_F(MouseKeysTest, Dragging) {
   ClearEvents();
   PressAndReleaseKey(ui::VKEY_OEM_PERIOD);
   EXPECT_FALSE(IsBubbleVisible());
+  ASSERT_FALSE(drag_event_rewriter->IsEnabled());
   mouse_events = CheckForMouseEvents();
   EXPECT_EQ(0u, CheckForKeyEvents().size());
   ASSERT_EQ(1u, mouse_events.size());

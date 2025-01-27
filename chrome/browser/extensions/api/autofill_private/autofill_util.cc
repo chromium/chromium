@@ -73,7 +73,7 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   // Add all address fields to the entry.
   address.guid = profile.guid();
 
-  base::ranges::transform(
+  std::ranges::transform(
       autofill::GetDatabaseStoredTypesOfAutofillProfile(),
       back_inserter(address.fields), [&profile](auto field_type) {
         autofill_private::AddressField field;

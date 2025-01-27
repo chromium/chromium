@@ -194,7 +194,7 @@
   {
     "name": "android-elegant-text-height",
     "owners": [ "twellington@chromium.org", "clank-app-team@google.com" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 137
   },
   {
     "name": "android-extended-keyboard-shortcuts",
@@ -1915,6 +1915,11 @@
     "name": "default-browser-video-promo",
     "owners": [ "cheickcisse@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 125
+  },
+  {
+    "name": "default-site-instance-groups",
+    "owners": [ "yangsharon@chromium.org", "chrome-security-architecture@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "defer-renderer-tasks-after-input",
@@ -5930,6 +5935,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "most-visited-tiles-customization",
+    "owners": [ "clank-start@google.com", "huangs@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "most-visited-tiles-new-scoring",
     "owners": [ "ckitagawa@chromium.org", "fredmello@chromium.org", "huangs@chromium.org" ],
     "expiry_milestone": 140
@@ -8811,6 +8821,11 @@
     "expiry_milestone": 127
   },
   {
+    "name": "use-account-list-from-identity-manager",
+    "owners": [ "treib@chromium.org", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "use-adhoc-signing-for-web-app-shims",
     "owners": [
       "markrowe@chromium.org",
@@ -9151,7 +9166,7 @@
   {
     "name": "visited-url-ranking-service-history-visibility-score-filter",
     "owners": ["romanarora@chromium.org", "ssid@chromium.org", "chrome-desktop-ntp@google.com"],
-    "expiry_milestone": 133
+    "expiry_milestone": 135
   },
   {
     "name": "vulkan-from-angle",

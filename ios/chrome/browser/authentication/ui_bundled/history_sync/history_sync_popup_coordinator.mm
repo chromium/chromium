@@ -168,7 +168,7 @@
         self.browser,
         signin_metrics::ProfileSignout::
             kUserDeclinedHistorySyncAfterDedicatedSignIn,
-        /*force_clear_data=*/false, /*force_snackbar_over_toolbar=*/false,
+        /*force_snackbar_over_toolbar=*/false,
         /*snackbar_message=*/nil,
         /*signout_completion=*/nil);
   }

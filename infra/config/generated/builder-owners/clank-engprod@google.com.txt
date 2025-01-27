@@ -1,3 +1,4 @@
+ci/3pp-mac-arm64-packager
 ci/Android arm Builder (dbg)
 ci/Android arm64 Builder (dbg)
 ci/Android arm64 Builder All Targets (dbg)
@@ -42,6 +43,7 @@ ci/android-oreo-x86-rel
 ci/android-pie-arm64-dbg
 ci/android-pie-arm64-rel
 ci/android-pie-x86-rel
+try/3pp-mac-arm64-packager
 try/android-10-x86-fyi-rel
 try/android-10-x86-rel
 try/android-12-x64-rel

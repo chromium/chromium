@@ -156,7 +156,8 @@ URLVisitAggregate::URLTypeSet GetFetchResultURLTypes() {
       ",:;", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
   if (url_type_entries.empty()) {
-    return {URLVisitAggregate::URLType::kActiveRemoteTab,
+    return {URLVisitAggregate::URLType::kActiveLocalTab,
+            URLVisitAggregate::URLType::kActiveRemoteTab,
             URLVisitAggregate::URLType::kRemoteVisit};
   }
 
@@ -240,6 +241,12 @@ void MostRelevantTabResumptionPageHandler::GetURLVisits(
   fetch_options.transforms.insert(
       fetch_options.transforms.begin(),
       URLVisitAggregatesTransformType::kHistoryCategoriesFilter);
+  if (ntp_features::kNtpMostRelevantTabResumptionModuleFilterLocalTabsParam
+          .Get()) {
+    // Filter visits that are associated with open tabs on the current device.
+    fetch_options.exclude_results_containing_types = {
+        URLVisitAggregate::URLType::kActiveLocalTab};
+  }
   auto* visited_url_ranking_service =
       visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
           profile_);

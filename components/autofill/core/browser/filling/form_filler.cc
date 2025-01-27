@@ -711,15 +711,15 @@ void FormFiller::FillOrPreviewForm(
       safe_filled_fields.old_values.push_back(
           form.FindFieldByGlobalId(field_id));
       safe_filled_fields.new_values.push_back([&] {
-        auto fields_it = base::ranges::find(result_fields, field_id,
-                                            &FormFieldData::global_id);
+        auto fields_it = std::ranges::find(result_fields, field_id,
+                                           &FormFieldData::global_id);
         return fields_it != result_fields.end() ? &*fields_it : nullptr;
       }());
       safe_filled_fields.cached.push_back(
           form_structure.GetFieldById(field_id));
     } else {
-      auto it = base::ranges::find(form.fields(), field_id,
-                                   &FormFieldData::global_id);
+      auto it =
+          std::ranges::find(form.fields(), field_id, &FormFieldData::global_id);
       CHECK(it != result_fields.end());
       std::string field_number =
           base::StringPrintf("Field %zu", it - result_fields.begin());
@@ -842,7 +842,7 @@ void FormFiller::TriggerRefill(const FormData& form,
             field->renderer_id());
       };
   auto it =
-      base::ranges::max_element(*form_structure, {}, comparison_attributes);
+      std::ranges::max_element(*form_structure, {}, comparison_attributes);
   AutofillField* autofill_field =
       it != form_structure->end() ? it->get() : nullptr;
   bool found_matching_element =

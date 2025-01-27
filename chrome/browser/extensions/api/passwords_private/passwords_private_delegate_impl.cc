@@ -71,6 +71,8 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/navigation_handle.h"
@@ -460,13 +462,11 @@ PasswordsPrivateDelegateImpl::GetUrlCollection(const std::string& url) {
 
 bool PasswordsPrivateDelegateImpl::IsAccountStoreDefault(
     content::WebContents* web_contents) {
+  // TODO(crbug.com/369341336): Replace with the IsAccountStorageEnabled()
+  // function.
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
-  if (!client ||
-      !client->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
-    return false;
-  }
-  return client->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
-         password_manager::PasswordForm::Store::kAccountStore;
+  return client &&
+         client->GetPasswordFeatureManager()->IsOptedInForAccountStorage();
 }
 
 bool PasswordsPrivateDelegateImpl::AddPassword(
@@ -857,12 +857,9 @@ void PasswordsPrivateDelegateImpl::SetAccountStorageEnabled(
       client->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
     return;
   }
-  if (!enabled) {
-    client->GetPasswordFeatureManager()->OptOutOfAccountStorage();
-    return;
-  }
-
-  client->GetPasswordFeatureManager()->OptInToAccountStorage();
+  SyncServiceFactory::GetForProfile(profile_)
+      ->GetUserSettings()
+      ->SetSelectedType(syncer::UserSelectableType::kPasswords, enabled);
 }
 
 std::vector<api::passwords_private::PasswordUiEntry>
@@ -1286,20 +1283,20 @@ api::passwords_private::PasswordUiEntry
 PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
     CredentialUIEntry credential) {
   api::passwords_private::PasswordUiEntry entry;
-  base::ranges::transform(credential.GetAffiliatedDomains(),
-                          std::back_inserter(entry.affiliated_domains),
-                          [](const CredentialUIEntry::DomainInfo& domain) {
-                            api::passwords_private::DomainInfo domain_info;
-                            // `domain.name` is used to redirect to the Password
-                            // Manager page for the password represented by the
-                            // current `CredentialUIEntry`.
-                            // LINT.IfChange
-                            domain_info.name = domain.name;
-                            // LINT.ThenChange(//chrome/browser/ui/passwords/bubble_controllers/manage_passwords_bubble_controller.cc)
-                            domain_info.url = domain.url.spec();
-                            domain_info.signon_realm = domain.signon_realm;
-                            return domain_info;
-                          });
+  std::ranges::transform(credential.GetAffiliatedDomains(),
+                         std::back_inserter(entry.affiliated_domains),
+                         [](const CredentialUIEntry::DomainInfo& domain) {
+                           api::passwords_private::DomainInfo domain_info;
+                           // `domain.name` is used to redirect to the Password
+                           // Manager page for the password represented by the
+                           // current `CredentialUIEntry`.
+                           // LINT.IfChange
+                           domain_info.name = domain.name;
+                           // LINT.ThenChange(//chrome/browser/ui/passwords/bubble_controllers/manage_passwords_bubble_controller.cc)
+                           domain_info.url = domain.url.spec();
+                           domain_info.signon_realm = domain.signon_realm;
+                           return domain_info;
+                         });
   entry.is_passkey = !credential.passkey_credential_id.empty();
   entry.username = base::UTF16ToUTF8(credential.username);
   if (entry.is_passkey) {

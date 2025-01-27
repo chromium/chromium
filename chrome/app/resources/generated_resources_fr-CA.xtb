@@ -5131,7 +5131,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4593021220803146968">&amp;Accéder à <ph name="URL" /></translation>
 <translation id="4593962599442730215">Modifier vos préférences</translation>
 <translation id="4594218792629569101">Sélectionnez « Marquer comme lu » pour déplacer la page au bas de votre liste</translation>
-<translation id="4594577641390224176">Vous recherchez la page à propos du système? Consultez</translation>
 <translation id="4595560905247879544">Les applications et les extensions ne peuvent être modifiées que par le gestionnaire (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Vous disposez de certificats qui identifient ces serveurs</translation>
 <translation id="4598345735110653698">Gérer les clés d'accès</translation>
@@ -6756,7 +6755,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5787420647064736989">Nom de l'appareil</translation>
 <translation id="5788367137662787332">Nous sommes désolés, il y a au moins une partition sur le périphérique <ph name="DEVICE_LABEL" /> qui n'est pas installable.</translation>
 <translation id="5789581866075720267">Pour importer des mots de passe dans <ph name="BRAND" /> sur cet appareil, sélectionnez un fichier CSV</translation>
-<translation id="5789643057113097023">,</translation>
 <translation id="5790085346892983794">Opération réussie</translation>
 <translation id="5790651917470750848">Cette redirection de port existe déjà</translation>
 <translation id="5792295754950501287">Autres actions pour <ph name="CARD_DESCRIPTION" /></translation>
@@ -7176,7 +7174,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6086418630711763366">Vous pouvez parcourir les pages à l'aide d'un curseur de texte. Appuyez sur Ctrl + <ph name="KEY" /> pour désactiver.</translation>
 <translation id="6086846494333236931">Élément installé par votre administrateur</translation>
 <translation id="6087286598828478206">Bloquer et quitter le groupe?</translation>
-<translation id="6087746524533454243">Vous recherchez la page à propos du navigateur? Consultez</translation>
 <translation id="6087960857463881712">Superbe visage</translation>
 <translation id="6088475950266477163">Paramètres</translation>
 <translation id="608912389580139775">Pour ajouter cette page à votre liste de lecture, cliquez sur l'icône de favori</translation>

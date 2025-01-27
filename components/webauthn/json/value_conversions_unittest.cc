@@ -526,11 +526,11 @@ TEST(WebAuthenticationJSONConversionTest,
             expected->extensions->appid_extension);
   EXPECT_EQ(response->extensions->echo_prf, expected->extensions->echo_prf);
   ASSERT_TRUE(response->extensions->prf_results);
-  EXPECT_TRUE(base::ranges::equal(response->extensions->prf_results->first,
-                                  expected_prf_first));
+  EXPECT_TRUE(std::ranges::equal(response->extensions->prf_results->first,
+                                 expected_prf_first));
   ASSERT_TRUE(response->extensions->prf_results->second);
-  EXPECT_TRUE(base::ranges::equal(*response->extensions->prf_results->second,
-                                  expected_prf_second));
+  EXPECT_TRUE(std::ranges::equal(*response->extensions->prf_results->second,
+                                 expected_prf_second));
   EXPECT_EQ(response->extensions->prf_not_evaluated,
             expected->extensions->prf_not_evaluated);
   EXPECT_EQ(response->extensions->echo_large_blob,

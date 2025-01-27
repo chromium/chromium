@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -1440,13 +1441,10 @@ void AudioContext::invoke_onrendererror_from_platform_for_testing() {
 
 void AudioContext::SendLogMessage(const char* const function_name,
                                   const String& message) {
-  WebRtcLogMessage(
-      String::Format(
-          "[WA]AC::%s %s [state=%s sink_descriptor_=%s, sink_id_given_=%s]",
-          function_name, message.Utf8().c_str(), state().AsCStr(),
-          sink_descriptor_.SinkId().Utf8().c_str(),
-          is_sink_id_given_ ? "true" : "false")
-          .Utf8());
+  WebRtcLogMessage(base::StrCat(
+      {"[WA]AC::", function_name, " ", message.Utf8(), " [state=",
+       state().AsCStr(), " sink_descriptor_=", sink_descriptor_.SinkId().Utf8(),
+       ", sink_id_given_=", base::ToString(is_sink_id_given_), "]"}));
 }
 
 LocalFrame* AudioContext::GetLocalFrame() const {

@@ -72,6 +72,10 @@ void AITestUtils::AITestBase::SetupNullOptimizationGuideKeyedService() {
                          -> std::unique_ptr<KeyedService> { return nullptr; }));
 }
 
+blink::mojom::AIManager* AITestUtils::AITestBase::GetAIManagerInterface() {
+  return ai_manager_.get();
+}
+
 mojo::Remote<blink::mojom::AIManager>
 AITestUtils::AITestBase::GetAIManagerRemote() {
   mojo::Remote<blink::mojom::AIManager> ai_manager;

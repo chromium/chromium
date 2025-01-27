@@ -878,7 +878,7 @@ bool AshAcceleratorConfiguration::AreAcceleratorsValid() {
       RestoreAllDefaults();
       return false;
     }
-    if (base::ranges::find(id_to_accelerator_iter->second, accelerator) ==
+    if (std::ranges::find(id_to_accelerator_iter->second, accelerator) ==
         id_to_accelerator_iter->second.end()) {
       LOG(ERROR) << "Shortcut overide prefs are out of sync, reverse lookup "
                  << "has an extra accelerator: "

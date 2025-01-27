@@ -43,8 +43,10 @@ suite('percentBarChartTestSuite', function() {
     const max = 30;
     return initializePercentBarChart(header, value, max).then(() => {
       assert(percentBarChartElement);
-      const paperProgress = percentBarChartElement.shadowRoot!.querySelector(
-                                'paper-progress') as PaperProgressElement;
+      const paperProgress =
+          percentBarChartElement.shadowRoot!
+              .querySelector<PaperProgressElement>('paper-progress');
+      assert(paperProgress);
       assertEquals(value, paperProgress.value);
       assertEquals(max, paperProgress.max);
       const chartName = strictQuery(
@@ -59,8 +61,10 @@ suite('percentBarChartTestSuite', function() {
     const max = 100;
     return initializePercentBarChart(header, value, max).then(() => {
       assert(percentBarChartElement);
-      const paperProgress = percentBarChartElement.shadowRoot!.querySelector(
-                                'paper-progress') as PaperProgressElement;
+      const paperProgress =
+          percentBarChartElement.shadowRoot!
+              .querySelector<PaperProgressElement>('paper-progress');
+      assert(paperProgress);
       assertEquals(paperProgress.value, paperProgress.max);
     });
   });

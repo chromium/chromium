@@ -115,6 +115,11 @@ std::u16string GetEveryoneSublabel() {
   return l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_EVERYONE_SUBLABEL);
 }
+
+std::u16string GetSettingsButtonTooltip() {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_SETTINGS_BUTTON_TOOLTIP);
+}
 }  // namespace
 
 namespace ash {
@@ -148,6 +153,7 @@ void NearbyShareDetailedViewImpl::CreateExtraTitleRowButtons() {
   settings_button_->SetState(TrayPopupUtils::CanOpenWebUISettings()
                                  ? views::Button::STATE_NORMAL
                                  : views::Button::STATE_DISABLED);
+  settings_button_->SetTooltipText(GetSettingsButtonTooltip());
   tri_view()->AddView(TriView::Container::END, settings_button_);
 }
 

@@ -789,7 +789,7 @@ views::Label* MediaItemUIUpdatedView::GetDurationTimestampLabelForTesting() {
 
 MediaActionButton* MediaItemUIUpdatedView::GetMediaActionButtonForTesting(
     MediaSessionAction action) {
-  const auto i = base::ranges::find(
+  const auto i = std::ranges::find(
       media_action_buttons_, static_cast<int>(action), &views::View::GetID);
   return (i == media_action_buttons_.end()) ? nullptr : *i;
 }

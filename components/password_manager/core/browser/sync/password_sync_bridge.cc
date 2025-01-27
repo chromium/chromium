@@ -740,7 +740,7 @@ std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
   metrics_util::LogPasswordSyncState(
       metrics_util::PasswordSyncState::kSyncingOk);
   if (password_store_sync_->IsAccountStore()) {
-    int password_count = base::ranges::count_if(
+    int password_count = std::ranges::count_if(
         entity_data,
         [](const std::unique_ptr<syncer::EntityChange>& entity_change) {
           return !entity_change->data()

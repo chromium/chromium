@@ -47,6 +47,7 @@ message CoarseSystemInfo {
     CHANNEL_STABLE = 1;
     CHANNEL_NOT_STABLE = 2;
   }
+
   optional Channel channel = 1;
 
   // Platform and activity type, 4 bits allocated.
@@ -67,6 +68,7 @@ message CoarseSystemInfo {
     PLATFORM_CHROMEOS = 11;
     PLATFORM_ANDROID = 12;
   }
+
   optional Platform platform = 2;
 
   // Geo designation, 1 bit allocated.
@@ -77,6 +79,7 @@ message CoarseSystemInfo {
     GEO_DESIGNATION_EEA = 1;  // Countries under the European Economic Area.
     GEO_DESIGNATION_ROW = 2;  // Rest of the world.
   }
+
   optional GeoDesignation geo_designation = 3;
 
   // An indicator of whether this is a recent (week old) client install or
@@ -92,6 +95,7 @@ message CoarseSystemInfo {
     CLIENT_AGE_RECENT = 1;
     CLIENT_AGE_NOT_RECENT = 2;
   }
+
   optional ClientAge client_age = 4;
 
   // First 3 digits of the milestone mod (%) 16, 4 bits allocated.
@@ -116,12 +120,15 @@ message EncryptedPageLoadEvents {
     message EncryptedDeidentifiedWebAnalyticsEvent {
       optional bytes encrypted_event = 1;
       optional fixed64 field_trials_hash = 2;
+
       // Same as DeidentifiedWebAnalyticsEvent.event_hash.
       optional fixed64 event_hash = 3;
     }
+
     repeated EncryptedDeidentifiedWebAnalyticsEvent
         encrypted_deidentified_web_analytics_events = 1;
   }
+
   repeated EncryptedPageLoadEvent encrypted_page_load_events = 1;
 }
 
@@ -141,6 +148,7 @@ message DeidentifiedWebAnalyticsEvent {
       // The content is a URL.
       CONTENT_TYPE_URL = 1;
     }
+
     optional ContentType content_type = 1;
 
     // A hash of the content (e.g. hash("example.com")).
@@ -164,6 +172,7 @@ message DeidentifiedWebAnalyticsEvent {
     // Metrics associated with the content.
     repeated EntryMetrics metrics = 3;
   }
+
   repeated ContentMetric content_metrics = 2;
 
   // Field trials that we want to associate with this event, name id and

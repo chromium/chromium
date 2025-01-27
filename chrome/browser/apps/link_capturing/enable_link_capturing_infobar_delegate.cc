@@ -79,7 +79,7 @@ infobars::InfoBar* EnableLinkCapturingInfoBarDelegate::FindInfoBar(
   auto* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   CHECK(infobar_manager);
-  const auto it = base::ranges::find(
+  const auto it = std::ranges::find(
       infobar_manager->infobars(),
       infobars::InfoBarDelegate::ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE,
       &infobars::InfoBar::GetIdentifier);

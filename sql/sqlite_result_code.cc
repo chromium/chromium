@@ -4,6 +4,7 @@
 
 #include "sql/sqlite_result_code.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <ostream>  // Needed to compile CHECK() with operator <<.
 #include <ranges>
@@ -16,7 +17,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "sql/sqlite_result_code_values.h"
 #include "third_party/sqlite/sqlite3.h"
 
@@ -313,7 +313,7 @@ file lock requests"
 // Returns an entry in kResultCodeMapping or kUnknownResultCodeMappingEntry.
 // CHECKs if the `sqlite_result_code` is not in the mapping table.
 SqliteResultCodeMappingEntry FindResultCode(int sqlite_result_code) {
-  const auto* mapping_it = base::ranges::find_if(
+  const auto* mapping_it = std::ranges::find_if(
       kResultCodeMapping,
       [&sqlite_result_code](SqliteResultCodeMappingEntry rhs) {
         return sqlite_result_code == rhs.result_code;
@@ -415,7 +415,7 @@ std::ostream& operator<<(std::ostream& os, SqliteErrorCode sqlite_error_code) {
 
 void CheckSqliteLoggedResultCodeForTesting() {
   // Ensure that error codes are alphabetical.
-  const auto* unordered_it = base::ranges::adjacent_find(
+  const auto* unordered_it = std::ranges::adjacent_find(
       kResultCodeMapping,
       [](SqliteResultCodeMappingEntry lhs, SqliteResultCodeMappingEntry rhs) {
         return lhs.result_code >= rhs.result_code;

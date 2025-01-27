@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <functional>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/functional.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -305,9 +305,8 @@ class DCLayerOverlayProcessorTest : public OverlayProcessorTestBase {
     // |DCLayerOverlayProcessor::Process| doesn't guarantee a specific ordering
     // for its overlays so we sort front-to-back so tests can make expectations
     // with the same ordering as the input draw quads.
-    base::ranges::sort(root_render_pass_overlay_data.promoted_overlays,
-                       base::ranges::greater(),
-                       &OverlayCandidate::plane_z_order);
+    std::ranges::sort(root_render_pass_overlay_data.promoted_overlays,
+                      std::ranges::greater(), &OverlayCandidate::plane_z_order);
 
     return std::move(root_render_pass_overlay_data);
   }
@@ -2376,8 +2375,8 @@ class OverlayProcessorWinSurfacePlaneTest
         pass_list_->back()->damage_rect.Intersect(*damage_rect_);
 
         const AggregatedRenderPassId max_pass_id =
-            base::ranges::max_element(*pass_list_, base::ranges::less(),
-                                      &AggregatedRenderPass::id)
+            std::ranges::max_element(*pass_list_, std::ranges::less(),
+                                     &AggregatedRenderPass::id)
                 ->get()
                 ->id;
         const AggregatedRenderPassId unused_pass_id(max_pass_id.value() + 1);
@@ -2421,7 +2420,7 @@ class OverlayProcessorWinSurfacePlaneTest
 
       ~ScopedSimulateUnmergedWebContentsSurface() {
         auto it =
-            base::ranges::find_if(*candidates_, [](const auto& candidate) {
+            std::ranges::find_if(*candidates_, [](const auto& candidate) {
               return candidate.rpdq &&
                      candidate.rpdq->render_pass_id == kDefaultRootPassId;
             });
@@ -2462,8 +2461,8 @@ class OverlayProcessorWinSurfacePlaneTest
 
     // Sort candidates front-to-back so tests can assume they appear in the same
     // order as the input draw quads.
-    base::ranges::sort(*candidates, base::ranges::greater(),
-                       &OverlayCandidate::plane_z_order);
+    std::ranges::sort(*candidates, std::ranges::greater(),
+                      &OverlayCandidate::plane_z_order);
   }
 
  private:

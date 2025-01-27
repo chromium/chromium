@@ -870,7 +870,7 @@ const RepresentativenessMap& GetRepresentativenessMapForCurrentTaxonomy() {
       static const base::NoDestructor<RepresentativenessMap>
           kRepresentativenessMapV2([]() -> RepresentativenessMap {
             RepresentativenessMap map;
-            base::ranges::copy_if(
+            std::ranges::copy_if(
                 GetInternalRepresentativenessMap(),
                 std::inserter(map, map.end()), [](const auto& topic_kv) {
                   return topic_kv.first != 275 && topic_kv.first != 279;

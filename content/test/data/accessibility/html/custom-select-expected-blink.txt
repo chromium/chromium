@@ -5,7 +5,7 @@ rootWebArea focusable htmlTag='#document'
 ++++++++menuListPopup invisible htmlTag='div' setSize=5 ispopup=auto
 ++++++++++genericContainer invisible className='datalist' htmlTag='div'
 ++++++++++++menuListOption focusable invisible htmlTag='option' name='EUR Euro' setSize=5 posInSet=1 selected=false
-++++++++++++++genericContainer invisible htmlTag='slot'
+++++++++++++++genericContainer ignored invisible
 ++++++++++++++++image invisible htmlTag='img' name=''
 ++++++++++++++++genericContainer invisible className='currency' htmlTag='div'
 ++++++++++++++++++genericContainer invisible className='currency-short' htmlTag='div'
@@ -13,9 +13,8 @@ rootWebArea focusable htmlTag='#document'
 ++++++++++++++++++genericContainer invisible className='currency-long' htmlTag='div'
 ++++++++++++++++++++staticText invisible name='Euro'
 ++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuListOption focusable invisible htmlTag='option' name='GBP Great British Pound' setSize=5 posInSet=2 selected=false
-++++++++++++++genericContainer invisible htmlTag='slot'
+++++++++++++++genericContainer ignored invisible
 ++++++++++++++++image invisible htmlTag='img' name=''
 ++++++++++++++++genericContainer invisible className='currency' htmlTag='div'
 ++++++++++++++++++genericContainer invisible className='currency-short' htmlTag='div'
@@ -23,9 +22,8 @@ rootWebArea focusable htmlTag='#document'
 ++++++++++++++++++genericContainer invisible className='currency-long' htmlTag='div'
 ++++++++++++++++++++staticText invisible name='Great British Pound'
 ++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuListOption focusable htmlTag='option' name='USD United States Dollar' setSize=5 posInSet=3 selected=true
-++++++++++++++genericContainer htmlTag='slot'
+++++++++++++++genericContainer ignored
 ++++++++++++++++image htmlTag='img' name=''
 ++++++++++++++++genericContainer className='currency' htmlTag='div'
 ++++++++++++++++++genericContainer className='currency-short' htmlTag='div'
@@ -33,9 +31,8 @@ rootWebArea focusable htmlTag='#document'
 ++++++++++++++++++genericContainer className='currency-long' htmlTag='div'
 ++++++++++++++++++++staticText name='United States Dollar'
 ++++++++++++++++genericContainer ignored
-++++++++++++++++++staticText ignored
 ++++++++++++menuListOption focusable invisible htmlTag='option' name='JPY Japanese Yen' setSize=5 posInSet=4 selected=false
-++++++++++++++genericContainer invisible htmlTag='slot'
+++++++++++++++genericContainer ignored invisible
 ++++++++++++++++image invisible htmlTag='img' name=''
 ++++++++++++++++genericContainer invisible className='currency' htmlTag='div'
 ++++++++++++++++++genericContainer invisible className='currency-short' htmlTag='div'
@@ -43,9 +40,8 @@ rootWebArea focusable htmlTag='#document'
 ++++++++++++++++++genericContainer invisible className='currency-long' htmlTag='div'
 ++++++++++++++++++++staticText invisible name='Japanese Yen'
 ++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuListOption focusable invisible htmlTag='option' name='BTC Bitcoin' setSize=5 posInSet=5 selected=false
-++++++++++++++genericContainer invisible htmlTag='slot'
+++++++++++++++genericContainer ignored invisible
 ++++++++++++++++image invisible htmlTag='img' name=''
 ++++++++++++++++genericContainer invisible className='currency' htmlTag='div'
 ++++++++++++++++++genericContainer invisible className='currency-short' htmlTag='div'
@@ -53,4 +49,3 @@ rootWebArea focusable htmlTag='#document'
 ++++++++++++++++++genericContainer invisible className='currency-long' htmlTag='div'
 ++++++++++++++++++++staticText invisible name='Bitcoin'
 ++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible

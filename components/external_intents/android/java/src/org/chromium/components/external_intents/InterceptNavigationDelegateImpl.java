@@ -116,7 +116,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             "Android.Intent.MainFrameIntentLaunch";
 
     private InterceptNavigationDelegateClient mClient;
-    private Callback<Pair<GURL, OverrideUrlLoadingResult>> mResultCallbackForTesting;
+    private static Callback<Pair<GURL, OverrideUrlLoadingResult>> sResultCallbackForTesting;
     private WebContents mWebContents;
     private ExternalNavigationHandler mExternalNavHandler;
     private WebContentsObserver mWebContentsObserver;
@@ -127,6 +127,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     private boolean mShouldClearRedirectHistoryForTabClobbering;
 
     private CancelableRunnable mPendingShouldIgnore;
+    private RequiredCallback<Boolean> mShouldIgnoreResultCallback;
 
     /** Default constructor of {@link InterceptNavigationDelegateImpl}. */
     public InterceptNavigationDelegateImpl(InterceptNavigationDelegateClient client) {
@@ -147,6 +148,10 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     public void associateWithWebContents(WebContents webContents) {
         if (mWebContents == webContents) return;
+
+        // Before we attach to another WebContents, cancel any checks that were in progress.
+        cancelPendingShouldIgnoreCheck();
+
         if (mWebContents != null) {
             mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
@@ -189,6 +194,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
         RedirectHandler redirectHandler = mClient.getOrCreateRedirectHandler();
 
+        mShouldIgnoreResultCallback = resultCallback;
         OverrideUrlLoadingResult result =
                 shouldOverrideUrlLoading(
                         redirectHandler,
@@ -205,24 +211,16 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         hiddenCrossFrame,
                         isSandboxedFrame,
                         navigationHandle.getNavigationId(),
-                        shouldRunAsync,
-                        resultCallback);
+                        shouldRunAsync);
         if (!shouldRunAsync) {
             onMainFrameShouldIgnoreNavigationResult(
-                    result, escapedUrl, navigationHandle.isExternalProtocol(), resultCallback);
+                    result, escapedUrl, navigationHandle.isExternalProtocol());
         }
     }
 
     private void onMainFrameShouldIgnoreNavigationResult(
-            OverrideUrlLoadingResult result,
-            GURL url,
-            boolean isExternalProtocol,
-            RequiredCallback<Boolean> resultCallback) {
+            OverrideUrlLoadingResult result, GURL url, boolean isExternalProtocol) {
         mPendingShouldIgnore = null;
-        if (mWebContents.isDestroyed()) {
-            resultCallback.onResult(false);
-            return;
-        }
         boolean shouldIgnore;
         switch (result.getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
@@ -247,19 +245,30 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 shouldIgnore = false;
                 break;
         }
-        resultCallback.onResult(shouldIgnore);
+        runResultCallback(shouldIgnore);
     }
 
     @Override
     public void finishPendingShouldIgnoreCheck() {
-        if (mPendingShouldIgnore != null) {
-            CancelableRunnable runnable = mPendingShouldIgnore;
-            runnable.run();
-            assert mPendingShouldIgnore == null;
-            // Cancel, ensuring any pending posted tasks do not execute by converting this runnable
-            // to a no-op.
-            runnable.cancel();
-        }
+        if (mPendingShouldIgnore == null) return;
+        CancelableRunnable runnable = mPendingShouldIgnore;
+        runnable.run();
+        assert mPendingShouldIgnore == null;
+        // Cancel, ensuring any pending posted tasks do not execute by converting this runnable
+        // to a no-op.
+        runnable.cancel();
+    }
+
+    private void cancelPendingShouldIgnoreCheck() {
+        if (mPendingShouldIgnore == null) return;
+        mPendingShouldIgnore.cancel();
+        mPendingShouldIgnore = null;
+        runResultCallback(false);
+    }
+
+    private void runResultCallback(boolean shouldIgnore) {
+        mShouldIgnoreResultCallback.onResult(shouldIgnore);
+        mShouldIgnoreResultCallback = null;
     }
 
     @Override
@@ -297,8 +306,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         /* hiddenCrossFrame= */ false,
                         /* isSandboxedMainFrame= */ false,
                         /* navigationId= */ -1,
-                        /* shouldRunAsync= */ false,
-                        /* resultCallback= */ null);
+                        /* shouldRunAsync= */ false);
 
         switch (result.getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
@@ -331,8 +339,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             boolean hiddenCrossFrame,
             boolean isSandboxedMainFrame,
             long navigationId,
-            boolean shouldRunAsync,
-            RequiredCallback<Boolean> resultCallback) {
+            boolean shouldRunAsync) {
         assert mPendingShouldIgnore == null;
         boolean initialNavigation = isInitialNavigation();
         redirectHandler.updateNewUrlLoading(
@@ -374,11 +381,18 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         mPendingShouldIgnore =
                 new CancelableRunnable(
                         () -> {
+                            // Navigation may have been externally canceled, or something caused
+                            // the Navigation Chain to be reset, so we should avoid leaving Chrome.
+                            if (mWebContents.isDestroyed()
+                                    || !params.getRedirectHandler().isOnNavigation()) {
+                                cancelPendingShouldIgnoreCheck();
+                                return;
+                            }
+
                             onMainFrameShouldIgnoreNavigationResult(
                                     doShouldOverrideUrlLoading(params, isExternalProtocol),
                                     params.getUrl(),
-                                    isExternalProtocol,
-                                    resultCallback);
+                                    isExternalProtocol);
                         });
         PostTask.postTask(TaskTraits.UI_DEFAULT, mPendingShouldIgnore);
         return null;
@@ -387,13 +401,9 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     private OverrideUrlLoadingResult doShouldOverrideUrlLoading(
             ExternalNavigationParams params, boolean isExternalProtocol) {
         OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
-        if (mResultCallbackForTesting != null) {
-            mResultCallbackForTesting.onResult(Pair.create(params.getUrl(), result));
+        if (sResultCallbackForTesting != null) {
+            sResultCallbackForTesting.onResult(Pair.create(params.getUrl(), result));
         }
-
-        // For async checks, the Navigation may already have been aborted and the WebContents
-        // destroyed.
-        if (mWebContents.isDestroyed()) return OverrideUrlLoadingResult.forNoOverride();
 
         String protocolType = isExternalProtocol ? "ExternalProtocol" : "InternalProtocol";
         RecordHistogram.recordEnumeratedHistogram(
@@ -654,10 +664,10 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         ContextUtils.getApplicationContext().getString(resId, url.getSpec()));
     }
 
-    public void setResultCallbackForTesting(
+    public static void setResultCallbackForTesting(
             Callback<Pair<GURL, OverrideUrlLoadingResult>> callback) {
-        mResultCallbackForTesting = callback;
-        ResettersForTesting.register(() -> mResultCallbackForTesting = null);
+        sResultCallbackForTesting = callback;
+        ResettersForTesting.register(() -> sResultCallbackForTesting = null);
     }
 
     @NativeMethods

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 
+#include <algorithm>
 #include <cmath>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -139,8 +139,8 @@ void OnListVmDisks(
     return;
   }
   auto disk_info = std::make_unique<CrostiniDiskInfo>();
-  auto image = base::ranges::find(response->images(), vm_name,
-                                  &vm_tools::concierge::VmDiskInfo::name);
+  auto image = std::ranges::find(response->images(), vm_name,
+                                 &vm_tools::concierge::VmDiskInfo::name);
   if (image == response->images().end()) {
     // No match found for the VM:
     LOG(ERROR) << "No VM found with name " << vm_name;

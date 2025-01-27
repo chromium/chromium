@@ -78,7 +78,7 @@ std::optional<AutofillProfile> GetTestAddressByGUID(
   if (test_addresses.empty()) {
     return std::nullopt;
   }
-  auto it = base::ranges::find(test_addresses, guid, &AutofillProfile::guid);
+  auto it = std::ranges::find(test_addresses, guid, &AutofillProfile::guid);
   if (it == test_addresses.end()) {
     return std::nullopt;
   }
@@ -520,11 +520,11 @@ void AutofillExternalDelegate::OnSuggestionsShown(
     }
   }
 
-  if (base::ranges::any_of(shown_suggestion_types,
-                           [](const SuggestionType& type) {
-                             return GetFillingProductFromSuggestionType(type) ==
-                                    FillingProduct::kAutofillAi;
-                           })) {
+  if (std::ranges::any_of(shown_suggestion_types,
+                          [](const SuggestionType& type) {
+                            return GetFillingProductFromSuggestionType(type) ==
+                                   FillingProduct::kAutofillAi;
+                          })) {
     if (auto* autofill_ai_delegate =
             manager_->client().GetAutofillAiDelegate()) {
       autofill_ai_delegate->OnSuggestionsShown(

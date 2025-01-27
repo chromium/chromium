@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "components/input/render_widget_host_view_input.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -92,7 +91,7 @@ bool CursorManager::IsCursorAllowed(const ui::Cursor& cursor) const {
     return true;
   }
 
-  const int max_dimension_dips = base::ranges::min(dimension_restrictions_);
+  const int max_dimension_dips = std::ranges::min(dimension_restrictions_);
   const gfx::Size size_in_dip = gfx::ScaleToCeiledSize(
       gfx::SkISizeToSize(cursor.custom_bitmap().dimensions()),
       1 / cursor.image_scale_factor());
@@ -105,7 +104,7 @@ void CursorManager::DisallowCustomCursorScopeExpired(int max_dimension_dips) {
   const ui::Cursor& target_cursor = cursor_map_[view_under_cursor_];
   const bool cursor_allowed_before = IsCursorAllowed(target_cursor);
 
-  auto it = base::ranges::find(dimension_restrictions_, max_dimension_dips);
+  auto it = std::ranges::find(dimension_restrictions_, max_dimension_dips);
   CHECK(it != dimension_restrictions_.end());
   dimension_restrictions_.erase(it);
 

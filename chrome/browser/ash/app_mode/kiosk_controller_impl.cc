@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_controller_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -22,7 +23,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
@@ -293,9 +293,9 @@ void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
   // device-local account list here to extract the kiosk_app_id.
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
-  const auto account = base::ranges::find(device_local_accounts,
-                                          kiosk_app_account_id.GetUserEmail(),
-                                          &policy::DeviceLocalAccount::user_id);
+  const auto account = std::ranges::find(device_local_accounts,
+                                         kiosk_app_account_id.GetUserEmail(),
+                                         &policy::DeviceLocalAccount::user_id);
   std::string kiosk_app_id;
   if (account != device_local_accounts.end()) {
     kiosk_app_id = account->kiosk_app_id;

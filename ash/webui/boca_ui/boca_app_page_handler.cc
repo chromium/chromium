@@ -240,6 +240,11 @@ void BocaAppHandler::ListStudents(const std::string& course_id,
   class_room_page_handler_->ListStudents(course_id, std::move(callback));
 }
 
+void BocaAppHandler::ListAssignments(const std::string& course_id,
+                                     ListAssignmentsCallback callback) {
+  class_room_page_handler_->ListAssignments(course_id, std::move(callback));
+}
+
 void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
                                    CreateSessionCallback callback) {
   std::unique_ptr<CreateSessionRequest> request =
@@ -252,7 +257,7 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
               [](CreateSessionCallback callback,
                  base::expected<std::unique_ptr<::boca::Session>,
                                 google_apis::ApiErrorCode> result) {
-                // TODO(b/358476060):Potentially parse error code to UI;
+                // TODO(b/358476060): Potentially parse error code to UI;
                 if (!result.has_value()) {
                   std::move(callback).Run(false);
                 } else {

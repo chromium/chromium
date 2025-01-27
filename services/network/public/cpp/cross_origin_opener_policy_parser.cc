@@ -4,9 +4,9 @@
 
 #include "services/network/public/cpp/cross_origin_opener_policy_parser.h"
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
@@ -86,8 +86,8 @@ void ParseHeader(std::string_view header_value,
             mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups;
       }
     }
-    auto it = base::ranges::find(item->params, kReportTo,
-                                 &std::pair<std::string, Item>::first);
+    auto it = std::ranges::find(item->params, kReportTo,
+                                &std::pair<std::string, Item>::first);
     if (it != item->params.end() && it->second.is_string()) {
       *endpoint = it->second.GetString();
     }

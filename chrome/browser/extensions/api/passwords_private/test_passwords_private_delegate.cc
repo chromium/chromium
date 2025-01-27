@@ -4,11 +4,11 @@
 
 #include "chrome/browser/extensions/api/passwords_private/test_passwords_private_delegate.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
@@ -113,8 +113,8 @@ bool TestPasswordsPrivateDelegate::AddPassword(
 bool TestPasswordsPrivateDelegate::ChangeCredential(
     const api::passwords_private::PasswordUiEntry& credential) {
   const auto existing =
-      base::ranges::find(current_entries_, credential.id,
-                         &api::passwords_private::PasswordUiEntry::id);
+      std::ranges::find(current_entries_, credential.id,
+                        &api::passwords_private::PasswordUiEntry::id);
   if (existing == current_entries_.end()) {
     return false;
   }

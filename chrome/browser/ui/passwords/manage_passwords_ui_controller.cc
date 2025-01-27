@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
@@ -140,7 +140,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyFormVector(
 const password_manager::InteractionsStats* FindStatsByUsername(
     base::span<const password_manager::InteractionsStats> stats,
     const std::u16string& username) {
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       stats, username, &password_manager::InteractionsStats::username_value);
   return it == stats.end() ? nullptr : &*it;
 }
@@ -396,7 +396,7 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
     return;
   }
 
-  const bool has_unnotified_shared_credentials = base::ranges::any_of(
+  const bool has_unnotified_shared_credentials = std::ranges::any_of(
       GetCurrentForms(),
       [](const std::unique_ptr<password_manager::PasswordForm>& form) {
         return form->type ==
@@ -411,7 +411,7 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
     return;
   }
 
-  const bool has_non_empty_note = !base::ranges::all_of(
+  const bool has_non_empty_note = !std::ranges::all_of(
       GetCurrentForms(), &std::u16string::empty,
       &password_manager::PasswordForm::GetNoteWithEmptyUniqueDisplayName);
   // Only one of these promos will be able to show. Try the more specific one
@@ -871,8 +871,7 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
 
   // If we just saved a password to the account store, notify the IPH tracker
   // about it (so it can decide not to show the IPH again).
-  if (GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
-      password_manager::PasswordForm::Store::kAccountStore) {
+  if (GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
     feature_engagement::TrackerFactory::GetForBrowserContext(
         Profile::FromBrowserContext(web_contents()->GetBrowserContext()))
         ->NotifyEvent("passwords_account_storage_used");

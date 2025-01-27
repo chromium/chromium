@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "components/page_info/page_info_ui_delegate.h"
 #include "url/gurl.h"
@@ -88,12 +90,14 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
 
   bool IsTrackingProtection3pcdEnabled() override;
   void GetMerchantTrustInfo(page_info::MerchantDataCallback callback) override;
+  void RecordPageInfoWithMerchantTrustOpenTime();
 
  private:
   Profile* GetProfile() const;
 
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
   GURL site_url_;
+  raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
 };
 
 #endif  // CHROME_BROWSER_UI_PAGE_INFO_CHROME_PAGE_INFO_UI_DELEGATE_H_

@@ -82,7 +82,10 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
             options->getSharedContextOr(g_empty_string),
             ToMojoAIRewriterTone(options->tone()),
             ToMojoAIRewriterFormat(options->format()),
-            ToMojoAIRewriterLength(options->length())));
+            ToMojoAIRewriterLength(options->length()),
+            options->expectedInputLanguages(),
+            options->expectedContextLanguages(),
+            options->getOutputLanguageOr(g_empty_string)));
   }
   ~CreateRewriterClient() override = default;
 
@@ -152,13 +155,15 @@ ScriptPromise<V8AICapabilityAvailability> AIRewriterFactory::availability(
     return promise;
   }
 
-  // TODO: Pass option to underlying check.
   ai_->GetAIRemote()->CanCreateRewriter(
       mojom::blink::AIRewriterCreateOptions::New(
           /*shared_context=*/g_empty_string,
           ToMojoAIRewriterTone(options->tone()),
           ToMojoAIRewriterFormat(options->format()),
-          ToMojoAIRewriterLength(options->length())),
+          ToMojoAIRewriterLength(options->length()),
+          options->expectedInputLanguages(),
+          options->expectedContextLanguages(),
+          options->getOutputLanguageOr(g_empty_string)),
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8AICapabilityAvailability>* resolver,
              AIRewriterFactory* factory,

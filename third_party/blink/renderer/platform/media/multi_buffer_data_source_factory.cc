@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source_factory.h"
 
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
@@ -12,7 +11,6 @@
 #include "media/formats/hls/types.h"
 #include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -36,7 +34,7 @@ void MultiBufferDataSourceFactory::CreateDataSource(GURL uri,
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   auto download_cb =
 #if DCHECK_IS_ON()
-      WTF::BindRepeating(
+      base::BindRepeating(
           [](const std::string url, bool is_downloading) {
             DVLOG(1) << __func__ << "(" << url << ", " << is_downloading << ")";
           },
@@ -46,9 +44,9 @@ void MultiBufferDataSourceFactory::CreateDataSource(GURL uri,
 #endif
 
   get_url_data_.Run(std::move(uri), ignore_cache,
-                    WTF::BindOnce(&MultiBufferDataSourceFactory::OnUrlData,
-                                  weak_factory_.GetWeakPtr(), std::move(cb),
-                                  std::move(download_cb)));
+                    base::BindOnce(&MultiBufferDataSourceFactory::OnUrlData,
+                                   weak_factory_.GetWeakPtr(), std::move(cb),
+                                   std::move(download_cb)));
 }
 
 void MultiBufferDataSourceFactory::OnUrlData(

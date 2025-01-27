@@ -917,7 +917,7 @@ TEST_F(ProductSpecificationsServiceTest,
   std::vector<ProductSpecificationsSet> multi_specifics_sets =
       service()->GetAllProductSpecifications();
 
-  const auto iter = base::ranges::find_if(
+  const auto iter = std::ranges::find_if(
       multi_specifics_sets, [&multi_specs_set_uuid](const auto& query_set) {
         return query_set.uuid().AsLowercaseString() == multi_specs_set_uuid;
       });
@@ -942,7 +942,7 @@ TEST_F(ProductSpecificationsServiceTest, TestTitle) {
   for (const auto& expected_title :
        {u"product one title", u"product two title"}) {
     const auto& url_infos = set_with_titles->url_infos();
-    const auto iter = base::ranges::find_if(
+    const auto iter = std::ranges::find_if(
         url_infos, [&expected_title](const UrlInfo& query_url_info) {
           return query_url_info.title == expected_title;
         });

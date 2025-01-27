@@ -4,9 +4,9 @@
 
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_usage_data_sync_bridge.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
@@ -144,10 +144,10 @@ std::unique_ptr<syncer::DataBatch>
 AutofillWalletUsageDataSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ranges::sort(storage_keys);
+  std::ranges::sort(storage_keys);
   auto filter_by_keys = base::BindRepeating(
       [](const StorageKeyList& storage_keys, const std::string& usage_data_id) {
-        return base::ranges::binary_search(storage_keys, usage_data_id);
+        return std::ranges::binary_search(storage_keys, usage_data_id);
       },
       storage_keys);
   return GetDataAndFilter(filter_by_keys);

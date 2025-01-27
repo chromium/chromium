@@ -4,6 +4,8 @@
 
 #include "ash/quick_insert/views/quick_insert_image_item_grid_view.h"
 
+#include <algorithm>
+#include <functional>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -12,8 +14,6 @@
 #include "ash/quick_insert/views/quick_insert_item_view.h"
 #include "ash/quick_insert/views/quick_insert_traversable_item_container.h"
 #include "base/notimplemented.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -108,11 +108,11 @@ views::View* QuickInsertImageItemGridView::GetTopItem() {
 
 views::View* QuickInsertImageItemGridView::GetBottomItem() {
   views::View* tallest_column =
-      base::ranges::max(children(),
-                        /*comp=*/base::ranges::less(),
-                        /*proj=*/[](const views::View* v) {
-                          return v->GetPreferredSize().height();
-                        });
+      std::ranges::max(children(),
+                       /*comp=*/std::ranges::less(),
+                       /*proj=*/[](const views::View* v) {
+                         return v->GetPreferredSize().height();
+                       });
   return tallest_column->children().empty()
              ? nullptr
              : tallest_column->children().back()->children().front().get();
@@ -123,7 +123,7 @@ views::View* QuickInsertImageItemGridView::GetItemAbove(views::View* item) {
   if (!column || item->parent() == column->children().front()) {
     return nullptr;
   }
-  return std::prev(base::ranges::find(column->children(), item->parent()))
+  return std::prev(std::ranges::find(column->children(), item->parent()))
       ->get()
       ->children()
       .front()
@@ -135,7 +135,7 @@ views::View* QuickInsertImageItemGridView::GetItemBelow(views::View* item) {
   if (!column || item->parent() == column->children().back()) {
     return nullptr;
   }
-  return std::next(base::ranges::find(column->children(), item->parent()))
+  return std::next(std::ranges::find(column->children(), item->parent()))
       ->get()
       ->children()
       .front()
@@ -152,7 +152,7 @@ views::View* QuickInsertImageItemGridView::GetItemLeftOf(views::View* item) {
   // usual scenarios where the grid items all have similar dimensions).
   const size_t item_index = column->GetIndexOf(item->parent()).value();
   views::View* left_column =
-      std::prev(base::ranges::find(children(), column))->get();
+      std::prev(std::ranges::find(children(), column))->get();
   return ItemInColumnWithIndexClosestTo(left_column, item_index);
 }
 
@@ -166,7 +166,7 @@ views::View* QuickInsertImageItemGridView::GetItemRightOf(views::View* item) {
   // usual scenarios where the grid items all have similar dimensions).
   const size_t item_index = column->GetIndexOf(item->parent()).value();
   views::View* right_column =
-      std::next(base::ranges::find(children(), column))->get();
+      std::next(std::ranges::find(children(), column))->get();
   return ItemInColumnWithIndexClosestTo(right_column, item_index);
 }
 
@@ -177,11 +177,11 @@ bool QuickInsertImageItemGridView::ContainsItem(views::View* item) {
 QuickInsertImageItemView* QuickInsertImageItemGridView::AddImageItem(
     std::unique_ptr<QuickInsertImageItemView> image_item) {
   views::View* shortest_column =
-      base::ranges::min(children(),
-                        /*comp=*/base::ranges::less(),
-                        /*proj=*/[](const views::View* v) {
-                          return v->GetPreferredSize().height();
-                        });
+      std::ranges::min(children(),
+                       /*comp=*/std::ranges::less(),
+                       /*proj=*/[](const views::View* v) {
+                         return v->GetPreferredSize().height();
+                       });
   QuickInsertImageItemView* new_item =
       shortest_column->AddChildView(CreateListItemView())
           ->AddChildView(std::move(image_item));

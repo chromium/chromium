@@ -90,6 +90,7 @@ class GeolocationPermissionContextAndroid
                            bool is_one_time,
                            bool is_final_decision) override;
   content::PermissionResult UpdatePermissionStatusWithDeviceStatus(
+      content::WebContents* web_contents,
       content::PermissionResult result,
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;

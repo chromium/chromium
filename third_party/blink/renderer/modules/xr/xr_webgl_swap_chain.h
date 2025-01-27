@@ -25,7 +25,7 @@ class XRWebGLSwapChain : public XRSwapChain<WebGLUnownedTexture> {
     GLenum attachment_target;
     uint16_t width;
     uint16_t height;
-    uint16_t depth;
+    uint16_t layers;
   };
 
   XRWebGLSwapChain(WebGLRenderingContextBase*,
@@ -39,12 +39,14 @@ class XRWebGLSwapChain : public XRSwapChain<WebGLUnownedTexture> {
 
   void Trace(Visitor* visitor) const override;
 
- protected:
   void ClearCurrentTexture();
+
+ protected:
+  WebGLFramebuffer* GetFramebuffer();
 
  private:
   Member<WebGLRenderingContextBase> webgl_context_;
-  Member<WebGLFramebuffer> clear_framebuffer_;
+  Member<WebGLFramebuffer> framebuffer_;
 
   XRWebGLSwapChain::Descriptor descriptor_;
   bool webgl2_;

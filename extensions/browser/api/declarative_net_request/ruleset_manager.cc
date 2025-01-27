@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 #include <tuple>
@@ -15,7 +16,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/web_cache/browser/web_cache_manager.h"
@@ -144,8 +144,8 @@ const CompositeMatcher* RulesetManager::GetMatcherForExtension(
   // This is O(n) but it's ok since the number of extensions will be small and
   // we have to maintain the rulesets sorted in decreasing order of installation
   // time.
-  auto iter = base::ranges::find(rulesets_, extension_id,
-                                 &ExtensionRulesetData::extension_id);
+  auto iter = std::ranges::find(rulesets_, extension_id,
+                                &ExtensionRulesetData::extension_id);
 
   // There must be ExtensionRulesetData corresponding to this |extension_id|.
   if (iter == rulesets_.end()) {
@@ -190,7 +190,7 @@ std::vector<RequestAction> RulesetManager::EvaluateRequestWithHeaders(
 bool RulesetManager::HasAnyExtraHeadersMatcher() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       rulesets_, [](const ExtensionRulesetData& ruleset) {
         return ruleset.matcher->HasAnyExtraHeadersMatcher();
       });
@@ -235,10 +235,10 @@ void RulesetManager::OnDidFinishNavigation(
 }
 
 bool RulesetManager::HasRulesets(RulesetMatchingStage stage) const {
-  return base::ranges::any_of(rulesets_,
-                              [stage](const ExtensionRulesetData& ruleset) {
-                                return ruleset.matcher->HasRulesets(stage);
-                              });
+  return std::ranges::any_of(rulesets_,
+                             [stage](const ExtensionRulesetData& ruleset) {
+                               return ruleset.matcher->HasRulesets(stage);
+                             });
 }
 
 std::vector<RequestAction> RulesetManager::MergeModifyHeaderActions(

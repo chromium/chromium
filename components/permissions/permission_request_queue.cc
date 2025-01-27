@@ -4,7 +4,8 @@
 
 #include "components/permissions/permission_request_queue.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_util.h"
 
@@ -22,7 +23,7 @@ bool PermissionRequestQueue::IsEmpty() const {
 size_t PermissionRequestQueue::Count(PermissionRequest* request) const {
   size_t count = 0;
   for (const auto& request_list : queued_requests_) {
-    count += base::ranges::count(request_list, request);
+    count += std::ranges::count(request_list, request);
   }
   return count;
 }

@@ -4,10 +4,10 @@
 
 #include "extensions/browser/url_loader_factory_manager.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/extension_registry.h"
@@ -56,7 +56,7 @@ bool DoExtensionPermissionsCoverHttpOrHttpsOrigins(
     const PermissionSet& permissions) {
   // Looking at explicit (rather than effective) hosts results in stricter
   // checks that better match ORB/CORS behavior.
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       permissions.explicit_hosts(), [](const URLPattern& permission) {
         return permission.MatchesScheme(url::kHttpScheme) ||
                permission.MatchesScheme(url::kHttpsScheme);

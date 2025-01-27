@@ -4,7 +4,8 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_app_availability_tracker.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/test/simple_test_tick_clock.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/media_route_provider_helper.h"
@@ -23,9 +24,9 @@ namespace media_router {
 namespace {
 
 MATCHER_P(CastMediaSourcesEqual, expected, "") {
-  return base::ranges::equal(expected, arg, std::equal_to<>(),
-                             &CastMediaSource::source_id,
-                             &CastMediaSource::source_id);
+  return std::ranges::equal(expected, arg, std::equal_to<>(),
+                            &CastMediaSource::source_id,
+                            &CastMediaSource::source_id);
 }
 
 MediaSinkInternal CreateSink(const std::string& id) {

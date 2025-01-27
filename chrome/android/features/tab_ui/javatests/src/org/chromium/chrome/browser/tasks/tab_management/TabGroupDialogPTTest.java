@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -37,6 +37,9 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
+// TODO(https://crbug.com/392634251): Fix line height when elegant text height is used with Roboto
+// or enable Google Sans (Text) in //chrome/ tests on Android T+.
+@Features.DisableFeatures(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)
 public class TabGroupDialogPTTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -48,7 +51,6 @@ public class TabGroupDialogPTTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/381595663")
     public void testNewTabCreation() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         WebPageStation pageStation =
@@ -67,7 +69,6 @@ public class TabGroupDialogPTTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/381595663")
     public void testIncognitoNewTabCreation() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         WebPageStation pageStation =
@@ -86,7 +87,6 @@ public class TabGroupDialogPTTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/381595663")
     public void testTabGroupNameChange() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         WebPageStation pageStation =

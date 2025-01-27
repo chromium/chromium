@@ -125,7 +125,6 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> đã đăng nhập vào hồ sơ này trên Chrome. Để tách biệt hoạt động duyệt web của bạn, Chrome có thể tạo hồ sơ riêng cho bạn.</translation>
 <translation id="2580411288591421699">Không thể cài đặt phiên bản Google Chrome giống với phiên bản hiện đang chạy. Vui lòng đóng Google Chrome và thử lại.</translation>
 <translation id="2586406160782125153">Thao tác này sẽ xóa dữ liệu duyệt web của bạn khỏi thiết bị này. Để truy xuất dữ liệu của bạn sau, hãy đăng nhập vào Chrome dưới dạng <ph name="USER_EMAIL" />.</translation>
-<translation id="2597976513418770460">Lấy dữ liệu Trình duyệt Chrome từ <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Không thể lưu trình cài đặt đã tải xuống vào bộ nhớ đệm. Lỗi: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2632707915638608719">Làm được nhiều việc hơn với các tiện ích dành cho Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -549,7 +548,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7845233973568007926">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại máy tính trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">AI trong Chrome giúp cho web nhanh hơn, an toàn hơn và dễ tiếp cận hơn</translation>
 <translation id="7872446069773932638">Đang tải xuống... Còn <ph name="SECONDS" /> giây</translation>
-<translation id="7880591377632733558">Chào mừng <ph name="ACCOUNT_FIRST_NAME" /> đến với Chrome</translation>
 <translation id="7886087451482920026">Chọn văn bản bằng Google Ống kính</translation>
 <translation id="7890208801193284374">Nếu bạn chia sẻ máy tính, bạn bè và gia đình có thể duyệt web một cách riêng biệt và thiết lập Chrome theo ý của họ.</translation>
 <translation id="7896673875602241923">Ai đó trước đây đã đăng nhập vào Chrome trên máy tính này bằng <ph name="ACCOUNT_EMAIL_LAST" />. Vui lòng tạo người dùng Chrome mới để giữ riêng biệt thông tin của bạn.</translation>
@@ -601,7 +599,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8429214465555795676">Bạn cần đăng nhập vào Chrome bằng <ph name="EMAIL" /> để tiếp tục. Điều này giúp bạn tuân thủ chính sách của tổ chức.</translation>
 <translation id="8433638294851456451">Để gửi số điện thoại từ thiết bị này đến điện thoại Android của bạn, hãy đăng nhập vào Chrome trên cả hai thiết bị.</translation>
-<translation id="8451192282033883849">Tài khoản của bạn do <ph name="MANAGER_NAME" /> quản lý. Quản trị viên của bạn có thể xem và chỉnh sửa hồ sơ Trình duyệt Chrome này cũng như dữ liệu như dấu trang, lịch sử và mật khẩu.</translation>
 <translation id="8496177819998570653">Trình quản lý mật khẩu của Google</translation>
 <translation id="8498858610309223613">Google Chrome vừa áp dụng một bản cập nhật bảo mật đặc biệt. Vui lòng khởi động lại ngay bây giờ và chúng tôi sẽ khôi phục các thẻ của bạn.</translation>
 <translation id="8516431725144212809">Mối quan tâm của bạn theo ước đoán của Chrome</translation>

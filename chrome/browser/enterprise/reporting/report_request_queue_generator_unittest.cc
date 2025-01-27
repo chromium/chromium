@@ -39,6 +39,10 @@
 #include "content/public/browser/plugin_service.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#endif
+
 namespace em = enterprise_management;
 
 namespace enterprise_reporting {
@@ -71,9 +75,9 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_manager_.CreateGuestProfile();
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     profile_manager_.CreateSystemProfile();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_PLUGINS)
     content::PluginService::GetInstance()->Init();
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
@@ -239,6 +243,10 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
   BrowserReportGenerator browser_report_generator_;
   ReportRequestQueueGenerator report_request_queue_generator_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+#endif
 };
 
 TEST_F(ReportRequestQueueGeneratorTest, GenerateSingleReport) {
@@ -296,7 +304,7 @@ TEST_F(ReportRequestQueueGeneratorTest, ChromePoliciesCollection) {
 
   auto profile_info = browser_report.chrome_user_profile_infos(0);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // In Chrome OS, the collection of policies is disabled.
   EXPECT_EQ(0, profile_info.chrome_policies_size());
 #else

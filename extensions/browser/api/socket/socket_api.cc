@@ -613,7 +613,7 @@ ExtensionFunction::ResponseAction SocketWriteFunction::Work() {
 
   auto io_buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(data_value.GetBlob().size());
-  base::ranges::copy(data_value.GetBlob(), io_buffer->data());
+  std::ranges::copy(data_value.GetBlob(), io_buffer->data());
 
   Socket* socket = GetSocket(socket_id);
   if (!socket) {
@@ -702,7 +702,7 @@ ExtensionFunction::ResponseAction SocketSendToFunction::Work() {
   io_buffer_size_ = data_value.GetBlob().size();
   io_buffer_ =
       base::MakeRefCounted<net::IOBufferWithSize>(data_value.GetBlob().size());
-  base::ranges::copy(data_value.GetBlob(), io_buffer_->data());
+  std::ranges::copy(data_value.GetBlob(), io_buffer_->data());
 
   Socket* socket = GetSocket(socket_id_);
   if (!socket) {

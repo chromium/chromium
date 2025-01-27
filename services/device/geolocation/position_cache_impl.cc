@@ -4,7 +4,8 @@
 
 #include "services/device/geolocation/position_cache_impl.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/utf_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/geolocation/wifi_data.h"

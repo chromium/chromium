@@ -9,10 +9,10 @@
 
 #include "components/url_pattern/url_pattern_util.h"
 
+#include <ranges>
 #include <string_view>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/ranges.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "url/url_util.h"
@@ -32,7 +32,7 @@ bool ContainsForbiddenHostnameCodePoint(std::string_view input) {
   //
   // We only check the code points the chromium URL parser incorrectly permits.
   // See: crbug.com/1065667#c18
-  return base::ranges::any_of(input, [](char c) {
+  return std::ranges::any_of(input, [](char c) {
     return c == ' ' || c == '#' || c == ':' || c == '<' || c == '>' ||
            c == '@' || c == '[' || c == ']' || c == '|';
   });

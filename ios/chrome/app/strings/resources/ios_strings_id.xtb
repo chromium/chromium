@@ -476,6 +476,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="3053332585453689122">Mengirimkan URL yang Anda kunjungi dan contoh kecil konten halaman, download, aktivitas ekstensi, serta informasi sistem ke Google Safe Browsing untuk memeriksa apakah URL tersebut berbahaya.</translation>
 <translation id="3055102495753300780">Penyimpanan informasi</translation>
 <translation id="3059270601560379555">Penelusuran baru</translation>
+<translation id="3064547930554042309">Kelola Download</translation>
 <translation id="3072279342064724558">Sandi sudah ada</translation>
 <translation id="3076846064362030967">Anda tidak akan logout dari Akun Google Anda. <ph name="BEGIN_LINK" />Bentuk aktivitas lainnya<ph name="END_LINK" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.
 
@@ -698,6 +699,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4154753961803534698">Telusuri dengan kamera</translation>
 <translation id="4158491215857439601">Pengelola Sandi</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}other{{count} bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}}</translation>
+<translation id="4164514562270305824">Hapus Otomatis Download</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> diakhiri dengan <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Jangan izinkan</translation>
 <translation id="4172051516777682613">Selalu tampilkan</translation>
@@ -1016,6 +1018,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5579012242779565775">Sembunyikan Daftar bacaan</translation>
 <translation id="5585019845078534178">Kartu</translation>
 <translation id="5595485650161345191">Edit alamat</translation>
+<translation id="559567008082979829">Setel download Anda untuk dihapus setelah satu bulan.</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
 <translation id="560322036295180549">Dinonaktifkan oleh organisasi Anda</translation>
 <translation id="5611107723541161735">Pintasan ke situs yang Anda buka baru-baru ini di perangkat ini.</translation>

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
@@ -114,8 +114,8 @@ bool ParseColor(const base::Value& color_value, SkColor& color) {
 
   const base::Value::List& color_list = color_value.GetList();
   if (color_list.size() != 4 ||
-      base::ranges::any_of(color_list,
-                           [](const auto& color) { return !color.is_int(); })) {
+      std::ranges::any_of(color_list,
+                          [](const auto& color) { return !color.is_int(); })) {
     return false;
   }
 

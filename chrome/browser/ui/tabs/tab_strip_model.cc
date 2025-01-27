@@ -33,7 +33,6 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
@@ -473,7 +472,7 @@ void TabStripModel::SendDetachWebContentsNotifications(
     selection.old_model = notifications->selection_model;
     selection.new_model = selection_model_;
     selection.reason = TabStripModelObserver::CHANGE_REASON_NONE;
-    selection.selected_tabs_were_removed = base::ranges::any_of(
+    selection.selected_tabs_were_removed = std::ranges::any_of(
         notifications->detached_tab, [&notifications](auto& dt) {
           return notifications->selection_model.IsSelected(
               dt->index_before_any_removals);
@@ -1119,8 +1118,8 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
 
   // Ensure that the indices are nonempty, sorted, and unique.
   CHECK_GT(indices.size(), 0u);
-  CHECK(base::ranges::is_sorted(indices));
-  CHECK(base::ranges::adjacent_find(indices) == indices.end());
+  CHECK(std::ranges::is_sorted(indices));
+  CHECK(std::ranges::adjacent_find(indices) == indices.end());
   CHECK(!group_model_->ContainsTabGroup(group_id));
 
   AddToNewGroupImpl(indices, group_id, visual_data);
@@ -1140,8 +1139,8 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
 
   // Ensure that the indices are nonempty, sorted, and unique.
   CHECK_GT(indices.size(), 0u);
-  CHECK(base::ranges::is_sorted(indices));
-  CHECK(base::ranges::adjacent_find(indices) == indices.end());
+  CHECK(std::ranges::is_sorted(indices));
+  CHECK(std::ranges::adjacent_find(indices) == indices.end());
 
   // The odds of |new_group| colliding with an existing group are astronomically
   // low. If there is a collision, a DCHECK will fail in |AddToNewGroupImpl()|,
@@ -1169,8 +1168,8 @@ void TabStripModel::AddToExistingGroup(const std::vector<int> indices,
   CHECK(SupportsTabGroups());
 
   // Ensure that the indices are sorted and unique.
-  DCHECK(base::ranges::is_sorted(indices));
-  DCHECK(base::ranges::adjacent_find(indices) == indices.end());
+  DCHECK(std::ranges::is_sorted(indices));
+  DCHECK(std::ranges::adjacent_find(indices) == indices.end());
   CHECK(ContainsIndex(*(indices.begin())));
   CHECK(ContainsIndex(*(indices.rbegin())));
 
@@ -2883,7 +2882,7 @@ void TabStripModel::MoveTabsToIndexImpl(
       [pinned_tab_count](int index) { return index >= pinned_tab_count; });
 
   CHECK(all_tabs_pinned || all_tabs_unpinned);
-  CHECK(base::ranges::is_sorted(tab_indices));
+  CHECK(std::ranges::is_sorted(tab_indices));
 
   const std::vector<MoveNotification> notifications =
       PrepareTabsToMoveToIndex(tab_indices, destination_index);

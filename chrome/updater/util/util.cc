@@ -19,6 +19,8 @@
 #include "base/logging_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#include <algorithm>
+
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -29,7 +31,6 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -160,7 +161,7 @@ std::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id) {
   }
 
   const std::vector<tagging::AppArgs>& apps_args = tag_args->apps;
-  std::vector<tagging::AppArgs>::const_iterator it = base::ranges::find_if(
+  std::vector<tagging::AppArgs>::const_iterator it = std::ranges::find_if(
       apps_args, [&app_id](const tagging::AppArgs& app_args) {
         return base::EqualsCaseInsensitiveASCII(app_args.app_id, app_id);
       });

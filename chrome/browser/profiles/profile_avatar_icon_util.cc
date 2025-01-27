@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 
 #include <algorithm>
@@ -99,7 +94,7 @@ const int kOldAvatarIconHeight = 31;
 
 // 2x sized versions of the old profile avatar icons.
 // TODO(crbug.com/41444689): Clean this up.
-const int kProfileAvatarIconResources2x[] = {
+constexpr auto kProfileAvatarIconResources2x = std::to_array<int>({
     IDR_PROFILE_AVATAR_2X_0,  IDR_PROFILE_AVATAR_2X_1,
     IDR_PROFILE_AVATAR_2X_2,  IDR_PROFILE_AVATAR_2X_3,
     IDR_PROFILE_AVATAR_2X_4,  IDR_PROFILE_AVATAR_2X_5,
@@ -114,7 +109,7 @@ const int kProfileAvatarIconResources2x[] = {
     IDR_PROFILE_AVATAR_2X_22, IDR_PROFILE_AVATAR_2X_23,
     IDR_PROFILE_AVATAR_2X_24, IDR_PROFILE_AVATAR_2X_25,
     IDR_PROFILE_AVATAR_2X_26,
-};
+});
 
 // Returns a copied SkBitmap for the given image that can be safely passed to
 // another thread.
@@ -799,7 +794,6 @@ int GetDefaultAvatarIconResourceIDAtIndex(size_t index) {
 
 #if BUILDFLAG(IS_WIN)
 int GetOldDefaultAvatar2xIconResourceIDAtIndex(size_t index) {
-  DCHECK_LT(index, std::size(kProfileAvatarIconResources2x));
   return kProfileAvatarIconResources2x[index];
 }
 #endif  // BUILDFLAG(IS_WIN)

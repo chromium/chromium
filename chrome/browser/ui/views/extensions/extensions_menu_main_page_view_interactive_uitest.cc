@@ -749,10 +749,10 @@ class ExtensionsMenuMainPageViewInteractiveTest
 
     std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
 
-    auto iter = base::ranges::find(menu_items, extension_id,
-                                   [](ExtensionMenuItemView* view) {
-                                     return view->view_controller()->GetId();
-                                   });
+    auto iter = std::ranges::find(menu_items, extension_id,
+                                  [](ExtensionMenuItemView* view) {
+                                    return view->view_controller()->GetId();
+                                  });
     return (iter == menu_items.end()) ? nullptr : *iter;
   }
 

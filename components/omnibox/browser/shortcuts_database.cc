@@ -251,6 +251,16 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
     AutocompleteMatchType::Type type;
     if (!AutocompleteMatchType::FromInteger(s.ColumnInt(10), &type))
       continue;
+    // TODO(crbug.com/391666322): Delete all shortcuts pointing to deprecated
+    //   HISTORY_KEYWORD suggestions from the DB. Once this migration (i.e.
+    //   deletion logic) has been in place for some time (e.g. 10+ milestones),
+    //   we should go ahead and delete the below conditional check entirely.
+    //
+    // Shortcuts related to deprecated HISTORY_KEYWORD suggestions should not be
+    // surfaced.
+    if (type == AutocompleteMatchType::HISTORY_KEYWORD) {
+      continue;
+    }
 
     const int page_transition_integer = s.ColumnInt(9);
     if (!ui::IsValidPageTransitionType(page_transition_integer)) {

@@ -228,17 +228,6 @@ void HTMLAreaElement::SetFocused(bool should_be_focused,
     layout_image->AreaElementFocusChanged(this);
 }
 
-Element* HTMLAreaElement::interestTargetElement() {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
-
-  if (!IsInTreeScope()) {
-    return nullptr;
-  }
-
-  return GetElementAttributeResolvingReferenceTarget(
-      html_names::kInteresttargetAttr);
-}
-
 void HTMLAreaElement::UpdateSelectionOnFocus(
     SelectionBehaviorOnFocus selection_behavior,
     const FocusOptions* options) {

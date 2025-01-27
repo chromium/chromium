@@ -137,17 +137,14 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   void SimulateUserLogin(
       const AccountId& account_id,
       user_manager::UserType user_type = user_manager::UserType::kRegular,
-      bool is_new_profile = false);
+      bool is_new_profile = false,
+      std::unique_ptr<PrefService> pref_service = nullptr);
 
   // Stabilizes the variable UI components (such as the battery view).
   void StabilizeUIForPixelTest();
 
   TestSessionControllerClient* test_session_controller_client() {
     return session_controller_client_.get();
-  }
-  void set_test_session_controller_client(
-      std::unique_ptr<TestSessionControllerClient> session_controller_client) {
-    session_controller_client_ = std::move(session_controller_client);
   }
   TestNotifierSettingsController* notifier_settings_controller() {
     return notifier_settings_controller_.get();

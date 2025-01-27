@@ -239,7 +239,7 @@ std::vector<storage::mojom::StorageUsageInfoPtr> GetLocalStorage(
 bool UsageInfosHasStorageKey(
     const std::vector<storage::mojom::StorageUsageInfoPtr>& usage_infos,
     const blink::StorageKey& key) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       usage_infos, [&key](const storage::mojom::StorageUsageInfoPtr& info) {
         return info->storage_key == key;
       });

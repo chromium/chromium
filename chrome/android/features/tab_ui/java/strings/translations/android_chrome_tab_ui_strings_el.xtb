@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">Κοινοποίηση ομάδας</translation>
 <translation id="2677748264148917807">Αποχώρηση</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Προστέθηκε <ph name="ONE_ADDED" /> καρτέλα, άλλαξαν <ph name="ANY_CHANGED" />, έκλεισαν <ph name="ANY_CLOSED" />}other{Προστέθηκαν <ph name="MANY_ADDED" /> καρτέλες, άλλαξαν <ph name="ANY_CHANGED" />, έκλεισαν <ph name="ANY_CLOSED" />}}</translation>
+<translation id="2755485474385016903">Οι αλλαγές που πραγματοποιούνται είναι ορατές σε όλους στην ομάδα</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_HOURS_ONE" /> ώρα}other{Δημιουργήθηκε πριν από <ph name="NUM_HOURS_MANY" /> ώρες}}</translation>
 <translation id="2801787514987684416">Προβολή πληροφοριών καταστήματος;</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Έκλεισε <ph name="ONE_CLOSED" /> καρτέλα}other{Έκλεισαν <ph name="MANY_CLOSED" /> καρτέλες}}</translation>

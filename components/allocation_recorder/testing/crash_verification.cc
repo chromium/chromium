@@ -15,7 +15,6 @@
 #include "base/debug/debugging_buildflags.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

@@ -856,8 +856,7 @@ Status ScrollElementRegionIntoView(
   // frame up to the web_view frame) and scroll each frame relative to its
   // parent frame, so that the region becomes visible in the parent frame.
   auto frames = base::Reversed(session->frames);
-  auto end =
-      base::ranges::find(frames, web_view->GetId(), &FrameInfo::frame_id);
+  auto end = std::ranges::find(frames, web_view->GetId(), &FrameInfo::frame_id);
   for (auto it = frames.begin(); it != end; ++it) {
     const FrameInfo& frame = *it;
     base::Value::List args;

@@ -5143,7 +5143,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4593021220803146968">Đ&amp;i đến <ph name="URL" /></translation>
 <translation id="4593962599442730215">Thay đổi lựa chọn ưu tiên</translation>
 <translation id="4594218792629569101">Chọn "Đánh dấu là đã đọc" để di chuyển trang xuống cuối danh sách</translation>
-<translation id="4594577641390224176">Bạn đang tìm hệ thống giới thiệu trang? Hãy truy cập</translation>
 <translation id="4595560905247879544">Chỉ người quản lý mới có thể sửa đổi ứng dụng và tiện ích (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Bạn có các chứng chỉ trên tệp có thể nhận dạng các máy chủ này</translation>
 <translation id="4598345735110653698">Quản lý khoá đăng nhập</translation>
@@ -6771,7 +6770,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5787420647064736989">Tên thiết bị</translation>
 <translation id="5788367137662787332">Rất tiếc, ít nhất một phân vùng trên thiết bị <ph name="DEVICE_LABEL" /> không thể kết nối được.</translation>
 <translation id="5789581866075720267">Để nhập mật khẩu vào <ph name="BRAND" /> trên thiết bị này, hãy chọn một tệp CSV.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Thành công</translation>
 <translation id="5790651917470750848">Đã chuyển tiếp cổng này</translation>
 <translation id="5792295754950501287">Thao tác khác cho <ph name="CARD_DESCRIPTION" /></translation>
@@ -7191,7 +7189,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6086418630711763366">Bạn có thể di chuyển giữa các trang bằng con trỏ văn bản. Nhấn Ctrl + <ph name="KEY" /> để tắt.</translation>
 <translation id="6086846494333236931">Do quản trị viên của bạn cài đặt</translation>
 <translation id="6087286598828478206">Chặn và rời khỏi nhóm?</translation>
-<translation id="6087746524533454243">Bạn đang tìm trình duyệt giới thiệu trang? Hãy truy cập</translation>
 <translation id="6087960857463881712">Khuôn mặt vui nhộn</translation>
 <translation id="6088475950266477163">Cài đặt</translation>
 <translation id="608912389580139775">Để thêm trang này vào danh sách đọc, hãy nhấp vào biểu tượng Dấu trang</translation>

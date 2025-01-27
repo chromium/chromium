@@ -27,6 +27,9 @@
 // events in all active web states to determine when to show and hide the promo.
 @interface DefaultBrowserBannerPromoAppAgent : SceneObservingAppAgent
 
+// Whether the promo is currently shown.
+@property(nonatomic, assign) BOOL promoCurrentlyShown;
+
 // Observation methods:
 - (void)addObserver:(id<DefaultBrowserBannerAppAgentObserver>)observer;
 - (void)removeObserver:(id<DefaultBrowserBannerAppAgentObserver>)observer;

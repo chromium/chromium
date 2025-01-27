@@ -562,6 +562,7 @@
 <translation id="3517216995152707259">‏اپنے براؤزنگ ڈیٹا کو حذف کرنے پر، آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوتے ہیں۔ ایسا کرنے کیلئے، <ph name="BEGIN_LINK" />Chrome سے سائن آؤٹ کریں<ph name="END_LINK" />۔</translation>
 <translation id="3519193562722059437">ویب براؤز کرنے کیلئے ایک ٹیب کھولیں۔</translation>
 <translation id="3519905498307021260">{count,plural, =1{ٹیب کھولیں}other{{count} ٹیبز کھولیں}}</translation>
+<translation id="3523513363815970085">"آپ کی سرفہرست سائٹس" چھپائیں</translation>
 <translation id="3523789730715594198">‏آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو روک سکتے ہیں۔ Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="3527085408025491307">فولڈر</translation>
 <translation id="3529024052484145543">محفوظ نہیں</translation>
@@ -836,6 +837,7 @@
 <translation id="4769198578611055647">کسی بھی آلے پر محفوظ کردہ پاس کیز تک رسائی حاصل کرنے میں آپ کی مدد کرتا ہے</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />، <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">پوشیدگی وضع میں کھولیں؟</translation>
+<translation id="479208892659046780">آپ کی سرفہرست سائٹس</translation>
 <translation id="4792385443586519711">کمپنی کا نام</translation>
 <translation id="479628432297359449">ڈاؤن لوڈ روکیں؟</translation>
 <translation id="4796496140132859135">ٹیب گروپ۔ سکیڑا گیا۔</translation>

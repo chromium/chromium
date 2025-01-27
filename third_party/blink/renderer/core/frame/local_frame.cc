@@ -3755,6 +3755,7 @@ void LocalFrame::PostMessageEvent(
     const String& source_origin,
     const String& target_origin,
     BlinkTransferableMessage message) {
+  probe::FrameRelatedTask probe(DomWindow());
   TRACE_EVENT0("blink", "LocalFrame::PostMessageEvent");
   RemoteFrame* source_frame = SourceFrameForOptionalToken(source_frame_token);
 

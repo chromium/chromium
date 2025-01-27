@@ -4,11 +4,12 @@
 
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -357,7 +358,7 @@ void CastMediaSinkServiceImpl::OnError(const cast_channel::CastSocket& socket,
   // Remove existing cast sink from |sinks|. It will be added back if
   // it can be successfully reconnected.
   const auto& sinks = GetSinks();
-  auto sink_it = base::ranges::find(sinks, socket_id, [](const auto& entry) {
+  auto sink_it = std::ranges::find(sinks, socket_id, [](const auto& entry) {
     return entry.second.cast_data().cast_channel_id;
   });
 
@@ -663,7 +664,7 @@ void CastMediaSinkServiceImpl::OnChannelOpenSucceeded(
   // IPEndPoint but different sink ID.
   const net::IPEndPoint& ip_endpoint = extra_data.ip_endpoint;
   const auto& sinks = GetSinks();
-  auto old_sink_it = base::ranges::find_if(
+  auto old_sink_it = std::ranges::find_if(
       sinks, [&cast_sink, &ip_endpoint](const auto& entry) {
         return entry.first != cast_sink.sink().id() &&
                entry.second.cast_data().ip_endpoint == ip_endpoint;

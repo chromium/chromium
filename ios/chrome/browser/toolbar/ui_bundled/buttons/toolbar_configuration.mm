@@ -59,7 +59,7 @@
       return [[UIColor colorNamed:kTextfieldBackgroundColor]
           colorWithAlphaComponent:visibilityFactor];
     case ToolbarStyle::kIncognito:
-      return [[UIColor colorNamed:@"omnibox_incognito_background_color"]
+      return [[UIColor colorNamed:kStaticGrey900Color]
           colorWithAlphaComponent:visibilityFactor];
   }
 }

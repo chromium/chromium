@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_LOGIN_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_LOGIN_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"

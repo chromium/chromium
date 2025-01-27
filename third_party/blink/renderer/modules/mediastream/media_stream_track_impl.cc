@@ -29,6 +29,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
@@ -334,8 +335,8 @@ void MediaStreamTrackImpl::setEnabled(bool enabled) {
 
   component_->SetEnabled(enabled);
 
-  SendLogMessage(
-      String::Format("%s({enabled=%s})", __func__, enabled ? "true" : "false"));
+  SendLogMessage(String::Format("%s({enabled=%s})", __func__,
+                                base::ToString(enabled).c_str()));
 }
 
 bool MediaStreamTrackImpl::muted() const {

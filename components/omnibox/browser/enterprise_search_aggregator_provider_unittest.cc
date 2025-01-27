@@ -6,14 +6,18 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/search_engines/template_url_data.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/page_transition_types.h"
 
@@ -28,6 +32,7 @@ class FakeEnterpriseSearchAggregatorProvider
   using EnterpriseSearchAggregatorProvider ::done_;
   using EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider;
   using EnterpriseSearchAggregatorProvider::IsProviderAllowed;
+  using EnterpriseSearchAggregatorProvider::matches_;
 
  protected:
   ~FakeEnterpriseSearchAggregatorProvider() override = default;
@@ -39,15 +44,38 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
     provider_ = new FakeEnterpriseSearchAggregatorProvider(client_.get());
   }
-  void InitClient();
+
+  void InitClient() {
+    EXPECT_CALL(*client_.get(), IsAuthenticated()).WillRepeatedly(Return(true));
+    EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillRepeatedly(Return(false));
+  }
+
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::SearchAggregatorProvider>
+  InitFeature() {
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::SearchAggregatorProvider>
+        scoped_config;
+    scoped_config.Get().enabled = true;
+    scoped_config.Get().name = "test";
+    scoped_config.Get().shortcut = "test";
+    scoped_config.Get().search_url = "example.com/{searchTerms}";
+    scoped_config.Get().suggest_url = "example.com";
+    return scoped_config;
+  }
+
+  std::vector<std::u16string> GetMatches() {
+    std::vector<std::u16string> match_strings;
+    for (const auto& m : provider_->matches_)
+      match_strings.push_back(m.fill_into_edit);
+    return match_strings;
+  }
+
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<FakeEnterpriseSearchAggregatorProvider> provider_;
 };
-
-void EnterpriseSearchAggregatorProviderTest::InitClient() {
-  EXPECT_CALL(*client_.get(), IsAuthenticated()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillRepeatedly(Return(false));
-}
 
 TEST_F(EnterpriseSearchAggregatorProviderTest, CreateMatch) {
   AutocompleteInput input{u"input text", metrics::OmniboxEventProto::OTHER,
@@ -72,39 +100,32 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, IsProviderAllowed) {
   InitClient();
 
   // Feature must be enabled.
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::SearchAggregatorProvider>
-      scoped_config;
-  scoped_config.Get().enabled = true;
-  scoped_config.Get().name = "test";
-  scoped_config.Get().shortcut = "test";
-  scoped_config.Get().search_url = "example.com/{searchTerms}";
-  scoped_config.Get().suggest_url = "example.com";
+  auto scoped_config = InitFeature();
 
-  AutocompleteInput ac_input = AutocompleteInput(
-      u"text text", metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+  AutocompleteInput input(u"text text", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
 
-  // Check IsProviderAllowed() returns true when all conditions pass.
-  EXPECT_TRUE(provider_->IsProviderAllowed(ac_input));
+  // Check` IsProviderAllowed()` returns true when all conditions pass.
+  EXPECT_TRUE(provider_->IsProviderAllowed(input));
 
   {
     // Should not be an incognito window.
     EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillRepeatedly(Return(true));
-    EXPECT_FALSE(provider_->IsProviderAllowed(ac_input));
+    EXPECT_FALSE(provider_->IsProviderAllowed(input));
     EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillRepeatedly(Return(false));
-    EXPECT_TRUE(provider_->IsProviderAllowed(ac_input));
+    EXPECT_TRUE(provider_->IsProviderAllowed(input));
   }
 
   {
     // Feature must be enabled.
     scoped_config.Get().enabled = false;
-    EXPECT_FALSE(provider_->IsProviderAllowed(ac_input));
+    EXPECT_FALSE(provider_->IsProviderAllowed(input));
     scoped_config.Get().enabled = true;
-    EXPECT_TRUE(provider_->IsProviderAllowed(ac_input));
+    EXPECT_TRUE(provider_->IsProviderAllowed(input));
   }
 }
 
-// Test that a call to ::Start will stop old requests to prevent their results
+// Test that a call to `Start()` will stop old requests to prevent their results
 // from appearing with the new input.
 TEST_F(EnterpriseSearchAggregatorProviderTest, StartCallsStop) {
   InitClient();
@@ -116,4 +137,40 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, StartCallsStop) {
   provider_->done_ = false;
   provider_->Start(invalid_input, false);
   EXPECT_TRUE(provider_->done());
+}
+
+TEST_F(EnterpriseSearchAggregatorProviderTest, CacheMatches) {
+  // Setup.
+  InitClient();
+  TemplateURLData turl_data;
+  turl_data.SetShortName(u"keyword");
+  turl_data.SetKeyword(u"keyword");
+  turl_data.SetURL("http://www.keyword.com/{searchTerms}");
+  turl_data.is_active = TemplateURLData::ActiveStatus::kTrue;
+  turl_data.featured_by_policy = true;
+  turl_data.policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator;
+  client_->GetTemplateURLService()->Add(
+      std::make_unique<TemplateURL>(turl_data));
+  auto scoped_config = InitFeature();
+  AutocompleteInput input(u"keyword query", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+
+  // Call `Start()` to put debouncer on cooldown.
+  provider_->Start(input, false);
+  EXPECT_THAT(GetMatches(), testing::ElementsAre(u"https://wikipedia.org"));
+
+  // Set an old match.
+  provider_->matches_ = {provider_->CreateMatch(input, u"keyword", true, 1500,
+                                                "https://cached.org", u"cached",
+                                                u"cached")};
+
+  // Call `Start()`, old match should still be present.
+  provider_->Start(input, false);
+  EXPECT_THAT(GetMatches(), testing::ElementsAre(u"https://cached.org"));
+
+  // Wait for debouncer and request to complete, old match should be
+  // replaced by new match.
+  task_environment_.FastForwardBy(base::Minutes(1));
+
+  EXPECT_THAT(GetMatches(), testing::ElementsAre(u"https://wikipedia.org"));
 }

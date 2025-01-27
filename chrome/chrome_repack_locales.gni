@@ -100,11 +100,6 @@ template("chrome_repack_locales") {
       }
       compress = true
     }
-    if (is_chromeos_lacros) {
-      source_patterns +=
-          [ "${root_gen_dir}/chromeos/strings/chromeos_strings_" ]
-      deps += [ "//chromeos/strings" ]
-    }
     if (!is_android) {
       source_patterns += [ "${root_gen_dir}/components/strings/search_engine_descriptions_strings_" ]
       deps += [ "//components/strings:search_engine_descriptions_strings" ]

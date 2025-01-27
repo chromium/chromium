@@ -4,11 +4,11 @@
 
 #include "components/signin/core/browser/account_investigator.h"
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/base64.h"
 #include "base/hash/sha1.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -163,17 +163,17 @@ std::string AccountInvestigator::HashAccounts(
     const std::vector<ListedAccount>& signed_in_accounts,
     const std::vector<ListedAccount>& signed_out_accounts) {
   std::vector<std::string> sorted_ids(signed_in_accounts.size());
-  base::ranges::transform(signed_in_accounts, std::back_inserter(sorted_ids),
-                          [](const ListedAccount& account) {
-                            return kSignedInHashPrefix + account.id.ToString();
-                          });
-  base::ranges::transform(signed_out_accounts, std::back_inserter(sorted_ids),
-                          [](const ListedAccount& account) {
-                            return kSignedOutHashPrefix + account.id.ToString();
-                          });
+  std::ranges::transform(signed_in_accounts, std::back_inserter(sorted_ids),
+                         [](const ListedAccount& account) {
+                           return kSignedInHashPrefix + account.id.ToString();
+                         });
+  std::ranges::transform(signed_out_accounts, std::back_inserter(sorted_ids),
+                         [](const ListedAccount& account) {
+                           return kSignedOutHashPrefix + account.id.ToString();
+                         });
   std::sort(sorted_ids.begin(), sorted_ids.end());
   std::ostringstream stream;
-  base::ranges::copy(sorted_ids, std::ostream_iterator<std::string>(stream));
+  std::ranges::copy(sorted_ids, std::ostream_iterator<std::string>(stream));
 
   // PrefService will slightly mangle some undisplayable characters, by encoding
   // in Base64 we are sure to have all safe characters that PrefService likes.
@@ -188,10 +188,10 @@ AccountRelation AccountInvestigator::DiscernRelation(
   if (signed_in_accounts.empty() && signed_out_accounts.empty()) {
     return AccountRelation::EMPTY_COOKIE_JAR;
   }
-  if (base::ranges::any_of(signed_in_accounts,
-                           [&info](const ListedAccount& account) {
-                             return AreSame(info, account);
-                           })) {
+  if (std::ranges::any_of(signed_in_accounts,
+                          [&info](const ListedAccount& account) {
+                            return AreSame(info, account);
+                          })) {
     if (signed_in_accounts.size() == 1) {
       return signed_out_accounts.empty()
                  ? AccountRelation::SINGLE_SIGNED_IN_MATCH_NO_SIGNED_OUT
@@ -199,10 +199,10 @@ AccountRelation AccountInvestigator::DiscernRelation(
     }
     return AccountRelation::ONE_OF_SIGNED_IN_MATCH_ANY_SIGNED_OUT;
   }
-  if (base::ranges::any_of(signed_out_accounts,
-                           [&info](const ListedAccount& account) {
-                             return AreSame(info, account);
-                           })) {
+  if (std::ranges::any_of(signed_out_accounts,
+                          [&info](const ListedAccount& account) {
+                            return AreSame(info, account);
+                          })) {
     if (signed_in_accounts.empty()) {
       return signed_out_accounts.size() == 1
                  ? AccountRelation::NO_SIGNED_IN_SINGLE_SIGNED_OUT_MATCH

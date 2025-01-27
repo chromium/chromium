@@ -33,7 +33,7 @@ std::vector<std::string> StringVectorFromGURLVector(
   std::vector<std::string> ret;
   ret.reserve(gurls.size());
 
-  base::ranges::transform(gurls, std::back_inserter(ret), [](const GURL& gurl) {
+  std::ranges::transform(gurls, std::back_inserter(ret), [](const GURL& gurl) {
     return gurl.possibly_invalid_spec();
   });
 

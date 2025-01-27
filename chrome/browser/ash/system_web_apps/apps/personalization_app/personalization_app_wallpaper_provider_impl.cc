@@ -860,11 +860,11 @@ void PersonalizationAppWallpaperProviderImpl::OnFetchCollectionImages(
   std::optional<std::vector<backdrop::Image>> result;
   if (success && !images.empty()) {
     // Do first pass to clear all unit_id associated with the images.
-    base::ranges::for_each(images, [&](auto& proto_image) {
+    std::ranges::for_each(images, [&](auto& proto_image) {
       image_unit_id_map_.erase(proto_image.unit_id());
     });
     // Do second pass to repopulate the map with fresh data.
-    base::ranges::for_each(images, [&](auto& proto_image) {
+    std::ranges::for_each(images, [&](auto& proto_image) {
       if (proto_image.has_asset_id() && proto_image.has_unit_id() &&
           proto_image.has_image_url()) {
         image_unit_id_map_[proto_image.unit_id()].push_back(

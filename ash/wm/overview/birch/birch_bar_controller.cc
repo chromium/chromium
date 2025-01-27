@@ -185,7 +185,7 @@ void BirchBarController::OnItemHiddenByUser(BirchItem* item) {
     return;
   }
 
-  auto iter = base::ranges::find_if(items_, base::MatchesUniquePtr(item));
+  auto iter = std::ranges::find_if(items_, base::MatchesUniquePtr(item));
   if (iter == items_.end()) {
     return;
   }

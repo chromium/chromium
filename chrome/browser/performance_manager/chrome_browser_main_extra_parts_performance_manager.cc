@@ -87,7 +87,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/path_service.h"
-#include "components/performance_manager/graph/policies/prefetch_virtual_memory_policy.h"
 #endif
 
 namespace {
@@ -252,19 +251,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
                        performance_manager::policies::ProcessPriorityPolicy>());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kPrefetchVirtualMemoryPolicy)) {
-    base::FilePath current_module_path;
-    if (base::PathService::Get(base::FILE_MODULE, &current_module_path)) {
-      graph->PassToGraph(
-          std::make_unique<
-              performance_manager::policies::PrefetchVirtualMemoryPolicy>(
-              std::move(current_module_path)));
-    }
-  }
-#endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* voting_system = graph->GetRegisteredObjectAs<

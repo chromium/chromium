@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/service.h"
 
+#include <algorithm>
 #include <concepts>
 #include <functional>
 #include <optional>
@@ -20,7 +21,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -101,7 +101,7 @@ void PolicyService::PolicyManagers::InitializeManagersVector() {
 }
 
 void PolicyService::PolicyManagers::SortManagersVector() {
-  base::ranges::stable_sort(
+  std::ranges::stable_sort(
       managers_, [](const scoped_refptr<PolicyManagerInterface>& lhs,
                     const scoped_refptr<PolicyManagerInterface>& rhs) {
         return lhs->HasActiveDevicePolicies() &&
@@ -111,7 +111,7 @@ void PolicyService::PolicyManagers::SortManagersVector() {
 
 bool PolicyService::PolicyManagers::CloudPolicyOverridesPlatformPolicy(
     const std::vector<scoped_refptr<PolicyManagerInterface>>& providers) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       providers, [](scoped_refptr<PolicyManagerInterface> p) {
         return p && (p->CloudPolicyOverridesPlatformPolicy()).has_value();
       });
@@ -351,7 +351,7 @@ std::set<std::string> PolicyService::GetAppsWithPolicy() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::set<std::string> apps_with_policy;
 
-  base::ranges::for_each(
+  std::ranges::for_each(
       policy_managers_.managers(),
       [&apps_with_policy](
           const scoped_refptr<PolicyManagerInterface>& manager) {

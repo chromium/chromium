@@ -2311,6 +2311,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableAllowlistForBmoCardCategoryBenefits)},
+    {"use-account-list-from-identity-manager",
+     flag_descriptions::kUseAccountListFromIdentityManagerName,
+     flag_descriptions::kUseAccountListFromIdentityManagerDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kUseAccountListFromIdentityManager)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -123,6 +123,8 @@ class USER_MANAGER_EXPORT User {
   // email if available and use_display_name == true. Otherwise use canonical.
   std::string GetAccountName(bool use_display_email) const;
 
+  const std::string* GetAccountLocale() const { return account_locale_.get(); }
+
   // True if the user's session can be locked (i.e. the user has a password with
   // which to unlock the session).
   // This depends on Profile preference, and if it's not yet ready, this
@@ -219,8 +221,6 @@ class USER_MANAGER_EXPORT User {
                                        bool is_using_saml = false);
 
   User(const AccountId& account_id, UserType type);
-
-  const std::string* GetAccountLocale() const { return account_locale_.get(); }
 
   // Setters are private so only UserManager can call them.
   void SetAccountLocale(const std::string& resolved_account_locale);

@@ -705,6 +705,9 @@ All changes to this list should go through Blink's feature review process: http:
     inset-inline
         inset-inline-end
         inset-inline-start
+    interest-target-delay
+        interest-target-hide-delay
+        interest-target-show-delay
     list-style
         list-style-image
         list-style-position

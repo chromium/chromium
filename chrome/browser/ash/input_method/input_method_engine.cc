@@ -1101,7 +1101,7 @@ bool InputMethodEngine::InferIsUserSelecting(
     return true;
   }
 
-  const bool any_non_empty_label = base::ranges::any_of(
+  const bool any_non_empty_label = std::ranges::any_of(
       candidates,
       [](const Candidate& candidate) { return !candidate.label.empty(); });
   return any_non_empty_label;

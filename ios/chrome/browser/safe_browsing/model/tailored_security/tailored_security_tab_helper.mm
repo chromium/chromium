@@ -93,7 +93,7 @@ void TailoredSecurityTabHelper::OnSyncNotificationMessageRequest(
       profile->GetPrefs(),
       is_enabled ? safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION
                  : safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
-      /*is_esb_enabled_in_sync=*/is_enabled);
+      /*is_esb_enabled_by_account_integration=*/is_enabled);
 
   if (is_enabled) {
     ShowInfoBar(safe_browsing::TailoredSecurityServiceMessageState::

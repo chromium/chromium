@@ -4,13 +4,13 @@
 
 #include "extensions/browser/api/socket/udp_socket.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
-#include "base/ranges/algorithm.h"
 #include "extensions/browser/api/api_resource.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"

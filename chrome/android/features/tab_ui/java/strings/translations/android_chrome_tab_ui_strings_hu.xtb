@@ -43,6 +43,7 @@ Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name
 <translation id="2671423594960767771">Csoport megosztása</translation>
 <translation id="2677748264148917807">Lap elhagyása</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> lap hozzáadva, <ph name="ANY_CHANGED" /> módosítva, <ph name="ANY_CLOSED" /> bezárva}other{<ph name="MANY_ADDED" /> lap hozzáadva, <ph name="ANY_CHANGED" /> módosítva, <ph name="ANY_CLOSED" /> bezárva}}</translation>
+<translation id="2755485474385016903">A módosításokat a csoport minden tagja látja</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> órája létrehozva}other{<ph name="NUM_HOURS_MANY" /> órája létrehozva}}</translation>
 <translation id="2801787514987684416">Megtekinti az üzlet adatait?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> lap bezárva}other{<ph name="MANY_CLOSED" /> lap bezárva}}</translation>

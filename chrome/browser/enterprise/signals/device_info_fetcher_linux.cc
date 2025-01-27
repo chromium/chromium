@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
 
+#include <algorithm>
 #include <string>
 
 #include "base/environment.h"
@@ -17,7 +18,6 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/nix/xdg_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -49,7 +49,7 @@ std::string GetOsVersion() {
   if (base::PathExists(os_release_file) &&
       base::ReadFileToStringWithMaxSize(os_release_file, &release_info, 8192) &&
       base::SplitStringIntoKeyValuePairs(release_info, '=', '\n', &values)) {
-    auto version_id = base::ranges::find(
+    auto version_id = std::ranges::find(
         values, "VERSION_ID", &std::pair<std::string, std::string>::first);
     if (version_id != values.end()) {
       return std::string(

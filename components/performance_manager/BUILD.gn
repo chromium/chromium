@@ -348,13 +348,6 @@ static_library("performance_manager") {
       "power/dbus_power_manager_sampling_event_source.h",
     ]
   }
-
-  if (is_win) {
-    sources += [
-      "graph/policies/prefetch_virtual_memory_policy.cc",
-      "graph/policies/prefetch_virtual_memory_policy.h",
-    ]
-  }
 }
 
 source_set("unit_tests") {

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -16,7 +17,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
@@ -288,7 +288,7 @@ SecurePaymentConfirmationAppFactory::SecurePaymentConfirmationAppFactory()
     : PaymentAppFactory(PaymentApp::Type::INTERNAL) {}
 
 SecurePaymentConfirmationAppFactory::~SecurePaymentConfirmationAppFactory() {
-  base::ranges::for_each(requests_, [&](const auto& pair) {
+  std::ranges::for_each(requests_, [&](const auto& pair) {
     if (pair.second->web_data_service)
       pair.second->web_data_service->CancelRequest(pair.first);
   });

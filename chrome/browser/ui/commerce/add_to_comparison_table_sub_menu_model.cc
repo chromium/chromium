@@ -111,10 +111,10 @@ void AddToComparisonTableSubMenuModel::AddUrlToSet(const UrlInfo& url_info,
   const std::u16string& title = url_info.title;
 
   std::vector<UrlInfo> existing_url_infos = set->url_infos();
-  auto it = base::ranges::find_if(existing_url_infos,
-                                  [&url](const UrlInfo& query_url_info) {
-                                    return query_url_info.url == url;
-                                  });
+  auto it = std::ranges::find_if(existing_url_infos,
+                                 [&url](const UrlInfo& query_url_info) {
+                                   return query_url_info.url == url;
+                                 });
 
   // Add the URL to the set. If it is already in the set (because it was added
   // after the menu was opened), then we still show the toast.

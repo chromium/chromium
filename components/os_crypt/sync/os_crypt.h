@@ -86,6 +86,13 @@ COMPONENT_EXPORT(OS_CRYPT) void ClearCacheForTesting();
 COMPONENT_EXPORT(OS_CRYPT)
 void SetEncryptionPasswordForTesting(const std::string& password);
 #endif  // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS))
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&         \
+        !(BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_FUCHSIA)
+COMPONENT_EXPORT(OS_CRYPT)
+void SetEncryptionAvailableForTesting(std::optional<bool> available);
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !(BUILDFLAG(IS_LINUX)
+        // && !BUILDFLAG(IS_CASTOS)) || BUILDFLAG(IS_FUCHSIA)
 }  // namespace OSCrypt
 
 // The OSCryptImpl class gives access to simple encryption and decryption of

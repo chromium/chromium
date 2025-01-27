@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
 
+#include <functional>
+
 #include "base/barrier_callback.h"
 #include "base/containers/extend.h"
-#include "base/ranges/functional.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace crosapi {
@@ -76,8 +77,8 @@ void DownloadControllerAsh::GetAllDownloads(
             // Sort aggregated downloads chronologically by start time.
             // `start_time` equal to `std::nullopt` is by default less than any
             // non-empty `start_time`.
-            base::ranges::sort(aggregated_downloads, base::ranges::less{},
-                               &mojom::DownloadItem::start_time);
+            std::ranges::sort(aggregated_downloads, std::ranges::less{},
+                              &mojom::DownloadItem::start_time);
 
             return aggregated_downloads;
           }).Then(std::move(callback)));

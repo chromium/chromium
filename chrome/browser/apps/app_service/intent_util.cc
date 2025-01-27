@@ -259,7 +259,7 @@ bool IsFileExtensionFilter(const arc::IntentFilter& arc_intent_filter) {
   }
 
   // Check that the scheme is generic or has a value related to files.
-  bool has_generic_scheme = base::ranges::any_of(
+  bool has_generic_scheme = std::ranges::any_of(
       arc_intent_filter.schemes(), [](const std::string& scheme) {
         return scheme == "content" || scheme == "file" || scheme == "*";
       });
@@ -268,7 +268,7 @@ bool IsFileExtensionFilter(const arc::IntentFilter& arc_intent_filter) {
   }
 
   // Check that the host is generic or doesn't exist.
-  bool has_generic_host = base::ranges::any_of(
+  bool has_generic_host = std::ranges::any_of(
       arc_intent_filter.authorities(),
       [](const arc::IntentFilter::AuthorityEntry& authority) {
         return authority.wild();
@@ -278,7 +278,7 @@ bool IsFileExtensionFilter(const arc::IntentFilter& arc_intent_filter) {
   }
 
   // Check that the mime type is generic or doesn't exist.
-  bool has_generic_mime = base::ranges::any_of(
+  bool has_generic_mime = std::ranges::any_of(
       arc_intent_filter.mime_types(), [](const std::string& mime_type) {
         return mime_type == "*" || mime_type == "*/*";
       });

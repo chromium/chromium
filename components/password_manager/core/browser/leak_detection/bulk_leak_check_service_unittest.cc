@@ -4,8 +4,9 @@
 
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -34,11 +35,11 @@ constexpr char16_t kUsername[] = u"user";
 constexpr char16_t kPassword[] = u"password123";
 
 MATCHER_P(CredentialsAre, credentials, "") {
-  return base::ranges::equal(arg, credentials.get(),
-                             [](const auto& lhs, const auto& rhs) {
-                               return lhs.username() == rhs.username() &&
-                                      lhs.password() == rhs.password();
-                             });
+  return std::ranges::equal(arg, credentials.get(),
+                            [](const auto& lhs, const auto& rhs) {
+                              return lhs.username() == rhs.username() &&
+                                     lhs.password() == rhs.password();
+                            });
   ;
 }
 

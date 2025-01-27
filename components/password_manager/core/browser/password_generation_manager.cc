@@ -4,13 +4,13 @@
 
 #include "components/password_manager/core/browser/password_generation_manager.h"
 
+#include <algorithm>
 #include <map>
 #include <unordered_set>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -216,8 +216,8 @@ std::unordered_set<char16_t> FindSetOfCharacterClassInPassword(
     const std::u16string& password,
     const base::FunctionRef<bool(char16_t)>& belongs_to_character_class) {
   std::unordered_set<char16_t> result;
-  base::ranges::copy_if(password, std::inserter(result, result.begin()),
-                        belongs_to_character_class);
+  std::ranges::copy_if(password, std::inserter(result, result.begin()),
+                       belongs_to_character_class);
   return result;
 }
 

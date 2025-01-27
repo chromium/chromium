@@ -207,20 +207,15 @@ TEST_F(GCMStoreImplTest, LastCheckinInfo) {
   LoadGCMStore(gcm_store.get(), &load_result);
 
   base::Time last_checkin_time = base::Time::Now();
-  std::set<std::string> accounts;
-  accounts.insert("test_user1@gmail.com");
-  accounts.insert("test_user2@gmail.com");
 
   gcm_store->SetLastCheckinInfo(
-      last_checkin_time, accounts,
-      base::BindOnce(&GCMStoreImplTest::UpdateCallback,
-                     base::Unretained(this)));
+      last_checkin_time, base::BindOnce(&GCMStoreImplTest::UpdateCallback,
+                                        base::Unretained(this)));
   PumpLoop();
 
   gcm_store = BuildGCMStore();
   LoadGCMStore(gcm_store.get(), &load_result);
   ASSERT_EQ(last_checkin_time, load_result->last_checkin_time);
-  ASSERT_EQ(accounts, load_result->last_checkin_accounts);
 
   // Negative cases, where the value read is gibberish.
   gcm_store->SetValueForTesting(

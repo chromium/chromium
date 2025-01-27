@@ -4,11 +4,11 @@
 
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 
+#include <algorithm>
 #include <functional>
 #include <numeric>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "build/build_config.h"
@@ -220,7 +220,7 @@ void OmniboxPedal::SynonymGroup::EraseIgnoreGroup(
 }
 
 bool OmniboxPedal::SynonymGroup::IsValid() const {
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       synonyms_, [](const auto& synonym) { return synonym.Size() > 0; });
 }
 

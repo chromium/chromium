@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
 import {GlicApiHost} from './glic_api_impl/glic_api_host.js';
@@ -30,7 +31,7 @@ interface PageElementTypes {
 
 const $: PageElementTypes = new Proxy({}, {
   get(_target: any, prop: string) {
-    return document.getElementById(prop);
+    return getRequiredElement(prop);
   },
 });
 
@@ -50,6 +51,9 @@ export class GlicAppController {
   guestPanelOpened: boolean = false;
 
   host: GlicApiHost|undefined;
+
+  // Created from constructor and never null since the destructor replaces it
+  // with an empty <webview>.
   webview: chrome.webviewTag.WebView;
 
   constructor(private browserProxy: BrowserProxyImpl) {
@@ -95,7 +99,8 @@ export class GlicAppController {
         document.createElement('webview') as chrome.webviewTag.WebView;
     webview.id = 'guestPanel';
     webview.setAttribute('partition', 'persist:glicpart');
-    webview.setAttribute('class', 'hidden panel');
+    webview.setAttribute('class', 'panel');
+    webview.hidden = true;
     $.panelContainer.appendChild(webview);
 
     webview.addEventListener('loadcommit', this.onLoadCommit);
@@ -147,8 +152,8 @@ export class GlicAppController {
   // newly-visible content. If the guest panel is now visible, then its size
   // will be determined by the most recent resize request.
   showPanel(id: PanelId): void {
-    for (const panel of document.querySelectorAll('.panel')) {
-      panel.classList.toggle('hidden', panel.id !== id);
+    for (const panel of document.querySelectorAll<HTMLElement>('.panel')) {
+      panel.hidden = panel.id !== id;
     }
     // Resize widget to size of new panel.
     if (id === 'guestPanel') {
@@ -192,10 +197,12 @@ export class GlicAppController {
   }
 
   updateOnlineState(online: boolean): void {
-    $.loadingPanel.classList.add('hidden');
+    $.loadingPanel.hidden = true;
     if (online) {
       this.beginLoadingSequence();
     } else {
+      clearTimeout(this.maxWaitTimer);
+      this.maxWaitTimer = undefined;
       this.destroyWebview();
       this.showPanel('offlinePanel');
     }

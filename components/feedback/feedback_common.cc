@@ -4,12 +4,12 @@
 
 #include "components/feedback/feedback_common.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/feedback/feedback_report.h"
@@ -61,7 +61,7 @@ constexpr char kIsOffensiveOrUnsafeKey[] = "is_offensive_or_unsafe";
 bool BelowCompressionThreshold(const std::string& content) {
   if (content.length() > kFeedbackMaxLength)
     return false;
-  const size_t line_count = base::ranges::count(content, '\n');
+  const size_t line_count = std::ranges::count(content, '\n');
   if (line_count > kFeedbackMaxLineCount)
     return false;
   return true;

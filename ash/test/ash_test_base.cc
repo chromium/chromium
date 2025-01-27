@@ -431,8 +431,10 @@ AccountId AshTestBase::SimulateUserLogin(const std::string& user_email,
 }
 
 void AshTestBase::SimulateUserLogin(const AccountId& account_id,
-                                    user_manager::UserType user_type) {
-  ash_test_helper_->SimulateUserLogin(account_id, user_type);
+                                    user_manager::UserType user_type,
+                                    std::unique_ptr<PrefService> pref_service) {
+  ash_test_helper_->SimulateUserLogin(
+      account_id, user_type, /*is_new_profiel=*/false, std::move(pref_service));
 }
 
 AccountId AshTestBase::SimulateNewUserFirstLogin(

@@ -9,6 +9,9 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/web_contents.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "components/permissions/android/android_permission_util.h"
+#endif
 
 namespace {
 
@@ -53,6 +56,18 @@ EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
     return Variant::kAdministratorDenied;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  if (!HasSystemPermission(type, web_contents_) &&
+      !CanRequestSystemPermission(type, web_contents_)) {
+    return Variant::kOsSystemSettings;
+  }
+
+  if (setting == CONTENT_SETTING_ALLOW &&
+      !HasSystemPermission(type, web_contents_) &&
+      CanRequestSystemPermission(type, web_contents_)) {
+    return Variant::kOsPrompt;
+  }
+#else
   // Determine if we can directly show one of the OS views. The "System
   // Settings" view is higher priority then all the other remaining options,
   // whereas the "OS Prompt" view is only higher priority then the views that
@@ -66,6 +81,7 @@ EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
       PermissionsClient::Get()->CanPromptSystemPermission(type)) {
     return Variant::kOsPrompt;
   }
+#endif
 
   if (PermissionsClient::Get()->IsPermissionAllowedByDevicePolicy(
           web_contents(), setting, info, type)) {

@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/web_applications/share_target_utils.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -99,7 +99,7 @@ NavigateParams NavigateParamsForShareTarget(
       for (const apps::ShareTarget::Files& files : share_target.params.files) {
         // Filter on MIME types. Chrome OS does not filter on file extensions.
         // https://w3c.github.io/web-share-target/level-2/#dfn-accepted
-        if (base::ranges::any_of(
+        if (std::ranges::any_of(
                 files.accept, [&mime_type](const auto& criteria) {
                   return !base::StartsWith(criteria, ".") &&
                          net::MatchesMimeType(criteria, mime_type);

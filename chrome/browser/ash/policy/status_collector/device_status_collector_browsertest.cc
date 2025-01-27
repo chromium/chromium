@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <memory>
@@ -33,8 +34,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -4150,11 +4149,11 @@ class DeviceStatusCollectorNetworkInterfacesTest
             iface->device_path() == dev.device_path &&
             iface->mdn() == dev.mdn && iface->iccid() == dev.iccid &&
             (iface->type() != em::NetworkInterface::TYPE_CELLULAR ||
-             base::ranges::equal(iface->eids().begin(), iface->eids().end(),
-                                 kFakeSimSlots,
-                                 kFakeSimSlots + std::size(kFakeSimSlots),
-                                 base::ranges::equal_to(), std::identity(),
-                                 &FakeSimSlotInfo::eid))) {
+             std::ranges::equal(iface->eids().begin(), iface->eids().end(),
+                                kFakeSimSlots,
+                                kFakeSimSlots + std::size(kFakeSimSlots),
+                                std::ranges::equal_to(), std::identity(),
+                                &FakeSimSlotInfo::eid))) {
           found_match = true;
           break;
         }

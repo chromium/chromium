@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/ostream_operators.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -232,9 +231,6 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
       return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/true,
                         /*can_do_hardware_accelerated_decode=*/false);
     cache_entry = AddCacheEntry(key);
-    if (task_type == TaskType::kOutOfRaster) {
-      cache_entry->mark_out_of_raster();
-    }
   } else {
     cache_entry = decoded_it->second.get();
   }
@@ -602,7 +598,6 @@ DecodedDrawImage SoftwareImageDecodeCache::GetDecodedImageForDrawInternal(
 
   // We'll definitely ref this cache entry and use it.
   ++cache_entry->ref_count;
-  cache_entry->mark_used();
 
   DecodeImageIfNecessary(key, paint_image, cache_entry);
   auto decoded_image = cache_entry->image();
@@ -641,7 +636,7 @@ void SoftwareImageDecodeCache::ReduceCacheUsageUntilWithinLimit(size_t limit) {
 
     const CacheKey& key = it->first;
     auto vector_it = frame_key_to_image_keys_.find(key.frame_key());
-    auto item_it = base::ranges::find(vector_it->second, key);
+    auto item_it = std::ranges::find(vector_it->second, key);
     CHECK(item_it != vector_it->second.end(), base::NotFatalUntil::M130);
     vector_it->second.erase(item_it);
     if (vector_it->second.empty())

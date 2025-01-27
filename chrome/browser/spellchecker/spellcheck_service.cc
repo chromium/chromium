@@ -4,6 +4,7 @@
 
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <set>
@@ -14,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/supports_user_data.h"
 #include "base/synchronization/waitable_event.h"
@@ -283,7 +283,7 @@ std::string SpellcheckService::GetSupportedAcceptLanguageCode(
   // First try exact match. Per BCP47, tags are in ASCII and should be treated
   // as case-insensitive (although there are conventions for the capitalization
   // of subtags).
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       accept_languages,
       [supported_language_full_tag](const auto& accept_language) {
         return base::EqualsCaseInsensitiveASCII(supported_language_full_tag,
@@ -300,7 +300,7 @@ std::string SpellcheckService::GetSupportedAcceptLanguageCode(
   if (!base::Contains(supported_language_full_tag, "-"))
     return "";
 
-  iter = base::ranges::find_if(
+  iter = std::ranges::find_if(
       accept_languages,
       [supported_language_full_tag](const auto& accept_language) {
         return base::EqualsCaseInsensitiveASCII(
@@ -723,7 +723,7 @@ std::string SpellcheckService::GetLanguageAndScriptTag(
 std::string SpellcheckService::GetSupportedAcceptLanguageCodeGenericOnly(
     const std::string& supported_language_full_tag,
     const std::vector<std::string>& accept_languages) {
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       accept_languages,
       [supported_language_full_tag](const auto& accept_language) {
         return base::EqualsCaseInsensitiveASCII(
@@ -891,7 +891,7 @@ std::vector<std::string> SpellcheckService::GetNormalizedAcceptLanguages(
                         ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (normalize_for_spellcheck) {
-    base::ranges::transform(
+    std::ranges::transform(
         accept_languages, accept_languages.begin(),
         [&](const std::string& language) {
 #if BUILDFLAG(IS_WIN)

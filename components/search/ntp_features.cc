@@ -391,6 +391,11 @@ const base::FeatureParam<int> kNtpMobilePromoImpressionLimit(
     &ntp_features::kNtpMobilePromo,
     "kNtpMobilePromoImpressionLimit",
     10);
+const base::FeatureParam<bool>
+    kNtpMostRelevantTabResumptionModuleFilterLocalTabsParam{
+        &kNtpMostRelevantTabResumptionModule,
+        /*name=*/"local_tab_filter",
+        /*default_value=*/true};
 
 const base::FeatureParam<NtpSharepointModuleDataType>::Option
     kNtpSharepointModuleDataTypeOptions[] = {

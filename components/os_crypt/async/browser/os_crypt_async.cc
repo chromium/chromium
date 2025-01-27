@@ -4,6 +4,7 @@
 
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "components/os_crypt/async/browser/key_provider.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -31,7 +31,7 @@ std::vector<std::unique_ptr<KeyProvider>> SortProviders(
     return providers;
   }
 
-  base::ranges::sort(input_providers, [](const auto& a, const auto& b) {
+  std::ranges::sort(input_providers, [](const auto& a, const auto& b) {
     return a.first < b.first;
   });
 
@@ -41,11 +41,11 @@ std::vector<std::unique_ptr<KeyProvider>> SortProviders(
         << "Cannot have two providers with same precedence.";
   }
 
-  base::ranges::transform(std::make_move_iterator(input_providers.begin()),
-                          std::make_move_iterator(input_providers.end()),
-                          std::back_inserter(providers), [](auto provider) {
-                            return std::move(provider.second);
-                          });
+  std::ranges::transform(std::make_move_iterator(input_providers.begin()),
+                         std::make_move_iterator(input_providers.end()),
+                         std::back_inserter(providers), [](auto provider) {
+                           return std::move(provider.second);
+                         });
 
   return providers;
 }

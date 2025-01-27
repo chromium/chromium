@@ -491,8 +491,7 @@ TEST_F(ManageSyncSettingsMediatorTest, TestAccountStateTransitionOnSignOut) {
   // Sign out.
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile_.get());
-  authentication_service->SignOut(signin_metrics::ProfileSignout::kTest,
-                                  /*force_clear_browsing_data=*/true, nil);
+  authentication_service->SignOut(signin_metrics::ProfileSignout::kTest, nil);
 
   // Reload the Sync page.
   [mediator_ onSyncStateChanged];

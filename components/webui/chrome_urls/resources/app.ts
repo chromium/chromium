@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+// <if expr="is_ios">
+// TODO(crbug.com/41173939): Remove this once injected by web. -->
+import 'chrome://resources/js/ios/web_ui.js';
+
+// </if>
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrRouter} from 'chrome://resources/js/cr_router.js';

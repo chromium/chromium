@@ -12,11 +12,13 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files.mojom.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -41,31 +43,59 @@ class MicrosoftFilesPageHandlerTest : public testing::Test {
     profile_builder.SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
-  }
-
-  std::unique_ptr<MicrosoftFilesPageHandler> CreateHandler() {
-    return std::make_unique<MicrosoftFilesPageHandler>(
+    handler_ = std::make_unique<MicrosoftFilesPageHandler>(
         mojo::PendingReceiver<
             file_suggestion::mojom::MicrosoftFilesPageHandler>(),
         profile_.get());
   }
 
- protected:
+  base::test::ScopedFeatureList& feature_list() { return feature_list_; }
+  MicrosoftFilesPageHandler& handler() { return *handler_; }
+  TestingProfile& profile() { return *profile_; }
+  network::TestURLLoaderFactory& test_url_loader_factory() {
+    return test_url_loader_factory_;
+  }
+  content::BrowserTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
+ private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> profile_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<MicrosoftFilesPageHandler> handler_;
+};
+
+class MicrosoftFilesPageHandlerTestForTrending
+    : public MicrosoftFilesPageHandlerTest {
+ public:
+  MicrosoftFilesPageHandlerTestForTrending() {
+    feature_list().InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpSharepointModule,
+        {{ntp_features::kNtpSharepointModuleDataParam.name,
+          "trending-insights"}});
+  }
+};
+
+class MicrosoftFilesPageHandlerTestForNonInsights
+    : public MicrosoftFilesPageHandlerTest {
+ public:
+  MicrosoftFilesPageHandlerTestForNonInsights() {
+    feature_list().InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpSharepointModule,
+        {{ntp_features::kNtpSharepointModuleDataParam.name, "non-insights"}});
+  }
 };
 
 TEST_F(MicrosoftFilesPageHandlerTest, GetFakeTrendingFiles) {
-  feature_list_.InitAndEnableFeatureWithParameters(
+  feature_list().InitAndEnableFeatureWithParameters(
       ntp_features::kNtpSharepointModule,
       {{ntp_features::kNtpSharepointModuleDataParam.name, "fake-trending"}});
-  std::unique_ptr<MicrosoftFilesPageHandler> handler = CreateHandler();
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
 
-  handler->GetFiles(future.GetCallback());
+  handler().GetFiles(future.GetCallback());
   const std::vector<file_suggestion::mojom::FilePtr>& suggestions =
       future.Get();
   // The fake trending data is hardcoded to having 5 suggestions.
@@ -73,12 +103,7 @@ TEST_F(MicrosoftFilesPageHandlerTest, GetFakeTrendingFiles) {
 }
 
 // Verifies files are constructed correctly from a valid response.
-TEST_F(MicrosoftFilesPageHandlerTest, GetTrendingFiles) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpSharepointModule,
-      {{ntp_features::kNtpSharepointModuleDataParam.name,
-        "trending-insights"}});
-  std::unique_ptr<MicrosoftFilesPageHandler> handler = CreateHandler();
+TEST_F(MicrosoftFilesPageHandlerTestForTrending, GetTrendingFiles) {
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
 
   std::string response =
@@ -155,9 +180,9 @@ TEST_F(MicrosoftFilesPageHandlerTest, GetTrendingFiles) {
           }
         }
     ]})";
-  handler->GetFiles(future.GetCallback());
+  handler().GetFiles(future.GetCallback());
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
+  test_url_loader_factory().SimulateResponseForPendingRequest(
       kTrendingFilesEndpoint, response);
 
   const std::vector<file_suggestion::mojom::FilePtr>& suggestions =
@@ -175,17 +200,13 @@ TEST_F(MicrosoftFilesPageHandlerTest, GetTrendingFiles) {
   }
 }
 
-TEST_F(MicrosoftFilesPageHandlerTest, NoTrendingFilesOnMalformedResponse) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpSharepointModule,
-      {{ntp_features::kNtpSharepointModuleDataParam.name,
-        "trending-insights"}});
-  std::unique_ptr<MicrosoftFilesPageHandler> handler = CreateHandler();
+TEST_F(MicrosoftFilesPageHandlerTestForTrending,
+       NoTrendingFilesOnMalformedResponse) {
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
 
-  handler->GetFiles(future.GetCallback());
+  handler().GetFiles(future.GetCallback());
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
+  test_url_loader_factory().SimulateResponseForPendingRequest(
       kTrendingFilesEndpoint, "} {");
 
   const std::vector<file_suggestion::mojom::FilePtr>& suggestions =
@@ -194,15 +215,11 @@ TEST_F(MicrosoftFilesPageHandlerTest, NoTrendingFilesOnMalformedResponse) {
   EXPECT_EQ(suggestions.size(), 0u);
 }
 
-TEST_F(MicrosoftFilesPageHandlerTest, NoTrendingFilesOnResponseMissingData) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpSharepointModule,
-      {{ntp_features::kNtpSharepointModuleDataParam.name,
-        "trending-insights"}});
-  std::unique_ptr<MicrosoftFilesPageHandler> handler = CreateHandler();
+TEST_F(MicrosoftFilesPageHandlerTestForTrending,
+       NoTrendingFilesOnResponseMissingData) {
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
 
-  handler->GetFiles(future.GetCallback());
+  handler().GetFiles(future.GetCallback());
 
   // The `title` property is missing.
   std::string response = R"(
@@ -221,7 +238,7 @@ TEST_F(MicrosoftFilesPageHandlerTest, NoTrendingFilesOnResponseMissingData) {
         }
       }]})";
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
+  test_url_loader_factory().SimulateResponseForPendingRequest(
       kTrendingFilesEndpoint, response);
 
   const std::vector<file_suggestion::mojom::FilePtr>& suggestions =
@@ -231,33 +248,30 @@ TEST_F(MicrosoftFilesPageHandlerTest, NoTrendingFilesOnResponseMissingData) {
 }
 
 // Verifies that prefs are accurately set on dismissal and restoring of module.
-TEST_F(MicrosoftFilesPageHandlerTest, DismissAndRestoreModule) {
-  std::unique_ptr<MicrosoftFilesPageHandler> handler = CreateHandler();
-
-  EXPECT_EQ(profile_->GetPrefs()->GetTime(
+TEST_F(MicrosoftFilesPageHandlerTestForTrending, DismissAndRestoreModule) {
+  EXPECT_EQ(profile().GetPrefs()->GetTime(
                 prefs::kNtpMicrosoftFilesModuleLastDismissedTime),
             base::Time());
 
-  handler->DismissModule();
-  EXPECT_EQ(profile_->GetPrefs()->GetTime(
+  handler().DismissModule();
+  EXPECT_EQ(profile().GetPrefs()->GetTime(
                 prefs::kNtpMicrosoftFilesModuleLastDismissedTime),
             base::Time::Now());
 
-  handler->RestoreModule();
-  EXPECT_EQ(profile_->GetPrefs()->GetTime(
+  handler().RestoreModule();
+  EXPECT_EQ(profile().GetPrefs()->GetTime(
                 prefs::kNtpMicrosoftFilesModuleLastDismissedTime),
             base::Time());
 }
 
 TEST_F(MicrosoftFilesPageHandlerTest, GetFakeNonInsightsFiles) {
-  feature_list_.InitAndEnableFeatureWithParameters(
+  feature_list().InitAndEnableFeatureWithParameters(
       ntp_features::kNtpSharepointModule,
       {{ntp_features::kNtpSharepointModuleDataParam.name,
         "fake-non-insights"}});
-  std::unique_ptr<MicrosoftFilesPageHandler> handler = CreateHandler();
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
 
-  handler->GetFiles(future.GetCallback());
+  handler().GetFiles(future.GetCallback());
   const std::vector<file_suggestion::mojom::FilePtr>& suggestions =
       future.Get();
 
@@ -266,11 +280,7 @@ TEST_F(MicrosoftFilesPageHandlerTest, GetFakeNonInsightsFiles) {
 
 // Verifies files are constructed correctly from a valid response for
 // recently used and shared files.
-TEST_F(MicrosoftFilesPageHandlerTest, GetNonInsightsFiles) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpSharepointModule,
-      {{ntp_features::kNtpSharepointModuleDataParam.name, "non-insights"}});
-  std::unique_ptr<MicrosoftFilesPageHandler> handler = CreateHandler();
+TEST_F(MicrosoftFilesPageHandlerTestForNonInsights, GetNonInsightsFiles) {
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
 
   std::string response =
@@ -371,9 +381,9 @@ TEST_F(MicrosoftFilesPageHandlerTest, GetNonInsightsFiles) {
   ]
   })";
 
-  handler->GetFiles(future.GetCallback());
+  handler().GetFiles(future.GetCallback());
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
+  test_url_loader_factory().SimulateResponseForPendingRequest(
       kNonInsightsRequestUrl, response);
   const std::vector<file_suggestion::mojom::FilePtr>& suggestions =
       future.Get();
@@ -389,16 +399,13 @@ TEST_F(MicrosoftFilesPageHandlerTest, GetNonInsightsFiles) {
   }
 }
 
-TEST_F(MicrosoftFilesPageHandlerTest, NoNonInsightFilesOnMalformedResponse) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpSharepointModule,
-      {{ntp_features::kNtpSharepointModuleDataParam.name, "non-insights"}});
-  std::unique_ptr<MicrosoftFilesPageHandler> handler = CreateHandler();
+TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
+       NoNonInsightFilesOnMalformedResponse) {
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
 
-  handler->GetFiles(future.GetCallback());
+  handler().GetFiles(future.GetCallback());
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
+  test_url_loader_factory().SimulateResponseForPendingRequest(
       kNonInsightsRequestUrl, "}{");
   const std::vector<file_suggestion::mojom::FilePtr>& suggestions =
       future.Get();
@@ -408,11 +415,8 @@ TEST_F(MicrosoftFilesPageHandlerTest, NoNonInsightFilesOnMalformedResponse) {
 
 // Ensures files are still created if one of the endpoint's return
 // an empty value list, but the other has suggestions.
-TEST_F(MicrosoftFilesPageHandlerTest, InsightFilesCreatedOnEmptyValueResponse) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpSharepointModule,
-      {{ntp_features::kNtpSharepointModuleDataParam.name, "non-insights"}});
-  std::unique_ptr<MicrosoftFilesPageHandler> handler = CreateHandler();
+TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
+       NonInsightFilesCreatedOnEmptyValueResponse) {
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
 
   std::string response =
@@ -447,9 +451,9 @@ TEST_F(MicrosoftFilesPageHandlerTest, InsightFilesCreatedOnEmptyValueResponse) {
   ]
   })";
 
-  handler->GetFiles(future.GetCallback());
+  handler().GetFiles(future.GetCallback());
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
+  test_url_loader_factory().SimulateResponseForPendingRequest(
       kNonInsightsRequestUrl, response);
   const std::vector<file_suggestion::mojom::FilePtr>& suggestions =
       future.Get();
@@ -459,11 +463,8 @@ TEST_F(MicrosoftFilesPageHandlerTest, InsightFilesCreatedOnEmptyValueResponse) {
 
 // Microsoft Graph API recently used or shared files endpoints may return
 // non-file types, such as a folder. Ensure only files are created.
-TEST_F(MicrosoftFilesPageHandlerTest, InsightFileNotCreatedForNonFiles) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpSharepointModule,
-      {{ntp_features::kNtpSharepointModuleDataParam.name, "non-insights"}});
-  std::unique_ptr<MicrosoftFilesPageHandler> handler = CreateHandler();
+TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
+       NonInsightFileNotCreatedForNonFiles) {
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
 
   // Missing `file.mimeType` property.
@@ -494,9 +495,9 @@ TEST_F(MicrosoftFilesPageHandlerTest, InsightFileNotCreatedForNonFiles) {
   ]
   })";
 
-  handler->GetFiles(future.GetCallback());
+  handler().GetFiles(future.GetCallback());
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
+  test_url_loader_factory().SimulateResponseForPendingRequest(
       kNonInsightsRequestUrl, response);
   const std::vector<file_suggestion::mojom::FilePtr>& suggestions =
       future.Get();
@@ -506,11 +507,8 @@ TEST_F(MicrosoftFilesPageHandlerTest, InsightFileNotCreatedForNonFiles) {
 
 // Verifies files aren't created for recent suggestions if there is
 // missing properties in the response.
-TEST_F(MicrosoftFilesPageHandlerTest, RecentFileNotCreatedWithMissingData) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpSharepointModule,
-      {{ntp_features::kNtpSharepointModuleDataParam.name, "non-insights"}});
-  std::unique_ptr<MicrosoftFilesPageHandler> handler = CreateHandler();
+TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
+       RecentFileNotCreatedWithMissingData) {
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
 
   // `lastModifiedDateTime` is missing.
@@ -555,9 +553,9 @@ TEST_F(MicrosoftFilesPageHandlerTest, RecentFileNotCreatedWithMissingData) {
   ]
   })";
 
-  handler->GetFiles(future.GetCallback());
+  handler().GetFiles(future.GetCallback());
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
+  test_url_loader_factory().SimulateResponseForPendingRequest(
       kNonInsightsRequestUrl, response);
   const std::vector<file_suggestion::mojom::FilePtr>& suggestions =
       future.Get();
@@ -567,11 +565,8 @@ TEST_F(MicrosoftFilesPageHandlerTest, RecentFileNotCreatedWithMissingData) {
 
 // Verifies files are not created for shared suggestions if there is
 // data missing in the response.
-TEST_F(MicrosoftFilesPageHandlerTest, SharedFileNotCreatedWithMissingData) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpSharepointModule,
-      {{ntp_features::kNtpSharepointModuleDataParam.name, "non-insights"}});
-  std::unique_ptr<MicrosoftFilesPageHandler> handler = CreateHandler();
+TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
+       SharedFileNotCreatedWithMissingData) {
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
 
   // Missing shared properties.
@@ -604,12 +599,93 @@ TEST_F(MicrosoftFilesPageHandlerTest, SharedFileNotCreatedWithMissingData) {
     ]
   })";
 
-  handler->GetFiles(future.GetCallback());
+  handler().GetFiles(future.GetCallback());
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
+  test_url_loader_factory().SimulateResponseForPendingRequest(
       kNonInsightsRequestUrl, response);
   const std::vector<file_suggestion::mojom::FilePtr>& suggestions =
       future.Get();
 
   EXPECT_EQ(suggestions.size(), 0u);
+}
+
+// Verifies that a "Retry-After" header is parsed and the earliest next retry
+// time is persisted in prefs.
+TEST_F(MicrosoftFilesPageHandlerTestForNonInsights, HandleThrottlingError) {
+  base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
+
+  EXPECT_EQ(profile().GetPrefs()->GetTime(
+                prefs::kNtpMicrosoftFilesModuleRetryAfterTime),
+            base::Time());
+
+  handler().GetFiles(future.GetCallback());
+
+  auto head = network::CreateURLResponseHead(net::HTTP_TOO_MANY_REQUESTS);
+  head->mime_type = "application/json";
+  head->headers->AddHeader("Retry-After", "20");
+  network::URLLoaderCompletionStatus status;
+  std::string response = R"({
+    "error": {
+      "code": "TooManyRequests",
+      "innerError": {
+        "code": "429",
+        "date": "2024-12-02T12:51:51",
+        "message": "Please retry after",
+        "request-id": "123-456-789-123-abcdefg",
+        "status": "429"
+      },
+      "message": "Please retry again later."
+    }})";
+
+  test_url_loader_factory().AddResponse(GURL(kNonInsightsRequestUrl),
+                                        std::move(head), response, status);
+
+  EXPECT_EQ(future.Get().size(), 0u);
+
+  EXPECT_EQ(profile().GetPrefs()->GetTime(
+                prefs::kNtpMicrosoftFilesModuleRetryAfterTime),
+            base::Time::Now() + base::Seconds(20));
+}
+
+// Ensures requests aren't made until after the specified wait time when
+// throttling occurs.
+TEST_F(MicrosoftFilesPageHandlerTestForTrending, MakeRequestAfterRetryTimeout) {
+  base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
+
+  profile().GetPrefs()->SetTime(prefs::kNtpMicrosoftFilesModuleRetryAfterTime,
+                                base::Time::Now() + base::Seconds(10));
+
+  handler().GetFiles(future.GetCallback());
+  EXPECT_EQ(test_url_loader_factory().NumPending(), 0);
+  EXPECT_EQ(future.Get().size(), 0u);
+
+  future.Clear();
+
+  // Fast forward past the retry time of 10 seconds.
+  task_environment().FastForwardBy(base::Seconds(15));
+
+  handler().GetFiles(future.GetCallback());
+  EXPECT_EQ(test_url_loader_factory().NumPending(), 1);
+
+  std::string response = R"({
+    "value": [
+        {
+          "id": "1",
+          "resourceVisualization": {
+              "title": "Spreadsheet",
+              "type": "Excel",
+              "mediaType": "application/vnd.)"
+                         R"(openxmlformats-officedocument.spreadsheetml.sheet"
+          },
+          "resourceReference": {
+              "webUrl": "https://foo.com/Spreadsheet.xlsx",
+              "id": "1-abc"
+          }
+        }
+  ]})";
+
+  test_url_loader_factory().SimulateResponseForPendingRequest(
+      kTrendingFilesEndpoint, response);
+
+  EXPECT_EQ(future.Get().size(), 1u);
 }

@@ -36,7 +36,8 @@ class CORE_EXPORT WorldSafeV8ReferenceInternal final {
   // TODO(yukishiino): Find the best place to put this function.  We might want
   // to share this function among other clients, e.g. access to wrapper objects
   // across worlds.
-  static void MaybeCheckCreationContextWorld(const DOMWrapperWorld& world,
+  static void MaybeCheckCreationContextWorld(v8::Isolate*,
+                                             const DOMWrapperWorld& world,
                                              v8::Local<v8::Value> value);
 
   template <typename V8Type>
@@ -68,7 +69,7 @@ class WorldSafeV8Reference final {
     if (isolate->InContext()) {
       world_ = &DOMWrapperWorld::Current(isolate);
       WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(
-          *world_.Get(), value);
+          isolate, *world_.Get(), value);
     } else if (value->IsObject()) {
       ScriptState* script_state = ScriptState::ForRelevantRealm(
           isolate, value.template As<v8::Object>());
@@ -102,8 +103,8 @@ class WorldSafeV8Reference final {
     DCHECK(!new_value.IsEmpty());
     CHECK(isolate->InContext());
     const DOMWrapperWorld& new_world = DOMWrapperWorld::Current(isolate);
-    WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(new_world,
-                                                                 new_value);
+    WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(
+        isolate, new_world, new_value);
     CHECK(v8_reference_.IsEmpty() || world_.Get() == &new_world);
     v8_reference_.Reset(isolate, new_value);
     world_ = &new_world;

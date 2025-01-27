@@ -7,9 +7,9 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <initializer_list>
 
-#include "base/ranges/algorithm.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 
@@ -51,7 +51,7 @@ struct SupportedTensors {
 
   bool SupportsAll(
       std::initializer_list<OperandDescriptor> operand_descriptors) const {
-    return base::ranges::all_of(
+    return std::ranges::all_of(
         operand_descriptors,
         [this](const OperandDescriptor& operand_descriptor) {
           return Supports(operand_descriptor);

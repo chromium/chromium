@@ -29,7 +29,6 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -637,9 +636,9 @@ void GPMEnclaveController::OnAccountStateDownloaded(
   if (!device::kWebAuthnGpmPin.Get() &&
       result.state == Result::State::kRecoverable &&
       !result.lskf_expiries.empty() &&
-      base::ranges::all_of(result.lskf_expiries, ExpiryTooSoon)) {
+      std::ranges::all_of(result.lskf_expiries, ExpiryTooSoon)) {
     std::vector<std::string> expiries;
-    base::ranges::transform(
+    std::ranges::transform(
         result.lskf_expiries, std::back_inserter(expiries),
         [](const auto& time) { return base::TimeFormatAsIso8601(time); });
     FIDO_LOG(EVENT) << "Account considered irrecoverable because no LSKF has "
@@ -896,6 +895,7 @@ void GPMEnclaveController::SetAccountState(AccountState account_state) {
     pin_is_arbitrary_ = enclave_manager_->has_wrapped_pin() &&
                         enclave_manager_->wrapped_pin_is_arbitrary();
   }
+  loading_timeout_.Stop();
   if (waiting_for_account_state_) {
     std::move(waiting_for_account_state_).Run();
   }
@@ -976,10 +976,7 @@ void GPMEnclaveController::OnGPMSelected() {
     case AccountState::kChecking:
       waiting_for_account_state_ = base::BindOnce(
           &GPMEnclaveController::OnGPMSelected, weak_ptr_factory_.GetWeakPtr());
-      // TODO(rgod): If the model step is `kNotStarted`, no UI is visible yet.
-      // Display a loading dialog after a delay, so it doesn't flicker in case
-      // the account state is fetched quickly.
-      model_->DisableUiOrShowLoadingDialog();
+      OnGpmSelectedWhileLoading();
       break;
 
     case AccountState::kNone:
@@ -1058,10 +1055,10 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 
     case AccountState::kLoading:
     case AccountState::kChecking:
-      model_->DisableUiOrShowLoadingDialog();
       waiting_for_account_state_ =
           base::BindOnce(&GPMEnclaveController::OnGPMPasskeySelected,
                          weak_ptr_factory_.GetWeakPtr(), *selected_cred_id_);
+      OnGpmSelectedWhileLoading();
       break;
 
     case AccountState::kNone:
@@ -1111,6 +1108,25 @@ void GPMEnclaveController::OnGpmPinChanged(bool success) {
   StartTransaction();
   ChangePinControllerImpl::RecordHistogram(
       ChangePinEvent::kCompletedSuccessfully);
+}
+
+void GPMEnclaveController::OnGpmSelectedWhileLoading() {
+  CHECK(waiting_for_account_state_);
+  if (!base::FeatureList::IsEnabled(device::kWebAuthnNoAccountTimeout) ||
+      model_->step() != AuthenticatorRequestDialogModel::Step::kNotStarted) {
+    model_->DisableUiOrShowLoadingDialog();
+    return;
+  }
+  loading_timeout_.Start(FROM_HERE, kLoadingTimeout,
+                         base::BindOnce(&GPMEnclaveController::OnLoadingTimeout,
+                                        weak_ptr_factory_.GetWeakPtr()));
+  return;
+}
+
+void GPMEnclaveController::OnLoadingTimeout() {
+  device::enclave::RecordEvent(device::enclave::Event::kLoadingTimeout);
+  waiting_for_account_state_.Reset();
+  model_->SetStep(AuthenticatorRequestDialogModel::Step::kMechanismSelection);
 }
 
 void GPMEnclaveController::OnTrustThisComputer() {

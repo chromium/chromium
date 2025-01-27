@@ -7,6 +7,7 @@
 #include <sddl.h>
 #include <wrl/module.h>
 
+#include <algorithm>
 #include <atomic>
 #include <string_view>
 #include <type_traits>
@@ -19,7 +20,6 @@
 #include "base/containers/heap_array.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/win/atl.h"

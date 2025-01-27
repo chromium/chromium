@@ -30,7 +30,6 @@ from util import server_utils
 
 _SOCKET_TIMEOUT = 60  # seconds
 
-_LOGFILES = {}
 _LOGFILE_NAME = 'buildserver.log'
 _MAX_LOGFILES = 6
 
@@ -49,7 +48,7 @@ def set_status(msg: str, *, quiet: bool = False, build_id: str = None):
   prefix = f'[{TaskStats.prefix()}] '
   # if message is specific to a build then also output to its logfile.
   if build_id:
-    log_to_file(f'{prefix}{msg}', build_id=build_id)
+    LogfileManager.log_to_file(f'{prefix}{msg}', build_id=build_id)
 
   # No need to also output to the terminal if quiet.
   if quiet:
@@ -68,10 +67,6 @@ def set_status(msg: str, *, quiet: bool = False, build_id: str = None):
   print(f'\r{prefix}{msg}\033[K', end='', flush=True)
 
 
-def log_to_file(message: str, build_id: str):
-  logfile = _LOGFILES[build_id]
-  print(message, file=logfile, flush=True)
-
 
 def _exception_hook(exctype: type, exc: Exception, tb):
   # Output uncaught exceptions to all live terminals
@@ -81,40 +76,55 @@ def _exception_hook(exctype: type, exc: Exception, tb):
   sys.__excepthook__(exctype, exc, tb)
 
 
-def create_logfile(build_id, outdir):
-  if logfile := _LOGFILES.get(build_id, None):
+class LogfileManager:
+  _open_logfiles: dict[str, IO[str]] = {}
+
+  @classmethod
+  def log_to_file(cls, message: str, build_id: str):
+    # No lock needed since this is only called by threads started after
+    # create_logfile was called on the main thread.
+    logfile = cls._open_logfiles[build_id]
+    print(message, file=logfile, flush=True)
+
+  @classmethod
+  def create_logfile(cls, build_id, outdir):
+    # No lock needed since this is only called by the main thread.
+    if logfile := cls._open_logfiles.get(build_id, None):
+      return logfile
+
+    outdir = pathlib.Path(outdir)
+    latest_logfile = outdir / f'{_LOGFILE_NAME}.0'
+
+    if latest_logfile.exists():
+      with latest_logfile.open('rt') as f:
+        first_line = f.readline()
+        if log_build_id := BUILD_ID_RE.search(first_line):
+          # If the newest logfile on disk is referencing the same build we are
+          # currently processing, we probably crashed previously and we should
+          # pick up where we left off in the same logfile.
+          if log_build_id.group('build_id') == build_id:
+            cls._open_logfiles[build_id] = latest_logfile.open('at')
+            return cls._open_logfiles[build_id]
+
+    # Do the logfile name shift.
+    filenames = os.listdir(outdir)
+    logfiles = {f for f in filenames if f.startswith(_LOGFILE_NAME)}
+    for idx in reversed(range(_MAX_LOGFILES)):
+      current_name = f'{_LOGFILE_NAME}.{idx}'
+      next_name = f'{_LOGFILE_NAME}.{idx+1}'
+      if current_name in logfiles:
+        shutil.move(os.path.join(outdir, current_name),
+                    os.path.join(outdir, next_name))
+
+    # Create a new 0th logfile.
+    logfile = latest_logfile.open('wt')
+    # Logfiles are never closed thus are leaked but there should not be too many
+    # of them since only one per build is created and the server exits on idle
+    # in normal operation.
+    cls._open_logfiles[build_id] = logfile
+    logfile.write(FIRST_LOG_LINE.format(build_id=build_id))
+    logfile.flush()
     return logfile
-
-  outdir = pathlib.Path(outdir)
-  latest_logfile = outdir / f'{_LOGFILE_NAME}.0'
-
-  if latest_logfile.exists():
-    with latest_logfile.open('rt') as f:
-      first_line = f.readline()
-      if log_build_id := BUILD_ID_RE.search(first_line):
-        # If the newest logfile on disk is referencing the same build we are
-        # currently processing, we probably crashed previously and we should
-        # pick up where we left off in the same logfile.
-        if log_build_id.group('build_id') == build_id:
-          _LOGFILES[build_id] = latest_logfile.open('at')
-          return _LOGFILES[build_id]
-
-  # Do the logfile name shift.
-  filenames = os.listdir(outdir)
-  logfiles = {f for f in filenames if f.startswith(_LOGFILE_NAME)}
-  for idx in reversed(range(_MAX_LOGFILES)):
-    current_name = f'{_LOGFILE_NAME}.{idx}'
-    next_name = f'{_LOGFILE_NAME}.{idx+1}'
-    if current_name in logfiles:
-      shutil.move(os.path.join(outdir, current_name),
-                  os.path.join(outdir, next_name))
-
-  # Create a new 0th logfile.
-  logfile = latest_logfile.open('wt')
-  _LOGFILES[build_id] = logfile
-  logfile.write(FIRST_LOG_LINE.format(build_id=build_id))
-  logfile.flush()
-  return logfile
 
 
 class TaskStats:
@@ -228,7 +238,7 @@ def check_pid_alive(pid: int):
 
 class BuildManager:
   _live_builders: dict[str, int] = dict()
-  _build_ttys: dict[str, IO[str]] = dict()
+  _cached_ttys: dict[(int, int), IO[str]] = dict()
   _lock = threading.RLock()
 
   @classmethod
@@ -237,9 +247,19 @@ class BuildManager:
       cls._live_builders[build_id] = int(builder_pid)
 
   @classmethod
-  def register_tty(cls, build_id, tty):
+  def open_tty(cls, tty_path):
+    # Do not open the same tty multiple times. Use st_ino and st_dev to compare
+    # file descriptors.
+    st = os.stat(tty_path)
+    tty_key = (st.st_ino, st.st_dev)
     with cls._lock:
-      cls._build_ttys[build_id] = tty
+      # Dedupes ttys
+      if tty_key not in cls._cached_ttys:
+        # TTYs are kept open for the lifetime of the server so that broadcast
+        # messages (e.g. uncaught exceptions) can be sent to them even if they
+        # are not currently building anything.
+        cls._cached_ttys[tty_key] = open(tty_path, 'wt')
+      return cls._cached_ttys[tty_key]
 
   @classmethod
   def get_live_builds(cls):
@@ -251,16 +271,8 @@ class BuildManager:
 
   @classmethod
   def broadcast(cls, msg: str):
-    seen = set()
     with cls._lock:
-      for tty in cls._build_ttys.values():
-        # Do not output to the same tty multiple times. Use st_ino and st_dev to
-        # compare open file descriptors.
-        st = os.stat(tty.fileno())
-        key = (st.st_ino, st.st_dev)
-        if key in seen:
-          continue
-        seen.add(key)
+      for tty in cls._cached_ttys.values():
         try:
           tty.write(msg + '\n')
           tty.flush()
@@ -502,7 +514,7 @@ class Task:
       ]
 
       message = '\n'.join(preamble + [stdout])
-      log_to_file(message, build_id=self.build_id)
+      LogfileManager.log_to_file(message, build_id=self.build_id)
       log(message, quiet=self.options.quiet)
       if self.tty:
         # Add emoji to show that output is from the build server.
@@ -533,15 +545,14 @@ def _handle_add_task(data, current_tasks: Dict[Tuple[str, str], Task], options):
   """Handle messages of type ADD_TASK."""
   build_id = data['build_id']
   task_outdir = data['cwd']
-  tty_name = data.get('tty')
+  tty_path = data.get('tty')
 
   tty = None
-  if tty_name:
-    tty = open(tty_name, 'wt')
-    BuildManager.register_tty(build_id, tty)
+  if tty_path:
+    tty = BuildManager.open_tty(tty_path)
 
   # Make sure a logfile for the build_id exists.
-  create_logfile(build_id, task_outdir)
+  LogfileManager.create_logfile(build_id, task_outdir)
 
   new_task = Task(name=data['name'],
                   cwd=task_outdir,
@@ -829,6 +840,8 @@ def _wait_for_task_requests(args):
     except socket.error as e:
       # errno 98 is Address already in use
       if e.errno == 98:
+        if not args.quiet:
+          print('Another instance is already running.', file=sys.stderr)
         return 1
       raise
     sock.listen()

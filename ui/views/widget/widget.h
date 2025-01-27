@@ -1355,6 +1355,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void OnChildRemoved(Widget* child_widget);
 
   void UpdateAccessibleNameForRootView();
+  void UpdateAccessibleURLForRootView(const GURL& url);
 
  protected:
   // Creates the RootView to be used within this Widget. Subclasses may override

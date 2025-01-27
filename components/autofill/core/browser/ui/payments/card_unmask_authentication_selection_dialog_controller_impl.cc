@@ -133,8 +133,8 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::
   // TODO(crbug.com/40247983): Remove this lambda once we refactor
   // `SetSelectedChallengeOptionId()` to `SetSelectedChallengeOptionForId()`.
   auto selected_challenge_option =
-      base::ranges::find(challenge_options_, selected_challenge_option_id_,
-                         &CardUnmaskChallengeOption::id);
+      std::ranges::find(challenge_options_, selected_challenge_option_id_,
+                        &CardUnmaskChallengeOption::id);
 
   CHECK(selected_challenge_option != challenge_options_.end());
   selected_challenge_option_type_ = (*selected_challenge_option).type;
@@ -228,8 +228,8 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::GetOkButtonLabel()
   // TODO(crbug.com/40247983): Remove this lambda once we refactor
   // `SetSelectedChallengeOptionId()` to `SetSelectedChallengeOptionForId()`.
   auto selected_challenge_option =
-      base::ranges::find(challenge_options_, selected_challenge_option_id_,
-                         &CardUnmaskChallengeOption::id);
+      std::ranges::find(challenge_options_, selected_challenge_option_id_,
+                        &CardUnmaskChallengeOption::id);
   switch (selected_challenge_option->type) {
     case CardUnmaskChallengeOptionType::kSmsOtp:
     case CardUnmaskChallengeOptionType::kEmailOtp:

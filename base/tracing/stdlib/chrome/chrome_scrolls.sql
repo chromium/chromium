@@ -134,11 +134,11 @@ LEFT JOIN chrome_input_pipeline_steps compositor_coalesced_input_handled_step
 
 -- Timestamps and durations for the input-associated (before coalescing inputs
 -- into a frame) stages of a scroll.
-CREATE PERFETTO TABLE chrome_scroll_update_input_info(
+CREATE PERFETTO TABLE chrome_scroll_update_input_pipeline(
   -- Id of the `LatencyInfo.Flow` slices corresponding to this scroll event.
   id LONG,
   -- Id of the frame that this input was presented in. Can be joined with
-  -- `chrome_scroll_update_frame_info.id`.
+  -- `chrome_scroll_update_frame_pipeline.id`.
   presented_in_frame_id LONG,
   -- Whether this input event was presented.
   is_presented BOOL,
@@ -448,7 +448,7 @@ WHERE refs.scroll_update_latency_id = refs.presentation_latency_id;
 
 -- Timestamps and durations for the frame-associated (after coalescing inputs
 -- into a frame) stages of a scroll.
-CREATE PERFETTO TABLE chrome_scroll_update_frame_info(
+CREATE PERFETTO TABLE chrome_scroll_update_frame_pipeline(
   -- Id of the `LatencyInfo.Flow` slices corresponding to this scroll event.
   id LONG,
   -- Id of the aggregated frame this scroll update was presented in.
@@ -751,7 +751,7 @@ GROUP BY sa.scroll_id;
 --                V                             V
 --    +-----------------------+     +-----------------------+
 --    | chrome_scroll_update_ |     | chrome_scroll_update_ |
---    |       INPUT_info      |     |       FRAME_info      |
+--    |     INPUT_pipeline    |     |     FRAME_pipeline    |
 --    +-----------+-----------+     +-----------+-----------+
 --                |                             |
 --                +--------------+--------------+
@@ -1011,8 +1011,8 @@ SELECT
   frame.viz_latch_to_presentation_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   frame.presentation_timestamp
-FROM chrome_scroll_update_input_info AS input
-LEFT JOIN chrome_scroll_update_frame_info AS frame
+FROM chrome_scroll_update_input_pipeline AS input
+LEFT JOIN chrome_scroll_update_frame_pipeline AS frame
 ON input.presented_in_frame_id = frame.id;
 
 

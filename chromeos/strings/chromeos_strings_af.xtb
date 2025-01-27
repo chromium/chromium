@@ -296,6 +296,7 @@
 <translation id="2240366984605217732">Uitlegomskakelaar</translation>
 <translation id="2244834438220057800">groen</translation>
 <translation id="225692081236532131">Aktiveringstatus</translation>
+<translation id="2265792117169966196">Kies <ph name="LANGUAGE_NAME" /> transkripsiemodel en laai dit af</translation>
 <translation id="2267285889943769271">Voeg skermskoot by</translation>
 <translation id="2268044343513325586">Verfyn</translation>
 <translation id="2271469253353559191">Donkermodus-skedule</translation>
@@ -774,6 +775,7 @@
 <translation id="473775607612524610">Dateer op</translation>
 <translation id="4744944742468440486">Inligting wat met jou keuse verband hou</translation>
 <translation id="4750394297954878236">Voorstelle</translation>
+<translation id="4763771683769971829">Lys beskikbare tale</translation>
 <translation id="4771607256327216405">sleutelbord verhelder</translation>
 <translation id="4771923071974529837">môre</translation>
 <translation id="4773299976671772492">Gestop</translation>
@@ -855,6 +857,7 @@
 <translation id="5095761549884461003">Prop die <ph name="DEVICE_NAME" /> se USB-kabel uit en prop dit weer in om met die opdateringproses voort te gaan</translation>
 <translation id="5099354524039520280">op</translation>
 <translation id="5107243100836678918">Kortpad sonder <ph name="META_KEY" />-sleutel kan dalk met sommige apps se kortpad bots. Druk weer hierdie kortpad om voort te gaan om dit te gebruik, of druk ’n nuwe kortpad deur die <ph name="KEY" />-sleutel te gebruik. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">Kan nie <ph name="LANGUAGE_NAME" /> transkripsiemodel aflaai nie. Probeer weer of herbegin jou Chromebook</translation>
 <translation id="5108781503443873320">Soortgelyk:</translation>
 <translation id="5121677070210013200">Kan nie transkripsiemodel aflaai nie. Probeer weer of herbegin jou Chromebook.</translation>
 <translation id="5130848777448318809">ponies</translation>
@@ -1278,6 +1281,7 @@
 <translation id="7049916119678019302">Laai transkripsiemodel in Instellings af</translation>
 <translation id="7058278511608979688">Beëindig en stoor</translation>
 <translation id="7059230779847288458">Laai tans; <ph name="TIME_VALUE" /> tot vol</translation>
+<translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> gekies</translation>
 <translation id="7066538517128343186">die <ph name="KEY" />-sleutel</translation>
 <translation id="7068619307603204412">Maak jou toestel gereed</translation>
 <translation id="7076851914315147928">Kies ’n muurpapier</translation>
@@ -1371,6 +1375,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7415801143053185905">Baie hoë HTTP-traagheid</translation>
 <translation id="7418738250896500352">Te veel woorde om te vereenvoudig</translation>
 <translation id="7425037327577270384">Help my skryf</translation>
+<translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> transkripsiemodel is <ph name="PROGRESS_PERCENTAGE" />% afgelaai</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Kan nie hierdie APN deaktiveer of verwyder nie. Maak seker dat geaktiveerde APN’e <ph name="ATTACH" /> gedeaktiveer of verwyder word.</translation>
 <translation id="7453118953486228603">Klik om die geselekteerde teks op te som</translation>
@@ -1407,6 +1412,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> oor</translation>
 <translation id="7600430297804876776">Die <ph name="MANAGER" />-admin het gestel wanneer hierdie <ph name="DEVICE_TYPE" /> gebruik kan word.</translation>
 <translation id="7613724632293948900">Herposisioneer met muis of pylsleutels.</translation>
+<translation id="7618216277886673749">Kies <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutraal</translation>
 <translation id="7620771111601174153">Kom meer te wete in Hulpsentrum</translation>
 <translation id="7625095758347640998">AI-muurpapiere</translation>

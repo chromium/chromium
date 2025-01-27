@@ -18,6 +18,7 @@
 #include "media/gpu/av1_picture.h"
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "third_party/libgav1/src/src/utils/common.h"
 
 namespace media {
 

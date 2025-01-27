@@ -1434,6 +1434,11 @@ extern const char kMediaRouterCastAllowAllIPsDescription[];
 extern const char kMojoLinuxChannelSharedMemName[];
 extern const char kMojoLinuxChannelSharedMemDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kMostVisitedTilesCustomizationName[];
+extern const char kMostVisitedTilesCustomizationDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kMostVisitedTilesNewScoringName[];
 extern const char kMostVisitedTilesNewScoringDescription[];
 
@@ -2010,6 +2015,9 @@ extern const char kSidePanelResizingDescription[];
 
 extern const char kSiteInstanceGroupsForDataUrlsName[];
 extern const char kSiteInstanceGroupsForDataUrlsDescription[];
+
+extern const char kDefaultSiteInstanceGroupsName[];
+extern const char kDefaultSiteInstanceGroupsDescription[];
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

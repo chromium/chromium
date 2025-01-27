@@ -5130,7 +5130,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4593021220803146968">&amp;Öppna <ph name="URL" /></translation>
 <translation id="4593962599442730215">Ändra inställningarna</translation>
 <translation id="4594218792629569101">Välj Markera som läst om du vill flytta sidan till slutet av listan</translation>
-<translation id="4594577641390224176">Letar du systemets about-sida? Besök</translation>
 <translation id="4595560905247879544">Appar och tillägg kan bara ändras av den ansvariga (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Du har sparade certifikat som identifierar dessa servrar</translation>
 <translation id="4598345735110653698">Hantera nycklar</translation>
@@ -6753,7 +6752,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5787420647064736989">Enhetens namn</translation>
 <translation id="5788367137662787332">Minst en partition på enheten <ph name="DEVICE_LABEL" /> kunde inte monteras.</translation>
 <translation id="5789581866075720267">Välj en CSV-fil för att importera lösenord till <ph name="BRAND" /> på den här enheten.</translation>
-<translation id="5789643057113097023">,</translation>
 <translation id="5790085346892983794">Klart</translation>
 <translation id="5790651917470750848">Portvidarebefordran finns redan</translation>
 <translation id="5792295754950501287">Fler åtgärder för <ph name="CARD_DESCRIPTION" /></translation>
@@ -7172,7 +7170,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6086418630711763366">Du kan navigera på sidor med en textmarkör. Tryck på Ctrl + <ph name="KEY" /> för att inaktivera.</translation>
 <translation id="6086846494333236931">Har installerats av administratören</translation>
 <translation id="6087286598828478206">Vill du blockera och lämna gruppen?</translation>
-<translation id="6087746524533454243">Letar du webbläsarens about-sida? Besök</translation>
 <translation id="6087960857463881712">Entusiastiskt ansikte</translation>
 <translation id="6088475950266477163">Inställningar</translation>
 <translation id="608912389580139775">Om du vill lägga till den här sidan i läslistan klickar du på bokmärkesikonen</translation>

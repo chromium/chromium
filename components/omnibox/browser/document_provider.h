@@ -23,8 +23,10 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "url/gurl.h"
 
 class AutocompleteProviderListener;
+struct AutocompleteMatch;
 class AutocompleteProviderClient;
 
 namespace base {
@@ -170,6 +172,9 @@ class DocumentProvider : public AutocompleteProvider {
   // remote request was sent. Used for histogram logging.
   base::TimeTicks time_request_sent_;
 
+  // Used to ensure that we don't send multiple requests in quick succession.
+  std::unique_ptr<AutocompleteProviderDebouncer> debouncer_;
+
   // Because the drive server is async and may intermittently provide a
   // particular suggestion for consecutive inputs, without caching, doc
   // suggestions flicker between drive format (title - date - doc_type) and URL
@@ -178,9 +183,6 @@ class DocumentProvider : public AutocompleteProvider {
   // suggestions only display if deduped with a non-cached suggestion and do not
   // affect which autocomplete results are displayed and their ranks.
   MatchesCache matches_cache_;
-
-  // Used to ensure that we don't send multiple requests in quick succession.
-  std::unique_ptr<AutocompleteProviderDebouncer> debouncer_;
 
   // Used to schedule a reset of the backoff state.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

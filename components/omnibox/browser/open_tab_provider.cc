@@ -4,8 +4,9 @@
 
 #include "components/omnibox/browser/open_tab_provider.h"
 
+#include <algorithm>
+
 #include "base/i18n/case_conversion.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -59,7 +60,7 @@ int Score(const AutocompleteInput& input,
   // Every input term must be included in either (or both) the title or URL.
   query_parser::Snippet::MatchPositions title_matches;
   query_parser::Snippet::MatchPositions url_matches;
-  if (!base::ranges::all_of(input_query_nodes, [&](const auto& query_node) {
+  if (!std::ranges::all_of(input_query_nodes, [&](const auto& query_node) {
         // Using local vars so to not short circuit adding URL matches when
         // title matches are found.
         const bool has_title_match =

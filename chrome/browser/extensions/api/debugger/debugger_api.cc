@@ -8,6 +8,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -23,7 +24,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
@@ -465,28 +465,28 @@ ExtensionDevToolsClientHost::ExtensionDevToolsClientHost(
 
 bool ExtensionDevToolsClientHost::Attach() {
   // Attach to debugger and tell it we are ready.
-  if (!agent_host_->AttachClient(this))
+  if (!agent_host_->AttachClient(this)) {
     return false;
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kSilentDebuggerExtensionAPI)) {
-    return true;
   }
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kSilentDebuggerExtensionAPI)) {
-    return true;
-  }
-
+  const bool suppress_infobar_by_flag =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kSilentDebuggerExtensionAPI) ||
+      base::FeatureList::IsEnabled(
+          extensions_features::kSilentDebuggerExtensionAPI);
   // We allow policy-installed extensions to circumvent the normal
   // infobar warning. See crbug.com/693621.
-  if (Manifest::IsPolicyLocation(extension_->location()))
-    return true;
+  const bool suppress_infobar =
+      suppress_infobar_by_flag ||
+      Manifest::IsPolicyLocation(extension_->location());
 
-  subscription_ = ExtensionDevToolsInfoBarDelegate::Create(
-      extension_id(), extension_->name(),
-      base::BindOnce(&ExtensionDevToolsClientHost::InfoBarDestroyed,
-                     base::Unretained(this)));
+  if (!suppress_infobar) {
+    subscription_ = ExtensionDevToolsInfoBarDelegate::Create(
+        extension_id(), extension_->name(),
+        base::BindOnce(&ExtensionDevToolsClientHost::InfoBarDestroyed,
+                       base::Unretained(this)));
+  }
+
   if (extension_service_worker_id_) {
     ProcessManager* process_manager = ProcessManager::Get(profile_);
     CHECK(process_manager);
@@ -750,7 +750,7 @@ bool DebuggerFunction::InitAgentHost(std::string* error) {
       // Re-use existing browser agent hosts.
       const ExtensionId& extension_id = extension()->id();
       AttachedClientHosts& hosts = g_attached_client_hosts.Get();
-      auto it = base::ranges::find_if(
+      auto it = std::ranges::find_if(
           hosts, [&extension_id](ExtensionDevToolsClientHost* client_host) {
             return client_host->extension_id() == extension_id &&
                    client_host->agent_host() &&
@@ -795,7 +795,7 @@ ExtensionDevToolsClientHost* DebuggerFunction::FindClientHost() {
   const ExtensionId& extension_id = extension()->id();
   DevToolsAgentHost* agent_host = agent_host_.get();
   AttachedClientHosts& hosts = g_attached_client_hosts.Get();
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       hosts,
       [&agent_host, &extension_id](ExtensionDevToolsClientHost* client_host) {
         return client_host->agent_host() == agent_host &&

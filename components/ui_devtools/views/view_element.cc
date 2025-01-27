@@ -4,8 +4,9 @@
 
 #include "components/ui_devtools/views/view_element.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -91,7 +92,7 @@ ViewElement::~ViewElement() = default;
 
 void ViewElement::OnChildViewRemoved(views::View* parent, views::View* view) {
   DCHECK_EQ(parent, view_);
-  auto iter = base::ranges::find(children(), view, [](UIElement* child) {
+  auto iter = std::ranges::find(children(), view, [](UIElement* child) {
     return UIElement::GetBackingElement<views::View, ViewElement>(child);
   });
   if (iter == children().end()) {
@@ -116,7 +117,7 @@ void ViewElement::OnChildViewAdded(views::View* parent, views::View* view) {
 
 void ViewElement::OnChildViewReordered(views::View* parent, views::View* view) {
   DCHECK_EQ(parent, view_);
-  auto iter = base::ranges::find(children(), view, [](UIElement* child) {
+  auto iter = std::ranges::find(children(), view, [](UIElement* child) {
     return UIElement::GetBackingElement<views::View, ViewElement>(child);
   });
   if (iter == children().end() ||

@@ -74,6 +74,7 @@ static_library("test_support") {
 
   deps = [
     ":common",
+    "//ash",
     "//ash/constants",
     "//ash/quick_pair/repository",
     "//base/test:test_support",

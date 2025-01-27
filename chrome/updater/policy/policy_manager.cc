@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/policy_manager.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -12,7 +13,6 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/updater/policy/manager.h"
@@ -67,7 +67,7 @@ PolicyManager::PolicyManager(base::Value::Dict policies)
     : policies_(std::move(policies)) {
   constexpr size_t kInstallAppPrefixLength =
       std::string_view(kInstallAppPrefix).length();
-  base::ranges::for_each(policies_, [&](const auto& policy) {
+  std::ranges::for_each(policies_, [&](const auto& policy) {
     const std::string policy_name = policy.first;
     VLOG_IF(1, policy_name != base::ToLowerASCII(policy_name))
         << "Policy [" << policy_name
@@ -215,9 +215,9 @@ std::optional<std::vector<std::string>> PolicyManager::GetAppsWithPolicy()
       kUpdateAppPrefix,        kTargetVersionPrefix, kTargetChannel,
       kRollbackToTargetVersion};
   std::vector<std::string> apps_with_policy;
-  base::ranges::for_each(policies_, [&](const auto& policy) {
+  std::ranges::for_each(policies_, [&](const auto& policy) {
     const std::string policy_name = policy.first;
-    base::ranges::for_each(kAppPolicyPrefixes, [&](const auto& prefix) {
+    std::ranges::for_each(kAppPolicyPrefixes, [&](const auto& prefix) {
       if (base::StartsWith(policy_name, base::ToLowerASCII(prefix)) &&
           !prefixed_policy_names.contains(policy_name)) {
         apps_with_policy.push_back(

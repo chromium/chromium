@@ -4,13 +4,13 @@
 
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/values.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -164,7 +164,7 @@ std::vector<CacheEntrySuggestResult> ZeroSuggestCacheService::GetSuggestResults(
 
   std::vector<CacheEntrySuggestResult> suggest_results;
   suggest_results.reserve(results.suggest_results.size());
-  base::ranges::transform(
+  std::ranges::transform(
       results.suggest_results, std::back_inserter(suggest_results),
       [](const auto& suggest_result) {
         return CacheEntrySuggestResult{suggest_result.subtypes(),

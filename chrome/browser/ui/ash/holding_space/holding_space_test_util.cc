@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
@@ -84,7 +85,7 @@ views::MenuItemView* SelectMenuItemWithCommandId(
 void WaitForItemRemoval(
     base::FunctionRef<bool(const HoldingSpaceItem*)> predicate) {
   auto* const model = HoldingSpaceController::Get()->model();
-  if (base::ranges::none_of(model->items(), [&predicate](const auto& item) {
+  if (std::ranges::none_of(model->items(), [&predicate](const auto& item) {
         return predicate(item.get());
       })) {
     return;

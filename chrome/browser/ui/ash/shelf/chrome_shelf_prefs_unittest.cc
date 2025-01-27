@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"

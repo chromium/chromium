@@ -392,6 +392,7 @@
     "linux-extended-tracing-rel": "ci/linux-extended-tracing-rel/gn-args.json",
     "linux-gcc-rel": "ci/linux-gcc-rel/gn-args.json",
     "linux-modules-compile-fyi-rel": "ci/linux-modules-compile-fyi-rel/gn-args.json",
+    "linux-oi-rel": "ci/linux-oi-rel/gn-args.json",
     "linux-v4l2-codec-rel": "ci/linux-v4l2-codec-rel/gn-args.json"
   },
   "chromium.mac": {
@@ -826,6 +827,7 @@
     "linux-libfuzzer-asan-rel": "try/linux-libfuzzer-asan-rel/gn-args.json",
     "linux-modules-compile-fyi-rel": "try/linux-modules-compile-fyi-rel/gn-args.json",
     "linux-multiscreen-fyi-rel": "try/linux-multiscreen-fyi-rel/gn-args.json",
+    "linux-oi-rel": "try/linux-oi-rel/gn-args.json",
     "linux-perfetto-rel": "try/linux-perfetto-rel/gn-args.json",
     "linux-rel": "try/linux-rel/gn-args.json",
     "linux-trees-in-viz-rel": "try/linux-trees-in-viz-rel/gn-args.json",

@@ -4,13 +4,13 @@
 
 #include "components/media_router/common/media_source.h"
 
+#include <algorithm>
 #include <array>
 #include <cstdio>
 #include <ostream>
 #include <string>
 #include <string_view>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -48,9 +48,9 @@ constexpr std::array<const char* const, 5> kAllowedSchemes{
 
 bool IsSchemeAllowed(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS() ||
-         base::ranges::any_of(
-             kAllowedSchemes,
-             [&url](const char* const scheme) { return url.SchemeIs(scheme); });
+         std::ranges::any_of(kAllowedSchemes, [&url](const char* const scheme) {
+           return url.SchemeIs(scheme);
+         });
 }
 
 bool IsSystemAudioCaptureSupported() {

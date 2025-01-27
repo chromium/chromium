@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">گروپ کا اشتراک کریں</translation>
 <translation id="2677748264148917807">چھوڑیں</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ٹیب شامل کیا گیا، <ph name="ANY_CHANGED" /> تبدیل ہو گیا، <ph name="ANY_CLOSED" /> بند ہو گیا}other{<ph name="MANY_ADDED" /> ٹیبز شامل کیے گئے، <ph name="ANY_CHANGED" /> تبدیل کیے گئے، <ph name="ANY_CLOSED" /> بند ہو گئے}}</translation>
+<translation id="2755485474385016903">کی گئی تبدیلیاں گروپ میں موجود ہر شخص دیکھتا ہے</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> گھنٹہ پہلے تخلیق کیا گیا}other{<ph name="NUM_HOURS_MANY" /> گھنٹے پہلے تخلیق کیا گیا}}</translation>
 <translation id="2801787514987684416">اسٹور کی معلومات دیکھیں؟</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ٹیب بند ہو گیا}other{<ph name="MANY_CLOSED" /> ٹیبز بند ہو گئے}}</translation>

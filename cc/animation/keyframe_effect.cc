@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
@@ -249,7 +248,7 @@ void KeyframeEffect::AddKeyframeModel(
          keyframe_model->TargetProperty() == TargetProperty::SCROLL_OFFSET);
   // This is to make sure that keyframe models in the same group, i.e., start
   // together, don't animate the same property.
-  DCHECK(base::ranges::none_of(
+  DCHECK(std::ranges::none_of(
       keyframe_models(), [&](const auto& existing_keyframe_model) {
         auto* cc_existing_keyframe_model =
             KeyframeModel::ToCcKeyframeModel(existing_keyframe_model.get());
@@ -273,7 +272,7 @@ void KeyframeEffect::AddKeyframeModel(
     // We should never have more than one scroll offset animation queued on the
     // same scrolling element as this would result in multiple automated
     // scrolls.
-    DCHECK(base::ranges::none_of(
+    DCHECK(std::ranges::none_of(
         keyframe_models(), [&](const auto& existing_keyframe_model) {
           auto* cc_existing_keyframe_model =
               KeyframeModel::ToCcKeyframeModel(existing_keyframe_model.get());
@@ -1025,7 +1024,7 @@ void KeyframeEffect::MarkKeyframeModelsForDeletion(
                                       cc_keyframe_model->group());
 
     bool a_keyframe_model_in_same_group_is_not_finished =
-        base::ranges::any_of(keyframe_models_in_same_group, [&](size_t index) {
+        std::ranges::any_of(keyframe_models_in_same_group, [&](size_t index) {
           auto* keyframe_model =
               KeyframeModel::ToCcKeyframeModel(keyframe_models()[index].get());
           return !keyframe_model->is_finished() ||

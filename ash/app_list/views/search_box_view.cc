@@ -9,6 +9,7 @@
 
 #include "ash/app_list/views/search_box_view.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -54,7 +55,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"

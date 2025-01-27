@@ -87,8 +87,6 @@ template <class T>
 class ScopedConfigForTesting : Config<T> {
  public:
   ScopedConfigForTesting() : original_config_(Get()) { Reset(); }
-  ScopedConfigForTesting(const ScopedConfigForTesting&) = delete;
-  ScopedConfigForTesting& operator=(const ScopedConfigForTesting&) = delete;
   ~ScopedConfigForTesting() { Get() = original_config_; }
 
   T& Get() { return const_cast<T&>(T::Get()); }

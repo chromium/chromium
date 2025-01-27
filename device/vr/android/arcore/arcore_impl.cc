@@ -4,6 +4,7 @@
 
 #include "device/vr/android/arcore/arcore_impl.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/android/jni_android.h"
@@ -12,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -69,8 +69,8 @@ std::set<ArTrackableType> GetArCoreEntityTypes(
     const std::vector<device::mojom::EntityTypeForHitTest>& entity_types) {
   std::set<ArTrackableType> result;
 
-  base::ranges::transform(entity_types, std::inserter(result, result.end()),
-                          GetArCoreEntityType);
+  std::ranges::transform(entity_types, std::inserter(result, result.end()),
+                         GetArCoreEntityType);
 
   return result;
 }
@@ -792,7 +792,7 @@ bool ArCoreImpl::ConfigureDepthSensing(
     maybe_format = device::mojom::XRDepthDataFormat::kLuminanceAlpha;
   } else {
     // Try and find the first format that we support in the preference list.
-    const auto format_it = base::ranges::find_if(
+    const auto format_it = std::ranges::find_if(
         format_preference.begin(), format_preference.end(),
         [](const device::mojom::XRDepthDataFormat& format) {
           return base::Contains(kSupportedDepthFormats, format);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/webapk/webapk_install_task.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/command_line.h"
@@ -11,7 +12,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -366,7 +366,7 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
   // and just send any URL of the correct purpose.
   auto& registrar = web_app_provider_->registrar_unsafe();
   const auto& manifest_icons = registrar.GetAppIconInfos(app_id_);
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       manifest_icons, [&icon_size_and_purpose](const apps::IconInfo& info) {
         return info.purpose == web_app::ManifestPurposeToIconInfoPurpose(
                                    icon_size_and_purpose->purpose);

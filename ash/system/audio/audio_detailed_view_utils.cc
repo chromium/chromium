@@ -31,7 +31,7 @@ void MaybeUpdateActiveDeviceColor(bool is_input,
   // Only the active node could trigger the mute state change. Iterates the
   // `device_map_` to find the corresponding `device_name_view` and
   // updates the color.
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       device_map, CrasAudioHandler::Get()->GetPrimaryActiveOutputNode(),
       [](const AudioDeviceViewMap::value_type& value) {
         return value.second.id;

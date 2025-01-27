@@ -195,6 +195,16 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-oi-rel",
+    mirrors = [
+        "ci/linux-oi-rel",
+    ],
+    gn_args = "ci/linux-oi-rel",
+    contact_team_email = "chrome-security-architecture@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "linux-bfcache-rel",
     mirrors = [
         "ci/linux-bfcache-rel",

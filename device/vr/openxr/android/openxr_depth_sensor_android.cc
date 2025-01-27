@@ -349,7 +349,7 @@ XrResult OpenXrDepthSensorAndroid::Initialize() {
     return XR_ERROR_INITIALIZATION_FAILED;
   }
 
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       kResolutionPreferences.begin(), kResolutionPreferences.end(),
       [&supported_resolutions](
           const XrDepthCameraResolutionANDROID& resolution) {

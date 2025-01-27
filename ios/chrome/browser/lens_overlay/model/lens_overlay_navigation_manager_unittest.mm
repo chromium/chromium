@@ -9,12 +9,12 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/fake_chrome_lens_overlay_result.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_mutator.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -117,7 +117,7 @@ class LensOverlayNavigationManagerTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY(mock_mutator_);
     EXPECT_EQ(latest_loaded_url_, expected_url);
     EXPECT_TRUE([latest_loaded_omnibox_text_
-        isEqualToString:base::SysUTF16ToNSString(omnibox_text)]);
+        isEqualToString:[NSString cr_fromString16:omnibox_text]]);
 
     // Simulates the web navigation that happens with `loadURL:omniboxText:`.
     // This navigation should not add a new navigation entries.

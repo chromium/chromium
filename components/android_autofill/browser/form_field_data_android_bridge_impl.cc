@@ -65,8 +65,8 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
                               const auto& projection) {
     std::vector<std::u16string> projected_options;
     projected_options.reserve(options.size());
-    base::ranges::transform(options, std::back_inserter(projected_options),
-                            projection);
+    std::ranges::transform(options, std::back_inserter(projected_options),
+                           projection);
     return ToJavaArrayOfStrings(env, projected_options);
   };
 

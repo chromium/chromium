@@ -10,7 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
-#include "base/ranges/algorithm.h"
 #include "components/omnibox/browser/autocomplete_grouper_groups.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -83,7 +82,7 @@ Groups::iterator Section::FindGroup(const AutocompleteMatch& match) {
   if (group_configs_[group_id].side_type() != side_type_) {
     return groups_.end();
   }
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       groups_, [&](const auto& group) { return group.CanAdd(match); });
 }
 
@@ -110,7 +109,7 @@ void ZpsSection::InitFromMatches(ACMatches& matches) {
   // Sort matches in the order of their potential containing groups. E.g., if
   // `groups_ = {group 1, group 2}, this sorts all matches that can be added to
   // group 1 before those that can only be added to group 2.
-  base::ranges::stable_sort(matches, std::less<int>{}, [&](const auto& match) {
+  std::ranges::stable_sort(matches, std::less<int>{}, [&](const auto& match) {
     // Don't have to handle `FindGroup()` returning `groups_.end()` since
     // those matches won't be added to the section anyways.
     return std::distance(groups_.begin(), FindGroup(match));
@@ -156,7 +155,7 @@ AndroidNonZPSSection::AndroidNonZPSSection(
           omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {}
 
 void AndroidNonZPSSection::InitFromMatches(ACMatches& matches) {
-  auto rich_answer_match = base::ranges::find_if(
+  auto rich_answer_match = std::ranges::find_if(
       matches,
       [&](const auto& match) { return match.answer_template.has_value(); });
   bool has_rich_answer = rich_answer_match != matches.end();
@@ -164,7 +163,7 @@ void AndroidNonZPSSection::InitFromMatches(ACMatches& matches) {
     return;
   }
 
-  bool has_url = base::ranges::any_of(matches, [](const auto& match) {
+  bool has_url = std::ranges::any_of(matches, [](const auto& match) {
     return !AutocompleteMatch::IsSearchType(match.type);
   });
   bool hide_if_urls_present =
@@ -351,18 +350,18 @@ void DesktopNonZpsSection::InitFromMatches(ACMatches& matches) {
   auto& nav_group = groups_[3];
 
   // Determine if `matches` contains any searches.
-  bool has_search = base::ranges::any_of(
+  bool has_search = std::ranges::any_of(
       matches, [&](const auto& match) { return search_group.CanAdd(match); });
 
   // Determine if the default match will be a search.
-  auto default_match = base::ranges::find_if(
+  auto default_match = std::ranges::find_if(
       matches, [&](const auto& match) { return default_group.CanAdd(match); });
   bool default_is_search =
       default_match != matches.end() && search_group.CanAdd(*default_match);
 
   // Find the 1st nav's index.
   size_t first_nav_index = std::distance(
-      matches.begin(), base::ranges::find_if(matches, [&](const auto& match) {
+      matches.begin(), std::ranges::find_if(matches, [&](const auto& match) {
         return nav_group.CanAdd(match);
       }));
 

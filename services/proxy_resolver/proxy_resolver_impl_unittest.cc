@@ -4,6 +4,7 @@
 
 #include "services/proxy_resolver/proxy_resolver_impl.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -199,7 +199,7 @@ void MockProxyResolverV8Tracing::GetProxyForURL(
 }
 
 void MockProxyResolverV8Tracing::WaitForCancel() {
-  while (base::ranges::any_of(pending_jobs_, &Job::cancelled)) {
+  while (std::ranges::any_of(pending_jobs_, &Job::cancelled)) {
     base::RunLoop run_loop;
     cancel_callback_ = run_loop.QuitClosure();
     run_loop.Run();

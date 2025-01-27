@@ -26,7 +26,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -715,8 +714,8 @@ void IEImporter::ParseFavoritesFolder(
     entry.creation_time = GetFileCreationTime(shortcut);
     if (!relative_path.empty()) {
       std::vector<std::wstring> wide_components = relative_path.GetComponents();
-      base::ranges::transform(wide_components, std::back_inserter(entry.path),
-                              &base::AsString16);
+      std::ranges::transform(wide_components, std::back_inserter(entry.path),
+                             &base::AsString16);
     }
 
     // Add the bookmark.

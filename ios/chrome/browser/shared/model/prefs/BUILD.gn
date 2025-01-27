@@ -89,6 +89,7 @@ source_set("browser_prefs") {
     "//components/update_client",
     "//components/variations/service",
     "//components/web_resource",
+    "//components/webui/chrome_urls",
     "//ios/chrome/app:variations_app_state_agent",
     "//ios/chrome/app/spotlight",
     "//ios/chrome/browser/app_store_rating/ui_bundled",

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/power_monitor/power_monitor.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/after_startup_task_utils.h"

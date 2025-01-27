@@ -306,11 +306,9 @@ void RealtimeAudioDestinationHandler::SetDetectSilenceIfNecessary(
 
   // For other latency profiles (interactive, balanced, exact), use the
   // following heristics for the FakeAudioWorker activation after detecting
-  // silence:
-  // a) When there is no automatic pull nodes (APN) in the graph, or
-  // b) When this destination node has one or more input connection.
-  bool needs_silence_detection =
-      !has_automatic_pull_nodes || Input(0).IsConnected();
+  // 30-seconds of silence when there are no automatic pull nodes (APN) in the
+  // graph.
+  bool needs_silence_detection = !has_automatic_pull_nodes;
 
   // Post a cross-thread task only when the detecting condition has changed.
   if (is_detecting_silence_ != needs_silence_detection) {
@@ -327,6 +325,7 @@ void RealtimeAudioDestinationHandler::SetDetectSilence(bool detect_silence) {
   DCHECK(IsMainThread());
 
   platform_destination_->SetDetectSilence(detect_silence);
+  is_silence_detection_active_for_testing_ = detect_silence;
 }
 
 uint32_t RealtimeAudioDestinationHandler::GetCallbackBufferSize() const {

@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <sys/socket.h>
 
+#include <algorithm>
 #include <iomanip>
 #include <optional>
 #include <string>
@@ -26,7 +27,6 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -188,7 +188,7 @@ template <class RemoteGattAttribute>
 RemoteGattAttribute* FindGattAttributeByUuid(
     const std::vector<RemoteGattAttribute*>& attributes,
     const BluetoothUUID& uuid) {
-  auto it = base::ranges::find(attributes, uuid, &RemoteGattAttribute::GetUUID);
+  auto it = std::ranges::find(attributes, uuid, &RemoteGattAttribute::GetUUID);
   return it != attributes.end() ? *it : nullptr;
 }
 

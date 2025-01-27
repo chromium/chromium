@@ -420,6 +420,9 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
     replace_in_file(gtk4_pc, r"pango [>=0-9. ]*", "pango")
     replace_in_file(gtk4_pc, r"pangocairo [>=0-9. ]*", "pangocairo")
 
+    # Remove a cyclic symlink: /usr/bin/X11 -> /usr/bin
+    os.remove(os.path.join(install_root, "usr/bin/X11"))
+
 
 def replace_in_file(file_path: str, search_pattern: str,
                     replace_pattern: str) -> None:

@@ -2691,6 +2691,7 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 # ====== New tests from wpt-importer added here ======
 crbug.com/392180059 [ Linux ] external/wpt/digital-credentials/disabled-by-permissions-policy.https.sub.html [ Failure Timeout ]
 crbug.com/391975648 [ Win11-arm64 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-5-test [ Crash Failure ]
+crbug.com/391975648 [ Win11-arm64 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-8-test [ Crash Failure ]
 crbug.com/391934074 virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup-detailed.optional.html [ Timeout ]
 crbug.com/391728750 [ Win11 ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.html [ Skip Timeout ]
 crbug.com/391728750 [ Win11 ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.serviceworker.html [ Skip Timeout ]
@@ -2777,9 +2778,7 @@ crbug.com/387777047 external/wpt/css/css-align/blocks/align-content-block-012.ht
 crbug.com/387626415 external/wpt/css/css-backgrounds/background-clip/clip-border-area-on-body-not-propagated-to-root.html [ Failure ]
 crbug.com/387378128 external/wpt/css/css-text/line-breaking/segment-break-transformation-punctuation-001.html [ Failure ]
 crbug.com/387626415 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-border-area-on-body-not-propagated-to-root.html [ Failure ]
-crbug.com/386713385 external/wpt/css/css-overflow/line-clamp/line-clamp-content-height-with-dynamic-change.html [ Failure ]
 crbug.com/385918146 [ Win11 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-clone.https.html [ Timeout ]
-crbug.com/386713385 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-content-height-with-dynamic-change.html [ Failure ]
 crbug.com/385993738 [ Mac12 ] external/wpt/css/css-masking/clip-path/clip-path-inline-001.html [ Failure ]
 crbug.com/386128935 [ Mac11 ] external/wpt/css/css-position/position-fixed-scroll-nested-fixed.html [ Failure ]
 crbug.com/386128935 [ Mac13 ] external/wpt/css/css-position/position-fixed-scroll-nested-fixed.html [ Failure ]
@@ -6153,6 +6152,9 @@ crbug.com/384009734 external/wpt/html/browsers/browsing-the-web/navigating-acros
 # Marked as failing due to different failure output on headless vs content_shell
 crbug.com/341935362 virtual/dialog-close-when-open-removed-disabled/external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-close-via-attribute.tentative.html [ Failure ]
 
+# unicode-bidi invalidation bug
+crbug.com/391865300 fast/forms/select/menulist-appearance-rtl.html [ Failure ]
+
 # CustomizableSelect
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-* [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-* [ Failure ]
@@ -6202,6 +6204,8 @@ crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semant
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-click-drag-option.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-keyboard-focus-change-for-hidden-options.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-keyboard-focus-change-for-hidden-options.tentative.html [ Failure ]
+crbug.com/40146374 virtual/customizable-select-disabled/fast/forms/select-popup/popup-menu-nested-option.html [ Failure ]
+crbug.com/40146374 virtual/select-parser-relaxation/fast/forms/select-popup/popup-menu-nested-option.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-popover-exit-animation.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-popover-exit-animation.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-second-child-button.tentative.html [ Failure ]
@@ -6246,17 +6250,6 @@ crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/anim
 # I think these are just test issues, but at least the scrollbars are related:
 crbug.com/362536387 external/wpt/html/semantics/forms/the-select-element/select-many-options.tentative.html [ Failure ]
 crbug.com/362536387 external/wpt/html/semantics/forms/the-select-element/select-popover-position-with-zoom.tentative.html [ Failure ]
-
-# These are accessibility tests which fail when CustomizableSelect is enabled,
-# which is set to experimental. They will pass after work has been completed on
-# the accessibility mappings for CustomizableSelect. For now, the stable behavior
-# of these tests is tested in virtual/customizable-select-disabled.
-crbug.com/343631044 accessibility/native-select-activedescendant.html [ Failure ]
-crbug.com/343631044 accessibility/role-attribute.html [ Failure ]
-crbug.com/343631044 virtual/customizable-select-disabled/accessibility/native-select-activedescendant.html [ Pass ]
-crbug.com/343631044 virtual/customizable-select-disabled/accessibility/role-attribute.html [ Pass ]
-crbug.com/343631044 virtual/select-parser-relaxation/accessibility/native-select-activedescendant.html [ Pass ]
-crbug.com/343631044 virtual/select-parser-relaxation/accessibility/role-attribute.html [ Pass ]
 
 # The listbox doesn't scroll to the selected option, during typeahead:
 crbug.com/362922565 html/select/select-typeahead-scroll.html [ Failure ]
@@ -8984,9 +8977,10 @@ crbug.com/380323589 [ Win11 ] external/wpt/pointerevents/pointerevent_sequence_a
 crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-creation-with-gc.html [ Crash Failure Pass ]
 crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-setcert-with-gc.html [ Crash Failure Pass ]
 
-# Tests temporarily disabled to unblock a WebRTC roll that make more tests pass
-crbug.com/381407888 external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
-crbug.com/381407888 fast/peerconnection/RTCRtpSender-setParameters.html [ Failure Pass ]
+# This test will [PRECONDITION_FAILED] on some bots and not others based on its HW capabilities, skip the test on such bots.
+# TODO(crbug.com/381407888): See if we can replace Pass/Failure with platform-specific -expected.txt files and remove this.
+crbug.com/381407888 [ Win11-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
+crbug.com/381407888 [ Mac13 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
 # Will pass or fail depending on bot's HW capabilities, allow either while this feature is behind flag.
 crbug.com/388299759 virtual/webrtc-h265/external/wpt/webrtc/protocol/h265-level-id.https.html [ Failure Pass ]
 
@@ -9070,6 +9064,8 @@ crbug.com/379474211 external/wpt/paint-timing/fcp-only/fcp-document-opacity-text
 
 crbug.com/389559091 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup.tentative.html [ Pass Timeout ]
 crbug.com/389559091 [ Mac ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup.tentative.html [ Pass Timeout ]
+# Gardener 2025-01-27
+crbug.com/390068099 [ Mac ] fast/mediarecorder/MediaRecorder-error-on-oversize-frame-h264.html [ Failure Pass ]
 
 # Gardener 2025-01-15
 crbug.com/389960979 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/locator.py [ Failure ]

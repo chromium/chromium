@@ -4,6 +4,7 @@
 
 #include "media/muxers/webm_muxer.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -14,7 +15,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -492,7 +492,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
 
   void SaveChunkAndInvokeWriteCallback(base::span<const uint8_t> chunk) {
     OnWrite();
-    base::ranges::copy(chunk, std::back_inserter(muxed_data_));
+    std::ranges::copy(chunk, std::back_inserter(muxed_data_));
   }
 
   // Muxed data gets saved here. The content is guaranteed to be finalized first

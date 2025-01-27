@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector android:autoMirrored="true" android:height="40dp"
+    android:viewportHeight="40" android:viewportWidth="40"
+    android:width="@dimen/ntp_customization_edit_icon_with_background_size" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="@color/material_primary_80" android:fillType="evenOdd" android:pathData="M20,40C31.046,40 40,31.046 40,20C40,8.954 31.046,0 20,0C8.954,0 0,8.954 0,20C0,31.046 8.954,40 20,40Z"/>
+    <group>
+        <clip-path android:pathData="M8,8h24v24h-24z"/>
+        <path android:fillColor="@color/material_primary_20" android:pathData="M13,27H14.425L24.2,17.225L22.775,15.8L13,25.575V27ZM11,29V24.75L24.2,11.575C24.4,11.392 24.617,11.25 24.85,11.15C25.1,11.05 25.358,11 25.625,11C25.892,11 26.15,11.05 26.4,11.15C26.65,11.25 26.867,11.4 27.05,11.6L28.425,13C28.625,13.183 28.767,13.4 28.85,13.65C28.95,13.9 29,14.15 29,14.4C29,14.667 28.95,14.925 28.85,15.175C28.767,15.408 28.625,15.625 28.425,15.825L15.25,29H11ZM27,14.4L25.6,13L27,14.4ZM23.475,16.525L22.775,15.8L24.2,17.225L23.475,16.525Z"/>
+    </group>
+</vector>

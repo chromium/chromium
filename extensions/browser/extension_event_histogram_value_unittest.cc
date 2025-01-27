@@ -4,6 +4,7 @@
 
 #include "extensions/browser/extension_event_histogram_value.h"
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <string>
@@ -12,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_enum_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"

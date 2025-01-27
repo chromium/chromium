@@ -9,6 +9,7 @@
 
 #include "ash/webui/recorder_app_ui/recorder_app_ui.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <utility>
 #include <vector>
@@ -23,7 +24,6 @@
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources_map.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
@@ -107,9 +107,9 @@ void TranslateAudioDeviceId(
 }
 
 int GetResourceIdFromStringName(const std::string& name) {
-  auto iter = base::ranges::find(
-      kLocalizedStrings, name,
-      [](const webui::LocalizedString& s) { return s.name; });
+  auto iter =
+      std::ranges::find(kLocalizedStrings, name,
+                        [](const webui::LocalizedString& s) { return s.name; });
   CHECK(iter != std::end(kLocalizedStrings));
   return iter->id;
 }

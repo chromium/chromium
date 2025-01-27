@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/offline_items_collection/core/offline_content_aggregator.h"
+
+#include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_item.h"
 
 namespace offline_items_collection {
@@ -243,7 +244,7 @@ void OfflineContentAggregator::OnItemRemoved(const ContentId& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!pending_providers_.empty()) {
-    auto item = base::ranges::find(aggregated_items_, id, &OfflineItem::id);
+    auto item = std::ranges::find(aggregated_items_, id, &OfflineItem::id);
     if (item != aggregated_items_.end())
       aggregated_items_.erase(item);
   }

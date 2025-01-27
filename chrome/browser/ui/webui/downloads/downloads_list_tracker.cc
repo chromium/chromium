@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/downloads/downloads_list_tracker.h"
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 #include <string>
@@ -16,7 +17,6 @@
 #include "base/i18n/rtl.h"
 #include "base/i18n/unicodestring.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -251,7 +251,7 @@ int DownloadsListTracker::NumDangerousItemsSent() const {
   auto sent_items_end_it = sorted_items_.begin();
   std::advance(sent_items_end_it, sent_to_page_);
 
-  return base::ranges::count_if(
+  return std::ranges::count_if(
       sorted_items_.begin(), sent_items_end_it,
       [](download::DownloadItem* item) { return item->IsDangerous(); });
 }
@@ -260,7 +260,7 @@ download::DownloadItem* DownloadsListTracker::GetFirstActiveWarningItem() {
   auto sent_items_end_it = sorted_items_.begin();
   std::advance(sent_items_end_it, sent_to_page_);
 
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       sorted_items_.begin(), sent_items_end_it,
       [](download::DownloadItem* item) {
         return item->GetState() != download::DownloadItem::CANCELLED &&

@@ -187,6 +187,11 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
       const std::optional<tab_groups::SavedTabGroupTab>& tab,
       const std::optional<PersistentNotificationType>& type);
 
+  InstantMessage CreateInstantMessage(
+      const collaboration_pb::Message& message,
+      const std::optional<tab_groups::SavedTabGroup>& tab_group,
+      const std::optional<tab_groups::SavedTabGroupTab>& tab);
+
   // Creates individual messages based on `base_message` per type, and notifies
   // oservers to display the messages.
   void NotifyDisplayPersistentMessagesForTypes(

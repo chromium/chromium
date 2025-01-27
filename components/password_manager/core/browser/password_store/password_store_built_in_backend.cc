@@ -79,7 +79,7 @@ std::optional<PasswordStoreChangeList> MaybeRecordPasswordDeletionViaSync(
         write_prefs_callback,
     std::optional<PasswordStoreChangeList> password_store_change_list,
     bool is_account_store) {
-  bool hasCredentialRemoval = base::ranges::any_of(
+  bool hasCredentialRemoval = std::ranges::any_of(
       password_store_change_list.value(), [](PasswordStoreChange change) {
         return change.type() == PasswordStoreChange::REMOVE;
       });

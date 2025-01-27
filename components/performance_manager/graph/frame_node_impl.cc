@@ -589,6 +589,28 @@ void FrameNodeImpl::OnNavigationCommitted(
   document_.Reset(this, std::move(url), std::move(origin));
 }
 
+void FrameNodeImpl::OnPrimaryPageAboutToBeDiscarded() {
+  // When a page is discarded by the browser, it is immediately marked as
+  // discarded and kicks off an async process to install a new empty document,
+  // clearing the existing frame tree.
+  //
+  // Close `receiver_` to ensure that messages queued by the previous document
+  // before the discard are dropped.
+  receiver_.reset();
+
+  for (const Node* child_frame_node : child_frame_nodes_) {
+    FrameNodeImpl::FromNode(child_frame_node)
+        ->OnPrimaryPageAboutToBeDiscarded();
+  }
+
+  for (const Node* embedded_page_node : embedded_page_nodes_) {
+    if (FrameNodeImpl* main_frame_node =
+            PageNodeImpl::FromNode(embedded_page_node)->main_frame_node()) {
+      main_frame_node->OnPrimaryPageAboutToBeDiscarded();
+    }
+  }
+}
+
 void FrameNodeImpl::AddChildWorker(WorkerNodeImpl* worker_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool inserted = child_worker_nodes_.insert(worker_node).second;

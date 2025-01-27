@@ -4913,7 +4913,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.AndroidAuthClient.AuthAndSignTime"
-    units="ms" expires_after="2025-02-22">
+    units="ms" expires_after="2026-01-22">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/browser/ip_protection/OWNERS</owner>
   <summary>
@@ -4931,7 +4931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.AndroidAuthClient.CreationTime"
-    units="ms" expires_after="2025-02-22">
+    units="ms" expires_after="2026-01-22">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/browser/ip_protection/OWNERS</owner>
   <summary>
@@ -4951,7 +4951,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.IpProtection.AndroidAuthClient.GetInitialDataTime"
-    units="ms" expires_after="2025-02-22">
+    units="ms" expires_after="2026-01-22">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/browser/ip_protection/OWNERS</owner>
   <summary>

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -22,7 +23,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -192,8 +192,8 @@ bool GetInstanceManipulations(const net::HttpResponseHeaders* headers,
                               bool* is_delta_compressed,
                               bool* is_gzip_compressed) {
   std::vector<std::string> ims = GetHeaderValuesList(headers, "IM");
-  const auto delta_im = base::ranges::find(ims, "x-bm");
-  const auto gzip_im = base::ranges::find(ims, "gzip");
+  const auto delta_im = std::ranges::find(ims, "x-bm");
+  const auto gzip_im = std::ranges::find(ims, "gzip");
   *is_delta_compressed = delta_im != ims.end();
   *is_gzip_compressed = gzip_im != ims.end();
 

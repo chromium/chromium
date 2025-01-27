@@ -83,7 +83,7 @@ void OutputAudioSlidersView::Update() {
 
   // Only display devices if they are for simple usage and are output devices.
   AudioDeviceList output_devices;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       all_devices, std::back_inserter(output_devices), [](const auto& device) {
         return device.is_for_simple_usage() && !device.is_input;
       });

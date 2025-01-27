@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <string_view>
@@ -13,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -231,9 +231,8 @@ void SecureDnsManager::LoadProviders() {
 
   for (const net::DohProviderEntry* provider : local_providers) {
     std::vector<std::string> ip_addrs;
-    base::ranges::transform(provider->ip_addresses,
-                            std::back_inserter(ip_addrs),
-                            &net::IPAddress::ToString);
+    std::ranges::transform(provider->ip_addresses, std::back_inserter(ip_addrs),
+                           &net::IPAddress::ToString);
     local_doh_providers_[provider->doh_server_config] =
         base::JoinString(ip_addrs, ",");
   }

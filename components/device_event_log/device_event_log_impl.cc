@@ -9,6 +9,7 @@
 
 #include "components/device_event_log/device_event_log_impl.h"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <list>
@@ -23,7 +24,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -455,9 +455,8 @@ void DeviceEventLogImpl::ClearAll() {
 }
 
 void DeviceEventLogImpl::Clear(const base::Time& begin, const base::Time& end) {
-  entries_.erase(
-      base::ranges::lower_bound(entries_, begin, {}, &LogEntry::time),
-      base::ranges::upper_bound(entries_, end, {}, &LogEntry::time));
+  entries_.erase(std::ranges::lower_bound(entries_, begin, {}, &LogEntry::time),
+                 std::ranges::upper_bound(entries_, end, {}, &LogEntry::time));
 }
 
 int DeviceEventLogImpl::GetCountByLevelForTesting(LogLevel level) {

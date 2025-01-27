@@ -10,8 +10,8 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/mock_page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
-#include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "chrome/test/base/testing_profile.h"
@@ -43,41 +43,6 @@ class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
               GetIconLabelBubbleBackgroundColor,
               (),
               (const, override));
-};
-
-class MockPageActionModel : public PageActionModelInterface {
- public:
-  MOCK_METHOD(bool, GetVisible, (), (const, override));
-  MOCK_METHOD(bool, GetShowSuggestionChip, (), (const, override));
-  MOCK_METHOD(const std::u16string, GetText, (), (const, override));
-  MOCK_METHOD(const std::u16string, GetTooltipText, (), (const, override));
-  MOCK_METHOD(const ui::ImageModel&, GetImage, (), (const, override));
-  MOCK_METHOD(void,
-              AddObserver,
-              (PageActionModelObserver * observer),
-              (override));
-  MOCK_METHOD(void,
-              RemoveObserver,
-              (PageActionModelObserver * observer),
-              (override));
-  MOCK_METHOD(void,
-              SetActionItemProperties,
-              (base::PassKey<PageActionController>,
-               const actions::ActionItem* action_item),
-              (override));
-  MOCK_METHOD(void,
-              SetShowRequested,
-              (base::PassKey<PageActionController>, bool requested),
-              (override));
-  MOCK_METHOD(void,
-              SetHasPinnedIcon,
-              (base::PassKey<PageActionController>, bool has_pinned_icon),
-              (override));
-  MOCK_METHOD(void,
-              SetOverrideText,
-              (base::PassKey<PageActionController>,
-               const std::optional<std::u16string>& text),
-              (override));
 };
 
 // Some methods in IconLabelBubbleView, from which PageActionView inherits,
@@ -260,25 +225,25 @@ TEST_F(PageActionViewWithMockModelTest, Visibility) {
   EXPECT_FALSE(page_action_view()->GetVisible());
 
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
-  page_action_view()->OnPageActionModelChanged(model());
+  page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_TRUE(page_action_view()->GetVisible());
 
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(false));
-  page_action_view()->OnPageActionModelChanged(model());
+  page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_FALSE(page_action_view()->GetVisible());
 }
 
 TEST_F(PageActionViewWithMockModelTest,
        UpdateStyleSetsTonalColorsAndBackgroundVisibility) {
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
-  page_action_view()->OnPageActionModelChanged(model());
+  page_action_view()->OnPageActionModelChanged(*model());
 
   EXPECT_TRUE(page_action_view()->is_using_tonal_colors());
   EXPECT_EQ(page_action_view()->background_visible(),
             IconLabelBubbleView::BackgroundVisibility::kAlways);
 
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
-  page_action_view()->OnPageActionModelChanged(model());
+  page_action_view()->OnPageActionModelChanged(*model());
 
   EXPECT_FALSE(page_action_view()->is_using_tonal_colors());
   EXPECT_EQ(page_action_view()->background_visible(),
@@ -287,13 +252,13 @@ TEST_F(PageActionViewWithMockModelTest,
 
 TEST_F(PageActionViewWithMockModelTest, SuggestionText) {
   EXPECT_CALL(*model(), GetText()).WillRepeatedly(Return(kTestText));
-  page_action_view()->OnPageActionModelChanged(model());
+  page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_EQ(page_action_view()->GetText(), kTestText);
 }
 
 TEST_F(PageActionViewWithMockModelTest, TooltipText) {
   EXPECT_CALL(*model(), GetTooltipText()).WillRepeatedly(Return(kTestText));
-  page_action_view()->OnPageActionModelChanged(model());
+  page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_EQ(page_action_view()->GetTooltipText(), kTestText);
 }
 
@@ -308,7 +273,7 @@ TEST_F(PageActionViewWithMockModelTest, OnThemeChangedUpdatesIconImage) {
   // If the default size is the intended icon size, this test is useless.
   EXPECT_GT(required_icon_size, kDefaultIconSize);
 
-  page_action_view()->OnPageActionModelChanged(model());
+  page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_EQ(page_action_view()
                 ->GetImageModel(views::Button::STATE_NORMAL)
                 ->Size()

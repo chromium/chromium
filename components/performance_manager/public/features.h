@@ -85,12 +85,6 @@ extern const base::FeatureParam<int> kInterventionDialogStringVersion;
 // profile that is different from the last active browser.
 extern const base::FeatureParam<bool> kInterventionShowMixedProfileSuggestions;
 
-#if BUILDFLAG(IS_WIN)
-// Prefetch the main browser DLL when a new node is added to the PM graph
-// and no prefetch has been done within a reasonable timeframe.
-BASE_DECLARE_FEATURE(kPrefetchVirtualMemoryPolicy);
-#endif
-
 // This represents the duration that the performance intervention button
 // should remain in the toolbar after the user dismisses the intervention
 // dialog without taking the suggested action.

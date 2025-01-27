@@ -482,6 +482,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1317637799698924700">Deine Dockingstation arbeitet im Modus für USB Typ-C-Kompatibilität.</translation>
 <translation id="1319983966058170660">Schaltfläche "Zurück" auf Unterseite "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="1322046419516468189">Gespeicherte Passwörter in meinem <ph name="SAVED_PASSWORDS_STORE" /> ansehen und verwalten</translation>
+<translation id="132539964543492755">Verwende „x“, um zwischen der linken, der rechten und beiden Maustasten gleichzeitig zu wechseln</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos-Tickets</translation>
 <translation id="1327495825214193325">Das Aktivieren der ADB-Fehlerbehebung erfordert einen Neustart von <ph name="DEVICE_TYPE" />. Zum Deaktivieren der ADB-Fehlerbehebung ist das Zurücksetzen auf die Werkseinstellungen erforderlich.</translation>
@@ -1676,6 +1677,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2155772377859296191">Auflösung <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">Scrollen und Zoomen auf geteilten Tabs zulässig</translation>
+<translation id="2157457598652721267">Verwende „/“ und „-“, um die linke oder rechte Maustaste auszuwählen. Nutze „*“, um beide gleichzeitig auszuwählen.</translation>
 <translation id="2157474325782140681">Verwende eine für dieses Chromebook entwickelte Dockingstation von Dell, um zusätzliche Funktionen nutzen zu können.</translation>
 <translation id="215753907730220065">Vollbildmodus aus</translation>
 <translation id="2157779167749714207">Auf deinem <ph name="DEVICE_TYPE" /> ist Gemini bereits installiert</translation>
@@ -1780,6 +1782,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2233502537820838181">&amp;Weitere Informationen</translation>
 <translation id="223356358902285214">Web- &amp; App-Aktivitäten</translation>
 <translation id="2234065144797002621">Bach</translation>
+<translation id="2234208862050358325">Verwende die Tasten „1“, „2“, „3“, „q“, „e“, „a“, „s“ und „d“, um den Cursor zu bewegen</translation>
 <translation id="2234827758954819389">Datenschutz-Leitfaden</translation>
 <translation id="2234876718134438132">Synchronisierung und Google-Dienste</translation>
 <translation id="2235344399760031203">Drittanbieter-Cookies werden blockiert</translation>
@@ -1799,6 +1802,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2249111429176737533">Als Tab-Fenster öffnen</translation>
 <translation id="2249605167705922988">z. B. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Du kannst die Informationen anpassen, die von Websites verwendet werden, um dir Werbung zu präsentieren</translation>
+<translation id="22505994009453896">Mauscursor mit dem Ziffernblock steuern</translation>
 <translation id="2250624716625396929">Dieser Tab verwendet deine Kamera und dein Mikrofon</translation>
 <translation id="2251218783371366160">Mit System Viewer öffnen</translation>
 <translation id="225163402930830576">Netzwerke aktualisieren</translation>
@@ -1992,6 +1996,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="236939127352773362">Wenn Geräte in der Nähe etwas teilen</translation>
 <translation id="2371076942591664043">Nach &amp;Download öffnen</translation>
 <translation id="237336063998926520">IP-Adresse zur Standortbestimmung verwenden</translation>
+<translation id="2373499590298659902">Verwende „0“, um eine Maustaste zu drücken und gedrückt zu halten</translation>
 <translation id="2373666622366160481">An Papierformat anpassen</translation>
 <translation id="2375406435414127095">Mit dem Smartphone verbinden</translation>
 <translation id="2376056713414548745">Vorlesen</translation>
@@ -2753,6 +2758,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2902312830803030883">Weitere Aktionen</translation>
 <translation id="2903457445916429186">Ausgewählte Elemente öffnen</translation>
 <translation id="2903882649406874750">Immer verhindern, dass <ph name="HOST" /> auf Sensoren zugreift</translation>
+<translation id="2903925626657991994">Verwende „,“, um zwischen der linken, der rechten und beiden Maustasten gleichzeitig zu wechseln</translation>
 <translation id="290415756080113152">Websites dürfen nicht nach für dein Gerät zugänglichen Druckern suchen oder diese verwenden</translation>
 <translation id="2904210161403910217">Dein Passwort hat sich seit deiner letzten Anmeldung geändert</translation>
 <translation id="2904506722835398619">Anmeldung und Synchronisierung erforderlich</translation>
@@ -3107,6 +3113,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3170072451822350649">Du kannst die Anmeldung auch überspringen und <ph name="LINK_START" />als Gast surfen<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Text</translation>
 <translation id="3175862692832442091">Wald</translation>
+<translation id="3176347586396987181">Verwende „z“, um eine Maustaste zu drücken und gedrückt zu halten</translation>
 <translation id="3177430966804511955">Isolierte Web-Apps (Beta) verwalten</translation>
 <translation id="31774765611822736">Neuer Tab links</translation>
 <translation id="3177909033752230686">Sprache der Seite:</translation>
@@ -4487,6 +4494,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="412730574613779332">Superheld</translation>
 <translation id="4130199216115862831">Geräteprotokoll</translation>
 <translation id="4130750466177569591">Ich stimme zu</translation>
+<translation id="4130877444234883490">Verwende „m“, um eine Maustaste zu drücken und gedrückt zu halten</translation>
 <translation id="413121957363593859">Komponenten</translation>
 <translation id="4131283654370308898">„<ph name="EXTENSION_NAME" />“ auf dieser Website zulassen</translation>
 <translation id="4131410914670010031">Schwarz-Weiß</translation>
@@ -4506,6 +4514,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID-Gerät verbunden</translation>
 <translation id="4139326893730851150">Firmwareupdates</translation>
 <translation id="4142052906269098341"><ph name="DEVICE_TYPE" /> mit dem Smartphone entsperren. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="4143606504420684845">Du kannst dir ansehen, wie sich KI auf deine Nutzung auswirkt, und fundierte Entscheidungen zu deiner Privatsphäre treffen</translation>
 <translation id="4146026355784316281">Immer mit System Viewer öffnen</translation>
 <translation id="4146785383423576110">Zurücksetzen und bereinigen</translation>
 <translation id="4147099377280085053">Brailletabelle auswählen</translation>
@@ -4789,6 +4798,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4360738659108163902">Mit der rechten Maustaste klicken</translation>
 <translation id="4361142739114356624">Der private Schlüssel für dieses Clientzertifikat fehlt oder ist ungültig</translation>
 <translation id="4361745360460842907">Als Tab öffnen</translation>
+<translation id="4362459470237309049">Verwende „.“, um eine Maustaste loszulassen</translation>
 <translation id="4363262124589131906">Neue Dateien in „Meine Ablage“ werden nicht mehr automatisch mit diesem Chromebook synchronisiert</translation>
 <translation id="4364327530094270451">Melone</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 Element wird nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto.}other{{ITEM_COUNT} Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto.}}</translation>
@@ -4814,6 +4824,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4378308539633073595">Weiterscrollen</translation>
 <translation id="4378551569595875038">Verbindung...</translation>
 <translation id="4378556263712303865">Geräteanforderung</translation>
+<translation id="4378589147979399051">Mauscursor mit der primären Tastatur steuern</translation>
 <translation id="4379097572583973456">Auf einer Website können auch von anderen Websites stammende Inhalte eingebettet sein, z. B. Bilder, Werbung und Text. Diese anderen Websites können ebenfalls Daten speichern.</translation>
 <translation id="4379281552162875326">"<ph name="APP_NAME" />" deinstallieren?</translation>
 <translation id="4380055775103003110">Wenn das Problem weiterhin auftritt, kannst du andere Möglichkeiten zum Fortfahren auf <ph name="SITE_ETLD_PLUS_ONE" /> ausprobieren.</translation>
@@ -5112,7 +5123,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4593021220803146968">Zu <ph name="URL" /> &amp;wechseln</translation>
 <translation id="4593962599442730215">Einstellungen ändern</translation>
 <translation id="4594218792629569101">Wähle „Als gelesen markieren“ aus, um die Seite ans Ende der Liste zu verschieben</translation>
-<translation id="4594577641390224176">Suchst du die Seite „Über das System“? Gehe zu</translation>
 <translation id="4595560905247879544">Apps und Erweiterungen können nur vom Administrator, <ph name="CUSTODIAN_NAME" />, geändert werden.</translation>
 <translation id="4596295440756783523">In deinen gespeicherten Zertifikaten sind folgende Server angegeben</translation>
 <translation id="4598345735110653698">Passkeys verwalten</translation>
@@ -5134,6 +5144,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4610493438923139095">Nicht vertrauenswürdig</translation>
 <translation id="4610637590575890427">Wolltest du <ph name="SITE" /> aufrufen?</translation>
 <translation id="4611114513649582138">Datenverbindung verfügbar</translation>
+<translation id="4611619000650855880">Wenn die linke Maustaste ausgewählt ist, verwende „/“, um doppelzuklicken</translation>
 <translation id="4611759022973144129">Mit diesem Passwort kannst du dich in deinem <ph name="DEVICE_TYPE" /> anmelden.</translation>
 <translation id="4612841084470706111">Zugriff auf alle angeforderten Websites erlauben.</translation>
 <translation id="4613144866899789710">Linux-Installation wird abgebrochen…</translation>
@@ -5259,6 +5270,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4694820450536519583">Berechtigungen</translation>
 <translation id="4695318956047767909">Dunkles Design, Bildschirmschoner</translation>
 <translation id="4697071790493980729">Keine Ergebnisse gefunden</translation>
+<translation id="4697231114332146850">Verwende die Tasten „7“, „8“, „9“, „4“, „6“, „1“, „2“ und „3“, um den Cursor zu bewegen</translation>
 <translation id="4697551882387947560">Beim Beenden der Browsersitzung</translation>
 <translation id="469838979880025581">Websites dürfen nachfragen, wenn sie mein Mikrofon verwenden möchten</translation>
 <translation id="4699172675775169585">Bilder und Dateien im Cache</translation>
@@ -6370,6 +6382,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5499453227627332024">Für deinen Linux-Container ist ein Upgrade verfügbar. Du kannst es auch später über die App "Einstellungen" ausführen.</translation>
 <translation id="5499476581866658341">Du kannst jetzt die neuesten Fotos und Medien von deinem Smartphone aufrufen</translation>
 <translation id="549957179819296104">Neues Symbol</translation>
+<translation id="5500163593833085874">Wenn die linke Maustaste ausgewählt ist, verwende „+“, um doppelzuklicken</translation>
 <translation id="5500168250243071806">Der <ph name="BEGIN_LINK_SEARCH" />Suchverlauf<ph name="END_LINK_SEARCH" /> und <ph name="BEGIN_LINK_GOOGLE" />andere Arten von Aktivitäten<ph name="END_LINK_GOOGLE" /> können in deinem Google-Konto gespeichert werden, wenn du angemeldet bist. Du kannst sie jederzeit löschen.</translation>
 <translation id="5501322521654567960">Linke Seitenleiste</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Fehler beim Empfangen von <ph name="ATTACHMENTS" /> von <ph name="DEVICE_NAME" />}other{Fehler beim Empfangen von <ph name="ATTACHMENTS" /> von <ph name="DEVICE_NAME" />}}</translation>
@@ -6665,6 +6678,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5733913382424854675">Tabs mit KI gruppieren</translation>
 <translation id="5734362860645681824">Kommunikation</translation>
 <translation id="5734697361979786483">Dateifreigabe hinzufügen</translation>
+<translation id="573520097779121706">Verwende die Tasten „7“, „8“, „9“, „u“, „o“, „j“, „k“ und „l“, um den Cursor zu bewegen</translation>
 <translation id="5735513236153491131">Leistung steigern</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Diese Daten oder dein Gerät entsprechen nicht allen Sicherheitsrichtlinien deiner Organisation. Frage deinen Administrator, was korrigiert werden muss.}=1{Diese Datei oder dein Gerät entspricht nicht allen Sicherheitsrichtlinien deiner Organisation. Frage deinen Administrator, was korrigiert werden muss.}other{Diese Dateien entsprechen nicht allen Sicherheitsrichtlinien deiner Organisation. Frage deinen Administrator, was korrigiert werden muss.}}</translation>
 <translation id="5738093759615225354">Du benötigst diesen Passkey, um dich auf deinem Computer anzumelden</translation>
@@ -6731,7 +6745,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5787420647064736989">Gerätename</translation>
 <translation id="5788367137662787332">Mindestens eine Partition auf dem Gerät <ph name="DEVICE_LABEL" /> konnte nicht bereitgestellt werden.</translation>
 <translation id="5789581866075720267">Wähle eine CSV-Datei aus, um Passwörter in <ph name="BRAND" /> zu importieren.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Abgeschlossen</translation>
 <translation id="5790651917470750848">Portweiterleitung ist bereits vorhanden</translation>
 <translation id="5792295754950501287">Weitere Aktionen für <ph name="CARD_DESCRIPTION" /></translation>
@@ -6898,6 +6911,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5901069264981746702">Dein Fingerabdruck wird sicher und niemals außerhalb deines Geräts (<ph name="DEVICE_TYPE" />) gespeichert. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">Zum empfangenden Tab wechseln</translation>
 <translation id="5901494423252125310">Druckerklappe offen</translation>
+<translation id="5901526412306322179">Aktivitätsprotokoll</translation>
 <translation id="5901630391730855834">Gelb</translation>
 <translation id="5902892210366342391">Vor dem Aufrufen unsicherer Websites im Inkognitomodus Warnungen einblenden</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> konnte aufgrund eines Konfigurationsproblems nicht eingerichtet werden. Bitte wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
@@ -7149,7 +7163,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6086418630711763366">Du kannst dich mit einem Textcursor auf den Seiten bewegen. Wenn du die Tastaturnavigation deaktivieren möchtest, drücke Strg + <ph name="KEY" />.</translation>
 <translation id="6086846494333236931">Von deinem Administrator installiert</translation>
 <translation id="6087286598828478206">Blockieren und Gruppe verlassen?</translation>
-<translation id="6087746524533454243">Suchst du die Seite „Über den Browser“? Gehe zu</translation>
 <translation id="6087960857463881712">Cooles Gesicht</translation>
 <translation id="6088475950266477163">Einstellun&amp;gen</translation>
 <translation id="608912389580139775">Wenn du deiner Leseliste diese Seite hinzufügen möchtest, klicke auf das Lesezeichensymbol</translation>
@@ -7272,6 +7285,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6171779718418683144">Bei jedem Besuch fragen</translation>
 <translation id="617213288191670920">Keine Sprachen hinzugefügt</translation>
 <translation id="6173623053897475761">PIN noch einmal eingeben</translation>
+<translation id="6174909075810107548">Verwende „5“, um eine Maustaste zu drücken</translation>
 <translation id="6175314957787328458">Microsoft-Domain-GUID</translation>
 <translation id="6175910054050815932">Link abrufen</translation>
 <translation id="6177412385419165772">Wird entfernt…</translation>
@@ -7757,6 +7771,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Hinweis:<ph name="END_BOLD" /> Aktiviere diese Option nur dann, wenn du dazu aufgefordert wurdest und dir sicher bist, dass es unbedenklich ist. Die Datenerfassung kann die Leistung verringern.</translation>
 <translation id="6540488083026747005">Du hast Drittanbieter-Cookies auf dieser Website zugelassen</translation>
 <translation id="6541638731489116978">Diese Website darf nicht auf deine Bewegungssensoren zugreifen.</translation>
+<translation id="654219396498297850">Wenn die linke Maustaste ausgewählt ist, verwende „v“, um doppelzuklicken</translation>
 <translation id="6542417422899025860">Die meisten personenbezogenen Daten automatisch entfernen</translation>
 <translation id="6542521951477560771">Inhalte werden an <ph name="RECEIVER_NAME" /> gestreamt</translation>
 <translation id="6544134392255015460">Ein-/Aus-Taste für Hintergrundbeleuchtung der Tastatur</translation>
@@ -8755,6 +8770,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7258225044283673131">Die Anwendung reagiert nicht. Wähle "Schließen erzwingen" aus, um die App zu beenden.</translation>
 <translation id="7260186537988033909">Geräteregistrierung für Kioske und digitale Beschilderung abgeschlossen</translation>
 <translation id="7260206782629605806">Wenn du den Grenzwert verringerst, reicht eine sanfte Bewegung. Wenn du den Grenzwert erhöhst, musst du möglicherweise eine größere Bewegung ausführen.</translation>
+<translation id="7260802376010589729">Verwende „c“, um eine Maustaste loszulassen</translation>
 <translation id="7261217796641151584">Gruppe teilen</translation>
 <translation id="7261612856573623172">Sprachausgabe-Stimme des Systems</translation>
 <translation id="7262004276116528033">Dieser Anmeldedienst wird von <ph name="SAML_DOMAIN" /> gehostet.</translation>
@@ -9597,6 +9613,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="78526636422538552">Option zum Hinzufügen weiterer Google-Konten ist deaktiviert</translation>
 <translation id="785371335555334021">Klicken, um „<ph name="TITLE" />“ zu verlassen</translation>
 <translation id="7853747251428735">Weitere Too&amp;ls</translation>
+<translation id="7855258394151767387">Verwende „w“, um eine Maustaste zu drücken</translation>
 <translation id="7855678561139483478">Tab in ein neues Fenster verschieben</translation>
 <translation id="7857004848504343806">Dein Computer enthält ein Sicherheitsmodul, über das viele wichtige Sicherheitsfunktionen in Chrome OS Flex implementiert werden. Weitere Informationen dazu findest du in der Chromebook-Hilfe unter https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="7857093393627376423">Textvorschläge</translation>
@@ -9969,6 +9986,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="810362914482827094">Passkeys durchsuchen</translation>
 <translation id="8104088837833760645">eSIM-Profil herunterladen</translation>
 <translation id="8105273883928376822">Melde dich an, um fortzufahren.</translation>
+<translation id="8106114112474206597">Verwende „i“, um eine Maustaste zu drücken</translation>
 <translation id="8107015733319732394">Google Play Store wird auf deinem <ph name="DEVICE_TYPE" /> installiert. Dies kann ein paar Minuten dauern.</translation>
 <translation id="810728361871746125">Displayauflösung</translation>
 <translation id="8108161424633979910"><ph name="NUM" /> Mitglieder</translation>

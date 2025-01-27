@@ -3408,6 +3408,39 @@ TEST_F(MenuControllerTest, MenuHostHasCorrectZOrderLevel) {
   EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow, host->GetZOrderLevel());
 }
 
+// Tests that updating an empty menu's children, while the "empty item"
+// placeholder is selected correctly transfers selection to the parent.
+TEST_F(MenuControllerTest, RemoveEmptyMenuMenuItemWhileSelected) {
+  views::MenuItemView* const root_menu = menu_item();
+  OpenMenu(root_menu);
+
+  // Remove all items.
+  root_menu->RemoveAllMenuItems();
+  root_menu->ChildrenChanged();
+  SubmenuView* const submenu = root_menu->GetSubmenu();
+  ASSERT_TRUE(submenu);
+
+  // The menu should only have an empty-menu menu item as a placeholder.
+  ASSERT_EQ(1u, submenu->children().size());
+  auto* const empty_child =
+      AsViewClass<EmptyMenuMenuItem>(submenu->children()[0]);
+  ASSERT_NE(empty_child, nullptr);
+  menu_controller()->SelectItemAndOpenSubmenu(empty_child);
+  ASSERT_TRUE(empty_child->IsSelected());
+
+  // Adding a new item will remove the empty-menu menu item.
+  // Selection should be transferred gracefully.
+  views::MenuItemView* const item = root_menu->AppendMenuItem(1, u"item 1");
+  item->SetVisible(true);
+  root_menu->ChildrenChanged();
+
+  // The parent should be selected and the remaining view should be the added
+  // menu item.
+  EXPECT_TRUE(root_menu->IsSelected());
+  ASSERT_EQ(1u, submenu->children().size());
+  EXPECT_EQ(item, submenu->children()[0]);
+}
+
 #if BUILDFLAG(IS_WIN)
 // The following tests are only relevant on platforms that select the first
 // menu item when a menu is opened via keyboard input.

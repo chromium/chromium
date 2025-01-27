@@ -309,10 +309,10 @@ const base::FeatureParam<int> kGlicPreLoadingTimeMs{
     &kGlic, "glic-pre-loading-time-ms", 200};
 
 const base::FeatureParam<int> kGlicMinLoadingTimeMs{
-    &kGlic, "glic-max-loading-time-ms", 1000};
+    &kGlic, "glic-min-loading-time-ms", 1000};
 
 const base::FeatureParam<int> kGlicMaxLoadingTimeMs{
-    &kGlic, "glic-min-loading-time-ms", 15000};
+    &kGlic, "glic-max-loading-time-ms", 15000};
 
 BASE_FEATURE(kGlicURLConfig,
              "GlicURLConfig",
@@ -967,6 +967,10 @@ BASE_FEATURE(kSafetyHubExtensionsOffStoreTrigger,
 // Enables Safety Hub feature.
 BASE_FEATURE(kSafetyHub, "SafetyHub", base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafetyHubThreeDotDetails,
+             "SafetyHubThreeDotDetails",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables Safety Hub card in magic stack.
 BASE_FEATURE(kSafetyHubMagicStack,
@@ -1126,13 +1130,6 @@ const base::FeatureParam<base::TimeDelta>
 // Interval to show notification for safe browsing in Safety Hub notifications.
 const base::FeatureParam<base::TimeDelta> kSafeBrowsingNotificationInterval{
     &kSafetyHub, kSafeBrowsingNotificationIntervalName, base::Days(90)};
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enable support for multiple scheduler configurations.
-BASE_FEATURE(kSchedulerConfiguration,
-             "SchedulerConfiguration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Controls whether SCT audit reports are queued and the rate at which they
 // should be sampled. Default sampling rate is 1/10,000 certificates.

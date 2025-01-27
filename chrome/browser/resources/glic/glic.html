@@ -6,7 +6,7 @@
   <script type="module" src="main.js"></script>
 </head>
 <body id="panelContainer">
-  <section class="hidden dialog panel" id="offlinePanel">
+  <section hidden class="dialog panel" id="offlinePanel">
     <div class="container">
       <div class="header">
         <img class="logo" src="glic_logo.svg">
@@ -15,7 +15,7 @@
       </div>
       <div class="notice">
         <div class="icon"><cr-icon icon="glic:offline"></cr-icon></div>
-        <p class="headline"><b>$i18n{offlineNoticeHeader}</b></p>
+        <p class="headline">$i18n{offlineNoticeHeader}</p>
         <p>$i18n{offlineNotice}</p>
         <p>$i18n{offlineNoticeAction}</p>
         <cr-button class="tonal-button" id="retry"
@@ -23,7 +23,7 @@
       </div>
     </div>
   </section>
-  <section class="hidden dialog panel" id="loadingPanel">
+  <section hidden class="dialog panel" id="loadingPanel">
     <div class="container">
       <div class="header">
         <img class="logo" src="glic_logo.svg">
@@ -36,7 +36,7 @@
       </div>
     </div>
   </section>
-  <section class="hidden dialog panel" id="errorPanel">
+  <section hidden class="dialog panel" id="errorPanel">
     <div class="container">
       <div class="header">
         <img class="logo" src="glic_logo.svg">
@@ -45,7 +45,7 @@
       </div>
       <div class="notice">
         <div class="icon"><cr-icon icon="glic:error"></cr-icon></div>
-        <p class="headline"><b>$i18n{errorNoticeHeader}</b></p>
+        <p class="headline">$i18n{errorNoticeHeader}</p>
         <p>$i18n{errorNotice}</p>
         <cr-button class="tonal-button" id="reload"
           role="button">$i18n{errorNoticeActionButton}</cr-button>

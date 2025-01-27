@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/accessibility/accessibility_ui.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -18,7 +19,6 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
@@ -429,7 +429,7 @@ class AccessibilityUiModes
     saved_process_mode_ = process_accessibility_mode_->mode();
     process_accessibility_mode_.reset();
 
-    base::ranges::for_each(
+    std::ranges::for_each(
         page_accessibility_modes_,
         [](PageAccessibilityMode& page_mode) { page_mode.Save(); },
         &std::map<void*, PageAccessibilityMode>::value_type::second);
@@ -445,7 +445,7 @@ class AccessibilityUiModes
         browser_accessibility_state.CreateScopedModeForProcess(
             std::exchange(saved_process_mode_, ui::AXMode()));
 
-    base::ranges::for_each(
+    std::ranges::for_each(
         page_accessibility_modes_,
         [&browser_accessibility_state](PageAccessibilityMode& page_mode) {
           page_mode.Restore(browser_accessibility_state);

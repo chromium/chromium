@@ -368,7 +368,6 @@ id<SystemIdentity> GetDefaultIdentityOnDevice(ProfileIOS* profile) {
 
 void MultiProfileSignOut(Browser* browser,
                          signin_metrics::ProfileSignout signout_source,
-                         bool force_clear_data,
                          bool force_snackbar_over_toolbar,
                          MDCSnackbarMessage* snackbar_message,
                          ProceduralBlock signout_completion) {
@@ -391,8 +390,8 @@ void MultiProfileSignOut(Browser* browser,
 
   ChangeProfileContinuation continuation =
       CreateChangeProfileSignoutContinuation(
-          signout_source, force_clear_data, force_snackbar_over_toolbar,
-          snackbar_message, signout_completion);
+          signout_source, force_snackbar_over_toolbar, snackbar_message,
+          signout_completion);
 
   if (!should_switch_profile_at_signout) {
     std::move(continuation).Run(scene_state, base::DoNothing());

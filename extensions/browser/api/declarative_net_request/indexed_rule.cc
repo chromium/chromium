@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check_op.h"
@@ -12,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
@@ -531,7 +531,7 @@ ParseResult ValidateHeadersForModification(
     if (are_request_headers &&
         header_info.operation == dnr_api::HeaderOperation::kAppend) {
       DCHECK(
-          base::ranges::none_of(header_info.header, base::IsAsciiUpper<char>));
+          std::ranges::none_of(header_info.header, base::IsAsciiUpper<char>));
       if (!base::Contains(kDNRRequestHeaderAppendAllowList,
                           header_info.header)) {
         return ParseResult::ERROR_APPEND_INVALID_REQUEST_HEADER;
@@ -580,7 +580,7 @@ void ParseTabIds(const std::vector<int>* input_tab_ids,
 ParseResult ValidateMatchingResponseHeaderValues(
     const dnr_api::HeaderInfo& header_info) {
   auto validate_header_values = [](const std::vector<std::string>& values) {
-    return base::ranges::all_of(values, [](const std::string& value) {
+    return std::ranges::all_of(values, [](const std::string& value) {
       return net::HttpUtil::IsValidHeaderValue(value);
     });
   };
@@ -824,7 +824,7 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
                 indexed_rule->tab_ids);
     ParseTabIds(base::OptionalToPtr(parsed_rule.condition.excluded_tab_ids),
                 indexed_rule->excluded_tab_ids);
-    if (base::ranges::any_of(
+    if (std::ranges::any_of(
             indexed_rule->tab_ids, [indexed_rule](int included_tab_id) {
               return base::Contains(indexed_rule->excluded_tab_ids,
                                     included_tab_id);

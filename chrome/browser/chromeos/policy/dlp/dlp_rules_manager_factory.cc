@@ -52,7 +52,7 @@ Profile* GetMainProfile() {
     return nullptr;
   auto profiles = profile_manager->GetLoadedProfiles();
   const auto profile_it =
-      base::ranges::find_if(profiles, &Profile::IsMainProfile);
+      std::ranges::find_if(profiles, &Profile::IsMainProfile);
   if (profile_it == profiles.end())
     return nullptr;
   return *profile_it;

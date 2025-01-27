@@ -503,7 +503,8 @@ suite('acceleratorViewTest', function() {
 
     assertEquals('LaunchApplication1', pendingKey.key);
     const keyIconElement =
-        pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
+        pendingKey.shadowRoot!.querySelector<IronIconElement>('#key-icon');
+    assertTrue(!!keyIconElement);
     assertEquals('shortcut-input-keys:overview', keyIconElement.icon);
 
     // Simulate SHIFT + BRIGHTNESS_UP, expect the key display to be
@@ -521,7 +522,8 @@ suite('acceleratorViewTest', function() {
 
     assertEquals('BrightnessUp', pendingKey.key);
     const keyIconElement2 =
-        pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
+        pendingKey.shadowRoot!.querySelector<IronIconElement>('#key-icon');
+    assertTrue(!!keyIconElement2);
     assertEquals(
         'shortcut-input-keys:display-brightness-up', keyIconElement2.icon);
 
@@ -539,7 +541,8 @@ suite('acceleratorViewTest', function() {
 
     assertEquals('MicrophoneMuteToggle', pendingKey.key);
     const keyIconElement3 =
-        pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
+        pendingKey.shadowRoot!.querySelector<IronIconElement>('#key-icon');
+    assertTrue(!!keyIconElement3);
     assertEquals('shortcut-input-keys:microphone-mute', keyIconElement3.icon);
 
     // Simulate CONTROL + BACKQUOTE.
@@ -597,7 +600,8 @@ suite('acceleratorViewTest', function() {
     await flush();
 
     const viewContainer =
-        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
+        viewElement.shadowRoot!.querySelector<HTMLDivElement>('#container');
+    assertTrue(!!viewContainer);
     // The icon label is 'show windows'.
     const regex = /^(search|launcher) alt shift show windows$/;
     assertTrue(!!viewContainer.ariaLabel);
@@ -618,7 +622,8 @@ suite('acceleratorViewTest', function() {
     await flush();
 
     const viewContainer =
-        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
+        viewElement.shadowRoot!.querySelector<HTMLDivElement>('#container');
+    assertTrue(!!viewContainer);
     const regex = /^(search|launcher)$/;
     assertTrue(!!viewContainer.ariaLabel);
     assertTrue(regex.test(viewContainer.ariaLabel));

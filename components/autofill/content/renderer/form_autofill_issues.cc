@@ -4,11 +4,11 @@
 
 #include "components/autofill/content/renderer/form_autofill_issues.h"
 
+#include <algorithm>
 #include <string_view>
 #include <vector>
 
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -125,15 +125,15 @@ void MaybeAppendDuplicateIdForInputDevtoolsIssue(
       elements_with_id_attr.push_back(element);
     }
   }
-  base::ranges::sort(elements_with_id_attr, [](const WebFormControlElement& a,
-                                               const WebFormControlElement& b) {
+  std::ranges::sort(elements_with_id_attr, [](const WebFormControlElement& a,
+                                              const WebFormControlElement& b) {
     return std::forward_as_tuple(a.GetIdAttribute(),
                                  GetShadowHostDOMNodeId(a)) <
            std::forward_as_tuple(b.GetIdAttribute(), GetShadowHostDOMNodeId(b));
   });
 
   for (auto it = elements_with_id_attr.begin();
-       (it = base::ranges::adjacent_find(
+       (it = std::ranges::adjacent_find(
             it, elements_with_id_attr.end(),
             [](const WebFormControlElement& a, const WebFormControlElement& b) {
               return a.GetIdAttribute() == b.GetIdAttribute() &&

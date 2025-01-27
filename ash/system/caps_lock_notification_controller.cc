@@ -50,8 +50,8 @@ int GetMessageStringId() {
 
   if (keyboard != nullptr) {
     // If the keyboard has function key, return function key message id.
-    if (base::ranges::find(keyboard->modifier_keys,
-                           ui::mojom::ModifierKey::kFunction) !=
+    if (std::ranges::find(keyboard->modifier_keys,
+                          ui::mojom::ModifierKey::kFunction) !=
         keyboard->modifier_keys.end()) {
       return IDS_ASH_STATUS_TRAY_CAPS_LOCK_CANCEL_BY_FN_QUICK_INSERT;
     }

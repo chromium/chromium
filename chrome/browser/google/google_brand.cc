@@ -4,6 +4,7 @@
 
 #include "chrome/browser/google/google_brand.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -11,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -156,7 +156,7 @@ bool IsEnterprise(const std::string& brand) {
       "GCT", "GCU", "GCV", "GCW",
   };
   return brand == "GGRV" ||
-         base::ranges::any_of(kEnterpriseBrands, [&brand](const char* br) {
+         std::ranges::any_of(kEnterpriseBrands, [&brand](const char* br) {
            return base::StartsWith(brand, br, base::CompareCase::SENSITIVE);
          });
 }

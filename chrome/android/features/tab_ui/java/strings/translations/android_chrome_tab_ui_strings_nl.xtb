@@ -43,6 +43,7 @@ Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep
 <translation id="2671423594960767771">Groep delen</translation>
 <translation id="2677748264148917807">Verlaten</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tabblad toegevoegd, <ph name="ANY_CHANGED" /> gewijzigd, <ph name="ANY_CLOSED" /> gesloten}other{<ph name="MANY_ADDED" /> tabbladen toegevoegd, <ph name="ANY_CHANGED" /> gewijzigd, <ph name="ANY_CLOSED" /> gesloten}}</translation>
+<translation id="2755485474385016903">Aangebrachte wijzigingen zijn zichtbaar voor iedereen in de groep</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> uur geleden gemaakt}other{<ph name="NUM_HOURS_MANY" /> uur geleden gemaakt}}</translation>
 <translation id="2801787514987684416">Winkelinformatie bekijken?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> tabblad gesloten}other{<ph name="MANY_CLOSED" /> tabbladen gesloten}}</translation>

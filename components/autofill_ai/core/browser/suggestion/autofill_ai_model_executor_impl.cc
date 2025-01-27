@@ -179,7 +179,7 @@ AutofillAiModelExecutorImpl::ExtractPredictions(
 
       // Ensure that the predicted value actually is one of the select
       // options.
-      auto predicted_select_option_it = base::ranges::find(
+      auto predicted_select_option_it = std::ranges::find(
           field.options(), predicted_value, &autofill::SelectOption::text);
       if (predicted_select_option_it == field.options().end()) {
         continue;

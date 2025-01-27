@@ -9,6 +9,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/time/default_clock.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"
 #include "chrome/browser/permissions/prediction_service_request.h"
@@ -18,6 +20,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/optimization_guide/proto/features/permissions_ai.pb.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_uma_util.h"
@@ -40,9 +43,12 @@
 
 namespace {
 
+using permissions::PermissionRequest;
+using permissions::PredictionRequestFeatures;
 using QuietUiReason = PredictionBasedPermissionUiSelector::QuietUiReason;
 using Decision = PredictionBasedPermissionUiSelector::Decision;
 using PredictionSource = PredictionBasedPermissionUiSelector::PredictionSource;
+using PermissionsAiResponse = optimization_guide::proto::PermissionsAiResponse;
 
 constexpr auto VeryUnlikely = permissions::
     PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY;
@@ -106,6 +112,70 @@ PredictionBasedPermissionUiSelector::PredictionBasedPermissionUiSelector(
 PredictionBasedPermissionUiSelector::~PredictionBasedPermissionUiSelector() =
     default;
 
+void PredictionBasedPermissionUiSelector::InquireServerModel(
+    PredictionRequestFeatures features,
+    permissions::RequestType request_type) {
+  permissions::PredictionService* service =
+      PredictionServiceFactory::GetForProfile(profile_);
+
+  VLOG(1) << "[CPSS] Starting prediction service request";
+
+  permissions::PermissionUmaUtil::RecordPermissionPredictionSource(
+      permissions::PermissionPredictionSource::SERVER_SIDE);
+
+  request_ = std::make_unique<PredictionServiceRequest>(
+      service, features,
+      base::BindOnce(
+          &PredictionBasedPermissionUiSelector::LookupResponseReceived,
+          base::Unretained(this), /*is_on_device=*/false, request_type));
+}
+
+void PredictionBasedPermissionUiSelector::InquireTfliteOnDeviceModelIfAvailable(
+    PredictionRequestFeatures features,
+    permissions::RequestType request_type) {
+#if !BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  VLOG(1) << "[CPSS] Client doesn't support tflite";
+  std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+  return;
+#else
+  permissions::PredictionModelHandlerProvider*
+      prediction_model_handler_provider =
+          PredictionModelHandlerProviderFactory::GetForBrowserContext(profile_);
+  permissions::PredictionModelHandler* prediction_model_handler = nullptr;
+  if (prediction_model_handler_provider) {
+    prediction_model_handler =
+        prediction_model_handler_provider->GetPredictionModelHandler(
+            request_type);
+  }
+  if (prediction_model_handler && prediction_model_handler->ModelAvailable()) {
+    VLOG(1) << "[CPSS] Using locally available TFLite model";
+    permissions::PermissionUmaUtil::RecordPermissionPredictionSource(
+        permissions::PermissionPredictionSource::ON_DEVICE_TFLITE);
+    auto proto_request = GetPredictionRequestProto(features);
+    prediction_model_handler->ExecuteModelWithMetadata(
+        base::BindOnce(
+            &PredictionBasedPermissionUiSelector::LookupResponseReceived,
+            weak_ptr_factory_.GetWeakPtr(), /*is_on_device=*/true, request_type,
+            /*lookup_succesful=*/true, /*response_from_cache=*/false),
+        std::move(proto_request));
+    return;
+  }
+  VLOG(1) << "[CPSS] On device TFLite model unavailable";
+  std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+}
+
+void PredictionBasedPermissionUiSelector::
+    InquireGenAiOnDeviceAndServerModelIfAvailable(
+        PredictionRequestFeatures features,
+        permissions::RequestType request_type) {
+  VLOG(1) << "[PermissionsAIv1] On device genAI prediction requested";
+  // TODO(crbug.com/382447738) Call genAi model via model_handler_provider
+  // and provide GenAIModelExecutionCallback
+  VLOG(1) << "[PermissionsAIv1] On device genAI model session unavailable";
+  InquireServerModel(features, request_type);
+}
+
 void PredictionBasedPermissionUiSelector::SelectUiToUse(
     content::WebContents* web_contents,
     permissions::PermissionRequest* request,
@@ -124,7 +194,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
     return;
   }
 
-  auto features = BuildPredictionRequestFeatures(request);
+  PredictionRequestFeatures features = BuildPredictionRequestFeatures(request);
   if (!base::FeatureList::IsEnabled(
           permissions::features::kPermissionPredictionsV3) ||
       prediction_source == PredictionSource::USE_ONDEVICE_TFLITE) {
@@ -162,62 +232,18 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
     return;
   }
 
-  if (prediction_source == PredictionSource::USE_SERVER_SIDE) {
-    permissions::PredictionService* service =
-        PredictionServiceFactory::GetForProfile(profile_);
-
-    VLOG(1) << "[CPSS] Starting prediction service request";
-    permissions::PermissionUmaUtil::RecordPermissionPredictionSource(
-        permissions::PermissionPredictionSource::SERVER_SIDE);
-    request_ = std::make_unique<PredictionServiceRequest>(
-        service, features,
-        base::BindOnce(
-            &PredictionBasedPermissionUiSelector::LookupResponseReceived,
-            base::Unretained(this), /*is_on_device=*/false,
-            request->request_type()));
-    return;
+  switch (prediction_source) {
+    case PredictionSource::USE_ONDEVICE_GENAI_AND_SERVER_SIDE:
+      return InquireGenAiOnDeviceAndServerModelIfAvailable(
+          features, request->request_type());
+    case PredictionSource::USE_SERVER_SIDE:
+      return InquireServerModel(features, request->request_type());
+    case PredictionSource::USE_ONDEVICE_TFLITE:
+      return InquireTfliteOnDeviceModelIfAvailable(features,
+                                                   request->request_type());
+    default:
+      NOTREACHED();
   }
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (prediction_source == PredictionSource::USE_ONDEVICE_TFLITE) {
-    permissions::PredictionModelHandlerProvider*
-        prediction_model_handler_provider =
-            PredictionModelHandlerProviderFactory::GetForBrowserContext(
-                profile_);
-    permissions::PredictionModelHandler* prediction_model_handler = nullptr;
-    if (prediction_model_handler_provider) {
-      prediction_model_handler =
-          prediction_model_handler_provider->GetPredictionModelHandler(
-              request->request_type());
-    }
-    if (prediction_model_handler &&
-        prediction_model_handler->ModelAvailable()) {
-      VLOG(1) << "[CPSS] Using locally available TFLitemodel";
-      permissions::PermissionUmaUtil::RecordPermissionPredictionSource(
-          permissions::PermissionPredictionSource::ON_DEVICE);
-      auto proto_request = GetPredictionRequestProto(features);
-      prediction_model_handler->ExecuteModelWithMetadata(
-          base::BindOnce(
-              &PredictionBasedPermissionUiSelector::LookupResponseReceived,
-              weak_ptr_factory_.GetWeakPtr(), /*is_on_device=*/true,
-              request->request_type(),
-              /*lookup_succesful=*/true, /*response_from_cache=*/false),
-          std::move(proto_request));
-      return;
-    } else {
-      VLOG(1) << "[CPSS] On device TFLite model unavailable";
-      std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
-      return;
-    }
-  }
-#else
-  if (prediction_source == PredictionSource::USE_ONDEVICE_TFLITE) {
-    VLOG(1) << "[CPSS] Client doesnt support tflite";
-    std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
-    return;
-  }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  NOTREACHED();
 }
 
 void PredictionBasedPermissionUiSelector::FetchInnerTextForFrame(
@@ -277,10 +303,10 @@ PredictionBasedPermissionUiSelector::WasSelectorDecisionHeldback() {
   return was_decision_held_back_;
 }
 
-permissions::PredictionRequestFeatures
+PredictionRequestFeatures
 PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
-    permissions::PermissionRequest* request) {
-  permissions::PredictionRequestFeatures features;
+    PermissionRequest* request) {
+  PredictionRequestFeatures features;
   features.gesture = request->GetGestureType();
   features.type = request->request_type();
 #if BUILDFLAG(IS_ANDROID)
@@ -327,10 +353,27 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
   return features;
 }
 
+void PredictionBasedPermissionUiSelector::GenAIModelExecutionCallback(
+    PredictionRequestFeatures features,
+    permissions::RequestType request_type,
+    std::optional<PermissionsAiResponse> response) {
+  VLOG(1) << "[PermissionsAIv1]: GenAI model execution callback result: "
+          << (response.has_value() ? "success" : "failure");
+  if (response.has_value()) {
+    // TODO(crbug.com/382447738): fill in last_permission_request_relevance_
+    // with the return value of the models response
+
+    permissions::PermissionUmaUtil::RecordPermissionPredictionSource(
+        permissions::PermissionPredictionSource::
+            SERVER_SIDE_AND_ON_DEVICE_GENAI);
+  }
+  InquireServerModel(features, request_type);
+}
+
 void PredictionBasedPermissionUiSelector::LookupResponseReceived(
     bool is_on_device,
     permissions::RequestType request_type,
-    bool lookup_succesful,
+    bool lookup_successful,
     bool response_from_cache,
     const std::optional<permissions::GeneratePredictionsResponse>& response) {
   request_.reset();
@@ -339,7 +382,7 @@ void PredictionBasedPermissionUiSelector::LookupResponseReceived(
                "canceled";
     return;
   }
-  if (!lookup_succesful || !response || response->prediction_size() == 0) {
+  if (!lookup_successful || !response || response->prediction_size() == 0) {
     VLOG(1) << "[CPSS] Prediction service request failed";
     std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
     return;
@@ -440,11 +483,14 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
 #endif  // BUILDFLAG(IS_ANDROID)
   }
   if (use_server_side) {
+    if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
+      return PredictionSource::USE_ONDEVICE_GENAI_AND_SERVER_SIDE;
+    }
     return PredictionSource::USE_SERVER_SIDE;
   }
 
-  bool use_ondevice_tflite = false;
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  bool use_ondevice_tflite = false;
   if (request_type == permissions::RequestType::kNotifications) {
     use_ondevice_tflite = base::FeatureList::IsEnabled(
         permissions::features::kPermissionOnDeviceNotificationPredictions);
@@ -452,10 +498,10 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
     use_ondevice_tflite = base::FeatureList::IsEnabled(
         permissions::features::kPermissionOnDeviceGeolocationPredictions);
   }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (use_ondevice_tflite) {
     return PredictionSource::USE_ONDEVICE_TFLITE;
   }
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   return PredictionSource::USE_NONE;
 }

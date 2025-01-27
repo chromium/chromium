@@ -78,9 +78,6 @@ struct BiddingAndAuctionServerKey;
 // will not destroy the CompressionGroupData, or the CompressionGroupData's
 // fetch, if it has one.
 //
-// * TODO(https://crbug.com/333445540): A map of ScoringCacheEntries much akin
-// to the map of BiddingCacheEntries.
-//
 // Fetches and CacheEntries have pointers to the corresponding
 // CompressionGroupData, while the CompressionGroupData owns the corresponding
 // values in the other two maps. Deleting a CompressionGroupData removes the
@@ -151,15 +148,15 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   //
   // Handles must be destroyed before the TrustedSignalsCacheImpl that created
   // them.
-  //
-  // TODO(https://crbug.com/333445540): Remove refcounting, which is only done
-  // for legacy reasons.
-  class CONTENT_EXPORT Handle : public base::RefCounted<Handle> {
+  class CONTENT_EXPORT Handle {
    public:
     // Takes ownership of a reference to CompressionGroupData.
     Handle(TrustedSignalsCacheImpl* trusted_signals_cache,
            scoped_refptr<CompressionGroupData> compression_group_data);
     Handle(Handle&) = delete;
+
+    ~Handle();
+
     Handle& operator=(Handle&) = delete;
 
     // The token that needs to be passed to GetTrustedSignals() to retrieve the
@@ -180,10 +177,6 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     void StartFetch();
 
    protected:
-    friend class base::RefCounted<Handle>;
-
-    virtual ~Handle();
-
     const raw_ptr<TrustedSignalsCacheImpl> trusted_signals_cache_;
 
     // The underlying CompressionGroupData. Only released on destruction.
@@ -227,7 +220,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   //
   // Never starts a network fetch synchronously. Bidder signals are requested
   // over the network after a post task.
-  scoped_refptr<Handle> RequestTrustedBiddingSignals(
+  std::unique_ptr<Handle> RequestTrustedBiddingSignals(
       const url::Origin& main_frame_origin,
       network::mojom::IPAddressSpace ip_address_space,
       const url::Origin& interest_group_owner,
@@ -253,14 +246,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   //
   // Never starts a network fetch synchronously. Scoring signals are requested
   // over the network after a post task.
-  //
-  // TODO(mmenke): Implement Some way to delay sending the fetch over the wire
-  // for a certain duration, with some way for an auction to flush requests once
-  // it knows all signals it needs have been requested. Probably need to either
-  // add a method to Handle to flush requests, or add an API to flush all
-  // Fetches matching a passed in {seller origin, joining origin, publisher
-  // origin} triplet.
-  scoped_refptr<TrustedSignalsCacheImpl::Handle> RequestTrustedScoringSignals(
+  std::unique_ptr<TrustedSignalsCacheImpl::Handle> RequestTrustedScoringSignals(
       const url::Origin& main_frame_origin,
       network::mojom::IPAddressSpace ip_address_space,
       const url::Origin& seller,

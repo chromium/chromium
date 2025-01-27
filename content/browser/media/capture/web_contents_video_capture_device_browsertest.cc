@@ -83,12 +83,12 @@ class WebContentsVideoCaptureDeviceBrowserTest
             << color_string << ", tolerated color: " << tolerated_color_string;
 
     while (!testing::Test::HasFailure()) {
-      EXPECT_TRUE(capture_stack()->Started());
       EXPECT_FALSE(capture_stack()->ErrorOccurred());
       capture_stack()->ExpectNoLogMessages();
 
       while (capture_stack()->HasCapturedFrames() &&
              !testing::Test::HasFailure()) {
+        EXPECT_TRUE(capture_stack()->Started());
         // Pop the next frame from the front of the queue and convert to a RGB
         // bitmap for analysis.
         const SkBitmap rgb_frame = capture_stack()->NextCapturedFrame();

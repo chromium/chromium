@@ -47,6 +47,7 @@
         "UpdateLayout",
         "WillHandlePromise",
         "UserEntryPoint",
+        "FrameRelatedTask",
       ]
     },
     InspectorIssueReporter: {

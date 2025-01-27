@@ -4,12 +4,12 @@
 
 #include "components/user_education/common/tutorial/tutorial.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"

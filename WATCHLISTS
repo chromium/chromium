@@ -1441,6 +1441,10 @@
                   'ios/chrome/browser/language|'\
                   'ios/web_view/internal/language'
     },
+    'lens_desktop': {
+      'filepath': 'components/lens/|'\
+                  'chrome/browser/ui/lens/'
+    },
     'libaom': {
       'filepath': 'third_party/libaom/',
     },
@@ -2989,6 +2993,9 @@
                                             'simonha@google.com'],
     'kiosk': ['chromeos-kiosk-eng+watch@google.com'],
     'language': ['language-reviews@chromium.org'],
+    'lens_desktop': ['lens-chrome-eng+reviews@google.com',
+                     'stanfield+watch@google.com',
+                     'mercerd+watch@google.com'],
     'libaom': ['fgalligan@chromium.org',
                'jianj@chromium.org',
                'jzern@chromium.org',

@@ -1100,23 +1100,15 @@
   },
 
   {
-    "prefix": "block-cross-partition-blob-url-fetching",
+    "prefix": "cross-partition-blob-url",
     "platforms": ["Linux"],
     "bases": [
       "external/wpt/FileAPI/BlobURL/cross-partition.https.html",
-      "external/wpt/FileAPI/BlobURL/cross-partition-worker-creation.https.html"],
-    "args": ["--enable-features=BlockCrossPartitionBlobUrlFetching"],
-    "expires": "Feb 4, 2025",
-    "owners": ["janiceliu@chromium.org"]
-  },
-
-  {
-    "prefix": "enforce-noopener-on-blob-url-navigation",
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html"],
-    "args": ["--enable-features=EnforceNoopenerOnBlobURLNavigation"],
-    "expires": "Feb 4, 2025",
+      "external/wpt/FileAPI/BlobURL/cross-partition-worker-creation.https.html",
+      "external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html"
+    ],
+    "args": ["--enable-features=BlockCrossPartitionBlobUrlFetching,EnforceNoopenerOnBlobURLNavigation"],
+    "expires": "Mar 1, 2025",
     "owners": ["janiceliu@chromium.org"]
   },
 
@@ -1490,7 +1482,7 @@
       "external/wpt/fledge/tentative/server-response-for-debugging-only.https.window.js"
     ],
     "args": [
-      "--enable-features=FledgeSampleDebugReports,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}",
+      "--enable-features=EnableBandASampleDebugReports,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}",
       "--disable-features=FledgeSampleDebugReports"
     ],
     "expires": "Jul 14, 2025"

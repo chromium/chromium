@@ -210,7 +210,7 @@ void MediaFoundationVideoEncoderSharedState::GetSupportedProfilesInternal() {
       }
 
       if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing)) {
-        base::ranges::copy(
+        std::ranges::copy(
             kSupportedPixelFormatsD3DVideoProcessing,
             std::back_inserter(profile.gpu_supported_pixel_formats));
       }

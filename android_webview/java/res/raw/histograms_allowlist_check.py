@@ -16,7 +16,7 @@ def get_histograms_allowlist_content(src_path):
         return [line.rstrip() for line in file]
 
 
-def CheckWebViewHistogramsAllowlist(src_path, output_api):
+def CheckWebViewHistogramsAllowlist(src_path, output_api, histograms_files):
     """Checks that histograms_allowlist.txt contains valid histograms.
     src_path should point to chromium/src
     """
@@ -24,8 +24,7 @@ def CheckWebViewHistogramsAllowlist(src_path, output_api):
     sys.path.append(histograms_path)
     import print_histogram_names
 
-    all_histograms = print_histogram_names.get_names(
-        print_histogram_names.histogram_xml_files())
+    all_histograms = print_histogram_names.get_names(histograms_files)
 
     histograms_allowlist = get_histograms_allowlist_content(src_path)
 

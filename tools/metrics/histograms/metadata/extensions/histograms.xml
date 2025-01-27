@@ -5232,6 +5232,21 @@ This is emitted for two scenarios when a worker may be unregistered:
   </token>
 </histogram>
 
+<histogram
+    name="Extensions.WebRequest.DeclarativeRequestDependentExtensionCount"
+    units="Extension Count" expires_after="2025-07-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the number of installed Extensions that require the
+    Declarative{Web|Net}Request or their variant permission. The number will be
+    clamped to 10 at maximum. This is recorded whenever a URLLoaderFactory is
+    created for renderers. The metric is used for identifying the major reason
+    to decide using the Extensions' loader proxy. We will consider possible
+    optimization opportunities to reduce loading overheads.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.WebRequest.EventListenerFlag"
     enum="WebRequestEventListenerFlag" expires_after="never">
 <!-- expires-never: For monitoring Web Request API usage statistics. -->
@@ -5375,6 +5390,34 @@ This is emitted for two scenarios when a worker may be unregistered:
     was registered at the start of the request. Measures from onBeforeRequest to
     onCompleted/onErrorOccurred, and does not include canceled or redirected
     requests.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.WebRequest.WebRequestDependentExtensionCount"
+    units="Extension Count" expires_after="2025-07-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the number of installed Extensions that require the WebRequest or
+    its variant permission. The number will be clamped to 10 at maximum. This is
+    recorded whenever a URLLoaderFactory is created for renderers. The metric is
+    used for identifying the major reason to decide using the Extensions' loader
+    proxy. We will consider possible optimization opportunities to reduce
+    loading overheads.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.WebRequest.WebViewDependentExtensionCount"
+    units="Extension Count" expires_after="2025-07-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the number of installed Extensions that require the WebView
+    permission. The number will be clamped to 10 at maximum. This is recorded
+    whenever a URLLoaderFactory is created for renderers. The metric is used for
+    identifying the major reason to decide using the Extensions' loader proxy.
+    We will consider possible optimization opportunities to reduce loading
+    overheads.
   </summary>
 </histogram>
 

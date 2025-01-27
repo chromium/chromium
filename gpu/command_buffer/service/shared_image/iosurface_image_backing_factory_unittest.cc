@@ -12,11 +12,11 @@
 #include <dawn/native/DawnNative.h>
 #include <dawn/webgpu_cpp.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"

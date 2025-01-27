@@ -140,8 +140,8 @@ void CheckSelectionIsValid(
         selection) {
   CHECK(!selection.empty());
   // Nodes must be not null.
-  CHECK(base::ranges::all_of(selection,
-                             [](const BookmarkNode* node) { return node; }));
+  CHECK(std::ranges::all_of(selection,
+                            [](const BookmarkNode* node) { return node; }));
 
   // Check not repeated nodes.
   std::set<const BookmarkNode*> nodes_set(selection.begin(), selection.end());
@@ -570,12 +570,12 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
 bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
   PrefService* prefs = profile_->GetPrefs();
 
-  bool is_any_node_permanent = base::ranges::any_of(
+  bool is_any_node_permanent = std::ranges::any_of(
       selection_,
       [](const BookmarkNode* node) { return node->is_permanent_node(); });
   bool can_edit =
       prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled) &&
-      base::ranges::all_of(selection_, [&](const BookmarkNode* node) {
+      std::ranges::all_of(selection_, [&](const BookmarkNode* node) {
         return !bookmark_service_->IsNodeManaged(node);
       });
 

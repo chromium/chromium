@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -16,7 +17,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
@@ -194,7 +194,7 @@ void BrowserDMTokenStorage::InitIfNeeded() {
   }
 
   // checks if client ID includes an illegal character
-  if (base::ranges::any_of(client_id_, [](char ch) {
+  if (std::ranges::any_of(client_id_, [](char ch) {
         return ch == ' ' || !base::IsAsciiPrintable(ch);
       })) {
     SYSLOG(ERROR)

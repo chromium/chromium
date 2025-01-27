@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -87,7 +87,7 @@ void ExtendAddressComponents(
        country.address_format_extensions()) {
     // Find the location of `rule.placed_after` in `components`.
     // `components.field` is only valid if `components.literal.empty()`.
-    auto prev_component = base::ranges::find_if(
+    auto prev_component = std::ranges::find_if(
         components, [&rule](const AutofillAddressUIComponent& component) {
           return component.literal.empty() &&
                  component.field == rule.placed_after;
@@ -312,11 +312,11 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     }
   };
 
-  base::ranges::sort(differences_for_ui,
-                     [get_priority](const ProfileValueDifference& a,
-                                    const ProfileValueDifference& b) {
-                       return get_priority(a.type) < get_priority(b.type);
-                     });
+  std::ranges::sort(differences_for_ui,
+                    [get_priority](const ProfileValueDifference& a,
+                                   const ProfileValueDifference& b) {
+                      return get_priority(a.type) < get_priority(b.type);
+                    });
   return differences_for_ui;
 }
 

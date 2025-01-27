@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"

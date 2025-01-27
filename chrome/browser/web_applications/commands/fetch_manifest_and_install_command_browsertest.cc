@@ -4,12 +4,12 @@
 
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <memory>
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"

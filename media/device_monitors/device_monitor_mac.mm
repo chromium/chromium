@@ -7,6 +7,7 @@
 #include <AVFoundation/AVFoundation.h>
 #include <CoreFoundation/CoreFoundation.h>
 
+#include <algorithm>
 #include <set>
 #include <string>
 
@@ -16,7 +17,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -293,7 +293,7 @@ bool AVFoundationMonitorImpl::IsAudioDevice(AVCaptureDevice* device) {
   DCHECK(_mainThreadChecker.CalledOnValidThread());
   DCHECK(device != nil);
 
-  auto found = base::ranges::find(_monitoredDevices, device);
+  auto found = std::ranges::find(_monitoredDevices, device);
   DCHECK(found != _monitoredDevices.end());
   [self removeObservers:*found];
   _monitoredDevices.erase(found);

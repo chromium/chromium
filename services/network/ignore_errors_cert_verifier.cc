@@ -4,13 +4,13 @@
 
 #include "services/network/ignore_errors_cert_verifier.h"
 
+#include <algorithm>
 #include <iterator>
 #include <string_view>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "crypto/sha2.h"
 #include "net/base/hash_value.h"
@@ -100,7 +100,7 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
   if (ignore_errors) {
     verify_result->Reset();
     verify_result->verified_cert = params.certificate();
-    base::ranges::transform(
+    std::ranges::transform(
         spki_fingerprints, std::back_inserter(verify_result->public_key_hashes),
         [](const SHA256HashValue& v) { return HashValue(v); });
     if (!params.ocsp_response().empty()) {

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -13,7 +14,6 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_simple_task_runner.h"
@@ -74,7 +74,7 @@ class DeviceEventLogTest : public testing::Test {
   }
 
   size_t CountLines(const std::string& input) {
-    return base::ranges::count(input, '\n');
+    return std::ranges::count(input, '\n');
   }
 
   std::string GetAsString(StringOrder order,

@@ -1138,7 +1138,7 @@ const char kSeparateProfilesForManagedAccountsName[] =
     "Put each managed account into its own profile";
 const char kSeparateProfilesForManagedAccountsDescription[] =
     "If enabled, each managed account will be assigned to its own separate "
-    "profile.";
+    "profile. Requires #use-account-list-from-identity-manager";
 
 const char kSharedHighlightingIOSName[] = "Enable Shared Highlighting features";
 const char kSharedHighlightingIOSDescription[] =
@@ -1272,6 +1272,12 @@ const char kUpdatedFRESequenceName[] =
 const char kUpdatedFRESequenceDescription[] =
     "Updates the sequence of the FRE screens to show the DB promo first, "
     "remove the Sin-In & Sync screens, or both.";
+
+const char kUseAccountListFromIdentityManagerName[] =
+    "Get the list of accounts from IdentityManager";
+const char kUseAccountListFromIdentityManagerDescription[] =
+    "If enabled, UIs query the list of accounts from IdentityManager instead "
+    "of from ChromeAccountManagerService.";
 
 const char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "

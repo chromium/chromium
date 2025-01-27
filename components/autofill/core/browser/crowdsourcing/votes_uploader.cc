@@ -310,7 +310,7 @@ void VotesUploader::UploadVote(
     const std::u16string& last_unlocked_credit_card_cvc,
     ukm::SourceId ukm_source_id) {
   auto count_types = [&submitted_form](FormType type) {
-    return base::ranges::count_if(
+    return std::ranges::count_if(
         submitted_form->fields(),
         [=](const std::unique_ptr<AutofillField>& field) {
           return FieldTypeGroupToFormType(field->Type().group()) == type;

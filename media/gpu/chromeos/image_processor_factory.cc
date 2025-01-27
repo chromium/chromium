@@ -189,12 +189,12 @@ std::unique_ptr<ImageProcessor> CreateLibYUVImageProcessorWithInputCandidates(
   if (input_candidates.empty())
     return nullptr;
 
-  auto iter = base::ranges::find_if(
-    input_candidates,
-    [](const PixelLayoutCandidate& candidate) {
-      return !LibYUVImageProcessorBackend::GetSupportedOutputFormats(
-          candidate.fourcc).empty();
-    });
+  auto iter = std::ranges::find_if(
+      input_candidates, [](const PixelLayoutCandidate& candidate) {
+        return !LibYUVImageProcessorBackend::GetSupportedOutputFormats(
+                    candidate.fourcc)
+                    .empty();
+      });
 
   if (iter == input_candidates.end())
     return nullptr;

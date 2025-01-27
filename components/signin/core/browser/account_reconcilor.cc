@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <set>
 #include <utility>
@@ -19,7 +20,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -61,8 +61,8 @@ std::vector<gaia::ListedAccount> FilterUnverifiedAccounts(
     const std::vector<gaia::ListedAccount>& accounts) {
   // Ignore unverified accounts.
   std::vector<gaia::ListedAccount> verified_gaia_accounts;
-  base::ranges::copy_if(accounts, std::back_inserter(verified_gaia_accounts),
-                        &gaia::ListedAccount::verified);
+  std::ranges::copy_if(accounts, std::back_inserter(verified_gaia_accounts),
+                       &gaia::ListedAccount::verified);
   return verified_gaia_accounts;
 }
 

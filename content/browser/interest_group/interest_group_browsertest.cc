@@ -15245,7 +15245,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
   // from inputs resolving -> auction resolved winds up in a different histogram
   // bucket than the time from auction start -> auction resolved.
   perBuyerSignals: maybePromise(
-      {[componentBuyer]: ["top-level buyer signals"]}, 100),
+      {[componentBuyer]: ["top-level buyer signals"]}),
   perBuyerTimeouts: maybePromise({[componentBuyer]: 11000, '*': 15000}),
   perBuyerCumulativeTimeouts: maybePromise(
       {[componentBuyer]: 11100, '*': 15100}),
@@ -15342,17 +15342,6 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
     EXPECT_LT(0u, histogram_tester.GetTotalSum(
                       "Ads.InterestGroup.Auction."
                       "TimeFromInputsResolvedToAuctionResolved"));
-
-    if (use_promise) {
-      // Since the promise inputs have a delay associated with them,
-      // TimeToResolve should be greater than
-      // TimeFromInputsResolvedToAuctionResolved.
-      EXPECT_GT(histogram_tester.GetTotalSum(
-                    "Ads.InterestGroup.Auction.TimeToResolve"),
-                histogram_tester.GetTotalSum(
-                    "Ads.InterestGroup.Auction."
-                    "TimeFromInputsResolvedToAuctionResolved"));
-    }
   }
 }
 

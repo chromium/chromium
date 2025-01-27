@@ -465,10 +465,6 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "android",
-                # This is necessary due to this builder running the
-                # telemetry_perf_unittests suite.
-                "chromium_with_telemetry_dependencies",
-                "enable_wpr_tests",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -498,7 +494,6 @@ ci.builder(
             targets.bundle(
                 targets = [
                     "android_10_emulator_fyi_gtests",
-                    "q_isolated_scripts",
                 ],
                 mixins = targets.mixin(
                     args = [
@@ -506,7 +501,6 @@ ci.builder(
                     ],
                 ),
             ),
-            "chromium_android_scripts",
         ],
         additional_compile_targets = [
             "chrome_nocompile_tests",

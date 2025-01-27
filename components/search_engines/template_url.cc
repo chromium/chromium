@@ -4,6 +4,7 @@
 
 #include "components/search_engines/template_url.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -24,7 +25,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -609,11 +609,10 @@ std::u16string TemplateURLRef::SearchTermToString16(
 bool TemplateURLRef::HasGoogleBaseURLs(
     const SearchTermsData& search_terms_data) const {
   ParseIfNecessary(search_terms_data);
-  return base::ranges::any_of(
-      replacements_, [](const Replacement& replacement) {
-        return replacement.type == GOOGLE_BASE_URL ||
-               replacement.type == GOOGLE_BASE_SUGGEST_URL;
-      });
+  return std::ranges::any_of(replacements_, [](const Replacement& replacement) {
+    return replacement.type == GOOGLE_BASE_URL ||
+           replacement.type == GOOGLE_BASE_SUGGEST_URL;
+  });
 }
 
 bool TemplateURLRef::ExtractSearchTermsFromURL(
@@ -1068,7 +1067,7 @@ std::string TemplateURLRef::HandleReplacements(
   bool is_in_query = true;
 
   auto search_terms =
-      base::ranges::find(replacements_, SEARCH_TERMS, &Replacement::type);
+      std::ranges::find(replacements_, SEARCH_TERMS, &Replacement::type);
 
   if (search_terms != replacements_.end()) {
     std::u16string::size_type query_start = parsed_url_.find('?');
@@ -1766,10 +1765,11 @@ bool TemplateURL::SupportsReplacement(
 
 bool TemplateURL::HasGoogleBaseURLs(
     const SearchTermsData& search_terms_data) const {
-  if (base::ranges::any_of(url_refs_, [&](const TemplateURLRef& ref) {
+  if (std::ranges::any_of(url_refs_, [&](const TemplateURLRef& ref) {
         return ref.HasGoogleBaseURLs(search_terms_data);
-      }))
+      })) {
     return true;
+  }
 
   return suggestions_url_ref_.HasGoogleBaseURLs(search_terms_data) ||
          image_url_ref_.HasGoogleBaseURLs(search_terms_data) ||

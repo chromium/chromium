@@ -4,6 +4,7 @@
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/public/cpp/window_properties.h"
@@ -12,7 +13,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -119,7 +119,7 @@ void FrameThrottlingController::StartThrottling(
     return;
 
   std::vector<aura::Window*> all_arc_windows;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk),
       std::back_inserter(all_arc_windows), [](aura::Window* window) {
         return chromeos::AppType::ARC_APP ==

@@ -21,7 +21,6 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/draw_utils/page_boundary_intersect.h"
@@ -1069,8 +1068,8 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
     }
 
     std::vector<InkStrokeId> ids_to_apply_command;
-    base::ranges::set_intersection(stroke_ids, page_ids,
-                                   std::back_inserter(ids_to_apply_command));
+    std::ranges::set_intersection(stroke_ids, page_ids,
+                                  std::back_inserter(ids_to_apply_command));
     if (ids_to_apply_command.empty()) {
       continue;
     }
@@ -1080,7 +1079,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
     auto it = page_ink_strokes.begin();
     ink::Envelope invalidate_envelope;
     for (InkStrokeId id : ids_to_apply_command) {
-      it = base::ranges::lower_bound(
+      it = std::ranges::lower_bound(
           it, page_ink_strokes.end(), id, {},
           [](const FinishedStrokeState& state) { return state.id; });
       auto& stroke = *it;
@@ -1111,8 +1110,8 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
     }
 
     std::vector<InkModeledShapeId> ids_to_apply_command;
-    base::ranges::set_intersection(shape_ids, page_ids,
-                                   std::back_inserter(ids_to_apply_command));
+    std::ranges::set_intersection(shape_ids, page_ids,
+                                  std::back_inserter(ids_to_apply_command));
     if (ids_to_apply_command.empty()) {
       continue;
     }
@@ -1122,7 +1121,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
     auto it = page_ink_shapes.begin();
     ink::Envelope invalidate_envelope;
     for (InkModeledShapeId id : ids_to_apply_command) {
-      it = base::ranges::lower_bound(
+      it = std::ranges::lower_bound(
           it, page_ink_shapes.end(), id, {},
           [](const LoadedV2ShapeState& state) { return state.id; });
       auto& shape_state = *it;
@@ -1163,7 +1162,7 @@ void PdfInkModule::ApplyUndoRedoDiscards(
   const InkStrokeId start_id = *discards.begin();
   for (auto& [page_index, page_ink_strokes] : strokes_) {
     // Find the first element in `page_ink_strokes` whose ID >= `start_id`.
-    auto start = base::ranges::lower_bound(
+    auto start = std::ranges::lower_bound(
         page_ink_strokes, start_id, {},
         [](const FinishedStrokeState& state) { return state.id; });
     auto end = page_ink_strokes.end();

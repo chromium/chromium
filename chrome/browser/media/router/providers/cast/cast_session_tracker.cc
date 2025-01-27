@@ -4,9 +4,10 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/providers/cast/chrome_cast_message_handler.h"
@@ -55,7 +56,7 @@ const CastSessionTracker::SessionMap& CastSessionTracker::GetSessions() const {
 CastSession* CastSessionTracker::GetSessionById(
     const std::string& session_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       sessions_by_sink_id_, session_id,
       [](const auto& entry) { return entry.second->session_id(); });
   return it != sessions_by_sink_id_.end() ? it->second.get() : nullptr;
@@ -189,7 +190,7 @@ void CastSessionTracker::CopySavedMediaFieldsToMediaList(
       continue;
     }
 
-    auto session_media_it = base::ranges::find(
+    auto session_media_it = std::ranges::find(
         *session_media_value_list, media_session_id,
         [](const base::Value& session_media) {
           return session_media.GetDict().FindInt("mediaSessionId");

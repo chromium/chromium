@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom-forward.h"
@@ -45,8 +44,8 @@ std::vector<mojom::app_service_internals::AppInfoPtr> GetApps(
                       debug_info.str());
   });
 
-  base::ranges::sort(apps, std::less<>(),
-                     [](const auto& app) { return app->name; });
+  std::ranges::sort(apps, std::less<>(),
+                    [](const auto& app) { return app->name; });
 
   return apps;
 }
@@ -76,8 +75,8 @@ std::vector<mojom::app_service_internals::PreferredAppInfoPtr> GetPreferredApps(
     preferred_apps.push_back(std::move(ptr));
   }
 
-  base::ranges::sort(preferred_apps, std::less<>(),
-                     [](const auto& app) { return app->name; });
+  std::ranges::sort(preferred_apps, std::less<>(),
+                    [](const auto& app) { return app->name; });
   return preferred_apps;
 }
 
@@ -100,7 +99,7 @@ std::vector<mojom::app_service_internals::PromiseAppInfoPtr> GetPromiseApps(
                               debug_info.str());
   }
 
-  base::ranges::sort(promise_apps, std::less<>(), [](const auto& promise_app) {
+  std::ranges::sort(promise_apps, std::less<>(), [](const auto& promise_app) {
     return promise_app->package_id;
   });
 

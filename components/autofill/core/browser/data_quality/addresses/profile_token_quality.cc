@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/levenshtein_distance.h"
 #include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -117,11 +116,11 @@ bool ProfileTokenQuality::operator==(const ProfileTokenQuality& other) const {
   // Element-wise comparison between `observations_` and `other.observations_`.
   // base::circular_deque<> intentionally doesn't define a comparison operator.
   using map_entry_t = std::pair<FieldType, base::circular_deque<Observation>>;
-  return base::ranges::equal(observations_, other.observations_,
-                             [](const map_entry_t& a, const map_entry_t& b) {
-                               return a.first == b.first &&
-                                      base::ranges::equal(a.second, b.second);
-                             });
+  return std::ranges::equal(observations_, other.observations_,
+                            [](const map_entry_t& a, const map_entry_t& b) {
+                              return a.first == b.first &&
+                                     std::ranges::equal(a.second, b.second);
+                            });
 }
 
 bool ProfileTokenQuality::AddObservationsForFilledForm(

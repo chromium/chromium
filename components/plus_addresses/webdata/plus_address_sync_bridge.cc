@@ -4,12 +4,12 @@
 
 #include "components/plus_addresses/webdata/plus_address_sync_bridge.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"

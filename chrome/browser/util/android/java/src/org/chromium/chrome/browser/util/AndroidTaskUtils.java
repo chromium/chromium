@@ -40,13 +40,15 @@ public class AndroidTaskUtils {
     private static final int MAX_NUM_TASKS = 100;
 
     /**
-     * Finishes tasks other than the one with the given ID that were started with the given data
-     * in the Intent, removing those tasks from Recents and leaving a unique task with the data.
+     * Finishes tasks other than the one with the given ID that were started with the given data in
+     * the Intent, removing those tasks from Recents and leaving a unique task with the data.
+     *
      * @param data Passed in as part of the Intent's data when starting the Activity.
      * @param canonicalTaskId ID of the task will be the only one left with the ID.
      * @return Intent of one of the tasks that were finished.
      */
-    public static @Nullable Intent finishOtherTasksWithData(Uri data, int canonicalTaskId) {
+    public static @Nullable Intent finishOtherTasksWithData(
+            @Nullable Uri data, int canonicalTaskId) {
         if (data == null) return null;
 
         String dataString = data.toString();

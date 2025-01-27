@@ -203,8 +203,10 @@ constexpr CGFloat kFacePileAvatarSize = 20;
     return;
   }
   if (confirmation) {
-    [_delegate showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
-                                                              kUngroupTabGroup];
+    [_delegate
+        showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
+                                                       kUngroupTabGroup
+                                             group:tabGroup->GetWeakPtr()];
     return;
   }
   _webStateList->DeleteGroup(tabGroup);
@@ -216,8 +218,10 @@ constexpr CGFloat kFacePileAvatarSize = 20;
     return;
   }
   if (IsTabGroupSyncEnabled() && confirmation) {
-    [_delegate showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
-                                                              kDeleteTabGroup];
+    [_delegate
+        showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
+                                                       kDeleteTabGroup
+                                             group:tabGroup->GetWeakPtr()];
     return;
   }
   [self closeTabGroup:tabGroup andDeleteGroup:YES];

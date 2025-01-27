@@ -4,10 +4,10 @@
 
 #include "components/policy/test_support/test_server_helpers.h"
 
+#include <algorithm>
 #include <ranges>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/url_util.h"

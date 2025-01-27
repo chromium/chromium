@@ -4,10 +4,11 @@
 
 #include "components/tracing/common/active_processes_win.h"
 
+#include <algorithm>
+
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/version.h"
 
 namespace tracing {
@@ -100,8 +101,8 @@ void ActiveProcesses::AddProcess(uint32_t pid,
   if (!inserted) {
     // Duplicate pid. The event for the removal of this pid must have been lost.
     // Forget about the old process's threads before replacing it.
-    base::ranges::for_each(process.threads,
-                           [this](uint32_t tid) { threads_.erase(tid); });
+    std::ranges::for_each(process.threads,
+                          [this](uint32_t tid) { threads_.erase(tid); });
     process.threads.clear();
     // Move the new process's properties into the instance.
     process.parent_pid = parent_pid;
@@ -135,8 +136,8 @@ void ActiveProcesses::RemoveProcess(uint32_t pid) {
 
   if (auto iter = processes_.find(pid); iter != processes_.end()) {
     // Forget about this process's threads if they haven't already been removed.
-    base::ranges::for_each(iter->second.threads,
-                           [this](uint32_t tid) { threads_.erase(tid); });
+    std::ranges::for_each(iter->second.threads,
+                          [this](uint32_t tid) { threads_.erase(tid); });
     processes_.erase(iter);
   }  // else the event for the addition of this process must have been lost.
 }
@@ -245,7 +246,7 @@ void ActiveProcesses::OnClientAdded(Process* client) {
       IsSameOrParent(application_dir_, GetProgram(*client).DirName());
 
   // Re-categorize all existing "other" processes to detect client processes.
-  base::ranges::for_each(
+  std::ranges::for_each(
       processes_,
       [this](auto& process) {
         if (process.category == Category::kOther) {
@@ -260,7 +261,7 @@ void ActiveProcesses::OnClientRemoved(Process* client) {
   client_in_application_ = false;
 
   // All previously-discovered client processes are now "other" processes.
-  base::ranges::for_each(
+  std::ranges::for_each(
       processes_,
       [](auto& process) {
         if (process.category == Category::kClient) {

@@ -24,7 +24,8 @@ class ValidateTokenTests(unittest.TestCase):
   def test_invalid_tokens(self):
     with self.assertLogs() as logs:
       has_token_error = validate_token.ValidateTokenInFile(
-          f'{os.path.dirname(__file__)}/test_data/tokens/histograms.xml')
+          f'{os.path.dirname(__file__)}'
+          '/test_data/tokens/token_errors_histograms.xml')
       self.assertTrue(has_token_error)
     self.assertEqual(len(logs.output), 1)
     output = logs.output[0]

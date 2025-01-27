@@ -86,7 +86,7 @@ size_t WebViewsInfo::GetSize() const {
 }
 
 const WebViewInfo* WebViewsInfo::GetForId(const std::string& id) const {
-  auto it = base::ranges::find(views_info, id, &WebViewInfo::id);
+  auto it = std::ranges::find(views_info, id, &WebViewInfo::id);
   if (it == views_info.end()) {
     return nullptr;
   }
@@ -131,7 +131,7 @@ Status WebViewsInfo::FillFromTargetsInfo(
 }
 
 bool WebViewsInfo::ContainsTargetType(WebViewInfo::Type type) const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       views_info,
       [searched_type = type](WebViewInfo::Type current_type) {
         return searched_type == current_type;
@@ -140,6 +140,6 @@ bool WebViewsInfo::ContainsTargetType(WebViewInfo::Type type) const {
 }
 
 const WebViewInfo* WebViewsInfo::FindFirst(WebViewInfo::Type type) const {
-  auto it = base::ranges::find(views_info, type, &WebViewInfo::type);
+  auto it = std::ranges::find(views_info, type, &WebViewInfo::type);
   return it == views_info.end() ? nullptr : &(*it);
 }

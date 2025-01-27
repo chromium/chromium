@@ -128,12 +128,10 @@ static bool MatchesMultiSelectFocusPseudoClass(const Element& element) {
 
 static bool MatchesTagName(const Element& element,
                            const QualifiedName& tag_q_name) {
-  if (tag_q_name == AnyQName()) {
-    return true;
-  }
+  DCHECK_NE(tag_q_name, AnyQName());
   const AtomicString& local_name = tag_q_name.LocalName();
-  if (local_name != CSSSelector::UniversalSelectorAtom() &&
-      local_name != element.localName()) {
+  DCHECK_NE(local_name, CSSSelector::UniversalSelectorAtom());
+  if (local_name != element.localName()) {
     if (element.IsHTMLElement() || !IsA<HTMLDocument>(element.GetDocument())) {
       return false;
     }
@@ -144,6 +142,16 @@ static bool MatchesTagName(const Element& element,
     if (element.TagQName().LocalNameUpper() != tag_q_name.LocalNameUpper()) {
       return false;
     }
+  }
+  const AtomicString& namespace_uri = tag_q_name.NamespaceURI();
+  return namespace_uri == g_star_atom ||
+         namespace_uri == element.namespaceURI();
+}
+
+static bool MatchesUniversalTagName(const Element& element,
+                                    const QualifiedName& tag_q_name) {
+  if (tag_q_name == AnyQName()) {
+    return true;
   }
   const AtomicString& namespace_uri = tag_q_name.NamespaceURI();
   return namespace_uri == g_star_atom ||
@@ -363,6 +371,9 @@ bool MatchScrollButton(const Element& element,
   if (!element.IsPseudoElement()) {
     result.dynamic_pseudo = kPseudoIdScrollButton;
     return true;
+  }
+  if (!element.IsScrollButtonPseudoElement()) {
+    return false;
   }
   const ComputedStyle* style = element.ParentComputedStyle();
   CHECK(style);
@@ -913,6 +924,8 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
   switch (selector.Match()) {
     case CSSSelector::kTag:
       return MatchesTagName(element, selector.TagQName());
+    case CSSSelector::kUniversalTag:
+      return MatchesUniversalTagName(element, selector.TagQName());
     case CSSSelector::kClass:
       return element.HasClass() &&
              element.ClassNames().Contains(selector.Value());
@@ -1806,6 +1819,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return true;
       }
       return element.HasFocusWithin();
+    case CSSSelector::kPseudoHasInterest:
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+      return element.HasInterest();
     case CSSSelector::kPseudoHasSlotted:
       DCHECK(RuntimeEnabledFeatures::CSSPseudoHasSlottedEnabled());
       if (auto* slot = DynamicTo<HTMLSlotElement>(element)) {

@@ -4,7 +4,7 @@
 
 import type {Value} from '//resources/mojo/mojo/public/mojom/base/values.mojom-webui.js'
 
-import {Config, ControlledTab as ControlledTabMojom, Course, IdentifiedActivity as Activity, Identity as IdentityMojom, NetworkInfo as NetworkInfoMojom, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
+import {Assignment as AssignmentMojom, Config, ControlledTab as ControlledTabMojom, Course, IdentifiedActivity as Activity, Identity as IdentityMojom, Material as MaterialMojom, NetworkInfo as NetworkInfoMojom, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
 
 import {BocaValidPref, CaptionConfig, ClientApiDelegate, ControlledTab, IdentifiedActivity, Identity, NetworkInfo, OnTaskConfig, SessionConfig, SubmitAccessCodeResult} from './boca_app.js';
 
@@ -136,6 +136,19 @@ export class ClientDelegateFactory {
             name: student.name,
             email: student.email,
             photoUrl: student.photoUrl ? student.photoUrl.url : undefined,
+          };
+        });
+      },
+      getAssignmentList: async (id: string) => {
+        const result = await pageHandler.listAssignments(id);
+        return result.assignments.map((assignment: AssignmentMojom) => {
+          return {
+            title: assignment.title,
+            url: assignment.url.url,
+            lastUpdateTime: assignment.lastUpdateTime,
+            materials: assignment.materials.map((material: MaterialMojom) => {
+              return {title: material.title, type: material.type.valueOf()};
+            }),
           };
         });
       },

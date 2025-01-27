@@ -125,7 +125,6 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> আগে থেকেই এই Chrome প্রোফাইলে সাইন-ইন করে আছেন। আপনার ব্রাউজিং আলাদা করতে, Chrome আপনার জন্য প্রোফাইল তৈরি করে দিতে পারে।</translation>
 <translation id="2580411288591421699">বর্তমানে Google Chrome-এর যে ভার্সনটি চলছে সেটি ইনস্টল করা যায় না৷ অনুগ্রহ করে Google Chrome বন্ধ করুন এবং আবার চেষ্টা করুন৷</translation>
 <translation id="2586406160782125153">এটি এই ডিভাইস থেকে আপনার ব্রাউজিং ডেটা মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
-<translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" /> থেকে আপনার Chrome ব্রাউজারের ডেটা পান</translation>
 <translation id="259935314519650377">ডাউনলোড করা ইনস্টলার ক্যাশে করা যায়নি। সমস্যা হয়েছে: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
 <translation id="2632707915638608719">Chrome-এর এক্সটেনশনের মাধ্যমে আরও অনেক কাজ করুন</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -547,7 +546,6 @@
 <translation id="7845233973568007926">ইনস্টল করার জন্য ধন্যবাদ। <ph name="BUNDLE_NAME" /> ব্যবহার করার আগে আপনাকে অবশ্যই কম্পিউটার রিস্টার্ট করতে হবে।</translation>
 <translation id="7852254990718225089">Chrome-এর AI, ওয়েবকে আরও দ্রুত, নিরাপদ ও অ্যাক্সেসযোগ্য করে তোলে</translation>
 <translation id="7872446069773932638">ডাউনলোড হচ্ছে... <ph name="SECONDS" /> সেকেন্ড বাকি আছে</translation>
-<translation id="7880591377632733558"><ph name="ACCOUNT_FIRST_NAME" />, Chrome-এ আপনাকে স্বাগতম</translation>
 <translation id="7886087451482920026">Google Lens-এর সাহায্যে টেক্সট বেছে নিন</translation>
 <translation id="7890208801193284374">যদি আপনি একটি কম্পিউটার শেয়ার করেন, তাহলে বন্ধু ও পরিবারের লোকজন পৃথকভাবে ব্রাউজ করতে পারবেন এবং তাদের ইচ্ছা অনুযায়ী Chrome-এর সেটআপ করতে পারবেন৷</translation>
 <translation id="7896673875602241923">আগে কোনো একজন এই কম্পিউটারে <ph name="ACCOUNT_EMAIL_LAST" /> হিসাবে Chrome-এ সাইন-ইন করেছেন। আপনার তথ্য আলাদা রাখার জন্য অনুগ্রহ করে একটি নতুন Chrome ব্যবহারকারী তৈরি করুন।</translation>
@@ -599,7 +597,6 @@
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8429214465555795676">চালিয়ে যেতে, <ph name="EMAIL" /> ব্যবহার করে Chrome-এ আপনাকে সাইন-ইন করতে হবে। এটি আপনার প্রতিষ্ঠানের নীতি মেনে যে চলছে তা নিশ্চিত করে।</translation>
 <translation id="8433638294851456451">এখান থেকে আপনার Android ফোনে একটি নম্বর পাঠাতে, উভয় ডিভাইসের Chrome-এ সাইন-ইন করুন।</translation>
-<translation id="8451192282033883849"><ph name="MANAGER_NAME" /> আপনার অ্যাকাউন্ট ম্যানেজ করে। আপনার অ্যাডমিনিস্ট্রেটর এই Chrome ব্রাউজার প্রোফাইল ও বুকমার্ক, ইতিহাস ও পাসওয়ার্ডের মতো ডেটা দেখতে এবং ম্যানেজ করতে পারবেন।</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>
 <translation id="8498858610309223613">Google Chrome-এর জন্য একটি বিশেষ নিরাপত্তা আপডেট এইমাত্র প্রয়োগ করা হয়েছে। এখনই রিস্টার্ট করুন এবং আপনার ট্যাব আমরা রিস্টোর করব।</translation>
 <translation id="8516431725144212809">আপনার আগ্রহ Chrome দ্বারা অনুমান করা হয়েছে</translation>

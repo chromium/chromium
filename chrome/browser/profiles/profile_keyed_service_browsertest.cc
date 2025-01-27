@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <sstream>
 
 #include "base/containers/to_vector.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -85,7 +85,7 @@ std::vector<KeyedServiceBaseFactory*> GetKeyedServiceBaseFactories() {
 std::string GetDifferenceString(const std::set<std::string>& set1,
                                 const std::set<std::string>& set2) {
   std::vector<std::string> differences;
-  base::ranges::set_difference(set1, set2, std::back_inserter(differences));
+  std::ranges::set_difference(set1, set2, std::back_inserter(differences));
 
   return differences.empty() ? "None" : base::JoinString(differences, ", ");
 }

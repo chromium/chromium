@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 #include <string_view>
@@ -15,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -331,7 +331,7 @@ TranslateLanguageList::TranslateLanguageList()
   DCHECK(
       std::is_sorted(supported_languages_.begin(), supported_languages_.end()));
   DCHECK(supported_languages_.end() ==
-         base::ranges::adjacent_find(supported_languages_));
+         std::ranges::adjacent_find(supported_languages_));
 
   if (update_is_disabled)
     return;
@@ -375,14 +375,14 @@ std::string TranslateLanguageList::GetLanguageCode(std::string_view language) {
 }
 
 bool TranslateLanguageList::IsSupportedLanguage(std::string_view language) {
-  return base::ranges::binary_search(supported_languages_, language);
+  return std::ranges::binary_search(supported_languages_, language);
 }
 
 // static
 bool TranslateLanguageList::IsSupportedPartialTranslateLanguage(
     std::string_view language) {
-  return base::ranges::binary_search(kDefaultSupportedPartialTranslateLanguages,
-                                     language);
+  return std::ranges::binary_search(kDefaultSupportedPartialTranslateLanguages,
+                                    language);
 }
 
 // static
@@ -522,7 +522,7 @@ bool TranslateLanguageList::SetSupportedLanguages(
   DCHECK(
       std::is_sorted(supported_languages_.begin(), supported_languages_.end()));
   DCHECK(supported_languages_.end() ==
-         base::ranges::adjacent_find(supported_languages_));
+         std::ranges::adjacent_find(supported_languages_));
 
   NotifyEvent(__LINE__, base::JoinString(supported_languages_, ", "));
   return true;

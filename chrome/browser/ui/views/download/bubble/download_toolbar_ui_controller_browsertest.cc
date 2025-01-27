@@ -287,4 +287,57 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   download_item->Cancel(true);
   EXPECT_FALSE(controller()->IsProgressRingInDormantStateForTesting());
 }
+
+IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
+                       ImageBadgeDoesNotShowForSingleDownload) {
+  download::DownloadItem* download_item = CreateSlowTestDownload();
+  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
+  EXPECT_NE(toolbar_button(browser()), nullptr);
+  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
+  EXPECT_TRUE(
+      controller()->GetImageBadgeForTesting()->GetImageModel().IsEmpty());
+  download_item->Cancel(true);
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
+                       ImageBadgeShowsForMultipleDownloads) {
+  controller()->Show();
+  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
+  EXPECT_NE(toolbar_button(browser()), nullptr);
+  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
+
+  content::DownloadManager* manager = DownloadManagerForBrowser(browser());
+
+  std::unique_ptr<content::DownloadTestObserver> observer =
+      std::make_unique<content::DownloadTestObserverInProgress>(manager, 2);
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &content::SlowDownloadHttpResponse::HandleSlowDownloadRequest));
+  EXPECT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL(
+      content::SlowDownloadHttpResponse::kKnownSizeUrl);
+
+  // Start two slow in progress downloads.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
+
+  observer->WaitForFinished();
+
+  // Verify the image badge shows when there are two in progress downloads.
+  EXPECT_EQ(2u, observer->NumDownloadsSeenInState(
+                    download::DownloadItem::IN_PROGRESS));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    auto* image_badge = controller()->GetImageBadgeForTesting();
+    return image_badge && !image_badge->GetImageModel().IsEmpty();
+  }));
+
+  content::DownloadManager::DownloadVector items;
+  manager->GetAllDownloads(&items);
+  for (download::DownloadItem* item : items) {
+    item->Cancel(true);
+  }
+}
 #endif

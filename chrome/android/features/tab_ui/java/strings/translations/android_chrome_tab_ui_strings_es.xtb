@@ -43,6 +43,7 @@ Si lo eliminas, todos los usuarios perderán inmediatamente el acceso al grupo d
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2677748264148917807">Salir</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestaña añadida, <ph name="ANY_CHANGED" /> cambiada, <ph name="ANY_CLOSED" /> cerrada}other{<ph name="MANY_ADDED" /> pestañas añadidas, <ph name="ANY_CHANGED" /> cambiadas, <ph name="ANY_CLOSED" /> cerradas}}</translation>
+<translation id="2755485474385016903">Todos los miembros del grupo pueden ver los cambios realizados</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creado hace <ph name="NUM_HOURS_ONE" /> hora}other{Creado hace <ph name="NUM_HOURS_MANY" /> horas}}</translation>
 <translation id="2801787514987684416">¿Ver información de la tienda?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> pestaña cerrada}other{<ph name="MANY_CLOSED" /> pestañas cerradas}}</translation>

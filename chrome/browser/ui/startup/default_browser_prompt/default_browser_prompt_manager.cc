@@ -222,7 +222,7 @@ void DefaultBrowserPromptManager::OnTabStripModelChanged(
 
 void DefaultBrowserPromptManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
                                                    bool animate) {
-  auto infobars_entry = base::ranges::find(
+  auto infobars_entry = std::ranges::find(
       infobars_, infobar, &decltype(infobars_)::value_type::second);
   if (infobars_entry == infobars_.end()) {
     return;

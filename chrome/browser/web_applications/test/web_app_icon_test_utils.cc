@@ -9,13 +9,13 @@
 
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -136,7 +136,7 @@ base::span<const int> GetIconSizes() {
 bool ContainsOneIconOfEachSize(
     const std::map<SquareSizePx, SkBitmap>& icon_bitmaps) {
   for (int size_px : kIconSizes) {
-    int num_icons_for_size = base::ranges::count(
+    int num_icons_for_size = std::ranges::count(
         icon_bitmaps, size_px, &std::pair<const SquareSizePx, SkBitmap>::first);
     if (num_icons_for_size != 1)
       return false;

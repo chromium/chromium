@@ -4,13 +4,13 @@
 
 #include "components/attribution_reporting/test_utils.h"
 
+#include <algorithm>
 #include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
@@ -65,7 +65,7 @@ TriggerSpecs SpecsFromWindowList(const std::vector<int>& windows_per_type,
   attribution_reporting::TriggerSpecs::TriggerDataIndices indices;
   std::vector<attribution_reporting::TriggerSpec> raw_specs;
 
-  bool supportable_by_single_spec = base::ranges::all_of(
+  bool supportable_by_single_spec = std::ranges::all_of(
       windows_per_type, [&](int w) { return w == windows_per_type[0]; });
 
   if (collapse_into_single_spec && supportable_by_single_spec) {

@@ -43,6 +43,7 @@ Grubu silerseniz herkes "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişimini 
 <translation id="2671423594960767771">Grubu paylaş</translation>
 <translation id="2677748264148917807">Çık</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> sekme eklendi, <ph name="ANY_CHANGED" /> sekme değiştirildi, <ph name="ANY_CLOSED" /> sekme kapatıldı}other{<ph name="MANY_ADDED" /> sekmeler eklendi, <ph name="ANY_CHANGED" /> sekmeler değiştirildi, <ph name="ANY_CLOSED" /> sekmeler kapatıldı}}</translation>
+<translation id="2755485474385016903">Yapılan değişiklikleri gruptaki herkes görür</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> saat önce oluşturuldu}other{<ph name="NUM_HOURS_MANY" /> saat önce oluşturuldu}}</translation>
 <translation id="2801787514987684416">Mağaza bilgileri görüntülensin mi?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> sekme kapatıldı}other{<ph name="MANY_CLOSED" /> sekme kapatıldı}}</translation>

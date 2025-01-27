@@ -799,14 +799,14 @@ TEST_F(TabGroupLocalUpdateObserverTest, UpdateActiveTab) {
   EXPECT_CALL(
       *mock_service_,
       OnTabSelected(Eq(group->tab_group_id()),
-                    Eq(web_state_a->GetUniqueIdentifier().identifier())));
+                    Eq(web_state_a->GetUniqueIdentifier().identifier()), _));
   web_state_list->ActivateWebStateAt(0);
 
   // Focus a tab not in any group.
   EXPECT_CALL(
       *mock_service_,
       OnTabSelected(Eq(std::nullopt),
-                    Eq(web_state_e->GetUniqueIdentifier().identifier())));
+                    Eq(web_state_e->GetUniqueIdentifier().identifier()), _));
   web_state_list->ActivateWebStateAt(4);
 }
 

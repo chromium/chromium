@@ -593,9 +593,9 @@ class WebAppNonClientFrameViewChromeOSTest
         content_settings::PageSpecificContentSettings::GetForFrame(frame);
     content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
 
-    return *base::ranges::find(*content_setting_views_,
-                               ContentSettingImageModel::ImageType::GEOLOCATION,
-                               &ContentSettingImageView::GetType);
+    return *std::ranges::find(*content_setting_views_,
+                              ContentSettingImageModel::ImageType::GEOLOCATION,
+                              &ContentSettingImageView::GetType);
   }
 
   void SimulateClickOnView(views::View* view) {

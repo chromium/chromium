@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/holding_space_tray.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -39,7 +40,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -509,7 +509,7 @@ void HoldingSpaceTray::UpdateVisibility() {
   // app chip has never been pressed.
   auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
   SetVisiblePreferred(
-      base::ranges::any_of(model->items(), IsPreviewable) ||
+      std::ranges::any_of(model->items(), IsPreviewable) ||
       (prefs && holding_space_prefs::GetTimeOfFirstAdd(prefs) &&
        !holding_space_prefs::GetTimeOfFirstPin(prefs) &&
        !holding_space_prefs::GetTimeOfFirstFilesAppChipPress(prefs)));
@@ -601,7 +601,7 @@ void HoldingSpaceTray::OnHoldingSpaceItemsAdded(
   // holding space tray should bounce in (if it isn't already visible) and
   // previews should be animated.
   if (!Shell::Get()->session_controller()->IsUserSessionBlocked()) {
-    const bool has_initialized_item = base::ranges::any_of(
+    const bool has_initialized_item = std::ranges::any_of(
         items,
         [](const HoldingSpaceItem* item) { return item->IsInitialized(); });
     if (has_initialized_item)
@@ -617,7 +617,7 @@ void HoldingSpaceTray::OnHoldingSpaceItemsRemoved(
   // If an initialized holding space item is removed from the model mid-session,
   // the holding space tray should animate updates.
   if (!Shell::Get()->session_controller()->IsUserSessionBlocked()) {
-    const bool has_initialized_item = base::ranges::any_of(
+    const bool has_initialized_item = std::ranges::any_of(
         items,
         [](const HoldingSpaceItem* item) { return item->IsInitialized(); });
     if (has_initialized_item)
@@ -729,9 +729,8 @@ void HoldingSpaceTray::UpdatePreviewsState() {
 
 void HoldingSpaceTray::UpdatePreviewsVisibility() {
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
-  const bool show_previews =
-      IsPreviewsEnabled() && model &&
-      base::ranges::any_of(model->items(), IsPreviewable);
+  const bool show_previews = IsPreviewsEnabled() && model &&
+                             std::ranges::any_of(model->items(), IsPreviewable);
 
   if (PreviewsShown() == show_previews)
     return;

@@ -427,7 +427,7 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
 
   // First, add the primary account (if available), even if it is not in the
   // cookie jar.
-  std::vector<AccountInfo>::iterator it = base::ranges::find(
+  std::vector<AccountInfo>::iterator it = std::ranges::find(
       accounts_with_tokens, default_account_id, &AccountInfo::account_id);
 
   if (it != accounts_with_tokens.end()) {
@@ -448,8 +448,8 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
 
     // Only insert the account if it has a refresh token, because we need the
     // account info.
-    it = base::ranges::find(accounts_with_tokens, account_info.id,
-                            &AccountInfo::account_id);
+    it = std::ranges::find(accounts_with_tokens, account_info.id,
+                           &AccountInfo::account_id);
 
     if (it != accounts_with_tokens.end()) {
       accounts.push_back(std::move(*it));

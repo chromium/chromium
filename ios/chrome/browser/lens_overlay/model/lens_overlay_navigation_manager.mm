@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_manager.h"
 
 #import "base/notreached.h"
-#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_mutator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
@@ -32,10 +32,11 @@ LensOverlayNavigationManager::LensResultItem::LensResultItem(
     : lens_result_(lens_result) {
   // Use `isTextSelection`, `selectionRect` and `queryText` to verify that two
   // lens result refer to the same selection query.
-  comparison_key_ = base::SysNSStringToUTF8(
+  comparison_key_ =
       [NSString stringWithFormat:@"%d%@%@", lens_result.isTextSelection,
                                  NSStringFromCGRect(lens_result.selectionRect),
-                                 lens_result.queryText]);
+                                 lens_result.queryText]
+          .cr_UTF8String;
 }
 
 LensOverlayNavigationManager::LensResultItem::~LensResultItem() {}
@@ -137,8 +138,7 @@ void LensOverlayNavigationManager::DidStartNavigation(
       NSString* omnibox_text =
           base::SysUTF8ToNSString(ExtractQueryFromSRP(navigation_url));
       [mutator_ onRelatedSearchLoaded:omnibox_text];
-      RegisterSubNavigation(navigation_url,
-                            base::SysNSStringToUTF16(omnibox_text));
+      RegisterSubNavigation(navigation_url, omnibox_text.cr_UTF16String);
     } else {
       RegisterSubNavigation(navigation_url, PreviousOmniboxText());
     }
@@ -231,8 +231,7 @@ std::u16string LensOverlayNavigationManager::PreviousOmniboxText() const {
   // If there is no previous sub navigation return the omnibox text from the
   // lens result.
   if (current_lens_result.sub_navigations().empty()) {
-    return base::SysNSStringToUTF16(
-        current_lens_result.lens_result().queryText);
+    return current_lens_result.lens_result().queryText.cr_UTF16String;
   } else {
     return current_lens_result.sub_navigations().back().omnibox_text;
   }

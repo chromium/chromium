@@ -159,6 +159,15 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForPage, 1);
   histogram_tester.ExpectTotalCount(kSubresourceLoadsMatchedRulesForPage, 1);
   histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForPage, 1);
+
+  // No incognito-specific metrics logged.
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForIncognitoPage, 0);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForIncognitoPage,
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadsMatchedRulesForIncognitoPage, 0);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForIncognitoPage,
+                                    0);
 }
 
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
@@ -238,6 +247,15 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
   histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForPage, 1);
   histogram_tester.ExpectTotalCount(kSubresourceLoadsMatchedRulesForPage, 1);
   histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForPage, 1);
+
+  // No incognito-specific metrics logged.
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForIncognitoPage, 0);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForIncognitoPage,
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadsMatchedRulesForIncognitoPage, 0);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForIncognitoPage,
+                                    0);
 }
 
 class FingerprintingProtectionFilterBrowserTestPerformanceMeasurementsEnabled
@@ -298,6 +316,19 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForPage, 1);
   histogram_tester.ExpectTotalCount(kEvaluationTotalWallDurationForPage, 1);
   histogram_tester.ExpectTotalCount(kEvaluationTotalCPUDurationForPage, 1);
+
+  // No incognito-specific metrics logged.
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForIncognitoPage, 0);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForIncognitoPage,
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadsMatchedRulesForIncognitoPage, 0);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForIncognitoPage,
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      kEvaluationTotalWallDurationForIncognitoPage, 0);
+  histogram_tester.ExpectTotalCount(kEvaluationTotalCPUDurationForIncognitoPage,
+                                    0);
 
   // TODO(https://crbug.com/376308447): Potentially add histogram assertions for
   // FP performance measurements from DocumentSubresourceFilter. Currently, the
@@ -393,10 +424,21 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kEnabled, 1);
-  histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForPage, 1);
+
+  // Incognito page-specific metrics emitted.
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForIncognitoPage,
+                                    1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForIncognitoPage,
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadsMatchedRulesForIncognitoPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForIncognitoPage, 1);
+
+  // Expect total-metrics emitted to be the same as incognito metrics emitted.
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForPage, 1);
   histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForPage, 1);
   histogram_tester.ExpectTotalCount(kSubresourceLoadsMatchedRulesForPage, 1);
-  histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForPage, 1);
 }
 
 class
@@ -465,6 +507,21 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kEnabled, 1);
+
+  // Incognito page-specific metrics emitted.
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForIncognitoPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForIncognitoPage,
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadsMatchedRulesForIncognitoPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForIncognitoPage,
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      kEvaluationTotalWallDurationForIncognitoPage, 1);
+  histogram_tester.ExpectTotalCount(kEvaluationTotalCPUDurationForIncognitoPage,
+                                    1);
+
+  // Expect total-metrics emitted to be the same as incognito metrics emitted.
   histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForPage, 1);
   histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForPage, 1);
   histogram_tester.ExpectTotalCount(kSubresourceLoadsMatchedRulesForPage, 1);
@@ -522,11 +579,11 @@ IN_PROC_BROWSER_TEST_F(
   // Check that no exception UKMs are logged.
   ExpectNoFpfExceptionUkms(test_ukm_recorder);
 
-  // Reload
+  // Reload.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  // Blocking still has effect
+  // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -535,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectFpfActivatedUkms(test_ukm_recorder, 4u,
                          /*is_dry_run=*/false);
 
-  // Reload again
+  // Reload again.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
@@ -583,20 +640,20 @@ IN_PROC_BROWSER_TEST_F(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
-  // Reload
+  // Reload.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  // Blocking still has effect
+  // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
-  // Reload again
+  // Reload again.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  // Blocking still has effect
+  // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -648,20 +705,20 @@ IN_PROC_BROWSER_TEST_F(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
-  // Reload
+  // Reload.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  // Blocking still has effect
+  // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
-  // Reload again
+  // Reload again.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  // Blocking still has effect
+  // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -704,15 +761,15 @@ IN_PROC_BROWSER_TEST_F(
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
   // Check that activated UKMs are logged, 1 for each subframe "one" and "three"
-  // containing "included_script.html"
+  // containing "included_script.html".
   ExpectFpfActivatedUkms(test_ukm_recorder, 2u,
                          /*is_dry_run=*/false);
 
-  // Reload
+  // Reload.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  // Blocking still has effect
+  // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -721,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectFpfActivatedUkms(test_ukm_recorder, 4u,
                          /*is_dry_run=*/false);
 
-  // Reload again
+  // Reload again.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
@@ -785,7 +842,7 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth,
                          /*is_dry_run=*/false);
   ExpectNoFpfExceptionUkms(test_ukm_recorder);
 
-  // Reload twice
+  // Reload twice.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
@@ -861,7 +918,7 @@ IN_PROC_BROWSER_TEST_F(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
-  // Reload twice
+  // Reload twice.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
@@ -903,8 +960,7 @@ IN_PROC_BROWSER_TEST_F(
   // x3 loads.
   ExpectFpfActivatedUkms(test_ukm_recorder, 6u,
                          /*is_dry_run=*/false);
-  // Check that the UKM exception log is unchanged, not persisted and relogged
-  // in non-incognito.
+  // Check that the UKM exception log is unchanged, not persisted and relogged.
   ExpectFpfExceptionUkms(
       test_ukm_recorder, 1u,
       static_cast<int64_t>(ExceptionSource::REFRESH_HEURISTIC));
@@ -914,7 +970,7 @@ class FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth
     : public FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest {
  public:
   FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth() {
-    // Disable refresh heuristic
+    // Disable refresh heuristic.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kEnableFingerprintingProtectionFilter, {}},
@@ -946,20 +1002,20 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
-  // Reload
+  // Reload.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  // Blocking still has effect
+  // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
-  // Reload again
+  // Reload again.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  // Blocking still has effect
+  // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -1000,20 +1056,20 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
-  // Reload
+  // Reload.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  // Blocking still has effect
+  // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
-  // Reload again
+  // Reload again.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  // Blocking still has effect
+  // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);

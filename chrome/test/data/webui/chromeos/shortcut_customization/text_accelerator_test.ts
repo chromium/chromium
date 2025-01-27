@@ -45,8 +45,8 @@ suite('textAcceleratorTest', function() {
   });
 
   function getTextPartsContainer(): HTMLElement {
-    return textAccelElement!.shadowRoot!.querySelector('.parts-container') as
-        HTMLElement;
+    return textAccelElement!.shadowRoot!.querySelector<HTMLElement>(
+        '.parts-container')!;
   }
 
   function getAllInputKeys(): NodeListOf<ShortcutInputKeyElement> {

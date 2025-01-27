@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">Бүлгийг хуваалцах</translation>
 <translation id="2677748264148917807">Үлдээх</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> таб нэмсэн, <ph name="ANY_CHANGED" />-г өөрчилсөн, <ph name="ANY_CLOSED" />-г хаасан}other{<ph name="MANY_ADDED" /> таб нэмсэн, <ph name="ANY_CHANGED" />-г өөрчилсөн, <ph name="ANY_CLOSED" />-г хаасан}}</translation>
+<translation id="2755485474385016903">Хийсэн өөрчлөлтийг бүлэг дэх хүн бүр хардаг</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> цагийн өмнө үүсгэсэн}other{<ph name="NUM_HOURS_MANY" /> цагийн өмнө үүсгэсэн}}</translation>
 <translation id="2801787514987684416">Дэлгүүрийн мэдээллийг үзэх үү?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> табыг хаасан}other{<ph name="MANY_CLOSED" /> табыг хаасан}}</translation>

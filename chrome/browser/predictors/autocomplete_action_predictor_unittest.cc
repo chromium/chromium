@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <string>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -644,7 +644,7 @@ TEST_F(AutocompleteActionPredictorTest,
   result.AppendMatches(matches);
   std::u16string user_text = u"google";
   predictor()->RegisterTransitionalMatches(user_text, result);
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       *transitional_matches(), user_text,
       &AutocompleteActionPredictor::TransitionalMatch::user_text);
   ASSERT_NE(it, transitional_matches()->end());

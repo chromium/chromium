@@ -201,6 +201,10 @@ extern const base::FeatureParam<NtpSharepointModuleDataType>
 // Parameter determining the max number of files to display on the Microsoft
 // files module.
 extern const base::FeatureParam<int> kNtpMicrosoftFilesModuleMaxFilesParam;
+// Parameter determining whether the tab resumption module should filter visits
+// that are associated with local tabs.
+extern const base::FeatureParam<bool>
+    kNtpMostRelevantTabResumptionModuleFilterLocalTabsParam;
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

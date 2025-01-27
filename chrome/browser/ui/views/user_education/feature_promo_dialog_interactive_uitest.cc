@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <vector>
@@ -10,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -162,7 +162,7 @@ class FeaturePromoDialogTest : public TestBase {
     std::vector<const base::Feature*> iph_features =
         feature_engagement::GetAllFeatures();
     auto feature_it =
-        base::ranges::find(iph_features, name, &base::Feature::name);
+        std::ranges::find(iph_features, name, &base::Feature::name);
     CHECK(feature_it != iph_features.end());
     return *feature_it;
   }

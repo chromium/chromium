@@ -10,6 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
@@ -17,8 +19,40 @@
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/merchant_trust_validation.h"
 #include "components/page_info/core/page_info_types.h"
+#include "components/page_info/core/pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
+
+namespace {
+
+std::string GetUserActionString(
+    page_info::MerchantTrustInteraction interaction) {
+  switch (interaction) {
+    case page_info::MerchantTrustInteraction::kPageInfoRowShown:
+      return "PageInfoRowSeen";
+    case page_info::MerchantTrustInteraction::kBubbleOpenedFromPageInfo:
+      return "BubbleOpenedFromPageInfo";
+    case page_info::MerchantTrustInteraction::kSidePanelOpened:
+      return "SidePanelOpened";
+    case page_info::MerchantTrustInteraction::kBubbleClosed:
+      return "BubbleClosed";
+    case page_info::MerchantTrustInteraction::kSidePanelClosed:
+      return "SidePanelClosed";
+  }
+}
+
+std::string GetFamiliarityString(page_info::MerchantFamiliarity familiarity) {
+  switch (familiarity) {
+    case page_info::MerchantFamiliarity::kFamiliar:
+      return "FamiliarSite";
+    case page_info::MerchantFamiliarity::kNotFamiliar:
+      return "UnfamiliarSite";
+  }
+}
+
+}  // namespace
 
 namespace page_info {
 using OptimizationGuideDecision = optimization_guide::OptimizationGuideDecision;
@@ -38,6 +72,15 @@ std::optional<page_info::MerchantData> GetSampleData() {
   return merchant_data;
 }
 }  // namespace
+
+// static
+void MerchantTrustService::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterTimePref(prefs::kMerchantTrustUiLastInteractionTime,
+                             base::Time());
+  registry->RegisterTimePref(prefs::kMerchantTrustPageInfoLastOpenTime,
+                             base::Time());
+}
 
 MerchantTrustService::MerchantTrustService(
     std::unique_ptr<Delegate> delegate,
@@ -149,14 +192,26 @@ MerchantTrustService::GetMerchantDataFromProto(
 bool MerchantTrustService::CanShowEvaluationSurvey() {
   if (base::FeatureList::IsEnabled(
           page_info::kMerchantTrustEvaluationControlSurvey)) {
-    // TODO(crbug.com/378854311): Check when the feature was used.
-    return true;
+    base::Time last_shown =
+        prefs_->GetTime(prefs::kMerchantTrustPageInfoLastOpenTime);
+
+    base::TimeDelta last_shown_delta = clock_->Now() - last_shown;
+    return last_shown_delta >=
+               kMerchantTrustEvaluationControlMinTimeToShowSurvey.Get() &&
+           last_shown_delta <=
+               kMerchantTrustEvaluationControlMaxTimeToShowSurvey.Get();
   }
 
   if (base::FeatureList::IsEnabled(
           page_info::kMerchantTrustEvaluationExperimentSurvey)) {
-    // TODO(crbug.com/378854311): Check when the feature was used.
-    return true;
+    base::Time last_shown =
+        prefs_->GetTime(prefs::kMerchantTrustUiLastInteractionTime);
+
+    base::TimeDelta last_shown_delta = clock_->Now() - last_shown;
+    return last_shown_delta >=
+               kMerchantTrustEvaluationExperimentMinTimeToShowSurvey.Get() &&
+           last_shown_delta <=
+               kMerchantTrustEvaluationExperimentMaxTimeToShowSurvey.Get();
   }
 
   return false;
@@ -170,13 +225,17 @@ void MerchantTrustService::RecordMerchantTrustInteraction(
           ? MerchantFamiliarity::kFamiliar
           : MerchantFamiliarity::kNotFamiliar;
 
-  auto histogram_name =
-      std::string("Security.PageInfo.MerchantTrustInteraction.") +
-      (merchant_familiarity == MerchantFamiliarity::kFamiliar
-           ? "FamiliarSite"
-           : "UnfamiliarSite");
+  std::string histogram_name = base::StrCat(
+      {"Security.PageInfo.MerchantTrustInteraction.",
+       GetFamiliarityString(merchant_familiarity)});
+
+  std::string user_action_string =
+      base::StrCat({"MerchantTrust.",
+                    GetUserActionString(interaction), ".",
+                    GetFamiliarityString(merchant_familiarity)});
 
   base::UmaHistogramEnumeration(histogram_name, interaction);
+  base::RecordAction(base::UserMetricsAction(user_action_string.c_str()));
 }
 
 }  // namespace page_info

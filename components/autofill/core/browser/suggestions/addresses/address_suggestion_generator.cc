@@ -17,7 +17,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -551,7 +550,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
   std::vector<std::vector<Suggestion::Text>> labels = CreateSuggestionLabels(
       profiles, field_types, trigger_field_type, app_locale);
   const bool contains_profile_related_fields =
-      base::ranges::count_if(field_types, [](FieldType field_type) {
+      std::ranges::count_if(field_types, [](FieldType field_type) {
         FieldTypeGroup field_type_group = GroupTypeOfFieldType(field_type);
         return field_type_group == FieldTypeGroup::kName ||
                field_type_group == FieldTypeGroup::kAddress ||
@@ -731,8 +730,8 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
   }
   if (suggestions.size() > 0) {
     // TODO(crbug.com/381994105): Consider adding undo.
-    base::ranges::move(GetAddressFooterSuggestions(/*is_autofilled=*/false),
-                       std::back_inserter(suggestions));
+    std::ranges::move(GetAddressFooterSuggestions(/*is_autofilled=*/false),
+                      std::back_inserter(suggestions));
   }
   return suggestions;
 }
@@ -773,8 +772,8 @@ std::vector<Suggestion> GetSuggestionsForProfiles(
   if (suggestions.empty()) {
     return suggestions;
   }
-  base::ranges::move(GetAddressFooterSuggestions(trigger_field.is_autofilled()),
-                     std::back_inserter(suggestions));
+  std::ranges::move(GetAddressFooterSuggestions(trigger_field.is_autofilled()),
+                    std::back_inserter(suggestions));
   return suggestions;
 }
 

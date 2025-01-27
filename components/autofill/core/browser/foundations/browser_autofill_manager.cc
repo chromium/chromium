@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <iterator>
 #include <limits>
@@ -47,7 +48,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -406,23 +406,23 @@ void LogSuggestionsCount(const SuggestionsContext& context,
         context.is_context_secure);
     // TODO(crbug.com/41484171): Move to payments_suggestion_generator.cc.
     autofill_metrics::LogSuggestionsCount(
-        base::ranges::count_if(suggestions,
-                               [](const Suggestion& suggestion) {
-                                 return GetFillingProductFromSuggestionType(
-                                            suggestion.type) ==
-                                        FillingProduct::kCreditCard;
-                               }),
+        std::ranges::count_if(suggestions,
+                              [](const Suggestion& suggestion) {
+                                return GetFillingProductFromSuggestionType(
+                                           suggestion.type) ==
+                                       FillingProduct::kCreditCard;
+                              }),
         FillingProduct::kCreditCard);
   }
   if (context.filling_product == FillingProduct::kAddress) {
     // TODO(crbug.com/41484171): Move to address_suggestion_generator.cc.
     autofill_metrics::LogSuggestionsCount(
-        base::ranges::count_if(suggestions,
-                               [](const Suggestion& suggestion) {
-                                 return GetFillingProductFromSuggestionType(
-                                            suggestion.type) ==
-                                        FillingProduct::kAddress;
-                               }),
+        std::ranges::count_if(suggestions,
+                              [](const Suggestion& suggestion) {
+                                return GetFillingProductFromSuggestionType(
+                                           suggestion.type) ==
+                                       FillingProduct::kAddress;
+                              }),
         FillingProduct::kAddress);
   }
 }
@@ -548,7 +548,7 @@ GetFieldTypeGroupsFromFormStructure(const FormStructure* form_structure) {
 // using a plus profile.
 bool WasEmailOverrideAppliedOnSuggestions(
     const std::vector<Suggestion>& address_suggestions) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       address_suggestions, [](const Suggestion& suggestion) {
         const Suggestion::AutofillProfilePayload* profile_payload =
             absl::get_if<Suggestion::AutofillProfilePayload>(

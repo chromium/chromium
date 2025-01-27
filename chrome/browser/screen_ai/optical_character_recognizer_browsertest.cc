@@ -31,6 +31,16 @@
 #include "ui/accessibility/ax_features.mojom-features.h"
 #include "ui/gfx/codec/png_codec.h"
 
+// It looks that screen_ai_library "PresandboxInit" reads uninitialized value
+// and MSan tests are failing.
+//
+// TODO(b:392474272): Fix it and Reenable these tests.
+#if defined(MEMORY_SANITIZER)
+#define DISABLE_MSAN(x) DISABLED_##x
+#else
+#define DISABLE_MSAN(x) x
+#endif
+
 namespace {
 
 using ::testing::ElementsAre;
@@ -240,7 +250,7 @@ class OpticalCharacterRecognizerTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, Create) {
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, DISABLE_MSAN(Create)) {
   scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr =
       screen_ai::OpticalCharacterRecognizer::Create(
           browser()->profile(), mojom::OcrClientType::kTest);
@@ -254,7 +264,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, Create) {
 }
 
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
-                       CreateWithStatusCallback) {
+                       DISABLE_MSAN(CreateWithStatusCallback)) {
   base::test::TestFuture<bool> future;
   scoped_refptr<OpticalCharacterRecognizer> ocr =
       OpticalCharacterRecognizer::CreateWithStatusCallback(
@@ -266,8 +276,9 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   ASSERT_TRUE(ocr);
 }
 
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
-                       CreateWithStatusCallbackWithReturnedPtrDestructed) {
+IN_PROC_BROWSER_TEST_P(
+    OpticalCharacterRecognizerTest,
+    DISABLE_MSAN(CreateWithStatusCallbackWithReturnedPtrDestructed)) {
   base::test::TestFuture<bool> future;
 
   // Create an `OpticalCharacterRecognizer` scoped_refptr and then immediately
@@ -280,7 +291,8 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   EXPECT_TRUE(future.Wait());
 }
 
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Empty) {
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
+                       DISABLE_MSAN(PerformOCR_Empty)) {
   // Init OCR.
   base::test::TestFuture<bool> init_future;
   scoped_refptr<OpticalCharacterRecognizer> ocr =
@@ -303,7 +315,8 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Empty) {
 // failure due to library changes.
 // If this test fails after updating the library, there is a high probability
 // that the new library has some sort of incompatibility with Chromium.
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
+                       DISABLE_MSAN(PerformOCR_Simple)) {
   base::HistogramTester histograms;
 
   // Init OCR.
@@ -379,7 +392,8 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
       "Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF", 0);
 }
 
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_PdfMetrics) {
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
+                       DISABLE_MSAN(PerformOCR_PdfMetrics)) {
   base::HistogramTester histograms;
 
   // Init OCR.
@@ -439,7 +453,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_PdfMetrics) {
 }
 
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
-                       PerformOCR_ImmediatelyAfterServiceInit) {
+                       DISABLE_MSAN(PerformOCR_ImmediatelyAfterServiceInit)) {
   if (!IsOcrAvailable()) {
     GTEST_SKIP() << "This test is only available when service is available";
   }
@@ -467,7 +481,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
-                       PerformOCR_AfterServiceRevive) {
+                       DISABLE_MSAN(PerformOCR_AfterServiceRevive)) {
   if (!IsOcrAvailable()) {
     GTEST_SKIP() << "This test is only available when service is available";
   }
@@ -518,7 +532,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
-                       PerformOCR_AfterDisconnect) {
+                       DISABLE_MSAN(PerformOCR_AfterDisconnect)) {
   if (!IsOcrAvailable()) {
     GTEST_SKIP() << "This test is only available when service is available";
   }

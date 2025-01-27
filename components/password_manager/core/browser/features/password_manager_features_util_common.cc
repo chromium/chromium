@@ -160,24 +160,6 @@ bool IsOptedInForAccountStorage(const PrefService* pref_service,
   return true;
 }
 
-PasswordForm::Store GetDefaultPasswordStore(
-    const PrefService* pref_service,
-    const syncer::SyncService* sync_service) {
-  // TODO(crbug.com/369341336): Inline this function.
-  CHECK(pref_service);
-  return IsOptedInForAccountStorage(pref_service, sync_service)
-             ? PasswordForm::Store::kAccountStore
-             : PasswordForm::Store::kProfileStore;
-}
-
-bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
-                               const syncer::SyncService* sync_service) {
-  // TODO(crbug.com/369341336): Inline this function. Returning false is correct
-  // because the only remaining caller uses the result to decide whether to show
-  // the DefaultStoreChangedBubbleController and it shouldn't be shown anymore.
-  return false;
-}
-
 PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {

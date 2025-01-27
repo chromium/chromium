@@ -4,13 +4,13 @@
 
 #include "components/policy/core/common/policy_map.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
@@ -574,7 +574,7 @@ void PolicyMap::LoadFrom(const base::Value::Dict& policies,
 }
 
 bool PolicyMap::Equals(const PolicyMap& other) const {
-  return base::ranges::equal(*this, other, MapEntryEquals);
+  return std::ranges::equal(*this, other, MapEntryEquals);
 }
 
 bool PolicyMap::empty() const {

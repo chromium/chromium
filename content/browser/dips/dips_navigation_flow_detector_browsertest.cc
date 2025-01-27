@@ -201,16 +201,6 @@ class BtmNavigationFlowDetectorTest : public ContentBrowserTest {
     return testing::AssertionResult(success);
   }
 
-  void SimulateUserActivation(WebContents* web_contents) {
-#if BUILDFLAG(IS_ANDROID)
-    // TODO - crbug.com/40247129: Remove the ExecJs workaround once mouse clicks
-    // / taps reliably trigger user activation on Android
-    ASSERT_TRUE(ExecJs(web_contents, ""));
-#else
-    SimulateMouseClickAndWait(web_contents);
-#endif
-  }
-
   [[nodiscard]] testing::AssertionResult WaitUntilTransientActivationLost(
       RenderFrameHost* rfh,
       base::TimeDelta timeout) {

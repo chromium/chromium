@@ -521,7 +521,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseInit" units="attempts"
-    expires_after="2025-03-09">
+    expires_after="2026-01-27">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -1887,6 +1887,17 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     Records failures when attempting to surface the survey for the Privacy
     Sandbox Ads notice/consent on CCT. A non-zero value in any bucket is an
     indication of either a bug or misconfiguration.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.Surveys.SurfaceAttempts"
+    enum="PrivacySandboxSurveyTypes" expires_after="2025-06-01">
+  <owner>alvingo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the amount of times each survey was attempted to be shown on Clank.
+    Values do not indicate the amount of surveys shown as each attempt can fail
+    due to various factors.
   </summary>
 </histogram>
 

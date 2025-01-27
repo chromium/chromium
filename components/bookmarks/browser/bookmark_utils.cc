@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <unordered_set>
@@ -19,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -174,7 +174,7 @@ void GetMostRecentEntries(
 bool HasUserCreatedBookmarks(BookmarkModel* model) {
   const BookmarkNode* root_node = model->root_node();
 
-  return base::ranges::any_of(root_node->children(), [](const auto& node) {
+  return std::ranges::any_of(root_node->children(), [](const auto& node) {
     return !node->children().empty();
   });
 }
@@ -359,7 +359,7 @@ BookmarkNodesSplitByAccountAndLocal GetPermanentNodesForDisplay(
 }
 
 bool HasLocalOrSyncableBookmarks(const BookmarkModel* model) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       std::array{model->bookmark_bar_node(), model->other_node(),
                  model->mobile_node()},
       [](const BookmarkNode* node) { return !node->children().empty(); });

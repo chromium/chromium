@@ -4,6 +4,7 @@
 
 #include "ash/user_education/user_education_util.h"
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "ash/user_education/user_education_types.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -88,7 +88,7 @@ user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
     const gfx::VectorIcon& body_icon) {
   auto& registry = GetHelpBubbleBodyIconRegistry();
 
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       registry, &body_icon,
       &std::pair<const std::string, raw_ptr<const gfx::VectorIcon>>::second);
 

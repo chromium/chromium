@@ -4,9 +4,10 @@
 
 #include "cc/metrics/event_latency_tracing_recorder.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
@@ -324,7 +325,7 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEventInternal(
     DCHECK(viz_breakdown);
     // Find the first compositor stage that starts at the same time or after the
     // end of the final event dispatch stage.
-    auto stage_it = base::ranges::lower_bound(
+    auto stage_it = std::ranges::lower_bound(
         *stage_history, dispatch_timestamp, {},
         &CompositorFrameReporter::StageData::start_time);
     // TODO(crbug.com/40843545): Ideally, at least the start time of

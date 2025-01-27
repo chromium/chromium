@@ -47,10 +47,10 @@ void ValidateAllowedUnpartitionedSites(
 
   // Hosts should match in order.
   EXPECT_TRUE(
-      base::ranges::equal(sites, expected_sites_in_order,
-                          [](const auto& site, const auto& expected_site) {
-                            return site.origin.host() == expected_site.host();
-                          }));
+      std::ranges::equal(sites, expected_sites_in_order,
+                         [](const auto& site, const auto& expected_site) {
+                           return site.origin.host() == expected_site.host();
+                         }));
 }
 
 blink::StorageKey CreateUnpartitionedStorageKey(const GURL& url) {

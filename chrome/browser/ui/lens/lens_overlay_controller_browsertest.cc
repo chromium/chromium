@@ -735,16 +735,6 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     bool has_q_value =
         net::GetValueForKeyInQuery(url_to_process, "q", &q_value);
     EXPECT_TRUE(has_q_value);
-
-    std::string biw_value;
-    bool has_biw_value =
-        net::GetValueForKeyInQuery(url_to_process, "biw", &biw_value);
-    EXPECT_TRUE(has_biw_value);
-
-    std::string bih_value;
-    bool has_bih_value =
-        net::GetValueForKeyInQuery(url_to_process, "bih", &bih_value);
-    EXPECT_TRUE(has_bih_value);
   }
 
   void CloseOverlayAndWaitForOff(LensOverlayController* controller,
@@ -4941,6 +4931,82 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       "Lens.Overlay.ContextualSearchBox.ByPageContentType.Pdf.ShownInSession",
       /*sample*/ false,
       /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+                       QueryFlowRestartsOnSearchboxFocus) {
+  base::HistogramTester histogram_tester;
+
+  const GURL url = embedded_test_server()->GetURL(kPdfDocument);
+  LoadPdfGetExtensionHost(url);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Grab the fake query controller.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+
+  // Verify the current number of requests is as expected. Both requests happen
+  // async, so need to wait for both to be sent before continuing to prevent
+  // flakiness.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_query_controller->num_full_image_requests_sent() == 1 &&
+           fake_query_controller->num_page_content_update_requests_sent() == 1;
+  }));
+
+  // Cause cluster info to expire.
+  fake_query_controller->ResetRequestClusterInfoStateForTesting();
+
+  // Reset the fake query controller testing state to prevent dangling the
+  // stored page content bytes.
+  fake_query_controller->ResetTestingState();
+
+  // Focus the searchbox.
+  controller->OnFocusChangedForTesting(true);
+
+  // Verify a new full image and page content request was sent. Both requests
+  // happen async, so need to wait for both to be sent before continuing to
+  // prevent flakiness.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_query_controller->num_full_image_requests_sent() == 2 &&
+           fake_query_controller->num_page_content_update_requests_sent() == 2;
+  }));
+
+  // Issue a query.
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/true, std::map<std::string, std::string>());
+
+  // Verify transitions to live page.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
+  // Cause cluster info to expire again.
+  fake_query_controller->ResetRequestClusterInfoStateForTesting();
+
+  // Reset the fake query controller testing state to prevent dangling the
+  // stored page content bytes.
+  fake_query_controller->ResetTestingState();
+
+  // Focus the searchbox again.
+  controller->OnFocusChangedForTesting(true);
+
+  // Verify a new full image and page content request was sent in the live page
+  // state. Both requests happen async, so need to wait for both to be sent
+  // before continuing to prevent flakiness.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_query_controller->num_full_image_requests_sent() == 3 &&
+           fake_query_controller->num_page_content_update_requests_sent() == 3;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,

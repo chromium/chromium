@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">Топту бөлүшүү</translation>
 <translation id="2677748264148917807">Чыгуу</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> өтмөк кошулду, <ph name="ANY_CHANGED" /> өтмөк өзгөртүлдү, <ph name="ANY_CLOSED" /> өтмөк жабылды}other{<ph name="MANY_ADDED" /> өтмөк кошулду, <ph name="ANY_CHANGED" /> өтмөк өзгөртүлдү, <ph name="ANY_CLOSED" /> өтмөк жабылды}}</translation>
+<translation id="2755485474385016903">Киргизилген өзгөртүүлөр топтогулардын баарына көрүнөт</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> саат мурун түзүлдү}other{<ph name="NUM_HOURS_MANY" /> саат мурун түзүлдү}}</translation>
 <translation id="2801787514987684416">Дүкөн тууралуу маалыматты көрөсүзбү?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> өтмөк жабылды}other{<ph name="MANY_CLOSED" /> өтмөк жабылды}}</translation>

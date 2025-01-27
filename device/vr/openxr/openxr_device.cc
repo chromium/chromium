@@ -4,13 +4,13 @@
 
 #include "device/vr/openxr/openxr_device.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_render_loop.h"
@@ -40,7 +40,7 @@ bool AreAllRequiredFeaturesSupported(
     const mojom::XRSessionMode mode,
     const std::vector<mojom::XRSessionFeature>& required_features,
     const OpenXrExtensionHelper& extension_helper) {
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       required_features,
       [&extension_helper, mode](const mojom::XRSessionFeature& feature) {
         // First we check if we will allow the feature to be supported in the

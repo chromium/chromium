@@ -452,7 +452,7 @@ Profile* GetMainProfileLacros() {
     return nullptr;
   }
   auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
-  const auto main_it = base::ranges::find_if(profiles, &Profile::IsMainProfile);
+  const auto main_it = std::ranges::find_if(profiles, &Profile::IsMainProfile);
   if (main_it == profiles.end()) {
     return nullptr;
   }

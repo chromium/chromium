@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
@@ -229,8 +229,8 @@ void ChromotingHost::OnSessionAuthenticationFailed(ClientSession* client) {
 void ChromotingHost::OnSessionClosed(ClientSession* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = base::ranges::find(clients_, client,
-                               &std::unique_ptr<ClientSession>::get);
+  auto it =
+      std::ranges::find(clients_, client, &std::unique_ptr<ClientSession>::get);
   CHECK(it != clients_.end());
 
   bool was_authenticated = client->is_authenticated();

@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
@@ -22,7 +23,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service_factory.h"
@@ -298,7 +298,7 @@ bool IsSystemSlotAvailable(Profile* profile) {
 
 // Returns the number of corporate usage certs in |test_certs|.
 size_t CountCorporateUsage(const std::vector<TestCertData>& test_certs) {
-  return base::ranges::count_if(test_certs, &TestCertData::is_corporate_usage);
+  return std::ranges::count_if(test_certs, &TestCertData::is_corporate_usage);
 }
 
 // Deletes the given |cert| from |cert_db|.

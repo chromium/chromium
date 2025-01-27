@@ -6,11 +6,11 @@
 
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -379,7 +379,7 @@ void FakeBluetoothLEDeviceWinrt::SimulateGattServiceRemoved(
     BluetoothRemoteGattService* service) {
   auto* device_service = static_cast<BluetoothRemoteGattServiceWinrt*>(service)
                              ->GetDeviceServiceForTesting();
-  auto iter = base::ranges::find(
+  auto iter = std::ranges::find(
       fake_services_, device_service,
       &Microsoft::WRL::ComPtr<FakeGattDeviceServiceWinrt>::Get);
   CHECK(iter != fake_services_.end(), base::NotFatalUntil::M130);

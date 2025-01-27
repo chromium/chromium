@@ -26,7 +26,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -238,8 +237,8 @@ class PersonalizationAppTimeOfDayBrowserTest
   std::vector<base::Time> GenerateTimesToTest() {
     const auto& timestamps = GetParam().timestamps_to_test;
     std::vector<base::Time> times;
-    base::ranges::transform(timestamps, std::back_inserter(times),
-                            TimeFromString);
+    std::ranges::transform(timestamps, std::back_inserter(times),
+                           TimeFromString);
     return times;
   }
 

@@ -119,8 +119,12 @@ class ExpectedFieldTrialGroupAllChannelsTest
     : public ExpectedFieldTrialGroupChannelsTest {};
 class ExpectedFieldTrialGroupPreStableTest
     : public ExpectedFieldTrialGroupChannelsTest {};
-class ExpectedFieldTrialGroupStableAndUnknownTest
-    : public ExpectedFieldTrialGroupChannelsTest {};
+class ExpectedFieldTrialGroupStableTest
+    : public SeedReaderWriterTestBase,
+      public TestWithParam<std::string_view> {};
+class ExpectedFieldTrialGroupUnknownTest
+    : public SeedReaderWriterTestBase,
+      public TestWithParam<std::string_view> {};
 
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -176,19 +180,30 @@ TEST_P(ExpectedFieldTrialGroupPreStableTest, PreStable) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ExpectedFieldTrialGroupStableAndUnknownTest,
-    ::testing::ConvertGenerator<ExpectedFieldTrialGroupTestParams::TupleT>(
-        ::testing::Combine(
-            ::testing::Values(prefs::kVariationsCompressedSeed,
-                              prefs::kVariationsSafeCompressedSeed),
-            ::testing::Values(version_info::Channel::UNKNOWN,
-                              version_info::Channel::STABLE))));
+    ExpectedFieldTrialGroupStableTest,
+    ::testing::Values(prefs::kVariationsCompressedSeed,
+                      prefs::kVariationsSafeCompressedSeed));
 
-// If channel is stable or unknown, client is not assigned a group.
-TEST_P(ExpectedFieldTrialGroupStableAndUnknownTest, StableAndUnknown) {
+// If channel is stable, trial has been registered.
+TEST_P(ExpectedFieldTrialGroupStableTest, Stable) {
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
-      GetParam().seed_pref, GetParam().channel, entropy_providers_.get(),
+      GetParam(), version_info::Channel::STABLE, entropy_providers_.get(),
+      file_writer_thread_.task_runner());
+  EXPECT_TRUE(base::FieldTrialList::TrialExists(kSeedFileTrial));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExpectedFieldTrialGroupUnknownTest,
+    ::testing::Values(prefs::kVariationsCompressedSeed,
+                      prefs::kVariationsSafeCompressedSeed));
+
+// If channel is unknown, client is not assigned a group.
+TEST_P(ExpectedFieldTrialGroupUnknownTest, Unknown) {
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam(), version_info::Channel::UNKNOWN, entropy_providers_.get(),
       file_writer_thread_.task_runner());
   EXPECT_THAT(base::FieldTrialList::FindFullName(kSeedFileTrial), IsEmpty());
 }
@@ -478,8 +493,7 @@ INSTANTIATE_TEST_SUITE_P(
             ::testing::Values(prefs::kVariationsCompressedSeed,
                               prefs::kVariationsSafeCompressedSeed),
             ::testing::Values(kNoGroup),
-            ::testing::Values(version_info::Channel::UNKNOWN,
-                              version_info::Channel::STABLE))));
+            ::testing::Values(version_info::Channel::UNKNOWN))));
 
 INSTANTIATE_TEST_SUITE_P(
     ControlAndDefaultGroup,

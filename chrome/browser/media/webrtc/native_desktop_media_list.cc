@@ -8,6 +8,7 @@
 #endif
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -18,7 +19,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
@@ -620,7 +620,7 @@ NativeDesktopMediaList::Worker::MergeAndSortWindowSources(
   for (HWND window : z_ordered_windows) {
     for (const auto* source_container : source_containers) {
       auto source_it =
-          base::ranges::find(*source_container, window, id_hwnd_projection);
+          std::ranges::find(*source_container, window, id_hwnd_projection);
       if (source_it != source_container->end()) {
         sorted_sources.push_back(*source_it);
         break;

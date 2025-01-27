@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -75,7 +76,7 @@ std::vector<password_manager::PasswordForm> DeepCopyForms(
     const std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms) {
   std::vector<password_manager::PasswordForm> result;
   result.reserve(forms.size());
-  base::ranges::transform(
+  std::ranges::transform(
       forms, std::back_inserter(result),
       &std::unique_ptr<password_manager::PasswordForm>::operator*);
   return result;
@@ -236,8 +237,7 @@ void SaveUpdateBubbleController::ShouldRevealPasswords(
 }
 
 bool SaveUpdateBubbleController::IsUsingAccountStore() {
-  return delegate_->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
-         Store::kAccountStore;
+  return delegate_->GetPasswordFeatureManager()->IsOptedInForAccountStorage();
 }
 
 std::u16string SaveUpdateBubbleController::GetTitle() const {

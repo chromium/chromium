@@ -732,16 +732,18 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 // available space and trait collections.
 - (void)updateViews:(UIView*)updatedView
     previousTraitCollection:(UITraitCollection*)previousTraitCollection {
-  if (IsSplitToolbarMode(self)) {
-    [NSLayoutConstraint
-        activateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
-    [NSLayoutConstraint
-        deactivateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
-  } else {
-    [NSLayoutConstraint
-        deactivateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
-    [NSLayoutConstraint
-        activateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
+  if (!_bannerPromoBackground.hidden) {
+    if (IsSplitToolbarMode(self)) {
+      [NSLayoutConstraint
+          activateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
+      [NSLayoutConstraint deactivateConstraints:
+                              _bannerPromoBackgroundNonSplitToolbarConstraints];
+    } else {
+      [NSLayoutConstraint
+          deactivateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
+      [NSLayoutConstraint
+          activateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
+    }
   }
 
   _bannerPromoBackgroundHeightConstraint.constant =

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -178,7 +178,7 @@ class IntentPickerAppGridButton : public views::Button {
     }
 
     Views siblings = parent()->children();
-    auto it = base::ranges::find_if(siblings, [](views::View* v) {
+    auto it = std::ranges::find_if(siblings, [](views::View* v) {
       return views::AsViewClass<IntentPickerAppGridButton>(v)->selected_;
     });
 

@@ -316,7 +316,7 @@ void RecordOverlayHistograms(
   // underlay.
   bool is_overlay = true;
   for (auto& [render_pass, overlay_data] : render_pass_overlay_data_map) {
-    is_overlay = base::ranges::all_of(
+    is_overlay = std::ranges::all_of(
         overlay_data.promoted_overlays,
         [](const auto& dc_layer) { return dc_layer.plane_z_order > 0; });
     if (!is_overlay) {
@@ -324,7 +324,7 @@ void RecordOverlayHistograms(
     }
   }
 
-  bool damage_rects_empty = base::ranges::all_of(
+  bool damage_rects_empty = std::ranges::all_of(
       render_pass_overlay_data_map,
       [](const auto& data) { return data.second.damage_rect.IsEmpty(); });
 

@@ -772,7 +772,7 @@ std::string GenerateTestName(
   std::string name = info.param.BaseName()
                          .ReplaceExtension(FILE_PATH_LITERAL(""))
                          .MaybeAsASCII();
-  base::ranges::replace_if(name, [](char c) { return !std::isalnum(c); }, '_');
+  std::ranges::replace_if(name, [](char c) { return !std::isalnum(c); }, '_');
   return name;
 }
 

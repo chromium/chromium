@@ -4,6 +4,7 @@
 
 #include "media/audio/audio_manager.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

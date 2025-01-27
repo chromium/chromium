@@ -12,6 +12,8 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -34,7 +36,6 @@
 #include "third_party/blink/renderer/platform/media/cdm_result_promise_helper.h"
 #include "third_party/blink/renderer/platform/media/cdm_session_adapter.h"
 #include "third_party/blink/renderer/platform/media/media_player_util.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -358,7 +359,7 @@ void WebContentDecryptionModuleSessionImpl::InitializeNewSession(
       eme_init_data_type, sanitized_init_data, session_type_,
       std::make_unique<NewSessionCdmResultPromise>(
           result, adapter_->GetKeySystemUMAPrefix(), kGenerateRequestUMAName,
-          WTF::BindOnce(
+          base::BindOnce(
               &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
               weak_ptr_factory_.GetWeakPtr()),
           std::vector<SessionInitStatus>{SessionInitStatus::NEW_SESSION}));
@@ -390,7 +391,7 @@ void WebContentDecryptionModuleSessionImpl::Load(
       session_type_, sanitized_session_id,
       std::make_unique<NewSessionCdmResultPromise>(
           result, adapter_->GetKeySystemUMAPrefix(), kLoadSessionUMAName,
-          WTF::BindOnce(
+          base::BindOnce(
               &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
               weak_ptr_factory_.GetWeakPtr()),
           std::vector<SessionInitStatus>{

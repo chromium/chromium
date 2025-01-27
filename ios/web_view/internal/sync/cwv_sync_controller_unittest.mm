@@ -88,9 +88,6 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
   // Ensure opt-ins for transport only sync data is flipped to true.
   EXPECT_TRUE(autofill::IsUserOptedInWalletSyncTransport(
       &pref_service_, primary_account_info.account_id));
-  EXPECT_EQ(password_manager::features_util::GetDefaultPasswordStore(
-                &pref_service_, &sync_service_),
-            password_manager::PasswordForm::Store::kAccountStore);
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
       &pref_service_, &sync_service_));
 }

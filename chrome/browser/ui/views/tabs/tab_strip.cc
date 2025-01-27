@@ -33,7 +33,6 @@
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -681,8 +680,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     // The index of `source_view` in the TabStrip's viewmodel.
     std::optional<int> source_view_model_index = GetIndexOf(source_view);
     // The index of `source_view` as a child of this TabDragContext.
-    int source_view_index = static_cast<int>(
-        base::ranges::find(views, source_view) - views.begin());
+    int source_view_index =
+        static_cast<int>(std::ranges::find(views, source_view) - views.begin());
 
     const auto should_animate_tab = [&](size_t index_in_views) {
       // If the tab at `index_in_views` is already animating, don't interrupt

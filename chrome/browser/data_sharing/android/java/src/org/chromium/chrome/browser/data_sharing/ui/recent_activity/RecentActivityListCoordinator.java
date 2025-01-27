@@ -19,6 +19,8 @@ import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.url.GURL;
 
@@ -79,18 +81,22 @@ public class RecentActivityListCoordinator {
             FaviconProvider faviconProvider,
             AvatarProvider avatarProvider,
             RecentActivityActionHandler recentActivityActionHandler) {
-        mModelList = new ModelList();
         mBottomSheetController = bottomSheetController;
+        mContentContainer =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.recent_activity_bottom_sheet, /* root= */ null);
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(RecentActivityContainerProperties.ALL_KEYS).build();
+        PropertyModelChangeProcessor.create(
+                propertyModel, mContentContainer, RecentActivityContainerViewBinder::bind);
 
+        mModelList = new ModelList();
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mModelList);
         adapter.registerType(
                 0,
                 new LayoutViewBuilder(R.layout.recent_activity_log_item),
                 RecentActivityListViewBinder::bind);
 
-        mContentContainer =
-                LayoutInflater.from(context)
-                        .inflate(R.layout.recent_activity_bottom_sheet, /* root= */ null);
         mContentRecyclerView = mContentContainer.findViewById(R.id.recent_activity_recycler_view);
         mContentRecyclerView.setAdapter(adapter);
 
@@ -107,6 +113,7 @@ public class RecentActivityListCoordinator {
         mMediator =
                 new RecentActivityListMediator(
                         context,
+                        propertyModel,
                         mModelList,
                         messagingBackendService,
                         faviconProvider,

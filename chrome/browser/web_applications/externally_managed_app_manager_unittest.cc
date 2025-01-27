@@ -15,7 +15,6 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -139,7 +138,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
             ExternalInstallSource::kInternalDefault);
     std::vector<GURL> urls;
     for (const auto& it : apps) {
-      base::ranges::copy(it.second, std::back_inserter(urls));
+      std::ranges::copy(it.second, std::back_inserter(urls));
     }
 
     std::sort(urls.begin(), urls.end());
@@ -301,7 +300,7 @@ class ExternallyAppManagerTest : public WebAppTest {
       ExternalInstallSource source,
       std::optional<ExternalInstallOptions> template_options = std::nullopt) {
     std::vector<ExternalInstallOptions> output;
-    base::ranges::transform(
+    std::ranges::transform(
         install_urls, std::back_inserter(output),
         [source, &template_options](const GURL& install_url) {
           ExternalInstallOptions options = template_options.value_or(

@@ -108,11 +108,11 @@ size_t FindIndex(ToolbarActionsModel& toolbar_model,
       base::i18n::ToLower(toolbar_model.GetExtensionName(action_id));
   auto sorted_action_ids = SortExtensionsByName(toolbar_model);
   return static_cast<size_t>(
-      base::ranges::lower_bound(sorted_action_ids, extension_name, {},
-                                [&toolbar_model](std::string id) {
-                                  return base::i18n::ToLower(
-                                      toolbar_model.GetExtensionName(id));
-                                }) -
+      std::ranges::lower_bound(sorted_action_ids, extension_name, {},
+                               [&toolbar_model](std::string id) {
+                                 return base::i18n::ToLower(
+                                     toolbar_model.GetExtensionName(id));
+                               }) -
       sorted_action_ids.begin());
 }
 

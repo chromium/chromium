@@ -35,6 +35,9 @@ struct AIWriterCreateOptions {
   AIWriterTone tone;
   AIWriterFormat format;
   AIWriterLength length;
+  array<string> expected_input_languages;
+  array<string> expected_context_languages;
+  string output_language;
 };
 
 // Interface for AIWriter that can stream the output string.

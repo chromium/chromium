@@ -66,7 +66,6 @@ export class SettingsPinSettingsElement extends SettingsPinSettingsElementBase {
   }
 
   authToken: string|null;
-  /* eslint-disable @typescript-eslint/naming-convention */
   private hasPin_: boolean;
   private showSetPinDialog_: boolean;
   private showPinAutosubmitDialog_: boolean;

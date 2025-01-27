@@ -5116,7 +5116,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4593021220803146968">&amp;Accéder à <ph name="URL" /></translation>
 <translation id="4593962599442730215">Modifier vos préférences</translation>
 <translation id="4594218792629569101">Sélectionnez "Marquer comme lu" pour déplacer la page vers le bas de votre liste</translation>
-<translation id="4594577641390224176">Vous recherchez des informations à propos du système ? Accédez à la page</translation>
 <translation id="4595560905247879544">Seul l'administrateur (<ph name="CUSTODIAN_NAME" />) est autorisé à modifier les applications et les extensions.</translation>
 <translation id="4596295440756783523">Certains de vos certificats enregistrés identifient ces serveurs.</translation>
 <translation id="4598345735110653698">Gérer les clés d'accès</translation>
@@ -6738,7 +6737,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5787420647064736989">Nom de l'appareil</translation>
 <translation id="5788367137662787332">Désolé, impossible d'installer au moins une partition du périphérique <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5789581866075720267">Pour importer des mots de passe dans le <ph name="BRAND" /> sur cet appareil, sélectionnez un fichier CSV.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Succès</translation>
 <translation id="5790651917470750848">Ce port existe déjà</translation>
 <translation id="5792295754950501287">Plus d'actions pour <ph name="CARD_DESCRIPTION" /></translation>
@@ -7157,7 +7155,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6086418630711763366">Vous pouvez parcourir les pages à l'aide d'un curseur de texte. Appuyez sur Ctrl+<ph name="KEY" /> pour la désactiver.</translation>
 <translation id="6086846494333236931">Installée par votre administrateur</translation>
 <translation id="6087286598828478206">Bloquer et quitter le groupe ?</translation>
-<translation id="6087746524533454243">Vous recherchez des informations à propos du navigateur ? Accédez à la page</translation>
 <translation id="6087960857463881712">Visage "Génial"</translation>
 <translation id="6088475950266477163">Paramètr&amp;es</translation>
 <translation id="608912389580139775">Pour ajouter cette page à votre liste de lecture, cliquez sur l'icône Ajouter aux favoris</translation>

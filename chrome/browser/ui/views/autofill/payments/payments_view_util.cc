@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"

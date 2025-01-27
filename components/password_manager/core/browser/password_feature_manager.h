@@ -36,42 +36,16 @@ class PasswordFeatureManager {
   // default store, etc) only exist on desktop. The getters exist on mobile too,
   // but have different (usually simpler) implementation.
 
-  // Whether the current signed-in user (aka unconsented primary account) has
-  // opted in to use the Google account storage for passwords (as opposed to
-  // local/profile storage).
+  // Whether the Google account storage for passwords is enabled for the current
+  // signed-in user. This always returns false for sync-the-feature users and
+  // signed out users. Account storage can be enabled/disabled via
+  // syncer::SyncUserSettings::SetSelectedType().
   virtual bool IsOptedInForAccountStorage() const = 0;
-
-  // Returns the default storage location for signed-in but non-syncing users
-  // (i.e. will new passwords be saved to locally or to the account by default).
-  // Always returns an actual value, never kNotSet.
-  virtual PasswordForm::Store GetDefaultPasswordStore() const = 0;
-
-  // Returns whether the default storage location for newly-saved passwords is
-  // explicitly set, i.e. whether the user has made an explicit choice where to
-  // save. This can be used to detect "new" users, i.e. those that have never
-  // interacted with an account-storage-enabled Save flow yet.
-  virtual bool IsDefaultPasswordStoreSet() const = 0;
 
   // Returns the "usage level" of the account-scoped password storage. See
   // definition of PasswordAccountStorageUsageLevel.
   virtual features_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const = 0;
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  // Sets opt-in to using account storage for passwords for the current
-  // signed-in user (unconsented primary account).
-  virtual void OptInToAccountStorage() = 0;
-
-  // Opts-out from using account storage for passwords for the
-  // current signed-in user (unconsented primary account). Additionally it sets
-  // the default password store to kProfileStore.
-  virtual void OptOutOfAccountStorage() = 0;
-
-  // Sets the default password store selected by user in prefs. This store is
-  // used for saving new credentials and adding blacking listing entries.
-  virtual void SetDefaultPasswordStore(const PasswordForm::Store& store) = 0;
-
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns whether it is required to update the GMSCore based on the

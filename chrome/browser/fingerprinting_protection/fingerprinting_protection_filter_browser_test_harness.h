@@ -60,6 +60,19 @@ class FingerprintingProtectionFilterBrowserTest
   static constexpr const char kSubresourceLoadsDisallowedForPage[] =
       "FingerprintingProtection.PageLoad.NumSubresourceLoads.Disallowed";
 
+  // Incognito PageLoad histogram names.
+  static constexpr const char kSubresourceLoadsTotalForIncognitoPage[] =
+      "FingerprintingProtection.PageLoad.NumSubresourceLoads.Total.Incognito";
+  static constexpr const char kSubresourceLoadsEvaluatedForIncognitoPage[] =
+      "FingerprintingProtection.PageLoad.NumSubresourceLoads."
+      "Evaluated.Incognito";
+  static constexpr const char kSubresourceLoadsMatchedRulesForIncognitoPage[] =
+      "FingerprintingProtection.PageLoad.NumSubresourceLoads."
+      "MatchedRules.Incognito";
+  static constexpr const char kSubresourceLoadsDisallowedForIncognitoPage[] =
+      "FingerprintingProtection.PageLoad.NumSubresourceLoads."
+      "Disallowed.Incognito";
+
   // Names of the performance measurement histograms.
   static constexpr const char kEvaluationTotalWallDurationForPage[] =
       "FingerprintingProtection.PageLoad.SubresourceEvaluation."
@@ -67,6 +80,14 @@ class FingerprintingProtectionFilterBrowserTest
   static constexpr const char kEvaluationTotalCPUDurationForPage[] =
       "FingerprintingProtection.PageLoad.SubresourceEvaluation."
       "TotalCPUDuration";
+
+  // Names of the performance measurement histograms for Incognito.
+  static constexpr const char kEvaluationTotalWallDurationForIncognitoPage[] =
+      "FingerprintingProtection.PageLoad.SubresourceEvaluation."
+      "TotalWallDuration.Incognito";
+  static constexpr const char kEvaluationTotalCPUDurationForIncognitoPage[] =
+      "FingerprintingProtection.PageLoad.SubresourceEvaluation."
+      "TotalCPUDuration.Incognito";
 
  protected:
   void SetUpOnMainThread() override;

@@ -283,7 +283,7 @@ void WriteSeedData(PrefService* local_state,
 }
 
 bool FieldTrialListHasAllStudiesFrom(const SignedSeedData& seed_data) {
-  return base::ranges::all_of(seed_data.study_names, [](const char* study) {
+  return std::ranges::all_of(seed_data.study_names, [](const char* study) {
     return base::FieldTrialList::TrialExists(study);
   });
 }

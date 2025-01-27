@@ -19,7 +19,6 @@
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -307,7 +306,7 @@ void ResourcePool::OnResourceReleased(size_t unique_id,
 
   // TODO(danakj): Should busy_resources be a map?
   auto busy_it =
-      base::ranges::find(busy_resources_, unique_id, &PoolResource::unique_id);
+      std::ranges::find(busy_resources_, unique_id, &PoolResource::unique_id);
   // If the resource isn't busy then we made it available for reuse already
   // somehow, even though it was exported to the ResourceProvider, or we evicted
   // a resource that was still in use by the display compositor.

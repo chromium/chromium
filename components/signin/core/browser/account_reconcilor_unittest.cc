@@ -4,6 +4,7 @@
 
 #include "components/signin/core/browser/account_reconcilor.h"
 
+#include <algorithm>
 #include <cstring>
 #include <map>
 #include <memory>
@@ -14,7 +15,6 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -693,7 +693,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
       for (Cookie& cookie : cookies_after_reconcile) {
         if (base::Contains(gaia_ids, cookie.gaia_id)) {
           cookie.is_valid = true;
-          gaia_ids.erase(base::ranges::find(gaia_ids, cookie.gaia_id));
+          gaia_ids.erase(std::ranges::find(gaia_ids, cookie.gaia_id));
         } else {
           DCHECK(!cookie.is_valid);
         }

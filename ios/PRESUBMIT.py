@@ -18,6 +18,7 @@ INCLUDE_PATTERN = r'^#include'
 PIPE_IN_COMMENT_PATTERN = r'//.*[^|]\|(?!\|)'
 IOS_PACKAGE_PATTERN = r'^ios'
 BOXED_BOOL_PATTERN = r'@\((YES|NO)\)'
+USER_DEFAULTS_PATTERN = r'\[NSUserDefaults standardUserDefaults]'
 
 def IsSubListOf(needle, hay):
     """Returns whether there is a slice of |hay| equal to |needle|."""
@@ -308,6 +309,28 @@ def _CheckOrderedStringFile(input_api, output_api):
     return [output_api.PresubmitPromptWarning(warning_message)]
 
 
+def _CheckNotUsingNSUserDefaults(input_api, output_api):
+    """ Checks the added code to limit new usage of NSUserDefaults """
+    user_defaults_regex = input_api.re.compile(USER_DEFAULTS_PATTERN)
+
+    errors = []
+    for f in input_api.AffectedFiles():
+        if (not f.LocalPath().endswith('.mm')):
+            continue
+        for line_num, line in f.ChangedContents():
+            if user_defaults_regex.search(line):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+
+    if not errors:
+        return []
+    warning_message = '\n'.join([
+        'A new use of NSUserDefaults was added. If this is a newly added key '
+        'consider storing it to PrefService instead.'
+    ] + errors) + '\n'
+
+    return [output_api.PresubmitPromptWarning(warning_message)]
+
+
 def CheckChangeOnUpload(input_api, output_api):
     results = []
     results.extend(_CheckBugInToDo(input_api, output_api))
@@ -318,4 +341,5 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckNoTearDownEGTest(input_api, output_api))
     results.extend(_CheckCanImproveTestUsingExpectNSEQ(input_api, output_api))
     results.extend(_CheckOrderedStringFile(input_api, output_api))
+    results.extend(_CheckNotUsingNSUserDefaults(input_api, output_api))
     return results

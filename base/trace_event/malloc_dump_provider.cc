@@ -593,8 +593,22 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
 
   auto total_committed_bytes = memory_stats->total_committed_bytes;
   auto total_active_bytes = memory_stats->total_active_bytes;
-  size_t wasted = total_committed_bytes - total_active_bytes;
-  DCHECK_GE(total_committed_bytes, total_active_bytes);
+  size_t wasted = 0;
+  // This should always be true, but only if our accounting of committed bytes
+  // is consistent, which it isn't. Indeed, with
+  // PartitionAllocFewerMemoryRegions, we may allocate a slot span before the
+  // feature state is known, in which case we commit less, then decommit it
+  // after, in which case we subtract the new commit unit, which is larger.
+  //
+  // Properly handling this would require remembering how much was committed,
+  // which complicates bookkeeping, especially as metadata space is
+  // limited. Since this is only used to report metrics, which are known to
+  // already be quite flawed, and the feature is meant to be temporary (either
+  // shipped or abandoned), don't handle this corner case (which should only
+  // happen for the initial partition, which is tiny anyway).
+  if (total_committed_bytes >= total_active_bytes) {
+    wasted = total_committed_bytes - total_active_bytes;
+  }
   size_t fragmentation =
       total_committed_bytes == 0 ? 0 : 100 * wasted / total_committed_bytes;
 

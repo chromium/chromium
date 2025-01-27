@@ -142,6 +142,7 @@ CSSSelector::CSSSelector(MatchType match_type,
 
 void CSSSelector::CreateRareData() {
   DCHECK_NE(Match(), kTag);
+  DCHECK_NE(Match(), kUniversalTag);
   if (HasRareData()) {
     return;
   }
@@ -280,10 +281,9 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
     case kAttributeEnd:
       return kClassLikeSpecificity;
     case kTag:
-      if (TagQName().LocalName() == UniversalSelectorAtom()) {
-        return 0;
-      }
       return kTagSpecificity;
+    case kUniversalTag:
+      return 0;
     case kInvalidList:
     case kPagePseudoClass:
       NOTREACHED();
@@ -301,7 +301,7 @@ unsigned CSSSelector::SpecificityForPage() const {
        component = component->NextSimpleSelector()) {
     switch (component->Match()) {
       case kTag:
-        s += TagQName().LocalName() == UniversalSelectorAtom() ? 0 : 4;
+        s += 4;
         break;
       case kPagePseudoClass:
         switch (component->GetPseudoType()) {
@@ -432,6 +432,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoFullscreen:
     case kPseudoFutureCue:
     case kPseudoHas:
+    case kPseudoHasInterest:
     case kPseudoHasSlotted:
     case kPseudoHasDatalist:
     case kPseudoHorizontal:
@@ -615,6 +616,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"future", CSSSelector::kPseudoFutureCue},
     {"grammar-error", CSSSelector::kPseudoGrammarError},
     {"granted", CSSSelector::kPseudoPermissionGranted},
+    {"has-interest", CSSSelector::kPseudoHasInterest},
     {"has-slotted", CSSSelector::kPseudoHasSlotted},
     {"horizontal", CSSSelector::kPseudoHorizontal},
     {"host", CSSSelector::kPseudoHost},
@@ -799,6 +801,11 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if (match->type == CSSSelector::kPseudoHasInterest &&
+      !RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   if (match->type == CSSSelector::kPseudoHasSlotted &&
       !RuntimeEnabledFeatures::CSSPseudoHasSlottedEnabled()) {
     return CSSSelector::kPseudoUnknown;
@@ -811,11 +818,11 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
 void CSSSelector::Show(int indent) const {
   printf("%*sSelectorText(): %s\n", indent, "", SelectorText().Ascii().c_str());
   printf("%*smatch_: %d\n", indent, "", Match());
-  if (Match() != kTag) {
+  if (Match() != kTag && Match() != kUniversalTag) {
     printf("%*sValue(): %s\n", indent, "", Value().Ascii().c_str());
   }
   printf("%*sGetPseudoType(): %d\n", indent, "", GetPseudoType());
-  if (Match() == kTag) {
+  if (Match() == kTag && Match() != kUniversalTag) {
     printf("%*sTagQName().LocalName(): %s\n", indent, "",
            TagQName().LocalName().Ascii().c_str());
   }
@@ -968,6 +975,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoFullscreen:
     case kPseudoFutureCue:
     case kPseudoHas:
+    case kPseudoHasInterest:
     case kPseudoHasSlotted:
     case kPseudoHorizontal:
     case kPseudoHost:
@@ -1341,7 +1349,7 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
 template <bool expand_pseudo_references>
 const CSSSelector* CSSSelector::SerializeCompound(StringBuilder& builder,
                                                   uintptr_t scope_id) const {
-  if (Match() == kTag && !IsImplicit()) {
+  if ((Match() == kTag || Match() == kUniversalTag) && !IsImplicit()) {
     SerializeNamespacePrefixIfNeeded(TagQName().Prefix(), g_star_atom, builder,
                                      IsAttributeSelector());
     SerializeIdentifierOrAny(TagQName().LocalName(), UniversalSelectorAtom(),
@@ -1424,7 +1432,7 @@ String CSSSelector::SelectorTextInternal(uintptr_t scope_id) const {
 
 String CSSSelector::SimpleSelectorTextForDebug() const {
   StringBuilder builder;
-  if (Match() == kTag && !IsImplicit()) {
+  if ((Match() == kTag || Match() == kUniversalTag) && !IsImplicit()) {
     SerializeNamespacePrefixIfNeeded(TagQName().Prefix(), g_star_atom, builder,
                                      IsAttributeSelector());
     SerializeIdentifierOrAny(TagQName().LocalName(), UniversalSelectorAtom(),
@@ -1464,6 +1472,7 @@ void CSSSelector::SetHasArgumentMatchInShadowTree() {
 static bool ValidateSubSelector(const CSSSelector* selector) {
   switch (selector->Match()) {
     case CSSSelector::kTag:
+    case CSSSelector::kUniversalTag:
     case CSSSelector::kId:
     case CSSSelector::kClass:
     case CSSSelector::kAttributeExact:
@@ -1710,6 +1719,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoFocusVisible:
     case kPseudoFocusWithin:
     case kPseudoFullPageMedia:
+    case kPseudoHasInterest:
     case kPseudoHasSlotted:
     case kPseudoHover:
     case kPseudoIndeterminate:

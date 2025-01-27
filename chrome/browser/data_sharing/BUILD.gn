@@ -115,6 +115,8 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/DescriptionAndTimestamp.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityActionHandler.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityBottomSheetContent.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityContainerProperties.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityContainerViewBinder.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityListCoordinator.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityListMediator.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityListProperties.java",

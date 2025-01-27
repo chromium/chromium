@@ -476,6 +476,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="3053332585453689122">Hutuma URL unazotembelea na sehemu ndogo ya maudhui ya ukurasa, vipakuliwa, shughuli kwenye viendelezi na maelezo ya mfumo kwenye Kipengele cha Kuvinjari Salama na Google ili zikaguliwe iwapo ni hatari.</translation>
 <translation id="3055102495753300780">Nafasi ya hifadhi ya data</translation>
 <translation id="3059270601560379555">Hoja mpya ya utafutaji</translation>
+<translation id="3064547930554042309">Kudhibiti Vipakuliwa</translation>
 <translation id="3072279342064724558">Nenosiri tayari lipo</translation>
 <translation id="3076846064362030967">Hutaondolewa katika Akaunti yako ya Google. Huenda <ph name="BEGIN_LINK" />aina nyingine za shughuli<ph name="END_LINK" /> zikahifadhiwa kwenye Akaunti yako ya Google ukiwa umeingia katika akaunti. Unaweza kuzifuta wakati wowote.
 
@@ -698,6 +699,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4154753961803534698">Tafuta ukitumia kamera</translation>
 <translation id="4158491215857439601">Kidhibiti cha Manenosiri</translation>
 <translation id="4163699139741158298">{count,plural, =1{Alamisho imehifadhiwa kwenye "{title}". Imehifadhiwa katika kifaa hiki pekee.}other{Alamisho {count} zimehifadhiwa kwenye "{title}" katika kifaa hiki pekee.}}</translation>
+<translation id="4164514562270305824">Futa Vipakuliwa Kiotomatiki</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> inayoisha kwa <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Usiruhusu</translation>
 <translation id="4172051516777682613">Onyesha kila mara</translation>
@@ -1016,6 +1018,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5579012242779565775">Ficha kipengele cha Orodha ya kusoma</translation>
 <translation id="5585019845078534178">Kadi</translation>
 <translation id="5595485650161345191">Badilisha anwani</translation>
+<translation id="559567008082979829">Weka mipangilio ili vipakuliwa vyako vifutwe baada ya mwezi mmoja.</translation>
 <translation id="5596627076506792578">Chaguo zaidi</translation>
 <translation id="560322036295180549">Imezimwa na shirika lako</translation>
 <translation id="5611107723541161735">Njia za mkato za tovuti ulizotembelea hivi majuzi kwenye kifaa hiki.</translation>

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 
@@ -15,7 +16,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -54,22 +54,22 @@ void OrderProfiles(std::vector<const AutofillProfile*>& profiles,
     case AddressDataManager::ProfileOrder::kNone:
       break;
     case AddressDataManager::ProfileOrder::kHighestFrecencyDesc:
-      base::ranges::sort(
+      std::ranges::sort(
           profiles, [comparison_time = AutofillClock::Now()](
                         const AutofillProfile* a, const AutofillProfile* b) {
             return a->HasGreaterRankingThan(b, comparison_time);
           });
       break;
     case AddressDataManager::ProfileOrder::kMostRecentlyModifiedDesc:
-      base::ranges::sort(
+      std::ranges::sort(
           profiles, [](const AutofillProfile* a, const AutofillProfile* b) {
             return a->usage_history().modification_date() >
                    b->usage_history().modification_date();
           });
       break;
     case AddressDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc:
-      base::ranges::sort(profiles, [](const AutofillProfile* a,
-                                      const AutofillProfile* b) {
+      std::ranges::sort(profiles, [](const AutofillProfile* a,
+                                     const AutofillProfile* b) {
         return a->usage_history().use_date() > b->usage_history().use_date();
       });
       break;
@@ -216,7 +216,7 @@ std::vector<const AutofillProfile*> AddressDataManager::GetProfilesForSettings()
 const AutofillProfile* AddressDataManager::GetProfileByGUID(
     const std::string& guid) const {
   std::vector<const AutofillProfile*> profiles = GetProfiles();
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       profiles, guid,
       [](const AutofillProfile* profile) { return profile->guid(); });
   return it != profiles.end() ? *it : nullptr;
@@ -256,7 +256,7 @@ void AddressDataManager::UpdateProfile(const AutofillProfile& profile) {
   // Duplicates can exist across record types.
   const std::vector<const AutofillProfile*> profiles =
       GetProfilesByRecordType(profile.record_type());
-  auto duplicate_profile_iter = base::ranges::find_if(
+  auto duplicate_profile_iter = std::ranges::find_if(
       profiles, [&profile](const AutofillProfile* other_profile) {
         return profile.guid() != other_profile->guid() &&
                other_profile->Compare(profile) == 0;
@@ -684,15 +684,15 @@ void AddressDataManager::OnAutofillProfileChanged(
     case AutofillProfileChange::UPDATE:
       if (existing_profile &&
           !existing_profile->EqualsForUpdatePurposes(profile)) {
-        profiles_.erase(base::ranges::find(profiles_, existing_profile->guid(),
-                                           &AutofillProfile::guid));
+        profiles_.erase(std::ranges::find(profiles_, existing_profile->guid(),
+                                          &AutofillProfile::guid));
         profiles_.push_back(profile);
       }
       break;
     case AutofillProfileChange::REMOVE:
       if (existing_profile) {
-        profiles_.erase(base::ranges::find(profiles_, existing_profile->guid(),
-                                           &AutofillProfile::guid));
+        profiles_.erase(std::ranges::find(profiles_, existing_profile->guid(),
+                                          &AutofillProfile::guid));
       }
       break;
   }

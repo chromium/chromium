@@ -28,7 +28,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -568,8 +567,8 @@ MenuButton* BookmarkBarView::GetMenuButtonForFolder(
   if (const BookmarkNode* node = folder.as_non_permanent_folder();
       node && node->is_folder() &&
       node->parent()->type() == BookmarkNode::Type::BOOKMARK_BAR) {
-    auto it = base::ranges::find(bookmark_buttons_, node,
-                                 &BookmarkButtonAndNode::second);
+    auto it = std::ranges::find(bookmark_buttons_, node,
+                                &BookmarkButtonAndNode::second);
     CHECK(it != bookmark_buttons_.end());
     return static_cast<MenuButton*>(it->first);
   }
@@ -1548,7 +1547,7 @@ void BookmarkBarView::Init() {
 }
 
 size_t BookmarkBarView::GetFirstHiddenNodeIndex() const {
-  const auto i = base::ranges::find_if_not(
+  const auto i = std::ranges::find_if_not(
       bookmark_buttons_, [](const BookmarkButtonAndNode& pair) {
         return pair.first->GetVisible();
       });
@@ -1800,8 +1799,8 @@ void BookmarkBarView::BookmarkNodeChangedImpl(const BookmarkNode* node) {
     return;
   }
 
-  auto it = base::ranges::find(bookmark_buttons_, node,
-                               &BookmarkButtonAndNode::second);
+  auto it = std::ranges::find(bookmark_buttons_, node,
+                              &BookmarkButtonAndNode::second);
   if (it == bookmark_buttons_.end()) {
     return;  // Buttons are created as needed.
   }
@@ -1986,8 +1985,8 @@ void BookmarkBarView::InvalidateDrop() {
 }
 
 const BookmarkNode* BookmarkBarView::GetNodeForSender(View* sender) const {
-  const auto i = base::ranges::find(bookmark_buttons_, sender,
-                                    &BookmarkButtonAndNode::first);
+  const auto i = std::ranges::find(bookmark_buttons_, sender,
+                                   &BookmarkButtonAndNode::first);
   DCHECK(i != bookmark_buttons_.cend());
   return i->second;
 }
@@ -2157,8 +2156,8 @@ void BookmarkBarView::InsertBookmarkButtonAtIndex(
 }
 
 size_t BookmarkBarView::GetIndexForButton(views::View* button) {
-  auto it = base::ranges::find(bookmark_buttons_, button,
-                               &BookmarkButtonAndNode::first);
+  auto it = std::ranges::find(bookmark_buttons_, button,
+                              &BookmarkButtonAndNode::first);
   if (it == bookmark_buttons_.cend()) {
     return static_cast<size_t>(-1);
   }

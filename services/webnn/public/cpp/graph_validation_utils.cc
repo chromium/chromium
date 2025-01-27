@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -297,7 +296,7 @@ base::expected<void, std::string> ValidateRecurrentNetworkOperand(
         label, base::StringPrintf("The %s operand should be a %zu-D tensor.",
                                   operand_name, expected_shape.size())));
   }
-  if (!base::ranges::equal(operand.shape(), expected_shape)) {
+  if (!std::ranges::equal(operand.shape(), expected_shape)) {
     return base::unexpected(ErrorWithLabel(
         label,
         base::StringPrintf("The %s operand shape is invalid.", operand_name)));
@@ -416,8 +415,8 @@ ValidateSplitAndInferOutput(const ContextProperties& context_properties,
                  attributes.splits)) {
     const auto& splits =
         absl::get<base::span<const uint32_t>>(attributes.splits);
-    if (base::ranges::any_of(splits,
-                             [](uint32_t split) { return split == 0; })) {
+    if (std::ranges::any_of(splits,
+                            [](uint32_t split) { return split == 0; })) {
       return base::unexpected(
           ErrorWithLabel(label, "All splits must be greater than zero."));
     }
@@ -868,7 +867,7 @@ ValidateScaleZeroPointOperandShapeIsCompatibleWithInput(
     }
   }
 
-  if (!base::ranges::equal(scale_shape, zero_point_shape)) {
+  if (!std::ranges::equal(scale_shape, zero_point_shape)) {
     return base::unexpected(ErrorWithLabel(
         label, "The shape of scale and zero point must be the same."));
   }
@@ -1338,7 +1337,7 @@ base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
   output_shape.reserve(checked_output_rank.ValueOrDie());
   for (uint32_t i = 0; i < input.Rank(); ++i) {
     if (i == axis) {
-      base::ranges::copy(indices.shape(), std::back_inserter(output_shape));
+      std::ranges::copy(indices.shape(), std::back_inserter(output_shape));
     } else {
       output_shape.push_back(input.shape()[i]);
     }
@@ -1458,10 +1457,10 @@ base::expected<OperandDescriptor, std::string> ValidateGatherNDAndInferOutput(
 
   std::vector<uint32_t> output_shape;
   output_shape.reserve(checked_output_rank.ValueOrDie());
-  base::ranges::copy(indices.shape().begin(), indices.shape().end() - 1,
-                     std::back_inserter(output_shape));
-  base::ranges::copy(input.shape().begin() + indices_last_dimension_size,
-                     input.shape().end(), std::back_inserter(output_shape));
+  std::ranges::copy(indices.shape().begin(), indices.shape().end() - 1,
+                    std::back_inserter(output_shape));
+  std::ranges::copy(input.shape().begin() + indices_last_dimension_size,
+                    input.shape().end(), std::back_inserter(output_shape));
 
   return OperandDescriptor::Create(context_properties, input.data_type(),
                                    std::move(output_shape), label);
@@ -1505,13 +1504,13 @@ base::expected<OperandDescriptor, std::string> ValidateGemmAndInferOutput(
 
   std::vector<uint32_t> shape_a = a.shape();
   if (attributes.a_transpose) {
-    base::ranges::reverse(shape_a);
+    std::ranges::reverse(shape_a);
   }
   // The second input 2-D tensor with shape [K, N] if bTranspose is false, or
   // [N, K] if bTranspose is true.
   std::vector<uint32_t> shape_b = b.shape();
   if (attributes.b_transpose) {
-    base::ranges::reverse(shape_b);
+    std::ranges::reverse(shape_b);
   }
   // The number of columns in the first matrix must be equal to the number of
   // rows in the second matrix.
@@ -1860,7 +1859,7 @@ ValidateLayerNormalizationAndInferOutput(
   // The dimensions for layerNormalization to reduce along.
   std::vector<uint32_t> reduction_dimensions;
   reduction_dimensions.reserve(axes.size());
-  base::ranges::transform(
+  std::ranges::transform(
       axes, std::back_inserter(reduction_dimensions),
       [&input_dimensions](uint32_t axis) { return input_dimensions[axis]; });
 
@@ -2635,11 +2634,11 @@ base::expected<OperandDescriptor, std::string> ValidateScatterNDAndInferOutput(
 
   std::vector<uint32_t> expected_updates_shape;
   expected_updates_shape.reserve(checked_updates_rank.ValueOrDie());
-  base::ranges::copy(indices.shape().begin(), indices.shape().end() - 1,
-                     std::back_inserter(expected_updates_shape));
-  base::ranges::copy(input.shape().begin() + indices_last_dim_size,
-                     input.shape().end(),
-                     std::back_inserter(expected_updates_shape));
+  std::ranges::copy(indices.shape().begin(), indices.shape().end() - 1,
+                    std::back_inserter(expected_updates_shape));
+  std::ranges::copy(input.shape().begin() + indices_last_dim_size,
+                    input.shape().end(),
+                    std::back_inserter(expected_updates_shape));
 
   if (expected_updates_shape != updates.shape()) {
     return base::unexpected(
@@ -2725,7 +2724,7 @@ base::expected<OperandDescriptor, std::string> ValidateWhereAndInferOutput(
 base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,
                                                uint32_t rank,
                                                std::string_view label) {
-  if (base::ranges::any_of(axes, [rank](uint32_t axis) {
+  if (std::ranges::any_of(axes, [rank](uint32_t axis) {
         return base::MakeStrictNum(axis) >= rank;
       })) {
     return base::unexpected(ErrorWithLabel(

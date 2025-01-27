@@ -296,7 +296,7 @@
 <translation id="2240366984605217732">Prekidač za raspored</translation>
 <translation id="2244834438220057800">zelene</translation>
 <translation id="225692081236532131">Status aktivacije</translation>
-<translation id="2265792117169966196">Odaberite i preuzmite model prijepisa za <ph name="LANGUAGE_NAME" /> jezik</translation>
+<translation id="2265792117169966196">Odabir i preuzimanje modela transkripcije za jezik <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Dodajte snimak ekrana</translation>
 <translation id="2268044343513325586">Traži detaljnije</translation>
 <translation id="2271469253353559191">Raspored tamnog načina rada</translation>
@@ -775,7 +775,7 @@
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4744944742468440486">Informacije u vezi s vašim odabirom</translation>
 <translation id="4750394297954878236">Prijedlozi</translation>
-<translation id="4763771683769971829">Popis dostupnih jezika</translation>
+<translation id="4763771683769971829">Lista dostupnih jezika</translation>
 <translation id="4771607256327216405">posvjetljenje tastature</translation>
 <translation id="4771923071974529837">sutra</translation>
 <translation id="4773299976671772492">Zaustavljeno</translation>
@@ -857,7 +857,7 @@
 <translation id="5095761549884461003">Iskopčajte USB kabl uređaja <ph name="DEVICE_NAME" />, a zatim ga ponovo umetnite da nastavite postupak ažuriranja</translation>
 <translation id="5099354524039520280">gore</translation>
 <translation id="5107243100836678918">Prečica bez tipke "<ph name="META_KEY" />" možda se ne slaže s prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da je nastavite koristiti ili pritisnite novu prečicu pomoću tipke "<ph name="KEY" />". <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Preuzimanje modela prijepisa za <ph name="LANGUAGE_NAME" /> jezik nije uspjelo. Pokušajte ponovo ili ponovo pokrenite Chromebook.</translation>
+<translation id="5107402373921342399">Nije moguće preuzeti model transkripcije za jezik <ph name="LANGUAGE_NAME" />. Ponovni pokušaj ili ponovno pokretanje Chromebooka</translation>
 <translation id="5108781503443873320">Slično:</translation>
 <translation id="5121677070210013200">Nije moguće preuzeti model transkripcije. Pokušajte ponovo ili ponovo pokrenite Chromebook.</translation>
 <translation id="5130848777448318809">Poniji</translation>
@@ -1281,7 +1281,7 @@
 <translation id="7049916119678019302">Preuzmite model transkripcije u Postavkama</translation>
 <translation id="7058278511608979688">Završi i sačuvaj</translation>
 <translation id="7059230779847288458">Punjenje – <ph name="TIME_VALUE" /> do potpune napunjenosti</translation>
-<translation id="7065336548231472971">Odabran je <ph name="LANGUAGE_NAME" /> jezik</translation>
+<translation id="7065336548231472971">Odabrano: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">tipka <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Pripremite uređaj</translation>
 <translation id="7076851914315147928">Odaberite pozadinsku sliku</translation>
@@ -1375,7 +1375,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="7415801143053185905">Veoma visoka HTTP latentnost</translation>
 <translation id="7418738250896500352">Previše je riječi za pojednostavljenje</translation>
 <translation id="7425037327577270384">Pomozi mi da napišem</translation>
-<translation id="7425832472614771259">Model prijepisa za <ph name="LANGUAGE_NAME" /> jezik preuzet je <ph name="PROGRESS_PERCENTAGE" />%</translation>
+<translation id="7425832472614771259">Model transkripcije za jezik <ph name="LANGUAGE_NAME" />, preuzeto <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Nije moguće onemogućiti ili ukloniti APN. Provjerite jesu li omogućeni APN-ovi (<ph name="ATTACH" />) onemogućeni ili uklonjeni.</translation>
 <translation id="7453118953486228603">Sažimanje odabranog teksta klikom</translation>
@@ -1412,7 +1412,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="7595982850646262331">Još <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Administrator web lokacije <ph name="MANAGER" /> je postavio kada se ovaj <ph name="DEVICE_TYPE" /> može koristiti.</translation>
 <translation id="7613724632293948900">Premještanje mišem ili tipkama sa strelicama.</translation>
-<translation id="7618216277886673749">Odaberite <ph name="LANGUAGE_NAME" /> jezik</translation>
+<translation id="7618216277886673749">Odabir jezika <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutralno</translation>
 <translation id="7620771111601174153">Saznajte više u Centru za pomoć</translation>
 <translation id="7625095758347640998">AI pozadinske slike</translation>

@@ -26,7 +26,6 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/parameter_pack.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -1121,7 +1120,7 @@ void LayerTreeImpl::SetBackdropFilterMutated(
 
 void LayerTreeImpl::AddPresentationCallbacks(
     std::vector<PresentationTimeCallbackBuffer::Callback> callbacks) {
-  base::ranges::move(callbacks, std::back_inserter(presentation_callbacks_));
+  std::ranges::move(callbacks, std::back_inserter(presentation_callbacks_));
 }
 
 std::vector<PresentationTimeCallbackBuffer::Callback>
@@ -1134,8 +1133,8 @@ LayerTreeImpl::TakePresentationCallbacks() {
 void LayerTreeImpl::AddSuccessfulPresentationCallbacks(
     std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
         callbacks) {
-  base::ranges::move(callbacks,
-                     std::back_inserter(successful_presentation_callbacks_));
+  std::ranges::move(callbacks,
+                    std::back_inserter(successful_presentation_callbacks_));
 }
 
 std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
@@ -1807,8 +1806,8 @@ LayerImpl* LayerTreeImpl::LayerById(int id) const {
 // TODO(masonf): If this shows up on profiles, this could use
 // a layer_element_map_ approach similar to LayerById().
 LayerImpl* LayerTreeImpl::LayerByElementId(ElementId element_id) const {
-  auto it = base::ranges::find(base::Reversed(*this), element_id,
-                               &LayerImpl::element_id);
+  auto it = std::ranges::find(base::Reversed(*this), element_id,
+                              &LayerImpl::element_id);
   if (it == rend())
     return nullptr;
   return *it;
@@ -2211,7 +2210,7 @@ void LayerTreeImpl::RegisterPictureLayerImpl(PictureLayerImpl* layer) {
 }
 
 void LayerTreeImpl::UnregisterPictureLayerImpl(PictureLayerImpl* layer) {
-  auto it = base::ranges::find(picture_layers_, layer);
+  auto it = std::ranges::find(picture_layers_, layer);
   CHECK(it != picture_layers_.end(), base::NotFatalUntil::M130);
   picture_layers_.erase(it);
 

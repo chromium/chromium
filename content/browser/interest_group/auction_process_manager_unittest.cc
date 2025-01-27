@@ -534,7 +534,7 @@ class AuctionProcessManagerTest
     auto* cache_remote = WaitForCacheRemote(handle);
     ASSERT_TRUE(cache_remote);
 
-    scoped_refptr<TrustedSignalsCacheImpl::Handle> trusted_signals_handle;
+    std::unique_ptr<TrustedSignalsCacheImpl::Handle> trusted_signals_handle;
     int partition_id_ignored = 0;
     // Request signals of the corresponding worklet type, on behalf of `origin`.
     // None of the other parameters matter.

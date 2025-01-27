@@ -153,7 +153,7 @@ public class EdgeToEdgeControllerFactory {
             return false;
         }
 
-        return EdgeToEdgeUtils.isEnabled()
+        return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
                 && !BuildInfo.getInstance().isAutomotive
                 // TODO(https://crbug.com/325356134) use UiUtils#isGestureNavigationMode instead.

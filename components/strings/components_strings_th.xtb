@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">ตั้งค่าคีย์ "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" ในพจนานุกรมเดียวกันกับคีย์ "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" ไม่ได้</translation>
 <translation id="1455413310270022028">ยางลบ</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{ดูรีวิว 0 รายการ}=1{ดูรีวิว 1 รายการ}other{ดูรีวิวทั้งหมด # รายการ}}</translation>
 <translation id="1458059624921545588">ผู้คนและสังคม</translation>
 <translation id="1458140305240870199">ชุดชั้นใน</translation>
 <translation id="1459693405370120464">สภาพอากาศ</translation>
@@ -1955,6 +1956,7 @@
 <translation id="4407758156081352648">เพื่อรักษาความปลอดภัย องค์กรของคุณไม่อนุญาตให้นำรหัสผ่านกลับมาใช้ใหม่ใน Chrome รหัสผ่านใน Chrome ได้รับการเข้ารหัสเพื่อปกป้องความเป็นส่วนตัวของผู้ใช้</translation>
 <translation id="4408413947728134509">คุกกี้ <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">การกําหนดค่านี้ทําเครื่องหมายเป็น "ติดตั้งได้" แต่ไม่ได้ระบุอิมเมจสําหรับสถาปัตยกรรมนี้ จึงติดตั้งไม่ได้</translation>
+<translation id="4412377069090572315">ความคิดเห็นจากผู้อื่น</translation>
 <translation id="4414452699610169758">ใช้เครื่องมือจัดการรหัสผ่านบน Google และการป้อนข้อความอัตโนมัติของ Chrome เพื่อบันทึกและป้อนรหัสผ่าน วิธีการชำระเงิน และที่อยู่</translation>
 <translation id="4414515549596849729">คุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="4415156962929755728">พลาสติก (เงามาก)</translation>
@@ -2776,6 +2778,7 @@
 <translation id="5937560539988385583">แปลหน้าเว็บแล้ว</translation>
 <translation id="5938153366081463283">เพิ่มบัตรเสมือน</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">ข้อมูลนี้มาจากเว็บไซต์รีวิวอิสระ เช่น Trustpilot, ScamAdviser, Google และอื่นๆ ข้อมูลสรุปสร้างขึ้นด้วย AI</translation>
 <translation id="5944297261866530437">ผ้า (เงามาก)</translation>
 <translation id="5950901984834744590">มีดโกนและเครื่องโกน</translation>
 <translation id="5951495562196540101">ลงทะเบียนด้วยบัญชีผู้ใช้ทั่วไปไม่ได้ (มีใบอนุญาตแบบแพ็กเกจ)</translation>
@@ -3142,6 +3145,7 @@
 <translation id="6567832540451970450">ผู้ดูแลระบบอนุญาตให้ใช้<ph name="PERMISSION" />สำหรับเว็บไซต์นี้</translation>
 <translation id="6568793038316600992">ปุ่มจัดการวิธีการชําระเงิน เปิดใช้งานเพื่อจัดการการชำระเงินและข้อมูลบัตรเครดิตในการตั้งค่า Chrome</translation>
 <translation id="6569060085658103619">คุณกำลังดูหน้าส่วนขยาย</translation>
+<translation id="6572867903637058088">ข้อมูลนี้มีประโยชน์ไหม</translation>
 <translation id="6573200754375280815">เจาะรูด้านขวา 2 รู</translation>
 <translation id="6574762126505704998">เติม</translation>
 <translation id="6575408526598156416">บันทึกในบัญชี</translation>
@@ -4322,9 +4326,11 @@
 <translation id="8672535691554698269">เครือข่ายคอมพิวเตอร์</translation>
 <translation id="8675446170353411473">กำลังอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">ไม่หน่วงเวลา</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{ลบตาราง {COUNT} รายการแล้ว}other{ลบตาราง {COUNT} รายการแล้ว}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, คำตอบ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">ไม่สามารถโหลดหน้าเว็บที่ <ph name="PAGE" /> เนื่องจาก:</translation>
 <translation id="8682297334444610648">เกมไดโนเสาร์ แตะเพื่อเล่น</translation>
+<translation id="8685225035093721011">รีวิวร้านค้า</translation>
 <translation id="8686424632716064939">การรักษาความปลอดภัยของคอมพิวเตอร์</translation>
 <translation id="8687278439622293018">ลบรายการ <ph name="ENTRY_VOICEOVER" /> แล้ว</translation>
 <translation id="8687429322371626002">อุปกรณ์และบัญชีของคุณจัดการโดย <ph name="MANAGER" /></translation>

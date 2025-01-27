@@ -47,6 +47,9 @@ class FakeProfileReportGeneratorDelegate
   void GetExtensionRequest(
       enterprise_management::ChromeUserProfileInfo* report) override;
 
+  void GetProfileId(
+      enterprise_management::ChromeUserProfileInfo* report) override;
+
   std::unique_ptr<policy::PolicyConversionsClient> MakePolicyConversionsClient(
       bool is_machine_scope) override;
 

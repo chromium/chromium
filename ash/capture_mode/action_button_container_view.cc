@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/action_button_container_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -16,7 +17,6 @@
 #include "ash/style/typography.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

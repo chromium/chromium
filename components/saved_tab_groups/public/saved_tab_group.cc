@@ -5,14 +5,13 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 
 #include <algorithm>
+#include <functional>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -135,7 +134,7 @@ bool SavedTabGroup::ContainsTab(const LocalTabID& local_tab_id) const {
 
 std::optional<int> SavedTabGroup::GetIndexOfTab(
     const base::Uuid& saved_tab_guid) const {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       saved_tabs(), [saved_tab_guid](const SavedTabGroupTab& tab) {
         return tab.saved_tab_guid() == saved_tab_guid;
       });
@@ -147,10 +146,10 @@ std::optional<int> SavedTabGroup::GetIndexOfTab(
 
 std::optional<int> SavedTabGroup::GetIndexOfTab(
     const LocalTabID& local_tab_id) const {
-  auto it = base::ranges::find_if(saved_tabs(),
-                                  [local_tab_id](const SavedTabGroupTab& tab) {
-                                    return tab.local_tab_id() == local_tab_id;
-                                  });
+  auto it = std::ranges::find_if(saved_tabs(),
+                                 [local_tab_id](const SavedTabGroupTab& tab) {
+                                   return tab.local_tab_id() == local_tab_id;
+                                 });
   if (it != saved_tabs().end()) {
     return it - saved_tabs().begin();
   }
@@ -300,8 +299,8 @@ SavedTabGroup& SavedTabGroup::RemoveTabFromSync(
     if (last_removed_tabs_metadata_.size() > kMaxLastRemovedTabsMetadata) {
       // Erase only one minimal element because it should be the case in
       // practice.
-      last_removed_tabs_metadata_.erase(base::ranges::min_element(
-          last_removed_tabs_metadata_, base::ranges::less(),
+      last_removed_tabs_metadata_.erase(std::ranges::min_element(
+          last_removed_tabs_metadata_, std::ranges::less(),
           [](const auto& guid_and_metadata) {
             return guid_and_metadata.second.removal_time;
           }));
@@ -437,6 +436,7 @@ bool SavedTabGroup::IsSyncEquivalent(const SavedTabGroup& other) const {
 SavedTabGroup SavedTabGroup::CloneAsSharedTabGroup(
     CollaborationId collaboration_id) const {
   SavedTabGroup shared_group = CopyBaseFieldsWithTabs();
+  shared_group.is_transitioning_to_shared_ = true;
   shared_group.SetCollaborationId(std::move(collaboration_id));
   shared_group.SetOriginatingTabGroupGuid(saved_guid());
   return shared_group;
@@ -461,6 +461,10 @@ bool SavedTabGroup::IsPendingSanitization() const {
 // static
 size_t SavedTabGroup::GetMaxLastRemovedTabsMetadataForTesting() {
   return kMaxLastRemovedTabsMetadata;
+}
+
+void SavedTabGroup::MarkTransitionedToShared() {
+  is_transitioning_to_shared_ = false;
 }
 
 void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid,

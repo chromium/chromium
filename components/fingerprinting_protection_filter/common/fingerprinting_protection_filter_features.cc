@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "fingerprinting_protection_filter_features.h"
 
 namespace fingerprinting_protection_filter::features {
 
@@ -94,6 +95,13 @@ const base::FeatureParam<bool> kEnableConsoleLoggingNonIncognito{
 const base::FeatureParam<bool> kEnableConsoleLoggingIncognito{
     &kEnableFingerprintingProtectionFilterInIncognito,
     kEnableConsoleLoggingParam, false};
+
+const base::FeatureParam<std::string> kExperimentVersionNonIncognito{
+    &kEnableFingerprintingProtectionFilter, kExperimentVersionParam, ""};
+
+const base::FeatureParam<std::string> kExperimentVersionIncognito{
+    &kEnableFingerprintingProtectionFilterInIncognito, kExperimentVersionParam,
+    ""};
 
 const base::FeatureParam<int> kRefreshHeuristicExceptionThresholdNonIncognito{
     &kEnableFingerprintingProtectionFilter,

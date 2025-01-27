@@ -897,6 +897,7 @@ public class NavigationTransitionsTest {
     /** Tests that the favicon bitmap when navigating back to a native page is not null. */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/392629755")
     public void testFallbackUxFaviconForNativePages() throws TimeoutException {
         // This test is for both 3-button and gesture nav mode.
         if (mTestNavigationMode == NAVIGATION_MODE_GESTURAL

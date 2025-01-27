@@ -40,6 +40,7 @@ class VIEWS_EXPORT TableHeader : public View {
   int GetCellHorizontalPadding() const;
   int GetResizeBarVerticalPadding() const;
   int GetSeparatorHorizontalPadding() const;
+  ui::ColorId GetSeparatorHorizontalColorId() const;
   int GetSortIndicatorWidth() const;
   gfx::Font::Weight GetFontWeight() const;
 

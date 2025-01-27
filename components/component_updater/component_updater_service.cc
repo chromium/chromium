@@ -4,6 +4,7 @@
 
 #include "components/component_updater/component_updater_service.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -20,7 +21,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -245,7 +245,7 @@ bool CrxUpdateService::DoUnregisterComponent(const std::string& id) {
 
   const bool result = components_.find(id)->second.installer->Uninstall();
 
-  const auto pos = base::ranges::find(components_order_, id);
+  const auto pos = std::ranges::find(components_order_, id);
   if (pos != components_order_.end()) {
     components_order_.erase(pos);
   }

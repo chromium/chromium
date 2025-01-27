@@ -158,6 +158,10 @@ class TaskManagerTableModel : public TaskManagerObserver,
   // group of tasks.
   bool IsTaskFirstInGroup(size_t row_index) const;
 
+  // Checks whether the task falls in `Tabs`, `Extensions` or `Systems`
+  // category.
+  bool ShouldKeepTaskForSupportedType(TaskId task_id) const;
+
   // Determines whether a TaskId should be kept based on the DisplayCategory.
   bool ShouldKeepTask(TaskId task_id) const;
 

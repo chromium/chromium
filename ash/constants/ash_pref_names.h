@@ -2638,6 +2638,11 @@ inline constexpr char kSunfishLauncherNudgeLastShown[] =
 inline constexpr char kQuickInsertFeatureTourCompletedPref[] =
     "ash.picker.feature_tour.completed";
 
+// A string preference indicating the name of the OS level task scheduler
+// configuration to use.
+inline constexpr char kSchedulerConfiguration[] =
+    "chromeos.scheduler_configuration";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------

@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/serial/serial_chooser_controller.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
@@ -185,7 +185,7 @@ size_t SerialChooserController::NumOptions() const {
 bool SerialChooserController::DisplayServiceClassId(
     const device::mojom::SerialPortInfo& port) const {
   CHECK_EQ(port.type, device::mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM);
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       ports_, [&port](const device::mojom::SerialPortInfoPtr& p) {
         return p->token != port.token &&
                p->type == SerialPortType::BLUETOOTH_CLASSIC_RFCOMM &&
@@ -348,8 +348,8 @@ void SerialChooserController::OnPortAdded(
 
 void SerialChooserController::OnPortRemoved(
     const device::mojom::SerialPortInfo& port) {
-  const auto it = base::ranges::find(ports_, port.token,
-                                     &device::mojom::SerialPortInfo::token);
+  const auto it = std::ranges::find(ports_, port.token,
+                                    &device::mojom::SerialPortInfo::token);
   if (it != ports_.end()) {
     const size_t index = it - ports_.begin();
     ports_.erase(it);

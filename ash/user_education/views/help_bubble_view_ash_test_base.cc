@@ -4,6 +4,7 @@
 
 #include "ash/user_education/views/help_bubble_view_ash_test_base.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -13,7 +14,6 @@
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/views/help_bubble_view_ash.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/vector_icons/vector_icons.h"
@@ -34,7 +34,7 @@ using user_education::HelpBubbleParams;
 
 std::u16string Repeat(std::u16string_view str, size_t times) {
   std::vector<std::u16string_view> strs(times);
-  base::ranges::fill(strs, str);
+  std::ranges::fill(strs, str);
   return base::JoinString(strs, u" ");
 }
 

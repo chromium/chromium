@@ -6,20 +6,26 @@
 
 The edits have the following format:
     ...
-    {lhs_node1}@{rhs_node1}
-    {node_n}
-    {lhs_node2}@{rhs_node2}
+    e{lhs_node1}@{rhs_node2}           # Edge from node 1 to node 2.
+    e{lhs_node2}@{rhs_node3}           # Edge from node 2 to node 3.
+    e{lhs_node3}@{rhs_node4}           # Edge from node 3 to node 4.
     ...
+    s{node_1}                          # Source node of the graph that triggers
+                                       # a rewrite (i.e. buffer usage)
+    ...
+    f{lhs_key}@{rhs_key}@{replacement} # Span frontier replacement applied if
+                                       # lhs_key is not rewritten but rhs_key
+                                       # is.
     ...
 Where lhs_node, rhs_node, and node_n represent a node's text representation
 generated using the spanification tool's Node::ToString() function.
 
 The string representation has the following format:
-`{is_buffer\,r:::<file path>:::<offset>:::<length>
+`{r:::<file path>:::<offset>:::<length>
 :::<replacement text>\,include-user-header:::<file path>:::-1:::-1
-:::<include text>\,size_info_available\,is_data_change\,is_dependent}`
+:::<include text>\,size_info_available\,is_dependent}`
 
-where `is_buffer`,`size_info_available`, `is_data_change` and `is_dependent`
+where `size_info_available`, and `is_dependent`
 are booleans represented as  0 or 1.
 
 extract_edits.py takes input that is concatenated from multiple tool
@@ -27,9 +33,9 @@ invocations and extract just the edits with the following steps:
 1- Construct the adjacency list of nodes
    (a pairs of nodes represents an edge in the directed graph)
 
-2- Determine whether size info is available for a given buffer node.
+2- Determine whether size info is available for a given source node.
 
-3- Run `DFS` starting from buffer nodes whose size info is available and emit
+3- Run `DFS` starting from source nodes whose size info is available and emit
    edits for reachable nodes.
 
 4- Adapt dereference expressions and add data changes where necessary.
@@ -48,7 +54,6 @@ https://docs.google.com/document/d/1hUPe21CDdbT6_YFHl03KWlcZqhNIPBAfC-5N5DDY2OE/
 import sys
 import urllib.parse
 
-import resource
 from os.path import expanduser
 import pprint
 
@@ -62,28 +67,32 @@ class Component:
         # Changes associated with the connected component.
         self.changes = set()
 
+        # Frontier changes are either accepted or rejected. The two dictionaries
+        # are used to detect conflicts in the frontier changes. This might
+        # happen in rare cases where C++ macros are used. In case of conflict,
+        # the whole component is discarded.
+        self.frontier_changes_accepted = set()
+        self.frontier_changes_rejected = set()
+
         # `Component.all` can be used to iterate over all components.
         Component.all.add(self)
 
-
 class Node:
-    # Mapping in between the replacement directive and the node.
+    # Mapping in between the node's key and the node.
     key_to_node = dict()
 
-    def __init__(self, is_buffer, replacement, include_directive,
-                 size_info_available, is_dependent, is_data_change) -> None:
-        self.is_buffer = is_buffer
+    def __init__(self, replacement, include_directive, size_info_available,
+                 is_dependent) -> None:
         self.replacement = replacement
         self.include_directive = include_directive
         self.is_dependent = is_dependent
-        self.is_data_change = is_data_change
 
         # Neighbors of the node in the graph. The graph is directed,
         # flowing from lhs to rhs.
         self.neighbors_directed = set()
         self.neighbors_undirected = set()
 
-        # Property to tracker whether the node is "connected" to a buffer node.
+        # Property to track whether the node is "connected" to a source node.
         # This is set from DFS(...)
         self.visited = False
 
@@ -111,20 +120,18 @@ class Node:
     # Static method to create a node from its string representation. This
     # deduplicate nodes by storing them in a dictionary.
     @classmethod
-    def from_string(cls: type, txt: str):
+    def get_or_create(cls: type, txt: str):
         # Skipping the first and last character that correspond to the curly
         # braces denoting the start and end of a serialized node.
         x = txt[1:-1].split('\\,')
 
         # Expect exactly 6 elements that correspond to the following node
         # attributes:
-        # - is_buffer
         # - replacement
         # - include_directive
         # - size_info_available
         # - is_dependent
-        # - is_data_change
-        assert len(x) == 6, txt
+        assert len(x) == 4, txt
 
         # Value are escaped to avoid conflicts with the separator. Unescape
         # them.
@@ -144,7 +151,6 @@ class Node:
     def __repr__(self) -> str:
         result = [
             f"Node {hash(self)} {{",
-            f"  is_buffer: {self.is_buffer}",
             f"  replacement: {self.replacement}",
             f"  include_directive: {self.include_directive}",
             f"  size_info_available: {self.size_info_available}",
@@ -153,8 +159,8 @@ class Node:
         ]
         return "\n".join(result)
 
-    # This is not parsable by from_string but is useful for debugging the graph
-    # of nodes.
+    # This is not parsable by get_or_create but is useful for debugging the
+    # graph of nodes.
     def to_debug_string(self) -> str:
         return repr(self)
 
@@ -188,7 +194,7 @@ def DFS(node: Node):
 
 def SizeInfoAvailable(node: Node):
     """
-    Determines whether size information is available for a buffer node and its
+    Determines whether size information is available for a source node and its
     neighbors_directed. Updates the node's size_info_available attribute.
 
     Args:
@@ -232,35 +238,62 @@ def SizeInfoAvailable(node: Node):
 
 
 def main():
+    # Since the tool is invoked from multiple compile units, we are using sets
+    # to deduplicate what was visible from multiple compile units.
+
+    # A set of source nodes that trigger the rewrite.
+    sources = set()
+
+    # Change to apply at the edge in between rewritten and non-rewritten nodes.
+    frontiers = set()
+
     # Collect from every compile units the nodes and edges of the graph:
     for line in sys.stdin:
         line = line.rstrip('\n\r')
-        nodes = line.split('@')
 
-        # Single nodes are buffer nodes; mark them as such.
-        if len(nodes) == 1:
-            # `from_string()` has the side effect of making the node
-            # available in class member `Node.key_to_node`.
-            buffer_node = Node.from_string(nodes[0])
-            buffer_node.is_buffer = '1'
+        # The first character of the line denotes the type of the line:
+        # - 'e': Edge in between two nodes.
+        # - 's': Source node of the graph triggering the rewrite.
+        # - 'f': Span frontier change.
+        assert line[0] in ['e', 's', 'f'], "Unknown line type: " +\
+               line[0] + " in line: " + line
+
+        # Source node:
+        if line[0] == 's':
+            sources.add(line[1:])
             continue
 
-        # Else, parse the edge between two nodes:
-        assert len(nodes) == 2, "Length of nodes: " + str(len(nodes))
-        lhs = Node.from_string(nodes[0])
-        rhs = Node.from_string(nodes[1])
+        # Edge in between two nodes:
+        if line[0] == 'e':
+            nodes = line[1:].split('@')
+            assert len(nodes) == 2
+            lhs = Node.get_or_create(nodes[0])
+            rhs = Node.get_or_create(nodes[1])
 
-        # Directed edge:
-        lhs.neighbors_directed.add(rhs)
+            # Directed edge:
+            lhs.neighbors_directed.add(rhs)
 
-        # Undirected edge:
-        lhs.neighbors_undirected.add(rhs)
-        rhs.neighbors_undirected.add(lhs)
+            # Undirected edge:
+            lhs.neighbors_undirected.add(rhs)
+            rhs.neighbors_undirected.add(lhs)
+            continue
 
-    # Determine whether size information is available for each buffer node:
-    for node in Node.all():
-        if node.is_buffer == '1':
-            SizeInfoAvailable(node)
+        # Span frontier change:
+        if line[0] == 'f':
+            frontiers.add(line[1:])
+            continue
+
+        assert False, "Unreachable code"
+
+    # Mark the source nodes:
+    source_nodes = []
+    for source in sources:
+        source_node = Node.from_key(source)
+        assert source_node is not None
+        source_nodes.append(source_node)
+
+        # Determine whether size information is available from this source.
+        SizeInfoAvailable(source_node)
 
     # Identify all the connected components in the undirected graph. This is
     # exploring the graph in depth-first search and assigning the same component
@@ -278,20 +311,15 @@ def main():
             for neighbor in current.neighbors_undirected:
                 stack.append(neighbor)
 
-    # Collect the changes to apply. Starting from buffers nodes whose size info
+    # Collect the changes to apply. Starting from sources nodes whose size info
     # could be determined.
-    for node in Node.all():
-
-        # We only want to rewrite components connected to a buffer node.
-        if node.is_buffer != '1':
-            continue
-
-        # Some buffers might not have their size info available. We can't
+    for node in source_nodes:
+        # Some sources might not have their size info available. We can't
         # rewrite those.
         if node.size_info_available != '1':
             continue
 
-        # Collect the changes to apply. We start from buffer nodes whose size
+        # Collect the changes to apply. We start from sources nodes whose size
         # info is available and explore the graph in depth-first search.
         DFS(node)
 
@@ -306,56 +334,27 @@ def main():
 
     # At the edge in between rewritten and non-rewritten nodes, we need
     # to add a call to `.data()` to access the pointer from the span:
-    for node in Node.all():
+    for frontier in frontiers:
+        (lhs_key, rhs_key, replacement) = frontier.split('@')
+        lhs_node = Node.from_key(lhs_key)
+        rhs_node = Node.from_key(rhs_key)
 
-        if node.is_data_change != '1':
-            continue
+        apply_frontier = rhs_node.visited and not lhs_node.visited
+        if apply_frontier:
+            lhs_node.component.frontier_changes_accepted.add(replacement)
+        else:
+            lhs_node.component.frontier_changes_rejected.add(replacement)
 
-        # A data change needs to be added if lhs was not rewritten and rhs was.
-        # The lhs key is stored in the data_change_node's include_directive.
-        # Check if the lhs key is in the set of visited nodes (i.e lhs was
-        # rewritten). If lhs was rewritten, we don't need to add `.data()`
-        if Node.from_key(node.include_directive).visited:
-            continue
+    # Do or do not, there is no try. Discard components with conflicting
+    # frontier changes. This happens in rare cases where C++ macros are used.
+    # The whole component is discarded in case of conflict, because we can't
+    # satisfy the constraints.
+    for component in Component.all:
+        if component.frontier_changes_accepted & component.frontier_changes_rejected:
+            component.changes.clear()
+            continue;
 
-        # Expect at least single neighbor (usually just one).
-        #
-        # However when you have a MACRO that references a variable that isn't
-        # passed as an argument to that MACRO for example:
-        #
-        # #define MY_MACRO(name) CallFunc(entry, name)
-        #
-        # When this macro is used in different locations, each textual
-        # replacement causes a single rhs to be created pointing at the location
-        # inside the macro (I.E. the |entry| in MY_MACRO). This results in one
-        # lhs (the CallFunc's entry parameter) being referenced by two rhs (each
-        # macro usage). In that case ALL neighbors should have been visited or
-        # NONE should have. I.E. we rewrite all or none. Otherwise a compile
-        # error will naturally result.
-        num_nodes = len(node.neighbors_directed)
-        assert num_nodes >= 1, "and node: " + node.to_debug_string()
-
-        # If the rhs node was visited (i.e rewritten), then we need to apply the
-        # data change.
-        visited = 0
-        neighbors = list(node.neighbors_directed)
-        for neighbor in neighbors:
-            if neighbor.visited:
-                visited += 1
-                # In this case, rhs was rewritten, and lhs was not, we need to
-                # add the corresponding `.data()`
-                neighbor.component.changes.add(node.replacement)
-        # It is worth noting that while this is the correct assertion, and there
-        # are tests that cover this assertion, in the actual chromium code base
-        # we don't ever seem to run into such macros so it is usually num_nodes
-        # == 1 and when it isn't visited will be zero. However due to the tests
-        # we assert that either nothing gets rewritten or everything gets
-        # rewritten.
-        assert visited == 0 or visited == num_nodes, ("node: ",
-                                                      node.to_debug_string(),
-                                                      " num: ", str(num_nodes),
-                                                      " visited: ",
-                                                      str(visited))
+        component.changes |= component.frontier_changes_accepted
 
     # Emit the changes:
     # - ~/scratch/patches.txt: A summary of each atomic change.
@@ -382,6 +381,7 @@ def main():
     summary_file.close()
 
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

@@ -4,9 +4,10 @@
 
 #include "components/optimization_guide/core/model_util.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -31,8 +32,8 @@ TEST(ModelUtilTest, ModelCacheKeyHash) {
   EXPECT_NE(GetModelCacheKeyHash(CreateModelCacheKey("en-US")),
             GetModelCacheKeyHash(CreateModelCacheKey("en-UK")));
   EXPECT_TRUE(
-      base::ranges::all_of(GetModelCacheKeyHash(CreateModelCacheKey("en-US")),
-                           [](char ch) { return base::IsHexDigit(ch); }));
+      std::ranges::all_of(GetModelCacheKeyHash(CreateModelCacheKey("en-US")),
+                          [](char ch) { return base::IsHexDigit(ch); }));
 }
 
 TEST(ModelUtilTest, PredictionModelVersionInKillSwitch) {

@@ -483,6 +483,7 @@
 <translation id="1317637799698924700">‏ایستگاه پایه اتصال در حالت سازگار با «USB نوع C» کار می‌کند.</translation>
 <translation id="1319983966058170660">دکمه برگشت صفحه فرعی <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">در <ph name="SAVED_PASSWORDS_STORE" /> گذرواژه‌های ذخیره‌شده‌تان را مشاهده و مدیریت کنید</translation>
+<translation id="132539964543492755">‏از «x» برای تغییر دادن انتخاب دکمه موشواره بین دکمه چپ، دکمه راست، و هر دو استفاده کنید</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">‏بلیت‌های Kerberos</translation>
 <translation id="1327495825214193325">‏برای فعال‌سازی اشکال‌زدایی ADB (پل اشکال‌زدایی android)، بازراه‌اندازی <ph name="DEVICE_TYPE" /> لازم است. برای غیرفعال کردن این تنظیم، باید به تنظیمات کارخانه بازنشانی کنید.</translation>
@@ -1686,6 +1687,7 @@
 <translation id="2155772377859296191">‏‎<ph name="WIDTH" /> × <ph name="HEIGHT" />‎ به‌نظر می‌رسد</translation>
 <translation id="2156294658807918600">عامل خدماتی: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">پیمایش و بزرگ‌نمایی برگه‌های هم‌رسانی‌شده مجاز است</translation>
+<translation id="2157457598652721267">از «/» و «-» برای انتخاب دکمه‌های چپ یا راست موشواره استفاده کنید. از «*» برای انتخاب هر دو استفاده کنید.</translation>
 <translation id="2157474325782140681">‏برای دریافت ویژگی‌های اضافی، از ایستگاه پایه اتصال Dell که برای کار با این Chromebook طراحی شده است، استفاده کنید.</translation>
 <translation id="215753907730220065">خروج از حالت تمام صفحه</translation>
 <translation id="2157779167749714207">‏‫<ph name="DEVICE_TYPE" /> شما با Gemini ارائه می‌شود</translation>
@@ -1790,6 +1792,7 @@
 <translation id="2233502537820838181">&amp;اطلاعات بیشتر</translation>
 <translation id="223356358902285214">فعالیت‌ها در وب و برنامه</translation>
 <translation id="2234065144797002621">نهر</translation>
+<translation id="2234208862050358325">‏از کلیدهای 1، 2، 3، q،‏ e،‏ a،‏ s،‏ d برای حرکت دادن مکان‌نما استفاده کنید</translation>
 <translation id="2234827758954819389">راهنمای حریم خصوصی</translation>
 <translation id="2234876718134438132">‏همگام‌سازی و سرویس‌های Google</translation>
 <translation id="2235344399760031203">کوکی‌های طرف سوم مسدود شده‌اند</translation>
@@ -1809,6 +1812,7 @@
 <translation id="2249111429176737533">باز کردن به‌عنوان پنجره برگه‌دار</translation>
 <translation id="2249605167705922988">برای مثال 5-1، 8، 13-11</translation>
 <translation id="2249635629516220541">سفارشی کردن اطلاعات مورداستفاده سایت‌ها برای نمایش آگهی به شما</translation>
+<translation id="22505994009453896">کنترل کردن مکان‌نمای موشواره با صفحه‌کلید عددی</translation>
 <translation id="2250624716625396929">این برگه از دوربین یا میکروفن شما استفاده می‌کند</translation>
 <translation id="2251218783371366160">بازکردن با نظاره‌گر سیستم</translation>
 <translation id="225163402930830576">بازآوری شبکه‌ها</translation>
@@ -2005,6 +2009,7 @@
 <translation id="236939127352773362">وقتی دستگاه‌ها در حال هم‌رسانی با اطراف باشند</translation>
 <translation id="2371076942591664043">پس از &amp;تکمیل باز شود</translation>
 <translation id="237336063998926520">‏استفاده از نشانی IP برای تعیین مکان</translation>
+<translation id="2373499590298659902">از «0» برای فشار دادن و نگه داشتن دکمه موشواره استفاده کنید</translation>
 <translation id="2373666622366160481">متناسب با اندازه کاغذ</translation>
 <translation id="2375406435414127095">اتصال به تلفن</translation>
 <translation id="2376056713414548745">با صدای بلند خوانده شود</translation>
@@ -2766,6 +2771,7 @@
 <translation id="2902312830803030883">کنش‌های بیشتر</translation>
 <translation id="2903457445916429186">باز کردن موارد انتخاب‌شده</translation>
 <translation id="2903882649406874750">همیشه دسترسی <ph name="HOST" /> به حسگرها مسدود شود</translation>
+<translation id="2903925626657991994">از «,» برای تغییر دادن انتخاب دکمه موشواره بین دکمه چپ، دکمه راست، و هر دو استفاده کنید</translation>
 <translation id="290415756080113152">سایت‌ها نمی‌توانند چاپگرهای دردسترس دستگاهتان را جستجو کنند و از آن‌ها استفاده کنند</translation>
 <translation id="2904210161403910217">گذرواژه‌تان از آخرین باری که به سیستم وارد شده‌اید تغییر کرده است</translation>
 <translation id="2904506722835398619">ورود به سیستم و همگام‌سازی لازم است</translation>
@@ -3120,6 +3126,7 @@
 <translation id="3170072451822350649">همچنین می‌توانید از ورود به سیستم صرف‌نظر کرده، <ph name="LINK_START" />به عنوان مهمان مرور کنید<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">نوشتار اصلی</translation>
 <translation id="3175862692832442091">جنگل</translation>
+<translation id="3176347586396987181">‏از «z» برای فشار دادن و نگه داشتن دکمه موشواره استفاده کنید</translation>
 <translation id="3177430966804511955">مدیریت برنامه‌های وب مجزا (نسخه بتا)</translation>
 <translation id="31774765611822736">برگه جدید در سمت چپ</translation>
 <translation id="3177909033752230686">زبان صفحه:</translation>
@@ -4502,6 +4509,7 @@
 <translation id="412730574613779332">قهرمان</translation>
 <translation id="4130199216115862831">گزارش دستگاه</translation>
 <translation id="4130750466177569591">موافقم</translation>
+<translation id="4130877444234883490">‏از «m» برای فشار دادن و نگه داشتن دکمه موشواره استفاده کنید</translation>
 <translation id="413121957363593859">مؤلفه‌ها</translation>
 <translation id="4131283654370308898">مجاز کردن <ph name="EXTENSION_NAME" /> در این سایت</translation>
 <translation id="4131410914670010031">سیاه و سفید</translation>
@@ -4521,6 +4529,7 @@
 <translation id="413915106327509564">‏<ph name="WINDOW_TITLE" /> - متصل به دستگاه HID</translation>
 <translation id="4139326893730851150">به‌روزرسانی‌های سفت‌افزار</translation>
 <translation id="4142052906269098341">قفل <ph name="DEVICE_TYPE" /> را با تلفنتان باز کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="4143606504420684845">ببینید هوش مصنوعی چگونه تجربه شما را شکل می‌دهد و انتخاب‌های آگاهانه‌ای درباره حریم خصوصی‌تان داشته باشید</translation>
 <translation id="4146026355784316281">همیشه با نظاره‌گر سیستم باز شود</translation>
 <translation id="4146785383423576110">بارنشانی و پاک کردن</translation>
 <translation id="4147099377280085053">انتخاب جدول بریل</translation>
@@ -4804,6 +4813,7 @@
 <translation id="4360738659108163902">کلیک راست موشواره</translation>
 <translation id="4361142739114356624">کلید خصوصی برای این گواهی کارخواه موجود نیست یا نامعتبر است</translation>
 <translation id="4361745360460842907">باز کردن به‌عنوان برگه</translation>
+<translation id="4362459470237309049">از «.» برای رها کردن دکمه موشواره استفاده کنید</translation>
 <translation id="4363262124589131906">‏فایل‌های جدید در My Drive دیگر به‌طور خودکار با این Chromebook همگام‌سازی نخواهند شد</translation>
 <translation id="4364327530094270451">خربزه</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{‏‫۱ مورد فقط در این دستگاه ذخیره شده است. برای استفاده از آن در سایر دستگاه‌هایتان، آن را در «حساب Google» خود ذخیره کنید.}one{‏‫{ITEM_COUNT} مورد فقط در این دستگاه ذخیره شده است. برای استفاده از آن‌ها در سایر دستگاه‌هایتان، آن‌ها را در «حساب Google» خود ذخیره کنید.}other{‏‫{ITEM_COUNT} مورد فقط در این دستگاه ذخیره شده است. برای استفاده از آن‌ها در سایر دستگاه‌هایتان، آن‌ها را در «حساب Google» خود ذخیره کنید.}}</translation>
@@ -4829,6 +4839,7 @@
 <translation id="4378308539633073595">پیمایش به‌جلو</translation>
 <translation id="4378551569595875038">در حال اتصال..</translation>
 <translation id="4378556263712303865">درخواست دستگاه</translation>
+<translation id="4378589147979399051">کنترل کردن مکان‌نمای موشواره با صفحه‌کلید اصلی</translation>
 <translation id="4379097572583973456">یکی از سایت‌ها همچنین می‌تواند از سایت‌های دیگر محتوایی مثل تصویر، آگهی، و نوشتار جاسازی کند. این سایت‌های دیگر نیز می‌توانند داده‌ها را ذخیره کنند.</translation>
 <translation id="4379281552162875326">«<ph name="APP_NAME" />» حذف نصب شود؟</translation>
 <translation id="4380055775103003110">اگر این مشکل باز هم اتفاق افتاد، می‌توانید روش‌های دیگر را برای ادامه دادن در <ph name="SITE_ETLD_PLUS_ONE" /> امتحان کنید.</translation>
@@ -5127,7 +5138,6 @@
 <translation id="4593021220803146968">&amp;رفتن به <ph name="URL" /></translation>
 <translation id="4593962599442730215">تغییر اولویت‌ها</translation>
 <translation id="4594218792629569101">برای انتقال صفحه به پایین فهرست، «علامت‌گذاری به‌عنوان خوانده‌شده» را انتخاب کنید</translation>
-<translation id="4594577641390224176">به‌دنبال صفحه درباره سیستم هستید؟ از این پیوند استفاده کنید:</translation>
 <translation id="4595560905247879544">برنامه‌ها و افزونه‌ها فقط توسط مدیر (<ph name="CUSTODIAN_NAME" />) قابل تغییر هستند.</translation>
 <translation id="4596295440756783523">گواهی‌هایی در فایل دارید که این سرورها را شناسایی می‌کنند</translation>
 <translation id="4598345735110653698">مدیریت گذرکلیدها</translation>
@@ -5149,6 +5159,7 @@
 <translation id="4610493438923139095">غیرقابل‌اعتماد</translation>
 <translation id="4610637590575890427">آیا می‌خواستید به <ph name="SITE" /> بروید؟</translation>
 <translation id="4611114513649582138">اتصال داده دردسترس است</translation>
+<translation id="4611619000650855880">وقتی دکمه سمت چپ موشواره انتخاب شده است، از «/» برای دوکلیک کردن استفاده کنید</translation>
 <translation id="4611759022973144129">می‌توانید از این گذرواژه برای ورود به سیستم <ph name="DEVICE_TYPE" /> استفاده کنید.</translation>
 <translation id="4612841084470706111">موافقت با دسترسی همه سایت‌های درخواست‌شده.</translation>
 <translation id="4613144866899789710">‏درحال لغو کردن نصب Linux…</translation>
@@ -5274,6 +5285,7 @@
 <translation id="4694820450536519583">اجازه‌ها</translation>
 <translation id="4695318956047767909">زمینه تاریک، محافظ صفحه</translation>
 <translation id="4697071790493980729">هیچ نتیجه‌ای یافت نشد</translation>
+<translation id="4697231114332146850">از کلیدهای 7، 8، 9، 4، 6، 1، 2، 3 برای حرکت دادن مکان‌نما استفاده کنید</translation>
 <translation id="4697551882387947560">هنگام پایان جلسه مرور</translation>
 <translation id="469838979880025581">سایت‌ها می‌توانند استفاده از میکروفون را درخواست کنند</translation>
 <translation id="4699172675775169585">تصاویر و فایل‌های ذخیره‌شده در حافظه نهان</translation>
@@ -6387,6 +6399,7 @@
 <translation id="5499453227627332024">‏نسخه‌ای برای ارتقای محتوی Linux شما دردسترس است. همچنین می‌توانید بعداً در «تنظیمات» ارتقا دهید.</translation>
 <translation id="5499476581866658341">اکنون می‌توانید عکس‌ها و رسانه‌های جدید تلفنتان را مشاهده کنید</translation>
 <translation id="549957179819296104">نماد جدید</translation>
+<translation id="5500163593833085874">وقتی دکمه سمت چپ موشواره انتخاب شده است، از «+» برای دوکلیک کردن استفاده کنید</translation>
 <translation id="5500168250243071806">‏وقتی به سیستم وارد شده باشید، ممکن است <ph name="BEGIN_LINK_SEARCH" />سابقه جستجو<ph name="END_LINK_SEARCH" /> و <ph name="BEGIN_LINK_GOOGLE" />انواع دیگر فعالیت<ph name="END_LINK_GOOGLE" /> در «حساب Google» شما ذخیره شوند. هر زمان خواستید می‌توانید آن‌ها را حذف کنید.</translation>
 <translation id="5501322521654567960">پانل کناری ترازشده به‌چپ</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}one{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}other{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}}</translation>
@@ -6684,6 +6697,7 @@
 <translation id="5733913382424854675">گروه‌بندی برگه‌ها با هوش مصنوعی</translation>
 <translation id="5734362860645681824">ارتباطات</translation>
 <translation id="5734697361979786483">افزودن دستگاه ذخیره‌سازی متصل به شبکه</translation>
+<translation id="573520097779121706">‏از کلیدهای 7، 8، 9، u،‏ o،‏ j،‏ k،‏ l برای حرکت دادن مکان‌نما استفاده کنید</translation>
 <translation id="5735513236153491131">اکنون تقویت شود</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{این داده یا دستگاه شما برخی‌از خط‌مشی‌های امنیتی سازمانتان را رعایت نمی‌کند. مواردی را که باید برطرف شود از سرپرست خود بپرسید.}=1{این فایل یا دستگاه شما برخی‌از خط‌مشی‌های امنیتی سازمانتان را رعایت نمی‌کند. مواردی را که باید برطرف شود از سرپرست خود بپرسید.}one{این فایل‌ها برخی‌از خط‌مشی‌های امنیتی سازمانتان را رعایت نمی‌کنند. مواردی را که باید برطرف شود از سرپرست خود بپرسید.}other{این فایل‌ها برخی‌از خط‌مشی‌های امنیتی سازمانتان را رعایت نمی‌کنند. مواردی را که باید برطرف شود از سرپرست خود بپرسید.}}</translation>
 <translation id="5738093759615225354">برای ورود به سیستم رایانه‌تان به این گذرکلید نیاز دارید</translation>
@@ -6750,7 +6764,6 @@
 <translation id="5787420647064736989">نام دستگاه</translation>
 <translation id="5788367137662787332">متأسفیم، حداقل یک پارتیشن در دستگاه <ph name="DEVICE_LABEL" /> نصب نمی‌شود.</translation>
 <translation id="5789581866075720267">‏برای وارد کردن گذرواژه‌ها به <ph name="BRAND" /> در این دستگاه، فایل CSV موردنظر را انتخاب کنید.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">موفق شدید</translation>
 <translation id="5790651917470750848">بازارسال درگاه ازقبل موجود است</translation>
 <translation id="5792295754950501287">کنش‌های بیشتر برای <ph name="CARD_DESCRIPTION" /></translation>
@@ -6917,6 +6930,7 @@
 <translation id="5901069264981746702">داده‌های اثر انگشتتان به‌صورت ایمن ذخیره می‌شود و هرگز از <ph name="DEVICE_TYPE" /> شما خارج نمی‌شود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">رفتن به برگه درحال ضبط</translation>
 <translation id="5901494423252125310">در چاپگر باز است</translation>
+<translation id="5901526412306322179">گزارش فعالیت</translation>
 <translation id="5901630391730855834">زرد</translation>
 <translation id="5902892210366342391">نمایش هشدار قبل‌از رفتن به سایت‌های ناامن «درحالت ناشناس»</translation>
 <translation id="5904614460720589786">به‌دلیل مشکل پیکربندی، <ph name="APP_NAME" /> راه‌اندازی نشد. لطفاً با سرپرست تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
@@ -7169,7 +7183,6 @@
 <translation id="6086418630711763366">‏با نشانگر نوشتار می‌توانید در صفحه‌ها پیمایش کنید. برای خاموش کردن، «Ctrl + <ph name="KEY" />» را فشار دهید.</translation>
 <translation id="6086846494333236931">سرپرست سیستم شما نصب کرده است.</translation>
 <translation id="6087286598828478206">گروه را مسدود و ترک می‌کنید؟</translation>
-<translation id="6087746524533454243">به‌دنبال صفحه درباره مرورگر هستید؟ از این پیوند استفاده کنید:</translation>
 <translation id="6087960857463881712">چهره تأثیرگذار</translation>
 <translation id="6088475950266477163">تنظیمات</translation>
 <translation id="608912389580139775">برای افزودن این صفحه به فهرست خواندن، روی نماد «نشانک» کلیک کنید</translation>
@@ -7292,6 +7305,7 @@
 <translation id="6171779718418683144">در هر بازدید پرسیده شود</translation>
 <translation id="617213288191670920">زبانی اضافه نشده است</translation>
 <translation id="6173623053897475761">پین خود را دوباره تایپ کنید</translation>
+<translation id="6174909075810107548">از «5» برای فشار دادن دکمه موشواره استفاده کنید</translation>
 <translation id="6175314957787328458">‏GUID دامنه Microsoft</translation>
 <translation id="6175910054050815932">دریافت پیوند</translation>
 <translation id="6177412385419165772">درحال برداشتن…</translation>
@@ -7777,6 +7791,7 @@
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" /> فقط درصورتی آن را فعال کنید که اطلاع دارید چه کاری انجام می‌دهید یا از شما خواسته شده باشد این کار را انجام دهید، زیرا جمع‌آوری داده‌ها ممکن است عملکرد را کاهش دهد.</translation>
 <translation id="6540488083026747005">کوکی‌های طرف سوم را برای این سایت مجاز کرده‌اید</translation>
 <translation id="6541638731489116978">دسترسی این سایت به حسگرهای حرکتی مسدود شده است.</translation>
+<translation id="654219396498297850">‏وقتی دکمه سمت چپ موشواره انتخاب شده است، از «v» برای دوکلیک کردن استفاده کنید</translation>
 <translation id="6542417422899025860">برداشتن خودکار اکثر اطلاعات شخصی</translation>
 <translation id="6542521951477560771">پخش محتوا به <ph name="RECEIVER_NAME" /></translation>
 <translation id="6544134392255015460">روشن/ خاموش کردن نور پس‌زمینه صفحه‌کلید</translation>
@@ -8777,6 +8792,7 @@
 <translation id="7258225044283673131">برنامه پاسخ نمی‌دهد. برای بستن برنامه، «بستن اجباری» را انتخاب کنید.</translation>
 <translation id="7260186537988033909">ثبت‌نام دستگاه کیوسک و تابلوی دیجیتال کامل شد</translation>
 <translation id="7260206782629605806">اگر آستانه را کاهش دهید، می‌توانید از حرکتی کوچک استفاده کنید. اگر آستانه را افزایش دهید، شاید به حرکت بزرگ‌تری نیاز پیدا کنید.</translation>
+<translation id="7260802376010589729">‏از «c» برای رها کردن دکمه موشواره استفاده کنید</translation>
 <translation id="7261217796641151584">هم‌رسانی گروه</translation>
 <translation id="7261612856573623172">صدای سیستم نوشتار به گفتار</translation>
 <translation id="7262004276116528033">این خدمات ورود به سیستم توسط <ph name="SAML_DOMAIN" /> میزبانی شده است</translation>
@@ -9618,6 +9634,7 @@
 <translation id="78526636422538552">‏افزودن تعداد بیشتر «حساب Google» غیرفعال شد</translation>
 <translation id="785371335555334021">برای خارج شدن از <ph name="TITLE" />، کلیک کنید</translation>
 <translation id="7853747251428735">‏ابزارهای بیشتر (‎&amp;L)</translation>
+<translation id="7855258394151767387">‏از «w» برای فشار دادن دکمه موشواره استفاده کنید</translation>
 <translation id="7855678561139483478">انتقال برگه به پنجره جدید</translation>
 <translation id="7857004848504343806">‏رایانه شما دارای پودمان امنیتی است که برای پیاده‌سازی بسیاری از ویژگی‌های امنیتی ضروری در ChromeOS Flex استفاده می‌شود. برای کسب اطلاعات بیشتر، از «مرکز راهنمایی Chromebook» بازدید کنید: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">پیشنهادهای نوشتار</translation>
@@ -9990,6 +10007,7 @@
 <translation id="810362914482827094">جستجوی گذرکلیدها</translation>
 <translation id="8104088837833760645">بارگیری نمایه سیم‌کارت داخلی</translation>
 <translation id="8105273883928376822">لطفاً برای ادامه به سیستم وارد شوید.</translation>
+<translation id="8106114112474206597">‏از «i» برای فشار دادن دکمه موشواره استفاده کنید</translation>
 <translation id="8107015733319732394">‏«فروشگاه Google Play» در <ph name="DEVICE_TYPE" /> شما درحال نصب شدن است. ممکن است این کار چند دقیقه طول بکشد.</translation>
 <translation id="810728361871746125">وضوح نمایشگر</translation>
 <translation id="8108161424633979910">‫<ph name="NUM" /> عضو</translation>

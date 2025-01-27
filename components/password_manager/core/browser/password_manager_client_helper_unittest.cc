@@ -135,8 +135,6 @@ TEST_F(PasswordManagerClientHelperTest,
 TEST_F(PasswordManagerClientHelperTest, PromptMoveForMovableFormInAccountMode) {
   ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
   EXPECT_CALL(*client(), PromptUserToEnableAutosignin).Times(0);
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount);
@@ -153,27 +151,9 @@ TEST_F(PasswordManagerClientHelperTest, PromptMoveForMovableFormInAccountMode) {
       CreateFormManager(&form, /*is_movable=*/true));
 }
 
-TEST_F(PasswordManagerClientHelperTest,
-       NoPromptToMoveForMovableFormInProfileMode) {
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
-      .WillByDefault(Return(true));
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillByDefault(Return(PasswordForm::Store::kProfileStore));
-  EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
-  EXPECT_CALL(*client(), PromptUserToEnableAutosignin).Times(0);
-
-  // Indicate successful login.
-  const PasswordForm form =
-      CreateForm(kTestUsername, kTestPassword, GURL(kTestOrigin));
-  helper()->NotifySuccessfulLoginWithExistingPassword(
-      CreateFormManager(&form, /*is_movable=*/true));
-}
-
 TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForUnmovableForm) {
   ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
   EXPECT_CALL(*client(), PromptUserToEnableAutosignin).Times(0);
 
@@ -187,8 +167,6 @@ TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForUnmovableForm) {
 TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForGaiaAccountForm) {
   ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
 
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
 
@@ -201,8 +179,6 @@ TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForGaiaAccountForm) {
 TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForNonOptedInUser) {
   ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
       .WillByDefault(Return(false));
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillByDefault(Return(PasswordForm::Store::kProfileStore));
 
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
   const PasswordForm form =

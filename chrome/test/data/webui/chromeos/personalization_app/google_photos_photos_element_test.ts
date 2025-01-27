@@ -6,7 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import type {GooglePhotosPhoto, GooglePhotosPhotosSection, SetErrorAction, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, getNumberOfGridItemsPerRow, GooglePhotosPhotosElement, PersonalizationActionName, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, createSvgDataUrl, dispatchKeydown, getActiveElement, initElement, teardownElement, waitForActiveElement} from './personalization_app_test_utils.js';
@@ -377,15 +377,12 @@ suite('GooglePhotosPhotosElementTest', function() {
 
         // Verify that the expected |photos| are rendered.
         row.forEach((photo, photoIndex) => {
-          const photoEl =
-              rowEl!.querySelector(
-                  `${photoSelector}:nth-of-type(${photoIndex + 1})`) as
-                  WallpaperGridItemElement |
-              null;
-          assertNotEquals(photoEl, null);
-          assertDeepEquals(photoEl!.src, photo.url);
-          assertEquals(photoEl!.primaryText, undefined);
-          assertEquals(photoEl!.secondaryText, undefined);
+          const photoEl = rowEl!.querySelector<WallpaperGridItemElement>(
+              `${photoSelector}:nth-of-type(${photoIndex + 1})`);
+          assertTrue(!!photoEl);
+          assertDeepEquals(photoEl.src, photo.url);
+          assertEquals(photoEl.primaryText, undefined);
+          assertEquals(photoEl.secondaryText, undefined);
         });
 
         ++absoluteRowIndex;
@@ -712,7 +709,7 @@ suite('GooglePhotosPhotosElementTest', function() {
     const placeholderSelector = `${selector}[placeholder]`;
     assertEquals(querySelectorAll(placeholderSelector)!.length % 4, 0);
     querySelectorAll(rowSelector)!.forEach(rowEl => {
-      assertEquals(rowEl.querySelectorAll(placeholderSelector)!.length, 4);
+      assertEquals(rowEl.querySelectorAll(placeholderSelector).length, 4);
     });
 
     // Mock |window.innerWidth| and dispatch a resize event.
@@ -727,7 +724,7 @@ suite('GooglePhotosPhotosElementTest', function() {
     // placeholders per row given the mocked |window.innerWidth|.
     assertEquals(querySelectorAll(placeholderSelector)!.length % 3, 0);
     querySelectorAll(rowSelector)!.forEach(rowEl => {
-      assertEquals(rowEl.querySelectorAll(placeholderSelector)!.length, 3);
+      assertEquals(rowEl.querySelectorAll(placeholderSelector).length, 3);
     });
   });
 

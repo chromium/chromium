@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <string>
@@ -15,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -282,7 +282,7 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
   }
   // |this| pointer will be deleted when removed from the vector, so don't
   // access any members after call to erase().
-  token_service_delegate_->server_revokes_.erase(base::ranges::find(
+  token_service_delegate_->server_revokes_.erase(std::ranges::find(
       token_service_delegate_->server_revokes_, this,
       &std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate::
                            RevokeServerRefreshToken>::get));

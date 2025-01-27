@@ -4,6 +4,7 @@
 
 #include "chrome/updater/test/integration_tests_impl.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <cstdlib>
 #include <map>
@@ -33,7 +34,6 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -1027,7 +1027,7 @@ void GetAppStates(UpdaterScope updater_scope,
        &loop](const std::vector<updater::UpdateService::AppState>& states) {
         for (const auto [expected_app_id, expected_state] :
              expected_app_states) {
-          const auto& it = base::ranges::find_if(
+          const auto& it = std::ranges::find_if(
               states, [&expected_app_id](const auto& state) {
                 return base::EqualsCaseInsensitiveASCII(state.app_id,
                                                         expected_app_id);

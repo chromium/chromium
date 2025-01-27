@@ -36,6 +36,7 @@ v8::Local<v8::Value> WorldSafeV8ReferenceInternal::ToWorldSafeValue(
 
 // static
 void WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(
+    v8::Isolate* isolate,
     const DOMWrapperWorld& world,
     v8::Local<v8::Value> value) {
   if (!value->IsObject())
@@ -46,7 +47,6 @@ void WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(
   if (!value.As<v8::Object>()->GetCreationContext().ToLocal(&context))
     return;
 
-  v8::Isolate* isolate = context->GetIsolate();
   ScriptState* script_state = ScriptState::From(isolate, context);
   CHECK_EQ(&world, &script_state->World());
 }

@@ -217,7 +217,7 @@ class AuthenticationFlowTest : public PlatformTest {
     // Can't use a RunLoop multiple times, create a new one.
     run_loop_ = std::make_unique<base::RunLoop>();
     authentication_service->SignOut(
-        signin_metrics::ProfileSignout::kChangeAccountInAccountMenu, false,
+        signin_metrics::ProfileSignout::kChangeAccountInAccountMenu,
         base::CallbackToBlock(run_loop_->QuitClosure()));
     run_loop_->Run();
   }

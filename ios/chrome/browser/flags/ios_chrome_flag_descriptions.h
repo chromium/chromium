@@ -1133,6 +1133,11 @@ extern const char kTabResumptionImagesDescription[];
 extern const char kUpdatedFRESequenceName[];
 extern const char kUpdatedFRESequenceDescription[];
 
+// Title and description for the flag to query accounts from IdentityManager
+// instead of ChromeAccountManagerService.
+extern const char kUseAccountListFromIdentityManagerName[];
+extern const char kUseAccountListFromIdentityManagerDescription[];
+
 // Title and description for the flag to control the maximum wait time (in
 // seconds) for a response from the Account Capabilities API.
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiName[];

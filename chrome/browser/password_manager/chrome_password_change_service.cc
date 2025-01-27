@@ -83,8 +83,8 @@ void ChromePasswordChangeService::OnPasswordChangeStopped(
     PasswordChangeDelegate* delegate) {
   delegate->RemoveObserver(this);
 
-  auto iter = base::ranges::find(password_change_delegates_, delegate,
-                                 &std::unique_ptr<PasswordChangeDelegate>::get);
+  auto iter = std::ranges::find(password_change_delegates_, delegate,
+                                &std::unique_ptr<PasswordChangeDelegate>::get);
   CHECK(iter != password_change_delegates_.end());
 
   std::unique_ptr<PasswordChangeDelegate> deleted_delegate = std::move(*iter);

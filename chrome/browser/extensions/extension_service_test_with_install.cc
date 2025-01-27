@@ -4,9 +4,10 @@
 
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 
+#include <algorithm>
+
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -401,7 +402,7 @@ void ExtensionServiceTestWithInstall::OnExtensionUnloaded(
     UnloadedExtensionReason reason) {
   unloaded_id_ = extension->id();
   unloaded_reason_ = reason;
-  auto i = base::ranges::find(loaded_extensions_, extension);
+  auto i = std::ranges::find(loaded_extensions_, extension);
   // TODO(erikkay) fix so this can be an assert.  Right now the tests
   // are manually calling `ClearLoadedExtensions` since this method is not
   // called by reloads, so this isn't doable.

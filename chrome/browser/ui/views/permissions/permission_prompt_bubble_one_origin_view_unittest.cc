@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_one_origin_view.h"
 
+#include <algorithm>
+
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"

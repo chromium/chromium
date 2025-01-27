@@ -112,6 +112,7 @@ class DownloadToolbarUIController
 
   bool IsProgressRingInDownloadingStateForTesting();
   bool IsProgressRingInDormantStateForTesting();
+  views::ImageView* GetImageBadgeForTesting();
 
  private:
   // Closes the bubble when it detects an event such as a mouse click, escape

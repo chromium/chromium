@@ -4,9 +4,10 @@
 
 #include "chrome/test/media_router/access_code_cast/access_code_cast_integration_browsertest.h"
 
+#include <algorithm>
+
 #include "base/auto_reset.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -151,7 +152,7 @@ void AccessCodeCastIntegrationBrowserTest::OnWillCreateBrowserContextServices(
   // this to occur).
   ON_CALL(*media_router_, UnregisterMediaSinksObserver(_))
       .WillByDefault([this](MediaSinksObserver* observer) {
-        auto it = base::ranges::find(media_sinks_observers_, observer);
+        auto it = std::ranges::find(media_sinks_observers_, observer);
         if (it != media_sinks_observers_.end()) {
           media_sinks_observers_.erase(it);
         }

@@ -67,7 +67,7 @@ bool AreParamsValid(const BoundSessionParams& bound_session_params) {
     return false;
   }
 
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       bound_session_params.credentials(), [](const auto& credential) {
         return credential.has_cookie_credential() &&
                !credential.cookie_credential().name().empty() &&

@@ -60,6 +60,23 @@ public class ViewElement extends Element<View> {
                         .withExpectEnabled(mOptions.mExpectEnabled)
                         .withExpectDisabled(mOptions.mExpectDisabled)
                         .withDisplayingAtLeast(mOptions.mDisplayedPercentageRequired)
+                        .withSettleTimeMs(mOptions.mInitialSettleTimeMs)
+                        .build();
+        return new DisplayedCondition(viewMatcher, conditionOptions);
+    }
+
+    /**
+     * Create a {@link DisplayedCondition} like the enter Condition, but also waiting for the View
+     * to settle (no changes to its rect coordinates) for 1 second.
+     */
+    public ConditionWithResult<View> createSettleCondition() {
+        Matcher<View> viewMatcher = mViewSpec.getViewMatcher();
+        DisplayedCondition.Options conditionOptions =
+                DisplayedCondition.newOptions()
+                        .withExpectEnabled(mOptions.mExpectEnabled)
+                        .withExpectDisabled(mOptions.mExpectDisabled)
+                        .withDisplayingAtLeast(mOptions.mDisplayedPercentageRequired)
+                        .withSettleTimeMs(1000)
                         .build();
         return new DisplayedCondition(viewMatcher, conditionOptions);
     }
@@ -80,7 +97,8 @@ public class ViewElement extends Element<View> {
         protected boolean mExpectEnabled = true;
         protected boolean mExpectDisabled;
         protected String mElementId;
-        protected Integer mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
+        protected int mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
+        protected int mInitialSettleTimeMs;
 
         protected Options() {}
 
@@ -130,6 +148,12 @@ public class ViewElement extends Element<View> {
              */
             public Builder displayingAtLeast(int percentage) {
                 mDisplayedPercentageRequired = percentage;
+                return this;
+            }
+
+            /** Waits for the View's rect to stop moving. */
+            public Builder initialSettleTime(int settleTimeMs) {
+                mInitialSettleTimeMs = settleTimeMs;
                 return this;
             }
         }

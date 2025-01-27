@@ -9,12 +9,12 @@
 
 #include "components/spellcheck/renderer/spellcheck_provider.h"
 
+#include <algorithm>
 #include <unordered_map>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -290,10 +290,10 @@ void SpellCheckProvider::CheckSpelling(
     std::vector<std::u16string> suggestions;
     spellcheck::FillSuggestions(per_language_suggestions, &suggestions);
     WebVector<WebString> web_suggestions(suggestions.size());
-    base::ranges::transform(suggestions, web_suggestions.begin(),
-                            [](const auto& suggestion) {
-                              return WebString::FromUTF16(suggestion);
-                            });
+    std::ranges::transform(suggestions, web_suggestions.begin(),
+                           [](const auto& suggestion) {
+                             return WebString::FromUTF16(suggestion);
+                           });
     *optional_suggestions = web_suggestions;
     spellcheck_renderer_metrics::RecordCheckedTextLengthWithSuggestions(
         base::saturated_cast<int>(word.size()));

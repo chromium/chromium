@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <linux/input.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -27,7 +28,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/screen.h"
@@ -190,9 +190,9 @@ void InputDataProvider::GetConnectedDevicesHelper(
     touch_device_vector.push_back(touch_device_info.second.Clone());
   }
 
-  base::ranges::sort(keyboard_vector, std::less<>(), &mojom::KeyboardInfo::id);
-  base::ranges::sort(touch_device_vector, std::less<>(),
-                     &mojom::TouchDeviceInfo::id);
+  std::ranges::sort(keyboard_vector, std::less<>(), &mojom::KeyboardInfo::id);
+  std::ranges::sort(touch_device_vector, std::less<>(),
+                    &mojom::TouchDeviceInfo::id);
 
   std::move(callback).Run(std::move(keyboard_vector),
                           std::move(touch_device_vector));

@@ -4632,11 +4632,10 @@ TEST_F(NoSessionShelfLayoutManagerTest, UpdateShelfVisibilityAfterLogin) {
   constexpr char kUser[] = "user1@test.com";
   const AccountId kUserAccount = AccountId::FromUserEmail(kUser);
 
-  // Setup autohide shelf pref.
-  auto* pref_service =
-      GetSessionControllerClient()->ProvidePrefServiceForUser(kUserAccount);
-
-  SetShelfAutoHideBehaviorPref(pref_service,
+  auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
+  RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
+                           /*for_test=*/true);
+  SetShelfAutoHideBehaviorPref(user_prefs.get(),
                                WindowTreeHostManager::GetPrimaryDisplayId(),
                                ShelfAutoHideBehavior::kAlways);
 
@@ -4645,7 +4644,8 @@ TEST_F(NoSessionShelfLayoutManagerTest, UpdateShelfVisibilityAfterLogin) {
   auto window = CreateTestWindow(gfx::Rect(400, kExpectedWindowHeight));
 
   // Simulate login.
-  SimulateUserLogin(kUser);
+  SimulateUserLogin(kUserAccount, user_manager::UserType::kRegular,
+                    std::move(user_prefs));
 
   // The window should be the same height.
   EXPECT_EQ(kExpectedWindowHeight, window->bounds().height());

@@ -100,6 +100,10 @@ class LensOverlayQueryController {
   // Clears the state and resets stored values.
   void EndQuery();
 
+  // Restarts the query flow if its in a state where no cluster info is
+  // available.
+  void MaybeRestartQueryFlow();
+
   // Sends a full image request to translate the page.
   virtual void SendFullPageTranslateQuery(const std::string& source_language,
                                           const std::string& target_language);
@@ -230,6 +234,8 @@ class LensOverlayQueryController {
     // The full image response has been received and resulted in an error
     // response.
     kReceivedFullImageErrorResponse = 5,
+    // The cluster info has expired and a new query flow needs to be started.
+    kClusterInfoExpired = 6,
   };
 
   // Data class for constructing a fetch request to the Lens servers.

@@ -6,17 +6,18 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -122,25 +123,42 @@ bool FromHeaderDictionary(const base::Value::Dict& header_value,
   return true;
 }
 
-// Checks whether the extension has any permissions that would intercept or
-// modify network requests.
-bool HasAnyWebRequestPermissions(const Extension* extension) {
-  static constexpr APIPermissionID kWebRequestPermissions[] = {
+template <size_t N>
+bool DoesExtensionHasAnyOfPermission(
+    const Extension& extension,
+    const base::fixed_flat_set<APIPermissionID, N>& permissions) {
+  const PermissionsData* permissions_data = extension.permissions_data();
+  return base::ranges::any_of(
+      permissions, [&permissions_data](auto permission) {
+        return permissions_data->HasAPIPermission(permission);
+      });
+}
+
+// Checks whether the extension has WebRequest* permissions.
+bool HasAnyWebRequestPermissions(const Extension& extension) {
+  static constexpr auto kPermissions = base::MakeFixedFlatSet<APIPermissionID>({
       APIPermissionID::kWebRequest,
       APIPermissionID::kWebRequestBlocking,
+  });
+
+  return DoesExtensionHasAnyOfPermission(extension, kPermissions);
+}
+
+// Checks whether the extension has Declarative{Web|Net}Request* permissions.
+bool HasAnyDeclarativeWebRequestPermissions(const Extension& extension) {
+  static constexpr auto kPermissions = base::MakeFixedFlatSet<APIPermissionID>({
       APIPermissionID::kDeclarativeWebRequest,
       APIPermissionID::kDeclarativeNetRequest,
       APIPermissionID::kDeclarativeNetRequestWithHostAccess,
-      APIPermissionID::kWebView,
-  };
+  });
 
-  const PermissionsData* permissions = extension->permissions_data();
-  for (auto permission : kWebRequestPermissions) {
-    if (permissions->HasAPIPermission(permission)) {
-      return true;
-    }
-  }
-  return false;
+  return DoesExtensionHasAnyOfPermission(extension, kPermissions);
+}
+
+// Checks whether the extension has WebView permission.
+bool HasWebViewPermission(const Extension& extension) {
+  const PermissionsData* permissions = extension.permissions_data();
+  return permissions->HasAPIPermission(APIPermissionID::kWebView);
 }
 
 // Mirrors the histogram enum of the same name. DO NOT REORDER THESE VALUES OR
@@ -342,7 +360,7 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
 
   if (details.is_lazy) {
     // This is a removed lazy listener. This happens when an extension uses
-    // removeListener() in its lazy context to forceably remove a listener
+    // removeListener() in its lazy context to forcibly remove a listener
     // registration (as opposed to when the context is torn down, in which case
     // it's the active listener registration that's removed).
     // Due to https://crbug.com/1347597, we only have a single lazy listener
@@ -398,6 +416,16 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
       std::move(navigation_response_task_runner), request_initiator);
   base::UmaHistogramEnumeration("Extensions.WebRequest.ProxyDecision2",
                                 decision);
+  const size_t kMaxCount = 10u;
+  base::UmaHistogramExactLinear(
+      "Extensions.WebRequest.WebRequestDependentExtensionCount",
+      web_request_extension_count_, kMaxCount);
+  base::UmaHistogramExactLinear(
+      "Extensions.WebRequest.DeclarativeRequestDependentExtensionCount",
+      declarative_request_extension_count_, kMaxCount);
+  base::UmaHistogramExactLinear(
+      "Extensions.WebRequest.WebViewDependentExtensionCount",
+      web_view_extension_count_, kMaxCount);
   return decision != ProxyDecision::kWillNotProxy;
 }
 
@@ -590,7 +618,9 @@ bool WebRequestAPI::MayHaveProxies() const {
     return true;
   }
 
-  return web_request_extension_count_ > 0;
+  return (web_request_extension_count_ > 0) ||
+         (declarative_request_extension_count_ > 0) ||
+         (web_view_extension_count_ > 0);
 }
 
 bool WebRequestAPI::IsAvailableToWebViewEmbedderFrame(
@@ -639,8 +669,21 @@ void WebRequestAPI::UpdateMayHaveProxies() {
 
 void WebRequestAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
                                       const Extension* extension) {
-  if (HasAnyWebRequestPermissions(extension)) {
+  CHECK(extension);
+  bool update_may_have_proxies = false;
+  if (HasAnyWebRequestPermissions(*extension)) {
     ++web_request_extension_count_;
+    update_may_have_proxies = true;
+  }
+  if (HasAnyDeclarativeWebRequestPermissions(*extension)) {
+    ++declarative_request_extension_count_;
+    update_may_have_proxies = true;
+  }
+  if (HasWebViewPermission(*extension)) {
+    ++web_view_extension_count_;
+    update_may_have_proxies = true;
+  }
+  if (update_may_have_proxies) {
     UpdateMayHaveProxies();
   }
 }
@@ -649,8 +692,21 @@ void WebRequestAPI::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  if (HasAnyWebRequestPermissions(extension)) {
+  CHECK(extension);
+  bool update_may_have_proxies = false;
+  if (HasAnyWebRequestPermissions(*extension)) {
     --web_request_extension_count_;
+    update_may_have_proxies = true;
+  }
+  if (HasAnyDeclarativeWebRequestPermissions(*extension)) {
+    --declarative_request_extension_count_;
+    update_may_have_proxies = true;
+  }
+  if (HasWebViewPermission(*extension)) {
+    --web_view_extension_count_;
+    update_may_have_proxies = true;
+  }
+  if (update_may_have_proxies) {
     UpdateMayHaveProxies();
   }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_file_system_delegate.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 
@@ -16,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -248,7 +248,7 @@ void HoldingSpaceFileSystemDelegate::OnFilesChanged(
   model()->RemoveIf(base::BindRepeating(
       [](const std::set<base::FilePath>& deleted_paths,
          const HoldingSpaceItem* item) {
-        return base::ranges::any_of(
+        return std::ranges::any_of(
             deleted_paths, [&](const base::FilePath& deleted_path) {
               return item->file().file_path == deleted_path ||
                      deleted_path.IsParent(item->file().file_path);
@@ -674,7 +674,7 @@ void HoldingSpaceFileSystemDelegate::MaybeRemoveWatch(
   // The watch for `file_path` should only be removed if no holding space items
   // exist in the model which are backed by files it directly parents.
   const bool remove_watch =
-      base::ranges::none_of(model()->items(), [&file_path](const auto& item) {
+      std::ranges::none_of(model()->items(), [&file_path](const auto& item) {
         return item->IsInitialized() &&
                item->file().file_path.DirName() == file_path;
       });

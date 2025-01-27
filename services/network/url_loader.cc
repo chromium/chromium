@@ -28,7 +28,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -1695,8 +1694,8 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   response->has_range_requested =
       url_request_->extra_request_headers().HasHeader(
           net::HttpRequestHeaders::kRange);
-  base::ranges::copy(url_request_->response_info().dns_aliases,
-                     std::back_inserter(response->dns_aliases));
+  std::ranges::copy(url_request_->response_info().dns_aliases,
+                    std::back_inserter(response->dns_aliases));
   // [spec]: https://fetch.spec.whatwg.org/#http-network-or-cache-fetch
   // 13. Set response’s request-includes-credentials to includeCredentials.
   response->request_include_credentials = url_request_->allow_credentials();

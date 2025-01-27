@@ -318,11 +318,11 @@ enum class SafeBrowsingState {
 
 SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs);
 
-// Set the SafeBrowsing prefs. Also records if ESB was enabled in sync with
-// Account-ESB via Tailored Security.
+// Set the SafeBrowsing prefs.  Records whether ESB was enabled by Tailored
+// Security (through account integration).
 void SetSafeBrowsingState(PrefService* prefs,
                           SafeBrowsingState state,
-                          bool is_esb_enabled_in_sync = false);
+                          bool is_esb_enabled_by_account_integration = false);
 
 // Returns whether Safe Browsing is enabled for the user.
 bool IsSafeBrowsingEnabled(const PrefService& prefs);

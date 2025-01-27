@@ -4,6 +4,7 @@
 
 #include <jni.h>
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <vector>
@@ -23,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "components/browser_ui/site_settings/android/storage_info_fetcher.h"
 #include "components/browser_ui/site_settings/android/website_preference_bridge_util.h"
 #include "components/browsing_data/content/cookie_helper.h"
@@ -619,11 +619,11 @@ void OnLocalStorageModelInfoLoaded(
 
   std::vector<std::pair<url::Origin, bool>> important_notations(
       local_storage_info.size());
-  base::ranges::transform(local_storage_info, important_notations.begin(),
-                          [](const content::StorageUsageInfo& info) {
-                            return std::make_pair(info.storage_key.origin(),
-                                                  false);
-                          });
+  std::ranges::transform(local_storage_info, important_notations.begin(),
+                         [](const content::StorageUsageInfo& info) {
+                           return std::make_pair(info.storage_key.origin(),
+                                                 false);
+                         });
   if (fetch_important) {
     permissions::PermissionsClient::Get()->AreSitesImportant(
         browser_context, &important_notations);

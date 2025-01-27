@@ -245,7 +245,7 @@ void DesktopResizerX11::OnGnomeDisplayConfigReceived(
   // an enabled monitor, since a disabled monitor might not have a reliable
   // "scale" property returned by GNOME.
   auto monitor_iter =
-      base::ranges::find_if(config.monitors, [](const auto& entry) {
+      std::ranges::find_if(config.monitors, [](const auto& entry) {
         return entry.second.GetCurrentMode() != nullptr;
       });
   if (monitor_iter == std::ranges::end(config.monitors)) {

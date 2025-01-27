@@ -30,16 +30,12 @@ export default [
       // which is no longer supported. TODO(https://crbug.com/369766161):
       // Bring directories into conformance to re-enable linting.
       'ash/webui/**/*',
-      'chrome/browser/resources/ash/**/*.[jt]s',
       'chrome/browser/resources/chromeos/**/*',
       'chrome/test/data/webui/chromeos/**/*',
 
       // TODO(https://crbug.com/41446521): Bring extension test files into
       // conformance.
       'chrome/test/data/extensions/**/*',
-
-      // Un-ignore CrOS Settings dir to enable linting.
-      '!chrome/browser/resources/ash/settings/**/*',
     ],
   },
   {

@@ -48,10 +48,20 @@ ScriptPromise<IDLString> AITranslator::translate(
     const WTF::String& input,
     AITranslatorTranslateOptions* options,
     ExceptionState& exception_state) {
-  // TODO(crbug.com/322229993): Take `options` into account.
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
     return EmptyPromise();
+  }
+
+  CHECK(options);
+  ScriptPromiseResolver<IDLString>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+  ScriptPromise<IDLString> promise = resolver->Promise();
+
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    resolver->Reject(signal->reason(script_state));
+    return promise;
   }
 
   if (!translator_remote_) {
@@ -59,10 +69,6 @@ ScriptPromise<IDLString> AITranslator::translate(
                                       kExceptionMessageTranslatorDestroyed);
     return EmptyPromise();
   }
-
-  ScriptPromiseResolver<IDLString>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
-  ScriptPromise<IDLString> promise = resolver->Promise();
 
   // TODO(crbug.com/335374928): implement the error handling for the translation
   // service crash.

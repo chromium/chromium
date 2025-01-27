@@ -4,13 +4,13 @@
 
 #include "chrome/browser/privacy_budget/surface_set_with_valuation.h"
 
+#include <algorithm>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 
 static_assert(std::is_same<RepresentativeSurface,
@@ -59,7 +59,7 @@ void SurfaceSetWithValuation::AssignWithBudget(
   // drop elements until we meet the budget's restrictions.
   auto container = std::move(surfaces_).extract();
   base::RandomBitGenerator g;
-  base::ranges::shuffle(container, g);
+  std::ranges::shuffle(container, g);
 
   auto new_beginning = container.begin();
   for (; new_beginning != container.end() && cost_ > budget;

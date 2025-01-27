@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_flags.h"
@@ -551,10 +550,10 @@ bool PaintOpBuffer::EqualsForTesting(const PaintOpBuffer& other) const {
     return false;
   }
 
-  return base::ranges::equal(*this, other,
-                             [](const PaintOp& a, const PaintOp& b) {
-                               return a.EqualsForTesting(b);  // IN-TEST
-                             });
+  return std::ranges::equal(*this, other,
+                            [](const PaintOp& a, const PaintOp& b) {
+                              return a.EqualsForTesting(b);  // IN-TEST
+                            });
 }
 
 bool PaintOpBuffer::NeedsAdditionalInvalidationForLCDText(

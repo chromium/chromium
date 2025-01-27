@@ -4,6 +4,7 @@
 
 #include "components/favicon/core/favicon_handler.h"
 
+#include <algorithm>
 #include <cmath>
 #include <utility>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/favicon/core/core_favicon_service.h"
 #include "components/favicon_base/favicon_util.h"
@@ -42,8 +42,8 @@ bool HasExpiredOrIncompleteResult(
     return false;
 
   // Check if at least one of the bitmaps is expired.
-  if (base::ranges::any_of(bitmap_results,
-                           &favicon_base::FaviconRawBitmapResult::expired)) {
+  if (std::ranges::any_of(bitmap_results,
+                          &favicon_base::FaviconRawBitmapResult::expired)) {
     return true;
   }
 
@@ -75,8 +75,8 @@ bool HasExpiredOrIncompleteResult(
 // Returns true if at least one of `bitmap_results` is valid.
 bool HasValidResult(
     const std::vector<favicon_base::FaviconRawBitmapResult>& bitmap_results) {
-  return base::ranges::any_of(bitmap_results,
-                              &favicon_base::FaviconRawBitmapResult::is_valid);
+  return std::ranges::any_of(bitmap_results,
+                             &favicon_base::FaviconRawBitmapResult::is_valid);
 }
 
 std::vector<int> GetDesiredPixelSizes(
@@ -108,7 +108,7 @@ bool FaviconURLEquals(const FaviconURL& lhs, const FaviconURL& rhs) {
 // invalid size by the 'sizes' parser (see for example `WebIconSizesParser` in
 // Blink).
 bool HasAnySize(const std::vector<gfx::Size>& icon_sizes) {
-  return base::ranges::any_of(icon_sizes, &gfx::Size::IsZero);
+  return std::ranges::any_of(icon_sizes, &gfx::Size::IsZero);
 }
 
 }  // namespace
@@ -331,8 +331,8 @@ void FaviconHandler::OnUpdateCandidates(
   // `candidates or `manifest_url` could have been modified via Javascript. If
   // neither changed, ignore the call.
   if (candidates_received_ && manifest_url_ == manifest_url &&
-      base::ranges::equal(candidates, non_manifest_original_candidates_,
-                          &FaviconURLEquals)) {
+      std::ranges::equal(candidates, non_manifest_original_candidates_,
+                         &FaviconURLEquals)) {
     return;
   }
 

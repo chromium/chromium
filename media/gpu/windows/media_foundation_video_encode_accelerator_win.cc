@@ -286,11 +286,11 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   bool is_supported_format = false;
   if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing)) {
     is_supported_format =
-        base::ranges::find(kSupportedPixelFormatsD3DVideoProcessing,
-                           config.input_format) != kSupportedPixelFormats.end();
+        std::ranges::find(kSupportedPixelFormatsD3DVideoProcessing,
+                          config.input_format) != kSupportedPixelFormats.end();
   } else {
     is_supported_format =
-        base::ranges::find(kSupportedPixelFormats, config.input_format) !=
+        std::ranges::find(kSupportedPixelFormats, config.input_format) !=
         kSupportedPixelFormats.end();
   }
 
@@ -1795,11 +1795,11 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
   bool is_supported_format;
   if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing)) {
     is_supported_format =
-        base::ranges::find(kSupportedPixelFormatsD3DVideoProcessing,
-                           frame->format()) != kSupportedPixelFormats.end();
+        std::ranges::find(kSupportedPixelFormatsD3DVideoProcessing,
+                          frame->format()) != kSupportedPixelFormats.end();
   } else {
     is_supported_format =
-        base::ranges::find(kSupportedPixelFormats, frame->format()) !=
+        std::ranges::find(kSupportedPixelFormats, frame->format()) !=
         kSupportedPixelFormats.end();
   }
   if (!is_supported_format) {

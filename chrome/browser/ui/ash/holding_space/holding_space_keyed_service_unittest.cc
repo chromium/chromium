@@ -196,7 +196,7 @@ GetExpectedTotalCountV2HistogramSamples(const HoldingSpaceModel* model) {
     result.emplace(
         base::StrCat({kTotalCountV2HistogramPrefix, ".All.FileSystemType.",
                       holding_space_util::ToString(fs_type)}),
-        std::vector<Bucket>({Bucket(/*sample=*/base::ranges::count(
+        std::vector<Bucket>({Bucket(/*sample=*/std::ranges::count(
                                         model->items(), fs_type,
                                         [&](const auto& item) {
                                           return item->file().file_system_type;
@@ -209,8 +209,8 @@ GetExpectedTotalCountV2HistogramSamples(const HoldingSpaceModel* model) {
     result.emplace(base::StrCat({kTotalCountV2HistogramPrefix, ".",
                                  holding_space_util::ToString(type)}),
                    std::vector<Bucket>({Bucket(
-                       /*sample=*/base::ranges::count(model->items(), type,
-                                                      &HoldingSpaceItem::type),
+                       /*sample=*/std::ranges::count(model->items(), type,
+                                                     &HoldingSpaceItem::type),
                        /*count=*/1u)}));
 
     // Fill "HoldingSpace.Item.TotalCountV2.{type}.FileSystemType.{fs_type}".
@@ -220,7 +220,7 @@ GetExpectedTotalCountV2HistogramSamples(const HoldingSpaceModel* model) {
                         holding_space_util::ToString(type), ".FileSystemType.",
                         holding_space_util::ToString(fs_type)}),
           std::vector<Bucket>({Bucket(
-              /*sample=*/base::ranges::count_if(
+              /*sample=*/std::ranges::count_if(
                   model->items(),
                   [&](const auto& item) {
                     return item->type() == type &&
@@ -252,7 +252,7 @@ std::map<std::string, std::vector<Bucket>> MergeHistogramSamples(
     // Case: Name *did* exist in other map.
     for (const auto& bucket : buckets) {
       auto bucket_it =
-          base::ranges::find(result_buckets, bucket.min, &Bucket::min);
+          std::ranges::find(result_buckets, bucket.min, &Bucket::min);
 
       // Case: Bucket did *not* exist in other map. Add bucket.
       if (bucket_it == result_buckets.end()) {

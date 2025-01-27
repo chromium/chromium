@@ -219,10 +219,10 @@ ShoppingService::ShoppingService(
       types.push_back(
           optimization_guide::proto::OptimizationType::PRICE_TRACKING);
 
-    if (IsMerchantViewerEnabled()) {
-      types.push_back(optimization_guide::proto::OptimizationType::
-                          MERCHANT_TRUST_SIGNALS_V2);
-    }
+      if (IsMerchantViewerEnabled(account_checker_.get())) {
+        types.push_back(optimization_guide::proto::OptimizationType::
+                            MERCHANT_TRUST_SIGNALS_V2);
+      }
     if (IsPriceInsightsApiEnabled(account_checker_.get())) {
       types.push_back(
           optimization_guide::proto::OptimizationType::PRICE_INSIGHTS);
@@ -232,7 +232,7 @@ ShoppingService::ShoppingService(
           optimization_guide::proto::OptimizationType::SHOPPING_DISCOUNTS);
     }
 
-    if (IsShoppingPageTypesApiEnabled()) {
+    if (IsShoppingPageTypesApiEnabled(account_checker_.get())) {
       types.push_back(
           optimization_guide::proto::OptimizationType::SHOPPING_PAGE_TYPES);
     }
@@ -720,7 +720,7 @@ ShoppingService::GetAllShoppingBookmarks() {
 
 void ShoppingService::GetMerchantInfoForUrl(const GURL& url,
                                             MerchantInfoCallback callback) {
-  if (!opt_guide_ || !IsMerchantViewerEnabled()) {
+  if (!opt_guide_ || !IsMerchantViewerEnabled(account_checker_.get())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), url, std::nullopt));
     return;
@@ -836,22 +836,12 @@ bool ShoppingService::IsRegionLockedFeatureEnabled(
       locale_on_startup_);
 }
 
-bool ShoppingService::IsMerchantViewerEnabled() {
-  return IsRegionLockedFeatureEnabled(kCommerceMerchantViewer,
-                                      kCommerceMerchantViewerRegionLaunched);
-}
-
 bool ShoppingService::IsParcelTrackingEligible() {
   if (!IsRegionLockedFeatureEnabled(kParcelTracking,
                                     kParcelTrackingRegionLaunched)) {
     return false;
   }
   return account_checker_ && account_checker_->IsSignedIn();
-}
-
-bool ShoppingService::IsShoppingPageTypesApiEnabled() {
-  return IsRegionLockedFeatureEnabled(kShoppingPageTypes,
-                                      kShoppingPageTypesRegionLaunched);
 }
 
 const std::vector<UrlInfo> ShoppingService::GetUrlInfosForActiveWebWrappers() {

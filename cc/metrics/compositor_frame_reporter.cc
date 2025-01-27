@@ -20,7 +20,6 @@
 #include "base/debug/alias.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -1917,7 +1916,7 @@ void CompositorFrameReporter::CalculateEventLatencyPrediction(
   // TODO(crbug.com/40228308): Explore calculating predictions for multiple
   // events. Currently only kGestureScrollUpdate event predictions
   // are being calculated, consider including other stages in future changes.
-  auto event_it = base::ranges::find_if(
+  auto event_it = std::ranges::find_if(
       events_metrics_, [](const std::unique_ptr<EventMetrics>& event) {
         return event &&
                event->type() == EventMetrics::EventType::kGestureScrollUpdate;
@@ -1980,9 +1979,9 @@ void CompositorFrameReporter::CalculateEventLatencyPrediction(
   }
 
   // Determine dispatch-to-compositor transition stage duration.
-  auto stage_it = base::ranges::lower_bound(
-      stage_history_, dispatch_end_time, {},
-      &CompositorFrameReporter::StageData::start_time);
+  auto stage_it =
+      std::ranges::lower_bound(stage_history_, dispatch_end_time, {},
+                               &CompositorFrameReporter::StageData::start_time);
   if (stage_it != stage_history_.end()) {
     if (dispatch_end_time < stage_it->start_time) {
       base::TimeDelta stage_duration = stage_it->start_time - dispatch_end_time;

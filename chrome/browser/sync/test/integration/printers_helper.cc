@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/printers_helper.h"
 
+#include <algorithm>
 #include <ostream>
 #include <string>
 #include <unordered_map>
@@ -11,7 +12,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
@@ -88,7 +88,7 @@ bool EditPrinterDescription(ash::SyncedPrintersManager* manager,
                             const std::string& description) {
   PrinterList printers = manager->GetSavedPrinters();
   std::string printer_id = PrinterId(index);
-  auto found = base::ranges::find(printers, printer_id, &chromeos::Printer::id);
+  auto found = std::ranges::find(printers, printer_id, &chromeos::Printer::id);
 
   if (found == printers.end()) {
     return false;

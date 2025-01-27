@@ -4,6 +4,7 @@
 
 #include "ash/shelf/login_shelf_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -38,7 +39,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
@@ -126,7 +126,7 @@ class LoginShelfViewTest : public LoginTestBase {
         return false;
       }
     }
-    const size_t visible_buttons = base::ranges::count_if(
+    const size_t visible_buttons = std::ranges::count_if(
         login_shelf_view_->children(), &views::View::GetVisible);
     return visible_buttons == ids.size();
   }

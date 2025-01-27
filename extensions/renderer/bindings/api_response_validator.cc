@@ -4,10 +4,10 @@
 
 #include "extensions/renderer/bindings/api_response_validator.h"
 
+#include <algorithm>
 #include <ostream>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/bindings/api_type_reference_map.h"
@@ -132,9 +132,10 @@ void APIResponseValidator::ValidateEvent(
       "downloads.onCreated",
   };
 
-  if (base::ranges::find(kBrokenSignaturesToIgnore, event_name) !=
-      std::end(kBrokenSignaturesToIgnore))
+  if (std::ranges::find(kBrokenSignaturesToIgnore, event_name) !=
+      std::end(kBrokenSignaturesToIgnore)) {
     return;
+  }
 
   std::string error;
   if (signature->ValidateCall(context, event_args, *type_refs_, &error)) {

@@ -4,6 +4,7 @@
 
 #include "ash/ambient/managed/screensaver_image_downloader.h"
 
+#include <algorithm>
 #include <string>
 
 #include "ash/ambient/metrics/managed_screensaver_metrics.h"
@@ -13,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -184,8 +184,8 @@ std::vector<base::FilePath> DeleteUnreferencedImageFiles(
     const base::FilePath& download_directory) {
   std::vector<std::string> hashed_image_urls = new_image_urls;
   // Hash the image url
-  base::ranges::transform(hashed_image_urls.begin(), hashed_image_urls.end(),
-                          hashed_image_urls.begin(), GetHashedFileNameForUrl);
+  std::ranges::transform(hashed_image_urls.begin(), hashed_image_urls.end(),
+                         hashed_image_urls.begin(), GetHashedFileNameForUrl);
 
   base::flat_set<std::string> hashed_image_file_paths(hashed_image_urls);
 

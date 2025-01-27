@@ -4,10 +4,10 @@
 
 #include "chrome/browser/webauthn/cablev2_devices.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -416,9 +416,9 @@ struct TestDeviceInfoConfig {
 syncer::DeviceInfo TestDeviceInfo(const TestDeviceInfoConfig& config) {
   syncer::DeviceInfo::PhoneAsASecurityKeyInfo paask_info;
   paask_info.contact_id = std::vector<uint8_t>({1, 2, 3});
-  base::ranges::fill(paask_info.peer_public_key_x962, 0);
+  std::ranges::fill(paask_info.peer_public_key_x962, 0);
   paask_info.peer_public_key_x962[0] = 1;
-  base::ranges::fill(paask_info.secret, 0);
+  std::ranges::fill(paask_info.secret, 0);
   paask_info.secret[0] = 2;
   paask_info.id = config.id;
   paask_info.tunnel_server_domain = config.tunnel_server_domain;

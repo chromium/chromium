@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/profiles/profile_picker.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -160,7 +160,7 @@ StartupProfileModeReason ProfilePicker::GetStartupModeReason() {
 
   std::vector<ProfileAttributesEntry*> profile_attributes =
       profile_manager->GetProfileAttributesStorage().GetAllProfilesAttributes();
-  int number_of_active_profiles = base::ranges::count_if(
+  int number_of_active_profiles = std::ranges::count_if(
       profile_attributes, [](ProfileAttributesEntry* entry) {
         return (base::Time::Now() - entry->GetActiveTime() <
                 kActiveTimeThreshold);

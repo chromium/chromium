@@ -346,7 +346,7 @@ PinSetupPageActor::PinSetupPageActor()
 PinSetupPageActor::~PinSetupPageActor() = default;
 
 void PinSetupPageActor::EnterPin(const std::string& pin) {
-  EXPECT_TRUE(base::ranges::all_of(pin, ::isdigit));
+  EXPECT_TRUE(std::ranges::all_of(pin, ::isdigit));
   test::OobeJS().TypeIntoPath(pin, kPinSetupKeyboardInput);
 }
 

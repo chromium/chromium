@@ -2600,17 +2600,34 @@ public class ToolbarManager
         mIphController.showBottomToolbarIph(mControlContainer.findViewById(R.id.location_bar));
     }
 
+    /**
+     * This method and checkIfNtpLoaded encode different concepts of the current tab's NTP-ness"
+     * which are suitable for different use cases. checkIfNtpShowingWithNoPendingLoad checks that
+     * the NTP is loaded and that there is no pending load away from the NTP; this is suitable for
+     * cases where we need to update the UI as soon an extra-NTP load begins.In contrast,
+     * checkIfNtpLoaded checks only that the NTP is showing, which will remain true until
+     * didFinishNavigationInPrimaryMainFrame causes the tab to hide the NTP NativePage and render
+     * the new page.
+     */
+    private void checkIfNtpShowingWithNoPendingLoad() {
+        boolean isNtpUrl = UrlUtilities.isNtpUrl(mLocationBarModel.getCurrentGurl());
+        if (isNtpUrl && getNewTabPageForCurrentTab() != null) {
+            mIsNtpShowingSupplier.set(true);
+        } else {
+            mIsNtpShowingSupplier.set(false);
+            maybeShowBottomToolbarIph();
+        }
+    }
+
     private void checkIfNtpLoaded() {
         NewTabPage ntp = getNewTabPageForCurrentTab();
 
         if (ntp != null) {
             ntp.setOmniboxStub(mLocationBar.getOmniboxStub());
             mLocationBarModel.notifyNtpStartedLoading();
-            mIsNtpShowingSupplier.set(true);
-        } else {
-            maybeShowBottomToolbarIph();
-            mIsNtpShowingSupplier.set(false);
         }
+
+        checkIfNtpShowingWithNoPendingLoad();
     }
 
     private void setBookmarkModel(
@@ -2653,6 +2670,7 @@ public class ToolbarManager
         if (updateUrl) {
             mLocationBarModel.notifyUrlChanged();
             updateButtonStatus();
+            checkIfNtpShowingWithNoPendingLoad();
         }
     }
 

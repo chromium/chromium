@@ -314,7 +314,7 @@ class VideoUtilRotationTest
   VideoUtilRotationTest()
       : dest_(base::HeapArray<uint8_t>::Uninit(GetParam().width *
                                                GetParam().height)) {
-    base::ranges::fill(dest_, 255);
+    std::ranges::fill(dest_, 255);
   }
   VideoUtilRotationTest(const VideoUtilRotationTest&) = delete;
   VideoUtilRotationTest& operator=(const VideoUtilRotationTest&) = delete;

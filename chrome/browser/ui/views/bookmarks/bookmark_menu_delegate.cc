@@ -104,7 +104,7 @@ ui::ImageModel GetFaviconForNode(BookmarkModel* model,
 
 bool ShouldBuildPermanentNode(const BookmarkMergedSurfaceService* service,
                               const BookmarkParentFolder& folder) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       service->GetUnderlyingNodes(folder), [](const BookmarkNode* node) {
         return node->IsVisible() && !node->children().empty();
       });

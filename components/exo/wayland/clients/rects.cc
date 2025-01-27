@@ -16,6 +16,7 @@
 #include <wayland-client-core.h>
 #include <wayland-client-protocol.h>
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <memory>
@@ -29,7 +30,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
@@ -208,7 +208,7 @@ void FeedbackDiscarded(void* data,
                        struct wp_presentation_feedback* presentation_feedback) {
   Presentation* presentation = static_cast<Presentation*>(data);
   DCHECK_GT(presentation->scheduled_frames.size(), 0u);
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       presentation->scheduled_frames, presentation_feedback,
       [](std::unique_ptr<Frame>& frame) { return frame->feedback.get(); });
   CHECK(it != presentation->scheduled_frames.end(), base::NotFatalUntil::M130);

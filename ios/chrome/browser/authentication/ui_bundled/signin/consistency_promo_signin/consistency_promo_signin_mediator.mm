@@ -237,7 +237,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   }
   __weak __typeof(self) weakSelf = self;
   self.authenticationService->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin, false, ^() {
+      signin_metrics::ProfileSignout::kAbortSignin, ^() {
         [weakSelf.delegate consistencyPromoSigninMediator:weakSelf
                                            errorDidHappen:error];
       });

@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/document_provider.h"
 
+#include <algorithm>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -14,7 +15,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -113,7 +113,7 @@ class DocumentProviderTest : public testing::Test,
   using Summary = std::tuple<const std::u16string, int, bool>;
   static std::vector<Summary> ExtractMatchSummary(const ACMatches& matches) {
     std::vector<Summary> summaries;
-    base::ranges::transform(
+    std::ranges::transform(
         matches, std::back_inserter(summaries), [](const auto& match) {
           return Summary{
               match.contents, match.relevance,

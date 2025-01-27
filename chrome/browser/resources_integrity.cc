@@ -9,6 +9,7 @@
 
 #include "chrome/browser/resources_integrity.h"
 
+#include <algorithm>
 #include <array>
 
 #include "base/files/file.h"
@@ -16,7 +17,6 @@
 #include "base/memory/page_size.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -60,7 +60,7 @@ bool CheckResourceIntegrityInternal(
   std::array<uint8_t, crypto::kSHA256Length> digest;
   hash->Finish(digest);
 
-  return base::ranges::equal(digest, expected_signature);
+  return std::ranges::equal(digest, expected_signature);
 }
 
 void ReportPakIntegrity(const std::string& histogram_name, bool hash_matches) {

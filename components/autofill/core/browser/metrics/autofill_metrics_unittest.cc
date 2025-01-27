@@ -5267,8 +5267,8 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
   }
 
   FormFieldData& GetFieldById(FieldGlobalId field) {
-    auto it = base::ranges::find(test_api(form_).fields(), field,
-                                 &FormFieldData::global_id);
+    auto it = std::ranges::find(test_api(form_).fields(), field,
+                                &FormFieldData::global_id);
     CHECK(it != form_.fields().end());
     return *it;
   }

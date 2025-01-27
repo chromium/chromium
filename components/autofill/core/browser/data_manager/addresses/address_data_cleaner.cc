@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 
+#include <algorithm>
+
 #include "base/containers/to_vector.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -74,7 +75,7 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
        local_profile_it != account_profiles.begin(); ++local_profile_it) {
     // If possible, merge `*local_profile_it` with another local profile and
     // remove it.
-    if (auto merge_candidate = base::ranges::find_if(
+    if (auto merge_candidate = std::ranges::find_if(
             local_profile_it + 1, account_profiles.begin(),
             [&](const AutofillProfile& local_profile2) {
               return comparator.AreMergeable(*local_profile_it, local_profile2);
@@ -89,7 +90,7 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
     }
     // `*local_profile_it` is not mergeable with another local profile. But it
     // might be a subset of an account profile and can thus be removed.
-    if (auto superset_account_profile = base::ranges::find_if(
+    if (auto superset_account_profile = std::ranges::find_if(
             account_profiles,
             [&](const AutofillProfile& account_profile) {
               return comparator.AreMergeable(*local_profile_it,

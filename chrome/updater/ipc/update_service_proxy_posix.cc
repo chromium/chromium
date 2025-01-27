@@ -4,6 +4,7 @@
 
 #include "chrome/updater/ipc/update_service_proxy_posix.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -18,7 +19,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -286,8 +286,8 @@ void UpdateServiceProxyImpl::GetAppStates(
   remote_->GetAppStates(
       base::BindOnce([](std::vector<mojom::AppStatePtr> app_states_mojo) {
         std::vector<updater::UpdateService::AppState> app_states;
-        base::ranges::transform(app_states_mojo, std::back_inserter(app_states),
-                                &MakeAppState);
+        std::ranges::transform(app_states_mojo, std::back_inserter(app_states),
+                               &MakeAppState);
         return app_states;
       }).Then(ToMojoCallback(std::move(callback))));
 }

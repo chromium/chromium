@@ -78,8 +78,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentCapture.CaptureContentTime2" units="microseconds"
-    expires_after="2025-03-01">
-  <owner>wangxianzhu@chromium.org</owner>
+    expires_after="2025-12-01">
+  <owner>elabadysayed@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>
     The time taken to capture the on-screen content and group them by document.
@@ -89,47 +89,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentCapture.SendContentTime" units="microseconds"
-    expires_after="2025-03-01">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The time taken to send the content to the browser process in batch.
-
-    Note that this metrics is only recorded on clients on which a
-    high-resolution clock is available.
-  </summary>
-</histogram>
-
 <histogram name="ContentCapture.SentContentCount2" units="count"
-    expires_after="2025-03-01">
-  <owner>wangxianzhu@chromium.org</owner>
+    expires_after="2025-12-01">
+  <owner>elabadysayed@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>The total number of content captures sent for a document.</summary>
-</histogram>
-
-<histogram name="ContentCapture.TaskDelayTimeInMs" units="ms"
-    expires_after="2025-03-01">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The time taken for the task to start after it's scheduled.
-
-    Note: The time of task that was scheduled for the retry wasn't measured
-    because it is always 500ms.
-  </summary>
-</histogram>
-
-<histogram name="ContentCapture.TaskRunsPerCapture" units="runs"
-    expires_after="2025-03-01">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The number of the times the task runs for a content capture session.
-
-    A content capture session begins with capturing on-screen content and ends
-    in sending all changes.
-  </summary>
 </histogram>
 
 <histogram name="ContentNotifications.ClientStatus.Enabled.ByProvider"

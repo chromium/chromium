@@ -4,6 +4,7 @@
 
 #include "extensions/browser/script_executor.h"
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <string>
@@ -17,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/pickle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/pass_key.h"
 #include "content/public/browser/render_frame_host.h"
@@ -419,7 +419,7 @@ void ScriptExecutor::ExecuteScript(
       DCHECK(expect_injection_key)
           << "Only extensions (with injection keys supplied) can remove CSS.";
     }
-    DCHECK(base::ranges::all_of(
+    DCHECK(std::ranges::all_of(
         injection->get_css()->sources,
         [expect_injection_key](const mojom::CSSSourcePtr& source) {
           return expect_injection_key == source->key.has_value();

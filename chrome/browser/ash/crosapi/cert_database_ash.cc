@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -209,11 +208,11 @@ void CertDatabaseAsh::SetCertsProvidedByExtension(
   // nullptr. We ignore such certificates to avoid closing the mojo pipe.
   chromeos::certificate_provider::CertificateInfoList
       filtered_certificate_infos;
-  base::ranges::copy_if(certificate_infos,
-                        std::back_inserter(filtered_certificate_infos),
-                        [&](const auto& certificate_info) {
-                          return certificate_info.certificate != nullptr;
-                        });
+  std::ranges::copy_if(certificate_infos,
+                       std::back_inserter(filtered_certificate_infos),
+                       [&](const auto& certificate_info) {
+                         return certificate_info.certificate != nullptr;
+                       });
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   chromeos::CertificateProviderService* certificate_provider_service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(

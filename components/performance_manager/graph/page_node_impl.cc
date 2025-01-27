@@ -334,9 +334,16 @@ void PageNodeImpl::OnTitleUpdated() {
 
 void PageNodeImpl::OnAboutToBeDiscarded(base::WeakPtr<PageNode> new_page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!embedder_frame_node_)
+      << "Discard should only be called on the primary page node.";
 
   if (!new_page_node) {
     return;
+  }
+
+  // Notify all embedded frames that the primary page is about to be discarded.
+  if (FrameNodeImpl* main_frame = main_frame_node()) {
+    main_frame->OnPrimaryPageAboutToBeDiscarded();
   }
 
   for (auto& observer : GetObservers()) {

@@ -4,11 +4,11 @@
 
 #include "services/webnn/public/cpp/webnn_errors.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
@@ -22,7 +22,7 @@ static constexpr char kInputParam[] = "input";
 
 std::string SupportedDataTypesString(SupportedDataTypes supported_types) {
   std::vector<std::string> type_strings;
-  base::ranges::transform(
+  std::ranges::transform(
       supported_types, std::back_inserter(type_strings),
       [](OperandDataType type) { return DataTypeToString(type); });
   return base::StrCat(

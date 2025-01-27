@@ -103,8 +103,7 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
             base::span<const uint8_t> mp4_data_string) {
           // Callback is called per box output.
 
-          base::ranges::copy(mp4_data_string,
-                             std::back_inserter(*written_data));
+          std::ranges::copy(mp4_data_string, std::back_inserter(*written_data));
           std::move(run_loop_quit).Run();
         },
         run_loop_.QuitClosure(), &written_data));

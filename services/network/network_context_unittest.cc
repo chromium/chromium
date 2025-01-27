@@ -29,7 +29,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -6861,7 +6860,7 @@ TEST_F(NetworkContextTest, HangingHeaderClientAbortDuringOnHeadersReceived) {
     const net::cookie_util::ParsedRequestCookies& cookies,
     std::string_view name) {
   auto it =
-      base::ranges::find(cookies, name, [](const auto& p) { return p.first; });
+      std::ranges::find(cookies, name, [](const auto& p) { return p.first; });
   if (it == cookies.end()) {
     return ::testing::AssertionFailure() << "no cookie named " << name;
   }
@@ -6873,7 +6872,7 @@ TEST_F(NetworkContextTest, HangingHeaderClientAbortDuringOnHeadersReceived) {
     std::string_view name,
     std::string_view value) {
   auto it =
-      base::ranges::find(cookies, name, [](const auto& p) { return p.first; });
+      std::ranges::find(cookies, name, [](const auto& p) { return p.first; });
   if (it == cookies.end()) {
     return ::testing::AssertionFailure() << "no cookie named " << name;
   }
@@ -9632,7 +9631,7 @@ TEST_F(NetworkContextTest, ExemptUrlFromNetworkRevocationForNonce_InvalidURLs) {
                                 const std::string& url) {
     return network_context->IsNetworkForNonceAndUrlAllowed(nonce, GURL(url));
   };
-  ASSERT_TRUE(base::ranges::all_of(invalid_urls, is_network_allowed));
+  ASSERT_TRUE(std::ranges::all_of(invalid_urls, is_network_allowed));
   ASSERT_TRUE(
       network_context->IsNetworkForNonceAndUrlAllowed(nonce, GURL(valid_url)));
 
@@ -9643,7 +9642,7 @@ TEST_F(NetworkContextTest, ExemptUrlFromNetworkRevocationForNonce_InvalidURLs) {
   EXPECT_TRUE(revoked.Wait());
 
   // Now the `invalid_urls` and the `valid_url` all have network disabled.
-  ASSERT_TRUE(base::ranges::none_of(invalid_urls, is_network_allowed));
+  ASSERT_TRUE(std::ranges::none_of(invalid_urls, is_network_allowed));
   ASSERT_FALSE(
       network_context->IsNetworkForNonceAndUrlAllowed(nonce, GURL(valid_url)));
 
@@ -9657,7 +9656,7 @@ TEST_F(NetworkContextTest, ExemptUrlFromNetworkRevocationForNonce_InvalidURLs) {
 
   // Now the `valid_url` should be exempted. The `invalid_urls` are still
   // disabled for network.
-  ASSERT_TRUE(base::ranges::none_of(invalid_urls, is_network_allowed));
+  ASSERT_TRUE(std::ranges::none_of(invalid_urls, is_network_allowed));
   ASSERT_TRUE(
       network_context->IsNetworkForNonceAndUrlAllowed(nonce, GURL(valid_url)));
 }
@@ -10278,7 +10277,7 @@ class StorageAccessHeaderNetworkContextTest : public NetworkContextTest {
                           ContentSettingsType content_type,
                           std::initializer_list<PatternsAndSetting> patterns) {
     std::vector<ContentSettingPatternSource> settings;
-    base::ranges::transform(
+    std::ranges::transform(
         patterns, std::back_inserter(settings),
         [](const PatternsAndSetting& patterns_and_setting) {
           return ContentSettingPatternSource(

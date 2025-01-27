@@ -193,8 +193,9 @@ class PageContentAnnotationsWebContentsObserver::AnnotatedPageContentRequest {
     }
     UMA_HISTOGRAM_TIMES("OptimizationGuide.InnerText.TotalLatency",
                         base::TimeTicks::Now() - start_time);
-    UMA_HISTOGRAM_MEMORY_KB("OptimizationGuide.InnerText.TotalSize",
-                            result->inner_text.length() / 1024);
+    UMA_HISTOGRAM_CUSTOM_COUNTS("OptimizationGuide.InnerText.TotalSize2",
+                                result->inner_text.length() / 1024, 10, 5000,
+                                50);
   }
 
   const raw_ptr<content::WebContents> web_contents_;

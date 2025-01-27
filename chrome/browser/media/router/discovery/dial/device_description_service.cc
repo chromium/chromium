@@ -13,9 +13,10 @@
 #include <sstream>
 #endif
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/discovery/dial/device_description_fetcher.h"
 #include "chrome/browser/media/router/discovery/dial/safe_dial_device_description_parser.h"
 #include "net/base/ip_address.h"
@@ -81,7 +82,7 @@ void DeviceDescriptionService::GetDeviceDescriptions(
   for (auto& fetcher_it : device_description_fetcher_map_) {
     std::string device_label = fetcher_it.first;
     const auto& device_it =
-        base::ranges::find(devices, device_label, &DialDeviceData::label);
+        std::ranges::find(devices, device_label, &DialDeviceData::label);
     if (device_it == devices.end() ||
         device_it->device_description_url() ==
             fetcher_it.second->device_description_url()) {

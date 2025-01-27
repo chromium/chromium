@@ -234,7 +234,7 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateGroupPositionPinnedState) {
 TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateGroupPositionIndex) {
   auto get_index = [&](const LocalTabGroupID& local_id) -> int {
     std::vector<SavedTabGroup> groups = service()->GetAllGroups();
-    auto it = base::ranges::find_if(groups, [&](const SavedTabGroup& group) {
+    auto it = std::ranges::find_if(groups, [&](const SavedTabGroup& group) {
       return group.local_group_id() == local_id;
     });
 

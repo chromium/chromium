@@ -587,7 +587,7 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, ShutsDownOnFatalError) {
   auto receiver_ptr = std::make_unique<MockVideoFrameReceiver>();
   auto* receiver = receiver_ptr.get();
   Sequence sequence;
-  EXPECT_CALL(*receiver, OnStarted()).InSequence(sequence);
+  EXPECT_CALL(*receiver, OnStarted()).Times(0);
   EXPECT_CALL(*receiver, OnLog(StrNe(""))).InSequence(sequence);
   EXPECT_CALL(*receiver, OnError(_)).InSequence(sequence);
 

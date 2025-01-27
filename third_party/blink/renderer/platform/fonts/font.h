@@ -189,6 +189,10 @@ class PLATFORM_EXPORT Font {
   // when, for whatever reason, the last resort font cannot be loaded.
   const SimpleFontData* PrimaryFont() const;
 
+  // Returns a list of font features for this `FontDescription`. The returned
+  // list is common for all `SimpleFontData` for `this`.
+  const FontFeatures& GetFontFeatures() const;
+
   // Access the NG shape cache associated with this particular font object.
   // Should *not* be retained across layout calls as it may become invalid.
   NGShapeCache& GetNGShapeCache() const;

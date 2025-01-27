@@ -432,7 +432,8 @@ bool ShoppingServiceAndroid::IsMerchantViewerEnabled(
     const JavaParamRef<jobject>& obj) {
   CHECK(shopping_service_);
 
-  return shopping_service_->IsMerchantViewerEnabled();
+  return commerce::IsMerchantViewerEnabled(
+      shopping_service_->GetAccountChecker());
 }
 
 bool ShoppingServiceAndroid::IsPriceInsightsEligible(

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -23,7 +24,6 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
-
 class CdmSessionAdapter;
 
 class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl

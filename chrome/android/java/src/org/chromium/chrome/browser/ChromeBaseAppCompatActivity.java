@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -237,17 +238,19 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         @ColorInt
         int defaultStatusBarColor =
                 AttrUtils.resolveColor(getTheme(), android.R.attr.statusBarColor);
+        @ColorInt
+        int defaultNavigationBarColor =
+                AttrUtils.resolveColor(getTheme(), android.R.attr.navigationBarColor);
         // Check if defaultStatusBarColor is transparent
         defaultStatusBarColor =
                 (defaultStatusBarColor != 0) ? defaultStatusBarColor : defaultBgColor;
+        defaultNavigationBarColor =
+                (defaultNavigationBarColor != 0) ? defaultNavigationBarColor : defaultBgColor;
 
-        // TODO(crbug.com/389161492): Fix status bar color for DownloadActivity.
-        mEdgeToEdgeManager
-                .getEdgeToEdgeSystemBarColorHelper()
-                .setStatusBarColor(defaultStatusBarColor);
-        mEdgeToEdgeManager
-                .getEdgeToEdgeSystemBarColorHelper()
-                .setNavigationBarColor(defaultBgColor);
+        EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper =
+                mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper();
+        edgeToEdgeSystemBarColorHelper.setStatusBarColor(defaultStatusBarColor);
+        edgeToEdgeSystemBarColorHelper.setNavigationBarColor(defaultNavigationBarColor);
     }
 
     @Override
@@ -452,7 +455,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                                     isDynamicColorAvailable ? "Enabled" : "Disabled");
                         });
 
-        if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()) {
+        // TODO(https://crbug.com/392634251): Explore setting elegantTextHeight to 'true' on older
+        // OS versions.
+        if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()
+                && Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
             int elegantTextHeightOverlay = R.style.ThemeOverlay_BrowserUI_ElegantTextHeight;
             getTheme().applyStyle(elegantTextHeightOverlay, true);
             mThemeResIds.add(elegantTextHeightOverlay);

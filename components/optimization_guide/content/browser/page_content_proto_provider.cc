@@ -68,11 +68,20 @@ std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
       render_frame_host->GetGlobalFrameToken();
   // We use the origin instead of last committed URL here to ensure the security
   // origin for the iframe's content is accurately tracked.
-  // For example, for data URLs we need the source origin for the URL instead of
-  // the raw URL itself.
-  render_frame_info.source_origin = render_frame_host->GetLastCommittedOrigin()
-                                        .GetTupleOrPrecursorTupleIfOpaque();
+  // For example:
+  // 1. data URLs use an opaque origin
+  // 2. about:blank inherits its origin from the initiator while the URL doesn't
+  //    convey that.
+  render_frame_info.source_origin = render_frame_host->GetLastCommittedOrigin();
   return render_frame_info;
+}
+
+int CountContentNodes(const optimization_guide::proto::ContentNode& node) {
+  int node_count = 1;
+  for (const auto& child : node.children_nodes()) {
+    node_count += CountContentNodes(child);
+  }
+  return node_count;
 }
 
 void OnGotAIPageContentForAllFrames(
@@ -86,8 +95,15 @@ void OnGotAIPageContentForAllFrames(
           base::BindRepeating(&GetRenderFrameInfo), &proto)) {
     UMA_HISTOGRAM_TIMES("OptimizationGuide.AIPageContent.TotalLatency",
                         base::TimeTicks::Now() - start_time);
-    UMA_HISTOGRAM_MEMORY_KB("OptimizationGuide.AnnotatedPageContent.TotalSize",
-                            proto.ByteSizeLong() / 1024);
+    // 10KB bucket up to 5MB.
+    // TODO(crbug.com/392115749): Use provided metrics when available.
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
+        "OptimizationGuide.AnnotatedPageContent.TotalSize2",
+        proto.ByteSizeLong() / 1024, 10, 5000, 50);
+    auto node_count = CountContentNodes(proto.root_node());
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
+        "OptimizationGuide.AnnotatedPageContent.TotalNodeCount", node_count, 1,
+        100000, 50);
     std::move(done_callback).Run(std::move(proto));
     return;
   }

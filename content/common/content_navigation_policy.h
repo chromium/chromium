@@ -92,6 +92,11 @@ CONTENT_EXPORT bool ShouldQueueNavigationsWhenPendingCommitRFHExists();
 // Returns true if data: URL subframes should be put in a separate SiteInstance
 // in the SiteInstanceGroup of the initiator.
 CONTENT_EXPORT bool ShouldCreateSiteInstanceForDataUrls();
+
+// Returns true if non-isolated sites should be put in a default
+// SiteInstanceGroup in separate SiteInstances, rather than sharing a default
+// SiteInstance.
+CONTENT_EXPORT bool ShouldUseDefaultSiteInstanceGroup();
 }  // namespace content
 
 #endif  // CONTENT_COMMON_CONTENT_NAVIGATION_POLICY_H_

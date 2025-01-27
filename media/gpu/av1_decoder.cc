@@ -9,18 +9,19 @@
 
 #include "media/gpu/av1_decoder.h"
 
+#include <algorithm>
 #include <bitset>
 #include <utility>
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/av1_picture.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libgav1/src/src/decoder_state.h"
 #include "third_party/libgav1/src/src/gav1/status_code.h"
+#include "third_party/libgav1/src/src/utils/common.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
 #include "ui/gfx/hdr_metadata.h"
 
@@ -539,7 +540,7 @@ void AV1Decoder::ClearReferenceFrames() {
   ref_frames_.fill(nullptr);
   // If AV1Decoder has decided to clear the reference frames, then ObuParser
   // must have also decided to do so.
-  DCHECK_EQ(base::ranges::count(state_->reference_frame, nullptr),
+  DCHECK_EQ(std::ranges::count(state_->reference_frame, nullptr),
             static_cast<int>(state_->reference_frame.size()));
 }
 

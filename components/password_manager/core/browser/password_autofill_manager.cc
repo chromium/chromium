@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -19,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -81,7 +81,7 @@ std::u16string GetUsernameFromSuggestion(const std::u16string& suggestion) {
 
 bool ContainsOtherThanManagePasswords(
     base::span<const Suggestion> suggestions) {
-  return base::ranges::any_of(suggestions, [](const auto& s) {
+  return std::ranges::any_of(suggestions, [](const auto& s) {
     return s.type != autofill::SuggestionType::kAllSavedPasswordsEntry;
   });
 }
@@ -104,14 +104,14 @@ std::vector<Suggestion> PrepareLoadingStateSuggestions(
       suggestion.acceptability = kUnacceptableWithDeactivatedStyle;
     }
   };
-  base::ranges::for_each(current_suggestions, modifier_fun);
+  std::ranges::for_each(current_suggestions, modifier_fun);
   return current_suggestions;
 }
 
 bool AreNewSuggestionsTheSame(
     const std::vector<autofill::Suggestion>& new_suggestions,
     const std::vector<autofill::Suggestion>& old_suggestions) {
-  return base::ranges::equal(
+  return std::ranges::equal(
       new_suggestions, old_suggestions, [](const auto& lhs, const auto& rhs) {
         return lhs.main_text == rhs.main_text && lhs.type == rhs.type &&
                lhs.icon == rhs.icon && lhs.payload == rhs.payload;
@@ -469,10 +469,10 @@ void PasswordAutofillManager::FillSuggestion(
   metrics_util::LogFilledPasswordFromAndroidApp(is_android_credential);
   // Emit UMA if grouped affiliation match was available for the user.
   if (fill_data_->preferred_login.is_grouped_affiliation ||
-      base::ranges::find_if(fill_data_->additional_logins,
-                            [](const autofill::PasswordAndMetadata& login) {
-                              return login.is_grouped_affiliation;
-                            }) != fill_data_->additional_logins.end()) {
+      std::ranges::find_if(fill_data_->additional_logins,
+                           [](const autofill::PasswordAndMetadata& login) {
+                             return login.is_grouped_affiliation;
+                           }) != fill_data_->additional_logins.end()) {
     metrics_util::LogFillSuggestionGroupedMatchAccepted(
         password_and_metadata.is_grouped_affiliation);
   }
@@ -523,7 +523,7 @@ PasswordAutofillManager::GetPasswordAndMetadataForUsername(
   }
 
   // Scan additional logins for a match.
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       fill_data_->additional_logins,
       [&](const autofill::PasswordAndMetadata& login) {
         return current_username == login.username_value &&

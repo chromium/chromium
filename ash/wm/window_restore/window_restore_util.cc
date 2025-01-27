@@ -4,6 +4,8 @@
 
 #include "ash/wm/window_restore/window_restore_util.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/window_properties.h"
@@ -12,7 +14,6 @@
 #include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -58,7 +59,7 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
   if (activation_index) {
     window_activation_index = *activation_index;
   } else {
-    auto it = base::ranges::find(mru_windows, window);
+    auto it = std::ranges::find(mru_windows, window);
     if (it != mru_windows.end())
       window_activation_index = it - mru_windows.begin();
   }

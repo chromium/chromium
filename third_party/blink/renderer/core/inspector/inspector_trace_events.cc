@@ -322,6 +322,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoWebKitAutofill)
     DEFINE_STRING_MAPPING(PseudoAutofillPreviewed)
     DEFINE_STRING_MAPPING(PseudoAutofillSelected)
+    DEFINE_STRING_MAPPING(PseudoHasInterest)
     DEFINE_STRING_MAPPING(PseudoHasSlotted)
     DEFINE_STRING_MAPPING(PseudoHover)
     DEFINE_STRING_MAPPING(PseudoDrag)

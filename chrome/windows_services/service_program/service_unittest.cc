@@ -291,7 +291,7 @@ TEST_F(ServiceTest, RapidReuse) {
         for (const auto& [process, xactions] : task_transactions) {
           auto& combined = transactions[process];
           combined.insert(combined.end(), xactions.begin(), xactions.end());
-          base::ranges::stable_sort(
+          std::ranges::stable_sort(
               combined, [](auto& a, auto& b) { return a.first < b.first; });
         }
         std::move(quit_closure).Run();
@@ -530,7 +530,13 @@ class ServiceCrashTest : public ServiceTest {
 };
 
 // Tests that a dump is produced if a crash happens during a COM call.
-TEST_F(ServiceCrashTest, InduceCrash) {
+// TODO(crbug.com/392552209) This times out in ASAN bots.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_InduceCrash DISABLED_InduceCrash
+#else
+#define MAYBE_InduceCrash InduceCrash
+#endif
+TEST_F(ServiceCrashTest, MAYBE_InduceCrash) {
   Microsoft::WRL::ComPtr<ITestService> test_service;
   ASSERT_NO_FATAL_FAILURE(CreateServiceForCrashTest(test_service));
   ASSERT_EQ(test_service->InduceCrash(), HRESULT_FROM_WIN32(RPC_S_CALL_FAILED));
@@ -538,7 +544,13 @@ TEST_F(ServiceCrashTest, InduceCrash) {
 }
 
 // Tests that a dump is produced if a crash happens in the background.
-TEST_F(ServiceCrashTest, InduceCrashSoon) {
+// TODO(crbug.com/392552209) This times out in ASAN bots.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_InduceCrashSoon DISABLED_InduceCrashSoon
+#else
+#define MAYBE_InduceCrashSoon InduceCrashSoon
+#endif
+TEST_F(ServiceCrashTest, MAYBE_InduceCrashSoon) {
   Microsoft::WRL::ComPtr<ITestService> test_service;
   ASSERT_NO_FATAL_FAILURE(CreateServiceForCrashTest(test_service));
   ASSERT_HRESULT_SUCCEEDED(test_service->InduceCrashSoon());

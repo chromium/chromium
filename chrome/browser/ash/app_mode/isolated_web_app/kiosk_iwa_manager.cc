@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -16,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -96,7 +96,7 @@ const KioskIwaData* KioskIwaManager::GetApp(const AccountId& account_id) const {
     return nullptr;
   }
 
-  const auto iter = base::ranges::find_if(
+  const auto iter = std::ranges::find_if(
       isolated_web_apps_,
       [&account_id](const std::unique_ptr<KioskIwaData>& app) {
         return app->account_id() == account_id;
@@ -194,8 +194,8 @@ void KioskIwaManager::CancelCryptohomeRemovalsForCurrentApps() {
 
 void KioskIwaManager::RemoveApps(const KioskIwaDataMap& previous_apps) const {
   std::vector<const KioskAppDataBase*> apps_to_remove;
-  base::ranges::transform(previous_apps, std::back_inserter(apps_to_remove),
-                          [](const auto& kv) { return kv.second.get(); });
+  std::ranges::transform(previous_apps, std::back_inserter(apps_to_remove),
+                         [](const auto& kv) { return kv.second.get(); });
   ClearRemovedApps(apps_to_remove);
 }
 

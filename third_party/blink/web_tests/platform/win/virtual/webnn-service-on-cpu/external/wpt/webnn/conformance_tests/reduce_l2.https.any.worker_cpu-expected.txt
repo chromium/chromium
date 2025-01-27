@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] reduceL2 float32 5D tensor default options
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'reduceL2' on 'MLGraphBuilder': Unsupported rank 5 for argument input (must be at most 4)."
-[FAIL] reduceL2 float16 5D tensor default options
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'reduceL2' on 'MLGraphBuilder': Unsupported rank 5 for argument input (must be at most 4)."
-Harness: the test ran to completion.
-

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <ostream>
@@ -15,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
@@ -182,7 +182,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
     ExternalInstallSource install_source,
     SynchronizeCallback callback) {
   CHECK(callback);
-  CHECK(base::ranges::all_of(
+  CHECK(std::ranges::all_of(
       desired_apps_install_options,
       [&install_source](const ExternalInstallOptions& install_options) {
         return install_options.install_source == install_source;

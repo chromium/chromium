@@ -4,11 +4,12 @@
 
 #include "extensions/browser/script_injection_tracker.h"
 
+#include <algorithm>
+
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/guest_view/buildflags/buildflags.h"
@@ -294,7 +295,7 @@ bool DoScriptsMatch(const Extension& extension,
                     const std::vector<const UserScript*>& scripts,
                     content::RenderFrameHost& frame,
                     const GURL& url) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       scripts.begin(), scripts.end(),
       [&extension, &frame, &url](const UserScript* script) {
         return DoesScriptMatch(extension, *script, frame, url);

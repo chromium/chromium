@@ -127,7 +127,6 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> 已登入此 Chrome 設定檔。Chrome 可為您建立您的設定檔，以分開您的瀏覽區。</translation>
 <translation id="2580411288591421699">您無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome，然後再試一次。</translation>
 <translation id="2586406160782125153">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
-<translation id="2597976513418770460">從 <ph name="ACCOUNT_EMAIL" /> 取得 Chrome 瀏覽器內容</translation>
 <translation id="259935314519650377">無法快取已下載的安裝程式。錯誤代碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2632707915638608719">Chrome 擴充程式讓你事半功倍</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -550,7 +549,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7845233973568007926">多謝安裝。您必須先重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7852254990718225089">Chrome 中的 AI 技術有助提升網絡速度、安全和便利性</translation>
 <translation id="7872446069773932638">正在下載… 剩餘 <ph name="SECONDS" /> 秒</translation>
-<translation id="7880591377632733558"><ph name="ACCOUNT_FIRST_NAME" />，歡迎使用 Chrome</translation>
 <translation id="7886087451482920026">使用「Google 智能鏡頭」選取文字</translation>
 <translation id="7890208801193284374">如果您與親朋好友共用電腦，每個人均可享有獨立的瀏覽空間，按照自己的偏好設定 Chrome。</translation>
 <translation id="7896673875602241923">先前已有其他人在這部電腦上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身分登入 Chrome。請建立新的 Chrome 使用者以個別保存您的資料。</translation>
@@ -602,7 +600,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8429214465555795676">如要繼續，請使用 <ph name="EMAIL" /> 登入 Chrome，確保符合機構的政策。</translation>
 <translation id="8433638294851456451">如要將號碼從此處傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
-<translation id="8451192282033883849">您的帳戶由 <ph name="MANAGER_NAME" /> 管理。管理員可查看並編輯此 Chrome 瀏覽器設定檔和其資料，例如書籤、記錄和密碼。</translation>
 <translation id="8496177819998570653">Google 密碼管理工具(&amp;A)</translation>
 <translation id="8498858610309223613">Google Chrome 剛套用了特別的安全性更新。請立即重新啟動，我們將會還原您的分頁。</translation>
 <translation id="8516431725144212809">Chrome 推測您有以下興趣</translation>

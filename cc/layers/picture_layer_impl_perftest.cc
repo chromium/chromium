@@ -4,8 +4,9 @@
 
 #include "cc/layers/picture_layer_impl.h"
 
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/timer/lap_timer.h"
 #include "cc/test/fake_picture_layer_impl.h"
 #include "cc/test/fake_raster_source.h"
@@ -31,7 +32,7 @@ void AddTiling(float scale,
   tiling->set_resolution(HIGH_RESOLUTION);
   tiling->CreateAllTilesForTesting();
   std::vector<Tile*> tiling_tiles = tiling->AllTilesForTesting();
-  base::ranges::copy(tiling_tiles, std::back_inserter(*all_tiles));
+  std::ranges::copy(tiling_tiles, std::back_inserter(*all_tiles));
 }
 
 class PictureLayerImplPerfTest : public LayerTreeImplTestBase,

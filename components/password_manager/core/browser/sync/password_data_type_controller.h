@@ -59,10 +59,6 @@ class PasswordDataTypeController : public syncer::DataTypeController,
   // IdentityManager::Observer overrides.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
-  void OnAccountsInCookieUpdated(
-      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
-      const GoogleServiceAuthError& error) override;
-  void OnAccountsCookieDeletedByUserAction() override;
 
  private:
   const raw_ptr<PrefService> pref_service_;

@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ash/printing/zeroconf_printer_detector.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -17,7 +18,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/hash/md5.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -263,7 +263,7 @@ bool ConvertToPrinter(const std::string& service_type,
       // Prune any empty splits.
       std::erase_if(media_types, [](std::string_view s) { return s.empty(); });
 
-      base::ranges::transform(
+      std::ranges::transform(
           media_types,
           std::back_inserter(
               detected_printer->ppd_search_data.supported_document_formats),

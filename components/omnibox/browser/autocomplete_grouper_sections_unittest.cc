@@ -29,8 +29,8 @@ AutocompleteMatch CreateMatch(int relevance,
 void VerifyMatches(const ACMatches& matches,
                    std::vector<int> expected_relevances) {
   std::vector<int> relevances = {};
-  base::ranges::transform(matches, std::back_inserter(relevances),
-                          [&](const auto& match) { return match.relevance; });
+  std::ranges::transform(matches, std::back_inserter(relevances),
+                         [&](const auto& match) { return match.relevance; });
 
   EXPECT_THAT(relevances, testing::ElementsAreArray(expected_relevances));
 }

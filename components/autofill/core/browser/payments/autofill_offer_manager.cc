@@ -4,10 +4,11 @@
 
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 
+#include <ranges>
+
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/ranges.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"

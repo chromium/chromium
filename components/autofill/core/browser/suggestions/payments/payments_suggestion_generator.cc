@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 
+#include <algorithm>
 #include <functional>
 #include <string>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -757,7 +757,7 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
   if (std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
           GetCardLinkedOffers(client);
       !card_linked_offers_map.empty()) {
-    base::ranges::stable_sort(
+    std::ranges::stable_sort(
         available_cards,
         [&card_linked_offers_map](const CreditCard* a, const CreditCard* b) {
           return base::Contains(card_linked_offers_map, a->guid()) &&
@@ -930,7 +930,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     bool display_gpay_logo = false;
     suggestions.push_back(
         CreateSaveAndFillSuggestion(client, display_gpay_logo));
-    base::ranges::move(
+    std::ranges::move(
         GetCreditCardFooterSuggestions(
             should_show_scan_credit_card, should_show_cards_from_account,
             trigger_field.is_autofilled(), display_gpay_logo),
@@ -1043,7 +1043,7 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
       // Find the ranking of the card in the old and new algorithm and
       // mark if they are ranked higher, lower, or the same.
       size_t ranking_legacy_algorithm =
-          base::ranges::find(cards_ranked_by_legacy_algorithm, credit_card) -
+          std::ranges::find(cards_ranked_by_legacy_algorithm, credit_card) -
           cards_ranked_by_legacy_algorithm.begin();
       autofill_metrics::SuggestionRankingContext::RelativePosition
           ranking_difference = autofill_metrics::SuggestionRankingContext::
@@ -1067,7 +1067,7 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
   const bool display_gpay_logo = std::ranges::none_of(
       cards_to_suggest,
       [](const CreditCard& card) { return CreditCard::IsLocalCard(&card); });
-  base::ranges::move(
+  std::ranges::move(
       GetCreditCardFooterSuggestions(
           should_show_scan_credit_card, should_show_cards_from_account,
           trigger_field.is_autofilled(), display_gpay_logo),
@@ -1133,7 +1133,7 @@ std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
     return suggestions;
   }
 
-  base::ranges::move(
+  std::ranges::move(
       GetCreditCardFooterSuggestions(/*should_show_scan_credit_card=*/false,
                                      /*should_show_cards_from_account=*/false,
                                      trigger_field.is_autofilled(),

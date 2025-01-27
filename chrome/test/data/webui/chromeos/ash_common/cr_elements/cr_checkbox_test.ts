@@ -201,7 +201,7 @@ suite('cr-checkbox', function() {
 
     checkbox = document.querySelector('cr-checkbox')!;
     innerCheckbox =
-        checkbox.shadowRoot!.querySelector('#checkbox')! as HTMLElement;
+        checkbox.shadowRoot!.querySelector<HTMLElement>('#checkbox')!;
 
     // Should not override tabindex if it is initialized.
     assertEquals(-1, checkbox.tabIndex);
@@ -216,7 +216,7 @@ suite('cr-checkbox', function() {
 
     checkbox = document.querySelector('cr-checkbox')!;
     innerCheckbox =
-        checkbox.shadowRoot!.querySelector('#checkbox')! as HTMLElement;
+        checkbox.shadowRoot!.querySelector<HTMLElement>('#checkbox')!;
 
     // Initializing with disabled should make tabindex="-1".
     assertEquals(-1, checkbox.tabIndex);

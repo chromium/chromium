@@ -207,6 +207,7 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
     last_sent_page_url_ = GURL(request->objects_request().payload().page_url());
   } else if (request->has_objects_request()) {
     // Full image request.
+    num_full_image_requests_sent_++;
     sent_full_image_objects_request_.CopyFrom(request->objects_request());
     fake_server_response.mutable_objects_response()->CopyFrom(
         fake_objects_response_);

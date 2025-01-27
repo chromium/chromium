@@ -96,8 +96,9 @@ inline gfx::ColorSpace SkColorSpaceToGfxColorSpace(
 }
 
 // Temporary utility while converting canvas code to use SharedImageFormat.
-// TODO(crbug.com/371227617): Determine best long-term plan once canvas code is
-// completely converted to SharedImageFormat.
+// TODO(crbug.com/391903236): Determine best long-term plan once canvas code is
+// completely converted to SharedImageFormat (i.e., crbug.com/371227617 is
+// resolved).
 inline viz::SharedImageFormat GetN32FormatForCanvas() {
   return kN32_SkColorType == kRGBA_8888_SkColorType
              ? viz::SinglePlaneFormat::kRGBA_8888

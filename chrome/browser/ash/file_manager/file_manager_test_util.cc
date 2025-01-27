@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 
+#include <algorithm>
+
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
@@ -66,7 +67,7 @@ void FolderInMyFiles::AddWithName(const base::FilePath& file,
 
 OpenOperationResult FolderInMyFiles::Open(const base::FilePath& file) {
   const auto& it =
-      base::ranges::find(files_, file.BaseName(), &base::FilePath::BaseName);
+      std::ranges::find(files_, file.BaseName(), &base::FilePath::BaseName);
   EXPECT_FALSE(it == files_.end());
   if (it == files_.end()) {
     return platform_util::OPEN_FAILED_PATH_NOT_FOUND;

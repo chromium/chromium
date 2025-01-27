@@ -70,6 +70,27 @@
           }
         ]
       },
+      "3pp-mac-arm64-packager": {
+        "contact_team_email": "clank-engprod@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "3pp-windows-amd64-packager": {
         "contact_team_email": "chrome-browser-infra-team@google.com",
         "problem_specs": [
@@ -10363,6 +10384,27 @@
               "fail_rate": {
                 "average": 0.99
               }
+            }
+          }
+        ]
+      },
+      "linux-oi-rel": {
+        "contact_team_email": "chrome-security-architecture@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
             }
           }
         ]

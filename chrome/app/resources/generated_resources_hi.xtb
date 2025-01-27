@@ -5130,7 +5130,6 @@
 <translation id="4593021220803146968"><ph name="URL" /> पर &amp;जाएं</translation>
 <translation id="4593962599442730215">अपनी प्राथमिकताएं बदलना</translation>
 <translation id="4594218792629569101">पेज को अपनी सूची में सबसे नीचे ले जाने के लिए, “पढ़ा गया के तौर पर मार्क करें” को चुनें</translation>
-<translation id="4594577641390224176">सिस्टम की जानकारी वाला पेज चाहिए? यहां जाएं</translation>
 <translation id="4595560905247879544">ऐप्स और एक्सटेंशन केवल मैनेजर (<ph name="CUSTODIAN_NAME" />) के द्वारा बदले जा सकते हैं.</translation>
 <translation id="4596295440756783523">इन सर्वर की पहचान करने वाले प्रमाणपत्र आपके रिकॉर्ड में हैं</translation>
 <translation id="4598345735110653698">पासवर्ड मैनेज करें</translation>
@@ -6751,7 +6750,6 @@
 <translation id="5787420647064736989">डिवाइस का नाम</translation>
 <translation id="5788367137662787332">क्षमा करें, डिवाइस <ph name="DEVICE_LABEL" /> पर कम-से-कम एक विभाजन माउंट नहीं हो सका.</translation>
 <translation id="5789581866075720267">इस डिवाइस पर <ph name="BRAND" /> में पासवर्ड इंपोर्ट करने के लिए, कोई CSV फ़ाइल चुनें.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">सफलता</translation>
 <translation id="5790651917470750848">पोर्ट फ़ॉरवर्ड की सुविधा पहले से मौजूद है</translation>
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> से जुड़ी और कार्रवाइयां</translation>
@@ -7170,7 +7168,6 @@
 <translation id="6086418630711763366">किसी टेक्स्ट कर्सर से पेजों पर नेविगेट किया जा सकता है. इसे बंद करने के लिए, Ctrl + <ph name="KEY" /> दबाएं.</translation>
 <translation id="6086846494333236931">आपके नियंत्रक द्वारा इंस्‍टॉल किया गया</translation>
 <translation id="6087286598828478206">क्या आपको ग्रुप ब्लॉक करना और छोड़ना है?</translation>
-<translation id="6087746524533454243">ब्राउज़र की जानकारी वाला पेज चाहिए? यहां जाएं</translation>
 <translation id="6087960857463881712">बढ़िया चेहरा</translation>
 <translation id="6088475950266477163">सेटिंग</translation>
 <translation id="608912389580139775">इस पेज को अपनी रीडिंग लिस्ट में जोड़ने के लिए, बुकमार्क आइकॉन पर क्लिक करें</translation>

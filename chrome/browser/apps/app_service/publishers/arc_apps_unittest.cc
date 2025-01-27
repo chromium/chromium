@@ -4,13 +4,13 @@
 
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -684,7 +684,7 @@ TEST_F(ArcAppsPublisherTest, PublishPermission) {
   EXPECT_EQ(result.size(), 2ul);
 
   // Sort permissions by permission type.
-  base::ranges::sort(result, std::less<>(), &apps::Permission::permission_type);
+  std::ranges::sort(result, std::less<>(), &apps::Permission::permission_type);
 
   EXPECT_EQ(result[0]->permission_type, apps::PermissionType::kCamera);
   EXPECT_EQ(absl::get<apps::TriState>(result[0]->value), apps::TriState::kAsk);

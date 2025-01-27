@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/dbus/chrome_features_service_provider.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -14,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
@@ -209,7 +209,7 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
   }
 
   auto* const* it =
-      base::ranges::find(kFeatureLookup, feature_name, &base::Feature::name);
+      std::ranges::find(kFeatureLookup, feature_name, &base::Feature::name);
   if (it != std::end(kFeatureLookup)) {
     SendResponse(method_call, std::move(response_sender),
                  base::FeatureList::IsEnabled(**it));

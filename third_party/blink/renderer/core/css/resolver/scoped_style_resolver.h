@@ -84,9 +84,7 @@ class CORE_EXPORT ScopedStyleResolver final
   }
 
   // See InspectorGhostRules.
-  void QuietlySwapActiveStyleSheets(ActiveStyleSheetVector& other) {
-    std::swap(active_style_sheets_, other);
-  }
+  void QuietlySwapActiveStyleSheets(ActiveStyleSheetVector& other);
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
   void CollectMatchingElementScopeRules(ElementRuleCollector&,
@@ -137,6 +135,7 @@ class CORE_EXPORT ScopedStyleResolver final
 
   ActiveStyleSheetVector active_style_sheets_;
   MediaQueryResultFlags media_query_result_flags_;
+  HeapVector<RuleSetGroup> rule_set_groups_;
 
   using KeyframesRuleMap =
       HeapHashMap<AtomicString, Member<StyleRuleKeyframes>>;

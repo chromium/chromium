@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/overview_controller.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -32,7 +33,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"

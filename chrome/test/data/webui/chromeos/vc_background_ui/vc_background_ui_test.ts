@@ -37,7 +37,7 @@ suite('VcBackgroundUITest', () => {
 
   function getVcBackgroundBreadcrumbsText(): string[] {
     const breadcrumbElements =
-        getVcBackgroundBreadcrumbs().shadowRoot!.querySelectorAll('cr-button')!;
+        getVcBackgroundBreadcrumbs().shadowRoot!.querySelectorAll('cr-button');
     return Array.from(breadcrumbElements).map(el => el.textContent!);
   }
 
@@ -191,8 +191,10 @@ suite('VcBackgroundUITest', () => {
         `selected template in the dropdown should be ${classicArtTitle}`);
 
     // Activate the dropdown menu.
-    const lastBreadcrumb = breadcrumbElement.shadowRoot!.querySelector(
-                               'cr-button#breadcrumb1') as HTMLElement;
+    const lastBreadcrumb =
+        breadcrumbElement.shadowRoot!.querySelector<HTMLElement>(
+            'cr-button#breadcrumb1');
+    assertTrue(!!lastBreadcrumb);
     lastBreadcrumb.click();
 
     await waitAfterNextRender(breadcrumbElement);

@@ -71,6 +71,28 @@ ValueStore::ReadResult LeveldbValueStore::Get(const std::string& key) {
   return Get(std::vector<std::string>(1, key));
 }
 
+ValueStore::ReadResult LeveldbValueStore::GetKeys() {
+  Status status = EnsureDbIsOpen();
+  if (!status.ok()) {
+    return ReadResult(std::move(status));
+  }
+
+  base::Value::Dict settings;
+
+  std::unique_ptr<leveldb::Iterator> it(db()->NewIterator(read_options()));
+  for (it->SeekToFirst(); it->Valid(); it->Next()) {
+    std::string key = it->key().ToString();
+    settings.Set(key, base::Value());
+  }
+
+  if (!it->status().ok()) {
+    status.Merge(ToValueStoreError(it->status()));
+    return ReadResult(std::move(status));
+  }
+
+  return ReadResult(std::move(settings), std::move(status));
+}
+
 ValueStore::ReadResult LeveldbValueStore::Get(
     const std::vector<std::string>& keys) {
   Status status = EnsureDbIsOpen();

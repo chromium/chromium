@@ -7,6 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -17,7 +18,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
@@ -176,7 +176,7 @@ class SimpleMessage : public TestMessageBase {
   }
 
   void SerializePayload(void* buffer) override {
-    base::ranges::copy(contents_, static_cast<char*>(buffer));
+    std::ranges::copy(contents_, static_cast<char*>(buffer));
   }
 
   const std::string contents_;

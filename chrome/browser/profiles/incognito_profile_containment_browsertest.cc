@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -9,7 +11,6 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -165,15 +166,15 @@ bool AreDirectoriesModified(Snapshot& snapshot_before,
     if (!base::Contains(snapshot_before.directories, directory)) {
       // If a file/prefix in this directory is allowlisted, ignore directory
       // addition.
-      if (base::ranges::any_of(allow_list,
-                               [&directory](const std::string& prefix) {
-                                 return prefix.find(directory) == 0;
-                               })) {
+      if (std::ranges::any_of(allow_list,
+                              [&directory](const std::string& prefix) {
+                                return prefix.find(directory) == 0;
+                              })) {
         continue;
       }
 
       // If directory is specifically allow list, ignore.
-      if (base::ranges::any_of(
+      if (std::ranges::any_of(
               kAllowListEmptyDirectoryPrefixesForAllPlatforms,
               [&directory](const std::string& allow_listed_directory) {
                 return directory.find(allow_listed_directory) == 0;
@@ -203,7 +204,7 @@ bool AreFilesModified(Snapshot& snapshot_before,
     if (is_new ||
         fd.second.last_modified_time != before->second.last_modified_time) {
       // Ignore allow-listed paths.
-      if (base::ranges::any_of(allow_list, [&fd](const std::string& prefix) {
+      if (std::ranges::any_of(allow_list, [&fd](const std::string& prefix) {
             return fd.first.find(prefix) == 0;
           })) {
         continue;

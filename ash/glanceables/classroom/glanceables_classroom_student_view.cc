@@ -4,6 +4,7 @@
 
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
@@ -30,7 +31,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -125,8 +125,8 @@ class ClassroomStudentComboboxModel : public ui::ComboboxModel {
     const auto selected_list_type = static_cast<StudentAssignmentsListType>(
         Shell::Get()->session_controller()->GetActivePrefService()->GetInteger(
             kLastSelectedAssignmentsListPref));
-    const auto iter = base::ranges::find(kStudentAssignmentsListTypeOrdered,
-                                         selected_list_type);
+    const auto iter = std::ranges::find(kStudentAssignmentsListTypeOrdered,
+                                        selected_list_type);
     return iter != kStudentAssignmentsListTypeOrdered.end()
                ? iter - kStudentAssignmentsListTypeOrdered.begin()
                : 0;

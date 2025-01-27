@@ -4,8 +4,9 @@
 
 #include "media/filters/hls_data_source_provider_impl.h"
 
+#include <algorithm>
+
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"

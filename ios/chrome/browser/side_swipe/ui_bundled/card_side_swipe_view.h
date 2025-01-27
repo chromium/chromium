@@ -37,6 +37,9 @@ class WebStateList;
 - (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture
       actionBeforeTabSwitch:(TabSwipeHandler)completionHandler;
 
+// Disconnects this view.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SIDE_SWIPE_UI_BUNDLED_CARD_SIDE_SWIPE_VIEW_H_

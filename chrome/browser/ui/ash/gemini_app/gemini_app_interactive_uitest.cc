@@ -111,7 +111,7 @@ void FindDescendantsOfClass(views::View* parent,
 // Returns the index of `value` in the specified `range`.
 template <typename Range, typename Value>
 std::optional<size_t> FindIndex(const Range& range, const Value* value) {
-  auto it = base::ranges::find(range, value);
+  auto it = std::ranges::find(range, value);
   return it != range.end()
              ? std::make_optional<size_t>(std::distance(range.begin(), it))
              : std::make_optional<size_t>();
@@ -133,14 +133,14 @@ std::vector<raw_ptr<views::MenuItemView>> FindMenuItemViews() {
 // with the specified command `id`.
 views::MenuItemView* FindMenuItemViewForCommand(int id) {
   std::vector<raw_ptr<views::MenuItemView>> views = FindMenuItemViews();
-  auto it = base::ranges::find(views, id, &views::MenuItemView::GetCommand);
+  auto it = std::ranges::find(views, id, &views::MenuItemView::GetCommand);
   return it != views.end() ? *it : nullptr;
 }
 
 // Returns the `ash::ShelfItem` for the given web app `id`.
 const ash::ShelfItem* FindShelfItemForWebApp(std::string_view id) {
   const ash::ShelfItems& items = ash::ShelfModel::Get()->items();
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       items, [id](const ash::ShelfItem& item) { return item.id.app_id == id; });
   return it != items.end() ? &*it : nullptr;
 }
@@ -904,7 +904,7 @@ INSTANTIATE_TEST_SUITE_P(
       std::vector<IneligibilityReason> reasons(
           static_cast<int>(IneligibilityReason::kMaxValue) -
           static_cast<int>(IneligibilityReason::kMinValue) + 1);
-      base::ranges::generate(
+      std::ranges::generate(
           reasons.begin(), reasons.end(),
           [i = static_cast<int>(IneligibilityReason::kMinValue)]() mutable {
             return static_cast<IneligibilityReason>(i++);
@@ -937,7 +937,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiIneligibilityTest,
             std::vector<raw_ptr<ash::AppListItemView>> apps;
             FindDescendantsOfClass(apps_grid_view, apps);
             return apps.size() &&
-                   base::ranges::none_of(apps, [&](ash::AppListItemView* app) {
+                   std::ranges::none_of(apps, [&](ash::AppListItemView* app) {
                      return IsAppListItemViewForWebApp(ash::kGeminiAppId, app);
                    });
           }));
@@ -952,7 +952,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiIneligibilityTest,
         std::vector<raw_ptr<ash::ShelfAppButton>> apps;
         FindDescendantsOfClass(shelf, apps);
         return apps.size() &&
-               base::ranges::none_of(
+               std::ranges::none_of(
                    apps, [&, shelf = raw_ptr(shelf)](ash::ShelfAppButton* app) {
                      return IsShelfAppButtonForWebApp(std::cref(shelf),
                                                       ash::kGeminiAppId, app);

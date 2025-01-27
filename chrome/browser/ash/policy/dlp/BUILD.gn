@@ -26,6 +26,8 @@ static_library("dlp") {
     "files_policy_notification_manager_factory.h",
     "files_policy_string_util.cc",
     "files_policy_string_util.h",
+    "window_util.cc",
+    "window_util.h",
   ]
 
   public_deps = [

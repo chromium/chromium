@@ -15,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -173,7 +172,7 @@ void BrowserUpdaterClient::IsBrowserRegisteredCompleted(
     base::OnceCallback<void(bool)> callback,
     const std::vector<updater::UpdateService::AppState>& apps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto updater = base::ranges::find_if(
+  const auto updater = std::ranges::find_if(
       apps, [](const updater::UpdateService::AppState& state) {
         return base::EqualsCaseInsensitiveASCII(state.app_id,
                                                 updater::kUpdaterAppId);
@@ -182,7 +181,7 @@ void BrowserUpdaterClient::IsBrowserRegisteredCompleted(
     *GetLastKnownUpdaterRegistrationStorage() = *updater;
   }
   const auto app =
-      base::ranges::find_if(apps, &BrowserUpdaterClient::AppMatches);
+      std::ranges::find_if(apps, &BrowserUpdaterClient::AppMatches);
   if (app != apps.end()) {
     *GetLastKnownBrowserRegistrationStorage() = *app;
   }

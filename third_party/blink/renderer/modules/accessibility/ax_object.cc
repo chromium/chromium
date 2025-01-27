@@ -980,28 +980,6 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
 
   Node* parent = nullptr;
 
-  // Select elements have a complex architecture with two different slot
-  // elements which `node` may be slotted into. `node` might also not be slotted
-  // into anything at all (which is why we are doing this before using
-  // LayoutTreeBuilderTraversal). Despite this, we always want to expose a
-  // consistent structure for the select element with a MenuList and
-  // MenuListPopup with all the children exposed in the MenuListPopup. For
-  // consistency, we will use the select's PopoverForAppearanceBase element as
-  // the MenuListPopup and make it the parent of all the nodes inside the
-  // select.
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-    if (auto* select = DynamicTo<HTMLSelectElement>(node->parentNode())) {
-      if (select->UsesMenuList()) {
-        if (node == select->SlottedButton()) {
-          // <select>'s author provided <button> should not have any
-          // accessibility mappings.
-          return nullptr;
-        }
-        parent = select->PopoverForAppearanceBase();
-      }
-    }
-  }
-
   // Use LayoutTreeBuilderTraversal::Parent(), which handles pseudo content.
   // This can return nullptr for a node that is never visited by
   // LayoutTreeBuilderTraversal's child traversal. For example, while an element
@@ -1091,16 +1069,6 @@ bool AXObject::CanHaveChildren(Element& element) {
         return false;
       }
     }
-  }
-
-  if (IsA<HTMLBRElement>(element)) {
-    // Normally, a <br> is allowed to have a single inline text box child.
-    // However, a <br> element that has DOM children can occur only if a script
-    // adds the children, and Blink will not render those children. This is an
-    // obscure edge case that should only occur during fuzzing, but to maintain
-    // tree consistency and prevent DCHECKs, AXObjects for <br> elements are not
-    // allowed to have children if there are any DOM children at all.
-    return !element.hasChildren();
   }
 
   if (IsA<HTMLHRElement>(element)) {

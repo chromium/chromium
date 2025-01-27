@@ -180,7 +180,7 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResults(
   // TODO(crbug.com/40269204): process PSL and affilated credentials if needed.
   // TODO(crbug.com/40269204): process conflicting passwords differently if
   // necessary.
-  auto credential_with_same_username_it = base::ranges::find_if(
+  auto credential_with_same_username_it = std::ranges::find_if(
       results, [this](const std::unique_ptr<PasswordForm>& result) {
         return result->username_value == incoming_credentials_.username_value;
       });

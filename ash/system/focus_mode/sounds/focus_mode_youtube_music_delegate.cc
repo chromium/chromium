@@ -194,7 +194,7 @@ FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::GetTopPlaylists() {
                        results.size() < kFocusModePlaylistViewsNum;
          i++) {
       // Skip the duplicate.
-      if (base::ranges::find(results, playlist_bucket[i].id, &Playlist::id) !=
+      if (std::ranges::find(results, playlist_bucket[i].id, &Playlist::id) !=
           results.end()) {
         continue;
       }

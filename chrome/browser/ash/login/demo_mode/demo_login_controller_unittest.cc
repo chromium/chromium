@@ -6,10 +6,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -57,6 +59,16 @@ constexpr char kInValidGaiaCreds[] =
     R"({
       "username":"example@gmail.com",
       "gaia_id":"123"
+    })";
+
+constexpr char kServerError[] =
+    R"({
+        "error": {
+          "code": 500,
+           "message": "Internal error encountered.",
+           "status": "INTERNAL",
+           "detail":[]
+          }
     })";
 
 constexpr char kSetupDemoAccountUrl[] =
@@ -402,6 +414,34 @@ TEST_F(DemoLoginControllerTest, FallbackToMGS) {
 
   // Expect auto login managed guest session starts.
   EXPECT_TRUE(existing_user_controller()->IsAutoLoginTimerRunningForTesting());
+}
+
+TEST_F(DemoLoginControllerTest, LogServerError) {
+  // Mock setup failed by returning server error.
+  test_url_loader_factory_.AddResponse(GetSetupUrl().spec(), kServerError,
+                                       net::HTTP_INTERNAL_SERVER_ERROR);
+  base::test::MockLog log;
+  EXPECT_CALL(
+      log,
+      Log(::logging::LOGGING_ERROR, testing::_, testing::_, testing::_,
+          testing::HasSubstr("Setup response error: error code: 500; message: "
+                             "Internal error encountered.; status: INTERNAL.")))
+      .Times(1);
+  base::RunLoop loop;
+  EXPECT_CALL(login_display_host(), CompleteLogin).Times(0);
+  GetDemoLoginController()->SetSetupFailedCallbackForTest(
+      base::BindLambdaForTesting(
+          [&](const DemoLoginController::ResultCode result_code) {
+            EXPECT_EQ(result_code,
+                      DemoLoginController::ResultCode::kRequestFailed);
+            loop.Quit();
+            log.StartCapturingLogs();
+          }));
+
+  // Trigger auto sign in:
+  ConfigureAutoLoginSetting();
+
+  loop.Run();
 }
 
 // TODO(crbug.com/372771485): Add more request fail test cases.

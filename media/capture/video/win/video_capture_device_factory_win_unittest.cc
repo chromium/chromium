@@ -7,18 +7,20 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include <mfidl.h>
+#include "media/capture/video/win/video_capture_device_factory_win.h"
 
 #include <ks.h>
 #include <ksmedia.h>
 #include <mfapi.h>
 #include <mferror.h>
+#include <mfidl.h>
 #include <mfobjects.h>
 #include <stddef.h>
 #include <vidcap.h>
 #include <wrl.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
@@ -26,14 +28,12 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_switches.h"
-#include "media/capture/video/win/video_capture_device_factory_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -84,10 +84,10 @@ using iterator = std::vector<VideoCaptureDeviceInfo>::const_iterator;
 iterator FindDeviceInRange(iterator begin,
                            iterator end,
                            const std::string& device_id) {
-  return base::ranges::find(begin, end, device_id,
-                            [](const VideoCaptureDeviceInfo& device_info) {
-                              return device_info.descriptor.device_id;
-                            });
+  return std::ranges::find(begin, end, device_id,
+                           [](const VideoCaptureDeviceInfo& device_info) {
+                             return device_info.descriptor.device_id;
+                           });
 }
 
 template <class Interface>

@@ -341,4 +341,4 @@ enum WebDXFeature {
   // chromium/src/tools/metrics/histograms/ to update the UMA mapping.
 };
 
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:WebDXFeatureObserver)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:WebDXFeatureObserver)

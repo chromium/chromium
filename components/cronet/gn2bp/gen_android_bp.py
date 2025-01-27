@@ -88,6 +88,8 @@ BLUEPRINTS_MAPPING = {
     "buildtools/third_party/libc++abi": "third_party/libc++abi",
 }
 
+_MIN_SDK_VERSION = 30
+
 # Include directories that will be removed from all targets.
 include_dirs_denylist = [
     'external/cronet/third_party/zlib/',
@@ -2050,7 +2052,7 @@ def create_bindgen_module(blueprint: Blueprint, target,
   # to already be present in AOSP (currently, in Android.extras.bp). See
   # https://r.android.com/3413202.
   module.header_libs = {"cronet_repository_root_include_dirs_anchor"}
-  module.min_sdk_version = 31
+  module.min_sdk_version = _MIN_SDK_VERSION
   module.apex_available = [tethering_apex]
   blueprint.add_module(module)
   return module
@@ -2247,7 +2249,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
           '//components/cronet/android:cronet_tests_jni_registration_java__testing'
       ]:
         module.jarjar_rules = REMOVE_GEN_JNI_JARJAR_RULES_FILE
-    module.min_sdk_version = 30
+    module.min_sdk_version = _MIN_SDK_VERSION
     module.apex_available = [tethering_apex]
     if is_test_target:
       module.sdk_version = target.sdk_version
@@ -2311,7 +2313,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     if module.type in ["rust_proc_macro", "rust_binary", "rust_ffi_static"]:
       module.crate_name = target.crate_name
       module.crate_root = gn_utils.label_to_path(target.crate_root)
-      module.min_sdk_version = 30
+      module.min_sdk_version = _MIN_SDK_VERSION
       module.apex_available = [tethering_apex]
       for arch_name, arch in target.get_archs().items():
         _set_rust_flags(module.target[arch_name], arch.rust_flags, arch_name)
@@ -2539,7 +2541,7 @@ def create_cc_defaults_module():
   ]
   defaults.stl = 'none'
   defaults.cpp_std = CPP_VERSION
-  defaults.min_sdk_version = 29
+  defaults.min_sdk_version = _MIN_SDK_VERSION
   defaults.apex_available.add(tethering_apex)
   return defaults
 

@@ -531,6 +531,7 @@ void SelectorQuery::Execute(
             root_node, first_selector.Value(), nullptr, output);
         return;
       case CSSSelector::kTag:
+      case CSSSelector::kUniversalTag:
         if (first_selector.TagQName().NamespaceURI() == g_star_atom) {
           CollectElementsByTagName<SelectorQueryTrait>(
               root_node, first_selector.TagQName(), output);

@@ -158,6 +158,21 @@ class AuthenticationServiceTestBase : public PlatformTest {
     authentication_service()->OnAccessTokenRefreshFailed(identity, error);
   }
 
+  void MarkSignedinUserMigratedFromSyncing() {
+    profile_->GetPrefs()->SetString(
+        prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn,
+        base::SysNSStringToUTF8(
+            authentication_service()
+                ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+                .gaiaID));
+    profile_->GetPrefs()->SetString(
+        prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn,
+        base::SysNSStringToUTF8(
+            authentication_service()
+                ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+                .userEmail));
+  }
+
   // Simulates that fetching access token for `identity` fails with a given
   // error identifier. Returns the MDM error information.
   //
@@ -499,28 +514,38 @@ TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnSignout) {
 
   SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/false, nil);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(0)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
 }
 
-// Tests that MDM errors are correctly cleared when signing out with clearing
-// browsing data.
-TEST_P(AuthenticationServiceTest,
+// Tests that MDM errors are correctly cleared when signing out from a managed
+// account which clears browsing data in this case.
+// If `kSeparateProfilesForManagedAccounts` is enabled, managed accounts are
+// assigned into their own separate profiles and cannot sign out from there, so
+// this test doesn't apply.
+TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
        MDMErrorsClearedOnSignoutAndClearBrowsingData) {
-  authentication_service()->SignIn(identity(0),
-                                   signin_metrics::AccessPoint::kUnknown);
-  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
-  VerifyLastSigninTimestamp();
+  // Add a managed identity to device.
+  FakeSystemIdentity* fake_system_identity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  fake_system_identity_manager()->AddIdentity(fake_system_identity);
 
-  SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
+  ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
+
+  authentication_service()->SignIn(identity(2),
+                                   signin_metrics::AccessPoint::kUnknown);
+  VerifyLastSigninTimestamp();
+  // Mark the signed-in user as "migrated from previously syncing".
+  MarkSignedinUserMigratedFromSyncing();
+
+  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(2)));
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/true, nil);
-  EXPECT_FALSE(HasCachedMDMInfo(identity(0)));
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
+  EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
+  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
 }
 
@@ -546,8 +571,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
 
   SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(0)));
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/false, nil);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
@@ -573,12 +597,8 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   VerifyLastSigninTimestamp();
 
   SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(0)));
-  // Data will be cleared regardless of `force_clear_browsing_data` value
-  // passed. This is intended because signout is not always triggered from UI
-  // sources that set this value to true.
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-      /*force_clear_browsing_data=*/false, nil);
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataFromSigninCount(), 1);
@@ -612,8 +632,7 @@ TEST_F(
   SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(0)));
   // Data should not be cleared if the browser is managed.
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/false, nil);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
   ASSERT_FALSE(HasCachedMDMInfo(identity(2)));
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
@@ -659,8 +678,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
           IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(true));
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/false, nil);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
   ASSERT_FALSE(HasCachedMDMInfo(identity(2)));
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
@@ -727,8 +745,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   VerifyLastSigninTimestamp();
 
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/false, nil);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
@@ -750,15 +767,18 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   authentication_service()->SignIn(identity(2),
                                    signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
+  // Mark the signed-in user as "migrated from previously syncing".
+  MarkSignedinUserMigratedFromSyncing();
 
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
   VerifyLastSigninTimestamp();
 
+  // Note: Clear data on signout is decided inside AuthenticationService based
+  // on the account state.
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/true, nil);
+      signin_metrics::ProfileSignout::kAbortSignin, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);

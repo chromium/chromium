@@ -296,7 +296,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   } else {
     base::RecordAction(base::UserMetricsAction(
         "Signin_Signout_ConfirmationRequestNotPresented"));
-    [self handleSignOutWithForceClearData:NO];
+    [self handleSignOut];
   }
 }
 
@@ -331,10 +331,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                     action:^{
                       base::RecordAction(base::UserMetricsAction(
                           "Signin_Signout_Confirm_Regular_UNO"));
-                      [weakSelf signoutWithForceClearData:NO
-                                          recordHistogram:
-                                              SignoutDataLossAlertReason::
-                                                  kSignoutWithUnsyncedData];
+                      [weakSelf signoutWithReason:SignoutDataLossAlertReason::
+                                                      kSignoutWithUnsyncedData];
                     }
                      style:UIAlertActionStyleDestructive];
       [self.actionSheetCoordinator
@@ -363,14 +361,10 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                     action:^{
                       base::RecordAction(base::UserMetricsAction(
                           "Signin_Signout_Confirm_Managed_ClearDataOnSignout"));
-                      // `clearData` should not be set
-                      // based on the useer choice, but based on the account
-                      // state in `AuthenticationService`.
-                      [weakSelf
-                          signoutWithForceClearData:NO
-                                    recordHistogram:
-                                        SignoutDataLossAlertReason::
-                                            kSignoutWithClearDataForManagedUser];
+
+                      [weakSelf signoutWithReason:
+                                    SignoutDataLossAlertReason::
+                                        kSignoutWithClearDataForManagedUser];
                     }
                      style:UIAlertActionStyleDestructive];
       [self.actionSheetCoordinator
@@ -397,11 +391,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                     action:^{
                       base::RecordAction(base::UserMetricsAction(
                           "Signin_Signout_Confirm_Managed_Syncing"));
-                      // Note that it doesn't really make a difference whether
-                      // `forceClearData` is set to YES or NO here - based on
-                      // the account's state, AuthenticationService will decide
-                      // to clear the data anyway.
-                      [weakSelf signoutWithForceClearData:YES];
+                      [weakSelf signout];
                     }
                      style:UIAlertActionStyleDestructive];
       break;
@@ -433,20 +423,19 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   [self dismissActionSheetCoordinator];
 }
 
-- (void)signoutWithForceClearData:(BOOL)clearData
-                  recordHistogram:(SignoutDataLossAlertReason)reason {
+- (void)signoutWithReason:(SignoutDataLossAlertReason)reason {
   signin_metrics::RecordSignoutConfirmationFromDataLossAlert(reason, true);
-  [self signoutWithForceClearData:clearData];
+  [self signout];
 }
 
-- (void)signoutWithForceClearData:(BOOL)clearData {
-  [self handleSignOutWithForceClearData:clearData];
+- (void)signout {
+  [self handleSignOut];
   [self dismissActionSheetCoordinator];
 }
 
 // Signs the user out of the primary account and clears the data from their
-// device if specified to do so.
-- (void)handleSignOutWithForceClearData:(BOOL)forceClearData {
+// device if account is managed.
+- (void)handleSignOut {
   if (!self.browser) {
     return;
   }
@@ -463,8 +452,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 
   __weak __typeof(self) weakSelf = self;
   signin::MultiProfileSignOut(self.browser, _signout_source_metric,
-                              forceClearData, _forceSnackbarOverToolbar,
-                              snackbarMessage, ^{
+                              _forceSnackbarOverToolbar, snackbarMessage, ^{
                                 [weakSelf signOutDidFinish];
                               });
 }

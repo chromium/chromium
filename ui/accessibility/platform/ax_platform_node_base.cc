@@ -483,6 +483,10 @@ void AXPlatformNodeBase::AnnounceTextAs(const std::u16string& text,
                                         AnnouncementType announcement_type) {}
 #endif
 
+std::string AXPlatformNodeBase::GetRootURL() const {
+  return delegate_ ? delegate_->GetRootURL() : std::string();
+}
+
 AXPlatformNodeDelegate* AXPlatformNodeBase::GetDelegate() const {
   return delegate_;
 }

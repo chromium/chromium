@@ -4,6 +4,7 @@
 
 #include "chrome/browser/printing/print_browsertest.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -21,7 +22,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -803,7 +803,7 @@ class BackForwardCachePrintBrowserTest : public PrintBrowserTest {
  private:
   void AddSampleToBuckets(std::vector<base::Bucket>* buckets,
                           base::HistogramBase::Sample32 sample) {
-    auto it = base::ranges::find(*buckets, sample, &base::Bucket::min);
+    auto it = std::ranges::find(*buckets, sample, &base::Bucket::min);
     if (it == buckets->end()) {
       buckets->push_back(base::Bucket(sample, 1));
     } else {

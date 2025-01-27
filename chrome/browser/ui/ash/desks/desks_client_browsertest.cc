@@ -883,7 +883,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
   // Verify that the settings window has been launched on the new desk (desk B).
   EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
   auto it =
-      base::ranges::find_if(*BrowserList::GetInstance(), [](Browser* browser) {
+      std::ranges::find_if(*BrowserList::GetInstance(), [](Browser* browser) {
         return ash::IsBrowserForSystemWebApp(browser,
                                              ash::SystemWebAppType::SETTINGS);
       });
@@ -3531,11 +3531,11 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, LaunchAdminTemplate) {
   // expect the new window to have an index that is higher than the old.
   const auto& container = new_browser_window_one->parent()->children();
   size_t new_index_one =
-      base::ranges::find(container, new_browser_window_one) - container.begin();
+      std::ranges::find(container, new_browser_window_one) - container.begin();
   size_t new_index_two =
-      base::ranges::find(container, new_browser_window_two) - container.begin();
+      std::ranges::find(container, new_browser_window_two) - container.begin();
   size_t old_index =
-      base::ranges::find(container, old_browser_window) - container.begin();
+      std::ranges::find(container, old_browser_window) - container.begin();
 
   EXPECT_GT(new_index_one, new_index_two);
   EXPECT_GT(new_index_two, old_index);

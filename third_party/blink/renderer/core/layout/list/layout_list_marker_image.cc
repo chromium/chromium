@@ -19,14 +19,16 @@ LayoutListMarkerImage* LayoutListMarkerImage::CreateAnonymous(
   return object;
 }
 
-gfx::SizeF LayoutListMarkerImage::DefaultSize() const {
+PhysicalSize LayoutListMarkerImage::DefaultSize() const {
   NOT_DESTROYED();
   const SimpleFontData* font_data = StyleRef().GetFont().PrimaryFont();
   DCHECK(font_data);
-  if (!font_data)
-    return gfx::SizeF(kDefaultWidth, kDefaultHeight);
-  float bullet_width = font_data->GetFontMetrics().Ascent() / 2.f;
-  return gfx::SizeF(bullet_width, bullet_width);
+  if (!font_data) {
+    return PhysicalSize(LayoutUnit(kDefaultWidth), LayoutUnit(kDefaultHeight));
+  }
+  const LayoutUnit bullet_width =
+      LayoutUnit(font_data->GetFontMetrics().Ascent()) / 2;
+  return PhysicalSize(bullet_width, bullet_width);
 }
 
 PhysicalNaturalSizingInfo LayoutListMarkerImage::GetNaturalDimensions() const {
@@ -34,17 +36,12 @@ PhysicalNaturalSizingInfo LayoutListMarkerImage::GetNaturalDimensions() const {
   PhysicalNaturalSizingInfo sizing_info = LayoutImage::GetNaturalDimensions();
 
   // If this is an image without natural width and height, compute the concrete
-  // object size by using the specified default object size.
+  // object size by using a default object size of (ascent/2 x ascent/2).
   if (sizing_info.size.IsEmpty()) {
-    // Because ImageResource() is always LayoutImageResourceStyleImage. So we
-    // could use StyleImage::ImageSize to determine the concrete object size
-    // with default object size(ascent/2 x ascent/2).
-    gfx::SizeF concrete_size = ImageResource()->ConcreteObjectSize(
-        StyleRef().EffectiveZoom(), DefaultSize());
-    concrete_size.Scale(ImageDevicePixelRatio());
-
+    const auto natural_dimensions = PhysicalNaturalSizingInfo::FromSizingInfo(
+        ImageResource()->GetNaturalDimensions(StyleRef().EffectiveZoom()));
     sizing_info = PhysicalNaturalSizingInfo::MakeFixed(
-        PhysicalSize::FromSizeFRound(concrete_size));
+        ConcreteObjectSize(natural_dimensions, DefaultSize()));
   }
   return sizing_info;
 }

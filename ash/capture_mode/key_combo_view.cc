@@ -153,7 +153,7 @@ class ModifiersContainerView : public views::View {
     // or at the end if no such view was found. This keeps the modifiers sorted
     // as `Ctrl < Alt < Shift < Search`.
     const auto iter =
-        base::ranges::find_if(children(), [key_code](views::View* child) {
+        std::ranges::find_if(children(), [key_code](views::View* child) {
           return static_cast<KeyItemView*>(child)->key_code() > key_code;
         });
 
@@ -210,7 +210,7 @@ void KeyComboView::RefreshView(int modifiers,
 
 std::vector<ui::KeyboardCode> KeyComboView::GetModifierKeycodeVector() const {
   std::vector<ui::KeyboardCode> key_codes;
-  base::ranges::for_each(
+  std::ranges::for_each(
       modifiers_container_view_->children(), [&](views::View* view) {
         key_codes.push_back(static_cast<KeyItemView*>(view)->key_code());
       });

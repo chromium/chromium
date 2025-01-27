@@ -385,6 +385,14 @@ public class OmniboxResourceProvider {
     }
 
     /**
+     * Returns the background hover color for suggestions in a "standard" (non-incognito) model with
+     * the given context.
+     */
+    public static @ColorInt int getHoverSuggestionBackgroundColor(Context context) {
+        return ChromeColors.getSurfaceColor(context, R.dimen.omnibox_suggestion_bg_hover_elevation);
+    }
+
+    /**
      * Returns the background color for the suggestions dropdown in a "standard" (non-incognito)
      * TabModel with the given context.
      */

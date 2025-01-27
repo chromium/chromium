@@ -9,6 +9,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <bit>
 #include <queue>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -157,7 +157,7 @@ class FakeV4L2Impl::OpenedDevice {
 
   FakeV4L2Buffer* LookupBufferFromOffset(off_t offset) {
     auto buffer_iter =
-        base::ranges::find(device_buffers_, offset, &FakeV4L2Buffer::offset);
+        std::ranges::find(device_buffers_, offset, &FakeV4L2Buffer::offset);
     if (buffer_iter == device_buffers_.end())
       return nullptr;
     return &(*buffer_iter);

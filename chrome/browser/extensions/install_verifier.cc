@@ -15,7 +15,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/one_shot_event.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -230,7 +229,7 @@ void InstallVerifier::RemoveMany(const ExtensionIdSet& ids) {
   if (!signature_.get() || !ShouldFetchSignature())
     return;
 
-  if (base::ranges::any_of(ids, [this](const std::string& id) {
+  if (std::ranges::any_of(ids, [this](const std::string& id) {
         return base::Contains(signature_->ids, id) ||
                base::Contains(signature_->invalid_ids, id);
       })) {
@@ -333,7 +332,7 @@ ExtensionIdSet InstallVerifier::GetExtensionsToVerify() const {
 void InstallVerifier::MaybeBootstrapSelf() {
   ExtensionIdSet extension_ids = GetExtensionsToVerify();
   if ((signature_.get() == nullptr && ShouldFetchSignature()) ||
-      base::ranges::any_of(extension_ids, [this](const std::string& id) {
+      std::ranges::any_of(extension_ids, [this](const std::string& id) {
         return !IsKnownId(id);
       })) {
     AddMany(extension_ids, ADD_ALL_BOOTSTRAP);

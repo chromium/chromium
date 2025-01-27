@@ -4,6 +4,7 @@
 
 #include "services/network/trust_tokens/trust_token_request_signing_helper.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -14,7 +15,6 @@
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

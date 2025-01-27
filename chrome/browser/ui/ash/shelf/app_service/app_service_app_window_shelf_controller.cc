@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -14,7 +15,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
@@ -335,7 +335,7 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
     // then removed. Since it is not registered we don't need to do anything
     // anyways. As such, all which is left to do here is to get rid of our own
     // reference.
-    WindowList::iterator it = base::ranges::find(window_list_, update.Window());
+    WindowList::iterator it = std::ranges::find(window_list_, update.Window());
     if (it != window_list_.end()) {
       window_list_.erase(it);
     }
@@ -470,8 +470,8 @@ AppWindowBase* AppServiceAppWindowShelfController::GetAppWindow(
 
 std::vector<aura::Window*> AppServiceAppWindowShelfController::GetArcWindows() {
   std::vector<aura::Window*> arc_windows;
-  base::ranges::copy_if(window_list_, std::back_inserter(arc_windows),
-                        &ash::IsArcWindow);
+  std::ranges::copy_if(window_list_, std::back_inserter(arc_windows),
+                       &ash::IsArcWindow);
   return arc_windows;
 }
 

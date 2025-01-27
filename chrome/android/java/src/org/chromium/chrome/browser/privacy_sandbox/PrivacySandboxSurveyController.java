@@ -50,32 +50,37 @@ import java.util.Random;
 
 /** Class that controls and manages when and if surveys should be shown. */
 public class PrivacySandboxSurveyController {
+    // LINT.IfChange(PrivacySandboxSurveyTypes)
     /** List of all the survey types that this controller manages. */
     @IntDef({
         PrivacySandboxSurveyType.UNKNOWN,
+        PrivacySandboxSurveyType.SENTIMENT_SURVEY,
         PrivacySandboxSurveyType.CCT_EEA_ACCEPTED,
         PrivacySandboxSurveyType.CCT_EEA_DECLINED,
         PrivacySandboxSurveyType.CCT_EEA_CONTROL,
         PrivacySandboxSurveyType.CCT_ROW_ACKNOWLEDGED,
         PrivacySandboxSurveyType.CCT_ROW_CONTROL,
-        PrivacySandboxSurveyType.SENTIMENT_SURVEY,
+        PrivacySandboxSurveyType.MAX_VALUE,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PrivacySandboxSurveyType {
         // Default survey type if we don't surey type not explicitly defined.
         int UNKNOWN = 0;
-        // Represents the surveys for the Ads CCT notice.
-        int CCT_EEA_ACCEPTED = 1;
-        int CCT_EEA_DECLINED = 2;
-        int CCT_EEA_CONTROL = 3;
-        int CCT_ROW_ACKNOWLEDGED = 4;
-        int CCT_ROW_CONTROL = 5;
         // Represents the always on sentiment survey.
-        int SENTIMENT_SURVEY = 6;
+        int SENTIMENT_SURVEY = 1;
+        // Represents the surveys for the Ads CCT notice.
+        int CCT_EEA_ACCEPTED = 2;
+        int CCT_EEA_DECLINED = 3;
+        int CCT_EEA_CONTROL = 4;
+        int CCT_ROW_ACKNOWLEDGED = 5;
+        int CCT_ROW_CONTROL = 6;
+
+        int MAX_VALUE = 7;
     }
 
-    // LINT.IfChange(PrivacySandboxCctAdsNoticeSurveyFailures)
+    // LINT.ThenChange(/tools/metrics/histograms/enums.xml:PrivacySandboxSurveyTypesEnums)
 
+    // LINT.IfChange(PrivacySandboxCctAdsNoticeSurveyFailures)
     /** Represents the possible failures when attempting to surface a CCT ads notice survey. */
     @IntDef({
         CctAdsNoticeSurveyFailures.FEATURE_NOT_ENABLED,
@@ -145,12 +150,8 @@ public class PrivacySandboxSurveyController {
     private boolean mHasSeenNtp;
     private boolean mOverrideChannelForTesting;
     private int mChannelForTesting;
-    private static long sAdsCctDelayOverrideMilliseconds;
     private static final int DEFAULT_ADS_CCT_DELAY_MS = 20_000;
 
-    // TODO(crbug.com/379930582): Remove usage of the testing flag and rely on the feature parameter
-    // to set the delay.
-    private static boolean sOverrideAdsCctDelay;
     private static boolean sEnableForTesting;
 
     PrivacySandboxSurveyController(
@@ -210,7 +211,7 @@ public class PrivacySandboxSurveyController {
         }
         String paramAdsNoticeAppId =
                 ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY, "app-id");
+                        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY, "survey-app-id");
         if (!paramAdsNoticeAppId.isEmpty() && !paramAdsNoticeAppId.equals(appId)) {
             recordCctAdsNoticeSurveyFailures(CctAdsNoticeSurveyFailures.APP_ID_MISMATCH);
             return false;
@@ -220,9 +221,6 @@ public class PrivacySandboxSurveyController {
 
     @VisibleForTesting
     public long getAdsCctDelayMilliseconds() {
-        if (sOverrideAdsCctDelay) {
-            return sAdsCctDelayOverrideMilliseconds;
-        }
         // Use the 20 second default if the conversion of the parameter fails.
         return Long.valueOf(
                 ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
@@ -352,6 +350,7 @@ public class PrivacySandboxSurveyController {
     }
 
     private void showSurvey(@PrivacySandboxSurveyType int surveyType) {
+        recordSurveySurfaceAttempted(surveyType);
         SurveyClient surveyClient = constructSurveyClient(surveyType);
         if (surveyClient == null) {
             return;
@@ -501,6 +500,13 @@ public class PrivacySandboxSurveyController {
         }
     }
 
+    private static void recordSurveySurfaceAttempted(@PrivacySandboxSurveyType int surveyType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "PrivacySandbox.Surveys.SurfaceAttempts",
+                surveyType,
+                PrivacySandboxSurveyType.MAX_VALUE);
+    }
+
     // Set whether to trigger the start up survey in tests.
     public static void setEnableForTesting() {
         sEnableForTesting = true;
@@ -517,12 +523,5 @@ public class PrivacySandboxSurveyController {
     public void setChannelForTesting(int channel) {
         mChannelForTesting = channel;
         ResettersForTesting.register(() -> mChannelForTesting = Channel.DEFAULT);
-    }
-
-    // Overrides the survey delay
-    public static void overrideAdsCctSurveyDelayForTesting(long delayMilliseconds) {
-        sAdsCctDelayOverrideMilliseconds = delayMilliseconds;
-        sOverrideAdsCctDelay = true;
-        ResettersForTesting.register(() -> sOverrideAdsCctDelay = false);
     }
 }

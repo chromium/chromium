@@ -24,7 +24,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -413,7 +412,7 @@ class DeclarativeNetRequestBrowserTest
   void LoadExtensionWithRulesets(const std::vector<TestRulesetInfo>& rulesets,
                                  const std::string& directory,
                                  const std::vector<std::string>& hosts) {
-    bool has_enabled_rulesets = base::ranges::any_of(
+    bool has_enabled_rulesets = std::ranges::any_of(
         rulesets,
         [](const TestRulesetInfo& ruleset) { return ruleset.enabled; });
 

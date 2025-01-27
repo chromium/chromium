@@ -132,6 +132,7 @@ class VIEWS_EXPORT RootView : public View,
   void UpdateParentLayer() override;
 
   void UpdateAccessibleName();
+  void UpdateAccessibleURL(const GURL& url);
 
   const views::View* gesture_handler_for_testing() const {
     return gesture_handler_;

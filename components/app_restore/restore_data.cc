@@ -139,7 +139,7 @@ bool RestoreData::HasAppTypeBrowser() const {
   if (it == app_id_to_launch_list_.end())
     return false;
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       it->second,
       [](const std::pair<const int, std::unique_ptr<AppRestoreData>>& data) {
         return data.second->browser_extra_info.app_type_browser.value_or(false);
@@ -151,7 +151,7 @@ bool RestoreData::HasBrowser() const {
   if (it == app_id_to_launch_list_.end())
     return false;
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       it->second,
       [](const std::pair<const int, std::unique_ptr<AppRestoreData>>& data) {
         return !data.second->browser_extra_info.app_type_browser.value_or(

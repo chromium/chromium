@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -26,7 +27,6 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -370,7 +370,7 @@ WebInputElement FindUsernameElementPrecedingPasswordElement(
       form_util::GetOwnedAutofillableFormControls(
           frame->GetDocument(), password_element.GetOwningFormForAutofill());
 
-  auto iter = base::ranges::find(elements, password_element);
+  auto iter = std::ranges::find(elements, password_element);
   if (iter == elements.end())
     return WebInputElement();
 

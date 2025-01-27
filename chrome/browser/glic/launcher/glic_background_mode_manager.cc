@@ -21,7 +21,7 @@
 
 namespace {
 bool IsEnabledInAnyLoadedProfile() {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       g_browser_process->profile_manager()->GetLoadedProfiles(),
       GlicEnabling::IsEnabledForProfile);
 }

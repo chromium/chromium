@@ -4,9 +4,9 @@
 
 #include "media/filters/video_renderer_algorithm.h"
 
+#include <algorithm>
 #include <limits>
 
-#include "base/ranges/algorithm.h"
 #include "media/base/media_log.h"
 
 namespace media {
@@ -745,7 +745,7 @@ void VideoRendererAlgorithm::UpdateEffectiveFramesQueued() {
   // that were not rendered yet.
   if (frame_dropping_disabled_) {
     min_frames_queued =
-        base::ranges::count(frame_queue_, 0, &ReadyFrame::render_count);
+        std::ranges::count(frame_queue_, 0, &ReadyFrame::render_count);
   }
 
   // Next, see if can report more frames as queued.

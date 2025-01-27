@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/media_router/media_route_starter.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -96,7 +97,7 @@ MediaRouteStarter::~MediaRouteStarter() {
   // If |start_presentation_context_| still exists, then it means presentation
   // route request was never attempted.
   if (start_presentation_context_) {
-    bool presentation_sinks_available = base::ranges::any_of(
+    bool presentation_sinks_available = std::ranges::any_of(
         GetQueryResultManager()->GetSinksWithCastModes(),
         [](const MediaSinkWithCastModes& sink) {
           return base::Contains(sink.cast_modes, MediaCastMode::PRESENTATION) ||

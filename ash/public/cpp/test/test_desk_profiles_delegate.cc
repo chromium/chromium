@@ -4,9 +4,8 @@
 
 #include "ash/public/cpp/test/test_desk_profiles_delegate.h"
 
+#include <algorithm>
 #include <vector>
-
-#include "base/ranges/algorithm.h"
 
 namespace ash {
 
@@ -62,8 +61,8 @@ TestDeskProfilesDelegate::GetProfilesSnapshotByProfileId(
     profile_id = primary_user_profile_id_;
   }
 
-  const auto iter = base::ranges::find(profiles_, profile_id,
-                                       &LacrosProfileSummary::profile_id);
+  const auto iter = std::ranges::find(profiles_, profile_id,
+                                      &LacrosProfileSummary::profile_id);
   return iter == profiles_.end() ? nullptr : &(*iter);
 }
 

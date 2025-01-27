@@ -25,6 +25,7 @@
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/merchant_trust_service.h"
+#include "components/page_info/core/pref_names.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permissions_client.h"
@@ -322,9 +323,16 @@ ChromePageInfoUiDelegate::GetEmbargoResult(ContentSettingsType type) {
 
 void ChromePageInfoUiDelegate::GetMerchantTrustInfo(
     page_info::MerchantDataCallback callback) {
-  MerchantTrustServiceFactory::GetForProfile(GetProfile())
-      ->GetMerchantTrustInfo(web_contents_->GetVisibleURL(),
-                             std::move(callback));
+  if (auto* service =
+          MerchantTrustServiceFactory::GetForProfile(GetProfile())) {
+    service->GetMerchantTrustInfo(web_contents_->GetVisibleURL(),
+                                  std::move(callback));
+  }
+}
+
+void ChromePageInfoUiDelegate::RecordPageInfoWithMerchantTrustOpenTime() {
+  GetProfile()->GetPrefs()->SetTime(prefs::kMerchantTrustPageInfoLastOpenTime,
+                                    clock_->Now());
 }
 
 Profile* ChromePageInfoUiDelegate::GetProfile() const {

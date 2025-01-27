@@ -208,8 +208,9 @@ public interface TabGroupSyncService {
      * @param tabGroupId The local group ID of the corresponding tab group. Null if the tab is not
      *     part of a group.
      * @param tabId The local ID of the corresponding tab.
+     * @param tabTitle The title of the corresponding tab.
      */
-    void onTabSelected(@Nullable LocalTabGroupId tabGroupId, int tabId);
+    void onTabSelected(@Nullable LocalTabGroupId tabGroupId, int tabId, String tabTitle);
 
     /**
      * Called to return all the remote tab group IDs currently existing in the system.

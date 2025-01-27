@@ -6,8 +6,9 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -308,7 +309,7 @@ Browser* FindBrowserWithActiveWindow() {
 Browser* FindBrowserWithTab(const WebContents* web_contents) {
   DCHECK(web_contents);
   auto& all_tabs = AllTabContentses();
-  auto it = base::ranges::find(all_tabs, web_contents);
+  auto it = std::ranges::find(all_tabs, web_contents);
 
   return (it == all_tabs.end()) ? nullptr : it.browser();
 }

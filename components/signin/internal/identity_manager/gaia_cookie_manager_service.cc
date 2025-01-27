@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <optional>
 #include <queue>
 #include <set>
@@ -20,7 +21,6 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -913,7 +913,7 @@ void GaiaCookieManagerService::OptimizeListAccounts() {
   // Logout or set accounts will impact the result of list accounts.
   // Handle those requests first.
   bool should_delay_list_accounts =
-      base::ranges::any_of(requests_, [](const auto& request) {
+      std::ranges::any_of(requests_, [](const auto& request) {
         return request.request_type() == GaiaCookieRequestType::LOG_OUT ||
                request.request_type() == GaiaCookieRequestType::SET_ACCOUNTS;
       });

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/base/status.h"
+
+#include <algorithm>
 #include <sstream>
 #include <string>
 
 #include "base/json/json_writer.h"
-#include "base/ranges/algorithm.h"
 #include "media/base/media_serializers.h"
-#include "media/base/status.h"
 #include "media/base/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -583,7 +584,7 @@ TEST_F(StatusTest, OrTypeMapping) {
   // try it with a lambda returning-lambda
   auto finder = [](char search) {
     return [search](std::string seq) -> NormalStatus::Or<int> {
-      auto count = base::ranges::count(seq, search);
+      auto count = std::ranges::count(seq, search);
       if (count == 0)
         return NormalStatus::Codes::kFoo;
       return count;

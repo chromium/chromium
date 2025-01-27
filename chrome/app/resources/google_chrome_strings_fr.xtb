@@ -126,7 +126,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2574930892358684005">L'utilisateur <ph name="EXISTING_USER" /> est déjà connecté à ce profil Chrome. Chrome peut vous créer un profil de navigation individuel.</translation>
 <translation id="2580411288591421699">Impossible d'installer la version de Google Chrome qui est en cours d'exécution. Fermez Google Chrome et réessayez.</translation>
 <translation id="2586406160782125153">Cette action aura pour effet de supprimer vos données de navigation de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
-<translation id="2597976513418770460">Récupérer vos données Chrome à partir de <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Échec de la mise en cache du programme d'installation téléchargé. Erreur : <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2632707915638608719">Gagnez en efficacité grâce aux extensions pour Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -550,7 +549,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7845233973568007926">Merci d'avoir installé notre produit. Vous devez redémarrer votre ordinateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">L'IA dans Chrome contribue à rendre le Web plus rapide, plus sûr et plus accessible</translation>
 <translation id="7872446069773932638">Téléchargement… <ph name="SECONDS" /> seconde(s) restante(s)</translation>
-<translation id="7880591377632733558">Bienvenue dans Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7886087451482920026">Sélectionnez du texte avec Google Lens</translation>
 <translation id="7890208801193284374">Si vous partagez un ordinateur avec vos proches, ceux-ci peuvent configurer Chrome comme bon leur semble et naviguer sur le Web à leur manière.</translation>
 <translation id="7896673875602241923">Un utilisateur s'est récemment connecté à Chrome sur cet ordinateur en tant que <ph name="ACCOUNT_EMAIL_LAST" />. Veuillez créer un autre utilisateur Chrome pour séparer vos informations.</translation>
@@ -602,7 +600,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8429214465555795676">Pour continuer, vous devez vous connecter à Chrome avec <ph name="EMAIL" />. Cela garantit la conformité aux règles de votre organisation.</translation>
 <translation id="8433638294851456451">Pour envoyer un numéro d'ici vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>
-<translation id="8451192282033883849">Votre compte est géré par <ph name="MANAGER_NAME" />. Votre administrateur peut afficher et modifier ce profil de navigateur Chrome et ses données, comme les favoris, l'historique et les mots de passe.</translation>
 <translation id="8496177819998570653">Gestionnaire de mots de p&amp;asse de Google</translation>
 <translation id="8498858610309223613">Une mise à jour spéciale de sécurité pour Google Chrome vient d'être installée. Veuillez redémarrer le navigateur. Vos onglets seront restaurés.</translation>
 <translation id="8516431725144212809">Vos centres d'intérêt estimés par Chrome</translation>

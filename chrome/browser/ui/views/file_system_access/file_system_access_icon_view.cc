@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/file_system_access/file_system_access_icon_view.h"
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
@@ -27,8 +27,8 @@ namespace {
 std::vector<base::FilePath> GetPaths(
     const std::vector<content::PathInfo>& path_infos) {
   std::vector<base::FilePath> result;
-  base::ranges::transform(path_infos, std::back_inserter(result),
-                          &content::PathInfo::path);
+  std::ranges::transform(path_infos, std::back_inserter(result),
+                         &content::PathInfo::path);
   return result;
 }
 

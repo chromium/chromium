@@ -184,16 +184,18 @@
         return l10n_util::GetNSString(
             IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE_WITHOUT_EMAIL);
       }
-    case TabGroupActionType::kLeaveSharedTabGroup:
-      // TODO(crbug.com/375587197): Update the string once the coordinator has
-      // access to the leaved tab group.
+    case TabGroupActionType::kLeaveSharedTabGroup: {
+      CHECK(_tabGroupName);
       return l10n_util::GetNSStringF(
-          IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_LEAVE_MESSAGE, u"GROUP_NAME");
-    case TabGroupActionType::kDeleteSharedTabGroup:
-      // TODO(crbug.com/375587197): Update the string once the coordinator has
-      // access to the leaved tab group.
+          IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_LEAVE_MESSAGE,
+          base::SysNSStringToUTF16(_tabGroupName));
+    }
+    case TabGroupActionType::kDeleteSharedTabGroup: {
+      CHECK(_tabGroupName);
       return l10n_util::GetNSStringF(
-          IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE, u"GROUP_NAME");
+          IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE,
+          base::SysNSStringToUTF16(_tabGroupName));
+    }
   }
 }
 

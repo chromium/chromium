@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -73,7 +74,7 @@ void CastToolbarButtonController::OnIssuesCleared() {
 void CastToolbarButtonController::OnRoutesUpdated(
     const std::vector<media_router::MediaRoute>& routes) {
   has_local_display_route_ =
-      base::ranges::any_of(routes, [](const media_router::MediaRoute& route) {
+      std::ranges::any_of(routes, [](const media_router::MediaRoute& route) {
         // The Cast icon should be hidden if there only are
         // non-local and non-display routes.
         if (!route.is_local()) {

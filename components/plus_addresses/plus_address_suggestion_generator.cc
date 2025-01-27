@@ -116,9 +116,7 @@ bool ShouldOfferPlusAddressCreationOnForm(
           !IsPasswordFieldVisible(focused_form, form_classification)) {
         return true;
       }
-      return base::FeatureList::IsEnabled(
-                 features::kPlusAddressRefinedPasswordFormClassification) &&
-             form_has_unexpected_field_types_for_login_form();
+      return form_has_unexpected_field_types_for_login_form();
     case PasswordFormClassification::Type::kChangePasswordForm:
     case PasswordFormClassification::Type::kResetPasswordForm:
       return false;

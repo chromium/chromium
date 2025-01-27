@@ -30,7 +30,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -287,7 +286,7 @@ AutocompleteMatch::RichAutocompletionType TopMatchRichAutocompletionType(
         match.relevance);
   };
 
-  auto top_match = base::ranges::max_element(result, {}, get_sort_key);
+  auto top_match = std::ranges::max_element(result, {}, get_sort_key);
   return top_match->rich_autocompletion_triggered;
 }
 
@@ -886,7 +885,7 @@ void AutocompleteController::OnProviderUpdate(
 
   if (done_state == ProviderDoneState::kAllDone) {
     size_t calculator_count =
-        base::ranges::count_if(published_result_, [](const auto& match) {
+        std::ranges::count_if(published_result_, [](const auto& match) {
           return match.type == AutocompleteMatchType::CALCULATOR;
         });
     UMA_HISTOGRAM_COUNTS_100("Omnibox.NumCalculatorMatches", calculator_count);
@@ -2069,7 +2068,7 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
   // would be scored independently with their partial signals.
   internal_result_.DeduplicateMatches(input_, template_url_service_);
 
-  size_t eligible_matches_count = base::ranges::count_if(
+  size_t eligible_matches_count = std::ranges::count_if(
       internal_result_.matches_,
       [](const auto& match) { return match.IsMlScoringEligible(); });
 
@@ -2268,7 +2267,7 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
     }
     scores_pool.push_back(match.relevance);
   }
-  base::ranges::sort(scores_pool, std::greater<>());
+  std::ranges::sort(scores_pool, std::greater<>());
 
   // Avoid duplicate scores by ensuring that no two URL suggestions are assigned
   // the same score.
@@ -2284,8 +2283,8 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
     prediction_and_position_heap.push_back(
         {prediction.value_or(0), scored_positions[i]});
   }
-  base::ranges::stable_sort(prediction_and_position_heap, std::greater<>(),
-                            [](const auto& pair) { return pair.first; });
+  std::ranges::stable_sort(prediction_and_position_heap, std::greater<>(),
+                           [](const auto& pair) { return pair.first; });
 
   // Assign the finalized relevance scores to each URL suggestion in order of
   // priority (i.e. ML score).
@@ -2431,7 +2430,7 @@ void AutocompleteController::
     }
     scores_pool.push_back(match.relevance);
   }
-  base::ranges::sort(scores_pool, std::greater<>());
+  std::ranges::sort(scores_pool, std::greater<>());
 
   // Avoid duplicate scores by ensuring that no two URL suggestions are assigned
   // the same score.
@@ -2447,8 +2446,8 @@ void AutocompleteController::
     prediction_and_position_heap.push_back(
         {prediction.value_or(0), scored_positions[i]});
   }
-  base::ranges::stable_sort(prediction_and_position_heap, std::greater<>(),
-                            [](const auto& pair) { return pair.first; });
+  std::ranges::stable_sort(prediction_and_position_heap, std::greater<>(),
+                           [](const auto& pair) { return pair.first; });
 
   // Assign the finalized relevance scores to each URL suggestion in order of
   // priority (i.e. ML score).
@@ -2474,7 +2473,7 @@ void AutocompleteController::MaybeRemoveCompanyEntityImages(
     history_domain = GetDomain(*result->match_at(0));
   }
 
-  auto iter = base::ranges::find_if(result->matches_, [](const auto& match) {
+  auto iter = std::ranges::find_if(result->matches_, [](const auto& match) {
     return match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
   });
   if (iter == result->matches_.end()) {

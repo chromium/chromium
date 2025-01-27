@@ -19,8 +19,9 @@ template("private_code_test") {
     }
     if (shlib_prefix != "") {
       _so_name = shlib_prefix + get_label_info(_linker_inputs_dep, "name")
-      _so_name =
-          string_replace(_so_name, "${shlib_prefix}${shlib_prefix}", shlib_prefix)
+      _so_name = string_replace(_so_name,
+                                "${shlib_prefix}${shlib_prefix}",
+                                shlib_prefix)
     }
     _executable_path = "$_dir/${_so_name}$shlib_extension"
   }
@@ -36,7 +37,9 @@ template("private_code_test") {
     # The script does not read this file, so the dep is not really required.
     # It is needed only in the case where the target is in a different
     # toolchain, and would not be added to build.ninja otherwise.
-    deps = [ _linker_inputs_dep ]
+    if (get_label_info(_linker_inputs_dep, "toolchain") != default_toolchain) {
+      deps = [ _linker_inputs_dep ]
+    }
     args = [
       "--executable",
       rebase_path(_executable_path, root_build_dir),

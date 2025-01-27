@@ -1471,8 +1471,8 @@ TEST_F(PaymentsAutofillTableTest, SetAndGetVirtualCardUsageData) {
 
   for (const auto& data : virtual_card_usage_data) {
     // Find output data with corresponding data.
-    auto it = base::ranges::find(output_data, data.instrument_id(),
-                                 &VirtualCardUsageData::instrument_id);
+    auto it = std::ranges::find(output_data, data.instrument_id(),
+                                &VirtualCardUsageData::instrument_id);
 
     // Expect to find a usage data match in the vector.
     EXPECT_NE(it, output_data.end());
@@ -1641,7 +1641,7 @@ TEST_F(PaymentsAutofillTableTest, GetAllCreditCardBenefits) {
   EXPECT_EQ(input_benefits.size(), output_benefits.size());
   for (const auto& input_benefit : input_benefits) {
     // Find input benefits in outputs.
-    auto output_benefit_find_result = base::ranges::find(
+    auto output_benefit_find_result = std::ranges::find(
         output_benefits, get_benefit_id(input_benefit), get_benefit_id);
     EXPECT_NE(output_benefit_find_result, output_benefits.end());
     EXPECT_EQ(input_benefit, *output_benefit_find_result);

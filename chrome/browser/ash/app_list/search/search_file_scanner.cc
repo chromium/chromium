@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/search_file_scanner.h"
 
+#include <algorithm>
 #include <map>
 #include <string_view>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -83,10 +83,10 @@ void FullScan(const base::FilePath& search_path,
   for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
        file_path = file_enumerator.Next()) {
     // Exclude any paths that are parented at an enabled trash location.
-    if (base::ranges::any_of(trash_paths,
-                             [&file_path](const base::FilePath& trash_path) {
-                               return trash_path.IsParent(file_path);
-                             })) {
+    if (std::ranges::any_of(trash_paths,
+                            [&file_path](const base::FilePath& trash_path) {
+                              return trash_path.IsParent(file_path);
+                            })) {
       continue;
     }
     // Always counts the total file number.

@@ -342,9 +342,11 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
       const url::Origin& request_initiator = url::Origin());
 
-  // A count of active extensions for this BrowserContext that use web request
-  // permissions.
+  // Counts of active extensions for this BrowserContext that use kWebRequest*,
+  // kDeclarative{Web|Net}Request*, or kWebView permissions.
   int web_request_extension_count_ = 0;
+  int declarative_request_extension_count_ = 0;
+  int web_view_extension_count_ = 0;
 
   const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 

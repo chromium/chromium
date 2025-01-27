@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -21,7 +22,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
@@ -946,7 +946,7 @@ bool EventRouter::HasLazyEventListenerForTesting(
     const std::string& event_name) {
   const EventListenerMap::ListenerList& listeners =
       listeners_.GetEventListenersByName(event_name);
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       listeners, [](const std::unique_ptr<EventListener>& listener) {
         return listener->IsLazy();
       });
@@ -956,7 +956,7 @@ bool EventRouter::HasNonLazyEventListenerForTesting(
     const std::string& event_name) {
   const EventListenerMap::ListenerList& listeners =
       listeners_.GetEventListenersByName(event_name);
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       listeners, [](const std::unique_ptr<EventListener>& listener) {
         return !listener->IsLazy();
       });
@@ -977,7 +977,7 @@ void EventRouter::RemoveFilterFromEvent(const std::string& event_name,
   }
   const base::Value::Dict& (base::Value::*get_dict)() const =
       &base::Value::GetDict;
-  filter_list->erase(base::ranges::find(*filter_list, filter, get_dict));
+  filter_list->erase(std::ranges::find(*filter_list, filter, get_dict));
 }
 
 const base::Value::Dict* EventRouter::GetFilteredEvents(

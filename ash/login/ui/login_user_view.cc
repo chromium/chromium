@@ -600,7 +600,7 @@ void LoginUserView::RequestFocus() {
 views::View::Views LoginUserView::GetChildrenInZOrder() {
   auto children = views::View::GetChildrenInZOrder();
   const auto move_child_to_top = [&](View* child) {
-    auto it = base::ranges::find(children, child);
+    auto it = std::ranges::find(children, child);
     DCHECK(it != children.end());
     std::rotate(it, it + 1, children.end());
   };

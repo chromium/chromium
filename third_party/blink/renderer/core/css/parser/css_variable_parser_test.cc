@@ -112,6 +112,7 @@ const char* valid_if_values[] = {
     "if(style(--prop: abc): true_val;   )",
     "if(   style(--prop: abc): true_val   )",
     "if(   style(--prop: abc):   true_val   )",
+    "if(style(--prop: abc):)",
     "if(   style(   --prop:   abc   ):   true_val   )",
     "if(style(--prop: abc): true_val; else: false_val)",
     "if(style(--prop: abc): true_val; else: false_val;)",
@@ -137,6 +138,8 @@ const char* valid_if_values[] = {
 
 const char* invalid_if_values[] = {
     // clang-format off
+    "if()",
+    "if(style(--prop: abc))",
     "if(style(--prop: abc): true_val!)",
     "if(!style(--prop: abc): true_val)",
     "if(style(--prop abc): true_val)",

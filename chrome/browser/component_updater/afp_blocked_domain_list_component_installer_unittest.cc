@@ -4,6 +4,7 @@
 
 #include "chrome/browser/component_updater/afp_blocked_domain_list_component_installer.h"
 
+#include "afp_blocked_domain_list_component_installer.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -227,6 +228,50 @@ TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
   ASSERT_TRUE(base::ReadFileToString(service()->ruleset_path(),
                                      &actual_ruleset_contents));
   EXPECT_EQ(expected_ruleset_contents, actual_ruleset_contents);
+}
+
+TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
+       InstallerAttributes_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      {}, {fingerprinting_protection_filter::features::
+               kEnableFingerprintingProtectionFilter,
+           fingerprinting_protection_filter::features::
+               kEnableFingerprintingProtectionFilterInIncognito});
+
+  EXPECT_EQ(policy()->GetInstallerAttributes(),
+            update_client::InstallerAttributes(
+                {{kExperimentalVersionAttributeName, ""}}));
+}
+
+TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
+       InstallerAttributes_FeatureEnabledInNonIncognito) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeaturesAndParameters(
+      {{fingerprinting_protection_filter::features::
+            kEnableFingerprintingProtectionFilter,
+        {{"experimental_version", "test1"}}}},
+      {fingerprinting_protection_filter::features::
+           kEnableFingerprintingProtectionFilterInIncognito});
+
+  EXPECT_EQ(policy()->GetInstallerAttributes(),
+            update_client::InstallerAttributes(
+                {{kExperimentalVersionAttributeName, "test1"}}));
+}
+
+TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
+       InstallerAttributes_FeatureEnabledFilterInIncognito) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeaturesAndParameters(
+      {{fingerprinting_protection_filter::features::
+            kEnableFingerprintingProtectionFilterInIncognito,
+        {{"experimental_version", "test2"}}}},
+      {fingerprinting_protection_filter::features::
+           kEnableFingerprintingProtectionFilter});
+
+  EXPECT_EQ(policy()->GetInstallerAttributes(),
+            update_client::InstallerAttributes(
+                {{kExperimentalVersionAttributeName, "test2"}}));
 }
 
 }  // namespace component_updater

@@ -1637,7 +1637,7 @@ TEST_F(SiteSettingsHelperIsolatedWebAppTest, AutomaticFullscreenVisibility) {
   EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);
   const auto types = GetVisiblePermissionCategories(
       app_url_info.origin().GetURL().spec(), profile());
-  EXPECT_TRUE(base::ranges::any_of(types, [](auto& t) { return t == type; }));
+  EXPECT_TRUE(std::ranges::any_of(types, [](auto& t) { return t == type; }));
 }
 
 }  // namespace site_settings

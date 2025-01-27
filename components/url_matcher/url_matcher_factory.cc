@@ -4,12 +4,12 @@
 
 #include "components/url_matcher/url_matcher_factory.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/check.h"
 #include "base/lazy_instance.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/url_matcher/url_matcher_constants.h"
@@ -186,7 +186,7 @@ namespace {
 
 // Returns true if some alphabetic characters in this string are upper case.
 bool ContainsUpperCase(const std::string& str) {
-  return base::ranges::any_of(str, ::isupper);
+  return std::ranges::any_of(str, ::isupper);
 }
 
 }  // namespace

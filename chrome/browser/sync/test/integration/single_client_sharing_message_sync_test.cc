@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -113,7 +113,7 @@ class SharingMessageEqualityChecker : public SingleClientStatusChangeChecker {
     }
 
     for (const SharingMessageSpecifics& specifics : expected_specifics_) {
-      auto iter = base::ranges::find(
+      auto iter = std::ranges::find(
           entities, specifics.payload(), [](const sync_pb::SyncEntity& entity) {
             return entity.specifics().sharing_message().payload();
           });

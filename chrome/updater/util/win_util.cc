@@ -16,6 +16,7 @@
 #include <wrl/client.h>
 #include <wtsapi32.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <memory>
 #include <optional>
@@ -40,7 +41,6 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -604,7 +604,7 @@ HRESULT RunDeElevatedCmdLine(const std::wstring& cmd_line) {
             }
 
             std::vector<std::wstring> parameters;
-            base::ranges::for_each(
+            std::ranges::for_each(
                 argv->begin() + 1, argv->end(),
                 [&](const std::wstring& parameter) {
                   parameters.push_back(

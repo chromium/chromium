@@ -1664,9 +1664,9 @@ std::map<std::string_view, sync_preferences::SyncablePrefMetadata>
 ChromeSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
   std::map<std::string_view, sync_preferences::SyncablePrefMetadata>
       syncable_prefs;
-  base::ranges::copy(kChromeSyncablePrefsAllowlist,
-                     std::inserter(syncable_prefs, syncable_prefs.end()));
-  base::ranges::move(
+  std::ranges::copy(kChromeSyncablePrefsAllowlist,
+                    std::inserter(syncable_prefs, syncable_prefs.end()));
+  std::ranges::move(
       common_syncable_prefs_database_.GetAllSyncablePrefsForTest(),  // IN-TEST
       std::inserter(syncable_prefs, syncable_prefs.end()));
   return syncable_prefs;

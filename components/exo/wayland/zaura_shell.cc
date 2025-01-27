@@ -8,6 +8,7 @@
 #include <wayland-server-protocol-core.h>
 #include <xdg-shell-server-protocol.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <string_view>
@@ -28,7 +29,6 @@
 #include "base/bit_cast.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"

@@ -388,10 +388,10 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
   }
   // The import can only be one of {new, updated, migrated} profile at once.
   ASSERT_EQ(
-      base::ranges::count(std::vector<bool>{IsNewProfile(test_scenario),
-                                            IsConfirmableMerge(test_scenario),
-                                            IsMigration(test_scenario)},
-                          true),
+      std::ranges::count(std::vector<bool>{IsNewProfile(test_scenario),
+                                           IsConfirmableMerge(test_scenario),
+                                           IsMigration(test_scenario)},
+                         true),
       1);
 
   const ImportHistogramNames& affected_histograms =

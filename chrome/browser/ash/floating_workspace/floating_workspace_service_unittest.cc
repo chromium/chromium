@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -14,7 +15,6 @@
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -211,10 +211,10 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
       std::vector<raw_ptr<const sync_sessions::SyncedSession,
                           VectorExperimental>>* sessions) override {
     *sessions = foreign_sessions_;
-    base::ranges::sort(*sessions, std::greater(),
-                       [](const sync_sessions::SyncedSession* session) {
-                         return session->GetModifiedTime();
-                       });
+    std::ranges::sort(*sessions, std::greater(),
+                      [](const sync_sessions::SyncedSession* session) {
+                        return session->GetModifiedTime();
+                      });
 
     return !sessions->empty();
   }

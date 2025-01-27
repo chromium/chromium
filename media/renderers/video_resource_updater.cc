@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -1475,8 +1475,8 @@ void VideoResourceUpdater::ReturnTexture(
 void VideoResourceUpdater::RecycleResource(uint32_t resource_id,
                                            const gpu::SyncToken& sync_token,
                                            bool lost_resource) {
-  auto resource_it = base::ranges::find(all_resources_, resource_id,
-                                        &FrameResource::frame_resource_id);
+  auto resource_it = std::ranges::find(all_resources_, resource_id,
+                                       &FrameResource::frame_resource_id);
   if (resource_it == all_resources_.end())
     return;
 

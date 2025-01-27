@@ -4,12 +4,12 @@
 
 #include "components/autofill/content/renderer/form_cache.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"

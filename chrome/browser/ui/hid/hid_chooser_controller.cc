@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
@@ -68,7 +68,7 @@ bool FilterMatch(const blink::mojom::HidDeviceFilterPtr& filter,
       }
     } else if (filter->usage->is_usage_and_page()) {
       const auto& usage_and_page = filter->usage->get_usage_and_page();
-      if (base::ranges::none_of(
+      if (std::ranges::none_of(
               device.collections,
               [&usage_and_page](const device::mojom::HidCollectionInfoPtr& c) {
                 return usage_and_page->usage_page == c->usage->usage_page &&
@@ -242,7 +242,7 @@ void HidChooserController::OnDeviceAdded(
 void HidChooserController::OnDeviceRemoved(
     const device::mojom::HidDeviceInfo& device) {
   auto id = PhysicalDeviceIdFromDeviceInfo(device);
-  auto items_it = base::ranges::find(items_, id);
+  auto items_it = std::ranges::find(items_, id);
   if (items_it == items_.end()) {
     return;
   }
@@ -413,8 +413,8 @@ void HidChooserController::UpdateDeviceInfo(
   auto physical_device_it = device_map_.find(id);
   CHECK(physical_device_it != device_map_.end(), base::NotFatalUntil::M130);
   auto& device_infos = physical_device_it->second;
-  auto device_it = base::ranges::find(device_infos, device.guid,
-                                      &device::mojom::HidDeviceInfo::guid);
+  auto device_it = std::ranges::find(device_infos, device.guid,
+                                     &device::mojom::HidDeviceInfo::guid);
   CHECK(device_it != device_infos.end(), base::NotFatalUntil::M130);
   *device_it = device.Clone();
 }

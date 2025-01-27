@@ -9,9 +9,8 @@
 
 #include "components/mirroring/service/fake_network_service.h"
 
+#include <algorithm>
 #include <memory>
-
-#include "base/ranges/algorithm.h"
 // #include "media/cast/test/utility/net_utility.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/ip_address.h"
@@ -90,7 +89,7 @@ void MockUdpSocket::OnReceivedPacket(const media::cast::Packet& packet) {
 }
 
 void MockUdpSocket::VerifySendingPacket(const media::cast::Packet& packet) {
-  EXPECT_TRUE(base::ranges::equal(packet, *sending_packet_));
+  EXPECT_TRUE(std::ranges::equal(packet, *sending_packet_));
 }
 
 MockNetworkContext::MockNetworkContext(

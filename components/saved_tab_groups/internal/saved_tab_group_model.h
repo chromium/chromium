@@ -230,6 +230,9 @@ class SavedTabGroupModel {
   // One time migration of saved tab groups from v1 to v2.
   void MigrateTabGroupSavesUIUpdate();
 
+  // Mark the tab group as transitioned to shared.
+  void MarkTransitionedToShared(const base::Uuid& group_id);
+
  private:
   // Returns mutable group containing tab with ID `saved_tab_guid`, otherwise
   // returns null.

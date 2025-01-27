@@ -24,7 +24,7 @@ class TimeDelta {
  * Fake implementation of InSessionAuthInterface
  */
 export class FakeInSessionAuth {
-  tokenReply_: RequestTokenReply|null;
+  private tokenReply_: RequestTokenReply|null;
 
   constructor() {
     this.tokenReply_ = {token: 'token', timeout: new TimeDelta(BigInt(1000))};

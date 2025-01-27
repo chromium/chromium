@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -1092,7 +1092,7 @@ TEST_P(ChromePasswordManagerClientSchemeTest,
   EXPECT_EQ(url::Origin::Create(url).GetURL(),
             GetClient()->GetLastCommittedOrigin().GetURL());
 
-  auto* it = base::ranges::find_if(kSchemeTestCases, [](auto test_case) {
+  auto* it = std::ranges::find_if(kSchemeTestCases, [](auto test_case) {
     return strcmp(test_case.scheme, GetParam()) == 0;
   });
   // If saving isn't allowed it shouldn't be due to the setting, so make

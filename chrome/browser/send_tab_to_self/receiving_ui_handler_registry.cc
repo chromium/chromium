@@ -4,11 +4,11 @@
 
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"

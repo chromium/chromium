@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
@@ -26,7 +27,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -140,6 +140,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_indicator_icon.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
@@ -517,7 +518,7 @@ class OverlayViewTargeterDelegate : public views::ViewTargeterDelegate {
       views::View::ConvertRectToTarget(target, child, &child_rect);
       return child->HitTestRect(gfx::ToEnclosingRect(child_rect));
     };
-    return base::ranges::any_of(children, hits_child);
+    return std::ranges::any_of(children, hits_child);
   }
 };
 
@@ -2637,8 +2638,8 @@ bool BrowserView::WidgetOwnedByAnchorContainsPoint(
 
   views::Widget::Widgets widgets;
   views::Widget::GetAllOwnedWidgets(anchor_widget->GetNativeView(), &widgets);
-  return base::ranges::any_of(widgets, [point_in_screen_coords,
-                                        anchor_widget](views::Widget* widget) {
+  return std::ranges::any_of(widgets, [point_in_screen_coords,
+                                       anchor_widget](views::Widget* widget) {
     return widget != anchor_widget && widget->IsVisible() &&
            widget->GetWindowBoundsInScreen().Contains(point_in_screen_coords);
   });
@@ -3270,9 +3271,15 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
     return ShowTranslateBubbleResult::BROWSER_WINDOW_MINIMIZED;
   }
 
-  views::Button* translate_icon =
-      toolbar_button_provider()->GetPageActionIconView(
-          PageActionIconType::kTranslate);
+  views::Button* translate_icon;
+  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    translate_icon =
+        toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
+  } else {
+    translate_icon = toolbar_button_provider()->GetPageActionIconView(
+        PageActionIconType::kTranslate);
+  }
+
   views::View* anchor_view =
       toolbar_button_provider()->GetAnchorView(kActionShowTranslate);
   if (features::IsToolbarPinningEnabled() &&
@@ -3298,12 +3305,19 @@ void BrowserView::StartPartialTranslate(const std::string& source_language,
       ->GetLanguageState()
       ->SetTranslateEnabled(true);
 
+  views::Button* translate_icon;
+  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    translate_icon =
+        toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
+  } else {
+    translate_icon = toolbar_button_provider()->GetPageActionIconView(
+        PageActionIconType::kTranslate);
+  }
+
   TranslateBubbleController::GetOrCreate(GetActiveWebContents())
       ->StartPartialTranslate(
           toolbar_button_provider()->GetAnchorView(kActionShowTranslate),
-          toolbar_button_provider()->GetPageActionIconView(
-              PageActionIconType::kTranslate),
-          source_language, target_language, text_selection);
+          translate_icon, source_language, target_language, text_selection);
 }
 
 void BrowserView::ShowOneClickSigninConfirmation(
@@ -3604,6 +3618,20 @@ LocationBarView* BrowserView::GetLocationBarView() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, TabStripModelObserver implementation:
+
+void BrowserView::TabChangedAt(content::WebContents* contents,
+                               int index,
+                               TabChangeType change_type) {
+  if (change_type != TabChangeType::kLoadingOnly || contents->IsLoading()) {
+    return;
+  }
+
+  if (contents != GetActiveWebContents()) {
+    return;
+  }
+
+  UpdateAccessibleURLForRootView(contents->GetURL());
+}
 
 void BrowserView::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
@@ -5783,6 +5811,12 @@ void BrowserView::FrameColorsChanged() {
 void BrowserView::UpdateAccessibleNameForRootView() {
   if (GetWidget()) {
     GetWidget()->UpdateAccessibleNameForRootView();
+  }
+}
+
+void BrowserView::UpdateAccessibleURLForRootView(const GURL& url) {
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleURLForRootView(url);
   }
 }
 

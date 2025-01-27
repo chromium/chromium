@@ -747,15 +747,6 @@ const char kDisableLoginScreenApps[] = "disable-login-screen-apps";
 // Use a short (1 second) timeout for merge session loader throttle testing.
 const char kShortMergeSessionTimeoutForTest[] =
     "short-merge-session-timeout-for-test";
-
-// Selects the scheduler configuration specified in the parameter.
-const char kSchedulerConfiguration[] = "scheduler-configuration";
-const char kSchedulerConfigurationConservative[] = "conservative";
-const char kSchedulerConfigurationPerformance[] = "performance";
-
-// Specifies what the default scheduler configuration value is if the user does
-// not set one.
-const char kSchedulerConfigurationDefault[] = "scheduler-configuration-default";
 #else
 // Enables saving webpages as MHTML (Webpage, Single) by default, instead of
 // saving as HTML with a directory of sub-resources. (Webpage, Complete).

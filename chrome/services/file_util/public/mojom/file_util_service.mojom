@@ -9,7 +9,7 @@ import "sandbox/policy/mojom/sandbox.mojom";
 [EnableIf=full_safe_browsing]
 import "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom";
 
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 import "chrome/services/file_util/public/mojom/zip_file_creator.mojom";
 
 [EnableIf=extractors]
@@ -20,7 +20,7 @@ import "chrome/services/file_util/public/mojom/single_file_extractor.mojom";
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface FileUtilService {
   // Binds an instance of the ZipFileCreator interface.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   BindZipFileCreator(pending_receiver<ZipFileCreator> receiver);
 
   // Binds an instance of the SafeArchiveAnalyzer interface.

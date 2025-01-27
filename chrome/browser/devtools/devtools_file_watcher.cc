@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -16,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
@@ -114,7 +114,7 @@ void DevToolsFileWatcher::SharedFileWatcher::AddListener(
 void DevToolsFileWatcher::SharedFileWatcher::RemoveListener(
     DevToolsFileWatcher* watcher) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = base::ranges::find(listeners_, watcher);
+  auto it = std::ranges::find(listeners_, watcher);
   listeners_.erase(it);
   if (listeners_.empty()) {
     file_path_times_.clear();

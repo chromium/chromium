@@ -4,10 +4,11 @@
 
 #include "components/live_caption/live_caption_controller.h"
 
+#include <ranges>
+
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/ranges/ranges.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"

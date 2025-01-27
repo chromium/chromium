@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -21,7 +22,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
@@ -486,7 +486,7 @@ std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
 
   // Erase duplicated profiles. This is needed because H264PROFILE_BASELINE maps
   // to both V4L2_MPEG_VIDEO_H264_PROFILE__BASELINE/CONSTRAINED_BASELINE
-  base::ranges::sort(profiles);
+  std::ranges::sort(profiles);
   auto to_remove = std::ranges::unique(profiles);
   profiles.erase(to_remove.begin(), to_remove.end());
   return profiles;

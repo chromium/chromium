@@ -83,12 +83,12 @@ SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs) {
 
 void SetSafeBrowsingState(PrefService* prefs,
                           SafeBrowsingState state,
-                          bool is_esb_enabled_in_sync) {
+                          bool is_esb_enabled_by_account_integration) {
   if (state == SafeBrowsingState::ENHANCED_PROTECTION) {
     SetEnhancedProtectionPref(prefs, true);
     SetStandardProtectionPref(prefs, true);
     prefs->SetBoolean(prefs::kEnhancedProtectionEnabledViaTailoredSecurity,
-                      is_esb_enabled_in_sync);
+                      is_esb_enabled_by_account_integration);
   } else if (state == SafeBrowsingState::STANDARD_PROTECTION) {
     SetEnhancedProtectionPref(prefs, false);
     SetStandardProtectionPref(prefs, true);

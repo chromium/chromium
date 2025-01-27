@@ -36,16 +36,8 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
   bool IsBiometricAuthenticationBeforeFillingEnabled() const override;
 
   bool IsOptedInForAccountStorage() const override;
-  PasswordForm::Store GetDefaultPasswordStore() const override;
-  bool IsDefaultPasswordStoreSet() const override;
   features_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const override;
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  void OptInToAccountStorage() override;
-  void OptOutOfAccountStorage() override;
-  void SetDefaultPasswordStore(const PasswordForm::Store& store) override;
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
   bool ShouldUpdateGmsCore() override;

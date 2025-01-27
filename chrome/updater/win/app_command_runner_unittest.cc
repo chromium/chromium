@@ -9,6 +9,7 @@
 #include <shellapi.h>
 #include <shlobj.h>
 
+#include <algorithm>
 #include <array>
 #include <optional>
 #include <string>
@@ -20,7 +21,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/gmock_expected_support.h"
@@ -621,7 +621,7 @@ INSTANTIATE_TEST_SUITE_P(
         }}));
 
 TEST_P(LoadAutoRunOnOsUpgradeAppCommandsTest, TestCases) {
-  base::ranges::for_each(GetParam(), [&](const auto& app_command) {
+  std::ranges::for_each(GetParam(), [&](const auto& app_command) {
     test::CreateAppCommandOSUpgradeRegistry(
         GetUpdaterScopeForTesting(), kAppId1, app_command.command_id,
         base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
@@ -633,7 +633,7 @@ TEST_P(LoadAutoRunOnOsUpgradeAppCommandsTest, TestCases) {
           GetUpdaterScopeForTesting(), kAppId1);
 
   ASSERT_EQ(std::size(app_command_runners), std::size(GetParam()));
-  base::ranges::for_each(
+  std::ranges::for_each(
       app_command_runners, [&](const auto& app_command_runner) {
         base::Process process;
         EXPECT_HRESULT_SUCCEEDED(app_command_runner.Run({}, process));

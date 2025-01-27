@@ -237,7 +237,7 @@ bool PermissionUtil::ShouldCurrentRequestUsePermissionElementSecondaryUI(
 
   std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
       requests = delegate->Requests();
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       requests, [](permissions::PermissionRequest* request) {
         return (request->request_type() ==
                     permissions::RequestType::kCameraStream ||

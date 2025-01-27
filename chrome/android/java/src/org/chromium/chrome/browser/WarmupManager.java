@@ -434,7 +434,10 @@ public class WarmupManager {
         // TODO(twellington): Look at improving code sharing with ChromeBaseAppCompatActivity
         // if the number of these overlays grows. The two below are experimental / are planned to be
         // removed by mid 2025 or sooner.
-        if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()) {
+        // TODO(https://crbug.com/392634251): Explore setting elegantTextHeight to 'true' on older
+        // OS versions.
+        if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()
+                && Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
             int elegantTextHeightOverlay = R.style.ThemeOverlay_BrowserUI_ElegantTextHeight;
             context.getTheme().applyStyle(elegantTextHeightOverlay, true);
         }

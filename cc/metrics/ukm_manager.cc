@@ -4,10 +4,10 @@
 
 #include "cc/metrics/ukm_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -304,7 +304,7 @@ void UkmManager::RecordEventLatencyUKM(
     // a begin-impl, and the event was handled on the renderer before that frame
     // ended). To handle such cases, find the first stage that happens after the
     // event's processing finished on the renderer.
-    auto stage_it = base::ranges::lower_bound(
+    auto stage_it = std::ranges::lower_bound(
         stage_history, dispatch_timestamp, {},
         &CompositorFrameReporter::StageData::start_time);
     // TODO(crbug.com/40843545): Ideally, at least the start time of

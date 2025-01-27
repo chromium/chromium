@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
@@ -15,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/values_equivalent.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

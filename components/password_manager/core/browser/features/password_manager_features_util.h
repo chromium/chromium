@@ -12,7 +12,6 @@ namespace syncer {
 class SyncService;
 }
 
-class GaiaId;
 class PrefService;
 
 namespace password_manager::features_util {
@@ -76,37 +75,17 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
 // CanAccountStorageBeEnabled() and IsUserEligibleForAccountStorage().
 bool CanCreateAccountStore(const PrefService* pref_service);
 
-// Whether the current signed-in user (aka unconsented primary account) has
-// opted in to use the Google account storage for passwords (as opposed to
-// local/profile storage). This always returns false for sync-the-feature users.
+// Whether the Google account storage for passwords is enabled for the current
+// signed-in user. This always returns false for sync-the-feature users and
+// signed out users. Account storage can be enabled/disabled via
+// syncer::SyncUserSettings::SetSelectedType().
+//
 // |pref_service| must not be null.
 // |sync_service| may be null (commonly the case in incognito mode), in which
 // case this will simply return false.
 // See PasswordFeatureManager::IsOptedInForAccountStorage.
 bool IsOptedInForAccountStorage(const PrefService* pref_service,
                                 const syncer::SyncService* sync_service);
-
-// Returns the default storage location for signed-in but non-syncing users
-// (i.e. will new passwords be saved to locally or to the account by default).
-// Always returns an actual value, never kNotSet.
-// |pref_service| must not be null.
-// |sync_service| may be null (commonly the case in incognito mode), in which
-// case this will return kProfileStore.
-// See PasswordFeatureManager::GetDefaultPasswordStore.
-PasswordForm::Store GetDefaultPasswordStore(
-    const PrefService* pref_service,
-    const syncer::SyncService* sync_service);
-
-// Returns whether the default storage location for newly-saved passwords is
-// explicitly set, i.e. whether the user has made an explicit choice where to
-// save. This can be used to detect "new" users, i.e. those that have never
-// interacted with an account-storage-enabled Save flow yet.
-// |pref_service| must not be null.
-// |sync_service| may be null (commonly the case in incognito mode), in which
-// case this will return false.
-// See PasswordFeatureManager::IsDefaultPasswordStoreSet.
-bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
-                               const syncer::SyncService* sync_service);
 
 // See definition of PasswordAccountStorageUserState.
 PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
@@ -121,35 +100,6 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
     const syncer::SyncService* sync_service);
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
-// Sets opt-in to using account storage for passwords for the current
-// signed-in user (unconsented primary account).
-// |pref_service| and |sync_service| must not be null.
-// See PasswordFeatureManager::OptInToAccountStorage.
-void OptInToAccountStorage(PrefService* pref_service,
-                           syncer::SyncService* sync_service);
-
-// Opts-out from using account storage for passwords for the
-// current signed-in user (unconsented primary account). Additionally it sets
-// the default password store to kProfileStore.
-void OptOutOfAccountStorage(PrefService* pref_service,
-                            syncer::SyncService* sync_service);
-
-// Sets the default storage location for signed-in but non-syncing users. This
-// store is used for saving new credentials and adding blacking listing entries.
-// |pref_service| and |sync_service| must not be null.
-// See PasswordFeatureManager::SetDefaultPasswordStore.
-void SetDefaultPasswordStore(PrefService* pref_service,
-                             const syncer::SyncService* sync_service,
-                             PasswordForm::Store default_store);
-
-// Clears all account-storage-related settings for all users *except* the ones
-// in the passed-in |gaia_ids|. Most notably, the default password store.
-// WARNING: this does not clear the opt-in!
-// |pref_service| must not be null.
-void KeepAccountStorageSettingsOnlyForUsers(
-    PrefService* pref_service,
-    const std::vector<GaiaId>& gaia_ids);
 
 // Whether the user toggle for account storage is shown in settings.
 bool ShouldShowAccountStorageSettingToggle(

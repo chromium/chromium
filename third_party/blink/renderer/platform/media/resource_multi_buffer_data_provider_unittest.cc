@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/format_macros.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -39,7 +40,6 @@
 #include "third_party/blink/renderer/platform/media/testing/mock_resource_fetch_context.h"
 #include "third_party/blink/renderer/platform/media/testing/mock_web_associated_url_loader.h"
 #include "third_party/blink/renderer/platform/media/url_index.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -91,8 +91,8 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
     url_data_->set_etag(kEtag);
     DCHECK(url_data_);
     url_data_->OnRedirect(
-        WTF::BindOnce(&ResourceMultiBufferDataProviderTest::RedirectCallback,
-                      WTF::Unretained(this)));
+        base::BindOnce(&ResourceMultiBufferDataProviderTest::RedirectCallback,
+                       base::Unretained(this)));
 
     first_position_ = first_position;
 

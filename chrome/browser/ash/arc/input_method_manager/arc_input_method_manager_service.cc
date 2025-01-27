@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -644,7 +644,7 @@ void ArcInputMethodManagerService::SyncEnabledImesInArc() {
 
   // Filter out non ARC IME ids.
   std::set<std::string> new_arc_enabled_ime_ids;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       new_enabled_ime_ids,
       std::inserter(new_arc_enabled_ime_ids, new_arc_enabled_ime_ids.end()),
       &ash::extension_ime_util::IsArcIME);

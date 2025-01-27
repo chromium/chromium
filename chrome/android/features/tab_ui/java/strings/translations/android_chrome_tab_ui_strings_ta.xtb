@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">குழுவைப் பகிர்</translation>
 <translation id="2677748264148917807">வெளியேறு</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> பக்கம் சேர்க்கப்பட்டது, <ph name="ANY_CHANGED" /> மாற்றப்பட்டது, <ph name="ANY_CLOSED" /> மூடப்பட்டது.}other{<ph name="MANY_ADDED" /> பக்கங்கள் சேர்க்கப்பட்டன, <ph name="ANY_CHANGED" /> மாற்றப்பட்டது, <ph name="ANY_CLOSED" /> மூடப்பட்டது.}}</translation>
+<translation id="2755485474385016903">செய்யப்பட்ட மாற்றங்கள் குழுவில் உள்ள எல்லோருக்கும் காட்டப்படும்</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> மணிநேரத்திற்கு முன் உருவாக்கப்பட்டது}other{<ph name="NUM_HOURS_MANY" /> மணிநேரத்திற்கு முன் உருவாக்கப்பட்டது}}</translation>
 <translation id="2801787514987684416">ஸ்டோர் தகவலைப் பார்க்க வேண்டுமா?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> பக்கம் மூடப்பட்டது}other{<ph name="MANY_CLOSED" /> பக்கங்கள் மூடப்பட்டன}}</translation>

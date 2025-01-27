@@ -4,6 +4,7 @@
 
 #include "ash/accelerators/accelerator_commands.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "ash/accelerators/accelerator_lookup.h"
@@ -91,7 +92,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
@@ -1232,7 +1232,7 @@ void ShiftPrimaryDisplay() {
   const display::Displays& active_display_list =
       display_manager->active_display_list();
 
-  auto primary_display_iter = base::ranges::find(
+  auto primary_display_iter = std::ranges::find(
       active_display_list, primary_display_id, &display::Display::id);
 
   DCHECK(primary_display_iter != active_display_list.end());

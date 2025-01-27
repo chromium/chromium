@@ -76,11 +76,11 @@ class IdleService::BrowserObserver : public BrowserListObserver {
 
   IdleDialog::ActionSet GetActionSet(PrefService* prefs) {
     std::vector<ActionType> actions;
-    base::ranges::transform(prefs->GetList(prefs::kIdleTimeoutActions),
-                            std::back_inserter(actions),
-                            [](const base::Value& action) {
-                              return static_cast<ActionType>(action.GetInt());
-                            });
+    std::ranges::transform(prefs->GetList(prefs::kIdleTimeoutActions),
+                           std::back_inserter(actions),
+                           [](const base::Value& action) {
+                             return static_cast<ActionType>(action.GetInt());
+                           });
     return ActionsToActionSet(base::flat_set<ActionType>(std::move(actions)));
   }
 

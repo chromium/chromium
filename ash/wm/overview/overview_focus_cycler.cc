@@ -159,7 +159,7 @@ void OverviewFocusCycler::MoveFocus(bool reverse) {
     return;
   }
 
-  auto it = base::ranges::find(widgets, focused_view->GetWidget());
+  auto it = std::ranges::find(widgets, focused_view->GetWidget());
   CHECK(it != widgets.end());
 
   const int previous_index = std::distance(widgets.begin(), it);

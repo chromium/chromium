@@ -58,8 +58,8 @@ const FieldTypeSet& GetDatabaseStoredTypesOfAutofillProfile() {
 
 size_t NumberOfPossibleFieldTypesInGroup(const AutofillField& field,
                                          FieldTypeGroup group) {
-  return base::ranges::count(field.possible_types(), group,
-                             GroupTypeOfFieldType);
+  return std::ranges::count(field.possible_types(), group,
+                            GroupTypeOfFieldType);
 }
 
 bool FieldHasMeaningfulPossibleFieldTypes(const AutofillField& field) {

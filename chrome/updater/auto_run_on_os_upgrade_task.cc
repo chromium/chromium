@@ -4,6 +4,7 @@
 
 #include "chrome/updater/auto_run_on_os_upgrade_task.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -59,7 +59,7 @@ void AutoRunOnOsUpgradeTask::Run(base::OnceClosure callback) {
 
 void AutoRunOnOsUpgradeTask::RunOnOsUpgradeForApps(
     const std::vector<std::string>& app_ids) {
-  base::ranges::for_each(
+  std::ranges::for_each(
       app_ids, [&](const auto& app_id) { RunOnOsUpgradeForApp(app_id); });
 }
 
@@ -88,7 +88,7 @@ std::string GetOSUpgradeVersionsString(
 
 size_t AutoRunOnOsUpgradeTask::RunOnOsUpgradeForApp(const std::string& app_id) {
   size_t number_of_successful_tasks = 0;
-  base::ranges::for_each(
+  std::ranges::for_each(
       AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(
           scope_, base::SysUTF8ToWide(app_id)),
       [&](const auto& app_command_runner) {

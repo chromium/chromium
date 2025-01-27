@@ -6,48 +6,67 @@
 #define CONTENT_BROWSER_DIPS_BTM_PAGE_VISIT_OBSERVER_TEST_UTILS_H_
 
 #include <iosfwd>
+#include <optional>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "content/browser/dips/btm_page_visit_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace content {
 
-struct VisitTuple {
-  BtmPageVisitInfo prev_page;
-  BtmNavigationInfo navigation;
-  GURL url;
-};
-
 std::ostream& operator<<(std::ostream& out, const BtmPageVisitInfo& page);
 std::ostream& operator<<(std::ostream& out,
                          const BtmServerRedirectInfo& redirect);
 std::ostream& operator<<(std::ostream& out, const BtmNavigationInfo& nav);
-std::ostream& operator<<(std::ostream& out, const VisitTuple& visit);
+std::ostream& operator<<(std::ostream& out,
+                         const BtmPageVisitObserver::VisitTuple& visit);
 
 class BtmPageVisitRecorder {
  public:
-  BtmPageVisitRecorder(WebContents* web_contents);
+  using VisitTuple = BtmPageVisitObserver::VisitTuple;
+
+  explicit BtmPageVisitRecorder(WebContents* web_contents);
   ~BtmPageVisitRecorder();
 
+  // Returns all visits observed so far.
   const std::vector<VisitTuple>& visits() const { return visits_; }
 
+  // Wait until `visits()` returns at least `n` elements. Returns `true` if
+  // successful, or `false` if it times out.
+  [[nodiscard]] bool WaitForSize(size_t n);
+
  private:
+  // The state needed to implement `WaitForSize()`.
+  struct WaitState {
+    explicit WaitState(size_t wanted_count) : wanted_count(wanted_count) {}
+
+    const size_t wanted_count;
+    base::RunLoop run_loop;
+  };
+
+  // Called by `observer_` on each page visit; appends to `visits_`.
   void OnVisit(const BtmPageVisitInfo& prev_page,
                const BtmNavigationInfo& navigation,
                const GURL& url);
 
   std::vector<VisitTuple> visits_;
+  // Populated only during a call to `WaitForSize()`. Mostly a `RunLoop` wrapped
+  // in `optional<>` to allow for re-creation.
+  std::optional<WaitState> wait_state_;
   BtmPageVisitObserver observer_;
 };
 
+// Matches the `url` property of `VisitTuple`, `BtmPageVisitInfo`, or
+// `BtmServerRedirectInfo`.
 MATCHER_P(HasUrl,
           matcher,
           "has url that " + testing::DescribeMatcher<GURL>(matcher, negation)) {
   return testing::ExplainMatchResult(matcher, arg.url, result_listener);
 }
 
+// Matches `VisitTuple::prev_page`.
 MATCHER_P(PreviousPage,
           matcher,
           "has prev_page that " +
@@ -55,6 +74,7 @@ MATCHER_P(PreviousPage,
   return testing::ExplainMatchResult(matcher, arg.prev_page, result_listener);
 }
 
+// Matches `VisitTuple::navigation`.
 MATCHER_P(Navigation,
           matcher,
           "has navigation that " +
@@ -62,6 +82,7 @@ MATCHER_P(Navigation,
   return testing::ExplainMatchResult(matcher, arg.navigation, result_listener);
 }
 
+// Matches `BtmNavigationInfo::server_redirects`.
 MATCHER_P(ServerRedirects,
           matcher,
           "has server_redirects that " +
@@ -70,6 +91,40 @@ MATCHER_P(ServerRedirects,
                   negation)) {
   return testing::ExplainMatchResult(matcher, arg.server_redirects,
                                      result_listener);
+}
+
+// Matches `BtmPageVisitInfo::had_qualifying_storage_access`.
+MATCHER_P(HadQualifyingStorageAccess,
+          matcher,
+          "has had_qualifying_storage_access that " +
+              testing::DescribeMatcher<bool>(matcher, negation)) {
+  return testing::ExplainMatchResult(matcher, arg.had_qualifying_storage_access,
+                                     result_listener);
+}
+
+// Matches `BtmServerRedirectInfo::did_write_cookies`.
+MATCHER_P(DidWriteCookies,
+          matcher,
+          "has did_write_cookies that " +
+              testing::DescribeMatcher<bool>(matcher, negation)) {
+  return testing::ExplainMatchResult(matcher, arg.did_write_cookies,
+                                     result_listener);
+}
+
+MATCHER_P(ReceivedUserActivation,
+          matcher,
+          "has received_user_activation that " +
+              testing::DescribeMatcher<bool>(matcher, negation)) {
+  return testing::ExplainMatchResult(matcher, arg.received_user_activation,
+                                     result_listener);
+}
+
+MATCHER_P(HadSuccessfulWebAuthnAssertion,
+          matcher,
+          "has had_successful_web_authn_assertion that " +
+              testing::DescribeMatcher<bool>(matcher, negation)) {
+  return testing::ExplainMatchResult(
+      matcher, arg.had_successful_web_authn_assertion, result_listener);
 }
 
 }  // namespace content

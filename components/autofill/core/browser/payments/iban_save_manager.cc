@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 
+#include <algorithm>
+
 #include "base/check_deref.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/iban.h"

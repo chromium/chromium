@@ -62,7 +62,7 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     public void moveTab(LocalTabGroupId tabGroupId, int tabId, int newIndexInGroup) {}
 
     @Override
-    public void onTabSelected(LocalTabGroupId tabGroupId, int tabId) {}
+    public void onTabSelected(LocalTabGroupId tabGroupId, int tabId, String tabTitle) {}
 
     @Override
     public void makeTabGroupShared(LocalTabGroupId tabGroupId, @NonNull String collaborationId) {}

@@ -38,7 +38,8 @@ enum class CollaborationEvent {
   COLLABORATION_ADDED,
   COLLABORATION_MEMBER_ADDED,
   COLLABORATION_MEMBER_REMOVED,
-  // Current user left or lost access.
+  // Deprecated: Migrated to TAB_GROUP_REMOVED instead. Current user left or
+  // lost access.
   COLLABORATION_REMOVED,
 };
 

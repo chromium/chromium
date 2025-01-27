@@ -104,7 +104,7 @@ class ProfilePickerHandlerTest : public testing::Test {
   }
 
   void VerifyIfGuestModeUpdateWasCalled(bool expected_guest_mode) {
-    auto it = base::ranges::find_if(web_ui()->call_data(), [](auto& data_ptr) {
+    auto it = std::ranges::find_if(web_ui()->call_data(), [](auto& data_ptr) {
       return data_ptr->function_name() == "cr.webUIListenerCallback" &&
              data_ptr->arg1()->GetString() == "guest-mode-availability-updated";
     });

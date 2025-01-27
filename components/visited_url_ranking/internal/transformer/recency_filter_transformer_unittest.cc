@@ -4,6 +4,8 @@
 
 #include "components/visited_url_ranking/internal/transformer/recency_filter_transformer.h"
 
+#include <string>
+
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -101,6 +103,24 @@ class RecencyFilterTransformerTest : public URLVisitAggregatesTransformerTest {
                                                        now - kTimeSinceLoad7));
     return candidates;
   }
+
+  URLVisitAggregate::TabData CreateSampleTabData(const std::u16string& title,
+                                                 const URLVisit::Source& source,
+                                                 const base::Time& time) {
+    std::optional<std::string> sample_tag = std::nullopt;
+    std::optional<std::string> sample_session_name = std::nullopt;
+    if (source == URLVisit::Source::kForeign) {
+      sample_tag = "sample_tag";
+      sample_session_name = "sample_session_name";
+    }
+    auto tab_data = URLVisitAggregate::TabData(URLVisitAggregate::Tab(
+        1,
+        URLVisit(GURL(kSampleSearchUrl), title, time,
+                 syncer::DeviceInfo::FormFactor::kDesktop, source),
+        std::move(sample_tag), std::move(sample_session_name)));
+    tab_data.last_active = time;
+    return tab_data;
+  }
 };
 
 TEST_F(RecencyFilterTransformerTest, SortAndFilter) {
@@ -167,6 +187,38 @@ TEST_F(RecencyFilterTransformerTest, FilteringRemoteTab) {
   EXPECT_EQ(*(*result.second[2].GetAssociatedURLs().begin()), GURL(kTestUrl5));
   EXPECT_EQ(*(*result.second[3].GetAssociatedURLs().begin()), GURL(kTestUrl6));
   EXPECT_EQ(*(*result.second[4].GetAssociatedURLs().begin()), GURL(kTestUrl7));
+}
+
+TEST_F(RecencyFilterTransformerTest, FilterVisitAggregatesWithLocalTabURLType) {
+  base::Time now = base::Time::Now();
+
+  URLVisitAggregate visit_aggregate_with_local_tab_data(kSampleSearchUrl);
+  visit_aggregate_with_local_tab_data.fetcher_data_map.emplace(
+      Fetcher::kTabModel,
+      CreateSampleTabData(u"sample_title", URLVisit::Source::kLocal, now));
+
+  URLVisitAggregate visit_aggregate_with_remote_tab_data(
+      base::StrCat({kSampleSearchUrl, "2"}));
+  visit_aggregate_with_remote_tab_data.fetcher_data_map.emplace(
+      Fetcher::kSession,
+      CreateSampleTabData(u"sample_title_2", URLVisit::Source::kForeign, now));
+
+  std::vector<URLVisitAggregate> candidates = {};
+  candidates.push_back(std::move(visit_aggregate_with_local_tab_data));
+  candidates.push_back(std::move(visit_aggregate_with_remote_tab_data));
+
+  FetchOptions fetch_options = FetchOptions::CreateFetchOptionsForTabResumption(
+      {URLVisitAggregate::URLType::kActiveLocalTab,
+       URLVisitAggregate::URLType::kActiveRemoteTab});
+  fetch_options.exclude_results_containing_types = {
+      URLVisitAggregate::URLType::kActiveLocalTab};
+  URLVisitAggregatesTransformerTest::Result result =
+      TransformAndGetResult(std::move(candidates), fetch_options);
+
+  ASSERT_EQ(result.first, URLVisitAggregatesTransformer::Status::kSuccess);
+  ASSERT_EQ(result.second.size(), 1u);
+  ASSERT_FALSE(result.second.front().GetURLTypes().Has(
+      URLVisitAggregate::URLType::kActiveLocalTab));
 }
 
 }  // namespace

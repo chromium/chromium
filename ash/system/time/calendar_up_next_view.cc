@@ -157,7 +157,7 @@ int GetFirstVisibleChildIndex(
 // be the same (unique per Calendar) and in the same order.
 bool SameEvents(const std::list<google_apis::calendar::CalendarEvent>& a,
                 const std::list<google_apis::calendar::CalendarEvent>& b) {
-  return base::ranges::equal(a, b, [](const auto& a, const auto& b) {
+  return std::ranges::equal(a, b, [](const auto& a, const auto& b) {
     return a.id() == b.id() &&
            a.start_time().date_time() == b.start_time().date_time() &&
            a.end_time().date_time() == b.end_time().date_time();

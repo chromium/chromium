@@ -1027,6 +1027,7 @@ public class TabGridDialogMediator
     private void handleShareClick() {
         assert ChromeFeatureList.isEnabled(DATA_SHARING);
 
+        saveCurrentGroupModifiedTitle();
         String tabGroupDisplayName = mModel.get(TabGridDialogProperties.HEADER_TITLE);
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
 

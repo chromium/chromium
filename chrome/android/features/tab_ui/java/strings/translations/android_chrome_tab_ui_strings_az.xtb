@@ -43,6 +43,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="2671423594960767771">Qrupu paylaşın</translation>
 <translation id="2677748264148917807">Tərk edin</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab əlavə edilib, <ph name="ANY_CHANGED" /> tab dəyişib, <ph name="ANY_CLOSED" /> tab bağlanıb}other{<ph name="MANY_ADDED" /> tab əlavə edilib, <ph name="ANY_CHANGED" /> tab dəyişib, <ph name="ANY_CLOSED" /> tab bağlanıb}}</translation>
+<translation id="2755485474385016903">Edilən dəyişikliklər qrupdakı hər kəs tərəfindən görülür</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> saat əvvəl yaradıldı}other{<ph name="NUM_HOURS_MANY" /> saat əvvəl yaradıldı}}</translation>
 <translation id="2801787514987684416">Mağaza məlumatlarına baxılsın?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> tab bağlanıb}other{<ph name="MANY_CLOSED" /> tab bağlanıb}}</translation>

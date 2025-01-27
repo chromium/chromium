@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/containers/span.h"
 #include "base/location.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
@@ -19,11 +20,14 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/version_info/version_info.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -91,7 +95,7 @@ bool PublicKeyForPasskeyEquals(
   CHECK(ec_key);
   std::vector<uint8_t> ec_key_pub;
   CHECK(ec_key->ExportPublicKey(&ec_key_pub));
-  return base::ranges::equal(ec_key_pub, expected_spki);
+  return std::ranges::equal(ec_key_pub, expected_spki);
 }
 
 std::unique_ptr<syncer::PersistentUniqueClientEntity>
@@ -1053,8 +1057,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTestExplicitParamTest,
 
     // Let the user opt in to transport mode and wait for passkeys to start
     // syncing.
-    password_manager::features_util::OptInToAccountStorage(
-        GetProfile(0)->GetPrefs(), GetSyncService(0));
+    GetSyncService(0)->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPasswords, true);
   }
   PasskeySyncActiveChecker(GetSyncService(0)).Wait();
   EXPECT_TRUE(
@@ -1063,8 +1067,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTestExplicitParamTest,
           .Wait());
 
   // Opt out. The passkey should be removed.
-  password_manager::features_util::OptOutOfAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, false);
   EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile, IsEmpty()).Wait());
 }
 

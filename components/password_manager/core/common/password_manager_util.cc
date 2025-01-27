@@ -4,8 +4,9 @@
 
 #include "components/password_manager/core/common/password_manager_util.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -31,7 +32,7 @@ const size_t kMinInputNameLengthForSingleUsername = 2;
 bool IsRendererRecognizedCredentialForm(const autofill::FormData& form) {
   // TODO(crbug.com/40276126): Consolidate with the parsing logic in
   // form_autofill_util.cc.
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       form.fields(), [](const autofill::FormFieldData& field) {
         return field.IsPasswordInputElement() ||
                field.autocomplete_attribute().find(

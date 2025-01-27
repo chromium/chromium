@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -32,7 +32,7 @@ bool AggregatableNamedBudgetKeyHasValidLength(const std::string& key) {
 
 bool IsValid(const AggregatableNamedBudgetDefs::BudgetMap& budgets) {
   return budgets.size() <= kMaxAggregatableNamedBudgetsPerSource &&
-         base::ranges::all_of(budgets, [](const auto& budget) {
+         std::ranges::all_of(budgets, [](const auto& budget) {
            return AggregatableNamedBudgetKeyHasValidLength(budget.first) &&
                   IsAggregatableBudgetInRange(budget.second);
          });

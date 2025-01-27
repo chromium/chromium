@@ -9,6 +9,7 @@
 
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
 
+#include <algorithm>
 #include <limits>
 #include <string_view>
 
@@ -17,7 +18,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -743,7 +743,7 @@ size_t ExtractWebAppId(std::string_view str) {
   DCHECK_EQ(str.length(), kWebAppIdLength);
 
   // Avoid leading '+', etc.
-  if (!base::ranges::all_of(str, absl::ascii_isdigit)) {
+  if (!std::ranges::all_of(str, absl::ascii_isdigit)) {
     return kInvalidWebRtcEventLogWebAppId;
   }
 

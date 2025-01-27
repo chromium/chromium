@@ -6,6 +6,7 @@
 // should be kept in sync with those in ios/chrome/browser/variations/
 // variations_safe_mode_egtest.mm.
 
+#include <ranges>
 #include <string>
 
 #include "base/atomic_sequence_num.h"
@@ -16,7 +17,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
-#include "base/ranges/ranges.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

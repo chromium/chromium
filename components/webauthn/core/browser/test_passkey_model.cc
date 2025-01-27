@@ -4,12 +4,12 @@
 
 #include "components/webauthn/core/browser/test_passkey_model.h"
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 
 #include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
@@ -65,15 +65,15 @@ TestPasskeyModel::GetPasskeyByCredentialId(
     const std::string& rp_id,
     const std::string& credential_id) const {
   std::vector<sync_pb::WebauthnCredentialSpecifics> rp_passkeys;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       credentials_, std::back_inserter(rp_passkeys),
       [&rp_id](const auto& passkey) { return passkey.rp_id() == rp_id; });
   rp_passkeys = passkey_model_utils::FilterShadowedCredentials(rp_passkeys);
   std::vector<sync_pb::WebauthnCredentialSpecifics> result;
-  base::ranges::copy_if(rp_passkeys, std::back_inserter(result),
-                        [&credential_id](const auto& passkey) {
-                          return passkey.credential_id() == credential_id;
-                        });
+  std::ranges::copy_if(rp_passkeys, std::back_inserter(result),
+                       [&credential_id](const auto& passkey) {
+                         return passkey.credential_id() == credential_id;
+                       });
   if (result.empty()) {
     return std::nullopt;
   }
@@ -84,7 +84,7 @@ TestPasskeyModel::GetPasskeyByCredentialId(
 std::vector<sync_pb::WebauthnCredentialSpecifics>
 TestPasskeyModel::GetPasskeysForRelyingPartyId(const std::string& rp_id) const {
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       credentials_, std::back_inserter(passkeys),
       [&rp_id](const auto& passkey) { return passkey.rp_id() == rp_id; });
   return passkey_model_utils::FilterShadowedCredentials(passkeys);
@@ -134,8 +134,8 @@ bool TestPasskeyModel::DeletePasskey(const std::string& credential_id,
   // Don't implement the shadow chain deletion logic. Instead, remove the
   // credential with the matching id.
   const auto credential_it =
-      base::ranges::find(credentials_, credential_id,
-                         &sync_pb::WebauthnCredentialSpecifics::credential_id);
+      std::ranges::find(credentials_, credential_id,
+                        &sync_pb::WebauthnCredentialSpecifics::credential_id);
   if (credential_it == credentials_.end()) {
     return false;
   }
@@ -154,8 +154,8 @@ bool TestPasskeyModel::UpdatePasskey(const std::string& credential_id,
                                      PasskeyUpdate change,
                                      bool updated_by_user) {
   const auto credential_it =
-      base::ranges::find(credentials_, credential_id,
-                         &sync_pb::WebauthnCredentialSpecifics::credential_id);
+      std::ranges::find(credentials_, credential_id,
+                        &sync_pb::WebauthnCredentialSpecifics::credential_id);
   if (credential_it == credentials_.end()) {
     return false;
   }
@@ -173,8 +173,8 @@ bool TestPasskeyModel::UpdatePasskey(const std::string& credential_id,
 bool TestPasskeyModel::UpdatePasskeyTimestamp(const std::string& credential_id,
                                               base::Time last_used_time) {
   const auto credential_it =
-      base::ranges::find(credentials_, credential_id,
-                         &sync_pb::WebauthnCredentialSpecifics::credential_id);
+      std::ranges::find(credentials_, credential_id,
+                        &sync_pb::WebauthnCredentialSpecifics::credential_id);
   if (credential_it == credentials_.end()) {
     return false;
   }

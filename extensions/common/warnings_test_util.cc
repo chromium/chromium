@@ -13,7 +13,7 @@ namespace extensions::warnings_test_util {
 
 bool HasInstallWarning(scoped_refptr<Extension> extension,
                        const std::string& expected_message) {
-  return base::ranges::count_if(
+  return std::ranges::count_if(
              extension->install_warnings(),
              [expected_message](const InstallWarning& warning) {
                return warning.message == expected_message;

@@ -25,6 +25,7 @@ source_set("browser_tests") {
   sources = [
     "about_sys/about_sys_browsertest.cc",
     "access_code_cast/access_code_cast_browsertest.cc",
+    "bluetooth_internals/bluetooth_internals_browsertest.cc",
     "bookmarks/bookmarks_browsertest.cc",
     "chrome_timeticks_browsertest.cc",
     "chrome_urls/chrome_urls_browsertest.cc",
@@ -71,6 +72,7 @@ source_set("browser_tests") {
     "sync_internals/sync_internals_browsertest.cc",
     "tab_search/tab_search_browsertest.cc",
     "usb_internals/usb_internals_browsertest.cc",
+    "webview/webui_webview_browsertest.cc",
   ]
 
   if (is_chrome_branded) {
@@ -159,13 +161,6 @@ source_set("browser_tests") {
       "app_settings/app_settings_browsertest.cc",
       "on_device_translation_internals/on_device_translation_internals_browsertest.cc",
       "whats_new/whats_new_browsertest.cc",
-    ]
-  }
-
-  if (!is_chromeos_lacros) {
-    sources += [
-      "bluetooth_internals/bluetooth_internals_browsertest.cc",
-      "webview/webui_webview_browsertest.cc",
     ]
   }
 
@@ -425,6 +420,7 @@ generate_grd("build_grd") {
     ":build_ts",
     "about_sys:build_grdp",
     "access_code_cast:build_grdp",
+    "bluetooth_internals:build_grdp",
     "bookmarks:build_grdp",
     "chrome_urls:build_grdp",
     "commerce/product_specifications:build_grdp",
@@ -474,11 +470,14 @@ generate_grd("build_grd") {
     "sync_internals:build_grdp",
     "tab_search:build_grdp",
     "usb_internals:build_grdp",
+    "webview:build_grdp",
   ]
 
   grdp_files = [
     "$target_gen_dir/about_sys/resources.grdp",
     "$target_gen_dir/access_code_cast/resources.grdp",
+    "$target_gen_dir/bluetooth_internals/resources.grdp",
+    "$target_gen_dir/webview/resources.grdp",
     "$target_gen_dir/bookmarks/resources.grdp",
     "$target_gen_dir/chai_resources.grdp",
     "$target_gen_dir/chrome_urls/resources.grdp",
@@ -680,17 +679,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/inline_login/resources.grdp",
       "$target_gen_dir/intro/resources.grdp",
       "$target_gen_dir/signin/resources.grdp",
-    ]
-  }
-
-  if (!is_chromeos_lacros) {
-    deps += [
-      "bluetooth_internals:build_grdp",
-      "webview:build_grdp",
-    ]
-    grdp_files += [
-      "$target_gen_dir/bluetooth_internals/resources.grdp",
-      "$target_gen_dir/webview/resources.grdp",
     ]
   }
 

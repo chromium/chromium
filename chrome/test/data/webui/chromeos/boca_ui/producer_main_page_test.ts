@@ -10,8 +10,8 @@ suite('ClientDelegateTest', function() {
   });
 
   test('producer home page should have been loaded', async () => {
-    assertTrue(isVisible(
-        document.querySelector('boca-app')
-            ?.shadowRoot?.querySelector('teacher-view') as Element));
+    assertTrue(
+        isVisible(document.querySelector('boca-app')!.shadowRoot!.querySelector(
+            'teacher-view')));
   });
 });

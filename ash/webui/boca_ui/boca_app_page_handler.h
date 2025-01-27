@@ -59,6 +59,8 @@ class BocaAppHandler : public mojom::PageHandler,
   void ListCourses(ListCoursesCallback callback) override;
   void ListStudents(const std::string& course_id,
                     ListStudentsCallback callback) override;
+  void ListAssignments(const std::string& course_id,
+                       ListAssignmentsCallback callback) override;
   void CreateSession(mojom::ConfigPtr config,
                      CreateSessionCallback callback) override;
   void GetSession(GetSessionCallback callback) override;

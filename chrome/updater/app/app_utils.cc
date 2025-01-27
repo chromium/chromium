@@ -4,10 +4,10 @@
 
 #include "chrome/updater/app/app_utils.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/updater/constants.h"
@@ -23,7 +23,7 @@ bool IsUpdaterOrCompanionApp(const std::string& app_id) {
 bool ShouldUninstall(const std::vector<std::string>& app_ids,
                      int server_starts,
                      bool had_apps) {
-  bool has_app = base::ranges::any_of(app_ids, [](const std::string& app_id) {
+  bool has_app = std::ranges::any_of(app_ids, [](const std::string& app_id) {
     // The updater and the companion app don't count.
     return !IsUpdaterOrCompanionApp(app_id);
   });

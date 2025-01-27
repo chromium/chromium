@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 
+#include <algorithm>
 #include <cstring>
 #include <memory>
 #include <string_view>
@@ -19,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -147,8 +147,8 @@ void VerifyTasks(int* remaining,
   ASSERT_TRUE(resulting_tasks) << expectation.file_extensions;
   --*remaining;
 
-  auto default_task = base::ranges::find_if(resulting_tasks->tasks,
-                                            &FullTaskDescriptor::is_default);
+  auto default_task = std::ranges::find_if(resulting_tasks->tasks,
+                                           &FullTaskDescriptor::is_default);
 
   // Early exit for the uncommon situation where no default should be set.
   if (!expectation.app_id) {
@@ -164,8 +164,8 @@ void VerifyTasks(int* remaining,
       << " for extension: " << expectation.file_extensions;
 
   // Verify no other task is set as default.
-  EXPECT_EQ(1, base::ranges::count_if(resulting_tasks->tasks,
-                                      &FullTaskDescriptor::is_default))
+  EXPECT_EQ(1, std::ranges::count_if(resulting_tasks->tasks,
+                                     &FullTaskDescriptor::is_default))
       << expectation.file_extensions;
 }
 
@@ -766,8 +766,8 @@ class FileTasksPolicyBrowserTest : public FileTasksBrowserTest {
       bool expect_dlp_blocked =
           test.dlp_source_url && strcmp(test.dlp_source_url, blockedUrl) == 0;
       EXPECT_EQ(expect_dlp_blocked,
-                base::ranges::all_of(resulting_tasks.tasks,
-                                     &FullTaskDescriptor::is_dlp_blocked));
+                std::ranges::all_of(resulting_tasks.tasks,
+                                    &FullTaskDescriptor::is_dlp_blocked));
     }
   }
 
@@ -994,7 +994,7 @@ IN_PROC_BROWSER_TEST_P(WithEnterpriseFlagAndPrefs,
       std::vector<FullTaskDescriptor> tasks =
           file_manager::test::GetTasksForFile(profile, test_file_path);
 
-      const size_t google_workspace_task_count = base::ranges::count_if(
+      const size_t google_workspace_task_count = std::ranges::count_if(
           tasks, &IsWebDriveOfficeTask, &FullTaskDescriptor::task_descriptor);
       EXPECT_EQ(
           google_workspace_task_count,
@@ -1002,7 +1002,7 @@ IN_PROC_BROWSER_TEST_P(WithEnterpriseFlagAndPrefs,
               ? 1U
               : 0U);
 
-      const size_t microsoft_office_task_count = base::ranges::count_if(
+      const size_t microsoft_office_task_count = std::ranges::count_if(
           tasks, &IsOpenInOfficeTask, &FullTaskDescriptor::task_descriptor);
       EXPECT_EQ(microsoft_office_task_count,
                 chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(

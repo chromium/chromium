@@ -46,6 +46,7 @@ class SyncableSettingsStorage : public value_store::ValueStore {
   size_t GetBytesInUse(const std::string& key) override;
   size_t GetBytesInUse(const std::vector<std::string>& keys) override;
   size_t GetBytesInUse() override;
+  ReadResult GetKeys() override;
   ReadResult Get(const std::string& key) override;
   ReadResult Get(const std::vector<std::string>& keys) override;
   ReadResult Get() override;

@@ -5142,7 +5142,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4593021220803146968">&amp;Ir até <ph name="URL" /></translation>
 <translation id="4593962599442730215">Mudar suas preferências</translation>
 <translation id="4594218792629569101">Selecione "Marcar como lida" para mover a página para o fim da sua lista</translation>
-<translation id="4594577641390224176">Procurando a página de detalhes do sistema? Acesse</translation>
 <translation id="4595560905247879544">Apps e extensões só podem ser modificadas pelo gerente (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Você tem certificados no arquivo que identificam estes servidores</translation>
 <translation id="4598345735110653698">Gerenciar chaves de acesso</translation>
@@ -6770,7 +6769,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5787420647064736989">Nome do dispositivo</translation>
 <translation id="5788367137662787332">Ao menos uma partição no dispositivo <ph name="DEVICE_LABEL" /> não pôde ser montada.</translation>
 <translation id="5789581866075720267">Se quiser importar senhas para o <ph name="BRAND" /> deste dispositivo, selecione um arquivo CSV.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Sucesso</translation>
 <translation id="5790651917470750848">O encaminhamento de portas já existe</translation>
 <translation id="5792295754950501287">Mais ações para <ph name="CARD_DESCRIPTION" /></translation>
@@ -7190,7 +7188,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6086418630711763366">Você pode navegar pelas páginas com um cursor de texto. Pressione Ctrl + <ph name="KEY" /> para desativar.</translation>
 <translation id="6086846494333236931">Instalada pelo administrador</translation>
 <translation id="6087286598828478206">Bloquear e sair do grupo?</translation>
-<translation id="6087746524533454243">Procurando a página de detalhes do navegador? Acesse</translation>
 <translation id="6087960857463881712">Rosto maravilhado</translation>
 <translation id="6088475950266477163">Configurações</translation>
 <translation id="608912389580139775">Para adicionar essa página à sua Lista de leitura, clique no ícone "Adicionar aos favoritos"</translation>

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <list>
 #include <map>
@@ -24,7 +25,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -599,7 +599,7 @@ class ExtensionUpdaterTest : public testing::Test {
       const std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>>&
           failures,
       const ExtensionId& id) {
-    auto it = base::ranges::find(
+    auto it = std::ranges::find(
         failures, id, [](const auto& failure) { return failure.first.id; });
     return it == failures.end() ? nullptr : &it->second;
   }

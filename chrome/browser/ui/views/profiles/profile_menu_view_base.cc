@@ -93,6 +93,7 @@ constexpr int kMenuWidth = 328;
 constexpr int kMaxImageSize = ProfileMenuViewBase::kIdentityImageSize;
 constexpr int kDefaultMargin = 8;
 constexpr int kBadgeSize = 16;
+constexpr int kManagementHeaderIconLabelSpacing = 6;
 constexpr int kCircularImageButtonSize = 28;
 constexpr int kCircularImageButtonRefreshSize = 32;
 constexpr int kCircularImageButtonTransparentRefreshSize = 24;
@@ -753,7 +754,8 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
         std::move(params.header_action),
         std::make_unique<views::ImageView>(
             GetCircularSizedImage(params.header_image, kHeaderImageSize)),
-        params.header_string);
+        params.header_string, std::u16string(), nullptr, true, std::u16string(),
+        kManagementHeaderIconLabelSpacing);
     hover_button->SetPreferredSize(gfx::Size(
         kMenuWidth - 2 * kIdentityContainerMargin, kHeaderVerticalSize));
     hover_button->SetIconHorizontalMargins(0, 0);

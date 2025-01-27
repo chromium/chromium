@@ -39,7 +39,7 @@ uint16_t XRWebGLProjectionLayer::textureHeight() const {
 }
 
 uint16_t XRWebGLProjectionLayer::textureArrayLength() const {
-  return color_swap_chain_->descriptor().depth;
+  return color_swap_chain_->descriptor().layers;
 }
 
 void XRWebGLProjectionLayer::OnFrameStart() {

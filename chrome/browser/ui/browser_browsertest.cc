@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
@@ -20,7 +21,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -1411,7 +1411,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
 
   // Find the new browser.
   BrowserList* browsers = BrowserList::GetInstance();
-  auto new_browser_iter = base::ranges::find_if_not(
+  auto new_browser_iter = std::ranges::find_if_not(
       *browsers, [this](Browser* b) { return b == browser(); });
   ASSERT_NE(browsers->end(), new_browser_iter);
 

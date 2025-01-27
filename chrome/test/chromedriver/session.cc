@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/session.h"
 
+#include <algorithm>
 #include <list>
 #include <utility>
 
@@ -11,7 +12,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -240,8 +240,8 @@ Status Session::OnBidiResponse(base::Value::Dict payload) {
     return Status{kUnknownError, "unable to serialize a BiDi response"};
   }
 
-  auto it = base::ranges::find(bidi_connections_, connection_id,
-                               &BidiConnection::connection_id);
+  auto it = std::ranges::find(bidi_connections_, connection_id,
+                              &BidiConnection::connection_id);
   if (it == bidi_connections_.end()) {
     // It can happen that we receive a message from the mapper designated to the
     // channel that has recently been closed.
@@ -267,8 +267,8 @@ void Session::RemoveBidiConnection(int connection_id) {
   // connection as an error.
   // Reallistically we will not have many connections, therefore linear search
   // is optimal.
-  auto it = base::ranges::find(bidi_connections_, connection_id,
-                               &BidiConnection::connection_id);
+  auto it = std::ranges::find(bidi_connections_, connection_id,
+                              &BidiConnection::connection_id);
   if (it != bidi_connections_.end()) {
     bidi_connections_.erase(it);
   }

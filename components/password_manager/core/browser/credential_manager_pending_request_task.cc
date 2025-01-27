@@ -17,12 +17,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/password_manager/core/browser/credential_type_flags.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
+#include "components/password_manager/core/browser/credential_type_flags.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -168,18 +167,18 @@ CredentialManagerPendingRequestTask::~CredentialManagerPendingRequestTask() {
 
 void CredentialManagerPendingRequestTask::OnFetchCompleted() {
   std::vector<std::unique_ptr<PasswordForm>> all_matches;
-  base::ranges::transform(form_fetcher_->GetFederatedMatches(),
-                          std::back_inserter(all_matches),
-                          [](const PasswordForm& form) {
-                            return std::make_unique<PasswordForm>(form);
-                          });
+  std::ranges::transform(form_fetcher_->GetFederatedMatches(),
+                         std::back_inserter(all_matches),
+                         [](const PasswordForm& form) {
+                           return std::make_unique<PasswordForm>(form);
+                         });
   // GetFederatedMatches() comes with duplicates, filter them immediately.
   FilterDuplicatesInFederatedCredentials(all_matches);
-  base::ranges::transform(form_fetcher_->GetBestMatches(),
-                          std::back_inserter(all_matches),
-                          [](const PasswordForm& form) {
-                            return std::make_unique<PasswordForm>(form);
-                          });
+  std::ranges::transform(form_fetcher_->GetBestMatches(),
+                         std::back_inserter(all_matches),
+                         [](const PasswordForm& form) {
+                           return std::make_unique<PasswordForm>(form);
+                         });
   bool include_passwords =
       requested_credential_type_flags_ &
       static_cast<int>(CredentialTypeFlags::kPassword);

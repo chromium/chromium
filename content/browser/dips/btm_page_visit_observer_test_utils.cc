@@ -11,7 +11,12 @@
 namespace content {
 
 std::ostream& operator<<(std::ostream& out, const BtmPageVisitInfo& page) {
-  return out << "BtmPageVisitInfo{url=" << page.url << "}";
+  return out << "BtmPageVisitInfo{url=" << page.url
+             << ", had_qualifying_storage_access="
+             << page.had_qualifying_storage_access
+             << ", received_user_activation=" << page.received_user_activation
+             << ", had_successful_webauthn_assertion="
+             << page.had_successful_web_authn_assertion << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -30,7 +35,8 @@ std::ostream& operator<<(std::ostream& out, const BtmNavigationInfo& nav) {
   return out << "]}";
 }
 
-std::ostream& operator<<(std::ostream& out, const VisitTuple& visit) {
+std::ostream& operator<<(std::ostream& out,
+                         const BtmPageVisitObserver::VisitTuple& visit) {
   return out << "VisitTuple{prev_page=" << visit.prev_page
              << ", navigation=" << visit.navigation << ", url=" << visit.url
              << "}";
@@ -43,10 +49,30 @@ BtmPageVisitRecorder::BtmPageVisitRecorder(WebContents* web_contents)
 
 BtmPageVisitRecorder::~BtmPageVisitRecorder() = default;
 
+[[nodiscard]] bool BtmPageVisitRecorder::WaitForSize(size_t n) {
+  if (visits_.size() >= n) {
+    return true;
+  }
+
+  if (wait_state_.has_value()) {
+    NOTREACHED()
+        << "PageVisitWaiter::WaitForCount() called when already waiting";
+  }
+
+  wait_state_.emplace(n);
+  wait_state_->run_loop.Run();
+  wait_state_.reset();
+  return visits_.size() >= n;
+}
+
 void BtmPageVisitRecorder::OnVisit(const BtmPageVisitInfo& prev_page,
                                    const BtmNavigationInfo& navigation,
                                    const GURL& url) {
   visits_.emplace_back(prev_page, navigation, url);
+
+  if (wait_state_.has_value() && wait_state_->wanted_count <= visits_.size()) {
+    wait_state_->run_loop.Quit();
+  }
 }
 
 }  // namespace content

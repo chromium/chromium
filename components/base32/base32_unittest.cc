@@ -6,10 +6,10 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <string>
 
-#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base32 {
@@ -29,7 +29,7 @@ TEST(Base32Test, EncodesRfcTestVectorsCorrectlyWithoutPadding) {
         Base32Encode(test_subspan.first(i), Base32EncodePolicy::OMIT_PADDING);
     EXPECT_EQ(expected[i], encoded_output);
     auto decoded_output = Base32Decode(encoded_output);
-    EXPECT_TRUE(base::ranges::equal(test_subspan.first(i), decoded_output));
+    EXPECT_TRUE(std::ranges::equal(test_subspan.first(i), decoded_output));
   }
 }
 
@@ -47,7 +47,7 @@ TEST(Base32Test, EncodesRfcTestVectorsCorrectlyWithPadding) {
     std::string encoded_output = Base32Encode(test_subspan.first(i));
     EXPECT_EQ(expected[i], encoded_output);
     std::vector<uint8_t> decoded_output = Base32Decode(encoded_output);
-    EXPECT_TRUE(base::ranges::equal(test_subspan.first(i), decoded_output));
+    EXPECT_TRUE(std::ranges::equal(test_subspan.first(i), decoded_output));
   }
 }
 
@@ -63,7 +63,7 @@ TEST(Base32Test, EncodesSha256HashCorrectly) {
   EXPECT_EQ("D4S6DSV2J743QJZEQMH4UYHEYK7KRQ5JIQOCPMFUHZVJNFGHXACA",
             encoded_output);
   std::vector<uint8_t> decoded_output = Base32Decode(encoded_output);
-  EXPECT_TRUE(base::ranges::equal(test_span, decoded_output));
+  EXPECT_TRUE(std::ranges::equal(test_span, decoded_output));
 }
 
 }  // namespace

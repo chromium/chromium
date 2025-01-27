@@ -10,6 +10,7 @@
 #include <sddl.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -3494,7 +3494,7 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
     actual_mac_address_list.push_back(value.GetString());
   }
 
-  ASSERT_TRUE(base::ranges::equal(actual_mac_address_list, mac_addresses));
+  ASSERT_TRUE(std::ranges::equal(actual_mac_address_list, mac_addresses));
 
   if (registry_has_device_resource_id) {
     ASSERT_EQ(*request_dict.FindString("device_resource_id"),

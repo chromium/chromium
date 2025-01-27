@@ -4,15 +4,16 @@
 
 #include "ash/system/notification_center/notification_grouping_controller.h"
 
+#include <algorithm>
+
 #include "ash/system/notification_center/ash_message_popup_collection.h"
-#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/metrics_utils.h"
 #include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/notification_center/views/notification_list_view.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/message_center/message_center_types.h"
@@ -446,8 +447,7 @@ void NotificationGroupingController::OnNotificationRemoved(
     auto grouped_notifications =
         grouped_notification_list_->GetGroupedNotificationsForParent(
             notification_id);
-    base::ranges::copy(grouped_notifications,
-                       std::back_inserter(to_be_deleted));
+    std::ranges::copy(grouped_notifications, std::back_inserter(to_be_deleted));
     grouped_notification_list_->ClearGroupedNotification(notification_id);
 
     for (const auto& id : to_be_deleted) {

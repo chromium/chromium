@@ -13,6 +13,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
+#include "third_party/libgav1/src/src/utils/common.h"
 
 namespace media {
 namespace {

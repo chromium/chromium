@@ -4,6 +4,7 @@
 
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -24,7 +25,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/vector_icons/vector_icons.h"
@@ -378,7 +378,7 @@ std::optional<int> ClipboardHistoryMenuModelAdapter::GetFirstMenuItemCommand() {
     return std::nullopt;
   }
 
-  return base::ranges::min_element(
+  return std::ranges::min_element(
              item_views_by_command_id_, /*comp=*/{},
              /*proj=*/[](const auto& kv) { return kv.first; })
       ->first;
@@ -419,9 +419,9 @@ void ClipboardHistoryMenuModelAdapter::SelectMenuItemWithCommandId(
 
 void ClipboardHistoryMenuModelAdapter::SelectMenuItemHoveredByMouse() {
   // Find the menu item hovered by mouse.
-  auto iter = base::ranges::find_if(item_views_by_command_id_,
-                                    &views::View::IsMouseHovered,
-                                    &ItemViewsByCommandId::value_type::second);
+  auto iter = std::ranges::find_if(item_views_by_command_id_,
+                                   &views::View::IsMouseHovered,
+                                   &ItemViewsByCommandId::value_type::second);
 
   if (iter == item_views_by_command_id_.cend()) {
     // If no item is hovered by mouse, cancel the selection on the child menu

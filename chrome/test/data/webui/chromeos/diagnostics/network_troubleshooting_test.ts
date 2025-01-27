@@ -37,8 +37,8 @@ suite('networkTroubleshootingTestSuite', function() {
   function getLinkTextElement(): HTMLElement {
     assert(networkTroubleshootingElement);
 
-    return networkTroubleshootingElement.shadowRoot!.querySelector(
-               '#troubleshootingLinkText') as HTMLElement;
+    return networkTroubleshootingElement.shadowRoot!.querySelector<HTMLElement>(
+        '#troubleshootingLinkText')!;
   }
 
   function initializeNetworkTroubleshooting(info: TroubleshootingInfo):

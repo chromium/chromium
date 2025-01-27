@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -13,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/string_compare.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -134,8 +134,8 @@ void TemplateURLTableModel::Reload() {
     }
   }
 
-  base::ranges::sort(active_entries, OrderByManagedAndAlphabetically());
-  base::ranges::sort(other_entries, OrderByManagedAndAlphabetically());
+  std::ranges::sort(active_entries, OrderByManagedAndAlphabetically());
+  std::ranges::sort(other_entries, OrderByManagedAndAlphabetically());
 
   last_search_engine_index_ = default_entries.size();
   last_active_engine_index_ = last_search_engine_index_ + active_entries.size();

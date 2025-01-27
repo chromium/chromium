@@ -101,31 +101,4 @@ void PasswordDataTypeController::OnPrimaryAccountChanged(
 #endif
 }
 
-void PasswordDataTypeController::OnAccountsInCookieUpdated(
-    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
-    const GoogleServiceAuthError& error) {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  // If the account information is stale, do nothing for now - wait until there
-  // is fresh information.
-  if (!accounts_in_cookie_jar_info.AreAccountsFresh()) {
-    return;
-  }
-  // Keep any account-storage settings only for known accounts.
-  features_util::KeepAccountStorageSettingsOnlyForUsers(
-      pref_service_, signin::GetAllGaiaIdsForKeyedPreferences(
-                         identity_manager_, accounts_in_cookie_jar_info)
-                         .extract());
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-}
-
-void PasswordDataTypeController::OnAccountsCookieDeletedByUserAction() {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  // Pass an empty `signin::AccountsInCookieJarInfo` to simulate empty cookies.
-  base::flat_set<GaiaId> gaia_ids = signin::GetAllGaiaIdsForKeyedPreferences(
-      identity_manager_, signin::AccountsInCookieJarInfo());
-  features_util::KeepAccountStorageSettingsOnlyForUsers(
-      pref_service_, std::move(gaia_ids).extract());
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-}
-
 }  // namespace password_manager

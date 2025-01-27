@@ -31,10 +31,12 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './app.html.js';
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 import type {BuyingOptions} from './buying_options_section.js';
 import type {ComparisonTableListElement} from './comparison_table_list.js';
 import type {ComparisonTableListItemClickEvent, ComparisonTableListItemRenameEvent} from './comparison_table_list_item.js';
@@ -123,7 +125,7 @@ export const COLUMN_MODIFICATION_HISTOGRAM_NAME: string =
 export const TABLE_LOAD_HISTOGRAM_NAME: string =
     'Commerce.Compare.Table.LoadStatus';
 
-enum AppState {
+export enum AppState {
   ERROR = 0,
   TABLE_EMPTY = 1,
   SYNC_SCREEN = 2,
@@ -218,46 +220,42 @@ export const LOADING_END_EVENT_TYPE: string = 'loading-animation-end';
 
 const LOADING_ANIMATION_SLIDE_PX = 16;
 
-export class ProductSpecificationsElement extends PolymerElement {
+export class ProductSpecificationsElement extends CrLitElement {
   static get is() {
     return 'product-specifications-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      appState_: {
-        type: Object,
-        computed: 'computeAppState_(productSpecificationsFeatureState_.*,' +
-            ' loadingState_.loading, showEmptyState_)',
-      },
-      sets_: Array,
-      loadingState_: Object,
-      setName_: String,
-      showComparisonTableList_: {
-        type: Boolean,
-        computed: 'computeShowComparisonTableList_(showEmptyState_,' +
-            ' sets_)',
-      },
+      appState_: {type: Object},
+      sets_: {type: Array},
+      loadingState_: {type: Object},
+      productSpecificationsFeatureState_: {type: Object},
+      setName_: {type: String},
+      showComparisonTableList_: {type: Boolean},
+      showEmptyState_: {type: Boolean},
       showTableDataUnavailableContainer_: {
         type: Boolean,
-        computed: 'computeShowTableDataUnavailableContainer_(appState_)',
-        reflectToAttribute: true,
+        reflect: true,
       },
-      tableColumns_: Object,
+      tableColumns_: {type: Object},
     };
   }
 
-  private appState_: AppState = AppState.NO_CONTENT;
-  private loadingState_: LoadingState = {loading: false, urlCount: 0};
-  private setName_: string|null = null;
-  private sets_: ProductSpecificationsSet[] = [];
-  private showComparisonTableList_: boolean = false;
-  private showTableDataUnavailableContainer_: boolean;
-  private tableColumns_: TableColumn[] = [];
+  protected appState_: AppState = AppState.NO_CONTENT;
+  protected loadingState_: LoadingState = {loading: false, urlCount: 0};
+  protected productSpecificationsFeatureState_:
+      ProductSpecificationsFeatureState;
+  protected setName_: string|null = null;
+  protected sets_: ProductSpecificationsSet[] = [];
+  protected showComparisonTableList_: boolean = false;
+  private showEmptyState_: boolean;
+  protected showTableDataUnavailableContainer_: boolean;
+  protected tableColumns_: TableColumn[] = [];
 
   private callbackRouter_: PageCallbackRouter;
   private eventTracker_: EventTracker = new EventTracker();
@@ -267,17 +265,42 @@ export class ProductSpecificationsElement extends PolymerElement {
   private loadingAnimationSlideDurationMs_: number = 200;
   private minLoadingAnimationMs_: number = 500;
   private pendingSetUpdate_: (() => void)|null = null;
-  private productSpecificationsFeatureState_: ProductSpecificationsFeatureState;
   private productSpecificationsProxy_: ProductSpecificationsBrowserProxy =
       ProductSpecificationsBrowserProxyImpl.getInstance();
   private shoppingApi_: ShoppingServiceBrowserProxy =
       ShoppingServiceBrowserProxyImpl.getInstance();
-  private showEmptyState_: boolean;
 
   constructor() {
     super();
     this.callbackRouter_ = this.productSpecificationsProxy_.getCallbackRouter();
     ColorChangeUpdater.forDocument().start();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('productSpecificationsFeatureState_') ||
+        changedPrivateProperties.has('loadingState_') ||
+        changedPrivateProperties.has('showEmptyState_')) {
+      this.appState_ = this.computeAppState_();
+    }
+
+    if (changedPrivateProperties.has('sets_') ||
+        changedPrivateProperties.has('showEmptyState_')) {
+      this.showComparisonTableList_ = this.computeShowComparisonTableList_();
+    }
+
+    if (changedPrivateProperties.has('appState_')) {
+      this.showTableDataUnavailableContainer_ =
+          this.computeShowTableDataUnavailableContainer_();
+    }
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   override async connectedCallback() {
@@ -440,30 +463,6 @@ export class ProductSpecificationsElement extends PolymerElement {
     return AppState.NO_CONTENT;
   }
 
-  private isAppStateError_() {
-    return this.appState_ === AppState.ERROR;
-  }
-
-  private isAppStateTableEmpty_() {
-    return this.appState_ === AppState.TABLE_EMPTY;
-  }
-
-  private isAppStateSyncScreen_() {
-    return this.appState_ === AppState.SYNC_SCREEN;
-  }
-
-  private isAppStateTablePopulated_() {
-    return this.appState_ === AppState.TABLE_POPULATED;
-  }
-
-  private isAppStateLoading_() {
-    return this.appState_ === AppState.LOADING;
-  }
-
-  private isAppStateNoContent_() {
-    return this.appState_ === AppState.NO_CONTENT;
-  }
-
   private computeShowTableDataUnavailableContainer_() {
     return this.appState_ === AppState.ERROR ||
         this.appState_ === AppState.TABLE_EMPTY ||
@@ -478,18 +477,18 @@ export class ProductSpecificationsElement extends PolymerElement {
     return this.showEmptyState_ && this.id_ === null && this.sets_.length > 0;
   }
 
-  private canShowFooter_(
+  protected canShowFooter_(
       showTableDataUnavailableContainer: boolean, appState: AppState) {
     return !(
         showTableDataUnavailableContainer || appState === AppState.NO_CONTENT);
   }
 
-  private canShowFeedbackButtons_() {
+  protected canShowFeedbackButtons_() {
     return Boolean(
         this.productSpecificationsFeatureState_?.isQualityLoggingAllowed);
   }
 
-  private showSyncSetupFlow_() {
+  protected showSyncSetupFlow_() {
     assert(this.productSpecificationsFeatureState_);
     assert(!this.productSpecificationsFeatureState_.isSyncingTabCompare);
 
@@ -503,7 +502,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.productSpecificationsProxy_.showSyncSetupFlow();
   }
 
-  private showOfflineToast_() {
+  protected showOfflineToast_() {
     this.$.offlineToast.show();
   }
 
@@ -663,7 +662,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
   }
 
-  private updateSetName_(e: CustomEvent<{name: string}>) {
+  protected updateSetName_(e: CustomEvent<{name: string}>) {
     if (this.isOffline_) {
       this.showOfflineToast_();
       return;
@@ -675,7 +674,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
   }
 
-  private seeAllSets_() {
+  protected seeAllSets_() {
     if (loadTimeData.getBoolean('comparisonTableListEnabled')) {
       this.productSpecificationsProxy_.showComparePage(true);
       return;
@@ -685,7 +684,7 @@ export class ProductSpecificationsElement extends PolymerElement {
         loadTimeData.getString('productSpecificationsManagementUrl'));
   }
 
-  private async onUrlAdd_(
+  protected async onUrlAdd_(
       e: CustomEvent<{url: string, urlSection: SectionType}>) {
     if (this.isOffline_) {
       this.showOfflineToast_();
@@ -724,7 +723,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
   }
 
-  private onUrlChange_(
+  protected onUrlChange_(
       e: CustomEvent<{url: string, urlSection: SectionType, index: number}>) {
     if (this.isOffline_) {
       this.showOfflineToast_();
@@ -749,7 +748,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.modifyUrls_(urls);
   }
 
-  private onUrlOrderUpdate_() {
+  protected onUrlOrderUpdate_() {
     if (this.isOffline_) {
       this.showOfflineToast_();
       return;
@@ -764,7 +763,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.modifyUrls_(urls);
   }
 
-  private onUrlRemove_(e: CustomEvent<{index: number}>) {
+  protected onUrlRemove_(e: CustomEvent<{index: number}>) {
     if (this.isOffline_) {
       this.showOfflineToast_();
       return;
@@ -806,13 +805,13 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.populateTable_(urls);
   }
 
-  private getTableUrls_(): string[] {
+  protected getTableUrls_(): string[] {
     return this.tableColumns_.map(
         (column: TableColumn) => column.selectedItem.url);
   }
 
-  private isTableFull_(columnCount: number): boolean {
-    return columnCount >= loadTimeData.getInteger('maxTableSize');
+  protected isTableFull_(): boolean {
+    return this.tableColumns_.length >= loadTimeData.getInteger('maxTableSize');
   }
 
   private async onSetUpdated_(set: ProductSpecificationsSet) {
@@ -888,7 +887,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
   }
 
-  private onFeedbackSelectedOptionChanged_(
+  protected onFeedbackSelectedOptionChanged_(
       e: CustomEvent<{value: CrFeedbackOption}>) {
     switch (e.detail.value) {
       case CrFeedbackOption.UNSPECIFIED:
@@ -912,7 +911,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
   }
 
-  private getDisclaimerText_(): string {
+  protected getDisclaimerText_(): string {
     return loadTimeData.getStringF(
         'experimentalFeatureDisclaimer', loadTimeData.getString('userEmail'));
   }
@@ -983,17 +982,16 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private dispatchLoadingStartEvent_() {
-    this.dispatchEvent(new CustomEvent(
-        LOADING_START_EVENT_TYPE, {bubbles: true, composed: true}));
+    this.fire(LOADING_START_EVENT_TYPE);
   }
 
   private dispatchLoadingEndEvent_() {
-    this.dispatchEvent(new CustomEvent(
-        LOADING_END_EVENT_TYPE, {bubbles: true, composed: true}));
+    this.fire(LOADING_END_EVENT_TYPE);
   }
 
   private async updateEmptyState_(shouldShow: boolean) {
     this.showEmptyState_ = shouldShow;
+    this.requestUpdate();
 
     // If we show the empty state and there are no comparison tables, try to
     // fetch them.
@@ -1004,19 +1002,19 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
   }
 
-  private onComparisonTableListItemClick_(
+  protected onComparisonTableListItemClick_(
       event: ComparisonTableListItemClickEvent) {
     window.history.pushState(undefined, '', `?id=${event.detail.uuid.value}`);
     this.loadSet_(event.detail.uuid);
   }
 
-  private onComparisonTableListItemRename_(
+  protected onComparisonTableListItemRename_(
       event: ComparisonTableListItemRenameEvent) {
     this.shoppingApi_.setNameForProductSpecificationsSet(
         event.detail.uuid, event.detail.name);
   }
 
-  private onHeaderMenuDeleteClick_() {
+  protected onHeaderMenuDeleteClick_() {
     this.deleteSet_();
   }
 

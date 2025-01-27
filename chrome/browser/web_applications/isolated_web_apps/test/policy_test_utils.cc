@@ -40,7 +40,7 @@ void EditForceInstalledIwaPolicy(
     base::Value::Dict policy_entry) {
   ScopedListPrefUpdate update{prefs, prefs::kIsolatedWebAppInstallForceList};
   auto itr =
-      base::ranges::find(*update, web_bundle_id.id(), [](const auto& entry) {
+      std::ranges::find(*update, web_bundle_id.id(), [](const auto& entry) {
         return *entry.GetDict().FindString(kPolicyWebBundleIdKey);
       });
   CHECK(itr != update->end());

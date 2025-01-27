@@ -32,6 +32,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/language/core/common/locale_util.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -129,6 +130,17 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
       NOTREACHED();
   }
   NOTREACHED();
+}
+
+// Checks for supported language code options (currently just "en").
+bool SupportedLanguages(const std::vector<std::string>& input,
+                        const std::vector<std::string>& context,
+                        const std::string& output) {
+  auto supported = [](const std::string& l) {
+    return l.empty() || language::ExtractBaseLanguage(l) == "en";
+  };
+  return base::ranges::all_of(input, supported) &&
+         base::ranges::all_of(context, supported) && supported(output);
 }
 
 template <typename ContextBoundObjectType,
@@ -403,7 +415,13 @@ void AIManager::GetModelInfo(GetModelInfoCallback callback) {
 
 void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
                                 CanCreateWriterCallback callback) {
-  // TODO(crbug.com/382596381): Check Options.
+  if (options && !SupportedLanguages(options->expected_input_languages,
+                                     options->expected_context_languages,
+                                     options->output_language)) {
+    std::move(callback).Run(
+        blink::mojom::ModelAvailabilityCheckResult::kNoUnknown);
+    return;
+  }
   CanCreateSession(
       optimization_guide::ModelBasedCapabilityKey::kWritingAssistanceApi,
       std::move(callback));
@@ -412,6 +430,14 @@ void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
 void AIManager::CreateWriter(
     mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
     blink::mojom::AIWriterCreateOptionsPtr options) {
+  if (options && !SupportedLanguages(options->expected_input_languages,
+                                     options->expected_context_languages,
+                                     options->output_language)) {
+    mojo::Remote<blink::mojom::AIManagerCreateWriterClient> client_remote(
+        std::move(client));
+    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIWriter>());
+    return;
+  }
   CreateContextBoundObjectTask<AIWriter, blink::mojom::AIWriter,
                                blink::mojom::AIManagerCreateWriterClient,
                                blink::mojom::AIWriterCreateOptionsPtr>::
@@ -424,6 +450,13 @@ void AIManager::CreateWriter(
 void AIManager::CanCreateRewriter(
     blink::mojom::AIRewriterCreateOptionsPtr options,
     CanCreateRewriterCallback callback) {
+  if (options && !SupportedLanguages(options->expected_input_languages,
+                                     options->expected_context_languages,
+                                     options->output_language)) {
+    std::move(callback).Run(
+        blink::mojom::ModelAvailabilityCheckResult::kNoUnknown);
+    return;
+  }
   CanCreateSession(
       optimization_guide::ModelBasedCapabilityKey::kWritingAssistanceApi,
       std::move(callback));
@@ -432,6 +465,14 @@ void AIManager::CanCreateRewriter(
 void AIManager::CreateRewriter(
     mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
     blink::mojom::AIRewriterCreateOptionsPtr options) {
+  if (options && !SupportedLanguages(options->expected_input_languages,
+                                     options->expected_context_languages,
+                                     options->output_language)) {
+    mojo::Remote<blink::mojom::AIManagerCreateRewriterClient> client_remote(
+        std::move(client));
+    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIRewriter>());
+    return;
+  }
   CreateContextBoundObjectTask<AIRewriter, blink::mojom::AIRewriter,
                                blink::mojom::AIManagerCreateRewriterClient,
                                blink::mojom::AIRewriterCreateOptionsPtr>::

@@ -1370,7 +1370,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
   syncer::SyncData GetSyncDataFor(std::string_view app_id) const {
     auto sync_data = app_list_syncable_service_->GetAllSyncDataForTesting();
-    auto itr = base::ranges::find(sync_data, app_id, [](const auto& sync_item) {
+    auto itr = std::ranges::find(sync_data, app_id, [](const auto& sync_item) {
       return sync_item.GetSpecifics().app_list().item_id();
     });
     EXPECT_FALSE(itr == sync_data.end());

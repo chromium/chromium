@@ -59,7 +59,10 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/pref_names.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_impl.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -260,8 +263,8 @@ class PasswordManagerSyncTest : public SyncTest {
     if (!explicit_signin) {
       // Let the user opt in to the account-scoped password storage, and wait
       // for it to become active.
-      password_manager::features_util::OptInToAccountStorage(
-          GetProfile(0)->GetPrefs(), GetSyncService(0));
+      GetSyncService(0)->GetUserSettings()->SetSelectedType(
+          syncer::UserSelectableType::kPasswords, true);
     }
     PasswordSyncActiveChecker(GetSyncService(0)).Wait();
     ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
@@ -829,8 +832,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, OptInSurvivesSignout) {
   SignIn(kTestUserEmail, /*explicit_signin=*/false);
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
-  password_manager::features_util::OptInToAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
   PasswordSyncActiveChecker(GetSyncService(0)).Wait();
 
   SignOut();
@@ -846,8 +849,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, OptOutSurvivesSignout) {
   SignIn(kTestUserEmail);
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
-  password_manager::features_util::OptOutOfAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, false);
   PasswordSyncInactiveChecker(GetSyncService(0)).Wait();
 
   SignOut();
@@ -861,14 +864,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        KeepOptInAccountStorageSettingsOnlyForUsers) {
   ASSERT_TRUE(SetupClients());
   SignIn("first@gmail.com", /*explicit_signin=*/false);
-  password_manager::features_util::OptInToAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
   auto first_gaia_id_hash =
       signin::GaiaIdHash::FromGaiaId(GetSyncService(0)->GetAccountInfo().gaia);
   SignOut();
   SignIn("second@gmail.com", /*explicit_signin=*/false);
-  password_manager::features_util::OptInToAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
   SignOut();
 
   GetSyncService(0)->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
@@ -887,14 +890,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        KeepOptOutAccountStorageSettingsOnlyForUsers) {
   ASSERT_TRUE(SetupClients());
   SignIn("first@gmail.com");
-  password_manager::features_util::OptOutOfAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, false);
   auto first_gaia_id_hash =
       signin::GaiaIdHash::FromGaiaId(GetSyncService(0)->GetAccountInfo().gaia);
   SignOut();
   SignIn("second@gmail.com");
-  password_manager::features_util::OptOutOfAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, false);
   SignOut();
 
   GetSyncService(0)->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
@@ -1119,8 +1122,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
     waiter.Wait();
   }
 
-  password_manager::features_util::OptOutOfAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, false);
 
   {
     SavedPasswordsPresenterWaiter waiter(&presenter, 0);

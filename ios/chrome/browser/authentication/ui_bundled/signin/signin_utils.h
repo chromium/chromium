@@ -80,7 +80,6 @@ id<SystemIdentity> GetDefaultIdentityOnDevice(ProfileIOS* profile);
 // Switch profile if needed then sign out from the current profile.
 void MultiProfileSignOut(Browser* browser,
                          signin_metrics::ProfileSignout signout_source,
-                         bool force_clear_data,
                          bool force_snackbar_over_toolbar,
                          MDCSnackbarMessage* snackbar_message,
                          ProceduralBlock signout_completion);

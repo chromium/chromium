@@ -4,7 +4,8 @@
 
 #include "chrome/install_static/user_data_dir.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/test/test_reg_util_win.h"
 #include "build/branding_buildflags.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
@@ -160,7 +161,7 @@ TEST(UserDataDir, RegistrySettingWithPathExpansionHKCU) {
   EXPECT_EQ(strlen("X:\\WINDOWS"), result.size());
   EXPECT_EQ(std::wstring::npos, result.find(L"${windows}"));
   std::wstring upper;
-  base::ranges::transform(result, std::back_inserter(upper), toupper);
+  std::ranges::transform(result, std::back_inserter(upper), toupper);
   EXPECT_TRUE(upper.ends_with(L"\\WINDOWS"));
   EXPECT_EQ(std::wstring(), invalid);
 }

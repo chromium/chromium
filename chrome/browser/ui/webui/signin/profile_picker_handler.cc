@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/check.h"
@@ -16,7 +17,6 @@
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"

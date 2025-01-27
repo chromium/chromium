@@ -32,6 +32,7 @@ import java.util.List;
  */
 class RecentActivityListMediator {
     private final Context mContext;
+    private final PropertyModel mPropertyModel;
     private final ModelList mModelList;
     private final MessagingBackendService mMessagingBackendService;
     private final FaviconProvider mFaviconProvider;
@@ -43,14 +44,17 @@ class RecentActivityListMediator {
      * Constructor.
      *
      * @param context The activity context.
+     * @param propertyModel The property model of the recent activity list container view.
      * @param modelList The {@link ModelList} that will be filled with the list items to be shown.
      * @param messagingBackendService The backed to query for the list of recent activities.
      * @param faviconProvider The backend for providing favicon for URLs.
      * @param avatarProvider The backend for providing avatars for users.
      * @param recentActivityActionHandler Click event handler for activity rows.
+     * @param closeBottomSheetCallback Callback to invoke when bottom sheet is to be closed.
      */
     public RecentActivityListMediator(
             @NonNull Context context,
+            @NonNull PropertyModel propertyModel,
             @NonNull ModelList modelList,
             MessagingBackendService messagingBackendService,
             FaviconProvider faviconProvider,
@@ -58,6 +62,7 @@ class RecentActivityListMediator {
             RecentActivityActionHandler recentActivityActionHandler,
             Runnable closeBottomSheetCallback) {
         mContext = context;
+        mPropertyModel = propertyModel;
         mModelList = modelList;
         mMessagingBackendService = messagingBackendService;
         mFaviconProvider = faviconProvider;
@@ -80,6 +85,8 @@ class RecentActivityListMediator {
         activityLogQueryParams.collaborationId = collaborationId;
         List<ActivityLogItem> activityLogItems =
                 mMessagingBackendService.getActivityLog(activityLogQueryParams);
+        mPropertyModel.set(
+                RecentActivityContainerProperties.EMPTY_STATE_VISIBLE, activityLogItems.isEmpty());
         updateModelList(activityLogItems);
         callback.run();
     }

@@ -72,6 +72,7 @@
 <translation id="1043505821207197890">Kesilapan telah berlaku. Linux hanya boleh ditingkatkan sebahagian sahaja. Semak log untuk mendapatkan maklumat lanjut. Log telah disimpan dalam Fail &gt; Fail saya &gt; <ph name="LOG_FILE" /></translation>
 <translation id="104385770822424034">Tambahkan tindakan</translation>
 <translation id="104419033123549300">Gaya Peta Kekunci</translation>
+<translation id="1045487161760507186">Anda tidak perlu mengingati kata laluan kerana kata laluan disimpan untuk anda dalam Google Password Manager</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 kata laluan diimport pada <ph name="BRAND" /> pada peranti ini}other{{NUM_PASSWORDS} kata laluan diimport pada <ph name="BRAND" /> pada peranti ini}}</translation>
 <translation id="1046572983040892965">Tetingkap dialihkan ke atas dan ke kiri</translation>
 <translation id="104710386808485638">Mulakan semula Linux?</translation>
@@ -1887,6 +1888,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2297705863329999812">Cari pencetak</translation>
 <translation id="2297822946037605517">Kongsi halaman ini</translation>
 <translation id="229871422646860597">Nyahsemat daripada bar alat</translation>
+<translation id="2299685119225839832">Anda boleh mendapatkan ringkasan perkara yang orang katakan dalam ulasan mereka</translation>
 <translation id="2299734369537008228">Peluncur: <ph name="MIN_LABEL" /> hingga <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Sertakan semua fail log yang dikumpulkan oleh debugd sebagai arkib yang berasingan.</translation>
 <translation id="2300214399009193026">PCIe</translation>
@@ -5143,7 +5145,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4593021220803146968">&amp;Pergi ke <ph name="URL" /></translation>
 <translation id="4593962599442730215">Ubah pilihan anda</translation>
 <translation id="4594218792629569101">Pilih "Tandakan sebagai dibaca" untuk mengalihkan halaman ke bahagian bawah senarai anda</translation>
-<translation id="4594577641390224176">Mencari halaman perihalan sistem? Lawati</translation>
 <translation id="4595560905247879544">Apl dan sambungan hanya boleh diubah suai oleh pengurus (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Anda mempunyai sijil pada fail yang mengenal pasti pelayan ini</translation>
 <translation id="4598345735110653698">Urus kunci laluan</translation>
@@ -5260,6 +5261,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4676616966096505747">Sesetengah data belum disimpan dalam akaun anda lagi</translation>
 <translation id="4677772697204437347">Memori GPU</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4678729681411398877">Apabila satu daripada kata laluan anda ditemukan dalam pelanggaran data, Google Password Manager bertanya sama ada anda mahu Google Password Manager menukar kata laluan tersebut menjadi kata laluan kukuh</translation>
 <translation id="4678848110205818817">Kad Kredit/Debit</translation>
 <translation id="4679018849559620189">PIN ini akan membantu anda mengakses kunci laluan anda yang disimpan pada mana-mana peranti</translation>
 <translation id="4680105648806843642">Bunyi telah diredamkan pada halaman ini</translation>
@@ -6771,7 +6773,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5787420647064736989">Nama peranti</translation>
 <translation id="5788367137662787332">Maaf, sekurang-kurangnya satu pemetakan pada peranti <ph name="DEVICE_LABEL" /> tidak dapat dilekapkan.</translation>
 <translation id="5789581866075720267">Untuk mengimport kata laluan kepada <ph name="BRAND" /> pada peranti ini, pilih fail CSV.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Berjaya</translation>
 <translation id="5790651917470750848">Kiriman semula sudah wujud</translation>
 <translation id="5792295754950501287">Lagi tindakan untuk <ph name="CARD_DESCRIPTION" /></translation>
@@ -6830,6 +6831,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5828545842856466741">Tambah profil...</translation>
 <translation id="5828633471261496623">Mencetak...</translation>
 <translation id="5830205393314753525">Tidak dapat membuka <ph name="APP_NAME" /></translation>
+<translation id="5830512293931520102">Kata laluan anda disulitkan dan tidak akan dilihat oleh sesiapa sahaja</translation>
 <translation id="5830720307094128296">Simpan Halaman &amp;Sebagai...</translation>
 <translation id="583179300286794292">Log masuk sebagai <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Padamkan data laman dan kebenaran untuk <ph name="SITE_NAME" />, semua laman di bawah laman tersebut dan apl yang dipasang?</translation>
@@ -7191,7 +7193,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6086418630711763366">Anda boleh menukar halaman dengan kursor teks. Tekan Ctrl + <ph name="KEY" /> untuk mematikan.</translation>
 <translation id="6086846494333236931">Dipasang oleh pentadbir anda</translation>
 <translation id="6087286598828478206">Sekat dan tinggalkan kumpulan?</translation>
-<translation id="6087746524533454243">Mencari halaman perihalan penyemak imbas? Lawati</translation>
 <translation id="6087960857463881712">Wajah hebat</translation>
 <translation id="6088475950266477163">Tetapan</translation>
 <translation id="608912389580139775">Untuk menambahkan halaman ini pada senarai bacaan anda, klik ikon Penanda Halaman</translation>
@@ -10165,6 +10166,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8215129063232901118">Akses keupayaan telefon anda daripada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="8217212468862726597">Serlahkan penuding</translation>
 <translation id="8217399928341212914">Teruskan menyekat muat turun automatik berbilang fail</translation>
+<translation id="8219785583603399823">Lihat rating untuk kedai ini</translation>
 <translation id="822050276545350872">Mulai sekarang, anda tidak perlu menunggu</translation>
 <translation id="8222112516148944758">Kumpulan tab disimpan dan dikemaskinikan secara automatik merentas semua peranti anda</translation>
 <translation id="8222674561049363989">Fail ini bukan dokumen yang sah</translation>

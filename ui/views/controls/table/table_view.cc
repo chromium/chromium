@@ -53,7 +53,6 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
-#include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_utils.h"
 
@@ -176,8 +175,6 @@ class TableView::HighlightPathGenerator : public views::HighlightPathGenerator {
 };
 
 TableView::TableView() : weak_factory_(this) {
-  constexpr int kTextContext = style::CONTEXT_TABLE_ROW;
-  constexpr int kTextStyle = style::STYLE_BODY_4;
   font_list_ = TypographyProvider::Get().GetFont(kTextContext, kTextStyle);
   row_height_ = LayoutProvider::GetControlHeightForFont(kTextContext,
                                                         kTextStyle, font_list_);
@@ -322,6 +319,15 @@ bool TableView::GetSingleSelection() const {
 void TableView::SetGrouper(TableGrouper* grouper) {
   grouper_ = grouper;
   SortItemsAndUpdateMapping(/*schedule_paint=*/true);
+}
+
+void TableView::SetGrouperVisibility(bool visible) {
+  if (grouper_visible_ == visible) {
+    return;
+  }
+
+  grouper_visible_ = visible;
+  SchedulePaint();
 }
 
 size_t TableView::GetRowCount() const {
@@ -516,6 +522,23 @@ size_t TableView::ViewToModel(size_t view_index) const {
   DCHECK_LT(view_index, view_to_model_.size())
       << " out of bounds view_index " << view_index;
   return view_to_model_[view_index];
+}
+
+void TableView::SetRowPadding(views::DistanceMetric distance_metric) {
+  const int control_height = std::max(
+      TypographyProvider::Get().GetLineHeight(kTextContext, kTextStyle),
+      font_list_.GetHeight());
+  const int padding =
+      LayoutProvider::Get()->GetDistanceMetric(distance_metric) * 2;
+  DCHECK_GE(padding, 0);
+  const int new_row_height = control_height + padding;
+  if (row_height_ == new_row_height) {
+    return;
+  }
+
+  row_height_ = new_row_height;
+  PreferredSizeChanged();
+  SchedulePaint();
 }
 
 bool TableView::GetSelectOnRemove() const {
@@ -1200,7 +1223,7 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
       text_bounds.Inset(gfx::Insets::VH(0, cell_margin));
 
       // Provide space for the grouping indicator, but draw it separately.
-      if (j == 0 && grouper_) {
+      if (j == 0 && grouper_ && grouper_visible_) {
         text_bounds.Inset(gfx::Insets().set_left(kGroupingIndicatorSize +
                                                  cell_element_spacing));
       }
@@ -1241,7 +1264,7 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
     }
   }
 
-  if (!grouper_ || region.min_column > 0) {
+  if (!grouper_ || !grouper_visible_ || region.min_column > 0) {
     return;
   }
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <sstream>
@@ -16,7 +17,6 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -200,7 +200,7 @@ class MetricsScraper {
         histogram_names.push_back(name);
       }
     }
-    base::ranges::sort(histogram_names);
+    std::ranges::sort(histogram_names);
 
     // Output the samples of all `histogram_names` to `output_file`.
     std::stringstream output;

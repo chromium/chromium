@@ -9,6 +9,9 @@
 #include <cmath>
 #include <limits>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/media_tracks.h"
 #include "media/base/stream_parser.h"
@@ -17,7 +20,6 @@
 #include "media/filters/source_buffer_parse_warnings.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_source_buffer_client.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -75,11 +77,11 @@ WebSourceBufferImpl::WebSourceBufferImpl(const std::string& id,
       append_window_end_(media::kInfiniteDuration) {
   DCHECK(demuxer_);
   demuxer_->SetTracksWatcher(
-      id, WTF::BindRepeating(&WebSourceBufferImpl::InitSegmentReceived,
-                             WTF::Unretained(this)));
+      id, base::BindRepeating(&WebSourceBufferImpl::InitSegmentReceived,
+                              base::Unretained(this)));
   demuxer_->SetParseWarningCallback(
-      id, WTF::BindRepeating(&WebSourceBufferImpl::NotifyParseWarning,
-                             WTF::Unretained(this)));
+      id, base::BindRepeating(&WebSourceBufferImpl::NotifyParseWarning,
+                              base::Unretained(this)));
 }
 
 WebSourceBufferImpl::~WebSourceBufferImpl() = default;

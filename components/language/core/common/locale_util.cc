@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/ranges/algorithm.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace language {
@@ -16,7 +16,7 @@ namespace language {
 std::pair<std::string_view, std::string_view> SplitIntoMainAndTail(
     std::string_view locale) {
   size_t hyphen_pos =
-      static_cast<size_t>(base::ranges::find(locale, '-') - locale.begin());
+      static_cast<size_t>(std::ranges::find(locale, '-') - locale.begin());
   return std::make_pair(locale.substr(0U, hyphen_pos),
                         locale.substr(hyphen_pos));
 }

@@ -5114,7 +5114,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4593021220803146968">&amp;Vés a <ph name="URL" /></translation>
 <translation id="4593962599442730215">Canvia les teves preferències</translation>
 <translation id="4594218792629569101">Per moure la pàgina a la part inferior de la llista, selecciona Marca com a llegit</translation>
-<translation id="4594577641390224176">Busques la pàgina d'informació del sistema? Ves a</translation>
 <translation id="4595560905247879544">Només el gestor (<ph name="CUSTODIAN_NAME" />) pot modificar les aplicacions i les extensions.</translation>
 <translation id="4596295440756783523">Tens certificats arxivats que identifiquen aquests servidors</translation>
 <translation id="4598345735110653698">Gestiona les claus d'accés</translation>
@@ -6735,7 +6734,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5787420647064736989">Nom del dispositiu</translation>
 <translation id="5788367137662787332">Com a mínim una partició del dispositiu <ph name="DEVICE_LABEL" /> no s'ha pogut muntar.</translation>
 <translation id="5789581866075720267">Per importar contrasenyes a <ph name="BRAND" /> en aquest dispositiu, selecciona un fitxer CSV.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Amb èxit</translation>
 <translation id="5790651917470750848">La redirecció de ports ja existeix</translation>
 <translation id="5792295754950501287">Més accions per a <ph name="CARD_DESCRIPTION" /></translation>
@@ -7153,7 +7151,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6086418630711763366">Pots navegar per les pàgines amb un cursor de text. Prem Ctrl+<ph name="KEY" /> per desactivar-ho.</translation>
 <translation id="6086846494333236931">Extensió instal·lada per l'administrador</translation>
 <translation id="6087286598828478206">Vols bloquejar aquest membre i sortir del grup?</translation>
-<translation id="6087746524533454243">Busques la pàgina d'informació del navegador? Ves a</translation>
 <translation id="6087960857463881712">Cara de fascinació</translation>
 <translation id="6088475950266477163">Configura&amp;ció</translation>
 <translation id="608912389580139775">Per afegir aquesta pàgina a la llista de lectura, fes clic a la icona d'adreça d'interès</translation>

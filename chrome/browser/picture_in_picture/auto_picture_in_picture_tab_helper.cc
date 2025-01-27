@@ -174,9 +174,9 @@ void AutoPictureInPictureTabHelper::MediaSessionInfoChanged(
 void AutoPictureInPictureTabHelper::MediaSessionActionsChanged(
     const std::vector<media_session::mojom::MediaSessionAction>& actions) {
   is_enter_auto_picture_in_picture_available_ =
-      base::ranges::find(actions,
-                         media_session::mojom::MediaSessionAction::
-                             kEnterAutoPictureInPicture) != actions.end();
+      std::ranges::find(actions,
+                        media_session::mojom::MediaSessionAction::
+                            kEnterAutoPictureInPicture) != actions.end();
 
   if (is_enter_auto_picture_in_picture_available_) {
     has_ever_registered_for_auto_picture_in_picture_ = true;

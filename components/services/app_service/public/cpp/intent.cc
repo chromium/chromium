@@ -4,9 +4,10 @@
 
 #include "components/services/app_service/public/cpp/intent.h"
 
+#include <algorithm>
+
 #include "base/files/safe_base_name.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 
@@ -68,10 +69,10 @@ bool IntentFile::MatchConditionValue(const ConditionValuePtr& condition_value) {
 
 bool IntentFile::MatchAnyConditionValue(
     const std::vector<ConditionValuePtr>& condition_values) {
-  return base::ranges::any_of(condition_values,
-                              [this](const ConditionValuePtr& condition_value) {
-                                return MatchConditionValue(condition_value);
-                              });
+  return std::ranges::any_of(condition_values,
+                             [this](const ConditionValuePtr& condition_value) {
+                               return MatchConditionValue(condition_value);
+                             });
 }
 
 Intent::Intent(const std::string& action) : action(action) {}
@@ -179,7 +180,7 @@ bool Intent::MatchAuthorityCondition(const ConditionPtr& condition) {
 
   std::optional<std::string> port =
       apps_util::AuthorityView::PortToString(url.value());
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       condition->condition_values,
       [this, &port](const ConditionValuePtr& condition_value) {
         apps_util::AuthorityView match_authority =
@@ -205,7 +206,7 @@ bool Intent::MatchFileCondition(const ConditionPtr& condition) {
   DCHECK_EQ(condition->condition_type, ConditionType::kFile);
 
   return !files.empty() &&
-         base::ranges::all_of(files, [&condition](const IntentFilePtr& file) {
+         std::ranges::all_of(files, [&condition](const IntentFilePtr& file) {
            return file->MatchAnyConditionValue(condition->condition_values);
          });
 }
@@ -222,11 +223,11 @@ bool Intent::MatchCondition(const ConditionPtr& condition) {
   std::optional<std::string> value_to_match =
       GetIntentConditionValueByType(condition->condition_type);
   return value_to_match.has_value() &&
-         base::ranges::any_of(condition->condition_values,
-                              [&value_to_match](const auto& condition_value) {
-                                return apps_util::ConditionValueMatches(
-                                    value_to_match.value(), condition_value);
-                              });
+         std::ranges::any_of(condition->condition_values,
+                             [&value_to_match](const auto& condition_value) {
+                               return apps_util::ConditionValueMatches(
+                                   value_to_match.value(), condition_value);
+                             });
 }
 
 bool Intent::MatchFilter(const IntentFilterPtr& filter) {

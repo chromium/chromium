@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/on_device_translation/constants.h"
@@ -48,7 +47,7 @@ bool TranslateKitLanguagePackComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   // Check that the sub-directories of the package install directory exist.
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       GetPackageInstallSubDirNamesForVerification(language_pack_key_),
       [&install_dir](const std::string& sub_dir_name) {
         return base::PathExists(install_dir.AppendASCII(sub_dir_name));

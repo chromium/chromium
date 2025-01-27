@@ -4,6 +4,7 @@
 
 #include "ash/system/notification_center/views/ash_notification_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -40,7 +41,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -1509,7 +1509,7 @@ void AshNotificationView::OnInlineReplyUpdated() {
 
 views::View* AshNotificationView::FindGroupNotificationView(
     const std::string& notification_id) {
-  auto notification = base::ranges::find(
+  auto notification = std::ranges::find(
       grouped_notifications_container_->children(), notification_id,
       [](views::View* notification_view) {
         return static_cast<message_center::MessageView*>(notification_view)

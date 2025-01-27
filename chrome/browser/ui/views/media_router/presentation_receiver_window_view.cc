@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ui/views/media_router/presentation_receiver_window_view.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -149,7 +150,7 @@ void PresentationReceiverWindowView::Init() {
   DCHECK(result);
 #else
   const auto accelerators = GetAcceleratorList();
-  const auto fullscreen_accelerator = base::ranges::find(
+  const auto fullscreen_accelerator = std::ranges::find(
       accelerators, IDC_FULLSCREEN, &AcceleratorMapping::command_id);
   CHECK(fullscreen_accelerator != accelerators.end(),
         base::NotFatalUntil::M130);

@@ -12,6 +12,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <cstdlib>
 #include <ios>
@@ -34,7 +35,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -75,7 +75,7 @@ std::optional<base::CommandLine> GetCommandLine() {
       additional_args, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 #if BUILDFLAG(IS_WIN)
   std::vector<std::wstring> wargv(argv.size());
-  base::ranges::transform(
+  std::ranges::transform(
       argv.begin(), argv.end(), wargv.begin(),
       [](std::string str) { return std::wstring(str.begin(), str.end()); });
   return base::CommandLine::FromArgvWithoutProgram(wargv);
@@ -259,10 +259,10 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
   //
   // TODO: A slight improvement would be to filter out individual "ATTACH
   // DATABASE" queries rather than throwing away the whole test case.
-  if (base::ranges::any_of(fuzzer_input.queries().extra_queries(),
-                           &sql_query_grammar::SQLQuery::has_attach_db) ||
-      base::ranges::any_of(fuzzer_input.queries_after_open().extra_queries(),
-                           &sql_query_grammar::SQLQuery::has_attach_db)) {
+  if (std::ranges::any_of(fuzzer_input.queries().extra_queries(),
+                          &sql_query_grammar::SQLQuery::has_attach_db) ||
+      std::ranges::any_of(fuzzer_input.queries_after_open().extra_queries(),
+                          &sql_query_grammar::SQLQuery::has_attach_db)) {
     return;
   }
 

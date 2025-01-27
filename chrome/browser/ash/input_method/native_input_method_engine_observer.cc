@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/native_input_method_engine_observer.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -17,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -644,7 +644,7 @@ bool InferIsUserSelecting(
     return true;
   }
 
-  const bool any_non_empty_label = base::ranges::any_of(
+  const bool any_non_empty_label = std::ranges::any_of(
       candidates, [](const ime::mojom::CandidatePtr& candidate) {
         return !candidate->label->empty();
       });

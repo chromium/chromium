@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <memory>
@@ -20,7 +21,6 @@
 #include "base/functional/callback.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -113,7 +113,7 @@ bool IsValidBrand(const std::string& brand) {
   const size_t kMaxBrandSize = 4;
   return brand.empty() ||
          (brand.size() == kMaxBrandSize &&
-          base::ranges::all_of(brand, &base::IsAsciiAlpha<char>));
+          std::ranges::all_of(brand, &base::IsAsciiAlpha<char>));
 }
 
 // Helper function.
@@ -124,7 +124,7 @@ bool IsValidInstallerAttributePart(const std::string& part,
                                    size_t min_length,
                                    size_t max_length) {
   return part.size() >= min_length && part.size() <= max_length &&
-         base::ranges::all_of(part, [&special_chars](char ch) {
+         std::ranges::all_of(part, [&special_chars](char ch) {
            return base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch) ||
                   base::Contains(special_chars, ch);
          });

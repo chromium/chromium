@@ -4,6 +4,7 @@
 
 #include "components/browsing_topics/browsing_topics_service_impl.h"
 
+#include <algorithm>
 #include <random>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/browsing_topics/browsing_topics_calculator.h"
@@ -1031,7 +1031,7 @@ void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUiHelper(
   }
 
   // Reorder the epochs from latest to oldest.
-  base::ranges::reverse(webui_state->epochs);
+  std::ranges::reverse(webui_state->epochs);
 
   std::move(callback).Run(
       mojom::WebUIGetBrowsingTopicsStateResult::NewBrowsingTopicsState(

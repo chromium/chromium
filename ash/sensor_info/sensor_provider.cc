@@ -4,6 +4,7 @@
 
 #include "ash/sensor_info/sensor_provider.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <iterator>
 #include <utility>
@@ -11,7 +12,6 @@
 #include "ash/sensor_info/sensor_types.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -431,7 +431,7 @@ void SensorProvider::OnAttributes(
       return;
     }
 
-    auto* it = base::ranges::find(kLocationStrings, val_it->value());
+    auto* it = std::ranges::find(kLocationStrings, val_it->value());
     if (it == std::end(kLocationStrings)) {
       LOG(WARNING) << "Unrecognized location: " << val_it->value()
                    << " for device with id: " << id;

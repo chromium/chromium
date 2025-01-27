@@ -5,12 +5,12 @@
 #ifndef CHROME_COMMON_PRIVACY_BUDGET_FIELD_TRIAL_PARAM_CONVERSIONS_H_
 #define CHROME_COMMON_PRIVACY_BUDGET_FIELD_TRIAL_PARAM_CONVERSIONS_H_
 
+#include <algorithm>
 #include <iterator>
 #include <string_view>
 #include <type_traits>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -133,7 +133,7 @@ std::string EncodeIdentifiabilityFieldTrialParam(const T& source) {
   }
   if (privacy_budget_internal::SortWhenSerializing<
           typename std::remove_cv<T>::type>::value) {
-    base::ranges::sort(encoded_elements);
+    std::ranges::sort(encoded_elements);
   }
   return base::JoinString(encoded_elements, ",");
 }

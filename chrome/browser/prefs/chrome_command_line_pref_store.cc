@@ -54,7 +54,8 @@ const CommandLinePrefStore::SwitchToPreferenceMapEntry
          prefs::kAuthAndroidNegotiateAccountType},
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        {switches::kSchedulerConfiguration, prefs::kSchedulerConfiguration},
+        {ash::switches::kSchedulerConfiguration,
+         ash::prefs::kSchedulerConfiguration},
         {borealis::switches::kLaunchOptions,
          borealis::prefs::kExtraLaunchOptions},
 #endif

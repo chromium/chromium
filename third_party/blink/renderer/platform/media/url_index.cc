@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -15,7 +16,6 @@
 #include "media/base/media_switches.h"
 #include "third_party/blink/renderer/platform/media/resource_multi_buffer_data_provider.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -256,8 +256,8 @@ UrlIndex::UrlIndex(ResourceFetchContext* fetch_context,
       lru_(base::MakeRefCounted<MultiBuffer::GlobalLRU>(task_runner)),
       block_shift_(block_shift),
       memory_pressure_listener_(FROM_HERE,
-                                WTF::BindRepeating(&UrlIndex::OnMemoryPressure,
-                                                   WTF::Unretained(this))),
+                                base::BindRepeating(&UrlIndex::OnMemoryPressure,
+                                                    base::Unretained(this))),
       task_runner_(std::move(task_runner)) {}
 
 UrlIndex::~UrlIndex() {

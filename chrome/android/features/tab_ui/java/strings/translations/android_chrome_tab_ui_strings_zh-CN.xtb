@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">分享组</translation>
 <translation id="2677748264148917807">离开</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{已添加 <ph name="ONE_ADDED" /> 个标签页，已更改 <ph name="ANY_CHANGED" /> 个标签页，已关闭 <ph name="ANY_CLOSED" /> 个标签页}other{已添加 <ph name="MANY_ADDED" /> 个标签页，已更改 <ph name="ANY_CHANGED" /> 个标签页，已关闭 <ph name="ANY_CLOSED" /> 个标签页}}</translation>
+<translation id="2755485474385016903">分组中的所有人都会看到所做的更改</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{创建时间：<ph name="NUM_HOURS_ONE" /> 小时前}other{创建时间：<ph name="NUM_HOURS_MANY" /> 小时前}}</translation>
 <translation id="2801787514987684416">查看商店信息？</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{已关闭 <ph name="ONE_CLOSED" /> 个标签页}other{已关闭 <ph name="MANY_CLOSED" /> 个标签页}}</translation>

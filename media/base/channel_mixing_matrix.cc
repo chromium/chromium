@@ -6,9 +6,10 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "media/base/channel_mixer.h"
 
 namespace media {
@@ -261,7 +262,7 @@ bool ChannelMixingMatrix::CreateTransformationMatrix(
 }
 
 void ChannelMixingMatrix::AccountFor(Channels ch) {
-  unaccounted_inputs_.erase(base::ranges::find(unaccounted_inputs_, ch));
+  unaccounted_inputs_.erase(std::ranges::find(unaccounted_inputs_, ch));
 }
 
 bool ChannelMixingMatrix::IsUnaccounted(Channels ch) const {

@@ -66,7 +66,7 @@ MATCHER_P(EntityDataHasSignonRealm, expected_signon_realm, "") {
 bool PasswordIssuesHasExpectedInsecureTypes(
     const sync_pb::PasswordIssues& issues,
     const std::vector<InsecureType>& expected_types) {
-  return base::ranges::all_of(expected_types, [&issues](auto type) {
+  return std::ranges::all_of(expected_types, [&issues](auto type) {
     switch (type) {
       case InsecureType::kLeaked:
         return issues.has_leaked_password_issue();

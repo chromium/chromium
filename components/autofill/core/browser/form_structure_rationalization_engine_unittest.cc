@@ -50,7 +50,7 @@ std::vector<std::unique_ptr<AutofillField>> CreateFields(
 std::vector<FieldType> GetTypes(
     const std::vector<std::unique_ptr<AutofillField>>& fields) {
   std::vector<FieldType> server_types;
-  base::ranges::transform(
+  std::ranges::transform(
       fields, std::back_inserter(server_types),
       [](const auto& field) { return field->Type().GetStorableType(); });
   return server_types;

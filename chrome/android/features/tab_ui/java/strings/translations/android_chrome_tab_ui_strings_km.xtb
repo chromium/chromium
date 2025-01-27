@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">ចែករំលែកក្រុម</translation>
 <translation id="2677748264148917807">ចាកចេញ</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{បានបញ្ចូល <ph name="ONE_ADDED" /> ផ្ទាំង, បានប្ដូរ <ph name="ANY_CHANGED" /> ផ្ទាំង, បានបិទ <ph name="ANY_CLOSED" /> ផ្ទាំង}other{បានបញ្ចូល <ph name="MANY_ADDED" /> ផ្ទាំង, បានប្ដូរ <ph name="ANY_CHANGED" /> ផ្ទាំង, បានបិទ <ph name="ANY_CLOSED" /> ផ្ទាំង}}</translation>
+<translation id="2755485474385016903">អ្នកគ្រប់គ្នា​នៅក្នុង​ក្រុម​មើលឃើញ​ការផ្លាស់ប្ដូរ​ដែលបានធ្វើ</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{បានបង្កើត <ph name="NUM_HOURS_ONE" /> ម៉ោងមុន}other{បានបង្កើត <ph name="NUM_HOURS_MANY" /> ម៉ោងមុន}}</translation>
 <translation id="2801787514987684416">មើលព័ត៌មានអំពីហាងឬ?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{បានបិទ <ph name="ONE_CLOSED" /> ផ្ទាំង}other{បានបិទ <ph name="MANY_CLOSED" /> ផ្ទាំង}}</translation>

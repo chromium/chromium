@@ -4,6 +4,7 @@
 
 #include "chrome/updater/win/manifest_util.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -15,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
@@ -123,7 +123,7 @@ void ReadInstallCommandFromManifest(
 
   requirements = manifest_parsed->system_requirements;
   const std::vector<ProtocolParserXML::App>& app_list = manifest_parsed->apps;
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       app_list, [&app_id](const ProtocolParserXML::App& result) {
         return base::EqualsCaseInsensitiveASCII(result.app_id, app_id);
       });
@@ -148,8 +148,8 @@ void ReadInstallCommandFromManifest(
 
   if (!install_data_index.empty()) {
     auto data_iter =
-        base::ranges::find(it->data, install_data_index,
-                           &ProtocolParserXML::Data::install_data_index);
+        std::ranges::find(it->data, install_data_index,
+                          &ProtocolParserXML::Data::install_data_index);
     if (data_iter == std::end(it->data)) {
       VLOG(2) << "Install data index not found: " << install_data_index;
       return;
@@ -212,9 +212,9 @@ bool IsArchitectureCompatible(const std::string& arch_list,
     return true;
   }
 
-  base::ranges::sort(architectures);
+  std::ranges::sort(architectures);
 
-  if (base::ranges::find_if(
+  if (std::ranges::find_if(
           architectures, [&current_architecture](const std::string& narch) {
             if (narch[0] != '-') {
               return false;
@@ -233,7 +233,7 @@ bool IsArchitectureCompatible(const std::string& arch_list,
   std::erase_if(architectures,
                 [](const std::string& arch) { return arch[0] == '-'; });
   return architectures.empty() ||
-         base::ranges::find_if(
+         std::ranges::find_if(
              architectures, [&current_architecture](const std::string& arch) {
                return IsArchitectureSupported(arch, current_architecture);
              }) != architectures.end();

@@ -4,8 +4,9 @@
 
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
 
+#include <algorithm>
+
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_utils.h"
 
@@ -28,7 +29,7 @@ base::expected<EcdsaP256PublicKey, std::string> EcdsaP256PublicKey::Create(
   }
 
   std::array<uint8_t, kLength> key;
-  base::ranges::copy(key_bytes, key.begin());
+  std::ranges::copy(key_bytes, key.begin());
 
   return EcdsaP256PublicKey(std::move(key));
 }

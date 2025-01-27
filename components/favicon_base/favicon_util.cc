@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cmath>
 
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/favicon_base/favicon_types.h"
@@ -190,7 +190,7 @@ gfx::Image SelectFaviconFramesFromPNGs(
 
   std::vector<float> favicon_scales_to_generate = favicon_scales;
   for (auto& png_rep : png_reps) {
-    auto iter = base::ranges::find(favicon_scales_to_generate, png_rep.scale);
+    auto iter = std::ranges::find(favicon_scales_to_generate, png_rep.scale);
     if (iter != favicon_scales_to_generate.end()) {
       favicon_scales_to_generate.erase(iter);
     }

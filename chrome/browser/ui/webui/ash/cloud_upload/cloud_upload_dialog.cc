@@ -322,8 +322,8 @@ void OpenODFSUrl(Profile* profile,
 bool HasFileWithExtensionFromSet(
     const std::vector<storage::FileSystemURL>& file_urls,
     const std::set<std::string>& extensions) {
-  return base::ranges::any_of(file_urls, [&extensions](const auto& file_url) {
-    return base::ranges::any_of(extensions, [&file_url](const auto& extension) {
+  return std::ranges::any_of(file_urls, [&extensions](const auto& file_url) {
+    return std::ranges::any_of(extensions, [&file_url](const auto& extension) {
       return file_url.path().MatchesExtension(extension);
     });
   });
@@ -349,7 +349,7 @@ bool HasPowerPointFile(const std::vector<storage::FileSystemURL>& file_urls) {
 bool HaveExplicitFileHandlers(
     Profile* profile,
     const std::vector<storage::FileSystemURL>& file_urls) {
-  return base::ranges::all_of(file_urls, [profile](const auto& url) {
+  return std::ranges::all_of(file_urls, [profile](const auto& url) {
     return fm_tasks::HasExplicitDefaultFileHandler(profile,
                                                    url.path().FinalExtension());
   });
@@ -359,7 +359,7 @@ bool HaveExplicitFileHandlers(
 // pre-existing preference for these file types.
 bool HaveExplicitFileHandlers(Profile* profile,
                               const std::set<std::string>& extensions) {
-  return base::ranges::all_of(extensions, [profile](const auto& extension) {
+  return std::ranges::all_of(extensions, [profile](const auto& extension) {
     return fm_tasks::HasExplicitDefaultFileHandler(profile, extension);
   });
 }

@@ -4,6 +4,7 @@
 
 #include "extensions/browser/permissions_manager.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/check.h"
@@ -11,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -176,8 +176,8 @@ std::unique_ptr<PermissionSet> AdjustHostPatterns(
   // circumstances (whereas the default explicit scheme does not, in order to
   // allow for patterns like chrome://favicon).
 
-  bool needs_adjustment = base::ranges::any_of(permissions->explicit_hosts(),
-                                               needs_chrome_scheme_adjustment);
+  bool needs_adjustment = std::ranges::any_of(permissions->explicit_hosts(),
+                                              needs_chrome_scheme_adjustment);
   // If no patterns need adjustment, return the original set.
   if (!needs_adjustment) {
     return permissions;

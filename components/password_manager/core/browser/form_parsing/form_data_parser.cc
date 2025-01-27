@@ -22,7 +22,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -185,7 +184,7 @@ bool MatchesInteractability(const ProcessedField& processed_field,
 }
 
 bool DoesStringContainOnlyDigits(const std::u16string& s) {
-  return base::ranges::all_of(s, &base::IsAsciiDigit<char16_t>);
+  return std::ranges::all_of(s, &base::IsAsciiDigit<char16_t>);
 }
 
 // Heuristics to determine that a string is very unlikely to be a username.
@@ -379,8 +378,8 @@ bool CanBeConsideredAsSingleUsernameField(const FormFieldData* field) {
 const FormFieldData* FindConfirmationPasswordField(
     const std::vector<ProcessedField>& processed_fields,
     const FormFieldData& new_password) {
-  auto new_password_field = base::ranges::find(processed_fields, &new_password,
-                                               &ProcessedField::field);
+  auto new_password_field = std::ranges::find(processed_fields, &new_password,
+                                              &ProcessedField::field);
   if (new_password_field == processed_fields.end()) {
     return nullptr;
   }
@@ -403,10 +402,9 @@ const FormFieldData* FindConfirmationPasswordField(
 
 bool HasPasswordFieldsWithUserInput(
     const std::vector<ProcessedField>& processed_fields) {
-  return base::ranges::any_of(
-      processed_fields, [](const ProcessedField& field) {
-        return field.is_password && !field.field->user_input().empty();
-      });
+  return std::ranges::any_of(processed_fields, [](const ProcessedField& field) {
+    return field.is_password && !field.field->user_input().empty();
+  });
 }
 
 // Tries to parse |processed_fields| based on server |predictions|. Uses |mode|
@@ -699,7 +697,7 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
   // |passwords| though, in case it is needed for fallback.
   std::vector<const ProcessedField*> filtered;
   filtered.reserve(passwords.size());
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       passwords, std::back_inserter(filtered),
       [&ignored_readonly](const ProcessedField* processed_field) {
         return IsLikelyPassword(*processed_field, &ignored_readonly);
@@ -1438,7 +1436,7 @@ const FormFieldData* FindUsernameInHtmlParserResult(
     const std::vector<ProcessedField>& processed_fields,
     Interactability username_max) {
   for (FieldRendererId predicted_id : username_predictions) {
-    auto iter = base::ranges::find_if(
+    auto iter = std::ranges::find_if(
         processed_fields, [&](const ProcessedField& processed_field) {
           return processed_field.field->renderer_id() == predicted_id &&
                  MatchesInteractability(processed_field, username_max);

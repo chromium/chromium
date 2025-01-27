@@ -988,8 +988,8 @@ class DelegatedSourceListTest : public DesktopMediaPickerViewsTestBase {
       const std::vector<DesktopMediaList::Type>& delegated_source_types) {
     source_types_ = source_types;
     delegated_source_types_ = delegated_source_types;
-    ASSERT_FALSE(base::ranges::any_of(
-        source_types_, [this](DesktopMediaList::Type type) {
+    ASSERT_FALSE(
+        std::ranges::any_of(source_types_, [this](DesktopMediaList::Type type) {
           return base::Contains(delegated_source_types_, type);
         }));
   }

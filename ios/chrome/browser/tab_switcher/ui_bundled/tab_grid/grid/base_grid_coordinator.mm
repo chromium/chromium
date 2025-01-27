@@ -292,6 +292,9 @@
                                     group:
                                         (base::WeakPtr<const TabGroup>)tabGroup
                                sourceView:(UIView*)sourceView {
+  if (!tabGroup) {
+    return;
+  }
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
@@ -301,6 +304,7 @@
   _tabGroupConfirmationCoordinator.action = ^{
     [weakSelf takeActionForActionType:actionType weakGroup:tabGroup];
   };
+  _tabGroupConfirmationCoordinator.tabGroupName = tabGroup->GetTitle();
   [_tabGroupConfirmationCoordinator start];
   self.gridViewController.tabGroupConfirmationHandler =
       _tabGroupConfirmationCoordinator;
@@ -310,6 +314,9 @@
                                     group:
                                         (base::WeakPtr<const TabGroup>)tabGroup
                          sourceButtonItem:(UIBarButtonItem*)sourceButtonItem {
+  if (!tabGroup) {
+    return;
+  }
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
@@ -319,6 +326,7 @@
   _tabGroupConfirmationCoordinator.action = ^{
     [weakSelf takeActionForActionType:actionType weakGroup:tabGroup];
   };
+  _tabGroupConfirmationCoordinator.tabGroupName = tabGroup->GetTitle();
   [_tabGroupConfirmationCoordinator start];
   self.gridViewController.tabGroupConfirmationHandler =
       _tabGroupConfirmationCoordinator;

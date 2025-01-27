@@ -1200,6 +1200,14 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
   EXPECT_EQ(title_item->GetIndexInParent(), 7u);
 }
 
+TEST_F(ViewAXPlatformNodeDelegateTest, AccessibleURL) {
+  const GURL test_url("https://example.com");
+  widget_->UpdateAccessibleURLForRootView(test_url);
+  ViewAXPlatformNodeDelegate* root_delegate =
+      view_accessibility(widget_->GetRootView());
+  EXPECT_EQ(root_delegate->GetRootURL(), test_url.spec());
+}
+
 #if defined(USE_AURA)
 class DerivedTestView : public View {
   METADATA_HEADER(DerivedTestView, View)

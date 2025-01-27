@@ -313,9 +313,10 @@ scoped_refptr<InputContext> AsInputContext(
 }
 
 const URLVisitAggregate::TabData* GetTabDataIfExists(
-    const URLVisitAggregate& url_visit_aggregate) {
+    const URLVisitAggregate& url_visit_aggregate,
+    const std::vector<Fetcher>& fetchers) {
   const auto& fetcher_data_map = url_visit_aggregate.fetcher_data_map;
-  for (const auto& fetcher : {Fetcher::kTabModel, Fetcher::kSession}) {
+  for (const auto& fetcher : fetchers) {
     auto it = fetcher_data_map.find(fetcher);
     if (it != fetcher_data_map.end()) {
       const URLVisitAggregate::TabData* tab_data =

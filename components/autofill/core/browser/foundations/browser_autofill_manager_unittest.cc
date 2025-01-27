@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <optional>
@@ -20,7 +21,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -1158,8 +1158,8 @@ class BrowserAutofillManagerTest : public testing::Test {
     FormData result_form = input_form;
     // Copy the filled data into the form.
     for (FormFieldData& field : test_api(result_form).fields()) {
-      if (auto it = base::ranges::find(filled_fields, field.global_id(),
-                                       &FormFieldData::global_id);
+      if (auto it = std::ranges::find(filled_fields, field.global_id(),
+                                      &FormFieldData::global_id);
           it != filled_fields.end()) {
         field = *it;
       }
@@ -3399,7 +3399,7 @@ class BrowserAutofillManagerWithLogEventsTest
   template <class T>
   size_t CountEventOfType(
       const std::vector<AutofillField::FieldLogEventType>& events) {
-    return base::ranges::count_if(events, [](const auto& event) {
+    return std::ranges::count_if(events, [](const auto& event) {
       return absl::holds_alternative<T>(event);
     });
   }
@@ -4674,7 +4674,7 @@ void DoTestFormSubmittedNonAddressControlWithDefaultValue(
 
   // Remove phone number field.
   auto phonenumber_it =
-      base::ranges::find(form.fields(), u"phonenumber", &FormFieldData::name);
+      std::ranges::find(form.fields(), u"phonenumber", &FormFieldData::name);
   ASSERT_TRUE(phonenumber_it != form.fields().end());
   test_api(form).fields().erase(phonenumber_it);
 

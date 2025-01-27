@@ -392,7 +392,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   // Accessed on any thread.
   const bool is_accelerated_;
-  const bool supports_display_compositing_;
   const bool use_oop_rasterization_;
   OwningThreadData owning_thread_data_;
 };

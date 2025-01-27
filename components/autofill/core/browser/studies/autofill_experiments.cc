@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -230,7 +230,7 @@ bool IsCreditCardUploadEnabled(
 
   std::string country_code = base::ToUpperASCII(user_country);
   auto* const* country_iter =
-      base::ranges::find(kAutofillUpstreamLaunchedCountries, country_code);
+      std::ranges::find(kAutofillUpstreamLaunchedCountries, country_code);
   if (country_iter == std::end(kAutofillUpstreamLaunchedCountries)) {
     // |country_code| was not found in the list of launched countries.
     autofill_metrics::LogCardUploadEnabledMetric(

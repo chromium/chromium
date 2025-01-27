@@ -892,7 +892,7 @@ void FloatController::OnDeskActivationChanged(const Desk* activated,
   // update the floated windows' visibility. Therefore, here we hide the floated
   // window belonging to the deactivated desk, and show the one belonging to the
   // activated desk.
-  auto deactivated_desk_floated_window_info_iter = base::ranges::find_if(
+  auto deactivated_desk_floated_window_info_iter = std::ranges::find_if(
       floated_window_info_map_, [deactivated](const auto& floated_window_info) {
         return floated_window_info.second->desk() == deactivated;
       });

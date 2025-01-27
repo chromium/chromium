@@ -85,10 +85,6 @@ namespace blink {
 
 namespace {
 
-String SerializeBoolean(bool value) {
-  return value ? "true" : "false";
-}
-
 String SerializeServers(
     const std::vector<webrtc::PeerConnectionInterface::IceServer>& servers) {
   StringBuilder result;
@@ -124,9 +120,9 @@ String SerializeOfferOptions(blink::RTCOfferOptionsPlatform* options) {
   result.Append(", offerToReceiveAudio: ");
   result.AppendNumber(options->OfferToReceiveAudio());
   result.Append(", voiceActivityDetection: ");
-  result.Append(SerializeBoolean(options->VoiceActivityDetection()));
+  result.Append(String::Boolean(options->VoiceActivityDetection()));
   result.Append(", iceRestart: ");
-  result.Append(SerializeBoolean(options->IceRestart()));
+  result.Append(String::Boolean(options->IceRestart()));
   return result.ToString();
 }
 
@@ -136,7 +132,7 @@ String SerializeAnswerOptions(blink::RTCAnswerOptionsPlatform* options) {
 
   StringBuilder result;
   result.Append(", voiceActivityDetection: ");
-  result.Append(SerializeBoolean(options->VoiceActivityDetection()));
+  result.Append(String::Boolean(options->VoiceActivityDetection()));
   return result.ToString();
 }
 
@@ -211,7 +207,7 @@ String SerializeEncodingParameters(
     result.Append(indent);
     result.Append("    {");
     result.Append("active: ");
-    result.Append(encoding.active ? "true" : "false");
+    result.Append(String::Boolean(encoding.active));
     result.Append(", ");
     if (encoding.max_bitrate_bps) {
       result.Append("maxBitrate: ");
@@ -941,7 +937,7 @@ void PeerConnectionTracker::TrackCreateDataChannel(
   result.Append("label: ");
   result.Append(String::FromUTF8(data_channel->label()));
   result.Append(", ordered: ");
-  result.Append(SerializeBoolean(data_channel->ordered()));
+  result.Append(String::Boolean(data_channel->ordered()));
   std::optional<uint16_t> maxPacketLifeTime = data_channel->maxPacketLifeTime();
   if (maxPacketLifeTime.has_value()) {
     result.Append(", maxPacketLifeTime: ");
@@ -959,7 +955,7 @@ void PeerConnectionTracker::TrackCreateDataChannel(
   }
   bool negotiated = data_channel->negotiated();
   result.Append(", negotiated: ");
-  result.Append(SerializeBoolean(negotiated));
+  result.Append(String::Boolean(negotiated));
   if (negotiated) {
     result.Append(", id: ");
     result.Append(String::Number(data_channel->id()));

@@ -42,11 +42,16 @@ TEST_F(URLVisitResumptionRankerTest, ModelScore) {
   ModelProvider::Request inputs(visited_url_ranking::kNumInputs, -1);
   ExpectExecutionWithInput(inputs, false, {0});
 
-  inputs[visited_url_ranking::kTimeSinceLastModifiedSec] = 0;
-  ExpectExecutionWithInput(inputs, false, {1});
+  for (const auto& input_signal :
+       {visited_url_ranking::kTimeSinceLastActiveSec,
+        visited_url_ranking::kTimeSinceLastModifiedSec}) {
+    ModelProvider::Request request_inputs(visited_url_ranking::kNumInputs, -1);
+    request_inputs[input_signal] = 0;
+    ExpectExecutionWithInput(request_inputs, false, {1});
 
-  inputs[visited_url_ranking::kTimeSinceLastModifiedSec] = 10;
-  ExpectExecutionWithInput(inputs, false, {0.1});
+    request_inputs[input_signal] = 10;
+    ExpectExecutionWithInput(request_inputs, false, {0.1});
+  }
 }
 
 }  // namespace segmentation_platform

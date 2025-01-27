@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -31,7 +32,6 @@
 #include "url/origin.h"
 
 namespace blink {
-
 namespace {
 
 const char kCreateSessionSessionTypeUMAName[] = "CreateSession.SessionType";

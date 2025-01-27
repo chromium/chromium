@@ -322,7 +322,6 @@ class ChromeAuthenticatorRequestDelegate
   // available that can service requests for synced GPM passkeys.
   bool can_use_synced_phone_passkeys_ = false;
 
-  // TODO(crbug.com/40187814): Don't define this on ChromeOS.
   std::unique_ptr<GPMEnclaveController> enclave_controller_;
 
   // Stores the TransportAvailabilityInfo while we're waiting for the enclave

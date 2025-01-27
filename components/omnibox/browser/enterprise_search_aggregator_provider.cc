@@ -40,9 +40,9 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
     return false;
   }
 
-  // For now, only start if mock engines are valid.
-  if (!omnibox_feature_configs::SearchAggregatorProvider::Get()
-           .AreMockEnginesValid()) {
+  // There can be an aggregator set either through the feature params or through
+  // a policy JSON. Both require this feature to be enabled.
+  if (!omnibox_feature_configs::SearchAggregatorProvider::Get().enabled) {
     return false;
   }
 
@@ -52,7 +52,9 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
 
 void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
                                                bool minimal_changes) {
-  Stop(/*clear_cached_results=*/!minimal_changes,
+  // Don't clear matches. Keep showing old matches until a new response comes.
+  // This avoids flickering.
+  Stop(/*clear_cached_results=*/false,
        /*due_to_user_inactivity=*/false);
 
   if (!IsProviderAllowed(input)) {
@@ -81,6 +83,9 @@ void EnterpriseSearchAggregatorProvider::Run() {
   CHECK(template_url->featured_by_policy());
   CHECK(template_url->policy_origin() ==
         TemplateURLData::PolicyOrigin::kSearchAggregator);
+
+  // Clear old matches from the last response.
+  matches_.clear();
 
   auto match = CreateMatch(input_, template_url->keyword(), true, 1500,
                            "https://wikipedia.org", u"Your document",
@@ -120,6 +125,7 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
   DCHECK(!done_);
   DCHECK_EQ(loader_.get(), source);
   done_ = true;
+  NotifyListeners(/*updated_matches=*/true);
 }
 
 AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(

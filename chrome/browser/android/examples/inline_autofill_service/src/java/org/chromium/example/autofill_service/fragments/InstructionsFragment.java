@@ -5,7 +5,9 @@
 package org.chromium.example.autofill_service.fragments;
 
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -17,10 +19,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.example.autofill_service.R;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /** Primary fragment of the landing page. It describes the setup of the bundled AutofillService. */
 public class InstructionsFragment extends Fragment {
@@ -32,12 +36,18 @@ public class InstructionsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         view.findViewById(R.id.button_first).setOnClickListener(this::openCommunicationFragment);
+    }
 
-        final TextView introTextView = view.findViewById(R.id.textview_first);
+    @Override
+    public void onResume() {
+        super.onResume();
+        final TextView introTextView = getView().findViewById(R.id.textview_first);
         introTextView.setMovementMethod(LinkMovementMethod.getInstance());
         introTextView.setText(
                 applyClickActionToString(
-                        R.string.fragment_instructions_summary,
+                        getResources().getString(R.string.fragment_instructions_summary)
+                                + "\n\n"
+                                + addChannelConfigs(),
                         "Android System settings",
                         this::openSystemSettings),
                 TextView.BufferType.SPANNABLE);
@@ -53,8 +63,7 @@ public class InstructionsFragment extends Fragment {
     }
 
     private SpannableString applyClickActionToString(
-            @StringRes int stringRes, String subString, Runnable action) {
-        final String originalText = getResources().getString(stringRes);
+            String originalText, String subString, Runnable action) {
         final SpannableString spannableString = new SpannableString(originalText);
         final int subStringIndex = originalText.indexOf(subString);
         spannableString.setSpan(
@@ -80,5 +89,55 @@ public class InstructionsFragment extends Fragment {
             getContext().startActivity(intent, null);
         } catch (ActivityNotFoundException e) {
         }
+    }
+
+    String addChannelConfigs() {
+        return Stream.of(
+                        "org.chromium.chrome",
+                        "com.google.android.apps.chrome",
+                        "com.chrome.canary",
+                        "com.chrome.dev",
+                        "com.chrome.beta",
+                        "com.android.chrome")
+                .map(this::buildStringForChannel3pUsage)
+                .collect(Collectors.joining("\n"));
+    }
+
+    private String buildStringForChannel3pUsage(String channelPackageName) {
+        final Boolean channelUses3pFilling = uses3pFilling(channelPackageName);
+        return channelPackageName
+                + ": "
+                + (channelUses3pFilling == null ? "Not found" : channelUses3pFilling);
+    }
+
+    private Boolean uses3pFilling(String packageName) {
+        final String kContentProvidername = ".AutofillThirdPartyModeContentProvider";
+        final String kThirdPartyColumn = "autofill_third_party_state";
+        final String kThirdPartyModeActionsUriPath = "autofill_third_party_mode";
+
+        final Uri uri =
+                new Uri.Builder()
+                        .scheme(ContentResolver.SCHEME_CONTENT)
+                        .authority(packageName + kContentProvidername)
+                        .path(kThirdPartyModeActionsUriPath)
+                        .build();
+
+        final Cursor cursor =
+                getActivity()
+                        .getApplicationContext()
+                        .getContentResolver()
+                        .query(
+                                uri,
+                                /* projection= */ new String[] {kThirdPartyColumn},
+                                /* selection= */ null,
+                                /* selectionArgs= */ null,
+                                /* sortOrder= */ null);
+
+        if (cursor == null) {
+            return null; // Channel may not be installed.
+        }
+
+        cursor.moveToFirst(); // Retrieve the result;
+        return cursor.getInt(cursor.getColumnIndex(kThirdPartyColumn)) > 0;
     }
 }

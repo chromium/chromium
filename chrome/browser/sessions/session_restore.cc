@@ -28,7 +28,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
@@ -539,7 +538,7 @@ class SessionRestoreImpl : public BrowserListObserver {
 
     // Copy windows into windows_ so that we can combine both app and browser
     // windows together before doing a one-pass restore.
-    base::ranges::move(windows, std::back_inserter(windows_));
+    std::ranges::move(windows, std::back_inserter(windows_));
     SessionRestore::OnGotSession(profile(), for_apps, windows.size());
     windows.clear();
 

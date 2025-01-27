@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -16,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -446,7 +446,7 @@ void ShortcutsBackend::OnHistoryDeletions(
 
   ShortcutsDatabase::ShortcutIDs shortcut_ids;
   for (const auto& guid_pair : guid_map_) {
-    if (base::ranges::any_of(
+    if (std::ranges::any_of(
             deletion_info.deleted_rows(),
             history::URLRow::URLRowHasURL(
                 guid_pair.second->second.match_core.destination_url))) {

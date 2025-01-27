@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -22,7 +23,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -244,7 +244,7 @@ AccountInfo AccountTrackerService::GetAccountInfo(
 AccountInfo AccountTrackerService::FindAccountInfoByGaiaId(
     const GaiaId& gaia_id) const {
   if (!gaia_id.empty()) {
-    const auto iterator = base::ranges::find(
+    const auto iterator = std::ranges::find(
         accounts_, gaia_id, [](const auto& pair) { return pair.second.gaia; });
     if (iterator != accounts_.end()) {
       return iterator->second;
@@ -258,7 +258,7 @@ AccountInfo AccountTrackerService::FindAccountInfoByEmail(
     const std::string& email) const {
   if (!email.empty()) {
     const auto iterator =
-        base::ranges::find_if(accounts_, [&email](const auto& pair) {
+        std::ranges::find_if(accounts_, [&email](const auto& pair) {
           return gaia::AreEmailsSame(pair.second.email, email);
         });
     if (iterator != accounts_.end()) {

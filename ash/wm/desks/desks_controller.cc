@@ -65,7 +65,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -559,7 +558,7 @@ Desk* DesksController::GetPreviousDesk(bool use_target_active_desk) const {
 }
 
 Desk* DesksController::GetDeskByUuid(const base::Uuid& desk_uuid) const {
-  auto it = base::ranges::find(desks_, desk_uuid, &Desk::uuid);
+  auto it = std::ranges::find(desks_, desk_uuid, &Desk::uuid);
   return it != desks_.end() ? it->get() : nullptr;
 }
 
@@ -1784,7 +1783,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
 
-  auto iter = base::ranges::find(desks_, desk, &std::unique_ptr<Desk>::get);
+  auto iter = std::ranges::find(desks_, desk, &std::unique_ptr<Desk>::get);
   DCHECK(iter != desks_.end());
 
   const int removed_desk_index = std::distance(desks_.begin(), iter);
@@ -2365,7 +2364,7 @@ void DesksController::ReportClosedWindowsCountPerSourceHistogram(
 
 void DesksController::ReportCustomDeskNames() const {
   int custom_names_count =
-      base::ranges::count(desks_, true, &Desk::is_name_set_by_user);
+      std::ranges::count(desks_, true, &Desk::is_name_set_by_user);
 
   base::UmaHistogramCounts100(kNumberOfCustomNamesHistogramName,
                               custom_names_count);

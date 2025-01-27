@@ -221,7 +221,7 @@ void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
   base::StringPairs items;
   base::SplitStringIntoKeyValuePairs(*termination_header_value, '=', ';',
                                      &items);
-  auto session_id_it = base::ranges::find_if(items, [](const auto& kv_pair) {
+  auto session_id_it = std::ranges::find_if(items, [](const auto& kv_pair) {
     return base::EqualsCaseInsensitiveASCII(
         kv_pair.first, kGoogleSessionTerminationSessionIdKey);
   });

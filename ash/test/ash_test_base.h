@@ -336,7 +336,8 @@ class AshTestBase : public testing::Test {
   // existing user sessions and makes it the active user session.
   void SimulateUserLogin(
       const AccountId& account_id,
-      user_manager::UserType user_type = user_manager::UserType::kRegular);
+      user_manager::UserType user_type = user_manager::UserType::kRegular,
+      std::unique_ptr<PrefService> pref_service = nullptr);
 
   // Simular to SimulateUserLogin but for a newly created user first ever login.
   AccountId SimulateNewUserFirstLogin(const std::string& user_email);

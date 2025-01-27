@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -116,7 +116,7 @@ void TabStripLayoutHelper::MarkTabAsClosing(int model_index, Tab* tab) {
 }
 
 void TabStripLayoutHelper::RemoveTab(Tab* tab) {
-  auto it = base::ranges::find_if(slots_, [tab](const TabSlot& slot) {
+  auto it = std::ranges::find_if(slots_, [tab](const TabSlot& slot) {
     return slot.type == ViewType::kTab && slot.view == tab;
   });
   if (it != slots_.end()) {
@@ -389,7 +389,7 @@ int TabStripLayoutHelper::GetFirstSlotIndexForTabModelIndex(
 
 int TabStripLayoutHelper::GetSlotIndexForGroupHeader(
     tab_groups::TabGroupId group) const {
-  const auto it = base::ranges::find_if(slots_, [group](const auto& slot) {
+  const auto it = std::ranges::find_if(slots_, [group](const auto& slot) {
     return slot.type == ViewType::kGroupHeader &&
            static_cast<TabGroupHeader*>(slot.view)->group() == group;
   });

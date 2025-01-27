@@ -9,6 +9,7 @@
 
 #include <ntstatus.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -20,7 +21,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -480,7 +480,7 @@ HRESULT MakeUsernameForAccount(const base::Value::Dict& result,
 
   // Determine if the email is a consumer domain (gmail.com or googlemail.com).
   std::wstring email = GetDictString(result, kKeyEmail);
-  base::ranges::transform(email, email.begin(), ::tolower);
+  std::ranges::transform(email, email.begin(), ::tolower);
   std::wstring::size_type consumer_domain_pos = email.find(L"@gmail.com");
   if (consumer_domain_pos == std::wstring::npos)
     consumer_domain_pos = email.find(L"@googlemail.com");

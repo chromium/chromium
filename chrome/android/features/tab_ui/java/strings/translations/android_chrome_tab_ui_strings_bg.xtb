@@ -43,6 +43,7 @@
 <translation id="2671423594960767771">Споделяне на групата</translation>
 <translation id="2677748264148917807">Излизане</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Добавихте <ph name="ONE_ADDED" /> раздел, променихте <ph name="ANY_CHANGED" /> и затворихте <ph name="ANY_CLOSED" />}other{Добавихте <ph name="MANY_ADDED" /> раздела, променихте <ph name="ANY_CHANGED" /> и затворихте <ph name="ANY_CLOSED" />}}</translation>
+<translation id="2755485474385016903">Направените промени се виждат от всички в групата</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Създадено преди <ph name="NUM_HOURS_ONE" /> час}other{Създадено преди <ph name="NUM_HOURS_MANY" /> часа}}</translation>
 <translation id="2801787514987684416">Искате ли да прегледате информацията за магазина?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Затворихте <ph name="ONE_CLOSED" /> раздел}other{Затворихте <ph name="MANY_CLOSED" /> раздела}}</translation>

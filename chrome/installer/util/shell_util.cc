@@ -39,7 +39,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -1113,10 +1112,10 @@ FilterTargetContains::FilterTargetContains(
 
 bool FilterTargetContains::Match(const base::FilePath& target_path,
                                  const std::wstring& args) const {
-  if (base::ranges::none_of(desired_target_compare_,
-                            [&target_path](const auto& target_compare) {
-                              return target_compare.EvaluatePath(target_path);
-                            })) {
+  if (std::ranges::none_of(desired_target_compare_,
+                           [&target_path](const auto& target_compare) {
+                             return target_compare.EvaluatePath(target_path);
+                           })) {
     return false;
   }
   if (require_args_ && args.empty())
