@@ -12,10 +12,11 @@ import '//resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 import './network_property_list_mojo.js';
 import './network_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {NO_ROUTING_PREFIX} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {CrToggleElement} from '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import {IPConfigProperties, ManagedProperties, NO_ROUTING_PREFIX} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {IPConfigType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 
 import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from './cr_policy_network_behavior_mojo.js';
 import {getTemplate} from './network_ip_config.html.js';
@@ -24,14 +25,13 @@ import {OncMojo} from './onc_mojo.js';
 /**
  * Returns the routing prefix as a string for a given prefix length. If
  * |prefixLength| is invalid, returns undefined.
- * @param {number} prefixLength The ONC routing prefix length.
- * @return {string|undefined}
+ * @param prefixLength The ONC routing prefix length.
  */
-const getRoutingPrefixAsNetmask = function(prefixLength) {
+const getRoutingPrefixAsNetmask = function(prefixLength: number): string|null {
   'use strict';
   // Return the empty string for invalid inputs.
   if (prefixLength <= 0 || prefixLength > 32) {
-    return undefined;
+    return null;
   }
   let netmask = '';
   for (let i = 0; i < 4; ++i) {
@@ -56,10 +56,9 @@ const getRoutingPrefixAsNetmask = function(prefixLength) {
 
 /**
  * Returns the routing prefix length as a number from the netmask string.
- * @param {string|undefined} netmask The netmask string, e.g. 255.255.255.0.
- * @return {number} The corresponding netmask or NO_ROUTING_PREFIX if invalid.
+ * @param netmask The netmask string, e.g. 255.255.255.0.
  */
-const getRoutingPrefixAsLength = function(netmask) {
+const getRoutingPrefixAsLength = function(netmask: string|null): number {
   'use strict';
   if (!netmask) {
     return NO_ROUTING_PREFIX;
@@ -103,19 +102,16 @@ const getRoutingPrefixAsLength = function(netmask) {
   return prefixLength;
 };
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {CrPolicyNetworkBehaviorMojoInterface}
- */
 const NetworkIpConfigElementBase =
-    mixinBehaviors([I18nBehavior, CrPolicyNetworkBehaviorMojo], PolymerElement);
+    mixinBehaviors([CrPolicyNetworkBehaviorMojo], I18nMixin(PolymerElement)) as
+    {
+      new (): PolymerElement & I18nMixinInterface &
+          CrPolicyNetworkBehaviorMojoInterface,
+    };
 
-/** @polymer */
-class NetworkIpConfigElement extends NetworkIpConfigElementBase {
+export class NetworkIpConfigElement extends NetworkIpConfigElementBase {
   static get is() {
-    return 'network-ip-config';
+    return 'network-ip-config' as const;
   }
 
   static get template() {
@@ -129,7 +125,6 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
         value: false,
       },
 
-      /** @type {!ManagedProperties|undefined} */
       managedProperties: {
         type: Object,
         observer: 'managedPropertiesChanged_',
@@ -137,7 +132,6 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
 
       /**
        * State of 'Configure IP Addresses Automatically'.
-       * @private
        */
       automatic_: {
         type: Boolean,
@@ -146,16 +140,11 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
 
       /**
        * The currently visible IP Config property dictionary.
-       * @private {{
-       *   ipv4: (OncMojo.IPConfigUIProperties|undefined),
-       *   ipv6: (OncMojo.IPConfigUIProperties|undefined)
-       * }|undefined}
        */
       ipConfig_: Object,
 
       /**
        * Array of properties to pass to the property list.
-       * @private {!Array<string>}
        */
       ipConfigFields_: {
         type: Array,
@@ -172,7 +161,6 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
 
       /**
        * True if automatically-configured IP address toggle should be visible.
-       * @private
        */
       shouldShowAutoIpConfigToggle_: {
         type: Boolean,
@@ -182,34 +170,42 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
     };
   }
 
-  /** @override */
+  disabled: boolean;
+  managedProperties: ManagedProperties|undefined;
+  private automatic_: boolean;
+  private ipConfig_: ({
+    ipv4: (OncMojo.IPConfigUIProperties|undefined),
+    ipv6: (OncMojo.IPConfigUIProperties|undefined)
+  }|undefined);
+  private ipConfigFields_: string[];
+  private shouldShowAutoIpConfigToggle_: boolean;
+  private savedStaticIp_: OncMojo.IPConfigUIProperties|undefined;
+
   constructor() {
     super();
 
     /**
      * Saved static IP configuration properties when switching to 'automatic'.
-     * @private {!OncMojo.IPConfigUIProperties|undefined}
      */
     this.savedStaticIp_ = undefined;
   }
 
   /**
    * Returns the automatically configure IP CrToggleElement.
-   * @return {?CrToggleElement}
    */
-  getAutoConfigIpToggle() {
-    return /** @type {?CrToggleElement} */ (
-        this.shadowRoot.querySelector('#autoConfigIpToggle'));
+  getAutoConfigIpToggle(): CrToggleElement|null {
+    return this.shadowRoot!.querySelector('#autoConfigIpToggle');
   }
 
-  /** @private */
-  managedPropertiesChanged_(newValue, oldValue) {
+  private managedPropertiesChanged_(
+      newValue: ManagedProperties|undefined,
+      oldValue: ManagedProperties|undefined): void {
     if (!this.managedProperties) {
       return;
     }
 
     const properties = this.managedProperties;
-    if (newValue.guid !== (oldValue && oldValue.guid)) {
+    if (newValue && newValue.guid !== (oldValue && oldValue.guid)) {
       this.savedStaticIp_ = undefined;
     }
 
@@ -219,7 +215,7 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
 
     if (properties.ipConfigs || properties.staticIpConfig) {
       if (this.automatic_ || !oldValue ||
-          newValue.guid !== (oldValue && oldValue.guid) ||
+          (newValue && newValue.guid !== (oldValue && oldValue.guid)) ||
           !OncMojo.connectionStateIsConnected(properties.connectionState)) {
         // Update the 'ipConfig' property.
         const ipv4 = this.getIPConfigUIProperties_(
@@ -231,8 +227,18 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
         // the ipv6 address is not set.
         if (OncMojo.connectionStateIsConnected(properties.connectionState) &&
             this.automatic_ && ipv4 && ipv4.ipAddress) {
-          ipv6 = ipv6 || {type: IPConfigType.kIPv6};
-          ipv6.ipAddress = ipv6.ipAddress || this.i18n('ipAddressNotAvailable');
+          ipv6 = ipv6 || {
+            type: IPConfigType.kIPv6,
+            gateway: null,
+            ipAddress: null,
+            nameServers: null,
+            netmask: null,
+            webProxyAutoDiscoveryUrl: null
+          };
+          if (ipv6) {
+            ipv6.ipAddress =
+                ipv6.ipAddress || this.i18n('ipAddressNotAvailable');
+          }
         }
         this.ipConfig_ = {ipv4: ipv4, ipv6: ipv6};
       }
@@ -243,11 +249,9 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
 
   /**
    * Checks whether IP address config type can be changed.
-   * @param {?ManagedProperties} managedProperties
-   * @return {boolean}
-   * @private
    */
-  canChangeIPConfigType_(managedProperties) {
+  private canChangeIPConfigType_(managedProperties: ManagedProperties|
+                                 null): boolean {
     if (this.disabled || !managedProperties) {
       return false;
     }
@@ -265,9 +269,8 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
    * StaticIPConfig.
    * TODO(https://crbug.com/1148841): Setting defaults here is strange, find
    * some better way.
-   * @private
    */
-  setIpv4Defaults_() {
+  private setIpv4Defaults_(): void {
     if (!this.ipConfig_ || !this.ipConfig_.ipv4) {
       return;
     }
@@ -282,11 +285,10 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
     }
   }
 
-  /** @private */
-  onAutomaticChange_() {
+  private onAutomaticChange_(): void {
     if (!this.automatic_) {
       if (!this.ipConfig_) {
-        this.ipConfig_ = {};
+        this.ipConfig_ = {ipv4: undefined, ipv6: undefined};
       }
       if (this.savedStaticIp_) {
         this.ipConfig_.ipv4 = this.savedStaticIp_;
@@ -294,6 +296,11 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
       if (!this.ipConfig_.ipv4) {
         this.ipConfig_.ipv4 = {
           type: IPConfigType.kIPv4,
+          gateway: null,
+          ipAddress: null,
+          nameServers: null,
+          netmask: null,
+          webProxyAutoDiscoveryUrl: null,
         };
       }
       this.setIpv4Defaults_();
@@ -313,58 +320,54 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
   }
 
   /**
-   * @param {!IPConfigProperties|undefined}
-   *     ipconfig
-   * @return {!OncMojo.IPConfigUIProperties|undefined} A new
-   *     IPConfigUIProperties object with routingPrefix expressed as a netmask
-   *     string instead of a prefix length. Returns undefined if |ipconfig|
-   *     is not defined.
-   * @private
+   * Returns a new IPConfigUIProperties object with routingPrefix expressed as a
+   * netmask string instead of a prefix length. Returns undefined if
+   * |ipconfig| is not defined.
+   *
    */
-  getIPConfigUIProperties_(ipconfig) {
+  private getIPConfigUIProperties_(ipconfig: IPConfigProperties|undefined):
+      OncMojo.IPConfigUIProperties|undefined {
     if (!ipconfig) {
       return undefined;
     }
 
     // Copy |ipconfig| properties into |ipconfigUI|.
-    const ipconfigUI = {};
-    ipconfigUI.gateway = ipconfig.gateway;
-    ipconfigUI.ipAddress = ipconfig.ipAddress;
-    ipconfigUI.nameServers = ipconfig.nameServers;
-    ipconfigUI.type = ipconfig.type;
-    ipconfigUI.webProxyAutoDiscoveryUrl = ipconfig.webProxyAutoDiscoveryUrl;
-
-    if (ipconfig.routingPrefix !== NO_ROUTING_PREFIX) {
-      ipconfigUI.netmask = getRoutingPrefixAsNetmask(ipconfig.routingPrefix);
-    }
+    const ipconfigUI: OncMojo.IPConfigUIProperties = {
+      gateway: ipconfig.gateway,
+      ipAddress: ipconfig.ipAddress,
+      nameServers: ipconfig.nameServers,
+      type: ipconfig.type,
+      webProxyAutoDiscoveryUrl: ipconfig.webProxyAutoDiscoveryUrl,
+      netmask: ipconfig.routingPrefix !== NO_ROUTING_PREFIX ?
+          getRoutingPrefixAsNetmask(ipconfig.routingPrefix) :
+          null,
+    };
 
     return ipconfigUI;
   }
 
   /**
-   * @param {!OncMojo.IPConfigUIProperties} ipconfigUI
-   * @return {!IPConfigProperties} A new
-   *     IPConfigProperties object with netmask expressed as a a prefix
-   *     length.
-   * @private
+   * Returns a new IPConfigProperties object with netmask expressed as a
+   * prefix length.
    */
-  getIPConfigProperties_(ipconfigUI) {
-    const ipconfig = {};
-    ipconfig.gateway = ipconfigUI.gateway;
-    ipconfig.ipAddress = ipconfigUI.ipAddress;
-    ipconfig.nameServers = ipconfigUI.nameServers;
-    ipconfig.routingPrefix = getRoutingPrefixAsLength(ipconfigUI.netmask);
-    ipconfig.type = ipconfigUI.type;
-    ipconfig.webProxyAutoDiscoveryUrl = ipconfigUI.webProxyAutoDiscoveryUrl;
+  private getIPConfigProperties_(ipconfigUI: OncMojo.IPConfigUIProperties):
+      IPConfigProperties {
+    const ipconfig: IPConfigProperties = {
+      gateway: ipconfigUI.gateway,
+      ipAddress: ipconfigUI.ipAddress,
+      nameServers: ipconfigUI.nameServers,
+      routingPrefix: getRoutingPrefixAsLength(ipconfigUI.netmask),
+      type: ipconfigUI.type,
+      webProxyAutoDiscoveryUrl: ipconfigUI.webProxyAutoDiscoveryUrl,
+      excludedRoutes: null,
+      includedRoutes: null,
+      searchDomains: null,
+    };
 
     return ipconfig;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  hasIpConfigFields_() {
+  private hasIpConfigFields_(): boolean {
     if (!this.ipConfig_) {
       return false;
     }
@@ -379,19 +382,17 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
   }
 
   /**
-   * @param {?OncMojo.ManagedProperty|undefined} property
-   * @return {string|undefined} Edit type to be used in network-property-list.
-   * @private
+   * Returns an edit type to be used in network-property-list.
    */
-  getIPFieldEditType_(property) {
+  private getIPFieldEditType_(property: OncMojo.ManagedProperty|
+                              undefined): string|undefined {
     return this.isNetworkPolicyEnforced(property) ? undefined : 'String';
   }
 
   /**
-   * @return {Object} An object with the edit type for each editable field.
-   * @private
+   * Returns an object with the edit type for each editable field.
    */
-  getIPEditFields_() {
+  private getIPEditFields_(): Object {
     const staticIpConfig =
         this.managedProperties && this.managedProperties.staticIpConfig;
     if (this.automatic_ || !staticIpConfig) {
@@ -409,11 +410,9 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
 
   /**
    * Event triggered when the network property list changes.
-   * @param {!CustomEvent<!{field: string, value: string}>} event The
-   *     network-property-list change event.
-   * @private
    */
-  onIPChange_(event) {
+  private onIPChange_(event: CustomEvent<{field: string, value: string}>):
+      void {
     if (!this.ipConfig_) {
       return;
     }
@@ -424,42 +423,40 @@ class NetworkIpConfigElement extends NetworkIpConfigElementBase {
     this.sendStaticIpConfig_();
   }
 
-  /** @private */
-  sendStaticIpConfig_() {
+  private sendStaticIpConfig_(): void {
     // This will also set IPAddressConfigType to STATIC.
     this.dispatchEvent(new CustomEvent('ip-change', {
       bubbles: true,
       composed: true,
       detail: {
         field: 'staticIpConfig',
-        value: this.ipConfig_.ipv4 ?
+        value: this.ipConfig_ && this.ipConfig_.ipv4 ?
             this.getIPConfigProperties_(this.ipConfig_.ipv4) :
             {}
       }
     }));
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShouldShowAutoIpConfigToggle_() {
-    if (this.managedProperties.type === NetworkType.kCellular) {
+  private computeShouldShowAutoIpConfigToggle_(): boolean {
+    if (this.managedProperties &&
+        this.managedProperties.type === NetworkType.kCellular) {
       return false;
     }
     return true;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getFieldsClassList_() {
+  private getFieldsClassList_(): string {
     let classes = 'property-box single-column stretch';
     if (this.shouldShowAutoIpConfigToggle_) {
       classes += ' indented';
     }
     return classes;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'network-ip-config': NetworkIpConfigElement;
   }
 }
 

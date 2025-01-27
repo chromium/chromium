@@ -1416,14 +1416,14 @@ OncMojo.ManagedProperty;
 /**
  * Modified version of IPConfigProperties to store routingPrefix as
  * a human-readable netmask string instead of as a number. Used in
- * network_ip_config.js.
+ * network_ip_config.ts.
  * @typedef {{
- *   gateway: (string|undefined),
- *   ipAddress: (string|undefined),
- *   nameServers: (Array<string>|undefined),
- *   netmask: (string|undefined),
+ *   gateway: (string|null),
+ *   ipAddress: (string|null),
+ *   nameServers: (Array<string>|null),
+ *   netmask: (string|null),
  *   type: !IPConfigType,
- *   webProxyAutoDiscoveryUrl: (string|undefined),
+ *   webProxyAutoDiscoveryUrl: (string|null),
  * }}
  */
 OncMojo.IPConfigUIProperties;
