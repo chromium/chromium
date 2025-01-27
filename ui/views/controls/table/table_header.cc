@@ -131,6 +131,11 @@ int TableHeader::GetSeparatorHorizontalPadding() const {
       kHorizontalSeparatorPaddingDefault);
 }
 
+ui::ColorId TableHeader::GetSeparatorHorizontalColorId() const {
+  return table_->header_style().separator_horizontal_color_id.value_or(
+      ui::kColorFocusableBorderUnfocused);
+}
+
 gfx::Font::Weight TableHeader::GetFontWeight() const {
   return table_->header_style().font_weight.value_or(gfx::Font::Weight::NORMAL);
 }
@@ -154,7 +159,7 @@ void TableHeader::OnPaint(gfx::Canvas* canvas) {
   // matches that of the border around the scrollview.
   OnPaintBackground(canvas);
   SkColor border_color =
-      color_provider->GetColor(ui::kColorFocusableBorderUnfocused);
+      color_provider->GetColor(GetSeparatorHorizontalColorId());
   canvas->DrawSharpLine(
       gfx::PointF(separator_horizontal_padding, height() - 1),
       gfx::PointF(width() - separator_horizontal_padding, height() - 1),

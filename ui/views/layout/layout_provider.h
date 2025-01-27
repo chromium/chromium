@@ -72,6 +72,8 @@ enum DistanceMetric {
   DISTANCE_CLOSE_BUTTON_MARGIN,
   // The vertical padding applied to text in a control.
   DISTANCE_CONTROL_VERTICAL_TEXT_PADDING,
+  // The vertical padding applied to text in a table.
+  DISTANCE_TABLE_VERTICAL_TEXT_PADDING,
   // The default minimum width of a dialog button.
   DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH,
   // The distance between the bottom of a dialog's content, when the final
