@@ -108,6 +108,9 @@
                 'name': '2d.composite.%s.%s' % (name, op),
                 'test_type': 'promise',
                 'code': """
+    ctx.fillStyle = 'rgba%s';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.globalCompositeOperation = '%s';
     const canvas2 = document.createElement('canvas');
     canvas2.width = canvas.width;
     canvas2.height = canvas.height;
@@ -116,9 +119,6 @@
     const blob = await response.blob();
     const bitmap = await createImageBitmap(blob);
     ctx2.drawImage(bitmap, 0, 0);
-    ctx.fillStyle = 'rgba%s';
-    ctx.fillRect(0, 0, 100, 50);
-    ctx.globalCompositeOperation = '%s';
     ctx.drawImage(canvas2, 0, 0);
     @assert pixel 50,25 ==~ %s +/- 5;
     """ % (dest, op, to_test(expected)),
