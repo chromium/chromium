@@ -102,6 +102,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/bluetooth:unit_tests",
     "//chrome/browser/ash/boca:unit_tests",
     "//chrome/browser/ash/boca/on_task:unit_tests",
+    "//chrome/browser/ash/boca/spotlight:unit_tests",
     "//chrome/browser/ash/borealis:unit_tests",
     "//chrome/browser/ash/bruschetta:unit_tests",
     "//chrome/browser/ash/calendar:unit_tests",
