@@ -3049,11 +3049,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool HasStickyUserActivationForHistoryIntervention() const;
 
   // Parameter for `ClosePage()` that indicates whether the request comes from
-  // the browser, the renderer or intended prerender cancellation. This is used
-  // to determine whether navigation should prevent the page from closing, since
-  // navigations should not prevent the page from closing if the browser or
-  // prerender cancellation is trying to close the page.
-  enum class ClosePageSource { kRenderer, kBrowser, kPrerenderDiscard };
+  // the browser or the renderer. This is used to determine whether navigation
+  // should prevent the page from closing, since navigations should not prevent
+  // the page from closing if the browser is trying to close the page.
+  enum class ClosePageSource { kRenderer, kBrowser };
 
   // Tells the renderer process to run the page's unload handler.
   // A completion callback is invoked by the renderer when the handler

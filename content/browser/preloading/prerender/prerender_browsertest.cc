@@ -3634,14 +3634,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Start prerendering.
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/pagehide_event_listeners.html");
+  const GURL kPrerenderingUrl = GetUrl("/title2.html");
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
   AddPrerenderAsync(kPrerenderingUrl);
   registry_observer.WaitForTrigger(kPrerenderingUrl);
   FrameTreeNodeId host_id = GetHostForUrl(kPrerenderingUrl);
   ASSERT_TRUE(host_id);
-  WaitForPrerenderLoadCompletion(kPrerenderingUrl);
 
   // Remove the rules and check that the prerender is cancelled with an
   // appropriate final status.
@@ -3653,12 +3651,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_TRUE(GetHostForUrl(kPrerenderingUrl).is_null());
   ExpectFinalStatusForSpeculationRule(
       PrerenderFinalStatus::kSpeculationRuleRemoved);
-  // Intended prerender cancellation such as speculation rules removal is
-  // expected to dispatch the pagehide event unlike other unexpected prerender
-  // failures.
-  EXPECT_EQ(EvalJs(web_contents_impl()->GetPrimaryMainFrame(),
-                   "window.localStorage.getItem(\"pagehideFired\")"),
-            kPrerenderingUrl.spec());
 }
 
 // Tests removing speculation rules whose target_hint is "_blank" (i.e.,

@@ -7026,10 +7026,7 @@ void RenderFrameHostImpl::ClosePageIgnoringUnloadEvents(
 }
 
 bool RenderFrameHostImpl::IsPageReadyToBeClosed() {
-  if (lifecycle_state_ != LifecycleStateImpl::kPrerendering) {
-    DCHECK(IsInPrimaryMainFrame());
-  }
-
+  DCHECK(IsInPrimaryMainFrame());
   // If there is a JavaScript dialog up, don't bother sending the renderer the
   // close event because it is known unresponsive, waiting for the reply from
   // the dialog.
