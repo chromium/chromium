@@ -364,11 +364,6 @@ class ShoppingService : public KeyedService,
   virtual void WaitForReady(
       base::OnceCallback<void(ShoppingService*)> callback);
 
-  // This is a feature check for the "merchant viewer", which will return true
-  // if the user has the feature flag enabled or (if applicable) is in an
-  // enabled country and locale.
-  virtual bool IsMerchantViewerEnabled();
-
   // Check if parcel tracking is eligible for use. This not only checks the
   // feature flag, but also checks user's sign in state, country code, etc. The
   // value returned here can change during runtime so it should not be used

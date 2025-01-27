@@ -62,7 +62,6 @@ void MockShoppingService::SetupPermissiveMock() {
   SetIsSubscribedCallbackValue(true);
   SetGetAllSubscriptionsCallbackValue(std::vector<CommerceSubscription>());
   SetIsShoppingListEligible(true);
-  SetIsMerchantViewerEnabled(true);
   SetGetAllPriceTrackedBookmarksCallbackValue(
       std::vector<const bookmarks::BookmarkNode*>());
   SetGetAllShoppingBookmarksValue(
@@ -212,11 +211,6 @@ void MockShoppingService::SetIsReady(bool ready) {
                   FROM_HERE, base::BindOnce(std::move(callback), this));
             }
           });
-}
-
-void MockShoppingService::SetIsMerchantViewerEnabled(bool is_enabled) {
-  ON_CALL(*this, IsMerchantViewerEnabled)
-      .WillByDefault(testing::Return(is_enabled));
 }
 
 void MockShoppingService::SetGetAllPriceTrackedBookmarksCallbackValue(
