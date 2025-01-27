@@ -767,6 +767,22 @@ void MessagingBackendServiceImpl::OnTabUpdated(
 
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            updated_tab.saved_group_guid());
+
+  if (source == tab_groups::TriggerSource::REMOTE && last_selected_tab_ &&
+      last_selected_tab_->saved_tab_guid() == updated_tab.saved_tab_guid() &&
+      instant_message_delegate_) {
+    InstantMessage instant_message_base;
+    instant_message_base.attribution = CreateMessageAttributionForTabUpdates(
+        message, std::nullopt, updated_tab);
+    instant_message_base.collaboration_event = CollaborationEvent::TAB_UPDATED;
+    // TODO(crbug.com/391941212): CONFLICT_TAB_REMOVED and UNDEFINED don't seem
+    // to be used. In that case, remove them.
+    instant_message_base.type = InstantNotificationType::UNDEFINED;
+
+    DisplayInstantMessage(base::Uuid::ParseLowercase(message.uuid()),
+                          instant_message_base,
+                          {InstantNotificationLevel::BROWSER});
+  }
 }
 
 void MessagingBackendServiceImpl::OnTabSelected(

@@ -1459,6 +1459,56 @@ TEST_F(MessagingBackendServiceImplTest, TestGetMessagesForTab) {
   EXPECT_EQ(PersistentNotificationType::DIRTY_TAB, messages.at(1).type);
 }
 
+TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsUpdated) {
+  CreateAndInitializeService();
+  SetupInstantMessageDelegate();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+
+  // Store all stored messages to this field
+  collaboration_pb::Message db_message;
+  EXPECT_CALL(*unowned_messaging_backend_store_, AddMessage(_))
+      .WillRepeatedly(SaveArg<0>(&db_message));
+
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+  base::Uuid tab1_sync_id = tab_group.saved_tabs().at(0).saved_tab_guid();
+  tab_groups::SavedTabGroupTab* tab1 = tab_group.GetTab(tab1_sync_id);
+
+  tg_notifier_observer_->OnTabSelected(*tab1);
+
+  // Save the last invocation of calls to the InstantMessageDelegate.
+  InstantMessage message;
+  MessagingBackendService::InstantMessageDelegate::SuccessCallback
+      success_callback;
+  EXPECT_CALL(*mock_instant_message_delegate_,
+              DisplayInstantaneousMessage(_, _))
+      .WillRepeatedly(
+          DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
+
+  // Updating the currently selected tab should inform the delegate.
+  tg_notifier_observer_->OnTabUpdated(*tab1, tab_groups::TriggerSource::REMOTE);
+
+  // We should have received a stored message about the updated tab.
+  EXPECT_NE("", db_message.uuid());
+  base::Uuid db_message_id = base::Uuid::ParseLowercase(db_message.uuid());
+  EXPECT_EQ(db_message_id, message.attribution.id);
+
+  EXPECT_EQ(CollaborationEvent::TAB_UPDATED, message.collaboration_event);
+  EXPECT_EQ(InstantNotificationType::UNDEFINED, message.type);
+
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              ClearDirtyMessage(db_message_id, DirtyType::kMessageOnly))
+      .Times(1);
+  std::move(success_callback).Run(true);
+}
+
 TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsRemoved) {
   CreateAndInitializeService();
   SetupInstantMessageDelegate();
