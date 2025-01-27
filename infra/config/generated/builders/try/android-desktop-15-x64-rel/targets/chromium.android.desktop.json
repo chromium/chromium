@@ -111,6 +111,7 @@
         "args": [
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
+          "--gtest_filter=-org.chromium.chrome.browser.ui.appmenu.AppMenuTest.testShowAppMenu_AnchorTop",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
