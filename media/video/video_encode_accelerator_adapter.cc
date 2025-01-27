@@ -1079,7 +1079,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   const auto dest_coded_size = input_coded_size_;
   const auto dest_visible_rect = gfx::Rect(options_.frame_size);
   bool is_gpu_supported_format =
-      base::ranges::find(gpu_supported_pixel_formats_, src_frame->format()) !=
+      std::ranges::find(gpu_supported_pixel_formats_, src_frame->format()) !=
       gpu_supported_pixel_formats_.end();
 
   if ((src_frame->HasMappableGpuBuffer() || src_frame->HasSharedImage()) &&

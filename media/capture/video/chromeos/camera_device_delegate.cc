@@ -22,7 +22,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/posix/safe_strerror.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1686,21 +1685,21 @@ void CameraDeviceDelegate::DoGetPhotoState(
   // resolutions, we set the step to 0.0 here.
   photo_state->width->current = current_blob_resolution_.width();
   photo_state->width->min =
-      base::ranges::min_element(blob_resolutions, {}, [](const gfx::Size& s) {
+      std::ranges::min_element(blob_resolutions, {}, [](const gfx::Size& s) {
         return s.width();
       })->width();
   photo_state->width->max =
-      base::ranges::max_element(blob_resolutions, {}, [](const gfx::Size& s) {
+      std::ranges::max_element(blob_resolutions, {}, [](const gfx::Size& s) {
         return s.width();
       })->width();
   photo_state->width->step = 0.0;
   photo_state->height->current = current_blob_resolution_.height();
   photo_state->height->min =
-      base::ranges::min_element(blob_resolutions, {}, [](const gfx::Size& s) {
+      std::ranges::min_element(blob_resolutions, {}, [](const gfx::Size& s) {
         return s.height();
       })->height();
   photo_state->height->max =
-      base::ranges::max_element(blob_resolutions, {}, [](const gfx::Size& s) {
+      std::ranges::max_element(blob_resolutions, {}, [](const gfx::Size& s) {
         return s.height();
       })->height();
   photo_state->height->step = 0.0;

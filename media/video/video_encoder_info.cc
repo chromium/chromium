@@ -4,9 +4,8 @@
 
 #include "media/video/video_encoder_info.h"
 
+#include <algorithm>
 #include <tuple>
-
-#include "base/ranges/algorithm.h"
 
 namespace media {
 
@@ -57,7 +56,7 @@ bool operator==(const VideoEncoderInfo& lhs, const VideoEncoderInfo& rhs) {
 
 bool VideoEncoderInfo::DoesSupportGpuSharedImages(VideoPixelFormat format) {
   bool is_gpu_supported_format =
-      base::ranges::find(gpu_supported_pixel_formats, format) !=
+      std::ranges::find(gpu_supported_pixel_formats, format) !=
       gpu_supported_pixel_formats.end();
   return supports_gpu_shared_images && is_gpu_supported_format;
 }

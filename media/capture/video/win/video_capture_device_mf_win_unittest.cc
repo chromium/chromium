@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <wincodec.h>
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <string>
@@ -20,7 +21,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -1904,27 +1904,27 @@ TEST_F(VideoCaptureDeviceMFWinTest, GetPhotoStateViaPhotoStream) {
   EXPECT_EQ(state->height->max, kArbitraryValidPhotoHeight);
 
   EXPECT_EQ(state->supported_white_balance_modes.size(), 2u);
-  EXPECT_EQ(base::ranges::count(state->supported_white_balance_modes,
-                                mojom::MeteringMode::CONTINUOUS),
+  EXPECT_EQ(std::ranges::count(state->supported_white_balance_modes,
+                               mojom::MeteringMode::CONTINUOUS),
             1);
-  EXPECT_EQ(base::ranges::count(state->supported_white_balance_modes,
-                                mojom::MeteringMode::MANUAL),
+  EXPECT_EQ(std::ranges::count(state->supported_white_balance_modes,
+                               mojom::MeteringMode::MANUAL),
             1);
   EXPECT_EQ(state->current_white_balance_mode, mojom::MeteringMode::CONTINUOUS);
   EXPECT_EQ(state->supported_exposure_modes.size(), 2u);
-  EXPECT_EQ(base::ranges::count(state->supported_exposure_modes,
-                                mojom::MeteringMode::CONTINUOUS),
+  EXPECT_EQ(std::ranges::count(state->supported_exposure_modes,
+                               mojom::MeteringMode::CONTINUOUS),
             1);
-  EXPECT_EQ(base::ranges::count(state->supported_exposure_modes,
-                                mojom::MeteringMode::MANUAL),
+  EXPECT_EQ(std::ranges::count(state->supported_exposure_modes,
+                               mojom::MeteringMode::MANUAL),
             1);
   EXPECT_EQ(state->current_exposure_mode, mojom::MeteringMode::CONTINUOUS);
   EXPECT_EQ(state->supported_focus_modes.size(), 2u);
-  EXPECT_EQ(base::ranges::count(state->supported_focus_modes,
-                                mojom::MeteringMode::CONTINUOUS),
+  EXPECT_EQ(std::ranges::count(state->supported_focus_modes,
+                               mojom::MeteringMode::CONTINUOUS),
             1);
-  EXPECT_EQ(base::ranges::count(state->supported_focus_modes,
-                                mojom::MeteringMode::MANUAL),
+  EXPECT_EQ(std::ranges::count(state->supported_focus_modes,
+                               mojom::MeteringMode::MANUAL),
             1);
   EXPECT_EQ(state->current_focus_mode, mojom::MeteringMode::CONTINUOUS);
   EXPECT_EQ(state->points_of_interest.size(), 0u);
@@ -2020,34 +2020,34 @@ TEST_F(VideoCaptureDeviceMFWinTest, GetPhotoStateViaPhotoStream) {
 
   ASSERT_TRUE(state->supported_background_blur_modes);
   EXPECT_EQ(state->supported_background_blur_modes->size(), 2u);
-  EXPECT_EQ(base::ranges::count(*state->supported_background_blur_modes,
-                                mojom::BackgroundBlurMode::OFF),
+  EXPECT_EQ(std::ranges::count(*state->supported_background_blur_modes,
+                               mojom::BackgroundBlurMode::OFF),
             1);
-  EXPECT_EQ(base::ranges::count(*state->supported_background_blur_modes,
-                                mojom::BackgroundBlurMode::BLUR),
+  EXPECT_EQ(std::ranges::count(*state->supported_background_blur_modes,
+                               mojom::BackgroundBlurMode::BLUR),
             1);
   EXPECT_EQ(state->background_blur_mode, mojom::BackgroundBlurMode::OFF);
 
   ASSERT_TRUE(state->supported_eye_gaze_correction_modes);
   EXPECT_EQ(state->supported_eye_gaze_correction_modes->size(), 3u);
-  EXPECT_EQ(base::ranges::count(*state->supported_eye_gaze_correction_modes,
-                                mojom::EyeGazeCorrectionMode::OFF),
+  EXPECT_EQ(std::ranges::count(*state->supported_eye_gaze_correction_modes,
+                               mojom::EyeGazeCorrectionMode::OFF),
             1);
-  EXPECT_EQ(base::ranges::count(*state->supported_eye_gaze_correction_modes,
-                                mojom::EyeGazeCorrectionMode::ON),
+  EXPECT_EQ(std::ranges::count(*state->supported_eye_gaze_correction_modes,
+                               mojom::EyeGazeCorrectionMode::ON),
             1);
-  EXPECT_EQ(base::ranges::count(*state->supported_eye_gaze_correction_modes,
-                                mojom::EyeGazeCorrectionMode::STARE),
+  EXPECT_EQ(std::ranges::count(*state->supported_eye_gaze_correction_modes,
+                               mojom::EyeGazeCorrectionMode::STARE),
             1);
   EXPECT_EQ(state->current_eye_gaze_correction_mode,
             mojom::EyeGazeCorrectionMode::OFF);
 
   ASSERT_TRUE(state->supported_face_framing_modes);
   EXPECT_EQ(2u, state->supported_face_framing_modes->size());
-  EXPECT_EQ(1, base::ranges::count(*state->supported_face_framing_modes,
-                                   mojom::MeteringMode::CONTINUOUS));
-  EXPECT_EQ(1, base::ranges::count(*state->supported_face_framing_modes,
-                                   mojom::MeteringMode::NONE));
+  EXPECT_EQ(1, std::ranges::count(*state->supported_face_framing_modes,
+                                  mojom::MeteringMode::CONTINUOUS));
+  EXPECT_EQ(1, std::ranges::count(*state->supported_face_framing_modes,
+                                  mojom::MeteringMode::NONE));
   EXPECT_EQ(mojom::MeteringMode::NONE, state->current_face_framing_mode);
 }
 

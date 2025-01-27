@@ -4,13 +4,13 @@
 
 #include "media/mojo/services/watch_time_recorder.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "media/base/limits.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder.h"
@@ -120,8 +120,8 @@ void WatchTimeRecorder::FinalizeWatchTime(
       if (kv.second >= kMinimumElapsedWatchTime) {
         RecordWatchTimeInternal(key_str, kv.second);
       } else if (kv.second.is_positive()) {
-        auto it = base::ranges::find(extended_metrics_keys_, kv.first,
-                                     &ExtendedMetricsKeyMap::watch_time_key);
+        auto it = std::ranges::find(extended_metrics_keys_, kv.first,
+                                    &ExtendedMetricsKeyMap::watch_time_key);
         if (it != extended_metrics_keys_.end())
           RecordDiscardedWatchTime(it->discard_key, kv.second);
       }

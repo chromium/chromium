@@ -4,9 +4,10 @@
 
 #include "media/base/audio_limiter.h"
 
+#include <algorithm>
+
 #include "base/containers/span_reader.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "media/base/audio_timestamp_helper.h"
 
@@ -102,7 +103,7 @@ void AudioLimiter::FeedInput(const AudioBus& input, int num_frames) {
   // Sanitize the input, removing unusual values. This is a destructive
   // operation which changes the nature of the audio signal, but it avoids
   // undefined behavior.
-  base::ranges::for_each(interleaved_input, [](float& sample) {
+  std::ranges::for_each(interleaved_input, [](float& sample) {
     if (std::isnan(sample) || std::isinf(sample)) {
       sample = 0.0f;
     }
@@ -111,8 +112,8 @@ void AudioLimiter::FeedInput(const AudioBus& input, int num_frames) {
   delayed_interleaved_input_.reserve(delayed_interleaved_input_.size() +
                                      interleaved_input.size());
 
-  base::ranges::copy(interleaved_input,
-                     std::back_inserter(delayed_interleaved_input_));
+  std::ranges::copy(interleaved_input,
+                    std::back_inserter(delayed_interleaved_input_));
 
   base::SpanReader<float> input_reader(interleaved_input);
 

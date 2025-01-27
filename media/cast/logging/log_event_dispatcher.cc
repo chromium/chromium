@@ -4,6 +4,7 @@
 
 #include "media/cast/logging/log_event_dispatcher.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -13,7 +14,6 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/cast/cast_environment.h"
@@ -141,7 +141,7 @@ void LogEventDispatcher::Impl::Subscribe(RawEventSubscriber* subscriber) {
 }
 
 void LogEventDispatcher::Impl::Unsubscribe(RawEventSubscriber* subscriber) {
-  const auto it = base::ranges::find(subscribers_, subscriber);
+  const auto it = std::ranges::find(subscribers_, subscriber);
   CHECK(it != subscribers_.end(), base::NotFatalUntil::M130);
   subscribers_.erase(it);
 }

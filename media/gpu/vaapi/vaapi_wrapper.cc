@@ -21,6 +21,7 @@
 #include <va/va_version.h>
 #include <xf86drm.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <type_traits>
@@ -40,7 +41,6 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -878,11 +878,11 @@ std::vector<VAEntrypoint> GetEntryPointsForProfile(const base::Lock* va_lock,
                 "");
 
   std::vector<VAEntrypoint> entrypoints;
-  base::ranges::copy_if(va_entrypoints, std::back_inserter(entrypoints),
-                        [&kAllowedEntryPoints, mode](VAEntrypoint entry_point) {
-                          return base::Contains(kAllowedEntryPoints[mode],
-                                                entry_point);
-                        });
+  std::ranges::copy_if(va_entrypoints, std::back_inserter(entrypoints),
+                       [&kAllowedEntryPoints, mode](VAEntrypoint entry_point) {
+                         return base::Contains(kAllowedEntryPoints[mode],
+                                               entry_point);
+                       });
   return entrypoints;
 }
 
@@ -1069,7 +1069,7 @@ const VASupportedProfiles::ProfileInfo* VASupportedProfiles::IsProfileSupported(
     VaapiWrapper::CodecMode mode,
     VAProfile va_profile,
     VAEntrypoint va_entrypoint) const {
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       supported_profiles_[mode],
       [va_profile, va_entrypoint](const ProfileInfo& profile) {
         return profile.va_profile == va_profile &&

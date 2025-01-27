@@ -9,12 +9,12 @@
 
 #include "media/gpu/test/video_encoder/video_encoder_test_environment.h"
 
+#include <algorithm>
 #include <array>
 #include <iterator>
 #include <utility>
 
 #include "base/containers/flat_set.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -244,8 +244,8 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     return nullptr;
   }
 
-  const auto* codec_it = base::ranges::find(kCodecParamToProfile, codec,
-                                            &CodecParamToProfile::codec);
+  const auto* codec_it = std::ranges::find(kCodecParamToProfile, codec,
+                                           &CodecParamToProfile::codec);
   if (codec_it == std::end(kCodecParamToProfile)) {
     LOG(ERROR) << "Unknown codec: " << codec;
     return nullptr;
@@ -255,8 +255,8 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
   size_t num_temporal_layers = 1u;
   size_t num_spatial_layers = 1u;
   auto inter_layer_pred_mode = SVCInterLayerPredMode::kOff;
-  const auto* svc_it = base::ranges::find(kSVCModeParamToSVCConfig, svc_mode,
-                                          &SVCConfig::svc_mode);
+  const auto* svc_it = std::ranges::find(kSVCModeParamToSVCConfig, svc_mode,
+                                         &SVCConfig::svc_mode);
   if (svc_it == std::end(kSVCModeParamToSVCConfig)) {
     LOG(ERROR) << "Unsupported svc_mode: " << svc_mode;
     return nullptr;

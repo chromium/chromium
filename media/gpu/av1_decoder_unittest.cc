@@ -11,6 +11,7 @@
 
 #include <string.h>
 
+#include <algorithm>
 #include <array>
 #include <string>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
@@ -204,7 +204,7 @@ void AV1DecoderTest::Reset() {
   EXPECT_TRUE(decoder_->parser_);
   EXPECT_EQ(decoder_->accelerator_.get(), mock_accelerator_);
   EXPECT_LT(base::checked_cast<AV1ReferenceFrameVector::size_type>(
-                base::ranges::count(decoder_->ref_frames_, nullptr)),
+                std::ranges::count(decoder_->ref_frames_, nullptr)),
             decoder_->ref_frames_.size());
   EXPECT_FALSE(decoder_->current_frame_header_);
   EXPECT_FALSE(decoder_->current_frame_);
@@ -217,7 +217,7 @@ void AV1DecoderTest::Reset() {
   EXPECT_FALSE(decoder_->parser_);
   EXPECT_EQ(decoder_->accelerator_.get(), mock_accelerator_);
   EXPECT_EQ(base::checked_cast<AV1ReferenceFrameVector::size_type>(
-                base::ranges::count(decoder_->ref_frames_, nullptr)),
+                std::ranges::count(decoder_->ref_frames_, nullptr)),
             decoder_->ref_frames_.size());
   EXPECT_FALSE(decoder_->current_frame_header_);
   EXPECT_FALSE(decoder_->current_frame_);
@@ -734,13 +734,13 @@ TEST_F(AV1DecoderTest, InconsistentReferenceFrameState) {
     // frames are valid.
     const libgav1::DecoderState* decoder_state = GetDecoderState();
     ASSERT_TRUE(decoder_state);
-    EXPECT_EQ(base::ranges::count(decoder_state->reference_frame, nullptr),
+    EXPECT_EQ(std::ranges::count(decoder_state->reference_frame, nullptr),
               base::checked_cast<long>(decoder_state->reference_frame.size()));
 
     // And to be consistent, AV1Decoder should not be tracking any reference
     // frames yet.
     const AV1ReferenceFrameVector& internal_ref_frames = GetReferenceFrames();
-    EXPECT_EQ(base::ranges::count(internal_ref_frames, nullptr),
+    EXPECT_EQ(std::ranges::count(internal_ref_frames, nullptr),
               base::checked_cast<long>(internal_ref_frames.size()));
 
     // Now try to decode one frame and make sure that the frame is intra.
@@ -753,19 +753,19 @@ TEST_F(AV1DecoderTest, InconsistentReferenceFrameState) {
     // SubmitDecode() should have received the reference frames before they were
     // updated. That means that it should have received no reference frames
     // since this SubmitDecode() refers to the first frame.
-    EXPECT_EQ(base::ranges::count(ref_frames, nullptr),
+    EXPECT_EQ(std::ranges::count(ref_frames, nullptr),
               base::checked_cast<long>(ref_frames.size()));
 
     // Now let's inspect the current state of things (which is after the
     // reference frames have been updated): libgav1 should have decided that all
     // reference frames are valid.
     ASSERT_TRUE(decoder_state);
-    EXPECT_EQ(base::ranges::count(decoder_state->reference_frame, nullptr), 0);
+    EXPECT_EQ(std::ranges::count(decoder_state->reference_frame, nullptr), 0);
 
     // And to be consistent, all the reference frames tracked by the AV1Decoder
     // should also be valid and they should be pointing to the only AV1Picture
     // so far.
-    EXPECT_TRUE(base::ranges::all_of(
+    EXPECT_TRUE(std::ranges::all_of(
         internal_ref_frames,
         [&av1_picture](const scoped_refptr<AV1Picture>& ref_frame) {
           return ref_frame.get() == av1_picture.get();
@@ -798,7 +798,7 @@ TEST_F(AV1DecoderTest, InconsistentReferenceFrameState) {
   // were valid.
   const libgav1::DecoderState* decoder_state = GetDecoderState();
   ASSERT_TRUE(decoder_state);
-  EXPECT_EQ(base::ranges::count(decoder_state->reference_frame, nullptr), 0);
+  EXPECT_EQ(std::ranges::count(decoder_state->reference_frame, nullptr), 0);
 }
 
 TEST_F(AV1DecoderTest, TryAgainSubmitDecode) {

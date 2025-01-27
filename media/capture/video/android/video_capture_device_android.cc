@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/android/jni_android.h"
@@ -18,7 +19,6 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/system_monitor.h"
 #include "base/task/single_thread_task_runner.h"

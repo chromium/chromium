@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <sys/uio.h>
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 
@@ -23,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/posix/safe_strerror.h"
 #include "base/process/launch.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -110,7 +110,7 @@ bool IsVividLoaded() {
   std::vector<std::string_view> lines = base::SplitStringPieceUsingSubstr(
       output, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  return base::ranges::any_of(lines, [](const auto& line) {
+  return std::ranges::any_of(lines, [](const auto& line) {
     return base::StartsWith(line, "vivid", base::CompareCase::SENSITIVE);
   });
 }

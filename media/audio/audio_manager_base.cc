@@ -4,6 +4,7 @@
 
 #include "media/audio/audio_manager_base.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
@@ -15,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -475,7 +475,7 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
   // it work with expected buffer size according to requested output
   // param.
   if (!output_params.RequireOffload()) {
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         output_dispatchers_,
         [&](const std::unique_ptr<DispatcherParams>& dispatcher) {
           // We will reuse the existing dispatcher when:
