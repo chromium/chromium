@@ -42,6 +42,7 @@ import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -72,6 +73,7 @@ public class RecentActivityListMediatorUnitTest {
     @Mock private Runnable mCallback1;
     @Mock private ImageView mAvatarView;
     @Mock private ImageView mFaviconView;
+    private PropertyModel mPropertyModel;
     private ModelList mModelList;
     private RecentActivityListMediator mMediator;
     private List<ActivityLogItem> mTestItems = new ArrayList<>();
@@ -87,10 +89,14 @@ public class RecentActivityListMediatorUnitTest {
                 .when(mAvatarProvider)
                 .getAvatarBitmap(any(), mAvatarResponseCallbackCaptor.capture());
 
+        mPropertyModel =
+                new PropertyModel.Builder(RecentActivityContainerProperties.ALL_KEYS).build();
+
         mModelList = new ModelList();
         mMediator =
                 new RecentActivityListMediator(
                         mContext,
+                        mPropertyModel,
                         mModelList,
                         mMessagingBackendService,
                         mFaviconProvider,

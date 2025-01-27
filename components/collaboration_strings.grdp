@@ -93,6 +93,9 @@
   <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_DESCRIPTION_FULL" desc="The description text on a recent activity bottom sheet row that has three parts: an URL or email or group name on first half, a separator, and a relative time duration on the second half." formatter_data="android_java">
     <ph name="DESCRIPTION">%1$s<ex>google.com</ex></ph><ph name="SEPARATOR">%2$s<ex> . </ex></ph><ph name="TIMESTMAP">%3$s<ex>8h ago</ex></ph>
   </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_EMPTY" desc="The text on the recent activity bottom sheet screen shown to indicate that there is no recent ativity to show and the list is empty." formatter_data="android_java">
+    No recent activity
+  </message>
   <!-- Recent Activity -->
 
 </grit-part>
