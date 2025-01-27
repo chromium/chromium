@@ -16,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -442,15 +441,15 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
            extension_helper.IsFeatureSupported(feature);
   };
 
-  if (!base::ranges::all_of(session_options_->required_features,
-                            enable_function)) {
+  if (!std::ranges::all_of(session_options_->required_features,
+                           enable_function)) {
     return XR_ERROR_INITIALIZATION_FAILED;
   }
 
   std::unordered_set<mojom::XRSessionFeature> requested_features;
   requested_features.insert(session_options_->required_features.begin(),
                             session_options_->required_features.end());
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       session_options_->optional_features,
       std::inserter(requested_features, requested_features.begin()),
       enable_function);
@@ -1367,7 +1366,7 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
 uint32_t OpenXrApiWrapper::GetRecommendedSwapchainSampleCount() const {
   DCHECK(IsInitialized());
 
-  return base::ranges::min_element(
+  return std::ranges::min_element(
              primary_view_config_.Properties(), {},
              [](const OpenXrViewProperties& view) {
                return view.RecommendedSwapchainSampleCount();
@@ -1441,7 +1440,7 @@ bool OpenXrApiWrapper::GetStageParameters(
   // TODO(crbug.com/41495208): Check for crash dumps.
   std::array<float, 16> transform_data;
   local_from_stage.GetColMajorF(transform_data.data());
-  bool contains_nan = base::ranges::any_of(
+  bool contains_nan = std::ranges::any_of(
       transform_data, [](const float f) { return std::isnan(f); });
 
   if (contains_nan) {

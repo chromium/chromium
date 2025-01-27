@@ -184,11 +184,11 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
         ui_request_->secret.has_value());
   CHECK(ui_request_->key_version.has_value());
 
-  if (base::ranges::any_of(request.exclude_list, [this](const auto& excluded) {
-        return base::ranges::any_of(ui_request_->existing_cred_ids,
-                                    [&excluded](const auto& existing_cred_id) {
-                                      return existing_cred_id == excluded.id;
-                                    });
+  if (std::ranges::any_of(request.exclude_list, [this](const auto& excluded) {
+        return std::ranges::any_of(ui_request_->existing_cred_ids,
+                                   [&excluded](const auto& existing_cred_id) {
+                                     return existing_cred_id == excluded.id;
+                                   });
       })) {
     std::move(callback).Run(
         MakeCredentialStatus::kUserConsentButCredentialExcluded, std::nullopt);

@@ -7,11 +7,12 @@
 #import <CoreFoundation/CoreFoundation.h>
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -440,7 +441,7 @@ void BluetoothLowEnergyDeviceMac::SendNotificationIfDiscoveryComplete() {
   // Notify when all services have been discovered.
   bool discovery_complete =
       discovery_pending_count_ == 0 &&
-      base::ranges::all_of(
+      std::ranges::all_of(
           gatt_services_, [](GattServiceMap::value_type& pair) {
             BluetoothRemoteGattService* gatt_service = pair.second.get();
             return static_cast<BluetoothRemoteGattServiceMac*>(gatt_service)

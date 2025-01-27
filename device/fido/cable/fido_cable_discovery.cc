@@ -4,6 +4,7 @@
 
 #include "device/fido/cable/fido_cable_discovery.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -106,7 +106,7 @@ std::unique_ptr<BluetoothAdvertisement::Data> ConstructAdvertisementData(
   // bit of the flag byte.
   service_data_value[0] = kCableFlags;
   service_data_value[1] = 1 /* version */;
-  base::ranges::copy(client_eid, service_data_value.begin() + 2);
+  std::ranges::copy(client_eid, service_data_value.begin() + 2);
   service_data.emplace(kGoogleCableUUID128, std::move(service_data_value));
   advertisement_data->set_service_data(std::move(service_data));
 #endif

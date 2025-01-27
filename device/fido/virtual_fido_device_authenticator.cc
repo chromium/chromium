@@ -35,10 +35,10 @@ void VirtualFidoDeviceAuthenticator::GetPlatformCredentialInfoForRequest(
         // Discoverable credentials are found if the allow-list is empty.
         ((request.allow_list.empty() && registration.second.is_resident) ||
          // Otherwise any credentials are found if enumerated in the allowlist.
-         base::ranges::any_of(request.allow_list,
-                              [&registration](const auto& cred_descriptor) {
-                                return cred_descriptor.id == registration.first;
-                              }))) {
+         std::ranges::any_of(request.allow_list,
+                             [&registration](const auto& cred_descriptor) {
+                               return cred_descriptor.id == registration.first;
+                             }))) {
       credentials.emplace_back(
           AuthenticatorType::kOther, request.rp_id, registration.first,
           registration.second.user.value_or(PublicKeyCredentialUserEntity()));

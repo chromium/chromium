@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/emulation/fake_central.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -11,7 +12,6 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -202,7 +202,7 @@ void FakeCentral::SetNextGATTDiscoveryResponse(
 }
 
 bool FakeCentral::AllResponsesConsumed() {
-  return base::ranges::all_of(devices_, [](const auto& e) {
+  return std::ranges::all_of(devices_, [](const auto& e) {
     // static_cast is safe because the parent class's devices_ is only
     // populated via this FakeCentral, and only with FakePeripherals.
     return static_cast<FakePeripheral*>(e.second.get())->AllResponsesConsumed();

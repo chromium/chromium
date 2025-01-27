@@ -225,7 +225,7 @@ bool OpenXrHandTrackerFactory::IsEnabled(
   // supported and at least one of our other required extensions is supported.
   return extension_enum->ExtensionSupported(
              XR_EXT_HAND_TRACKING_EXTENSION_NAME) &&
-         base::ranges::any_of(
+         std::ranges::any_of(
              GetRequestedExtensions(),
              [&extension_enum](std::string_view extension) {
                return strcmp(extension.data(),

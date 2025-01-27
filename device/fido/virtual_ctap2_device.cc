@@ -9,6 +9,7 @@
 
 #include "device/fido/virtual_ctap2_device.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <set>
@@ -21,7 +22,6 @@
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -505,7 +505,7 @@ std::vector<uint8_t> GenerateAndEncryptToken(
 
 bool CheckCredentialListForExtraKeys(
     base::span<const PublicKeyCredentialDescriptor> creds) {
-  if (base::ranges::any_of(
+  if (std::ranges::any_of(
           creds, [](const auto& cred) { return cred.had_other_keys; })) {
     LOG(ERROR) << "A PublicKeyCredentialDescriptor contained unexpected CBOR "
                   "keys. This is believed to trigger bugs in some security "
@@ -703,7 +703,7 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
 
   if (!config.advertised_algorithms.empty()) {
     device_info_->algorithms.emplace();
-    base::ranges::transform(
+    std::ranges::transform(
         config.advertised_algorithms,
         std::back_inserter(device_info_->algorithms.value()),
         [](auto algo) { return static_cast<int32_t>(algo); });
@@ -2143,7 +2143,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnCredentialManagement(
         return pin_status;
       }
 
-      const size_t num_resident = base::ranges::count_if(
+      const size_t num_resident = std::ranges::count_if(
           mutable_state()->registrations,
           [](const auto& it) { return it.second.is_resident; });
       response_map.emplace(
@@ -2780,8 +2780,8 @@ void VirtualCtap2Device::InitPendingRegistrations(
   request_state_.Reset();
   for (const auto& registration : mutable_state()->registrations) {
     if (!registration.second.is_resident ||
-        !base::ranges::equal(rp_id_hash,
-                             registration.second.application_parameter)) {
+        !std::ranges::equal(rp_id_hash,
+                            registration.second.application_parameter)) {
       continue;
     }
     DCHECK(!registration.second.is_u2f && registration.second.user &&
@@ -2866,10 +2866,10 @@ size_t VirtualCtap2Device::remaining_resident_credentials() const {
 }
 
 bool VirtualCtap2Device::SupportsAtLeast(Ctap2Version ctap2_version) const {
-  return base::ranges::any_of(config_.ctap2_versions,
-                              [ctap2_version](const Ctap2Version& version) {
-                                return version >= ctap2_version;
-                              });
+  return std::ranges::any_of(config_.ctap2_versions,
+                             [ctap2_version](const Ctap2Version& version) {
+                               return version >= ctap2_version;
+                             });
 }
 
 }  // namespace device

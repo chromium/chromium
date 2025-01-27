@@ -4,6 +4,7 @@
 
 #include "device/fido/cable/v2_authenticator.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/containers/flat_set.h"
@@ -12,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -624,7 +624,7 @@ class TunnelTransport : public Transport {
           break;
       }
     }
-    base::ranges::sort(ret, [](const auto& a, const auto& b) {
+    std::ranges::sort(ret, [](const auto& a, const auto& b) {
       return a.GetString() < b.GetString();
     });
     return cbor::Value(std::move(ret));

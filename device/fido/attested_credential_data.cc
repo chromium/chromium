@@ -4,11 +4,11 @@
 
 #include "device/fido/attested_credential_data.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_math.h"
-#include "base/ranges/algorithm.h"
 #include "components/cbor/reader.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cbor_extract.h"
@@ -243,7 +243,7 @@ AttestedCredentialData& AttestedCredentialData::operator=(
 AttestedCredentialData::~AttestedCredentialData() = default;
 
 bool AttestedCredentialData::IsAaguidZero() const {
-  return base::ranges::all_of(aaguid_, [](uint8_t v) { return v == 0; });
+  return std::ranges::all_of(aaguid_, [](uint8_t v) { return v == 0; });
 }
 
 bool AttestedCredentialData::DeleteAaguid() {

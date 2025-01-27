@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/test/bluetooth_test_android.h"
 
+#include <algorithm>
 #include <iterator>
 #include <sstream>
 
@@ -13,7 +14,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -224,7 +224,7 @@ void BluetoothTestAndroid::SimulateGattServicesDiscovered(
 
   // Join UUID strings into a single string.
   std::ostringstream uuids_space_delimited;
-  base::ranges::copy(
+  std::ranges::copy(
       uuids, std::ostream_iterator<std::string>(uuids_space_delimited, " "));
 
   JNIEnv* env = base::android::AttachCurrentThread();

@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -14,7 +15,6 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
@@ -68,7 +68,7 @@ AuthenticatorSupportedOptions WinWebAuthnApiOptions(int api_version) {
 bool MayHaveWindowsHelloCredentials(
     std::vector<PublicKeyCredentialDescriptor> allow_list) {
   return allow_list.empty() ||
-         base::ranges::any_of(allow_list, [](const auto& credential) {
+         std::ranges::any_of(allow_list, [](const auto& credential) {
            return credential.transports.empty() ||
                   base::Contains(credential.transports,
                                  FidoTransportProtocol::kInternal);
@@ -82,7 +82,7 @@ void FilterFoundCredentials(
     const std::vector<PublicKeyCredentialDescriptor>& allow_list_creds) {
   auto removed = std::ranges::remove_if(
       *found_creds, [&allow_list_creds](const auto& found_cred) {
-        return base::ranges::none_of(
+        return std::ranges::none_of(
             allow_list_creds, [&found_cred](const auto& allow_list_cred) {
               return allow_list_cred.id == found_cred.cred_id;
             });
