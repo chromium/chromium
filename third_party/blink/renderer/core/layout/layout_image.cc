@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/image_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -165,24 +164,38 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
         1 / image_resource_->CachedImage()->DevicePixelRatioHeaderValue();
   }
 
-  if (!did_increment_visually_non_empty_pixel_count_) {
-    // At a zoom level of 1 the image is guaranteed to have an integer size.
-    View()->GetFrameView()->IncrementVisuallyNonEmptyPixelCount(
-        gfx::ToFlooredSize(image_resource_->ImageSize(1.0f)));
-    did_increment_visually_non_empty_pixel_count_ = true;
-  }
-
   // The replaced content transform depends on the intrinsic size (see:
   // FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform).
   SetNeedsPaintPropertyUpdate();
   InvalidatePaintAndMarkForLayoutIfNeeded(defer);
+
+  if (!did_increment_visually_non_empty_pixel_count_) {
+    PhysicalSize default_object_size{LayoutUnit(kDefaultWidth),
+                                     LayoutUnit(kDefaultHeight)};
+    default_object_size.Scale(StyleRef().EffectiveZoom());
+    PhysicalSize concrete_object_size =
+        ConcreteObjectSize(natural_dimensions_, default_object_size);
+    concrete_object_size.Scale(1 / StyleRef().EffectiveZoom());
+    View()->GetFrameView()->IncrementVisuallyNonEmptyPixelCount(
+        ToFlooredSize(concrete_object_size));
+    did_increment_visually_non_empty_pixel_count_ = true;
+  }
 }
 
-void LayoutImage::UpdateNaturalSizeIfNeeded(const PhysicalSize& new_size) {
+bool LayoutImage::UpdateNaturalSizeIfNeeded() {
   NOT_DESTROYED();
-  if (image_resource_->ErrorOccurred())
-    return;
-  SetNaturalSize(new_size);
+  PhysicalNaturalSizingInfo new_natural_dimensions;
+  // If the image resource is not associated with an image then we set natural
+  // dimensions of 0x0 ("represents nothing" per HTML spec).
+  if (image_resource_->HasImage()) {
+    new_natural_dimensions = PhysicalNaturalSizingInfo::FromSizingInfo(
+        image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom()));
+  }
+  const bool dimensions_changed = natural_dimensions_ != new_natural_dimensions;
+  if (!image_resource_->ErrorOccurred()) {
+    natural_dimensions_ = new_natural_dimensions;
+  }
+  return dimensions_changed;
 }
 
 bool LayoutImage::NeedsLayoutOnNaturalSizeChange() const {
@@ -205,11 +218,7 @@ bool LayoutImage::NeedsLayoutOnNaturalSizeChange() const {
 void LayoutImage::InvalidatePaintAndMarkForLayoutIfNeeded(
     CanDeferInvalidation defer) {
   NOT_DESTROYED();
-  PhysicalSize old_natural_size = NaturalSize();
-
-  PhysicalSize new_natural_size = PhysicalSize::FromSizeFRound(
-      image_resource_->ImageSize(StyleRef().EffectiveZoom()));
-  UpdateNaturalSizeIfNeeded(new_natural_size);
+  const bool dimensions_changed = UpdateNaturalSizeIfNeeded();
 
   // In the case of generated image content using :before/:after/content, we
   // might not be in the layout tree yet. In that case, we just need to update
@@ -218,7 +227,7 @@ void LayoutImage::InvalidatePaintAndMarkForLayoutIfNeeded(
   if (!ContainingBlock())
     return;
 
-  if (old_natural_size != new_natural_size) {
+  if (dimensions_changed) {
     SetIntrinsicLogicalWidthsDirty();
 
     if (NeedsLayoutOnNaturalSizeChange()) {
@@ -336,33 +345,27 @@ bool LayoutImage::NodeAtPoint(HitTestResult& result,
 
 PhysicalNaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
   NOT_DESTROYED();
+  PhysicalNaturalSizingInfo natural_dimensions = natural_dimensions_;
   if (EmbeddedSVGImage()) {
-    NaturalSizingInfo sizing_info =
-        image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
-
     // The value returned by LayoutImageResource will be in zoomed CSS
     // pixels, but for the 'scale-down' object-fit value we want "zoomed
     // device pixels", so undo the DPR part here.
     if (StyleRef().GetObjectFit() == EObjectFit::kScaleDown) {
-      sizing_info.size.InvScale(ImageDevicePixelRatio());
+      natural_dimensions.size.Scale(1 / ImageDevicePixelRatio());
     }
-    return PhysicalNaturalSizingInfo::FromSizingInfo(sizing_info);
-  }
-
-  auto sizing_info = PhysicalNaturalSizingInfo::MakeFixed(NaturalSize());
-
-  if (RuntimeEnabledFeatures::
-          LayoutImageForceAspectRatioOfOneOnErrorEnabled()) {
+  } else if (RuntimeEnabledFeatures::
+                 LayoutImageForceAspectRatioOfOneOnErrorEnabled()) {
     // Don't compute an intrinsic ratio to preserve historical WebKit behavior
-    // if we're painting alt text and/or a broken image. Video is excluded from
-    // this behavior because video elements have a default aspect ratio that a
-    // failed poster image load should not override.
-    if (image_resource_ && image_resource_->ErrorOccurred() &&
-        !IsA<LayoutVideo>(this)) {
-      sizing_info.aspect_ratio = PhysicalSize(LayoutUnit(1), LayoutUnit(1));
+    // if we're painting alt text and/or a broken image.
+    // Video is excluded from this behavior because video elements have a
+    // default aspect ratio that a failed poster image load should not
+    // override.
+    if (image_resource_->ErrorOccurred() && !IsA<LayoutVideo>(this)) {
+      natural_dimensions.aspect_ratio =
+          PhysicalSize(LayoutUnit(1), LayoutUnit(1));
     }
   }
-  return sizing_info;
+  return natural_dimensions;
 }
 
 SVGImage* LayoutImage::EmbeddedSVGImage() const {
