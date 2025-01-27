@@ -38,7 +38,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const std::u16string& rp_for_display,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
-      content::WebContents* web_contents,
       views::View* anchor_view,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       FedCmAccountSelectionView* owner);

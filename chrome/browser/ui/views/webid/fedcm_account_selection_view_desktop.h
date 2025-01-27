@@ -57,7 +57,7 @@ class AccountSelectionViewBase;
 // widget is destroyed, then the UI flow is finished.
 class FedCmAccountSelectionView : public AccountSelectionView,
                                   public FedCmModalDialogView::Observer,
-                                  content::WebContentsObserver,
+                                  public content::WebContentsObserver,
                                   public PictureInPictureOcclusionObserver {
  public:
   // safe_zone_diameter/icon_size as defined in

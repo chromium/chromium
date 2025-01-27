@@ -537,13 +537,10 @@ void AccountHoverButton::ReplaceSecondaryViewWithSpinner() {
 }
 
 AccountSelectionViewBase::AccountSelectionViewBase(
-    content::WebContents* web_contents,
     FedCmAccountSelectionView* owner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::u16string rp_for_display)
-    : web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr),
-      owner_(owner),
-      rp_for_display_(rp_for_display) {
+    : owner_(owner), rp_for_display_(rp_for_display) {
   image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
       std::make_unique<ImageDecoderImpl>(), std::move(url_loader_factory));
 }
@@ -607,11 +604,9 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
       icon_container->SetMainAxisAlignment(views::LayoutAlignment::kEnd);
       icon_container->SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
 
-      // `web_contents_` may be nullptr in tests.
       SkColor background_color =
-          web_contents_ ? web_contents_->GetColorProvider().GetColor(
-                              ui::kColorDialogBackground)
-                        : SK_ColorWHITE;
+          owner_->web_contents()->GetColorProvider().GetColor(
+              ui::kColorDialogBackground);
       std::unique_ptr<BrandIconImageView> brand_icon_image_view =
           std::make_unique<BrandIconImageView>(
               base::BindOnce(&AccountSelectionViewBase::AddIdpImage,

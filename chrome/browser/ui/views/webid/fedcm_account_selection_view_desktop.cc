@@ -102,7 +102,7 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
   GetDialogWidget()->Show();
   if (dialog_type_ == DialogType::MODAL) {
     scoped_ignore_input_events_ =
-        tab_->GetContents()->IgnoreInputEvents(std::nullopt);
+        web_contents()->IgnoreInputEvents(std::nullopt);
   } else {
     tab_accept_mouse_events_ = tab_->AcceptMouseEventsWhileWindowInactive();
   }
@@ -794,10 +794,9 @@ void FedCmAccountSelectionView::OnChooseAnAccountClicked() {
 }
 
 bool FedCmAccountSelectionView::CanFitInWebContents() {
-  content::WebContents* web_contents = account_selection_view_->web_contents();
-  CHECK(web_contents && dialog_widget_);
+  CHECK(web_contents() && dialog_widget_);
 
-  gfx::Size web_contents_size = web_contents->GetSize();
+  gfx::Size web_contents_size = web_contents()->GetSize();
   gfx::Size preferred_bubble_size =
       dialog_widget_->GetContentsView()->GetPreferredSize();
 
@@ -819,7 +818,7 @@ void FedCmAccountSelectionView::UpdateDialogPosition() {
     constrained_window::UpdateWebContentsModalDialogPosition(
         GetDialogWidget(),
         web_modal::WebContentsModalDialogManager::FromWebContents(
-            account_selection_view_->web_contents())
+            web_contents())
             ->delegate()
             ->GetWebContentsModalDialogHost());
   }
@@ -952,7 +951,7 @@ std::unique_ptr<views::Widget> FedCmAccountSelectionView::CreateDialogWidget() {
     auto* modal =
         static_cast<AccountSelectionModalView*>(account_selection_view_);
     gfx::NativeWindow top_level_native_window =
-        tab_->GetContents()->GetTopLevelNativeWindow();
+        web_contents()->GetTopLevelNativeWindow();
     views::Widget* top_level_widget =
         views::Widget::GetWidgetForNativeWindow(top_level_native_window);
     dialog_widget = base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
@@ -997,12 +996,11 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateDialogView(
   if (rp_mode == blink::mojom::RpMode::kActive && has_modal_support) {
     *out_dialog_type = DialogType::MODAL;
     return new AccountSelectionModalView(rp_for_display, idp_title, rp_context,
-                                         tab_->GetContents(),
                                          GetURLLoaderFactory(), this);
   } else {
     *out_dialog_type = DialogType::BUBBLE;
     return new AccountSelectionBubbleView(rp_for_display, idp_title, rp_context,
-                                          tab_->GetContents(), GetAnchorView(),
+                                          GetAnchorView(),
                                           GetURLLoaderFactory(), this);
   }
 }
@@ -1100,10 +1098,9 @@ void FedCmAccountSelectionView::LogDialogDismissal(
   if (modal_account_chooser_state_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Button.AccountChooserResult",
                               *modal_account_chooser_state_);
-    if (account_selection_view_->web_contents()) {
-      ukm::SourceId source_id = account_selection_view_->web_contents()
-                                    ->GetPrimaryMainFrame()
-                                    ->GetPageUkmSourceId();
+    if (web_contents()) {
+      ukm::SourceId source_id =
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
       ukm::builders::Blink_FedCm(source_id)
           .SetButton_AccountChooserResult(
               static_cast<int>(*modal_account_chooser_state_))
@@ -1115,10 +1112,9 @@ void FedCmAccountSelectionView::LogDialogDismissal(
   if (modal_loading_dialog_state_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Button.LoadingDialogResult",
                               *modal_loading_dialog_state_);
-    if (account_selection_view_->web_contents()) {
-      ukm::SourceId source_id = account_selection_view_->web_contents()
-                                    ->GetPrimaryMainFrame()
-                                    ->GetPageUkmSourceId();
+    if (web_contents()) {
+      ukm::SourceId source_id =
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
       ukm::builders::Blink_FedCm(source_id)
           .SetButton_LoadingDialogResult(
               static_cast<int>(*modal_loading_dialog_state_))
@@ -1130,10 +1126,9 @@ void FedCmAccountSelectionView::LogDialogDismissal(
   if (modal_disclosure_dialog_state_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Button.DisclosureDialogResult",
                               *modal_disclosure_dialog_state_);
-    if (account_selection_view_->web_contents()) {
-      ukm::SourceId source_id = account_selection_view_->web_contents()
-                                    ->GetPrimaryMainFrame()
-                                    ->GetPageUkmSourceId();
+    if (web_contents()) {
+      ukm::SourceId source_id =
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
       ukm::builders::Blink_FedCm(source_id)
           .SetButton_DisclosureDialogResult(
               static_cast<int>(*modal_disclosure_dialog_state_))

@@ -142,11 +142,9 @@ AccountSelectionModalView::AccountSelectionModalView(
     const std::u16string& rp_for_display,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
-    content::WebContents* web_contents,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     FedCmAccountSelectionView* owner)
-    : AccountSelectionViewBase(web_contents,
-                               owner,
+    : AccountSelectionViewBase(owner,
                                std::move(url_loader_factory),
                                rp_for_display) {
   SetModalType(ui::mojom::ModalType::kChild);
@@ -175,7 +173,7 @@ AccountSelectionModalView::~AccountSelectionModalView() = default;
 std::unique_ptr<views::View>
 AccountSelectionModalView::CreatePlaceholderAccountRow() {
   const SkColor kPlaceholderColor =
-      color_utils::IsDark(web_contents_->GetColorProvider().GetColor(
+      color_utils::IsDark(owner_->web_contents()->GetColorProvider().GetColor(
           ui::kColorDialogBackground))
           ? gfx::kGoogleGrey800
           : gfx::kGoogleGrey200;
@@ -699,7 +697,8 @@ void AccountSelectionModalView::ShowSingleReturningAccountDialog(
 std::unique_ptr<views::View> AccountSelectionModalView::CreateIconHeaderView() {
   // Create background image view.
   std::unique_ptr<BackgroundImageView> background_image_view =
-      std::make_unique<BackgroundImageView>(web_contents_);
+      std::make_unique<BackgroundImageView>(
+          owner_->web_contents()->GetWeakPtr());
 
   // Put background image view into a FillLayout container.
   std::unique_ptr<views::View> background_container =

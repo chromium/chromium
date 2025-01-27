@@ -170,7 +170,6 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
     const std::u16string& rp_for_display,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
-    content::WebContents* web_contents,
     views::View* anchor_view,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     FedCmAccountSelectionView* owner)
@@ -182,8 +181,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
           views::BubbleBorder::Arrow::TOP_RIGHT,
           views::BubbleBorder::DIALOG_SHADOW,
           /*autosize=*/true),
-      AccountSelectionViewBase(web_contents,
-                               owner,
+      AccountSelectionViewBase(owner,
                                std::move(url_loader_factory),
                                rp_for_display),
       rp_context_(rp_context) {
@@ -436,13 +434,7 @@ std::string AccountSelectionBubbleView::GetDialogTitle() const {
 }
 
 void AccountSelectionBubbleView::OnAnchorBoundsChanged() {
-  // TODO(crbug.com/342216390): It is unclear why there are callers where some
-  // of these checks fail.
-  if (!web_contents_) {
-    return;
-  }
-
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_.get());
+  Browser* browser = chrome::FindBrowserWithTab(owner_->web_contents());
   if (!browser || !browser->tab_strip_model()) {
     return;
   }
@@ -482,20 +474,21 @@ gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
   //       |-------------------------|
   // In the RTL case, the bubble is aligned towards the left side of the screen
   // and the horizontal inset would apply to the left of the bubble.
-  CHECK(web_contents_);
+  CHECK(owner_->web_contents());
 
   gfx::Rect bubble_bounds = views::BubbleDialogDelegateView::GetBubbleBounds();
-  gfx::Rect web_contents_bounds = web_contents_->GetViewBounds();
+  gfx::Rect web_contents_bounds = owner_->web_contents()->GetViewBounds();
   if (base::i18n::IsRTL()) {
     web_contents_bounds.Inset(gfx::Insets::TLBR(
         /*top=*/kTopMargin, /*left=*/kRightMargin, /*bottom=*/0,
         /*right=*/0));
-    bubble_bounds.set_origin(web_contents_->GetViewBounds().origin());
+    bubble_bounds.set_origin(owner_->web_contents()->GetViewBounds().origin());
   } else {
     web_contents_bounds.Inset(gfx::Insets::TLBR(
         /*top=*/kTopMargin, /*left=*/0, /*bottom=*/0,
         /*right=*/kRightMargin));
-    bubble_bounds.set_origin(web_contents_->GetViewBounds().top_right());
+    bubble_bounds.set_origin(
+        owner_->web_contents()->GetViewBounds().top_right());
   }
   bubble_bounds.AdjustToFit(web_contents_bounds);
 
