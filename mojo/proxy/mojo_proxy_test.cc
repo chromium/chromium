@@ -4,6 +4,7 @@
 
 #include <unistd.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <cstring>
 #include <optional>
@@ -28,7 +29,6 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/launch.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -155,7 +155,7 @@ class TestServiceImpl : public mojom::TestService {
 
   void FlipFile(base::File file, FlipFileCallback callback) override {
     std::string contents = ReadWholeFile(file);
-    base::ranges::reverse(contents);
+    std::ranges::reverse(contents);
     std::move(callback).Run(
         file_factory_.CreateFileWithContents("flipped", contents));
   }
@@ -163,7 +163,7 @@ class TestServiceImpl : public mojom::TestService {
   void FlipMemory(base::ReadOnlySharedMemoryRegion region,
                   FlipMemoryCallback callback) override {
     std::string contents = ReadMemory(std::move(region));
-    base::ranges::reverse(contents);
+    std::ranges::reverse(contents);
     std::move(callback).Run(CreateMemory(contents));
   }
 

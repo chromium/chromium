@@ -9,6 +9,7 @@
 
 #include "mojo/core/broker_host.h"
 
+#include <algorithm>
 #include <array>
 #include <string_view>
 #include <utility>
@@ -16,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/buildflags.h"
@@ -114,7 +114,7 @@ void BrokerHost::SendNamedChannel(std::wstring_view pipe_name) {
       BrokerMessageType::INIT, 0, sizeof(*name_data) * pipe_name.length(),
       &data, reinterpret_cast<void**>(&name_data));
   data->pipe_name_length = static_cast<uint32_t>(pipe_name.length());
-  base::ranges::copy(pipe_name, name_data);
+  std::ranges::copy(pipe_name, name_data);
   channel_->Write(std::move(message));
 }
 

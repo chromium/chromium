@@ -659,7 +659,7 @@ bool ChannelPosix::CloseHandles(const int* fds, size_t num_fds) {
   if (!num_fds)
     return false;
 
-  auto start = base::ranges::find(fds_to_close_, fds[0], &base::ScopedFD::get);
+  auto start = std::ranges::find(fds_to_close_, fds[0], &base::ScopedFD::get);
   if (start == fds_to_close_.end())
     return false;
 

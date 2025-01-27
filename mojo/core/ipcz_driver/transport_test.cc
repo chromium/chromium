@@ -9,6 +9,7 @@
 
 #include "mojo/core/ipcz_driver/transport.h"
 
+#include <algorithm>
 #include <cstring>
 #include <queue>
 #include <string>
@@ -21,7 +22,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -213,8 +213,8 @@ class TransportListener {
     TestMessage message;
     message.bytes.resize(bytes.size());
     message.handles.resize(handles.size());
-    base::ranges::copy(bytes, message.bytes.begin());
-    base::ranges::copy(handles, message.handles.begin());
+    std::ranges::copy(bytes, message.bytes.begin());
+    std::ranges::copy(handles, message.handles.begin());
 
     base::AutoLock lock(lock_);
     messages_.push(std::move(message));
