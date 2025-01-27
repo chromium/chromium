@@ -7,6 +7,7 @@
 #import <CoreML/CoreML.h>
 #import <Foundation/Foundation.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "base/apple/foundation_util.h"
@@ -22,7 +23,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -588,14 +588,14 @@ void GraphImplCoreml::DispatchImpl(
   // them as shared/read-only.
   std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources;
   shared_resources.reserve(named_inputs.size());
-  base::ranges::transform(
+  std::ranges::transform(
       named_input_buffer_states, std::back_inserter(shared_resources),
       [](const auto& name_and_state) { return name_and_state.second; });
 
   // Exclusively reserve all output tensors, which will be written to.
   std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources;
   exclusive_resources.reserve(named_outputs.size());
-  base::ranges::transform(
+  std::ranges::transform(
       named_output_buffer_states, std::back_inserter(exclusive_resources),
       [](const auto& name_and_state) { return name_and_state.second; });
 

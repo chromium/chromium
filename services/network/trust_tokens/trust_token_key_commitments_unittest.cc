@@ -4,10 +4,10 @@
 
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 
+#include <algorithm>
 #include <array>
 
 #include "base/base64.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
@@ -217,7 +217,7 @@ TEST(TrustTokenKeyCommitments, FiltersKeys) {
 
   auto result = GetCommitmentForOrigin(commitments, origin);
   EXPECT_EQ(result->keys.size(), max_keys);
-  EXPECT_TRUE(base::ranges::all_of(
+  EXPECT_TRUE(std::ranges::all_of(
       result->keys, [](const mojom::TrustTokenVerificationKeyPtr& key) {
         return key->expiry == base::Time::Now() + base::Minutes(1);
       }));

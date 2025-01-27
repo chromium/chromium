@@ -7,7 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <concepts>
+#include <functional>
 #include <iterator>
 #include <numeric>
 #include <vector>
@@ -16,8 +18,6 @@
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -264,8 +264,8 @@ base::expected<TfLitePadding, std::string> GetTfLitePaddingMode(
 std::vector<uint32_t> GetIndexOfSortedValue(base::span<const uint32_t> axes) {
   std::vector<uint32_t> sorted_indices(axes.size());
   std::iota(sorted_indices.begin(), sorted_indices.end(), 0);
-  base::ranges::sort(sorted_indices, base::ranges::less(),
-                     [axes](uint32_t index) { return axes[index]; });
+  std::ranges::sort(sorted_indices, std::ranges::less(),
+                    [axes](uint32_t index) { return axes[index]; });
   return sorted_indices;
 }
 
@@ -1085,24 +1085,24 @@ auto GraphBuilderTflite::FinishAndTakeResult(
   int32_t* graph_input_ids = nullptr;
   auto graph_input_ids_index = builder_.CreateUninitializedVector<int32_t>(
       input_operands.size(), &graph_input_ids);
-  base::ranges::transform(input_operands, graph_input_ids, get_index);
+  std::ranges::transform(input_operands, graph_input_ids, get_index);
 
   std::vector<std::pair<std::string, int>> input_name_to_index;
   input_name_to_index.reserve(input_operands.size());
-  base::ranges::transform(input_operands,
-                          std::back_inserter(input_name_to_index),
-                          get_name_and_index);
+  std::ranges::transform(input_operands,
+                         std::back_inserter(input_name_to_index),
+                         get_name_and_index);
 
   int32_t* graph_output_ids = nullptr;
   auto graph_output_ids_index = builder_.CreateUninitializedVector<int32_t>(
       output_operands.size(), &graph_output_ids);
-  base::ranges::transform(output_operands, graph_output_ids, get_index);
+  std::ranges::transform(output_operands, graph_output_ids, get_index);
 
   std::vector<std::pair<std::string, int>> output_name_to_index;
   output_name_to_index.reserve(output_operands.size());
-  base::ranges::transform(output_operands,
-                          std::back_inserter(output_name_to_index),
-                          get_name_and_index);
+  std::ranges::transform(output_operands,
+                         std::back_inserter(output_name_to_index),
+                         get_name_and_index);
 
   // Insert the cast operator for the graph output operand after the unsupported
   // float16 inference operation.
@@ -1146,7 +1146,7 @@ uint32_t GraphBuilderTflite::SerializeBuffer(base::span<const uint8_t> buffer) {
   std::fill_n(std::back_inserter(buffer_data_), padding, 0);
   CHECK_EQ(buffer_data_.size() % kWeightsAlignment, 0u);
 
-  base::ranges::copy(buffer, std::back_inserter(buffer_data_));
+  std::ranges::copy(buffer, std::back_inserter(buffer_data_));
   const auto buffer_index = base::checked_cast<uint32_t>(buffers_.size());
   buffers_.emplace_back(
       ::tflite::CreateBuffer(builder_, /*data=*/0, offset, buffer.size()));
@@ -1624,7 +1624,7 @@ auto GraphBuilderTflite::InsertPadOperation(const TensorInfo& input_tensor_info,
   // [beginning_height, ending_height], [beginning_width, ending_width], [0,
   // 0]].
   std::array<int32_t, 8> tflite_paddings = {};
-  base::ranges::copy(paddings, tflite_paddings.begin() + 2);
+  std::ranges::copy(paddings, tflite_paddings.begin() + 2);
 
   // The shape of padding is [n, 2], where n is the rank of input as described
   // here https://www.tensorflow.org/mlir/tfl_ops#tflmirror_pad_tflmirrorpadop.
@@ -3866,7 +3866,7 @@ int32_t GraphBuilderTflite::TransposeAndReshapeLayerNormalizationScaleBias(
   // transposed to [1, 4, 3] and then reshaped to [1, 1, 4, 3].
   std::optional<int32_t> transpose_tensor_index;
   const std::vector<uint32_t> sorted_indices = GetIndexOfSortedValue(axes);
-  if (!base::ranges::is_sorted(sorted_indices)) {
+  if (!std::ranges::is_sorted(sorted_indices)) {
     transpose_tensor_index =
         InsertTransposeOperation(scale_or_bias_tensor_info, sorted_indices);
   }
@@ -4389,28 +4389,28 @@ base::FixedArray<int64_t> GraphBuilderTflite::GetConstantInt64Value(
       return GetInt64ZeroPointFromInt4(operand_id);
     }
     case OperandDataType::kInt8: {
-      base::ranges::copy(GetConstantValue<int8_t>(operand_id),
-                         typed_value.begin());
+      std::ranges::copy(GetConstantValue<int8_t>(operand_id),
+                        typed_value.begin());
       break;
     }
     case OperandDataType::kUint8: {
-      base::ranges::copy(GetConstantValue<uint8_t>(operand_id),
-                         typed_value.begin());
+      std::ranges::copy(GetConstantValue<uint8_t>(operand_id),
+                        typed_value.begin());
       break;
     }
     case OperandDataType::kInt32: {
-      base::ranges::copy(GetConstantValue<int32_t>(operand_id),
-                         typed_value.begin());
+      std::ranges::copy(GetConstantValue<int32_t>(operand_id),
+                        typed_value.begin());
       break;
     }
     case OperandDataType::kUint32: {
-      base::ranges::copy(GetConstantValue<uint32_t>(operand_id),
-                         typed_value.begin());
+      std::ranges::copy(GetConstantValue<uint32_t>(operand_id),
+                        typed_value.begin());
       break;
     }
     case OperandDataType::kInt64: {
-      base::ranges::copy(GetConstantValue<int64_t>(operand_id),
-                         typed_value.begin());
+      std::ranges::copy(GetConstantValue<int64_t>(operand_id),
+                        typed_value.begin());
       break;
     }
     case OperandDataType::kFloat32:
@@ -4883,7 +4883,7 @@ auto GraphBuilderTflite::SerializeResample2d(
       GetOperand(resample2d.input_operand_id).descriptor));
 
   const std::array<uint32_t, 2> supported_axes = {1, 2};
-  CHECK(base::ranges::equal(resample2d.axes, supported_axes));
+  CHECK(std::ranges::equal(resample2d.axes, supported_axes));
 
   // Create tflite builtin options for resize mode that is align_corner = false
   // and half_pixel_center = true by default. WebNN will support coordinate
@@ -4976,7 +4976,7 @@ auto GraphBuilderTflite::SerializeReverse(const mojom::Reverse& reverse)
   // tensor need to be reversed slice by slice.
   ASSIGN_OR_RETURN(std::vector<int32_t> signed_axes,
                    ToSignedDimensions(reverse.axes));
-  base::ranges::sort(signed_axes);
+  std::ranges::sort(signed_axes);
   std::vector<int32_t> contiguous_axes = {signed_axes[0]};
   std::optional<int32_t> previous_reverse_tensor_index;
   for (size_t i = 1; i < signed_axes.size(); ++i) {

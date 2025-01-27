@@ -4,10 +4,10 @@
 
 #include "services/webnn/webnn_utils.h"
 
+#include <algorithm>
 #include <set>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -42,7 +42,7 @@ std::string OpKindToString(mojom::Pool2d::Kind kind) {
 bool ValidateAxes(base::span<const uint32_t> axes) {
   size_t rank = axes.size();
 
-  if (base::ranges::any_of(axes, [rank](uint32_t axis) {
+  if (std::ranges::any_of(axes, [rank](uint32_t axis) {
         return base::checked_cast<size_t>(axis) >= rank;
       })) {
     // All axes should be within range [0, N - 1].

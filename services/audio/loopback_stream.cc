@@ -4,12 +4,12 @@
 
 #include "services/audio/loopback_stream.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/sync_socket.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -261,7 +261,7 @@ void LoopbackStream::FlowNetwork::RemoveInput(SnooperNode* node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(control_sequence_);
 
   base::AutoLock scoped_lock(lock_);
-  const auto it = base::ranges::find(inputs_, node);
+  const auto it = std::ranges::find(inputs_, node);
   CHECK(it != inputs_.end(), base::NotFatalUntil::M130);
   inputs_.erase(it);
 }

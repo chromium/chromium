@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 
+#include <algorithm>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -12,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -443,7 +443,7 @@ bool ParseHost(std::string_view host, mojom::CSPSource* csp_source) {
   for (int i = 0; std::string_view piece : host_pieces) {
     // Only a trailing dot is allowed.
     if ((piece.empty() && i + 1 < std::ssize(host_pieces)) ||
-        !base::ranges::all_of(piece, [](auto c) {
+        !std::ranges::all_of(piece, [](auto c) {
           return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) || c == '-';
         })) {
       return false;
@@ -465,8 +465,8 @@ bool ParsePort(std::string_view port, mojom::CSPSource* csp_source) {
     return true;
   }
 
-  if (!base::ranges::all_of(port,
-                            base::IsAsciiDigit<std::string_view::value_type>)) {
+  if (!std::ranges::all_of(port,
+                           base::IsAsciiDigit<std::string_view::value_type>)) {
     return false;
   }
 
@@ -750,7 +750,7 @@ mojom::CSPSourceListPtr ParseSourceList(
   }
 
   if (contains_none &&
-      base::ranges::any_of(tokens, [](const auto& token) -> bool {
+      std::ranges::any_of(tokens, [](const auto& token) -> bool {
         return !base::EqualsCaseInsensitiveASCII(token, "'report-sample'") &&
                !base::EqualsCaseInsensitiveASCII(token, "'none'");
       })) {
@@ -800,7 +800,7 @@ network::mojom::CSPRequireTrustedTypesFor ParseRequireTrustedTypesFor(
 // This implements tt-policy-name from
 // https://w3c.github.io/trusted-types/dist/spec/#trusted-types-csp-directive
 bool IsValidTrustedTypesPolicyName(std::string_view value) {
-  return base::ranges::all_of(value, [](char c) {
+  return std::ranges::all_of(value, [](char c) {
     return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) ||
            base::Contains("-#=_/@.%", c);
   });
@@ -971,7 +971,7 @@ void AddContentSecurityPolicyFromHeader(
   out->self_origin = ComputeSelfOrigin(base_url);
 
   for (auto directive : directives) {
-    if (!base::ranges::all_of(directive.first, IsDirectiveNameCharacter)) {
+    if (!std::ranges::all_of(directive.first, IsDirectiveNameCharacter)) {
       out->parsing_errors.emplace_back(base::StringPrintf(
           "The Content-Security-Policy directive name '%s' contains one or "
           "more invalid characters. Only ASCII alphanumeric characters or "
@@ -999,7 +999,7 @@ void AddContentSecurityPolicyFromHeader(
     }
     out->raw_directives[directive_name] = std::string(directive.second);
 
-    if (!base::ranges::all_of(directive.second, IsDirectiveValueCharacter)) {
+    if (!std::ranges::all_of(directive.second, IsDirectiveValueCharacter)) {
       out->parsing_errors.emplace_back(base::StringPrintf(
           "The value for the Content-Security-Policy directive '%s' contains "
           "one or more invalid characters. In a source expression, "
@@ -1538,7 +1538,7 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
       CSPDirectiveName::FrameAncestors, CSPDirectiveName::FormAction,
       CSPDirectiveName::FencedFrameSrc};
 
-  return base::ranges::all_of(directives, [&](CSPDirectiveName directive) {
+  return std::ranges::all_of(directives, [&](CSPDirectiveName directive) {
     auto required = GetSourceList(directive, policy_a);
     if (!required.second)
       return true;

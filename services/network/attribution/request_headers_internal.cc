@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -13,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "net/http/structured_headers.h"
@@ -98,7 +98,7 @@ void ApplyGrease(std::vector<net::structured_headers::DictionaryMember>& dict,
   if (dict.size() > 1 && options.reverse) {
     // Dictionaries retain order during serialization, so reordering helps
     // ensure that recipients do not depend on it.
-    base::ranges::reverse(dict);
+    std::ranges::reverse(dict);
   }
 }
 

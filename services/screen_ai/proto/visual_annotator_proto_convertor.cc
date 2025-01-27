@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/ranges.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "services/strings/grit/services_strings.h"
@@ -30,7 +29,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 
-namespace ranges = base::ranges;
+namespace ranges = std::ranges;
 
 namespace {
 

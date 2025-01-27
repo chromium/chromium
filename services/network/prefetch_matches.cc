@@ -4,6 +4,7 @@
 
 #include "services/network/prefetch_matches.h"
 
+#include <algorithm>
 #include <array>
 #include <functional>
 #include <iomanip>
@@ -26,7 +27,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "build/buildflag.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_flags_to_string.h"

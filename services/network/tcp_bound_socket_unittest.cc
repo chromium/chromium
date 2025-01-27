@@ -366,7 +366,7 @@ TEST_F(TCPBoundSocketTest, ReadWrite) {
     }
     if (result != MOJO_RESULT_OK)
       break;
-    base::ranges::fill(buffer, 0);
+    std::ranges::fill(buffer, 0);
     client_socket_send_handle->EndWriteData(buffer.size());
   }
   // Wait for write error on the client socket. Don't check exact error, out of

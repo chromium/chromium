@@ -4,13 +4,13 @@
 
 #include "services/network/trust_tokens/trust_token_request_issuance_helper.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"

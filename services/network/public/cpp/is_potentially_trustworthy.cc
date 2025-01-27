@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 #include <string_view>
@@ -16,7 +17,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
@@ -372,8 +372,8 @@ std::vector<std::string> SecureOriginAllowlist::GetCurrentAllowlist() {
 
   std::vector<std::string> result;
   result.reserve(cmdline_allowlist_.size() + auxiliary_allowlist_.size());
-  base::ranges::copy(cmdline_allowlist_, std::back_inserter(result));
-  base::ranges::copy(auxiliary_allowlist_, std::back_inserter(result));
+  std::ranges::copy(cmdline_allowlist_, std::back_inserter(result));
+  std::ranges::copy(auxiliary_allowlist_, std::back_inserter(result));
   return result;
 }
 

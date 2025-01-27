@@ -4,12 +4,12 @@
 
 #include "services/network/network_service_network_delegate.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
@@ -360,7 +360,7 @@ void NetworkServiceNetworkDelegate::OnCanSendReportingReports(
   }
 
   std::vector<url::Origin> origin_vector;
-  base::ranges::copy(origins, std::back_inserter(origin_vector));
+  std::ranges::copy(origins, std::back_inserter(origin_vector));
   client->OnCanSendReportingReports(
       origin_vector,
       base::BindOnce(

@@ -593,10 +593,9 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
   if (!maybe_included_cookies.empty() && IsPartitionedCookiesEnabled()) {
     UMA_HISTOGRAM_COUNTS_100(
         "Net.RestrictedCookieManager.PartitionedCookiesInScript",
-        base::ranges::count_if(result,
-                               [](const net::CookieWithAccessResult& c) {
-                                 return c.cookie.IsPartitioned();
-                               }));
+        std::ranges::count_if(result, [](const net::CookieWithAccessResult& c) {
+          return c.cookie.IsPartitioned();
+        }));
   }
 
   std::move(callback).Run(result);

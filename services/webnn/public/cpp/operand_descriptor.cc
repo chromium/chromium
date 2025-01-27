@@ -4,11 +4,11 @@
 
 #include "services/webnn/public/cpp/operand_descriptor.h"
 
+#include <algorithm>
 #include <numeric>
 
 #include "base/containers/to_vector.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
@@ -35,7 +35,7 @@ base::expected<uint64_t, std::string> ValidateAndGetByteLength(
 
   // Enforce dimension range according to
   // https://www.w3.org/TR/webnn/#valid-dimension.
-  if (base::ranges::any_of(shape, [](uint32_t dimension) {
+  if (std::ranges::any_of(shape, [](uint32_t dimension) {
         return !base::CheckedNumeric<int32_t>(dimension).IsValid();
       })) {
     return base::unexpected(

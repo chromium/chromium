@@ -27,7 +27,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -3968,7 +3967,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
 
   base::FixedArray<DML_OPERATOR_DESC> activation_dml_descs(
       activation_operator_descs.size());
-  base::ranges::transform(
+  std::ranges::transform(
       activation_operator_descs, std::begin(activation_dml_descs),
       [](const auto& activation_operator_desc) {
         return activation_operator_desc.GetActivationDmlDesc();
@@ -4624,7 +4623,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
 
   base::FixedArray<DML_OPERATOR_DESC> activation_dml_descs(
       activation_operator_descs.size());
-  base::ranges::transform(
+  std::ranges::transform(
       activation_operator_descs, activation_dml_descs.begin(),
       [](const auto& activation_operator_desc) {
         return activation_operator_desc.GetActivationDmlDesc();
@@ -5542,7 +5541,7 @@ bool IsDispatchBindingValid(
     const base::flat_map<std::string_view, WebNNTensorImpl*>& named_tensors,
     const base::flat_map<std::string, base::WeakPtr<const WebNNTensorImpl>>&
         prev_named_tensors) {
-  return base::ranges::equal(
+  return std::ranges::equal(
       named_tensors, prev_named_tensors,
       [](const auto& pair, const auto& previous_pair) {
         const auto& [name, tensor] = pair;
@@ -6064,10 +6063,9 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
   // `id_to_operand_map`. It might be used for inserting new operands into maps
   // when adding operations.
   uint64_t next_operand_id = 0;
-  base::ranges::for_each(
-      id_to_operand_map, [&next_operand_id](auto& key_value) {
-        next_operand_id = std::max(next_operand_id, key_value.first + 1);
-      });
+  std::ranges::for_each(id_to_operand_map, [&next_operand_id](auto& key_value) {
+    next_operand_id = std::max(next_operand_id, key_value.first + 1);
+  });
 
   // Fuse the operations in `mojom::GraphInfo` wherever possible to optimize the
   // graph's compute performance.

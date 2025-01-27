@@ -4,8 +4,9 @@
 
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -58,7 +59,7 @@ void MockVideoFrameHandler::OnFrameReadyInBuffer(
 }
 
 void MockVideoFrameHandler::OnBufferRetired(int32_t buffer_id) {
-  auto iter = base::ranges::find(known_buffer_ids_, buffer_id);
+  auto iter = std::ranges::find(known_buffer_ids_, buffer_id);
   CHECK(iter != known_buffer_ids_.end());
   known_buffer_ids_.erase(iter);
   DoOnBufferRetired(buffer_id);

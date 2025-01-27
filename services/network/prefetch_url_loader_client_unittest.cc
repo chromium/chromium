@@ -6,12 +6,12 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <type_traits>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -148,7 +148,7 @@ mojo_base::BigBuffer TestBigBuffer() {
 MATCHER(BigBufferHasExpectedContents,
         "does the BigBuffer have the right contents") {
   auto expected = TestBigBuffer();
-  return base::ranges::equal(base::span(expected), base::span(arg));
+  return std::ranges::equal(base::span(expected), base::span(arg));
 }
 
 // Returns a RedirectInfo object that is useful for use in tests. It is

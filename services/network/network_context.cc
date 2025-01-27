@@ -29,7 +29,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -2469,7 +2468,7 @@ const net::HttpAuthPreferences* NetworkContext::GetHttpAuthPreferences() const {
 }
 
 size_t NetworkContext::NumOpenWebTransports() const {
-  return base::ranges::count(web_transports_, false, &WebTransport::torn_down);
+  return std::ranges::count(web_transports_, false, &WebTransport::torn_down);
 }
 
 bool NetworkContext::AllURLLoaderFactoriesAreBoundToNetworkForTesting(

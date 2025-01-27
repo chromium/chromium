@@ -4,12 +4,12 @@
 
 #include "services/accessibility/android/auto_complete_handler.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "services/accessibility/android/accessibility_info_data_wrapper.h"
 #include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
 #include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
@@ -217,9 +217,9 @@ TEST_F(AutoCompleteHandlerTest, PreEventAndPostSerialize) {
       AutoCompleteHandler::CreateIfNecessary(tree_source(), *event_data);
   ASSERT_EQ(2U, create_result.size());
 
-  auto editable1_handler = base::ranges::find(
+  auto editable1_handler = std::ranges::find(
       create_result, 1, &AutoCompleteHandler::IdAndHandler::first);
-  auto editable2_handler = base::ranges::find(
+  auto editable2_handler = std::ranges::find(
       create_result, 2, &AutoCompleteHandler::IdAndHandler::first);
   ASSERT_NE(editable1_handler, create_result.end());
   ASSERT_NE(editable2_handler, create_result.end());

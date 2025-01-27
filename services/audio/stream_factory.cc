@@ -4,12 +4,12 @@
 
 #include "services/audio/stream_factory.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
@@ -165,7 +165,7 @@ void StreamFactory::BindMuter(
                                       group_id);
 
   // Find the existing LocalMuter for this group, or create one on-demand.
-  auto it = base::ranges::find(muters_, group_id, &LocalMuter::group_id);
+  auto it = std::ranges::find(muters_, group_id, &LocalMuter::group_id);
   LocalMuter* muter;
   if (it == muters_.end()) {
     auto muter_ptr = std::make_unique<LocalMuter>(&coordinator_, group_id);
@@ -257,8 +257,8 @@ void StreamFactory::DestroyMuter(base::WeakPtr<LocalMuter> muter) {
   auto do_destroy = [](base::WeakPtr<StreamFactory> weak_this,
                        base::WeakPtr<LocalMuter> muter) {
     if (weak_this && muter) {
-      const auto it = base::ranges::find_if(
-          weak_this->muters_, base::MatchesUniquePtr(muter.get()));
+      const auto it = std::ranges::find_if(weak_this->muters_,
+                                           base::MatchesUniquePtr(muter.get()));
 
       // The LocalMuter can still have receivers if a receiver was bound after
       // DestroyMuter is called but before the do_destroy task is run.
@@ -278,7 +278,7 @@ void StreamFactory::DestroyLoopbackStream(LoopbackStream* stream) {
   DCHECK(stream);
 
   const auto it =
-      base::ranges::find_if(loopback_streams_, base::MatchesUniquePtr(stream));
+      std::ranges::find_if(loopback_streams_, base::MatchesUniquePtr(stream));
   CHECK(it != loopback_streams_.end(), base::NotFatalUntil::M130);
   loopback_streams_.erase(it);
 

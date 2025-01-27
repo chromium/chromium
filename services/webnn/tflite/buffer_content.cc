@@ -4,8 +4,9 @@
 
 #include "services/webnn/tflite/buffer_content.h"
 
+#include <algorithm>
+
 #include "base/compiler_specific.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/tflite/buildflags.h"
 #include "third_party/tflite/src/tensorflow/lite/util.h"
 
@@ -33,7 +34,7 @@ BufferContent::BufferContent(size_t size)
                                  ::tflite::kDefaultTensorAlignment)),
       size_(size) {
   // `base::AlignedAlloc` does not return initialized memory.
-  base::ranges::fill(AsSpan(), 0);
+  std::ranges::fill(AsSpan(), 0);
 }
 
 BufferContent::~BufferContent() = default;

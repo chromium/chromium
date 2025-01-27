@@ -4,14 +4,14 @@
 
 #include "services/device/public/cpp/usb/usb_ids.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
 
 namespace device {
 
 // static
 const UsbVendor* UsbIds::FindVendor(uint16_t vendor_id) {
   const UsbVendor key = {/*name=*/{}, /*products=*/{}, vendor_id};
-  auto it = base::ranges::lower_bound(
+  auto it = std::ranges::lower_bound(
       vendors_, key, [](const auto& a, const auto& b) { return a.id < b.id; });
   if (it == vendors_.end() || it->id != vendor_id) {
     return nullptr;
@@ -36,7 +36,7 @@ const char* UsbIds::GetProductName(uint16_t vendor_id, uint16_t product_id) {
   }
 
   const UsbProduct key = {product_id, /*name=*/{}};
-  auto it = base::ranges::lower_bound(
+  auto it = std::ranges::lower_bound(
       vendor->products, key,
       [](const auto& a, const auto& b) { return a.id < b.id; });
   if (it == vendor->products.end() || it->id != product_id) {

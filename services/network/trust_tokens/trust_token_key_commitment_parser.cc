@@ -4,10 +4,11 @@
 
 #include "services/network/trust_tokens/trust_token_key_commitment_parser.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
