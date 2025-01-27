@@ -1090,6 +1090,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // the element supports this attribute. For example, `interesttarget` is not
   // allowed on a `<div>`.
   virtual Element* interestTargetElement() { return nullptr; }
+  // Returns true if this element is an interest invoker that currently "has
+  // interest".
+  bool HasInterest();
 
   // The implementations of |innerText()| and |GetInnerTextWithoutUpdate()| are
   // found in "element_inner_text.cc".

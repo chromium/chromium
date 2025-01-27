@@ -95,6 +95,7 @@ const std::string Converter::kPseudoLookupTable[] = {
     "focus-within",
     "fullscreen",
     "future",
+    "has-interest",
     "has-slotted",
     "horizontal",
     "host",

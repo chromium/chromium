@@ -10278,6 +10278,7 @@ void Element::ScheduleInterestGainedTask() {
             target->EnsureElementRareData()
                 .EnsureInterestInvokerTargetData()
                 .setInterestInvoker(invoker);
+            invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
           },
           WrapWeakPersistent(this), WrapWeakPersistent(target)),
       base::Seconds(show_delay_seconds)));
@@ -10322,6 +10323,7 @@ void Element::ScheduleInterestLostTask() {
               target->EnsureElementRareData()
                   .EnsureInterestInvokerTargetData()
                   .setInterestInvoker(nullptr);
+              invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
             }
           },
           WrapWeakPersistent(this), WrapWeakPersistent(target)),
@@ -10342,6 +10344,14 @@ Element* Element::GetInterestInvoker() const {
     return nullptr;
   }
   return invoker;
+}
+
+bool Element::HasInterest() {
+  auto* target = interestTargetElement();
+  if (!target) {
+    return false;
+  }
+  return target->GetInterestInvoker() == this;
 }
 
 void Element::SetHovered(bool hovered) {
