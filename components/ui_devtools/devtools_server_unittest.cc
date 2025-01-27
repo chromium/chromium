@@ -49,7 +49,13 @@ class UIDevToolsServerTest : public testing::Test {
 
 // Tests whether the server for Views is properly created so we can connect to
 // it.
-TEST_F(UIDevToolsServerTest, ConnectionToViewsServer) {
+// TODO(crbug.com/392596491) Test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ConnectionToViewsServer DISABLED_ConnectionToViewsServer
+#else
+#define MAYBE_ConnectionToViewsServer ConnectionToViewsServer
+#endif
+TEST_F(UIDevToolsServerTest, MAYBE_ConnectionToViewsServer) {
   // As with the test server itself, TCPClientSocket can only be connected on an
   // IO thread, so have to do all the work here on the IO thread.
   base::RunLoop run_loop;
