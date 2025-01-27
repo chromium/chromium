@@ -14,12 +14,14 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "components/performance_manager/test_support/graph/mock_frame_node_observer.h"
 #include "components/performance_manager/test_support/graph/mock_page_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
@@ -1055,6 +1057,39 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   testing::Mock::VerifyAndClear(&obs);
 
   graph()->RemovePageNodeObserver(&obs);
+}
+
+// Regression test for crbug.com/391723297.
+TEST_F(FrameNodeImplTest, ResetCoordinationUnitReceiverOnDiscard) {
+  // Create a frame tree with two child frame nodes.
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto main_frame_node = CreateFrameNodeAutoId(process.get(), page.get());
+  auto child_frame_node =
+      CreateFrameNodeAutoId(process.get(), page.get(), main_frame_node.get());
+
+  // Bind remotes to each frame.
+  mojo::Remote<mojom::DocumentCoordinationUnit> main_frame_remote;
+  main_frame_node->Bind(main_frame_remote.BindNewPipeAndPassReceiver());
+  mojo::Remote<mojom::DocumentCoordinationUnit> child_frame_remote;
+  child_frame_node->Bind(child_frame_remote.BindNewPipeAndPassReceiver());
+
+  // Assert the remotes are connected to the frame receivers.
+  EXPECT_TRUE(main_frame_remote.is_connected());
+  EXPECT_TRUE(child_frame_remote.is_connected());
+
+  // Notify a discard for the primary page node.
+  base::RunLoop main_frame_run_loop;
+  base::RunLoop child_frame_run_loop;
+  main_frame_remote.set_disconnect_handler(main_frame_run_loop.QuitClosure());
+  child_frame_remote.set_disconnect_handler(child_frame_run_loop.QuitClosure());
+  page->OnAboutToBeDiscarded(page->GetWeakPtr());
+
+  // The connection should have been reset.
+  main_frame_run_loop.Run();
+  child_frame_run_loop.Run();
+  EXPECT_FALSE(main_frame_remote.is_connected());
+  EXPECT_FALSE(child_frame_remote.is_connected());
 }
 
 }  // namespace performance_manager
