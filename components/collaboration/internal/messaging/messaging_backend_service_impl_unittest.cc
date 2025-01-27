@@ -1765,6 +1765,10 @@ TEST_F(MessagingBackendServiceImplTest, TestMemberAddedCreatesInstantMessage) {
   EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
       .WillRepeatedly(Return(all_groups));
 
+  EXPECT_CALL(*mock_data_sharing_service_,
+              ReadGroup(Eq(group_data.group_token.group_id)))
+      .WillRepeatedly(Return(group_data));
+
   ds_notifier_observer_->OnGroupMemberAdded(group_data, member2.gaia_id, now);
 
   EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_ADDED,

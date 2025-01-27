@@ -602,12 +602,9 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
       {PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED});
 
   if (instant_message_delegate_) {
-    InstantMessage instant_message;
-    instant_message.attribution = CreateMessageAttributionForTabUpdates(
-        message, removed_group, std::nullopt);
-    instant_message.collaboration_event = CollaborationEvent::TAB_GROUP_REMOVED;
+    InstantMessage instant_message =
+        CreateInstantMessage(message, removed_group, /*tab=*/std::nullopt);
     instant_message.type = InstantNotificationType::UNDEFINED;
-
     DisplayInstantMessage(base::Uuid::ParseLowercase(message.uuid()),
                           instant_message, {InstantNotificationLevel::BROWSER});
   }
@@ -717,18 +714,15 @@ void MessagingBackendServiceImpl::OnTabRemoved(
   if (source == tab_groups::TriggerSource::REMOTE && last_selected_tab_ &&
       last_selected_tab_->saved_tab_guid() == removed_tab.saved_tab_guid() &&
       instant_message_delegate_) {
-    InstantMessage instant_message_base;
-    instant_message_base.attribution = CreateMessageAttributionForTabUpdates(
-        message, std::nullopt, removed_tab);
-    instant_message_base.collaboration_event = CollaborationEvent::TAB_REMOVED;
-    instant_message_base.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
+    InstantMessage instant_message =
+        CreateInstantMessage(message, /*tab_group=*/std::nullopt, removed_tab);
+    instant_message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
 
     // TODO(crbug.com/390794240): Remove the id argument to
     // DisplayInstantMessage as it's now contained inside the
     // MessageAttribution.
     DisplayInstantMessage(base::Uuid::ParseLowercase(message.uuid()),
-                          instant_message_base,
-                          {InstantNotificationLevel::BROWSER});
+                          instant_message, {InstantNotificationLevel::BROWSER});
   }
 }
 
@@ -932,24 +926,8 @@ void MessagingBackendServiceImpl::OnGroupMemberAdded(
   store_->AddMessage(message);
 
   if (instant_message_delegate_) {
-    InstantMessage instant_message;
-    instant_message.attribution.collaboration_id =
-        group_data.group_token.group_id;
-    instant_message.attribution.tab_group_metadata =
-        CreateTabGroupMessageMetadataFromMessageOrTabGroup(message, *tab_group);
-    instant_message.collaboration_event =
-        CollaborationEvent::COLLABORATION_MEMBER_ADDED;
-
-    // Look for the member in the provided data.
-    for (const data_sharing::GroupMember& member : group_data.members) {
-      if (member.gaia_id == member_gaia_id) {
-        instant_message.attribution.affected_user = member;
-        instant_message.attribution.affected_user_is_self =
-            IsMemberCurrentUser(identity_manager_, member_gaia_id);
-        break;
-      }
-    }
-
+    InstantMessage instant_message =
+        CreateInstantMessage(message, tab_group, /*tab=*/std::nullopt);
     DisplayInstantMessage(
         base::Uuid::ParseLowercase(message.uuid()), instant_message,
         {InstantNotificationLevel::SYSTEM, InstantNotificationLevel::BROWSER});
@@ -1385,6 +1363,18 @@ PersistentMessage MessagingBackendServiceImpl::CreatePersistentMessage(
   return persistent_message;
 }
 
+InstantMessage MessagingBackendServiceImpl::CreateInstantMessage(
+    const collaboration_pb::Message& message,
+    const std::optional<tab_groups::SavedTabGroup>& tab_group,
+    const std::optional<tab_groups::SavedTabGroupTab>& tab) {
+  InstantMessage instant_message;
+  instant_message.collaboration_event =
+      ToCollaborationEvent(message.event_type());
+  instant_message.attribution =
+      CreateMessageAttributionForTabUpdates(message, tab_group, tab);
+  return instant_message;
+}
+
 void MessagingBackendServiceImpl::NotifyDisplayPersistentMessagesForTypes(
     const PersistentMessage& base_message,
     const std::vector<PersistentNotificationType>& types) {
@@ -1473,11 +1463,41 @@ MessagingBackendServiceImpl::CreateMessageAttributionForTabUpdates(
   attribution.tab_metadata = CreateTabMessageMetadataFromMessageOrTab(
       message,
       tab.has_value() ? tab : GetTabFromGroup(message, stack_tab_group));
-  GaiaId trigger_user_gaia_id(message.triggering_user_gaia_id());
-  attribution.triggering_user = GetGroupMemberFromGaiaId(
-      data_sharing::GroupId(message.collaboration_id()), trigger_user_gaia_id);
-  attribution.triggering_user_is_self =
-      IsMemberCurrentUser(identity_manager_, trigger_user_gaia_id);
+
+  // Look for the member in the provided data.
+  auto group_data =
+      data_sharing_service_->ReadGroup(attribution.collaboration_id);
+
+  if (group_data) {
+    // Set affected user if available.
+    if (message.has_affected_user_gaia_id()) {
+      GaiaId gaia_id(message.affected_user_gaia_id());
+      for (const data_sharing::GroupMember& member :
+           group_data.value().members) {
+        if (member.gaia_id == gaia_id) {
+          attribution.affected_user = member;
+          attribution.affected_user_is_self =
+              IsMemberCurrentUser(identity_manager_, gaia_id);
+          break;
+        }
+      }
+    }
+
+    // Set triggering user if available.
+    if (message.has_triggering_user_gaia_id()) {
+      for (const data_sharing::GroupMember& member :
+           group_data.value().members) {
+        GaiaId gaia_id(message.triggering_user_gaia_id());
+        if (member.gaia_id == gaia_id) {
+          attribution.triggering_user = member;
+          attribution.triggering_user_is_self =
+              IsMemberCurrentUser(identity_manager_, gaia_id);
+          break;
+        }
+      }
+    }
+  }
+
   return attribution;
 }
 
