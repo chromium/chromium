@@ -597,7 +597,7 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280166,-2143831735395280163,-2143831735395280166,1407387768455501,"[NULL]"
   """))
 
-  def test_chrome_scroll_update_input_info(self):
+  def test_chrome_scroll_update_input_pipeline(self):
         return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
@@ -632,7 +632,7 @@ class ChromeScrollJankStdlib(TestSuite):
           compositor_coalesced_input_handled_ts,
           compositor_coalesced_input_handled_dur,
           compositor_coalesced_input_handled_end_ts
-        FROM chrome_scroll_update_input_info
+        FROM chrome_scroll_update_input_pipeline
         ORDER BY id
         LIMIT 21
         """,
@@ -661,7 +661,7 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280166,-2143831735395280166,1,0,0,1,1,1292554023976270,3704987,1,10071,1292554027681257,2166000,10102,1292554029847257,236000,1292554030083257,276953,4,10123,1292554030360210,377000,1292554030737210,-68000,10128,1292554030669210,56000,1292554030725210
         """))
 
-  def test_chrome_scroll_update_frame_info(self):
+  def test_chrome_scroll_update_frame_pipeline(self):
         return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
@@ -701,7 +701,7 @@ class ChromeScrollJankStdlib(TestSuite):
           latch_timestamp,
           viz_latch_to_presentation_dur,
           presentation_timestamp
-        FROM chrome_scroll_update_frame_info
+        FROM chrome_scroll_update_frame_pipeline
         ORDER BY id
         LIMIT 21
         """,
