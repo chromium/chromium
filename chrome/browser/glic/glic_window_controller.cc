@@ -771,15 +771,16 @@ void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
     return;
   }
 
-  GlicButton* glic_button = browser->window()
+
+  TabStripActionContainer* tab_strip_action_container = browser->window()
                                 ->AsBrowserView()
                                 ->tab_strip_region_view()
-                                ->GetGlicButton();
-  CHECK(glic_button);
+                                ->GetTabStripActionContainer();
+  CHECK(tab_strip_action_container);
 
   // TODO(andreaxg): Fix exact attachment position.
-  gfx::Rect glic_button_rect = glic_button->GetBoundsInScreen();
-  gfx::Point top_right = glic_button_rect.top_right();
+  gfx::Rect tab_strip_container_rect = tab_strip_action_container->GetBoundsInScreen();
+  gfx::Point top_right = tab_strip_container_rect.top_right();
   int tab_strip_padding = GetLayoutConstant(TAB_STRIP_PADDING);
 
   gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
