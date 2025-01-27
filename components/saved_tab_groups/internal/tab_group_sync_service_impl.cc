@@ -589,8 +589,12 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
     tab.SetUpdatedByAttribution(account_id.value());
   }
 
-  // TODO(crbug.com/382557489): use `callback` when provided.
   model_->AddedLocally(std::move(shared_group));
+  // TODO(crbug.com/382557489): use `callback` when provided, simulate success
+  // for now.
+  if (callback) {
+    std::move(callback).Run(TabGroupSharingResult::kSuccess);
+  }
 }
 
 void TabGroupSyncServiceImpl::AboutToUnShareTabGroup(
