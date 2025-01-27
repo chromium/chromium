@@ -13,13 +13,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/task_environment.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_translation_dispatcher.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
+#include "media/mojo/mojom/speech_recognition_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,13 +36,15 @@ constexpr char kTranscriptionFull[] =
     "The red fox jumped over the lazy brown dog. Hello there!";
 constexpr char kTranscriptionPartial[] =
     "The red fox jumped over the lazy brown dog.";
-constexpr char kTranscriptionFullFinal[] =
-    "The red fox jumped over the lazy brown dog. Hello there! ";
 constexpr char kTranscriptionPartialWithMore[] =
     "the red fox jumped over the lazy brown dog. Hello";
 constexpr char kOtherTranscription[] = "This is a second transcript!";
 constexpr char kOtherTranscriptionPartial[] = "This is a";
 constexpr char kOtherTranscriptionPartialMore[] = "this is a second";
+constexpr char kTranslationResult[] = "translations are fun! Look at this one!";
+constexpr char kTranslationResultFirstSentence[] = "translations are fun!";
+constexpr char kOtherTranslationResult[] = "Wow! Translated text!";
+
 }  // namespace
 
 class BabelOrcaCaptionTranslatorTest : public testing::Test {
@@ -65,44 +68,6 @@ class BabelOrcaCaptionTranslatorTest : public testing::Test {
                                                        kDefaultSourceName);
   }
 
-  void GetFullTranslationCallback(
-      base::OnceCallback<void()> quit_closure,
-      const media::SpeechRecognitionResult& result) {
-    EXPECT_EQ(result.transcription, kTranscriptionFull);
-    std::move(quit_closure).Run();
-  }
-
-  void GetFullFinalTranslationCallback(
-      base::OnceCallback<void()> quit_closure,
-      const media::SpeechRecognitionResult& result) {
-    EXPECT_EQ(result.transcription, kTranscriptionFullFinal);
-    std::move(quit_closure).Run();
-  }
-
-  // Like above, but will only quit the run loop iff result.is_final.
-  void GetPartialTranslationCallback(
-      base::OnceCallback<void()> quit_closure,
-      const media::SpeechRecognitionResult& result) {
-    if (result.is_final) {
-      EXPECT_EQ(result.transcription, kTranscriptionPartial);
-      std::move(quit_closure).Run();
-    }
-  }
-
-  void GetBothPartsOnCallback(base::OnceCallback<void()> quit_closure,
-                              const media::SpeechRecognitionResult& result) {
-    ++get_both_parts_callback_call_number_;
-    ASSERT_LE(get_both_parts_callback_call_number_, 2);
-    if (get_both_parts_callback_call_number_ == 1) {
-      EXPECT_EQ(result.transcription, kTranscriptionFull);
-    } else if (get_both_parts_callback_call_number_ == 2) {
-      EXPECT_EQ(result.transcription, kTranscriptionPartial);
-      std::move(quit_closure).Run();
-    }
-  }
-
-  int get_both_parts_callback_call_number_ = 0;
-  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<BabelOrcaCaptionTranslator> caption_translator_;
   base::WeakPtr<FakeBabelOrcaTranslationDispatcher> translation_dispatcher_;
 
@@ -115,20 +80,41 @@ TEST_F(BabelOrcaCaptionTranslatorTest, NoCallbackNoOp) {
   BabelOrcaCaptionTranslator::OnTranslationCallback null_callback;
   caption_translator_->Translate(
       media::SpeechRecognitionResult(kTranscriptionFull, false),
-      std::move(null_callback), kDefaultSourceName, kDefaultTargetName);
+      std::move(null_callback), kDefaultSourceName, kDefaultSourceName);
   EXPECT_EQ(translation_dispatcher_->GetNumGetTranslationCalls(), 0);
 }
 
-TEST_F(BabelOrcaCaptionTranslatorTest,
-       FailsIfSourceOrTargetAreNotValidLanguages) {
-  // Expect these calls to do nothing because the language strings should not
+TEST_F(BabelOrcaCaptionTranslatorTest, FailsIfSourceIsNotValid) {
+  translation_dispatcher_->InjectTranslationResult(kTranslationResult);
+  std::string translation_result;
+
+  // Expect this call to do nothing because the language string should not
   // be valid.
   caption_translator_->Translate(
       media::SpeechRecognitionResult(kTranscriptionFull, false),
-      base::DoNothing(), kInvalidLanguageName, kDefaultTargetName);
+      base::BindLambdaForTesting(
+          [&translation_result](const media::SpeechRecognitionResult& result) {
+            translation_result = result.transcription;
+          }),
+      kInvalidLanguageName, kDefaultTargetName);
+  EXPECT_EQ(translation_result, kTranscriptionFull);
+  EXPECT_EQ(translation_dispatcher_->GetNumGetTranslationCalls(), 0);
+}
+
+TEST_F(BabelOrcaCaptionTranslatorTest, FailsIfTargetNotValid) {
+  translation_dispatcher_->InjectTranslationResult(kTranslationResult);
+  std::string translation_result;
+
+  // Expect this call to do nothing because the language string should not
+  // be valid.
   caption_translator_->Translate(
       media::SpeechRecognitionResult(kTranscriptionFull, false),
-      base::DoNothing(), kDefaultSourceName, kInvalidLanguageName);
+      base::BindLambdaForTesting(
+          [&translation_result](const media::SpeechRecognitionResult& result) {
+            translation_result = result.transcription;
+          }),
+      kDefaultSourceName, kInvalidLanguageName);
+  EXPECT_EQ(translation_result, kTranscriptionFull);
   EXPECT_EQ(translation_dispatcher_->GetNumGetTranslationCalls(), 0);
 }
 
@@ -136,15 +122,18 @@ TEST_F(BabelOrcaCaptionTranslatorTest,
        ReturnsTranscriptionIfSourceAndTargetAreTheSame) {
   base::UserActionTester actions;
   base::HistogramTester histograms;
-  base::RunLoop run_loop;
+  translation_dispatcher_->InjectTranslationResult(kTranslationResult);
+  std::string translation_result;
+
   caption_translator_->Translate(
       media::SpeechRecognitionResult(kTranscriptionFull, false),
-      base::BindOnce(
-          &BabelOrcaCaptionTranslatorTest::GetFullTranslationCallback,
-          weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()),
+      base::BindLambdaForTesting(
+          [&translation_result](const media::SpeechRecognitionResult& result) {
+            translation_result = result.transcription;
+          }),
       kDefaultTargetName, kDefaultTargetName);
-  run_loop.Run();
 
+  EXPECT_EQ(translation_result, kTranscriptionFull);
   histograms.ExpectTotalCount(boca::kBocaBabelorcaTargetLanguage, 0);
   EXPECT_EQ(
       actions.GetActionCount(boca::kBocaBabelorcaActionOfStudentSwitchLanguage),
@@ -155,15 +144,18 @@ TEST_F(BabelOrcaCaptionTranslatorTest,
 TEST_F(BabelOrcaCaptionTranslatorTest, NoCacheTranslationNotFinal) {
   base::UserActionTester actions;
   base::HistogramTester histograms;
-  base::RunLoop run_loop;
+  translation_dispatcher_->InjectTranslationResult(kTranslationResult);
+  std::string translation_result;
+
   caption_translator_->Translate(
       media::SpeechRecognitionResult(kTranscriptionFull, false),
-      base::BindOnce(
-          &BabelOrcaCaptionTranslatorTest::GetFullTranslationCallback,
-          weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()),
+      base::BindLambdaForTesting(
+          [&translation_result](const media::SpeechRecognitionResult& result) {
+            translation_result = result.transcription;
+          }),
       kIdeographicLanguage, kDefaultTargetName);
-  run_loop.Run();
 
+  EXPECT_EQ(translation_result, kTranslationResult);
   histograms.ExpectTotalCount(boca::kBocaBabelorcaTargetLanguage, 1);
   histograms.ExpectBucketCount(boca::kBocaBabelorcaTargetLanguage,
                                base::HashMetricName(kDefaultTargetName), 1);
@@ -175,15 +167,22 @@ TEST_F(BabelOrcaCaptionTranslatorTest, NoCacheTranslationNotFinal) {
 TEST_F(BabelOrcaCaptionTranslatorTest, NoCacheTranslationFinal) {
   base::UserActionTester actions;
   base::HistogramTester histograms;
-  base::RunLoop run_loop;
+  translation_dispatcher_->InjectTranslationResult(kTranslationResult);
+  std::string translation_result;
+
   caption_translator_->Translate(
       media::SpeechRecognitionResult(kTranscriptionFull, true),
-      base::BindOnce(
-          &BabelOrcaCaptionTranslatorTest::GetFullFinalTranslationCallback,
-          weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()),
+      base::BindLambdaForTesting(
+          [&translation_result](const media::SpeechRecognitionResult& result) {
+            translation_result = result.transcription;
+          }),
       kIdeographicLanguage, kDefaultTargetName);
-  run_loop.Run();
 
+  // Final translations with no caching have a space appended to the
+  // end of the result, see
+  // BabelOrcaCaptionTranslator::OnTranslationDispatcherCallback comments for
+  // more information.
+  EXPECT_EQ(translation_result, base::StrCat({kTranslationResult, " "}));
   histograms.ExpectTotalCount(boca::kBocaBabelorcaTargetLanguage, 1);
   histograms.ExpectBucketCount(boca::kBocaBabelorcaTargetLanguage,
                                base::HashMetricName(kDefaultTargetName), 1);
@@ -195,23 +194,40 @@ TEST_F(BabelOrcaCaptionTranslatorTest, NoCacheTranslationFinal) {
 TEST_F(BabelOrcaCaptionTranslatorTest, CachingTranslationNoWorkNeeded) {
   base::UserActionTester actions;
   base::HistogramTester histograms;
-  base::RunLoop run_loop;
+  std::string first_translation_result;
+  std::string second_translation_result;
 
   // we only expect the mock method to be called once here as the cache will
-  // contain our translation.
+  // contain our translation. Note that the cache is only relevant in the
+  // case that the first partial translation is completed before the next
+  // part of the sgement is passed to translate.  Otherwise because the
+  // first is not final, the second translation will cancel the pending
+  // request for the first.
+  translation_dispatcher_->InjectTranslationResult(kTranslationResult);
   caption_translator_->Translate(
       media::SpeechRecognitionResult(kTranscriptionFull, false),
-      base::BindOnce(
-          &BabelOrcaCaptionTranslatorTest::GetPartialTranslationCallback,
-          weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()),
+      base::BindLambdaForTesting(
+          [&first_translation_result](
+              const media::SpeechRecognitionResult& result) {
+            first_translation_result = result.transcription;
+          }),
       kDefaultSourceName, kIdeographicLanguage);
+  EXPECT_EQ(first_translation_result, kTranslationResult);
+
+  // Change the injected translation result to ensure we're retrieving
+  // the translation from the cache.
+  translation_dispatcher_->InjectTranslationResult(kOtherTranslationResult);
   caption_translator_->Translate(
       media::SpeechRecognitionResult(kTranscriptionPartial, true),
-      base::BindOnce(
-          &BabelOrcaCaptionTranslatorTest::GetPartialTranslationCallback,
-          weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()),
+      base::BindLambdaForTesting(
+          [&second_translation_result](
+              const media::SpeechRecognitionResult& result) {
+            second_translation_result = result.transcription;
+          }),
       kDefaultSourceName, kIdeographicLanguage);
-  run_loop.Run();
+  // Since we only passed the first sentence, we only expect to get the
+  // first sentence back.
+  EXPECT_EQ(second_translation_result, kTranslationResultFirstSentence);
 
   histograms.ExpectTotalCount(boca::kBocaBabelorcaTargetLanguage, 1);
   histograms.ExpectBucketCount(boca::kBocaBabelorcaTargetLanguage,
@@ -225,21 +241,34 @@ TEST_F(BabelOrcaCaptionTranslatorTest, CachingTranslationNoWorkNeeded) {
 TEST_F(BabelOrcaCaptionTranslatorTest, CachingTranslationClearsCache) {
   base::UserActionTester actions;
   base::HistogramTester histograms;
-  base::RunLoop run_loop;
+  std::string first_translation_result;
+  std::string second_translation_result;
 
   // we expect the mock method to be called twice here as the cache will not
-  // contain our translation.
+  // contain our translation. To avoid the correct behavior being done by
+  // accident via the queue we wait for each request to complete before
+  // beginning the next one.
+  translation_dispatcher_->InjectTranslationResult(kTranslationResult);
   caption_translator_->Translate(
       media::SpeechRecognitionResult(kTranscriptionFull, true),
-      base::BindOnce(&BabelOrcaCaptionTranslatorTest::GetBothPartsOnCallback,
-                     weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()),
+      base::BindLambdaForTesting(
+          [&first_translation_result](
+              const media::SpeechRecognitionResult& result) {
+            first_translation_result = result.transcription;
+          }),
       kDefaultSourceName, kIdeographicLanguage);
+  EXPECT_EQ(first_translation_result, kTranslationResult);
+
+  translation_dispatcher_->InjectTranslationResult(kOtherTranslationResult);
   caption_translator_->Translate(
       media::SpeechRecognitionResult(kTranscriptionPartial, true),
-      base::BindOnce(&BabelOrcaCaptionTranslatorTest::GetBothPartsOnCallback,
-                     weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()),
+      base::BindLambdaForTesting(
+          [&second_translation_result](
+              const media::SpeechRecognitionResult& result) {
+            second_translation_result = result.transcription;
+          }),
       kDefaultSourceName, kIdeographicLanguage);
-  run_loop.Run();
+  EXPECT_EQ(second_translation_result, kOtherTranslationResult);
 
   histograms.ExpectTotalCount(boca::kBocaBabelorcaTargetLanguage, 1);
   histograms.ExpectBucketCount(boca::kBocaBabelorcaTargetLanguage,
@@ -260,15 +289,17 @@ TEST_F(BabelOrcaCaptionTranslatorTest,
        DoesNotRecordMetricIfTranslationWasAlreadyActive) {
   base::UserActionTester actions;
   base::HistogramTester histograms;
-  base::RunLoop run_loop;
+  std::string translation_result;
+
+  translation_dispatcher_->InjectTranslationResult(kTranslationResult);
   caption_translator_->UnsetCurrentLanguagesForTesting();
   caption_translator_->Translate(
       media::SpeechRecognitionResult(kTranscriptionFull, true),
-      base::BindOnce(
-          &BabelOrcaCaptionTranslatorTest::GetFullFinalTranslationCallback,
-          weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()),
+      base::BindLambdaForTesting(
+          [&translation_result](const media::SpeechRecognitionResult& result) {
+            translation_result = result.transcription;
+          }),
       kIdeographicLanguage, kDefaultTargetName);
-  run_loop.Run();
 
   histograms.ExpectTotalCount(boca::kBocaBabelorcaTargetLanguage, 0);
   histograms.ExpectBucketCount(boca::kBocaBabelorcaTargetLanguage,
@@ -290,9 +321,6 @@ TEST_F(BabelOrcaCaptionTranslatorTest, DispatchTranslationsInOrder) {
   base::OnceCallback<void()> first_bound_dispatch;
   base::OnceCallback<void()> second_bound_dispatch;
   base::OnceCallback<void()> third_bound_dispatch;
-  base::RunLoop first_run_loop;
-  base::RunLoop second_run_loop;
-  base::RunLoop third_run_loop;
 
   // These first two Translate calls ensure that if a segment we're
   // currently working on is updated the Translator will immediately
@@ -336,11 +364,10 @@ TEST_F(BabelOrcaCaptionTranslatorTest, DispatchTranslationsInOrder) {
       }));
   caption_translator_->Translate(
       media::SpeechRecognitionResult(kOtherTranscription, /*is_final=*/true),
-      base::BindLambdaForTesting([&third_dispatch_handled, &first_run_loop](
-                                     const media::SpeechRecognitionResult&) {
-        third_dispatch_handled = true;
-        first_run_loop.Quit();
-      }),
+      base::BindLambdaForTesting(
+          [&third_dispatch_handled](const media::SpeechRecognitionResult&) {
+            third_dispatch_handled = true;
+          }),
       kDefaultSourceName, kIdeographicLanguage);
 
   // we expect the third dispatch to be bound immediately.
@@ -380,11 +407,10 @@ TEST_F(BabelOrcaCaptionTranslatorTest, DispatchTranslationsInOrder) {
   // translator has by the time it flushes the queue.
   caption_translator_->Translate(
       media::SpeechRecognitionResult(kTranscriptionFull, /*is_final=*/false),
-      base::BindLambdaForTesting([&sixth_dispatch_handled, &second_run_loop](
-                                     const media::SpeechRecognitionResult&) {
-        sixth_dispatch_handled = true;
-        second_run_loop.Quit();
-      }),
+      base::BindLambdaForTesting(
+          [&sixth_dispatch_handled](const media::SpeechRecognitionResult&) {
+            sixth_dispatch_handled = true;
+          }),
       kDefaultSourceName, kIdeographicLanguage);
 
   // At this point the first request is still pending, so we expect that none of
@@ -392,8 +418,6 @@ TEST_F(BabelOrcaCaptionTranslatorTest, DispatchTranslationsInOrder) {
   // we then should expect that only the third and fifth callbacks were invoked.
   // The rest were skipped because a more final transcription has come through.
   std::move(third_bound_dispatch).Run();
-  first_run_loop.Run();
-  second_run_loop.Run();
 
   // We only expect that the final dispatch in the first segment and the last
   // segment in the queue to be dispatched.
@@ -408,13 +432,11 @@ TEST_F(BabelOrcaCaptionTranslatorTest, DispatchTranslationsInOrder) {
   // was not final and the queue was empty.
   caption_translator_->Translate(
       media::SpeechRecognitionResult(kOtherTranscription, /*is_final=*/true),
-      base::BindLambdaForTesting([&seventh_dispatch_handled, &third_run_loop](
-                                     const media::SpeechRecognitionResult&) {
-        seventh_dispatch_handled = true;
-        third_run_loop.Quit();
-      }),
+      base::BindLambdaForTesting(
+          [&seventh_dispatch_handled](const media::SpeechRecognitionResult&) {
+            seventh_dispatch_handled = true;
+          }),
       kDefaultSourceName, kIdeographicLanguage);
-  third_run_loop.Run();
   EXPECT_TRUE(seventh_dispatch_handled);
 }
 
