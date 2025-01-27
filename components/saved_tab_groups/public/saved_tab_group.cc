@@ -437,7 +437,6 @@ bool SavedTabGroup::IsSyncEquivalent(const SavedTabGroup& other) const {
 SavedTabGroup SavedTabGroup::CloneAsSharedTabGroup(
     CollaborationId collaboration_id) const {
   SavedTabGroup shared_group = CopyBaseFieldsWithTabs();
-  shared_group.is_transitioning_to_shared_ = true;
   shared_group.SetCollaborationId(std::move(collaboration_id));
   shared_group.SetOriginatingTabGroupGuid(saved_guid());
   return shared_group;
@@ -462,10 +461,6 @@ bool SavedTabGroup::IsPendingSanitization() const {
 // static
 size_t SavedTabGroup::GetMaxLastRemovedTabsMetadataForTesting() {
   return kMaxLastRemovedTabsMetadata;
-}
-
-void SavedTabGroup::MarkTransitionedToShared() {
-  is_transitioning_to_shared_ = false;
 }
 
 void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid,

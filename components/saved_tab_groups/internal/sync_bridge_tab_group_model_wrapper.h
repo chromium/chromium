@@ -93,10 +93,6 @@ class SyncBridgeTabGroupModelWrapper {
       std::optional<std::string> old_cache_guid,
       std::optional<std::string> new_cache_guid);
 
-  // Marks the tab group as transitioned to shared, used for shared tab groups
-  // only.
-  void MarkTransitionedToShared(const base::Uuid& group_id);
-
   // Initializes with the data loaded from the disk.
   void Initialize(std::vector<SavedTabGroup> groups,
                   std::vector<SavedTabGroupTab> tabs);

@@ -186,9 +186,6 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // Returns true of the bridge is ready to sync and accept new local changes.
   bool IsReadyToSync() const;
 
-  // Notifies the model on committed tab groups if there are any.
-  void ProcessCommittedTabGroups();
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   // In charge of actually persisting changes to disk, or loading previous data.
@@ -209,9 +206,6 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
 
   // The model wrapper used to access and mutate SavedTabGroupModel.
   raw_ptr<SyncBridgeTabGroupModelWrapper> model_wrapper_;
-
-  // List of tab groups waiting for being committed to the server.
-  std::vector<base::Uuid> tab_groups_waiting_for_commit_;
 
   // Allows safe temporary use of the SharedTabGroupDataSyncBridge object if it
   // exists at the time of use.

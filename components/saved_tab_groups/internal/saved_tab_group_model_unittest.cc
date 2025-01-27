@@ -135,7 +135,8 @@ class SavedTabGroupModelTest : public ::testing::Test {
   SavedTabGroupModelTest()
       : id_1_(base::Uuid::GenerateRandomV4()),
         id_2_(base::Uuid::GenerateRandomV4()),
-        id_3_(base::Uuid::GenerateRandomV4()) {}
+        id_3_(base::Uuid::GenerateRandomV4()) {
+  }
 
   ~SavedTabGroupModelTest() override { RemoveTestData(); }
 
@@ -666,8 +667,8 @@ TEST_F(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
   EXPECT_EQ(0, group2->position());
 
   // Verify group 2 should be the 1st one in the list.
-  ASSERT_THAT(GetSavedTabGroupIds(),
-              testing::ElementsAre(guid2, guid1, id_3_, id_2_, id_1_));
+    ASSERT_THAT(GetSavedTabGroupIds(),
+                testing::ElementsAre(guid2, guid1, id_3_, id_2_, id_1_));
 
   // Change group 2 position from 0 to 1.
   SavedTabGroup updated_group2(*group2);
@@ -687,8 +688,8 @@ TEST_F(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
   EXPECT_EQ(1, merged_group->position());
 
   // Verify group 2 should be the 2nd one in the list.
-  ASSERT_THAT(GetSavedTabGroupIds(),
-              testing::ElementsAre(guid1, guid2, id_3_, id_2_, id_1_));
+    ASSERT_THAT(GetSavedTabGroupIds(),
+                testing::ElementsAre(guid1, guid2, id_3_, id_2_, id_1_));
 }
 
 TEST_F(SavedTabGroupModelTest, MergeSharedTabGroupAttribution) {
@@ -1144,9 +1145,9 @@ TEST_F(SavedTabGroupModelObserverTest, MoveElement) {
   saved_tab_group_model_->ReorderGroupLocally(stg_2.saved_guid(), 2);
 
   EXPECT_TRUE(reordered_called_);
-  EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(stg_3.saved_guid()));
-  EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(stg_1.saved_guid()));
-  EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(stg_2.saved_guid()));
+    EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(stg_3.saved_guid()));
+    EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(stg_1.saved_guid()));
+    EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(stg_2.saved_guid()));
 }
 
 TEST_F(SavedTabGroupModelObserverTest, ReordedTabsUpdatePositions) {
@@ -1295,27 +1296,6 @@ TEST_F(SavedTabGroupModelObserverTest, UpdateLocalCacheGuidForTabs) {
   EXPECT_EQ(retrieved_group->creator_cache_guid(), cache_guid2);
   EXPECT_EQ(retrieved_tab1->creator_cache_guid(), cache_guid2);
   EXPECT_EQ(retrieved_tab2->creator_cache_guid(), std::nullopt);
-}
-
-TEST_F(SavedTabGroupModelObserverTest,
-       ShouldMarkSharedTabGroupsAsTransitioned) {
-  SavedTabGroup saved_group = test::CreateTestSavedTabGroup();
-  saved_tab_group_model_->AddedLocally(saved_group);
-
-  SavedTabGroup shared_group =
-      saved_group.CloneAsSharedTabGroup(CollaborationId("collaboration"));
-  saved_tab_group_model_->AddedLocally(shared_group);
-  ASSERT_TRUE(saved_tab_group_model_->Get(shared_group.saved_guid())
-                  ->is_transitioning_to_shared());
-
-  ClearSignals();
-  ASSERT_THAT(retrieved_group_, IsEmpty());
-
-  saved_tab_group_model_->MarkTransitionedToShared(shared_group.saved_guid());
-  EXPECT_FALSE(saved_tab_group_model_->Get(shared_group.saved_guid())
-                   ->is_transitioning_to_shared());
-  EXPECT_THAT(retrieved_group_,
-              UnorderedElementsAre(HasGroupId(shared_group.saved_guid())));
 }
 
 }  // namespace

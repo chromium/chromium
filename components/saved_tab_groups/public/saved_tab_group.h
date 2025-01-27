@@ -103,9 +103,6 @@ class SavedTabGroup {
 
   bool is_pinned() const { return position_.has_value(); }
   bool is_shared_tab_group() const { return collaboration_id_.has_value(); }
-  bool is_transitioning_to_shared() const {
-    return is_transitioning_to_shared_;
-  }
   bool is_transitioning_to_saved() const { return is_transitioning_to_saved_; }
 
   const std::map<base::Uuid, RemovedTabMetadata>& last_removed_tabs_metadata()
@@ -231,9 +228,6 @@ class SavedTabGroup {
 
   static size_t GetMaxLastRemovedTabsMetadataForTesting();
 
-  // Marks the tab group as transitioned to shared.
-  void MarkTransitionedToShared();
-
  private:
   // Moves the tab denoted by `saved_tab_guid` to the position `new_index`.
   void MoveTabImpl(const base::Uuid& saved_tab_guid, size_t new_index);
@@ -305,8 +299,6 @@ class SavedTabGroup {
   // metrics.
   base::Time last_user_interaction_time_;
 
-  // Fields below are only used for shared tab groups.
-
   // Collaboration ID in case if the group is shared.
   std::optional<CollaborationId> collaboration_id_;
 
@@ -317,10 +309,6 @@ class SavedTabGroup {
 
   // Atribution data for the shared tab group.
   SharedAttribution shared_attribution_;
-
-  // Whether the tab group is transitioning from private to shared, but not yet
-  // completed. Can only be true if the tab group is currently shared.
-  bool is_transitioning_to_shared_ = false;
 
   // Whether the tab group is transitioning from shared to private, but not yet
   // completed. Can only be true if the tab group is currently shared.

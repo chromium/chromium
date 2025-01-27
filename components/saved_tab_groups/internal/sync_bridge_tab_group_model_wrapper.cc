@@ -127,13 +127,6 @@ SyncBridgeTabGroupModelWrapper::UpdateLocalCacheGuid(
                                       std::move(new_cache_guid));
 }
 
-void SyncBridgeTabGroupModelWrapper::MarkTransitionedToShared(
-    const base::Uuid& group_id) {
-  CHECK(IsSharedTabGroupData());
-
-  model_->MarkTransitionedToShared(group_id);
-}
-
 void SyncBridgeTabGroupModelWrapper::Initialize(
     std::vector<SavedTabGroup> groups,
     std::vector<SavedTabGroupTab> tabs) {
