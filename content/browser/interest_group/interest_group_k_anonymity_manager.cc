@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
@@ -20,7 +21,15 @@ constexpr base::TimeDelta kKAnonymityExpiration = base::Days(7);
 }  // namespace
 
 bool IsKAnonDataExpired(const base::Time last_updated, const base::Time now) {
-  return last_updated + kKAnonymityExpiration < now;
+  bool result = last_updated + kKAnonymityExpiration < now;
+  base::UmaHistogramBoolean("Ads.InterestGroup.Auction.KAnonymityDataExpired",
+                            result);
+  base::UmaHistogramCustomTimes("Ads.InterestGroup.Auction.KAnonymityDataAge",
+                                /*sample=*/now - last_updated,
+                                /*min=*/base::Seconds(0),
+                                /*max=*/base::Days(7),
+                                /*buckets=*/50);
+  return result;
 }
 
 InterestGroupKAnonymityManager::InterestGroupKAnonymityManager(
