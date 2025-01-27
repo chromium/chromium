@@ -294,7 +294,7 @@ class LinkerDriver(object):
                            capture_output=True)
         if p.returncode != 0:
             return
-        if re.match(b'\s+cmd LC_REEXPORT_DYLIB$', p.stdout, re.MULTILINE):
+        if re.match(rb'\s+cmd LC_REEXPORT_DYLIB$', p.stdout, re.MULTILINE):
             self._reexport_in_old_module = True
 
     def set_install_name_tool_path(self, install_name_tool_path):
