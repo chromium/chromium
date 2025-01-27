@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views_test_api.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
@@ -96,7 +97,7 @@ void DesktopMediaPickerViewsTestApi::DoubleTapSourceAtIndex(size_t index) {
 void DesktopMediaPickerViewsTestApi::SelectTabForSourceType(
     DesktopMediaList::Type source_type) {
   const auto& categories = picker_->dialog_->categories_;
-  const auto i = base::ranges::find(
+  const auto i = std::ranges::find(
       categories, source_type,
       &DesktopMediaPickerDialogView::DisplaySurfaceCategory::type);
   DCHECK(i != categories.cend());

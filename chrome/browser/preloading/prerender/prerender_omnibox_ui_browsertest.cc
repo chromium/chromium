@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 
@@ -9,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -867,7 +867,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
   // Ensure there is a search hint.
-  auto prerender_match = base::ranges::find_if(
+  auto prerender_match = std::ranges::find_if(
       autocomplete_controller->result(), &BaseSearchProvider::ShouldPrerender);
   ASSERT_NE(prerender_match, std::end(autocomplete_controller->result()));
 

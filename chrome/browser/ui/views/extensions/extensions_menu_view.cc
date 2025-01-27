@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -455,10 +456,10 @@ void ExtensionsMenuView::OnToolbarActionAdded(
 
 void ExtensionsMenuView::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
-  auto iter = base::ranges::find(extensions_menu_items_, action_id,
-                                 [](const ExtensionMenuItemView* item) {
-                                   return item->view_controller()->GetId();
-                                 });
+  auto iter = std::ranges::find(extensions_menu_items_, action_id,
+                                [](const ExtensionMenuItemView* item) {
+                                  return item->view_controller()->GetId();
+                                });
   CHECK(iter != extensions_menu_items_.end(), base::NotFatalUntil::M130);
   ExtensionMenuItemView* const view = *iter;
   DCHECK(Contains(view));

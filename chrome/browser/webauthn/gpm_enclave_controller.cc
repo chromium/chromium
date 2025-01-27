@@ -29,7 +29,6 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -637,9 +636,9 @@ void GPMEnclaveController::OnAccountStateDownloaded(
   if (!device::kWebAuthnGpmPin.Get() &&
       result.state == Result::State::kRecoverable &&
       !result.lskf_expiries.empty() &&
-      base::ranges::all_of(result.lskf_expiries, ExpiryTooSoon)) {
+      std::ranges::all_of(result.lskf_expiries, ExpiryTooSoon)) {
     std::vector<std::string> expiries;
-    base::ranges::transform(
+    std::ranges::transform(
         result.lskf_expiries, std::back_inserter(expiries),
         [](const auto& time) { return base::TimeFormatAsIso8601(time); });
     FIDO_LOG(EVENT) << "Account considered irrecoverable because no LSKF has "

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/lifetime/browser_close_manager.h"
 
+#include <algorithm>
 #include <iterator>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -44,8 +44,8 @@ namespace {
 class BrowserListIterator : public BrowserListObserver {
  public:
   BrowserListIterator() {
-    base::ranges::copy(*BrowserList::GetInstance(),
-                       std::inserter(browsers_, browsers_.begin()));
+    std::ranges::copy(*BrowserList::GetInstance(),
+                      std::inserter(browsers_, browsers_.begin()));
     BrowserList::GetInstance()->AddObserver(this);
   }
   BrowserListIterator(const BrowserListIterator&) = delete;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -240,10 +240,10 @@ void WiredDisplayMediaRouteProvider::OnDisplaysRemoved(
     const std::string sink_id =
         WiredDisplayMediaRouteProvider::GetSinkIdForDisplay(display);
     auto it =
-        base::ranges::find(presentations_, sink_id,
-                           [](const Presentations::value_type& presentation) {
-                             return presentation.second.route().media_sink_id();
-                           });
+        std::ranges::find(presentations_, sink_id,
+                          [](const Presentations::value_type& presentation) {
+                            return presentation.second.route().media_sink_id();
+                          });
     if (it != presentations_.end()) {
       it->second.receiver()->ExitFullscreen();
     }
@@ -408,7 +408,7 @@ void WiredDisplayMediaRouteProvider::TerminatePresentationsOnDisplay(
 std::optional<Display> WiredDisplayMediaRouteProvider::GetDisplayBySinkId(
     const std::string& sink_id) const {
   std::vector<Display> displays = GetAllDisplays();
-  auto it = base::ranges::find(displays, sink_id, &GetSinkIdForDisplay);
+  auto it = std::ranges::find(displays, sink_id, &GetSinkIdForDisplay);
   return it == displays.end() ? std::nullopt
                               : std::make_optional<Display>(std::move(*it));
 }

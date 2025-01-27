@@ -442,7 +442,7 @@ void BoundSessionRefreshCookieFetcherImpl::OnCookiesAccessed(
 
     reported_cookies_notified_ = true;
     for (const std::string& expected_cookie_name : expected_cookie_names_) {
-      auto it = base::ranges::find_if(
+      auto it = std::ranges::find_if(
           cookie_details->cookie_list,
           [this, &expected_cookie_name](
               const network::mojom::CookieOrLineWithAccessResultPtr& cookie) {

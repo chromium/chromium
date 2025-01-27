@@ -4,6 +4,7 @@
 
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/google_accounts_private_api_util.h"
@@ -151,8 +151,8 @@ class EncryptionKeyApi
 
     std::vector<std::vector<uint8_t>> keys_as_bytes;
     keys_as_bytes.reserve(keys.size());
-    base::ranges::transform(keys, std::back_inserter(keys_as_bytes),
-                            &chrome::mojom::TrustedVaultKey::bytes);
+    std::ranges::transform(keys, std::back_inserter(keys_as_bytes),
+                           &chrome::mojom::TrustedVaultKey::bytes);
     const int32_t last_key_version = keys.back()->version;
 
     if (security_domain == trusted_vault::SecurityDomainId::kPasskeys) {

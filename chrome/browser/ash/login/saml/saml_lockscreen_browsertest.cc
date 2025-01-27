@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <optional>
@@ -15,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -1239,7 +1239,7 @@ class SAMLCookieTransferTest : public SamlUnlockTest {
     run_loop.Run();
     EXPECT_GT(cookie_list_.size(), 0u);
 
-    const auto saml_cookie_iterator = base::ranges::find(
+    const auto saml_cookie_iterator = std::ranges::find(
         cookie_list_, cookie_name,
         [](const net::CanonicalCookie& cookie) { return cookie.Name(); });
     EXPECT_NE(saml_cookie_iterator, cookie_list_.end());

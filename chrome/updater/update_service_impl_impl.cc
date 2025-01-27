@@ -4,6 +4,7 @@
 
 #include "chrome/updater/update_service_impl_impl.h"
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <string>
@@ -26,7 +27,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -884,12 +884,12 @@ void UpdateServiceImplImpl::ForceInstall(
 
   std::vector<std::string> installed_app_ids =
       config_->GetUpdaterPersistedData()->GetAppIds();
-  base::ranges::sort(force_install_apps);
-  base::ranges::sort(installed_app_ids);
+  std::ranges::sort(force_install_apps);
+  std::ranges::sort(installed_app_ids);
 
   std::vector<std::string> app_ids_to_install;
-  base::ranges::set_difference(force_install_apps, installed_app_ids,
-                               std::back_inserter(app_ids_to_install));
+  std::ranges::set_difference(force_install_apps, installed_app_ids,
+                              std::back_inserter(app_ids_to_install));
   if (app_ids_to_install.empty()) {
     base::BindPostTask(main_task_runner_, std::move(callback))
         .Run(UpdateService::Result::kSuccess);
@@ -1128,7 +1128,7 @@ void UpdateServiceImplImpl::CancelInstalls(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   auto [first, last] = cancellation_callbacks_.equal_range(app_id);
-  base::ranges::for_each(first, last, [](const auto& i) { i.second.Run(); });
+  std::ranges::for_each(first, last, [](const auto& i) { i.second.Run(); });
 }
 
 void UpdateServiceImplImpl::RunInstaller(
@@ -1478,7 +1478,7 @@ void UpdateServiceImplImpl::OnShouldBlockForceInstallForMeteredNetwork(
   auto barrier_callback = base::BarrierCallback<Result>(
       app_ids.size(),
       base::BindOnce([](const std::vector<Result>& results) {
-        auto error_it = base::ranges::find_if(
+        auto error_it = std::ranges::find_if(
             results, [](Result result) { return result != Result::kSuccess; });
         return error_it == std::end(results) ? Result::kSuccess : *error_it;
       }).Then(std::move(callback)));

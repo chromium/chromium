@@ -18,6 +18,7 @@
 #include <stddef.h>
 #include <wtsapi32.h>
 
+#include <algorithm>
 #include <initializer_list>
 #include <iterator>
 #include <limits>
@@ -38,7 +39,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
@@ -322,7 +322,7 @@ void DeleteRegistryKeyPartial(
     const std::vector<std::wstring>& keys_to_preserve) {
   // Downcase the list of keys to preserve (all must be ASCII strings).
   std::set<std::wstring> lowered_keys_to_preserve;
-  base::ranges::transform(
+  std::ranges::transform(
       keys_to_preserve,
       std::inserter(lowered_keys_to_preserve, lowered_keys_to_preserve.begin()),
       [](const std::wstring& str) {

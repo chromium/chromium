@@ -13,8 +13,9 @@
 #include <Foundation/Foundation.h>
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
@@ -108,8 +109,8 @@ class TaskManagerMacTest : public InProcessBrowserTest {
   // Looks up a tab based on its tab ID.
   content::WebContents* FindWebContentsByTabId(SessionID tab_id) {
     auto& all_tabs = AllTabContentses();
-    auto it = base::ranges::find(all_tabs, tab_id,
-                                 &sessions::SessionTabHelper::IdForTab);
+    auto it = std::ranges::find(all_tabs, tab_id,
+                                &sessions::SessionTabHelper::IdForTab);
 
     return (it == all_tabs.end()) ? nullptr : *it;
   }

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <tuple>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
@@ -443,8 +443,8 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
   // correct item and select that.
   const auto& app_infos =
       web_app::intent_picker_bubble()->app_info_for_testing();
-  auto it = base::ranges::find(app_infos, outer_app_id,
-                               &apps::IntentPickerAppInfo::launch_name);
+  auto it = std::ranges::find(app_infos, outer_app_id,
+                              &apps::IntentPickerAppInfo::launch_name);
   ASSERT_NE(it, app_infos.end());
   size_t index = it - app_infos.begin();
 

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -24,7 +25,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -347,7 +347,7 @@ std::string SanitizeEnabledExperiments(const std::string& value) {
     return base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch) || ch == ';' ||
            ch == '_';
   };
-  return base::ranges::all_of(value, is_legal) ? value : std::string();
+  return std::ranges::all_of(value, is_legal) ? value : std::string();
 }
 
 std::string SanitizeFrontendQueryParam(const std::string& key,
@@ -769,7 +769,7 @@ DevToolsUIBindings::~DevToolsUIBindings() {
   // Remove self from global list.
   DevToolsUIBindingsList& instances =
       DevToolsUIBindings::GetDevToolsUIBindings();
-  auto it = base::ranges::find(instances, this);
+  auto it = std::ranges::find(instances, this);
   CHECK(it != instances.end(), base::NotFatalUntil::M130);
   instances.erase(it);
 }

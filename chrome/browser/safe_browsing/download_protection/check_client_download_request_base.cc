@@ -4,13 +4,14 @@
 
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request_base.h"
 
+#include <algorithm>
+
 #include "base/cancelable_callback.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/browser_process.h"
@@ -335,7 +336,7 @@ void CheckClientDownloadRequestBase::OnRequestBuilt(
            ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_EXECUTABLE) &&
       client_download_request_->archive_summary().parser_status() ==
           ClientDownloadRequest::ArchiveSummary::VALID &&
-      base::ranges::all_of(
+      std::ranges::all_of(
           client_download_request_->archived_binary(),
           [](const ClientDownloadRequest::ArchivedBinary& archived_binary) {
             return !archived_binary.is_executable() &&

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/ash/arc/arc_open_url_delegate_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -40,11 +40,11 @@ using arc::mojom::ChromePage;
 
 // Return the number of windows that hosts OS Settings.
 size_t GetNumberOfSettingsWindows() {
-  return base::ranges::count_if(*BrowserList::GetInstance(),
-                                [](Browser* browser) {
-                                  return ash::IsBrowserForSystemWebApp(
-                                      browser, ash::SystemWebAppType::SETTINGS);
-                                });
+  return std::ranges::count_if(*BrowserList::GetInstance(),
+                               [](Browser* browser) {
+                                 return ash::IsBrowserForSystemWebApp(
+                                     browser, ash::SystemWebAppType::SETTINGS);
+                               });
 }
 
 // Give the underlying function a clearer name.

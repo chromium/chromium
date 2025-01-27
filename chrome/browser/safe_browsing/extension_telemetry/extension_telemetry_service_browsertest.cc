@@ -805,7 +805,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     // Verify the contents of telemetry report generated.
     std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
     ASSERT_NE(telemetry_report_pb, nullptr);
-    auto extension_report = base::ranges::find_if(
+    auto extension_report = std::ranges::find_if(
         telemetry_report_pb->reports(), [&](const auto& report) {
           return report.extension().id() == extension->id();
         });
@@ -908,7 +908,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     // Verify the contents of telemetry report generated.
     std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
     ASSERT_NE(telemetry_report_pb, nullptr);
-    auto extension_report = base::ranges::find_if(
+    auto extension_report = std::ranges::find_if(
         telemetry_report_pb->reports(), [&](const auto& report) {
           return report.extension().id() == extension->id();
         });

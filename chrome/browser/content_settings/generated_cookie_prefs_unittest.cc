@@ -4,10 +4,10 @@
 
 #include "chrome/browser/content_settings/generated_cookie_prefs.h"
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"

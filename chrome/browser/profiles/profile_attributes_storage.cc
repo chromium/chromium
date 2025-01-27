@@ -22,7 +22,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -195,7 +194,7 @@ MultiProfileUserType GetMultiProfileUserType(
     return MultiProfileUserType::kSingleProfile;
 
   int active_count =
-      base::ranges::count_if(entries, &ProfileMetrics::IsProfileActive);
+      std::ranges::count_if(entries, &ProfileMetrics::IsProfileActive);
 
   if (active_count <= 1)
     return MultiProfileUserType::kLatentMultiProfile;
@@ -665,7 +664,7 @@ std::u16string ProfileAttributesStorage::ChooseNameForNewProfile() const {
     std::vector<ProfileAttributesEntry*> entries =
         const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes();
 
-    if (base::ranges::none_of(entries, [name](ProfileAttributesEntry* entry) {
+    if (std::ranges::none_of(entries, [name](ProfileAttributesEntry* entry) {
           return entry->GetLocalProfileName() == name ||
                  entry->GetName() == name;
         })) {

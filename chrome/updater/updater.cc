@@ -4,6 +4,7 @@
 
 #include "chrome/updater/updater.h"
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/at_exit.h"
@@ -15,7 +16,6 @@
 #include "base/logging.h"
 #include "base/process/memory.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_executor.h"
@@ -237,7 +237,7 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
       kHandoffSwitch,
       kNetWorkerSwitch,
   };
-  const auto it = base::ranges::find_if(commands, [command_line](auto cmd) {
+  const auto it = std::ranges::find_if(commands, [command_line](auto cmd) {
     return command_line->HasSwitch(cmd);
   });
   // Return the command. As a workaround for recovery component invocations

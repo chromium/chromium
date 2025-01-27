@@ -28,7 +28,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -588,12 +587,12 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
   }
 
   // Sort pins according their ordinals.
-  base::ranges::sort(pin_infos, syncer::StringOrdinal::LessThanFn(),
-                     &PinInfo::item_ordinal);
+  std::ranges::sort(pin_infos, syncer::StringOrdinal::LessThanFn(),
+                    &PinInfo::item_ordinal);
 
   // Convert to ShelfID array.
   std::vector<ash::ShelfID> pins;
-  base::ranges::transform(
+  std::ranges::transform(
       pin_infos, std::back_inserter(pins),
       [](const auto& pin_info) { return ash::ShelfID(pin_info.app_id); });
 

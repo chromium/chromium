@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/i18n/string_search.h"
 #include "base/i18n/time_formatting.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -761,7 +761,7 @@ void TaskManagerTableModel::OnTaskAdded(TaskId id) {
 
   if (table_model_observer_) {
     std::vector<TaskId>::difference_type index =
-        base::ranges::find(tasks_, id) - tasks_.begin();
+        std::ranges::find(tasks_, id) - tasks_.begin();
     table_model_observer_->OnItemsAdded(index, 1);
   }
 }
@@ -776,7 +776,7 @@ void TaskManagerTableModel::OnTaskToBeRemoved(TaskId id) {
     return;
   }
 
-  auto index = base::ranges::find(tasks_, id);
+  auto index = std::ranges::find(tasks_, id);
   if (index == tasks_.end()) {
     return;
   }
@@ -1003,7 +1003,7 @@ std::optional<size_t> TaskManagerTableModel::GetRowForWebContents(
     content::WebContents* web_contents) {
   TaskId task_id =
       observed_task_manager()->GetTaskIdForWebContents(web_contents);
-  auto index = base::ranges::find(tasks_, task_id);
+  auto index = std::ranges::find(tasks_, task_id);
   if (index == tasks_.end()) {
     return std::nullopt;
   }
@@ -1014,7 +1014,7 @@ std::optional<size_t> TaskManagerTableModel::GetRowForActiveTask() {
   if (!active_task_id_.has_value()) {
     return std::nullopt;
   }
-  auto index = base::ranges::find(tasks_, active_task_id_.value());
+  auto index = std::ranges::find(tasks_, active_task_id_.value());
   if (index == tasks_.end()) {
     return std::nullopt;
   }
@@ -1099,7 +1099,7 @@ bool TaskManagerTableModel::HasMatchInTasksSharingSameProcess(
     if (base::i18n::StringSearchIgnoringCaseAndAccents(
             search_terms_, observed_task_manager()->GetTitle(id),
             /*match_index=*/nullptr, /*match_length=*/nullptr) &&
-        base::ranges::find(tasks_, id) != tasks_.end()) {
+        std::ranges::find(tasks_, id) != tasks_.end()) {
       // There is at least one matched task in task group, we need to
       // keep it.
       return true;
@@ -1154,10 +1154,10 @@ bool TaskManagerTableModel::UpdateModel(const DisplayCategory display_category,
   FilterTaskList(filtered_task_list);
 
   for (TaskId id : task_list) {
-    auto filtered_iter = base::ranges::find(filtered_task_list, id);
+    auto filtered_iter = std::ranges::find(filtered_task_list, id);
     bool should_keep_task = filtered_iter != filtered_task_list.end();
     // Indicate if the task is in current task list.
-    auto task_iter = base::ranges::find(tasks_, id);
+    auto task_iter = std::ranges::find(tasks_, id);
     bool task_id_exists = task_iter != tasks_.end();
     if (should_keep_task == task_id_exists) {
       // The task already displays as the filter logic.

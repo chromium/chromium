@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string>
 #include <tuple>
 #include <variant>
@@ -17,7 +18,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -1145,7 +1145,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
   // picked up by the browser zoom, then zoom to the next zoom level. This
   // ensures the test passes regardless of the initial default zoom level.
   std::vector<double> preset_zoom_levels = zoom::PageZoom::PresetZoomLevels(0);
-  auto it = base::ranges::find(preset_zoom_levels, 0);
+  auto it = std::ranges::find(preset_zoom_levels, 0);
   ASSERT_NE(it, preset_zoom_levels.end());
   it++;
   ASSERT_NE(it, preset_zoom_levels.end());

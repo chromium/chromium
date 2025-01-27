@@ -4,9 +4,10 @@
 
 #include "chrome/browser/notifications/stub_notification_display_service.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,7 +52,7 @@ StubNotificationDisplayService::GetDisplayedNotificationsForType(
 std::optional<message_center::Notification>
 StubNotificationDisplayService::GetNotification(
     const std::string& notification_id) {
-  auto iter = base::ranges::find(
+  auto iter = std::ranges::find(
       notifications_, notification_id,
       [](const NotificationData& data) { return data.notification.id(); });
 
@@ -64,7 +65,7 @@ StubNotificationDisplayService::GetNotification(
 const NotificationCommon::Metadata*
 StubNotificationDisplayService::GetMetadataForNotification(
     const message_center::Notification& notification) {
-  auto iter = base::ranges::find(
+  auto iter = std::ranges::find(
       notifications_, notification.id(),
       [](const NotificationData& data) { return data.notification.id(); });
 
@@ -290,7 +291,7 @@ std::vector<StubNotificationDisplayService::NotificationData>::iterator
 StubNotificationDisplayService::FindNotification(
     NotificationHandler::Type notification_type,
     const std::string& notification_id) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       notifications_,
       [notification_type, &notification_id](const NotificationData& data) {
         return data.type == notification_type &&

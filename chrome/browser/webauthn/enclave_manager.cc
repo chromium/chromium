@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/enclave_manager.h"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <deque>
@@ -36,7 +37,6 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
@@ -239,7 +239,7 @@ base::span<const uint8_t, N> ToSizedSpan(const std::string& s) {
 template <size_t N>
 std::array<uint8_t, N> ToArray(base::span<const uint8_t, N> in) {
   std::array<uint8_t, N> ret;
-  base::ranges::copy(in, ret.begin());
+  std::ranges::copy(in, ret.begin());
   return ret;
 }
 
@@ -991,7 +991,7 @@ std::unique_ptr<HashedPIN> HashPINSlowly(std::string_view pin) {
   // with this norm.
   hashed->metadata.n = 16384;
   hashed->metadata.is_six_digits =
-      pin.size() == 6 && base::ranges::all_of(pin, [](char c) -> bool {
+      pin.size() == 6 && std::ranges::all_of(pin, [](char c) -> bool {
         return c >= '0' && c <= '9';
       });
   CHECK(EVP_PBE_scrypt(pin.data(), pin.size(), hashed->metadata.salt.data(),

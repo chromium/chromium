@@ -4,7 +4,8 @@
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "components/cross_device/logging/logging.h"
@@ -33,8 +34,8 @@ void NearbyShareCertificateStorage::UpdatePrivateCertificate(
     return;
   }
 
-  auto it = base::ranges::find(*certs, private_certificate.id(),
-                               &NearbySharePrivateCertificate::id);
+  auto it = std::ranges::find(*certs, private_certificate.id(),
+                              &NearbySharePrivateCertificate::id);
   if (it == certs->end()) {
     CD_LOG(VERBOSE, Feature::NS)
         << __func__ << ": No private certificate with id="

@@ -13,6 +13,7 @@
 #include <winhttp.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -29,7 +30,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -896,7 +896,7 @@ void AppInstallControllerImpl::RunUI() {
           return kErrorNoApps;
         }
 
-        return base::ranges::max_element(
+        return std::ranges::max_element(
                    observer_completion_info_->apps_info,
                    [](const auto& app_info1, const auto& app_info2) {
                      return GetPriority(app_info1.completion_code) <

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/uuid.h"
 #include "chrome/browser/sync/test/integration/saved_tab_groups_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -109,7 +110,7 @@ class SingleClientSavedTabGroupsSyncTest : public SyncTest {
 
     const std::string& uuid_string = uuid.AsLowercaseString();
 
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         server_tabs_and_groups,
         [uuid_string](const sync_pb::SyncEntity entity) {
           return entity.specifics().saved_tab_group().guid() == uuid_string;

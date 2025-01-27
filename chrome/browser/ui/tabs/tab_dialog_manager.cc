@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"

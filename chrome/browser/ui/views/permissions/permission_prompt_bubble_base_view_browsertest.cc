@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -125,7 +124,7 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
       ContentSettingImageModel::ImageType image_type) {
     LocationBarView* location_bar_view =
         BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
-    return **base::ranges::find(
+    return **std::ranges::find(
         location_bar_view->GetContentSettingViewsForTest(), image_type,
         &ContentSettingImageView::GetType);
   }

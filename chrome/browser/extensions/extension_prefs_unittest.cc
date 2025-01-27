@@ -4,13 +4,13 @@
 
 #include "chrome/browser/extensions/extension_prefs_unittest.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -553,10 +553,10 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
 
   bool HasInfoForId(const ExtensionPrefs::ExtensionsInfo& info,
                     const std::string& id) {
-    return base::ranges::find_if(info.begin(), info.end(),
-                                 [&id](const ExtensionInfo& info) {
-                                   return info.extension_id == id;
-                                 }) != info.end();
+    return std::ranges::find_if(info.begin(), info.end(),
+                                [&id](const ExtensionInfo& info) {
+                                  return info.extension_id == id;
+                                }) != info.end();
   }
 
   void Initialize() override {

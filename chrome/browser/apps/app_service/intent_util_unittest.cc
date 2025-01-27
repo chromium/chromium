@@ -795,7 +795,7 @@ TEST_F(IntentUtilsTest, ConvertValidFilePathsToFileExtensions) {
   apps::ConditionValues& result_extensions =
       app_service_filter->conditions[1]->condition_values;
   auto found_extension = [&result_extensions](const std::string extension) {
-    return base::ranges::any_of(
+    return std::ranges::any_of(
         result_extensions,
         [extension](std::unique_ptr<apps::ConditionValue>& condition_value) {
           return condition_value->value == extension;

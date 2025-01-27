@@ -4,11 +4,11 @@
 
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/uuid.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"

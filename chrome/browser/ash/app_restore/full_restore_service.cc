@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -28,7 +29,6 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
@@ -579,8 +579,8 @@ void FullRestoreService::InitInformedRestoreContentsData(
   // Sort the windows based on their activation index (more recent windows
   // have a lower index). Windows without an activation index can be placed at
   // the end.
-  base::ranges::sort(complete_window_list, [](const WindowAppData& element_a,
-                                              const WindowAppData& element_b) {
+  std::ranges::sort(complete_window_list, [](const WindowAppData& element_a,
+                                             const WindowAppData& element_b) {
     return element_a.app_restore_data->window_info.activation_index.value_or(
                INT_MAX) <
            element_b.app_restore_data->window_info.activation_index.value_or(

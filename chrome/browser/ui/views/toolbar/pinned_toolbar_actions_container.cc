@@ -231,7 +231,7 @@ void PinnedToolbarActionsContainer::MovePinnedActionBy(actions::ActionId id,
   DCHECK(IsActionPinned(id));
   const auto& pinned_action_ids = model_->PinnedActionIds();
 
-  auto iter = base::ranges::find(pinned_action_ids, id);
+  auto iter = std::ranges::find(pinned_action_ids, id);
   CHECK(iter != pinned_action_ids.end());
 
   int current_index = std::distance(pinned_action_ids.begin(), iter);
@@ -303,7 +303,7 @@ int PinnedToolbarActionsContainer::OnDragUpdated(
   const int offset_into_icon_area = GetMirroredXInView(event.x());
   const size_t before_icon_unclamped = WidthToIconCount(offset_into_icon_area);
 
-  const size_t visible_pinned_icons = base::ranges::count_if(
+  const size_t visible_pinned_icons = std::ranges::count_if(
       pinned_buttons_,
       [](PinnedActionToolbarButton* button) { return button->GetVisible(); });
   const size_t button_offset = pinned_buttons_.size() - visible_pinned_icons;
@@ -374,7 +374,7 @@ void PinnedToolbarActionsContainer::WriteDragDataForView(
     ui::OSExchangeData* data) {
   DCHECK(data);
 
-  const auto iter = base::ranges::find(pinned_buttons_, sender);
+  const auto iter = std::ranges::find(pinned_buttons_, sender);
   CHECK(iter != pinned_buttons_.end(), base::NotFatalUntil::M130);
   auto* button = (*iter).get();
 
@@ -405,7 +405,7 @@ bool PinnedToolbarActionsContainer::CanStartDragForView(
   // We don't allow dragging buttons that aren't pinned, or if
   // the profile is incognito (to avoid changing state from an incognito
   // window).
-  const auto iter = base::ranges::find(pinned_buttons_, sender);
+  const auto iter = std::ranges::find(pinned_buttons_, sender);
   return iter != pinned_buttons_.end() &&
          !browser_view_->GetProfile()->IsOffTheRecord();
 }
@@ -435,7 +435,7 @@ PinnedActionToolbarButton* PinnedToolbarActionsContainer::AddPoppedOutButtonFor(
 
 void PinnedToolbarActionsContainer::MaybeRemovePoppedOutButtonFor(
     const actions::ActionId& id) {
-  const auto iter = base::ranges::find(
+  const auto iter = std::ranges::find(
       popped_out_buttons_, id,
       [](PinnedActionToolbarButton* button) { return button->GetActionId(); });
   if (iter == popped_out_buttons_.end() ||
@@ -460,10 +460,10 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     return;
   }
   if (GetPoppedOutButtonFor(id)) {
-    const auto iter = base::ranges::find(popped_out_buttons_, id,
-                                         [](PinnedActionToolbarButton* button) {
-                                           return button->GetActionId();
-                                         });
+    const auto iter = std::ranges::find(popped_out_buttons_, id,
+                                        [](PinnedActionToolbarButton* button) {
+                                          return button->GetActionId();
+                                        });
     (*iter)->SetPinned(true);
     pinned_buttons_.push_back(*iter);
     popped_out_buttons_.erase(iter);
@@ -483,7 +483,7 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
 
 void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
     const actions::ActionId& id) {
-  const auto iter = base::ranges::find(
+  const auto iter = std::ranges::find(
       pinned_buttons_, id,
       [](PinnedActionToolbarButton* button) { return button->GetActionId(); });
   if (iter == pinned_buttons_.end()) {
@@ -503,7 +503,7 @@ void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
 
 PinnedActionToolbarButton* PinnedToolbarActionsContainer::GetPinnedButtonFor(
     const actions::ActionId& id) {
-  const auto iter = base::ranges::find(
+  const auto iter = std::ranges::find(
       pinned_buttons_, id,
       [](PinnedActionToolbarButton* button) { return button->GetActionId(); });
   return iter == pinned_buttons_.end() ? nullptr : *iter;
@@ -511,7 +511,7 @@ PinnedActionToolbarButton* PinnedToolbarActionsContainer::GetPinnedButtonFor(
 
 PinnedActionToolbarButton* PinnedToolbarActionsContainer::GetPoppedOutButtonFor(
     const actions::ActionId& id) {
-  const auto iter = base::ranges::find(
+  const auto iter = std::ranges::find(
       popped_out_buttons_, id,
       [](PinnedActionToolbarButton* button) { return button->GetActionId(); });
   return iter == popped_out_buttons_.end() ? nullptr : *iter;

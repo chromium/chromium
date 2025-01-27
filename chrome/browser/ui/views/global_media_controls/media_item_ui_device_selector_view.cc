@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -11,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_metrics.h"
@@ -201,7 +201,7 @@ void MediaItemUIDeviceSelectorView::UpdateCurrentAudioDevice(
   }
 
   // Find DeviceEntryView* from |device_entry_ui_map_| with |current_device_id|.
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       device_entry_ui_map_, current_device_id,
       [](const auto& pair) { return pair.second->raw_device_id(); });
 
@@ -376,7 +376,7 @@ bool MediaItemUIDeviceSelectorView::ShouldBeVisible() const {
   // * Or, there are two devices and one of them has the default ID but not the
   // default name.
   if (device_entry_views_container_->children().size() == 2) {
-    return base::ranges::any_of(
+    return std::ranges::any_of(
         device_entry_views_container_->children(), [this](views::View* view) {
           DeviceEntryUI* entry = GetDeviceEntryUI(view);
           return entry->raw_device_id() ==

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -30,7 +31,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -383,7 +383,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
     }
     const WebApp& installed_app = maybe_installed_app->get();
 
-    static_assert(base::ranges::is_sorted(
+    static_assert(std::ranges::is_sorted(
         std::vector{WebAppManagement::Type::kIwaShimlessRma,
                     // Add further higher priority IWA sources here and make
                     // sure that the `case` statements below are sorted
@@ -561,7 +561,7 @@ void IsolatedWebAppPolicyManager::OnAllInstallTasksCompleted(
     return;
   }
 
-  const bool any_task_failed = base::ranges::any_of(
+  const bool any_task_failed = std::ranges::any_of(
       install_results, [](const IwaInstaller::Result& result) {
         return result.type() != IwaInstallerResultType::kSuccess;
       });

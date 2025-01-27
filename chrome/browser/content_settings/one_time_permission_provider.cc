@@ -4,11 +4,11 @@
 
 #include "chrome/browser/content_settings/one_time_permission_provider.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 
 #include "base/power_monitor/power_monitor.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"

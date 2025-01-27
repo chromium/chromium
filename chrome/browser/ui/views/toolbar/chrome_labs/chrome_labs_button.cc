@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

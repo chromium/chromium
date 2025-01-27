@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -760,7 +759,7 @@ void ToolbarView::EnabledStateChangedForCommand(int id, bool enabled) {
   DCHECK(display_mode_ == DisplayMode::NORMAL);
   const std::array<views::Button*, 5> kButtons{back_, forward_, reload_, home_,
                                                avatar_};
-  auto* button = *base::ranges::find(kButtons, id, &views::Button::tag);
+  auto* button = *std::ranges::find(kButtons, id, &views::Button::tag);
   DCHECK(button);
   button->SetEnabled(enabled);
 }

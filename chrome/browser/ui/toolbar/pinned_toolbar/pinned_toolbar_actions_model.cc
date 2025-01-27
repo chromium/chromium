@@ -67,7 +67,7 @@ bool PinnedToolbarActionsModel::CanUpdate() {
 
 bool PinnedToolbarActionsModel::Contains(
     const actions::ActionId& action_id) const {
-  auto iter = base::ranges::find(pinned_action_ids_, action_id);
+  auto iter = std::ranges::find(pinned_action_ids_, action_id);
   return iter != pinned_action_ids_.end();
 }
 
@@ -117,7 +117,7 @@ void PinnedToolbarActionsModel::MovePinnedAction(
     return;
   }
 
-  auto action_to_move = base::ranges::find(pinned_action_ids_, action_id);
+  auto action_to_move = std::ranges::find(pinned_action_ids_, action_id);
   if (action_to_move == pinned_action_ids_.end()) {
     // Do nothing if this action is not pinned.
     return;
@@ -130,11 +130,11 @@ void PinnedToolbarActionsModel::MovePinnedAction(
 
   std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
 
-  auto start_iter = base::ranges::find(updated_pinned_action_ids, action_id);
+  auto start_iter = std::ranges::find(updated_pinned_action_ids, action_id);
   CHECK(start_iter != updated_pinned_action_ids.end());
 
-  auto end_iter = base::ranges::find(updated_pinned_action_ids,
-                                     pinned_action_ids_[target_index]);
+  auto end_iter = std::ranges::find(updated_pinned_action_ids,
+                                    pinned_action_ids_[target_index]);
   CHECK(end_iter != updated_pinned_action_ids.end());
 
   // Rotate |action_id| to be in the target position.

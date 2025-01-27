@@ -591,7 +591,7 @@ void SubAppsServiceImpl::RemoveSubApp(
 void SubAppsServiceImpl::NotifyUninstall(
     RemoveCallback result_callback,
     std::vector<SubAppsServiceRemoveResultPtr> remove_results) {
-  int num_successful_uninstalls = base::ranges::count(
+  int num_successful_uninstalls = std::ranges::count(
       remove_results, SubAppsServiceResultCode::kSuccess,
       [](const auto& result) { return result->result_code; });
 

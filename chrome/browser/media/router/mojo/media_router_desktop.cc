@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -901,8 +901,8 @@ MediaRouterDesktop::GetProviderIdForPresentation(
   for (const auto& provider_to_routes : routes_query_.providers_to_routes()) {
     const mojom::MediaRouteProviderId provider_id = provider_to_routes.first;
     const std::vector<MediaRoute>& routes = provider_to_routes.second;
-    DCHECK_LE(base::ranges::count(routes, presentation_id,
-                                  &MediaRoute::presentation_id),
+    DCHECK_LE(std::ranges::count(routes, presentation_id,
+                                 &MediaRoute::presentation_id),
               1);
     if (base::Contains(routes, presentation_id, &MediaRoute::presentation_id)) {
       return provider_id;
@@ -939,8 +939,8 @@ const MediaSink* MediaRouterDesktop::GetSinkById(
   for (const auto& sinks_query : sinks_queries_) {
     const std::vector<MediaSink>& sinks =
         sinks_query.second->cached_sink_list();
-    DCHECK_LE(base::ranges::count(sinks, sink_id, &MediaSink::id), 1);
-    auto sink_it = base::ranges::find(sinks, sink_id, &MediaSink::id);
+    DCHECK_LE(std::ranges::count(sinks, sink_id, &MediaSink::id), 1);
+    auto sink_it = std::ranges::find(sinks, sink_id, &MediaSink::id);
     if (sink_it != sinks.end()) {
       return &(*sink_it);
     }
@@ -950,8 +950,8 @@ const MediaSink* MediaRouterDesktop::GetSinkById(
 
 const MediaRoute* MediaRouterDesktop::GetRoute(
     const MediaRoute::Id& route_id) const {
-  auto it = base::ranges::find(current_routes_, route_id,
-                               &MediaRoute::media_route_id);
+  auto it =
+      std::ranges::find(current_routes_, route_id, &MediaRoute::media_route_id);
   return it == current_routes_.end() ? nullptr : &*it;
 }
 

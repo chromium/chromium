@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/browser_list.h"
 
+#include <algorithm>
+
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -11,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -202,7 +203,7 @@ void BrowserList::CloseAllBrowsersWithIncognitoProfile(
   // calling before unload handlers.
   skip_beforeunload =
       skip_beforeunload &&
-      base::ranges::none_of(browsers_to_close, &Browser::is_type_devtools);
+      std::ranges::none_of(browsers_to_close, &Browser::is_type_devtools);
   TryToCloseBrowserList(browsers_to_close, on_close_success, on_close_aborted,
                         profile->GetPath(), skip_beforeunload);
 }
@@ -366,7 +367,7 @@ bool BrowserList::IsOffTheRecordBrowserActive() {
 // static
 int BrowserList::GetOffTheRecordBrowsersActiveForProfile(Profile* profile) {
   BrowserList* list = BrowserList::GetInstance();
-  return base::ranges::count_if(*list, [profile](Browser* browser) {
+  return std::ranges::count_if(*list, [profile](Browser* browser) {
     return browser->profile()->IsSameOrParent(profile) &&
            browser->profile()->IsOffTheRecord() && !browser->is_type_devtools();
   });
@@ -375,7 +376,7 @@ int BrowserList::GetOffTheRecordBrowsersActiveForProfile(Profile* profile) {
 // static
 size_t BrowserList::GetIncognitoBrowserCount() {
   BrowserList* list = BrowserList::GetInstance();
-  return base::ranges::count_if(*list, [](Browser* browser) {
+  return std::ranges::count_if(*list, [](Browser* browser) {
     return browser->profile()->IsIncognitoProfile() &&
            !browser->is_type_devtools();
   });
@@ -384,7 +385,7 @@ size_t BrowserList::GetIncognitoBrowserCount() {
 // static
 size_t BrowserList::GetGuestBrowserCount() {
   BrowserList* list = BrowserList::GetInstance();
-  return base::ranges::count_if(*list, [](Browser* browser) {
+  return std::ranges::count_if(*list, [](Browser* browser) {
     return browser->profile()->IsGuestSession() && !browser->is_type_devtools();
   });
 }
@@ -392,7 +393,7 @@ size_t BrowserList::GetGuestBrowserCount() {
 // static
 bool BrowserList::IsOffTheRecordBrowserInUse(Profile* profile) {
   BrowserList* list = BrowserList::GetInstance();
-  return base::ranges::any_of(*list, [profile](Browser* browser) {
+  return std::ranges::any_of(*list, [profile](Browser* browser) {
     return browser->profile()->IsSameOrParent(profile) &&
            browser->profile()->IsOffTheRecord();
   });
@@ -408,7 +409,7 @@ BrowserList::~BrowserList() = default;
 // static
 void BrowserList::RemoveBrowserFrom(Browser* browser,
                                     BrowserVector* browser_list) {
-  auto remove_browser = base::ranges::find(*browser_list, browser);
+  auto remove_browser = std::ranges::find(*browser_list, browser);
   if (remove_browser != browser_list->end()) {
     browser_list->erase(remove_browser);
   }

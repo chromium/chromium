@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 
+#include <algorithm>
+
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
@@ -201,8 +202,8 @@ PageInfoPermissionContentView::~PageInfoPermissionContentView() {
 void PageInfoPermissionContentView::SetPermissionInfo(
     const PermissionInfoList& permission_info_list,
     ChosenObjectInfoList chosen_object_info_list) {
-  auto permission_it = base::ranges::find(permission_info_list, type_,
-                                          &PageInfo::PermissionInfo::type);
+  auto permission_it = std::ranges::find(permission_info_list, type_,
+                                         &PageInfo::PermissionInfo::type);
 
   CHECK(permission_it != permission_info_list.end());
 

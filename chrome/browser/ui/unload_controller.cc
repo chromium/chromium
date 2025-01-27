@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/unload_controller.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -452,7 +453,7 @@ bool UnloadController::RemoveFromSet(UnloadListenerSet* set,
                                      content::WebContents* web_contents) {
   DCHECK(is_attempting_to_close_browser_);
 
-  auto iter = base::ranges::find(*set, web_contents);
+  auto iter = std::ranges::find(*set, web_contents);
   if (iter != set->end()) {
     set->erase(iter);
     return true;

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -54,7 +53,7 @@ std::string GetPrintableContent(const HttpRequest& request) {
       std::min(request.decoded_content.size(), size_t{2048});
   std::string printable_content;
   printable_content.reserve(dump_limit);
-  base::ranges::transform(
+  std::ranges::transform(
       request.decoded_content.begin(),
       request.decoded_content.begin() + dump_limit,
       std::back_inserter(printable_content), [](unsigned char c) {

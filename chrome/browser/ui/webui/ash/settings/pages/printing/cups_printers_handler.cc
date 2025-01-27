@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/cups_printers_handler.h"
 
+#include <algorithm>
 #include <optional>
 #include <set>
 #include <utility>
@@ -21,7 +22,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -1400,9 +1400,8 @@ void CupsPrintersHandler::HandleGetEulaUrl(const base::Value::List& args) {
   const PpdProvider::ResolvedPrintersList& printers_for_manufacturer =
       resolved_printers_it->second;
 
-  auto printer_it =
-      base::ranges::find(printers_for_manufacturer, ppd_model,
-                         &PpdProvider::ResolvedPpdReference::name);
+  auto printer_it = std::ranges::find(printers_for_manufacturer, ppd_model,
+                                      &PpdProvider::ResolvedPpdReference::name);
 
   if (printer_it == printers_for_manufacturer.end()) {
     // Unable to find the PpdReference, resolve promise with empty string.

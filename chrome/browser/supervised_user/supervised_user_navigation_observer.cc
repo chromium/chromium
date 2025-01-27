@@ -215,7 +215,7 @@ void SupervisedUserNavigationObserver::RecordPageLoadUKM(
     }
   } else {
     // The main frame was not blocked. Check for any blocked iframes.
-    size_t blocked_frame_count = base::ranges::count_if(
+    size_t blocked_frame_count = std::ranges::count_if(
         supervised_user_interstitials_, [](const auto& entry) {
           return entry.second->filtering_behavior_reason() ==
                  supervised_user::FilteringBehaviorReason::ASYNC_CHECKER;

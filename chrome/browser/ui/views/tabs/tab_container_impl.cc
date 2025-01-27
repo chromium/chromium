@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/views/tabs/tab_container_impl.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/bits.h"
 #include "base/containers/adapters.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -496,7 +496,7 @@ std::optional<int> TabContainerImpl::GetModelIndexOfFirstNonClosingTab(
     // user can rapidly close tabs by clicking the close button and not have
     // the animations interfere with that.
     std::vector<Tab*> all_tabs = layout_helper_->GetTabs();
-    auto it = base::ranges::find(all_tabs, tab);
+    auto it = std::ranges::find(all_tabs, tab);
     while (it < all_tabs.end() && (*it)->closing()) {
       it++;
     }
@@ -1508,7 +1508,7 @@ void TabContainerImpl::OrderTabSlotView(TabSlotView* slot_view) {
   // |slot_view| is in the wrong place in children(). Fix it.
   std::vector<TabSlotView*> slots = layout_helper_->GetTabSlotViews();
   size_t target_slot_index =
-      base::ranges::find(slots, slot_view) - slots.begin();
+      std::ranges::find(slots, slot_view) - slots.begin();
   // Find the index in children() that corresponds to |target_slot_index|.
   size_t view_index = 0;
   for (size_t slot_index = 0; slot_index < target_slot_index; ++slot_index) {

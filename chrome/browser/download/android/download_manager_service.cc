@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/android/download_manager_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
@@ -14,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
@@ -571,8 +571,8 @@ void DownloadManagerService::OnPendingDownloadsLoaded() {
   is_pending_downloads_loaded_ = true;
 
   auto result =
-      base::ranges::find_if_not(coordinators_, &ProfileKey::IsOffTheRecord,
-                                &Coordinators::value_type::first);
+      std::ranges::find_if_not(coordinators_, &ProfileKey::IsOffTheRecord,
+                               &Coordinators::value_type::first);
   CHECK(result != coordinators_.end())
       << "A non-OffTheRecord coordinator should exist when "
          "OnPendingDownloadsLoaded is triggered.";

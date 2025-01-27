@@ -4,11 +4,11 @@
 
 #include "chrome/browser/webid/federated_identity_account_keyed_permission_context.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
@@ -115,7 +115,7 @@ bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
 bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     const net::SchemefulSite& relying_party_embedder,
     const net::SchemefulSite& identity_provider) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       GetAllGrantedObjects(),
       [&](const std::unique_ptr<
           permissions::ObjectPermissionContextBase::Object>& object) -> bool {
@@ -322,7 +322,7 @@ void FederatedIdentityAccountKeyedPermissionContext::OnSetRequiresUserMediation(
     const url::Origin& relying_party,
     base::OnceClosure callback) {
   net::SchemefulSite relying_party_site(relying_party);
-  if (base::ranges::none_of(
+  if (std::ranges::none_of(
           storage_access_eligible_connections_, [&](const auto& pair) -> bool {
             return net::SchemefulSite(pair.first) == relying_party_site;
           })) {

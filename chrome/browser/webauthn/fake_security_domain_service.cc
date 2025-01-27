@@ -4,11 +4,12 @@
 
 #include "chrome/browser/webauthn/fake_security_domain_service.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "services/network/public/cpp/data_element.h"
@@ -66,7 +67,7 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
   size_t num_physical_members() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    return base::ranges::count_if(members_, [](const auto& member) -> bool {
+    return std::ranges::count_if(members_, [](const auto& member) -> bool {
       return member.member_type() == trusted_vault_pb::SecurityDomainMember::
                                          MEMBER_TYPE_PHYSICAL_DEVICE;
     });
@@ -75,7 +76,7 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
   size_t num_pin_members() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    return base::ranges::count_if(members_, [](const auto& member) -> bool {
+    return std::ranges::count_if(members_, [](const auto& member) -> bool {
       return member.member_type() ==
              trusted_vault_pb::SecurityDomainMember::
                  MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN;
@@ -156,7 +157,7 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
                  .empty());
 
       const auto existing_pin =
-          base::ranges::find_if(members_, [](const auto& member) -> bool {
+          std::ranges::find_if(members_, [](const auto& member) -> bool {
             return member.member_type() ==
                    trusted_vault_pb::SecurityDomainMember::
                        MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN;

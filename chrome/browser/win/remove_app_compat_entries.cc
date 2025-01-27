@@ -4,12 +4,12 @@
 
 #include "chrome/browser/win/remove_app_compat_entries.h"
 
+#include <algorithm>
 #include <string_view>
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/win/registry.h"

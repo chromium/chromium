@@ -4,7 +4,8 @@
 
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom-forward.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
@@ -163,7 +164,7 @@ TEST(EnterpriseCompanionStatusTest, DifferentSuccessesEqual) {
       EnterpriseCompanionStatus::FromMojomStatus(mojom::Status::New(
           /*space=*/0, /*code=*/0, /*description=*/"Success"))};
 
-  ASSERT_TRUE(base::ranges::all_of(
+  ASSERT_TRUE(std::ranges::all_of(
       successes,
       [](const EnterpriseCompanionStatus& status) { return status.ok(); }));
   for (const auto& lhs : successes) {

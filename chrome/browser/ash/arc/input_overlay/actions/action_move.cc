@@ -15,7 +15,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
@@ -139,7 +138,7 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     if (labels_.size() != kActionMoveKeysSize) {
       return;
     }
-    auto it = base::ranges::find(labels_, action_label);
+    auto it = std::ranges::find(labels_, action_label);
     DCHECK(it != labels_.end());
     if (it == labels_.end()) {
       return;
@@ -418,7 +417,7 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
                                  const gfx::Transform* rotation_transform,
                                  std::list<ui::TouchEvent>& rewritten_events) {
   auto keys = current_input_->keys();
-  auto it = base::ranges::find(keys, key_event->code());
+  auto it = std::ranges::find(keys, key_event->code());
   if (it == keys.end()) {
     return false;
   }

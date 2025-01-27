@@ -7,10 +7,10 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <algorithm>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -75,7 +75,7 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
     base::CommandLine::StringVector argv = command_line->argv();
     std::erase_if(argv, IsNonSwitchArgument);
     command_line->InitFromArgv(argv);
-    ASSERT_TRUE(base::ranges::equal(argv, command_line->argv()));
+    ASSERT_TRUE(std::ranges::equal(argv, command_line->argv()));
   }
 
   void ListOfURLs() {

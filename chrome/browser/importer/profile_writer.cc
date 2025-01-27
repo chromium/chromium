@@ -6,11 +6,11 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <string>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread.h"
@@ -192,7 +192,7 @@ void ProfileWriter::AddBookmarks(
         continue;
       }
 
-      const auto it = base::ranges::find_if(
+      const auto it = std::ranges::find_if(
           parent->children(), [folder_name](const auto& node) {
             return node->is_folder() && node->GetTitle() == *folder_name;
           });

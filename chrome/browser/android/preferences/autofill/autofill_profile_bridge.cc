@@ -4,11 +4,12 @@
 
 #include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
 
+#include <algorithm>
+
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_orphaned_isolated_web_apps_command.h"
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 #include <set>
@@ -15,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
@@ -79,7 +79,7 @@ std::set<base::FilePath> RetrieveAllIsolatedWebAppsDirectories(
 }
 
 bool DeleteOrphanedIsolatedWebApps(std::vector<base::FilePath> paths) {
-  return base::ranges::all_of(paths, [](const base::FilePath& path) {
+  return std::ranges::all_of(paths, [](const base::FilePath& path) {
     return base::DeletePathRecursively(path);
   });
 }
@@ -210,9 +210,9 @@ void CleanupOrphanedIsolatedWebAppsCommand::
       RetrieveAllInstalledIsolatedWebAppsPaths(*lock_, *profile_);
 
   std::vector<base::FilePath> directories_to_delete;
-  base::ranges::set_difference(isolated_web_apps_directories,
-                               installed_isolated_web_apps_paths,
-                               std::back_inserter(directories_to_delete));
+  std::ranges::set_difference(isolated_web_apps_directories,
+                              installed_isolated_web_apps_paths,
+                              std::back_inserter(directories_to_delete));
 
   number_of_deleted_directories_ = directories_to_delete.size();
   base::ThreadPool::PostTaskAndReplyWithResult(

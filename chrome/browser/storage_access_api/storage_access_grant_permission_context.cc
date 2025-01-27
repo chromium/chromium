@@ -4,6 +4,8 @@
 
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -11,7 +13,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -459,7 +460,7 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
             ContentSettingsType::STORAGE_ACCESS,
             content_settings::mojom::SessionModel::USER_SESSION);
 
-    const int existing_implicit_grants = base::ranges::count_if(
+    const int existing_implicit_grants = std::ranges::count_if(
         implicit_grants, [&request_data](const auto& entry) {
           return entry.primary_pattern.Matches(request_data.requesting_origin);
         });

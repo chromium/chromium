@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/json/json_reader.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -107,7 +107,7 @@ ToolbarActionView* ExtensionsToolbarContainerUnitTest::GetPinnedExtensionView(
     const extensions::ExtensionId& extension_id) {
   std::vector<ToolbarActionView*> actions = GetPinnedExtensionViews();
   auto it =
-      base::ranges::find(actions, extension_id, [](ToolbarActionView* action) {
+      std::ranges::find(actions, extension_id, [](ToolbarActionView* action) {
         return action->view_controller()->GetId();
       });
   if (it == actions.end()) {

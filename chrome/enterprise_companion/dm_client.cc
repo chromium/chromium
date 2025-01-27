@@ -4,6 +4,7 @@
 
 #include "chrome/enterprise_companion/dm_client.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -15,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -48,7 +48,7 @@ namespace {
 device_management_storage::DMPolicyMap ToDMPolicyMap(
     const policy::CloudPolicyClient::ResponseMap& in) {
   device_management_storage::DMPolicyMap out;
-  base::ranges::transform(
+  std::ranges::transform(
       in, std::inserter(out, out.end()),
       [](const std::pair<std::pair<std::string, std::string>,
                          enterprise_management::PolicyFetchResponse> response) {

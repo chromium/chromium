@@ -374,7 +374,7 @@ SodaSpeechRecognizerImpl::FSMState SodaSpeechRecognizerImpl::ProcessFinalResult(
     const FSMEventArgs& event_args) {
   const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& results =
       event_args.engine_results;
-  if (base::ranges::any_of(results, [](const auto& result) {
+  if (std::ranges::any_of(results, [](const auto& result) {
         return !result->hypotheses.empty();
       })) {
     session_client_->ResultRetrieved(mojo::Clone(results));

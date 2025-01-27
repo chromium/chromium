@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
@@ -12,7 +13,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"

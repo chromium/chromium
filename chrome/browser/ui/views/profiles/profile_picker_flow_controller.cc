@@ -714,7 +714,7 @@ void ProfilePickerFlowController::OnSwitchToProfileComplete(bool open_settings,
           ->GetProfileAttributesStorage()
           .GetAllProfilesAttributes();
   int profile_count =
-      base::ranges::count(entries, false, &ProfileAttributesEntry::IsOmitted);
+      std::ranges::count(entries, false, &ProfileAttributesEntry::IsOmitted);
   if (profile_count > 1 && !open_settings &&
       selected_profile_target_url_.is_empty()) {
     browser->window()->MaybeShowProfileSwitchIPH();

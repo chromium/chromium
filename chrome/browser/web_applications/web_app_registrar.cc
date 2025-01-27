@@ -24,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1293,7 +1292,7 @@ bool WebAppRegistrar::IsLinkCapturableByApp(const webapps::AppId& app,
   if (app_score == 0) {
     return false;
   }
-  return base::ranges::none_of(GetAppIds(), [&](const webapps::AppId& app_id) {
+  return std::ranges::none_of(GetAppIds(), [&](const webapps::AppId& app_id) {
     int other_score;
     if (base::FeatureList::IsEnabled(
             features::kPwaNavigationCapturingWithScopeExtensions)) {
@@ -1737,7 +1736,7 @@ base::Value WebAppRegistrar::AsDebugValue() const {
   for (const web_app::WebApp& web_app : GetAppsIncludingStubs()) {
     web_apps.push_back(&web_app);
   }
-  base::ranges::sort(web_apps, {}, &web_app::WebApp::untranslated_name);
+  std::ranges::sort(web_apps, {}, &web_app::WebApp::untranslated_name);
 
   // Prefix with a ! so this appears at the top when serialized.
   base::Value::Dict& index = *root.EnsureDict("!Index");

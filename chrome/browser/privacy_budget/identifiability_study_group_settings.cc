@@ -8,7 +8,6 @@
 #include <numeric>
 
 #include "base/containers/flat_map.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/types.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"

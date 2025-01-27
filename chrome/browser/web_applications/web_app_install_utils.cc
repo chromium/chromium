@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 
+#include <algorithm>
 #include <array>
 #include <iterator>
 #include <map>
@@ -31,7 +32,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -174,7 +174,7 @@ void PopulateWebAppShortcutsMenuItemInfos(
 
         // Filter out non-square or too large icons.
         auto valid_size_it =
-            base::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
+            std::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
               return size.width() == size.height() &&
                      size.width() <= kMaxIconSize;
             });
@@ -609,7 +609,7 @@ void UpdateWebAppInstallInfoIconsFromManifestIfNeeded(
 
         // Filter out non-square or too large icons.
         auto valid_size =
-            base::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
+            std::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
               return size.width() == size.height() &&
                      size.width() <= kMaxIconSize;
             });
@@ -684,7 +684,7 @@ void PopulateHomeTabIconsFromHomeTabManifestParams(
       }
       // Filter out non-square or too large icons.
       auto valid_size =
-          base::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
+          std::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
             return size.width() == size.height() &&
                    size.width() <= kMaxIconSize;
           });

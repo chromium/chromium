@@ -92,6 +92,6 @@ bool SurfaceSetEquivalence::IsRepresentative(
 
 bool SurfaceSetEquivalence::IsRepresentative(
     const IdentifiableSurfaceSet& source) const {
-  return base::ranges::all_of(source,
-                              [this](auto s) { return IsRepresentative(s); });
+  return std::ranges::all_of(source,
+                             [this](auto s) { return IsRepresentative(s); });
 }

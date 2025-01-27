@@ -4,13 +4,13 @@
 
 #include "chrome/test/supervised_user/embedded_test_server_setup_mixin.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -53,7 +53,7 @@ void EmbeddedTestServerSetupMixin::SetUp() {
 
 void EmbeddedTestServerSetupMixin::SetUpCommandLine(
     base::CommandLine* command_line) {
-  base::ranges::for_each(
+  std::ranges::for_each(
       resolver_rules_map_host_list_, [&](const std::string& host) {
         AddHostResolverRule(command_line, host, *embedded_test_server_);
       });

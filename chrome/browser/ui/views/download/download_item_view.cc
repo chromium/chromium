@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <functional>
 #include <memory>
 #include <numbers>
 #include <numeric>
@@ -22,8 +23,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -590,7 +589,7 @@ gfx::Size DownloadItemView::CalculatePreferredSize(
         kStartPadding * 2 + icon_size.width() + label->width() + kEndPadding;
     height = std::max(height, icon_size.height());
     const int visible_buttons =
-        base::ranges::count(buttons(), true, &views::View::GetVisible);
+        std::ranges::count(buttons(), true, &views::View::GetVisible);
     if (visible_buttons > 0) {
       const gfx::Size button_size = GetButtonSize();
       width += kLabelPadding + button_size.width() * visible_buttons +
@@ -1182,8 +1181,8 @@ int DownloadItemView::GetLabelWidth(const views::StyledLabel& label) const {
   // TODO(pkasting): Can use std::iota_view() when C++20 is available.
   std::vector<int> widths(max_width + 1 - min_width);
   std::iota(widths.begin(), widths.end(), min_width);
-  return *base::ranges::lower_bound(widths, 2, base::ranges::greater{},
-                                    std::move(lines_for_width));
+  return *std::ranges::lower_bound(widths, 2, std::ranges::greater{},
+                                   std::move(lines_for_width));
 }
 
 void DownloadItemView::SetDropdownPressed(bool pressed) {

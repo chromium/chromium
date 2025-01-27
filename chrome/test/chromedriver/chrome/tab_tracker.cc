@@ -4,9 +4,9 @@
 
 #include "chrome/test/chromedriver/chrome/tab_tracker.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
@@ -33,7 +33,7 @@ Status TabTracker::OnEvent(DevToolsClient* client,
       // We are not interested in those types of targets.
       return Status(kOk);
     }
-    auto it = base::ranges::find(*tab_views_, *target_id, &WebViewImpl::GetId);
+    auto it = std::ranges::find(*tab_views_, *target_id, &WebViewImpl::GetId);
     if (it == tab_views_->end()) {
       // There are some target types that we're not keeping track of, thus not
       // finding the target in frame_to_target_map_ is OK.

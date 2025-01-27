@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <set>
@@ -17,7 +18,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -543,7 +543,7 @@ void TabSearchPageHandler::RemoveDuplicateTab(tabs::TabInterface* tab) {
   CHECK(tab);
 
   for (auto& [duplicate_url, duplicate_tab_list] : duplicate_tabs_) {
-    auto found_it = base::ranges::find(duplicate_tab_list, tab);
+    auto found_it = std::ranges::find(duplicate_tab_list, tab);
     if (found_it != duplicate_tab_list.end()) {
       // Remove the specific tab from `duplicate_tabs_` and subscription maps.
       duplicate_tab_list.erase(found_it);
@@ -1466,16 +1466,16 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   std::vector<TabAlertState> alert_states =
       GetTabAlertStatesForContents(contents);
   // Currently, we only report media alert states.
-  base::ranges::copy_if(alert_states.begin(), alert_states.end(),
-                        std::back_inserter(tab_data->alert_states),
-                        [](TabAlertState alert) {
-                          return alert == TabAlertState::MEDIA_RECORDING ||
-                                 alert == TabAlertState::AUDIO_RECORDING ||
-                                 alert == TabAlertState::VIDEO_RECORDING ||
-                                 alert == TabAlertState::AUDIO_PLAYING ||
-                                 alert == TabAlertState::AUDIO_MUTING ||
-                                 alert == TabAlertState::GLIC_ACCESSING;
-                        });
+  std::ranges::copy_if(alert_states.begin(), alert_states.end(),
+                       std::back_inserter(tab_data->alert_states),
+                       [](TabAlertState alert) {
+                         return alert == TabAlertState::MEDIA_RECORDING ||
+                                alert == TabAlertState::AUDIO_RECORDING ||
+                                alert == TabAlertState::VIDEO_RECORDING ||
+                                alert == TabAlertState::AUDIO_PLAYING ||
+                                alert == TabAlertState::AUDIO_MUTING ||
+                                alert == TabAlertState::GLIC_ACCESSING;
+                       });
 
   return tab_data;
 }

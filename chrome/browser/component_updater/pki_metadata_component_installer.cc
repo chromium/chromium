@@ -4,6 +4,7 @@
 
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -22,7 +23,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -458,7 +458,7 @@ PKIMetadataComponentInstallerPolicy::BytesArrayFromProtoBytes(
     google::protobuf::RepeatedPtrField<std::string> proto_bytes) {
   std::vector<std::vector<uint8_t>> bytes;
   bytes.reserve(proto_bytes.size());
-  base::ranges::transform(
+  std::ranges::transform(
       proto_bytes, std::back_inserter(bytes), [](std::string element) {
         const auto bytes = base::as_byte_span(element);
         return std::vector<uint8_t>(bytes.begin(), bytes.end());

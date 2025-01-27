@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -18,7 +19,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -828,7 +828,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   const PasswordsPrivateDelegate::UiEntries& credentials =
       GetCredentials(*delegate);
   EXPECT_EQ(credentials.size(), 2u);
-  const auto account_credential_it = base::ranges::find(
+  const auto account_credential_it = std::ranges::find(
       credentials, api::passwords_private::PasswordStoreSet::kAccount,
       &PasswordUiEntry::stored_in);
   ASSERT_NE(account_credential_it, credentials.end());
@@ -846,7 +846,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   const PasswordsPrivateDelegate::UiEntries& updated_credentials =
       GetCredentials(*delegate);
   EXPECT_EQ(updated_credentials.size(), 2u);
-  const auto refreshed_credential_it = base::ranges::find(
+  const auto refreshed_credential_it = std::ranges::find(
       updated_credentials, api::passwords_private::PasswordStoreSet::kAccount,
       &PasswordUiEntry::stored_in);
   ASSERT_NE(account_credential_it, updated_credentials.end());

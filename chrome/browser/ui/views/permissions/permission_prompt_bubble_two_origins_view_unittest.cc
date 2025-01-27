@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_two_origins_view.h"
 
+#include <algorithm>
+
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"

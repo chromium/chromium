@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -194,7 +194,7 @@ base::Value::Dict LoadTriggerFormAndFieldLogs(
       FieldGlobalId field_global_id = {
           frame_token, FieldRendererId(params.field_renderer_id)};
       auto field =
-          base::ranges::find_if(*form, [&field_global_id](const auto& field) {
+          std::ranges::find_if(*form, [&field_global_id](const auto& field) {
             return field->global_id() == field_global_id;
           });
       if (field != form->end()) {

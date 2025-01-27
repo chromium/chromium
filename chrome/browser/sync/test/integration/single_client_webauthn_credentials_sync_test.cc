@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/containers/span.h"
 #include "base/location.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
@@ -94,7 +95,7 @@ bool PublicKeyForPasskeyEquals(
   CHECK(ec_key);
   std::vector<uint8_t> ec_key_pub;
   CHECK(ec_key->ExportPublicKey(&ec_key_pub));
-  return base::ranges::equal(ec_key_pub, expected_spki);
+  return std::ranges::equal(ec_key_pub, expected_spki);
 }
 
 std::unique_ptr<syncer::PersistentUniqueClientEntity>

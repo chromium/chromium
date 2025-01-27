@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_ambient_provider_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -34,7 +35,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/ambient_video_albums.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager.h"
@@ -687,8 +687,8 @@ void PersonalizationAppAmbientProviderImpl::FetchPreviewImages() {
         AmbientBackendController::Get()->GetTimeOfDayVideoPreviewImageUrls(
             video.value());
     std::vector<GURL> previews;
-    base::ranges::transform(url_arr, std::back_inserter(previews),
-                            [](const char* url) { return GURL(url); });
+    std::ranges::transform(url_arr, std::back_inserter(previews),
+                           [](const char* url) { return GURL(url); });
     OnPreviewsFetched(std::move(previews));
     return;
   }
@@ -709,8 +709,8 @@ void PersonalizationAppAmbientProviderImpl::OnPreviewsFetched(
 ash::PersonalAlbum*
 PersonalizationAppAmbientProviderImpl::FindPersonalAlbumById(
     const std::string& album_id) {
-  auto it = base::ranges::find(personal_albums_.albums, album_id,
-                               &ash::PersonalAlbum::album_id);
+  auto it = std::ranges::find(personal_albums_.albums, album_id,
+                              &ash::PersonalAlbum::album_id);
 
   if (it == personal_albums_.albums.end()) {
     return nullptr;
@@ -721,8 +721,8 @@ PersonalizationAppAmbientProviderImpl::FindPersonalAlbumById(
 
 ash::ArtSetting* PersonalizationAppAmbientProviderImpl::FindArtAlbumById(
     const std::string& album_id) {
-  auto it = base::ranges::find(settings_->art_settings, album_id,
-                               &ash::ArtSetting::album_id);
+  auto it = std::ranges::find(settings_->art_settings, album_id,
+                              &ash::ArtSetting::album_id);
   // Album does not exist any more.
   if (it == settings_->art_settings.end()) {
     return nullptr;

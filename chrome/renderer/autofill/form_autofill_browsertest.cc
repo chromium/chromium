@@ -9,6 +9,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -16,7 +17,6 @@
 
 #include "base/feature_list.h"
 #include "base/format_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

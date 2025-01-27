@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -22,7 +23,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -715,7 +715,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     // Process requested apps.
     for (auto& app : apps) {
       const std::string id = ArcAppTest::GetAppId(*app);
-      std::vector<std::string>::iterator it_id = base::ranges::find(ids, id);
+      std::vector<std::string>::iterator it_id = std::ranges::find(ids, id);
       ASSERT_NE(it_id, ids.end());
       ids.erase(it_id);
 
@@ -744,7 +744,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     // Process requested apps.
     for (auto& shortcut : shortcuts) {
       const std::string id = ArcAppTest::GetAppId(shortcut);
-      std::vector<std::string>::iterator it_id = base::ranges::find(ids, id);
+      std::vector<std::string>::iterator it_id = std::ranges::find(ids, id);
       ASSERT_NE(it_id, ids.end());
       ids.erase(it_id);
 

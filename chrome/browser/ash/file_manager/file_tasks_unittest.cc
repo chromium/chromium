@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
@@ -284,9 +283,9 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
   void CheckCorrectPolicyAssignment(std::string_view default_app_id) {
     ASSERT_EQ(resulting_tasks()->policy_default_handler_status,
               PolicyDefaultHandlerStatus::kDefaultHandlerAssignedByPolicy);
-    ASSERT_EQ(base::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
+    ASSERT_EQ(std::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
               1);
-    ASSERT_EQ(base::ranges::find_if(resulting_tasks()->tasks, &IsDefaultTask)
+    ASSERT_EQ(std::ranges::find_if(resulting_tasks()->tasks, &IsDefaultTask)
                   ->task_descriptor.app_id,
               default_app_id);
   }
@@ -295,10 +294,10 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
       std::string_view virtual_task_id) {
     ASSERT_EQ(resulting_tasks()->policy_default_handler_status,
               PolicyDefaultHandlerStatus::kDefaultHandlerAssignedByPolicy);
-    ASSERT_EQ(base::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
+    ASSERT_EQ(std::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
               1);
     const auto& task =
-        base::ranges::find_if(resulting_tasks()->tasks, &IsDefaultTask)
+        std::ranges::find_if(resulting_tasks()->tasks, &IsDefaultTask)
             ->task_descriptor;
     ASSERT_TRUE(IsVirtualTask(task));
     ASSERT_THAT(task.action_id, testing::EndsWith(virtual_task_id));
@@ -307,13 +306,13 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
   void CheckConflictingPolicyAssignment() {
     ASSERT_EQ(resulting_tasks()->policy_default_handler_status,
               PolicyDefaultHandlerStatus::kIncorrectAssignment);
-    ASSERT_EQ(base::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
+    ASSERT_EQ(std::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
               0);
   }
 
   void CheckNoPolicyAssignment() {
     ASSERT_FALSE(resulting_tasks()->policy_default_handler_status);
-    ASSERT_EQ(base::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
+    ASSERT_EQ(std::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
               0);
   }
 

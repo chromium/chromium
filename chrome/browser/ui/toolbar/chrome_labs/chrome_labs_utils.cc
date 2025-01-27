@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
@@ -112,10 +113,10 @@ bool ShouldShowChromeLabsUI(const ChromeLabsModel* model, Profile* profile) {
   }
 #endif
 
-  return base::ranges::any_of(model->GetLabInfo(),
-                              [&profile](const LabInfo& lab) {
-                                return IsChromeLabsFeatureValid(lab, profile);
-                              });
+  return std::ranges::any_of(model->GetLabInfo(),
+                             [&profile](const LabInfo& lab) {
+                               return IsChromeLabsFeatureValid(lab, profile);
+                             });
 }
 
 bool AreNewChromeLabsExperimentsAvailable(const ChromeLabsModel* model,
@@ -133,7 +134,7 @@ bool AreNewChromeLabsExperimentsAvailable(const ChromeLabsModel* model,
   std::vector<std::string> lab_internal_names;
   const std::vector<LabInfo>& all_labs = model->GetLabInfo();
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       all_labs.begin(), all_labs.end(), [&new_badge_prefs](const LabInfo& lab) {
         std::optional<int> new_badge_pref_value =
             new_badge_prefs.FindInt(lab.internal_name);

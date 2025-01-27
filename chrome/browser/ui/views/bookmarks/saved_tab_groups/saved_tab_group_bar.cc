@@ -263,7 +263,7 @@ void SavedTabGroupBar::ShowEverythingMenu() {
 std::optional<size_t> SavedTabGroupBar::GetIndexOfGroup(
     const base::Uuid& guid) const {
   std::vector<SavedTabGroup> groups = tab_group_service_->GetAllGroups();
-  auto it = base::ranges::find_if(groups, [&](const SavedTabGroup& group) {
+  auto it = std::ranges::find_if(groups, [&](const SavedTabGroup& group) {
     return group.saved_guid() == guid;
   });
 

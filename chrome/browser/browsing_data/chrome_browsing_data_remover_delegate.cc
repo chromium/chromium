@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <utility>
@@ -24,7 +25,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -1474,7 +1474,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
           type_to_clear, [&](const ContentSettingPatternSource& setting) {
             return setting.metadata.decided_by_related_website_sets() &&
-                   base::ranges::any_of(
+                   std::ranges::any_of(
                        filter_builder->GetOrigins(),
                        [&](const url::Origin& origin) -> bool {
                          return setting.primary_pattern.Matches(

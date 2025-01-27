@@ -4,13 +4,13 @@
 
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
@@ -200,7 +200,7 @@ bool AppActivity::HasJoinableClient(
     AutoJoinPolicy policy,
     const url::Origin& origin,
     content::FrameTreeNodeId frame_tree_node_id) const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       connected_clients_,
       [policy, &origin, frame_tree_node_id](const auto& client) {
         return IsAutoJoinAllowed(policy, origin, frame_tree_node_id.value(),

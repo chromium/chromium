@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/existing_user_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <tuple>
@@ -27,7 +28,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -274,7 +274,7 @@ std::optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
 AccountId GetPublicSessionAutoLoginAccountId(
     const std::vector<policy::DeviceLocalAccount>& device_local_accounts,
     const std::string& auto_login_account_id) {
-  const auto& it = base::ranges::find_if(
+  const auto& it = std::ranges::find_if(
       device_local_accounts, [&auto_login_account_id](const auto& account) {
         return account.account_id == auto_login_account_id;
       });

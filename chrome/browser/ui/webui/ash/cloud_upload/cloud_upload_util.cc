@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -246,7 +246,7 @@ base::FilePath GetODFSFuseboxMount(Profile* profile) {
 
 bool IsODFSInstalled(Profile* profile) {
   auto* service = ash::file_system_provider::Service::Get(profile);
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       service->GetProviders(), [](const auto& provider) {
         return provider.first ==
                ash::file_system_provider::ProviderId::CreateFromExtensionId(

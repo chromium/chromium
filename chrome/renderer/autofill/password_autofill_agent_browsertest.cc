@@ -4372,14 +4372,14 @@ TEST_F(PasswordAutofillAgentTest, SuggestPasswordWhenUsernameFieldDisabled) {
   const FormData& form = *fake_driver_.form_data_parsed()->begin();
   uint64_t username_index = std::distance(
       form.fields().begin(),
-      base::ranges::find(form.fields(),
-                         form_util::GetFieldRendererId(username_element_),
-                         &autofill::FormFieldData::renderer_id));
+      std::ranges::find(form.fields(),
+                        form_util::GetFieldRendererId(username_element_),
+                        &autofill::FormFieldData::renderer_id));
   uint64_t password_index = std::distance(
       form.fields().begin(),
-      base::ranges::find(form.fields(),
-                         form_util::GetFieldRendererId(password_element_),
-                         &autofill::FormFieldData::renderer_id));
+      std::ranges::find(form.fields(),
+                        form_util::GetFieldRendererId(password_element_),
+                        &autofill::FormFieldData::renderer_id));
   EXPECT_EQ(suggestion_request.username_field_index, username_index);
   EXPECT_EQ(suggestion_request.password_field_index, password_index);
 }

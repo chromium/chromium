@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -24,7 +25,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"  // For CHECK macros.
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1963,7 +1963,7 @@ void HttpHandler::OnClose(HttpServerInterface* http_server, int connection_id) {
     return;
   }
   std::vector<int>& bucket = ses_it->second;
-  auto bucket_it = base::ranges::find(bucket, connection_id);
+  auto bucket_it = std::ranges::find(bucket, connection_id);
   // The case when it can happen:
   // The session thread has sent a response (e.g. Quit command) to the client.
   // After that the session thread preempted before closing all connections.

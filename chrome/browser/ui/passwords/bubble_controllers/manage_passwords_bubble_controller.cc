@@ -290,7 +290,7 @@ bool ManagePasswordsBubbleController::UsernameExists(
   if (!delegate_) {
     return false;
   }
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       GetCredentials(),
       [&username](const std::unique_ptr<password_manager::PasswordForm>& form) {
         return form->username_value == username;

@@ -80,7 +80,7 @@ policy::FilesPolicyDialog::Info GetDialogInfoForEnterpriseConnectorsBlockReason(
 
   // Find the first valid delegate, since every delegate contains the same copy
   // of custom messaging settings.
-  auto delegate = base::ranges::find_if(
+  auto delegate = std::ranges::find_if(
       file_transfer_analysis_delegates,
       [](const std::unique_ptr<
           enterprise_connectors::FileTransferAnalysisDelegate>& delegate) {

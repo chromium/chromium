@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -22,7 +23,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
@@ -592,7 +592,7 @@ tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
 
   // TODO(tluk) remove the reliance on the ordering of the color pairs in the
   // vector and use the ColorLabelMap structure instead.
-  base::ranges::copy(color_map, std::back_inserter(colors_));
+  std::ranges::copy(color_map, std::back_inserter(colors_));
 
   // Keep track of the current group's color, to be returned as the initial
   // selected value.

@@ -4,10 +4,11 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"

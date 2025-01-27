@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -19,7 +20,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
@@ -1104,7 +1104,7 @@ TEST_F(VolumeManagerTest, VolumeManagerInitializeMyFilesVolume) {
       volume_manager()->GetVolumeList();
   ASSERT_GT(volume_list.size(), 0u);
   auto volume =
-      base::ranges::find(volume_list, "downloads:MyFiles", &Volume::volume_id);
+      std::ranges::find(volume_list, "downloads:MyFiles", &Volume::volume_id);
   EXPECT_FALSE(volume == volume_list.end());
   EXPECT_EQ(VOLUME_TYPE_DOWNLOADS_DIRECTORY, (*volume)->type());
 }
@@ -1523,8 +1523,8 @@ class VolumeManagerLocalUserFilesTest : public VolumeManagerArcTest {
     if (volume_list.size() == 0u) {
       return false;
     }
-    auto volume = base::ranges::find(volume_list, "downloads:MyFiles",
-                                     &Volume::volume_id);
+    auto volume =
+        std::ranges::find(volume_list, "downloads:MyFiles", &Volume::volume_id);
     return volume != volume_list.end() &&
            (*volume)->type() == VOLUME_TYPE_DOWNLOADS_DIRECTORY;
   }
@@ -1536,7 +1536,7 @@ class VolumeManagerLocalUserFilesTest : public VolumeManagerArcTest {
       return false;
     }
     auto volume =
-        base::ranges::find(volume_list, "android_files:0", &Volume::volume_id);
+        std::ranges::find(volume_list, "android_files:0", &Volume::volume_id);
     return volume != volume_list.end() &&
            (*volume)->type() == VOLUME_TYPE_ANDROID_FILES;
   }

@@ -59,7 +59,7 @@ bool IsSimpleOverrideExtension(const extensions::Extension& extension) {
   // Return true only if the extension has exclusively allowlisted keys in the
   // manifest.
   for (const auto [key, value] : extension.manifest()->available_values()) {
-    if (base::ranges::find(kAllowlistedManifestKeys, key) ==
+    if (std::ranges::find(kAllowlistedManifestKeys, key) ==
         std::end(kAllowlistedManifestKeys)) {
       return false;
     }

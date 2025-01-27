@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -21,7 +22,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -108,7 +108,7 @@ base::FilePath CreateTextFile(const base::FilePath& root_path,
 void WaitForItemAddition(
     base::RepeatingCallback<bool(const HoldingSpaceItem*)> predicate) {
   auto* const model = HoldingSpaceController::Get()->model();
-  if (base::ranges::any_of(model->items(), [&predicate](const auto& item) {
+  if (std::ranges::any_of(model->items(), [&predicate](const auto& item) {
         return predicate.Run(item.get());
       })) {
     return;
@@ -140,7 +140,7 @@ void WaitForItemInitialization(
   WaitForItemAddition(predicate);
 
   auto* const model = HoldingSpaceController::Get()->model();
-  auto item_it = base::ranges::find_if(
+  auto item_it = std::ranges::find_if(
       model->items(),
       [&predicate](const auto& item) { return predicate.Run(item.get()); });
 

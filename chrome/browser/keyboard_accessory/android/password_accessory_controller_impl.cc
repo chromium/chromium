@@ -4,6 +4,7 @@
 
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -20,7 +21,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -186,7 +186,7 @@ ShouldShowAction ShouldShowCredManReentryAction(
 base::span<const UiCredential>::iterator GetUiCredentialForSelection(
     base::span<const UiCredential> matching_creds,
     const AccessorySheetField& suggestion) {
-  return base::ranges::find_if(matching_creds, [&](const auto& cred) {
+  return std::ranges::find_if(matching_creds, [&](const auto& cred) {
     return suggestion.display_text() ==
            (suggestion.is_obfuscated() ? cred.password() : cred.username());
   });
@@ -294,11 +294,11 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
                        origin),
       GetPlusAddressTitle(!plus_address_info_to_add.empty(), origin),
       std::move(info_to_add), CreateManagePasswordsFooter());
-  base::ranges::for_each(std::move(passkeys_to_add),
-                         [&data](PasskeySection section) {
-                           data.add_passkey_section(std::move(section));
-                         });
-  base::ranges::for_each(
+  std::ranges::for_each(std::move(passkeys_to_add),
+                        [&data](PasskeySection section) {
+                          data.add_passkey_section(std::move(section));
+                        });
+  std::ranges::for_each(
       std::move(plus_address_info_to_add),
       [&data](autofill::PlusAddressInfo plus_address_info) {
         data.add_plus_address_info(std::move(plus_address_info));

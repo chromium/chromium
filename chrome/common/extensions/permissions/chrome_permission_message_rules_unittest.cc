@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/common/extensions/permissions/chrome_permission_message_rules.h"
+
 #include <stddef.h>
 
+#include <algorithm>
 #include <set>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/common/extensions/permissions/chrome_permission_message_rules.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -42,8 +43,8 @@ bool MakesRedundant(const ChromePermissionMessageRule& first_rule,
   // (i.e., A, B, and C are all there), then the requirements for 1 are also
   // satisfied. Since 1 comes first, it will always take A and B, and so the
   // requirements for 2 can never be satisfied by the time it's applied.
-  return base::ranges::includes(second_rule.required_permissions(),
-                                first_rule.required_permissions());
+  return std::ranges::includes(second_rule.required_permissions(),
+                               first_rule.required_permissions());
 }
 
 }  // namespace

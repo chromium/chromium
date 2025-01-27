@@ -4,6 +4,7 @@
 
 #include "chrome/enterprise_companion/telemetry_logger/telemetry_logger.h"
 
+#include <algorithm>
 #include <iterator>
 #include <list>
 #include <memory>
@@ -17,7 +18,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -43,7 +43,7 @@ std::string SerializeEvents(base::span<TestEvent> events) {
   return base::JoinString(
       [](base::span<TestEvent> events) {
         std::vector<std::string> serialized_events;
-        base::ranges::transform(
+        std::ranges::transform(
             events, std::back_inserter(serialized_events),
             [](const TestEvent& event) {
               return base::StringPrintf(

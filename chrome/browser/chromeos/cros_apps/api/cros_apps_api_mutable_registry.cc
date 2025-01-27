@@ -4,11 +4,11 @@
 
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_mutable_registry.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_info.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_infos.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_utils.h"
@@ -47,7 +47,7 @@ bool CrosAppsApiMutableRegistry::CanEnableApi(
 
 bool CrosAppsApiMutableRegistry::CanEnableApi(
     const CrosAppsApiInfo& api_info) const {
-  const bool are_required_features_enabled = base::ranges::all_of(
+  const bool are_required_features_enabled = std::ranges::all_of(
       api_info.required_features(), [](const auto& base_feature) {
         return base::FeatureList::IsEnabled(base_feature);
       });
@@ -81,7 +81,7 @@ bool CrosAppsApiMutableRegistry::IsApiEnabledForFrame(
     return false;
   }
 
-  const bool is_allowlisted_origin = base::ranges::any_of(
+  const bool is_allowlisted_origin = std::ranges::any_of(
       api_info.allowed_origins(),
       [&url](const auto& origin) { return origin.IsSameOriginWith(url); });
 

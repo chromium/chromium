@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(
   VerifyUi();
 
   // Select the CVC challenge option in the dialog.
-  auto cvc_challenge_option = base::ranges::find_if(
+  auto cvc_challenge_option = std::ranges::find_if(
       GetChallengeOptions(), [](const auto& challenge_option) {
         return challenge_option.type == CardUnmaskChallengeOptionType::kCvc;
       });

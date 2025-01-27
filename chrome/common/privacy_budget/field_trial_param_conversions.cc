@@ -8,7 +8,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -103,11 +102,10 @@ std::string EncodeIdentifiabilityType(const int& value) {
 std::string EncodeIdentifiabilityType(
     const std::vector<blink::IdentifiableSurface>& value) {
   std::vector<std::string> parts;
-  base::ranges::transform(
-      value, std::back_inserter(parts),
-      [](const blink::IdentifiableSurface v) -> std::string {
-        return EncodeIdentifiabilityType(v);
-      });
+  std::ranges::transform(value, std::back_inserter(parts),
+                         [](const blink::IdentifiableSurface v) -> std::string {
+                           return EncodeIdentifiabilityType(v);
+                         });
   return base::JoinString(parts, ";");
 }
 

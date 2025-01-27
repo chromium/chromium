@@ -4,13 +4,13 @@
 
 #include "chrome/browser/predictors/preconnect_manager.h"
 
+#include <algorithm>
 #include <map>
 #include <utility>
 
 #include "base/format_macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"

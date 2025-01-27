@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/crosapi/desk_profiles_ash.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <utility>
 #include <vector>
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "base/ranges/algorithm.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace crosapi {
@@ -106,8 +106,8 @@ void DeskProfilesAsh::RemoveObserver(Observer* observer) {
 
 ash::LacrosProfileSummary& DeskProfilesAsh::UpsertProfile(
     ash::LacrosProfileSummary&& summary) {
-  auto existing = base::ranges::find(profiles_, summary.profile_id,
-                                     &ash::LacrosProfileSummary::profile_id);
+  auto existing = std::ranges::find(profiles_, summary.profile_id,
+                                    &ash::LacrosProfileSummary::profile_id);
   // If we have this profile, update it.
   if (existing != profiles_.end()) {
     *existing = std::move(summary);

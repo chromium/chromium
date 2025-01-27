@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "build/build_config.h"

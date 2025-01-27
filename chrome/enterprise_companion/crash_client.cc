@@ -42,9 +42,9 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include <algorithm>
 #include <iterator>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/wrapped_window_proc.h"
 
@@ -100,10 +100,9 @@ std::vector<std::string> MakeCrashHandlerArgs() {
   // which must be skipped.
 #if BUILDFLAG(IS_WIN)
   std::vector<std::string> args;
-  base::ranges::transform(
-      ++command_line.argv().begin(), command_line.argv().end(),
-      std::back_inserter(args),
-      [](const auto& arg) { return base::WideToUTF8(arg); });
+  std::ranges::transform(++command_line.argv().begin(),
+                         command_line.argv().end(), std::back_inserter(args),
+                         [](const auto& arg) { return base::WideToUTF8(arg); });
 
   return args;
 #else

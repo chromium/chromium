@@ -20,7 +20,7 @@ namespace {
 
 bool ContainsUserCreatedCredential(
     const std::vector<device::DiscoverableCredentialMetadata>& credentials) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       credentials, [](const device::DiscoverableCredentialMetadata& cred) {
         return !cred.system_created;
       });

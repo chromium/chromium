@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 
+#include <algorithm>
+
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -39,7 +40,7 @@ SidePanelRegistry* SidePanelRegistry::GetDeprecated(
 
 SidePanelEntry* SidePanelRegistry::GetEntryForKey(
     const SidePanelEntry::Key& entry_key) {
-  auto it = base::ranges::find(entries_, entry_key, &SidePanelEntry::key);
+  auto it = std::ranges::find(entries_, entry_key, &SidePanelEntry::key);
   return it == entries_.end() ? nullptr : it->get();
 }
 

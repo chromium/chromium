@@ -29,7 +29,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -843,7 +842,7 @@ void AuthenticatorRequestDialogController::
     // API and local credentials, there is no point showing Chrome UI as an
     // extra step. Jump to Windows instead.
     if (transport_availability_.has_win_native_api_authenticator &&
-        base::ranges::all_of(model_->mechanisms, [](const auto& mech) {
+        std::ranges::all_of(model_->mechanisms, [](const auto& mech) {
           return absl::holds_alternative<Mechanism::WindowsAPI>(mech.type) ||
                  (absl::holds_alternative<Mechanism::Credential>(mech.type) &&
                   absl::get<Mechanism::Credential>(mech.type).value().source ==
@@ -858,11 +857,11 @@ void AuthenticatorRequestDialogController::
         transport_availability_.request_type !=
             FidoRequestType::kGetAssertion ||
         // If there were any matches, ignore a hint and show the user the list.
-        base::ranges::any_of(model_->mechanisms,
-                             [](const auto& mech) {
-                               return absl::get_if<Mechanism::Credential>(
-                                   &mech.type);
-                             }) ||
+        std::ranges::any_of(model_->mechanisms,
+                            [](const auto& mech) {
+                              return absl::get_if<Mechanism::Credential>(
+                                  &mech.type);
+                            }) ||
         !StartGuidedFlowForHint(*hints_.transport)) {
       SetCurrentStep(Step::kMechanismSelection);
     }
@@ -882,7 +881,7 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
 
   // The RP has given a hint about the expected transport for a create() call.
   // See https://w3c.github.io/webauthn/#enum-hints
-  const auto mech_it = base::ranges::find_if(
+  const auto mech_it = std::ranges::find_if(
       model_->mechanisms,
       [this, mechanism_is_transport, transport, profile](const auto& mech) {
         switch (transport) {
@@ -938,7 +937,7 @@ void AuthenticatorRequestDialogController::
 #elif BUILDFLAG(IS_MAC)
   // If there are multiple platform authenticators, one of them is the default.
   if (!type.has_value()) {
-    if (base::ranges::any_of(
+    if (std::ranges::any_of(
             authenticators, [](const AuthenticatorReference& ref) {
               return ref.type == AuthenticatorType::kOther &&
                      ref.transport == device::FidoTransportProtocol::kInternal;
@@ -952,7 +951,7 @@ void AuthenticatorRequestDialogController::
   }
 #endif
 
-  auto platform_authenticator_it = base::ranges::find_if(
+  auto platform_authenticator_it = std::ranges::find_if(
       authenticators, [type](const AuthenticatorReference& ref) -> bool {
         if (type && *type == AuthenticatorType::kEnclave) {
           return ref.type == *type;
@@ -1275,12 +1274,12 @@ bool AuthenticatorRequestDialogController::OnWinUserCancelled() {
   // dialog) then start the request over (once) if the user cancels the Windows
   // UI and there are other options in Chrome's UI.
   bool enclave_is_option =
-      base::ranges::any_of(model_->mechanisms, [](const Mechanism& m) {
+      std::ranges::any_of(model_->mechanisms, [](const Mechanism& m) {
         return absl::holds_alternative<Mechanism::Enclave>(m.type);
       });
   bool phone_is_option =
       !WebAuthnApiSupportsHybrid() &&
-      base::ranges::any_of(model_->mechanisms, [](const Mechanism& m) -> bool {
+      std::ranges::any_of(model_->mechanisms, [](const Mechanism& m) -> bool {
         return absl::holds_alternative<Mechanism::Phone>(m.type) ||
                absl::holds_alternative<Mechanism::AddPhone>(m.type);
       });
@@ -1405,10 +1404,10 @@ AuthenticatorType AuthenticatorRequestDialogController::OnAccountPreselected(
   // Run `account_preselected_callback_` to narrow the request to the selected
   // credential and dispatch to the platform authenticator.
   const auto cred =
-      base::ranges::find_if(transport_availability_.recognized_credentials,
-                            [&credential_id](const auto& cred) {
-                              return cred.cred_id == credential_id;
-                            });
+      std::ranges::find_if(transport_availability_.recognized_credentials,
+                           [&credential_id](const auto& cred) {
+                             return cred.cred_id == credential_id;
+                           });
   CHECK(cred != transport_availability_.recognized_credentials.end())
       << "OnAccountPreselected() called with unknown credential_id "
       << base::HexEncode(credential_id);
@@ -1545,9 +1544,9 @@ void AuthenticatorRequestDialogController::set_cable_transport_info(
   model_->cable_qr_string = cable_qr_string;
 
   model_->paired_phone_names.clear();
-  base::ranges::transform(paired_phones_,
-                          std::back_inserter(model_->paired_phone_names),
-                          &device::cablev2::Pairing::name);
+  std::ranges::transform(paired_phones_,
+                         std::back_inserter(model_->paired_phone_names),
+                         &device::cablev2::Pairing::name);
   model_->paired_phone_names.erase(
       std::unique(model_->paired_phone_names.begin(),
                   model_->paired_phone_names.end()),
@@ -2033,8 +2032,8 @@ AuthenticatorRequestDialogController::GetIndexOfMostRecentlyUsedPhoneFromSync()
   if (last_used_pairing) {
     for (size_t i = 0; i < paired_phones_.size(); ++i) {
       if (paired_phones_[i]->from_sync_deviceinfo &&
-          base::ranges::equal(paired_phones_[i]->peer_public_key_x962,
-                              *last_used_pairing)) {
+          std::ranges::equal(paired_phones_[i]->peer_public_key_x962,
+                             *last_used_pairing)) {
         return i;
       }
     }
@@ -2060,8 +2059,8 @@ void AuthenticatorRequestDialogController::SortRecognizedCredentials() {
       return std::tie(a.user.id, a.cred_id) < std::tie(b.user.id, b.cred_id);
     }
   } id_comparator;
-  base::ranges::sort(transport_availability_.recognized_credentials,
-                     std::ref(id_comparator));
+  std::ranges::sort(transport_availability_.recognized_credentials,
+                    std::ref(id_comparator));
 
   struct UsernameComparator {
     explicit UsernameComparator(const icu::Locale* locale) {
@@ -2080,8 +2079,8 @@ void AuthenticatorRequestDialogController::SortRecognizedCredentials() {
   };
   UsernameComparator user_name_comparator(&icu::Locale::getDefault());
 
-  base::ranges::stable_sort(transport_availability_.recognized_credentials,
-                            std::ref(user_name_comparator));
+  std::ranges::stable_sort(transport_availability_.recognized_credentials,
+                           std::ref(user_name_comparator));
 }
 
 void AuthenticatorRequestDialogController::PopulateMechanisms() {

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_client_impl.h"
 
+#include <algorithm>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -30,8 +32,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
@@ -173,10 +173,10 @@ std::vector<ash::QuickInsertSearchResult> ConvertSearchResults(
     CHECK(result);
   }
 
-  base::ranges::sort(results, base::ranges::greater(),
-                     [](const std::unique_ptr<ChromeSearchResult>& result) {
-                       return result->relevance();
-                     });
+  std::ranges::sort(results, std::ranges::greater(),
+                    [](const std::unique_ptr<ChromeSearchResult>& result) {
+                      return result->relevance();
+                    });
 
   for (const std::unique_ptr<ChromeSearchResult>& result : results) {
     switch (result->result_type()) {

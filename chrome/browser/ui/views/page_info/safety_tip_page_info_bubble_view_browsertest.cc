@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/views/page_info/safety_tip_page_info_bubble_view.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1268,7 +1268,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
     }
   }
 
-  size_t expected_event_count = base::ranges::count_if(
+  size_t expected_event_count = std::ranges::count_if(
       test_cases, [](const HeuristicsTestCase& test_case) {
         return test_case.expected_lookalike;
       });

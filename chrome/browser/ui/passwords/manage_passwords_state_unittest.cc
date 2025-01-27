@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -13,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"

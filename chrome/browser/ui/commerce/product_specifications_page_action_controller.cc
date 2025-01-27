@@ -173,7 +173,7 @@ void ProductSpecificationsPageActionController::OnIconClicked() {
     is_in_recommended_set_ = true;
   } else {
     GURL current_url = current_url_;
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         existing_url_infos, [&current_url](const UrlInfo& query_url_info) {
           return query_url_info.url == current_url;
         });

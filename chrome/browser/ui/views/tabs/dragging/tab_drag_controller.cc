@@ -22,7 +22,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -480,7 +479,7 @@ TabDragController::Liveness TabDragController::Init(
     ref->InitDragData(dragging_views[i], &(ref->drag_data_[i]));
   }
   ref->source_view_index_ =
-      base::ranges::find(dragging_views, source_view) - dragging_views.begin();
+      std::ranges::find(dragging_views, source_view) - dragging_views.begin();
 
   // Listen for Esc key presses and mouse releases.
   ref->event_tracker_ = std::make_unique<EventTracker>(

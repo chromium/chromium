@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_suggest/drive_recent_file_suggestion_provider.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/files/justifications.h"
@@ -410,7 +410,7 @@ DriveRecentFileSuggestionProvider::GetSuggestionsFromLatestQueryResults() {
     }
   }
 
-  base::ranges::sort(results, [](const auto& lhs, const auto& rhs) {
+  std::ranges::sort(results, [](const auto& lhs, const auto& rhs) {
     if ((lhs.modified_time || rhs.modified_time) &&
         lhs.modified_time != rhs.modified_time) {
       return lhs.modified_time.value_or(base::Time()) >

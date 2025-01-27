@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -217,7 +216,7 @@ std::vector<base::FilePath::StringType> GetExtensionsForArcMimeType(
       base::FilePath::StringType preferred_extension;
       if (net::GetPreferredExtensionForMimeType(mime_type,
                                                 &preferred_extension)) {
-        auto iter = base::ranges::find(extensions, preferred_extension);
+        auto iter = std::ranges::find(extensions, preferred_extension);
         if (iter == extensions.end()) {
           // This is unlikely to happen, but there is no guarantee.
           extensions.insert(extensions.begin(), preferred_extension);

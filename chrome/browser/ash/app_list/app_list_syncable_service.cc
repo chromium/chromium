@@ -21,7 +21,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/one_shot_event.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1672,7 +1671,7 @@ void AppListSyncableService::ProcessExistingSyncItem(SyncItem* sync_item) {
       sync_item->item_id != ash::kOemFolderId,  // Don't sync oem folder's name.
       update_folder);
 
-  const auto linked_promise_item = base::ranges::find_if(
+  const auto linked_promise_item = std::ranges::find_if(
       items_linked_to_promise_item_, [&sync_item](const auto& linked_item) {
         return linked_item.second == sync_item->item_id;
       });
@@ -1852,8 +1851,8 @@ AppListSyncableService::GetSortedTopLevelSyncItems() const {
   }
 
   // Sort remaining items based on their positions.
-  base::ranges::sort(sync_items, syncer::StringOrdinal::LessThanFn(),
-                     &SyncItem::item_ordinal);
+  std::ranges::sort(sync_items, syncer::StringOrdinal::LessThanFn(),
+                    &SyncItem::item_ordinal);
   return sync_items;
 }
 
@@ -2243,7 +2242,7 @@ void AppListSyncableService::OnGetLauncherOrdering(
     // Sort ordering for items in the same folder.
     std::vector<std::pair<apps::LauncherItem, apps::LauncherItemData>>
         folder_order(item_map.begin(), item_map.end());
-    base::ranges::sort(
+    std::ranges::sort(
         folder_order, {},
         [](const std::pair<apps::LauncherItem, apps::LauncherItemData>& p) {
           return p.second.order;
@@ -2281,8 +2280,8 @@ void AppListSyncableService::OnGetLauncherOrdering(
         lhs = ordinal;
       } else {
         // Update `merge_index` and `lhs` if new match is after current.
-        auto defaults_it = base::ranges::find(defaults.begin() + merge_index,
-                                              defaults.end(), item);
+        auto defaults_it = std::ranges::find(defaults.begin() + merge_index,
+                                             defaults.end(), item);
         if (defaults_it != defaults.end()) {
           merge_index = defaults_it - defaults.begin();
           lhs = preload_service_ordinals_[item];

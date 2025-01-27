@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
@@ -70,7 +71,7 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   }
 
   if (ash::DemoSession::Get() &&
-      base::ranges::none_of(*policy_ids, [](const auto& policy_id) {
+      std::ranges::none_of(*policy_ids, [](const auto& policy_id) {
         return ash::DemoSession::Get()->ShouldShowAppInShelf(policy_id);
       })) {
     return AppListControllerDelegate::PIN_EDITABLE;

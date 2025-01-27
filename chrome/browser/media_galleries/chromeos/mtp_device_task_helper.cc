@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/media_galleries/chromeos/mtp_device_object_enumerator.h"
 #include "chrome/browser/media_galleries/chromeos/mtp_read_file_worker.h"
 #include "chrome/browser/media_galleries/chromeos/snapshot_file_details.h"
@@ -459,7 +458,7 @@ void MTPDeviceTaskHelper::OnDidReadBytes(
   }
 
   CHECK_LE(base::checked_cast<int>(data.length()), request.buf_len);
-  base::ranges::copy(data, request.buf->data());
+  std::ranges::copy(data, request.buf->data());
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(request.success_callback), file_info,

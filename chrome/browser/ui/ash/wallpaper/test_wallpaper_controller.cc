@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/containers/adapters.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/account_id/account_id.h"
@@ -139,16 +139,16 @@ bool TestWallpaperController::SetDailyGooglePhotosWallpaperIdCache(
     const AccountId& account_id,
     const DailyGooglePhotosIdCache& ids) {
   id_cache_.ShrinkToSize(0);
-  base::ranges::for_each(base::Reversed(ids),
-                         [&](uint id) { id_cache_.Put(std::move(id)); });
+  std::ranges::for_each(base::Reversed(ids),
+                        [&](uint id) { id_cache_.Put(std::move(id)); });
   return true;
 }
 
 bool TestWallpaperController::GetDailyGooglePhotosWallpaperIdCache(
     const AccountId& account_id,
     DailyGooglePhotosIdCache& ids_out) const {
-  base::ranges::for_each(base::Reversed(id_cache_),
-                         [&](uint id) { ids_out.Put(std::move(id)); });
+  std::ranges::for_each(base::Reversed(id_cache_),
+                        [&](uint id) { ids_out.Put(std::move(id)); });
   return true;
 }
 

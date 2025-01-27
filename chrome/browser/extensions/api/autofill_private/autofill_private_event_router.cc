@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -11,7 +12,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"

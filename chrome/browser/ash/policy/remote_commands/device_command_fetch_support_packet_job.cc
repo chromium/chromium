@@ -398,8 +398,8 @@ void DeviceCommandFetchSupportPacketJob::OnDataExported(
     std::set<SupportToolError> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto export_error =
-      base::ranges::find(errors, SupportToolErrorCode::kDataExportError,
-                         &SupportToolError::error_code);
+      std::ranges::find(errors, SupportToolErrorCode::kDataExportError,
+                        &SupportToolError::error_code);
 
   if (export_error != errors.end()) {
     base::UmaHistogramEnumeration(kFetchSupportPacketFailureHistogramName,

@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"

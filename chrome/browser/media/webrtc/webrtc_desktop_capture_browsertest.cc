@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -153,7 +154,7 @@ class InfobarUIChangeObserver : public TabStripModelObserver {
 
  public:
   void EraseObserver(InfoBarChangeObserver* observer) {
-    auto iter = base::ranges::find(
+    auto iter = std::ranges::find(
         observers_, observer,
         [](const auto& observer_iter) { return observer_iter.second.get(); });
     observers_.erase(iter);

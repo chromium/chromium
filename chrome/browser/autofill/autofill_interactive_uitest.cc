@@ -787,7 +787,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     content::DOMMessageQueue msg_queue(GetWebContents());
     for (char16_t character : value) {
       ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
-      const ui::PrintableCodeEntry* code_entry = base::ranges::find_if(
+      const ui::PrintableCodeEntry* code_entry = std::ranges::find_if(
           ui::kPrintableCodeMap,
           [character](const ui::PrintableCodeEntry& entry) {
             return entry.character[0] == character ||

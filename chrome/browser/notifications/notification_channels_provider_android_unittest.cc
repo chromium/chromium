@@ -4,6 +4,7 @@
 
 #include "chrome/browser/notifications/notification_channels_provider_android.h"
 
+#include <algorithm>
 #include <map>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -61,7 +61,7 @@ class FakeNotificationChannelsBridge
   void SetChannelStatus(const std::string& origin,
                         NotificationChannelStatus status) {
     DCHECK_NE(NotificationChannelStatus::UNAVAILABLE, status);
-    auto it = base::ranges::find(
+    auto it = std::ranges::find(
         channels_, origin,
         [](const Channels::value_type& pair) { return pair.second.origin; });
     CHECK(it != channels_.end(), base::NotFatalUntil::M130)

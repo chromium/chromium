@@ -4,11 +4,11 @@
 
 #include "chrome/browser/download/android/download_dialog_utils.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/gfx/text_elider.h"
@@ -18,8 +18,8 @@
 download::DownloadItem* DownloadDialogUtils::FindAndRemoveDownload(
     std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>* downloads,
     const std::string& download_guid) {
-  auto iter = base::ranges::find(*downloads, download_guid,
-                                 &download::DownloadItem::GetGuid);
+  auto iter = std::ranges::find(*downloads, download_guid,
+                                &download::DownloadItem::GetGuid);
 
   if (iter == downloads->end())
     return nullptr;

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -85,7 +85,7 @@ void IsMultiCaptureAllowedForAnyOriginOnMainProfileResultReceived(
   ContentSettingsForOneType content_settings =
       host_content_settings_map->GetSettingsForOneType(
           ContentSettingsType::ALL_SCREEN_CAPTURE);
-  std::move(callback).Run(base::ranges::any_of(
+  std::move(callback).Run(std::ranges::any_of(
       content_settings, [](const ContentSettingPatternSource& source) {
         return source.GetContentSetting() ==
                ContentSetting::CONTENT_SETTING_ALLOW;

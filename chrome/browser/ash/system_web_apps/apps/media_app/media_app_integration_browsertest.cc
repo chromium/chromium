@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -606,7 +606,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppHandlesIntents) {
         GetAppsForMimeType(proxy, "application/octet-stream");
 
     // Media App should not be in the returned list of handlers.
-    EXPECT_FALSE(base::ranges::any_of(
+    EXPECT_FALSE(std::ranges::any_of(
         intent_launch_info,
         [&media_app_id](const apps::IntentLaunchInfo& info) {
           return info.app_id == media_app_id;
@@ -624,7 +624,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppHandlesIntents) {
 
       // Media App should be in the returned list of handlers.
       EXPECT_FALSE(intent_launch_info.empty()) << " at " << accept.mime_type;
-      EXPECT_TRUE(base::ranges::any_of(
+      EXPECT_TRUE(std::ranges::any_of(
           intent_launch_info,
           [&media_app_id](const apps::IntentLaunchInfo& info) {
             return info.app_id == media_app_id;

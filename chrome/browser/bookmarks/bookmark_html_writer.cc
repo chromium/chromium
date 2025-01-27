@@ -320,7 +320,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   // Get the latest time of a given type, across a list of folders.
   std::string GetLatestTime(const std::vector<base::Value::Dict*>& folders,
                             std::string_view time_type_key) {
-    CHECK(base::ranges::any_of(
+    CHECK(std::ranges::any_of(
         folders, [](const base::Value::Dict* folder) { return folder; }));
 
     int64_t latest_time = 0;

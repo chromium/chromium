@@ -513,9 +513,9 @@ BrowserViewLayout::GetChildViewsInPaintOrder(const views::View* host) const {
   // when this is a window using WindowControlsOverlay, to make sure the window
   // controls are in fact drawn on top of the web contents.
   if (delegate_->IsWindowControlsOverlayEnabled()) {
-    auto top_container_iter = base::ranges::find(result, top_container_);
+    auto top_container_iter = std::ranges::find(result, top_container_);
     auto contents_container_iter =
-        base::ranges::find(result, contents_container_);
+        std::ranges::find(result, contents_container_);
     CHECK(contents_container_iter != result.end());
     // When in Immersive Fullscreen `top_container_` might not be one of our
     // children at all. While Window Controls Overlay shouldn't be enabled in

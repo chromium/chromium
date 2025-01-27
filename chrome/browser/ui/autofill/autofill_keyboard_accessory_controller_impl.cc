@@ -605,8 +605,8 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
 void AutofillKeyboardAccessoryControllerImpl::
     OrderSuggestionsAndCreateLabels() {
   // If there is an Undo suggestion, move it to the front.
-  if (auto it = base::ranges::find(suggestions_, SuggestionType::kUndoOrClear,
-                                   &Suggestion::type);
+  if (auto it = std::ranges::find(suggestions_, SuggestionType::kUndoOrClear,
+                                  &Suggestion::type);
       it != suggestions_.end()) {
     std::rotate(suggestions_.begin(), it, it + 1);
   }

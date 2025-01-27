@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 
 #include "base/memory/raw_ref.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -900,7 +900,7 @@ TEST_F(TabContainerTest, GroupHeaderMovesOnRegrouping) {
   tab_container_->CompleteAnimationAndLayout();
 
   std::vector<TabGroupViews*> views = ListGroupViews();
-  auto views_it = base::ranges::find(views, group1, [](TabGroupViews* view) {
+  auto views_it = std::ranges::find(views, group1, [](TabGroupViews* view) {
     return view->header()->group();
   });
   ASSERT_TRUE(views_it != views.end());

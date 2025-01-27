@@ -4,10 +4,10 @@
 
 #include "chrome/browser/media/router/providers/openscreen/discovery/open_screen_listener_delegate.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "components/openscreen_platform/network_util.h"
 #include "net/base/ip_endpoint.h"
@@ -123,14 +123,14 @@ void OpenScreenListenerDelegate::OnDeviceChanged(
   ServiceInfo service_info =
       ServiceInfoFromServiceDescription(service_description);
   if (added) {
-    auto it = base::ranges::find(receivers_, service_info.instance_name,
-                                 &ServiceInfo::instance_name);
+    auto it = std::ranges::find(receivers_, service_info.instance_name,
+                                &ServiceInfo::instance_name);
     CHECK(it == receivers_.end());
     receivers_.push_back(std::move(service_info));
     listener_->OnReceiverUpdated(receivers_);
   } else {
-    auto it = base::ranges::find(receivers_, service_info.instance_name,
-                                 &ServiceInfo::instance_name);
+    auto it = std::ranges::find(receivers_, service_info.instance_name,
+                                &ServiceInfo::instance_name);
     CHECK(it != receivers_.end());
     *it = std::move(service_info);
     listener_->OnReceiverUpdated(receivers_);
@@ -151,7 +151,7 @@ void OpenScreenListenerDelegate::OnDeviceRemoved(
   }
 
   auto removed_it =
-      base::ranges::find(receivers_, results[0], &ServiceInfo::instance_name);
+      std::ranges::find(receivers_, results[0], &ServiceInfo::instance_name);
 
   // Move the receiver we want to remove to the end, so we don't have to shift.
   CHECK(removed_it != receivers_.end());

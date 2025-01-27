@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
@@ -26,7 +27,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -518,7 +518,7 @@ class OverlayViewTargeterDelegate : public views::ViewTargeterDelegate {
       views::View::ConvertRectToTarget(target, child, &child_rect);
       return child->HitTestRect(gfx::ToEnclosingRect(child_rect));
     };
-    return base::ranges::any_of(children, hits_child);
+    return std::ranges::any_of(children, hits_child);
   }
 };
 
@@ -2632,8 +2632,8 @@ bool BrowserView::WidgetOwnedByAnchorContainsPoint(
 
   views::Widget::Widgets widgets;
   views::Widget::GetAllOwnedWidgets(anchor_widget->GetNativeView(), &widgets);
-  return base::ranges::any_of(widgets, [point_in_screen_coords,
-                                        anchor_widget](views::Widget* widget) {
+  return std::ranges::any_of(widgets, [point_in_screen_coords,
+                                       anchor_widget](views::Widget* widget) {
     return widget != anchor_widget && widget->IsVisible() &&
            widget->GetWindowBoundsInScreen().Contains(point_in_screen_coords);
   });

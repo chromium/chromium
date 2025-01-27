@@ -4,11 +4,11 @@
 
 #include "chrome/browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -99,11 +99,11 @@ void ProfileDiscardOptOutListHelper::ProfileDiscardOptOutTracker::
 
   // Merge the two lists so that the PageDiscardingHelper only sees a single
   // list of patterns to exclude from discarding.
-  base::ranges::transform(
+  std::ranges::transform(
       user_value_map.begin(), user_value_map.end(),
       std::back_inserter(patterns),
       [](const auto& user_value) { return user_value.first; });
-  base::ranges::transform(
+  std::ranges::transform(
       managed_value_list, std::back_inserter(patterns),
       [](const auto& managed_value) { return managed_value.GetString(); });
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_utils.h"
 
+#include <algorithm>
 #include <iterator>
 #include <map>
 #include <optional>
@@ -21,7 +22,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -464,7 +464,7 @@ std::vector<std::u16string> TransformFileExtensionsForDisplay(
     const std::set<std::string>& extensions) {
   std::vector<std::u16string> extensions_for_display;
   extensions_for_display.reserve(extensions.size());
-  base::ranges::transform(
+  std::ranges::transform(
       extensions, std::back_inserter(extensions_for_display),
       [](const std::string& extension) {
         return base::UTF8ToUTF16(base::ToUpperASCII(extension.substr(1)));

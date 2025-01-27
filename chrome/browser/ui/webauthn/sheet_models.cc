@@ -18,7 +18,6 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -1502,8 +1501,8 @@ AuthenticatorMultiSourcePickerSheetModel::
 
   webauthn::user_actions::RecordMultipleOptionsShown(
       dialog_model->mechanisms, dialog_model->request_type);
-  if (base::ranges::any_of(dialog_model->mechanisms,
-                           &IsLocalPasskeyOrEnclaveAuthenticator)) {
+  if (std::ranges::any_of(dialog_model->mechanisms,
+                          &IsLocalPasskeyOrEnclaveAuthenticator)) {
     primary_passkeys_label_ =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_THIS_DEVICE_LABEL);
     for (size_t i = 0; i < dialog_model->mechanisms.size(); ++i) {
@@ -1552,7 +1551,7 @@ bool AuthenticatorMultiSourcePickerSheetModel::IsManageDevicesButtonVisible()
   using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
   // If any phones or passkeys from a phone are shown then also show a button
   // that goes to the settings page to manage them.
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       dialog_model()->mechanisms, [](const Mechanism& mech) {
         return absl::holds_alternative<Mechanism::Phone>(mech.type) ||
                (absl::holds_alternative<Mechanism::Credential>(mech.type) &&

@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/immediate_crash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
@@ -356,7 +357,7 @@ void PageActionIconController::UpdateAll() {
 }
 
 bool PageActionIconController::IsAnyIconVisible() const {
-  return base::ranges::any_of(page_action_icon_views_, [](auto icon_item) {
+  return std::ranges::any_of(page_action_icon_views_, [](auto icon_item) {
     return icon_item.second->GetVisible();
   });
 }
@@ -427,9 +428,9 @@ void PageActionIconController::ZoomChangedForActiveTab(bool can_show_bubble) {
 std::vector<const PageActionIconView*>
 PageActionIconController::GetPageActionIconViewsForTesting() const {
   std::vector<const PageActionIconView*> icon_views;
-  base::ranges::transform(page_action_icon_views_,
-                          std::back_inserter(icon_views),
-                          &IconViews::value_type::second);
+  std::ranges::transform(page_action_icon_views_,
+                         std::back_inserter(icon_views),
+                         &IconViews::value_type::second);
   return icon_views;
 }
 
@@ -458,7 +459,7 @@ void PageActionIconController::PrimaryPageChanged(content::Page& page) {
 }
 
 int PageActionIconController::VisibleEphemeralActionCount() const {
-  return base::ranges::count_if(
+  return std::ranges::count_if(
       page_action_icon_views_,
       [](std::pair<PageActionIconType, PageActionIconView*> view) {
         return view.second->ephemeral() && view.second->GetVisible();

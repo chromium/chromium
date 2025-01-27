@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -93,7 +94,7 @@ class LocationBarViewBrowserTest : public InProcessBrowserTest {
       ContentSettingImageModel::ImageType image_type) {
     LocationBarView* location_bar_view =
         BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
-    return **base::ranges::find(
+    return **std::ranges::find(
         location_bar_view->GetContentSettingViewsForTest(), image_type,
         &ContentSettingImageView::GetType);
   }

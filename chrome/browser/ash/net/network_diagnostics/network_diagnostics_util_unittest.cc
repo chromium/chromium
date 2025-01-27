@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,7 +38,7 @@ TEST(NetworkDiagnosticsUtilTest, TestGetRandomHosts) {
       util::GetRandomHosts(num_hosts, prefix_length);
   // Ensure |random_hosts| has unique entries.
   std::sort(random_hosts.begin(), random_hosts.end());
-  EXPECT_TRUE(base::ranges::adjacent_find(random_hosts) == random_hosts.end());
+  EXPECT_TRUE(std::ranges::adjacent_find(random_hosts) == random_hosts.end());
 }
 
 TEST(NetworkDiagnosticsUtilTest, TestGetRandomHostsWithScheme) {
@@ -48,7 +48,7 @@ TEST(NetworkDiagnosticsUtilTest, TestGetRandomHostsWithScheme) {
       util::GetRandomHostsWithScheme(num_hosts, prefix_length, kHttpsScheme);
   // Ensure |random_hosts| has unique entries.
   std::sort(random_hosts.begin(), random_hosts.end());
-  EXPECT_TRUE(base::ranges::adjacent_find(random_hosts) == random_hosts.end());
+  EXPECT_TRUE(std::ranges::adjacent_find(random_hosts) == random_hosts.end());
   // Ensure hosts in |random_hosts| start with |kHttpsScheme|.
   for (const auto& host : random_hosts) {
     EXPECT_TRUE(host.rfind(kHttpsScheme, 0) == 0);
@@ -64,7 +64,7 @@ TEST(NetworkDiagnosticsUtilTest,
                                                        kHttpsScheme);
   // Ensure |random_hosts| has unique entries.
   std::sort(random_hosts.begin(), random_hosts.end());
-  EXPECT_TRUE(base::ranges::adjacent_find(random_hosts) == random_hosts.end());
+  EXPECT_TRUE(std::ranges::adjacent_find(random_hosts) == random_hosts.end());
   // Ensure:
   // (1) hosts in |random_hosts| start with |kHttpsScheme|.
   // (2) hosts in |random_hosts| end with |kGenerate204Path|.

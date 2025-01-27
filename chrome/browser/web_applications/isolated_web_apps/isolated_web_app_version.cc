@@ -38,7 +38,7 @@ base::expected<base::Version, IwaVersionParseError> ParseIwaVersion(
     }
 
     // Check that the component only consists of digits.
-    if (!base::ranges::all_of(component_string, &base::IsAsciiDigit<char>)) {
+    if (!std::ranges::all_of(component_string, &base::IsAsciiDigit<char>)) {
       return base::unexpected(IwaVersionParseError::kNonDigit);
     }
 

@@ -20,7 +20,6 @@
 #include "base/json/values_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1310,8 +1309,8 @@ void GetFileSystemGrantedEntries(std::vector<base::Value::Dict>* exceptions,
     }
   }
   // Sort exceptions by origin name, alphabetically.
-  base::ranges::sort(*exceptions, [](const base::Value::Dict& lhs,
-                                     const base::Value::Dict& rhs) {
+  std::ranges::sort(*exceptions, [](const base::Value::Dict& lhs,
+                                    const base::Value::Dict& rhs) {
     return lhs.Find(kOrigin)->GetString() < rhs.Find(kOrigin)->GetString();
   });
 }

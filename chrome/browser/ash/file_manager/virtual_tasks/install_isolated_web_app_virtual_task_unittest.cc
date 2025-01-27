@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/file_manager/virtual_tasks/install_isolated_web_app_virtual_task.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
@@ -66,7 +66,7 @@ class InstallIsolatedWebAppVirtualTaskTest : public testing::Test {
 
   bool Matches(const std::vector<GURL>& file_urls) {
     std::vector<extensions::EntryInfo> entries;
-    base::ranges::transform(
+    std::ranges::transform(
         file_urls, std::back_inserter(entries), [](const GURL& file_url) {
           return extensions::EntryInfo(base::FilePath(file_url.path()),
                                        "application/octet-stream",
@@ -85,12 +85,12 @@ class InstallIsolatedWebAppVirtualTaskTest : public testing::Test {
     std::vector<FileSystemURL> file_system_urls;
     auto storage_key =
         blink::StorageKey::CreateFromStringForTesting("https://example.com/");
-    base::ranges::transform(file_urls, std::back_inserter(file_system_urls),
-                            [&](const GURL& url) {
-                              return storage::FileSystemURL::CreateForTest(
-                                  storage_key, storage::kFileSystemTypeLocal,
-                                  base::FilePath::FromUTF8Unsafe(url.path()));
-                            });
+    std::ranges::transform(file_urls, std::back_inserter(file_system_urls),
+                           [&](const GURL& url) {
+                             return storage::FileSystemURL::CreateForTest(
+                                 storage_key, storage::kFileSystemTypeLocal,
+                                 base::FilePath::FromUTF8Unsafe(url.path()));
+                           });
 
     return ExecuteVirtualTask(
         &profile_, {kFileManagerSwaAppId, TASK_TYPE_WEB_APP, task_.id()},

@@ -291,7 +291,7 @@ TEST_F(ServiceTest, RapidReuse) {
         for (const auto& [process, xactions] : task_transactions) {
           auto& combined = transactions[process];
           combined.insert(combined.end(), xactions.begin(), xactions.end());
-          base::ranges::stable_sort(
+          std::ranges::stable_sort(
               combined, [](auto& a, auto& b) { return a.first < b.first; });
         }
         std::move(quit_closure).Run();

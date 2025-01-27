@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 
+#include <algorithm>
 #include <set>
 
 #include "ash/constants/ash_features.h"
@@ -16,7 +17,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/browser_process.h"
@@ -273,11 +273,11 @@ void HoldingSpaceKeyedService::SetSuggestions(
   }
 
   // No-op if `existing_suggestions` are unchanged.
-  if (base::ranges::equal(existing_suggestions, suggestions, /*pred=*/{},
-                          [](const HoldingSpaceItem* item) {
-                            return std::make_pair(item->type(),
-                                                  item->file().file_path);
-                          })) {
+  if (std::ranges::equal(existing_suggestions, suggestions, /*pred=*/{},
+                         [](const HoldingSpaceItem* item) {
+                           return std::make_pair(item->type(),
+                                                 item->file().file_path);
+                         })) {
     return;
   }
 
@@ -288,11 +288,11 @@ void HoldingSpaceKeyedService::SetSuggestions(
   for (const auto& [type, file_path] : base::Reversed(suggestions)) {
     std::unique_ptr<HoldingSpaceItem> item;
     if (auto existing_item =
-            base::ranges::find_if(existing_suggestions,
-                                  [&](const HoldingSpaceItem* item) {
-                                    return item->type() == type &&
-                                           item->file().file_path == file_path;
-                                  });
+            std::ranges::find_if(existing_suggestions,
+                                 [&](const HoldingSpaceItem* item) {
+                                   return item->type() == type &&
+                                          item->file().file_path == file_path;
+                                 });
         existing_item != existing_suggestions.end() &&
         !(*existing_item)->IsInitialized()) {
       // Reuse the existing uninitialized file suggestion item to avoid
@@ -307,13 +307,13 @@ void HoldingSpaceKeyedService::SetSuggestions(
         std::stringstream data;
         data << "type: " << static_cast<int>((*existing_item)->type());
         data << ", existing_count: "
-             << base::ranges::count_if(
+             << std::ranges::count_if(
                     existing_suggestions, [&](const HoldingSpaceItem* item) {
                       return item->type() == type &&
                              item->file().file_path == file_path;
                     });
         data << ", new_count: "
-             << base::ranges::count_if(
+             << std::ranges::count_if(
                     suggestions,
                     [&](const std::pair<HoldingSpaceItem::Type, base::FilePath>&
                             suggestion) {
@@ -569,7 +569,7 @@ void HoldingSpaceKeyedService::MakeDriveItemAvailableOffline(
 
 bool HoldingSpaceKeyedService::IsInitialized() const {
   return delegates_.size() &&
-         base::ranges::none_of(
+         std::ranges::none_of(
              delegates_,
              &HoldingSpaceKeyedServiceDelegate::is_restoring_persistence);
 }

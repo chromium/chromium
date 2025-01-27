@@ -4,13 +4,13 @@
 
 #include "chrome/browser/enterprise/idle/dialog_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -29,11 +29,11 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
 
 IdleDialog::ActionSet GetActionSet(PrefService* prefs) {
   std::vector<ActionType> actions;
-  base::ranges::transform(prefs->GetList(prefs::kIdleTimeoutActions),
-                          std::back_inserter(actions),
-                          [](const base::Value& action) {
-                            return static_cast<ActionType>(action.GetInt());
-                          });
+  std::ranges::transform(prefs->GetList(prefs::kIdleTimeoutActions),
+                         std::back_inserter(actions),
+                         [](const base::Value& action) {
+                           return static_cast<ActionType>(action.GetInt());
+                         });
   return ActionsToActionSet(base::flat_set<ActionType>(std::move(actions)));
 }
 

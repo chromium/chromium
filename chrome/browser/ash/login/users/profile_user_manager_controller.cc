@@ -32,7 +32,7 @@ void ProfileUserManagerController::OnProfileCreationStarted(Profile* profile) {
   // Hereafter, we can use AnnotatedAccountId::Get() to find the User.
   if (ash::IsUserBrowserContext(profile)) {
     auto logged_in_users = user_manager_->GetLoggedInUsers();
-    auto it = base::ranges::find(
+    auto it = std::ranges::find(
         logged_in_users,
         ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile),
         [](const user_manager::User* user) { return user->username_hash(); });

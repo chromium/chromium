@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <variant>
@@ -13,7 +14,6 @@
 #include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
@@ -107,7 +107,7 @@ void UpdateDebugInfo(bound_session_credentials::RotationDebugInfo& info,
     return;
   }
 
-  auto counter_it = base::ranges::find_if(
+  auto counter_it = std::ranges::find_if(
       *info.mutable_errors_since_last_rotation(),
       [&failure_type](const RotationDebugInfo::FailureCounter& counter) {
         return counter.type() == failure_type.value();

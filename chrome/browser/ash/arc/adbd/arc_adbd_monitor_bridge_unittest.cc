@@ -158,7 +158,7 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdSuccess) {
   EXPECT_EQ(ops[1].type, ash::FakeUpstartClient::UpstartOperationType::START);
 
   // Check the environment variables when starting arcvm-adbd Upstart job.
-  const auto it_cid = base::ranges::find(
+  const auto it_cid = std::ranges::find(
       ops[1].env,
       base::StringPrintf("ARCVM_CID=%" PRId64, kArcVmCidForTesting));
   EXPECT_NE(it_cid, ops[1].env.end());
@@ -166,7 +166,7 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdSuccess) {
       arc::ArcSessionManager::Get()->GetSerialNumber();
   ASSERT_FALSE(serial_number.empty());
   const auto it_serial =
-      base::ranges::find(ops[1].env, "SERIALNUMBER=" + serial_number);
+      std::ranges::find(ops[1].env, "SERIALNUMBER=" + serial_number);
   EXPECT_NE(it_serial, ops[1].env.end());
 }
 

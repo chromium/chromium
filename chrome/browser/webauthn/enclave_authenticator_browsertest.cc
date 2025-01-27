@@ -2286,14 +2286,14 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   // No credentials should be displayed since tapping on them won't work.
   EXPECT_FALSE(
-      base::ranges::any_of(dialog_model()->mechanisms, [](const auto& m) {
+      std::ranges::any_of(dialog_model()->mechanisms, [](const auto& m) {
         return absl::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::Credential>(m.type);
       }));
 
   // The button has text indicating the user they need to sign in.
   const auto sign_in_again_mech =
-      base::ranges::find_if(dialog_model()->mechanisms, [](const auto& m) {
+      std::ranges::find_if(dialog_model()->mechanisms, [](const auto& m) {
         return absl::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::SignInAgain>(m.type);
       });
@@ -2337,7 +2337,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   ASSERT_EQ(browser()->tab_strip_model()->GetTabCount(), 1);
   // The sign in button is not visible.
   const auto sign_in_again_mech =
-      base::ranges::find_if(dialog_model()->mechanisms, [](const auto& m) {
+      std::ranges::find_if(dialog_model()->mechanisms, [](const auto& m) {
         return absl::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::SignInAgain>(m.type);
       });
@@ -2765,7 +2765,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_TRUE(
-      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+      std::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
         return absl::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
       }));
@@ -2795,7 +2795,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_TRUE(
-      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+      std::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
         return absl::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
       }));
@@ -2824,7 +2824,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_TRUE(
-      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+      std::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
         return absl::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
       }));
@@ -2930,7 +2930,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
                                         /*offsets=*/nullptr));
     delegate_observer()->WaitForUI();
     EXPECT_TRUE(
-        base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+        std::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
           return absl::holds_alternative<
               AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
         }));
@@ -2954,7 +2954,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
                                                       /*offsets=*/nullptr));
     delegate_observer()->WaitForUI();
     EXPECT_TRUE(
-        base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+        std::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
           return absl::holds_alternative<
               AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
         }));
@@ -2984,7 +2984,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
                                         /*offsets=*/nullptr));
     delegate_observer()->WaitForUI();
     EXPECT_FALSE(
-        base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+        std::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
           return absl::holds_alternative<
               AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
         }));
@@ -3654,7 +3654,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   // ...and select it again from the mechanism list.
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       dialog_model()->mechanisms,
       [](const auto& m) { return IsMechanismEnclaveCredential(m); }));
   for (auto& mechanism : request_delegate_->dialog_model()->mechanisms) {
@@ -3684,7 +3684,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   // Passkeys from GPM should still be present, but they should not be the
   // default.
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       dialog_model()->mechanisms,
       [](const auto& m) { return IsMechanismEnclaveCredential(m); }));
   EXPECT_EQ(dialog_model()->step(),

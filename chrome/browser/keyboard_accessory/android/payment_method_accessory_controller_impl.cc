@@ -4,6 +4,7 @@
 
 #include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller_impl.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
@@ -201,10 +201,10 @@ PaymentMethodAccessoryControllerImpl::GetSheetData() const {
   if (!unmasked_cards.empty()) {
     // Add the cached server cards first, so that they show up on the top of the
     // manual filling view.
-    base::ranges::transform(unmasked_cards, std::back_inserter(info_to_add),
-                            [allow_filling](const CachedServerCardInfo* data) {
-                              return TranslateCachedCard(data, allow_filling);
-                            });
+    std::ranges::transform(unmasked_cards, std::back_inserter(info_to_add),
+                           [allow_filling](const CachedServerCardInfo* data) {
+                             return TranslateCachedCard(data, allow_filling);
+                           });
   }
   // Only add cards that are not present in the cache. Otherwise, we might
   // show duplicates.
@@ -511,8 +511,8 @@ content::WebContents& PaymentMethodAccessoryControllerImpl::GetWebContents()
 bool PaymentMethodAccessoryControllerImpl::FetchIfCreditCardId(
     const std::string& selection_id) {
   std::vector<CardOrVirtualCard> cards = GetAllCreditCards();
-  auto card_iter = base::ranges::find_if(
-      cards, [&selection_id](const auto& card_or_virtual) {
+  auto card_iter =
+      std::ranges::find_if(cards, [&selection_id](const auto& card_or_virtual) {
         const CreditCard* card = UnwrapCardOrVirtualCard(card_or_virtual);
         return card && card->guid() == selection_id;
       });
@@ -532,7 +532,7 @@ bool PaymentMethodAccessoryControllerImpl::FetchIfIban(
     const std::string& selection_id) {
   std::vector<Iban> ibans = GetIbans();
   auto iban_iter =
-      base::ranges::find_if(ibans, [&selection_id](const Iban& available_iban) {
+      std::ranges::find_if(ibans, [&selection_id](const Iban& available_iban) {
         return available_iban.record_type() == Iban::kServerIban &&
                base::NumberToString(available_iban.instrument_id()) ==
                    selection_id;

@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -68,7 +67,7 @@ ScopedServer::~ScopedServer() {
     // Forces `request_matcher` to log to help debugging, unless the
     // matcher matches the empty request.
     ADD_FAILURE() << "Unmet expectation: ";
-    base::ranges::for_each(request_matcher_group, [](request::Matcher matcher) {
+    std::ranges::for_each(request_matcher_group, [](request::Matcher matcher) {
       matcher.Run(HttpRequest());
     });
   }
@@ -100,10 +99,10 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
     return response;
   }
-  if (!base::ranges::all_of(request_matcher_groups_.front(),
-                            [&request](request::Matcher matcher) {
-                              return matcher.Run(request);
-                            })) {
+  if (!std::ranges::all_of(request_matcher_groups_.front(),
+                           [&request](request::Matcher matcher) {
+                             return matcher.Run(request);
+                           })) {
     VLOG(0) << "Request did not match.";
     ADD_FAILURE() << "Unmatched " << SerializeRequest(request);
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);

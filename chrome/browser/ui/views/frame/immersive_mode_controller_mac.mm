@@ -6,12 +6,12 @@
 
 #include <AppKit/AppKit.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/fullscreen_util_mac.h"
@@ -530,7 +530,7 @@ views::View* ImmersiveModeFocusSearchMac::FindNextFocusableView(
     traverse_order.push_back(browser_view_->tab_overlay_widget());
   }
 
-  auto current_widget_it = base::ranges::find_if(
+  auto current_widget_it = std::ranges::find_if(
       traverse_order, [starting_view](const views::Widget* widget) {
         return widget->GetRootView()->Contains(starting_view);
       });

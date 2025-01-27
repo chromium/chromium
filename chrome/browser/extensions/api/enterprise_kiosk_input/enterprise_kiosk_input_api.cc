@@ -4,20 +4,19 @@
 
 #include "chrome/browser/extensions/api/enterprise_kiosk_input/enterprise_kiosk_input_api.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/common/extensions/api/enterprise_kiosk_input.h"
-#include "chromeos/crosapi/mojom/input_methods.mojom.h"
-
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/input_methods_ash.h"
+#include "chrome/common/extensions/api/enterprise_kiosk_input.h"
+#include "chromeos/crosapi/mojom/input_methods.mojom.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
 namespace {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_ambient_provider_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -972,7 +972,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, TestSetSelectedArtAlbum) {
 
   // The fake data has art setting '0' as enabled.
   std::vector<ash::ArtSetting> art_settings = ArtSettings();
-  auto it = base::ranges::find_if(art_settings, &ash::ArtSetting::enabled);
+  auto it = std::ranges::find_if(art_settings, &ash::ArtSetting::enabled);
   EXPECT_NE(it, art_settings.end());
   EXPECT_EQ(it->album_id, "0");
 
@@ -984,7 +984,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, TestSetSelectedArtAlbum) {
   SetAlbumSelected(album->id, album->topic_source, album->checked);
 
   art_settings = ArtSettings();
-  EXPECT_TRUE(base::ranges::none_of(art_settings, &ash::ArtSetting::enabled));
+  EXPECT_TRUE(std::ranges::none_of(art_settings, &ash::ArtSetting::enabled));
 
   album = ash::personalization_app::mojom::AmbientModeAlbum::New();
   album->id = '1';
@@ -993,7 +993,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, TestSetSelectedArtAlbum) {
   SetAlbumSelected(album->id, album->topic_source, album->checked);
 
   art_settings = ArtSettings();
-  it = base::ranges::find_if(art_settings, &ash::ArtSetting::enabled);
+  it = std::ranges::find_if(art_settings, &ash::ArtSetting::enabled);
   EXPECT_NE(it, art_settings.end());
   EXPECT_EQ(it->album_id, "1");
 }

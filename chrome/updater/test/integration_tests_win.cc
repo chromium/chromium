@@ -9,6 +9,7 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -34,7 +35,6 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -482,9 +482,9 @@ void CallDispatchMethod(
   params.reserve(variant_params.size());
 
   // IDispatch::Invoke() expects the parameters in reverse order.
-  base::ranges::transform(base::Reversed(variant_params),
-                          std::back_inserter(params),
-                          &base::win::ScopedVariant::Copy);
+  std::ranges::transform(base::Reversed(variant_params),
+                         std::back_inserter(params),
+                         &base::win::ScopedVariant::Copy);
 
   DISPPARAMS dp = {};
   if (!params.empty()) {
@@ -496,7 +496,7 @@ void CallDispatchMethod(
       GetDispId(dispatch, method_name), IID_NULL, LOCALE_USER_DEFAULT,
       DISPATCH_METHOD, &dp, nullptr, nullptr, nullptr));
 
-  base::ranges::for_each(params, [](auto& param) { ::VariantClear(&param); });
+  std::ranges::for_each(params, [](auto& param) { ::VariantClear(&param); });
   return;
 }
 
@@ -1528,11 +1528,11 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
 
   std::vector<base::win::ScopedVariant> variant_params;
   variant_params.reserve(kMaxParameters);
-  base::ranges::transform(parameters, std::back_inserter(variant_params),
-                          [](const auto& param) {
-                            return base::win::ScopedVariant(
-                                base::UTF8ToWide(param.GetString()).c_str());
-                          });
+  std::ranges::transform(parameters, std::back_inserter(variant_params),
+                         [](const auto& param) {
+                           return base::win::ScopedVariant(
+                               base::UTF8ToWide(param.GetString()).c_str());
+                         });
   for (size_t i = parameters.size(); i < kMaxParameters; ++i) {
     variant_params.emplace_back(base::win::ScopedVariant::kEmptyVariant);
   }
@@ -1697,7 +1697,7 @@ std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
   path_suffix = path_suffix.Append(FILE_PATH_LITERAL("UpdaterSetup_test.exe"));
 
   std::vector<TestUpdaterVersion> updater_versions;
-  base::ranges::transform(
+  std::ranges::transform(
       supported_archs, std::back_inserter(updater_versions),
       [&](const std::string& arch) -> TestUpdaterVersion {
         const base::FilePath updater_setup_path =

@@ -11,7 +11,7 @@ namespace {
 std::optional<const net::CanonicalCookie> GetCookie(
     const net::CookieAccessResultList& cookie_list,
     const std::string& cookie_name) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       cookie_list,
       [&cookie_name](
           const net::CookieWithAccessResult& cookie_with_access_result) {

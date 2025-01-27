@@ -63,7 +63,7 @@ void SelectEncryptedEntry(
     std::vector<ClientDownloadRequest::ArchivedBinary>* considering,
     google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>*
         selected) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       *considering, &ClientDownloadRequest::ArchivedBinary::is_encrypted);
   if (it != considering->end()) {
     *selected->Add() = *it;
@@ -75,7 +75,7 @@ void SelectDeepestEntry(
     std::vector<ClientDownloadRequest::ArchivedBinary>* considering,
     google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>*
         selected) {
-  auto it = base::ranges::max_element(*considering, {}, &ArchiveEntryDepth);
+  auto it = std::ranges::max_element(*considering, {}, &ArchiveEntryDepth);
   if (it != considering->end()) {
     *selected->Add() = *it;
     considering->erase(it);
@@ -86,7 +86,7 @@ void SelectWildcardEntryAtFront(
     std::vector<ClientDownloadRequest::ArchivedBinary>* considering,
     google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>*
         selected) {
-  int remaining_executables = base::ranges::count_if(
+  int remaining_executables = std::ranges::count_if(
       *considering, &ClientDownloadRequest::ArchivedBinary::is_executable);
   for (auto it = considering->begin(); it != considering->end(); ++it) {
     if (it->is_executable()) {

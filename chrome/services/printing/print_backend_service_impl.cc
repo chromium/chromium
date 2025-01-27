@@ -4,6 +4,7 @@
 
 #include "chrome/services/printing/print_backend_service_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -18,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -952,7 +952,7 @@ void PrintBackendServiceImpl::RemoveDocumentHelper(
   // reverse iterator.
   int cookie = document_helper.document_cookie();
   auto item =
-      base::ranges::find(documents_, cookie, &DocumentHelper::document_cookie);
+      std::ranges::find(documents_, cookie, &DocumentHelper::document_cookie);
   CHECK(item != documents_.end(), base::NotFatalUntil::M130)
       << "Document " << cookie << " to be deleted not found";
   documents_.erase(item);

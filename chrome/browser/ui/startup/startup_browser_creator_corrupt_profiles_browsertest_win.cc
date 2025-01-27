@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_file_util.h"
@@ -54,7 +54,7 @@ void CheckBrowserWindows(const std::vector<std::string>& expected_basepaths) {
         browser->profile()->GetBaseName().AsUTF8Unsafe());
   }
 
-  if (!base::ranges::is_permutation(actual_basepaths, expected_basepaths)) {
+  if (!std::ranges::is_permutation(actual_basepaths, expected_basepaths)) {
     ADD_FAILURE()
         << "Expected profile paths are different from actual profile paths."
            "\n  Actual profile paths: "

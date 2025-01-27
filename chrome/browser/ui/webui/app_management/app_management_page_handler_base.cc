@@ -239,7 +239,7 @@ AppManagementPageHandlerBase::CreateAppFromAppUpdate(
         // Mime types are ignored.
         std::set<std::string> mime_types;
         for (auto& filter : filters) {
-          bool is_potential_file_handler_action = base::ranges::any_of(
+          bool is_potential_file_handler_action = std::ranges::any_of(
               filter->conditions.begin(), filter->conditions.end(),
               [](const std::unique_ptr<apps::Condition>& condition) {
                 if (condition->condition_type != apps::ConditionType::kAction) {

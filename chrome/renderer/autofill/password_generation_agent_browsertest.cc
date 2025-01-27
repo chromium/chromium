@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
@@ -13,7 +14,6 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -64,8 +64,8 @@ namespace {
 // Utility method that tries to find a field in `form` whose `id_attribute`
 // matches `id`. Returns nullptr if no such field exists.
 const FormFieldData* FindFieldById(const FormData& form, std::string_view id) {
-  auto it = base::ranges::find(form.fields(), base::UTF8ToUTF16(id),
-                               &FormFieldData::id_attribute);
+  auto it = std::ranges::find(form.fields(), base::UTF8ToUTF16(id),
+                              &FormFieldData::id_attribute);
   return it != form.fields().end() ? &*it : nullptr;
 }
 

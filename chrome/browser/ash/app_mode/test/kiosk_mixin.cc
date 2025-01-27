@@ -136,22 +136,22 @@ void CheckIsValid(const KioskMixin::Config& config) {
   // If there is an auto launch app, there must also be a config option for it.
   if (config.auto_launch_account_id.has_value()) {
     CHECK_NE(0l,
-             base::ranges::count(config.options,
-                                 config.auto_launch_account_id.value().value(),
-                                 GetAccountId));
+             std::ranges::count(config.options,
+                                config.auto_launch_account_id.value().value(),
+                                GetAccountId));
   }
 
   // No two Web apps can have the same URL.
   for (auto it = config.options.begin(); it != config.options.end(); it++) {
     if (GURL url = GetWebAppUrl(*it); url.is_valid()) {
-      CHECK_EQ(1, base::ranges::count(config.options, url, GetWebAppUrl));
+      CHECK_EQ(1, std::ranges::count(config.options, url, GetWebAppUrl));
     }
   }
 
   // No two Chrome apps can have the same app ID.
   for (auto it = config.options.begin(); it != config.options.end(); it++) {
     if (std::string_view app_id = GetChromeAppId(*it); !app_id.empty()) {
-      CHECK_EQ(1, base::ranges::count(config.options, app_id, GetChromeAppId));
+      CHECK_EQ(1, std::ranges::count(config.options, app_id, GetChromeAppId));
     }
   }
 }

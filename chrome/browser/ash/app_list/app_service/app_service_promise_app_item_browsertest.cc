@@ -77,7 +77,7 @@ ash::AppListItem* GetAppListItem(const std::string& id) {
 bool IsItemPinned(const std::string& item_id) {
   const auto& shelf_items = ash::ShelfModel::Get()->items();
   auto pinned_item =
-      base::ranges::find_if(shelf_items, [&item_id](const auto& shelf_item) {
+      std::ranges::find_if(shelf_items, [&item_id](const auto& shelf_item) {
         return shelf_item.id.app_id == item_id;
       });
   return pinned_item != std::ranges::end(shelf_items);

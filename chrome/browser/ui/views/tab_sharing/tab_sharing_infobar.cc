@@ -230,7 +230,7 @@ void TabSharingInfoBar::Layout(PassKey) {
   }
 
   if constexpr (!views::PlatformStyle::kIsOkButtonLeading) {
-    base::ranges::reverse(order_of_buttons);
+    std::ranges::reverse(order_of_buttons);
   }
 
   for (views::MdTextButton* button : order_of_buttons) {

@@ -4,6 +4,7 @@
 
 #include "chrome/updater/app/server/posix/update_service_stub.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -16,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/version.h"
 #include "chrome/updater/app/server/posix/mojom/updater_service.mojom-forward.h"
@@ -275,9 +275,9 @@ void UpdateServiceStub::GetAppStates(GetAppStatesCallback callback) {
       base::BindOnce(
           [](const std::vector<updater::UpdateService::AppState>& app_states) {
             std::vector<mojom::AppStatePtr> app_states_mojom;
-            base::ranges::transform(app_states,
-                                    std::back_inserter(app_states_mojom),
-                                    &MakeMojoAppState);
+            std::ranges::transform(app_states,
+                                   std::back_inserter(app_states_mojom),
+                                   &MakeMojoAppState);
             return app_states_mojom;
           })
           .Then(std::move(callback))

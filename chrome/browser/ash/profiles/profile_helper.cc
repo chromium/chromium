@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/profiles/profile_helper.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -16,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"

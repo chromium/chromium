@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <iterator>
 #include <map>
@@ -28,7 +29,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -173,8 +173,8 @@ inline bool IsFilesAppId(const std::string& app_id) {
 
 // Returns true if path_mime_set contains a Google document.
 bool ContainsGoogleDocument(const std::vector<extensions::EntryInfo>& entries) {
-  return base::ranges::any_of(entries, &drive::util::HasHostedDocumentExtension,
-                              &extensions::EntryInfo::path);
+  return std::ranges::any_of(entries, &drive::util::HasHostedDocumentExtension,
+                             &extensions::EntryInfo::path);
 }
 
 // Removes all tasks except tasks handled by file manager.
@@ -208,7 +208,7 @@ void RemoveActionsForApp(const std::string& app_id,
 // over chrome://media-app.
 void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
                             std::vector<FullTaskDescriptor>* tasks) {
-  const auto media_app_task = base::ranges::find(
+  const auto media_app_task = std::ranges::find(
       *tasks, ash::kMediaAppId,
       [](const auto& task) { return task.task_descriptor.app_id; });
 
@@ -596,7 +596,7 @@ void UpdateDefaultTask(Profile* profile,
   std::set<std::string> mime_types_to_set = mime_types;
   std::set<std::string> suffixes_to_set;
   // Suffixes are case insensitive.
-  base::ranges::transform(
+  std::ranges::transform(
       suffixes, std::inserter(suffixes_to_set, suffixes_to_set.begin()),
       [](const std::string& suffix) { return base::ToLowerASCII(suffix); });
 
@@ -650,7 +650,7 @@ void RemoveDefaultTask(Profile* profile,
 
   std::set<std::string> suffixes_to_remove;
   // Suffixes are case insensitive.
-  base::ranges::transform(
+  std::ranges::transform(
       suffixes, std::inserter(suffixes_to_remove, suffixes_to_remove.begin()),
       [](const std::string& suffix) { return base::ToLowerASCII(suffix); });
 
@@ -922,8 +922,8 @@ void FindAllTypesOfTasks(Profile* profile,
                          FindTasksCallback callback) {
   DCHECK(profile);
   auto resulting_tasks = std::make_unique<ResultingTasks>();
-  bool has_encrypted_item = base::ranges::any_of(entries, &IsEncryptedEntry);
-  bool all_encrypted_items = base::ranges::all_of(entries, &IsEncryptedEntry);
+  bool has_encrypted_item = std::ranges::any_of(entries, &IsEncryptedEntry);
+  bool all_encrypted_items = std::ranges::all_of(entries, &IsEncryptedEntry);
   if (has_encrypted_item) {
     if (all_encrypted_items) {
       resulting_tasks->tasks.emplace_back(FullTaskDescriptor(

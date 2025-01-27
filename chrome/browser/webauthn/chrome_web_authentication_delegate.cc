@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -22,7 +23,6 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
@@ -103,7 +103,7 @@ bool IsOriginListedInEnterpriseAttestationSwitch(
           webauthn::switches::kPermitEnterpriseAttestationOriginList);
   std::vector<std::string_view> origin_strings = base::SplitStringPiece(
       cmdline_origins, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       origin_strings, [&caller_origin](std::string_view origin_string) {
         return url::Origin::Create(GURL(origin_string)) == caller_origin;
       });

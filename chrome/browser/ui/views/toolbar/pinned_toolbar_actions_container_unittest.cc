@@ -99,16 +99,16 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
     auto* container =
         browser_view()->toolbar()->pinned_toolbar_actions_container();
     if (should_be_popped_out) {
-      ASSERT_NE(base::ranges::find(container->popped_out_buttons_, id,
-                                   [](PinnedActionToolbarButton* button) {
-                                     return button->GetActionId();
-                                   }),
+      ASSERT_NE(std::ranges::find(container->popped_out_buttons_, id,
+                                  [](PinnedActionToolbarButton* button) {
+                                    return button->GetActionId();
+                                  }),
                 container->popped_out_buttons_.end());
     } else {
-      ASSERT_EQ(base::ranges::find(container->popped_out_buttons_, id,
-                                   [](PinnedActionToolbarButton* button) {
-                                     return button->GetActionId();
-                                   }),
+      ASSERT_EQ(std::ranges::find(container->popped_out_buttons_, id,
+                                  [](PinnedActionToolbarButton* button) {
+                                    return button->GetActionId();
+                                  }),
                 container->popped_out_buttons_.end());
     }
   }
@@ -117,16 +117,16 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
     auto* container =
         browser_view()->toolbar()->pinned_toolbar_actions_container();
     if (should_be_pinned) {
-      ASSERT_NE(base::ranges::find(container->pinned_buttons_, id,
-                                   [](PinnedActionToolbarButton* button) {
-                                     return button->GetActionId();
-                                   }),
+      ASSERT_NE(std::ranges::find(container->pinned_buttons_, id,
+                                  [](PinnedActionToolbarButton* button) {
+                                    return button->GetActionId();
+                                  }),
                 container->pinned_buttons_.end());
     } else {
-      ASSERT_EQ(base::ranges::find(container->pinned_buttons_, id,
-                                   [](PinnedActionToolbarButton* button) {
-                                     return button->GetActionId();
-                                   }),
+      ASSERT_EQ(std::ranges::find(container->pinned_buttons_, id,
+                                  [](PinnedActionToolbarButton* button) {
+                                    return button->GetActionId();
+                                  }),
                 container->pinned_buttons_.end());
     }
   }

@@ -4,11 +4,12 @@
 
 #include "chrome/browser/webauthn/fake_recovery_key_store.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -420,7 +421,7 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
     CHECK(request.ParseFromArray(body.data(), body.size()));
     CHECK(!request.vault_parameters().vault_handle().empty());
     CHECK_EQ(request.vault_parameters().vault_handle()[0], 3 /* GPM PIN */);
-    auto existing = base::ranges::find_if(
+    auto existing = std::ranges::find_if(
         vaults_, [&request](const auto& candidate) -> bool {
           const auto& candidate_params = candidate.vault_parameters();
           const auto& request_params = request.vault_parameters();

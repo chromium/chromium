@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -16,7 +17,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected_macros.h"
@@ -274,7 +274,7 @@ AppActivity* CastActivityManager::FindActivityForSessionJoin(
 
   // Find activity by session ID.  Search should fail if the session ID is not
   // valid.
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       app_activities_, session_id,
       [](const auto& entry) { return entry.second->session_id(); });
   return it == app_activities_.end() ? nullptr : it->second;
@@ -292,7 +292,7 @@ AppActivity* CastActivityManager::FindActivityForAutoJoin(
       return nullptr;
   }
 
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       app_activities_,
       [&cast_source, &origin, frame_tree_node_id](const auto& pair) {
         AutoJoinPolicy policy = cast_source.auto_join_policy();
@@ -490,7 +490,7 @@ bool CastActivityManager::BindMediaController(
 
 CastActivityManager::ActivityMap::iterator
 CastActivityManager::FindActivityByChannelId(int channel_id) {
-  return base::ranges::find_if(activities_, [channel_id, this](auto& entry) {
+  return std::ranges::find_if(activities_, [channel_id, this](auto& entry) {
     const MediaRoute& route = entry.second->route();
     const MediaSinkInternal* sink = media_sink_service_->GetSinkByRoute(route);
     return sink && sink->cast_data().cast_channel_id == channel_id;
@@ -500,7 +500,7 @@ CastActivityManager::FindActivityByChannelId(int channel_id) {
 CastActivityManager::ActivityMap::iterator
 CastActivityManager::FindActivityBySink(const MediaSinkInternal& sink) {
   const MediaSink::Id& sink_id = sink.sink().id();
-  return base::ranges::find(activities_, sink_id, [](const auto& activity) {
+  return std::ranges::find(activities_, sink_id, [](const auto& activity) {
     return activity.second->route().media_sink_id();
   });
 }

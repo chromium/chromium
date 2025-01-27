@@ -4,6 +4,7 @@
 
 #include "chrome/browser/themes/theme_syncable_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
@@ -16,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -3967,7 +3967,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
           fake_change_processor_.get())));
 
-  EXPECT_EQ(2, base::ranges::count_if(
+  EXPECT_EQ(2, std::ranges::count_if(
                    fake_change_processor_->changes(), [](const auto& e) {
                      return e.sync_data().GetSpecifics().has_theme();
                    }));

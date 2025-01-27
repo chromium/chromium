@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -14,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -112,7 +112,7 @@ class UpdaterIPCTestCase : public testing::Test {
   ExpectUpdateStatesCallback() {
     std::vector<UpdateService::UpdateState> states = GetExampleUpdateStates();
     // For the convenience of using `back` and `pop_back` below.
-    base::ranges::reverse(states);
+    std::ranges::reverse(states);
     return base::BindRepeating(
         [](std::vector<UpdateService::UpdateState>& states,
            const UpdateService::UpdateState& state) {

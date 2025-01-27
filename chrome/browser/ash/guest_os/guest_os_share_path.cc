@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/barrier_callback.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -125,7 +125,7 @@ void RemovePersistedPathFromPrefs(base::Value::Dict& shared_paths,
                  << " for VM " << vm_name;
     return;
   }
-  auto it = base::ranges::find(*found, base::Value(vm_name));
+  auto it = std::ranges::find(*found, base::Value(vm_name));
   if (it == found->end()) {
     LOG(WARNING) << "VM not in prefs to unshare path " << path.value()
                  << " for VM " << vm_name;

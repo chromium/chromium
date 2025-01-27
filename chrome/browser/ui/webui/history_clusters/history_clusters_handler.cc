@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -353,7 +352,7 @@ void HistoryClustersHandler::HideVisits(std::vector<mojom::URLVisitPtr> visits,
   }
 
   std::vector<history::VisitID> visit_ids;
-  base::ranges::transform(
+  std::ranges::transform(
       visits, std::back_inserter(visit_ids),
       [](const auto& url_visit_ptr) { return url_visit_ptr->visit_id; });
 

@@ -254,7 +254,7 @@ class OptimizationGuideTestServer {
     for (int i = 0; i < request.form_data().fields().size(); ++i) {
       const optimization_guide::proto::FormFieldData& field =
           request.form_data().fields(i);
-      auto it = base::ranges::find(
+      auto it = std::ranges::find(
           request.entries(), field.field_label(),
           &optimization_guide::proto::UserAnnotationsEntry::key);
       if (it == request.entries().end()) {

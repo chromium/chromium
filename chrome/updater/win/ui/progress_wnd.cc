@@ -4,6 +4,7 @@
 
 #include "chrome/updater/win/ui/progress_wnd.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
@@ -12,7 +13,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
@@ -35,7 +35,7 @@ namespace {
 
 // Returns true if all apps are cancelled or if the range is empty.
 bool AreAllAppsCanceled(const std::vector<AppCompletionInfo>& apps_info) {
-  return base::ranges::all_of(apps_info, [](const AppCompletionInfo& app_info) {
+  return std::ranges::all_of(apps_info, [](const AppCompletionInfo& app_info) {
     return app_info.is_canceled;
   });
 }
@@ -441,7 +441,7 @@ CompletionCodes ProgressWnd::GetBundleCompletionCode(
 
   return info.apps_info.empty()
              ? kCompletionCodesActionPriority[0]
-             : base::ranges::max_element(
+             : std::ranges::max_element(
                    info.apps_info,
                    [](const auto& app_info1, const auto& app_info2) {
                      return GetPriority(app_info1.completion_code) <

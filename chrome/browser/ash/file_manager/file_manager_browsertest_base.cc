@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <compare>
 #include <iterator>
 #include <map>
@@ -53,7 +54,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/escape.h"
@@ -3736,7 +3736,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "getVolumesCount") {
     file_manager::VolumeManager* volume_manager = VolumeManager::Get(profile());
-    *output = base::NumberToString(base::ranges::count_if(
+    *output = base::NumberToString(std::ranges::count_if(
         volume_manager->GetVolumeList(),
         [](const auto& volume) { return !volume->hidden(); }));
     return;

@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -95,8 +94,8 @@ bool IcnsEncoder::AddImage(const gfx::Image& image) {
       bitmap.width() != bitmap.height())
     return false;
 
-  const IcnsBlockTypes* block_types = base::ranges::find(
-      kIcnsBlockTypes, bitmap.width(), &IcnsBlockTypes::size);
+  const IcnsBlockTypes* block_types =
+      std::ranges::find(kIcnsBlockTypes, bitmap.width(), &IcnsBlockTypes::size);
   if (block_types == std::end(kIcnsBlockTypes))
     return false;
 

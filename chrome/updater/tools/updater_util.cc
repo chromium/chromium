@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -22,7 +23,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -589,7 +589,7 @@ void UpdaterUtilApp::FindApp(
       [](const std::string& app_id,
          base::OnceCallback<void(scoped_refptr<AppState>)> callback,
          const std::vector<updater::UpdateService::AppState>& states) {
-        auto it = base::ranges::find_if(
+        auto it = std::ranges::find_if(
             states, [&app_id](const updater::UpdateService::AppState& state) {
               return base::EqualsCaseInsensitiveASCII(state.app_id, app_id);
             });

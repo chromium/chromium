@@ -4,6 +4,7 @@
 
 #include "chrome/browser/keyboard_accessory/android/address_accessory_controller_impl.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
@@ -11,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
@@ -83,7 +83,7 @@ UserInfo TranslateProfile(const AutofillProfile* profile) {
 std::vector<UserInfo> UserInfosForProfiles(
     const std::vector<const AutofillProfile*>& profiles) {
   std::vector<UserInfo> infos(profiles.size());
-  base::ranges::transform(profiles, infos.begin(), TranslateProfile);
+  std::ranges::transform(profiles, infos.begin(), TranslateProfile);
   return infos;
 }
 

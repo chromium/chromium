@@ -10,6 +10,7 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -28,7 +29,6 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/process/process_iterator.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_generic.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -51,7 +51,7 @@ struct IidComparator {
       return true;
     }
     if (lhs_prefix == rhs_prefix) {
-      return base::ranges::lexicographical_compare(lhs.Data4, rhs.Data4);
+      return std::ranges::lexicographical_compare(lhs.Data4, rhs.Data4);
     }
     return false;
   }

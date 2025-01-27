@@ -4,12 +4,12 @@
 
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -48,7 +48,7 @@ gfx::NativeWindow GetNativeWindowFromWebContents(
 }
 
 bool HasHostedDocument(const apps::Intent& intent) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       intent.files, [](const apps::IntentFilePtr& file) {
         return drive::util::HasHostedDocumentExtension(
             base::FilePath(file->url.ExtractFileName()));
@@ -386,7 +386,7 @@ void SharesheetService::OnReadyToShowBubble(
   const std::u16string selected_app = GetSelectedApp();
   if (!selected_app.empty()) {
     SharesheetResult result = SharesheetResult::kCancel;
-    if (base::ranges::any_of(targets, [selected_app](const auto& target) {
+    if (std::ranges::any_of(targets, [selected_app](const auto& target) {
           return (target.type == TargetType::kArcApp ||
                   target.type == TargetType::kWebApp) &&
                  target.launch_name == selected_app;

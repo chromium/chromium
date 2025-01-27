@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 
@@ -36,7 +37,6 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1595,7 +1595,7 @@ void AccessibilityManager::UpdateBrailleImeState() {
       pref_service->GetString(::prefs::kLanguagePreloadEngines);
   std::vector<std::string_view> preload_engines = base::SplitStringPiece(
       preload_engines_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  std::vector<std::string_view>::iterator it = base::ranges::find(
+  std::vector<std::string_view>::iterator it = std::ranges::find(
       preload_engines, extension_ime_util::kBrailleImeEngineId);
   bool is_enabled = (it != preload_engines.end());
   bool should_be_enabled =

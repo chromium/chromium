@@ -4,9 +4,9 @@
 
 #include "chrome/browser/enterprise/reporting/extension_info.h"
 
+#include <algorithm>
 #include <string>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "extensions/browser/extension_registry.h"
@@ -54,12 +54,12 @@ void AddPermission(const extensions::Extension* extension,
     extension_info->add_permissions(permission);
   };
 
-  base::ranges::for_each(
+  std::ranges::for_each(
       extensions::PermissionsParser::GetRequiredPermissions(extension)
           .GetAPIsAsStrings(),
       add_permission);
 
-  base::ranges::for_each(
+  std::ranges::for_each(
       extensions::PermissionsParser::GetOptionalPermissions(extension)
           .GetAPIsAsStrings(),
       add_permission);
@@ -72,12 +72,12 @@ void AddHostPermission(const extensions::Extension* extension,
     extension_info->add_host_permissions(url.GetAsString());
   };
 
-  base::ranges::for_each(
+  std::ranges::for_each(
       extensions::PermissionsParser::GetRequiredPermissions(extension)
           .explicit_hosts(),
       add_permission);
 
-  base::ranges::for_each(
+  std::ranges::for_each(
       extensions::PermissionsParser::GetOptionalPermissions(extension)
           .explicit_hosts(),
       add_permission);

@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -260,8 +259,8 @@ void ExtensionsToolbarContainer::RemoveAction(
   // could be handled inside the model and be invisible to the container when
   // permissions are unchanged.
 
-  auto iter = base::ranges::find(actions_, action_id,
-                                 &ToolbarActionViewController::GetId);
+  auto iter = std::ranges::find(actions_, action_id,
+                                &ToolbarActionViewController::GetId);
   CHECK(iter != actions_.end(), base::NotFatalUntil::M130);
   // Ensure the action outlives the UI element to perform any cleanup.
   std::unique_ptr<ToolbarActionViewController> controller = std::move(*iter);
@@ -427,8 +426,8 @@ void ExtensionsToolbarContainer::ShowWidgetForExtension(
 views::Widget*
 ExtensionsToolbarContainer::GetAnchoredWidgetForExtensionForTesting(
     const std::string& extension_id) {
-  auto iter = base::ranges::find(anchored_widgets_, extension_id,
-                                 &AnchoredWidget::extension_id);
+  auto iter = std::ranges::find(anchored_widgets_, extension_id,
+                                &AnchoredWidget::extension_id);
   return iter == anchored_widgets_.end() ? nullptr : iter->widget.get();
 }
 
@@ -525,7 +524,7 @@ void ExtensionsToolbarContainer::UpdateIconVisibility(
 void ExtensionsToolbarContainer::AnchorAndShowWidgetImmediately(
     MayBeDangling<views::Widget> widget) {
   auto iter =
-      base::ranges::find(anchored_widgets_, widget, &AnchoredWidget::widget);
+      std::ranges::find(anchored_widgets_, widget, &AnchoredWidget::widget);
 
   if (iter == anchored_widgets_.end()) {
     // This should mean that the Widget destructed before we got to showing it.
@@ -746,7 +745,7 @@ void ExtensionsToolbarContainer::WriteDragDataForView(
     ui::OSExchangeData* data) {
   DCHECK(data);
 
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       model_->pinned_action_ids(), sender,
       [this](const std::string& action_id) { return GetViewForId(action_id); });
   DCHECK(it != model_->pinned_action_ids().cend());
@@ -781,7 +780,7 @@ bool ExtensionsToolbarContainer::CanStartDragForView(View* sender,
   }
 
   // Only pinned extensions should be draggable.
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       model_->pinned_action_ids(), sender,
       [this](const std::string& action_id) { return GetViewForId(action_id); });
   if (it == model_->pinned_action_ids().cend()) {
@@ -884,7 +883,7 @@ views::View::DropCallback ExtensionsToolbarContainer::GetDropCallback(
 
 void ExtensionsToolbarContainer::OnWidgetDestroying(views::Widget* widget) {
   auto iter =
-      base::ranges::find(anchored_widgets_, widget, &AnchoredWidget::widget);
+      std::ranges::find(anchored_widgets_, widget, &AnchoredWidget::widget);
   CHECK(iter != anchored_widgets_.end(), base::NotFatalUntil::M130);
   iter->widget->RemoveObserver(this);
   const std::string extension_id = std::move(iter->extension_id);
@@ -910,7 +909,7 @@ ui::ImageModel ExtensionsToolbarContainer::GetExtensionIcon(
 void ExtensionsToolbarContainer::SetExtensionIconVisibility(
     ToolbarActionsModel::ActionId id,
     bool visible) {
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       model_->pinned_action_ids(), GetViewForId(id),
       [this](const std::string& action_id) { return GetViewForId(action_id); });
   if (it == model_->pinned_action_ids().cend()) {

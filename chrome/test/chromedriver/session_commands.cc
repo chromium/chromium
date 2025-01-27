@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/session_commands.h"
 
+#include <algorithm>
 #include <list>
 #include <memory>
 #include <thread>
@@ -15,7 +16,6 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"  // For CHECK macros.
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
@@ -888,8 +888,8 @@ Status ExecuteGetWindowHandles(Session* session,
   if (session->web_socket_url) {
     const std::string& (base::Value::*get_string)() const =
         &base::Value::GetString;
-    auto it = base::ranges::find(window_ids, session->bidi_mapper_web_view_id,
-                                 get_string);
+    auto it = std::ranges::find(window_ids, session->bidi_mapper_web_view_id,
+                                get_string);
     if (it != window_ids.end()) {
       window_ids.erase(it);
     }

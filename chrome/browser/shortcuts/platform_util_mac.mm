@@ -6,12 +6,13 @@
 
 #import <AppKit/AppKit.h>
 
+#include <algorithm>
+
 #import "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
@@ -75,7 +76,7 @@ std::optional<base::SafeBaseName> SanitizeTitleForFileName(
   std::string name = title.substr(first_non_dot);
 
   // Finder will display ':' as '/', so replace all '/' instances with ':'.
-  base::ranges::replace(name, '/', ':');
+  std::ranges::replace(name, '/', ':');
 
   return base::SafeBaseName::Create(name);
 }

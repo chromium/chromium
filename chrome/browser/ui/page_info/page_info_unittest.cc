@@ -347,9 +347,9 @@ void ExpectPermissionInfoList(
     const PermissionInfoList& permissions,
     const base::Location& location = FROM_HERE) {
   std::set<ContentSettingsType> actual_types;
-  base::ranges::transform(permissions,
-                          std::inserter(actual_types, actual_types.end()),
-                          [](const auto& p) { return p.type; });
+  std::ranges::transform(permissions,
+                         std::inserter(actual_types, actual_types.end()),
+                         [](const auto& p) { return p.type; });
 
   EXPECT_THAT(actual_types, expected_types)
       << "(expected at " << location.ToString() << ")";

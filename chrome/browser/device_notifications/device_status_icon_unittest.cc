@@ -117,7 +117,7 @@ void DeviceStatusIconTestBase::CheckIcon(
   // pointer. This is necessary because the menu items are created by
   // iterating through a structure of flat_map<Profile*, bool>.
   auto sorted_profile_connection_counts = profile_connection_counts;
-  base::ranges::sort(sorted_profile_connection_counts);
+  std::ranges::sort(sorted_profile_connection_counts);
   size_t total_connection_count = 0;
   size_t total_origin_count = 0;
   auto* menu_item = status_icon->menu_item();
@@ -131,7 +131,7 @@ void DeviceStatusIconTestBase::CheckIcon(
     // Sort the |origin_items| by origin. This is necessary because the origin
     // items for each profile in the menu are created by iterating through a
     // structure of flat_map<url::Origin, ...>.
-    base::ranges::sort(sorted_origin_items);
+    std::ranges::sort(sorted_origin_items);
     auto* connection_tracker = GetDeviceConnectionTracker(profile,
                                                           /*create=*/false);
     ASSERT_TRUE(connection_tracker);
@@ -212,7 +212,7 @@ void DeviceStatusIconTestBase::TestNumCommandIdOverLimitExtensionOrigin() {
     // count.
     profile_connection_counts.push_back(
         {profile, {{extension->origin(), 1, extension->name()}}});
-    base::ranges::sort(profile_connection_counts);
+    std::ranges::sort(profile_connection_counts);
     profile_connection_counts.back().second.clear();
     // The total connection count in the title still captures all of the origins
     override_title_total_connection_count_ = 20;
@@ -251,7 +251,7 @@ void DeviceStatusIconTestBase::TestProfileUserNameExtensionOrigin() {
   // Sort the |profiles| by the address of the profile pointer. This is
   // necessary because the menu items are created by iterating through a
   // structure of flat_map<Profile*, bool>.
-  base::ranges::sort(profiles);
+  std::ranges::sort(profiles);
 
   // The below is status icon items layout, profile1 name is on [3] and profile2
   // name is on [7].

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/perf/perf_events_collector.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -594,9 +594,9 @@ void PerfCollector::ParseOutputProtoIfValid(
   }
   if (has_cycles) {
     // Store CPU max frequencies in the sampled profile.
-    base::ranges::copy(max_frequencies_mhz_,
-                       google::protobuf::RepeatedFieldBackInserter(
-                           sampled_profile->mutable_cpu_max_frequency_mhz()));
+    std::ranges::copy(max_frequencies_mhz_,
+                      google::protobuf::RepeatedFieldBackInserter(
+                          sampled_profile->mutable_cpu_max_frequency_mhz()));
   }
 
   bool posted = base::ThreadPool::PostTaskAndReply(
