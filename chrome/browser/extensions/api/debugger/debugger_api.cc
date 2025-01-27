@@ -465,28 +465,28 @@ ExtensionDevToolsClientHost::ExtensionDevToolsClientHost(
 
 bool ExtensionDevToolsClientHost::Attach() {
   // Attach to debugger and tell it we are ready.
-  if (!agent_host_->AttachClient(this))
+  if (!agent_host_->AttachClient(this)) {
     return false;
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kSilentDebuggerExtensionAPI)) {
-    return true;
   }
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kSilentDebuggerExtensionAPI)) {
-    return true;
-  }
-
+  const bool suppress_infobar_by_flag =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kSilentDebuggerExtensionAPI) ||
+      base::FeatureList::IsEnabled(
+          extensions_features::kSilentDebuggerExtensionAPI);
   // We allow policy-installed extensions to circumvent the normal
   // infobar warning. See crbug.com/693621.
-  if (Manifest::IsPolicyLocation(extension_->location()))
-    return true;
+  const bool suppress_infobar =
+      suppress_infobar_by_flag ||
+      Manifest::IsPolicyLocation(extension_->location());
 
-  subscription_ = ExtensionDevToolsInfoBarDelegate::Create(
-      extension_id(), extension_->name(),
-      base::BindOnce(&ExtensionDevToolsClientHost::InfoBarDestroyed,
-                     base::Unretained(this)));
+  if (!suppress_infobar) {
+    subscription_ = ExtensionDevToolsInfoBarDelegate::Create(
+        extension_id(), extension_->name(),
+        base::BindOnce(&ExtensionDevToolsClientHost::InfoBarDestroyed,
+                       base::Unretained(this)));
+  }
+
   if (extension_service_worker_id_) {
     ProcessManager* process_manager = ProcessManager::Get(profile_);
     CHECK(process_manager);
