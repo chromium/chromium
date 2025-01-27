@@ -334,23 +334,25 @@ void ObservableSubscribeDelegate::OnSubscribe(Subscriber* subscriber,
   // getting here.
   CHECK(script_state->ContextIsValid());
 
+  // The weak `event_target_` could be null at this point, if the target has
+  // been garbage collected by the time `this`'s associated Observable has been
+  // subscribed to. We early return in this case, as to avoid setting up the
+  // entire event listener / abort signal mechanism.
+  //
+  // "If event target is null, abort these steps."
+  if (!event_target_) {
+    return;
+  }
+
   // If the subscriber is already aborted, early return because there is no use
   // in adding the event listener, since it will never be able to removed again.
   // It is possible for the subscriber to be aborted at this point if
   // `Observable#subscribe()` is called with an already-aborted signal in
   // `SubscribeOptions`.
   //
-  // TODO(crbug.com/1485981): Once we agree on proper spec text for this, quote
-  // it here.
+  // "If subscriber's subscription controller's signal is aborted, abort these
+  // steps."
   if (subscriber->signal()->aborted()) {
-    return;
-  }
-
-  // The weak `event_target_` could be null at this point, if the target has
-  // been garbage collected by the time `this`'s associated Observable has been
-  // subscribed to. We early return in this case, as to avoid setting up the
-  // entire event listener / abort signal mechanism.
-  if (!event_target_) {
     return;
   }
 
