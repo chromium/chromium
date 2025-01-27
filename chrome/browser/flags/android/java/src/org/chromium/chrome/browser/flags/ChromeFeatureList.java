@@ -377,6 +377,7 @@ public abstract class ChromeFeatureList {
     public static final String MAGIC_STACK_ANDROID = "MagicStackAndroid";
     public static final String MAYLAUNCHURL_USES_SEPARATE_STORAGE_PARTITION =
             "MayLaunchUrlUsesSeparateStoragePartition";
+    public static final String MOST_VISITED_TILES_CUSTOMIZATION = "MostVisitedTilesCustomization";
     public static final String MOST_VISITED_TILES_RESELECT = "MostVisitedTilesReselect";
     public static final String MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP =
             "MultiInstanceApplicationStatusCleanup";
@@ -705,6 +706,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sLogoPolishAnimationKillSwitch =
             newCachedFlag(LOGO_POLISH_ANIMATION_KILL_SWITCH, true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
+    public static final CachedFlag sMostVisitedTilesCustomization =
+            newCachedFlag(MOST_VISITED_TILES_CUSTOMIZATION, false);
     public static final CachedFlag sMostVisitedTilesReselect =
             newCachedFlag(MOST_VISITED_TILES_RESELECT, false);
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
@@ -868,6 +871,7 @@ public abstract class ChromeFeatureList {
                     sLogoPolishAnimationKillSwitch,
                     sNotificationTrampoline,
                     sMagicStackAndroid,
+                    sMostVisitedTilesCustomization,
                     sMostVisitedTilesReselect,
                     sMultiInstanceApplicationStatusCleanup,
                     sNavBarColorAnimation,

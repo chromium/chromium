@@ -277,6 +277,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kLogoPolishAnimationKillSwitch,
     &kMagicStackAndroid,
     &kMayLaunchUrlUsesSeparateStoragePartition,
+    &kMostVisitedTilesCustomization,
     &kMostVisitedTilesReselect,
     &kMultiInstanceApplicationStatusCleanup,
     &kNativePageTransitionHardwareCapture,
@@ -848,6 +849,10 @@ BASE_FEATURE(kMagicStackAndroid,
 // default.
 BASE_FEATURE(kMayLaunchUrlUsesSeparateStoragePartition,
              "MayLaunchUrlUsesSeparateStoragePartition",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMostVisitedTilesCustomization,
+             "MostVisitedTilesCustomization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMostVisitedTilesReselect,

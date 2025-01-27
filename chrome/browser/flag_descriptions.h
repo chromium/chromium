@@ -1434,6 +1434,11 @@ extern const char kMediaRouterCastAllowAllIPsDescription[];
 extern const char kMojoLinuxChannelSharedMemName[];
 extern const char kMojoLinuxChannelSharedMemDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kMostVisitedTilesCustomizationName[];
+extern const char kMostVisitedTilesCustomizationDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kMostVisitedTilesNewScoringName[];
 extern const char kMostVisitedTilesNewScoringDescription[];
 

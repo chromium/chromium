@@ -22803,6 +22803,7 @@ from previous Chrome versions.
   <int value="1067618884" label="enable-experimental-input-view-features"/>
   <int value="1067990299" label="enable-ui-devtools"/>
   <int value="1069325321" label="CrostiniGpuSupport:enabled"/>
+  <int value="1069628859" label="MostVisitedTilesCustomization:disabled"/>
   <int value="1070164693" label="MidiManagerDynamicInstantiation:disabled"/>
   <int value="1070300488" label="disable-webgl"/>
   <int value="1070449228" label="ContextualSuggestionsCarousel:enabled"/>
@@ -23001,6 +23002,7 @@ from previous Chrome versions.
   <int value="1140375528" label="CrabbyAvif:enabled"/>
   <int value="1140513364" label="IdentityStatusConsistency:disabled"/>
   <int value="1140541604" label="WinrtGeolocationImplementation:enabled"/>
+  <int value="1140725823" label="MostVisitedTilesCustomization:enabled"/>
   <int value="1140903063" label="FuseBox:enabled"/>
   <int value="1141918949" label="ContextualSearchLongpressPanelHelp:enabled"/>
   <int value="1142147693" label="webview-enable-app-recovery"/>
