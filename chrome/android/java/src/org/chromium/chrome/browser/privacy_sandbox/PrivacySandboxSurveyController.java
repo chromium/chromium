@@ -215,7 +215,7 @@ public class PrivacySandboxSurveyController {
         }
         String paramAdsNoticeAppId =
                 ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY, "app-id");
+                        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY, "survey-app-id");
         if (!paramAdsNoticeAppId.isEmpty() && !paramAdsNoticeAppId.equals(appId)) {
             recordCctAdsNoticeSurveyFailures(CctAdsNoticeSurveyFailures.APP_ID_MISMATCH);
             return false;

@@ -264,11 +264,11 @@ const base::FeatureParam<double>
         &kPrivacySandboxCctAdsNoticeSurvey, "decline-trigger-rate", 0.0};
 
 const base::FeatureParam<std::string> kPrivacySandboxCctAdsNoticeSurveyAppId{
-    &kPrivacySandboxCctAdsNoticeSurvey, "app-id", ""};
+    &kPrivacySandboxCctAdsNoticeSurvey, "survey-app-id", ""};
 
 const base::FeatureParam<int>
     kPrivacySandboxCctAdsNoticeSurveyDelaysMilliseconds{
-        &kPrivacySandboxCctAdsNoticeSurvey, "survey-delay",
+        &kPrivacySandboxCctAdsNoticeSurvey, "survey-delay-ms",
         /*20 seconds*/ 20000};
 
 #endif  // BUILDFLAG(IS_ANDROID)
