@@ -220,6 +220,15 @@ const FontData* FontFallbackList::FontDataAt(
   return result;
 }
 
+const FontFeatures& FontFallbackList::GetFontFeatures(
+    const FontDescription& font_description) {
+  if (!is_font_features_computed_) [[unlikely]] {
+    is_font_features_computed_ = true;
+    font_features_.Initialize(font_description);
+  }
+  return font_features_;
+}
+
 bool FontFallbackList::ComputeCanShapeWordByWord(
     const FontDescription& font_description) {
   if (!font_description.GetTypesettingFeatures())

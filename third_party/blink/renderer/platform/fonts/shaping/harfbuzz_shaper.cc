@@ -241,9 +241,9 @@ struct RangeContext {
         start(start),
         end(end),
         buffer(hb_buffer_create()),
+        font_features(font->GetFontFeatures()),
         options(options) {
     DCHECK_GE(end, start);
-    font_features.Initialize(font->GetFontDescription());
   }
 
   const Font* const font;
