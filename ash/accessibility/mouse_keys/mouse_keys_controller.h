@@ -17,6 +17,7 @@
 
 namespace ash {
 
+class DragEventRewriter;
 class MouseKeysBubbleController;
 
 // Mouse keys is an accessibility feature that allows you to control your mouse
@@ -103,6 +104,9 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   };
 
   MouseKeysBubbleController* GetMouseKeysBubbleControllerForTest();
+  DragEventRewriter* GetDragEventRewriterForTest() const {
+    return drag_event_rewriter_.get();
+  }
 
  private:
   // ui::EventHandler:
@@ -147,6 +151,8 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
 
   // Used to control the MouseKeys bubble UI.
   std::unique_ptr<MouseKeysBubbleController> mouse_keys_bubble_controller_;
+  // Adapts drag events for Mouse Keys (e.g. text selection).
+  std::unique_ptr<DragEventRewriter> drag_event_rewriter_;
 };
 
 }  // namespace ash
