@@ -44,6 +44,7 @@ DECLARE_STATE_IDENTIFIER_VALUE(GlicInitializedStateObserver,
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
 extern const InteractiveBrowserTestApi::DeepQuery kPathToMockGlicCloseButton;
+extern const InteractiveBrowserTestApi::DeepQuery kPathToGuestPanel;
 
 // Mixin class that adds a mock glic to the current browser.
 // If all you need is the combination of this + interactive browser test, use
@@ -89,6 +90,18 @@ class InteractiveGlicTestT : public T {
                                         .spec());
   }
 
+  auto WaitForElementVisible(
+      const InteractiveBrowserTestApi::DeepQuery& path_to_element) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementIsVisible);
+
+    InteractiveBrowserTestApi::StateChange element_visibility_change;
+    element_visibility_change.event = kElementIsVisible;
+    element_visibility_change.where = path_to_element;
+    element_visibility_change.test_function = "(el) => !el.hidden";
+    return InteractiveBrowserTestApi::WaitForStateChange(
+        kGlicHostElementId, element_visibility_change);
+  }
+
   // Waits for glic to be ready and instruments it as `kGlicContentsElementId`.
   auto WaitForAndInstrumentGlic() {
     // NOTE: The use of "Api::" here is required because this is a template
@@ -106,7 +119,8 @@ class InteractiveGlicTestT : public T {
                                             kGlicHostElementId, 0),
             Api::WaitForWebContentsReady(kGlicContentsElementId))),
         Api::WaitForState(internal::kGlicInitializedState, true),
-        Api::StopObservingState(internal::kGlicInitializedState));
+        Api::StopObservingState(internal::kGlicInitializedState),
+        WaitForElementVisible(kPathToGuestPanel));
     Api::AddDescriptionPrefix(steps, "WaitForAndInstrumentGlic");
     return steps;
   }
