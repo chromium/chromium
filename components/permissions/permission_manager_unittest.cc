@@ -644,7 +644,16 @@ TEST_F(PermissionManagerTest, RequestPermissionInDifferentStoragePartition) {
                 partitioned_child->GetLastCommittedOrigin().GetURL()));
 }
 
-TEST_F(PermissionManagerTest, UpdatePermissionStatusWithDeviceStatus) {
+// TODO(crbug.com/377264243): Enable the test when device permission is
+// supported in Android
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_UpdatePermissionStatusWithDeviceStatus \
+  DISABLED_UpdatePermissionStatusWithDeviceStatus
+#else
+#define MAYBE_UpdatePermissionStatusWithDeviceStatus \
+  UpdatePermissionStatusWithDeviceStatus
+#endif
+TEST_F(PermissionManagerTest, MAYBE_UpdatePermissionStatusWithDeviceStatus) {
   struct {
     blink::mojom::PermissionStatus initial_status;
     bool has_device_permission;

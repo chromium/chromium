@@ -612,13 +612,15 @@ content::PermissionResult PermissionManager::GetPermissionStatusInternal(
   content::PermissionResult result = context->GetPermissionStatus(
       render_frame_host, canonical_requesting_origin.DeprecatedGetOriginAsURL(),
       embedding_origin.DeprecatedGetOriginAsURL());
+  content::WebContents* const web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
   if (should_include_device_status || context->AlwaysIncludeDeviceStatus()) {
     result = context->UpdatePermissionStatusWithDeviceStatus(
-        result, requesting_origin, embedding_origin);
+        web_contents, result, requesting_origin, embedding_origin);
   } else {
     // Give the context an opportunity to still check the device status and
     // maybe notify observers.
-    context->MaybeUpdateCachedHasDevicePermission();
+    context->MaybeUpdateCachedHasDevicePermission(web_contents);
   }
   DCHECK(result.status == PermissionStatus::GRANTED ||
          result.status == PermissionStatus::ASK ||

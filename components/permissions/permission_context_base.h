@@ -120,6 +120,7 @@ class PermissionContextBase : public content_settings::Observer {
   // This function updates the cached device permission status which can result
   // in the permission status changing and observers being notified.
   virtual content::PermissionResult UpdatePermissionStatusWithDeviceStatus(
+      content::WebContents* web_contents,
       content::PermissionResult result,
       const GURL& requesting_origin,
       const GURL& embedding_origin);
@@ -142,7 +143,7 @@ class PermissionContextBase : public content_settings::Observer {
 
   // Update the value of `last_has_device_permission_result_` and notify
   // observers if it changes.
-  void MaybeUpdateCachedHasDevicePermission();
+  void MaybeUpdateCachedHasDevicePermission(content::WebContents* web_contents);
 
   ContentSettingsType content_settings_type() const {
     return content_settings_type_;
@@ -232,7 +233,8 @@ class PermissionContextBase : public content_settings::Observer {
       content::RenderFrameHost* rfh) const;
 
   // Called when a request is no longer used so it can be cleaned up.
-  void CleanUpRequest(const PermissionRequestID& id,
+  void CleanUpRequest(content::WebContents* web_contents,
+                      const PermissionRequestID& id,
                       bool embedded_permission_element_initiated);
 
   // This is the callback for PermissionRequest and is called once the user

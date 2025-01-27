@@ -222,10 +222,11 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
 
 content::PermissionResult
 GeolocationPermissionContextAndroid::UpdatePermissionStatusWithDeviceStatus(
+    content::WebContents* web_contents,
     content::PermissionResult result,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  MaybeUpdateCachedHasDevicePermission();
+  MaybeUpdateCachedHasDevicePermission(web_contents);
 
   if (result.status != PermissionStatus::DENIED) {
     if (!location_settings_->IsSystemLocationSettingEnabled()) {
