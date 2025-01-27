@@ -789,6 +789,34 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ScrollIntoView(
           .SetDescription("ScrollIntoView()"));
 }
 
+InteractiveBrowserTestApi::MultiStep
+InteractiveBrowserTestApi::WaitForElementVisible(
+    ui::ElementIdentifier web_contents,
+    const DeepQuery& where) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWaitforElementVisibleCompleteEvent);
+  const std::string function =
+      R"(
+        function(el) {
+          const rect = el.getBoundingClientRect();
+          const left = Math.max(0, rect.x);
+          const top = Math.max(0, rect.y);
+          const right = Math.min(rect.x + rect.width, window.innerWidth);
+          const bottom = Math.min(rect.y + rect.height, window.innerHeight);
+          return right > left && bottom > top;
+        }
+      )";
+
+  StateChange change;
+  change.event = kWaitforElementVisibleCompleteEvent;
+  change.test_function = function;
+  change.type = StateChange::Type::kExistsAndConditionTrue;
+  change.where = where;
+
+  auto steps = WaitForStateChange(web_contents, change);
+  AddDescriptionPrefix(steps, "WaitForElementVisible()");
+  return steps;
+}
+
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ClickElement(
     ui::ElementIdentifier web_contents,
     const DeepQuery& where,

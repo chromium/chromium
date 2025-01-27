@@ -377,6 +377,12 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   [[nodiscard]] StepBuilder ScrollIntoView(ui::ElementIdentifier web_contents,
                                            const DeepQuery& where);
 
+  // Waits until the intersection of the element's bounds and the window bounds
+  // are nonempty.
+  [[nodiscard]] MultiStep WaitForElementVisible(
+      ui::ElementIdentifier web_contents,
+      const DeepQuery& where);
+
   // Simulates clicking on an HTML element by injecting the click event directly
   // into the DOM. You can specify the mouse button and additional modifier
   // keys (default is left-click, no modifiers).

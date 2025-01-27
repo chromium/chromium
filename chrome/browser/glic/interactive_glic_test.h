@@ -132,6 +132,19 @@ class InteractiveGlicTestT : public T {
     return steps;
   }
 
+  // Ensures a mock glic button is visible and then clicks it.
+  //
+  // The mock glic window takes a moment to resize to the correct size for the
+  // window, so some elements may start offscreen/unrendered.
+  auto ClickMockGlicElement(
+      const WebContentsInteractionTestUtil::DeepQuery& where) {
+    auto steps =
+        Api::Steps(Api::WaitForElementVisible(kGlicContentsElementId, where),
+                   Api::ClickElement(kGlicContentsElementId, where));
+    Api::AddDescriptionPrefix(steps, "ClickMockGlicElement");
+    return steps;
+  }
+
   // Closes the glic window, which must be open.
   auto CloseGlicWindow() {
     // NOTE: The use of "Api::" here is required because this is a template
