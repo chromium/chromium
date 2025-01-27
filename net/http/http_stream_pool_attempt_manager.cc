@@ -149,6 +149,12 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   int WaitForSSLConfigReady(CompletionOnceCallback callback) override {
     int rv = manager_->WaitForSSLConfigReady();
     if (rv == ERR_IO_PENDING) {
+      // TODO(crbug.com/383220402): Remove the timer when the cause of the bug
+      // is fixed.
+      ssl_config_waiting_timeout_timer_.Start(
+          FROM_HERE, base::Seconds(6),
+          base::BindOnce(&InFlightAttempt::OnWaitingSSLConfigTimedout,
+                         base::Unretained(this)));
       ssl_config_waiting_callback_ = std::move(callback);
     }
     return rv;
@@ -164,6 +170,7 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   }
 
   CompletionOnceCallback TakeSSLConfigWaitingCallback() {
+    ssl_config_waiting_timeout_timer_.Stop();
     return std::move(ssl_config_waiting_callback_);
   }
 
@@ -194,6 +201,12 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   }
 
  private:
+  void OnWaitingSSLConfigTimedout() {
+    std::string manager_info = manager_->GetInfoAsValue().DebugString();
+    DEBUG_ALIAS_FOR_CSTR(aliased_info, manager_info.c_str(), 512);
+    CHECK(false) << manager_info;
+  }
+
   const raw_ptr<AttemptManager> manager_;
   std::unique_ptr<StreamAttempt> attempt_;
   base::TimeTicks start_time_;
@@ -208,6 +221,9 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   // handle ECH failure.
   bool is_aborted_ = false;
   CompletionOnceCallback ssl_config_waiting_callback_;
+
+  // TODO(crbug.com/383220402): Remove this when the cause of the bug is fixed.
+  base::OneShotTimer ssl_config_waiting_timeout_timer_;
 };
 
 // Represents a preconnect request.
