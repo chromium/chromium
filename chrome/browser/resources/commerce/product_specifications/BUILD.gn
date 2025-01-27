@@ -15,12 +15,10 @@ build_webui("build") {
   ]
 
   # Files holding a Polymer element definition and have an equivalent .html file.
-  web_component_files = [
-    "app.ts",
-    "table.ts",
-  ]
+  web_component_files = [ "table.ts" ]
 
   css_files = [
+    "app.css",
     "buying_options_section.css",
     "comparison_table_list.css",
     "comparison_table_list_item.css",
@@ -46,6 +44,8 @@ build_webui("build") {
   ]
 
   non_web_component_files = [
+    "app.html.ts",
+    "app.ts",
     "buying_options_section.html.ts",
     "buying_options_section.ts",
     "comparison_table_list.html.ts",
