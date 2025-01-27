@@ -2178,7 +2178,14 @@ NavigationRequest::~NavigationRequest() {
   if (HasCommitted()) {
     CHECK(!navigation_discard_reason_.has_value());
   } else {
-    CHECK(navigation_discard_reason_.has_value());
+    if (!navigation_discard_reason_.has_value()) {
+      // If a navigation is destructed without having committed, it should have
+      // a reason set.
+      // TODO(crbug.com/390569133): Change this back to a CHECK once we make
+      // sure this is never hit.
+      SCOPED_CRASH_KEY_NUMBER("Bug390569133", "navigation_state", (int)state_);
+      base::debug::DumpWithoutCrashing();
+    }
 
     // If we're before WILL_START_NAVIGATION, we haven't reported request start
     // to DevTools yet.
