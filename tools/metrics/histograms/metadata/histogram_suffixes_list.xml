@@ -2038,8 +2038,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="OutOfRaster"
       label="Task was not performed as part of a raster task."/>
   <affected-histogram name="Renderer4.GpuImageDecodeState.FirstLockWasted"/>
-  <affected-histogram
-      name="Renderer4.SoftwareImageDecodeState.FirstLockWasted"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadBackgrounded2" separator=".">

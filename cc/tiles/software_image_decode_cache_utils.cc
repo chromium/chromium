@@ -334,59 +334,6 @@ SoftwareImageDecodeCacheUtils::CacheEntry::CacheEntry(
 
 SoftwareImageDecodeCacheUtils::CacheEntry::~CacheEntry() {
   DCHECK(!is_locked);
-
-  // We create temporary CacheEntries as a part of decoding. However, we move
-  // the memory to cache entries that actually live in the cache. Destroying the
-  // temporaries should not cause any of the stats to be recorded. Specifically,
-  // if allowed to report, they would report every single temporary entry as
-  // wasted, which is misleading. As a fix, don't report on a cache entry that
-  // has never been in the cache.
-  if (!cached_)
-    return;
-
-  // lock_count | used  | last lock failed | result state
-  // ===========+=======+==================+==================
-  //  1         | false | false            | WASTED
-  //  1         | false | true             | WASTED
-  //  1         | true  | false            | USED
-  //  1         | true  | true             | USED_RELOCK_FAILED
-  //  >1        | false | false            | WASTED_RELOCKED
-  //  >1        | false | true             | WASTED_RELOCKED
-  //  >1        | true  | false            | USED_RELOCKED
-  //  >1        | true  | true             | USED_RELOCKED
-  // Note that it's important not to reorder the following enums, since the
-  // numerical values are used in the histogram code.
-  enum State : int {
-    DECODED_IMAGE_STATE_WASTED,
-    DECODED_IMAGE_STATE_USED,
-    DECODED_IMAGE_STATE_USED_RELOCK_FAILED,
-    DECODED_IMAGE_STATE_WASTED_RELOCKED,
-    DECODED_IMAGE_STATE_USED_RELOCKED,
-    DECODED_IMAGE_STATE_COUNT
-  } state = DECODED_IMAGE_STATE_WASTED;
-
-  if (usage_stats_.lock_count == 1) {
-    if (!usage_stats_.used)
-      state = DECODED_IMAGE_STATE_WASTED;
-    else if (usage_stats_.last_lock_failed)
-      state = DECODED_IMAGE_STATE_USED_RELOCK_FAILED;
-    else
-      state = DECODED_IMAGE_STATE_USED;
-  } else {
-    if (usage_stats_.used)
-      state = DECODED_IMAGE_STATE_USED_RELOCKED;
-    else
-      state = DECODED_IMAGE_STATE_WASTED_RELOCKED;
-  }
-
-  UMA_HISTOGRAM_ENUMERATION("Renderer4.SoftwareImageDecodeState", state,
-                            DECODED_IMAGE_STATE_COUNT);
-  UMA_HISTOGRAM_BOOLEAN("Renderer4.SoftwareImageDecodeState.FirstLockWasted",
-                        usage_stats_.first_lock_wasted);
-  if (usage_stats_.first_lock_out_of_raster)
-    UMA_HISTOGRAM_BOOLEAN(
-        "Renderer4.SoftwareImageDecodeState.FirstLockWasted.OutOfRaster",
-        usage_stats_.first_lock_wasted);
 }
 
 void SoftwareImageDecodeCacheUtils::CacheEntry::MoveImageMemoryTo(
@@ -413,11 +360,9 @@ bool SoftwareImageDecodeCacheUtils::CacheEntry::Lock() {
   bool success = memory->Lock();
   if (!success) {
     memory = nullptr;
-    usage_stats_.last_lock_failed = true;
     return false;
   }
   is_locked = true;
-  ++usage_stats_.lock_count;
   return true;
 }
 
@@ -428,8 +373,6 @@ void SoftwareImageDecodeCacheUtils::CacheEntry::Unlock() {
   DCHECK(is_locked);
   memory->Unlock();
   is_locked = false;
-  if (usage_stats_.lock_count == 1)
-    usage_stats_.first_lock_wasted = !usage_stats_.used;
 }
 
 }  // namespace cc

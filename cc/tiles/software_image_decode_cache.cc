@@ -232,9 +232,6 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
       return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/true,
                         /*can_do_hardware_accelerated_decode=*/false);
     cache_entry = AddCacheEntry(key);
-    if (task_type == TaskType::kOutOfRaster) {
-      cache_entry->mark_out_of_raster();
-    }
   } else {
     cache_entry = decoded_it->second.get();
   }
@@ -602,7 +599,6 @@ DecodedDrawImage SoftwareImageDecodeCache::GetDecodedImageForDrawInternal(
 
   // We'll definitely ref this cache entry and use it.
   ++cache_entry->ref_count;
-  cache_entry->mark_used();
 
   DecodeImageIfNecessary(key, paint_image, cache_entry);
   auto decoded_image = cache_entry->image();

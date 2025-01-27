@@ -31792,14 +31792,6 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="No conditions met"/>
 </enum>
 
-<enum name="SoftwareImageDecodeState">
-  <int value="0" label="Wasted"/>
-  <int value="1" label="Used"/>
-  <int value="2" label="Used, relock failed"/>
-  <int value="3" label="Wasted, relocked"/>
-  <int value="4" label="Used, relocked"/>
-</enum>
-
 <enum name="SpecialLocalePromoAction">
   <int value="0" label="Use Sogou"/>
   <int value="1" label="Keep Google"/>

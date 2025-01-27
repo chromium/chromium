@@ -267,31 +267,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer4.SoftwareImageDecodeState"
-    enum="SoftwareImageDecodeState" expires_after="2025-05-04">
-  <owner>vmpstr@chromium.org</owner>
-  <owner>thiabaud@google.com</owner>
-  <summary>
-    Software image decode usage statistics. Images are decoded and locked prior
-    to raster; this indicates how that decode is used during tile management.
-    Warning: this histogram was expired from 2021-06-08 to 2022-05-20, and
-    2022-12-31 to 2023-01-09, and 2023-12-31 to 2024-01-30; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Renderer4.SoftwareImageDecodeState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="2024-12-31">
-  <owner>vmpstr@chromium.org</owner>
-  <owner>thiabaud@google.com</owner>
-  <summary>
-    Indication whether the first lock of an image decode was wasted (image was
-    not used). Images are decoded and locked prior to raster; this indicates
-    whether the decode was used or not during the first lock. Warning: this
-    histogram was expired from 2021-06-08 to 2022-05-20, and 2022-12-31 to
-    2023-01-09, and 2023-12-31 to 2024-01-30; data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="Renderer4.TextureCopyLatency" units="microseconds"
     expires_after="M85">
   <owner>reveman@chromium.org</owner>
