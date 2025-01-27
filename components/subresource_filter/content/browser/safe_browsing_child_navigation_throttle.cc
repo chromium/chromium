@@ -120,9 +120,6 @@ bool SafeBrowsingChildNavigationThrottle::ShouldDeferNavigation() const {
     // third-party cookie exceptions is applicable to it.
     bool defer_for_tagging =
         !kCheckFor3pcException.Get() || NavigationHasCookieException();
-    UMA_HISTOGRAM_BOOLEAN(
-        "PageLoad.FrameCounts.AdFrames.PerFrame.DeferredForTagging",
-        defer_for_tagging);
 
     return defer_for_tagging;
   }
