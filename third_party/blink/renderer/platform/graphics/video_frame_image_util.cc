@@ -181,8 +181,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
         base::PlatformThreadRef(),
         // The task runner is only used for |release_callback|.
         ThreadScheduler::Current()->CleanupTaskRunner(),
-        std::move(release_callback),
-        /*supports_display_compositing=*/true);
+        std::move(release_callback));
   }
 
   gfx::Rect final_dest_rect = dest_rect;

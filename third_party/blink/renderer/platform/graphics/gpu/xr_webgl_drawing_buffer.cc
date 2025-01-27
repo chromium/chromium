@@ -660,8 +660,7 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
       drawing_buffer_->ContextProviderWeakPtr(),
       base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
-      std::move(release_callback),
-      /*supports_display_compositing=*/true);
+      std::move(release_callback));
 }
 
 // static

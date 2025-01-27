@@ -62,8 +62,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-      viz::ReleaseCallback release_callback,
-      bool supports_display_compositing);
+      viz::ReleaseCallback release_callback);
 
   // Creates an image wrapping an external shared image.
   // The shared image may come from a different context,

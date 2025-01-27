@@ -756,8 +756,7 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
       /* shared_image_texture_id = */ 0, sk_image_info,
       context_provider_->GetWeakPtr(), base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
-      std::move(release_callback),
-      /*supports_display_compositing=*/true);
+      std::move(release_callback));
 }
 
 scoped_refptr<DrawingBuffer::ColorBuffer>

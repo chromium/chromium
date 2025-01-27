@@ -366,8 +366,6 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
                      color_space),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       is_accelerated_(is_accelerated),
-      supports_display_compositing_(
-          shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ)),
       use_oop_rasterization_(is_accelerated &&
                              context_provider_wrapper_->ContextProvider()
                                  .GetCapabilities()
@@ -644,8 +642,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
   image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(client_shared_image), GetSyncToken(), texture_id_for_image,
       image_info, context_provider_wrapper_, owning_thread_ref_,
-      owning_thread_task_runner_, std::move(release_callback),
-      supports_display_compositing_);
+      owning_thread_task_runner_, std::move(release_callback));
 
   DCHECK(image);
   return image;
@@ -843,8 +840,7 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       client_si_, GetSyncToken(), /*shared_image_texture_id=*/0u,
       CreateSkImageInfo(), context_provider_wrapper_, owning_thread_ref_,
-      owning_thread_task_runner_, std::move(release_callback),
-      /*supports_display_compositing=*/true);
+      owning_thread_task_runner_, std::move(release_callback));
 }
 
 const gpu::SyncToken
@@ -973,7 +969,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       back_buffer_shared_image_, GetSyncToken(), shared_texture_id, image_info,
       context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
-      std::move(release_callback), /*supports_display_compositing=*/true);
+      std::move(release_callback));
 }
 
 scoped_refptr<gpu::ClientSharedImage>

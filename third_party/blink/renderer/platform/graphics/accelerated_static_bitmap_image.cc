@@ -68,8 +68,7 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
     scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-    viz::ReleaseCallback release_callback,
-    bool supports_display_compositing) {
+    viz::ReleaseCallback release_callback) {
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       std::move(shared_image), sync_token, shared_image_texture_id,
       sk_image_info, ImageOrientationEnum::kDefault,

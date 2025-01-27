@@ -323,8 +323,7 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
           /* shared_image_texture_id = */ 0, sk_image_info,
           GetContextProviderWeakPtr(), base::PlatformThread::CurrentRef(),
           ThreadScheduler::Current()->CleanupTaskRunner(),
-          std::move(release_callback),
-          /*supports_display_compositing=*/true));
+          std::move(release_callback)));
 }
 
 // gpu_presentation_context.idl
