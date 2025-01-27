@@ -25,6 +25,9 @@ typedef void (^TabGroupActionBlock)();
 // The action that a tab group is going to take.
 @property(nonatomic, strong) TabGroupActionBlock action;
 
+// The name of the tab group.
+@property(nonatomic, copy) NSString* tabGroupName;
+
 // Designated initializer with a parameter for anchoring the popover to a
 // UIView.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
