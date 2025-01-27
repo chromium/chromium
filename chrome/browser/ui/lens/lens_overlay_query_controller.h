@@ -157,8 +157,7 @@ class LensOverlayQueryController {
       std::optional<SkBitmap> region_bytes);
 
   // Sends a task completion Gen204 ping for certain user actions.
-  virtual void SendTaskCompletionGen204IfEnabled(
-      lens::mojom::UserAction user_action);
+  void SendTaskCompletionGen204IfEnabled(lens::mojom::UserAction user_action);
 
   // Sends a semantic event Gen204 ping.
   virtual void SendSemanticEventGen204IfEnabled(
@@ -193,6 +192,13 @@ class LensOverlayQueryController {
       std::string vit_query_param_value,
       std::optional<base::TimeDelta> cluster_info_latency,
       std::optional<std::string> encoded_analytics_id);
+
+  // Sends a task completion Gen204 ping for certain user actions with
+  // the given analytics id. Protected to allow overriding in tests to
+  // check the encoded analytics id.
+  virtual void SendTaskCompletionGen204IfEnabled(
+      std::string encoded_analytics_id,
+      lens::mojom::UserAction user_action);
 
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
@@ -689,6 +695,13 @@ class LensOverlayQueryController {
 
   // The current gen204 id for logging, set on each overlay invocation.
   uint64_t gen204_id_ = 0;
+
+  // The latest encoded analytics id. Updated on each full-image and
+  // interaction request. This may differ from the analytics id in the
+  // latest_interaction_request_data_ if the user makes a text-only query,
+  // because no interaction request is made in that case even though the
+  // request id is incremented.
+  std::string latest_encoded_analytics_id_;
 
   // The time it took from sending the cluster info request to receiving
   // the response.

@@ -75,11 +75,6 @@ void TestLensOverlayQueryController::StartQueryFlow(
       invocation_time);
 }
 
-void TestLensOverlayQueryController::SendTaskCompletionGen204IfEnabled(
-    lens::mojom::UserAction user_action) {
-  last_user_action_ = user_action;
-}
-
 void TestLensOverlayQueryController::SendRegionSearch(
     lens::mojom::CenterRotatedBoxPtr region,
     lens::LensOverlaySelectionType selection_type,
@@ -270,6 +265,14 @@ void TestLensOverlayQueryController::SendLatencyGen204IfEnabled(
                     ? latency_gen_204_counter_.at(latency_type)
                     : 0;
   latency_gen_204_counter_[latency_type] = counter + 1;
+  last_latency_gen204_analytics_id_ = encoded_analytics_id;
+}
+
+void TestLensOverlayQueryController::SendTaskCompletionGen204IfEnabled(
+    std::string encoded_analytics_id,
+    lens::mojom::UserAction user_action) {
+  last_user_action_ = user_action;
+  last_task_completion_gen204_analytics_id_ = encoded_analytics_id;
 }
 
 }  // namespace lens
