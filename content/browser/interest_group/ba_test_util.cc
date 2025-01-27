@@ -20,8 +20,8 @@
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/common/oblivious_http_header_key_config.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
-#include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "url/origin.h"
 
