@@ -206,11 +206,21 @@ VideoCaptureController::VideoCaptureController(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 }
 
-VideoCaptureController::~VideoCaptureController() = default;
+VideoCaptureController::~VideoCaptureController() {
+  // All weak ptrs should already have been invalidated on the IO thread as weak
+  // ptrs are only allowed to be referenced or invalidated on the same thread.
+  CHECK(!weak_ptr_factory_.HasWeakPtrs());
+}
 
 base::WeakPtr<VideoCaptureController>
 VideoCaptureController::GetWeakPtrForIOThread() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void VideoCaptureController::InvalidateWeakPtrsOnIOThread() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void VideoCaptureController::AddClient(
@@ -696,6 +706,7 @@ void VideoCaptureController::ReleaseDeviceAsync(base::OnceClosure done_cb) {
   string_stream << "VideoCaptureController::ReleaseDeviceAsync: serial_id = "
                 << serial_id() << ", device_id = " << device_id();
   EmitLogMessage(string_stream.str(), 1);
+
   if (!launched_device_) {
     device_launcher_->AbortLaunch();
     return;
