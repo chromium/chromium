@@ -120,9 +120,6 @@ void ContentCaptureTask::SendContent(
   auto* client = GetWebContentCaptureClient(*document);
   DCHECK(client);
 
-  if (histogram_reporter_) {
-    histogram_reporter_->OnSendContentStarted();
-  }
   WebVector<WebContentHolder> content_batch;
   content_batch.reserve(kBatchSize);
   // Only send changed content after the new content was sent.
@@ -144,9 +141,6 @@ void ContentCaptureTask::SendContent(
       client->DidCaptureContent(content_batch, !doc_session.FirstDataHasSent());
       doc_session.SetFirstDataHasSent();
     }
-  }
-  if (histogram_reporter_) {
-    histogram_reporter_->OnSendContentEnded(content_batch.size());
   }
 }
 
@@ -233,18 +227,9 @@ bool ContentCaptureTask::RunInternal() {
 void ContentCaptureTask::Run(TimerBase*) {
   TRACE_EVENT0("content_capture", "RunTask");
   task_delay_->IncreaseDelayExponent();
-  if (histogram_reporter_) {
-    histogram_reporter_->OnTaskRun();
-  }
   bool completed = RunInternal();
   if (!completed) {
     ScheduleInternal(ScheduleReason::kRetryTask);
-  }
-  if (histogram_reporter_ &&
-      (completed || task_state_ == TaskState::kCaptureContent)) {
-    // The current capture session ends if the task indicates it completed or
-    // is about to capture the new changes.
-    histogram_reporter_->OnAllCapturedContentSent();
   }
 }
 
@@ -275,10 +260,6 @@ void ContentCaptureTask::ScheduleInternal(ScheduleReason reason) {
   delay_task_.StartOneShot(delay, FROM_HERE);
   TRACE_EVENT_INSTANT1("content_capture", "ScheduleTask",
                        TRACE_EVENT_SCOPE_THREAD, "reason", reason);
-  if (histogram_reporter_) {
-    histogram_reporter_->OnTaskScheduled(/* record_task_delay = */ reason !=
-                                         ScheduleReason::kRetryTask);
-  }
 }
 
 void ContentCaptureTask::Schedule(ScheduleReason reason) {
