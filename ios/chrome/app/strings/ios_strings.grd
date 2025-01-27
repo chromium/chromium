@@ -4018,21 +4018,21 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         To change your PIN, first set up a passcode on your device.
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_CREDENTIAL_DELETION_TEXT" desc="Section title in password settings, explaining to the user what data will be deleted. [iOS Only]">
-        Passwords, passkeys, and other data will be permanently deleted from Google Password Manager
+        From Google Password Manager, including passwords and passkeys
       </message>
-      <message name="IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION" desc="Description of the confirmation alert when the user tap delete all data button. [iOS only]">
+      <message name="IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION" desc="Description of the confirmation alert when the user tap delete all data button. The 'list of sites &amp; apps' corresponds to the data shown in the 'Never Saved' section in the home page of Password Manager. [iOS only]">
         {password, plural,
-               =0 {{passkey, plural,
-                        =1 {If you continue, your 1 passkey and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}
-                        other {If you continue, your {passkey} passkeys and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}}}
-               =1 {{passkey, plural,
-                        =0 {If you continue, your 1 password and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}
-                        =1 {If you continue, your 1 password, 1 passkey, and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}
-                        other {If you continue, your 1 password, {passkeys} passkeys, and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}}}
-               other {{passkey, plural,
-                           =0 {If you continue, your {password} passwords and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}
-                           =1 {If you continue, your {password} passwords, 1 passkey, and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}
-                           other {If you continue, your {password} passwords, {passkey} passkeys, and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}}}}
+        =0 {{passkey, plural,
+            =1 {You are about to delete 1 passkey and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}
+            other {You are about to delete {passkey} passkeys and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}}}
+        =1 {{passkey, plural,
+            =0 {You are about to delete 1 password and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}
+            =1 {You are about to delete 1 password, 1 passkey, and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}
+            other {You are about to delete 1 password, {passkeys} passkeys, and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}}}
+        other {{passkey, plural,
+               =0 {You are about to delete {password} passwords and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}
+               =1 {You are about to delete {password} passwords, 1 passkey, and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}
+               other {You are about to delete {password} passwords, {passkey} passkeys, and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}}}}
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_TITLE" desc="Title of the confirmation alert when the user tap delete all data button. [iOS only]">
         You're about to delete your Google Password Manager data
