@@ -11,7 +11,7 @@ emulator_package {
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-baklava/google_apis/x86_64"
-  version: "4Hz6NKLpNeRQgUbzHhpArXl4xhQySAbE406KXvgBj7YC"  # (v2) BP21.241121.010
+  version: "ly6e302ZivQeSDIEjrw4VA2X9W5u9Nqh34Zp7HE_NskC"  # (v3) BP22.250103.003
 }
 system_image_name: "system-images;android-Baklava;google_apis;x86_64"
 
