@@ -741,19 +741,26 @@ message SystemProfileProto {
   // (or foreground) action at any point during the two records.
   //
   // Note: This field is only set on mobile platforms (Android, WebView, iOS).
-  // Backgrounding/foregrounding also includes hiding/displaying an embedded
-  // WebView within a hosting app.
+  // Some caveats:
+  //  - Backgrounding/foregrounding also includes hiding/displaying an embedded
+  //    WebView within a hosting app.
+  //  - On Android, it's possible for Chrome to be launched and warmed up in the
+  //    background, e.g. by CCT. Metrics accumulated while in this state may
+  //    possibly be included in the same `fg_bg_id` as the first foreground
+  //    "period" from when the user eventually launches a CCT (or Chrome). This
+  //    is the only case where a given `fg_bg_id` will contain both foreground
+  //    and background metrics.
   //
   // WARNING: This field may be unset in certain edge cases where the continuity
-  // of a foreground/background "session" could not be properly determined. I.e.
+  // of a foreground/background "period" could not be properly determined. I.e.
   // it is possible for a log to contain metrics from both a foreground and
-  // background period, and the `fg_bg_id` field will be unset in this case.
-  // These edge cases are a lot more common than one may think, so please
-  // contact chrome-metrics-team@ before using this field for analysis. Some
-  // known edge cases include:
-  //  - The first log (first ~15 seconds of the process), because it cannot be
-  //    closed early, and there is always a foreground notification on startup.
-  //  - Going from background to foreground on WebView and iOS.
+  // background period -- the `fg_bg_id` field will be unset in this case (the
+  // only exception being CCT warm-ups described above). These edge cases can
+  // happen quite easily, so please contact chrome-metrics-team@ before using
+  // this field for analysis. Some known edge cases include:
+  //  - The user backgrounding/foregrounding the app during the first log (first
+  //    ~15 seconds of the process), because it cannot be closed early.
+  //  - Going from background to foreground on WebView or iOS.
   //  - Initial stability logs.
   //  - Independent logs from PMA files.
   //
