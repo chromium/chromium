@@ -187,8 +187,6 @@ static_library("crosapi") {
     "web_app_service_ash.h",
     "web_kiosk_service_ash.cc",
     "web_kiosk_service_ash.h",
-    "window_util.cc",
-    "window_util.h",
   ]
 
   if (use_cups) {
@@ -457,8 +455,6 @@ static_library("crosapi") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/policy/core",
-    "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/scalable_iph",
     "//chrome/browser/ash/system_web_apps/apps/help_app",
     "//chrome/browser/ash/video_conference",

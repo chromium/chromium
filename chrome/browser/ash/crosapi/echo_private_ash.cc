@@ -14,9 +14,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/notifications/echo_dialog_view.h"
+#include "chrome/browser/ash/policy/dlp/window_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -62,7 +62,7 @@ void EchoPrivateAsh::CheckRedeemOffersAllowed(const std::string& window_id,
                                               const std::string& service_name,
                                               const std::string& origin,
                                               BoolCallback callback) {
-  gfx::NativeWindow window = crosapi::GetShellSurfaceWindow(window_id);
+  gfx::NativeWindow window = ash::GetShellSurfaceWindow(window_id);
   if (!window) {
     std::move(callback).Run(/*allowed=*/false);
     return;

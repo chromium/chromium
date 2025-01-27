@@ -22,9 +22,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_external_cache.h"
 #include "chrome/browser/ash/policy/core/file_util.h"
@@ -110,19 +107,6 @@ void SendExtensionsToAsh(
   loader->OnExtensionListsUpdated(cached_extensions);
 }
 
-void SendExtensionsToLacros(const std::string& user_id,
-                            base::Value::Dict cached_extensions) {
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->device_local_account_extension_service()
-        ->SetForceInstallExtensionsFromCache(user_id,
-                                             std::move(cached_extensions));
-  } else {
-    CHECK_IS_TEST();
-  }
-}
-
 bool IsExtensionTracked(DeviceLocalAccountType account_type) {
   switch (account_type) {
     case DeviceLocalAccountType::kKioskApp:
@@ -173,7 +157,9 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
   external_cache_ = std::make_unique<chromeos::DeviceLocalAccountExternalCache>(
       /*ash_loader=*/base::BindRepeating(SendExtensionsToAsh,
                                          extension_loader_),
-      /*lacros_loader=*/base::BindRepeating(SendExtensionsToLacros), user_id_,
+      // TODO(b/392567217) remove the Lacros callback from
+      // DeviceLocalAccountExternalCache
+      /*lacros_loader=*/base::DoNothing(), user_id_,
       base::PathService::CheckedGet(ash::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS)
           .Append(GetUniqueSubDirectoryForAccountID(account.account_id)));
   store_->AddObserver(this);

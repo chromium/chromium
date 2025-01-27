@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/window_util.h"
+#include "chrome/browser/ash/policy/dlp/window_util.h"
 
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "components/exo/shell_surface_util.h"
 #include "ui/aura/window.h"
 
-namespace crosapi {
+namespace ash {
 namespace {
 
 // Performs a depth-first search for a window with a given exo ShellSurface
@@ -20,14 +20,16 @@ aura::Window* FindWindowWithShellAppId(aura::Window* root,
   if (id && *id == app_id) {
     // Do not include a window still being created.
     auto* window_state = ash::WindowState::Get(root);
-    if (!root->IsVisible() && !window_state->IsMinimized())
+    if (!root->IsVisible() && !window_state->IsMinimized()) {
       return nullptr;
+    }
     return root;
   }
   for (aura::Window* child : root->children()) {
     aura::Window* found = FindWindowWithShellAppId(child, app_id);
-    if (found)
+    if (found) {
       return found;
+    }
   }
   return nullptr;
 }
@@ -37,10 +39,11 @@ aura::Window* FindWindowWithShellAppId(aura::Window* root,
 aura::Window* GetShellSurfaceWindow(const std::string& app_id) {
   for (aura::Window* display_root : ash::Shell::GetAllRootWindows()) {
     aura::Window* window = FindWindowWithShellAppId(display_root, app_id);
-    if (window)
+    if (window) {
       return window;
+    }
   }
   return nullptr;
 }
 
-}  // namespace crosapi
+}  // namespace ash

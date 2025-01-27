@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/crosapi/content_protection_ash.h"
 
 #include "ash/display/output_protection_delegate.h"
-#include "chrome/browser/ash/crosapi/window_util.h"
+#include "chrome/browser/ash/policy/dlp/window_util.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -43,7 +43,7 @@ void ContentProtectionAsh::EnableWindowProtection(
     const std::string& window_id,
     uint32_t desired_protection_mask,
     EnableWindowProtectionCallback callback) {
-  aura::Window* window = crosapi::GetShellSurfaceWindow(window_id);
+  aura::Window* window = ash::GetShellSurfaceWindow(window_id);
   if (!window) {
     std::move(callback).Run(/*success=*/false);
     return;
@@ -57,7 +57,7 @@ void ContentProtectionAsh::EnableWindowProtection(
 void ContentProtectionAsh::QueryWindowStatus(
     const std::string& window_id,
     QueryWindowStatusCallback callback) {
-  aura::Window* window = crosapi::GetShellSurfaceWindow(window_id);
+  aura::Window* window = ash::GetShellSurfaceWindow(window_id);
   if (!window) {
     ExecuteWindowStatusCallback(std::move(callback), /*success=*/false,
                                 /*link_mask=*/0,
