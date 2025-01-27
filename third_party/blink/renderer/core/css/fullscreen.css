@@ -18,6 +18,7 @@
 
 :fullscreen {
   overlay: auto !important;
+  interactivity: auto;
 }
 
 iframe:fullscreen {
