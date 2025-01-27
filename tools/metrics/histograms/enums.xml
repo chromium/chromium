@@ -5033,8 +5033,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="4" label="Failed"/>
 </enum>
 
-<!-- LINT.IfChange(FeatureObserver) -->
-
 <enum name="FedCmThirdPartyCookiesStatus">
   <int value="0" label="Enabled in settings"/>
   <int value="1" label="Disabled in settings"/>
@@ -26677,10 +26675,6 @@ This is true even if the type has been removed from the mojom file.
   <int value="9" label="kFailedToCommitInitTransaction"/>
 </enum>
 
-<!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
-
-<!-- LINT.IfChange(WebDXFeatureObserver) -->
-
 <enum name="WebFontCacheHit">
   <int value="0" label="Miss"/>
   <int value="1" label="Hit disk cache"/>
@@ -27594,8 +27588,6 @@ This is true even if the type has been removed from the mojom file.
   <int value="0" label="Success"/>
   <int value="1" label="Error"/>
 </enum>
-
-<!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
 
 </enums>
 

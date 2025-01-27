@@ -281,6 +281,8 @@ Called by update_document_policy_enum.py.-->
   <int value="15" label="ExpectNoLinkedResources"/>
 </enum>
 
+<!-- LINT.IfChange(FeatureObserver) -->
+
 <enum name="FeatureObserver">
 <!-- Generated from third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.
 Called by update_use_counter_feature_enum.py.-->
@@ -5840,6 +5842,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5249" label="AboutSrcdocToBeControlledByServiceWorker"/>
 </enum>
 
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
+
 <enum name="FeaturePolicyFeature">
 <!-- Generated from third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.
 Called by update_permissions_policy_enum.py.-->
@@ -6514,6 +6518,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="keyboardLock() requested for a subset of keys"/>
   <int value="2" label="keyboardUnlock()"/>
 </enum>
+
+<!-- LINT.IfChange(MappedCSSProperties) -->
 
 <enum name="MappedCSSProperties">
 <!-- Generated from third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom.
@@ -7348,6 +7354,8 @@ Called by update_use_counter_css.py.-->
   <int value="827" label="interest-target-delay"/>
 </enum>
 
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
+
 <!-- LINT.IfChange(PermissionElementInvalidStyleReason) -->
 
 <enum name="PermissionElementInvalidStyleReason">
@@ -7432,6 +7440,8 @@ Called by update_use_counter_css.py.-->
   <int value="8" label="Inline speculation rules failed parsing"/>
   <int value="9" label="Browser injected speculation rules failed parsing"/>
 </enum>
+
+<!-- LINT.IfChange(WebDXFeatureObserver) -->
 
 <enum name="WebDXFeatureObserver">
 <!-- Generated from third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.
@@ -7717,6 +7727,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="277" label="LayoutInstability"/>
   <int value="278" label="Profiler"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
 
 <enum name="WebFontInstantiationResult">
   <int value="0" label="Error instantiating variable font, falling back"/>
