@@ -65,6 +65,10 @@ class Component:
         # `Component.all` can be used to iterate over all components.
         Component.all.add(self)
 
+        # Due to unsalvageable situations, we might need to abort the whole
+        # rewrite. The components tagged with `abort` will not be applied.
+        self.abort = False
+
 
 class Node:
     # Mapping in between the replacement directive and the node.
@@ -335,27 +339,20 @@ def main():
         num_nodes = len(node.neighbors_directed)
         assert num_nodes >= 1, "and node: " + node.to_debug_string()
 
+        # The next change must apply to all neighbors, or none. If not, we have
+        # to cancel the whole graph change to all the components. It is not
+        # salvageable.
+        abort = not all(node.visited for node in node.neighbors_directed) \
+            and not all(not node.visited for node in node.neighbors_directed)
+
         # If the rhs node was visited (i.e rewritten), then we need to apply the
         # data change.
-        visited = 0
-        neighbors = list(node.neighbors_directed)
-        for neighbor in neighbors:
+        for neighbor in list(node.neighbors_directed):
             if neighbor.visited:
-                visited += 1
                 # In this case, rhs was rewritten, and lhs was not, we need to
                 # add the corresponding `.data()`
                 neighbor.component.changes.add(node.replacement)
-        # It is worth noting that while this is the correct assertion, and there
-        # are tests that cover this assertion, in the actual chromium code base
-        # we don't ever seem to run into such macros so it is usually num_nodes
-        # == 1 and when it isn't visited will be zero. However due to the tests
-        # we assert that either nothing gets rewritten or everything gets
-        # rewritten.
-        assert visited == 0 or visited == num_nodes, ("node: ",
-                                                      node.to_debug_string(),
-                                                      " num: ", str(num_nodes),
-                                                      " visited: ",
-                                                      str(visited))
+                neighbor.component.abort |= abort
 
     # Emit the changes:
     # - ~/scratch/patches.txt: A summary of each atomic change.
@@ -367,7 +364,8 @@ def main():
     summary_file = open(summary_filename, 'w')
 
     component_with_changes = [
-        component for component in Component.all if len(component.changes) > 0
+        component for component in Component.all
+        if len(component.changes) > 0 and not component.abort
     ]
 
     for index, component in enumerate(component_with_changes):
