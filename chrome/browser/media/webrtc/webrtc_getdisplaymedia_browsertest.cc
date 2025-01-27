@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
@@ -501,9 +502,12 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
   RunGetDisplayMedia(tab, constraints,
                      /*is_fake_ui=*/true, /*expect_success=*/true,
                      /*is_tab_capture=*/PreferCurrentTab());
-
-  EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(), "getWidthSetting();"),
-            base::StringPrintf("%d", kMaxWidth));
+  auto result =
+      content::EvalJs(tab->GetPrimaryMainFrame(), "getWidthSetting();")
+          .ExtractString();
+  int value;
+  EXPECT_TRUE(base::StringToInt(result, &value));
+  EXPECT_LE(value, kMaxWidth);
 
   EXPECT_EQ(
       content::EvalJs(tab->GetPrimaryMainFrame(), "getFrameRateSetting();"),

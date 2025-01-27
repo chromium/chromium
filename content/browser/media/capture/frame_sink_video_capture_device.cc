@@ -305,8 +305,6 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiverInternal() {
 
   AllocateCapturer(pixel_format);
 
-  receiver_->OnStarted();
-
   if (!suspend_requested_) {
     MaybeStartConsuming();
   }
@@ -499,6 +497,11 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
   // assume the user is interacting with the view.
   info->metadata.interactive_content = true;
 #endif
+
+  if (!has_sent_on_started_to_client_) {
+    has_sent_on_started_to_client_ = true;
+    receiver_->OnStarted();
+  }
 
   // Pass the video frame to the VideoFrameReceiver. This is done by first
   // passing the shared memory buffer handle and then notifying it that a new
