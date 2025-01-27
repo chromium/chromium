@@ -319,6 +319,11 @@ ci.thin_tester(
             ),
         ],
         per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 10,
+                ),
+            ),
             "chrome_public_unit_test_apk": targets.mixin(
                 args = [
                     # https://crbug.com/392649074
