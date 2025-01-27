@@ -335,4 +335,8 @@ bool MetricsServicesManager::IsUkmAllowedForAllProfiles() {
   return metrics_service_client_->IsUkmAllowedForAllProfiles();
 }
 
+bool MetricsServicesManager::IsDwaAllowedForAllProfiles() {
+  return metrics_service_client_->IsDwaAllowedForAllProfiles();
+}
+
 }  // namespace metrics_services_manager
