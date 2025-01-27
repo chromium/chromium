@@ -102,7 +102,7 @@ interface PrintBackendService {
     => (DefaultPrinterNameResult printer_name);
 
   // Gets the semantic capabilities and defaults for a specific printer.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   GetPrinterSemanticCapsAndDefaults(string printer_name)
     => (PrinterSemanticCapsAndDefaultsResult printer_caps);
 

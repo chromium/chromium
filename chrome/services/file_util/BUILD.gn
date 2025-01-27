@@ -37,7 +37,7 @@ source_set("file_util") {
 
   defines = []
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "zip_file_creator.cc",
       "zip_file_creator.h",

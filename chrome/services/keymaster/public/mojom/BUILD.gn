@@ -5,12 +5,10 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 mojom("mojom") {
   sources = [ "cert_store.mojom" ]
 
-  public_deps = [
-    "//chrome/services/keymanagement/public/mojom",
-  ]
+  public_deps = [ "//chrome/services/keymanagement/public/mojom" ]
 }
