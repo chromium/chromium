@@ -4,6 +4,8 @@
 
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 
+#include <dwmapi.h>
+
 #include <algorithm>
 #include <utility>
 #include <vector>
@@ -165,6 +167,19 @@ void DesktopWindowTreeHostWin::FinishTouchDrag(gfx::Point screen_point) {
     ui::SendMouseEvent(screen_point, MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE);
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// DesktopWindowTreeHostWin, WidgetObserver implementation:
+void DesktopWindowTreeHostWin::OnWidgetThemeChanged(Widget* widget) {
+  // Ensure that DWM knows to apply the correct color scheme to the window
+  // backdrop whenever it changes.
+  BOOL use_dark_mode =
+      widget->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
+  HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
+                                     &use_dark_mode, sizeof(use_dark_mode));
+  CHECK_EQ(hr, S_OK);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // DesktopWindowTreeHostWin, DesktopWindowTreeHost implementation:
 
@@ -198,6 +213,35 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
   gfx::Rect pixel_bounds =
       display::win::ScreenWin::DIPToScreenRect(nullptr, params.bounds);
   message_handler_->Init(parent_hwnd, pixel_bounds);
+
+  // If the Redirection Surface is removed, there needs to be a replacement
+  // "background" of the Chromium window. `DWM_SYSTEMBACKDROP_TYPE` tells DWM
+  // to blur the contents behind the chromium window to yield a translucent
+  // "frosted glass" effect. This will show whenever the GPU crashes or is not
+  // ready by the time the window updates size or shape. Translucent windows
+  // do not need a backdrop as it would show up in unexpected ways - i.e. a
+  // gutter.
+  if (((message_handler_->window_ex_style() & WS_EX_NOREDIRECTIONBITMAP) ==
+       WS_EX_NOREDIRECTIONBITMAP) &&
+      !message_handler_->is_translucent()) {
+    // Observe the widget to update the backdrop when the color mode changes.
+    widget_observation_.Observe(GetWidget());
+
+    // Ensure that the hwnd has been created.
+    CHECK(GetHWND());
+    DWM_SYSTEMBACKDROP_TYPE backdrop = DWMSBT_TRANSIENTWINDOW;
+    HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_SYSTEMBACKDROP_TYPE,
+                                       &backdrop, sizeof(backdrop));
+    CHECK_EQ(hr, S_OK);
+
+    // Ensure that the backdrop honors the OS dark mode setting.
+    BOOL use_dark_mode =
+        GetWidget()->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
+    hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
+                               &use_dark_mode, sizeof(use_dark_mode));
+    CHECK_EQ(hr, S_OK);
+  }
+
   CreateCompositor(params.force_software_compositing);
   OnAcceleratedWidgetAvailable();
   InitHost();
