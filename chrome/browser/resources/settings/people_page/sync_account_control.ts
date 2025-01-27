@@ -628,7 +628,11 @@ export class SettingsSyncAccountControlElement extends
 
   private onSignoutClick_() {
     this.syncBrowserProxy_.signOut(false /* deleteProfile */);
-    this.shadowRoot!.querySelector('cr-action-menu')!.close();
+
+    const actionMenu = this.shadowRoot!.querySelector('cr-action-menu');
+    if (actionMenu) {
+      actionMenu.close();
+    }
   }
 
   private onSyncButtonClick_() {
