@@ -1993,6 +1993,10 @@ TEST_F(MessagingBackendServiceImplTest,
   EXPECT_CALL(*unowned_messaging_backend_store_,
               GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kDot))
       .WillRepeatedly(Return(db_messages));
+  EXPECT_CALL(
+      *unowned_messaging_backend_store_,
+      GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kMessageOnly))
+      .WillRepeatedly(Return(std::vector<collaboration_pb::Message>()));
 
   // Expect to show 3 messages (dirty tab, chip and dirty tab group).
   PersistentMessage expected_message_chip;
@@ -2017,6 +2021,50 @@ TEST_F(MessagingBackendServiceImplTest,
   EXPECT_CALL(mock_persistent_message_observer_,
               DisplayPersistentMessage(PersistentMessageTypeAndEventEq(
                   expected_message_dirty_tab_group)))
+      .Times(1);
+
+  tg_notifier_observer_->OnTabGroupOpened(tab_group);
+}
+
+TEST_F(MessagingBackendServiceImplTest,
+       TestOpenTabGroupRedeliverDirtyInstantMessages) {
+  CreateAndInitializeService();
+  SetupInstantMessageDelegate();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+
+  // Create a tab group.
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+  EXPECT_CALL(*mock_tab_group_sync_service_,
+              GetGroup(tab_groups::EitherGroupID(tab_group.saved_guid())))
+      .WillRepeatedly(Return(tab_group));
+
+  // Create a dirty db instant message.
+  base::Time now = base::Time::Now();
+  std::vector<collaboration_pb::Message> db_messages;
+  collaboration_pb::Message message1 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::COLLABORATION_ADDED,
+      DirtyType::kDotAndChip, now - base::Minutes(5));
+  message1.set_triggering_user_gaia_id("gaia_1");
+  db_messages.emplace_back(message1);
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kDot))
+      .WillRepeatedly(Return(std::vector<collaboration_pb::Message>()));
+  EXPECT_CALL(
+      *unowned_messaging_backend_store_,
+      GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kMessageOnly))
+      .WillRepeatedly(Return(db_messages));
+
+  // Expect to show instant message.
+  EXPECT_CALL(*mock_instant_message_delegate_,
+              DisplayInstantaneousMessage(_, _))
       .Times(1);
 
   tg_notifier_observer_->OnTabGroupOpened(tab_group);

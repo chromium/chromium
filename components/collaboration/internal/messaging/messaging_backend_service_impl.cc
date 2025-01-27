@@ -852,6 +852,15 @@ void MessagingBackendServiceImpl::OnTabGroupOpened(
     return;
   }
 
+  // Redeliver instant messages for the open group.
+  for (auto& message : store_->GetDirtyMessagesForGroup(
+           *collaboration_group_id, DirtyType::kMessageOnly)) {
+    InstantMessage instant_message =
+        CreateInstantMessage(message, tab_group, /*tab=*/std::nullopt);
+    DisplayInstantMessage(base::Uuid::ParseLowercase(message.uuid()),
+                          instant_message, {InstantNotificationLevel::BROWSER});
+  }
+
   // Show all the persistent messages in the group.
   std::vector<PersistentMessage> messages = GetMessagesForGroup(
       tab_group.saved_guid(), PersistentNotificationType::DIRTY_TAB);
