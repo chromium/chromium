@@ -7819,33 +7819,3 @@ def CheckTodoBugReferences(input_api, output_api):
         ]
     else:
         return []
-
-def CheckForAnonymousNamespaceInHeader(input_api,
-                                   output_api,
-                                   allowlist=_HEADER_EXTENSIONS,
-                                   denylist=None):
-    denylist = tuple(denylist or input_api.DEFAULT_FILES_TO_SKIP)
-    source_file_filter = lambda x: input_api.FilterSourceFile(
-        x, allowlist, denylist)
-
-    def headers(f):
-          return input_api.FilterSourceFile(
-              f, files_to_check=(r'.+%s' % _HEADER_EXTENSIONS, ))
-
-    header_using_anon_namespace_files = []
-
-    for f in input_api.AffectedSourceFiles(headers):
-        contents = input_api.ReadFile(f, 'rb')
-        if input_api.re.search(r"namespace {", contents):
-            header_using_anon_namespace_files.append(f.LocalPath())
-
-    result = []
-    if header_using_anon_namespace_files:
-        result.append(
-            output_api.PresubmitError(
-                'These files have an anonymous namespace which is not '
-                'permitted in header files, for more information see ('
-                'https://google.github.io/styleguide/cppguide.html#Internal_Linkage'
-                '): ',
-                items=header_using_anon_namespace_files))
-    return result

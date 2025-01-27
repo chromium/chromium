@@ -5705,30 +5705,6 @@ class CheckDeprecatedSyncConsentFunctionsTest(unittest.TestCase):
         self.assertTrue('chrome/foo/file4.java' in results[0].message),
         self.assertTrue('chrome/foo/file5.java' in results[0].message),
 
-class CheckAnonymousNamespacesInHeaderFilesTest(unittest.TestCase):
-    """Test the presubmit checking for anonymous namespaces in header files."""
-
-    def testAnonymousNamespaceInHeader(self):
-        file_types = ['src/helpers.h', 'src/helpers.hpp', 'src/helpers.hxx']
-        for header_file in file_types:
-            input_api = MockInputApi()
-            input_api.files = [
-              MockAffectedFile(header_file,
-                            ['namespace {}'])]
-            error = PRESUBMIT.CheckForAnonymousNamespaceInHeader(
-            input_api, MockOutputApi())
-            self.assertEqual(1, len(error))
-
-    def testValidNamespaceInHeader(self):
-        file_types = ['src/helpers.h', 'src/helpers.hpp', 'src/helpers.hxx']
-        for header_file in file_types:
-            input_api = MockInputApi()
-            input_api.files = [
-              MockAffectedFile(header_file,
-                            ['namespace test {}'])]
-            error = PRESUBMIT.CheckForAnonymousNamespaceInHeader(
-            input_api, MockOutputApi())
-            self.assertEqual(0, len(error))
 
 class CheckAnonymousNamespaceTest(unittest.TestCase):
     """Test the presubmit for anonymous namespaces."""
