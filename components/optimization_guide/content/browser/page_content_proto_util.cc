@@ -269,7 +269,9 @@ void ConvertIframeData(
     const RenderFrameInfo& render_frame_info,
     const blink::mojom::AIPageContentIframeData& iframe_data,
     optimization_guide::proto::IframeData* proto_iframe_data) {
-  proto_iframe_data->set_url(render_frame_info.source_origin.Serialize());
+  if (!render_frame_info.source_origin.opaque()) {
+    proto_iframe_data->set_url(render_frame_info.source_origin.Serialize());
+  }
   proto_iframe_data->set_likely_ad_frame(iframe_data.likely_ad_frame);
 }
 

@@ -68,10 +68,11 @@ std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
       render_frame_host->GetGlobalFrameToken();
   // We use the origin instead of last committed URL here to ensure the security
   // origin for the iframe's content is accurately tracked.
-  // For example, for data URLs we need the source origin for the URL instead of
-  // the raw URL itself.
-  render_frame_info.source_origin = render_frame_host->GetLastCommittedOrigin()
-                                        .GetTupleOrPrecursorTupleIfOpaque();
+  // For example:
+  // 1. data URLs use an opaque origin
+  // 2. about:blank inherits its origin from the initiator while the URL doesn't
+  //    convey that.
+  render_frame_info.source_origin = render_frame_host->GetLastCommittedOrigin();
   return render_frame_info;
 }
 
