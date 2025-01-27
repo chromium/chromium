@@ -11,6 +11,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/content_extraction/inner_text.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/optimization_guide/proto/features/permissions_ai.pb.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_ui_selector.h"
@@ -31,8 +37,10 @@ class PredictionBasedPermissionUiSelector
     : public permissions::PermissionUiSelector {
  public:
   enum class PredictionSource {
-    USE_SERVER_SIDE,      // url based cpss v2
-    USE_ONDEVICE_TFLITE,  // on device cpss v1
+    USE_ONDEVICE_GENAI_AND_SERVER_SIDE,  // on device cpss v2 with genai
+                                         // prediction
+    USE_SERVER_SIDE,                     // url based cpss v2
+    USE_ONDEVICE_TFLITE,                 // on device cpss v1
     USE_NONE,
   };
   using PredictionGrantLikelihood =
@@ -71,12 +79,18 @@ class PredictionBasedPermissionUiSelector
                            HoldbackHistogramTest);
   FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
                            HoldbackDecisionTest);
+
+  void GenAIModelExecutionCallback(
+      permissions::PredictionRequestFeatures features,
+      permissions::RequestType request_type,
+      std::optional<optimization_guide::proto::PermissionsAiResponse> response);
+
   permissions::PredictionRequestFeatures BuildPredictionRequestFeatures(
       permissions::PermissionRequest* request);
   void LookupResponseReceived(
       bool is_on_device,
       permissions::RequestType request_type,
-      bool lookup_succesful,
+      bool lookup_successful,
       bool response_from_cache,
       const std::optional<permissions::GeneratePredictionsResponse>& response);
   PredictionSource GetPredictionTypeToUse(
@@ -95,6 +109,15 @@ class PredictionBasedPermissionUiSelector
 
   bool ShouldHoldBack(bool is_on_device, permissions::RequestType request_type);
 
+  void InquireServerModel(permissions::PredictionRequestFeatures features,
+                          permissions::RequestType request_type);
+  void InquireTfliteOnDeviceModelIfAvailable(
+      permissions::PredictionRequestFeatures features,
+      permissions::RequestType request_type);
+  void InquireGenAiOnDeviceAndServerModelIfAvailable(
+      permissions::PredictionRequestFeatures features,
+      permissions::RequestType request_type);
+
   raw_ptr<Profile> profile_;
   std::unique_ptr<PredictionServiceRequest> request_;
   std::optional<PredictionGrantLikelihood> last_request_grant_likelihood_;
@@ -106,6 +129,7 @@ class PredictionBasedPermissionUiSelector
 
   DecisionMadeCallback callback_;
 
+  // Used to asynchronously call the callback during on device model execution.
   base::WeakPtrFactory<PredictionBasedPermissionUiSelector> weak_ptr_factory_{
       this};
 };

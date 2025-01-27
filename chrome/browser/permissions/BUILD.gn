@@ -87,6 +87,7 @@ source_set("permissions") {
     "//components/infobars/content",
     "//components/keyed_service/content",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/permissions",
     "//components/permissions/prediction_service",
     "//components/pref_registry",
