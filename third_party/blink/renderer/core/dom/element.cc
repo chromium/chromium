@@ -10404,10 +10404,12 @@ void Element::SetHovered(bool hovered) {
         ScheduleInterestGainedTask();
       }
     } else {
-      if (target) [[unlikely]] {
+      if (target && invoker_data) [[unlikely]] {
         // This is an interest invoker which was just de-hovered. Cancel any
         // pending InterestGained tasks, and schedule an InterestLost task if
-        // needed.
+        // needed. (We need to check that invoker_data is non-nullptr because
+        // the `invoketarget` attribute might have been added while this element
+        // was already hovered.)
         invoker_data->cancelInterestGainedTask();
         if (target->GetInterestInvoker() == this) {
           ScheduleInterestLostTask();

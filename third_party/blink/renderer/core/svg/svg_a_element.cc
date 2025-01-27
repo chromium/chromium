@@ -171,7 +171,9 @@ void SVGAElement::DefaultEventHandler(Event& event) {
 Element* SVGAElement::interestTargetElement() {
   CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
 
-  if (!IsInTreeScope()) {
+  // Anchor elements that don't have the `href` attribute are not interactive,
+  // so they can't support `interesttarget`.
+  if (!IsInTreeScope() || !IsLink()) {
     return nullptr;
   }
 
