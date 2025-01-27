@@ -10,8 +10,10 @@
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "components/search/ntp_features.h"
 #include "net/base/mime_util.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 
@@ -317,6 +319,8 @@ void MicrosoftFilesPageHandler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kNtpMicrosoftFilesModuleLastDismissedTime,
                              base::Time());
+  registry->RegisterTimePref(prefs::kNtpMicrosoftFilesModuleRetryAfterTime,
+                             base::Time());
 }
 
 MicrosoftFilesPageHandler::MicrosoftFilesPageHandler(
@@ -338,11 +342,27 @@ void MicrosoftFilesPageHandler::GetFiles(GetFilesCallback callback) {
     std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     return;
   }
-  if (ntp_features::kNtpSharepointModuleDataParam.Get() ==
-             ntp_features::NtpSharepointModuleDataType::kTrendingInsights) {
+
+  bool param_is_trending =
+      ntp_features::kNtpSharepointModuleDataParam.Get() ==
+      ntp_features::NtpSharepointModuleDataType::kTrendingInsights;
+  bool param_is_non_insights =
+      ntp_features::kNtpSharepointModuleDataParam.Get() ==
+      ntp_features::NtpSharepointModuleDataType::kNonInsights;
+
+  // Ensure requests aren't made when a throttling error must be waited out.
+  base::Time retry_after_time =
+      pref_service_->GetTime(prefs::kNtpMicrosoftFilesModuleRetryAfterTime);
+  if ((param_is_trending || param_is_non_insights) &&
+      (retry_after_time != base::Time() &&
+       base::Time::Now() < retry_after_time)) {
+    std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
+    return;
+  }
+
+  if (param_is_trending) {
     GetTrendingFiles(std::move(callback));
-  } else if (ntp_features::kNtpSharepointModuleDataParam.Get() ==
-             ntp_features::NtpSharepointModuleDataType::kNonInsights) {
+  } else if (param_is_non_insights) {
     GetRecentlyUsedAndSharedFiles(std::move(callback));
   } else {
     // Parse data immediately when displaying fake data.
@@ -413,6 +433,18 @@ void MicrosoftFilesPageHandler::OnJsonReceived(
     GetFilesCallback callback,
     std::unique_ptr<std::string> response_body) {
   const int net_error = url_loader_->NetError();
+
+  // Check for throttling errors.
+  auto* response_info = url_loader_->ResponseInfo();
+  if (net_error != net::OK && response_info && response_info->headers) {
+    int64_t wait_time =
+        response_info->headers->GetInt64HeaderValue("Retry-After");
+    if (wait_time != -1) {
+      pref_service_->SetTime(prefs::kNtpMicrosoftFilesModuleRetryAfterTime,
+                             base::Time::Now() + base::Seconds(wait_time));
+    }
+  }
+
   url_loader_.reset();
 
   if (net_error == net::OK && response_body) {

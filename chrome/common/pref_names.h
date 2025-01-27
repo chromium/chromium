@@ -2391,6 +2391,10 @@ inline constexpr char kNtpDisabledModules[] = "NewTabPage.DisabledModules";
 // Time the Microsoft files module was last dismissed.
 inline constexpr char kNtpMicrosoftFilesModuleLastDismissedTime[] =
     "NewTabPage.MicrosoftFilesModuleLastDismissedTime";
+// The next time file suggestions can be requested after hitting a throttling
+// error.
+inline constexpr char kNtpMicrosoftFilesModuleRetryAfterTime[] =
+    "NewTabPage.MicrosoftFilesModuleRetryAfterTime";
 // List keeping track of NTP modules order.
 inline constexpr char kNtpModulesOrder[] = "NewTabPage.ModulesOrder";
 // Whether NTP modules are visible.
