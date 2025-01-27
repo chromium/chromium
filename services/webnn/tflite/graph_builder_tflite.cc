@@ -570,10 +570,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*quantize_linear_zero_point=*/DataTypeConstraint::kInts8,
        // ReduceL1 is emulated by abs and reduceSum.
        /*reduce_l1_input=*/{kFloat16To32AndInt32, SupportedRanks::UpTo(8)},
-       // ReduceL2 is emulated by reduceSumSquare followed by pow(x, 0.5)
-       // which can't broadcast to more than 4D.
+       // ReduceL2 is emulated by reduceSumSquare followed by sqrt.
        /*reduce_l2_input=*/
-       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(4)},
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
        // ReduceLogSum is emulated by reduceSum and log.
        /*reduce_log_sum_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
@@ -621,6 +620,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        // Polyfilled with a broadcasted ADD.
        /*softsign_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(6)},
+       /*split_input=*/
        {kFloat16To32AndInt8To64AndUint8, SupportedRanks::UpTo(8)},
        /*tanh_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
@@ -1272,6 +1272,37 @@ auto GraphBuilderTflite::SerializeCastOperation(
       ::tflite::BuiltinOptions_CastOptions, cast_options.Union());
 }
 
+auto GraphBuilderTflite::SerializeSquareOperation(
+    int32_t input_tensor_index,
+    ::tflite::TensorType input_tensor_type,
+    int32_t output_tensor_index) -> OperatorOffset {
+  // TFLite only supports float32 for the built-in square operator,
+  // everything else needs to use a fallback.
+  if (input_tensor_type == ::tflite::TensorType_FLOAT32) {
+    return SerializeUnaryOperation(::tflite::BuiltinOperator_SQUARE,
+                                   input_tensor_index, output_tensor_index);
+  } else if (input_tensor_type == ::tflite::TensorType_INT32) {
+    return SerializeBinaryOperation(::tflite::BuiltinOperator_MUL,
+                                    input_tensor_index, input_tensor_index,
+                                    output_tensor_index);
+  } else {
+    NOTREACHED() << "Unsupported data type for square";
+  }
+}
+
+auto GraphBuilderTflite::SerializeSquareRootOperation(
+    int32_t input_tensor_index,
+    ::tflite::TensorType input_tensor_type,
+    int32_t output_tensor_index)
+    -> base::expected<OperatorOffset, std::string> {
+  if (input_tensor_type == ::tflite::TensorType_FLOAT32) {
+    return SerializeUnaryOperation(::tflite::BuiltinOperator_SQRT,
+                                   input_tensor_index, output_tensor_index);
+  } else {
+    NOTREACHED() << "Unsupported data type for sqrt";
+  }
+}
+
 auto GraphBuilderTflite::SerializeBinaryOperation(
     ::tflite::BuiltinOperator code,
     int32_t lhs_tensor_index,
@@ -1672,12 +1703,17 @@ int32_t GraphBuilderTflite::SerializeSubGraphPowMul(
     base::span<const int32_t> input_dimensions,
     ::tflite::TensorType input_tensor_type,
     int32_t input_tensor_index,
-    float pow_exponent,
+    int pow_exponent,
     float mul_alpha) {
+  // TFLite has a special optimization for broadcasting the POW operator with
+  // an integer exponent to any dimension, but the MUL operator only broadcasts
+  // to 6D.
+  CHECK_LE(input_dimensions.size(), 6u);
+
   const int32_t output_tensor_index_of_pow =
       SerializeTemporaryTensor(input_dimensions, input_tensor_type);
   const int32_t pow_exponent_tensor_index = SerializeTensorWithBuffer<float>(
-      /*buffer=*/std::array<float, 1>{pow_exponent},
+      /*buffer=*/std::array<float, 1>{static_cast<float>(pow_exponent)},
       /*dimensions=*/{});
   operators_.emplace_back(SerializeBinaryOperation(
       ::tflite::BuiltinOperator_POW, input_tensor_index,
@@ -2409,19 +2445,16 @@ auto GraphBuilderTflite::SerializeErf(const TensorInfo& input_tensor_info,
     }
   }
 
-  // Compute the subexpression `exp(-pow(x, 2))`.
-  const int32_t output_tensor_index_of_pow = SerializeTemporaryTensor(
+  // Compute the subexpression `exp(-square(x))`.
+  const int32_t output_tensor_index_of_square = SerializeTemporaryTensor(
       input_tensor_info.dimensions, input_tensor_info.data_type);
-  const int32_t pow_exponent_tensor_index = SerializeTensorWithBuffer<float>(
-      /*buffer=*/std::array<float, 1>{2.0},
-      /*dimensions=*/{});
-  operators_.emplace_back(SerializeBinaryOperation(
-      ::tflite::BuiltinOperator_POW, input_tensor_index,
-      pow_exponent_tensor_index, output_tensor_index_of_pow));
+  operators_.emplace_back(SerializeSquareOperation(
+      input_tensor_info.index, input_tensor_info.data_type,
+      output_tensor_index_of_square));
   const int32_t output_tensor_index_of_neg = SerializeTemporaryTensor(
       input_tensor_info.dimensions, input_tensor_info.data_type);
   operators_.emplace_back(SerializeUnaryOperation(::tflite::BuiltinOperator_NEG,
-                                                  output_tensor_index_of_pow,
+                                                  output_tensor_index_of_square,
                                                   output_tensor_index_of_neg));
   const int32_t output_tensor_index_of_exp = SerializeTemporaryTensor(
       input_tensor_info.dimensions, input_tensor_info.data_type);
@@ -3823,25 +3856,22 @@ GraphBuilderTflite::ComputeMeanAndVarianceForNormalization(
       ::tflite::BuiltinOperator_MEAN, input_tensor_index, mean_tensor_index,
       spatial_dimensions, /*keep_dimensions=*/true));
 
-  // Get variance with expression `Variance = ReduceMean(Pow(Input - Mean, 2))`
+  // Get variance with expression `Variance = ReduceMean(Square(Input - Mean))`
   // over the spatial dimensions of the input.
   const int32_t output_tensor_index_of_sub =
       SerializeTemporaryTensor(input_dimensions, input_tensor_type);
   operators_.emplace_back(SerializeBinaryOperation(
       ::tflite::BuiltinOperator_SUB, input_tensor_index, mean_tensor_index,
       output_tensor_index_of_sub));
-  const int32_t pow_constant_tensor_index = SerializeTensorWithBuffer<float>(
-      /*buffer=*/std::array<float, 1>{2.0},
-      /*dimensions=*/{});
-  const int32_t output_tensor_index_of_pow =
+  const int32_t output_tensor_index_of_square =
       SerializeTemporaryTensor(input_dimensions, input_tensor_type);
-  operators_.emplace_back(SerializeBinaryOperation(
-      ::tflite::BuiltinOperator_POW, output_tensor_index_of_sub,
-      pow_constant_tensor_index, output_tensor_index_of_pow));
+  operators_.emplace_back(
+      SerializeSquareOperation(output_tensor_index_of_sub, input_tensor_type,
+                               output_tensor_index_of_square));
   const int32_t variance_tensor_index =
       SerializeTemporaryTensor(reduce_dimensions, input_tensor_type);
   operators_.emplace_back(SerializeReduceOperation(
-      ::tflite::BuiltinOperator_MEAN, output_tensor_index_of_pow,
+      ::tflite::BuiltinOperator_MEAN, output_tensor_index_of_square,
       variance_tensor_index, spatial_dimensions, /*keep_dimensions=*/true));
 
   return std::make_tuple(mean_tensor_index, variance_tensor_index);
@@ -4769,7 +4799,7 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
     }
     case mojom::Reduce::Kind::kL2: {
       CHECK(data_type_limits.reduce_l2_input.Supports(input_descriptor));
-      // The reduceL2 can be emulated with appending pow(x, 0.5) operation after
+      // The reduceL2 can be emulated with appending sqrt operation after
       // reduceSumSquare.
       const int32_t output_tensor_index_of_sum = SerializeTemporaryTensor(
           input_tensor_info.dimensions, input_tensor_info.data_type);
@@ -4778,13 +4808,9 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
                                                 reduce.keep_dimensions,
                                                 output_tensor_index_of_sum));
       operators_.emplace_back(operator_offset);
-      const int32_t pow_constant_tensor_index =
-          SerializeTensorWithBuffer<float>(
-              /*buffer=*/std::array<float, 1>{0.5},
-              /*dimensions=*/{});
-      return SerializeBinaryOperation(
-          ::tflite::BuiltinOperator_POW, output_tensor_index_of_sum,
-          pow_constant_tensor_index, output_tensor_info.index);
+      return SerializeSquareRootOperation(output_tensor_index_of_sum,
+                                          input_tensor_info.data_type,
+                                          output_tensor_info.index);
     }
     case mojom::Reduce::Kind::kSumSquare: {
       // The reduceSumSquare can be emulated with adding pow operation before
@@ -4835,26 +4861,16 @@ auto GraphBuilderTflite::SerializeReduceSumSquare(
     -> base::expected<OperatorOffset, std::string> {
   CHECK(input_tensor_info.data_type == ::tflite::TensorType_FLOAT32 ||
         input_tensor_info.data_type == ::tflite::TensorType_INT32);
-  // The reduceSumSquare can be emulated with adding pow operation before
+  // The reduceSumSquare can be emulated with adding square operation before
   // reduceSum.
-  int32_t pow_constant_tensor_index = -1;
-  if (input_tensor_info.data_type == ::tflite::TensorType_FLOAT32) {
-    pow_constant_tensor_index = SerializeTensorWithBuffer<float>(
-        /*buffer=*/std::array<float, 1>{2.0},
-        /*dimensions=*/{});
-  } else if (input_tensor_info.data_type == ::tflite::TensorType_INT32) {
-    pow_constant_tensor_index = SerializeTensorWithBuffer<int32_t>(
-        /*buffer=*/std::array<int32_t, 1>{2},
-        /*dimensions=*/{});
-  }
-  const int32_t output_tensor_index_of_pow = SerializeTemporaryTensor(
+  const int32_t output_tensor_index_of_square = SerializeTemporaryTensor(
       input_tensor_info.dimensions, input_tensor_info.data_type);
-  operators_.emplace_back(SerializeBinaryOperation(
-      ::tflite::BuiltinOperator_POW, input_tensor_info.index,
-      pow_constant_tensor_index, output_tensor_index_of_pow));
+  operators_.emplace_back(SerializeSquareOperation(
+      input_tensor_info.index, input_tensor_info.data_type,
+      output_tensor_index_of_square));
 
   return SerializeReduceOperation(::tflite::BuiltinOperator_SUM,
-                                  output_tensor_index_of_pow,
+                                  output_tensor_index_of_square,
                                   output_tensor_index, axes, keep_dimensions);
 }
 

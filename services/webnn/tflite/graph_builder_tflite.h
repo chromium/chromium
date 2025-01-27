@@ -219,6 +219,17 @@ class GraphBuilderTflite final {
       int32_t output_tensor_index,
       ::tflite::TensorType output_tensor_type);
 
+  // Serializes specializations of the pow operator for the square and square
+  // root operations.
+  OperatorOffset SerializeSquareOperation(
+      int32_t input_tensor_index,
+      ::tflite::TensorType input_tensor_type,
+      int32_t output_tensor_index);
+  base::expected<OperatorOffset, std::string> SerializeSquareRootOperation(
+      int32_t input_tensor_index,
+      ::tflite::TensorType input_tensor_type,
+      int32_t output_tensor_index);
+
   // A helper function is used by WebNN binary operation direct or emulated
   // implementation.
   OperatorOffset SerializeBinaryOperation(::tflite::BuiltinOperator code,
@@ -394,7 +405,7 @@ class GraphBuilderTflite final {
   int32_t SerializeSubGraphPowMul(base::span<const int32_t> input_dimensions,
                                   ::tflite::TensorType input_tensor_type,
                                   int32_t input_tensor_index,
-                                  float pow_exponent,
+                                  int pow_exponent,
                                   float mul_alpha);
 
   // Serialize a sub graph (input * weight + bias) for gru cell.

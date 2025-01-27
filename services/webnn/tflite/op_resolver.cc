@@ -235,6 +235,8 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
              ::tflite::ops::builtin::Register_SPLIT_V(),
              /* min_version = */ 1,
              /* max_version = */ 2);
+  AddBuiltin(::tflite::BuiltinOperator_SQUARE,
+             ::tflite::ops::builtin::Register_SQUARE());
   AddBuiltin(::tflite::BuiltinOperator_SQUEEZE,
              ::tflite::ops::builtin::Register_SQUEEZE(),
              /* min_version = */ 1,
