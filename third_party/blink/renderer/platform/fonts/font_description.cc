@@ -91,8 +91,6 @@ FontDescription::FontDescription()
       font_selection_request_(kNormalWeightValue,
                               kNormalWidthValue,
                               kNormalSlopeValue) {
-  fields_as_unsigned_.parts[0] = 0;
-  fields_as_unsigned_.parts[1] = 0;
   fields_.orientation_ = static_cast<unsigned>(FontOrientation::kHorizontal);
   fields_.width_variant_ = kRegularWidth;
   fields_.variant_caps_ = kCapsNormal;
@@ -108,18 +106,21 @@ FontDescription::FontDescription()
   fields_.text_rendering_ = kAutoTextRendering;
   fields_.synthetic_bold_ = false;
   fields_.synthetic_italic_ = false;
+  fields_.synthetic_oblique_ = false;
   fields_.subpixel_text_position_ = use_subpixel_text_positioning_;
   fields_.typesetting_features_ = 0;
   fields_.variant_numeric_ = FontVariantNumeric().fields_as_unsigned_;
+  fields_.variant_east_asian_ = 0;
   fields_.subpixel_ascent_descent_ = false;
   fields_.font_optical_sizing_ = OpticalSizing::kAutoOpticalSizing;
+  fields_.has_size_adjust_descriptor_ = false;
   fields_.hash_category_ = kHashRegularValue;
   fields_.font_synthesis_weight_ = kAutoFontSynthesisWeight;
   fields_.font_synthesis_style_ = kAutoFontSynthesisStyle;
   fields_.font_synthesis_small_caps_ = kAutoFontSynthesisSmallCaps;
   fields_.variant_position_ = kNormalVariantPosition;
   fields_.variant_emoji_ = kNormalVariantEmoji;
-  static_assert(static_cast<unsigned>(TextSpacingTrim::kInitial) == 0);
+  fields_.text_spacing_trim_ = static_cast<unsigned>(TextSpacingTrim::kInitial);
 }
 
 FontDescription::FontDescription(const FontDescription&) = default;
