@@ -150,6 +150,7 @@ void CSSDefaultStyleSheets::Reset() {
   // Initialize the styles that have the lazily loaded style sheets.
   InitializeDefaultStyles();
   default_view_source_style_.Clear();
+  rule_set_group_cache_.clear();
 }
 
 void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
@@ -396,6 +397,10 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     }
   }
 
+  if (changed_default_style) {
+    rule_set_group_cache_.clear();
+  }
+
   DCHECK(!default_html_style_->Features()
               .GetRuleInvalidationData()
               .HasIdsInSelectors());
@@ -483,6 +488,7 @@ void CSSDefaultStyleSheets::RebuildFullscreenRuleSetIfMediaQueriesChanged(
       MediaQueryEvaluator(element.GetDocument().GetFrame()));
   default_fullscreen_style_->CompactRulesIfNeeded();
   VerifyUniversalRuleCount();
+  rule_set_group_cache_.clear();
 }
 
 bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
@@ -569,6 +575,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(scroll_button_style_sheet_);
   visitor->Trace(default_json_document_style_);
   visitor->Trace(default_forced_colors_media_controls_style_);
+  visitor->Trace(rule_set_group_cache_);
 }
 
 CSSDefaultStyleSheets::TestingScope::TestingScope() = default;

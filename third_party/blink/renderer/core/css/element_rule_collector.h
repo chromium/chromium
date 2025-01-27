@@ -201,7 +201,7 @@ class CORE_EXPORT ElementRuleCollector {
   // Return 'false' when we don't know if a StyleScope is in scope or not.
   //
   // [1] https://drafts.csswg.org/css-cascade-6/#in-scope
-  bool CanRejectScope(const StyleScope&);
+  bool CanRejectScope(const StyleScope&) const;
 
   void AddElementStyleProperties(const CSSPropertyValueSet*,
                                  CascadeOrigin,

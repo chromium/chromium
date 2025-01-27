@@ -2087,16 +2087,6 @@ static bool AnyRuleCausesInvalidation(const MatchRequest& match_request,
   return false;
 }
 
-namespace {
-
-bool CanRejectRuleSet(ElementRuleCollector& collector,
-                      const RuleSet& rule_set) {
-  const StyleScope* scope = rule_set.SingleScope();
-  return scope && collector.CanRejectScope(*scope);
-}
-
-}  // namespace
-
 // See if a given element needs to be recalculated after RuleSet changes
 // (see ApplyRuleSetInvalidation()).
 void StyleEngine::ApplyRuleSetInvalidationForElement(
@@ -2129,22 +2119,24 @@ void StyleEngine::ApplyRuleSetInvalidationForElement(
   ElementRuleCollector collector(element_resolve_context, style_recalc_context,
                                  selector_filter, match_result, inside_link);
 
-  MatchRequest match_request{&tree_scope.RootNode()};
+  unsigned rule_set_group_index = 0;
+  RuleSetGroup rule_set_group(rule_set_group_index++);
   bool matched_any = false;
   for (const Member<RuleSet>& rule_set : rule_sets) {
-    if (CanRejectRuleSet(collector, *rule_set)) {
-      continue;
-    }
-    match_request.AddRuleSet(rule_set.Get());
-    if (match_request.IsFull()) {
+    rule_set_group.AddRuleSet(rule_set.Get());
+    if (rule_set_group.IsFull()) {
+      MatchRequest match_request(rule_set_group, &tree_scope.RootNode(),
+                                 collector);
       if (AnyRuleCausesInvalidation(match_request, collector, is_shadow_host)) {
         matched_any = true;
         break;
       }
-      match_request.ClearAfterMatching();
+      rule_set_group = RuleSetGroup(rule_set_group_index++);
     }
   }
-  if (!match_request.IsEmpty() && !matched_any) {
+  if (!rule_set_group.IsEmpty() && !matched_any) {
+    MatchRequest match_request(rule_set_group, &tree_scope.RootNode(),
+                               collector);
     matched_any =
         AnyRuleCausesInvalidation(match_request, collector, is_shadow_host);
   }
@@ -2914,6 +2906,11 @@ void StyleEngine::ApplyUserRuleSetChanges(
     rule_set->CompactRulesIfNeeded();
   }
 
+  user_rule_set_groups_.clear();
+  for (const auto& [_, rule_set] : new_style_sheets) {
+    AddRuleSetToRuleSetGroupList(rule_set, user_rule_set_groups_);
+  }
+
   InvalidateForRuleSetChanges(GetDocument(), changed_rule_sets,
                               changed_rule_flags, kInvalidateAllScopes);
 }
@@ -3254,18 +3251,11 @@ void StyleEngine::ChildrenRemoved(ContainerNode& parent) {
   style_recalc_root_.SubtreeModified(parent);
 }
 
-void StyleEngine::CollectMatchingUserRules(
-    ElementRuleCollector& collector) const {
-  MatchRequest match_request;
-  for (const ActiveStyleSheet& style_sheet : active_user_style_sheets_) {
-    match_request.AddRuleSet(style_sheet.second);
-    if (match_request.IsFull()) {
-      collector.CollectMatchingRules(match_request, /*part_names*/ nullptr);
-      match_request.ClearAfterMatching();
-    }
-  }
-  if (!match_request.IsEmpty()) {
-    collector.CollectMatchingRules(match_request, /*part_names*/ nullptr);
+void StyleEngine::CollectMatchingUserRules(ElementRuleCollector& collector) {
+  for (RuleSetGroup& rule_set_group : user_rule_set_groups_) {
+    collector.CollectMatchingRules(
+        MatchRequest(rule_set_group, /*new_scope=*/nullptr),
+        /*part_names*/ nullptr);
   }
 }
 
@@ -4477,6 +4467,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(style_containment_scope_tree_);
   visitor->Trace(try_value_flips_);
   visitor->Trace(anchored_element_dirty_set_);
+  visitor->Trace(user_rule_set_groups_);
   FontSelectorClient::Trace(visitor);
 }
 

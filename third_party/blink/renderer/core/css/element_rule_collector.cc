@@ -747,7 +747,7 @@ bool ElementRuleCollector::CheckIfAnyRuleMatches(
       match_request, /*part_names*/ nullptr);
 }
 
-bool ElementRuleCollector::CanRejectScope(const StyleScope& style_scope) {
+bool ElementRuleCollector::CanRejectScope(const StyleScope& style_scope) const {
   if (!style_scope.IsImplicit()) {
     return false;
   }
