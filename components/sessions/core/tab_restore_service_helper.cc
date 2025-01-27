@@ -563,6 +563,31 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTabOrGroupFromWindow(
   return context;
 }
 
+void TabRestoreServiceHelper::UpdateSavedGroupIDsForTabEntries(
+    std::vector<std::unique_ptr<tab_restore::Tab>>& tabs,
+    const std::map<tab_groups::TabGroupId, base::Uuid>& group_mapping) {
+  for (auto& tab : tabs) {
+    if (tab->group.has_value() && group_mapping.contains(tab->group.value())) {
+      tab->saved_group_id = group_mapping.at(tab->group.value());
+    }
+  }
+}
+
+std::map<tab_groups::TabGroupId, base::Uuid>
+TabRestoreServiceHelper::CreateLocalSavedGroupIDMapping(
+    const std::map<tab_groups::TabGroupId, std::unique_ptr<tab_restore::Group>>&
+        groups) {
+  std::map<tab_groups::TabGroupId, base::Uuid> group_mapping;
+
+  for (const auto& [group_id, group] : groups) {
+    if (group->saved_group_id.has_value()) {
+      group_mapping[group_id] = group->saved_group_id.value();
+    }
+  }
+
+  return group_mapping;
+}
+
 std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
     LiveTabContext* context,
     SessionID id,
@@ -616,6 +641,12 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
             "TabRestore.Window.TimeBetweenClosedAndRestored",
             TimeNow() - window.timestamp);
       }
+
+      // In cases where restoring from a tab restore entry that was created
+      // through session service, or in other cases, the tab objects saved group
+      // information may be missing. Add it in before repopulating tabs.
+      UpdateSavedGroupIDsForTabEntries(
+          window.tabs, CreateLocalSavedGroupIDMapping(window.tab_groups));
 
       // When restoring a window, either the entire window can be restored, or a
       // single tab within it. If the entry's ID matches the one to restore, or
@@ -681,6 +712,14 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
         UMA_HISTOGRAM_LONG_TIMES(
             "TabRestore.Group.TimeBetweenClosedAndRestored",
             TimeNow() - group.timestamp);
+      }
+
+      // In cases where restoring from a tab restore entry that was created
+      // through session service, or in other cases, the tab objects saved group
+      // information may be missing. Add it in before repopulating tabs.
+      if (group.saved_group_id.has_value()) {
+        UpdateSavedGroupIDsForTabEntries(
+            group.tabs, {{group.group_id, group.saved_group_id.value()}});
       }
 
       // When restoring a group, either the entire group can be restored, or a
