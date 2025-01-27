@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <memory>
@@ -17,7 +18,6 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/angle_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -15858,7 +15858,7 @@ TEST_P(LayerTreeHostImplCountingLostSurfaces, TwiceLostSurface) {
 
 size_t CountRenderPassesWithId(const viz::CompositorRenderPassList& list,
                                viz::CompositorRenderPassId id) {
-  return base::ranges::count(list, id, &viz::CompositorRenderPass::id);
+  return std::ranges::count(list, id, &viz::CompositorRenderPass::id);
 }
 
 TEST_P(LayerTreeHostImplTest, RemoveUnreferencedRenderPass) {

@@ -4,12 +4,12 @@
 
 #include "cc/tiles/decoded_image_tracker.h"
 
+#include <algorithm>
 #include <unordered_map>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/test/skia_common.h"
@@ -25,8 +25,7 @@ class TestImageController : public ImageController {
       : ImageController(nullptr, nullptr, base::DoNothing()) {}
 
   void UnlockImageDecode(ImageDecodeRequestId id) override {
-    auto it =
-        base::ranges::find(locked_ids_, id, &LockedIds::value_type::first);
+    auto it = std::ranges::find(locked_ids_, id, &LockedIds::value_type::first);
     ASSERT_FALSE(it == locked_ids_.end());
     locked_ids_.erase(it);
   }

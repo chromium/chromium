@@ -26,7 +26,6 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -3746,7 +3745,7 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
 scoped_refptr<TileTask> GpuImageDecodeCache::GetTaskFromMapForClientId(
     const ClientId client_id,
     const ImageTaskMap& task_map) {
-  auto task_it = base::ranges::find_if(
+  auto task_it = std::ranges::find_if(
       task_map,
       [client_id](
           const std::pair<ClientId, scoped_refptr<TileTask>> task_item) {
