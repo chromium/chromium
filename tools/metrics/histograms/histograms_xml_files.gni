@@ -267,6 +267,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/translate/histograms.xml",
   "//tools/metrics/histograms/metadata/trusted_vault/enums.xml",
   "//tools/metrics/histograms/metadata/trusted_vault/histograms.xml",
+  "//tools/metrics/histograms/metadata/ui/enums.xml",
   "//tools/metrics/histograms/metadata/ui/histograms.xml",
   "//tools/metrics/histograms/metadata/ukm/enums.xml",
   "//tools/metrics/histograms/metadata/ukm/histograms.xml",

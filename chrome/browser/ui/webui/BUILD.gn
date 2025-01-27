@@ -11,7 +11,7 @@ import("//tools/metrics/generate_allowlist_from_histograms_file.gni")
 
 generate_allowlist_from_histograms_file("webui_url_hashes") {
   namespace = "webui_metrics"
-  input_xml_file = "//tools/metrics/histograms/enums.xml"
+  input_xml_file = "//tools/metrics/histograms/metadata/ui/enums.xml"
   tag = "enum"
   output_file = "webui_url_hashes.h"
   allow_list_name = "WebUIUrlHashes"
