@@ -1062,17 +1062,32 @@ bool TaskManagerTableModel::IsTaskFirstInGroup(size_t row_index) const {
   return false;
 }
 
+bool TaskManagerTableModel::ShouldKeepTaskForSupportedType(
+    TaskId task_id) const {
+  const TaskId root = observed_task_manager()->GetRootTaskId(task_id);
+  const Task::Type type = observed_task_manager()->GetType(root);
+  const Task::SubType subtype = observed_task_manager()->GetSubType(root);
+
+  return ShouldKeepTaskForTabs(type, subtype) ||
+         ShouldKeepTaskForExtensions(type) ||
+         ShouldKeepTaskForSystem(type, subtype);
+}
+
 bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
   if (!search_terms_.empty()) {
-    return matched_process_set_.contains(
-        observed_task_manager()->GetProcessId(task_id));
+    // In search mode, keep the task if it falls in a supported category as well
+    // as if it is in the same task group with tasks matching the current search
+    // term.
+    return ShouldKeepTaskForSupportedType(task_id) &&
+           matched_process_set_.contains(
+               observed_task_manager()->GetProcessId(task_id));
   }
 
   // Keep any TaskId iff the task that spawned it (root node) has a type that
   // matches the current category.
-  const TaskId trunk = observed_task_manager()->GetRootTaskId(task_id);
-  const Task::Type type = observed_task_manager()->GetType(trunk);
-  const Task::SubType subtype = observed_task_manager()->GetSubType(trunk);
+  const TaskId root = observed_task_manager()->GetRootTaskId(task_id);
+  const Task::Type type = observed_task_manager()->GetType(root);
+  const Task::SubType subtype = observed_task_manager()->GetSubType(root);
 
   switch (display_category_) {
     case DisplayCategory::kTabs:
@@ -1121,7 +1136,10 @@ void TaskManagerTableModel::UpdateMatchedProcessSet() {
 }
 
 void TaskManagerTableModel::UpdateMatchedProcessSetById(TaskId task_id) {
-  if (base::i18n::StringSearchIgnoringCaseAndAccents(
+  // Excludes the task from search term match if it does not fall in any
+  // category.
+  if (ShouldKeepTaskForSupportedType(task_id) &&
+      base::i18n::StringSearchIgnoringCaseAndAccents(
           search_terms_, observed_task_manager()->GetTitle(task_id),
           /*match_index=*/nullptr, /*match_length=*/nullptr)) {
     matched_process_set_.insert(observed_task_manager()->GetProcessId(task_id));
