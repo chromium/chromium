@@ -1791,6 +1791,7 @@ if (is_android) {
         "../browser/extensions/api/alarms/alarms_apitest.cc",
         "../browser/extensions/api/browsing_data/browsing_data_test.cc",
         "../browser/extensions/api/cookies/cookies_apitest.cc",
+        "../browser/extensions/api/declarative_net_request/declarative_net_request_apitest.cc",
         "../browser/extensions/api/i18n/i18n_apitest.cc",
         "../browser/extensions/api/idle/idle_apitest.cc",
         "../browser/extensions/api/module/module_apitest.cc",
