@@ -529,9 +529,9 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
                   return;
                 }
 
-                std::move(fetch_complete_callback)
-                    .Run(state_change_callback, std::move(complete_callback),
-                         update_service);
+                AppServerWin::PostRpcTask(base::BindOnce(
+                    std::move(fetch_complete_callback), state_change_callback,
+                    std::move(complete_callback), update_service));
               },
               std::move(fetch_complete_callback), state_change_callback,
               std::move(complete_callback), obj, update_service));
@@ -544,6 +544,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   // For backward-compatibility purposes, the `CheckForUpdate` call assumes
   // foreground priority and disallows same version updates.
   HRESULT CheckForUpdate() {
+    current_operation_ = CurrentOperation::kCheckingForUpdates;
     return FetchPolicies(
         base::BindOnce(&AppWebImpl::CheckForUpdateImpl, AppWebImplPtr(this)));
   }
@@ -553,37 +554,19 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           state_change_callback,
       base::OnceCallback<void(UpdateService::Result)> complete_callback,
       scoped_refptr<UpdateService> update_service) {
-    current_operation_ = CurrentOperation::kCheckingForUpdates;
+    CHECK(update_service);
 
-    AppServerWin::PostRpcTask(base::BindOnce(
-        [](base::RepeatingCallback<void(const UpdateService::UpdateState&)>
-               state_change_callback,
-           base::OnceCallback<void(UpdateService::Result)> complete_callback,
-           AppWebImplPtr obj) {
-          scoped_refptr<UpdateService> update_service =
-              GetAppServerWinInstance()->update_service();
-          if (!update_service) {
-            std::move(complete_callback)
-                .Run(UpdateService::Result::kServiceStopped);
-            return;
-          }
-          update_service->CheckForUpdate(
-              obj->app_id_, UpdateService::Priority::kForeground,
-              obj->policy_same_version_update_, obj->language_,
-              state_change_callback, std::move(complete_callback));
-        },
-        state_change_callback, std::move(complete_callback),
-        AppWebImplPtr(this)));
+    update_service->CheckForUpdate(
+        app_id_, UpdateService::Priority::kForeground,
+        policy_same_version_update_, language_, state_change_callback,
+        std::move(complete_callback));
   }
 
   HRESULT UpdateOrInstall() {
     current_operation_ = CurrentOperation::kUpdatingOrInstalling;
-    return is_install_ ? Install() : Update();
-  }
-
-  HRESULT Install() {
-    return FetchPolicies(
-        base::BindOnce(&AppWebImpl::InstallImpl, AppWebImplPtr(this)));
+    return FetchPolicies(base::BindOnce(
+        is_install_ ? &AppWebImpl::InstallImpl : &AppWebImpl::UpdateImpl,
+        AppWebImplPtr(this)));
   }
 
   void InstallImpl(
@@ -591,37 +574,17 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           state_change_callback,
       base::OnceCallback<void(UpdateService::Result)> complete_callback,
       scoped_refptr<UpdateService> update_service) {
-    AppServerWin::PostRpcTask(base::BindOnce(
-        [](base::RepeatingCallback<void(const UpdateService::UpdateState&)>
-               state_change_callback,
-           base::OnceCallback<void(UpdateService::Result)> complete_callback,
-           AppWebImplPtr obj) {
-          scoped_refptr<UpdateService> update_service =
-              GetAppServerWinInstance()->update_service();
-          if (!update_service) {
-            std::move(complete_callback)
-                .Run(UpdateService::Result::kServiceStopped);
-            return;
-          }
+    CHECK(update_service);
 
-          RegistrationRequest request;
-          request.app_id = obj->app_id_;
-          request.version = base::Version(kNullVersion);
-          request.brand_code = obj->brand_code_;
-          request.ap = obj->ap_;
+    RegistrationRequest request;
+    request.app_id = app_id_;
+    request.version = base::Version(kNullVersion);
+    request.brand_code = brand_code_;
+    request.ap = ap_;
 
-          update_service->Install(request, {}, obj->install_data_index_,
-                                  UpdateService::Priority::kForeground,
-                                  obj->language_, state_change_callback,
-                                  std::move(complete_callback));
-        },
-        state_change_callback, std::move(complete_callback),
-        AppWebImplPtr(this)));
-  }
-
-  HRESULT Update() {
-    return FetchPolicies(
-        base::BindOnce(&AppWebImpl::UpdateImpl, AppWebImplPtr(this)));
+    update_service->Install(
+        request, {}, install_data_index_, UpdateService::Priority::kForeground,
+        language_, state_change_callback, std::move(complete_callback));
   }
 
   void UpdateImpl(
@@ -629,26 +592,12 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           state_change_callback,
       base::OnceCallback<void(UpdateService::Result)> complete_callback,
       scoped_refptr<UpdateService> update_service) {
-    AppServerWin::PostRpcTask(base::BindOnce(
-        [](base::RepeatingCallback<void(const UpdateService::UpdateState&)>
-               state_change_callback,
-           base::OnceCallback<void(UpdateService::Result)> complete_callback,
-           AppWebImplPtr obj) {
-          scoped_refptr<UpdateService> update_service =
-              GetAppServerWinInstance()->update_service();
-          if (!update_service) {
-            std::move(complete_callback)
-                .Run(UpdateService::Result::kServiceStopped);
-            return;
-          }
-          update_service->Update(obj->app_id_, obj->install_data_index_,
-                                 UpdateService::Priority::kForeground,
-                                 obj->policy_same_version_update_,
-                                 obj->language_, state_change_callback,
-                                 std::move(complete_callback));
-        },
-        state_change_callback, std::move(complete_callback),
-        AppWebImplPtr(this)));
+    CHECK(update_service);
+
+    update_service->Update(app_id_, install_data_index_,
+                           UpdateService::Priority::kForeground,
+                           policy_same_version_update_, language_,
+                           state_change_callback, std::move(complete_callback));
   }
 
   // Legacy compatibility: sets a flag that causes `get_currentState` to return
