@@ -64,6 +64,7 @@ _DEFAULT_TARGETS = [
     '//chrome/android:chrome_public_apk',
     '//chrome/android:chrome_public_test_apk',
     '//chrome/android:chrome_public_unit_test_apk',
+    '//chrome/browser/android/examples/inline_autofill_service:inline_autofill_service_example_apk',
     '//content/public/android:content_junit_tests',
     '//content/shell/android:content_shell_apk',
     # Below must be included even with --all since they are libraries.
