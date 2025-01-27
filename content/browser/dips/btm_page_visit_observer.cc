@@ -179,4 +179,14 @@ void BtmPageVisitObserver::OnCookiesAccessed(
   state->RecordCookieAccess(details.url, details.type);
 }
 
+void BtmPageVisitObserver::FrameReceivedUserActivation(
+    RenderFrameHost* render_frame_host) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    CHECK(render_frame_host->GetOutermostMainFrameOrEmbedder()
+              ->IsInPrimaryMainFrame());
+    return;
+  }
+  current_page_.received_user_activation = true;
+}
+
 }  // namespace content

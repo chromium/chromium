@@ -111,6 +111,14 @@ MATCHER_P(DidWriteCookies,
                                      result_listener);
 }
 
+MATCHER_P(ReceivedUserActivation,
+          matcher,
+          "has received_user_activation that " +
+              testing::DescribeMatcher<bool>(matcher, negation)) {
+  return testing::ExplainMatchResult(matcher, arg.received_user_activation,
+                                     result_listener);
+}
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_DIPS_BTM_PAGE_VISIT_OBSERVER_TEST_UTILS_H_

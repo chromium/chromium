@@ -11,7 +11,11 @@
 namespace content {
 
 std::ostream& operator<<(std::ostream& out, const BtmPageVisitInfo& page) {
-  return out << "BtmPageVisitInfo{url=" << page.url << "}";
+  return out << "BtmPageVisitInfo{url=" << page.url
+             << ", had_qualifying_storage_access="
+             << page.had_qualifying_storage_access
+             << ", received_user_activation=" << page.received_user_activation
+             << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,

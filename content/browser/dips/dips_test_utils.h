@@ -275,6 +275,8 @@ class OpenedWindowObserver : public WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
+void SimulateUserActivation(WebContents* web_contents);
+
 // Simulate a mouse click and wait for the main frame to receive user
 // activation.
 void SimulateMouseClickAndWait(WebContents*);
