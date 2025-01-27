@@ -416,8 +416,6 @@ void SessionControllerImpl::UpdateUserSession(const UserSession& user_session) {
   }
 
   *it = std::make_unique<UserSession>(user_session);
-  for (auto& observer : observers_)
-    observer.OnUserSessionUpdated((*it)->user_info.account_id);
 
   UpdateLoginStatus();
 }
