@@ -75,6 +75,12 @@ public class DoubleCachedFeatureParam extends CachedFeatureParam<Double> {
         editor.putLong(getSharedPreferenceKey(), value);
     }
 
+    @Override
+    void writeCacheValueToEditor(final SharedPreferences.Editor editor, String value) {
+        final long doubleValue = Double.doubleToRawLongBits(Double.valueOf(value));
+        editor.putLong(getSharedPreferenceKey(), doubleValue);
+    }
+
     /**
      * Forces the parameter to return a specific value for testing.
      *

@@ -71,6 +71,11 @@ public class StringCachedFeatureParam extends CachedFeatureParam<String> {
         editor.putString(getSharedPreferenceKey(), value.isEmpty() ? getDefaultValue() : value);
     }
 
+    @Override
+    void writeCacheValueToEditor(final SharedPreferences.Editor editor, String value) {
+        editor.putString(getSharedPreferenceKey(), value.isEmpty() ? getDefaultValue() : value);
+    }
+
     /**
      * Forces the parameter to return a specific value for testing.
      *

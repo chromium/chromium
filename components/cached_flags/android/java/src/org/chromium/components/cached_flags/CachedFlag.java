@@ -143,7 +143,16 @@ public class CachedFlag extends Flag {
      */
     void writeCacheValueToEditor(final SharedPreferences.Editor editor) {
         final boolean isEnabledInNative = mFeatureMap.isEnabledInNative(mFeatureName);
-        editor.putBoolean(getSharedPreferenceKey(), isEnabledInNative);
+        writeCacheValueToEditor(editor, isEnabledInNative);
+    }
+
+    /**
+     * Assumes the parameter featureValue is the value of the feature and writes it to the provided
+     * SharedPrefs Editor for caching. Does not apply or commit the change - that is left up to the
+     * caller to perform.
+     */
+    void writeCacheValueToEditor(final SharedPreferences.Editor editor, boolean featureValue) {
+        editor.putBoolean(getSharedPreferenceKey(), featureValue);
     }
 
     String getSharedPreferenceKey() {

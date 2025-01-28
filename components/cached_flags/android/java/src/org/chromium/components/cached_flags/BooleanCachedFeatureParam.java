@@ -73,6 +73,12 @@ public class BooleanCachedFeatureParam extends CachedFeatureParam<Boolean> {
         editor.putBoolean(getSharedPreferenceKey(), value);
     }
 
+    @Override
+    void writeCacheValueToEditor(final SharedPreferences.Editor editor, String value) {
+        final boolean booleanValue = Boolean.valueOf(value);
+        editor.putBoolean(getSharedPreferenceKey(), booleanValue);
+    }
+
     /**
      * Forces the parameter to return a specific value for testing.
      *
