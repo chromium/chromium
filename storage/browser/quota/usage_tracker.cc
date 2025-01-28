@@ -305,13 +305,6 @@ void UsageTracker::AccumulateClientUsageWithBreakdown(
     case QuotaClientType::kBackgroundFetch:
       info->usage_breakdown->backgroundFetch += total_usage;
       break;
-    case QuotaClientType::kMediaLicense:
-      // Media license data does not count against quota and should always
-      // report 0 usage.
-      // TODO(crbug.com/40218094): Consider counting media license data against
-      // quota.
-      DCHECK_EQ(total_usage, 0);
-      break;
   }
 
   std::move(barrier_callback).Run();
