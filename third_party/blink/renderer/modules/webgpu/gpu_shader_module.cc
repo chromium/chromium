@@ -94,9 +94,6 @@ void GPUShaderModule::OnCompilationInfoCallback(
       case wgpu::CompilationInfoRequestStatus::InstanceDropped:
         message = "Instance dropped error in getCompilationInfo";
         break;
-      default:
-        message = "Unknown failure in getCompilationInfo";
-        break;
     }
     resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                      message);

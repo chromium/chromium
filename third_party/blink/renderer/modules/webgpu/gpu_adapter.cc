@@ -295,7 +295,6 @@ void GPUAdapter::OnRequestDeviceCallback(
 
     case wgpu::RequestDeviceStatus::Error:
     case wgpu::RequestDeviceStatus::InstanceDropped:
-    default:
       if (dawn_device) {
         // A device provided with an error is already a lost device on the Dawn
         // side, reflect that by resolving the lost property immediately.
