@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include "base/numerics/ranges.h"
 #include "base/path_service.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/glic/border_view.h"
@@ -33,10 +34,7 @@ namespace glic {
 
 namespace {
 
-static const SkColor kBlack = SkColors::kBlack.toSkColor();
-// The border color's alpha could make the RGB value not exact (e.g, 127 vs
-// 128). We allow one-off in each channel for comparison.
-static constexpr int kPxComparisonTolerance = 3;
+static constexpr float kFloatComparisonTolerance = 0.001f;
 
 class GlicBorderViewUiTest : public InteractiveBrowserTest {
  public:
@@ -69,42 +67,6 @@ class GlicBorderViewUiTest : public InteractiveBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InteractiveBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
-  }
-
-  SkBitmap PaintBorder(BorderView* border) {
-    gfx::Canvas canvas(GetContentsRectForWindow(browser()).size(),
-                       /*image_scale=*/1.0f,
-                       /*is_opaque=*/true);
-    canvas.DrawColor(kBlack);
-    border->OnPaint(&canvas);
-    return canvas.GetBitmap();
-  }
-
-  SkColor BorderColor() {
-    return browser()->GetBrowserView().GetColorProvider()->GetColor(
-        ui::kColorSysPrimary);
-  }
-
-  static SkBitmap ConstructExpectedBitmap(const gfx::Size& size,
-                                          SkColor border_color,
-                                          SkColor center_color,
-                                          float border_width,
-                                          float alpha) {
-    SkBitmap bitmap;
-    SkImageInfo info =
-        SkImageInfo::Make(size.width(), size.height(), kRGBA_8888_SkColorType,
-                          kUnpremul_SkAlphaType);
-    bitmap.allocPixels(info);
-    bitmap.eraseColor(center_color);
-    SkCanvas canvas(bitmap, SkSurfaceProps{});
-    SkPaint border;
-    border.setColor(border_color);
-    border.setStyle(SkPaint::Style::kStroke_Style);
-    border.setStrokeWidth(border_width);
-    border.setAlphaf(alpha);
-    canvas.drawRect(SkRect::MakeXYWH(0, 0, size.width(), size.height()),
-                    border);
-    return bitmap;
   }
 
   static gfx::Rect GetContentsRectForWindow(Browser* browser) {
@@ -184,12 +146,11 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, Visibility) {
   EXPECT_FALSE(border->GetVisible());
 }
 
-// Ensures that the border width is correct in various timestamps during the
-// animation.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationSteps) {
+// Exercise the default user journey: toggles the border animation and wait for
+// it to finish.
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
-  gfx::Rect capture_rect = GetContentsRectForWindow(browser());
 
   StartBorderAnimation(browser());
   EXPECT_TRUE(border->compositor_for_testing());
@@ -201,81 +162,33 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationSteps) {
 
   base::TimeTicks timestamp = base::TimeTicks::Now();
 
-  // Note: the following is based on having animation duration = 2 seconds.
-  // timestamp = 0 (now).
-  {
-    border->OnAnimationStep(timestamp);
-    SkBitmap actual_bitmap = PaintBorder(border);
+  // T=0s.
+  border->OnAnimationStep(timestamp);
+  EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 
-    SkBitmap expected_bitmap = ConstructExpectedBitmap(
-        capture_rect.size(),
-        /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/2.f, /*alpha=*/0.f);
+  // T=0.333s.
+  timestamp += base::Seconds(0.333);
+  border->OnAnimationStep(timestamp);
+  // 0.333/0.5.
+  EXPECT_NEAR(border->opacity_for_testing(), 0.666, kFloatComparisonTolerance);
+  // 0.333/(0.5+1.5)=0.167, 1-(1-0.167)**2=0.306
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.306, kFloatComparisonTolerance);
 
-    EXPECT_TRUE(cc::MatchesBitmap(
-        actual_bitmap, expected_bitmap,
-        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
-  }
+  // T=1.333s
+  timestamp += base::Seconds(1);
+  border->OnAnimationStep(timestamp);
+  // Opacity ramp up is 0.5s.
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  // 1.333/(0.5+1.5)=0.667, 1-(1-0.667)**2=0.889
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.889, kFloatComparisonTolerance);
 
-  // timestamp = 0.5 seconds.
-  {
-    timestamp += base::Seconds(0.5);
-    border->OnAnimationStep(timestamp);
-    SkBitmap actual_bitmap = PaintBorder(border);
-
-    // The sin input is calculated as:
-    // (since_first_frame / kDuration) * (PI * 2)
-    // At timestamp = 0.5 and with kAnimationDuration = 2,
-    // we have: (0.5 / 2) * (PI * 2) = 0.125 * M_PI.
-    float progress = sin(0.125 * M_PI);
-
-    // The border width is calculated as:
-    // `kBorderWidthMin` + ((`kBorderWidthMax` - `kBorderWidthMin`) *
-    // `progress`).
-    float border_width = 2 + (8 * progress);
-    SkBitmap expected_bitmap = ConstructExpectedBitmap(
-        capture_rect.size(),
-        /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/border_width,
-        /*alpha=*/progress);
-
-    EXPECT_TRUE(cc::MatchesBitmap(
-        actual_bitmap, expected_bitmap,
-        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
-  }
-
-  // timestamp = 2 seconds.
-  {
-    timestamp += base::Seconds(1.5);
-    border->OnAnimationStep(timestamp);
-    SkBitmap actual_bitmap = PaintBorder(border);
-
-    SkBitmap expected_bitmap =
-        ConstructExpectedBitmap(capture_rect.size(),
-                                /*border_color=*/BorderColor(),
-                                /*center_color=*/kBlack, /*border_width=*/10.f,
-                                /*alpha=*/1.f);
-
-    EXPECT_TRUE(cc::MatchesBitmap(
-        actual_bitmap, expected_bitmap,
-        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
-  }
-
-  // timestamp = 4 seconds; stable state.
-  {
-    timestamp += base::Seconds(2);
-    border->OnAnimationStep(timestamp);
-    SkBitmap actual_bitmap = PaintBorder(border);
-
-    SkBitmap expected_bitmap = ConstructExpectedBitmap(
-        capture_rect.size(),
-        /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/10.f, /*alpha=*/1.f);
-
-    EXPECT_TRUE(cc::MatchesBitmap(
-        actual_bitmap, expected_bitmap,
-        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
-  }
+  // T=2.433s
+  timestamp += base::Seconds(1.1);
+  border->OnAnimationStep(timestamp);
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  // (2.433-2)/0.5=0.866, 1-(1-(1-0.866)**2)=0.018
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.018, kFloatComparisonTolerance);
 
   border->CancelAnimation();
   EXPECT_FALSE(border->compositor_for_testing());
@@ -299,90 +212,48 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateReset) {
 IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
-  gfx::Rect capture_rect = GetContentsRectForWindow(browser());
 
   StartBorderAnimation(browser());
   EXPECT_TRUE(border->compositor_for_testing());
 
   base::TimeTicks timestamp = base::TimeTicks::Now();
 
-  // Note: the following is based on having animation duration = 2 seconds.
-  // timestamp = 0 (now).
-  {
-    border->OnAnimationStep(timestamp);
-    SkBitmap actual_bitmap = PaintBorder(border);
+  // T=0s.
+  border->OnAnimationStep(timestamp);
 
-    SkBitmap expected_bitmap = ConstructExpectedBitmap(
-        capture_rect.size(),
-        /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/2.f, /*alpha=*/0.f);
-
-    EXPECT_TRUE(cc::MatchesBitmap(
-        actual_bitmap, expected_bitmap,
-        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
-  }
-
-  // timestamp = 0.5 seconds.
-  {
-    timestamp += base::Seconds(0.5);
-    border->OnAnimationStep(timestamp);
-    SkBitmap actual_bitmap = PaintBorder(border);
-
-    float progress = sin(0.125 * M_PI);
-    float border_width = 2 + (8 * progress);
-    SkBitmap expected_bitmap = ConstructExpectedBitmap(
-        capture_rect.size(),
-        /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/border_width,
-        /*alpha=*/progress);
-
-    EXPECT_TRUE(cc::MatchesBitmap(
-        actual_bitmap, expected_bitmap,
-        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
-  }
+  // T=1.333s.
+  timestamp += base::Seconds(1.333);
+  border->OnAnimationStep(timestamp);
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.889, kFloatComparisonTolerance);
 
   // Changing the active tab.
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUINewTabURL),
                    /*index=*/-1, /*foreground=*/true);
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
 
-  // Since the active tab has changed, the animation should start from the
-  // beginning.
-  // timestamp = 6 seconds; second 0 in the current animation.
-  {
-    timestamp += base::Seconds(5.5);
-    border->OnAnimationStep(timestamp);
-    SkBitmap actual_bitmap = PaintBorder(border);
+  // Since the active tab has changed, only the emphasis animation should
+  // restart. This `OnAnimationStep()` resets the timeline of the emphasis
+  // animation.
+  border->OnAnimationStep(timestamp);
+  // Opacity isn't reset.
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  // Emphasis is reset.
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 
-    SkBitmap expected_bitmap =
-        ConstructExpectedBitmap(capture_rect.size(),
-                                /*border_color=*/BorderColor(),
-                                /*center_color=*/kBlack, /*border_width=*/2.f,
-                                /*alpha=*/0.f);
+  // T=1.456s. For emphasis, T=0.123s.
+  timestamp += base::Seconds(0.123);
+  border->OnAnimationStep(timestamp);
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  // 0.123/(0.5+1.5)=0.062, 1-(1-0.062)**2=0.120
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.12, kFloatComparisonTolerance);
 
-    EXPECT_TRUE(cc::MatchesBitmap(
-        actual_bitmap, expected_bitmap,
-        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
-  }
-
-  // timestamp = 6.5 seconds; second 0.5 in the current animation.
-  {
-    timestamp += base::Seconds(0.5);
-    border->OnAnimationStep(timestamp);
-    SkBitmap actual_bitmap = PaintBorder(border);
-
-    float progress = sin(0.125 * M_PI);
-    float border_width = 2 + (8 * progress);
-    SkBitmap expected_bitmap = ConstructExpectedBitmap(
-        capture_rect.size(),
-        /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/border_width,
-        /*alpha=*/progress);
-
-    EXPECT_TRUE(cc::MatchesBitmap(
-        actual_bitmap, expected_bitmap,
-        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
-  }
+  // T=3.567. For emphasis, T=2.234.
+  timestamp += base::Seconds(2.111);
+  border->OnAnimationStep(timestamp);
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  // (2.234-2)/0.5=0.468, 1-(1-(1-0.468)**2)=0.283
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.283, kFloatComparisonTolerance);
 
   border->CancelAnimation();
   EXPECT_FALSE(border->compositor_for_testing());
@@ -391,26 +262,20 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
 IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
-  gfx::Rect capture_rect = GetContentsRectForWindow(browser());
 
   StartBorderAnimation(browser());
   EXPECT_TRUE(border->compositor_for_testing());
 
   base::TimeTicks timestamp = base::TimeTicks::Now();
 
-  {
-    border->OnAnimationStep(timestamp);
-    SkBitmap actual_bitmap = PaintBorder(border);
+  // T=0s.
+  border->OnAnimationStep(timestamp);
 
-    SkBitmap expected_bitmap = ConstructExpectedBitmap(
-        capture_rect.size(),
-        /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/2.f, /*alpha=*/0.f);
-
-    EXPECT_TRUE(cc::MatchesBitmap(
-        actual_bitmap, expected_bitmap,
-        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
-  }
+  // T=1.333s.
+  timestamp += base::Seconds(1.333);
+  border->OnAnimationStep(timestamp);
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.889, kFloatComparisonTolerance);
 
   BorderView* new_border = nullptr;
   {
@@ -424,56 +289,37 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
     EXPECT_FALSE(border->compositor_for_testing());
   }
 
-  {
-    // The new "t0" for the border animation in the new browser window.
-    timestamp += base::Seconds(1.2345);
-    new_border->OnAnimationStep(timestamp);
-    SkBitmap actual_bitmap = PaintBorder(new_border);
+  // T=0 in the new window.
+  border->OnAnimationStep(timestamp);
+  EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 
-    SkBitmap expected_bitmap = ConstructExpectedBitmap(
-        capture_rect.size(),
-        /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/2.f, /*alpha=*/0.f);
-
-    EXPECT_TRUE(cc::MatchesBitmap(
-        actual_bitmap, expected_bitmap,
-        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
-  }
-  {
-    timestamp += base::Seconds(1);
-    new_border->OnAnimationStep(timestamp);
-    SkBitmap actual_bitmap = PaintBorder(new_border);
-
-    float progress = sin(0.25 * M_PI);
-    float border_width = 2 + (8 * progress);
-    SkBitmap expected_bitmap = ConstructExpectedBitmap(
-        capture_rect.size(),
-        /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/border_width,
-        /*alpha=*/progress);
-    EXPECT_TRUE(cc::MatchesBitmap(
-        actual_bitmap, expected_bitmap,
-        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
-  }
+  // T=0.123s in the new window.
+  timestamp += base::Seconds(0.123);
+  border->OnAnimationStep(timestamp);
+  // 0.123/0.5=0.246
+  EXPECT_NEAR(border->opacity_for_testing(), 0.246, kFloatComparisonTolerance);
+  // 0.123/(0.5+1.5)=0.062, 1-(1-0.062)**2=0.120
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.12, kFloatComparisonTolerance);
 
   border->CancelAnimation();
   EXPECT_FALSE(border->compositor_for_testing());
 }
 
 namespace {
-class BorderViewFeatureDisabledBrowserTest : public GlicBorderViewUiTest {
+class GlicBorderViewFeatureDisabledBrowserTest : public GlicBorderViewUiTest {
  public:
-  BorderViewFeatureDisabledBrowserTest() {
+  GlicBorderViewFeatureDisabledBrowserTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndDisableFeature(features::kGlic);
   }
-  ~BorderViewFeatureDisabledBrowserTest() override = default;
+  ~GlicBorderViewFeatureDisabledBrowserTest() override = default;
 };
 }  // namespace
 
 // Regression test for https://crbug.com/387458471: The border is not
 // initialized if the feature is disabled.
-IN_PROC_BROWSER_TEST_F(BorderViewFeatureDisabledBrowserTest, NoBorder) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewFeatureDisabledBrowserTest, NoBorder) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   EXPECT_FALSE(border);
 }
@@ -491,46 +337,26 @@ class GlicBorderViewPrefersReducedMotionUiTest : public GlicBorderViewUiTest {
 };
 }  // namespace
 
-// Ensures that in prefers-reduced-motion cases, the border appears in its
-// maximum width and opacity from the very beginning without any animation.
+// Ensures that in prefers-reduced-motion cases, we should immediately show the
+// static border without any animations.
 IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
                        PrefersReducedMotion) {
   ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
-  gfx::Rect capture_rect = GetContentsRectForWindow(browser());
 
   StartBorderAnimation(browser());
   EXPECT_TRUE(border->compositor_for_testing());
 
   base::TimeTicks timestamp = base::TimeTicks::Now();
+  border->OnAnimationStep(timestamp);
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 
-  {
-    border->OnAnimationStep(timestamp);
-    SkBitmap actual_bitmap = PaintBorder(border);
-    SkBitmap expected_bitmap = ConstructExpectedBitmap(
-        capture_rect.size(),
-        /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/10.f, /*alpha=*/1.f);
-
-    EXPECT_TRUE(cc::MatchesBitmap(
-        actual_bitmap, expected_bitmap,
-        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
-  }
-
-  {
-    timestamp += base::Seconds(4);
-    border->OnAnimationStep(timestamp);
-    SkBitmap actual_bitmap = PaintBorder(border);
-    SkBitmap expected_bitmap = ConstructExpectedBitmap(
-        capture_rect.size(),
-        /*border_color=*/BorderColor(),
-        /*center_color=*/kBlack, /*border_width=*/10.f, /*alpha=*/1.f);
-
-    EXPECT_TRUE(cc::MatchesBitmap(
-        actual_bitmap, expected_bitmap,
-        cc::ManhattanDistancePixelComparator(kPxComparisonTolerance)));
-  }
+  timestamp += base::Seconds(2.2);
+  border->OnAnimationStep(timestamp);
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 
   border->CancelAnimation();
   EXPECT_FALSE(border->compositor_for_testing());
