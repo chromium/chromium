@@ -96,10 +96,6 @@ BASE_FEATURE(kCreateWarningShownClientSafeBrowsingReports,
              "CreateWarningShownClientSafeBrowsingReports",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDangerousDownloadInterstitial,
-             "DangerousDownloadInterstitial",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDeepScanningCriteria,
              "SafeBrowsingDeepScanningCriteria",
              base::FEATURE_DISABLED_BY_DEFAULT);

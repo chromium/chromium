@@ -2600,64 +2600,6 @@ are declared in tools/grit/grit_args.gni.
         This file contains malware or comes from a suspicious site.
       </message>
 
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_TITLE"
-               desc="On the downloads page, the title in the interstitial to bypass a dangerous download warning.">
-        Download warning
-      </message>
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_CONTINUE"
-               desc="On the downloads page, the text for the continue anyway button in the interstitial to bypass a dangerous download warning.">
-        Continue anyway
-      </message>
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_CANCEL"
-               desc="On the downloads page, the text for the back to safety button in the interstitial to bypass a dangerous download warning.">
-        Back to safety
-      </message>
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_DOWNLOAD"
-               desc="On the downloads page, the text for the download button in the interstitial to bypass a dangerous download warning.">
-        Download
-      </message>
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TITLE"
-               desc="On the downloads page, the survey title in the interstitial to bypass a dangerous download warning.">
-        Tell us why you're downloading this file anyway
-      </message>
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_CREATED_FILE"
-               desc="On the downloads page, the created file survey option in the interstitial to bypass a dangerous download warning.">
-        I created this file
-      </message>
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITHOUT_URL"
-               desc="On the downloads page, the trust site survey option within the interstitial to bypass a dangerous download warning.">
-        I trust the site
-      </message>
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITH_URL"
-               desc="On the downloads page, the trust site survey option with a url within the interstitial to bypass a dangerous download warning.">
-        I trust the site (<ph name="SITE_URL">$1<ex>https://example.com</ex></ph>)
-      </message>
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_ACCEPT_RISK"
-               desc="On the downloads page, the accept risk survey option in the interstitial to bypass a dangerous download warning.">
-        I'm willing to accept the risk
-      </message>
-      <!-- Dangerous Download Interstitial Accessibility -->
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TITLE_ACCESSIBLE"
-               desc="On the downloads page, the accessible label text for the survey title in the interstitial to bypass a dangerous download warning.">
-        Tell us why you're downloading this file anyway survey
-      </message>
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_CREATED_FILE_ACCESSIBLE"
-               desc="On the downloads page, the accessible label text for the created file survey option in the interstitial to bypass a dangerous download warning.">
-        I created this file, radio button group, 1 of 3
-      </message>
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITHOUT_URL_ACCESSIBLE"
-               desc="On the downloads page, the accessible label text for the trust site survey option within the interstitial to bypass a dangerous download warning.">
-        I trust the site, radio button group, 2 of 3
-      </message>
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITH_URL_ACCESSIBLE"
-               desc="On the downloads page, the accessible label text for the trust site survey option with a url within the interstitial to bypass a dangerous download warning.">
-        I trust the site (<ph name="SITE_URL">$1<ex>https://example.com</ex></ph>), radio button group, 2 of 3
-      </message>
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_ACCEPT_RISK_ACCESSIBLE"
-               desc="On the downloads page, the accessible label text for the accept risk survey option in the interstitial to bypass a dangerous download warning.">
-        I'm willing to accept the risk, radio button group, 3 of 3
-      </message>
-
       <!-- Download Alerts for Accessibility -->
       <message name="IDS_DOWNLOAD_STATUS_IN_PROGRESS_ACCESSIBLE_ALERT"
                desc="The title of a download notification: the current download status is in progress. This message is for screen reader users.">

@@ -298,51 +298,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.DangerousDownloadInterstitial.Action"
-    enum="DangerousDownloadInterstitialAction" expires_after="2025-06-08">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records user action while attempting to recover a blocked download from
-    chrome://downloads. This is logged when the user interacts with the
-    dangerous download interstitial.
-  </summary>
-</histogram>
-
-<histogram
-    name="Download.DangerousDownloadInterstitial.InteractionTime.{InteractionType}"
-    units="ms" expires_after="2025-06-08">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Measures the time (in ms) between {InteractionType} on the dangerous
-    download interstitial. The interstitial is shown when attempting to recover
-    a blocked download from chrome://downloads. This is logged at most once per
-    dangerous download.
-  </summary>
-  <token key="InteractionType">
-    <variant name="CancelInterstitial"
-        summary="opening and canceling the interstitial"/>
-    <variant name="CompleteSurvey" summary="opening and submitting the survey"/>
-    <variant name="OpenSurvey"
-        summary="opening the interstitial and opening the survey"/>
-    <variant name="SaveDangerous"
-        summary="opening and bypassing the interstitial"/>
-  </token>
-</histogram>
-
-<histogram name="Download.DangerousDownloadInterstitial.SurveyResponse"
-    enum="DangerousDownloadInterstitialSurveyOptions"
-    expires_after="2025-06-08">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records user response to the optional survey on the chrome://downloads
-    dangerous download interstitial. This is logged when the user attempts to
-    save the dangerous download and a survey option is selected.
-  </summary>
-</histogram>
-
 <histogram name="Download.Database.IsAvailable" enum="BooleanAvailable"
     expires_after="never">
 <!-- expires-never: Helpful to track download database issue. -->

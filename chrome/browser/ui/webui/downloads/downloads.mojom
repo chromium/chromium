@@ -7,20 +7,6 @@ module downloads.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
-// Represents the possible responses to the survey on the chrome://downloads
-// dangerous download interstitial.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(DangerousDownloadInterstitialSurveyOptions)
-enum DangerousDownloadInterstitialSurveyOptions{
-  kNoResponse = 0,
-  kCreatedFile = 1,
-  kTrustSite = 2,
-  kAcceptRisk = 3,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/download/enums.xml:DangerousDownloadInterstitialSurveyOptions)
-
 // This is a subset of download::DownloadDangerType.
 enum DangerType {
   // This is the catch-all value for DownloadDangerTypes that are not relevant
@@ -158,32 +144,13 @@ interface PageHandler {
   RecordOpenBypassWarningDialog(string id);
 
   // Called when "Download dangerous file" is clicked from the
-  // chrome://downloads overflow menu to open the warning bypass interstitial,
-  // for dangerous files. Only records the opening of the warning bypass
-  // interstitial.
-  RecordOpenBypassWarningInterstitial(string id);
-
-  // Called when "Download anyway" is clicked on the chrome://downloads warning
-  // bypass interstitial, for dangerous files.
-  RecordOpenSurveyOnDangerousInterstitial(string id);
-
-  // Called when "Download dangerous file" is clicked from the
   // chrome://downloads warning dialog, for dangerous files.
   SaveDangerousFromDialogRequiringGesture(string id);
-
-  // Called when "Download <dangerous file name>" is clicked from the
-  // chrome://downloads warning interstitial, for dangerous files.
-  SaveDangerousFromInterstitialNeedGesture(string id,
-    DangerousDownloadInterstitialSurveyOptions response);
 
   // Called when "Cancel" is clicked on the chrome://downloads warning bypass
   // dialog, or the dialog is closed by dismissing it. Only records the event
   // and potentially sends a report.
   RecordCancelBypassWarningDialog(string id);
-
-  // Called when "Cancel" is clicked on the chrome://downloads warning bypass
-  // interstitial. Only records the event and potentially sends a report.
-  RecordCancelBypassWarningInterstitial(string id);
 
   DiscardDangerous(string id);
   RetryDownload(string id);
