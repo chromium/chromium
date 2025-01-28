@@ -25,16 +25,6 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_features.mojom-features.h"
 
-// It looks that screen_ai_library "PresandboxInit" reads uninitialized value
-// and MSan tests are failing.
-//
-// TODO(b:392474272): Fix it and Reenable these tests.
-#if defined(MEMORY_SANITIZER)
-#define DISABLE_MSAN(x) DISABLED_##x
-#else
-#define DISABLE_MSAN(x) x
-#endif
-
 namespace {
 
 #if !BUILDFLAG(USE_FAKE_SCREEN_AI)
@@ -159,7 +149,7 @@ class MainContentExtractionTest : public InProcessBrowserTest {
 };
 
 // Tests that calling main content extraction without content gets replied.
-IN_PROC_BROWSER_TEST_F(MainContentExtractionTest, DISABLE_MSAN(EmptyInput)) {
+IN_PROC_BROWSER_TEST_F(MainContentExtractionTest, EmptyInput) {
   Connect();
 
   ui::AXNodeData root;

@@ -24,16 +24,6 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_features.mojom-features.h"
 
-// It looks that screen_ai_library "PresandboxInit" reads uninitialized value
-// and MSan tests are failing.
-//
-// TODO(b:392474272): Fix it and Reenable these tests.
-#if defined(MEMORY_SANITIZER)
-#define DISABLE_MSAN(x) DISABLED_##x
-#else
-#define DISABLE_MSAN(x) x
-#endif
-
 namespace {
 
 enum class LibraryAvailablity {
@@ -218,8 +208,7 @@ class ScreenAIServiceRouterTest
   ResultsWaiter waiter_;
 };
 
-IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
-                       DISABLE_MSAN(OCRInitialization)) {
+IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest, OCRInitialization) {
   ScreenAIServiceRouter::Service service = ScreenAIServiceRouter::Service::kOCR;
 
   GetServiceStateAndWaitForResult(service);
@@ -234,7 +223,7 @@ IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
-                       DISABLE_MSAN(MainContentExtractionInitialization)) {
+                       MainContentExtractionInitialization) {
   ScreenAIServiceRouter::Service service =
       ScreenAIServiceRouter::Service::kMainContentExtraction;
 
@@ -249,8 +238,7 @@ IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
   EXPECT_EQ(waiter_.GetResult(), expected_result);
 }
 
-IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
-                       DISABLE_MSAN(MixedInitialization)) {
+IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest, MixedInitialization) {
   ScreenAIServiceRouter::Service service =
       ScreenAIServiceRouter::Service::kMainContentExtraction;
   GetServiceStateAndWaitForResult(service);
@@ -264,7 +252,7 @@ IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
 // Tests if asking for initialization of a second service before getting the
 // result of the first one passes.
 IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
-                       DISABLE_MSAN(MixedInitializationWithoutWait)) {
+                       MixedInitializationWithoutWait) {
   ScreenAIServiceRouter::Service service1 =
       ScreenAIServiceRouter::Service::kOCR;
   ScreenAIServiceRouter::Service service2 =
@@ -292,7 +280,7 @@ IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
 // Tests if repeated asking for initialization of a service before getting the
 // result of the first request passes.
 IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
-                       DISABLE_MSAN(RepeatedInitializationWithoutWait)) {
+                       RepeatedInitializationWithoutWait) {
   ScreenAIServiceRouter::Service service = ScreenAIServiceRouter::Service::kOCR;
 
   ResultsWaiter waiter1;
