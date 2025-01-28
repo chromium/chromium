@@ -339,10 +339,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
         [weakSelf firstSceneDidEnterForeground];
       });
 
-  // Register if it's a cold start or when bringing Chrome to foreground with
-  // Content Push Notifications available.
-  if (_mainController.isColdStart ||
-      [self provisionalNotificationTypesEnabled]) {
+  if (_mainController.isColdStart) {
     [PushNotificationUtil
         registerDeviceWithAPNSWithProvisionalNotificationsAvailable:
             [self provisionalNotificationTypesEnabled]];
