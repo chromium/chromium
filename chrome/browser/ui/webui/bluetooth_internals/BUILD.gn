@@ -30,7 +30,7 @@ source_set("bluetooth_internals") {
     "//ui/webui",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//ash/public/cpp",
       "//chrome/browser/ash/bluetooth",
@@ -38,6 +38,7 @@ source_set("bluetooth_internals") {
       "//chromeos/ash/services/bluetooth_config/public/mojom",
     ]
   }
+
   if (is_android) {
     deps += [
       "//components/permissions:permissions",

@@ -83,7 +83,7 @@ source_set("unit_tests") {
     deps += [ "//ui/aura" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "window_sizer_chromeos_unittest.cc" ]
     deps += [
       "//ash",
@@ -103,7 +103,7 @@ source_set("unit_tests") {
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   source_set("browser_tests") {
     testonly = true
 

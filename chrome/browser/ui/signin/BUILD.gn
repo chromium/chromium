@@ -93,8 +93,8 @@ if (enable_dice_support) {
 }
 
 if (!is_android) {
-  # This is not applicable to ChromeOS, but to lacros + other desktop platforms.
-  if (!is_chromeos_device && !is_chromeos_ash) {
+  # This is not applicable to ChromeOS, but to desktop platforms.
+  if (!is_chromeos_device && !is_chromeos) {
     source_set("interactive_ui_tests") {
       testonly = true
       defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
