@@ -100,8 +100,13 @@ class PredictionBasedPermissionUiSelector
     likelihood_override_for_testing_ = mock_likelihood;
   }
 
-  void FetchInnerTextForFrame(content::RenderFrameHost* rfh);
+  void FetchInnerTextForFrame(
+      content::RenderFrameHost* rfh,
+      const permissions::PredictionRequestFeatures& features,
+      const permissions::RequestType& request_type);
   void OnGetInnerTextForOnDeviceModel(
+      const permissions::PredictionRequestFeatures& features,
+      const permissions::RequestType& request_type,
       std::unique_ptr<content_extraction::InnerTextResult> result);
 
   void OnModelExecutionComplete(
@@ -109,14 +114,16 @@ class PredictionBasedPermissionUiSelector
 
   bool ShouldHoldBack(bool is_on_device, permissions::RequestType request_type);
 
-  void InquireServerModel(permissions::PredictionRequestFeatures features,
-                          permissions::RequestType request_type);
+  void InquireServerModel(
+      const permissions::PredictionRequestFeatures& features,
+      const permissions::RequestType& request_type);
   void InquireTfliteOnDeviceModelIfAvailable(
-      permissions::PredictionRequestFeatures features,
-      permissions::RequestType request_type);
+      const permissions::PredictionRequestFeatures& features,
+      const permissions::RequestType& request_type);
   void InquireGenAiOnDeviceAndServerModelIfAvailable(
-      permissions::PredictionRequestFeatures features,
-      permissions::RequestType request_type);
+      content::RenderFrameHost* rfh,
+      const permissions::PredictionRequestFeatures& features,
+      const permissions::RequestType& request_type);
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<PredictionServiceRequest> request_;
