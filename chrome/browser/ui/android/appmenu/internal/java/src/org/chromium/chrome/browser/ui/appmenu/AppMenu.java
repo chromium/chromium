@@ -292,6 +292,11 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         mListView.setAdapter(mAdapter);
 
         anchorView.getLocationOnScreen(mTempLocation);
+        // getLocationOnScreen() may return incorrect location when anchorView is scrolled up and
+        // leave the screen. In this case, we reset the location as 0 to indicate that the
+        // anchorView is out of the visible screen area. See https://crbug.com/392698392.
+        mTempLocation[1] = Math.max(mTempLocation[1], 0);
+
         int anchorViewOffset =
                 Math.min(
                         Math.abs(mTempLocation[1] - visibleDisplayFrame.top),
