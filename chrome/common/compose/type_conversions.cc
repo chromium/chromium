@@ -59,6 +59,7 @@ compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
     case ModelExecutionError::kUnsupportedLanguage:
       return compose::mojom::ComposeStatus::kUnsupportedLanguage;
     case ModelExecutionError::kFiltered:
+    case ModelExecutionError::kResponseLowQuality:
       return compose::mojom::ComposeStatus::kFiltered;
     case ModelExecutionError::kDisabled:
       return compose::mojom::ComposeStatus::kDisabled;

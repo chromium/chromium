@@ -36,5 +36,8 @@ blink::mojom::ModelStreamingResponseStatus AIUtils::ConvertModelExecutionError(
       return blink::mojom::ModelStreamingResponseStatus::kErrorDisabled;
     case ModelExecutionError::kCancelled:
       return blink::mojom::ModelStreamingResponseStatus::kErrorCancelled;
+    case ModelExecutionError::kResponseLowQuality:
+      return blink::mojom::ModelStreamingResponseStatus::
+          kErrorResponseLowQuality;
   }
 }

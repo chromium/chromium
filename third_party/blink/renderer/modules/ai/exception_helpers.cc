@@ -25,10 +25,13 @@ const char kExceptionMessagePermissionDenied[] =
     "allowed to execute model.";
 const char kExceptionMessageGenericError[] = "Other generic failures occurred.";
 const char kExceptionMessageFiltered[] =
-    "The execution yielded a bad response.";
+    "The execution yielded an unsafe response.";
 const char kExceptionMessageOutputLanguageFiltered[] =
     "The model attempted to output text in an untested language, and was "
     "prevented from doing so.";
+const char kExceptionMessageResponseLowQuality[] =
+    "The model attempted to output text with low quality, and was prevented "
+    "from doing so.";
 const char kExceptionMessageDisabled[] = "The response was disabled.";
 const char kExceptionMessageCancelled[] = "The request was cancelled.";
 const char kExceptionMessageSessionDestroyed[] =
@@ -159,6 +162,10 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
       return DOMException::Create(
           kExceptionRequestTooLarge,
           DOMException::GetErrorName(DOMExceptionCode::kQuotaExceededError));
+    case ModelStreamingResponseStatus::kErrorResponseLowQuality:
+      return DOMException::Create(
+          kExceptionMessageResponseLowQuality,
+          DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError));
     case ModelStreamingResponseStatus::kOngoing:
     case ModelStreamingResponseStatus::kComplete:
       NOTREACHED();

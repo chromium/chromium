@@ -247,6 +247,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Request was filtered"/>
   <int value="9" label="Response was disabled"/>
   <int value="10" label="The request was cancelled"/>
+  <int value="11" label="Response quality was low"/>
 </enum>
 
 <enum name="OptimizationGuideModelQualityLogsUploadStatus">
