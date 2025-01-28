@@ -13,6 +13,8 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequence.h"
@@ -184,7 +186,9 @@ void VerifyIsAllowedToShowFilePicker(const LocalDOMWindow& window,
   }
 
   LocalFrame* local_frame = window.GetFrame();
-  if (!local_frame || local_frame->IsCrossOriginToOutermostMainFrame()) {
+  if ((!local_frame || local_frame->IsCrossOriginToOutermostMainFrame()) &&
+      !Platform::Current()->IsFilePickerAllowedForCrossOriginSubframe(
+          WebSecurityOrigin(window.GetSecurityOrigin()))) {
     exception_state.ThrowSecurityError(
         "Cross origin sub frames aren't allowed to show a file picker.");
     return;

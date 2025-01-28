@@ -74,6 +74,8 @@ class ChromeContentClient : public content::ContentClient {
   gfx::Image& GetNativeImageNamed(int resource_id) override;
   std::string GetProcessTypeNameInEnglish(int type) override;
   blink::OriginTrialPolicy* GetOriginTrialPolicy() override;
+  bool IsFilePickerAllowedForCrossOriginSubframe(
+      const url::Origin& origin) override;
 #if BUILDFLAG(IS_ANDROID)
   media::MediaDrmBridgeClient* GetMediaDrmBridgeClient() override;
 #endif  // BUILDFLAG(IS_ANDROID)

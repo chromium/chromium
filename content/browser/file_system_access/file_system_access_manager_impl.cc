@@ -167,7 +167,9 @@ void ShowFilePickerOnUIThread(
   }
 
   url::Origin embedding_origin = outermost_rfh->GetLastCommittedOrigin();
-  if (embedding_origin != requesting_origin) {
+  if (embedding_origin != requesting_origin &&
+      !GetContentClient()->IsFilePickerAllowedForCrossOriginSubframe(
+          requesting_origin)) {
     // Third party iframes are not allowed to show a file picker.
     std::move(callback).Run(
         file_system_access_error::FromStatus(
@@ -1854,7 +1856,7 @@ FileSystemAccessManagerImpl::GetSharedHandleStateForNonSandboxedPath(
     write_grant = permission_context_->GetWritePermissionGrant(
         storage_key.origin(), path_info, handle_type, user_action);
   } else {
-    // Auto-deny all write grants if no permisson context is available, unless
+    // Auto-deny all write grants if no permission context is available, unless
     // Experimental Web Platform features are enabled.
     // TODO(mek): Remove experimental web platform check when permission UI is
     // implemented.

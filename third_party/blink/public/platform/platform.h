@@ -803,6 +803,19 @@ class BLINK_PLATFORM_EXPORT Platform {
       const WebURL& url,
       blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {}
 
+  // Cross-origin subframes are generally not allowed to display a file picker
+  // for security reasons. This method allows content embedders to specify
+  // whether a cross-origin subframe of a particular origin should be allowed to
+  // display the file picker.
+  //
+  // For example, Chrome's built-in PDF viewer may be hosted in a cross-origin
+  // subframe. To allow this viewer to function correctly, Chrome uses this
+  // method to grant it access to the file picker.
+  virtual bool IsFilePickerAllowedForCrossOriginSubframe(
+      const WebSecurityOrigin& origin) {
+    return false;
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   // User Level Memory Pressure Signal Generator ------------------
   virtual void SetPrivateMemoryFootprint(

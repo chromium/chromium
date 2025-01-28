@@ -1064,10 +1064,16 @@ void RendererBlinkPlatformImpl::AppendContentSecurityPolicy(
   GetContentClient()->renderer()->AppendContentSecurityPolicy(url, csp);
 }
 
+bool RendererBlinkPlatformImpl::IsFilePickerAllowedForCrossOriginSubframe(
+    const blink::WebSecurityOrigin& origin) {
+  return GetContentClient()->IsFilePickerAllowedForCrossOriginSubframe(origin);
+}
+
 base::PlatformThreadId RendererBlinkPlatformImpl::GetIOThreadId() const {
   auto io_task_runner = GetIOTaskRunner();
-  if (!io_task_runner)
+  if (!io_task_runner) {
     return base::kInvalidThreadId;
+  }
   // Cannot be called from IO thread due to potential deadlock.
   CHECK(!io_task_runner->BelongsToCurrentThread());
   {

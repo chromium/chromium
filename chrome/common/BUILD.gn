@@ -275,6 +275,7 @@ static_library("common_lib") {
     "//components/no_state_prefetch/common:mojo_bindings",
     "//components/page_load_metrics/common:common",
     "//components/pdf/common:constants",
+    "//components/pdf/common:util",
   ]
 
   if (is_android || enable_library_cdms) {
