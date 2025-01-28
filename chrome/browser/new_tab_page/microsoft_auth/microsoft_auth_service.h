@@ -20,12 +20,13 @@ class MicrosoftAuthService : public KeyedService {
   MicrosoftAuthService();
   ~MicrosoftAuthService() override;
 
-  virtual void SetAccessToken(new_tab_page::mojom::AccessTokenPtr access_token);
-  virtual void SetAuthStateError();
+  virtual void ClearAuthData();
   // Get the current access token. If the current access token is expired,
   // clear it, and return an empty string.
   std::string GetAccessToken();
   virtual new_tab_page::mojom::AuthState GetAuthState();
+  virtual void SetAuthStateError();
+  virtual void SetAccessToken(new_tab_page::mojom::AccessTokenPtr access_token);
 
   // Adds/Removes MicrosoftAuthServiceObserver observers.
   virtual void AddObserver(MicrosoftAuthServiceObserver* observer);

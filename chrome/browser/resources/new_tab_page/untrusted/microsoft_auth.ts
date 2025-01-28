@@ -84,8 +84,11 @@ function acquireTokenSilent() {
 }
 
 function signOut() {
-  msalApp.logoutPopup({
-    account: msalApp.getActiveAccount(),
-    postLogoutRedirectUri: 'https://chromeenterprise.google/ntp-microsoft-auth',
-  });
+  msalApp
+      .logoutPopup({
+        account: msalApp.getActiveAccount(),
+        postLogoutRedirectUri:
+            'https://chromeenterprise.google/ntp-microsoft-auth',
+      })
+      .then(handler.clearAuthData);
 }

@@ -55,6 +55,23 @@ class MicrosoftAuthServiceTest : public testing::Test {
       scoped_observation_{&observer_};
 };
 
+TEST_F(MicrosoftAuthServiceTest, ClearAuthData) {
+  // Set auth data.
+  EXPECT_CALL(observer(), OnAuthStateUpdated).Times(2);
+  new_tab_page::mojom::AccessTokenPtr access_token =
+      new_tab_page::mojom::AccessToken::New();
+  access_token->token = "1234";
+  access_token->expiration = base::Time::Now() + base::Minutes(5);
+  auth_service().SetAccessToken(std::move(access_token));
+
+  // Clear auth data.
+  auth_service().ClearAuthData();
+
+  EXPECT_TRUE(auth_service().GetAccessToken().empty());
+  EXPECT_EQ(auth_service().GetAuthState(),
+            new_tab_page::mojom::AuthState::kNone);
+}
+
 TEST_F(MicrosoftAuthServiceTest, SetAccessToken) {
   EXPECT_CALL(observer(), OnAuthStateUpdated).Times(1);
   new_tab_page::mojom::AccessTokenPtr access_token =

@@ -18,6 +18,7 @@ namespace {
 
 class MockMicrosoftAuthService : public MicrosoftAuthService {
  public:
+  MOCK_METHOD0(ClearAuthData, void());
   MOCK_METHOD1(SetAccessToken, void(new_tab_page::mojom::AccessTokenPtr));
   MOCK_METHOD0(SetAuthStateError, void());
 };
@@ -62,6 +63,12 @@ class NtpMicrosoftAuthUntrustedPageHandlerTest : public testing::Test {
   std::unique_ptr<MicrosoftAuthUntrustedPageHandler> handler_;
   raw_ptr<MockMicrosoftAuthService> mock_auth_service_;
 };
+
+TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, ClearAuthData) {
+  EXPECT_CALL(mock_auth_service(), ClearAuthData);
+
+  handler().ClearAuthData();
+}
 
 TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, SetAccessToken) {
   new_tab_page::mojom::AccessTokenPtr access_token_arg;

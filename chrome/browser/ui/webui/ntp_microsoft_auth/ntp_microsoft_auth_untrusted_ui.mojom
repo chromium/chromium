@@ -28,6 +28,8 @@ interface MicrosoftAuthUntrustedDocumentInterfacesFactory {
 
 // Browser-side handler for requests from WebUI document.
 interface MicrosoftAuthUntrustedPageHandler {
+  // Clears data for Microsoft auth.
+  ClearAuthData();
   // Sets Microsoft API access token in the browser-side.
   SetAccessToken(AccessToken access_token);
   // Sets error state for Microsoft auth in the browser-side.

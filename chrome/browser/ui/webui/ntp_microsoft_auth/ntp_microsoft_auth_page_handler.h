@@ -30,6 +30,7 @@ class MicrosoftAuthUntrustedPageHandler
   ~MicrosoftAuthUntrustedPageHandler() override;
 
   // new_tab_page::mojom::MicrosoftAuthUntrustedPageHandler:
+  void ClearAuthData() override;
   void SetAccessToken(
       new_tab_page::mojom::AccessTokenPtr access_token) override;
   void SetAuthStateError() override;

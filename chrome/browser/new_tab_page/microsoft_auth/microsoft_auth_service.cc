@@ -14,15 +14,9 @@
 MicrosoftAuthService::MicrosoftAuthService() = default;
 MicrosoftAuthService::~MicrosoftAuthService() = default;
 
-void MicrosoftAuthService::SetAccessToken(
-    new_tab_page::mojom::AccessTokenPtr access_token) {
-  access_token_ = std::move(access_token);
-  state_ = new_tab_page::mojom::AuthState::kSuccess;
-  NotifyObservers();
-}
-
-void MicrosoftAuthService::SetAuthStateError() {
-  state_ = new_tab_page::mojom::AuthState::kError;
+void MicrosoftAuthService::ClearAuthData() {
+  access_token_ = new_tab_page::mojom::AccessToken::New();
+  state_ = new_tab_page::mojom::AuthState::kNone;
   NotifyObservers();
 }
 
@@ -36,6 +30,18 @@ std::string MicrosoftAuthService::GetAccessToken() {
 new_tab_page::mojom::AuthState MicrosoftAuthService::GetAuthState() {
   CheckAccessTokenExpiration();
   return state_;
+}
+
+void MicrosoftAuthService::SetAuthStateError() {
+  state_ = new_tab_page::mojom::AuthState::kError;
+  NotifyObservers();
+}
+
+void MicrosoftAuthService::SetAccessToken(
+    new_tab_page::mojom::AccessTokenPtr access_token) {
+  access_token_ = std::move(access_token);
+  state_ = new_tab_page::mojom::AuthState::kSuccess;
+  NotifyObservers();
 }
 
 void MicrosoftAuthService::AddObserver(MicrosoftAuthServiceObserver* observer) {
