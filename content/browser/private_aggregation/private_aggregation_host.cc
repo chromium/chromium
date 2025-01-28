@@ -295,7 +295,7 @@ bool PrivateAggregationHost::BindNewReceiver(
 
   const bool needs_deterministic_report_count =
       PrivateAggregationManager::ShouldSendReportDeterministically(
-          context_id, filtering_id_max_bytes, max_contributions);
+          caller_api, context_id, filtering_id_max_bytes, max_contributions);
 
   // Enforce that reduced delay is used iff null reports are enabled.
   if (timeout.has_value() != needs_deterministic_report_count) {
@@ -454,7 +454,7 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
   // sending a report deterministically.
   CHECK(!contributions.empty() ||
         PrivateAggregationManager::ShouldSendReportDeterministically(
-            context_id, filtering_id_max_bytes, max_contributions));
+            caller_api, context_id, filtering_id_max_bytes, max_contributions));
   CHECK(debug_mode_details);
 
   RecordFilteringIdStatusHistogram(
