@@ -85,16 +85,15 @@ committer is sufficient.
 
 The existing owners of a directory approve additions to the list. It is
 preferable to have many directories, each with a smaller number of specific
-owners rather than large directories with many owners. Owners should:
+owners rather than large directories with many owners. Owners must be
+[committers](https://www.chromium.org/getting-involved/become-a-committer/)
+with at least 3 months' tenure, and in addition should:
 
   * Demonstrate excellent judgment, teamwork and ability to uphold
     [Chromium development principles](contributing.md).
 
   * Be already acting as an owner, providing high-quality reviews and design
     feedback.
-
-  * Be a Chromium project member with full commit access of at least three
-    months tenure.
 
   * Have submitted a substantial number of non-trivial changes to the affected
     directory.
