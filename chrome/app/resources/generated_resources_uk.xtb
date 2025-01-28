@@ -2494,7 +2494,7 @@
 <translation id="270516211545221798">Швидкість сенсорної панелі</translation>
 <translation id="2705736684557713153">Прокрутіть сторінку вниз і ввімкніть миттєву точку доступу (якщо ця опція відображається). Якщо ні, усе готово.</translation>
 <translation id="2706304388244371417">Створювати резервні копії на Google Диску. Легко відновлюйте дані чи переносьте їх на інші пристрої. Ця резервна копія містить дані додатків. Резервні копії завантажуються в Google і шифруються за допомогою пароля облікового запису Google вашої дитини. <ph name="BEGIN_LINK1" />Докладніше про резервне копіювання<ph name="BEGIN_LINK1_END" />Докладніше<ph name="END_LINK1" /></translation>
-<translation id="2706462751667573066">Вгору</translation>
+<translation id="2706462751667573066">Угору</translation>
 <translation id="270921614578699633">Середнє значення за</translation>
 <translation id="2709516037105925701">Автозаповнення</translation>
 <translation id="2710101514844343743">Дані про використання й діагностику</translation>
@@ -7381,7 +7381,7 @@
 <translation id="622125358038862905">{NUM_OF_FILES,plural, =1{Не вдалося скопіювати файл у сервіс <ph name="CLOUD_PROVIDER" />}one{Не вдалося скопіювати файли в сервіс <ph name="CLOUD_PROVIDER" />}few{Не вдалося скопіювати файли в сервіс <ph name="CLOUD_PROVIDER" />}many{Не вдалося скопіювати файли в сервіс <ph name="CLOUD_PROVIDER" />}other{Не вдалося скопіювати файли в сервіс <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="6224481128663248237">Форматування успішно завершено.</translation>
 <translation id="622474711739321877">Цей контейнер уже існує.</translation>
-<translation id="622484624075952240">Донизу</translation>
+<translation id="622484624075952240">Униз</translation>
 <translation id="622537739776246443">Профіль буде видалено</translation>
 <translation id="6225475702458870625">Передавання даних доступне через пристрій <ph name="PHONE_NAME" /></translation>
 <translation id="6226777517901268232">Файл секретного ключа (необов’язково)</translation>
