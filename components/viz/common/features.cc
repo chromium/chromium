@@ -270,7 +270,7 @@ BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
 // Enables occlusion culling for TextureDrawQuads when possible.
 BASE_FEATURE(kOcclusionCullingForTextureQuads,
              "OcclusionCullingForTextureQuads",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allow SurfaceAggregator to merge render passes when they contain quads that
 // require overlay (e.g. protected video). See usage in |EmitSurfaceContent|.
