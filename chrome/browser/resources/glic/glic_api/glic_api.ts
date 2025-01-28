@@ -351,7 +351,7 @@ export declare interface PdfDocumentData {
   /** Origin of the document. */
   origin: string;
   /** Raw PDF data, if it could be obtained. */
-  pdfData?: ReadableStream;
+  pdfData?: ReadableStream<Uint8Array>;
   /**
    * Whether the PDF size limit was exceeded. If true, `pdfData` will be empty.
    */
@@ -369,7 +369,7 @@ export declare interface DocumentData {
 
 export declare interface AnnotatedPageData {
   /** Serialized annotatedPageContent proto. */
-  annotatedPageContent?: ReadableStream;
+  annotatedPageContent?: ReadableStream<Uint8Array>;
 }
 /**
  * Various bits of data about a browser tab.

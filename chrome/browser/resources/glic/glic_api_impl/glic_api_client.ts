@@ -406,8 +406,8 @@ function convertTabDataFromPrivate(data: TabDataPrivate): TabData {
   return replaceProperties(data, {favicon});
 }
 
-function streamFromBuffer(buffer: ArrayBuffer): ReadableStream {
-  return new ReadableStream({
+function streamFromBuffer(buffer: Uint8Array): ReadableStream<Uint8Array> {
+  return new ReadableStream<Uint8Array>({
     start(controller) {
       controller.enqueue(buffer);
       controller.close();
@@ -417,14 +417,15 @@ function streamFromBuffer(buffer: ArrayBuffer): ReadableStream {
 
 function convertPdfDocumentDataFromPrivate(data: PdfDocumentDataPrivate):
     PdfDocumentData {
-  const pdfData = data.pdfData && streamFromBuffer(data.pdfData);
+  const pdfData =
+      data.pdfData && streamFromBuffer(new Uint8Array(data.pdfData));
   return replaceProperties(data, {pdfData});
 }
 
 function convertAnnotatedPageDataFromPrivate(data: AnnotatedPageDataPrivate):
     AnnotatedPageData {
-  const annotatedPageContent =
-      data.annotatedPageContent && streamFromBuffer(data.annotatedPageContent);
+  const annotatedPageContent = data.annotatedPageContent &&
+      streamFromBuffer(new Uint8Array(data.annotatedPageContent));
   return replaceProperties(data, {annotatedPageContent});
 }
 

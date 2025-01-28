@@ -207,14 +207,6 @@ $.contextAccessIndicator.addEventListener('click', () => {
   getBrowser()!.setContextAccessIndicator!($.contextAccessIndicator.checked);
 });
 
-async function computeStreamDataSize(stream: ReadableStream): Promise<number> {
-  let totalSize = 0;
-  for await (const chunk of stream) {
-    totalSize += chunk.byteLength;
-  }
-  return totalSize;
-}
-
 $.getpagecontext.addEventListener('click', async () => {
   logMessage('Starting Get Page Context');
   const options: any = {};
@@ -251,15 +243,16 @@ $.getpagecontext.addEventListener('click', async () => {
       let pdfDataSize = 0;
       if (pageContent.pdfDocumentData.pdfData) {
         pdfDataSize =
-            await computeStreamDataSize(pageContent.pdfDocumentData.pdfData!);
+            (await readStream(pageContent.pdfDocumentData.pdfData!)).length;
       }
       logMessage(`Got ${pdfDataSize} bytes of PDF data (origin=${
           pdfOrigin}, sizeLimitExceeded=${pdfSizeLimitExceeded})`);
     }
     if (pageContent.annotatedPageData &&
         pageContent.annotatedPageData.annotatedPageContent) {
-      const annotatedPageDataSize = await computeStreamDataSize(
-          pageContent.annotatedPageData.annotatedPageContent);
+      const annotatedPageDataSize =
+          (await readStream(pageContent.annotatedPageData.annotatedPageContent))
+              .length;
       logMessage(
           `Annotated page content data length: ${annotatedPageDataSize}`);
     }
@@ -381,3 +374,7 @@ window.addEventListener('load', () => {
     audioCapture.start();
   });
 });
+
+function readStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
+  return new Response(stream).bytes();
+}
