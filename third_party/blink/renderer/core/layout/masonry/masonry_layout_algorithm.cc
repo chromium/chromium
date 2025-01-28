@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/masonry/masonry_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 
 namespace blink {
 
@@ -14,46 +15,25 @@ MasonryLayoutAlgorithm::MasonryLayoutAlgorithm(
   DCHECK(params.space.IsNewFormattingContext());
 }
 
-namespace {
+GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks() const {
+  const auto& style = Style();
+  const auto& available_size = ChildAvailableSize();
+  const auto grid_direction = style.MasonryTrackSizingDirection();
 
-// Auto-placed masonry items can be placed at every cross axis track that fits
-// its span size, this implies that `masonry-template-tracks` will be expanded
-// to include all possible track starts, mapping 1:1 tracks to ranges.
-GridRangeVector ExpandRangesFromTemplateTracks(
-    const NGGridTrackList& template_tracks,
-    wtf_size_t auto_repetitions) {
-  GridRangeVector ranges;
-  wtf_size_t current_set_index = 0;
-  const auto repeater_count = template_tracks.RepeaterCount();
+  GridRangeBuilder range_builder(style, grid_direction,
+                                 ComputeAutomaticRepetitions(),
+                                 /*start_offset=*/0);
 
-  for (wtf_size_t i = 0; i < repeater_count; ++i) {
-    const auto repetitions = template_tracks.RepeatCount(i, auto_repetitions);
-    const auto repeat_size = template_tracks.RepeatSize(i);
+  GridSizingTrackCollection track_collection(range_builder.FinalizeRanges(),
+                                             grid_direction);
+  track_collection.BuildSets(style, available_size);
 
-    // Expand this repeater `repetitions` times, create a `GridRange` of a
-    // single track and set for each definition in the repeater.
-    for (wtf_size_t j = 0; j < repetitions; ++j) {
-      for (wtf_size_t k = 0; k < repeat_size; ++k) {
-        GridRange range;
-        range.begin_set_index = range.start_line = current_set_index++;
-        range.repeater_index = i;
-        range.repeater_offset = k;
-        range.set_count = range.track_count = 1;
-        ranges.emplace_back(std::move(range));
-      }
-    }
-  }
-  return ranges;
-}
+  auto first_set_geometry = GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
+      track_collection, style, available_size, BorderScrollbarPadding());
 
-}  // namespace
-
-GridSizingTrackCollection MasonryLayoutAlgorithm::ComputeCrossAxisTrackSizes()
-    const {
-  GridSizingTrackCollection cross_axis_tracks(
-      ExpandRangesFromTemplateTracks(Style().MasonryTemplateTracks().track_list,
-                                     ComputeAutomaticRepetitions()));
-  return cross_axis_tracks;
+  track_collection.FinalizeSetsGeometry(first_set_geometry.start_offset,
+                                        first_set_geometry.gutter_size);
+  return track_collection;
 }
 
 wtf_size_t MasonryLayoutAlgorithm::ComputeAutomaticRepetitions() const {
