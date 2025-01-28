@@ -443,5 +443,46 @@ TEST_F(ArtemisLogSourceTest, TestCrashRecovery) {
   EXPECT_EQ(PersistentDb::Get()->GetSize(), 1u);
 }
 
+// Note: not using fixture here to avoid file creation. We want
+// to test the scenario where the file doesn't exist at first.
+TEST(ArtemisLogSourceTestBadFile, TestFileInitializationIsRetried) {
+  base::test::TaskEnvironment task_environment;
+  base::RunLoop run_loop;
+  const std::string filename = "test.file";
+
+  auto log_source = std::make_unique<LogSourceForTesting>(
+      filename, kDefaultPollFrequency, kDefaultBatchSize);
+
+  // Attempt to fill the buffer. Verify that Fetch() returns nothing
+  // due to inaccessible file.
+  log_source->FillDataBufferForTesting();
+  log_source->Fetch(base::BindOnce([](const std::vector<std::string>& results) {
+    EXPECT_EQ(results.size(), 0u);
+  }));
+  run_loop.RunUntilIdle();
+
+  // Create file and add some junk data.
+  std::ofstream test_file;
+  test_file.open(filename, std::ios_base::app);
+  test_file << "fake data" << std::endl;
+  test_file.close();
+
+  // Fetch() to trigger the file open, then try to fill it.
+  log_source->Fetch(base::DoNothing());
+  log_source->FillDataBufferForTesting();
+
+  // Verify that we now have data.
+  log_source->Fetch(base::BindOnce([](const std::vector<std::string>& results) {
+    EXPECT_EQ(results.size(), 1u);
+    if (results.size() > 0) {
+      EXPECT_EQ(results[0], "fake data");
+    }
+  }));
+  run_loop.RunUntilIdle();
+
+  // Clean up.
+  std::filesystem::remove(filename);
+}
+
 }  // namespace
 }  // namespace ash::cfm
