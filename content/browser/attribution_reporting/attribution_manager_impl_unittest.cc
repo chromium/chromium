@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <initializer_list>
 #include <memory>
@@ -22,6 +23,7 @@
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/task_traits.h"
@@ -47,6 +49,7 @@
 #include "components/attribution_reporting/registration_header_error.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
@@ -1414,6 +1417,14 @@ TEST_F(AttributionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
 
 TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
   base::HistogramTester histograms;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(metrics::dwa::kDwaFeature);
+
+  metrics::dwa::DwaRecorder::Get()->EnableRecording();
+  metrics::dwa::DwaRecorder::Get()->Purge();
+  ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
+              IsEmpty());
+
   attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
   EXPECT_THAT(StoredReports(), IsEmpty());
   histograms.ExpectUniqueSample(
@@ -1422,6 +1433,32 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.CreateReportStatus4",
       AttributionTrigger::AggregatableResult::kNotRegistered, 1);
+  ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting().size(),
+              1);
+  EXPECT_THAT(metrics::dwa::DwaRecorder::Get()
+                  ->GetEntriesForTesting()
+                  .at(0)
+                  ->event_hash,
+              base::HashMetricName("AttributionConversionsCreateReport"));
+  // The content is set as the attribution trigger reporting origin. In unit
+  // tests, this value is set to "https://report.test". DWA content sanitization
+  // extracts the eTLD+1 from this value, yielding "report.test".
+  EXPECT_THAT(metrics::dwa::DwaRecorder::Get()
+                  ->GetEntriesForTesting()
+                  .at(0)
+                  ->content_hash,
+              base::HashMetricName("report.test"));
+  EXPECT_THAT(
+      metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting().at(0)->metrics,
+      UnorderedElementsAre(
+          testing::Pair(
+              base::HashMetricName("EventLevelStatus"),
+              static_cast<int64_t>(AttributionTrigger::EventLevelResult::
+                                       kNoMatchingImpressions)),
+          testing::Pair(
+              base::HashMetricName("AggregatableStatus"),
+              static_cast<int64_t>(
+                  AttributionTrigger::AggregatableResult::kNotRegistered))));
 }
 
 TEST_F(AttributionManagerImplTest,

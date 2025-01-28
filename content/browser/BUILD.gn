@@ -108,6 +108,8 @@ source_set("browser") {
     "//components/link_header_util",
     "//components/metrics",
     "//components/metrics:single_sample_metrics",
+    "//components/metrics/dwa:dwa",
+    "//components/metrics/dwa:dwa_builders",
     "//components/network_session_configurator/browser",
     "//components/offline_pages/buildflags",
     "//components/offline_pages/core/request_header",

@@ -3052,6 +3052,7 @@ test("content_unittests") {
     "//components/attribution_reporting:mojom",
     "//components/cbor",
     "//components/input",
+    "//components/metrics/dwa:dwa",
     "//components/network_session_configurator/browser",
     "//components/network_session_configurator/common",
     "//components/offline_pages/buildflags",

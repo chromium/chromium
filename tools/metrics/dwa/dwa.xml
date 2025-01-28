@@ -15,6 +15,26 @@ be describing additional metrics about the same event.
 
 <dwa-configuration>
 
+<event name="AttributionConversionsCreateReport">
+  <owner>zhouzj@google.com</owner>
+  <metric name="AggregatableStatus"
+      enum="ConversionCreateAggregatableReportStatus">
+    <summary>
+      Records the outcome of whether aggregatable reports are stored
+      successfully or rejected and why. Recorded once for each trigger event
+      processed by the attribution storage layer. `kNotRegistered` will be
+      logged if the source or trigger doesn't declare aggregatable data.
+    </summary>
+  </metric>
+  <metric name="EventLevelStatus" enum="ConversionStorageCreateReportStatus">
+    <summary>
+      Records the outcome of whether event-level triggers are stored
+      successfully or rejected and why. Recorded once for each conversion event
+      processed by the attribution storage layer.
+    </summary>
+  </metric>
+</event>
+
 <event name="DwaTestMetric">
   <owner>zhouzj@google.com</owner>
   <summary>
