@@ -32,9 +32,6 @@ class MaskedDomainListManager {
   ~MaskedDomainListManager();
   MaskedDomainListManager(const MaskedDomainListManager&);
 
-  static MaskedDomainListManager CreateForTesting(
-      const std::map<std::string, std::set<std::string>>& first_party_map);
-
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
