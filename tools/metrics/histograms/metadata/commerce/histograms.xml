@@ -618,6 +618,18 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <token key="TabUsageStatus" variants="TabUsageStatuses"/>
 </histogram>
 
+<histogram name="Commerce.PriceInsights.BottomSheetBrowsingTime" units="ms"
+    expires_after="2025-04-13">
+  <owner>qib@google.com</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the user browsing time in milliseconds when the price insights
+    bottom sheet is opened. Recorded when user taps to open the bottom sheet
+    until the bottom sheet is closed. Implemented for Android.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.PriceInsights.BuyingOptionsClicked"
     enum="PriceInsightsPriceBucket" expires_after="2025-06-22">
   <owner>mdjones@chromium.org</owner>
