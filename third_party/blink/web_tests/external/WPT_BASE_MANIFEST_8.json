@@ -418905,7 +418905,7 @@
      ]
     },
     "set-event-handlers-content-attributes.tentative-expected.txt": [
-     "2b947ec42e930b464963423402145f6d1cb1f241",
+     "7c84135f2f6a20f095d9df4ecf178d4d5be2841a",
      []
     ],
     "support": {
@@ -494712,6 +494712,15 @@
        }
       ]
      ],
+     "scroll-button-activation-content-hit-test.html": [
+      "26702bb65f8f3ee190acfb1b313ca663c7374f7d",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "scroll-button-hover-remove.html": [
       "af000012b4ec605fb0e30a34e50bc02119a9b925",
       [
@@ -526178,10 +526187,12 @@
       ]
      ],
      "html-text-copy-paste-of-anchor-with-href-in-content-editable.html": [
-      "5724b59ada4bb34fe416cb0031643e1fd4973667",
+      "c7ab18a3df6bdf5df2f585d4ebc337f021db69dd",
       [
        null,
-       {}
+       {
+        "testdriver": true
+       }
       ]
      ],
      "indent-preserving-selection.tentative.html": [
@@ -528768,10 +528779,12 @@
       ]
      ],
      "paste-in-list-with-inline-style.tentative.html": [
-      "97710e805dd635f586cd2fafe6a443bd663122f4",
+      "7eac635e8deb1ede3950df067f4ade6666d58e0b",
       [
        null,
-       {}
+       {
+        "testdriver": true
+       }
       ]
      ],
      "paste-multiline-text-as-plaintext.tentative.https.html": [
@@ -711988,7 +712001,7 @@
      ]
     ],
     "set-event-handlers-content-attributes.tentative.html": [
-     "0dd5f8b3a0803004f334d9adbcc9af03cec3a875",
+     "96ac03bd92357d689bae525229a1282249f23640",
      [
       null,
       {}
