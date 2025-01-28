@@ -34,7 +34,7 @@
 #include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
-#include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_handle_impl.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_handle_impl.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -982,13 +982,14 @@ class CONTENT_EXPORT WebContentsImpl
   bool ShouldIgnoreUnresponsiveRenderer() override;
   bool IsGuest() override;
   std::optional<SkColor> GetBaseBackgroundColor() override;
-  void StartPrefetch(const GURL& prefetch_url,
-                     bool use_prefetch_proxy,
-                     const blink::mojom::Referrer& referrer,
-                     const std::optional<url::Origin>& referring_origin,
-                     base::WeakPtr<PreloadingAttempt> attempt,
-                     std::optional<PreloadingHoldbackStatus>
-                         holdback_status_override) override;
+  std::unique_ptr<PrefetchHandle> StartPrefetch(
+      const GURL& prefetch_url,
+      bool use_prefetch_proxy,
+      const blink::mojom::Referrer& referrer,
+      const std::optional<url::Origin>& referring_origin,
+      base::WeakPtr<PreloadingAttempt> attempt,
+      std::optional<PreloadingHoldbackStatus> holdback_status_override)
+      override;
   std::unique_ptr<PrerenderHandle> StartPrerendering(
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,
@@ -2604,9 +2605,6 @@ class CONTENT_EXPORT WebContentsImpl
 
   // Stores the force enable zoom state for Accessibility.
   bool force_enable_zoom_ = false;
-
-  // Stores all prefetch containers created by `this`.
-  std::vector<base::WeakPtr<PrefetchContainer>> prefetch_containers_;
 
   std::unique_ptr<PrerenderHostRegistry> prerender_host_registry_;
 
