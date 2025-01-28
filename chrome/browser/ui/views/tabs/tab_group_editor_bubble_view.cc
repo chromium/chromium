@@ -264,13 +264,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       browser_(browser),
       group_(group),
       use_set_anchor_rect_(anchor_rect),
-      title_at_opening_(browser_->tab_strip_model()->SupportsTabGroups()
-                            ? browser_->tab_strip_model()
-                                  ->group_model()
-                                  ->GetTabGroup(group_)
-                                  ->visual_data()
-                                  ->title()
-                            : std::u16string(u"")),
+      title_at_opening_(GetGroupTitle()),
       stop_context_menu_propagation_(stop_context_menu_propagation) {
   // This dialog should only show up if the browser supports tab groups.
   DCHECK(browser_->tab_strip_model()->SupportsTabGroups());
@@ -311,11 +305,21 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetInteriorMargin(interior_margins);
+
+  browser_->tab_strip_model()->AddObserver(this);
 }
 
 void TabGroupEditorBubbleView::RebuildMenuContents() {
   menu_items_.clear();
-  title_field_ = nullptr;
+  std::unique_ptr<TitleField> title_field;
+  if (title_field_) {
+    // Reuse title_field_ if one exists, but update with the latest title. This
+    // is different from what we do for other child views, as creating a new
+    // title_field_ with the same controller causes a crash.
+    title_at_opening_ = GetGroupTitle();
+    title_field = RemoveChildViewT(title_field_);
+    title_field->SetText(title_at_opening_);
+  }
   color_selector_ = nullptr;
   save_group_toggle_ = nullptr;
   save_group_icon_ = nullptr;
@@ -324,7 +328,8 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
 
   RemoveAllChildViews();
 
-  title_field_ = AddChildView(BuildTitleField(title_at_opening_));
+  title_field_ = AddChildView(title_field ? std::move(title_field)
+                                          : BuildTitleField(title_at_opening_));
   color_selector_ = AddChildView(BuildColorPicker());
   AddChildView(BuildSeparator());
 
@@ -453,6 +458,16 @@ TabGroupEditorBubbleView::BuildTitleField(const std::u16string& title) {
       gfx::Insets::VH(vertical_spacing, horizontal_spacing));
 
   return title_field;
+}
+
+std::u16string TabGroupEditorBubbleView::GetGroupTitle() {
+  return browser_->tab_strip_model()->SupportsTabGroups()
+             ? browser_->tab_strip_model()
+                   ->group_model()
+                   ->GetTabGroup(group_)
+                   ->visual_data()
+                   ->title()
+             : std::u16string();
 }
 
 std::unique_ptr<views::LabelButton>
@@ -587,6 +602,7 @@ TabGroupEditorBubbleView::BuildRecentActivityButton() {
 TabGroupEditorBubbleView::~TabGroupEditorBubbleView() = default;
 
 tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
+  colors_.clear();
   const tab_groups::ColorLabelMap& color_map =
       tab_groups::GetTabGroupColorLabelMap();
 
@@ -598,6 +614,29 @@ tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
   // selected value.
   auto* const group_model = browser_->tab_strip_model()->group_model();
   return group_model->GetTabGroup(group_)->visual_data()->color();
+}
+
+// TabStripModelObserver:
+void TabGroupEditorBubbleView::OnTabGroupChanged(const TabGroupChange& change) {
+  if (change.type == TabGroupChange::kVisualsChanged) {
+    const tab_groups::TabGroupVisualData* new_visuals =
+        change.GetVisualsChange()->new_visuals;
+    const std::optional<int> selected_color =
+        color_selector_->GetSelectedElement();
+    const bool color_changed =
+        !selected_color.has_value() ||
+        colors_[selected_color.value()].first != new_visuals->color();
+    const bool text_changed = title_field_->GetText() != new_visuals->title();
+    if (color_changed) {
+      const std::optional<size_t> index = GetIndexOf(color_selector_);
+      CHECK(index.has_value());
+      RemoveChildViewT<ColorPickerView>(color_selector_);
+      color_selector_ = AddChildViewAt(BuildColorPicker(), index.value());
+    }
+    if (text_changed) {
+      title_field_->SetText(new_visuals->title());
+    }
+  }
 }
 
 void TabGroupEditorBubbleView::UpdateGroup() {
