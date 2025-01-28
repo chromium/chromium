@@ -203,7 +203,7 @@ IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
 IsolatedWebAppPolicyManager::~IsolatedWebAppPolicyManager() = default;
 
 void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
-  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
+  if (!content::AreIsolatedWebAppsEnabled(profile_)) {
     std::move(on_started_callback).Run();
     return;
   }

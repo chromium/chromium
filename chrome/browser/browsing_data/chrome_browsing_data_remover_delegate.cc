@@ -1399,7 +1399,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   // StoragePartition of an IWA, and all Controlled Frame StoragePartitions if
   // DATA_TYPE_CONTROLLED_FRAME is specified in `remove_mask`.
   if (!filter_builder->GetStoragePartitionConfig().has_value() &&
-      content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
+      content::AreIsolatedWebAppsEnabled(profile_)) {
     const web_app::WebAppRegistrar& web_app_registrar =
         web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_)
             ->registrar_unsafe();

@@ -2580,8 +2580,7 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     const GURL& url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
-  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
-          browser_context)) {
+  if (!content::AreIsolatedWebAppsEnabled(browser_context)) {
     return false;
   }
 
@@ -6168,8 +6167,7 @@ ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)
   if (scheme == chrome::kIsolatedAppScheme) {
-    if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
-            browser_context) &&
+    if (content::AreIsolatedWebAppsEnabled(browser_context) &&
         !browser_context->ShutdownStarted()) {
       return web_app::IsolatedWebAppURLLoaderFactory::CreateForFrame(
           browser_context, /*app_origin=*/std::nullopt, frame_tree_node_id);
@@ -6192,8 +6190,7 @@ void ChromeContentBrowserClient::
   DCHECK(factories);
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
-          browser_context) &&
+  if (content::AreIsolatedWebAppsEnabled(browser_context) &&
       !browser_context->ShutdownStarted()) {
     factories->emplace(chrome::kIsolatedAppScheme,
                        web_app::IsolatedWebAppURLLoaderFactory::Create(
@@ -6220,8 +6217,7 @@ void ChromeContentBrowserClient::
   DCHECK(factories);
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
-          browser_context) &&
+  if (content::AreIsolatedWebAppsEnabled(browser_context) &&
       !browser_context->ShutdownStarted()) {
     factories->emplace(chrome::kIsolatedAppScheme,
                        web_app::IsolatedWebAppURLLoaderFactory::Create(
@@ -6488,8 +6484,7 @@ void ChromeContentBrowserClient::
     bool is_initiator_iwa =
         request_initiator_origin.has_value() &&
         request_initiator_origin->scheme() == chrome::kIsolatedAppScheme;
-    if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
-            browser_context) &&
+    if (content::AreIsolatedWebAppsEnabled(browser_context) &&
         !browser_context->ShutdownStarted() && is_initiator_iwa) {
       if (frame_host != nullptr) {
         factories->emplace(
@@ -8178,8 +8173,7 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
     content::BrowserContext* browser_context,
     int32_t error_code) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
-          browser_context) &&
+  if (content::AreIsolatedWebAppsEnabled(browser_context) &&
       url.SchemeIs(chrome::kIsolatedAppScheme)) {
     content::mojom::AlternativeErrorPageOverrideInfoPtr
         alternative_error_page_override_info =

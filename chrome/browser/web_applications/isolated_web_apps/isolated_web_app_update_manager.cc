@@ -281,7 +281,7 @@ IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
     base::TimeDelta update_discovery_frequency)
     : profile_(profile),
       automatic_updates_enabled_(
-          content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(&profile) &&
+          content::AreIsolatedWebAppsEnabled(&profile) &&
           // Similar to extensions, we don't do any automatic updates in guest
           // sessions.
           !profile.IsGuestSession() &&
