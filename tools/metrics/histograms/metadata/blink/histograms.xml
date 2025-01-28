@@ -1004,7 +1004,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.DecodedImage.WebPDensity.KiBWeighted2"
-    units="0.01 bits per pixel" expires_after="2025-03-09">
+    units="0.01 bits per pixel" expires_after="2026-03-09">
   <owner>wtc@google.com</owner>
   <owner>jzern@google.com</owner>
   <owner>src/third_party/blink/renderer/platform/image-decoders/OWNERS</owner>
