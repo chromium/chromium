@@ -500,7 +500,7 @@ void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
 
   for (const auto& [saved_guid, local_group_id] :
        restored_groups_to_connect_on_load_) {
-    if (model()->is_loaded() && !model()->Contains(saved_guid)) {
+    if (!model()->Contains(saved_guid)) {
       continue;
     }
 
