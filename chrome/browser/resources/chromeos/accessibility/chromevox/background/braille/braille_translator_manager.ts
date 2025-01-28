@@ -15,37 +15,28 @@ import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
 import {LibLouis} from './liblouis.js';
 
 export class BrailleTranslatorManager {
-  /**
-   * @param {LibLouis=} opt_liblouisForTest Liblouis instance to use
-   *     for testing.
-   */
-  constructor(opt_liblouisForTest) {
-    /** @private {!LibLouis} */
+  private liblouis_: LibLouis;
+  private changeListeners_: VoidFunction[] = [];
+  private tables_: BrailleTable.Table[] = [];
+  private expandingTranslator_: ExpandingBrailleTranslator|null = null;
+  private defaultTableId_: string|null = null;
+  private defaultTranslator_: LibLouis.Translator|null = null;
+  private uncontractedTableId_: string|null = null;
+  private uncontractedTranslator_: LibLouis.Translator|null = null;
+
+  static instance: BrailleTranslatorManager;
+
+  constructor(liblouisForTest?: LibLouis) {
     this.liblouis_ =
-        opt_liblouisForTest ||
+        liblouisForTest ||
         new LibLouis(
             chrome.extension.getURL(
                 'chromevox/third_party/liblouis/liblouis_wrapper.js'),
             chrome.extension.getURL('chromevox/background/braille/tables'),
             () => this.loadLiblouis_());
-
-    /** @private {!Array<function()>} */
-    this.changeListeners_ = [];
-    /** @private {!Array<BrailleTable.Table>} */
-    this.tables_ = [];
-    /** @private {?ExpandingBrailleTranslator} */
-    this.expandingTranslator_ = null;
-    /** @private {?LibLouis.Translator} */
-    this.defaultTranslator_ = null;
-    /** @private {?string} */
-    this.defaultTableId_ = null;
-    /** @private {?LibLouis.Translator} */
-    this.uncontractedTranslator_ = null;
-    /** @private {?string} */
-    this.uncontractedTableId_ = null;
   }
 
-  static init() {
+  static init(): void {
     if (BrailleTranslatorManager.instance) {
       throw new Error('\nCannot create two BrailleTranslatorManagers');
     }
@@ -53,27 +44,28 @@ export class BrailleTranslatorManager {
 
     SettingsManager.addListenerForKey(
         'brailleTable',
-        brailleTable =>
+        (brailleTable: string) =>
             BrailleTranslatorManager.instance.refresh(brailleTable));
   }
 
-  /**
-   * @param {!ArrayBuffer} cells
-   * @return {!Promise<?string>}
-   */
-  static backTranslate(cells) {
+  static backTranslate(cells: ArrayBuffer): Promise<string|null> {
     return new Promise(resolve => {
-      BrailleTranslatorManager.instance.getDefaultTranslator().backTranslate(
-          cells, resolve);
+      const translator =
+          BrailleTranslatorManager.instance.getDefaultTranslator();
+      if (!translator) {
+        console.error('Braille translator is null, cannot call backTranslate');
+        resolve('');
+        return;
+      }
+      translator.backTranslate(cells, resolve);
     });
   }
 
   /**
    * Adds a listener to be called whenever there is a change in the
    * translator(s) returned by other methods of this instance.
-   * @param {function()} listener The listener.
    */
-  addChangeListener(listener) {
+  addChangeListener(listener: VoidFunction): void {
     this.changeListeners_.push(listener);
   }
 
@@ -81,13 +73,14 @@ export class BrailleTranslatorManager {
    * Refreshes the braille translator(s) used for input and output.  This
    * should be called when something has changed (such as a preference) to
    * make sure that the correct translator is used.
-   * @param {string} brailleTable The table for this translator to use.
-   * @param {string=} opt_brailleTable8 Optionally specify an uncontracted
-   * table.
-   * @param {function()=} opt_finishCallback Called when the refresh finishes.
+   * @param brailleTable The table for this translator to use.
+   * @param brailleTable8 Optionally specify an uncontracted table.
+   * @param finishCallback Called when the refresh finishes.
    */
-  async refresh(brailleTable, opt_brailleTable8, opt_finishCallback) {
-    const finishCallback = opt_finishCallback || (() => {});
+  async refresh(
+      brailleTable: string, brailleTable8?: string,
+      finishCallback?: VoidFunction): Promise<void> {
+    finishCallback = finishCallback ?? (() => {});
     if (brailleTable && brailleTable === this.defaultTableId_) {
       finishCallback();
       return;
@@ -120,17 +113,16 @@ export class BrailleTranslatorManager {
       }
     }
     if (!table) {
-      table = BrailleTable.forId(tables, 'en-nabcc');
+      table = BrailleTable.forId(tables, 'en-nabcc')!;
     }
 
     // If the user explicitly set an 8 dot table, use that when looking
     // for an uncontracted table.  Otherwise, use the current table and let
     // getUncontracted find an appropriate corresponding table.
-    const table8Dot = opt_brailleTable8 ?
-        BrailleTable.forId(tables, opt_brailleTable8) :
-        null;
+    const table8Dot =
+        brailleTable8 ? BrailleTable.forId(tables, brailleTable8) : null;
     const uncontractedTable =
-        BrailleTable.getUncontracted(tables, table8Dot || table);
+        BrailleTable.getUncontracted(tables, table8Dot ?? table);
     const newDefaultTableId = table.id;
     const newUncontractedTableId =
         table.id === uncontractedTable.id ? null : uncontractedTable.id;
@@ -140,16 +132,22 @@ export class BrailleTranslatorManager {
       return;
     }
 
-    const finishRefresh = (defaultTranslator, uncontractedTranslator) => {
-      this.defaultTableId_ = newDefaultTableId;
-      this.uncontractedTableId_ = newUncontractedTableId;
-      this.expandingTranslator_ = new ExpandingBrailleTranslator(
-          defaultTranslator, uncontractedTranslator);
-      this.defaultTranslator_ = defaultTranslator;
-      this.uncontractedTranslator_ = uncontractedTranslator;
-      this.changeListeners_.forEach(listener => listener());
-      finishCallback();
-    };
+    const finishRefresh =
+        (defaultTranslator: LibLouis.Translator|null,
+         uncontractedTranslator: LibLouis.Translator|null): void => {
+          this.defaultTableId_ = newDefaultTableId;
+          this.uncontractedTableId_ = newUncontractedTableId;
+          // TODO(crbug.com/314203187): Not null asserted, check that this is
+          // correct.
+          this.expandingTranslator_ = defaultTranslator ?
+              new ExpandingBrailleTranslator(
+                  defaultTranslator!, uncontractedTranslator) :
+              null;
+          this.defaultTranslator_ = defaultTranslator;
+          this.uncontractedTranslator_ = uncontractedTranslator;
+          this.changeListeners_.forEach(listener => listener());
+          finishCallback();
+        };
 
     const translator = await this.liblouis_.getTranslator(table.fileNames);
     if (!newUncontractedTableId) {
@@ -162,32 +160,31 @@ export class BrailleTranslatorManager {
   }
 
   /**
-   * @return {ExpandingBrailleTranslator} The current expanding braille
-   *     translator, or {@code null} if none is available.
+   * @return The current expanding braille translator, or null if none is
+   * available.
    */
-  getExpandingTranslator() {
+  getExpandingTranslator(): ExpandingBrailleTranslator|null {
     return this.expandingTranslator_;
   }
 
   /**
-   * @return {LibLouis.Translator} The current braille translator to use
-   *     by default, or {@code null} if none is available.
+   * @return The current braille translator to use by default, or null if none
+   * is available.
    */
-  getDefaultTranslator() {
+  getDefaultTranslator(): LibLouis.Translator|null {
     return this.defaultTranslator_;
   }
 
   /**
-   * @return {LibLouis.Translator} The current uncontracted braille
-   *     translator, or {@code null} if it is the same as the default
-   *     translator.
+   * @return The current uncontracted braille translator, or null if it is the
+   * same as the default translator.
    */
-  getUncontractedTranslator() {
+  getUncontractedTranslator(): LibLouis.Translator|null {
     return this.uncontractedTranslator_;
   }
 
   /** Toggles the braille table type. */
-  toggleBrailleTable() {
+  toggleBrailleTable(): void {
     let brailleTableType = SettingsManager.getString('brailleTableType');
     let output = '';
     if (brailleTableType === 'brailleTable6') {
@@ -212,11 +209,10 @@ export class BrailleTranslatorManager {
   /**
    * Asynchronously fetches the list of braille tables and refreshes the
    * translators when done.
-   * @return {!Promise} Resolves when tables are loaded.
-   * @private
+   * Resolves when tables are loaded.
    */
-  async fetchTables_() {
-    return new Promise(r => {
+  private async fetchTables_(): Promise<void> {
+    return new Promise((r: VoidFunction) => {
       BrailleTable.getAll(tables => {
         this.tables_ = tables;
 
@@ -228,37 +224,27 @@ export class BrailleTranslatorManager {
 
   /**
    * Loads the liblouis instance by attaching it to the document.
-   * @private
    */
-  loadLiblouis_() {
+  private loadLiblouis_(): void {
     this.fetchTables_();
   }
 
-  /**
-   * @return {!LibLouis} The liblouis instance used by this object.
-   */
-  getLibLouisForTest() {
+  getLibLouisForTest(): LibLouis {
     return this.liblouis_;
   }
 
   /**
-   * @return {!Array<BrailleTable.Table>} The currently loaded braille
-   *     tables, or an empty array if they are not yet loaded.
+   * @return The currently loaded braille tables, or an empty array if they are
+   * not yet loaded.
    */
-  getTablesForTest() {
+  getTablesForTest(): BrailleTable.Table[] {
     return this.tables_;
   }
 
-  /**
-   * Loads liblouis tables and returns a promise resolved when loaded.
-   * @return {!Promise}
-   */
-  async loadTablesForTest() {
+  /** Loads liblouis tables and returns a promise resolved when loaded. */
+  async loadTablesForTest(): Promise<void> {
     await this.fetchTables_();
   }
 }
-
-/** @type {BrailleTranslatorManager} */
-BrailleTranslatorManager.instance;
 
 TestImportManager.exportForTesting(BrailleTranslatorManager);
