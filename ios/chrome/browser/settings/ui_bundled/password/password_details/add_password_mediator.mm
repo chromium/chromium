@@ -4,12 +4,13 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_mediator.h"
 
+#import <algorithm>
+
 #import "base/check.h"
 #import "base/containers/contains.h"
 #import "base/containers/flat_set.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/cancelable_task_tracker.h"
 #import "base/task/sequenced_task_runner.h"
@@ -46,7 +47,7 @@ bool CheckForDuplicates(
         return signon_realm == credential.GetFirstSignonRealm() &&
                username_value == credential.username;
       };
-  if (base::ranges::any_of(credentials, have_equal_username_and_realm)) {
+  if (std::ranges::any_of(credentials, have_equal_username_and_realm)) {
     return true;
   }
   return false;

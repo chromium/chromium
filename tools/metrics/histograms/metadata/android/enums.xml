@@ -1732,6 +1732,14 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="READINESS_CHECKED"/>
 </enum>
 
+<!-- This mirrors the BrowserControlsStateProvider.ControlsPosition intdef. -->
+
+<enum name="ToolbarPosition">
+  <int value="0" label="TOP"/>
+  <int value="1" label="BOTTOM"/>
+  <int value="2" label="NONE; No toolbar present, e.g. NoTouchActivity"/>
+</enum>
+
 <enum name="ToolbarSnapshotDifference">
   <int value="0" label="NONE">
     This value will not be reported, only other actaul differences will be

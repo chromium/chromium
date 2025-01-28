@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -24,11 +25,7 @@ namespace internal {
 // always invisible.
 class CursorState {
  public:
-  CursorState()
-      : visible_(true),
-        cursor_size_(ui::CursorSize::kNormal),
-        mouse_events_enabled_(true),
-        visible_on_mouse_events_enabled_(true) {}
+  CursorState() = default;
 
   CursorState(const CursorState&) = delete;
   CursorState& operator=(const CursorState&) = delete;
@@ -47,6 +44,9 @@ class CursorState {
   void set_cursor_size(ui::CursorSize cursor_size) {
     cursor_size_ = cursor_size;
   }
+
+  SkColor cursor_color() const { return cursor_color_; }
+  void set_cursor_color(SkColor cursor_color) { cursor_color_ = cursor_color; }
 
   const gfx::Size& system_cursor_size() const { return system_cursor_size_; }
   void set_system_cursor_size(const gfx::Size& system_cursor_size) {
@@ -70,12 +70,13 @@ class CursorState {
 
  private:
   gfx::NativeCursor cursor_;
-  bool visible_;
-  ui::CursorSize cursor_size_;
-  bool mouse_events_enabled_;
+  bool visible_ = true;
+  ui::CursorSize cursor_size_ = ui::CursorSize::kNormal;
+  SkColor cursor_color_ = ui::kDefaultCursorColor;
+  bool mouse_events_enabled_ = true;
 
   // The visibility to set when mouse events are enabled.
-  bool visible_on_mouse_events_enabled_;
+  bool visible_on_mouse_events_enabled_ = true;
 
   gfx::Size system_cursor_size_;
 };
@@ -153,6 +154,17 @@ void CursorManager::SetCursorSize(ui::CursorSize cursor_size) {
 
 ui::CursorSize CursorManager::GetCursorSize() const {
   return current_state_->cursor_size();
+}
+
+void CursorManager::SetCursorColor(SkColor color) {
+  state_on_unlock_->set_cursor_color(color);
+  if (GetCursorColor() != state_on_unlock_->cursor_color()) {
+    delegate_->SetCursorColor(state_on_unlock_->cursor_color(), this);
+  }
+}
+
+SkColor CursorManager::GetCursorColor() const {
+  return current_state_->cursor_color();
 }
 
 void CursorManager::EnableMouseEvents() {
@@ -260,6 +272,10 @@ void CursorManager::CommitVisibility(bool visible) {
 
 void CursorManager::CommitCursorSize(ui::CursorSize cursor_size) {
   current_state_->set_cursor_size(cursor_size);
+}
+
+void CursorManager::CommitCursorColor(SkColor color) {
+  current_state_->set_cursor_color(color);
 }
 
 void CursorManager::CommitMouseEventsEnabled(bool enabled) {

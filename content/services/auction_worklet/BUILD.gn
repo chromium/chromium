@@ -74,6 +74,8 @@ source_set("auction_worklet") {
     "register_ad_macro_bindings.h",
     "report_bindings.cc",
     "report_bindings.h",
+    "report_win_browser_signals_lazy_filler.cc",
+    "report_win_browser_signals_lazy_filler.h",
     "seller_lazy_filler.cc",
     "seller_lazy_filler.h",
     "seller_worklet.cc",

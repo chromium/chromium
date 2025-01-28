@@ -1301,13 +1301,10 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
 
   EXPECT_CALL(client(), ShowAutofillSuggestions(
                             PopupOpenArgsAre(SuggestionVectorIdsAre(
-                                SuggestionType::kAddressEntry,
                                 SuggestionType::kFillExistingPlusAddress)),
                             _));
   const std::u16string plus_address = u"test+plus@test.example";
   std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(/*main_text=*/u"example@gmail.com",
-                           SuggestionType::kAddressEntry);
   suggestions.emplace_back(/*main_text=*/plus_address,
                            SuggestionType::kFillExistingPlusAddress);
   // This function tests the filling of existing plus addresses, which is why
@@ -1322,7 +1319,7 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
                          HasQueriedFormId(), HasQueriedFieldId(), plus_address,
                          SuggestionType::kFillExistingPlusAddress,
                          std::optional(EMAIL_ADDRESS)));
-  external_delegate().DidSelectSuggestion(suggestions[1]);
+  external_delegate().DidSelectSuggestion(suggestions[0]);
   EXPECT_CALL(client(), HideAutofillSuggestions(
                             SuggestionHidingReason::kAcceptSuggestion));
   EXPECT_CALL(plus_address_delegate(),
@@ -1341,7 +1338,7 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
                          HasQueriedFormId(), HasQueriedFieldId(), plus_address,
                          SuggestionType::kFillExistingPlusAddress,
                          std::optional(EMAIL_ADDRESS)));
-  external_delegate().DidAcceptSuggestion(suggestions[1],
+  external_delegate().DidAcceptSuggestion(suggestions[0],
                                           SuggestionPosition{.row = 0});
 }
 

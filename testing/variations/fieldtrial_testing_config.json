@@ -1748,6 +1748,7 @@
         {
             "platforms": [
                 "android",
+                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "ios",
@@ -6075,24 +6076,6 @@
             ]
         }
     ],
-    "ComposeUpfrontInputModes": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ComposeUpfrontInputModes"
-                    ]
-                }
-            ]
-        }
-    ],
     "CompositeBackgroundColorAnimation": [
         {
             "platforms": [
@@ -7415,6 +7398,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DefaultANGLEMetal"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DefaultANGLEVulkan": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DefaultANGLEVulkan"
                     ]
                 }
             ]
@@ -9282,22 +9280,6 @@
             ]
         }
     ],
-    "EsbAiStringUpdate": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EsbAiStringUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "EsbAsASyncedSetting": [
         {
             "platforms": [
@@ -11066,6 +11048,7 @@
                 {
                     "name": "Enabled_20250123",
                     "params": {
+                        "enabled_for_googlers": "true",
                         "histogram_name": "ChromeOS.HaTS.Audio",
                         "prob": "0.01",
                         "survey_cycle_length": "7",
@@ -11181,6 +11164,29 @@
                     },
                     "enable_features": [
                         "HappinessTrackingUnlock"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HeapProfilerMobileSamplingRate": [
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "browser-sampling-rate-bytes": "10000000",
+                        "gpu-sampling-rate-bytes": "5000000",
+                        "network-sampling-rate-bytes": "10000000",
+                        "renderer-sampling-rate-bytes": "10000000",
+                        "utility-sampling-rate-bytes": "1000000"
+                    },
+                    "enable_features": [
+                        "HeapProfilerReporting"
                     ]
                 }
             ]
@@ -18341,25 +18347,6 @@
             ]
         }
     ],
-    "ProtectedAudienceBAndATriggeredUpdates": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableBandATriggeredUpdates"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProtectedAudienceBidderUseBalancingThreadSelector": [
         {
             "platforms": [
@@ -20011,29 +19998,6 @@
                     },
                     "enable_features": [
                         "SafetyHub"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithHats",
-                    "params": {
-                        "background-password-check-interval-in-days": "1",
-                        "probability": "0.5",
-                        "survey": "safety-hub-android-survey",
-                        "trigger_id": "BqU7h7abt0tK1KeaPYj0WkmwAz4h"
-                    },
-                    "enable_features": [
-                        "SafetyHub",
-                        "SafetyHubAndroidOrganicSurvey",
-                        "SafetyHubAndroidSurvey",
-                        "SafetyHubAndroidSurveyV2",
-                        "SafetyHubFollowup"
                     ]
                 }
             ]

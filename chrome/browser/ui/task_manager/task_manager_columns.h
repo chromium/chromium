@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/nacl/common/buildflags.h"
 #include "ui/base/models/table_model.h"

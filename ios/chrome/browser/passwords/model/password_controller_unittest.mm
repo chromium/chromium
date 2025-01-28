@@ -114,6 +114,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
  public:
   FakeNetworkContext() = default;
   void IsHSTSActiveForHost(const std::string& host,
+                           bool is_top_level_nav,
                            IsHSTSActiveForHostCallback callback) override {
     std::move(callback).Run(false);
   }

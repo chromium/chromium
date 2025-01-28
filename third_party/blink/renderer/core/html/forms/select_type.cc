@@ -128,9 +128,6 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
     }
 
     if (auto* select = ParentSelect()) {
-      // MenuListSelectType::ManuallyAssignSlots changes behavior based on
-      // whether the popover is opened or closed.
-      select->GetShadowRoot()->SetNeedsAssignmentRecalc();
       // This is a CustomizableSelect popup. When it is shown, we should focus
       // on the selected option or on the first focusable element if we're in
       // dialog mode.
@@ -166,10 +163,6 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
     HTMLDivElement::HidePopoverInternal(focus_behavior, event_firing,
                                         exception_state);
     if (auto* select = ParentSelect()) {
-      // MenuListSelectType::ManuallyAssignSlots changes behavior based on
-      // whether the popover is opened or closed.
-      select->GetShadowRoot()->SetNeedsAssignmentRecalc();
-
       // Focus the select when the popover is hidden.
       if (focus_behavior == HidePopoverFocusBehavior::kFocusPreviousElement) {
         select->Focus(FocusParams(FocusTrigger::kScript));
@@ -822,7 +815,8 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
 }
 
 void MenuListSelectType::HidePopup(SelectPopupHideBehavior behavior) {
-  if (IsAppearanceBasePicker()) {
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() && popover_ &&
+      popover_->popoverOpen()) {
     bool normal_behavior = behavior == SelectPopupHideBehavior::kNormal;
     popover_->HidePopoverInternal(
         normal_behavior ? HidePopoverFocusBehavior::kFocusPreviousElement

@@ -227,4 +227,7 @@ public interface BrowserPaymentRequest {
     default boolean isContactSectionVisible() {
         return false;
     }
+
+    /** @return A dialog controller for displaying informational or warning messages. */
+    DialogController getDialogController();
 }

@@ -2436,6 +2436,11 @@ void RenderWidgetHostImpl::ClearDisplayedGraphics() {
   if (blink_frame_widget_) {
     blink_frame_widget_->NotifyClearedDisplayedGraphics();
   }
+
+  // crbug.com/40057499: While we didn't receive metadata signal in this case,
+  // we will release input events at this point anyway.  So for our purpose,
+  // this is equivalent to receiving the signal.
+  first_content_metadata_received_ = true;
 }
 
 void RenderWidgetHostImpl::OnKeyboardEventAck(

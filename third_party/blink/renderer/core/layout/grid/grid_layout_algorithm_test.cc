@@ -66,6 +66,12 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
                                                   layout_data_.Rows());
   }
 
+  void RunBuildGapGeometry(GridTrackSizingDirection track_direction,
+                           GridLayoutAlgorithm& algorithm,
+                           GapFragmentData::GapGeometry* gap_geometry) {
+    algorithm.BuildGapGeometry(track_direction, layout_data_, gap_geometry);
+  }
+
   // Helper methods to access private data on GridLayoutAlgorithm. This class
   // is a friend of GridLayoutAlgorithm but the individual tests are not.
   wtf_size_t GridItemCount() { return cached_grid_items_.Size(); }
@@ -182,6 +188,59 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmBaseSetSizes) {
   EXPECT_EQ(BaseRowSizeForChild(algorithm, 2), LayoutUnit(210));
   EXPECT_EQ(BaseRowSizeForChild(algorithm, 3), LayoutUnit(100));
   EXPECT_EQ(BaseRowSizeForChild(algorithm, 4), LayoutUnit(110));
+}
+
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometry) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid1 {
+      display: grid;
+      grid-gap: 10px;
+      grid-template-columns: 100px 100px 100px;
+    }
+    .item {
+      width: 100px;
+      height: 100px;
+    }
+    </style>
+    <div id="grid1">
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid1"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  BuildGridItemsAndTrackCollections(algorithm);
+  GapFragmentData::GapGeometry* gap_geometry =
+      MakeGarbageCollected<GapFragmentData::GapGeometry>();
+
+  RunBuildGapGeometry(kForColumns, algorithm, gap_geometry);
+  // Expect 2 gaps for 3 columns.
+  EXPECT_EQ(gap_geometry->columns.size(), 2U);
+  EXPECT_EQ(gap_geometry->columns[0].start_offset, LayoutUnit(100));
+  EXPECT_EQ(gap_geometry->columns[0].end_offset, LayoutUnit(110));
+  EXPECT_EQ(gap_geometry->columns[1].start_offset, LayoutUnit(210));
+  EXPECT_EQ(gap_geometry->columns[1].end_offset, LayoutUnit(220));
+
+  RunBuildGapGeometry(kForRows, algorithm, gap_geometry);
+  // Expect 1 gap for 2 rows.
+  EXPECT_EQ(gap_geometry->rows.size(), 1U);
+  EXPECT_EQ(gap_geometry->rows[0].start_offset, LayoutUnit(100));
+  EXPECT_EQ(gap_geometry->rows[0].end_offset, LayoutUnit(110));
 }
 
 TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRanges) {

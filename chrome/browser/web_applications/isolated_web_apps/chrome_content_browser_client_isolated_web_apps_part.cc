@@ -51,8 +51,7 @@ void ChromeContentBrowserClientIsolatedWebAppsPart::
     AppendExtraRendererCommandLineSwitches(
         base::CommandLine* command_line,
         content::RenderProcessHost& process) {
-  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
-          process.GetBrowserContext())) {
+  if (!content::AreIsolatedWebAppsEnabled(process.GetBrowserContext())) {
     return;
   }
   command_line->AppendSwitch(switches::kEnableIsolatedWebAppsInRenderer);

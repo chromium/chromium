@@ -15,7 +15,6 @@
 #include <array>
 
 #include "base/check_op.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 
 namespace content {
@@ -67,7 +66,7 @@ bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
     // If the given string doesn't include any ASCII characters, we can treat
     // the string as valid one.
     std::u16string::iterator first_char =
-        base::ranges::find_if(string_text, IsASCIIAlpha);
+        std::ranges::find_if(string_text, IsASCIIAlpha);
     if (first_char == string_text.end())
       return true;
     int word_offset = std::distance(string_text.begin(), first_char);

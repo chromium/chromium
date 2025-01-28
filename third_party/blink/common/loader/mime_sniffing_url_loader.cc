@@ -178,18 +178,6 @@ void MimeSniffingURLLoader::SetPriority(net::RequestPriority priority,
   source_url_loader_->SetPriority(priority, intra_priority_value);
 }
 
-void MimeSniffingURLLoader::PauseReadingBodyFromNet() {
-  if (state_ == State::kAborted)
-    return;
-  source_url_loader_->PauseReadingBodyFromNet();
-}
-
-void MimeSniffingURLLoader::ResumeReadingBodyFromNet() {
-  if (state_ == State::kAborted)
-    return;
-  source_url_loader_->ResumeReadingBodyFromNet();
-}
-
 void MimeSniffingURLLoader::OnBodyReadable(MojoResult) {
   if (state_ == State::kSending) {
     // The pipe becoming readable when kSending means all buffered body has

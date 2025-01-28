@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2025-05-25">
+<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2025-07-27">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -144,6 +144,16 @@ chromium-metrics-reviews@google.com.
     <variant name="Highlighter"/>
     <variant name="Pen"/>
   </token>
+</histogram>
+
+<histogram name="PDF.LoadedWithV2InkAnnotations" enum="Boolean"
+    expires_after="2025-12-01">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the number of PDF documents loaded with existing V2 ink annotations
+    in the PDF viewer.
+  </summary>
 </histogram>
 
 <histogram name="PDF.LoadStatus2" enum="ChromePDFViewerLoadStatus"

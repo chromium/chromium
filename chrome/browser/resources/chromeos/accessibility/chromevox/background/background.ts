@@ -8,7 +8,7 @@ import {Flags} from '/common/flags.js';
 import {InstanceChecker} from '/common/instance_checker.js';
 import {LocalStorage} from '/common/local_storage.js';
 
-import {BrailleKeyEvent} from '../common/braille/braille_key_types.js';
+import type {BrailleKeyEvent} from '../common/braille/braille_key_types.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {EarconId} from '../common/earcon_id.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
@@ -20,7 +20,7 @@ import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 import {JaPhoneticData} from '../third_party/tamachiyomi/ja_phonetic_data.js';
 import {JaPhoneticMap} from '../third_party/tamachiyomi/ja_phonetic_map.js';
 
-import {AbstractEarcons} from './abstract_earcons.js';
+import type {AbstractEarcons} from './abstract_earcons.js';
 import {AutoScrollHandler} from './auto_scroll_handler.js';
 import {BrailleBackground} from './braille/braille_background.js';
 import {BrailleCommandHandler} from './braille/braille_command_handler.js';

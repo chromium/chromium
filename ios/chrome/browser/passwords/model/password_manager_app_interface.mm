@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 
-#import "base/ranges/algorithm.h"
+#import <algorithm>
+
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -166,7 +167,7 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
   std::u16string usernameStr = base::SysNSStringToUTF16(username);
   std::u16string passwordStr = base::SysNSStringToUTF16(password);
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       credentials, [&](const std::unique_ptr<PasswordForm>& credential) {
         return credential->username_value == usernameStr &&
                credential->password_value == passwordStr;

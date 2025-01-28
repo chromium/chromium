@@ -17,7 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
@@ -362,6 +361,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesGoogleCalendarTitle", IDS_NTP_MODULES_GOOGLE_CALENDAR_TITLE},
       {"modulesGoogleCalendarDisableButtonText",
        IDS_NTP_MODULES_GOOGLE_CALENDAR_DISABLE_BUTTON_TEXT},
+      {"modulesMicrosoftSignOutButtonText",
+       IDS_NTP_MODULES_MICROSOFT_SIGN_OUT_BUTTON_TEXT},
       {"modulesOutlookCalendarTitle", IDS_NTP_MODULES_OUTLOOK_CALENDAR_TITLE},
       {"modulesOutlookCalendarDisableButtonText",
        IDS_NTP_MODULES_OUTLOOK_CALENDAR_DISABLE_BUTTON_TEXT},
@@ -536,14 +537,14 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
 
 // Give OGB 3P Cookie Permissions. Only necessary on non-Ash builds. Granting
 // 3P cookies on Ash causes b/314326552.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   WebUIAllowlist::GetOrCreate(profile_)->RegisterAutoGrantedThirdPartyCookies(
       url::Origin::Create(GURL(chrome::kChromeUIUntrustedNewTabPageUrl)),
       {
           ContentSettingsPattern::FromURL(GURL("https://ogs.google.com")),
           ContentSettingsPattern::FromURL(GURL("https://corp.google.com")),
       });
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(

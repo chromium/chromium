@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/x11/x11_window.h"
-#include "base/memory/raw_ptr.h"
+
+#include <algorithm>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -206,7 +207,7 @@ bool ShapeRectContainsPoint(const std::vector<gfx::Rect>& shape_rects,
                             int x,
                             int y) {
   gfx::Point point(x, y);
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       shape_rects, [&point](const auto& rect) { return rect.Contains(point); });
 }
 

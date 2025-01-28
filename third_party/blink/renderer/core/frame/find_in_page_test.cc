@@ -65,7 +65,7 @@ class FindInPageCallbackReceiver {
   bool IsCalled() { return is_called; }
 
   void AssertFindMatchRects(int expected_version,
-                            const WebVector<gfx::RectF>& expected_rects,
+                            const Vector<gfx::RectF>& expected_rects,
                             const gfx::RectF& expected_active_match_rect,
                             int actual_version,
                             const Vector<gfx::RectF>& actual_rects,

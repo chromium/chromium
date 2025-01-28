@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/network_service/aw_proxying_url_loader_factory.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -36,7 +37,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/base_tracing.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "components/embedder_support/android/util/response_delegate_impl.h"
@@ -166,8 +166,6 @@ class InterceptedRequest : public network::mojom::URLLoader,
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   void ContinueAfterIntercept();
   void ContinueAfterInterceptWithOverride(
@@ -903,16 +901,6 @@ void InterceptedRequest::SetPriority(net::RequestPriority priority,
                                      int32_t intra_priority_value) {
   if (target_loader_)
     target_loader_->SetPriority(priority, intra_priority_value);
-}
-
-void InterceptedRequest::PauseReadingBodyFromNet() {
-  if (target_loader_)
-    target_loader_->PauseReadingBodyFromNet();
-}
-
-void InterceptedRequest::ResumeReadingBodyFromNet() {
-  if (target_loader_)
-    target_loader_->ResumeReadingBodyFromNet();
 }
 
 std::unique_ptr<AwContentsIoThreadClient>

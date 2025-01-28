@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
@@ -40,9 +39,7 @@ AccountBookmarkSyncServiceFactory::AccountBookmarkSyncServiceFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
-              .Build()) {
-  DependsOn(BookmarkUndoServiceFactory::GetInstance());
-}
+              .Build()) {}
 
 AccountBookmarkSyncServiceFactory::~AccountBookmarkSyncServiceFactory() =
     default;
@@ -55,8 +52,6 @@ AccountBookmarkSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<sync_bookmarks::BookmarkSyncService>(
-      BookmarkUndoServiceFactory::GetForProfileIfExists(profile),
       syncer::WipeModelUponSyncDisabledBehavior::kAlways);
 }

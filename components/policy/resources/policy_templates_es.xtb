@@ -3655,6 +3655,19 @@ Si <ph name="PRODUCT_NAME" /> no se cierra correctamente (por ejemplo, si el nav
 <translation id="3700193037252896716">La frecuencia con la que se debe repetir el reinicio.</translation>
 <translation id="3700318587977845664">Frecuencia con la que debe comprobarse si hay actualizaciones.</translation>
 <translation id="3701121231485832347">Controla la configuración específica de los dispositivos con <ph name="PRODUCT_OS_NAME" /> gestionados con <ph name="MS_AD_NAME" />.</translation>
+<translation id="3701177991731919830">Esta política habilita la aplicación Transferencia de contenido para los usuarios gestionados. Esta aplicación ayuda a los usuarios a transferir sus datos de una cuenta gestionada a una cuenta de consumidor.
+
+Si se asigna el valor <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" /> a <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" />, la aplicación Transferencia de contenido se mostrará entre las fechas de inicio y finalización (inclusive), según la hora local.
+
+Si se asigna el valor <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> a <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> o no se define, la aplicación no se mostrará.
+
+Si no se define <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" />, la aplicación se mostrará hasta la fecha de finalización.
+
+Si no se define <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />, la aplicación se mostrará indefinidamente a partir de la fecha de inicio.
+
+Si no se definen <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> ni <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />, la aplicación se mostrará de forma indefinida. Si las fechas de inicio y finalización no son válidas, no se mostrará la aplicación Transferencia de contenido. Por ejemplo, si las fechas proporcionadas no existen o la fecha de finalización es anterior a la de inicio.
+
+La transferencia de datos con Takeout también debe habilitarse para que la aplicación Transferencia de contenido funcione correctamente. Consulta https://support.google.com/a/answer/6364687 para obtener más información.</translation>
 <translation id="3702518095257671450">Confirmación remota</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (el campo de una línea está obsoleto y desaparecerá en el futuro; a partir de ahora, debes utilizar el campo de varias líneas que aparece más abajo).</translation>
 <translation id="3711561721191203926">Si se habilita esta política, cuando deba mostrarse una advertencia en <ph name="DEV_TOOLS_NAME" /> debido a un fallo en las comprobaciones de <ph name="PRIVATE_NETWORK_ACCESS" />, se bloqueará la solicitud principal.
@@ -8392,6 +8405,12 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si no le asignas ningún valor, la estantería se colocará en la parte inferior de la pantalla de forma predeterminada y el usuario podrá cambiar su posición.</translation>
 <translation id="7039815268521168329">Mostrar el flujo de Voice Match del Asistente de Google durante la configuración inicial</translation>
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
+<translation id="7044626519138840387">Una lista de orígenes de aplicaciones de cliente de escritorio remoto que pueden realizar solicitudes a la API WebAuthn que se originan en una sesión de navegador en un host remoto.
+
+Cualquier origen configurado en esta política puede hacer solicitudes WebAuthn para obtener IDs de entidad de confianza que normalmente no podría solicitar.
+
+Solo se permiten orígenes HTTPS válidos. No se admiten comodines.
+Las entradas no válidas se ignoran.</translation>
 <translation id="7044883996351280650">Controlar el servicio de copia de seguridad y restauración de Android</translation>
 <translation id="7045221780834308118">Si se habilita esta política, las aplicaciones web de terceros podrán usar la API Desk para controlar los escritorios de <ph name="PRODUCT_OS_NAME" />. Si esta política no se define o se inhabilita, <ph name="DESK_API_NAME" /> no estará disponible. La política solo se aplicará a los dispositivos registrados.</translation>
 <translation id="7046113122884041950">No permitir Smart Lock</translation>
@@ -10572,6 +10591,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 <translation id="8734543507835977857">Iniciar los retrasos de gestión de batería y los límites de duración de sesión al comenzar la sesión</translation>
 <translation id="8736538322216687231">Aplicar el modo restringido en YouTube como mínimo</translation>
 <translation id="873800217865395140">Intervalo de recogida de telemetría de sitios web en milisegundos.</translation>
+<translation id="8743149927570551353">Configurar cuándo estará disponible la herramienta Transferencia de contenido para <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8743902569031401303">Permitir encuestas sobre Navegación segura</translation>
 <translation id="8744844164152340112">Controla el tema utilizado para renderizar la interfaz de usuario la primera vez que se usa el dispositivo y durante la sesión (oscuro/claro/automático).
       El modo automático cambia automáticamente entre los temas oscuro y claro al amanecer y al atardecer.
@@ -11185,6 +11205,7 @@ Para obtener más información sobre contextos seguros, consulta la página http
       Si se inhabilita esta opción, los usuarios no podrán abrir páginas web en modo Incógnito.
 
       Si no se establece esta política, la opción estará habilitada y los usuarios podrán usar el modo Incógnito.</translation>
+<translation id="9151267823917882070">Orígenes permitidos para las solicitudes WebAuthn con proxy desde aplicaciones de Escritorio Remoto.</translation>
 <translation id="9152473318295429890">Habilitar las sugerencias contextuales de páginas web relacionadas</translation>
 <translation id="9155218447258425310">Duración de la notificación al quitar la tarjeta inteligente en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9155375380628728544">Si se le asigna un valor a esta política, los usuarios podrán añadir solo uno de los idiomas incluidos en esta política a la lista de idiomas preferidos.

@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -383,7 +382,8 @@ TaskManagerView::TableConfigs TaskManagerView::GetTableConfigs() {
       base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh);
   return TableConfigs{
       .table_has_border = !tm_refresh_enabled,
-      .header_padding = tm_refresh_enabled,
+      .header_style = tm_refresh_enabled,
+      .table_refresh = tm_refresh_enabled,
       .scroll_view_rounded = tm_refresh_enabled,
       .layout_refresh = tm_refresh_enabled,
       .dialog_button_disabled = tm_refresh_enabled,
@@ -636,15 +636,31 @@ void TaskManagerView::Init() {
                    l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
   }
 
-  if (table_config_.header_padding) {
+  if (table_config_.header_style) {
     views::TableHeaderStyle header_style = {
         .cell_vertical_padding = 14,
         .cell_horizontal_padding = 12,
         .resize_bar_vertical_padding = 16,
         .separator_horizontal_padding = 0,
         .font_weight = gfx::Font::Weight::MEDIUM,
-        .separator_horizontal_color_id = ui::kColorSysDivider};
+        .separator_horizontal_color_id = ui::kColorSysDivider,
+        .background_color_id = kColorTaskManagerTableHeaderBackground};
     tab_table->SetHeaderStyle(header_style);
+  }
+
+  if (table_config_.table_refresh) {
+    views::TableStyle table_style = {
+        .background_tokens =
+            views::TableBackgroundStyle{
+                .background = kColorTaskManagerTableBackground,
+                .alternate = kColorTaskManagerTableBackgroundAlternate,
+                .selected_focused =
+                    kColorTaskManagerTableBackgroundSelectedFocused,
+                .selected_unfocused =
+                    kColorTaskManagerTableBackgroundSelectedUnfocused,
+            },
+    };
+    tab_table->SetTableStyle(table_style);
   }
 
   const auto* provider = ChromeLayoutProvider::Get();

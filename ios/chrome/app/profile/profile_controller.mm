@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/profile/profile_controller.h"
 
+#import <algorithm>
 #import <memory>
 #import <utility>
 
@@ -16,7 +17,6 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
@@ -182,7 +182,7 @@ ProfileAttributesIOS RemoveSessionsFromSessionsToDiscard(
     const std::set<std::string>& session_ids,
     ProfileAttributesIOS attrs) {
   std::set<std::string> discarded_sessions;
-  base::ranges::set_difference(
+  std::ranges::set_difference(
       attrs.GetDiscardedSessions(), session_ids,
       std::inserter(discarded_sessions, discarded_sessions.end()));
   attrs.SetDiscardedSessions(discarded_sessions);

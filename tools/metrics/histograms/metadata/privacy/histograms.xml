@@ -170,20 +170,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
-<histogram name="Privacy.3pcd.Experiment3pcBlockStatusHistogram"
-    enum="Experiment3pcBlockStatus" expires_after="2024-11-03">
-  <owner>trishalfonso@google.com</owner>
-  <owner>src/chrome/browser/tpcd/OWNERS</owner>
-  <summary>
-    Records the state of 3P cookie enablement in relation to the requested 3P
-    cookie usage for the 3P cookie deprecation experiment when the 3P cookie
-    deprecation experiment is enabled.
-
-    Recorded for each main-frame navigation when that navigation commits. Only
-    counts HTTP or HTTPS URLs and ignores downloads.
-  </summary>
-</histogram>
-
 <histogram name="Privacy.3pcd.ProfileEligibilityMismatch"
     enum="ProfileEligibilityMismatch" expires_after="2025-05-11">
   <owner>trishalfonso@google.com</owner>
@@ -1147,7 +1133,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.Attestations.InitializationDuration.ComponentReadyFromApplicationStart"
-    units="ms" expires_after="2025-05-25">
+    units="ms" expires_after="2025-07-27">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1164,7 +1150,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.Attestations.InitializationDuration.ComponentReadyFromApplicationStartWithInterruption"
-    units="ms" expires_after="2025-05-25">
+    units="ms" expires_after="2025-07-27">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1184,7 +1170,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.Attestations.InitializationDuration.ComponentReadyFromBrowserWindowFirstPaint"
-    units="ms" expires_after="2025-05-25">
+    units="ms" expires_after="2025-07-27">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1208,7 +1194,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.Attestations.IsSiteAttested"
-    enum="PrivacySandboxApiAllowed" expires_after="2025-05-25">
+    enum="PrivacySandboxApiAllowed" expires_after="2025-07-27">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1565,7 +1551,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.NoticeRequirement.IsVariationCountryEmpty"
-    enum="Boolean" expires_after="2025-05-25">
+    enum="Boolean" expires_after="2025-07-27">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1576,7 +1562,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.NoticeRequirement.IsVariationServiceReady"
-    enum="Boolean" expires_after="2025-05-25">
+    enum="Boolean" expires_after="2025-07-27">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>

@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Adres yalnızca bu cihaza kaydedildi</translation>
 <translation id="1445276840641906250">Tüm sekmeleriniz tek tarayıcıda</translation>
 <translation id="1450170672351507823">Standart koruma açık. Daha fazla güvenlik için gelişmiş korumayı kullanın.</translation>
-<translation id="1454615514353469963">Şifreler, geçiş anahtarları ve diğer veriler Google Şifre Yöneticisi'nden kalıcı olarak silinecektir</translation>
 <translation id="1455660774629812862">Gizleme</translation>
 <translation id="1460751212339734034">Daha az yazarak zaman kazanın</translation>
 <translation id="1466035273550360103">Açık sekme yok</translation>
@@ -476,6 +475,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="3053332585453689122">Ziyaret ettiğiniz URL'lerin yanı sıra sayfa içeriği, indirmeler, uzantı etkinliği ve sistem bilgilerinin küçük bir örneğini Google Güvenli Tarama'ya göndererek bunların zararlı olup olmadığını kontrol eder.</translation>
 <translation id="3055102495753300780">Bilgi depolama</translation>
 <translation id="3059270601560379555">Yeni arama</translation>
+<translation id="3064547930554042309">İndirilenleri yönet</translation>
 <translation id="3072279342064724558">Şifre zaten mevcut</translation>
 <translation id="3076846064362030967">Google Hesaplarınızdaki oturumlarınız kapatılmaz. <ph name="BEGIN_LINK" />Diğer etkinlik biçimleri<ph name="END_LINK" />, oturum açtığınızda Google Hesabınıza kaydedilebilir. Bunları istediğiniz zaman silebilirsiniz.
 
@@ -698,6 +698,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4154753961803534698">Kamera ile ara</translation>
 <translation id="4158491215857439601">Şifre Yöneticisi</translation>
 <translation id="4163699139741158298">{count,plural, =1{Yer işareti "{title}" konumuna kaydedildi ve yalnızca bu cihazda kayıtlı kalacaktır.}other{{count} yer işareti "{title}" konumuna kaydedildi ve yalnızca bu cihazda kayıtlı kalacaktır.}}</translation>
+<translation id="4164514562270305824">İndirilenleri otomatik sil</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" /> ile biten <ph name="NETWORK_NAME" /></translation>
 <translation id="4169535189173047238">İzin verme</translation>
 <translation id="4172051516777682613">Her zaman göster</translation>
@@ -1016,6 +1017,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5579012242779565775">"Okuma Listesi" seçeneğini gizle</translation>
 <translation id="5585019845078534178">Kartlar</translation>
 <translation id="5595485650161345191">Adresi düzenle</translation>
+<translation id="559567008082979829">İndirmelerinizin bir ay sonra silinmesini sağlayın.</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
 <translation id="560322036295180549">Kuruluşunuz tarafından kapatıldı.</translation>
 <translation id="5611107723541161735">Bu cihazda son zamanlarda ziyaret ettiğiniz sitelerin kısayolları.</translation>

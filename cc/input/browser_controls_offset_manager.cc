@@ -511,8 +511,14 @@ gfx::Vector2dF BrowserControlsOffsetManager::ScrollBy(
 
   float min_ratio = base_on_top_controls ? TopControlsMinShownRatio()
                                          : BottomControlsMinShownRatio();
-  float normalized_shown_ratio =
-      (std::clamp(shown_ratio, min_ratio, 1.f) - min_ratio) / (1.f - min_ratio);
+  float normalized_shown_ratio;
+  if (min_ratio == 1.f) {
+    normalized_shown_ratio = 1.f;
+  } else {
+    normalized_shown_ratio =
+        (std::clamp(shown_ratio, min_ratio, 1.f) - min_ratio) /
+        (1.f - min_ratio);
+  }
   // Even though the real shown ratios (shown height / total height) of the top
   // and bottom controls can be different, they share the same
   // relative/normalized ratio to keep them in sync.
@@ -669,9 +675,9 @@ void BrowserControlsOffsetManager::SetupAnimation(
     AnimationDirection direction) {
   DCHECK_NE(AnimationDirection::kNoAnimation, direction);
   DCHECK(direction != AnimationDirection::kHidingControls ||
-         TopControlsShownRatio() > 0.f);
+         TopControlsShownRatio() > 0.f || BottomControlsShownRatio() > 0.f);
   DCHECK(direction != AnimationDirection::kShowingControls ||
-         TopControlsShownRatio() < 1.f);
+         TopControlsShownRatio() < 1.f || BottomControlsShownRatio() < 1.f);
 
   if (top_controls_animation_.IsInitialized() &&
       top_controls_animation_.Direction() == direction &&

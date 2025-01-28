@@ -612,8 +612,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // on the current `RenderingPrioritizationState`.
   std::optional<TaskPriority> ComputeCompositorPriorityForMainFrame() const;
 
-  static void RunIdleTask(Thread::IdleTask, base::TimeTicks deadline);
-
   void ShutdownAllQueues();
 
   bool AllPagesFrozen() const;

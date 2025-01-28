@@ -8,15 +8,10 @@ static_library("constants") {
   sources = [ "controlled_pref_mapping.h" ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/common:constants",
+    "//chromeos/crosapi/mojom",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/constants",
-      "//chromeos/crosapi/mojom",
-    ]
-  }
 }

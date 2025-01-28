@@ -25,7 +25,8 @@
 import {KeyCode} from '/common/key_code.js';
 
 import {Command, CommandCategory} from './command.js';
-import {KeyBinding, KeySequence, SerializedKeySequence} from './key_sequence.js';
+import type {KeyBinding, SerializedKeySequence} from './key_sequence.js';
+import {KeySequence} from './key_sequence.js';
 
 export class CommandStore {
   /**

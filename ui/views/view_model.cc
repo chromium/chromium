@@ -6,8 +6,9 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/check_op.h"
-#include "base/ranges/algorithm.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -58,7 +59,7 @@ void ViewModelBase::Clear() {
 }
 
 std::optional<size_t> ViewModelBase::GetIndexOfView(const View* view) const {
-  const auto i = base::ranges::find(entries_, view, &Entry::view);
+  const auto i = std::ranges::find(entries_, view, &Entry::view);
   return (i == entries_.cend())
              ? std::nullopt
              : std::make_optional(static_cast<size_t>(i - entries_.cbegin()));

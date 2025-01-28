@@ -8,14 +8,10 @@
 
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -118,25 +114,9 @@ void StorageSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
           IDS_SETTINGS_STORAGE_ANDROID_APPS_ACCESS_EXTERNAL_DRIVES_NOTE,
           chrome::kArcExternalStorageLearnMoreURL));
 
-  // If Lacros is enabled the browsing data settings control will open a Lacros
-  // window for browsing data belonging to the Lacros primary profile. The
-  // signed-in ash user profile corresponds directly to the Lacros primary
-  // profile so use the ash user's display name.
-  // TODO(crbug.com/41484354): Explore exposing a better setting that allows
-  // browsing data management for all browser profiles.
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    const user_manager::User* user =
-        ProfileHelper::Get()->GetUserByProfile(profile());
-    CHECK(user);
-    html_source->AddString("storageItemBrowsingData",
-                           l10n_util::GetStringFUTF16(
-                               IDS_SETTINGS_STORAGE_ITEM_BROWSING_DATA_LACROS,
-                               user->GetDisplayName()));
-  } else {
-    html_source->AddString(
-        "storageItemBrowsingData",
-        l10n_util::GetStringUTF16(IDS_SETTINGS_STORAGE_ITEM_BROWSING_DATA));
-  }
+  html_source->AddString(
+      "storageItemBrowsingData",
+      l10n_util::GetStringUTF16(IDS_SETTINGS_STORAGE_ITEM_BROWSING_DATA));
 
   html_source->AddBoolean("isExternalStorageEnabled",
                           IsExternalStorageEnabled(profile()));

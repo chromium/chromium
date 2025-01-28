@@ -11077,9 +11077,9 @@ class LayerTreeHostTestCustomPropertyTreeDelegate : public LayerTreeHostTest {
    public:
     bool update_called() { return update_called_; }
 
-    void UpdatePropertyTreesIfNeeded(LayerTreeHost* host) override {
+    void UpdatePropertyTreesIfNeeded() override {
       update_called_ = true;
-      PropertyTreeLayerTreeDelegate::UpdatePropertyTreesIfNeeded(host);
+      PropertyTreeLayerTreeDelegate::UpdatePropertyTreesIfNeeded();
     }
 
    private:

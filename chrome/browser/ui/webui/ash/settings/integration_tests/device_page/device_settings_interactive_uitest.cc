@@ -383,11 +383,11 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, AddNewMouse) {
       WaitForElementTextContains(webcontents_id_, kMouseNameQuery, "mouse"));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SixPackKeys DISABLED_SixPackKeys
 #else
 #define MAYBE_SixPackKeys SixPackKeys
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, MAYBE_SixPackKeys) {
   const DeepQuery kDeleteDropdownQuery{
       "os-settings-ui",      "os-settings-main",

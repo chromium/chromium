@@ -36,7 +36,7 @@
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 #include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
@@ -54,7 +54,7 @@
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kUsername[] = "test@example.com";
 
 // The SHA256 hash of the certificate in client_with_ec_key.p12, as a hex
@@ -132,7 +132,7 @@ class FakeCertificateManagerPage
 
 class ClientCertSourceWritableUnitTest
     : public ChromeRenderViewHostTestHarness,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       public testing::WithParamInterface<std::tuple<bool, bool, bool>>
 #else
       // In the non-ChromeOS case, the test does not actually need any
@@ -145,7 +145,7 @@ class ClientCertSourceWritableUnitTest
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ASSERT_TRUE(test_nss_user_.constructed_successfully());
     test_nss_user_.FinishInit();
 
@@ -162,7 +162,7 @@ class ClientCertSourceWritableUnitTest
 
     ChromeRenderViewHostTestHarness::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     // is_affiliated=true is required for nss_service_chromeos to configure the
     // system slot.
@@ -185,7 +185,7 @@ class ClientCertSourceWritableUnitTest
   void TearDown() override {
     ui::SelectFileDialog::SetFactory(nullptr);
     cert_source_.reset();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     fake_user_manager_.Reset();
     crosapi_manager_.reset();
     ash::LoginState::Shutdown();
@@ -196,7 +196,7 @@ class ClientCertSourceWritableUnitTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool dual_write_enabled() const { return std::get<0>(GetParam()); }
   bool kcer_enabled() const { return std::get<1>(GetParam()); }
   bool use_hardware_backed() const { return std::get<2>(GetParam()); }
@@ -208,7 +208,7 @@ class ClientCertSourceWritableUnitTest
 
   void DoImport(
       CertificateManagerPageHandler::ImportCertificateCallback callback) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (use_hardware_backed()) {
       cert_source_->ImportAndBindCertificate(web_contents()->GetWeakPtr(),
                                              std::move(callback));
@@ -262,7 +262,7 @@ class ClientCertSourceWritableUnitTest
     net::NSSCertDatabase* nss_db = nss_waiter.Get();
 
     crypto::ScopedPK11Slot slot;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (import_to_system_slot) {
       slot = nss_db->GetSystemSlot();
     } else if (use_hardware_backed()) {
@@ -306,7 +306,7 @@ class ClientCertSourceWritableUnitTest
   }
 
   bool NSSContainsCertWithHash(std::string_view hash_hex) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return SlotContainsCertWithHash(
         crypto::GetPublicSlotForChromeOSUser(username_hash()).get(), hash_hex);
 #else
@@ -315,7 +315,7 @@ class ClientCertSourceWritableUnitTest
   }
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList feature_list_;
   AccountId account_{AccountId::FromUserEmail(kUsername)};
   crypto::ScopedTestNSSChromeOSUser test_nss_user_{username_hash()};
@@ -341,7 +341,7 @@ class ClientCertSourceWritableUnitTest
 // with no policy set.
 TEST_P(ClientCertSourceWritableUnitTest,
        ImportPkcs12AndGetCertificateInfosAndDelete) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kNssChapsDualWrittenCertsExist));
 #endif
@@ -376,7 +376,7 @@ TEST_P(ClientCertSourceWritableUnitTest,
     EXPECT_TRUE(import_result->is_success());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // The cert should be dual written only if dual-write feature is enabled
   // and the import was not hardware backed (if it's hardware backed it
   // already gets imported to Chaps so the dual write isn't needed.)
@@ -408,7 +408,7 @@ TEST_P(ClientCertSourceWritableUnitTest,
   EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug.com/376923227): enable once test certificate has regenerated.
 TEST_P(ClientCertSourceWritableUnitTest, DISABLED_PolicyAllAllowsDeletion) {
@@ -592,7 +592,7 @@ TEST_P(ClientCertSourceWritableUnitTest, ImportPkcs12NotAllowedByPolicy) {
   ASSERT_TRUE(import_result->is_error());
   EXPECT_EQ(import_result->get_error(), "not allowed");
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(ClientCertSourceWritableUnitTest, ImportPkcs12PasswordWrong) {
   ui::FakeSelectFileDialog::Factory* factory =
@@ -758,7 +758,7 @@ TEST_P(ClientCertSourceWritableUnitTest, DeleteCertificateNotFound) {
 
 INSTANTIATE_TEST_SUITE_P(Foo,
                          ClientCertSourceWritableUnitTest,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                          testing::Combine(testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool())

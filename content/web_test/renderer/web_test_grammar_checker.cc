@@ -11,10 +11,10 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
@@ -34,8 +34,9 @@ bool WebTestGrammarChecker::CheckGrammarOfString(
     std::vector<blink::WebTextCheckingResult>* results) {
   DCHECK(results);
   std::u16string string_text = text.Utf16();
-  if (base::ranges::none_of(string_text, IsASCIIAlpha))
+  if (std::ranges::none_of(string_text, IsASCIIAlpha)) {
     return true;
+  }
 
   // Find matching grammatical errors from known ones. This function has to
   // check all errors because the given text may consist of two or more

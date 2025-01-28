@@ -50,7 +50,6 @@
 #
 # See `docs/unsafe_buffers.md`.
 
--android_webview/
 -base/allocator/
 -base/third_party/
 -chrome/browser/platform_experience/win/

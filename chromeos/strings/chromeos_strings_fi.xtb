@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Peruutettu</translation>
 <translation id="1020274983236703756">Eksklusiivista sisältöä nyt saatavilla: <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="102432830749687801">Muista siirtää koulutilin data henkilökohtaiselle tilillesi Googlen Sisällön siirto ‑sovelluksella ennen kuin menetät pääsyn.</translation>
 <translation id="1026212596705997935">Pikanäppäintä käytetään tähän: "<ph name="CONFLICT_ACCEL_NAME" />". Paina uutta pikanäppäintä. Jos haluat korvata nykyisen pikanäppäimen, paina tätä pikanäppäintä uudelleen.</translation>
 <translation id="1030856839388844477">Nollaa datan käyttö</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> viestiketju, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Laitteen kotelon akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Yhdyskäytävää voidaan pingata</translation>
 <translation id="1398634363027580500">Erittäin suuri HTTPS-viive</translation>
+<translation id="1406389211945506521">Kiitos, että jaoit kokemuksesi. Palautteesi auttaa meitä luomaan tarkempaa ja hyödyllisempää sisältöä.</translation>
 <translation id="1407069428457324124">Tumma teema</translation>
 <translation id="1413240736185167732">Epäonnistui – Suodatin epäkunnossa</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">klassinen taide</translation>
 <translation id="181434555916624618">Ihmisiä koskevia tuloksia ei tällä hetkellä näytetä. Kokeile toista kehotetta.</translation>
 <translation id="1815850098929213707">Valittu avain on <ph name="KEYS" />. Muokkaa ohjainta napauttamalla painiketta</translation>
+<translation id="1818174214124933000">Kun valitset Lähetä, palautteesi ja sisältösi (katso alla) lähetetään Googlelle ihmisten tarkastettavaksi. Niiden avulla koulutamme ja kehitämme tuotteitamme ja palveluitamme <ph name="LINK_POLICY_BEGIN" />tietosuojakäytännön<ph name="LINK_POLICY_END" /> ja <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Googlen käyttöehtojen<ph name="LINK_TERMS_OF_SERVICE_END" /> mukaisesti.</translation>
 <translation id="1823120442877418684">Aiheet</translation>
 <translation id="1827738518074806965">Taidegalleria</translation>
+<translation id="183287940576828840">Loukkaava/epäluotettava</translation>
 <translation id="1836553715834333258">Järjestelmän väri</translation>
 <translation id="183675228220305365">realismi</translation>
 <translation id="1838374766361614909">Tyhjennä haku</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Epäonnistuneita UDP-pyyntöjä</translation>
 <translation id="1908394185991500139">vasen nuolinäppäin</translation>
 <translation id="1914144885717544695">perjantaina</translation>
+<translation id="1915960750806557358">Jaa palautteesi tai kerro ongelmastasi. Älä lisää henkilökohtaisia, arkaluontoisia tai luottamuksellisia tietoja.</translation>
 <translation id="1923388006036088459">Korostusvärit</translation>
 <translation id="1945403655450283000">Tallentaja</translation>
 <translation id="1947737735496445907">Tulostettu</translation>
@@ -296,6 +301,7 @@
 <translation id="2240366984605217732">Asettelun valitsin</translation>
 <translation id="2244834438220057800">vihreä</translation>
 <translation id="225692081236532131">Aktivoinnin tila</translation>
+<translation id="2265792117169966196">Valitse ja lataa transkriptiomalli, jonka kieli on <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Lisää kuvakaappaus</translation>
 <translation id="2268044343513325586">Tarkenna</translation>
 <translation id="2271469253353559191">Tumman tilan aikataulu</translation>
@@ -595,6 +601,7 @@
 <translation id="387301095347517405">Kuinka monta kertaa akku on ollut täynnä ja sitten tyhjentynyt</translation>
 <translation id="3877066159641251281">Kuuntele käännös</translation>
 <translation id="3880601782712134623">Tunnista eri äänet automaattisesti ja anna kullekin niistä yleinen tunniste, esim. "Kaiutin 1" ja "Kaiutin 2"</translation>
+<translation id="38811596981744338">Oikeudellinen ongelma</translation>
 <translation id="3885327323343477505">Vaihda näytönsäästäjä</translation>
 <translation id="3889914174935857450">Nollaamispäivämäärä</translation>
 <translation id="3897092660631435901">Valikko</translation>
@@ -774,6 +781,7 @@
 <translation id="473775607612524610">Päivitä</translation>
 <translation id="4744944742468440486">Valintaasi liittyviä tietoja</translation>
 <translation id="4750394297954878236">Ehdotukset</translation>
+<translation id="4763771683769971829">Saatavilla olevat kielet</translation>
 <translation id="4771607256327216405">näppäimistön kirkastus</translation>
 <translation id="4771923071974529837">huomenna</translation>
 <translation id="4773299976671772492">Keskeytetty</translation>
@@ -819,6 +827,7 @@
 <translation id="4921665434385737356"><ph name="RATE" /> ladattiin <ph name="NUM_SECONDS" /> sekunnissa.</translation>
 <translation id="4930320165497208503">Määritä tai päivitä yhteys avaamalla <ph name="BEGIN_LINK" />Asetukset<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Päiväys</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, avautuu uudelle välilehdelle</translation>
 <translation id="4946927805998996217">Luodaan yhteenvetoa</translation>
 <translation id="4950314376641394653">Laiteohjelmisto (<ph name="DEVICE_NAME" />) on päivitetty versioon <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">puutunneli</translation>
@@ -855,6 +864,7 @@
 <translation id="5095761549884461003">Irrota USB-johto (<ph name="DEVICE_NAME" />) ja kytke se takaisin jatkaaksesi päivitysprosessia.</translation>
 <translation id="5099354524039520280">ylös</translation>
 <translation id="5107243100836678918">Pikakomento ilman <ph name="META_KEY" />näppäintä voi olla ristiriidassa toisen sovelluksen pikakomennon kanssa. Jatka pikakomennon käyttöä painamalla sitä uudelleen tai paina uutta pikakomentoa <ph name="KEY" />näppäimellä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">Ei voi ladata transkriptiomallia, jonka kieli on <ph name="LANGUAGE_NAME" />. Yritä vielä tai käynnistä Chromebook uudelleen.</translation>
 <translation id="5108781503443873320">Samantyyppisiä:</translation>
 <translation id="5121677070210013200">Transkriptiomallia ei voi ladata. Yritä uudelleen tai käynnistä Chromebook uudelleen.</translation>
 <translation id="5130848777448318809">ponit</translation>
@@ -1205,6 +1215,7 @@
 <translation id="6692996468359469499">Tietoja valinnastasi</translation>
 <translation id="6694534975463174713">lukko</translation>
 <translation id="6700703207451721535">Pääsyä tähän linkkiin ei sallita. Kysy opettajalta, tarvitsetko pääsyoikeudet.</translation>
+<translation id="6703179086771097594">Mikä ei toiminut hyvin?</translation>
 <translation id="6704062477274546131">DNS-ratkaisu</translation>
 <translation id="6712933881624804031">laakso</translation>
 <translation id="6716013206176357696">mansikat</translation>
@@ -1278,6 +1289,8 @@
 <translation id="7049916119678019302">Lataa transkriptiomalli asetuksista</translation>
 <translation id="7058278511608979688">Lopeta ja tallenna</translation>
 <translation id="7059230779847288458">Ladataan, täynnä <ph name="TIME_VALUE" /> päästä</translation>
+<translation id="7064209589142995848">Sisällön siirto</translation>
+<translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> valittu</translation>
 <translation id="7066538517128343186"><ph name="KEY" />-näppäin</translation>
 <translation id="7068619307603204412">Valmistele laite</translation>
 <translation id="7076851914315147928">Valitse taustakuva</translation>
@@ -1371,6 +1384,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7415801143053185905">Erittäin suuri HTTP-viive</translation>
 <translation id="7418738250896500352">Sanoja on liian paljon yksinkertaistamista varten</translation>
 <translation id="7425037327577270384">Auta minua kirjoittamaan</translation>
+<translation id="7425832472614771259"><ph name="LANGUAGE_NAME" />: transkriptiomallista <ph name="PROGRESS_PERCENTAGE" /> % ladattu</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">APN:ää ei voi poistaa käytöstä tai kokonaan. Varmista, että käyttöön otetut APN:t, jotka on <ph name="ATTACH" />, on poistettu käytöstä tai kokonaan.</translation>
 <translation id="7453118953486228603">Tee valitusta tekstistä yhteenveto klikkaamalla</translation>
@@ -1407,6 +1421,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> jäljellä</translation>
 <translation id="7600430297804876776">Järjestelmänvalvoja (<ph name="MANAGER" />) on määrittänyt, milloin laitetta (<ph name="DEVICE_TYPE" />) voidaan käyttää.</translation>
 <translation id="7613724632293948900">Sijoita uudelleen hiirellä tai nuolinäppäimillä.</translation>
+<translation id="7618216277886673749">Valitse <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutraali</translation>
 <translation id="7620771111601174153">Lue lisää ohjekeskuksesta</translation>
 <translation id="7625095758347640998">AI-taustakuvat</translation>
@@ -1586,6 +1601,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8476942730579767658">Windows ja työpöydät</translation>
 <translation id="8477536061607044749">graafinen suunnittelu</translation>
 <translation id="8477551185774834963">DNS-viive hieman yli sallitun rajan</translation>
+<translation id="8481308460877552925">Asiavirhe</translation>
 <translation id="8482376765267780829">Valitse yksinkertaistettava teksti</translation>
 <translation id="8483248364096924578">IP-osoite</translation>
 <translation id="8491311378305535241">HTTP-sivustoihin ei voi yhdistää palomuurin läpi Android-sovelluksilla</translation>

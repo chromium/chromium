@@ -228,8 +228,6 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
       const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
  private:
   explicit ExternalFileURLLoader(

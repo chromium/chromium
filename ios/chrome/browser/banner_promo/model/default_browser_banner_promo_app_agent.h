@@ -30,6 +30,10 @@
 // Whether the promo is currently shown.
 @property(nonatomic, assign) BOOL promoCurrentlyShown;
 
+// Whether the current UI state allows for a promo to be shown. Setting this to
+// `NO` will temporarily pause an active promo session.
+@property(nonatomic, assign) BOOL UICurrentlySupportsPromo;
+
 // Observation methods:
 - (void)addObserver:(id<DefaultBrowserBannerAppAgentObserver>)observer;
 - (void)removeObserver:(id<DefaultBrowserBannerAppAgentObserver>)observer;

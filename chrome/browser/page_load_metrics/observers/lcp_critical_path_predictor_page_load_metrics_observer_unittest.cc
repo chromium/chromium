@@ -102,9 +102,10 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
   void SetMockLcpElementLocator(
       GURL url,
       const std::string& mock_element_locator = "foo",
+      bool is_image_element = true,
       std::optional<uint32_t> mock_predicted_index = std::nullopt) {
-    lcpp_observers_[url]->SetLcpElementLocator(mock_element_locator,
-                                               mock_predicted_index);
+    lcpp_observers_[url]->OnLcpUpdated(mock_element_locator, is_image_element,
+                                       mock_predicted_index);
   }
 
   void ExpectNoHistogram(const char* name,
@@ -153,10 +154,12 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     tester()->SimulateTimingUpdate(timing_);
   }
 
-  void TestSimpleNavigation(bool provide_lcpp_hint) {
+  void TestSimpleNavigation(bool provide_lcpp_hint,
+                            bool is_image_element = true) {
     const GURL main_frame_url("https://test.example");
     NavigationWithLCPPHint(main_frame_url, provide_lcpp_hint);
-    SetMockLcpElementLocator(main_frame_url);
+    SetMockLcpElementLocator(main_frame_url,
+                             /*mock_element_locator=*/"foo", is_image_element);
 
     ConfirmResult(main_frame_url, /*learn_lcpp=*/true,
                   /*record_uma=*/provide_lcpp_hint);
@@ -210,6 +213,7 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     for (auto index : predicted_lcp_indexes) {
       SetMockLcpElementLocator(
           main_frame_url, "lcp_actual",
+          /*is_image_element=*/true,
           index == kNotFound ? std::nullopt : std::optional<uint32_t>(index));
     }
     tester()->NavigateToUntrackedUrl();
@@ -218,16 +222,25 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
                 base::BucketsAre(base::Bucket(expect, 1)));
   }
 
+  template <class T>
+  void ExpectUniqueSample(const char* name,
+                          const T& value,
+                          const base::Location& location = FROM_HERE) {
+    tester()->histogram_tester().ExpectUniqueSample(name, value, 1, location);
+  }
+
   void ExpectLCPHistogram(const char* name,
                           uint32_t value,
                           const base::Location& location = FROM_HERE) {
-    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(name),
-                base::BucketsAre(base::Bucket(
-                    value + internal::kLCPIndexHistogramOffset, 1)))
-        << location.ToString();
+    ExpectUniqueSample(name, value + internal::kLCPIndexHistogramOffset,
+                       location);
   }
 
   int NotFound() { return max_lcpp_histogram_buckets_; }
+
+  const page_load_metrics::mojom::PageLoadTiming& Timing() const {
+    return timing_;
+  }
 
  private:
   page_load_metrics::mojom::PageLoadTiming timing_;
@@ -262,6 +275,9 @@ TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, PredictLCPSuccess) {
   TestLCPPrediction({0u}, internal::LCPPPredictResult::kSuccess);
   ExpectLCPHistogram(internal::kHistogramLCPPPredictHitIndex, 0u);
   ExpectLCPHistogram(internal::kHistogramLCPPActualLCPIndex, 0u);
+  tester()->histogram_tester().ExpectUniqueTimeSample(
+      internal::kHistogramLCPPPredictSuccessLCPTiming,
+      *Timing().paint_timing->largest_contentful_paint->largest_image_paint, 1);
 }
 
 TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest,
@@ -296,4 +312,16 @@ TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, PredictLCPFailed4) {
                     internal::LCPPPredictResult::kFailureActuallySecondaryLCP);
   ExpectNoHistogram(internal::kHistogramLCPPPredictHitIndex);
   ExpectLCPHistogram(internal::kHistogramLCPPActualLCPIndex, 1u);
+}
+
+TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, UMAIsImageTrue) {
+  TestSimpleNavigation(/*provide_lcpp_hint=*/true,
+                       /*is_image_element=*/true);
+  ExpectUniqueSample(internal::kHistogramLCPPActualLCPIsImage, true);
+}
+
+TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, UMAIsImageFalse) {
+  TestSimpleNavigation(/*provide_lcpp_hint=*/true,
+                       /*is_image_element=*/false);
+  ExpectUniqueSample(internal::kHistogramLCPPActualLCPIsImage, false);
 }

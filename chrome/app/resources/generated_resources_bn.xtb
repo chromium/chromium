@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Android অ্যাপ্লিকেশন লঞ্চ করার জন্য ডিস্কে জায়গা খালি করুন।</translation>
 <translation id="1033780634303702874">আপনার সিরিয়াল ডিভাইসগুলি অ্যাক্সেস করুন</translation>
 <translation id="1034484273907870301">ট্যাবলেট মোডের জন্য থাম্বনেল ট্যাব বার</translation>
+<translation id="1035289631433631911">কন্টেন্ট ট্রান্সফার টুল</translation>
 <translation id="1035875743511577452">শিল্পী, প্রকৃতি এবং আরও অনেক কিছু দ্বারা অনুপ্রাণিত থিমগুলি এক্সপ্লোর করতে "থিম পরিবর্তন করুন" বিকল্পে ক্লিক করুন</translation>
 <translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1036511912703768636">এই USB ডিভাইসগুলির মধ্যে যে কোনোটি অ্যাক্সেস করুন</translation>
@@ -381,6 +382,7 @@
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ইনস্টল করা যায়নি: <ph name="HTTP_ERROR" /> সমস্যার কোড সহ একটি ছবির URL দেখাচ্ছে। অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="1247372569136754018">মাইক্রোফোন (অভ্যন্তরীণ)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{১টি সাইটের জন্য বিজ্ঞপ্তির অনুমতি নেই}one{{NUM_SITES}টি সাইটের জন্য বিজ্ঞপ্তির অনুমতি নেই}other{{NUM_SITES}টি সাইটের জন্য বিজ্ঞপ্তির অনুমতি নেই}}</translation>
+<translation id="125097549534200450">মুছে দিন</translation>
 <translation id="1251366534849411931">প্রত্যাশিত শুরুর সেকেন্ড ব্র্যাকেট: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">মোবাইল ডেটা নেটওয়ার্কের জন্য স্ক্যান করা হচ্ছে...</translation>
 <translation id="125220115284141797">ডিফল্ট</translation>
@@ -5946,6 +5948,7 @@
 <translation id="5177479852722101802">ক্যামেরা এবং মাইক্রোফোন অ্যাক্সেস অবরুদ্ধ করা চালিয়ে যান</translation>
 <translation id="5177549709747445269">আপনি মোবাইল ডেটা ব্যবহার করছেন</translation>
 <translation id="5178667623289523808">পূর্ববর্তী খুঁজুন</translation>
+<translation id="5180276433875360121"><ph name="CERT_LIST" /> দেখুন</translation>
 <translation id="5181140330217080051">ডাউনলোড হচ্ছে</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" />-এর Google পাসওয়ার্ড ম্যানেজারে</translation>
 <translation id="5181551096188687373">এই পাসওয়ার্ডটি শুধুমাত্র এই ডিভাইসে সেভ আছে। অন্য ডিভাইসে এটি ব্যবহার করার জন্য, আপনার Google অ্যাকাউন্টে এটি সেভ করুন, <ph name="USER_EMAIL" />।</translation>
@@ -7571,6 +7574,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">পরিবার এবং বন্ধুদের যোগ করুন</translation>
 <translation id="6367097275976877956">আপনি কি ChromeOS-এর বিল্ট-ইন স্ক্রিন রিডার ChromeVox অ্যাক্টিভেট করতে চাইছেন? উত্তর হ্যাঁ হলে, স্পেসবার প্রেস করুন।</translation>
+<translation id="6367396429435748845">'মাউস কী' পজ ও আবার চালু করতে, <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> প্রেস করুন</translation>
 <translation id="6367985768157257101">'নিয়ারবাই শেয়ার' ফিচারের মাধ্যমে আপনি কি ডেটা পেতে চান?</translation>
 <translation id="6368157733310917710">&amp;অ্যাড্রেস ও আরও</translation>
 <translation id="6368276408895187373">চালু আছে – <ph name="VARIATION_NAME" /></translation>
@@ -7877,7 +7881,7 @@
 
 আপনার আরও #টি পাসওয়ার্ড চুরি হয়েছে। Google পাসওয়ার্ড ম্যানেজার আপনার পাসওয়ার্ড এখনই চেক করার সাজেস্ট করছে।}}</translation>
 <translation id="6596325263575161958">এনক্রিপশন বিকল্পগুলি</translation>
-<translation id="6596816719288285829">আইপি অ্যাড্রেস</translation>
+<translation id="6596816719288285829">IP অ্যাড্রেস</translation>
 <translation id="6596916244504302242">এই পৃষ্ঠাটি রিলোড করুন যাতে এই সাইটে আপনার আপডেট করা এক্সটেনশন সেটিংস প্রয়োগ করা যায়</translation>
 <translation id="6597017209724497268">নমুনাগুলি</translation>
 <translation id="6597324406048772521">এই সাইটে এক্সটেনশনের অনুমতি নেই</translation>
@@ -8542,6 +8546,7 @@
 <translation id="7063311912041006059">কোয়েরি ফিল্ডে <ph name="SPECIAL_SYMBOL" /> সহ ইউআরএল লিখুন</translation>
 <translation id="706342288220489463">সহায়তা করার জন্য Assistant-কে আপনার স্ক্রিনে থাকা তথ্য ব্যবহার করার অনুমতি দিন</translation>
 <translation id="70641621694466590">পাসওয়ার্ড পৃষ্ঠাতে যান</translation>
+<translation id="7064209589142995848">কন্টেন্ট ট্রান্সফার</translation>
 <translation id="7064734931812204395">Linux কন্টেনার কনফিগার করা হচ্ছে এতে ৩০ মিনিট পর্যন্ত সময় লাগতে পারে।</translation>
 <translation id="7065223852455347715">এই ডিভাইসটি এমন একটি মোডে লক হয়েছে যা এন্টারপ্রাইজ তালিকাভুক্তি প্রতিরোধ করে৷ যদি আপনি ডিভাইসটিকে তালিকাভুক্ত করতে চান তবে আপনাকে প্রথমে ডিভাইস অ্যাকাউন্ট ফিরিয়ে আনার মধ্য দিয়ে যেতে হবে৷</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{১টি পাসওয়ার্ড <ph name="USER_EMAIL" />-এর জন্য <ph name="BRAND" />-এ ইম্পোর্ট করা হয়েছে}one{{NUM_PASSWORDS}টি পাসওয়ার্ড <ph name="USER_EMAIL" />-এর জন্য <ph name="BRAND" />-এ ইম্পোর্ট করা হয়েছে}other{{NUM_PASSWORDS}টি পাসওয়ার্ড <ph name="USER_EMAIL" />-এর জন্য <ph name="BRAND" />-এ ইম্পোর্ট করা হয়েছে}}</translation>
@@ -9227,6 +9232,7 @@
 <translation id="7568759527730933493">ডিএনএস (ডোমেন নেম সিস্টেম) থেকে কোনও সাইটের IP অ্যাড্রেস খুঁজতে সুরক্ষিত কানেকশন ব্যবহার করুন। এটি <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />-এ ম্যানেজ করা হয়েছে, এমন পরিষেবা প্রদানকারী ব্যবহার করে। আপনার অ্যাডমিনিস্ট্রেটর এমন কিছু ডোমেন কনফিগার করেছে যার জন্য সুরক্ষিত কানেকশন ব্যবহার করা যাবে না।</translation>
 <translation id="756876171895853918">অবতার কাস্টমাইজ করুন</translation>
 <translation id="7568790562536448087">আপডেট হচ্ছে</translation>
+<translation id="7569113730576914983">ডেটার নিরাপত্তা লঙ্ঘনের কারণে আপনার কোনও একটি পাসওয়ার্ড Chrome খুঁজে পেলে, আপনি সাইন-ইন করার সময়, এটি আপনার হয়ে পাসওয়ার্ড পরিবর্তন করার জন্য বলতে পারে</translation>
 <translation id="7569983096843329377">কালো</translation>
 <translation id="7570548610653957960">আমাকে পড়তে সাহায্য করো</translation>
 <translation id="7571643774869182231">আপডেটের জন্য যথেষ্ট জায়গা নেই</translation>
@@ -9512,6 +9518,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> ফোল্ডারের সব ফাইল দেখতে পারবে</translation>
 <translation id="7768770796815395237">পরিবর্তন করুন</translation>
 <translation id="7768784765476638775">বাছুন ও শুনুন</translation>
+<translation id="7769709635093101687">পজ করার কীবোর্ড শর্টকাট</translation>
 <translation id="7769748505895274502">সম্প্রতি বন্ধ হওয়া বোতামগুলি আড়াল করুন</translation>
 <translation id="7770072242481632881">সাইড প্যানেল বাছাইকারী</translation>
 <translation id="7770450735129978837">ডানদিকের মাউস ক্লিক করার বোতাম</translation>
@@ -9580,6 +9587,7 @@
 <translation id="7810202088502699111">এই পৃষ্ঠাতে পপ-আপগুলি ব্লক করা হয়েছে৷</translation>
 <translation id="7810367892333449285">আপনার এন্ট্রির ফর্ম্যাট হতে হবে <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ ঠিকানা<ph name="LPA_2" />$<ph name="LPA_3" />ঐচ্ছিক মিল থাকা আইডি<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">আবার চেষ্টা করুন অথবা নিচে উপলভ্য আগে তৈরি করা থিমগুলির মধ্যে থেকে বেছে নিন।</translation>
+<translation id="7811986034759500329">সিস্টেম সেটিংসে সেট করুন</translation>
 <translation id="7812170317334653156">Google Calendar লুকানো হয়েছে</translation>
 <translation id="7814090115158024843">এইসব সাইটে কখনও লেখার জন্য সহায়তা অফার করবেন না</translation>
 <translation id="7814458197256864873">&amp;কপি করুন</translation>
@@ -10545,7 +10553,7 @@
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> থেকে অজানা ডিভাইস</translation>
 <translation id="8481187309597259238">ইউএসবি অ্যাক্সেস করার অনুমতি নিশ্চিত করুন</translation>
 <translation id="8482077254400484047">এখান থেকে বন্ধ ট্যাবের লুক ম্যানেজ করুন</translation>
-<translation id="8483248364096924578">আইপি অ্যাড্রেস</translation>
+<translation id="8483248364096924578">IP অ্যাড্রেস</translation>
 <translation id="8486666913807228950">কারণ: "জোর করে খোলা" সংক্রান্ত তালিকায় বিপরীত নিয়ম <ph name="REVERT_RULE" /> পাওয়া গেছে।</translation>
 <translation id="8487678622945914333">জুম বাড়ান</translation>
 <translation id="8487699605742506766">হটস্পট</translation>

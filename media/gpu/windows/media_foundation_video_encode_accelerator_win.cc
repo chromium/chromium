@@ -1145,14 +1145,15 @@ MediaFoundationVideoEncodeAccelerator::GetCommandBufferHelperResult
 GetCommandBufferHelperOnGpuThread(
     base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
         get_command_buffer_helper_cb,
-    CHROME_LUID luid) {
+    CHROME_LUID luid,
+    bool use_shared_device) {
   MediaFoundationVideoEncodeAccelerator::GetCommandBufferHelperResult result;
   result.command_buffer_helper = get_command_buffer_helper_cb.Run();
   scoped_refptr<gpu::SharedContextState> shared_context_state =
       result.command_buffer_helper->GetSharedImageStub()
           ->shared_context_state();
 
-  if (shared_context_state->GetD3D11Device()) {
+  if (use_shared_device && shared_context_state->GetD3D11Device()) {
     DCHECK(
         IsMatchingDevice(luid, shared_context_state->GetD3D11Device().Get()));
     result.shared_d3d_device = shared_context_state->GetD3D11Device();
@@ -1174,12 +1175,22 @@ void MediaFoundationVideoEncodeAccelerator::SetCommandBufferHelperCB(
     return;
   }
 
+  // With GL/Ganesh, shared images will be copied out of GL textures into
+  // a shared D3D texture created on MFVEA's own D3D device.  (See
+  // GLTextureImageBacking::ProduceVideo).  It may be possible to
+  // optimize out this copy by extracting the backing ANGLE texture
+  // and synchronize access, but the copy works without invasive
+  // work in ANGLE and is much better than readback.
+  // With GraphiteDawn, MFVEA will use a shared D3D device and directly
+  // access textures, with D3DImageBacking handling synchronization.
   SetState(kAcquiringCommandBuffer);
   gpu_task_runner_ = gpu_task_runner;
   gpu_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GetCommandBufferHelperOnGpuThread,
-                     get_command_buffer_helper_cb, luid_),
+                     get_command_buffer_helper_cb, luid_,
+                     gpu_preferences_.gr_context_type ==
+                         gpu::GrContextType::kGraphiteDawn),
       base::BindOnce(&MediaFoundationVideoEncodeAccelerator::
                          OnCommandBufferHelperAvailable,
                      weak_ptr_));

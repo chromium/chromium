@@ -79,12 +79,6 @@ bundle_data("unit_tests_resources") {
 screenshots_lists = [
   "tips/DockingBling.json",
   "tips/DockingBling_darkmode.json",
-  "m125/PWMWidget.json",
-  "m125/PWMWidget_darkmode.json",
-  "m125/PinnedTabs.json",
-  "m125/PinnedTabs_darkmode.json",
-  "m125/InactiveTabs.json",
-  "m125/InactiveTabs_darkmode.json",
   "m128/PackageTracking.json",
   "m128/PackageTracking_darkmode.json",
   "m128/PasswordSharing.json",

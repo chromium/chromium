@@ -33,6 +33,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     @IntDef({
         LayerType.PROGRESS_BAR,
         LayerType.TABSTRIP_TOOLBAR,
+        LayerType.TABSTRIP_TOOLBAR_BELOW_READALOUD,
         LayerType.READ_ALOUD_PLAYER,
         LayerType.BOTTOM_TOOLBAR,
         LayerType.BOTTOM_CHIN,
@@ -44,8 +45,11 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         int PROGRESS_BAR = 0;
         int TABSTRIP_TOOLBAR = 1;
         int READ_ALOUD_PLAYER = 2;
-        int BOTTOM_TOOLBAR = 3;
-        int BOTTOM_CHIN = 4;
+        // Temporary layer that allows us to flag guard the new behavior of stacking the tabstrip
+        // toolbar below, rather than above, the readadloud player.
+        int TABSTRIP_TOOLBAR_BELOW_READALOUD = 3;
+        int BOTTOM_TOOLBAR = 4;
+        int BOTTOM_CHIN = 5;
 
         // Layer that's used for testing.
         int TEST_BOTTOM_LAYER = 100;
@@ -105,6 +109,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                 LayerType.PROGRESS_BAR,
                 LayerType.TABSTRIP_TOOLBAR,
                 LayerType.READ_ALOUD_PLAYER,
+                LayerType.TABSTRIP_TOOLBAR_BELOW_READALOUD,
                 LayerType.BOTTOM_TOOLBAR,
                 LayerType.BOTTOM_CHIN,
                 LayerType.TEST_BOTTOM_LAYER

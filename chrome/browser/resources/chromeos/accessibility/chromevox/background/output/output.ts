@@ -28,9 +28,11 @@ import {FocusBounds} from '../focus_bounds.js';
 import {BrailleOutput} from './braille_output.js';
 import {OutputAncestryInfo} from './output_ancestry_info.js';
 import {OutputFormatter} from './output_formatter.js';
-import {AnnotationOptions, OutputInterface, RenderArgs} from './output_interface.js';
+import type {AnnotationOptions, RenderArgs} from './output_interface.js';
+import {OutputInterface} from './output_interface.js';
 import {OutputFormatLogger} from './output_logger.js';
-import {Info, OutputRoleInfo} from './output_role_info.js';
+import type {Info} from './output_role_info.js';
+import {OutputRoleInfo} from './output_role_info.js';
 import {AncestryOutputRule, OutputRule} from './output_rules.js';
 import * as outputTypes from './output_types.js';
 

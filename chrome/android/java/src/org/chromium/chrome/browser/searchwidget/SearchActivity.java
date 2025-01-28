@@ -295,7 +295,10 @@ public class SearchActivity extends AsyncInitializationActivity
         if (anchorViewBackground instanceof GradientDrawable) {
             int anchorViewColor =
                     ((GradientDrawable) anchorViewBackground).getColor().getDefaultColor();
-            StatusBarColorController.setStatusBarColor(this.getWindow(), anchorViewColor);
+            StatusBarColorController.setStatusBarColor(
+                    getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper(),
+                    this.getWindow(),
+                    anchorViewColor);
         }
 
         BackPressManager backPressManager = new BackPressManager();
@@ -698,7 +701,10 @@ public class SearchActivity extends AsyncInitializationActivity
         GradientDrawable anchorViewBackground = (GradientDrawable) mAnchorView.getBackground();
         anchorViewBackground.setColor(anchorViewBackgroundColor);
         // Update the status bar's color based on the toolbar color.
-        StatusBarColorController.setStatusBarColor(getWindow(), anchorViewBackgroundColor);
+        StatusBarColorController.setStatusBarColor(
+                getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper(),
+                getWindow(),
+                anchorViewBackgroundColor);
 
         GradientDrawable searchBoxBackground =
                 (GradientDrawable) ((LayerDrawable) mSearchBox.getBackground()).getDrawable(0);

@@ -311,7 +311,7 @@
 
   InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(_webState);
   CHECK(manager);
-  const auto it = base::ranges::find(
+  const auto it = std::ranges::find(
       manager->infobars(), InfobarType::kInfobarTypeSaveAutofillAddressProfile,
       [](const infobars::InfoBar* infobar) {
         return static_cast<const InfoBarIOS*>(infobar)->infobar_type();

@@ -4,7 +4,8 @@
 
 #include "content/browser/compute_pressure/pressure_service_for_shared_worker.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "content/browser/compute_pressure/web_contents_pressure_manager_proxy.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/worker_host/shared_worker_host.h"
@@ -25,7 +26,7 @@ bool PressureServiceForSharedWorker::ShouldDeliverUpdate() const {
 
   // https://www.w3.org/TR/compute-pressure/#dfn-owning-document-set
   // https://www.w3.org/TR/compute-pressure/#dfn-may-receive-data
-  if (base::ranges::any_of(
+  if (std::ranges::any_of(
           worker_host_->GetRenderFrameIDsForWorker(), [](const auto& id) {
             return HasImplicitFocus(RenderFrameHostImpl::FromID(id));
           })) {

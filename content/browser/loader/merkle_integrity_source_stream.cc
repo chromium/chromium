@@ -11,13 +11,13 @@
 
 #include <string.h>
 
+#include <algorithm>
 #include <string_view>
 #include <tuple>
 
 #include "base/base64.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "net/base/io_buffer.h"
 
@@ -35,7 +35,7 @@ constexpr size_t kMiSha256HeaderLength = sizeof(kMiSha256Header) - 1;
 // Copies as many bytes from |input| as will fit in |output| and advances both.
 size_t CopyClamped(base::span<const char>* input, base::span<char>* output) {
   size_t size = std::min(output->size(), input->size());
-  base::ranges::copy(input->first(size), output->data());
+  std::ranges::copy(input->first(size), output->data());
   *output = output->subspan(size);
   *input = input->subspan(size);
   return size;

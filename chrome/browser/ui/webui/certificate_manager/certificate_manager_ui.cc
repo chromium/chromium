@@ -25,11 +25,11 @@
 #include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
 #include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -37,7 +37,7 @@ const char kCRSLearnMoreLink[] =
     "https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/"
     "chrome_root_store/faq.md";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AddCertificateManagerStrings(content::WebUIDataSource* html_source) {
   struct {
     const char* name;
@@ -54,7 +54,7 @@ void AddCertificateManagerStrings(content::WebUIDataSource* html_source) {
   }
   certificate_manager::AddLocalizedStrings(html_source);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
@@ -164,7 +164,7 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
   webui::EnableTrustedTypesCSP(source);
   webui::SetJSModuleDefaults(source);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2)) {
     // Serve the old certificate manager
     AddCertificateManagerStrings(source);
@@ -185,14 +185,14 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
         chromeos::cert_provisioning::CertificateProvisioningUiHandler::
             CreateForProfile(profile));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2)) {
     source->AddResourcePath("", IDR_CERT_MANAGER_DIALOG_V2_HTML);
     AddCertificateManagerV2Strings(source);
     source->AddString("crsLearnMoreUrl", kCRSLearnMoreLink);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ClientCertManagementAccessControls client_cert_policy(profile);
     source->AddBoolean(
         "clientCertImportAllowed",

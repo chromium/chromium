@@ -13,7 +13,6 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "components/autofill/core/common/unique_ids.h"

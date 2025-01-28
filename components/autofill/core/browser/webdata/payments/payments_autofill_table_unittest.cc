@@ -508,8 +508,9 @@ TEST_F(PaymentsAutofillTableTest, ServerCvc) {
   const std::u16string kCvc = u"123";
   const ServerCvc kServerCvc{kInstrumentId, kCvc, kArbitraryTime};
   EXPECT_TRUE(table_->AddServerCvc(kServerCvc));
-  // Database does not allow adding same instrument_id twice.
-  EXPECT_FALSE(table_->AddServerCvc(kServerCvc));
+  // The database replaces the already existing entry with the same
+  // instrument_id.
+  EXPECT_TRUE(table_->AddServerCvc(kServerCvc));
   EXPECT_THAT(table_->GetAllServerCvcs(),
               UnorderedElementsAre(testing::Pointee(kServerCvc)));
 

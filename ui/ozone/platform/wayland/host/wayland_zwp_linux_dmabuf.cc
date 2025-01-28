@@ -7,9 +7,10 @@
 #include <drm_fourcc.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 
+#include <algorithm>
+
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -142,7 +143,7 @@ void WaylandZwpLinuxDmabuf::AddSupportedFourCCFormatAndModifier(
 void WaylandZwpLinuxDmabuf::NotifyRequestCreateBufferDone(
     zwp_linux_buffer_params_v1* params,
     wl_buffer* new_buffer) {
-  auto it = base::ranges::find(pending_params_, params, [](const auto& item) {
+  auto it = std::ranges::find(pending_params_, params, [](const auto& item) {
     return item.first.get();
   });
   CHECK(it != pending_params_.end(), base::NotFatalUntil::M130);

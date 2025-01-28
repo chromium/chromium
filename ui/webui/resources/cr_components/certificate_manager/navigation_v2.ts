@@ -19,7 +19,9 @@ export enum Page {
   CRS_CERTS = 'crscerts',
   // Sub-pages
   ADMIN_CERTS = 'localcerts/admincerts',
+  // <if expr="not is_chromeos">
   PLATFORM_CERTS = 'localcerts/platformcerts',
+  // </if>
   USER_CERTS = 'localcerts/usercerts',
   PLATFORM_CLIENT_CERTS = 'clientcerts/platformclientcerts',
 }
@@ -38,7 +40,9 @@ export class Route {
   isSubpage(): boolean {
     switch (this.page) {
       case Page.ADMIN_CERTS:
+      // <if expr="not is_chromeos">
       case Page.PLATFORM_CERTS:
+      // </if>
       case Page.PLATFORM_CLIENT_CERTS:
       case Page.USER_CERTS:
         return true;

@@ -392,10 +392,12 @@ ExistingUserController::ExistingUserController()
       base::BindRepeating(&ExistingUserController::DeviceSettingsChanged,
                           base::Unretained(this)));
 
+  bool is_demo_login_eligible =
+      ash::features::IsDemoModeSignInEnabled() ||
+      ash::features::IsGrowthCampaignsInDemoModeEnabled();
   // If OOBE's done, device mode is populated in `ash::InitializeDBus()`. create
   // DemoLoginController here.
-  if (demo_mode::IsDeviceInDemoMode() &&
-      ash::features::IsDemoModeSignInEnabled()) {
+  if (demo_mode::IsDeviceInDemoMode() && is_demo_login_eligible) {
     // TODO(387572263): Fix `demo_login_controller_` is not created in OOBE. OK
     // for now because first session is very short and it will be a auto sign
     // out in 90s if idle.

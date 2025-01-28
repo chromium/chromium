@@ -19,17 +19,6 @@ enum class ExperimentState {
   kMaxValue = kOnboarded,
 };
 
-enum class Experiment3PCBlockStatus {
-  kAllowedAndExperimentBlocked = 0,
-  kAllowedAndExperimentAllowed = 1,
-  kBlockedAndExperimentBlocked = 2,
-  kBlockedAndExperimentAllowed = 3,
-  kMaxValue = kBlockedAndExperimentAllowed,
-};
-
-const char Experiment3pcBlockStatusHistogramName[] =
-    "Privacy.3pcd.Experiment3pcBlockStatus";
-
 }  // namespace tpcd::experiment::utils
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_TPCD_UTILS_H_

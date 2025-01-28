@@ -63,14 +63,6 @@ class URLLoaderRelay : public network::mojom::URLLoaderClient,
     loader_sink_->SetPriority(priority, intra_priority_value);
   }
 
-  void PauseReadingBodyFromNet() override {
-    loader_sink_->PauseReadingBodyFromNet();
-  }
-
-  void ResumeReadingBodyFromNet() override {
-    loader_sink_->ResumeReadingBodyFromNet();
-  }
-
   // network::mojom::URLLoaderClient implementation:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
     client_sink_->OnReceiveEarlyHints(std::move(early_hints));

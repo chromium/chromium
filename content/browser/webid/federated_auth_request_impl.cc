@@ -4,6 +4,7 @@
 
 #include "content/browser/webid/federated_auth_request_impl.h"
 
+#include <algorithm>
 #include <random>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -3000,7 +3000,7 @@ void FederatedAuthRequestImpl::SendSuccessfulTokenRequestMetrics(
 
     if (metrics_endpoint_kv.first == idp_config_url) {
       network_manager_->SendSuccessfulTokenRequestMetrics(
-          metrics_endpoint, did_show_ui_,
+          metrics_endpoint,
           ready_to_display_accounts_dialog_time_ - start_time_,
           select_account_time_ - accounts_dialog_display_time_,
           id_assertion_response_time_ - select_account_time_,

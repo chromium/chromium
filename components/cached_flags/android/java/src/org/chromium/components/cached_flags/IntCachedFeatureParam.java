@@ -73,6 +73,12 @@ public class IntCachedFeatureParam extends CachedFeatureParam<Integer> {
         editor.putInt(getSharedPreferenceKey(), value);
     }
 
+    @Override
+    void writeCacheValueToEditor(final SharedPreferences.Editor editor, String value) {
+        final int intValue = Integer.valueOf(value);
+        editor.putInt(getSharedPreferenceKey(), intValue);
+    }
+
     /**
      * Forces the parameter to return a specific value for testing.
      *

@@ -58,12 +58,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_prefs.h"
@@ -286,7 +286,7 @@ void PolicyUITest::VerifyReportButton(bool visible) {
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class PolicyUIStatusTest : public MixinBasedInProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
@@ -517,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest,
   EXPECT_EQ(status["time-since-last-refresh"], "1 hour ago");
   EXPECT_EQ(status["time-since-last-fetch-attempt"], "0 secs ago");
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyNames) {
   // Verifies that the names of known policies are sent to the UI and processed
@@ -787,11 +787,11 @@ class ExtensionPolicyUITest : public PolicyUITest,
   bool UseSigninProfile() const { return GetParam(); }
 
   Profile* extension_profile() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (UseSigninProfile()) {
       return ash::ProfileHelper::GetSigninProfile();
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     return chrome_test_utils::GetProfile(this);
   }
 };
@@ -996,11 +996,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ExtensionPolicyUITest,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                          ::testing::Values(false, true)
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
                          ::testing::Values(false)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 );
 
 #endif  // !BUILDFLAG(IS_ANDROID)

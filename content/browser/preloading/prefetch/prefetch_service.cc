@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -18,13 +19,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/timer/timer.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_handle_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
@@ -452,7 +453,7 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
           std::move(owned_prefetch_container));
       break;
     case Action::kReplaceOldWithNew:
-      ResetPrefetch(prefetch_iter->second->GetWeakPtr());
+      ResetPrefetchContainer(prefetch_iter->second->GetWeakPtr());
       owned_prefetches_[prefetch_container_key] =
           std::move(owned_prefetch_container);
       break;
@@ -461,6 +462,14 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
           std::move(owned_prefetch_container);
       break;
   }
+}
+
+std::unique_ptr<PrefetchHandle> PrefetchService::AddPrefetchContainerWithHandle(
+    std::unique_ptr<PrefetchContainer> owned_prefetch_container) {
+  base::WeakPtr<PrefetchContainer> prefetch_container =
+      owned_prefetch_container->GetWeakPtr();
+  PrefetchService::AddPrefetchContainer(std::move(owned_prefetch_container));
+  return std::make_unique<PrefetchHandleImpl>(GetWeakPtr(), prefetch_container);
 }
 
 void PrefetchService::AddPrefetchContainer(
@@ -1113,7 +1122,7 @@ PrefetchService::PopNextPrefetchContainer() {
   // managed by PrefetchDocumentManager, this depends on the state of the
   // initiating document, and the number of completed prefetches (this can also
   // result in previously completed prefetches being evicted).
-  auto prefetch_iter = base::ranges::find_if(
+  auto prefetch_iter = std::ranges::find_if(
       prefetch_queue_,
       [&](const base::WeakPtr<PrefetchContainer>& prefetch_container) {
         if (!prefetch_container->IsRendererInitiated()) {
@@ -1148,14 +1157,27 @@ PrefetchService::PopNextPrefetchContainer() {
 void PrefetchService::OnPrefetchTimeout(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchIsStale);
-  ResetPrefetch(prefetch_container);
+  ResetPrefetchContainer(prefetch_container);
 
   if (!active_prefetch_) {
     Prefetch();
   }
 }
 
-void PrefetchService::ResetPrefetch(
+void PrefetchService::MayReleasePrefetch(
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
+  if (!prefetch_container) {
+    return;
+  }
+
+  if (!base::Contains(owned_prefetches_, prefetch_container->key())) {
+    return;
+  }
+
+  ResetPrefetchContainer(prefetch_container);
+}
+
+void PrefetchService::ResetPrefetchContainer(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   CHECK(prefetch_container);
   auto it = owned_prefetches_.find(prefetch_container->key());
@@ -1207,7 +1229,7 @@ void PrefetchService::StartSinglePrefetch(
   if (prefetch_to_evict) {
     prefetch_to_evict->SetPrefetchStatus(
         PrefetchStatus::kPrefetchEvictedForNewerPrefetch);
-    ResetPrefetch(prefetch_to_evict);
+    ResetPrefetchContainer(prefetch_to_evict);
   }
 
   active_prefetch_.emplace(prefetch_container->key());

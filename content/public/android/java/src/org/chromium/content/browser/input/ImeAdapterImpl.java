@@ -33,7 +33,6 @@ import android.view.View;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.DeleteGesture;
 import android.view.inputmethod.DeleteRangeGesture;
-import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.HandwritingGesture;
@@ -1264,17 +1263,14 @@ public class ImeAdapterImpl
             editableNodeBounds.set(nodeLeftDip, nodeTopDip, nodeRightDip, nodeBottomDip);
         }
         float deviceScale = mWebContents.getRenderCoordinates().getDeviceScaleFactor();
-        EditorBoundsInfo editorBoundsInfo =
-                mWebContents
-                        .getStylusWritingHandler()
-                        .onFocusedNodeChanged(
-                                editableNodeBounds,
-                                isEditable,
-                                mViewDelegate.getContainerView(),
-                                deviceScale,
-                                mWebContents.getRenderCoordinates().getContentOffsetYPixInt());
-        mCursorAnchorInfoController.updateWithEditorBoundsInfo(
-                editorBoundsInfo, getContainerView());
+        mWebContents
+                .getStylusWritingHandler()
+                .onFocusedNodeChanged(
+                        editableNodeBounds,
+                        isEditable,
+                        mViewDelegate.getContainerView(),
+                        deviceScale,
+                        mWebContents.getRenderCoordinates().getContentOffsetYPixInt());
     }
 
     @CalledByNative
@@ -1317,17 +1313,14 @@ public class ImeAdapterImpl
         Rect roundedBounds = new Rect();
         focusedEditBounds.round(roundedBounds);
         // Send focused edit bounds and caret center position to Stylus writing service.
-        EditorBoundsInfo editorBoundsInfo =
-                mWebContents
-                        .getStylusWritingHandler()
-                        .onEditElementFocusedForStylusWriting(
-                                roundedBounds,
-                                cursorPosition,
-                                scaleFactor,
-                                contentOffsetY,
-                                getContainerView());
-        mCursorAnchorInfoController.updateWithEditorBoundsInfo(
-                editorBoundsInfo, getContainerView());
+        mWebContents
+                .getStylusWritingHandler()
+                .onEditElementFocusedForStylusWriting(
+                        roundedBounds,
+                        cursorPosition,
+                        scaleFactor,
+                        contentOffsetY,
+                        getContainerView());
     }
 
     /** Send a request to the native counterpart to give the latest text input state update. */

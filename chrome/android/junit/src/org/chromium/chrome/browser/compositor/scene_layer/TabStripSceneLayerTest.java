@@ -166,7 +166,6 @@ public class TabStripSceneLayerTest {
                         /* backgroundResourceId= */ anyInt(),
                         /* x= */ eq(mNewTabButton.getDrawX() * mDpToPx),
                         /* y= */ eq(mNewTabButton.getDrawY() * mDpToPx),
-                        /* topPadding= */ eq(topPadding),
                         /* touchTargetOffset= */ anyFloat(),
                         /* visible= */ eq(mNewTabButton.isVisible()),
                         /* isHovered= */ eq(mNewTabButton.isHovered()),

@@ -29,7 +29,6 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/printing/print_view_manager.h"
@@ -81,14 +80,11 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/crosapi/mojom/local_printer.mojom.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/test_local_printer_ash.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #endif
 
 namespace printing {
@@ -428,7 +424,7 @@ class PrintPreviewHandlerTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     ASSERT_TRUE(testing_profile_manager_.SetUp());
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     local_printer_ = std::make_unique<TestLocalPrinterAsh>(&profile_, nullptr);
     crosapi::IdleServiceAsh::DisableForTesting();
     ash::LoginState::Initialize();
@@ -460,7 +456,7 @@ class PrintPreviewHandlerTest : public testing::Test {
     auto preview_handler = CreateHandler(std::move(printer_handler), initiator);
     handler_ = preview_handler.get();
     handler_->set_web_ui(web_ui());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     handler_->local_printer_ = local_printer_.get();
 #endif
 
@@ -471,7 +467,7 @@ class PrintPreviewHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     manager_.reset();
     ash::LoginState::Shutdown();
 #endif
@@ -741,7 +737,7 @@ class PrintPreviewHandlerTest : public testing::Test {
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<TestLocalPrinterAsh> local_printer_;
   std::unique_ptr<crosapi::CrosapiManager> manager_;
 #endif

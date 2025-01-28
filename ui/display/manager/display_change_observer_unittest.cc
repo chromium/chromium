@@ -347,7 +347,7 @@ TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
 
   std::set<std::tuple<float, int, int>> dup_check;
 
-  for (auto& entry : display_configs) {
+  for (auto& entry : lcd_display_configs) {
     std::tuple<float, int, int> key{entry.diagonal_size,
                                     entry.resolution.width(),
                                     entry.resolution.height()};
@@ -711,7 +711,7 @@ auto CreateDisplay = [](const ManagedDisplayInfo& managed_display_info) {
 
 TEST_F(DisplayResolutionTest, CheckEffectiveResolutionUMAIndex) {
   std::map<int, gfx::Size> logical_resolutions;
-  for (const auto& display_config : display_configs) {
+  for (const auto& display_config : lcd_display_configs) {
     gfx::Size size = display_config.resolution;
     if (size.width() < size.height())
       size = gfx::Size(size.height(), size.width());
@@ -769,7 +769,7 @@ TEST_F(DisplayResolutionTest, CheckEffectiveResolutionUMAIndex) {
   }
 
 #if 0
-  // Enable this code to re-generate the "EffectiveResolution" in enums.xml.
+  //  Enable this code to re-generate the "EffectiveResolution" in enums.xml.
   for (auto pair : logical_resolutions) {
     std::cout << "  <int value=\"" << pair.first << "\" label=\""
                << pair.second.width() << " x " << pair.second.height()
@@ -777,11 +777,11 @@ TEST_F(DisplayResolutionTest, CheckEffectiveResolutionUMAIndex) {
   }
 #endif
 
-  // With the current set of display configs and zoom levels, there are only 322
+  // With the current set of display configs and zoom levels, there are only 340
   // possible effective resolutions for internal displays in chromebooks. Update
   // this value when adding a new display config, and re-generate the
   // EffectiveResolution value in enum.xml.
-  EXPECT_EQ(logical_resolutions.size(), 322ul);
+  EXPECT_EQ(logical_resolutions.size(), 340ul);
 }
 
 // Make sure that when display zoom is applied, the effective device scale
@@ -789,7 +789,7 @@ TEST_F(DisplayResolutionTest, CheckEffectiveResolutionUMAIndex) {
 // width / logical with) is close enough (<kDeviceScaleFactorErrorTolerance).
 TEST_F(DisplayResolutionTest, DisplayZoom) {
   // For internal displays
-  for (auto& config : display_configs) {
+  for (auto& config : lcd_display_configs) {
     const float dpi = ComputeDpi(config.diagonal_size, config.resolution);
     const auto snapshot = FakeDisplaySnapshot::Builder()
                               .SetId(10)

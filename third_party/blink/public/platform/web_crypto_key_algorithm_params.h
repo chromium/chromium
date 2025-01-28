@@ -122,7 +122,7 @@ class WebCryptoRsaHashedKeyAlgorithmParams
       base::span<const unsigned char> public_exponent,
       const WebCryptoAlgorithm& hash)
       : modulus_length_bits_(modulus_length_bits),
-        public_exponent_(public_exponent),
+        public_exponent_(public_exponent.begin(), public_exponent.end()),
         hash_(hash) {}
 
   unsigned ModulusLengthBits() const { return modulus_length_bits_; }

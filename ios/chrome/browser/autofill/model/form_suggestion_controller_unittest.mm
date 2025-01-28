@@ -318,6 +318,53 @@ TEST_P(FormSuggestionControllerTest,
   EXPECT_FALSE(received_suggestions_.count);
 }
 
+// Tests that the suggestions are not reset when a finished navigation happened
+// within the same document.
+TEST_P(FormSuggestionControllerTest,
+       PageLoadOnSameDocumentShouldntResetKeyboardAccessorySuggestions) {
+  SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
+  GURL url("http://foo.com");
+  fake_web_state_.SetCurrentURL(url);
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
+
+  // Trigger form activity, which should set up the suggestions view.
+  autofill::FormActivityParams params;
+  params.form_name = "form";
+  params.field_identifier = "field_id";
+  params.field_type = "text";
+  params.type = "type";
+  params.value = "value";
+  params.input_missing = false;
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+  NSUInteger initial_suggestion_count = received_suggestions_.count;
+  EXPECT_TRUE(initial_suggestion_count);
+
+  {
+    base::test::ScopedFeatureList feature_list(
+        kSkipKeyboardAccessoryResetForSameDocumentNavigation);
+
+    // Trigger another navigation, but within the same document. The suggestions
+    // should still be present.
+    web::FakeNavigationContext navigation_context;
+    navigation_context.SetIsSameDocument(true);
+    fake_web_state_.OnNavigationFinished(&navigation_context);
+    EXPECT_EQ(received_suggestions_.count, initial_suggestion_count);
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        kSkipKeyboardAccessoryResetForSameDocumentNavigation);
+
+    // Trigger another navigation, but within the same document. The suggestions
+    // should be reset.
+    web::FakeNavigationContext navigation_context;
+    navigation_context.SetIsSameDocument(true);
+    fake_web_state_.OnNavigationFinished(&navigation_context);
+    EXPECT_FALSE(received_suggestions_.count);
+  }
+}
+
 // Tests that "blur" events are ignored.
 TEST_P(FormSuggestionControllerTest, FormActivityBlurShouldBeIgnored) {
   SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);

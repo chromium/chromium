@@ -10,8 +10,8 @@ import("//build/config/android/rules.gni")
 #   package_name: Package name to use for the stub.
 #   version_code: Version code for the stub.
 #   version_name: Version name for the stub.
-#   package_info_from_target: Use the package name and version_code from this
-#       apk/bundle target.
+#   package_info_from_target: Use the package name, version_code, and <permission>s
+#       from this apk/bundle target.
 #   static_library_name: For static library apks, name for the <static-library>.
 #   static_library_version: For static library apks, version for the
 #       <static-library> tag (for TrichromeLibrary, we set this to be the same
@@ -29,7 +29,15 @@ template("system_image_stub_apk") {
 
   _manifest_target_name = "${target_name}__manifest"
   _manifest_path = "$target_gen_dir/$_manifest_target_name.xml"
-  action("$_manifest_target_name") {
+
+  if (defined(invoker.package_info_from_target)) {
+    _apk_or_bundle_target = invoker.package_info_from_target
+    _build_config =
+        get_label_info(_apk_or_bundle_target, "target_gen_dir") + "/" +
+        get_label_info(_apk_or_bundle_target, "name") + ".build_config.json"
+    _rebased_build_config = rebase_path(_build_config, root_build_dir)
+  }
+  action_with_pydeps("$_manifest_target_name") {
     outputs = [ _manifest_path ]
     script = "//build/android/gyp/create_stub_manifest.py"
     args = [
@@ -51,6 +59,11 @@ template("system_image_stub_apk") {
       } else {
         args += [ "--static-library-version=1" ]
       }
+    }
+    if (defined(_apk_or_bundle_target)) {
+      deps = [ "$_apk_or_bundle_target$build_config_target_suffix" ]
+      inputs = [ _build_config ]
+      args += [ "--use-permissions-from=@FileArg($_rebased_build_config:deps_info:lint_android_manifest)" ]
     }
   }
 
@@ -149,12 +162,8 @@ template("system_image_stub_apk") {
                "$invoker.static_library_version must equal $_version_code.")
       }
     } else {
-      _target = invoker.package_info_from_target
-      deps += [ "${_target}$build_config_target_suffix" ]
-      _build_config = get_label_info(_target, "target_gen_dir") + "/" +
-                      get_label_info(_target, "name") + ".build_config.json"
+      deps += [ "${_apk_or_bundle_target}$build_config_target_suffix" ]
       inputs += [ _build_config ]
-      _rebased_build_config = rebase_path(_build_config, root_build_dir)
       _package_name = "@FileArg($_rebased_build_config:deps_info:package_name)"
       _version_code = "@FileArg($_rebased_build_config:deps_info:version_code)"
       _version_name = "@FileArg($_rebased_build_config:deps_info:version_name)"

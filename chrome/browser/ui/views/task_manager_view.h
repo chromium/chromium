@@ -128,7 +128,8 @@ class TaskManagerView : public TableViewDelegate,
   // TODO(crbug.com/364926055): Remove after feature is enabled by default.
   struct TableConfigs {
     bool table_has_border;
-    bool header_padding;
+    bool header_style;
+    bool table_refresh;
     bool scroll_view_rounded;
     bool layout_refresh;
     bool dialog_button_disabled;

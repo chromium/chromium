@@ -55,6 +55,7 @@
 <translation id="103279545524624934">‏احرص على تفريغ مساحة على القرص لتشغيل تطبيقات Android.</translation>
 <translation id="1033780634303702874">الوصول إلى الأجهزة التسلسلية</translation>
 <translation id="1034484273907870301">شريط علامات التبويب الخاص بالصور المصغّرة في وضع الجهاز اللوحي</translation>
+<translation id="1035289631433631911">أداة "نقل المحتوى"</translation>
 <translation id="1035875743511577452">انقر على "تغيير المظهر" للاطّلاع على المظاهر المستوحاة من أعمال الفنانين والطبيعة وغيرها.</translation>
 <translation id="1036348656032585052">إيقاف</translation>
 <translation id="1036511912703768636">‏الدخول إلى أي من أجهزة USB هذه</translation>
@@ -71,6 +72,7 @@
 <translation id="1043505821207197890">‏حدث خطأ. قد تتم ترقية نظام التشغيل Linux جزئيًا فقط. لمزيد من المعلومات، يُرجى الاطّلاع على السجلّات. تم حفظ السجلّات في الملفات &gt; ملفاتي &gt; الملف <ph name="LOG_FILE" /></translation>
 <translation id="104385770822424034">إضافة إجراء</translation>
 <translation id="104419033123549300">شكل خريطة المفاتيح</translation>
+<translation id="1045487161760507186">‏لست بحاجة إلى تذكُّر كلمة المرور، إذ سيتم حفظها في "مدير كلمات المرور في Google"</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{تم استيراد كلمة مرور واحدة إلى "<ph name="BRAND" />" على هذا الجهاز.}zero{تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "<ph name="BRAND" />" على هذا الجهاز.}two{تم استيراد كلمتَي مرور ({NUM_PASSWORDS}) إلى "<ph name="BRAND" />" على هذا الجهاز.}few{تم استيراد {NUM_PASSWORDS} كلمات مرور إلى "<ph name="BRAND" />" على هذا الجهاز.}many{تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "<ph name="BRAND" />" على هذا الجهاز.}other{تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "<ph name="BRAND" />" على هذا الجهاز.}}</translation>
 <translation id="1046572983040892965">تم نقل النافذة إلى الأعلى وإلى اليسار</translation>
 <translation id="104710386808485638">‏هل تريد إعادة تشغيل نظام التشغيل Linux؟</translation>
@@ -384,6 +386,7 @@
 <translation id="1246863218384630739">‏تعذّر تثبيت <ph name="VM_NAME" />: عنوان URL للصورة عرضَ رمز الخطأ <ph name="HTTP_ERROR" />. يُرجى التواصل مع المشرف.</translation>
 <translation id="1247372569136754018">ميكروفون (داخلي)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{تم إيقاف تلقّي الإشعارات من موقع إلكتروني واحد.}zero{تم إيقاف تلقّي الإشعارات من {NUM_SITES} موقع إلكتروني.}two{تم إيقاف تلقّي الإشعارات من موقعَين إلكترونيَّين ({NUM_SITES}).}few{تم إيقاف تلقّي الإشعارات من {NUM_SITES} مواقع إلكترونية.}many{تم إيقاف تلقّي الإشعارات من {NUM_SITES} موقعًا إلكترونيًا.}other{تم إيقاف تلقّي الإشعارات من {NUM_SITES} موقع إلكتروني.}}</translation>
+<translation id="125097549534200450">محو</translation>
 <translation id="1251366534849411931">قوس متعرج مفتوح بشكلٍ متوقع: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">جارٍ البحث عن شبكات بيانات الجوّال...</translation>
 <translation id="125220115284141797">تلقائي</translation>
@@ -1877,6 +1880,7 @@
 <translation id="2297705863329999812">البحث في الطابعات</translation>
 <translation id="2297822946037605517">مشاركة هذه الصفحة</translation>
 <translation id="229871422646860597">إزالة التثبيت من شريط الأدوات</translation>
+<translation id="2299685119225839832">يمكنك الحصول على ملخّصات لآراء الأشخاص في مراجعاتهم</translation>
 <translation id="2299734369537008228">شريط التمرير: <ph name="MIN_LABEL" /> إلى <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">‏إدراج جميع ملفات السجلّ التي تمّ جمعها عبر خدمة debugd كأرشيف منفصل</translation>
 <translation id="2300214399009193026">PCIe</translation>
@@ -5247,6 +5251,7 @@
 <translation id="4676616966096505747">لم يتم حفظ بعض البيانات في حسابك إلى الآن</translation>
 <translation id="4677772697204437347">ذاكرة وحدة معالج الرسومات</translation>
 <translation id="467809019005607715">‏العروض التقديمية من Google</translation>
+<translation id="4678729681411398877">‏عندما يتم رصد إحدى كلمات مرورك في عملية اختراق للبيانات، يسألك "مدير كلمات المرور في Google" ما إذا كنت تريد تغييرها إلى كلمة مرور قوية</translation>
 <translation id="4678848110205818817">بطاقة الائتمان أو بطاقة السحب الآلي</translation>
 <translation id="4679018849559620189">يساعدك رقم التعريف الشخصي هذا في الوصول إلى مفاتيح المرور المحفوظة على أي جهاز</translation>
 <translation id="4680105648806843642">تم كتم الصوت في هذه الصفحة.</translation>
@@ -5935,6 +5940,7 @@
 <translation id="5177479852722101802">متابعة حظر الدخول إلى الكاميرا والميكروفون</translation>
 <translation id="5177549709747445269">أنت تستخدم بيانات الجوّال</translation>
 <translation id="5178667623289523808">البحث عن السابق</translation>
+<translation id="5180276433875360121">إظهار <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">تنزيل</translation>
 <translation id="5181172023548002891">‏حفظ كلمة المرور في "مدير كلمات المرور" من Google للحساب <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">‏يتم حفظ كلمة المرور هذه على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google‏ (<ph name="USER_EMAIL" />).</translation>
@@ -6815,6 +6821,7 @@
 <translation id="5828545842856466741">إضافة ملف شخصي...</translation>
 <translation id="5828633471261496623">الطباعة جارية...</translation>
 <translation id="5830205393314753525">يتعذّر فتح <ph name="APP_NAME" /></translation>
+<translation id="5830512293931520102">كلمة المرور مشفَّرة ولا يمكن لأي شخص الاطّلاع عليها</translation>
 <translation id="5830720307094128296">حفظ &amp;صفحة باسم...</translation>
 <translation id="583179300286794292">تم تسجيل الدخول بحساب <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" />.</translation>
 <translation id="5831950941058843834">هل تريد حذف البيانات والأذونات الخاصة بالموقع الإلكتروني <ph name="SITE_NAME" />، وكل المواقع الإلكترونية المدرَجة ضِمنه، وتطبيقه المثبَّت؟</translation>
@@ -8536,6 +8543,7 @@
 <translation id="7063311912041006059">‏عنوان URL الذي يحتوي على <ph name="SPECIAL_SYMBOL" /> بدلاً من طلب البحث</translation>
 <translation id="706342288220489463">‏السماح لخدمة "مساعد Google" باستخدام المعلومات التي تظهر على الشاشة لتقديم المساعدة</translation>
 <translation id="70641621694466590">الانتقال إلى صفحة "كلمات المرور"</translation>
+<translation id="7064209589142995848">نقل المحتوى</translation>
 <translation id="7064734931812204395">‏جارٍ إعداد حاوية نظام التشغيل Linux. قد تستغرق عملية الإعداد ما يصل إلى 30 دقيقة.</translation>
 <translation id="7065223852455347715">تم قفل هذا الجهاز في وضع يمنع التسجيل في المؤسسة.  إذا كنت ترغب في تسجيل الجهاز، ينبغي تنفيذ إجراءات استرداد الجهاز أولاً.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{تم استيراد كلمة مرور واحدة إلى "<ph name="BRAND" />" للحساب <ph name="USER_EMAIL" />.}zero{تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "<ph name="BRAND" />" للحساب <ph name="USER_EMAIL" />.}two{تم استيراد كلمتَي مرور ({NUM_PASSWORDS}) إلى "<ph name="BRAND" />" للحساب <ph name="USER_EMAIL" />.}few{تم استيراد {NUM_PASSWORDS} كلمات مرور إلى "<ph name="BRAND" />" للحساب <ph name="USER_EMAIL" />.}many{تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "<ph name="BRAND" />" للحساب <ph name="USER_EMAIL" />.}other{تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "<ph name="BRAND" />" للحساب <ph name="USER_EMAIL" />.}}</translation>
@@ -9575,6 +9583,7 @@
 <translation id="7810202088502699111">تم منع عرض النوافذ المنبثقة في هذه الصفحة.</translation>
 <translation id="7810367892333449285">‏يجب أن يكون الإدخال بالتنسيق <ph name="LPA_0" />$<ph name="LPA_1" />عنوان SM-DP+‎<ph name="LPA_2" />$<ph name="LPA_3" />رقم تعريف مطابق اختياري<ph name="LPA_4" />.</translation>
 <translation id="7811263553491007091">بإمكانك إعادة المحاولة أو اختيار أحد المظاهر أدناه المُنشأة سابقًا.</translation>
+<translation id="7811986034759500329">ضبط في إعدادات النظام</translation>
 <translation id="7812170317334653156">‏تم إخفاء "تقويم Google"</translation>
 <translation id="7814090115158024843">عدم عرض مساعدة في الكتابة على هذه المواقع الإلكترونية مطلقًا</translation>
 <translation id="7814458197256864873">&amp;نسخ</translation>
@@ -10156,6 +10165,7 @@
 <translation id="8215129063232901118">يمكنك استخدام <ph name="DEVICE_TYPE" /> للاستفادة من إمكانيات هاتفك.</translation>
 <translation id="8217212468862726597">تمييز مؤشر الماوس</translation>
 <translation id="8217399928341212914">متابعة حظر عمليات التنزيل التلقائية لعدة ملفات</translation>
+<translation id="8219785583603399823">الاطّلاع على تقييمات هذا المتجر</translation>
 <translation id="822050276545350872">لا داعي للانتظار بعد الآن.</translation>
 <translation id="8222112516148944758">يتم حفظ مجموعات علامات التبويب وتعديلها تلقائيًا على جميع أجهزتك</translation>
 <translation id="8222674561049363989">الملف ليس مستندًا صالحًا</translation>

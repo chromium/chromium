@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.collaboration;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -47,6 +48,11 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** Unit test for {@link CollaborationControllerDelegateImpl} */
@@ -64,6 +70,7 @@ public class CollaborationControllerDelegateImplUnitTest {
     @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private Callback<Boolean> mCloseScreenCallback;
+    @Mock private ModalDialogManager mModalDialogManager;
 
     @Mock
     private CollaborationControllerDelegateImpl.Natives
@@ -84,6 +91,7 @@ public class CollaborationControllerDelegateImplUnitTest {
         mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
         doReturn(mProfile).when(mDataSharingTabManager).getProfile();
         doReturn(mWindowAndroid).when(mDataSharingTabManager).getWindowAndroid();
+        doReturn(mModalDialogManager).when(mWindowAndroid).getModalDialogManager();
     }
 
     private void onActivityCreated(Activity activity) {
@@ -333,5 +341,28 @@ public class CollaborationControllerDelegateImplUnitTest {
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
         verify(mCloseScreenCallback).onResult(true);
+    }
+
+    @Test
+    public void testShowError() {
+        createDelegate(FlowType.JOIN);
+        long resultCallback = 1;
+        String title = "title";
+        String message = "message";
+
+        mCollaborationControllerDelegateImpl.showError(title, message, resultCallback);
+
+        ArgumentCaptor<PropertyModel> propertyModelCaptor =
+                ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mModalDialogManager).showDialog(propertyModelCaptor.capture(), anyInt());
+
+        ModalDialogProperties.Controller controller =
+                propertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(propertyModelCaptor.getValue(), ButtonType.POSITIVE);
+        verify(mModalDialogManager).dismissDialog(any(), anyInt());
+
+        controller.onDismiss(propertyModelCaptor.getValue(), DialogDismissalCause.NAVIGATE);
+        verify(mCollaborationControllerDelegateImplNativeMock)
+                .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
     }
 }

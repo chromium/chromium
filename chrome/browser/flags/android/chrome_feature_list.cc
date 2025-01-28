@@ -244,6 +244,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kChromeSharePageInfo,
     &kChromeSurveyNextAndroid,
     &kClankStartupLatencyInjection,
+    &kClankWhatsNew,
     &kClearBrowsingDataAndroidSurvey,
     &kCommandLineOnNonRooted,
     &kContextMenuTranslateWithGoogleLens,
@@ -718,6 +719,10 @@ BASE_FEATURE(kChromeSurveyNextAndroid,
 
 BASE_FEATURE(kClankStartupLatencyInjection,
              "ClankStartupLatencyInjection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kClankWhatsNew,
+             "ClankWhatsNew",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClearBrowsingDataAndroidSurvey,

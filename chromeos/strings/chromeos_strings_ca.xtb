@@ -200,6 +200,7 @@
 <translation id="1815850098929213707">La tecla seleccionada és <ph name="KEYS" />. Toca el botó per editar el control.</translation>
 <translation id="1823120442877418684">Temes</translation>
 <translation id="1827738518074806965">Galeria d'art</translation>
+<translation id="1834032517784994783">Selecciona l'idioma de transcripció</translation>
 <translation id="1836553715834333258">Color del sistema</translation>
 <translation id="183675228220305365">realista</translation>
 <translation id="1838374766361614909">Esborra la cerca</translation>
@@ -296,6 +297,7 @@
 <translation id="2240366984605217732">Canvi de disseny</translation>
 <translation id="2244834438220057800">verd</translation>
 <translation id="225692081236532131">Estat d'activació</translation>
+<translation id="2265792117169966196">Selecciona i baixa el model de transcripció per a <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Afegeix una captura de pantalla</translation>
 <translation id="2268044343513325586">Refina</translation>
 <translation id="2271469253353559191">Programació del mode fosc</translation>
@@ -726,6 +728,7 @@
 <translation id="4483049906298469269">No s'ha pogut fer ping a la passarel·la de xarxa no predeterminada</translation>
 <translation id="4483498983731992167">No es pot crear la transcripció</translation>
 <translation id="4486524074141928967">La teva sessió es tancarà a les <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Obre el selector d'idioma de transcripció</translation>
 <translation id="4500722292849917410">La drecera no està disponible. Prem una drecera nova amb una tecla modificadora (Ctrl, Alt, Maj o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Color de la interfície</translation>
 <translation id="4503223151711056411">Fletxa esquerra</translation>
@@ -774,6 +777,7 @@
 <translation id="473775607612524610">Actualitza</translation>
 <translation id="4744944742468440486">Informació relacionada amb la teva selecció</translation>
 <translation id="4750394297954878236">Suggeriments</translation>
+<translation id="4763771683769971829">Llista d'idiomes disponibles</translation>
 <translation id="4771607256327216405">brillantor del teclat</translation>
 <translation id="4771923071974529837">demà</translation>
 <translation id="4773299976671772492">En pausa</translation>
@@ -855,6 +859,7 @@
 <translation id="5095761549884461003">Desconnecta el cable USB del <ph name="DEVICE_NAME" /> i torna'l a connectar per continuar amb el procés d'actualització</translation>
 <translation id="5099354524039520280">amunt</translation>
 <translation id="5107243100836678918">La drecera sense tecla de <ph name="META_KEY" /> pot entrar en conflicte amb la drecera d'alguna aplicació. Torna a prémer aquesta drecera per continuar utilitzant-la o prem-ne una altra mitjançant la tecla de <ph name="KEY" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">No es pot baixar el model de transcripció per a <ph name="LANGUAGE_NAME" />. Torna-ho a provar o reinicia el Chromebook.</translation>
 <translation id="5108781503443873320">Similars:</translation>
 <translation id="5121677070210013200">No es pot baixar el model de transcripció. Torna-ho a provar o reinicia el Chromebook.</translation>
 <translation id="5130848777448318809">ponis</translation>
@@ -1278,6 +1283,7 @@
 <translation id="7049916119678019302">Baixa el model de transcripció a Configuració</translation>
 <translation id="7058278511608979688">Finalitza i desa</translation>
 <translation id="7059230779847288458">S'està carregant. <ph name="TIME_VALUE" /> per completar la càrrega.</translation>
+<translation id="7065336548231472971">S'ha seleccionat <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">la tecla <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Prepara el dispositiu</translation>
 <translation id="7076851914315147928">Tria un fons de pantalla</translation>
@@ -1371,6 +1377,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7415801143053185905">La latència d'HTTP és molt alta</translation>
 <translation id="7418738250896500352">Hi ha massa paraules per simplificar-les</translation>
 <translation id="7425037327577270384">Ajuda'm a escriure</translation>
+<translation id="7425832472614771259">S'ha baixat un <ph name="PROGRESS_PERCENTAGE" /> % del model de transcripció per a <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">No es pot desactivar ni suprimir aquest APN. Assegura't de desactivar o suprimir els APN <ph name="ATTACH" /> que estiguin activats.</translation>
 <translation id="7453118953486228603">Fes clic per resumir el text seleccionat</translation>
@@ -1407,6 +1414,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7595982850646262331">Temps restant: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">L'administrador de <ph name="MANAGER" /> ha definit quan es pot utilitzar aquest <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Canvia la posició amb el ratolí o les tecles de fletxa.</translation>
+<translation id="7618216277886673749">Selecciona <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7620771111601174153">Més informació al Centre d'ajuda</translation>
 <translation id="7625095758347640998">Fons de pantalla IA</translation>

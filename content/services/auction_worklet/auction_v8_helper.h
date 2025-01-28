@@ -275,12 +275,14 @@ class CONTENT_EXPORT AuctionV8Helper
       const SerializedValue& serialized_value);
 
   // Compiles the provided script. Despite not being bound to a context, there
-  // still must be an active context for this method to be invoked. In case of
-  // an error sets `error_out`.
+  // still must be an active context for this method to be invoked. If
+  // cached_data is non-null, use the `cached_data` instead of compiling from
+  // scratch. In case of an error sets `error_out`.
   v8::MaybeLocal<v8::UnboundScript> Compile(
       const std::string& src,
       const GURL& src_url,
       const DebugId* debug_id,
+      v8::ScriptCompiler::CachedData* cached_data,
       std::optional<std::string>& error_out);
 
   // Compiles the provided WASM module from bytecode. A context must be active

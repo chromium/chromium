@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 # This test_support library doesn't use extensions. It must not depend on
 # //chrome/test:test_support_ui as it is depended upon by those targets.

@@ -116,6 +116,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="1435593198351412143">Agor ffeiliau PDF yn awtomatig</translation>
 <translation id="1436784010935106834">Tynnwyd</translation>
 <translation id="1437543266176261764">Yn rhedeg yn <ph name="APP_NAME" /></translation>
+<translation id="1448147069872048656">Cadarnhewch mai chi sydd yno i wneud yn siŵr y gallwch gael mynediad at eich holl gyfrineiriau ar y ddyfais hon</translation>
 <translation id="1448440926884431741">Trefnu eich cynhyrchion sy'n cael eu dilyn yn Nodau tudalen</translation>
 <translation id="1460751212339734034">Arbed amser, teipio llai</translation>
 <translation id="1466383950273130737">Dewiswch iaith Chrome</translation>
@@ -847,6 +848,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4910889077668685004">Apiau talu</translation>
 <translation id="4912413785358399818">Symud tab</translation>
 <translation id="4913169188695071480">Stopio ail-lwytho</translation>
+<translation id="4913841543356834596">Cael mynediad at eich holl gyfrineiriau</translation>
 <translation id="4918086044614829423">Derbyn</translation>
 <translation id="4925120120285606924">Sgrinlun <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Bydd eich cyfrineiriau'n cael eu hallforio a'u lawrlwytho fel ffeil testun. Byddant yn weladwy i unrhyw un ac unrhyw ap sydd â mynediad at y ffolder cyrchfan.</translation>
@@ -1330,6 +1332,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6987047470128880212">Nid yw Anhysbys ar gael ar y ddyfais hon</translation>
 <translation id="6991701761229081516">Bydd eich cyfrineiriau'n cael eu huwchlwytho fel ffeil CSV. Byddant yn weladwy i unrhyw un sy'n gallu cyrchu'r ffeil, gan gynnwys apiau. Bydd cyfrineiriau wedi'u hallforio yn cael eu dileu o Chrome.</translation>
 <translation id="6996145122199359148">Lawrlwytho'r dudalen hon</translation>
+<translation id="7013627768165542797">Cadarnhewch mai chi sydd yno i gael mynediad at gyfrineiriau yn eich Cyfrif Google</translation>
 <translation id="7013762323294215682">Bydd y cyfrinair hwn yn cael ei gadw i'ch rheolwr cyfrineiriau. Bydd unrhyw un sydd â mynediad ato yn gallu defnyddio'r cyfrinair hwn.</translation>
 <translation id="7020741890149022655">Ychwanegu at restr <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Agor mewn porwr</translation>
@@ -1348,6 +1351,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7085332316435785646">Dewiswch a ddylid cynnwys hanes Chrome i gael profiadau mwy personol yng ngwasanaethau Google</translation>
 <translation id="7088681679121566888">Mae Chrome yn gyfoes</translation>
 <translation id="7094933634769755999">Gwallus</translation>
+<translation id="7102843846294013537">Nid yw rhai o'ch cyfrineiriau ar gael ar y ddyfais hon</translation>
 <translation id="7106762743910369165">Rheolir eich porwr gan eich sefydliad</translation>
 <translation id="7111394291981742152">Mae Chrome yn rhoi mwy o reolaeth i chi dros yr hysbysebion a welwch ac yn cyfyngu ar yr hyn y gall gwefannau ei ddysgu amdanoch chi pan fyddant yn dangos hysbysebion personol i chi.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Wedi adolygu caniatadau ar gyfer 1 wefan}zero{Wedi adolygu caniatadau ar gyfer # gwefan}two{Wedi adolygu caniatadau ar gyfer # wefan}few{Wedi adolygu caniatadau ar gyfer # gwefan}many{Wedi adolygu caniatadau ar gyfer # gwefan}other{Wedi adolygu caniatadau ar gyfer # gwefan}}</translation>

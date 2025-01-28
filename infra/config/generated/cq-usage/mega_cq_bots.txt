@@ -1,4 +1,5 @@
 chromium/try/android-10-arm64-rel
+chromium/try/android-11-x86-rel
 chromium/try/android-12-x64-rel
 chromium/try/android-12l-landscape-x64-dbg
 chromium/try/android-12l-x64-dbg
@@ -113,6 +114,7 @@ chromium/try/linux-libfuzzer-asan-rel
 chromium/try/linux-msan-chained-origins-rel
 chromium/try/linux-msan-no-origins-rel
 chromium/try/linux-rel
+chromium/try/linux-rel-test-selection
 chromium/try/linux-tsan-dbg
 chromium/try/linux-tsan-rel
 chromium/try/linux-ubsan-rel

@@ -71,6 +71,7 @@
 <translation id="1043505821207197890">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। Linux ਨੂੰ ਸ਼ਾਇਦ ਸਿਰਫ਼ ਅੰਸ਼ਕ ਤੌਰ 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕੀਤਾ ਜਾਵੇ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਲੌਗਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ। ਲੌਗਾਂ ਨੂੰ ਫ਼ਾਈਲਾਂ &gt; ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ &gt; <ph name="LOG_FILE" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="104385770822424034">ਕਾਰਵਾਈ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="104419033123549300">ਕੀਮੈਪ ਸਟਾਈਲ</translation>
+<translation id="1045487161760507186">ਤੁਹਾਨੂੰ ਪਾਸਵਰਡ ਯਾਦ ਰੱਖਣ ਦੀ ਲੋੜ ਨਹੀਂ ਕਿਉਂਕਿ ਇਹ Google Password Manager ਵਿੱਚ ਤੁਹਾਡੇ ਲਈ ਰੱਖਿਅਤ ਹੋ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{ਇਸ ਡੀਵਾਈਸ 'ਤੇ <ph name="BRAND" /> ਲਈ 1 ਪਾਸਵਰਡ ਆਯਾਤ ਕੀਤਾ ਗਿਆ}one{ਇਸ ਡੀਵਾਈਸ 'ਤੇ <ph name="BRAND" /> ਲਈ {NUM_PASSWORDS} ਪਾਸਵਰਡ ਆਯਾਤ ਕੀਤਾ ਗਿਆ}other{ਇਸ ਡੀਵਾਈਸ 'ਤੇ <ph name="BRAND" /> ਲਈ {NUM_PASSWORDS} ਪਾਸਵਰਡ ਆਯਾਤ ਕੀਤੇ ਗਏ}}</translation>
 <translation id="1046572983040892965">ਵਿੰਡੋ ਨੂੰ ਉੱਪਰ ਅਤੇ ਖੱਬੇ ਪਾਸੇ ਵੱਲ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="104710386808485638">ਕੀ Linux ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨਾ ਹੈ?</translation>
@@ -1886,6 +1887,7 @@
 <translation id="2297705863329999812">ਪ੍ਰਿੰਟਰ ਖੋਜੋ</translation>
 <translation id="2297822946037605517">ਇਹ ਪੰਨਾ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="229871422646860597">ਟੂਲਬਾਰ ਤੋਂ ਅਣਪਿੰਨ ਕਰੋ</translation>
+<translation id="2299685119225839832">ਤੁਸੀਂ ਲੋਕਾਂ ਦੀਆਂ ਸਮੀਖਿਆਵਾਂ ਵਿੱਚੋਂ ਉਨ੍ਹਾਂ ਦੀਆਂ ਗੱਲਾਂ ਦਾ ਸਾਰ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="2299734369537008228">ਸਲਾਈਡਰ: <ph name="MIN_LABEL" /> ਤੋਂ <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">ਡੀਬੱਗ ਵੱਲੋਂ ਇਕੱਤਰ ਕੀਤੀਆਂ ਸਾਰੀਆਂ ਲੌਗ ਫ਼ਾਈਲਾਂ ਨੂੰ ਵੱਖਰੇ ਪੁਰਾਲੇਖ ਵਜੋਂ ਸ਼ਾਮਲ ਕਰੋ।</translation>
 <translation id="2300214399009193026">PCIe</translation>
@@ -5259,6 +5261,7 @@
 <translation id="4676616966096505747">ਕੁਝ ਡਾਟਾ ਹਾਲੇ ਤੁਹਾਡੇ ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4677772697204437347">GPU ਮੈਮਰੀ</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4678729681411398877">ਜਦੋਂ ਤੁਹਾਡੇ ਕਿਸੇ ਪਾਸਵਰਡ ਦੀ ਡਾਟਾ ਉਲੰਘਣਾ ਹੋਈ ਮਿਲਦੀ ਹੈ, ਤਾਂ Google Password Manager ਪੁੱਛਦਾ ਹੈ ਕਿ ਕੀ ਤੁਸੀਂ ਕੋਈ ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਬਣਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ</translation>
 <translation id="4678848110205818817">ਕ੍ਰੈਡਿਟ/ਡੈਬਿਟ ਕਾਰਡ</translation>
 <translation id="4679018849559620189">ਇਸਦੀ ਮਦਦ ਨਾਲ, ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ 'ਤੇ ਆਪਣੀਆਂ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਪਾਸਕੀਆਂ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="4680105648806843642">ਇਸ ਪੰਨੇ 'ਤੇ ਧੁਨੀ ਨੂੰ ਮਿਊਟ ਕੀਤਾ ਗਿਆ</translation>
@@ -6826,6 +6829,7 @@
 <translation id="5828545842856466741">ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰੋ...</translation>
 <translation id="5828633471261496623">ਪ੍ਰਿੰਟ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> ਨੂੰ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
+<translation id="5830512293931520102">ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਇਨਕ੍ਰਿਪਟਡ ਹੈ ਅਤੇ ਕਦੇ ਵੀ ਕਿਸੇ ਵੱਲੋਂ ਦੇਖਿਆ ਨਹੀਂ ਜਾਵੇਗਾ</translation>
 <translation id="5830720307094128296">ਪੰਨੇ ਨੂੰ ਇਸ ਵਜੋਂ &amp;ਰੱਖਿਅਤ ਕਰੋ...</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5831950941058843834">ਕੀ <ph name="SITE_NAME" />, ਇਸਦੇ ਅਧੀਨ ਆਉਂਦੀਆਂ ਸਾਰੀਆਂ ਸਾਈਟਾਂ, ਅਤੇ ਇਸਦੀ ਸਥਾਪਤ ਕੀਤੀ ਐਪ ਲਈ ਸਾਈਟ ਡਾਟੇ ਅਤੇ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
@@ -7570,6 +7574,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">ਪਰਿਵਾਰ ਅਤੇ ਦੋਸਤਾਂ ਨੂੰ ਜੋੜੋ</translation>
 <translation id="6367097275976877956">ਕੀ ਤੁਸੀਂ ChromeOS ਦੇ ਬਿਲਟ-ਇਨ ਸਕ੍ਰੀਨ ਰੀਡਰ ChromeVox ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ? ਜੇ ਹਾਂ, ਤਾਂ ਸਪੇਸ ਬਾਰ ਦਬਾਓ।</translation>
+<translation id="6367396429435748845">ਮਾਊਸ ਕੁੰਜੀਆਂ ਨੂੰ ਰੋਕਣ ਅਤੇ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਲਈ <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> ਦਬਾਓ</translation>
 <translation id="6367985768157257101">ਕੀ ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਨਾਲ ਪ੍ਰਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="6368157733310917710">ਪਤੇ ਅਤੇ ਹੋਰ</translation>
 <translation id="6368276408895187373">ਚਾਲੂ – <ph name="VARIATION_NAME" /></translation>
@@ -9226,6 +9231,7 @@
 <translation id="7568759527730933493">DNS (ਡੋਮੇਨ ਨਾਮ ਪ੍ਰਣਾਲੀ) ਵਿੱਚ ਕਿਸੇ ਸਾਈਟ ਦਾ IP ਪਤਾ ਲੱਭਣ ਲਈ ਕਿਸੇ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਇਹ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 'ਤੇ ਪ੍ਰਬੰਧਿਤ ਸੇਵਾ ਪ੍ਰਦਾਨਕ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ। ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਕੁਝ ਅਜਿਹੇ ਡੋਮੇਨਾਂ ਦਾ ਸੰਰੂਪਣ ਕੀਤਾ ਹੈ, ਜਿਨ੍ਹਾਂ ਲਈ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨਾਂ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ।</translation>
 <translation id="756876171895853918">ਅਵਤਾਰ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="7568790562536448087">ਅੱਪਡੇਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="7569113730576914983">ਜਦੋਂ Chrome ਨੂੰ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਤੁਹਾਡਾ ਕੋਈ ਪਾਸਵਰਡ ਮਿਲਦਾ ਹੈ, ਤਾਂ ਇਹ ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਕਰਨ 'ਤੇ ਤੁਹਾਨੂੰ ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਣ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="7569983096843329377">ਕਾਲਾ</translation>
 <translation id="7570548610653957960">ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ</translation>
 <translation id="7571643774869182231">ਅੱਪਡੇਟ ਲਈ ਲੋੜੀਂਦਾ ਸਟੋਰੇਜ ਨਹੀਂ ਹੈ</translation>
@@ -9511,6 +9517,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੇਖ ਸਕੇਗੀ</translation>
 <translation id="7768770796815395237">ਬਦਲੋ</translation>
 <translation id="7768784765476638775">ਚੁਣੋ ਅਤੇ ਸੁਣੋ</translation>
+<translation id="7769709635093101687">ਰੋਕਣ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="7769748505895274502">ਹਾਲੀਆਂ ਬੰਦ ਕੀਤੀਆਂ ਨੂੰ ਸਮੇਟੋ</translation>
 <translation id="7770072242481632881">ਸਾਈਡ ਪੈਨਲ ਚੋਣਕਾਰ</translation>
 <translation id="7770450735129978837">ਸੱਜਾ ਮਾਊਸ ਕਲਿੱਕ</translation>
@@ -10158,6 +10165,7 @@
 <translation id="8215129063232901118">ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਤੋਂ ਫ਼ੋਨ ਦੀਆਂ ਸਮਰੱਥਾਵਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰੋ</translation>
 <translation id="8217212468862726597">ਪੁਆਇੰਟਰ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="8217399928341212914">ਮਲਟੀਪਲ ਫਾਈਲਾਂ ਦੀ ਆਟੋਮੈਟਿਕ ਡਾਊਨਲੋਡਸ ਨੂੰ ਬਲੌਕ ਕਰਦੇ ਹੋਏ ਜਾਰੀ ਰੱਖੋ</translation>
+<translation id="8219785583603399823">ਇਸ ਸਟੋਰ ਲਈ ਰੇਟਿੰਗਾਂ ਦੇਖੋ</translation>
 <translation id="822050276545350872">ਇੱਥੋਂ ਬਾਹਰ ਨਿਕਲਣ ਤੋਂ ਬਾਅਦ, ਬਿਲਕੁਲ ਵੀ ਉਡੀਕ ਕਰਨ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ</translation>
 <translation id="8222112516148944758">ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਰੱਖਿਅਤ ਹੁੰਦੇ ਹਨ ਅਤੇ ਅੱਪਡੇਟ ਹੁੰਦੇ ਹਨ</translation>
 <translation id="8222674561049363989">ਫ਼ਾਈਲ ਵੈਧ ਦਸਤਾਵੇਜ਼ ਨਹੀਂ ਹੈ</translation>

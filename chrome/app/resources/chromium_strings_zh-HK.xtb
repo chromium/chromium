@@ -365,6 +365,7 @@
 <translation id="6145820983052037069">您可在此處切換不同的 Chromium 設定檔</translation>
 <translation id="615103374448673771">如果你允許 Cookie，Chromium 可能會在預先載入時使用 Cookie</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
+<translation id="6173308241973263798">清除帳戶中的 Chromium 資料</translation>
 <translation id="6174920971222007286">此檔案可能不安全<ph name="LINE_BREAK" />如果你提供密碼，Chromium 可為你檢查此下載項目。系統會向「Google 安全瀏覽」傳送檔案的資料，但檔案內容和密碼只會儲存在裝置上。</translation>
 <translation id="6182736845697986886">由於更新伺服器發生內部錯誤，因此無法安裝。</translation>
 <translation id="6183079672144801177">請確認您已在 <ph name="TARGET_DEVICE_NAME" /> 上登入 Chromium，然後再傳送一次。</translation>
@@ -431,6 +432,7 @@
 <translation id="684888714667046800">無法連線至互聯網。如果你使用防火牆，請確保已將 <ph name="PRODUCT_EXE_NAME" /> 加入許可名單。</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium 發現「<ph name="EXTENSION_NAME" />」含有惡意軟件</translation>
+<translation id="6877631896957360295">如果忘記密碼短語或想變更此設定，請<ph name="SETTINGS_LINK" />帳戶中的 Chromium 資料。</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6929417474050522668">在試用期間，「廣告評估」允許您瀏覽的網站向 Chromium 要求資料，以便評估廣告的效益。「廣告評估」會透過盡量減少在網站之間傳送的資料，從而限制跨網站追蹤功能。</translation>
 <translation id="6940431691900807093">您日後瀏覽的網站可向 Chromium 要求查看您的興趣，以便向您顯示個人化廣告。Chromium 最多可分享 3 個感興趣的主題。</translation>

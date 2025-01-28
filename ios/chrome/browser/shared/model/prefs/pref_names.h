@@ -95,6 +95,10 @@ inline constexpr char kDetectAddressesAccepted[] =
 inline constexpr char kDetectAddressesEnabled[] =
     "ios.settings.detect_addresses_enabled";
 
+// The pref to enable the Download Auto-deletion system on the device.
+inline constexpr char kDownloadAutoDeletionEnabled[] =
+    "ios.download.auto_deletion_enabled";
+
 // Number of times the First Follow UI has been shown.
 inline constexpr char kFirstFollowUIShownCount[] =
     "follow.first_follow_ui_modal_count";
@@ -518,7 +522,7 @@ inline constexpr char kTabPickupLastDisplayedURL[] =
 inline constexpr char kTrackPricesOnTabsEnabled[] =
     "track_prices_on_tabs.enabled";
 
-// Boolean indicating if Lens camera assited searches are allowed by enterprise
+// Boolean indicating if Lens camera assisted searches are allowed by enterprise
 // policy.
 inline constexpr char kLensCameraAssistedSearchPolicyAllowed[] =
     "ios.lens_camera_assited_search_policy.allowed";

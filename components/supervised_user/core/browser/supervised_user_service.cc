@@ -33,6 +33,7 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using base::UserMetricsAction;
@@ -69,9 +70,9 @@ std::string SupervisedUserService::GetCustodianEmailAddress() const {
   return user_prefs_->GetString(prefs::kSupervisedUserCustodianEmail);
 }
 
-std::string SupervisedUserService::GetCustodianObfuscatedGaiaId() const {
-  return user_prefs_->GetString(
-      prefs::kSupervisedUserCustodianObfuscatedGaiaId);
+GaiaId SupervisedUserService::GetCustodianObfuscatedGaiaId() const {
+  return GaiaId(
+      user_prefs_->GetString(prefs::kSupervisedUserCustodianObfuscatedGaiaId));
 }
 
 std::string SupervisedUserService::GetCustodianName() const {
@@ -84,9 +85,9 @@ std::string SupervisedUserService::GetSecondCustodianEmailAddress() const {
   return user_prefs_->GetString(prefs::kSupervisedUserSecondCustodianEmail);
 }
 
-std::string SupervisedUserService::GetSecondCustodianObfuscatedGaiaId() const {
-  return user_prefs_->GetString(
-      prefs::kSupervisedUserSecondCustodianObfuscatedGaiaId);
+GaiaId SupervisedUserService::GetSecondCustodianObfuscatedGaiaId() const {
+  return GaiaId(user_prefs_->GetString(
+      prefs::kSupervisedUserSecondCustodianObfuscatedGaiaId));
 }
 
 std::string SupervisedUserService::GetSecondCustodianName() const {

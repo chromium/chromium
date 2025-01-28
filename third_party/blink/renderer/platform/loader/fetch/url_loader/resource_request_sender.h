@@ -34,7 +34,7 @@
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -89,7 +89,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
       uint32_t loader_options,
       SyncLoadResponse* response,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
+      std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
       base::TimeDelta timeout,
       const Vector<String>& cors_exempt_header_list,
       base::WaitableEvent* terminate_sync_load_event,
@@ -112,7 +112,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
       const Vector<String>& cors_exempt_header_list,
       scoped_refptr<ResourceRequestClient> client,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
+      std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       CodeCacheHost* code_cache_host,
@@ -199,7 +199,8 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
     //
     // May also include the `Shared-Storage-Writable` header in the case that
     // permission has been revoked on a redirect.
-    WebVector<WebString> removed_headers;
+    std::vector<std::string> removed_headers
+        ALLOW_DISCOURAGED_TYPE("Matches Chrome net API");
 
     // Headers that need to be added or updated, e.g. the
     // `Shared-Storage-Writable` header in the case that permission has been

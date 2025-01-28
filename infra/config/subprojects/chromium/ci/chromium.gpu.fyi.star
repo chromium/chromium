@@ -2847,7 +2847,7 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Win10 FYI x64 Release (NVIDIA RTX 4070 Super)",
+    name = "Win11 FYI x64 Release (NVIDIA RTX 4070 Super)",
     description_html = "Runs GPU tests on NVIDIA RTX 4070 Super GPUs",
     triggered_by = ["GPU FYI Win x64 Builder"],
     builder_spec = builder_config.builder_spec(

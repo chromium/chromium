@@ -353,7 +353,7 @@
   __weak id<TabGridCommands> tabGridHandler =
       HandlerForProtocol(dispatcher, TabGridCommands);
   void (^openTabGroupPanelAction)() = ^{
-    [tabGridHandler showTabGroupsPanelAnimated:YES];
+    [tabGridHandler showPage:TabGridPageTabGroups animated:YES];
   };
 
   // Create and config the snackbar.

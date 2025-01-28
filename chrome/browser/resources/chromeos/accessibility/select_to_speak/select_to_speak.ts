@@ -17,7 +17,8 @@ import {MetricsUtils} from './metrics_utils.js';
 import {PrefsManager} from './prefs_manager.js';
 import {SelectToSpeakConstants} from './select_to_speak_constants.js';
 import {TtsManager} from './tts_manager.js';
-import {SelectToSpeakUiListener, UiManager} from './ui_manager.js';
+import type {SelectToSpeakUiListener} from './ui_manager.js';
+import {UiManager} from './ui_manager.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
 import AutomationEvent = chrome.automation.AutomationEvent;
@@ -304,7 +305,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     // objects within that container. In the future we might include other
     // root-like roles here. (Consider harmonizing with the `ui::IsRootLike`
     // method.)
-    var root = evt.target;
+    let root = evt.target;
 
     // In Chrome PDF Viewer, PDF content for a large PDF might still be loading
     // into a PDF accessibility tree when the user selects text on a PDF page.
@@ -332,8 +333,8 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
       root = root.parent;
     }
 
-    var rect = this.inputHandler_!.getMouseRect();
-    var nodes: AutomationNode[] = [];
+    const rect = this.inputHandler_!.getMouseRect();
+    let nodes: AutomationNode[] = [];
     chrome.automation.getFocus(focusedNode => {
       // In some cases, e.g. ARC++, the window received in the hit test request,
       // which is computed based on which window is the event handler for the

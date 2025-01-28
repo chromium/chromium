@@ -125,6 +125,24 @@ namespace {
 static const char kOnSuspendEvent[] = "runtime.onSuspend";
 static const char kOnSuspendCanceledEvent[] = "runtime.onSuspendCanceled";
 
+// TODO(crbug.com/389971360) Remove this enum class and
+// `service_worker_context_state` once the issue is fixed. This is completely
+// for the debugging purpose.
+enum class ServiceWorkerContextState {
+  kDefault = 0,
+  kInitializing = 1,
+  kInitialized = 2,
+  kScriptUrlIsNotExtensionScheme = 3,
+  kNoExtension = 4,
+  kExtensionAPIIsNotEnabledForServiceWorkerScript = 5,
+  kDestroying = 6,
+  kDestroyed = 7,
+  kMaxValue = kDestroyed,
+};
+
+constinit thread_local ServiceWorkerContextState service_worker_context_state =
+    extensions::ServiceWorkerContextState::kDefault;
+
 enum class ExtensionRendererLoadStatus {
   // Extension is neither loaded in the registry nor unloaded.
   kUnknownExtension = 0,
@@ -581,6 +599,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     const GURL& script_url,
     const blink::ServiceWorkerToken& service_worker_token) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
+  service_worker_context_state = ServiceWorkerContextState::kInitializing;
 
   // TODO(crbug.com/40626913): We may want to give service workers not
   // registered by extensions minimal bindings, the same as other webpage-like
@@ -590,6 +609,8 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     // the extension registry is unnecessary if it's not. Checking this will
     // also skip over hosted apps, which is the desired behavior - hosted app
     // service workers are not our concern.
+    service_worker_context_state =
+        ServiceWorkerContextState::kScriptUrlIsNotExtensionScheme;
     return;
   }
 
@@ -629,11 +650,14 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     // Perhaps this could be solved with our own event on the service worker
     // saying that an extension is ready, and documenting that extension APIs
     // won't work before that event has fired?
+    service_worker_context_state = ServiceWorkerContextState::kNoExtension;
     return;
   }
 
   if (!ExtensionAPIEnabledForServiceWorkerScript(service_worker_scope,
                                                  script_url)) {
+    service_worker_context_state = ServiceWorkerContextState::
+        kExtensionAPIIsNotEnabledForServiceWorkerScript;
     return;
   }
 
@@ -699,6 +723,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
   UMA_HISTOGRAM_TIMES(
       "Extensions.DidInitializeServiceWorkerContextOnWorkerThread2", elapsed);
+  service_worker_context_state = ServiceWorkerContextState::kInitialized;
 }
 
 void Dispatcher::WillReleaseScriptContext(
@@ -723,6 +748,10 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
     return;
   }
 
+  // TODO(crbug.com/389971360) Remove this once the bug is fixed.
+  SCOPED_CRASH_KEY_NUMBER("extensions", "worker_context_state",
+                          static_cast<int>(service_worker_context_state));
+
   const int thread_id = content::WorkerThread::GetCurrentId();
   CHECK_NE(thread_id, kMainThreadId);
   auto* service_worker_data = WorkerThreadDispatcher::GetServiceWorkerData();
@@ -743,6 +772,7 @@ void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
   // Use the existence of ServiceWorkerData as the source of truth instead.
   if (auto* service_worker_data =
           WorkerThreadDispatcher::GetServiceWorkerData()) {
+    service_worker_context_state = ServiceWorkerContextState::kDestroying;
     const int thread_id = content::WorkerThread::GetCurrentId();
     CHECK_NE(thread_id, kMainThreadId);
 
@@ -763,6 +793,12 @@ void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
     // the associated bindings system.
     g_worker_script_context_set.Get().Remove(v8_context, script_url);
     WorkerThreadDispatcher::Get()->RemoveWorkerData(service_worker_version_id);
+
+    // TODO(crbug.com/389971360) Remove this after the fix. If ServiceWorkerData
+    // in `WorkerThreadDispatcher` is removed, update the eligibility status so
+    // that we make sure if ServiceWorkerData is already removed or not in the
+    // crash at `DidStartServiceWorkerContextOnWorkerThread()`.
+    service_worker_context_state = ServiceWorkerContextState::kDestroyed;
   } else {
     // If extension APIs in service workers aren't enabled, we just need to
     // remove the context.

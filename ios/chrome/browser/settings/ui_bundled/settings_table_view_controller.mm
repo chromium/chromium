@@ -548,7 +548,8 @@ struct EnhancedSafeBrowsingActivePromoData
 
   PhotosService* photosService = PhotosServiceFactory::GetForProfile(_profile);
   bool shouldShowDownloadsSettings =
-      photosService && photosService->IsSupported();
+      (photosService && photosService->IsSupported()) ||
+      IsDownloadAutoDeletionFeatureEnabled();
   if (IsInactiveTabsAvailable()) {
     [model addItem:[self tabsSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];

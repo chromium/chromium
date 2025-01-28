@@ -645,10 +645,19 @@ void ClientCertResolver::ResolveNetworks(
 
     ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
     std::string userhash;
+
+    // crbug.com/362668527: |ClientCertResolver| is responsible for finding the
+    // correct certificate for the network and setting it using
+    // |ManagedNetworkConfigurationHandler::SetResolvedClientCertificate|.
+    // Here it cannot use the kWithRuntimeValues policy because the certificate
+    // pattern there is already replaced with a certificate (or an empty value).
+    // The kOriginal policy cannot be used here because it still contains the
+    // unexpanded placeholders.
     const base::Value::Dict* policy =
         managed_network_config_handler_->FindPolicyByGuidAndProfile(
             network->guid(), network->profile_path(),
-            ManagedNetworkConfigurationHandler::PolicyType::kOriginal,
+            ManagedNetworkConfigurationHandler::PolicyType::
+                kWithVariablesExpanded,
             &onc_source, &userhash);
 
     if (!policy) {

@@ -47,7 +47,7 @@ import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Unit tests for the PageZoom view and view binder. */
@@ -72,7 +72,7 @@ public class PageZoomViewTest {
     @Mock private HostZoomMapImpl.Natives mHostZoomMapJniMock;
     @Mock private PageZoomMetrics.Natives mPageZoomMetricsJniMock;
     @Mock private BrowserContextHandle mBrowserContextHandle;
-    @Mock private WebContents mWebContents;
+    @Mock private MockWebContents mWebContents;
 
     private PageZoomCoordinator mCoordinator;
     private View mPageZoomView;

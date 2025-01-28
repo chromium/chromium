@@ -96,10 +96,6 @@ BASE_FEATURE(kCreateWarningShownClientSafeBrowsingReports,
              "CreateWarningShownClientSafeBrowsingReports",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDangerousDownloadInterstitial,
-             "DangerousDownloadInterstitial",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDeepScanningCriteria,
              "SafeBrowsingDeepScanningCriteria",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -157,12 +153,7 @@ BASE_FEATURE(kEnterpriseRealTimeUrlCheckOnAndroid,
 
 BASE_FEATURE(kEsbAiStringUpdate,
              "EsbAiStringUpdate",
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEsbAsASyncedSetting,
              "EsbAsASyncedSetting",

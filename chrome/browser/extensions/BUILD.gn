@@ -1007,7 +1007,6 @@ source_set("extensions") {
         "//chrome/browser/chromeos/platform_keys",
         "//chrome/browser/chromeos/policy/dlp",
         "//chrome/browser/chromeos/upload_office_to_cloud",
-        "//chromeos/ash/components/browser_context_helper",
         "//chromeos/components/kiosk",
         "//chromeos/components/mgs",
         "//chromeos/components/quick_answers/public/cpp:prefs",
@@ -1018,7 +1017,6 @@ source_set("extensions") {
         "//chromeos/dbus/power",
         "//chromeos/services/chromebox_for_meetings/public/cpp",
         "//chromeos/services/chromebox_for_meetings/public/mojom",
-        "//components/user_manager",
         "//remoting/host/it2me:chrome_os_host",
       ]
 
@@ -1123,12 +1121,20 @@ source_set("extensions") {
         "api/messaging/native_message_host_chromeos.cc",
         "api/networking_private/networking_private_ui_delegate_chromeos.cc",
         "api/networking_private/networking_private_ui_delegate_chromeos.h",
+        "api/quick_unlock_private/quick_unlock_private_api.cc",
+        "api/quick_unlock_private/quick_unlock_private_api.h",
+        "api/quick_unlock_private/quick_unlock_private_ash_utils.cc",
+        "api/quick_unlock_private/quick_unlock_private_ash_utils.h",
         "api/settings_private/chromeos_resolve_time_zone_by_geolocation_method_short.cc",
         "api/settings_private/chromeos_resolve_time_zone_by_geolocation_method_short.h",
         "api/settings_private/chromeos_resolve_time_zone_by_geolocation_on_off.cc",
         "api/settings_private/chromeos_resolve_time_zone_by_geolocation_on_off.h",
         "api/settings_private/generated_time_zone_pref_base.cc",
         "api/settings_private/generated_time_zone_pref_base.h",
+        "api/terminal/startup_status.cc",
+        "api/terminal/startup_status.h",
+        "api/terminal/terminal_private_api.cc",
+        "api/terminal/terminal_private_api.h",
         "api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.cc",
         "api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.h",
         "chrome_kiosk_delegate_chromeos.cc",
@@ -1429,7 +1435,6 @@ source_set("extensions") {
 
     if (enable_glic) {
       deps += [
-        "//chrome/browser/glic:enabling",
         "//chrome/browser/glic:glic",
         "//chrome/browser/glic:impl",
       ]

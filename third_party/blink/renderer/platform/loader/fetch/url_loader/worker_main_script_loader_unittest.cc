@@ -100,8 +100,6 @@ class WorkerMainScriptLoaderTest : public testing::Test {
                         const std::optional<GURL>&) override {}
     void SetPriority(net::RequestPriority priority,
                      int32_t intra_priority_value) override {}
-    void PauseReadingBodyFromNet() override {}
-    void ResumeReadingBodyFromNet() override {}
 
    private:
     mojo::Receiver<network::mojom::URLLoader> receiver_;

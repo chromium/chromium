@@ -16,7 +16,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/vector_icons/vector_icons.h"

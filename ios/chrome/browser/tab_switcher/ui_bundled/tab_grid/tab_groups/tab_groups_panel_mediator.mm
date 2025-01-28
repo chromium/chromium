@@ -13,10 +13,14 @@
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/collaboration_service.h"
+#import "components/collaboration/public/messaging/message.h"
+#import "components/collaboration/public/messaging/messaging_backend_service.h"
+#import "components/collaboration/public/messaging/util.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/string_utils.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/saved_tab_groups/favicon/coordinator/tab_group_favicons_grid_configurator.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
@@ -39,6 +43,7 @@
 #import "ui/gfx/favicon_size.h"
 #import "ui/gfx/image/image.h"
 
+using collaboration::messaging::TabGroupMessageMetadata;
 using tab_groups::utils::GetLocalTabGroupInfo;
 using tab_groups::utils::LocalTabGroupInfo;
 
@@ -58,16 +63,29 @@ bool CompareGroupByCreationDate(const tab_groups::SavedTabGroup& a,
          b.creation_time_windows_epoch_micros();
 }
 
+// Converts deletion notifications from the messaging service into a
+// notification `TabGroupsPanelItem`.
+TabGroupsPanelItem* CreateNotificationItem(
+    std::vector<collaboration::messaging::PersistentMessage> messages) {
+  std::optional<std::string> summary =
+      collaboration::messaging::GetRemovedCollaborationsSummary(messages);
+  if (!summary.has_value()) {
+    return nil;
+  }
+  NSString* text = base::SysUTF8ToNSString(summary.value());
+  return [[TabGroupsPanelItem alloc] initWithNotificationText:text];
+}
+
 // Converts a vector of `SavedTabGroup`s into an array of `TabGroupsPanelItem`s.
-NSArray<TabGroupsPanelItem*>* CreateItems(
+NSArray<TabGroupsPanelItem*>* CreateTabGroupItems(
     std::vector<tab_groups::SavedTabGroup> groups) {
   // Sort groups by creation date.
   std::sort(groups.begin(), groups.end(), CompareGroupByCreationDate);
 
   NSMutableArray<TabGroupsPanelItem*>* items = [[NSMutableArray alloc] init];
   for (const auto& group : groups) {
-    TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc] init];
-    item.savedTabGroupID = group.saved_guid();
+    TabGroupsPanelItem* item =
+        [[TabGroupsPanelItem alloc] initWithSavedTabGroupID:group.saved_guid()];
     [items addObject:item];
   }
   return items;
@@ -82,7 +100,8 @@ NSString* CreationText(base::Time creation_date) {
 
 }  // namespace
 
-@interface TabGroupsPanelMediator () <TabGridToolbarsGridDelegate,
+@interface TabGroupsPanelMediator () <MessagingBackendServiceObserving,
+                                      TabGridToolbarsGridDelegate,
                                       TabGroupSyncServiceObserverDelegate>
 @end
 
@@ -93,11 +112,16 @@ NSString* CreationText(base::Time creation_date) {
   raw_ptr<ShareKitService> _shareKitService;
   // The collaboration service.
   raw_ptr<collaboration::CollaborationService> _collaborationService;
+  // The service to get activity messages for shared tab groups.
+  raw_ptr<collaboration::messaging::MessagingBackendService> _messagingService;
   // The bridge between the service C++ observer and this Objective-C class.
   std::unique_ptr<TabGroupSyncServiceObserverBridge> _syncServiceObserver;
   std::unique_ptr<ScopedTabGroupSyncObservation> _scopedSyncServiceObservation;
+  // The bridge between the C++ MessagingBackendService observer and this
+  // Objective-C class.
+  std::unique_ptr<MessagingBackendServiceBridge> _messagingBackendServiceBridge;
   // Whether the service was fully initialized.
-  bool _serviceInitialized;
+  bool _tabGroupSyncServiceInitialized;
   // The regular WebStateList, to check if there are tabs to go back to when
   // pressing the Done button.
   base::WeakPtr<WebStateList> _regularWebStateList;
@@ -111,27 +135,37 @@ NSString* CreationText(base::Time creation_date) {
   std::unique_ptr<TabGroupFaviconsGridConfigurator> _faviconsGridConfigurator;
 }
 
-- (instancetype)initWithTabGroupSyncService:
-                    (tab_groups::TabGroupSyncService*)tabGroupSyncService
-                            shareKitService:(ShareKitService*)shareKitService
-                       collaborationService:
-                           (collaboration::CollaborationService*)
-                               collaborationService
-                        regularWebStateList:(WebStateList*)regularWebStateList
-                              faviconLoader:(FaviconLoader*)faviconLoader
-                           disabledByPolicy:(BOOL)disabled
-                                browserList:(BrowserList*)browserList {
+- (instancetype)
+    initWithTabGroupSyncService:
+        (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                shareKitService:(ShareKitService*)shareKitService
+           collaborationService:
+               (collaboration::CollaborationService*)collaborationService
+               messagingService:
+                   (collaboration::messaging::MessagingBackendService*)
+                       messagingService
+            regularWebStateList:(WebStateList*)regularWebStateList
+                  faviconLoader:(FaviconLoader*)faviconLoader
+               disabledByPolicy:(BOOL)disabled
+                    browserList:(BrowserList*)browserList {
   self = [super init];
   if (self) {
     _tabGroupSyncService = tabGroupSyncService;
     _shareKitService = shareKitService;
     _collaborationService = collaborationService;
+    _messagingService = messagingService;
     _syncServiceObserver =
         std::make_unique<TabGroupSyncServiceObserverBridge>(self);
     _scopedSyncServiceObservation =
         std::make_unique<ScopedTabGroupSyncObservation>(
             _syncServiceObserver.get());
     _scopedSyncServiceObservation->Observe(_tabGroupSyncService);
+    if (_messagingService) {
+      _messagingBackendServiceBridge =
+          std::make_unique<MessagingBackendServiceBridge>(self);
+      _messagingService->AddPersistentMessageObserver(
+          _messagingBackendServiceBridge.get());
+    }
     _regularWebStateList = regularWebStateList->AsWeakPtr();
     _isDisabled = disabled;
     _browserList = browserList;
@@ -145,7 +179,7 @@ NSString* CreationText(base::Time creation_date) {
 - (void)setConsumer:(id<TabGroupsPanelConsumer>)consumer {
   _consumer = consumer;
   if (_consumer) {
-    [self populateItemsFromService];
+    [self populateItemsFromServices];
   }
 }
 
@@ -171,6 +205,12 @@ NSString* CreationText(base::Time creation_date) {
 }
 
 - (void)disconnect {
+  if (_messagingService) {
+    _messagingService->RemovePersistentMessageObserver(
+        _messagingBackendServiceBridge.get());
+    _messagingBackendServiceBridge.reset();
+    _messagingService = nullptr;
+  }
   _consumer = nil;
   _scopedSyncServiceObservation.reset();
   _syncServiceObserver.reset();
@@ -179,6 +219,26 @@ NSString* CreationText(base::Time creation_date) {
   _collaborationService = nullptr;
   _regularWebStateList = nullptr;
   _faviconsGridConfigurator = nullptr;
+}
+
+#pragma mark MessagingBackendServiceObserving
+
+- (void)onMessagingBackendServiceInitialized {
+  [self populateItemsFromServices];
+}
+
+- (void)displayPersistentMessage:
+    (collaboration::messaging::PersistentMessage)message {
+  CHECK(_messagingService);
+  CHECK(_messagingService->IsInitialized());
+  [self populateItemsFromServices];
+}
+
+- (void)hidePersistentMessage:
+    (collaboration::messaging::PersistentMessage)message {
+  CHECK(_messagingService);
+  CHECK(_messagingService->IsInitialized());
+  [self populateItemsFromServices];
 }
 
 #pragma mark TabGridPageMutator
@@ -306,16 +366,21 @@ NSString* CreationText(base::Time creation_date) {
                              sourceView:sourceView];
 }
 
+- (void)deleteNotificationItem:(TabGroupsPanelItem*)item {
+  // TODO(crbug.com/375596435): Notify the MessagingBackendService.
+  [self populateItemsFromServices];
+}
+
 #pragma mark TabGroupSyncServiceObserverDelegate
 
 - (void)tabGroupSyncServiceInitialized {
-  _serviceInitialized = true;
-  [self populateItemsFromService];
+  _tabGroupSyncServiceInitialized = true;
+  [self populateItemsFromServices];
 }
 
 - (void)tabGroupSyncServiceTabGroupAdded:(const tab_groups::SavedTabGroup&)group
                               fromSource:(tab_groups::TriggerSource)source {
-  [self populateItemsFromService];
+  [self populateItemsFromServices];
 }
 
 - (void)tabGroupSyncServiceTabGroupUpdated:
@@ -334,14 +399,14 @@ NSString* CreationText(base::Time creation_date) {
 - (void)tabGroupSyncServiceSavedTabGroupRemoved:(const base::Uuid&)syncID
                                      fromSource:
                                          (tab_groups::TriggerSource)source {
-  [self populateItemsFromService];
+  [self populateItemsFromServices];
 }
 
 - (void)tabGroupSyncServiceTabGroupMigrated:
             (const tab_groups::SavedTabGroup&)newGroup
                                   oldSyncID:(const base::Uuid&)oldSync
                                  fromSource:(tab_groups::TriggerSource)source {
-  [self populateItemsFromService];
+  [self populateItemsFromServices];
 }
 
 - (void)tabGroupSyncServiceSavedTabGroupLocalIdChanged:(const base::Uuid&)syncID
@@ -350,7 +415,7 @@ NSString* CreationText(base::Time creation_date) {
                                                        tab_groups::
                                                            LocalTabGroupID>&)
                                                        localID {
-  [self populateItemsFromService];
+  [self populateItemsFromServices];
 }
 
 #pragma mark Private
@@ -383,17 +448,26 @@ NSString* CreationText(base::Time creation_date) {
 
 // Reads the TabGroupSyncService data, prepares it, and feeds it to the
 // consumer.
-- (void)populateItemsFromService {
-  if (_serviceInitialized) {
-    [_consumer populateItems:CreateItems(_tabGroupSyncService->GetAllGroups())];
+- (void)populateItemsFromServices {
+  if (_tabGroupSyncServiceInitialized) {
+    std::vector<collaboration::messaging::PersistentMessage> messages;
+    if (_messagingService && _messagingService->IsInitialized()) {
+      messages = _messagingService->GetMessages(
+          collaboration::messaging::PersistentNotificationType::
+              DIRTY_TAB_GROUP_REMOVED);
+    }
+    NSArray<TabGroupsPanelItem*>* tabGroupItems =
+        CreateTabGroupItems(_tabGroupSyncService->GetAllGroups());
+    [_consumer populateNotificationItem:CreateNotificationItem(messages)
+                          tabGroupItems:tabGroupItems];
   }
 }
 
 // Tells the consumer to reload the given group.
 - (void)reconfigureGroup:(const tab_groups::SavedTabGroup&)group {
-  if (_serviceInitialized) {
-    TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc] init];
-    item.savedTabGroupID = group.saved_guid();
+  if (_tabGroupSyncServiceInitialized) {
+    TabGroupsPanelItem* item =
+        [[TabGroupsPanelItem alloc] initWithSavedTabGroupID:group.saved_guid()];
     [_consumer reconfigureItem:item];
   }
 }

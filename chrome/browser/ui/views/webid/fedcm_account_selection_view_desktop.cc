@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -82,15 +81,6 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
 }
 
 void FedCmAccountSelectionView::ShowDialogWidget() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  if (browser &&
-      browser->tab_strip_model()->GetActiveWebContents() != web_contents()) {
-    // This is unexpected since we should never reach this codepath when the
-    // WebContents is not the active one. Dump to get debug info on when this
-    // happens.
-    base::debug::DumpWithoutCrashing();
-  }
-
   // Initialize InputEventActivationProtector to handle potentially unintended
   // input events. Do not override `input_protector_` set by
   // SetInputEventActivationProtectorForTesting().

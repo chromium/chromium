@@ -686,7 +686,7 @@ suite('sea pen', () => {
     assertTrue(!!seaPenTemplateQuery, 'Characters template should show up');
 
     const seaPenChips = await waitUntil(
-        () => seaPenTemplateQuery.shadowRoot?.querySelectorAll<HTMLDivElement>(
+        () => seaPenTemplateQuery.shadowRoot?.querySelectorAll<HTMLElement>(
             '#template > .chip-container > .chip-text'),
         'waiting for chips');
     assertEquals(
@@ -1162,7 +1162,7 @@ suite('sea pen', () => {
     setTransitionsEnabled(true);
 
     const seaPenChips = await waitUntil(
-        () => seaPenTemplateQuery.shadowRoot?.querySelectorAll<HTMLDivElement>(
+        () => seaPenTemplateQuery.shadowRoot?.querySelectorAll<HTMLElement>(
             '#template > .chip-container > .chip-text'),
         'waiting for chips');
     assertEquals(

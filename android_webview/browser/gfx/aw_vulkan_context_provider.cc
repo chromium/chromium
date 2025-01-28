@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "android_webview/common/gfx/aw_gr_context_options_provider.h"
@@ -13,7 +19,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/native_library.h"
-#include "base/ranges/algorithm.h"
 #include "gpu/config/skia_limits.h"
 #include "gpu/vulkan/init/skia_vk_memory_allocator_impl.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
@@ -212,7 +217,7 @@ void AwVulkanContextProvider::EnqueueSecondaryCBSemaphores(
     std::vector<VkSemaphore> semaphores) {
   post_submit_semaphores_.reserve(post_submit_semaphores_.size() +
                                   semaphores.size());
-  base::ranges::copy(semaphores, std::back_inserter(post_submit_semaphores_));
+  std::ranges::copy(semaphores, std::back_inserter(post_submit_semaphores_));
 }
 
 void AwVulkanContextProvider::EnqueueSecondaryCBPostSubmitTask(

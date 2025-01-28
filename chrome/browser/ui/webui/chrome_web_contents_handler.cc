@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

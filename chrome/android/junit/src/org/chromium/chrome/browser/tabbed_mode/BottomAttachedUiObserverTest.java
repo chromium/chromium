@@ -134,7 +134,7 @@ public class BottomAttachedUiObserverTest {
                         Optional.of(mOmniboxSuggestionsVisualState),
                         mAccessorySheetVisualStateSupplier,
                         mInsetObserver);
-        mBottomAttachedUiObserver.onInsetChanged(0, 0, 0, 0);
+        mBottomAttachedUiObserver.onInsetChanged();
 
         mColorChangeObserver = new TestBottomUiObserver();
         mBottomAttachedUiObserver.addObserver(mColorChangeObserver);
@@ -496,7 +496,7 @@ public class BottomAttachedUiObserverTest {
 
         // Navbar is present at the bottom.
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(BOTTOM_NAV_BAR_INSETS);
-        mBottomAttachedUiObserver.onInsetChanged(0, 0, 0, 0);
+        mBottomAttachedUiObserver.onInsetChanged();
         mColorChangeObserver.assertState(null, false, false);
 
         // Show a snackbar to set a color.
@@ -505,12 +505,12 @@ public class BottomAttachedUiObserverTest {
 
         // Shift navbar to the side.
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(SIDE_NAV_BAR_INSETS);
-        mBottomAttachedUiObserver.onInsetChanged(0, 0, 0, 0);
+        mBottomAttachedUiObserver.onInsetChanged();
         mColorChangeObserver.assertState(null, false, false);
 
         // Return navbar to the bottom.
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(BOTTOM_NAV_BAR_INSETS);
-        mBottomAttachedUiObserver.onInsetChanged(0, 0, 0, 0);
+        mBottomAttachedUiObserver.onInsetChanged();
         mColorChangeObserver.assertState(SNACKBAR_COLOR, false, false);
 
         // Hide the snackbar.

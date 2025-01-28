@@ -11,6 +11,7 @@ source_set("glic") {
   sources = [
     "border_view.h",
     "glic_cookie_synchronizer.h",
+    "glic_enabling.h",
     "glic_focused_tab_manager.h",
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
@@ -52,6 +53,7 @@ source_set("impl") {
   sources = [
     "border_view.cc",
     "glic_cookie_synchronizer.cc",
+    "glic_enabling.cc",
     "glic_focused_tab_manager.cc",
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
@@ -70,7 +72,6 @@ source_set("impl") {
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
-    ":enabling",
     ":glic",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
@@ -84,11 +85,13 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views",
     "//chrome/common",
     "//components/favicon/content:content",
     "//components/feature_engagement/public:feature_constants",
     "//components/guest_view/browser",
     "//components/pdf/browser:browser",
+    "//components/pdf/common:constants",
     "//components/sessions",
     "//extensions/browser:browser",
     "//ui/webui",
@@ -114,22 +117,6 @@ mojom("mojo_bindings") {
   ]
 }
 
-source_set("enabling") {
-  sources = [
-    "glic_enabling.cc",
-    "glic_enabling.h",
-  ]
-  deps = [
-    ":glic",
-    "//chrome/browser/profiles:profile",
-    "//components/prefs",
-  ]
-  public_deps = [
-    "//base",
-    "//chrome/common:chrome_features",
-  ]
-}
-
 source_set("test_support") {
   testonly = true
   sources = [
@@ -148,7 +135,6 @@ source_set("unit_tests") {
     "glic_profile_manager_unittest.cc",
   ]
   deps = [
-    ":enabling",
     ":glic",
     "//base/test:test_support",
     "//chrome/browser/ui",

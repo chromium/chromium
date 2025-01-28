@@ -22,6 +22,8 @@ std::string_view GetAISessionTypeName(AIMetrics::AISessionType session_type) {
       return "Rewriter";
     case AIMetrics::AISessionType::kSummarizer:
       return "Summarizer";
+    case AIMetrics::AISessionType::kTranslator:
+      return "Translator";
   }
   NOTREACHED();
 }

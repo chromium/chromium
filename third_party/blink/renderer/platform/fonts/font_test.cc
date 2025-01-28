@@ -152,7 +152,8 @@ TEST_F(FontTest, TextIntercepts) {
   // are rectangles below the baseline.
   UChar ahem_above_below_baseline_string[] = {0xc9, 0x70, 0xc9, 0x70, 0xc9,
                                               0x70, 0xc9, 0x70, 0xc9};
-  TextRun ahem_above_below_baseline(ahem_above_below_baseline_string, 9);
+  TextRun ahem_above_below_baseline{
+      base::span(ahem_above_below_baseline_string)};
   TextRunPaintInfo text_run_paint_info(ahem_above_below_baseline);
   cc::PaintFlags default_paint;
 

@@ -776,26 +776,13 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
         plus_address_delegate->RecordAutofillSuggestionEvent(
             AutofillPlusAddressDelegate::SuggestionEvent::
                 kExistingPlusAddressChosen);
-        const bool did_show_email_suggestion = [this] {
-          const AutofillField* autofill_trigger_field =
-              GetQueriedAutofillField();
-          const bool triggered_on_email_field =
-              autofill_trigger_field &&
-              autofill_trigger_field->Type().group() == FieldTypeGroup::kEmail;
-          // Email suggestions do not have a dedicated suggestion type. Address
-          // suggestions with the email as the main label are generated if the
-          // triggering field type is email.
-          return triggered_on_email_field &&
-                 base::Contains(shown_suggestion_types_,
-                                SuggestionType::kAddressEntry);
-        }();
         plus_address_delegate->DidFillPlusAddress();
         if (trigger_source_ ==
             AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses) {
           manager_->client().TriggerPlusAddressUserPerceptionSurvey(
               plus_addresses::hats::SurveyType::
                   kFilledPlusAddressViaManualFallack);
-        } else if (did_show_email_suggestion) {
+        } else {
           manager_->client().TriggerPlusAddressUserPerceptionSurvey(
               plus_addresses::hats::SurveyType::kDidChoosePlusAddressOverEmail);
         }

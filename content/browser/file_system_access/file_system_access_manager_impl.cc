@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -19,7 +20,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -167,7 +167,9 @@ void ShowFilePickerOnUIThread(
   }
 
   url::Origin embedding_origin = outermost_rfh->GetLastCommittedOrigin();
-  if (embedding_origin != requesting_origin) {
+  if (embedding_origin != requesting_origin &&
+      !GetContentClient()->IsFilePickerAllowedForCrossOriginSubframe(
+          requesting_origin)) {
     // Third party iframes are not allowed to show a file picker.
     std::move(callback).Run(
         file_system_access_error::FromStatus(
@@ -340,7 +342,7 @@ bool IsValidIdChar(const char c) {
 }
 
 bool IsValidId(const std::string& id) {
-  return id.size() <= 32 && base::ranges::all_of(id, &IsValidIdChar);
+  return id.size() <= 32 && std::ranges::all_of(id, &IsValidIdChar);
 }
 
 ui::SelectFileDialog::Type GetSelectFileDialogType(
@@ -1854,7 +1856,7 @@ FileSystemAccessManagerImpl::GetSharedHandleStateForNonSandboxedPath(
     write_grant = permission_context_->GetWritePermissionGrant(
         storage_key.origin(), path_info, handle_type, user_action);
   } else {
-    // Auto-deny all write grants if no permisson context is available, unless
+    // Auto-deny all write grants if no permission context is available, unless
     // Experimental Web Platform features are enabled.
     // TODO(mek): Remove experimental web platform check when permission UI is
     // implemented.

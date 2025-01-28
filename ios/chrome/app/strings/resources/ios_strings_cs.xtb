@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Adresa uložená pouze v tomto zařízení</translation>
 <translation id="1445276840641906250">Všechny vaše karty v jednom prohlížeči</translation>
 <translation id="1450170672351507823">Je zapnutá standardní ochrana. Ještě vyšší zabezpečení poskytuje Pokročilá ochrana.</translation>
-<translation id="1454615514353469963">Hesla, přístupové klíče a další data budou ze Správce hesel Google trvale odstraněna</translation>
 <translation id="1455660774629812862">Neskrývat</translation>
 <translation id="1460751212339734034">Ušetřete čas, pište méně</translation>
 <translation id="1466035273550360103">Žádné otevřené karty</translation>
@@ -476,6 +475,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="3053332585453689122">Odesílá navštívené adresy URL a malý vzorek obsahu stránek, stažených souborů, aktivity rozšíření a systémových informací do Bezpečného prohlížení Google k ověření, zda nejsou škodlivé.</translation>
 <translation id="3055102495753300780">Úložiště informací</translation>
 <translation id="3059270601560379555">Nové vyhledávání</translation>
+<translation id="3064547930554042309">Správa stažených souborů</translation>
 <translation id="3072279342064724558">Heslo už existuje</translation>
 <translation id="3076846064362030967">Z účtu Google odhlášeni nebudete. <ph name="BEGIN_LINK" />Další typy aktivity<ph name="END_LINK" /> se mohou ukládat do vašeho účtu Google, když jste přihlášeni. Můžete je kdykoli smazat.
 
@@ -698,6 +698,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4154753961803534698">Vyhledat pomocí fotoaparátu</translation>
 <translation id="4158491215857439601">Správce hesel</translation>
 <translation id="4163699139741158298">{count,plural, =1{Záložka byla uložena do složky „{title}“. Je uložena pouze na tomto zařízení.}few{Do složky „{title}“ byly uloženy {count} záložky. Jsou uloženy pouze na tomto zařízení.}many{Do složky „{title}“ bylo uloženo {count} záložky. Jsou uloženy pouze na tomto zařízení.}other{Do složky „{title}“ bylo uloženo {count} záložek. Jsou uloženy pouze na tomto zařízení.}}</translation>
+<translation id="4164514562270305824">Automaticky mazat stažené soubory</translation>
 <translation id="4168651806173792090">Účet <ph name="NETWORK_NAME" /> končící na <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Nepovolovat</translation>
 <translation id="4172051516777682613">Vždy zobrazovat</translation>
@@ -1016,6 +1017,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5579012242779565775">Skrýt možnost Seznam četby</translation>
 <translation id="5585019845078534178">Karty</translation>
 <translation id="5595485650161345191">Upravit adresu</translation>
+<translation id="559567008082979829">Nastaví automatické mazání stažených souborů po jednom měsíci.</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="560322036295180549">Vypnuto vaší organizací</translation>
 <translation id="5611107723541161735">Zkratky k webům, které jste na tomto zařízení v poslední době navštívili.</translation>

@@ -16,6 +16,7 @@
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/register_ad_macro_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
+#include "content/services/auction_worklet/report_win_browser_signals_lazy_filler.h"
 #include "content/services/auction_worklet/seller_lazy_filler.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/set_priority_bindings.h"
@@ -126,6 +127,12 @@ void ContextRecycler::AddSellerBrowserSignalsLazyFiller() {
                                                        v8_logger_.get());
 }
 
+void ContextRecycler::AddReportWinBrowserSignalsLazyFiller() {
+  DCHECK(!report_win_browser_signals_lazy_filler_);
+  report_win_browser_signals_lazy_filler_ =
+      std::make_unique<ReportWinBrowserSignalsLazyFiller>(v8_helper_);
+}
+
 void ContextRecycler::EnsureAuctionConfigLazyFillers(size_t required) {
   // We may see different limits in the same worklet if it's used for multiple
   // auctions.  In that case, we have to be sure to never shrink the vector
@@ -167,14 +174,20 @@ v8::Local<v8::Context> ContextRecycler::GetContext() {
 }
 
 void ContextRecycler::ResetForReuse() {
-  for (Bindings* bindings : bindings_list_)
+  for (Bindings* bindings : bindings_list_) {
     bindings->Reset();
-  if (bidding_browser_signals_lazy_filler_)
+  }
+  if (bidding_browser_signals_lazy_filler_) {
     bidding_browser_signals_lazy_filler_->Reset();
-  if (interest_group_lazy_filler_)
+  }
+  if (interest_group_lazy_filler_) {
     interest_group_lazy_filler_->Reset();
+  }
   if (seller_browser_signals_lazy_filler_) {
     seller_browser_signals_lazy_filler_->Reset();
+  }
+  if (report_win_browser_signals_lazy_filler_) {
+    report_win_browser_signals_lazy_filler_->Reset();
   }
   for (const auto& auction_config_lazy_filler : auction_config_lazy_fillers_) {
     auction_config_lazy_filler->Reset();

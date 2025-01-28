@@ -1065,6 +1065,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   inline bool IsAfterContent() const;
   inline bool IsPickerIconContent() const;
   inline bool IsMarkerContent() const;
+  inline bool IsScrollButtonContent() const;
+  inline bool IsScrollMarkerContent() const;
+  inline bool IsScrollButtonOrMarkerContent() const;
   inline bool IsBeforeOrAfterContent() const;
   static inline bool IsAfterContent(const LayoutObject* obj) {
     return obj && obj->IsAfterContent();
@@ -3607,6 +3610,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   LayoutFlowThread* LocateFlowThreadContainingBlock() const;
   void RemoveFromLayoutFlowThreadRecursive(LayoutFlowThread*);
 
+  // Returns `true` if the LayoutObject is for the specified pseudo-element
+  // type.
+  inline bool IsPseudoElementContent(PseudoId pseudo_id) const;
+
   // It's unclear why Clang doesn't inline this.
   ALWAYS_INLINE
   StyleDifference AdjustStyleDifference(StyleDifference) const;
@@ -4168,8 +4175,8 @@ inline bool LayoutObject::DocumentBeingDestroyed() const {
   return GetDocument().Lifecycle().GetState() >= DocumentLifecycle::kStopping;
 }
 
-inline bool LayoutObject::IsCheckContent() const {
-  if (StyleRef().StyleType() != kPseudoIdCheckMark) {
+inline bool LayoutObject::IsPseudoElementContent(PseudoId pseudo_id) const {
+  if (StyleRef().StyleType() != pseudo_id) {
     return false;
   }
   // Text nodes don't have their own styles, so ignore the style on a text node.
@@ -4177,28 +4184,34 @@ inline bool LayoutObject::IsCheckContent() const {
     return false;
   }
   return true;
+}
+
+inline bool LayoutObject::IsCheckContent() const {
+  return IsPseudoElementContent(kPseudoIdCheckMark);
 }
 
 inline bool LayoutObject::IsBeforeContent() const {
-  if (StyleRef().StyleType() != kPseudoIdBefore)
-    return false;
-  // Text nodes don't have their own styles, so ignore the style on a text node.
-  if (IsText() && !IsBR())
-    return false;
-  return true;
+  return IsPseudoElementContent(kPseudoIdBefore);
 }
 
 inline bool LayoutObject::IsAfterContent() const {
-  if (StyleRef().StyleType() != kPseudoIdAfter)
-    return false;
-  // Text nodes don't have their own styles, so ignore the style on a text node.
-  if (IsText() && !IsBR())
-    return false;
-  return true;
+  return IsPseudoElementContent(kPseudoIdAfter);
 }
 
 inline bool LayoutObject::IsPickerIconContent() const {
-  if (StyleRef().StyleType() != kPseudoIdPickerIcon) {
+  return IsPseudoElementContent(kPseudoIdPickerIcon);
+}
+
+inline bool LayoutObject::IsMarkerContent() const {
+  return IsPseudoElementContent(kPseudoIdMarker);
+}
+
+inline bool LayoutObject::IsScrollButtonContent() const {
+  if (StyleRef().StyleType() != kPseudoIdScrollButton &&
+      StyleRef().StyleType() != kPseudoIdScrollButtonBlockStart &&
+      StyleRef().StyleType() != kPseudoIdScrollButtonInlineStart &&
+      StyleRef().StyleType() != kPseudoIdScrollButtonInlineEnd &&
+      StyleRef().StyleType() != kPseudoIdScrollButtonBlockEnd) {
     return false;
   }
   // Text nodes don't have their own styles, so ignore the style on a text node.
@@ -4208,13 +4221,12 @@ inline bool LayoutObject::IsPickerIconContent() const {
   return true;
 }
 
-inline bool LayoutObject::IsMarkerContent() const {
-  if (StyleRef().StyleType() != kPseudoIdMarker)
-    return false;
-  // Text nodes don't have their own styles, so ignore the style on a text node.
-  if (IsText() && !IsBR())
-    return false;
-  return true;
+inline bool LayoutObject::IsScrollMarkerContent() const {
+  return IsPseudoElementContent(kPseudoIdScrollMarker);
+}
+
+inline bool LayoutObject::IsScrollButtonOrMarkerContent() const {
+  return IsScrollButtonContent() || IsScrollMarkerContent();
 }
 
 inline bool LayoutObject::IsBeforeOrAfterContent() const {

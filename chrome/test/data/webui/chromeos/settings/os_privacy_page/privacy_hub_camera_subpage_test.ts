@@ -88,7 +88,7 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
         '#cameraListSection'));
   }
 
-  function getNoCameraTextElement(): HTMLDivElement|null {
+  function getNoCameraTextElement(): HTMLElement|null {
     return privacyHubCameraSubpage.shadowRoot!.querySelector('#noCameraText');
   }
 
@@ -136,7 +136,7 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
         privacyHubCameraSubpage.i18n(
             'privacyHubSensorNameWithBlockedSuffix', 'Fake Camera'),
         privacyHubCameraSubpage.shadowRoot!
-            .querySelector<HTMLDivElement>(
+            .querySelector<HTMLElement>(
                 '#cameraNameWithBlockedSuffix')!.innerText.trim());
   });
 
@@ -299,7 +299,7 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
     }
   });
 
-  function getNoAppHasAccessTextSection(): HTMLDivElement|null {
+  function getNoAppHasAccessTextSection(): HTMLElement|null {
     return privacyHubCameraSubpage.shadowRoot!.querySelector(
         '#noAppHasAccessText');
   }
@@ -390,8 +390,8 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
         '#managePermissionsInChromeRow');
   }
 
-  function getNoWebsiteHasAccessTextRow(): HTMLDivElement|null {
-    return privacyHubCameraSubpage.shadowRoot!.querySelector<HTMLDivElement>(
+  function getNoWebsiteHasAccessTextRow(): HTMLElement|null {
+    return privacyHubCameraSubpage.shadowRoot!.querySelector<HTMLElement>(
         '#noWebsiteHasAccessText');
   }
 

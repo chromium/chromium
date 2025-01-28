@@ -4971,9 +4971,6 @@ crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-border.html [ Fa
 crbug.com/994692 [ Linux ] compositing/reflections/nested-reflection-anchor-point.html [ Failure Pass ]
 crbug.com/994692 [ Win ] compositing/reflections/nested-reflection-anchor-point.html [ Failure Pass ]
 
-crbug.com/996219 [ Win ] virtual/text-antialias/emoji-vertical-origin-visual.html [ Failure ]
-
-
 crbug.com/1000051 media/controls/volume-slider.html [ Failure Pass Timeout ]
 
 # Test for LCP's mouseover heuristics. Tested only under virtual/lcp-mouseover-heuristics.
@@ -6186,6 +6183,8 @@ crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semant
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events-2.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events-2.tentative.html [ Failure ]
+crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-iterate-before-beginning.tentative.html [ Failure ]
+crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-iterate-before-beginning.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/select-keyboard-behavior.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/select-keyboard-behavior.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/select-option-focusable.tentative.html [ Failure ]
@@ -6233,8 +6232,6 @@ crbug.com/362922565 virtual/customizable-select-disabled/external/wpt/html/seman
 crbug.com/362922565 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-type-to-search.tentative.html [ Failure ]
 crbug.com/366415131 external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.tentative.html [ Failure ]
 crbug.com/380466909 virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html [ Failure Pass ]
-# This fails with !owner_->GetDocument().IsSlotAssignmentRecalcForbidden().
-crbug.com/384394713 external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash Failure Timeout ]
 
 ### Tests failing with CSSGapDecorations Enabled:
 crbug.com/357648037 virtual/css-gap-decorations/animations/interpolation/webkit-column-rule-color-interpolation.html [ Crash Failure Timeout ]
@@ -8463,6 +8460,7 @@ crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/block-ellipsis-007.tentative.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/block-ellipsis-008.tentative.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/block-ellipsis-009.tentative.html [ Failure ]
+crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/block-ellipsis-010.html [ Failure ]
 
 # backdrop-filter-mirror-edge
 crbug.com/904592 external/wpt/css/filter-effects/backdrop-filter-svg-blur.html [ Failure ]

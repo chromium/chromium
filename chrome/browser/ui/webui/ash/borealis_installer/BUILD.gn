@@ -4,7 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 mojom("mojo_bindings") {
   sources = [ "borealis_installer.mojom" ]

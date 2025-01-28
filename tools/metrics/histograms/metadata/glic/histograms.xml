@@ -35,6 +35,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.TabContext.PdfContentsRequested" enum="PdfRequestStates"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Recorded whenever the glic web client requests to obtain PDF contents from
+    the focused tab. Records an enum sample that answers a) is the main document
+    a PDF (based on its MIME type) and b) were PDF contents actually found
+    within the web page (only if Chrome's PDF plugin is actually active).
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

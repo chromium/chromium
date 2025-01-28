@@ -110,7 +110,6 @@
 <translation id="143681031165817424">ঠিকনা কেৱল এই ডিভাইচত ছেভ কৰা হৈছে</translation>
 <translation id="1445276840641906250">আপোনাৰ আটাইবোৰ টেব একেটা ব্ৰাউজাৰত</translation>
 <translation id="1450170672351507823">সাধাৰণ সুৰক্ষা অন কৰা আছে। আৰু অধিক সুৰক্ষাৰ বাবে বৰ্ধিত সুৰক্ষা ব্যৱহাৰ কৰক।</translation>
-<translation id="1454615514353469963">পাছৱৰ্ড, পাছকী আৰু আন ডেটা Google Password Managerৰ পৰা স্থায়ীভাৱে মচি পেলোৱা হ’ব</translation>
 <translation id="1455660774629812862">নুলুকুৱাব</translation>
 <translation id="1460751212339734034">সময় ৰাহি কৰক, কমকৈ টাইপ কৰক</translation>
 <translation id="1466035273550360103">কোনো খোলা টেব নাই</translation>
@@ -563,6 +562,7 @@
 <translation id="3517216995152707259">আপোনাৰ ব্ৰাউজিঙৰ ডেটা মচাটোৱে আপোনাক নিজৰ Google একাউণ্টৰ পৰা ছাইন আউট নকৰায়। এনে কৰিবলৈ, <ph name="BEGIN_LINK" />Chromeৰ পৰা ছাইট আউট কৰক<ph name="END_LINK" />।</translation>
 <translation id="3519193562722059437">ৱেব ব্ৰাউজ কৰিবলৈ এটা টেব খোলক।</translation>
 <translation id="3519905498307021260">{count,plural, =1{টেবটো খোলক}one{{count} টা টেব খোলক}other{{count} টা টেব খোলক}}</translation>
+<translation id="3523513363815970085">"আপোনাৰ শীৰ্ষ ছাইটসমূহ" লুকুৱাওক</translation>
 <translation id="3523789730715594198">আপুনি যিকোনো সময়তে ছেটিঙত ছিংক কৰা বন্ধ কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
 <translation id="3527085408025491307">ফ’ল্ডাৰ</translation>
 <translation id="3529024052484145543">সুৰক্ষিত নহয়</translation>
@@ -838,6 +838,7 @@
 <translation id="4769198578611055647">আপোনাক যিকোনো ডিভাইচত ছেভ কৰি থোৱা পাছকীসমূহ এক্সেছ কৰাত সহায় কৰে</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">ইনক’গনিট’ ম’ডত খুলিবনে?</translation>
+<translation id="479208892659046780">আপোনাৰ শীৰ্ষ ছাইটসমূহ</translation>
 <translation id="4792385443586519711">কোম্পানীৰ নাম</translation>
 <translation id="479628432297359449">ডাউনল’ড কৰা বন্ধ কৰিবনে?</translation>
 <translation id="4796496140132859135">টেবৰ গোট। সংকোচন কৰা আছে।</translation>

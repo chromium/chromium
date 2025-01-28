@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Android এপ্ লঞ্চ কৰিবলৈ ডিস্কৰ ঠাই খালী কৰক।</translation>
 <translation id="1033780634303702874">আপোনাৰ ছিৰিয়েল ডিভাইচসমূহ এক্সেছ কৰক</translation>
 <translation id="1034484273907870301">টেবলেট ম’ডৰ বাবে থাম্বনেইল টেবৰ ষ্ট্ৰিপ</translation>
+<translation id="1035289631433631911">Content Transfer সঁজুলি</translation>
 <translation id="1035875743511577452">শিল্পী, প্ৰকৃতি আৰু অধিক দ্বাৰা অনুপ্ৰাণিত থীমসমূহ অন্বেষণ কৰিবলৈ “থীম সলনি কৰক”ত ক্লিক কৰক</translation>
 <translation id="1036348656032585052">অফ কৰক</translation>
 <translation id="1036511912703768636">এই USB ডিভাইচবোৰৰ যিকোনো এটা এক্সেছ কৰক</translation>
@@ -381,6 +382,7 @@
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ইনষ্টল কৰিব পৰা নগ'ল: প্ৰতিচ্ছবিৰ URL <ph name="HTTP_ERROR" /> আসোঁৱাহ ক'ডটোৰ বাবে ডাউনল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="1247372569136754018">মাইক্ৰফ’ন (আভ্যন্তৰীণ)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{১ টা ছাইটৰ বাবে জাননীৰ অনুমতি দিয়া হোৱা নাই}one{{NUM_SITES} টা ছাইটৰ বাবে জাননীৰ অনুমতি দিয়া হোৱা নাই}other{{NUM_SITES} টা ছাইটৰ বাবে জাননীৰ অনুমতি দিয়া হোৱা নাই}}</translation>
+<translation id="125097549534200450">মচক</translation>
 <translation id="1251366534849411931">প্ৰত্যাশিত প্ৰাৰম্ভিক কার্লী ব্ৰাচ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">ম’বাইল ডেটাৰ নেটৱৰ্কৰ বাবে স্কেন কৰি থকা হৈছে...</translation>
 <translation id="125220115284141797">ডিফ’ল্ট</translation>
@@ -5942,6 +5944,7 @@
 <translation id="5177479852722101802">কেমেৰা আৰু মাইক্ৰ'ফ'নৰ এক্সেছ অৱৰোধ কৰাটো অব্যাহত ৰাখক</translation>
 <translation id="5177549709747445269">আপুনি ম’বাইল ডেটা ব্যৱহাৰ কৰি আছে</translation>
 <translation id="5178667623289523808">পূর্বৱর্তীটো বিচাৰক</translation>
+<translation id="5180276433875360121"><ph name="CERT_LIST" /> দেখুৱাওক</translation>
 <translation id="5181140330217080051">ডাউনল’ড হৈ আছে</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" />ৰ বাবে Google পাছৱৰ্ড পৰিচালকলৈ</translation>
 <translation id="5181551096188687373">এই পাছৱৰ্ডটো কেৱল এই ডিভাইচটোত ছেভ কৰা হয়। এইটো আপোনাৰ আন ডিভাইচসমূহত ব্যৱহাৰ কৰিবলৈ, এইটো আপোনাৰ Google একাউণ্ট <ph name="USER_EMAIL" />ত ছেভ কৰক।</translation>
@@ -8536,6 +8539,7 @@
 <translation id="7063311912041006059">কুৱেৰীৰ ঠাইত <ph name="SPECIAL_SYMBOL" /> সহ URL লিখক</translation>
 <translation id="706342288220489463">সহায় কৰিবলৈ আপোনাৰ Assistantক আপোনাৰ স্ক্ৰীনত থকা তথ্য ব্যৱহাৰ কৰাৰ অনুমতি দিয়ক</translation>
 <translation id="70641621694466590">পাছৱৰ্ডৰ পৃষ্ঠালৈ যাওক</translation>
+<translation id="7064209589142995848">Content Transfer</translation>
 <translation id="7064734931812204395">Linux কণ্টেইনাৰটো কনফিগাৰ কৰি থকা হৈছে। এইটোৱে ৩০ মিনিট পৰ্যন্ত সময় লগাব পাৰে।</translation>
 <translation id="7065223852455347715">এই ডিভাইচটো এনেকুৱা এটা ম’ডত লক কৰা হৈছে যিটোৱে এণ্টাৰপ্ৰাইজ পঞ্জীয়নত বাধা দিয়ে।  যদি আপুনি পঞ্জীয়ন কৰাব খোজে তেন্তে প্ৰথমে আপুনি ডিভাইচ পুনৰুদ্ধাৰ কৰিব লাগিব।</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" />ৰ বাবে ১ টা পাছৱৰ্ড <ph name="BRAND" />লৈ আমদানি কৰা হৈছে}one{<ph name="USER_EMAIL" />ৰ বাবে {NUM_PASSWORDS} টা পাছৱৰ্ড <ph name="BRAND" />লৈ আমদানি কৰা হৈছে}other{<ph name="USER_EMAIL" />ৰ বাবে {NUM_PASSWORDS} টা পাছৱৰ্ড <ph name="BRAND" />লৈ আমদানি কৰা হৈছে}}</translation>
@@ -9575,6 +9579,7 @@
 <translation id="7810202088502699111">এই পৃষ্ঠাটোট পপ্-আপ অৱৰোধ কৰা হৈছে।</translation>
 <translation id="7810367892333449285">আপোনাৰ প্ৰৱিষ্টিটোত <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ ঠিকনা<ph name="LPA_2" />$<ph name="LPA_3" />ঐচ্ছিক মিলৰ আইডি<ph name="LPA_4" /> ফৰ্মেটটো থকা উচিত</translation>
 <translation id="7811263553491007091">পুনৰ চেষ্টা কৰক বা তলত পূৰ্বতে সৃষ্টি কৰা থীমসমূহৰ এটাৰ পৰা বাছনি কৰক।</translation>
+<translation id="7811986034759500329">ছিষ্টেমৰ ছেটিঙত ছেট কৰক</translation>
 <translation id="7812170317334653156">Google Calendar লুকুওৱা হৈছে</translation>
 <translation id="7814090115158024843">এই ছাইটসমূহত কেতিয়াও লিখাৰ সহায় আগবঢ়াব নবঢ়াব</translation>
 <translation id="7814458197256864873">&amp;প্ৰতিলিপি কৰক</translation>

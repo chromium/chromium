@@ -308,8 +308,10 @@ std::vector<autofill::Suggestion> CreateFillingSuggestionsV2(
 
     std::vector<std::pair<FieldGlobalId, std::u16string>> values_to_fill;
     for (const std::unique_ptr<AutofillField>& field : form.fields()) {
-      // TODO(crbug.com/389629573): Handle skipping fields that do not match the
-      // triggering field section.
+      // Only fill fields that match the triggering field section.
+      if (field->section() != autofill_field->section()) {
+        continue;
+      }
       autofill::FieldType prediction_for_field_type =
           field->GetAutofillAiServerTypePredictions();
 

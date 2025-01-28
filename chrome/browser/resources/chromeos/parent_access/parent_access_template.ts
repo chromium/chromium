@@ -9,7 +9,8 @@ import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './parent_access_template.html.js';
-import {ParentAccessResult, ParentAccessUiHandlerInterface} from './parent_access_ui.mojom-webui.js';
+import type {ParentAccessUiHandlerInterface} from './parent_access_ui.mojom-webui.js';
+import {ParentAccessResult} from './parent_access_ui.mojom-webui.js';
 import {getParentAccessUiHandler} from './parent_access_ui_handler.js';
 
 /**

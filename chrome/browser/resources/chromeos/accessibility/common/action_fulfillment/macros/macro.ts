@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {TestImportManager} from '../../testing/test_import_manager.js';
-import {Context, ContextChecker} from '../context_checker.js';
+import type {Context, ContextChecker} from '../context_checker.js';
 
 import {MacroName} from './macro_names.js';
 

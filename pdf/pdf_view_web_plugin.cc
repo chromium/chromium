@@ -124,6 +124,7 @@
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "base/memory/raw_ref.h"
 #include "pdf/pdf_ink_ids.h"
+#include "pdf/pdf_ink_metrics_handler.h"
 #include "pdf/pdf_ink_module.h"
 #include "pdf/pdf_ink_module_client.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -2472,6 +2473,14 @@ void PdfViewWebPlugin::RecordDocumentMetrics() {
     return;
 
   metrics_handler_->RecordDocumentMetrics(engine_->GetDocumentMetadata());
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // `metrics_handler_` is only initialized when not in Print Preview, so the
+  // V2 ink annotations load metric will not count Print Preview loads.
+  if (ink_module_) {
+    RecordPdfLoadedWithV2InkAnnotations(engine_->ContainsV2InkPath());
+  }
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 }
 
 void PdfViewWebPlugin::SendAttachments() {

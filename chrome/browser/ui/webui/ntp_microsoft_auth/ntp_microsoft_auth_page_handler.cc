@@ -22,6 +22,10 @@ MicrosoftAuthUntrustedPageHandler::MicrosoftAuthUntrustedPageHandler(
 MicrosoftAuthUntrustedPageHandler::~MicrosoftAuthUntrustedPageHandler() =
     default;
 
+void MicrosoftAuthUntrustedPageHandler::ClearAuthData() {
+  auth_service_->ClearAuthData();
+}
+
 void MicrosoftAuthUntrustedPageHandler::SetAccessToken(
     new_tab_page::mojom::AccessTokenPtr token) {
   auth_service_->SetAccessToken(std::move(token));

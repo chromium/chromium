@@ -4,6 +4,8 @@
 
 #include "fuchsia_web/runners/cast/test/fake_application_config_manager.h"
 
+#include <fuchsia/io/cpp/fidl.h>
+#include <fuchsia/unknown/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 
 #include <optional>
@@ -83,12 +85,12 @@ void FakeApplicationConfigManager::GetConfig(std::string id,
       // Borrow the directory handle to clone it.
       fuchsia::io::DirectorySyncPtr sync_ptr;
       sync_ptr.Bind(std::move(*content_directory.mutable_directory()));
-      fidl::InterfaceHandle<fuchsia::io::Node> node;
-      status = sync_ptr->Clone(fuchsia::io::OpenFlags::CLONE_SAME_RIGHTS,
-                               node.NewRequest());
-      ZX_CHECK(status == ZX_OK, status) << "Clone content directory";
-      entry.set_directory(
-          fidl::InterfaceHandle<fuchsia::io::Directory>(node.TakeChannel()));
+      fidl::InterfaceHandle<fuchsia::io::Directory> cloned;
+      status =
+          sync_ptr->Clone2(fidl::InterfaceRequest<fuchsia::unknown::Cloneable>(
+              cloned.NewRequest().TakeChannel()));
+      ZX_CHECK(status == ZX_OK, status) << "Clone2 content directory";
+      entry.set_directory(std::move(cloned));
       *content_directory.mutable_directory() = sync_ptr.Unbind();
 
       result.mutable_content_directories_for_isolated_application()->push_back(

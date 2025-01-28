@@ -310,6 +310,9 @@
    <message name="IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_SUBTITLE_WITH_EMAIL" desc="The subtitle of the avatar row shown to users who are signed in only to the web">
       To get your passwords and more on all your devices, sign in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_CHANGE_ACCOUNT" desc="The alt-text that corresponds to the down arrow button on the settings page. On clicking the user will a list of accounts they can use to signin with. This button is shown when the user is signed in the content area but not into Chrome.">
+      Choose another account
+  </message>
 
   <!-- Signout Subpage (strings used by the <settings-signout-dialog> element) -->
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_CONFIRM" desc="The text to display on the button to confirm the user wishes to stop syncing.">
@@ -453,7 +456,7 @@
     You reverted to a previous version of ChromeOS. To get updates, wait until the next version is available.
   </message>
 
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <message name="IDS_SETTINGS_THEMES_AND_WALLPAPERS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing themes and wallpapers between multiple browser instances.">
       Theme &amp; Wallpaper
     </message>

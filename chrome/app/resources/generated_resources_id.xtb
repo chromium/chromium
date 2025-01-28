@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Kosongkan ruang disk untuk meluncurkan aplikasi Android.</translation>
 <translation id="1033780634303702874">Mengakses perangkat seri Anda</translation>
 <translation id="1034484273907870301">Tab setrip thumbnail untuk mode tablet</translation>
+<translation id="1035289631433631911">Alat Transfer konten</translation>
 <translation id="1035875743511577452">Klik “Ubah tema” untuk menjelajahi tema yang terinspirasi oleh seniman, alam, dan lainnya</translation>
 <translation id="1036348656032585052">Nonaktifkan</translation>
 <translation id="1036511912703768636">Akses salah satu perangkat USB ini</translation>
@@ -380,6 +381,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1246863218384630739">Tidak dapat menginstal <ph name="VM_NAME" />: URL gambar menampilkan kode error <ph name="HTTP_ERROR" />. Harap hubungi administrator Anda.</translation>
 <translation id="1247372569136754018">Mikrofon (internal)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Notifikasi tidak diizinkan untuk 1 situs}other{Notifikasi tidak diizinkan untuk {NUM_SITES} situs}}</translation>
+<translation id="125097549534200450">hapus</translation>
 <translation id="1251366534849411931">Sepertinya ada kurung kurawal terbuka: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Memindai jaringan data seluler ...</translation>
 <translation id="125220115284141797">Default</translation>
@@ -5945,6 +5947,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5177479852722101802">Terus blokir akses mikrofon dan kamera</translation>
 <translation id="5177549709747445269">Anda menggunakan data seluler</translation>
 <translation id="5178667623289523808">Temukan Sebelumnya</translation>
+<translation id="5180276433875360121">Tampilkan <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">Mendownload</translation>
 <translation id="5181172023548002891">Ke Pengelola Sandi Google untuk <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">Sandi ini hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda, <ph name="USER_EMAIL" />.</translation>
@@ -8538,6 +8541,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7063311912041006059">URL dengan <ph name="SPECIAL_SYMBOL" /> sebagai ganti kueri</translation>
 <translation id="706342288220489463">Izinkan Asisten menggunakan info di layar untuk membantu Anda</translation>
 <translation id="70641621694466590">Buka halaman Sandi</translation>
+<translation id="7064209589142995848">Transfer konten</translation>
 <translation id="7064734931812204395">Mengonfigurasi penampung Linux. Proses ini mungkin memerlukan waktu hingga 30 menit.</translation>
 <translation id="7065223852455347715">Perangkat ini terkunci dalam mode yang mencegah pendaftaran perusahaan.  Jika ingin mendaftarkan perangkat, Anda perlu memulihkan perangkat terlebih dahulu.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 sandi diimpor ke <ph name="BRAND" /> untuk <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} sandi diimpor ke <ph name="BRAND" /> untuk <ph name="USER_EMAIL" />}}</translation>
@@ -9576,6 +9580,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7810202088502699111">Pop-up diblokir di halaman ini.</translation>
 <translation id="7810367892333449285">Entri Anda harus memiliki format <ph name="LPA_0" />$<ph name="LPA_1" />alamat SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID kecocokan opsional<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Coba lagi atau pilih dari salah satu tema yang dibuat sebelumnya di bawah.</translation>
+<translation id="7811986034759500329">Setel di setelan sistem</translation>
 <translation id="7812170317334653156">Google Kalender disembunyikan</translation>
 <translation id="7814090115158024843">Jangan pernah tawarkan bantuan penulisan di situs ini</translation>
 <translation id="7814458197256864873">&amp;Salin</translation>

@@ -4211,7 +4211,7 @@ Node* LayoutObject::NodeForHitTest() const {
   // actually hit the generated content so walk up to the PseudoElement.
   if (const LayoutObject* parent = Parent()) {
     if (parent->IsBeforeOrAfterContent() || parent->IsMarkerContent() ||
-        parent->IsScrollMarker() ||
+        parent->IsScrollButtonOrMarkerContent() ||
         parent->StyleRef().StyleType() == kPseudoIdFirstLetter) {
       for (; parent; parent = parent->Parent()) {
         if (Node* node = parent->GetNode())

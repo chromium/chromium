@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Manzil faqat bu qurilmada saqlangan</translation>
 <translation id="1445276840641906250">Barcha varaqlar yagona brauzerda</translation>
 <translation id="1450170672351507823">Standart himoya yoniq. Yanada kuchli himoyalanish uchun kengaytirilgan himoyadan foydalaning.</translation>
-<translation id="1454615514353469963">Google Parollar menejeridagi parollar, kalitlar va boshqa maʼlumotlar butunlay oʻchirib tashlanadi.</translation>
 <translation id="1455660774629812862">Berkitilmasin</translation>
 <translation id="1460751212339734034">Vaqtni tejang, kamroq yozing</translation>
 <translation id="1466035273550360103">Ochiq varaqlar topilmadi</translation>
@@ -476,6 +475,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="3053332585453689122">Siz tashrif buyurgan URL manzillar va sahifa kontenti, yuklab olishlar, kengaytmalar faoliyati va tizim maʼlumotlarining kichik namunasini ular zararli yoki yoʻqligini tekshirish uchun Google Saytlarni xavfsiz kezish xizmatiga yuboradi.</translation>
 <translation id="3055102495753300780">Axborot hajmi</translation>
 <translation id="3059270601560379555">Yangi qidiruv</translation>
+<translation id="3064547930554042309">Yuklanmalarni boshqarish</translation>
 <translation id="3072279342064724558">Parol allaqachon mavjud</translation>
 <translation id="3076846064362030967">Google hisobingizdan chiqmaysiz. Google hisobingizga kirganingizda <ph name="BEGIN_LINK" />boshqa shakldagi harakatlaringiz<ph name="END_LINK" /> hisobingizga saqlanishi mumkin. Ularni istalgan vaqt oʻchirish mumkin.
 
@@ -698,6 +698,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4154753961803534698">Kamera bilan qidirish</translation>
 <translation id="4158491215857439601">Parollar menejeri</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bukmark "{title}" jildiga saqlandi. U faqat shu qurilmada saqlanadi.}other{{count} ta bukmark "{title}" jildiga saqlandi. Ular faqat shu qurilmada saqlanadi.}}</translation>
+<translation id="4164514562270305824">Yuklanmalarni avtomatik oʻchirish</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> (oxirgi raqamlari <ph name="LAST_FOUR_DIGITS" />)</translation>
 <translation id="4169535189173047238">Rad etish</translation>
 <translation id="4172051516777682613">Doim ko‘rsatilsin</translation>
@@ -1016,6 +1017,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5579012242779565775">Saqlangan sahifalarni yashirish</translation>
 <translation id="5585019845078534178">Bildirgilar</translation>
 <translation id="5595485650161345191">Manzilni o‘zgartirish</translation>
+<translation id="559567008082979829">Yuklanmalar bir oydan keyin oʻchirilsin.</translation>
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
 <translation id="560322036295180549">Tashkilotingiz tomonidan faolsizlantirilgan</translation>
 <translation id="5611107723541161735">Bu qurilmada oxirgi ochilgan saytlarga tezkor tugmalar.</translation>

@@ -11,6 +11,8 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/notifications/notification_permission_context.h"
+#include "chrome/browser/notifications/persistent_notification_handler.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
@@ -556,6 +558,50 @@ IN_PROC_BROWSER_TEST_P(
   // allowlisted the origin.
   EXPECT_FALSE(
       IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    NotificationContentDetectionShowWarningsEnabledBrowserTest,
+    WarningShownWhenUserAllowlistsOriginThenUnsubscribesThenResubscribes) {
+  // Set `ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER` to true for
+  // `kNonAllowlistedUrl`.
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetWebsiteSettingCustomScope(
+          ContentSettingsPattern::FromURLNoWildcard(GURL(kNonAllowlistedUrl)),
+          ContentSettingsPattern::Wildcard(),
+          ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
+          base::Value(base::Value::Dict().Set(kIsAllowlistedByUserKey, true)));
+
+  // Unsubscribe from notifications then re-enable them.
+  std::unique_ptr<NotificationHandler> handler =
+      std::make_unique<PersistentNotificationHandler>();
+  handler->DisableNotifications(browser()->profile(), GURL(kNonAllowlistedUrl));
+  NotificationPermissionContext::UpdatePermission(
+      browser()->profile(), GURL(kNonAllowlistedUrl), CONTENT_SETTING_ALLOW);
+
+  // Display persistent notification.
+  UpdateNotificationContentDetectionModel();
+  blink::PlatformNotificationData data =
+      CreateNotificationData(u"Non-allowlisted title", u"Hello, world!", {});
+  service()->DisplayPersistentNotification(
+      kNotificationId, GURL() /* service_worker_scope */,
+      GURL(kNonAllowlistedUrl), data, blink::NotificationResources());
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester(),
+      "OptimizationGuide.ModelExecutor.ExecutionStatus."
+      "NotificationContentDetection",
+      1);
+  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+
+  // When the suspicious threshold is 0, every non-allowlisted notification is
+  // suspicious.
+  if (GetSuspiciousNotificationThreshold() == "0") {
+    EXPECT_TRUE(
+        IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+  } else {
+    EXPECT_FALSE(
+        IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+  }
 }
 
 }  // namespace safe_browsing

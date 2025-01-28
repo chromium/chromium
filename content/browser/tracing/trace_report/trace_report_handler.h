@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/task/task_runner.h"
 #include "base/token.h"
+#include "build/build_config.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/browser/tracing/trace_report/trace_report.mojom.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
@@ -31,7 +32,8 @@ class CONTENT_EXPORT TraceReportHandler
       mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver,
       mojo::PendingRemote<trace_report::mojom::Page> page,
       TraceUploadList& trace_upload_list,
-      BackgroundTracingManagerImpl& background_tracing_manager);
+      BackgroundTracingManagerImpl& background_tracing_manager,
+      TracingDelegate* tracing_delegate);
 
   TraceReportHandler(const TraceReportHandler&) = delete;
   TraceReportHandler& operator=(const TraceReportHandler&) = delete;
@@ -56,6 +58,14 @@ class CONTENT_EXPORT TraceReportHandler
       GetPrivacyFilterEnabledCallback callback) override;
   void SetPrivacyFilterEnabled(bool enable) override;
 
+#if BUILDFLAG(IS_WIN)
+  void GetSystemTracingState(GetSystemTracingStateCallback callback) override;
+  void GetSecurityShieldIconUrl(
+      GetSecurityShieldIconUrlCallback callback) override;
+  void EnableSystemTracing(EnableSystemTracingCallback callback) override;
+  void DisableSystemTracing(DisableSystemTracingCallback callback) override;
+#endif  // BUILDFLAG(IS_WIN)
+
  private:
   void OnGetAllReportsTaskComplete(GetAllTraceReportsCallback callback,
                                    std::vector<ClientTraceReport> results);
@@ -64,8 +74,9 @@ class CONTENT_EXPORT TraceReportHandler
   mojo::PendingRemote<trace_report::mojom::Page> page_;
 
   // Used to perform actions with on a single trace_report_database instance.
-  raw_ref<TraceUploadList> trace_upload_list_;
-  raw_ref<BackgroundTracingManagerImpl> background_tracing_manager_;
+  const raw_ref<TraceUploadList> trace_upload_list_;
+  const raw_ref<BackgroundTracingManagerImpl> background_tracing_manager_;
+  const raw_ptr<TracingDelegate> tracing_delegate_;
 
   base::WeakPtrFactory<TraceReportHandler> weak_factory_{this};
 };

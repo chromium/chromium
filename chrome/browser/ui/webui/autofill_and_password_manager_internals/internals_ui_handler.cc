@@ -12,7 +12,8 @@
 #include "chrome/common/channel_info.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/embedder_support/user_agent_utils.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/autofill_and_password_manager_internals_resources.h"
+#include "components/grit/autofill_and_password_manager_internals_resources_map.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
@@ -39,9 +40,10 @@ void CreateAndAddInternalsHTMLSource(Profile* profile,
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");
-  source->AddResourcePath("autofill_and_password_manager_internals.js",
-                          IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_JS);
-  source->SetDefaultResource(IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_HTML);
+  source->AddResourcePaths(kAutofillAndPasswordManagerInternalsResources);
+  source->AddResourcePath(
+      "",
+      IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_HTML);
   // Data strings:
   source->AddString(version_ui::kVersion,
                     std::string(version_info::GetVersionNumber()));

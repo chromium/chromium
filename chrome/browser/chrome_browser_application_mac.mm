@@ -156,6 +156,14 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   cocoa_l10n_util::ApplyForcedRTL();
 }
 
+- (void)orderFrontCharacterPalette:sender {
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:@"ChromeWillOrderFrontCharacterPalette"
+                    object:nil];
+
+  [super orderFrontCharacterPalette:sender];
+}
+
 // Initialize NSApplication using the custom subclass.  Check whether NSApp
 // was already initialized using another class, because that would break
 // some things.

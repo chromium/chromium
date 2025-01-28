@@ -563,16 +563,6 @@ void CorsURLLoader::SetPriority(net::RequestPriority priority,
     network_loader_->SetPriority(priority, intra_priority_value);
 }
 
-void CorsURLLoader::PauseReadingBodyFromNet() {
-  if (network_loader_)
-    network_loader_->PauseReadingBodyFromNet();
-}
-
-void CorsURLLoader::ResumeReadingBodyFromNet() {
-  if (network_loader_)
-    network_loader_->ResumeReadingBodyFromNet();
-}
-
 void CorsURLLoader::OnReceiveEarlyHints(mojom::EarlyHintsPtr early_hints) {
   DCHECK(network_loader_);
   DCHECK(forwarding_client_);

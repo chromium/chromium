@@ -8,12 +8,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/win/access_token.h"
 #include "base/win/security_util.h"
 #include "sandbox/win/src/acl.h"
@@ -118,7 +118,7 @@ std::vector<base::win::Sid> RestrictedToken::BuildDenyOnlySids(
       if (group.IsIntegrity() || group.IsLogonId()) {
         continue;
       }
-      if (base::ranges::find(add_all_exceptions_, group.GetSid()) ==
+      if (std::ranges::find(add_all_exceptions_, group.GetSid()) ==
           add_all_exceptions_.end()) {
         sids.push_back(group.GetSid().Clone());
       }

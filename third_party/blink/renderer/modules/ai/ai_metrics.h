@@ -18,9 +18,10 @@ class AIMetrics {
     kWriter = 1,
     kRewriter = 2,
     kSummarizer = 3,
-    kMaxValue = kSummarizer,
+    kTranslator = 4,
+    kMaxValue = kTranslator,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/histogram.xml:SessionType)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/histograms.xml:SessionType)
 
   // This class contains all the model execution API supported.
   // These values are persisted to logs. Entries should not be renumbered and

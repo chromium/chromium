@@ -431,7 +431,8 @@ const BookmarkNode* BookmarksCreateFunction::CreateBookmarkNode(
 
   if (!details.parent_id) {
     // Optional, default to "other bookmarks".
-    parent_id = model->other_node()->id();
+    parent_id = model->account_other_node() ? model->account_other_node()->id()
+                                            : model->other_node()->id();
   } else if (!base::StringToInt64(*details.parent_id, &parent_id)) {
     *error = bookmarks_errors::kInvalidIdError;
     return nullptr;

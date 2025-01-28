@@ -22,7 +22,7 @@
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './common_styles/oobe_common_styles.css.js';
 
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './hd_iron_icon.html.js';

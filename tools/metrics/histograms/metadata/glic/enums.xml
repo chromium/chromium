@@ -24,6 +24,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- Enum types -->
 
-<enums/>
+<enums>
+
+<enum name="PdfRequestStates">
+  <int value="0" label="PDF main doc; PDF found"/>
+  <int value="1" label="PDF main doc; PDF not found"/>
+  <int value="2" label="Non-PDF main doc; PDF found"/>
+  <int value="3" label="Non-PDF main doc; PDF not found"/>
+</enum>
+
+</enums>
 
 </histogram-configuration>

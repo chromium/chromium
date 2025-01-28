@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import type {DismissModuleInstanceEvent, OutlookCalendarModuleElement} from 'chrome://new-tab-page/lazy_load.js';
-import {outlookCalendarDescriptor, OutlookCalendarProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import {outlookCalendarDescriptor, OutlookCalendarProxyImpl, ParentTrustedDocumentProxy} from 'chrome://new-tab-page/lazy_load.js';
+import {MicrosoftAuthUntrustedDocumentRemote} from 'chrome://new-tab-page/ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import {OutlookCalendarPageHandlerRemote} from 'chrome://new-tab-page/outlook_calendar.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -16,6 +17,7 @@ import {createEvents} from './test_support.js';
 
 suite('NewTabPageModulesOutlookCalendarModuleTest', () => {
   const title = 'Outlook Calendar';
+  let childDocument: TestMock<MicrosoftAuthUntrustedDocumentRemote>;
   let handler: TestMock<OutlookCalendarPageHandlerRemote>;
   let module: OutlookCalendarModuleElement;
 
@@ -28,6 +30,9 @@ suite('NewTabPageModulesOutlookCalendarModuleTest', () => {
         OutlookCalendarPageHandlerRemote,
         mock => OutlookCalendarProxyImpl.setInstance(
             new OutlookCalendarProxyImpl(mock)));
+    childDocument = installMock(
+        MicrosoftAuthUntrustedDocumentRemote,
+        mock => ParentTrustedDocumentProxy.setInstance(mock));
   });
 
   test(`creates module`, async () => {
@@ -76,5 +81,25 @@ suite('NewTabPageModulesOutlookCalendarModuleTest', () => {
     // Restore module.
     event.detail.restoreCallback!();
     assertEquals(1, handler.getCallCount('restoreModule'));
+  });
+
+  test('clicking the sign out button sends sign out request', async () => {
+    // Arrange.
+    handler.setResultFor(
+        'getEvents', Promise.resolve({events: createEvents(1)}));
+    module = await outlookCalendarDescriptor.initialize(0) as
+        OutlookCalendarModuleElement;
+    assertTrue(!!module);
+    document.body.append(module);
+
+    // Act.
+    const signoutButton =
+        module.$.moduleHeaderElementV2.shadowRoot!.querySelector<HTMLElement>(
+            '#signout');
+    assertTrue(!!signoutButton);
+    signoutButton.click();
+
+    // Assert.
+    assertEquals(1, childDocument.getCallCount('signOut'));
   });
 });

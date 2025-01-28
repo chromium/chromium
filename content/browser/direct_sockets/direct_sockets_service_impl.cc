@@ -132,7 +132,7 @@ bool ShouldOpenFirewallHole(const net::IPAddress& address) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool RequiresPrivateNetworkAccess(const net::AddressList& addresses) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       addresses.endpoints(), [](const net::IPEndPoint& ip_endpoint) {
         return network::IPAddressToIPAddressSpace(ip_endpoint.address()) ==
                network::mojom::IPAddressSpace::kPrivate;

@@ -8,7 +8,10 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace metrics_util = password_manager::metrics_util;
 
 PrivacyNoticeBubbleViewController::PrivacyNoticeBubbleViewController(
     base::WeakPtr<PasswordsModelDelegate> delegate)
@@ -29,14 +32,18 @@ std::u16string PrivacyNoticeBubbleViewController::GetTitle() const {
 }
 
 void PrivacyNoticeBubbleViewController::ReportInteractions() {
-  // TODO(crbug.com/381053884): Report metrics.
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordChange.PrivacyNoticeBubble", dismissal_reason_,
+      metrics_util::NUM_UI_RESPONSES);
 }
 
 void PrivacyNoticeBubbleViewController::AcceptNotice() {
+  dismissal_reason_ = metrics_util::CLICKED_ACCEPT;
   password_change_delegate_->OnPrivacyNoticeAccepted();
 }
 
 void PrivacyNoticeBubbleViewController::Cancel() {
+  dismissal_reason_ = metrics_util::CLICKED_CANCEL;
   CHECK(password_change_delegate_);
   password_change_delegate_->Stop();
 }

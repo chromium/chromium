@@ -11,7 +11,7 @@ import {constants} from '/common/constants.js';
 import {Cursor} from '/common/cursors/cursor.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {ISearchHandler} from './i_search_handler.js';
+import type {ISearchHandler} from './i_search_handler.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
 import Dir = constants.Dir;

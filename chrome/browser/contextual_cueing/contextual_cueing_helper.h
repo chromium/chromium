@@ -13,6 +13,8 @@ class OptimizationGuideKeyedService;
 
 namespace contextual_cueing {
 
+class ContextualCueingService;
+
 class ContextualCueingHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ContextualCueingHelper> {
@@ -25,7 +27,7 @@ class ContextualCueingHelper
   ContextualCueingHelper& operator=(const ContextualCueingHelper&) = delete;
   ~ContextualCueingHelper() override;
 
-  // content::WebContentsObserver
+  // content::WebContentsObserver:
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   const std::string& last_navigation_cue_label() const {
@@ -34,13 +36,23 @@ class ContextualCueingHelper
 
  private:
   ContextualCueingHelper(content::WebContents* contents,
-                         OptimizationGuideKeyedService* ogks);
+                         OptimizationGuideKeyedService* ogks,
+                         ContextualCueingService* ccs);
 
+  // Not owned and guaranteed to outlive `this`.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
       nullptr;
 
+  // Not owned and guaranteed to outlive `this`.
+  raw_ptr<ContextualCueingService> contextual_cueing_service_ = nullptr;
+
   // Holds the cue label for the last navigation in `this`.
   std::string last_navigation_cue_label_;
+
+  // A counter for how many subsequent page load events will be prevented from
+  // showing a nudge. This is to limit the frequency at which consecutive page
+  // loads can trigger nudges.
+  int remaining_quiet_loads_ = 0;
 
   friend WebContentsUserData<ContextualCueingHelper>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();

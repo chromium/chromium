@@ -7,10 +7,10 @@
 #include "content/public/common/content_client.h"
 
 namespace content {
-// static
-bool IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
-    BrowserContext* browser_context) {
+
+bool AreIsolatedWebAppsEnabled(BrowserContext* browser_context) {
   return GetContentClient()->browser()->AreIsolatedWebAppsEnabled(
       browser_context);
 }
+
 }  // namespace content

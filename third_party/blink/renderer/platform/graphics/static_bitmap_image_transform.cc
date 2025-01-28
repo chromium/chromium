@@ -13,6 +13,7 @@
 
 #include <utility>
 
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
@@ -262,7 +263,8 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
     // If not (or if the SharedImage provider fails), fall back to software.
     if (!resource_provider) {
       resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-          gfx::Size(dest_size.width(), dest_size.height()), dest_color_type,
+          gfx::Size(dest_size.width(), dest_size.height()),
+          viz::SkColorTypeToSinglePlaneSharedImageFormat(dest_color_type),
           dest_alpha_type,
           SkColorSpaceToGfxColorSpace(std::move(dest_color_space)),
           kShouldInitialize);

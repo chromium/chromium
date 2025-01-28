@@ -1951,7 +1951,7 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
     base::UmaHistogramBoolean(
         "Accessibility.CrosCursorColor",
         prefs->GetInteger(prefs::kAccessibilityCursorColor) !=
-            static_cast<int>(kDefaultCursorColor));
+            static_cast<int>(ui::kDefaultCursorColor));
 
     bool color_correction_enabled = IsColorCorrectionEnabled();
     base::UmaHistogramBoolean("Accessibility.CrosColorCorrection",

@@ -19,7 +19,7 @@ using Availability = policy::DeveloperToolsPolicyHandler::Availability;
 }
 
 bool IsIwaDevModeEnabled(Profile* profile) {
-  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile)) {
+  if (!content::AreIsolatedWebAppsEnabled(profile)) {
     return false;
   }
 
@@ -39,7 +39,7 @@ bool IsIwaDevModeEnabled(Profile* profile) {
 }
 
 bool IsIwaUnmanagedInstallEnabled(Profile* profile) {
-  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile)) {
+  if (!content::AreIsolatedWebAppsEnabled(profile)) {
     return false;
   }
 

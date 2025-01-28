@@ -88,6 +88,16 @@ struct SceneStateData {
   [_observers removeObserver:observer];
 }
 
+- (void)setUICurrentlySupportsPromo:(BOOL)UICurrentlySupportsPromo {
+  if (_UICurrentlySupportsPromo == UICurrentlySupportsPromo) {
+    return;
+  }
+
+  _UICurrentlySupportsPromo = UICurrentlySupportsPromo;
+
+  [self updatePromoState];
+}
+
 #pragma mark - Private
 
 - (BOOL)navigationOccuredInWebState:(web::WebState*)webState
@@ -177,6 +187,11 @@ struct SceneStateData {
 
 // Checks if the promo can be displayed on all currently active pages.
 - (BOOL)promoIsSuppressedOnCurrentURLs {
+  // There must be at least one active URL to have a promo.
+  if (_lastNavigatedURLs.size() == 0) {
+    return true;
+  }
+
   for (const auto& [webStateID, url] : _lastNavigatedURLs) {
     if (IsUrlNtp(url) || google_util::IsGoogleSearchUrl(url)) {
       return true;
@@ -187,23 +202,39 @@ struct SceneStateData {
 
 // Updates the promo state based on the current active URLs.
 - (void)updatePromoState {
+  if (!self.UICurrentlySupportsPromo) {
+    [self ensurePromoHidden];
+    return;
+  }
+
   if (self.promoCurrentlyShown) {
     // Check if session is over.
     if (IsChromeLikelyDefaultBrowser() ||
         [self promoIsSuppressedOnCurrentURLs] ||
         _sessionDisplayCount >=
             kDefaultBrowserBannerPromoImpressionLimit.Get()) {
+      _sessionDisplayCount = 0;
       [self ensurePromoHidden];
       return;
     }
     _sessionDisplayCount += 1;
   } else {
-    // Check if session should begin.
+    // Check if promo can show.
     if (IsChromeLikelyDefaultBrowser() ||
         [self promoIsSuppressedOnCurrentURLs]) {
+      _sessionDisplayCount = 0;
       return;
     }
 
+    // If there's already an in progress session, just show the promo. This
+    // could happen when `UICurrentlySupportsPromo` is toggled.
+    if (_sessionDisplayCount > 0) {
+      _sessionDisplayCount += 1;
+      [self ensurePromoShown];
+      return;
+    }
+
+    // Check if session should begin.
     feature_engagement::Tracker* engagementTracker =
         feature_engagement::TrackerFactory::GetForProfile(
             _mainProfileState.profile);

@@ -1321,8 +1321,7 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::ClipDistances:
     case wgpu::FeatureName::DualSourceBlending:
     case wgpu::FeatureName::DawnMultiPlanarFormats:
-    case wgpu::FeatureName::Subgroups:
-    case wgpu::FeatureName::SubgroupsF16: {
+    case wgpu::FeatureName::Subgroups: {
       // Likely case when no features are blocked.
       if (runtime_unsafe_features_.empty() ||
           safety_level_ == webgpu::SafetyLevel::kUnsafe) {

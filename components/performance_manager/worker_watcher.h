@@ -26,7 +26,6 @@ namespace performance_manager {
 
 class FrameNodeImpl;
 class FrameNodeSource;
-class ProcessNodeSource;
 class WorkerNodeImpl;
 
 // This class keeps track of running workers of all types for a single browser
@@ -61,7 +60,6 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
                 content::DedicatedWorkerService* dedicated_worker_service,
                 content::SharedWorkerService* shared_worker_service,
                 ServiceWorkerContextAdapter* service_worker_context_adapter,
-                ProcessNodeSource* process_node_source,
                 FrameNodeSource* frame_node_source);
 
   WorkerWatcher(const WorkerWatcher&) = delete;
@@ -221,9 +219,6 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   base::ScopedObservation<ServiceWorkerContextAdapter,
                           content::ServiceWorkerContextObserver>
       service_worker_context_adapter_observation_{this};
-
-  // Used to retrieve an existing process node from its render process ID.
-  const raw_ptr<ProcessNodeSource> process_node_source_;
 
   // Used to retrieve an existing frame node from its render process ID and
   // frame ID. Also allows to subscribe to a frame's deletion notification.

@@ -396,6 +396,10 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // `ApplyStroke()`. Virtual to support testing.
   virtual void DiscardStroke(int page_index, InkStrokeId id);
 
+  // Returns whether any of the pages contains a "V2" path created by Ink.
+  // Virtual to support testing.
+  virtual bool ContainsV2InkPath() const;
+
   // Loads "V2" Ink paths from a page in the PDF identified by `page_index`. The
   // `page_index` must be in bounds.
   //

@@ -5,6 +5,8 @@
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/time/default_tick_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/media_engagement_service.h"
@@ -35,7 +37,8 @@ AutoPictureInPictureTabHelper::AutoPictureInPictureTabHelper(
       auto_blocker_(PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
       media_engagement_service_(MediaEngagementService::Get(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
+      clock_(base::DefaultTickClock::GetInstance()) {
   // `base::Unretained` is safe here since we own `tab_strip_observer_helper_`.
   tab_strip_observer_helper_ =
       std::make_unique<AutoPictureInPictureTabStripObserverHelper>(
@@ -79,6 +82,34 @@ void AutoPictureInPictureTabHelper::PrimaryPageChanged(content::Page& page) {
   StopAndResetAsyncTasks();
 }
 
+void AutoPictureInPictureTabHelper::MaybeRecordPictureInPictureChanged(
+    bool is_picture_in_picture) {
+  if (is_picture_in_picture) {
+    current_enter_pip_time_ = clock_->NowTicks();
+    return;
+  }
+
+  if (!current_enter_pip_time_) {
+    return;
+  }
+
+  base::TimeDelta total_pip_time =
+      clock_->NowTicks() - current_enter_pip_time_.value();
+  current_enter_pip_time_ = std::nullopt;
+
+  if (IsUsingCameraOrMicrophone()) {
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+        "VideoConferencing.TotalTime",
+        total_pip_time, base::Milliseconds(1), base::Minutes(2), 50);
+  } else if (MeetsVideoPlaybackConditions()) {
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+        "MediaPlayback.TotalTime",
+        total_pip_time, base::Milliseconds(1), base::Minutes(2), 50);
+  }
+}
+
 void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
     bool is_in_picture_in_picture) {
   if (is_in_picture_in_picture_ == is_in_picture_in_picture) {
@@ -88,6 +119,7 @@ void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
 
   if (!is_in_picture_in_picture_) {
     is_in_auto_picture_in_picture_ = false;
+    MaybeRecordPictureInPictureChanged(false);
     MaybeStartOrStopObservingTabStrip();
     return;
   }
@@ -192,6 +224,7 @@ void AutoPictureInPictureTabHelper::MaybeEnterAutoPictureInPicture() {
   auto_picture_in_picture_activation_time_ =
       base::TimeTicks::Now() + blink::kActivationLifespan;
   content::MediaSession::Get(web_contents())->EnterAutoPictureInPicture();
+  MaybeRecordPictureInPictureChanged(true);
 }
 
 void AutoPictureInPictureTabHelper::MaybeScheduleAsyncTasks() {
@@ -229,6 +262,7 @@ void AutoPictureInPictureTabHelper::StopAndResetAsyncTasks() {
 }
 
 void AutoPictureInPictureTabHelper::MaybeExitAutoPictureInPicture() {
+  MaybeRecordPictureInPictureChanged(false);
   StopAndResetAsyncTasks();
 
   if (!is_in_auto_picture_in_picture_) {

@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/clipboard_host_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -406,8 +406,8 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
   // paths.
   std::vector<base::FilePath> paths;
   paths.reserve(filenames.size());
-  base::ranges::transform(filenames, std::back_inserter(paths),
-                          [](const ui::FileInfo& info) { return info.path; });
+  std::ranges::transform(filenames, std::back_inserter(paths),
+                         [](const ui::FileInfo& info) { return info.path; });
   ClipboardPasteData clipboard_paste_data;
   clipboard_paste_data.file_paths = std::move(paths);
 

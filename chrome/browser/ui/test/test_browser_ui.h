@@ -9,7 +9,6 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/test/skia_gold_matching_algorithm.h"

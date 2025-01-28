@@ -3427,6 +3427,16 @@ void GridLayoutAlgorithm::PlaceGridItems(
     }
   }
 
+  // Build geometry for the gaps within this fragment.
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+      Style().HasColumnRule()) {
+    GapFragmentData::GapGeometry* gap_geometry =
+        MakeGarbageCollected<GapFragmentData::GapGeometry>();
+    BuildGapGeometry(kForColumns, layout_data, gap_geometry);
+    BuildGapGeometry(kForRows, layout_data, gap_geometry);
+    container_builder_.SetGapGeometry(gap_geometry);
+  }
+
   // Propagate the baselines.
   if (layout_data.Rows().HasBaselines()) {
     baseline_accumulator.AccumulateRows(layout_data.Rows());
@@ -3905,6 +3915,23 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
   if (fragmentainer_space != kIndefiniteSize) {
     *offset_in_stitched_container += fragmentainer_space;
+  }
+}
+
+void GridLayoutAlgorithm::BuildGapGeometry(
+    GridTrackSizingDirection track_direction,
+    const GridLayoutData& layout_data,
+    GapFragmentData::GapGeometry* gap_geometry) const {
+  const auto tracks =
+      LayoutGrid::ComputeExpandedPositions(&layout_data, track_direction);
+  const auto& gutter_size = track_direction == kForColumns
+                                ? layout_data.Columns().GutterSize()
+                                : layout_data.Rows().GutterSize();
+  for (wtf_size_t i = 1; i < tracks.size() - 1; ++i) {
+    GapFragmentData::GapBoundary gap_boundary(
+        /*index=*/i, /*start_offset=*/tracks[i] - gutter_size,
+        /*end_offset=*/tracks[i]);
+    gap_geometry->AddGapBoundary(track_direction, gap_boundary);
   }
 }
 

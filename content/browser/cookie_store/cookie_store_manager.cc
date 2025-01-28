@@ -4,12 +4,12 @@
 
 #include "content/browser/cookie_store/cookie_store_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -232,7 +232,7 @@ void CookieStoreManager::AddSubscriptions(
     auto new_subscription = std::make_unique<CookieChangeSubscription>(
         std::move(mojo_subscription), service_worker_registration->id());
 
-    auto existing_subscription_it = base::ranges::find(
+    auto existing_subscription_it = std::ranges::find(
         subscriptions, *new_subscription,
         &std::unique_ptr<CookieChangeSubscription>::operator*);
     if (existing_subscription_it == subscriptions.end())
@@ -330,7 +330,7 @@ void CookieStoreManager::RemoveSubscriptions(
   }
 
   for (auto& subscription : all_subscriptions) {
-    auto target_subscription_it = base::ranges::find(
+    auto target_subscription_it = std::ranges::find(
         target_subscriptions, *subscription,
         &std::unique_ptr<CookieChangeSubscription>::operator*);
     if (target_subscription_it == target_subscriptions.end()) {

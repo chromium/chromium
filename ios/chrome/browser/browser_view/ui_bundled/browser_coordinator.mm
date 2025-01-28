@@ -17,6 +17,8 @@
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/feature_utils.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -2225,7 +2227,8 @@ enum class ToolbarKind {
 }
 
 - (BOOL)navigateBackWithAnimationIfNeeded {
-  if (!IsLensOverlaySameTabNavigationEnabled()) {
+  if (!IsLensOverlaySameTabNavigationEnabled() ||
+      IsCompactHeight(self.viewController)) {
     return NO;
   }
 
@@ -3027,8 +3030,9 @@ enum class ToolbarKind {
     return;
   }
   ProfileIOS* profile = self.browser->GetProfile();
-  if (!commerce::ShoppingServiceFactory::GetForProfile(profile)
-           ->IsParcelTrackingEligible()) {
+  if (!commerce::IsParcelTrackingEligible(
+          commerce::ShoppingServiceFactory::GetForProfile(profile)
+              ->GetAccountChecker())) {
     return;
   }
   if (step == ParcelTrackingStep::kNewPackageTracked) {

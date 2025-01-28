@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Osoite on tallennettu vain tälle laitteelle</translation>
 <translation id="1445276840641906250">Kaikki välilehdet yhdessä selaimessa</translation>
 <translation id="1450170672351507823">Perustason suojaus on päällä. Käytä parannettua suojausta, jos haluat lisäsuojaa.</translation>
-<translation id="1454615514353469963">Salasanat, avainkoodit ja muu data poistetaan pysyvästi Google Salasanoista</translation>
 <translation id="1455660774629812862">Älä piilota</translation>
 <translation id="1460751212339734034">Säästä aikaa ja kirjoita vähemmän</translation>
 <translation id="1466035273550360103">Ei avoimia välilehtiä</translation>
@@ -476,6 +475,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="3053332585453689122">Lähettää avaamasi URL-osoitteet ja pienen näytteen sivun sisällöstä, latauksista, laajennustoiminnasta ja järjestelmätiedoista Googlen selaussuojalle tarkistaakseen, ovatko ne haitallisia.</translation>
 <translation id="3055102495753300780">Tietojen tallennustila</translation>
 <translation id="3059270601560379555">Uusi haku</translation>
+<translation id="3064547930554042309">Latausvalinnat</translation>
 <translation id="3072279342064724558">Salasana on jo olemassa</translation>
 <translation id="3076846064362030967">Sinua ei kirjata ulos Google-tililtäsi. <ph name="BEGIN_LINK" />Muita toimintoja<ph name="END_LINK" /> voidaan tallentaa Google-tilillesi, kun olet kirjautuneena sisään. Voit poistaa niitä koska vain.
 
@@ -562,6 +562,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3517216995152707259">Selausdatan poistaminen ei kirjaa sinua ulos Google-tililtäsi. <ph name="BEGIN_LINK" />Kirjaudu ulos Chromesta<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Avaa välilehti selailua varten.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Avaa välilehti}other{Avaa {count} välilehteä}}</translation>
+<translation id="3523513363815970085">Piilota "Suosituimmat sivustot"</translation>
 <translation id="3523789730715594198">Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="3527085408025491307">Kansio</translation>
 <translation id="3529024052484145543">Ei turvallinen</translation>
@@ -698,6 +699,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4154753961803534698">Hae kameralla</translation>
 <translation id="4158491215857439601">Salasanat</translation>
 <translation id="4163699139741158298">{count,plural, =1{Kirjanmerkki tallennettu tänne: "{title}". Se tallennetaan vain tälle laitteelle.}other{{count} kirjanmerkkiä tallennettu tänne: "{title}". Ne tallennetaan vain tälle laitteelle.}}</translation>
+<translation id="4164514562270305824">Poista lataukset automaattisesti</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, jonka lopussa on <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Älä salli</translation>
 <translation id="4172051516777682613">Näytä aina</translation>
@@ -836,6 +838,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4769198578611055647">Auttaa sinua käyttämään tallennettuja avainkoodeja kaikilla laitteilla</translation>
 <translation id="4787847736989526091"><ph name="VALUE" /> klo <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Avataanko incognito-tilassa?</translation>
+<translation id="479208892659046780">Suosituimmat sivustot</translation>
 <translation id="4792385443586519711">Yrityksen nimi</translation>
 <translation id="479628432297359449">Pysäytetäänkö lataus?</translation>
 <translation id="4796496140132859135">Välilehtiryhmä. Tiivistetty.</translation>
@@ -1016,6 +1019,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5579012242779565775">Piilota "Lukulista"</translation>
 <translation id="5585019845078534178">Kortit</translation>
 <translation id="5595485650161345191">Osoitteen muokkaus</translation>
+<translation id="559567008082979829">Valitse, että lataukset poistetaan kuukauden kuluttua.</translation>
 <translation id="5596627076506792578">Lisäasetukset</translation>
 <translation id="560322036295180549">Organisaatiosi on laittanut tämän pois päältä</translation>
 <translation id="5611107723541161735">Lyhytreittejä sivustoille, joilla olet käynyt viime aikoina tällä laitteella.</translation>

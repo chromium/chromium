@@ -13,7 +13,7 @@
 namespace ash::demo_mode {
 
 namespace {
-bool g_should_fall_back_mgs = false;
+bool g_force_enable_demo_account_sign_in = false;
 }
 
 bool IsDeviceInDemoMode() {
@@ -45,13 +45,13 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                std::string());
 }
 
-bool ShouldFallBackToMGS() {
-  // Always fall back to MGS if demo mode sign in not enable.
-  return !features::IsDemoModeSignInEnabled() || g_should_fall_back_mgs;
+void SetForceEnableDemoAccountSignIn(bool force_enabled) {
+  g_force_enable_demo_account_sign_in = force_enabled;
 }
 
-void SetShouldFallBackMGS(bool should_fall_back_mgs) {
-  g_should_fall_back_mgs = should_fall_back_mgs;
+bool IsDemoAccountSignInEnabled() {
+  return IsDeviceInDemoMode() && (features::IsDemoModeSignInEnabled() ||
+                                  g_force_enable_demo_account_sign_in);
 }
 
 void SetDoNothingWhenPowerIdle() {
@@ -60,7 +60,7 @@ void SetDoNothingWhenPowerIdle() {
 }
 
 bool ForceSessionLengthCountFromSessionStarts() {
-  return IsDeviceInDemoMode() && features::IsDemoModeSignInEnabled();
+  return IsDemoAccountSignInEnabled();
 }
 
 }  // namespace ash::demo_mode

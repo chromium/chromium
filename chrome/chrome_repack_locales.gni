@@ -24,11 +24,13 @@ template("chrome_repack_locales") {
 
     # Each input pak file should also have a deps line.
     source_patterns = [
+      "${root_gen_dir}/chrome/branded_strings_",
       "${root_gen_dir}/chrome/generated_resources_",
       "${root_gen_dir}/chrome/locale_settings_",
       "${root_gen_dir}/chrome/platform_locale_settings_",
       "${root_gen_dir}/components/omnibox/resources/omnibox_pedal_synonyms_",
       "${root_gen_dir}/components/plus_addresses/resources/strings/plus_addresses_strings_",
+      "${root_gen_dir}/components/strings/components_branded_strings_",
       "${root_gen_dir}/components/strings/components_locale_settings_",
       "${root_gen_dir}/components/strings/components_strings_",
       "${root_gen_dir}/components/strings/privacy_sandbox_strings_",
@@ -115,11 +117,6 @@ template("chrome_repack_locales") {
       source_patterns += [ "${root_gen_dir}/chrome/browser/nearby_sharing/internal/resources/nearby_share_internal_strings_" ]
       deps += [ "//chrome/browser/nearby_sharing/internal/resources:nearby_share_internal_strings" ]
     }
-
-    source_patterns += [
-      "${root_gen_dir}/chrome/${branding_path_product}_strings_",
-      "${root_gen_dir}/components/strings/components_${branding_path_product}_strings_",
-    ]
 
     if (defined(invoker.additional_source_patterns)) {
       source_patterns += invoker.additional_source_patterns

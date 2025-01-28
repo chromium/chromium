@@ -87,7 +87,9 @@ public class SharedImageTilesCoordinator {
     }
 
     /** Cleans up any resources or observers this class used. */
-    public void destroy() {}
+    public void destroy() {
+        resetTracker();
+    }
 
     /**
      * Fetch new images given a collaboration ID. Should be called again if the members change.
@@ -107,7 +109,10 @@ public class SharedImageTilesCoordinator {
      */
     public void fetchImagesForCollaborationId(
             @Nullable String collaborationId, Callback<Boolean> finishedCallback) {
-        if (!updateCollaborationIdValid(collaborationId)) return;
+        if (!updateCollaborationIdValid(collaborationId)) {
+            resetTracker();
+            return;
+        }
 
         resetTracker();
 

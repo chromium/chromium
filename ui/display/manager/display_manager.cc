@@ -4,6 +4,7 @@
 
 #include "ui/display/manager/display_manager.h"
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <map>
@@ -22,7 +23,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -106,10 +106,10 @@ ManagedDisplayInfo::ManagedDisplayModeList::const_iterator FindDisplayMode(
     const ManagedDisplayMode& target_mode) {
   const ManagedDisplayInfo::ManagedDisplayModeList& modes =
       info.display_modes();
-  return base::ranges::find_if(modes,
-                               [target_mode](const ManagedDisplayMode& mode) {
-                                 return target_mode.IsEquivalent(mode);
-                               });
+  return std::ranges::find_if(modes,
+                              [target_mode](const ManagedDisplayMode& mode) {
+                                return target_mode.IsEquivalent(mode);
+                              });
 }
 
 void SetInternalManagedDisplayModeList(ManagedDisplayInfo* info) {
@@ -179,7 +179,7 @@ bool GetDisplayModeForNextResolution(const ManagedDisplayInfo& info,
   const gfx::Size resolution = tmp.GetSizeInDIP();
 
   auto iter =
-      base::ranges::find(modes, resolution, &ManagedDisplayMode::GetSizeInDIP);
+      std::ranges::find(modes, resolution, &ManagedDisplayMode::GetSizeInDIP);
   if (iter == modes.end()) {
     return false;
   }
@@ -192,7 +192,7 @@ bool GetDisplayModeForNextResolution(const ManagedDisplayInfo& info,
 const ManagedDisplayInfo* FindInfoById(const DisplayInfoList& display_info_list,
                                        int64_t id) {
   const auto iter =
-      base::ranges::find(display_info_list, id, &ManagedDisplayInfo::id);
+      std::ranges::find(display_info_list, id, &ManagedDisplayInfo::id);
 
   if (iter == display_info_list.end()) {
     return nullptr;
@@ -1448,7 +1448,7 @@ void DisplayManager::UpdateDisplaysWith(
     // `UpdateDisplaysWith()`.
     CHECK(pending_display_changes_->removed_displays.empty());
     pending_display_changes_->removed_displays = std::move(removed_displays);
-    base::ranges::transform(
+    std::ranges::transform(
         added_display_indices,
         std::back_inserter(pending_display_changes_->added_display_ids),
         [this](size_t index) { return active_display_list_[index].id(); });
@@ -1653,8 +1653,8 @@ const ManagedDisplayInfo& DisplayManager::GetDisplayInfo(
 
 const Display DisplayManager::GetMirroringDisplayById(
     int64_t display_id) const {
-  auto iter = base::ranges::find(software_mirroring_display_list_, display_id,
-                                 &Display::id);
+  auto iter = std::ranges::find(software_mirroring_display_list_, display_id,
+                                &Display::id);
   return iter == software_mirroring_display_list_.end() ? GetInvalidDisplay()
                                                         : *iter;
 }
@@ -2074,7 +2074,7 @@ void DisplayManager::ResetDisplayZoom(int64_t display_id) {
     const ManagedDisplayInfo& display_info = GetDisplayInfo(kUnifiedDisplayId);
     const ManagedDisplayInfo::ManagedDisplayModeList& modes =
         display_info.display_modes();
-    auto iter = base::ranges::find_if(modes, &ManagedDisplayMode::native);
+    auto iter = std::ranges::find_if(modes, &ManagedDisplayMode::native);
     SetDisplayMode(kUnifiedDisplayId, *iter);
     return;
   }
@@ -2315,7 +2315,7 @@ void DisplayManager::CreateUnifiedDesktopDisplayInfo(
 
   // Find the default mode.
   auto default_mode_iter =
-      base::ranges::find_if(modes, &ManagedDisplayMode::native);
+      std::ranges::find_if(modes, &ManagedDisplayMode::native);
   DCHECK(default_mode_iter != modes.end());
 
   if (default_mode_iter != modes.end()) {
@@ -2391,7 +2391,7 @@ void DisplayManager::CreateUnifiedDesktopDisplayInfo(
 }
 
 Display* DisplayManager::FindDisplayForId(int64_t id) {
-  auto iter = base::ranges::find(active_display_list_, id, &Display::id);
+  auto iter = std::ranges::find(active_display_list_, id, &Display::id);
   if (iter != active_display_list_.end()) {
     return &(*iter);
   }

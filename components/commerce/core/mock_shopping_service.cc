@@ -240,11 +240,6 @@ void MockShoppingService::SetResponseForGetDiscountInfoForUrl(
       });
 }
 
-void MockShoppingService::SetIsParcelTrackingEligible(bool is_eligible) {
-  ON_CALL(*this, IsParcelTrackingEligible)
-      .WillByDefault(testing::Return(is_eligible));
-}
-
 void MockShoppingService::SetGetAllParcelStatusesCallbackValue(
     std::vector<ParcelTrackingStatus> parcels) {
   ON_CALL(*this, GetAllParcelStatuses)

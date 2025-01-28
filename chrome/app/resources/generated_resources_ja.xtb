@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Android アプリを起動できるようにディスク領域を解放します。</translation>
 <translation id="1033780634303702874">シリアル デバイスへのアクセス</translation>
 <translation id="1034484273907870301">タブレット モードのサムネイル タブバー</translation>
+<translation id="1035289631433631911">コンテンツ移行ツール</translation>
 <translation id="1035875743511577452">[テーマを変更] をクリックして、アーティスト、自然などから着想を得たテーマをお探しください。</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1036511912703768636">これらの USB デバイスへのアクセス</translation>
@@ -380,6 +381,7 @@
 <translation id="1246863218384630739"><ph name="VM_NAME" /> をインストールできませんでした: 画像 URL から <ph name="HTTP_ERROR" /> エラーが返されました。管理者にお問い合わせください。</translation>
 <translation id="1247372569136754018">マイク（内蔵）</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 件のサイトで通知をブロックしています}other{{NUM_SITES} 件のサイトで通知をブロックしています}}</translation>
+<translation id="125097549534200450">消去</translation>
 <translation id="1251366534849411931">開始の中かっこがありません: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">モバイルデータ ネットワークをスキャンしています...</translation>
 <translation id="125220115284141797">デフォルト</translation>
@@ -5919,6 +5921,7 @@
 <translation id="5177479852722101802">カメラとマイクへのアクセスを引き続きブロックする</translation>
 <translation id="5177549709747445269">モバイルデータ接続を使用しています</translation>
 <translation id="5178667623289523808">前を検索</translation>
+<translation id="5180276433875360121"><ph name="CERT_LIST" /> を表示</translation>
 <translation id="5181140330217080051">ダウンロードしています</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" /> の Google パスワード マネージャー</translation>
 <translation id="5181551096188687373">このパスワードは、このデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（<ph name="USER_EMAIL" />）に保存してください。</translation>
@@ -8507,6 +8510,7 @@
 <translation id="7063311912041006059">URL（<ph name="SPECIAL_SYMBOL" />=検索語句）</translation>
 <translation id="706342288220489463">アシスタントに画面上の情報を使用したサポートを許可する</translation>
 <translation id="70641621694466590">パスワード ページに移動</translation>
+<translation id="7064209589142995848">コンテンツ移行</translation>
 <translation id="7064734931812204395">Linux コンテナを設定しています。最長で 30 分ほどかかります。</translation>
 <translation id="7065223852455347715">このデバイスは企業の登録を防止するモードでロックされています。このデバイスを登録するにはまずデバイスの復元を行ってください。</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 件のパスワードを <ph name="USER_EMAIL" /> の <ph name="BRAND" /> にインポートしました}other{{NUM_PASSWORDS} 件のパスワードを <ph name="USER_EMAIL" /> の <ph name="BRAND" /> にインポートしました}}</translation>
@@ -9545,6 +9549,7 @@
 <translation id="7810202088502699111">このページのポップアップはブロックされました。</translation>
 <translation id="7810367892333449285">エントリは「<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" />」という形式にする必要があります</translation>
 <translation id="7811263553491007091">もう一度お試しいただくか、以前に生成された下のテーマから選択してください。</translation>
+<translation id="7811986034759500329">システム設定で設定</translation>
 <translation id="7812170317334653156">Google カレンダーを非表示にしました</translation>
 <translation id="7814090115158024843">文章作成サポートを表示しないサイト</translation>
 <translation id="7814458197256864873">コピー(&amp;C)</translation>

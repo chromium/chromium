@@ -85,7 +85,7 @@ struct RobinHoodMap {
   // Higher values mean higher load factors (less rehashing,
   // less RAM usage) but slower lookups (more comparisons),
   // potentially to the point of no longer having inlined/unrolled finds.
-  static constexpr unsigned kPossibleBucketsPerKey = 8;
+  static constexpr unsigned kPossibleBucketsPerKey = 6;
 
   // When rehashing due to excessive collisions, how much to attempt
   // growing by in each step (1.3 means 30% increase). Smaller values

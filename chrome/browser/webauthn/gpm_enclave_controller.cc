@@ -317,12 +317,9 @@ bool ExpiryTooSoon(base::Time expiry) {
   return expiry < now || (expiry - now) < base::Days(7 * 18);
 }
 
-void ResetDeclinedBootstrappingCount(
-    content::RenderFrameHost* render_frame_host) {
-  Profile::FromBrowserContext(render_frame_host->GetBrowserContext())
-      ->GetPrefs()
-      ->SetInteger(webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount,
-                   0);
+void ResetDeclinedBootstrappingCount(Profile* profile) {
+  profile->GetPrefs()->SetInteger(
+      webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount, 0);
 }
 
 }  // namespace
@@ -340,8 +337,8 @@ GPMEnclaveController::GPMEnclaveController(
       rp_id_(rp_id),
       request_type_(request_type),
       user_verification_requirement_(user_verification_requirement),
-      enclave_manager_(EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
-          Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))),
+      enclave_manager_(
+          EnclaveManagerFactory::GetAsEnclaveManagerForProfile(GetProfile())),
       model_(model),
       vault_connection_override_(std::move(optional_connection)),
       tick_clock_(tick_clock),
@@ -727,8 +724,7 @@ void GPMEnclaveController::OnKeysStored() {
 }
 
 void GPMEnclaveController::OnDeviceAdded(bool success) {
-  ResetDeclinedBootstrappingCount(
-      content::RenderFrameHost::FromID(render_frame_host_id_));
+  ResetDeclinedBootstrappingCount(GetProfile());
   if (!success) {
     model_->SetStep(Step::kGPMError);
     return;
@@ -1135,8 +1131,7 @@ void GPMEnclaveController::OnTrustThisComputer() {
   device::enclave::RecordEvent(device::enclave::Event::kOnboardingAccepted);
   // Clicking through the bootstrapping dialog resets the count even if it
   // doesn't end up being successful.
-  ResetDeclinedBootstrappingCount(
-      content::RenderFrameHost::FromID(render_frame_host_id_));
+  ResetDeclinedBootstrappingCount(GetProfile());
   RecoverSecurityDomain();
 }
 
@@ -1259,12 +1254,7 @@ void GPMEnclaveController::OnReauthComplete(std::string rapt) {
 void GPMEnclaveController::StartTransaction() {
   // Starting a transaction means the user has chosen to use GPM. Reset the
   // decline count so GPM can again be the priority on creation.
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(render_frame_host_id_);
-  Profile::FromBrowserContext(rfh->GetBrowserContext())
-      ->GetPrefs()
-      ->SetInteger(
-          webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount, 0);
+  ResetDeclinedBootstrappingCount(GetProfile());
   pending_enclave_transaction_ = std::make_unique<GPMEnclaveTransaction>(
       /*delegate=*/this, PasskeyModelFactory::GetForProfile(GetProfile()),
       request_type_, rp_id_, *uv_method_, enclave_manager_, pin_,

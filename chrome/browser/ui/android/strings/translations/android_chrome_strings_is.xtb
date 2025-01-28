@@ -116,6 +116,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="1435593198351412143">Opna PDF-skrár sjálfkrafa</translation>
 <translation id="1436784010935106834">Fjarlægð</translation>
 <translation id="1437543266176261764">Keyrt í <ph name="APP_NAME" /></translation>
+<translation id="1448147069872048656">Staðfestu hver þú ert til að ganga úr skugga um að þú hafir aðgang að öllum aðgangsorðunum þínum í þessu tæki</translation>
 <translation id="1448440926884431741">Notaðu bókamerki til að flokka vörur sem þú vaktar</translation>
 <translation id="1460751212339734034">Sparaðu tíma, sláðu minna inn</translation>
 <translation id="1466383950273130737">Velja tungumál Chrome</translation>
@@ -847,6 +848,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4910889077668685004">Greiðsluforrit</translation>
 <translation id="4912413785358399818">Færa flipa</translation>
 <translation id="4913169188695071480">Hætta að endurnýja</translation>
+<translation id="4913841543356834596">Fá aðgang að öllum aðgangsorðunum þínum</translation>
 <translation id="4918086044614829423">Samþykkja</translation>
 <translation id="4925120120285606924">Skjámynd <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Aðgangsorðin þín verða flutt út og þeim hlaðið niður í textaskrá. Þau verða sýnileg öllum, þar á meðal öllum forritum, sem hafa aðgang að möppunni sem hún er vistuð í.</translation>
@@ -1330,6 +1332,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6987047470128880212">Huliðsstilling er ekki í boði í þessu tæki</translation>
 <translation id="6991701761229081516">Aðgangsorðunum þínum verður hlaðið niður sem CSV-skrá. Þau verða sýnileg öllum sem eru með aðgang að skránni, m.a. forritum. Útfluttum aðgangsorðum verður eytt úr Chrome.</translation>
 <translation id="6996145122199359148">Sækja þessa síðu</translation>
+<translation id="7013627768165542797">Staðfestu hver þú ert til að fá aðgang að aðgangsorðum á Google-reikningnum þínum</translation>
 <translation id="7013762323294215682">Þessi aðgangslykill verður vistaður í aðgangsorðastjórnun. Þau sem hafa aðgang að henni geta notað þennan aðgangslykil.</translation>
 <translation id="7020741890149022655">Bæta við leslista <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Opna í vafra</translation>
@@ -1348,6 +1351,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7085332316435785646">Veldu hvort að Chrome-ferill eigi að fylgja með til að fá sérsniðnari upplifun í Google-þjónustum</translation>
 <translation id="7088681679121566888">Chrome er uppfærður</translation>
 <translation id="7094933634769755999">Ónákvæmt</translation>
+<translation id="7102843846294013537">Einhver aðgangsorðanna þinna eru ekki tiltæk í þessu tæki</translation>
 <translation id="7106762743910369165">Vafranum er stjórnað af fyrirtækinu þínu</translation>
 <translation id="7111394291981742152">Chrome veitir þér betri stjórn á auglýsingunum sem þú sérð og takmarkar upplýsingar um þig sem vefsvæði safna þegar þau birta þér sérsniðnar auglýsingar.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Farið yfir heimildir fyrir eitt vefsvæði}one{Farið yfir heimildir fyrir # vefsvæði}other{Farið yfir heimildir fyrir # vefsvæði}}</translation>

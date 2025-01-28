@@ -483,6 +483,7 @@
 <translation id="1317637799698924700">आपका डॉकिंग स्टेशन, यूएसबी टाइप-सी पर काम करने वाले मोड पर चलेगा.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> सबपेज पर वापस जाने का बटन</translation>
 <translation id="1322046419516468189">अपने <ph name="SAVED_PASSWORDS_STORE" /> में सेव किए गए पासवर्ड देखें और उन्हें प्रबंधित करें</translation>
+<translation id="132539964543492755">माउस का बायां बटन, दायां बटन या दोनों बटन चुनने के लिए, “x” का इस्तेमाल करें</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos के टिकट</translation>
 <translation id="1327495825214193325">ADB डीबग करने की सुविधा चालू करने के लिए, इस <ph name="DEVICE_TYPE" /> को रीस्टार्ट करना ज़रूरी है. इस सुविधा को बंद करने के लिए, डिवाइस को फ़ैक्ट्री सेटिंग पर रीसेट करना ज़रूरी है.</translation>
@@ -1690,6 +1691,7 @@
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> जैसा लगता है</translation>
 <translation id="2156294658807918600">सर्विस वर्कर: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">शेयर किए गए टैब में स्क्रोल और ज़ूम करने की अनुमति है</translation>
+<translation id="2157457598652721267">माउस का बायां या दायां बटन चुनने के लिए, “/” और “-” का इस्तेमाल करें. दोनों बटन चुनने के लिए, “*” का इस्तेमाल करें.</translation>
 <translation id="2157474325782140681">ज़्यादा सुविधाएं पाने के लिए, ऐसा Dell डॉकिंग स्टेशन इस्तेमाल करें जिसे इस Chromebook के साथ काम करने के लिए बनाया गया हो.</translation>
 <translation id="215753907730220065">फ़ुल स्क्रीन से बाहर निकलें</translation>
 <translation id="2157779167749714207">आपको <ph name="DEVICE_TYPE" /> में Gemini की सुविधा मिलती है</translation>
@@ -1794,6 +1796,7 @@
 <translation id="2233502537820838181">&amp;अधिक जानकारी</translation>
 <translation id="223356358902285214">वेब और ऐप्लिकेशन गतिविधि</translation>
 <translation id="2234065144797002621">नहर</translation>
+<translation id="2234208862050358325">कर्सर को मूव करने के लिए, 1, 2, 3, q, e, a, s, और d बटन इस्तेमाल करें</translation>
 <translation id="2234827758954819389">निजता गाइड</translation>
 <translation id="2234876718134438132">सिंक करने की सुविधा और Google सेवाएं</translation>
 <translation id="2235344399760031203">तीसरे पक्ष की कुकी ब्लॉक हैं</translation>
@@ -1813,6 +1816,7 @@
 <translation id="2249111429176737533">टैब की गई विंडो के तौर पर खोलें</translation>
 <translation id="2249605167705922988">जैसे कि 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">विज्ञापन दिखाने के लिए साइटें जिस जानकारी का इस्तेमाल करती हैं उसमें अपनी ज़रूरत के हिसाब से बदलाव करें</translation>
+<translation id="22505994009453896">माउस के कर्सर को कंट्रोल करने के लिए, न्यूमेरिक कीपैड का इस्तेमाल करें</translation>
 <translation id="2250624716625396929">यह टैब आपके कैमरे और माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="2251218783371366160">सिस्टम दर्शक के साथ खोलें</translation>
 <translation id="225163402930830576">नेटवर्क रीफ्रेश करें</translation>
@@ -2009,6 +2013,7 @@
 <translation id="236939127352773362">जब आस-पास मौजूद डिवाइसों से फ़ाइलें शेयर की जा रही हों</translation>
 <translation id="2371076942591664043">&amp;पू्र्ण होने पर खोलें</translation>
 <translation id="237336063998926520">जगह का पता करने के लिए अपने आईपी पते का इस्तेमाल करें</translation>
+<translation id="2373499590298659902">माउस बटन को दबाकर रखने के लिए, “0” का इस्तेमाल करें</translation>
 <translation id="2373666622366160481">जिस कागज़ पर प्रिंट किया जाना है उसके आकार के हिसाब से फ़िट करें</translation>
 <translation id="2375406435414127095">अपने फ़ोन से जोड़ें</translation>
 <translation id="2376056713414548745">टेक्स्ट को ज़ोर से पढ़े जाने से जुड़ी सेटिंग पर जाएं</translation>
@@ -2770,6 +2775,7 @@
 <translation id="2902312830803030883">और क्रियाएं</translation>
 <translation id="2903457445916429186">चुने गए आइटम खोलें</translation>
 <translation id="2903882649406874750"><ph name="HOST" /> को सेंसर ऐक्सेस करने से हमेशा ब्लॉक करें</translation>
+<translation id="2903925626657991994">माउस का बायां बटन, दायां बटन या दोनों बटन चुनने के लिए, “,” का इस्तेमाल करें</translation>
 <translation id="290415756080113152">साइटें, आपके डिवाइस से ऐक्सेस किए जा सकने वाले प्रिंटर नहीं खोज सकतीं या उनका इस्तेमाल नहीं कर सकतीं</translation>
 <translation id="2904210161403910217">पिछली बार साइन इन करने के बाद से, आपका पासवर्ड बदल गया है</translation>
 <translation id="2904506722835398619">साइन इन और सिंक करना ज़रूरी है</translation>
@@ -3124,6 +3130,7 @@
 <translation id="3170072451822350649">आप प्रवेश करना छोड़ भी सकते हैं और <ph name="LINK_START" />अतिथि के रूप में ब्राउज़<ph name="LINK_END" /> कर सकते हैं.</translation>
 <translation id="3175067642577044620">मुख्य हिस्सा</translation>
 <translation id="3175862692832442091">जंगल</translation>
+<translation id="3176347586396987181">माउस बटन को दबाकर रखने के लिए, “z” का इस्तेमाल करें</translation>
 <translation id="3177430966804511955">आइसोलेटेड वेब ऐप्लिकेशन मैनेज करें (बीटा वर्शन)</translation>
 <translation id="31774765611822736">बाईं ओर का नया टैब</translation>
 <translation id="3177909033752230686">पेज की भाषा:</translation>
@@ -4505,6 +4512,7 @@
 <translation id="412730574613779332">स्‍पैंडेक्‍स</translation>
 <translation id="4130199216115862831">डिवाइस लॉग</translation>
 <translation id="4130750466177569591">मैं सहमत हूं</translation>
+<translation id="4130877444234883490">माउस बटन को दबाकर रखने के लिए, “m” का इस्तेमाल करें</translation>
 <translation id="413121957363593859">घटक</translation>
 <translation id="4131283654370308898">इस साइट पर <ph name="EXTENSION_NAME" /> को अनुमति दें</translation>
 <translation id="4131410914670010031">श्याम और श्वेत</translation>
@@ -4524,6 +4532,7 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - एचआईडी डिवाइस कनेक्ट हो गया</translation>
 <translation id="4139326893730851150">फ़र्मवेयर से जुड़े अपडेट</translation>
 <translation id="4142052906269098341">अपने फ़ोन से <ph name="DEVICE_TYPE" /> को अनलॉक करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
+<translation id="4143606504420684845">जानें कि एआई किस तरह आपके अनुभव को बेहतर बनाता है और आपकी निजता के बारे में सही जानकारी देता है</translation>
 <translation id="4146026355784316281">हमेशा सिस्‍टम व्‍यूअर से खोलें</translation>
 <translation id="4146785383423576110">रीसेट करें और साफ़ करें</translation>
 <translation id="4147099377280085053">ब्रेल टेबल चुनें</translation>
@@ -4807,6 +4816,7 @@
 <translation id="4360738659108163902">माउस पर राइट क्लिक करें</translation>
 <translation id="4361142739114356624">इस क्‍लाइंट प्रमाणपत्र की निजी कुंजी मौजूद नहीं है या अमान्‍य है</translation>
 <translation id="4361745360460842907">टैब के रूप में खोलें</translation>
+<translation id="4362459470237309049">माउस बटन को छोड़ने के लिए, “.” का इस्तेमाल करें</translation>
 <translation id="4363262124589131906">'मेरी ड्राइव' में मौजूद नई फ़ाइलें, इस Chromebook में अपने-आप सिंक होना बंद हो जाएंगी</translation>
 <translation id="4364327530094270451">खरबूजा</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 आइटम को सिर्फ़ इस डिवाइस में सेव किया गया है. अपने दूसरे डिवाइसों पर इसका इस्तेमाल करने के लिए, इसे अपने Google खाते में सेव करें.}one{{ITEM_COUNT} आइटम सिर्फ़ इस डिवाइस में सेव किया गया है. अपने दूसरे डिवाइसों पर इसका इस्तेमाल करने के लिए, इसे अपने Google खाते में सेव करें.}other{{ITEM_COUNT} आइटम सिर्फ़ इस डिवाइस में सेव किए गए हैं. अपने दूसरे डिवाइसों पर इनका इस्तेमाल करने के लिए, इन्हें अपने Google खाते में सेव करें.}}</translation>
@@ -4832,6 +4842,7 @@
 <translation id="4378308539633073595">आगे की ओर स्क्रोल करें</translation>
 <translation id="4378551569595875038">कनेक्टिंग...</translation>
 <translation id="4378556263712303865">डिवाइस मांग</translation>
+<translation id="4378589147979399051">मुख्य कीबोर्ड की मदद से, माउस के कर्सर को कंट्रोल करें</translation>
 <translation id="4379097572583973456">कोई साइट, दूसरी साइटों से कॉन्टेंट भी एम्बेड कर सकती है, जैसे कि इमेज, विज्ञापन, और टेक्स्ट. ये दूसरी साइटें भी डेटा सेव कर सकती हैं.</translation>
 <translation id="4379281552162875326">क्या आप "<ph name="APP_NAME" />" अनइंस्टॉल करना चाहते हैं?</translation>
 <translation id="4380055775103003110">अगर यह समस्या बार-बार आ रही है, तो <ph name="SITE_ETLD_PLUS_ONE" /> पर जारी रखने के लिए, दूसरे तरीके आज़माएं.</translation>
@@ -5151,6 +5162,7 @@
 <translation id="4610493438923139095">डिस्ट्रस्टेड</translation>
 <translation id="4610637590575890427">क्या आपका मतलब <ph name="SITE" /> पर जाने से है ?</translation>
 <translation id="4611114513649582138">डेटा कनेक्शन उपलब्ध है</translation>
+<translation id="4611619000650855880">माउस के बाएं बटन को चुने जाने पर, दो बार क्लिक करने के लिए “/” का इस्तेमाल करें</translation>
 <translation id="4611759022973144129">अपने <ph name="DEVICE_TYPE" /> में साइन इन करने के लिए, इस पासवर्ड का इस्तेमाल किया जा सकता है.</translation>
 <translation id="4612841084470706111">उन सभी साइटों का ऐक्सेस दें जिनके लिए अनुरोध किया गया है.</translation>
 <translation id="4613144866899789710">Linux को इंस्टॉल करना रद्द किया जा रहा है...</translation>
@@ -5276,6 +5288,7 @@
 <translation id="4694820450536519583">अनुमतियां</translation>
 <translation id="4695318956047767909">गहरे रंग वाली थीम, स्क्रीन सेवर</translation>
 <translation id="4697071790493980729">कोई भी नतीजा नहीं मिला</translation>
+<translation id="4697231114332146850">कर्सर को मूव करने के लिए, 7, 8, 9, 4, 6, 1, 2, और 3 बटन इस्तेमाल करें</translation>
 <translation id="4697551882387947560">ब्राउज़िंग सत्र के खत्म होने पर</translation>
 <translation id="469838979880025581">साइटें आपके माइक्रोफ़ोन का इस्तेमाल करने के लिए पूछ सकती हैं</translation>
 <translation id="4699172675775169585">कैश इमेज और फ़ाइलें</translation>
@@ -6387,6 +6400,7 @@
 <translation id="5499453227627332024">आपके Linux कंटेनर का नया वर्शन उपलब्ध है. आप सेटिंग ऐप्लिकेशन में जाकर, इसे बाद में भी अपग्रेड कर सकते हैं.</translation>
 <translation id="5499476581866658341">अब आपके पास अपने फ़ोन में मौजूद हाल की फ़ोटो और मीडिया देखने का विकल्प है</translation>
 <translation id="549957179819296104">नया आइकॉन</translation>
+<translation id="5500163593833085874">माउस के बाएं बटन को चुने जाने पर, दो बार क्लिक करने के लिए “+” का इस्तेमाल करें</translation>
 <translation id="5500168250243071806">हो सकता है कि आपके साइन इन होने पर, <ph name="BEGIN_LINK_SEARCH" />खोज इतिहास<ph name="END_LINK_SEARCH" /> और <ph name="BEGIN_LINK_GOOGLE" />अन्य तरह की गतिविधियां<ph name="END_LINK_GOOGLE" /> आपके Google खाते में सेव हो जाएं. उन्हें किसी भी समय मिटाया जा सकता है.</translation>
 <translation id="5501322521654567960">बाईं ओर अलाइन साइड पैनल</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}one{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}other{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}}</translation>
@@ -6684,6 +6698,7 @@
 <translation id="5733913382424854675">एआई की मदद से, टैब का ग्रुप बनाएं</translation>
 <translation id="5734362860645681824">संचार</translation>
 <translation id="5734697361979786483">फ़ाइल शेयर जोड़ें</translation>
+<translation id="573520097779121706">कर्सर को मूव करने के लिए, 7, 8, 9, u, o, j, k, और l बटन इस्तेमाल करें</translation>
 <translation id="5735513236153491131">अभी बूस्ट करें</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{यह डेटा या आपका डिवाइस, आपके संगठन की कुछ सुरक्षा नीतियों का पालन नहीं करता. किन समस्याओं को ठीक करना है, इसके बारे में अपने एडमिन से संपर्क करें.}=1{यह फ़ाइल या आपका डिवाइस, आपके संगठन की सुरक्षा नीतियों का पालन नहीं करता. किन समस्याओं को ठीक करना है, इसके बारे में अपने एडमिन से संपर्क करें.}one{यह फ़ाइल आपके संगठन की सुरक्षा नीतियों का पालन नहीं करती. किन समस्याओं को ठीक करना है, इसके बारे में अपने एडमिन से संपर्क करें.}other{ये फ़ाइलें आपके संगठन की सुरक्षा नीतियों का पालन नहीं करतीं. किन समस्याओं को ठीक करना है, इसके बारे में अपने एडमिन से संपर्क करें.}}</translation>
 <translation id="5738093759615225354">आपको अपने कंप्यूटर में साइन इन करने के लिए, इस पासवर्ड की ज़रूरत है</translation>
@@ -6916,6 +6931,7 @@
 <translation id="5901069264981746702">आपके फ़िंगरप्रिंट का डेटा सुरक्षित तरीके से सेव किया जाता है और यह आपके <ph name="DEVICE_TYPE" /> में ही रहता है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">कैप्चर करने वाले टैब पर जाएं</translation>
 <translation id="5901494423252125310">प्रिंटर का दरवाज़ा खुला है</translation>
+<translation id="5901526412306322179">गतिविधि लॉग</translation>
 <translation id="5901630391730855834">पीला</translation>
 <translation id="5902892210366342391">गुप्त मोड में असुरक्षित साइटों पर जाने से पहले चेतावनियां दिखेंगी</translation>
 <translation id="5904614460720589786">कॉन्फ़िगर करते समय हुई गड़बड़ी की वजह से <ph name="APP_NAME" /> को सेट अप नहीं किया जा सका. कृपया अपने एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
@@ -7290,6 +7306,7 @@
 <translation id="6171779718418683144">हर बार वेबसाइट पर आने के लिए पूछें</translation>
 <translation id="617213288191670920">कोई भाषा नहीं जोड़ी गई</translation>
 <translation id="6173623053897475761">अपना पिन दोबारा लिखें</translation>
+<translation id="6174909075810107548">माउस बटन को दबाने के लिए, “5” का इस्तेमाल करें</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">लिंक पाएं</translation>
 <translation id="6177412385419165772">हटाया जा रहा है...</translation>
@@ -7775,6 +7792,7 @@
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> सिर्फ़ तभी चालू करें जब आपको पता हो कि आप क्या कर रहे हैं या अगर आप से ऐसा करने के लिए कहा गया हो, क्योंकि डेटा के संग्रह से परफ़ॉर्मेंस में कमी आ सकती है.</translation>
 <translation id="6540488083026747005">इस साइट पर आपने तीसरे पक्ष की कुकी को अनुमति दी है</translation>
 <translation id="6541638731489116978">इस साइट को आपके हलचल पकड़ने वाले सेंसर ऐक्सेस करने से रोक दिया गया है.</translation>
+<translation id="654219396498297850">माउस के बाएं बटन को चुने जाने पर, दो बार क्लिक करने के लिए “v” का इस्तेमाल करें</translation>
 <translation id="6542417422899025860">ज़्यादातर निजी जानकारी को अपने-आप हटाने का विकल्प</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> पर कास्ट किया जा रहा है</translation>
 <translation id="6544134392255015460">कीबोर्ड की बैकलाइट के लिए टॉगल बटन</translation>
@@ -8775,6 +8793,7 @@
 <translation id="7258225044283673131">ऐप्लिकेशन काम नहीं कर रहा है. ऐप्लिकेशन को बंद करने के लिए "ज़बरदस्ती बंद करें" चुनें.</translation>
 <translation id="7260186537988033909">किऑस्क और साइनेज का इस्तेमाल करके, डिवाइस का नाम दर्ज हो गया</translation>
 <translation id="7260206782629605806">थ्रेशोल्ड कम करने पर, आपको कम ज़ोर लगाकर आखें झपकनी पड़ सकती हैं. थ्रेशोल्ड बढ़ाने पर, आपको ज़्यादा ज़ोर लगाकर आखें झपकनी पड़ सकती हैं.</translation>
+<translation id="7260802376010589729">माउस बटन को छोड़ने के लिए, “c” का इस्तेमाल करें</translation>
 <translation id="7261217796641151584">ग्रुप शेयर करें</translation>
 <translation id="7261612856573623172">लिखाई को बोली में बदलने वाली सिस्टम की आवाज़</translation>
 <translation id="7262004276116528033">यह साइन इन सेवा <ph name="SAML_DOMAIN" /> की मदद से होस्‍ट की गई है</translation>
@@ -9615,6 +9634,7 @@
 <translation id="78526636422538552">और Google खाते जोड़ने की सुविधा बंद है</translation>
 <translation id="785371335555334021"><ph name="TITLE" /> से बाहर आने के लिए, क्लिक करें</translation>
 <translation id="7853747251428735">ज़्यादा टू&amp;ल</translation>
+<translation id="7855258394151767387">माउस बटन को दबाने के लिए, “w” का इस्तेमाल करें</translation>
 <translation id="7855678561139483478">टैब को नई विंडो पर ले जाएं</translation>
 <translation id="7857004848504343806">आपके कंप्यूटर में एक ऐसा सुरक्षित मॉड्यूल है जिसे ChromeOS Flex की सुरक्षा से जुड़ी कई अहम सुविधाओं को लागू करने में इस्तेमाल किया जाता है. ज़्यादा जानने के लिए Chromebook सहायता केंद्र पर जाएं: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">टाइपिंग के समय मिलने वाले शब्दों के सुझाव</translation>
@@ -9987,6 +10007,7 @@
 <translation id="810362914482827094">पासवर्ड खोजें</translation>
 <translation id="8104088837833760645">ई-सिम प्रोफ़ाइल डाउनलोड करें</translation>
 <translation id="8105273883928376822">कृपया जारी रखने के लिए साइन इन करें.</translation>
+<translation id="8106114112474206597">माउस बटन को दबाने के लिए, “i” का इस्तेमाल करें</translation>
 <translation id="8107015733319732394">आपके <ph name="DEVICE_TYPE" /> पर Google Play Store इंस्टॉल हो रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="810728361871746125">डिसप्ले का रिज़ॉल्यूशन</translation>
 <translation id="8108161424633979910"><ph name="NUM" /> सदस्य</translation>

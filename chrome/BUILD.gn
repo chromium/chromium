@@ -584,9 +584,7 @@ if (is_win) {
     outputs = []
 
     foreach(locale, platform_pak_locales) {
-      _strings_file = "${branding_path_product}_strings"
-
-      inputs += [ "$root_gen_dir/chrome/${_strings_file}_${locale}.pak" ]
+      inputs += [ "$root_gen_dir/chrome/branded_strings_${locale}.pak" ]
     }
 
     foreach(locale, locales_as_apple_outputs) {
@@ -598,7 +596,7 @@ if (is_win) {
     args =
         [
           "-b",
-          "${branding_path_product}_strings",
+          "branded_strings",
           "-v",
           chrome_version_full,
           "-g",

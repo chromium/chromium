@@ -402,7 +402,7 @@ class StorageQueueTest
           // unique_ptr and pass to SequenceBoundUpload to own.
           // MockUpload outlives TestUploader and is destructed together with
           // SequenceBoundUpload (on a sequenced task runner).
-          mock_upload_(new ::testing::NiceMock<const MockUpload>()),
+          mock_upload_(new ::testing::NiceMock<MockUpload>()),
           sequence_bound_upload_(self->main_task_runner_,
                                  base::WrapUnique(mock_upload_.get())) {
       DETACH_FROM_SEQUENCE(test_uploader_checker_);

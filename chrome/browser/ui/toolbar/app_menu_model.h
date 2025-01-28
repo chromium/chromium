@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -117,7 +116,7 @@ enum AppMenuAction {
   MENU_ACTION_DECLUTTER_TABS = 93,
   LIMIT_MENU_ACTION
 };
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml:WrenchMenuAction)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ui/enums.xml:WrenchMenuAction)
 
 enum class AlertMenuItem { kNone, kPasswordManager };
 

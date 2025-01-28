@@ -5,7 +5,7 @@
 import {LocalStorage} from '/common/local_storage.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {EarconId} from '../common/earcon_id.js';
+import type {EarconId} from '../common/earcon_id.js';
 
 type Rect = chrome.automation.Rect;
 

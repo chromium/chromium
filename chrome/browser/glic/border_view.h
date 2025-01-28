@@ -46,7 +46,20 @@ class BorderView : public views::View,
 
   ui::Compositor* compositor_for_testing() const { return compositor_; }
 
+  float opacity_for_testing() const { return opacity_; }
+
+  float emphasis_for_testing() const { return emphasis_; }
+
  private:
+  // A value from 0 to 1 indicating how much the border is to be emphasized.
+  float GetEmphasis(base::TimeDelta delta) const;
+
+  // Only valid to call after the animation has started.
+  void ResetEmphasisAndReplay();
+
+  // A value from 0 to 1 indicating the opacity of the border.
+  float GetOpacity(base::TimeDelta delta) const;
+
   // A utility class that subscribe to `GlicKeyedService` for various browser UI
   // status change.
   class BorderViewUpdater;
@@ -54,16 +67,15 @@ class BorderView : public views::View,
 
   raw_ptr<ui::Compositor> compositor_ = nullptr;
 
-  // Records the animation progress, starting from 0 to 1.f.
-  float progress_ = 0.f;
-
-  // Stores the first frame timestamp to be used for calculating the animation
-  // progress.
-  base::TimeTicks first_frame_time_;
-
   // When it is true, the class directly presents a static border and when it is
   // false, it animates the border first.
   bool skip_animation_ = false;
+
+  float opacity_ = 0.f;
+  float emphasis_ = 0.f;
+
+  base::TimeTicks first_frame_time_;
+  base::TimeTicks first_emphasis_frame_;
 };
 
 BEGIN_VIEW_BUILDER(, BorderView, views::View)

@@ -4,13 +4,13 @@
 
 #include "ui/views/accessibility/view_ax_platform_node_delegate_auralinux.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -122,7 +122,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
       window_observations_.RemoveObservation(window);
     }
 
-    auto iter = base::ranges::find(widgets_, widget);
+    auto iter = std::ranges::find(widgets_, widget);
     if (iter != widgets_.end()) {
       widgets_.erase(iter);
     }

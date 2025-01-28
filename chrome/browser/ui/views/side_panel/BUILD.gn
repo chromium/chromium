@@ -124,7 +124,6 @@ source_set("side_panel") {
   ]
   deps = [
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/app/vector_icons",

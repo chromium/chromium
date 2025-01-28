@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/chromeos/args.gni")
 import("//components/signin/features.gni")
 
 assert(!is_android && !is_fuchsia)
@@ -18,7 +18,6 @@ source_set("signin") {
 
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/ui/webui/signin",
     "//chrome/browser/ui/webui/signin:signin_utils",
     "//chrome/common",
@@ -55,7 +54,6 @@ source_set("impl") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
@@ -95,8 +93,8 @@ if (enable_dice_support) {
 }
 
 if (!is_android) {
-  # This is not applicable to ChromeOS, but to lacros + other desktop platforms.
-  if (!is_chromeos_device && !is_chromeos_ash) {
+  # This is not applicable to ChromeOS, but to desktop platforms.
+  if (!is_chromeos_device && !is_chromeos) {
     source_set("interactive_ui_tests") {
       testonly = true
       defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -105,7 +103,6 @@ if (!is_android) {
         ":signin",
         "//base",
         "//base/test:test_support",
-        "//build:chromeos_buildflags",
         "//chrome/browser",
         "//chrome/browser/ui",
         "//chrome/browser/ui:browser_element_identifiers",

@@ -45,9 +45,21 @@
 using credential_provider_extension::AccountInfo;
 
 namespace {
+
 UIColor* BackgroundColor() {
   return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
+
+// Returns whether the user has at least one saved passkey credential.
+BOOL HasSavedPasskeys(NSArray<id<Credential>>* credentials) {
+  NSUInteger passkey_credential_index =
+      [credentials indexOfObjectPassingTest:^BOOL(id<Credential> credential,
+                                                  NSUInteger, BOOL*) {
+        return credential.isPasskey;
+      }];
+  return passkey_credential_index != NSNotFound;
+}
+
 }  // namespace
 
 enum class PasskeyCreationEligibility {
@@ -299,10 +311,30 @@ enum class PasskeyCreationEligibility {
 }
 
 - (void)prepareInterfaceForExtensionConfiguration {
-  self.consentCoordinator =
-      [[ConsentCoordinator alloc] initWithBaseViewController:self
-                                   credentialResponseHandler:self];
-  [self.consentCoordinator start];
+  if (HasSavedPasskeys(self.credentialStore.credentials) &&
+      IsPasskeysM2Enabled()) {
+    __weak __typeof__(self) weakSelf = self;
+    auto completion = ^(NSArray<NSData*>* securityDomainSecrets) {
+      [weakSelf completeSecurityDomainSecretFetchForExtensionConfigutation];
+    };
+
+    // Trigger a security domain secret fetch to know whether the user needs to
+    // bootstrap (create/enter their GPM pin) to use passkeys on their device.
+    // If bootstrapping is needed, then the fetching flow will take care of
+    // presenting the relevent UI. The `completion` will then take care of
+    // dismissing the bootstrapping UI if it was presented. If it wasn't
+    // presented, it means that the user was already bootstrapped. In this case,
+    // `completion` will present the ConsentViewController.
+    [self
+        fetchSecurityDomainSecretForGaia:[self gaia]
+                              credential:nil
+                                 purpose:PasskeyKeychainProvider::
+                                             ReauthenticatePurpose::kUnspecified
+                userVerificationRequired:NO
+                              completion:completion];
+  } else {
+    [self presentConsentViewController];
+  }
 }
 
 // Only available in iOS 18.0+.
@@ -1132,6 +1164,36 @@ enum class PasskeyCreationEligibility {
   [self.presentingView presentViewController:self.passkeyNavigationController
                                     animated:NO
                                   completion:nil];
+}
+
+// Starts the `consentCoordinator` to present the ConsentViewController.
+- (void)presentConsentViewController {
+  self.consentCoordinator =
+      [[ConsentCoordinator alloc] initWithBaseViewController:self
+                                   credentialResponseHandler:self];
+  [self.consentCoordinator start];
+}
+
+// Completes the security domain secret fetch that happens when enabling the app
+// as a credential provider in iOS Settings. Dismisses the
+// `passkeyNavigationController` if presented for passkey bootstrapping purposes
+// during the fetching process. Otherwise, presents the ConsentViewController.
+- (void)completeSecurityDomainSecretFetchForExtensionConfigutation {
+  // If the `passkeyNavigationController` has a `visibleViewController`, it
+  // means that the bootstrapping UI has been presented to the user through the
+  // security domain secret fetch (see
+  // `-prepareInterfaceForExtensionConfiguration`). In this case, all that's
+  // left to do is dismiss the bootstrapping UI. Otherwise, it means that the
+  // bootstrapping UI hasn't been shown, hence the ConsentViewController needs
+  // to be presented.
+  if (self.passkeyNavigationController.visibleViewController) {
+    [self.passkeyNavigationController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
+    [self.extensionContext completeExtensionConfigurationRequest];
+  } else {
+    [self presentConsentViewController];
+  }
 }
 
 @end

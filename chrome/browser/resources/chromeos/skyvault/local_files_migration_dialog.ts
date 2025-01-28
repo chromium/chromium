@@ -18,12 +18,13 @@ import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '/strings.m.js';
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {LocalFilesBrowserProxy} from './local_files_browser_proxy.js';
-import {CloudProvider, TimeUnit, TimeUnitAndValue} from './local_files_migration.mojom-webui.js';
+import type {TimeUnitAndValue} from './local_files_migration.mojom-webui.js';
+import {CloudProvider, TimeUnit} from './local_files_migration.mojom-webui.js';
 import {getTemplate} from './local_files_migration_dialog.html.js';
 
 class LocalFilesMigrationDialogElement extends HTMLElement {

@@ -214,6 +214,7 @@ public class BookmarkManagerMediatorTest {
             new BookmarkId(mId++, BookmarkType.READING_LIST);
     private final BookmarkId mReadingListId = new BookmarkId(mId++, BookmarkType.READING_LIST);
     private final BookmarkId mPriceTrackedBookmarkId = new BookmarkId(mId++, BookmarkType.NORMAL);
+    private final BookmarkId mPartnerBookmarkFolderId = new BookmarkId(mId++, BookmarkType.PARTNER);
 
     private final BookmarkItem mDesktopFolderItem =
             new BookmarkItem(
@@ -325,6 +326,19 @@ public class BookmarkManagerMediatorTest {
                     false,
                     0,
                     false);
+    private final BookmarkItem mPartnerBookmarkFolderItem =
+            new BookmarkItem(
+                    mPartnerBookmarkFolderId,
+                    "Partner bookmarks",
+                    null,
+                    true,
+                    mMobileFolderId,
+                    false,
+                    false,
+                    0,
+                    false,
+                    0,
+                    false);
 
     private final ModelList mModelList = new ModelList();
     private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
@@ -375,6 +389,9 @@ public class BookmarkManagerMediatorTest {
         doReturn(mPriceTrackedBookmarkItem)
                 .when(mBookmarkModel)
                 .getBookmarkById(mPriceTrackedBookmarkId);
+        doReturn(mPartnerBookmarkFolderItem)
+                .when(mBookmarkModel)
+                .getBookmarkById(mPartnerBookmarkFolderId);
         doReturn(Arrays.asList(mPriceTrackedBookmarkId))
                 .when(mBookmarkModel)
                 .getChildIds(mMobileFolderId);
@@ -716,6 +733,21 @@ public class BookmarkManagerMediatorTest {
         mMediator.moveUpOne(mFolderId2);
         verify(mBookmarkModel)
                 .reorderBookmarks(mFolderId1, new long[] {mFolderId2.getId(), mFolderId3.getId()});
+    }
+
+    @Test
+    public void testMoveDownUp_partnerBookmarksPresent() {
+        finishLoading();
+        doReturn(Arrays.asList(mPriceTrackedBookmarkId, mFolderId1, mPartnerBookmarkFolderId))
+                .when(mBookmarkModel)
+                .getChildIds(mMobileFolderId);
+        mMediator.openFolder(mMobileFolderId);
+        mMediator.moveDownOne(mPriceTrackedBookmarkId);
+
+        verify(mBookmarkModel)
+                .reorderBookmarks(
+                        mMobileFolderId,
+                        new long[] {mFolderId1.getId(), mPriceTrackedBookmarkId.getId()});
     }
 
     @Test

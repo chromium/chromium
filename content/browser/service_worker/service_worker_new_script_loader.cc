@@ -236,26 +236,6 @@ void ServiceWorkerNewScriptLoader::SetPriority(net::RequestPriority priority,
     network_loader_->SetPriority(priority, intra_priority_value);
 }
 
-void ServiceWorkerNewScriptLoader::PauseReadingBodyFromNet() {
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker", "ServiceWorkerNewScriptLoader::PauseReadingBodyFromNet",
-      TRACE_ID_WITH_SCOPE(kServiceWorkerNewScriptLoaderScope,
-                          TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  if (network_loader_)
-    network_loader_->PauseReadingBodyFromNet();
-}
-
-void ServiceWorkerNewScriptLoader::ResumeReadingBodyFromNet() {
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker", "ServiceWorkerNewScriptLoader::ResumeReadingBodyFromNet",
-      TRACE_ID_WITH_SCOPE(kServiceWorkerNewScriptLoaderScope,
-                          TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  if (network_loader_)
-    network_loader_->ResumeReadingBodyFromNet();
-}
-
 // URLLoaderClient for network loader ------------------------------------------
 
 void ServiceWorkerNewScriptLoader::OnReceiveEarlyHints(

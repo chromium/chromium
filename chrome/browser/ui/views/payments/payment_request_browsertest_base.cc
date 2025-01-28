@@ -501,6 +501,18 @@ autofill::PersonalDataManager* PaymentRequestBrowserTestBase::GetDataManager() {
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
 }
 
+autofill::AddressDataManager*
+PaymentRequestBrowserTestBase::address_data_manager() {
+  autofill::PersonalDataManager* pdm = GetDataManager();
+  return pdm ? &pdm->address_data_manager() : nullptr;
+}
+
+autofill::PaymentsDataManager*
+PaymentRequestBrowserTestBase::payments_data_manager() {
+  autofill::PersonalDataManager* pdm = GetDataManager();
+  return pdm ? &pdm->payments_data_manager() : nullptr;
+}
+
 void PaymentRequestBrowserTestBase::AddAutofillProfile(
     const autofill::AutofillProfile& profile) {
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();

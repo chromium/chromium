@@ -793,5 +793,7 @@ bool PlatformNotificationServiceImpl::
                                      safe_browsing::kIsAllowlistedByUserKey)) {
     return false;
   }
-  return stored_value.GetDict().Find(safe_browsing::kIsAllowlistedByUserKey);
+  return stored_value.GetDict()
+      .FindBool(safe_browsing::kIsAllowlistedByUserKey)
+      .value_or(false);
 }

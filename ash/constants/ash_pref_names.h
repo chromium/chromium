@@ -2461,6 +2461,11 @@ inline constexpr char kSunfishEnabled[] = "ash.capture_mode.sunfish_enabled";
 inline constexpr char kSunfishConsentDisclaimerAccepted[] =
     "ash.capture_mode.sunfish_consent_disclaimer_accepted";
 
+// A boolean pref that records whether users can submit feedback with Scanner.
+// Intended to be managed by policy.
+inline constexpr char kScannerFeedbackEnabled[] =
+    "ash.scanner.feedback_enabled";
+
 // A dictionary that stores app icons' light vibrant colors.
 inline constexpr char kAshAppIconLightVibrantColorCache[] =
     "ash.app_icon_light_vibrant_color_cache";

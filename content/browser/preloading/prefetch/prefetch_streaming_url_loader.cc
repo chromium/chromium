@@ -278,16 +278,4 @@ void PrefetchStreamingURLLoader::SetPriority(net::RequestPriority priority,
   }
 }
 
-void PrefetchStreamingURLLoader::PauseReadingBodyFromNet() {
-  if (prefetch_url_loader_) {
-    prefetch_url_loader_->PauseReadingBodyFromNet();
-  }
-}
-
-void PrefetchStreamingURLLoader::ResumeReadingBodyFromNet() {
-  if (prefetch_url_loader_) {
-    prefetch_url_loader_->ResumeReadingBodyFromNet();
-  }
-}
-
 }  // namespace content

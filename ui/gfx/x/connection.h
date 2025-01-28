@@ -343,7 +343,7 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
     SendEventRequest send_event{false, target, mask};
     base::span(send_event.event).copy_from(event_bytes);
-    base::ranges::copy(event_bytes, send_event.event.begin());
+    std::ranges::copy(event_bytes, send_event.event.begin());
     return XProto::SendEvent(send_event);
   }
 

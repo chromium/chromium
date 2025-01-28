@@ -4,7 +4,7 @@
 
 #include "ui/display/screen_infos.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
 
 namespace display {
 
@@ -30,7 +30,7 @@ ScreenInfo& ScreenInfos::mutable_current() {
 }
 
 const ScreenInfo& ScreenInfos::current() const {
-  const auto& current_screen_info = base::ranges::find(
+  const auto& current_screen_info = std::ranges::find(
       screen_infos, current_display_id, &ScreenInfo::display_id);
   CHECK(current_screen_info != screen_infos.end());
   return *current_screen_info;

@@ -9,9 +9,10 @@ import {BridgeHelper} from '/common/bridge_helper.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../../common/bridge_constants.js';
-import {BaseLog, LogType, TextLog, TreeLog} from '../../common/log_types.js';
+import type {BaseLog} from '../../common/log_types.js';
+import {LogType, TextLog, TreeLog} from '../../common/log_types.js';
 import {SettingsManager} from '../../common/settings_manager.js';
-import {TreeDumper} from '../../common/tree_dumper.js';
+import type {TreeDumper} from '../../common/tree_dumper.js';
 import {LoggingPrefs} from '../prefs.js';
 
 const Action = BridgeConstants.LogStore.Action;

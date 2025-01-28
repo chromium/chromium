@@ -99,13 +99,13 @@ class EmbeddedPermissionControlCheckerTest
 
     std::vector<PermissionDescriptorPtr> permission_descriptors;
     permission_descriptors.reserve(permissions.size());
-    base::ranges::transform(permissions,
-                            std::back_inserter(permission_descriptors),
-                            [](const auto& permission) {
-                              auto descriptor = PermissionDescriptor::New();
-                              descriptor->name = permission;
-                              return descriptor;
-                            });
+    std::ranges::transform(permissions,
+                           std::back_inserter(permission_descriptors),
+                           [](const auto& permission) {
+                             auto descriptor = PermissionDescriptor::New();
+                             descriptor->name = permission;
+                             return descriptor;
+                           });
 
     permission_service()->RegisterPageEmbeddedPermissionControl(
         std::move(permission_descriptors), std::move(mojo_client));

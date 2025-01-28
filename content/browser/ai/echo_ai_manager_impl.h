@@ -51,7 +51,7 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
   void CreateSummarizer(
       mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
       blink::mojom::AISummarizerCreateOptionsPtr options) override;
-  void GetModelInfo(GetModelInfoCallback callback) override;
+  void GetLanguageModelParams(GetLanguageModelParamsCallback callback) override;
   void CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
                        CanCreateWriterCallback callback) override;
   void CreateWriter(

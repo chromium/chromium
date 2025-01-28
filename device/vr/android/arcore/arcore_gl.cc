@@ -694,27 +694,12 @@ void ArCoreGl::GetFrameData(
     frame_data->camera_image_size = camera_image_size_;
   }
 
-  // Check if floor height estimate has changed.
-  float new_floor_height_estimate = arcore_->GetEstimatedFloorHeight();
-  if (!floor_height_estimate_ ||
-      *floor_height_estimate_ != new_floor_height_estimate) {
-    floor_height_estimate_ = new_floor_height_estimate;
-
-    if (!stage_parameters_) {
-      stage_parameters_ = mojom::VRStageParameters::New();
-    }
-    stage_parameters_->mojo_from_stage = gfx::Transform();
-    stage_parameters_->mojo_from_stage.Translate3d(
-        0, (-1 * *floor_height_estimate_), 0);
-
-    stage_parameters_id_++;
-  }
-
-  // Only send updates to the stage parameters if the session's stage parameters
-  // id is different.
-  frame_data->stage_parameters_id = stage_parameters_id_;
-  if (!options || options->stage_parameters_id != stage_parameters_id_) {
-    frame_data->stage_parameters = stage_parameters_.Clone();
+  if (IsFeatureEnabled(
+          device::mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR)) {
+    gfx::Transform mojo_from_floor = gfx::Transform();
+    mojo_from_floor.Translate3d(0, (-1 * arcore_->GetEstimatedFloorHeight()),
+                                0);
+    frame_data->mojo_from_floor = std::move(mojo_from_floor);
   }
 
   // Set up a shared buffer for the renderer to draw into, it'll be sent

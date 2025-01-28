@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flag_descriptions.h"

@@ -45,16 +45,16 @@ promise_test(async (t) => {
   t.add_cleanup(() => button.removeAttribute('style'));
   button.setAttribute('style',`interest-target-delay: ${invokerDelayMs}ms`);
   assert_false(button.matches(':has-interest'));
-  await mouseOverAndRecord(button);
+  const token1 = await mouseOverAndRecord(t,button);
   const immediate_result = button.matches(':has-interest');
-  if (msSinceMouseOver() < invokerDelayMs) {
+  if (msSinceMouseOver(token1) < invokerDelayMs) {
     assert_false(immediate_result,':has-interest should not match before the show delay elapses');
   }
   await waitForHoverTime(hoverWaitTime);
   assert_true(button.matches(':has-interest'),':has-interest should match after hover delay');
-  await mouseOverAndRecord(unrelated);
+  const token2 = await mouseOverAndRecord(t,unrelated);
   const immediate_result2 = button.matches(':has-interest');
-  if (msSinceMouseOver() < invokerDelayMs) {
+  if (msSinceMouseOver(token2) < invokerDelayMs) {
     assert_true(immediate_result2,':has-interest should still match before the hide delay elapses');
   }
   await waitForHoverTime(hoverWaitTime);

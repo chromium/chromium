@@ -18,6 +18,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
@@ -140,6 +141,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(
                 (showing) -> updateCurrentPosition(/* formFieldStateChanged= */ true, false));
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        recordStartupPosition(isToolbarConfiguredToShowOnTop());
 
         mLayerVisibility = LayerVisibility.HIDDEN;
         mBottomToolbarLayer =
@@ -251,6 +253,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         if (ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED.equals(key)) {
             // Re-set placement to retrieve it from prefs upon next access.
             sToolbarShouldShowOnTop = null;
+            recordPrefChange(isToolbarConfiguredToShowOnTop());
             updateCurrentPosition(false, /* prefStateChanged= */ true);
         }
     }
@@ -426,5 +429,17 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
     static void resetCachedToolbarConfigurationForTesting() {
         sToolbarShouldShowOnTop = null;
+    }
+
+    private static void recordStartupPosition(boolean userPrefersTop) {
+        int sample = userPrefersTop ? ControlsPosition.TOP : ControlsPosition.BOTTOM;
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.ToolbarPosition.PositionAtStartup", sample, ControlsPosition.NONE);
+    }
+
+    private static void recordPrefChange(boolean userPrefersTop) {
+        int sample = userPrefersTop ? ControlsPosition.TOP : ControlsPosition.BOTTOM;
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.ToolbarPosition.PositionPrefChanged", sample, ControlsPosition.NONE);
     }
 }

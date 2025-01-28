@@ -29,7 +29,7 @@
     When used
   </message>
 
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY" desc="The body of the modal dialog that we show when users click on relaunch and they have open Incognito windows. The dialog serves to warn the users about losing their Incognito windows if they proceed with the relaunch.">
       {COUNT, plural,
       =1 {Your Incognito window won't open after you relaunch}
@@ -47,7 +47,7 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_LEARN_MORE_SYSTEM_REQUIREMENTS" desc="The accessibility label for a 'Learn more' link next to an error message about how the user's operating system is not supported.">
     Learn more about system requirements
   </message>
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH" desc="The label for the relaunch button that relaunches the browser once update is complete">
       Relaunch
     </message>
@@ -146,17 +146,17 @@
   <message name="IDS_SETTINGS_ENABLE_CARET_BROWSING_TITLE" desc="Name of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
     Navigate pages with a text cursor
   </message>
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_ENABLE_CARET_BROWSING_SUBTITLE" desc="Subtitle of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
       To turn caret browsing on or off, use the shortcut F7
     </message>
   </if>
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <message name="IDS_SETTINGS_ENABLE_CARET_BROWSING_SUBTITLE" desc="Subtitle of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
       To turn caret browsing on or off, use the shortcut Ctrl+Search+7
     </message>
   </if>
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to highlight the focused object to make it easier to see.">
       Show a quick highlight on the focused object
     </message>
@@ -314,12 +314,12 @@
   <message name="IDS_SETTINGS_SUBPAGE_BUTTON" desc="Accessibility description for a button navigating the user from a settings page to one of the settings subpages.">
     Subpage button
   </message>
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_RESTART" desc="Text for a button that will restart Chrome.">
       Relaunch
     </message>
   </if>
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <message name="IDS_SETTINGS_RESTART" desc="Text for a button that will restart ChromeOS.">
       Restart
     </message>
@@ -1226,7 +1226,7 @@
   <message name="IDS_SETTINGS_LANGUAGES_PAGE_TITLE" desc="Name of the settings page which displays language preferences.">
     Languages
   </message>
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_LANGUAGES_CARD_TITLE" desc="Name of the card which manages language preferences.">
       Preferred languages
     </message>
@@ -1255,7 +1255,7 @@
   <message name="IDS_SETTINGS_LANGUAGES_NO_LANGUAGES_ADDED" desc="Placeholder for language list settings when no languages have been added, on the Manage Languages page.">
     No languages added
   </message>
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_LANGUAGES_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the language options. Only visible by screen reader software.">
       Show language options
     </message>
@@ -1364,7 +1364,7 @@
       </message>
     </if>
   </if>
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <if expr="reven">
       <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in ChromeOS Flex.">
         Manage languages in ChromeOS Flex settings
@@ -1502,12 +1502,6 @@
   <!-- Privacy Sandbox strings -->
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TITLE" desc="The title of the Privacy Sandbox page. 'Privacy Sandbox' is a noun phrase (title case).">
     Privacy Sandbox
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG" desc="Text of a dialog shown to users when they interacted with cookies to make them aware of the Privacy Sandbox.">
-    Learn about and control new technologies that aim to replace third-party cookies
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG_MORE" desc="Label on the button in the dialog shown to users when they interacted with cookies to make them aware of the Privacy Sandbox.">
-    More
   </message>
 
   <!-- Privacy Sandbox Settings 4 - Privacy & Security Page -->
@@ -2141,7 +2135,7 @@
   <message name="IDS_SETTINGS_SECURE_DNS" desc="Text for secure DNS toggle in Privacy options">
     Use secure DNS
   </message>
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <message name="IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
       Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>
     </message>
@@ -2959,7 +2953,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED_SUB_LABEL" desc="Sub label for the disabled option of the protected content content setting.">
     Media with a copyright might not play
   </message>
-  <if expr="chromeos_ash or is_win">
+  <if expr="is_chromeos or is_win">
     <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS_EXPLANATION" desc="Text that is displayed on the Protected Content section of Content Settings. This text explains that enabling protected content may require using a uniquely identifiable machine identifier.">
       Sites may also need to recognize your device using an identifier
     </message>
@@ -3748,8 +3742,11 @@
   <message name="IDS_SETTINGS_SYNC_SETTINGS_SAVED_TOAST_LABEL" desc="The notification shown to user after they saved sync settings, and sync is now started.">
     Settings saved. Sync started.
   </message>
+  <message name="IDS_SETTINGS_CHROME_SIGNIN_OPTION_SAVED_TOAST_LABEL" desc="The notification shown to user after they save the setting that controls whether a user gets signed in to Chrome when signing in to Google Services.">
+    Choice saved. Your choice will apply when you sign in to other Google services.
+  </message>
 
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_PROFILE_NAME_INPUT_LABEL" desc="Aria label of the input field where the user can edit the name associated with the profile." meaning="Name of a person">
       Name
     </message>
@@ -4027,7 +4024,7 @@
   </message>
 
   <!-- System Page -->
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_SYSTEM" desc="Title of the system settings.">
       System
     </message>

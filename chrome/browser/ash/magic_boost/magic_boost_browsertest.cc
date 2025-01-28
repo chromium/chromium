@@ -29,6 +29,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
@@ -87,7 +88,7 @@ class MagicBoostBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<std::tuple<
           /*editor_mode=*/chromeos::editor_menu::EditorMode,
-          /*orca_consent_status=*/input_method::ConsentStatus,
+          /*orca_consent_status=*/chromeos::editor_menu::EditorConsentStatus,
           /*is_hmr_consent_unset=*/chromeos::HMRConsentStatus>> {
  public:
   void SetUp() override {
@@ -223,9 +224,9 @@ class MagicBoostBrowserTest
     // `kInvalid` is treated as `kUnset`.
     return GetEditorMode() != chromeos::editor_menu::EditorMode::kHardBlocked &&
            (GetInitEditorConsentStatus() ==
-                input_method::ConsentStatus::kUnset ||
+                chromeos::editor_menu::EditorConsentStatus::kUnset ||
             GetInitEditorConsentStatus() ==
-                input_method::ConsentStatus::kInvalid);
+                chromeos::editor_menu::EditorConsentStatus::kInvalid);
   }
 
   bool ShouldOptInHmr() const {
@@ -245,7 +246,8 @@ class MagicBoostBrowserTest
     return std::get<0>(GetParam());
   }
 
-  input_method::ConsentStatus GetInitEditorConsentStatus() const {
+  chromeos::editor_menu::EditorConsentStatus GetInitEditorConsentStatus()
+      const {
     return std::get<1>(GetParam());
   }
 
@@ -295,11 +297,11 @@ INSTANTIATE_TEST_SUITE_P(
             chromeos::editor_menu::EditorMode::kRewrite,
             chromeos::editor_menu::EditorMode::kWrite),
         /*orca_consent_status=*/
-        testing::Values(input_method::ConsentStatus::kInvalid,
-                        input_method::ConsentStatus::kPending,
-                        input_method::ConsentStatus::kApproved,
-                        input_method::ConsentStatus::kDeclined,
-                        input_method::ConsentStatus::kUnset),
+        testing::Values(chromeos::editor_menu::EditorConsentStatus::kInvalid,
+                        chromeos::editor_menu::EditorConsentStatus::kPending,
+                        chromeos::editor_menu::EditorConsentStatus::kApproved,
+                        chromeos::editor_menu::EditorConsentStatus::kDeclined,
+                        chromeos::editor_menu::EditorConsentStatus::kUnset),
         /*hmr_consent_status=*/
         testing::Values(chromeos::HMRConsentStatus::kUnset,
                         chromeos::HMRConsentStatus::kApproved,
@@ -363,7 +365,8 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromReadOnlyContent) {
   if (ShouldIncludeOrca()) {
     EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
     EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-              base::to_underlying(input_method::ConsentStatus::kApproved));
+              base::to_underlying(
+                  chromeos::editor_menu::EditorConsentStatus::kApproved));
   } else {
     EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
     EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
@@ -432,7 +435,8 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   if (ShouldIncludeOrca()) {
     EXPECT_FALSE(prefs->GetBoolean(prefs::kOrcaEnabled));
     EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-              base::to_underlying(input_method::ConsentStatus::kDeclined));
+              base::to_underlying(
+                  chromeos::editor_menu::EditorConsentStatus::kDeclined));
   } else {
     EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
     EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
@@ -509,7 +513,8 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   if (ShouldIncludeOrca()) {
     EXPECT_FALSE(prefs->GetBoolean(prefs::kOrcaEnabled));
     EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-              base::to_underlying(input_method::ConsentStatus::kDeclined));
+              base::to_underlying(
+                  chromeos::editor_menu::EditorConsentStatus::kDeclined));
   } else {
     EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
     EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
@@ -604,7 +609,8 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromInputFieldWeb) {
             base::to_underlying(chromeos::HMRConsentStatus::kApproved));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-            base::to_underlying(input_method::ConsentStatus::kApproved));
+            base::to_underlying(
+                chromeos::editor_menu::EditorConsentStatus::kApproved));
 
   // Shows the Editor Menu if the editor mode is not (soft/hard) blocked.
   if (ShouldShowEditorMenu()) {
@@ -675,7 +681,8 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
             base::to_underlying(chromeos::HMRConsentStatus::kDeclined));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kOrcaEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-            base::to_underlying(input_method::ConsentStatus::kDeclined));
+            base::to_underlying(
+                chromeos::editor_menu::EditorConsentStatus::kDeclined));
 
   // Not showing the Editor Menu after declined.
   EXPECT_FALSE(IsShowingMakoBubble());
@@ -749,7 +756,8 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
             base::to_underlying(chromeos::HMRConsentStatus::kDeclined));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kOrcaEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-            base::to_underlying(input_method::ConsentStatus::kDeclined));
+            base::to_underlying(
+                chromeos::editor_menu::EditorConsentStatus::kDeclined));
 
   // Not showing the Editor Menu after declined.
   EXPECT_FALSE(IsShowingMakoBubble());

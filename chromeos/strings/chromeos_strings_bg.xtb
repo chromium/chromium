@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Отказано</translation>
 <translation id="1020274983236703756">Вече са налице специални активи за <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Земята</translation>
+<translation id="102432830749687801">Използвайте приложението „Прехвърляне на съдържание“ от Google, за да преместите в личния си профил данните от училищния, преди да загубите достъп до него.</translation>
 <translation id="1026212596705997935">Клавишната комбинация служи за „<ph name="CONFLICT_ACCEL_NAME" />“. Използвайте друга. За да замените съществуващата комбинация, натиснете тази отново.</translation>
 <translation id="1030856839388844477">Нулиране на преноса на данни</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> нишки, <ph name="CPU_MAX_CLOCK_SPEED" /> ГХц)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Нивото на батерията на калъфа е <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Шлюзът отговаря на команда ping</translation>
 <translation id="1398634363027580500">Много голямо забавяне на HTTPS</translation>
+<translation id="1406389211945506521">Благодарим ви, че споделихте впечатленията си. Отзивите ви ни помагат да създаваме по-точно и полезно съдържание.</translation>
 <translation id="1407069428457324124">Тъмна тема</translation>
 <translation id="1413240736185167732">Неуспешно – проблем с филтъра</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Класическо изкуство</translation>
 <translation id="181434555916624618">Засега резултатите с хора няма да се показват. Опитайте с друга подкана.</translation>
 <translation id="1815850098929213707">Избраният клавиш е <ph name="KEYS" />. Докоснете бутона, за да редактирате контролата</translation>
+<translation id="1818174214124933000">Когато изберете „Изпращане“, отзивите и съдържанието ви (показани по-долу) ще бъдат изпратени до Google, прегледани от хора и използвани за обучение или подобряване на продуктите и услугите ни в съответствие с <ph name="LINK_POLICY_BEGIN" />Декларацията за поверителност<ph name="LINK_POLICY_END" /> и <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Общите условия на Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Обекти</translation>
 <translation id="1827738518074806965">Художествена галерия</translation>
+<translation id="183287940576828840">Обидно/опасно</translation>
 <translation id="1836553715834333258">Системен цвят</translation>
 <translation id="183675228220305365">реализъм</translation>
 <translation id="1838374766361614909">Изчистване на търсенето</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Неуспешни заявки през UDP</translation>
 <translation id="1908394185991500139">стрелка за наляво</translation>
 <translation id="1914144885717544695">в петък</translation>
+<translation id="1915960750806557358">Споделете отзиви или опишете проблема си. Не включвайте лично, чувствително или поверително съдържание.</translation>
 <translation id="1923388006036088459">Цветове на акцентирането</translation>
 <translation id="1945403655450283000">Рекордер</translation>
 <translation id="1947737735496445907">Отпечатано</translation>
@@ -296,6 +301,7 @@
 <translation id="2240366984605217732">Превключване на подредбата</translation>
 <translation id="2244834438220057800">зелен</translation>
 <translation id="225692081236532131">Състояние на активирането</translation>
+<translation id="2265792117169966196">Избиране и изтегляне на модела за преписи на <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Добавяне на екранна снимка</translation>
 <translation id="2268044343513325586">Прецизиране</translation>
 <translation id="2271469253353559191">График за тъмния режим</translation>
@@ -595,6 +601,7 @@
 <translation id="387301095347517405">Броят пълни цикли на зареждане на батерията ви</translation>
 <translation id="3877066159641251281">Слушане на превода</translation>
 <translation id="3880601782712134623">автоматично разпознаване на различните гласове и обозначаване на говорещите с типов етикет, като например „Говорещ 1“ и „Говорещ 2“;</translation>
+<translation id="38811596981744338">Правен проблем</translation>
 <translation id="3885327323343477505">Промяна на скрийнсейвъра</translation>
 <translation id="3889914174935857450">Дата на нулиране</translation>
 <translation id="3897092660631435901">Меню</translation>
@@ -774,6 +781,7 @@
 <translation id="473775607612524610">Актуализиране</translation>
 <translation id="4744944742468440486">Информация за избраното от вас</translation>
 <translation id="4750394297954878236">Предложения</translation>
+<translation id="4763771683769971829">Списък с наличните езици</translation>
 <translation id="4771607256327216405">увеличаване на яркостта на клавиатурата</translation>
 <translation id="4771923071974529837">утре</translation>
 <translation id="4773299976671772492">Спряно</translation>
@@ -819,6 +827,7 @@
 <translation id="4921665434385737356">За <ph name="NUM_SECONDS" /> секунди се заредиха <ph name="RATE" />.</translation>
 <translation id="4930320165497208503">За настройване или актуализиране на дадена връзка отворете <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" /> (отваря се в нов раздел)</translation>
 <translation id="4946927805998996217">Генерира се обобщение</translation>
 <translation id="4950314376641394653">Фърмуерът на <ph name="DEVICE_NAME" /> е актуализиран до версия <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">тунел от дървета</translation>
@@ -855,6 +864,7 @@
 <translation id="5095761549884461003">Изключете USB кабела на <ph name="DEVICE_NAME" /> и го включете отново, за да продължите процеса на актуализиране</translation>
 <translation id="5099354524039520280">нагоре</translation>
 <translation id="5107243100836678918">Клавишната комбинация без клавиша „<ph name="META_KEY" />“ може да е в конфликт с комбинация в приложение. Натиснете тази комбинация отново, за да продължите да я използвате, или натиснете нова, като включите и клавиша „<ph name="KEY" />“. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">Моделът за преписи на <ph name="LANGUAGE_NAME" /> не може да се изтегли. Опитайте отново или рестартирайте своя Chromebook</translation>
 <translation id="5108781503443873320">Подобни:</translation>
 <translation id="5121677070210013200">Моделът за преписи не може да се изтегли. Опитайте отново или рестартирайте своя Chromebook.</translation>
 <translation id="5130848777448318809">понита</translation>
@@ -1205,6 +1215,7 @@
 <translation id="6692996468359469499">Получаване на информация, свързана с избраното от вас</translation>
 <translation id="6694534975463174713">катинар</translation>
 <translation id="6700703207451721535">Достъпът до тази връзка не е разрешен. Попитайте преподавателя си, ако имате нужда от достъп.</translation>
+<translation id="6703179086771097594">Кое не даде добър резултат?</translation>
 <translation id="6704062477274546131">Преобразуване от DNS</translation>
 <translation id="6712933881624804031">долина</translation>
 <translation id="6716013206176357696">ягоди</translation>
@@ -1278,6 +1289,8 @@
 <translation id="7049916119678019302">Изтеглете модела за преписи от настройките</translation>
 <translation id="7058278511608979688">Край и запазване</translation>
 <translation id="7059230779847288458">Зарежда се: <ph name="TIME_VALUE" /> до пълно зареждане</translation>
+<translation id="7064209589142995848">Прехвърляне на съдържание</translation>
+<translation id="7065336548231472971">Избрахте <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">клавишът <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Подгответе устройството си</translation>
 <translation id="7076851914315147928">Изберете тапет</translation>
@@ -1371,6 +1384,7 @@
 <translation id="7415801143053185905">Много голямо забавяне на HTTP</translation>
 <translation id="7418738250896500352">Твърде много думи за опростяване</translation>
 <translation id="7425037327577270384">Помощ при писане</translation>
+<translation id="7425832472614771259">Моделът за преписи на <ph name="LANGUAGE_NAME" /> е изтеглен на <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Това име на точката за достъп (APN) не може да бъде деактивирано или премахнато. Уверете се, че активираните APN за <ph name="ATTACH" /> са деактивирани или премахнати.</translation>
 <translation id="7453118953486228603">Кликнете, за да обобщите избрания текст</translation>
@@ -1407,6 +1421,7 @@
 <translation id="7595982850646262331">Оставащо време: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Администраторът на <ph name="MANAGER" /> е задал кога може да се използва това устройство (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7613724632293948900">Преместете с мишката или клавишите със стрелки.</translation>
+<translation id="7618216277886673749">Избиране на <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Неутрален</translation>
 <translation id="7620771111601174153">Научете повече в Помощния център</translation>
 <translation id="7625095758347640998">Тапети от AI</translation>
@@ -1586,6 +1601,7 @@
 <translation id="8476942730579767658">Прозорци и работни кътове</translation>
 <translation id="8477536061607044749">графичен дизайн</translation>
 <translation id="8477551185774834963">Забавянето на DNS е малко над допустимия праг</translation>
+<translation id="8481308460877552925">Фактически неправилно</translation>
 <translation id="8482376765267780829">Изберете текст, който да бъде опростен</translation>
 <translation id="8483248364096924578">IP адрес</translation>
 <translation id="8491311378305535241">През защитната стена не може да се установи връзка от приложения за Android с уебсайтове, работещи с HTTP</translation>

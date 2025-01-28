@@ -38,8 +38,8 @@ import org.chromium.components.messages.MessageScopeType;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -53,7 +53,7 @@ public class ReaderModeManagerTest {
 
     @Mock private Tab mTab;
 
-    @Mock private WebContents mWebContents;
+    @Mock private MockWebContents mWebContents;
 
     @Mock private TabDistillabilityProvider mDistillabilityProvider;
 

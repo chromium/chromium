@@ -4,9 +4,10 @@
 
 #include "content/renderer/worker/dedicated_worker_host_factory_client.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
+#include "base/containers/to_vector.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
@@ -130,11 +131,8 @@ DedicatedWorkerHostFactoryClient::CreateWorkerFetchContext(
   DCHECK(subresource_loader_factory_bundle_);
   std::vector<std::string> cors_exempt_header_list =
       RenderThreadImpl::current()->cors_exempt_header_list();
-  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
-      cors_exempt_header_list.size());
-  base::ranges::transform(
-      cors_exempt_header_list, web_cors_exempt_header_list.begin(),
-      [](const auto& header) { return blink::WebString::FromLatin1(header); });
+  std::vector<blink::WebString> web_cors_exempt_header_list =
+      base::ToVector(cors_exempt_header_list, &blink::WebString::FromLatin1);
   scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
       web_dedicated_or_shared_worker_fetch_context =
           blink::WebDedicatedOrSharedWorkerFetchContext::Create(

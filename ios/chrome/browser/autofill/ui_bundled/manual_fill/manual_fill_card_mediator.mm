@@ -69,8 +69,8 @@ std::vector<CreditCard> FetchCards(
   // Make copies of the received `fetched_cards` to not make any assumption over
   // their lifetime and make sure that the CreditCard objects stay valid
   // throughout the lifetime of this class.
-  base::ranges::transform(fetched_cards, std::back_inserter(cards),
-                          [](const CreditCard* card) { return *card; });
+  std::ranges::transform(fetched_cards, std::back_inserter(cards),
+                         [](const CreditCard* card) { return *card; });
 
   return cards;
 }

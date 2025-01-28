@@ -14,16 +14,15 @@
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider.h"
 #include "chrome/credential_provider/test/com_fakes.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-class GaiaId;
 
 namespace credential_provider {
 
 namespace testing {
 
 extern const char kDefaultEmail[];
-extern const char kDefaultGaiaId[];
+extern const GaiaId::Literal kDefaultGaiaId;
 extern const wchar_t kDefaultUsername[];
 extern const char kDefaultInvalidTokenHandleResponse[];
 extern const char kDefaultValidTokenHandleResponse[];

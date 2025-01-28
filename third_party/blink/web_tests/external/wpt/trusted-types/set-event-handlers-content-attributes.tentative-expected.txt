@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 504 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 509 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] DIV.setAttribute(onabort, "unsafe_handler()") calls default policy
   assert_equals: expected "Element onabort" but got "Element setAttribute"
 [FAIL] DIV.setAttributeNS(onabort, "unsafe_handler()") calls default policy
@@ -1008,5 +1008,15 @@ Found 504 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "Element onrepeat" but got "Element setAttribute"
 [FAIL] animation.setAttributeNS(onrepeat, "unsafe_handler()") calls default policy
   assert_equals: expected "Element onrepeat" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute("onafterprint", "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onafterprint" but got "Element setAttribute"
+[FAIL] DIV.setAttribute("onwaitingforkey", "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwaitingforkey" but got "Element setAttribute"
+[FAIL] DIV.setAttribute("onbegin", "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbegin" but got "Element setAttribute"
+[FAIL] DIV.setAttribute("onreadystatechange", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"
+[FAIL] DIV.setAttribute("onopen", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"
 Harness: the test ran to completion.
 

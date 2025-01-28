@@ -381,7 +381,7 @@ void TabContainerImpl::OnGroupContentsChanged(
     const tab_groups::TabGroupId& group) {
   // If a tab was removed, the underline bounds might be stale.
   group_views_[group]->UpdateBounds();
-  group_views_[group]->header()->UpdateAccessibleName();
+  group_views_[group]->header()->OnGroupContentsChanged();
   // The group header may be in the wrong place if the tab didn't actually
   // move in terms of model indices.
   OnGroupMoved(group);

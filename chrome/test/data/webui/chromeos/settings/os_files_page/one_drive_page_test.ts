@@ -40,8 +40,8 @@ suite('<one-drive-subpage>', function() {
     const email = 'email@gmail.com';
     await setupOneDrivePage({email});
     const signedInAsLabelElement =
-        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
-            '#signedInAsLabel')!;
+        oneDrivePage.shadowRoot!.querySelector<HTMLElement>('#signedInAsLabel')!
+        ;
     const connectDisconnectButton =
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#oneDriveConnectDisconnect')!;
@@ -59,8 +59,8 @@ suite('<one-drive-subpage>', function() {
       email: null,
     });
     const signedInAsLabelElement =
-        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
-            '#signedInAsLabel')!;
+        oneDrivePage.shadowRoot!.querySelector<HTMLElement>('#signedInAsLabel')!
+        ;
     const connectDisconnectButton =
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#oneDriveConnectDisconnect')!;
@@ -80,8 +80,8 @@ suite('<one-drive-subpage>', function() {
       email: 'email@gmail.com',
     });
     const signedInAsLabelElement =
-        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
-            '#signedInAsLabel')!;
+        oneDrivePage.shadowRoot!.querySelector<HTMLElement>('#signedInAsLabel')!
+        ;
     const connectDisconnectButton =
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#oneDriveConnectDisconnect')!;
@@ -101,8 +101,8 @@ suite('<one-drive-subpage>', function() {
   test('Update page to signed in state on OneDrive mount', async () => {
     await setupOneDrivePage({email: null});
     const signedInAsLabelElement =
-        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
-            '#signedInAsLabel')!;
+        oneDrivePage.shadowRoot!.querySelector<HTMLElement>('#signedInAsLabel')!
+        ;
     const connectDisconnectButton =
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#oneDriveConnectDisconnect')!;
@@ -125,8 +125,8 @@ suite('<one-drive-subpage>', function() {
     const email = 'email@gmail.com';
     await setupOneDrivePage({email});
     const signedInAsLabelElement =
-        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
-            '#signedInAsLabel')!;
+        oneDrivePage.shadowRoot!.querySelector<HTMLElement>('#signedInAsLabel')!
+        ;
     const connectDisconnectButton =
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#oneDriveConnectDisconnect')!;

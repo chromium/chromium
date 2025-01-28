@@ -42,9 +42,9 @@ class FakePageHandler extends TestBrowserProxy implements
       };
 
   private metadata_: CertManagementMetadata = {
+    // <if expr="not is_chromeos">
     includeSystemTrustStore: true,
     numUserAddedSystemCerts: 0,
-    // <if expr="not is_chromeos">
     isIncludeSystemTrustStoreManaged: false,
     // </if>
     numPolicyCerts: 0,

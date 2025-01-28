@@ -16,6 +16,7 @@
   # TODO(thakis): Move android det bots to use two distinct build dirs,
   # https://crbug.com/899438
   'android': [
+    'gen/build/private_code_test/private_code_failure_test.json',
   ],
 
   'fuchsia': [

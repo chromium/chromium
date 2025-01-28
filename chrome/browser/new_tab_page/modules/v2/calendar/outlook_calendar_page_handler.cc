@@ -464,7 +464,10 @@ void OutlookCalendarPageHandler::OnJsonParsed(
       // can finish before possibly incorrectly resetting the URLs. The urls
       // will be reset if a) the next request fails b) the last attempt was
       // unsuccessful and it is not yet time to make another request.
-      created_attachment->resource_url = GURL(attachment_url);
+      if (!ntp_features::kNtpOutlookCalendarModuleDisableAttachmentsParam
+               .Get()) {
+        created_attachment->resource_url = GURL(attachment_url);
+      }
       last_attachment_resource_url = attachment_url;
       created_event->attachments.push_back(std::move(created_attachment));
     }
@@ -480,8 +483,10 @@ void OutlookCalendarPageHandler::OnJsonParsed(
   // Determine whether attachment's `resource_url` should be validated.
   base::Time last_request_time = pref_service_->GetTime(
       prefs::kNtpOutlookCalendarLastAttachmentRequestTime);
+  bool should_check_attachments =
+      ntp_features::kNtpOutlookCalendarModuleAttachmentCheckParam.Get();
   bool should_make_request =
-      last_request_time == base::Time()
+      last_request_time == base::Time() && should_check_attachments
           ? !last_attachment_resource_url.empty()
           : base::Time::Now() - last_request_time > base::Hours(4) &&
                 !last_attachment_resource_url.empty();
@@ -491,7 +496,8 @@ void OutlookCalendarPageHandler::OnJsonParsed(
                              last_attachment_resource_url);
     return;
   } else if (!pref_service_->GetBoolean(
-                 prefs::kNtpOutlookCalendarLastAttachmentRequestSuccess)) {
+                 prefs::kNtpOutlookCalendarLastAttachmentRequestSuccess) &&
+             should_check_attachments) {
     // Reset attachment URLs if the last request was unsuccessful.
     for (auto& event : created_events) {
       for (auto& attachment : event->attachments) {

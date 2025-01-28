@@ -960,6 +960,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2674170444375937751">Ushbu sahifalar tarixdan butunlay o‘chirilsinmi?</translation>
 <translation id="2674524144218093528">Boʻyoqchilik va ishlov berish</translation>
 <translation id="2674804415323431591">Tavsiyalarni berkitish</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> ta varaqlar guruhi endi mavjud emas</translation>
 <translation id="2677748264148917807">Tark etish</translation>
 <translation id="2683195745483370038">Boshqa natijalar topildi</translation>
 <translation id="2686919536310834199">Yozishda yordam yuzasidan fikr-mulohaza yuborish.</translation>
@@ -2259,6 +2260,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5001526427543320409">Tashqi cookie fayllar</translation>
 <translation id="5002932099480077015">Chrome shakllarni tezroq to‘ldirish uchun karta ma’lumotlarini ushbu qurilmaga saqlaydi.</translation>
 <translation id="5007392906805964215">Tekshirish</translation>
+<translation id="500790844453430087">“<ph name="GROUP_TITLE_1" />” va “<ph name="GROUP_TITLE_2" />” varaqlar guruhlari endi mavjud emas</translation>
 <translation id="5011561501798487822">Til aniqlandi</translation>
 <translation id="5015510746216210676">Kompyuter nomi:</translation>
 <translation id="5017554619425969104">Nusxalangan matn</translation>
@@ -2731,6 +2733,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5866898949289125849">Dasturchi vositalari sahifasidasiz</translation>
 <translation id="5869405914158311789">Bu saytga ulana olmadik</translation>
 <translation id="5869522115854928033">Saqlab olingan parollar</translation>
+<translation id="5872215789867188990">“<ph name="GROUP_TITLE" />” varaqlar guruhi endi mavjud emas</translation>
 <translation id="5872692522325383488">IBAN saqlandi</translation>
 <translation id="5873297634595728366">Dizel transport vositalari</translation>
 <translation id="5877359070305966420">Mehnat resurslari tashkiloti</translation>

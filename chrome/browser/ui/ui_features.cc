@@ -8,7 +8,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/flags_ui/feature_entry.h"
 #include "ui/base/ui_base_features.h"
 
@@ -56,14 +55,8 @@ const base::FeatureParam<std::string> kDefaultBrowserPromptRefreshStudyGroup{
 const base::FeatureParam<bool> kShowDefaultBrowserInfoBar{
     &kDefaultBrowserPromptRefresh, "show_info_bar", true};
 
-const base::FeatureParam<bool> kShowDefaultBrowserAppMenuChip{
-    &kDefaultBrowserPromptRefresh, "show_app_menu_chip", false};
-
 const base::FeatureParam<bool> kShowDefaultBrowserAppMenuItem{
     &kDefaultBrowserPromptRefresh, "show_app_menu_item", true};
-
-const base::FeatureParam<bool> kUpdatedInfoBarCopy{
-    &kDefaultBrowserPromptRefresh, "updated_info_bar_copy", false};
 
 const base::FeatureParam<base::TimeDelta> kRepromptDuration{
     &kDefaultBrowserPromptRefresh, "reprompt_duration", base::Days(60)};
@@ -73,12 +66,6 @@ const base::FeatureParam<int> kMaxPromptCount{&kDefaultBrowserPromptRefresh,
 
 const base::FeatureParam<int> kRepromptDurationMultiplier{
     &kDefaultBrowserPromptRefresh, "reprompt_duration_multiplier", 1};
-
-const base::FeatureParam<base::TimeDelta> kDefaultBrowserAppMenuDuration{
-    &kDefaultBrowserPromptRefresh, "app_menu_duration", base::Days(3)};
-
-const base::FeatureParam<bool> kAppMenuChipColorPrimary{
-    &kDefaultBrowserPromptRefresh, "app_menu_chip_color_primary", false};
 
 // Create new Extensions app menu option (removing "More Tools -> Extensions")
 // with submenu to manage extensions and visit chrome web store.

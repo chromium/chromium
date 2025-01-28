@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -17,8 +19,6 @@
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -841,7 +841,7 @@ AttributionResolverImpl::MaybeCreateEventLevelReport(
 
   const SourceType source_type = common_info.source_type();
 
-  auto event_trigger = base::ranges::find_if(
+  auto event_trigger = std::ranges::find_if(
       trigger.registration().event_triggers,
       [&](const attribution_reporting::EventTriggerData& event_trigger) {
         return source.filter_data().Matches(
@@ -910,7 +910,7 @@ AttributionResolverImpl::MaybeCreateAggregatableAttributionReport(
 
   const SourceType source_type = common_info.source_type();
 
-  auto matched_dedup_key = base::ranges::find_if(
+  auto matched_dedup_key = std::ranges::find_if(
       trigger.registration().aggregatable_dedup_keys,
       [&](const attribution_reporting::AggregatableDedupKey&
               aggregatable_dedup_key) {

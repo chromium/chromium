@@ -192,11 +192,19 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(PaymentsAccountStorageUponConfiguration) -->
 
 <enum name="PaymentsAccountStorageUponConfiguration">
-  <int value="0" label="Signed in implicitly with in-memory storage"/>
+  <int value="0"
+      label="(deprecated) Signed in implicitly with in-memory storage"/>
   <int value="1" label="Signed in explicitly with on-disk storage"/>
   <int value="2" label="Signed in explicitly with in-memory storage"/>
   <int value="3"
+      label="(deprecated) Signed in implicitly with on-disk storage"/>
+  <int value="4" label="Signed in implicitly with in-memory storage"/>
+  <int value="5"
       label="(UNEXPECTED) Signed in implicitly with on-disk storage"/>
+  <int value="6"
+      label="Signed in with Sync-the-feature on with on-disk storage"/>
+  <int value="7"
+      label="Signed in with Sync-the-feature on with in-memory storage"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/browser_sync/common_controller_builder.cc:PaymentsAccountStorageUponConfiguration) -->

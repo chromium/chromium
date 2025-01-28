@@ -500,7 +500,7 @@ bool WebAuthRequestSecurityChecker::
       base::flat_set<device::FidoTransportProtocol> merged_transports;
       if (!it->transports.empty() &&
           !credential_descriptor.transports.empty()) {
-        base::ranges::set_union(
+        std::ranges::set_union(
             it->transports, credential_descriptor.transports,
             std::inserter(merged_transports, merged_transports.begin()));
       }

@@ -19,7 +19,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/values.h"
@@ -904,7 +903,7 @@ void BiddingAndAuctionSerializer::AddGroups(
   // Randomize then order, then sort by priority. This insures fairness
   // between groups with the same priority.
   base::RandomShuffle(groups_to_add.begin(), groups_to_add.end());
-  base::ranges::stable_sort(
+  std::ranges::stable_sort(
       groups_to_add, [](const SingleStorageInterestGroup& a,
                         const SingleStorageInterestGroup& b) {
         return a->interest_group.priority > b->interest_group.priority;

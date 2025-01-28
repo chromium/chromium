@@ -94,7 +94,7 @@ suite('ApnListItemTest', function() {
     });
     await flushTasks();
     assertEquals(
-        apnListItem.shadowRoot!.querySelector<HTMLDivElement>(
+        apnListItem.shadowRoot!.querySelector<HTMLElement>(
                                    '#apnName')!.innerText,
         apnListItem.apn.accessPointName);
 
@@ -104,7 +104,7 @@ suite('ApnListItemTest', function() {
     });
     await flushTasks();
     assertEquals(
-        apnListItem.shadowRoot!.querySelector<HTMLDivElement>(
+        apnListItem.shadowRoot!.querySelector<HTMLElement>(
                                    '#apnName')!.innerText,
         apnListItem.apn.name);
 
@@ -113,7 +113,7 @@ suite('ApnListItemTest', function() {
     });
     await flushTasks();
     assertEquals(
-        apnListItem.shadowRoot!.querySelector<HTMLDivElement>(
+        apnListItem.shadowRoot!.querySelector<HTMLElement>(
                                    '#apnName')!.innerText,
         apnListItem.i18n('apnNameModem'));
   });
@@ -124,7 +124,7 @@ suite('ApnListItemTest', function() {
     await flushTasks();
 
     const subLabel =
-        apnListItem.shadowRoot!.querySelector<HTMLDivElement>('#subLabel');
+        apnListItem.shadowRoot!.querySelector<HTMLElement>('#subLabel');
     assertTrue(!!subLabel);
     assertTrue(subLabel.hasAttribute('hidden'), 'fails to hide sublabel');
     apnListItem.isApnConnected = true;
@@ -300,9 +300,8 @@ suite('ApnListItemTest', function() {
           apnListItem.apn = TEST_APN_EVENT_DATA.apn;
           apnListItem.guid = TEST_APN_EVENT_DATA_GUID;
 
-          const subLabel =
-              apnListItem.shadowRoot!.querySelector<HTMLDivElement>(
-                  '#autoDetected');
+          const subLabel = apnListItem.shadowRoot!.querySelector<HTMLElement>(
+              '#autoDetected');
           assertTrue(!!subLabel);
           assertFalse(subLabel.hasAttribute('hidden'));
           assertEquals(apnListItem.i18n('apnAutoDetected'), subLabel.innerText);

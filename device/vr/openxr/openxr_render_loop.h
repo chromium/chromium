@@ -268,6 +268,11 @@ class OpenXrRenderLoop : public XRThread,
 
   void MaybeRejectSessionCallback();
 
+  gfx::Transform mojo_from_local() {
+    // mojo_from_local is currently identity.
+    return gfx::Transform();
+  }
+
   bool IsFeatureEnabled(device::mojom::XRSessionFeature feature) const;
   int16_t next_frame_id_ = 0;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;

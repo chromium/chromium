@@ -311,7 +311,7 @@ void ClipboardIOS::ReadFilenames(ClipboardBuffer buffer,
           base::apple::NSStringToFilePath(file_url.lastPathComponent));
     }
   }
-  base::ranges::move(files, std::back_inserter(*result));
+  std::ranges::move(files, std::back_inserter(*result));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

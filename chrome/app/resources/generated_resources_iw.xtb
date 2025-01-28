@@ -71,6 +71,7 @@
 <translation id="1043505821207197890">‏משהו השתבש. השדרוג של Linux עשוי להיות חלקי בלבד. אפשר לבדוק ביומנים לקבלת מידע נוסף. היומנים נשמרו ב'קבצים' &gt; 'הקבצים שלי' &gt; <ph name="LOG_FILE" /></translation>
 <translation id="104385770822424034">הוספת פעולה</translation>
 <translation id="104419033123549300">סגנון מיפוי המקשים</translation>
+<translation id="1045487161760507186">‏אין צורך לזכור את הסיסמה כי היא נשמרת בשבילך במנהל הסיסמאות של Google</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{סיסמה אחת יובאה אל <ph name="BRAND" /> במכשיר הזה}one{{NUM_PASSWORDS} סיסמאות יובאו אל <ph name="BRAND" /> במכשיר הזה}two{{NUM_PASSWORDS} סיסמאות יובאו אל <ph name="BRAND" /> במכשיר הזה}other{{NUM_PASSWORDS} סיסמאות יובאו אל <ph name="BRAND" /> במכשיר הזה}}</translation>
 <translation id="1046572983040892965">החלון הועבר למעלה ושמאלה</translation>
 <translation id="104710386808485638">‏האם להפעיל מחדש את Linux?</translation>
@@ -1884,6 +1885,7 @@
 <translation id="2297705863329999812">חיפוש מדפסות</translation>
 <translation id="2297822946037605517">שתף דף זה</translation>
 <translation id="229871422646860597">ביטול ההצמדה לסרגל הכלים</translation>
+<translation id="2299685119225839832">אפשר לקבל סיכום של מה שאנשים כותבים בביקורות שלהם</translation>
 <translation id="2299734369537008228">מחוון: <ph name="MIN_LABEL" /> עד <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">הכללה של כל קובצי היומן שנאספו על-ידי ניפוי הבאגים כארכיון נפרד.</translation>
 <translation id="2300214399009193026">PCIe</translation>
@@ -5257,6 +5259,7 @@
 <translation id="4676616966096505747">חלק מהנתונים עדיין לא נשמרו בחשבון שלך</translation>
 <translation id="4677772697204437347">‏זיכרון GPU</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4678729681411398877">‏אם אחת מהסיסמאות שלך נחשפת בפרצה באבטחת המידע, מנהל הסיסמאות של Google מציע לשנות אותה לסיסמה חזקה</translation>
 <translation id="4678848110205818817">כרטיס אשראי או כרטיס חיוב מיידי</translation>
 <translation id="4679018849559620189">הפעולה הזו עוזרת לך לגשת למפתחות הגישה השמורים בכל מכשיר</translation>
 <translation id="4680105648806843642">הצלילים הושתקו בדף הזה</translation>
@@ -6825,6 +6828,7 @@
 <translation id="5828545842856466741">הוספת פרופיל...</translation>
 <translation id="5828633471261496623">ההדפסה מתבצעת...</translation>
 <translation id="5830205393314753525">לא ניתן לפתוח את <ph name="APP_NAME" /></translation>
+<translation id="5830512293931520102">הסיסמה שלך מוצפנת ואף אחד לא יכול לראות אותה</translation>
 <translation id="5830720307094128296">שמירת הדף &amp;כ...</translation>
 <translation id="583179300286794292">נכנסת בתור <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">למחוק את הנתונים ואת ההרשאות לאתר <ph name="SITE_NAME" />, לכל האתרים שתחתיו ולאפליקציות המותקנות?</translation>
@@ -10162,6 +10166,7 @@
 <translation id="8215129063232901118">אפשר ליהנות מהיכולות של הטלפון ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">הדגשת המצביע</translation>
 <translation id="8217399928341212914">להמשיך לחסום הורדות אוטומטיות של קבצים מרובים</translation>
+<translation id="8219785583603399823">הצגת הדירוגים של החנות הזו</translation>
 <translation id="822050276545350872">מעכשיו, לא יהיה צורך להמתין יותר</translation>
 <translation id="8222112516148944758">קבוצות הכרטיסיות נשמרות אוטומטית ומתעדכנות בכל המכשירים</translation>
 <translation id="8222674561049363989">הקובץ הוא לא מסמך תקין</translation>

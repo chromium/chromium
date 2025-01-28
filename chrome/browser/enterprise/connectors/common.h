@@ -103,10 +103,9 @@ bool ResultShouldAllowDataUse(
 // Calculates the event result that is experienced by the user.
 // If data is allowed to be accessed immediately, the result will indicate that
 // the user was allowed to use the data independent of the scanning result.
-safe_browsing::EventResult CalculateEventResult(
-    const AnalysisSettings& settings,
-    bool allowed_by_scan_result,
-    bool should_warn);
+EventResult CalculateEventResult(const AnalysisSettings& settings,
+                                 bool allowed_by_scan_result,
+                                 bool should_warn);
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

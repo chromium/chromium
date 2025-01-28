@@ -1055,14 +1055,13 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreateBitmapProvider(
     gfx::Size size,
-    SkColorType sk_color_type,
+    viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     ShouldInitialize should_initialize,
     CanvasResourceHost* resource_host) {
   auto provider = std::make_unique<CanvasResourceProviderBitmap>(
-      size, viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
-      alpha_type, color_space, resource_host);
+      size, format, alpha_type, color_space, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)

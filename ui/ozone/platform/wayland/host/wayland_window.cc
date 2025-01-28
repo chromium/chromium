@@ -20,7 +20,6 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/base/cursor/cursor.h"
@@ -46,6 +45,7 @@
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
+#include "ui/ozone/platform/wayland/host/wayland_async_cursor.h"
 #include "ui/ozone/platform/wayland/host/wayland_bubble.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
@@ -313,16 +313,10 @@ void WaylandWindow::OnPointerFocusChanged(bool focused) {
   // Whenever the window gets the pointer focus back, the cursor shape must be
   // updated. Otherwise, it is invalidated upon wl_pointer::leave and is not
   // restored by the Wayland compositor.
-#if BUILDFLAG(IS_LINUX)
   if (focused && async_cursor_) {
     async_cursor_->AddCursorLoadedCallback(base::BindOnce(
         &WaylandWindow::OnCursorLoaded, AsWeakPtr(), async_cursor_));
   }
-#else
-  if (focused && cursor_) {
-    UpdateCursorShape(cursor_);
-  }
-#endif
 }
 
 bool WaylandWindow::HasPointerFocus() const {
@@ -592,7 +586,6 @@ bool WaylandWindow::ShouldUseNativeFrame() const {
 void WaylandWindow::SetCursor(scoped_refptr<PlatformCursor> platform_cursor) {
   DCHECK(platform_cursor);
 
-#if BUILDFLAG(IS_LINUX)
   auto async_cursor = WaylandAsyncCursor::FromPlatformCursor(platform_cursor);
 
   if (async_cursor_ == async_cursor) {
@@ -602,13 +595,6 @@ void WaylandWindow::SetCursor(scoped_refptr<PlatformCursor> platform_cursor) {
   async_cursor_ = async_cursor;
   async_cursor->AddCursorLoadedCallback(base::BindOnce(
       &WaylandWindow::OnCursorLoaded, AsWeakPtr(), async_cursor));
-#else
-  if (cursor_ == platform_cursor) {
-    return;
-  }
-
-  UpdateCursorShape(BitmapCursor::FromPlatformCursor(platform_cursor));
-#endif
 }
 
 void WaylandWindow::MoveCursorTo(const gfx::Point& location) {
@@ -764,7 +750,6 @@ std::string WaylandWindow::WindowStates::ToString() const {
   } else {
     base::TrimString(states, " ", &states);
   }
-#if BUILDFLAG(IS_LINUX)
   states += "; tiled_edges: ";
   std::string tiled = "";
   if (tiled_edges.left) {
@@ -785,7 +770,6 @@ std::string WaylandWindow::WindowStates::ToString() const {
     base::TrimString(tiled, " ", &tiled);
   }
   states += tiled;
-#endif
   return states;
 }
 
@@ -1234,19 +1218,14 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
         cursor->bitmaps(), hotspot_in_dips,
         std::ceil(cursor->cursor_image_scale_factor()));
   }
-#if !BUILDFLAG(IS_LINUX)
-  cursor_ = cursor;
-#endif
 }
 
-#if BUILDFLAG(IS_LINUX)
 void WaylandWindow::OnCursorLoaded(scoped_refptr<WaylandAsyncCursor> cursor,
                                    scoped_refptr<BitmapCursor> bitmap_cursor) {
   if (HasPointerFocus() && async_cursor_ == cursor && bitmap_cursor) {
     UpdateCursorShape(bitmap_cursor);
   }
 }
-#endif
 
 void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
   // For values not specified in pending_configure_state_, use the latest
@@ -1519,7 +1498,7 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   }
 
   if (!force) {
-    int in_flight_applied = base::ranges::count_if(
+    int in_flight_applied = std::ranges::count_if(
         in_flight_requests_,
         [](const StateRequest& req) { return req.applied; });
 
@@ -1550,7 +1529,7 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   if (UseTestConfigForPlatformWindows()) {
     latest_applied_viz_seq_for_testing_ = std::max(
         latest_applied_viz_seq_for_testing_,
-        base::ranges::max(in_flight_requests_, {}, [](const StateRequest& req) {
+        std::ranges::max(in_flight_requests_, {}, [](const StateRequest& req) {
           return req.viz_seq;
         }).viz_seq);
   }

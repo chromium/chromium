@@ -4,6 +4,7 @@
 
 #include "ui/compositor/layer.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <optional>
@@ -20,7 +21,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/mirror_layer.h"
 #include "cc/layers/nine_patch_layer.h"
@@ -434,7 +434,7 @@ void Layer::Remove(Layer* child) {
   if (compositor && compositor->animations_are_enabled())
     child->ResetCompositorForAnimatorsInTree(compositor);
 
-  auto i = base::ranges::find(children_, child);
+  auto i = std::ranges::find(children_, child);
   CHECK(i != children_.end(), base::NotFatalUntil::M130);
   children_.erase(i);
   child->parent_ = nullptr;
@@ -1553,9 +1553,9 @@ void Layer::StackRelativeTo(Layer* child, Layer* other, bool above) {
   DCHECK_EQ(this, other->parent());
 
   const size_t child_i =
-      base::ranges::find(children_, child) - children_.begin();
+      std::ranges::find(children_, child) - children_.begin();
   const size_t other_i =
-      base::ranges::find(children_, other) - children_.begin();
+      std::ranges::find(children_, other) - children_.begin();
   DCHECK_LT(child_i, children_.size()) << " child not in vector";
   DCHECK_LT(other_i, children_.size()) << " other not in vector";
   if ((above && child_i == other_i + 1) || (!above && child_i + 1 == other_i))
@@ -1898,7 +1898,7 @@ void Layer::ResetCompositorForAnimatorsInTree(Compositor* compositor) {
 
 void Layer::OnMirrorDestroyed(LayerMirror* mirror) {
   const auto it =
-      base::ranges::find(mirrors_, mirror, &std::unique_ptr<LayerMirror>::get);
+      std::ranges::find(mirrors_, mirror, &std::unique_ptr<LayerMirror>::get);
 
   CHECK(it != mirrors_.end(), base::NotFatalUntil::M130);
   mirrors_.erase(it);

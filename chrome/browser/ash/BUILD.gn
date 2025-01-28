@@ -8,7 +8,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 source_set("unit_tests") {
   testonly = true

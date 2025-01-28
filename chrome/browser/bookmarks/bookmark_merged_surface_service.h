@@ -11,7 +11,10 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
+#include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -83,7 +86,8 @@ struct BookmarkParentFolder {
 // It maintains the order between local and account bookmark children
 // nodes of permanent bookmark nodes.
 // Merged UI surfaces should use this class for bookmark operations.
-class BookmarkMergedSurfaceService : public KeyedService {
+class BookmarkMergedSurfaceService : public KeyedService,
+                                     public bookmarks::BookmarkModelObserver {
  public:
   // `model` must not be null and must outlive this object.
   // `managed_bookmark_service` may be null.
@@ -176,6 +180,36 @@ class BookmarkMergedSurfaceService : public KeyedService {
   void SetShowMoveStorageDialogCallbackForTesting(
       ShowMoveStorageDialogCallback show_move_storage_dialog_for_testing);
 
+  void AddObserver(BookmarkMergedSurfaceServiceObserver* observer);
+  void RemoveObserver(BookmarkMergedSurfaceServiceObserver* observer);
+
+  // bookmarks::BookmarkModelObserver:
+  void BookmarkModelLoaded(bool ids_reassigned) override;
+  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
+                         size_t old_index,
+                         const bookmarks::BookmarkNode* new_parent,
+                         size_t new_index) override;
+  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
+                         size_t index,
+                         bool added_by_user) override;
+  void OnWillRemoveBookmarks(const bookmarks::BookmarkNode* parent,
+                             size_t old_index,
+                             const bookmarks::BookmarkNode* node,
+                             const base::Location& location) override;
+  void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
+                           size_t old_index,
+                           const bookmarks::BookmarkNode* node,
+                           const std::set<GURL>& no_longer_bookmarked,
+                           const base::Location& location) override;
+  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
+  void OnWillChangeBookmarkMetaInfo(
+      const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeChildrenReordered(
+      const bookmarks::BookmarkNode* node) override;
+  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
+                                   const base::Location& location) override;
+
  private:
   const bookmarks::BookmarkNode* managed_permanent_node() const;
 
@@ -184,6 +218,14 @@ class BookmarkMergedSurfaceService : public KeyedService {
 
   PermanentFolderOrderingTracker& GetPermanentFolderOrderingTracker(
       BookmarkParentFolder::PermanentFolderType folder_type);
+
+  // Helper function for optimization purposes.
+  // Returns `in_storage_index` if node is not tracked in any of
+  // `PermanentFolderOrderingTracker` or it is tracked but the ordering is not
+  // tracked based on `PermanentFolderOrderingTracker::ShouldTrackOrdering()`.
+  // Otherwise, returns `PermanentFolderOrderingTracker::GetIndexOf(node)`.
+  size_t GetIndexAcrossStorage(const bookmarks::BookmarkNode* node,
+                               size_t in_storage_index) const;
 
   const raw_ptr<bookmarks::BookmarkModel> model_;
   const raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
@@ -195,6 +237,21 @@ class BookmarkMergedSurfaceService : public KeyedService {
   const bookmarks::BookmarkNode dummy_empty_node_;
 
   ShowMoveStorageDialogCallback show_move_storage_dialog_for_testing_;
+
+  // Non-empty in the middle of bookmark node removal.
+  // It is set in `OnWillRemoveBookmarks()` and cleared in
+  // `BookmarkNodeRemoved()`.
+  // - It can contain zero, one or more elements in case of account node removal
+  // based on the account node's children size.
+  // - Otherwise, it contains a single node that is being removed.
+  base::flat_map<size_t, raw_ptr<const bookmarks::BookmarkNode>>
+      cached_index_for_nodes_removal_;
+
+  base::ObserverList<BookmarkMergedSurfaceServiceObserver> observers_;
+
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
+      model_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_BOOKMARK_MERGED_SURFACE_SERVICE_H_

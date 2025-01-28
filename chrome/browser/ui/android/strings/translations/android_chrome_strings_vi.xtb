@@ -1210,6 +1210,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Thẻ <ph name="TAB_TITLE" /> và <ph name="TAB_COUNT_ONE" /> thẻ khác sẽ đóng}other{Thẻ <ph name="TAB_TITLE" /> và <ph name="TAB_COUNT_MANY" /> thẻ khác sẽ đóng}}</translation>
 <translation id="6560414384669816528">Tìm kiếm với Sogou</translation>
 <translation id="656065428026159829">Xem thêm</translation>
+<translation id="6564820424018738527">Thiết bị Android của bạn có thể có chế độ cài đặt tương tự. Nếu bạn bật tính năng đo lường quảng cáo trong Chrome và trên thiết bị Android, một công ty có thể đo lường mức độ hiệu quả của quảng cáo trên những trang web bạn truy cập và ứng dụng bạn dùng.</translation>
 <translation id="6565959834589222080">Dùng mạng Wi-Fi khi có sẵn</translation>
 <translation id="6569373978618239158">Giờ đây, bạn sẽ thấy các tin bài của <ph name="SITE_NAME" /> khi mở một thẻ mới. Các trang web bạn theo dõi sẽ được lưu trong tài khoản Google của bạn. Bạn có thể quản lý các trang web đó trong phần cài đặt Khám phá.</translation>
 <translation id="6570116402456758630">Tóm tắt trang</translation>

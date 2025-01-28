@@ -122,7 +122,9 @@ class IsolatedWebAppUpdateDiscoveryTaskTest : public WebAppTest {
                     update_manifest_url_, update_channel, allow_downgrades,
                     pinned_version, url_info, /*dev_mode=*/false),
                 fake_provider().scheduler(), fake_provider().registrar_unsafe(),
-                profile()->GetURLLoaderFactory());
+                profile()->GetURLLoaderFactory(),
+                /*optional_keep_alive=*/nullptr,
+                /*optional_profile_keep_alive=*/nullptr);
   }
 
   Task CreateDefaultIwaUpdateDiscoveryTask(

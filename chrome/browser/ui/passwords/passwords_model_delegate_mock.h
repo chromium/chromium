@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -126,6 +127,10 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               GetPasswordChangeDelegate,
               (),
               (const override));
+  MOCK_METHOD(PasswordsLeakDialogDelegate*,
+              GetPasswordsLeakDialogDelegate,
+              (),
+              (override));
 
   base::WeakPtr<PasswordsModelDelegateMock> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

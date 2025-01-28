@@ -7,7 +7,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_features.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_features.h"
@@ -16,18 +15,31 @@
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_apitest.h"
+#endif
+
 namespace {
 
 using ContextType = extensions::browser_test_util::ContextType;
 using extensions::ScopedCurrentChannel;
 
-class DeclarativeNetRequestApiTest : public extensions::ExtensionApiTest {
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionApiTestBase = extensions::ExtensionPlatformApiTest;
+#else
+using ExtensionApiTestBase = extensions::ExtensionApiTest;
+#endif
+
+class DeclarativeNetRequestApiTest : public ExtensionApiTestBase {
  public:
   DeclarativeNetRequestApiTest() {
     feature_list_.InitWithFeatures(
@@ -37,7 +49,7 @@ class DeclarativeNetRequestApiTest : public extensions::ExtensionApiTest {
         /*disabled_features=*/{features::kHttpsUpgrades});
   }
   explicit DeclarativeNetRequestApiTest(ContextType context_type)
-      : ExtensionApiTest(context_type) {
+      : ExtensionApiTestBase(context_type) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
@@ -52,7 +64,7 @@ class DeclarativeNetRequestApiTest : public extensions::ExtensionApiTest {
  protected:
   // ExtensionApiTest override.
   void SetUpOnMainThread() override {
-    extensions::ExtensionApiTest::SetUpOnMainThread();
+    ExtensionApiTestBase::SetUpOnMainThread();
     ASSERT_TRUE(StartEmbeddedTestServer());
 
     // Map all hosts to localhost.
@@ -86,16 +98,23 @@ class DeclarativeNetRequestLazyApiTest
       : DeclarativeNetRequestApiTest(GetParam()) {}
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android only supports service worker.
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          DeclarativeNetRequestLazyApiTest,
                          ::testing::Values(ContextType::kEventPage));
+#endif
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          DeclarativeNetRequestLazyApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/392682596): Port to desktop Android. Service worker
+// registration fails on load.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, DynamicRules) {
   ASSERT_TRUE(RunExtensionTest("dynamic_rules")) << message_;
 }
+#endif
 
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, RegexRuleMessage) {
   // Ensure the error message for large RegEx rules is updated with the
@@ -106,6 +125,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, RegexRuleMessage) {
               testing::HasSubstr(expected_amount));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 class DeclarativeNetRequestSafeRulesLazyApiTest
     : public DeclarativeNetRequestLazyApiTest {
  public:
@@ -163,6 +183,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSafeRulesLazyApiTest,
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
+// TODO(crbug.com/391932982): Port to desktop Android when chrome.tabs API is
+// available.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, OnRulesMatchedDebug) {
   ASSERT_TRUE(RunExtensionTest("on_rules_matched_debug")) << message_;
 }
@@ -173,18 +195,26 @@ IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, ModifyHeaders) {
   ASSERT_TRUE(RunExtensionTest("modify_headers")) << message_;
 }
 
+// TODO(crbug.com/391932982): Port to desktop Android when chrome.tabs API is
+// available.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, GetMatchedRules) {
   ASSERT_TRUE(RunExtensionTest("get_matched_rules")) << message_;
 }
 
+// TODO(crbug.com/392682596): Port to desktop Android. Service worker
+// registration fails on load.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, IsRegexSupported) {
   ASSERT_TRUE(RunExtensionTest("is_regex_supported")) << message_;
 }
 
+// TODO(crbug.com/392682596): Port to desktop Android. Service worker
+// registration fails on load.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, TestMatchOutcome) {
   ASSERT_TRUE(RunExtensionTest("test_match_outcome")) << message_;
 }
 
+// TODO(crbug.com/392682596): Port to desktop Android. Service worker
+// registration fails on load.
 IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, UpdateStaticRules) {
   ASSERT_TRUE(RunExtensionTest("update_static_rules")) << message_;
 }
@@ -235,6 +265,8 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          DeclarativeNetRequestApiPrerenderingTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
+// TODO(crbug.com/391932982): Port to desktop Android when chrome.tabs API is
+// available.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestApiPrerenderingTest,
                        PrerenderedPageInterception) {
   ASSERT_TRUE(RunExtensionTest("prerendering")) << message_;
@@ -266,10 +298,13 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          DeclarativeNetRequestLazyApiResponseHeadersTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
+// TODO(crbug.com/392682596): Port to desktop Android. Service worker
+// registration fails on load.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiResponseHeadersTest,
                        TestMatchOutcomeWithResponseHeaders) {
   ASSERT_TRUE(RunExtensionTest("test_match_outcome_response_headers"))
       << message_;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

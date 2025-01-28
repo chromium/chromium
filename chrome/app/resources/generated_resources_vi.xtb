@@ -72,6 +72,7 @@
 <translation id="1043505821207197890">Đã xảy ra lỗi. Có thể Linux chỉ được nâng cấp một phần. Xem nhật ký để biết thêm thông tin. Nhật ký đã được lưu tại Files &gt; My files &gt; <ph name="LOG_FILE" /></translation>
 <translation id="104385770822424034">Thêm thao tác</translation>
 <translation id="104419033123549300">Kiểu sơ đồ bàn phím</translation>
+<translation id="1045487161760507186">Bạn không cần nhớ mật khẩu này vì hệ thống đã lưu mật khẩu đó trong Trình quản lý mật khẩu của Google</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{Đã nhập 1 mật khẩu vào <ph name="BRAND" /> trên thiết bị này}other{Đã nhập {NUM_PASSWORDS} mật khẩu vào <ph name="BRAND" /> trên thiết bị này}}</translation>
 <translation id="1046572983040892965">Đã di chuyển cửa sổ lên trên và sang bên trái</translation>
 <translation id="104710386808485638">Khởi động lại Linux?</translation>
@@ -1887,6 +1888,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2297705863329999812">Tìm kiếm máy in</translation>
 <translation id="2297822946037605517">Chia sẻ trang này</translation>
 <translation id="229871422646860597">Bỏ ghim khỏi thanh công cụ</translation>
+<translation id="2299685119225839832">Bạn có thể xem bản tóm tắt về những điều mọi người nhận xét trong bài đánh giá của họ</translation>
 <translation id="2299734369537008228">Thanh trượt: <ph name="MIN_LABEL" /> đến <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Thêm tất cả tệp nhật ký thu thập được trong quá trình gỡ lỗi dưới dạng một mục lưu trữ riêng.</translation>
 <translation id="2300214399009193026">PCIe</translation>
@@ -5259,6 +5261,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4676616966096505747">Một số dữ liệu chưa được lưu vào tài khoản của bạn</translation>
 <translation id="4677772697204437347">Bộ nhớ GPU</translation>
 <translation id="467809019005607715">Google Trang trình bày</translation>
+<translation id="4678729681411398877">Khi một trong các mật khẩu của bạn bị lộ trong sự cố rò rỉ dữ liệu, Trình quản lý mật khẩu của Google sẽ hỏi xem bạn có muốn thay đổi mật khẩu đó thành mật khẩu mạnh hay không</translation>
 <translation id="4678848110205818817">Thẻ tín dụng/thẻ ghi nợ</translation>
 <translation id="4679018849559620189">Mã PIN này giúp bạn truy cập vào khoá truy cập bạn đã lưu trên bất cứ thiết bị nào</translation>
 <translation id="4680105648806843642">Trang này đã bị tắt tiếng</translation>
@@ -6828,6 +6831,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5828545842856466741">Thêm hồ sơ...</translation>
 <translation id="5828633471261496623">Đang in...</translation>
 <translation id="5830205393314753525">Không thể mở <ph name="APP_NAME" /></translation>
+<translation id="5830512293931520102">Mật khẩu của bạn được mã hoá và không ai có thể nhìn thấy</translation>
 <translation id="5830720307094128296">Lưu trang &amp;dưới dạng...</translation>
 <translation id="583179300286794292">Đã đăng nhập bằng <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Xoá dữ liệu trang web và quyền của <ph name="SITE_NAME" />, cũng như mọi trang web và ứng dụng đã cài đặt thuộc nhóm này?</translation>
@@ -7572,6 +7576,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Thêm gia đình và bạn bè</translation>
 <translation id="6367097275976877956">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS) không? Nếu có, hãy nhấn phím cách.</translation>
+<translation id="6367396429435748845">Nhấn <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> để tạm dừng và tiếp tục sử dụng phím điều khiển chuột</translation>
 <translation id="6367985768157257101">Nhận thông qua tính năng Chia sẻ lân cận?</translation>
 <translation id="6368157733310917710">&amp;Địa chỉ và các mục khác</translation>
 <translation id="6368276408895187373">Đã bật – <ph name="VARIATION_NAME" /></translation>
@@ -9229,6 +9234,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7568759527730933493">Dùng kết nối bảo mật để tra cứu địa chỉ IP của một trang web trong DNS (Hệ thống tên miền). Hệ thống tên miền sử dụng nhà cung cấp dịch vụ được quản lý tại <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Không sử dụng kết nối bảo mật cho một số miền do quản trị viên của bạn định cấu hình.</translation>
 <translation id="756876171895853918">Tùy chỉnh hình đại diện</translation>
 <translation id="7568790562536448087">Đang cập nhật</translation>
+<translation id="7569113730576914983">Khi phát hiện một trong các mật khẩu của bạn bị lộ trong một sự cố rò rỉ dữ liệu, Chrome có thể đề xuất thay đổi mật khẩu cho bạn khi bạn đăng nhập</translation>
 <translation id="7569983096843329377">Đen</translation>
 <translation id="7570548610653957960">Giúp tôi đọc</translation>
 <translation id="7571643774869182231">Không đủ bộ nhớ để cập nhật</translation>
@@ -9514,6 +9520,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> sẽ xem được các tệp trong <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Thay đổi</translation>
 <translation id="7768784765476638775">Chọn để nói</translation>
+<translation id="7769709635093101687">Phím tắt để tạm dừng</translation>
 <translation id="7769748505895274502">Thu gọn thẻ đã đóng gần đây</translation>
 <translation id="7770072242481632881">Bộ chọn bảng điều khiển bên</translation>
 <translation id="7770450735129978837">Nhấn chuột phải</translation>
@@ -10164,6 +10171,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8215129063232901118">Sử dụng các tính năng của điện thoại trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Làm nổi bật con trỏ</translation>
 <translation id="8217399928341212914">Tiếp tục chặn tự động tải nhiều tệp xuống</translation>
+<translation id="8219785583603399823">Xem điểm xếp hạng của cửa hàng này</translation>
 <translation id="822050276545350872">Từ đây trở đi, bạn không cần phải chờ đợi nữa</translation>
 <translation id="8222112516148944758">Các nhóm thẻ sẽ tự động lưu và cập nhật trên mọi thiết bị của bạn.</translation>
 <translation id="8222674561049363989">Tệp không phải là tài liệu hợp lệ</translation>

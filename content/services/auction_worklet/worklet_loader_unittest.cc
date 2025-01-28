@@ -212,11 +212,12 @@ TEST_F(WorkletLoaderTest, TwoV8Helpers_CompileErrorWithDebugger) {
       AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner()));
   debug_ids_.push_back(scoped_refptr<AuctionV8Helper::DebugId>());
 
-  ScopedInspectorSupport inspector_support(v8_helpers_[1].get());
-  debug_ids_[1] =
-      base::MakeRefCounted<AuctionV8Helper::DebugId>(v8_helpers_[1].get());
+  // We compile only the first v8_helper.
+  ScopedInspectorSupport inspector_support(v8_helpers_[0].get());
+  debug_ids_[0] =
+      base::MakeRefCounted<AuctionV8Helper::DebugId>(v8_helpers_[0].get());
   TestChannel* channel = inspector_support.ConnectDebuggerSession(
-      debug_ids_[1]->context_group_id());
+      debug_ids_[0]->context_group_id());
   channel->RunCommandAndWaitForResult(
       1, "Runtime.enable", R"({"id":1,"method":"Runtime.enable","params":{}})");
   channel->RunCommandAndWaitForResult(
@@ -236,7 +237,7 @@ TEST_F(WorkletLoaderTest, TwoV8Helpers_CompileErrorWithDebugger) {
   EXPECT_FALSE(results_[1].success());
   channel->WaitForMethodNotification("Debugger.scriptFailedToParse");
 
-  debug_ids_[1]->AbortDebuggerPauses();
+  debug_ids_[0]->AbortDebuggerPauses();
 }
 
 TEST_F(WorkletLoaderTest, Success) {

@@ -31,6 +31,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "cc/paint/paint_flags.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -180,6 +181,9 @@ class CORE_EXPORT CanvasRenderingContext
 
   virtual SkAlphaType GetAlphaType() const = 0;
   virtual SkColorType GetSkColorType() const = 0;
+  viz::SharedImageFormat GetSharedImageFormat() const {
+    return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
+  }
   virtual gfx::ColorSpace GetColorSpace() const = 0;
 
   virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) = 0;

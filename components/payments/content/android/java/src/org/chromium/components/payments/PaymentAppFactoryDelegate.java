@@ -47,17 +47,23 @@ public interface PaymentAppFactoryDelegate {
     default void onDoneCreatingPaymentApps(PaymentAppFactoryInterface factory) {}
 
     /**
-     * Forces canMakePayment() and hasEnrolledInstrument() to return true even when no payment
-     * app is created.
+     * Forces canMakePayment() and hasEnrolledInstrument() to return true even when no payment app
+     * is created.
      */
     default void setCanMakePaymentEvenWithoutApps() {}
 
-    /**
-     * Records that an Opt Out experience will be offered to the user in the
-     * current UI flow.
-     */
+    /** Records that an Opt Out experience will be offered to the user in the current UI flow. */
     default void setOptOutOffered() {}
 
-    /** @return The Content-Security-Policy (CSP) checker. */
+    /**
+     * @return The Content-Security-Policy (CSP) checker.
+     */
     CSPChecker getCSPChecker();
+
+    /**
+     * @return An instance of a dailog for displaying informational or warning messages.
+     */
+    default DialogController getDialogController() {
+        return null;
+    }
 }

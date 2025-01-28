@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1020274983236703756">現已推出 <ph name="PRODUCT_NAME" /> 專屬素材資源</translation>
 <translation id="1022628058306505708">地球動態</translation>
+<translation id="102432830749687801">請務必在失去存取權前，使用 Google 的內容轉移工具應用程式將學校帳戶資料移到個人帳戶。</translation>
 <translation id="1026212596705997935">「<ph name="CONFLICT_ACCEL_NAME" />」正在使用這組快速鍵。請按下新的快速鍵。如要取代現有快速鍵，請再次按下這組快速鍵。</translation>
 <translation id="1030856839388844477">重設數據用量</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒；<ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">裝置的充電盒電量為 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="1397738625398125236">可連線偵測到閘道</translation>
 <translation id="1398634363027580500">非常高的 HTTPS 延遲</translation>
+<translation id="1406389211945506521">感謝你分享使用體驗。你的意見可協助我們提供更準確、實用的內容。</translation>
 <translation id="1407069428457324124">深色主題</translation>
 <translation id="1413240736185167732">失敗 - 無法使用過濾器</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">經典藝術</translation>
 <translation id="181434555916624618">目前不會顯示含有人臉的結果，請試試其他提示。</translation>
 <translation id="1815850098929213707">所選按鍵為 <ph name="KEYS" />。輕觸按鈕即可編輯控制項</translation>
+<translation id="1818174214124933000">選取「傳送」後，系統會將你的意見回饋和內容 (如下所示) 傳送給 Google 並送交人工審查。我們會根據《<ph name="LINK_POLICY_BEGIN" />隱私權政策<ph name="LINK_POLICY_END" />》和《<ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google 服務條款<ph name="LINK_TERMS_OF_SERVICE_END" />》的規定，運用這些資訊訓練或提升產品與服務的品質。</translation>
 <translation id="1823120442877418684">主題</translation>
 <translation id="1827738518074806965">畫廊</translation>
+<translation id="183287940576828840">令人反感/不安全</translation>
 <translation id="1836553715834333258">系統顏色</translation>
 <translation id="183675228220305365">寫實主義派</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">UDP 要求失敗</translation>
 <translation id="1908394185991500139">向左鍵</translation>
 <translation id="1914144885717544695">星期五</translation>
+<translation id="1915960750806557358">分享意見回饋或說明你的問題。請勿加入任何個人、敏感或機密資訊。</translation>
 <translation id="1923388006036088459">強調色</translation>
 <translation id="1945403655450283000">錄音工具</translation>
 <translation id="1947737735496445907">已列印</translation>
@@ -596,6 +601,7 @@
 <translation id="387301095347517405">電池經過的完整充電循環次數</translation>
 <translation id="3877066159641251281">聆聽譯文內容</translation>
 <translation id="3880601782712134623">自動偵測不同的語音，並為每個講者加上一般標籤，例如「講者 1」和「講者 2」</translation>
+<translation id="38811596981744338">法律問題</translation>
 <translation id="3885327323343477505">變更螢幕保護程式</translation>
 <translation id="3889914174935857450">重設日期</translation>
 <translation id="3897092660631435901">選單</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒內已充電 <ph name="RATE" />。</translation>
 <translation id="4930320165497208503">如要設定或更新連線，請前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />頁面。</translation>
 <translation id="4932733599132424254">日期</translation>
+<translation id="494102685638938793">「<ph name="LINK_TEXT" />」會在新分頁中開啟</translation>
 <translation id="4946927805998996217">正在產生摘要</translation>
 <translation id="4950314376641394653">「<ph name="DEVICE_NAME" />」的韌體已更新至版本 <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">樹木隧道</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">取得選取項目的相關資訊</translation>
 <translation id="6694534975463174713">鎖定</translation>
 <translation id="6700703207451721535">不允許存取這個連結。如需存取，請洽詢老師。</translation>
+<translation id="6703179086771097594">哪些方面有待改進？</translation>
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6712933881624804031">山谷</translation>
 <translation id="6716013206176357696">草莓</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">請前往「設定」下載語音轉錄模型</translation>
 <translation id="7058278511608979688">結束並儲存</translation>
 <translation id="7059230779847288458">充電中，<ph name="TIME_VALUE" />後充飽</translation>
+<translation id="7064209589142995848">內容轉移工具</translation>
 <translation id="7065336548231472971">已選取<ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186"><ph name="KEY" /> 鍵</translation>
 <translation id="7068619307603204412">準備好你的裝置</translation>
@@ -1592,6 +1601,7 @@
 <translation id="8476942730579767658">視窗和桌面</translation>
 <translation id="8477536061607044749">平面設計</translation>
 <translation id="8477551185774834963">DNS 延遲時間稍微超過允許的門檻</translation>
+<translation id="8481308460877552925">與事實不符</translation>
 <translation id="8482376765267780829">選取要精簡的文字內容</translation>
 <translation id="8483248364096924578">IP 位址</translation>
 <translation id="8491311378305535241">無法從 Android 應用程式透過防火牆連線到 HTTP 網站</translation>

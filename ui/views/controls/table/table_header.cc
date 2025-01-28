@@ -136,6 +136,11 @@ ui::ColorId TableHeader::GetSeparatorHorizontalColorId() const {
       ui::kColorFocusableBorderUnfocused);
 }
 
+ui::ColorId TableHeader::GetBackgroundColorId() const {
+  return table_->header_style().background_color_id.value_or(
+      ui::kColorTableHeaderBackground);
+}
+
 gfx::Font::Weight TableHeader::GetFontWeight() const {
   return table_->header_style().font_weight.value_or(gfx::Font::Weight::NORMAL);
 }
@@ -333,8 +338,12 @@ void TableHeader::OnGestureEvent(ui::GestureEvent* event) {
 
 void TableHeader::OnThemeChanged() {
   View::OnThemeChanged();
+
+  // Note: If custom background tokens are set, then it's the custom token's
+  // responsibility to ensure platform specific colors are set in the
+  // appropriate mixers.
   SetBackground(CreateSolidBackground(
-      GetColorProvider()->GetColor(ui::kColorTableHeaderBackground)));
+      GetColorProvider()->GetColor(GetBackgroundColorId())));
 }
 
 void TableHeader::ResizeColumnViaKeyboard(

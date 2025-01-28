@@ -459,6 +459,9 @@
     return;
   }
   [self updateToolbarsLayout];
+
+  [self.primaryToolbarCoordinator
+      viewControllerTraitCollectionDidChange:previousTraitCollection];
 }
 
 - (void)close {

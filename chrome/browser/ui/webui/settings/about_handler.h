@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -20,10 +19,10 @@
 #include "components/policy/core/common/policy_service.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ash/tpm/tpm_firmware_update.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace base {
 class FilePath;
@@ -83,7 +82,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   // Opens the help page. |args| must be empty.
   void HandleOpenHelpPage(const base::Value::List& args);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Checks if ReleaseNotes is enabled.
   void HandleGetEnabledReleaseNotes(const base::Value::List& args);
 
@@ -158,7 +157,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   void SetPromotionState(VersionUpdater::PromotionState state);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void HandleOpenDiagnostics(const base::Value::List& args);
 
   void HandleOpenFirmwareUpdates(const base::Value::List& args);
@@ -226,7 +225,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 
   // Subscription for changes to the |kDeviceExtendedAutoUpdateEnabled| setting.
   base::CallbackListSubscription extended_updates_setting_change_subscription_;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const raw_ptr<Profile> profile_;
 

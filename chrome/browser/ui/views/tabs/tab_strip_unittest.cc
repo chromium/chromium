@@ -279,7 +279,7 @@ TEST_P(TabStripTest, AccessibilityEvents) {
   widget_->OnNativeWidgetActivationChanged(false);
   node_data = ui::AXNodeData();
   tab->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  EXPECT_TRUE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionAdd));
   EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kSelection));
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionRemove));

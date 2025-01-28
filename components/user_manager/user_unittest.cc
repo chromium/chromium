@@ -14,7 +14,7 @@ namespace user_manager {
 namespace {
 
 const char kEmail[] = "email@example.com";
-const char kGaiaId[] = "fake_gaia_id";
+const GaiaId::Literal kGaiaId("fake_gaia_id");
 
 }  // namespace
 
@@ -36,8 +36,7 @@ TEST(UserTest, DeviceLocalAccountAffiliation) {
     const raw_ptr<const User, DanglingUntriaged> user_;
   };
 
-  const AccountId account_id =
-      AccountId::FromUserEmailGaiaId(kEmail, GaiaId(kGaiaId));
+  const AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kGaiaId);
 
   ScopedUser kiosk_user(User::CreateKioskAppUser(account_id));
   EXPECT_TRUE(kiosk_user.IsAffiliated());

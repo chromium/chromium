@@ -10,7 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -2038,7 +2037,7 @@ std::string MediaSessionImpl::GetSharedAudioOutputDeviceId() const {
 
   auto& first = normal_players_.begin()->first;
   const auto& first_id = first.observer->GetAudioOutputSinkId(first.player_id);
-  if (base::ranges::all_of(normal_players_, [&first_id](const auto& player) {
+  if (std::ranges::all_of(normal_players_, [&first_id](const auto& player) {
         return player.first.observer->GetAudioOutputSinkId(
                    player.first.player_id) == first_id;
       })) {
@@ -2052,7 +2051,7 @@ bool MediaSessionImpl::IsAudioOutputDeviceSwitchingSupported() const {
   if (normal_players_.empty())
     return false;
 
-  return base::ranges::all_of(normal_players_, [](const auto& player) {
+  return std::ranges::all_of(normal_players_, [](const auto& player) {
     return player.first.observer->SupportsAudioOutputDeviceSwitching(
         player.first.player_id);
   });

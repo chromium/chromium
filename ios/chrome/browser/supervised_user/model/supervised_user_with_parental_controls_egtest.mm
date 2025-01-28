@@ -719,15 +719,12 @@ static const char* kInterstitialDetails = "Details";
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kParentAccessViewAccessibilityIdentifier)];
 
-  // Swipe to dimiss the bottom sheet.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kParentAccessViewAccessibilityIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kParentAccessViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  // Tap outside to dimiss the bottom sheet.
+  [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kParentAccessViewAccessibilityIdentifier)];
 }
 
 // Tests that users can initiate the local web approval flow, and ensures the UI
@@ -771,15 +768,12 @@ static const char* kInterstitialDetails = "Details";
                                    kParentAccessViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Swipe to dimiss the bottom sheet.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kParentAccessViewAccessibilityIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kParentAccessViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  // Tap outside to dimiss the bottom sheet.
+  [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kParentAccessViewAccessibilityIdentifier)];
 }
 
 #pragma mark - Clear Content Behaviour

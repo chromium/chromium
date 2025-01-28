@@ -7,7 +7,7 @@ import 'chrome://resources/cros_components/button/button.js';
 import '/strings.m.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {Button} from 'chrome://resources/cros_components/button/button.js';
+import type {Button} from 'chrome://resources/cros_components/button/button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 

@@ -78,7 +78,11 @@ ServerCertificateDatabaseServiceFactory::
                   .Build()
               : ProfileSelections::BuildNoProfilesSelected()
 
-      ) {}
+      ) {
+#if BUILDFLAG(IS_CHROMEOS)
+  DependsOn(NssServiceFactory::GetInstance());
+#endif
+}
 
 ServerCertificateDatabaseServiceFactory::
     ~ServerCertificateDatabaseServiceFactory() = default;

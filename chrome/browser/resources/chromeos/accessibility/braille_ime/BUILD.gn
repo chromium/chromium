@@ -10,7 +10,7 @@ import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
 import("//tools/typescript/ts_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 braille_ime_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/braille_ime"
@@ -20,7 +20,7 @@ braille_ime_mv3_out_dir = "$braille_ime_out_dir/mv3"
 # TS files to compile.
 ts_modules = [
   "braille_ime.ts",
-  "main.ts",
+  "braille_ime_loader.ts",
 ]
 
 group("build") {

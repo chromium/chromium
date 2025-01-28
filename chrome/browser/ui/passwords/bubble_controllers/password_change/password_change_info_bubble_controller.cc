@@ -13,7 +13,10 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace metrics_util = password_manager::metrics_util;
 
 PasswordChangeInfoBubbleController::PasswordChangeInfoBubbleController(
     base::WeakPtr<PasswordsModelDelegate> delegate,
@@ -49,7 +52,9 @@ std::u16string PasswordChangeInfoBubbleController::GetTitle() const {
 }
 
 void PasswordChangeInfoBubbleController::ReportInteractions() {
-  // TODO(crbug.com/381053884): Report metrics.
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordChange.InformationBubble", dismissal_reason_,
+      metrics_util::NUM_UI_RESPONSES);
 }
 
 void PasswordChangeInfoBubbleController::OnStateChanged(
@@ -66,6 +71,7 @@ void PasswordChangeInfoBubbleController::OnPasswordChangeStopped(
 }
 
 void PasswordChangeInfoBubbleController::CancelPasswordChange() {
+  dismissal_reason_ = metrics_util::CLICKED_CANCEL;
   CHECK(password_change_delegate_);
   PasswordBubbleViewBase::CloseCurrentBubble();
   password_change_delegate_->Stop();
@@ -76,6 +82,7 @@ std::u16string PasswordChangeInfoBubbleController::GetDisplayOrigin() {
 }
 
 void PasswordChangeInfoBubbleController::OnGooglePasswordManagerLinkClicked() {
+  dismissal_reason_ = metrics_util::CLICKED_MANAGE_PASSWORD;
   if (delegate_) {
     delegate_->NavigateToPasswordManagerSettingsPage(
         password_manager::ManagePasswordsReferrer::kPasswordChangeInfoBubble);

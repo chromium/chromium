@@ -95,4 +95,14 @@ TEST_F(OptionListTest, Optgroup) {
   EXPECT_EQ("gg11", Id(*iter2)) << "Nested OPTGROUP should be included.";
 }
 
+TEST_F(OptionListTest, RetreatBeforeBeginning) {
+  Select().setInnerHTML("<button>button</button><option id=o1>option</option>");
+  OptionList list = Select().GetOptionList();
+  OptionList::Iterator it = list.begin();
+  EXPECT_EQ("o1", Id(*it));
+  --it;
+  bool is_null = it;
+  EXPECT_FALSE(is_null);
+}
+
 }  // naemespace blink

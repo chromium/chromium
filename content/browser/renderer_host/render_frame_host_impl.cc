@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <deque>
 #include <limits>
@@ -38,7 +39,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/state_transitions.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -9656,8 +9656,8 @@ std::vector<FencedFrame*> RenderFrameHostImpl::GetFencedFrames() const {
 }
 
 void RenderFrameHostImpl::DestroyFencedFrame(FencedFrame& fenced_frame) {
-  auto it = base::ranges::find_if(fenced_frames_,
-                                  base::MatchesUniquePtr(&fenced_frame));
+  auto it = std::ranges::find_if(fenced_frames_,
+                                 base::MatchesUniquePtr(&fenced_frame));
   CHECK(it != fenced_frames_.end());
 
   RenderFrameHostImpl* inner_root = (*it)->GetInnerRoot();

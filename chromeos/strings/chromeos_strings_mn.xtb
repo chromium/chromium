@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Цуцлагдсан байна</translation>
 <translation id="1020274983236703756">Одоо <ph name="PRODUCT_NAME" />-н онцгой өмчүүд боломжтой</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="102432830749687801">Та хандах эрхээ алдахаасаа өмнө сургуулийн бүртгэлийнхээ өгөгдлийг хувийн бүртгэл рүүгээ зөөхөд Google-н Контент шилжүүлэх аппыг ашиглахаа мартуузай.</translation>
 <translation id="1026212596705997935">Товчлолыг "<ph name="CONFLICT_ACCEL_NAME" />"-д ашиглаж байна. Шинэ товчлолыг дарна уу. Одоо байгаа товчлолыг солихын тулд энэ товчлолыг дахин дарна уу.</translation>
 <translation id="1030856839388844477">Дата ашиглалтыг шинэчлэх</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> уялдаат, <ph name="CPU_MAX_CLOCK_SPEED" />Гц)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Төхөөрөмжийн гэрийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="1397738625398125236">Гэйтвэйд пин илгээх боломжтой</translation>
 <translation id="1398634363027580500">Маш өндөр HTTPS хоцролт</translation>
+<translation id="1406389211945506521">Туршлагаа хуваалцсанд баярлалаа. Таны санал хүсэлт бидэнд илүү үнэн зөв, үр өгөөжтэй контент үүсгэхэд тусална.</translation>
 <translation id="1407069428457324124">Бараан загвар</translation>
 <translation id="1413240736185167732">Амжилтгүй болсон - Шүүж чадсангүй</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Сонгодог урлаг</translation>
 <translation id="181434555916624618">Одоогоор хүмүүсийг агуулсан илэрцүүдийг харуулахгүй. Өөр заавар оролдож үзнэ үү.</translation>
 <translation id="1815850098929213707">Сонгосон товч нь <ph name="KEYS" /> байна. Удирдлагыг засахын тулд товчлуур дээр товшино уу</translation>
+<translation id="1818174214124933000">Таныг илгээхийг сонгоход санал хүсэлт, контентыг (доор харуулсан) тань Google-д илгээж, хүмүүс хянах бөгөөд <ph name="LINK_POLICY_BEGIN" />Нууцлалын бодлого<ph name="LINK_POLICY_END" />, <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google-н Үйлчилгээний нөхцөлд<ph name="LINK_TERMS_OF_SERVICE_END" /> хамаарах манай бүтээгдэхүүн, үйлчилгээг сургах, сайжруулахад ашиглана.</translation>
 <translation id="1823120442877418684">Тэмдэгтүүд</translation>
 <translation id="1827738518074806965">Уран зургийн галерей</translation>
+<translation id="183287940576828840">Доромжилсон/аюултай</translation>
 <translation id="1836553715834333258">Системийн өнгө</translation>
 <translation id="183675228220305365">реалист</translation>
 <translation id="1838374766361614909">Хайлтыг арилгах</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">UDP хүсэлтийн алдаа</translation>
 <translation id="1908394185991500139">зүүн тийш заасан сум</translation>
 <translation id="1914144885717544695">Баасан гарагт</translation>
+<translation id="1915960750806557358">Санал хүсэлтээ хуваалцах эсвэл асуудлаа тайлбарлана уу. Ямар нэг хувийн, эмзэг, нууцлалтай зүйл оруулахгүй байхаа мартуузай.</translation>
 <translation id="1923388006036088459">Өргөлтийн өнгөнүүд</translation>
 <translation id="1945403655450283000">Дуу хураагуур</translation>
 <translation id="1947737735496445907">Хэвлэсэн</translation>
@@ -596,6 +601,7 @@
 <translation id="387301095347517405">Таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо</translation>
 <translation id="3877066159641251281">Орчуулгыг сонсох</translation>
 <translation id="3880601782712134623">Ялгаатай дуу хоолойг автоматаар илрүүлж, яригч тус бүрд 1-р яригч болон 2-р яригч зэрэг ерөнхий шошго өгөх</translation>
+<translation id="38811596981744338">Хуулийн асуудал</translation>
 <translation id="3885327323343477505">Дэлгэц амраагчийг өөрчлөх</translation>
 <translation id="3889914174935857450">Огноог шинэчлэх</translation>
 <translation id="3897092660631435901">Цэс</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэглэсэн.</translation>
 <translation id="4930320165497208503">Холболт тохируулах эсвэл шинэчлэхийн тулд <ph name="BEGIN_LINK" />Тохиргоо<ph name="END_LINK" /> руу очно уу.</translation>
 <translation id="4932733599132424254">Огноо</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, шинэ табд нээгдэнэ</translation>
 <translation id="4946927805998996217">Хураангуйг үүсгэж байна</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> жижиг программыг <ph name="VERSION" /> хувилбар луу шинэчилсэн байна</translation>
 <translation id="4950893758552030541">модон хонгил</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">Сонголттойгоо холбоотой мэдээлэл авах</translation>
 <translation id="6694534975463174713">түгжих</translation>
 <translation id="6700703207451721535">Энэ холбоосонд хандах эрхийг зөвшөөрөөгүй. Хэрэв танд хандах эрх хэрэгтэй бол багштай зөвлөлдөнө үү.</translation>
+<translation id="6703179086771097594">Ямар асуудалтай байсан бэ?</translation>
 <translation id="6704062477274546131">DNS-н тайлал</translation>
 <translation id="6712933881624804031">хөндий</translation>
 <translation id="6716013206176357696">гүзээлзгэнүүд</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">Тохиргоонд сийрүүлгийн загварыг татна уу</translation>
 <translation id="7058278511608979688">Дуусгаад, хадгалах</translation>
 <translation id="7059230779847288458">Цэнэглэж байна. Дүүрэх хүртэл <ph name="TIME_VALUE" /> үлдсэн байна</translation>
+<translation id="7064209589142995848">Контент шилжүүлэх</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" />-г сонгосон</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> товч</translation>
 <translation id="7068619307603204412">Төхөөрөмжөө бэлтгэх</translation>
@@ -1592,6 +1601,7 @@
 <translation id="8476942730579767658">Цонх болон дэлгэцүүд</translation>
 <translation id="8477536061607044749">график дизайн</translation>
 <translation id="8477551185774834963">DNS хоцролт зөвшөөрөгдөх хязгаараас бага зэрэг өндөр байна</translation>
+<translation id="8481308460877552925">Баримтын хувьд буруу</translation>
 <translation id="8482376765267780829">Хялбар болгох текст сонгоно уу</translation>
 <translation id="8483248364096924578">IP хаяг</translation>
 <translation id="8491311378305535241">Android аппуудаас HTTP вебсайт руу галт хана дундуур холбогдох боломжгүй</translation>

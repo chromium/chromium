@@ -110,7 +110,6 @@
 <translation id="143681031165817424">O enderezo gardouse só neste dispositivo</translation>
 <translation id="1445276840641906250">Todas as túas pestanas nun navegador</translation>
 <translation id="1450170672351507823">A protección estándar está activada. Se queres unha seguranza aínda maior, utiliza a protección mellorada.</translation>
-<translation id="1454615514353469963">Os contrasinais, as claves de acceso e demais datos eliminaranse permanentemente do xestor de contrasinais de Google</translation>
 <translation id="1455660774629812862">Non ocultar</translation>
 <translation id="1460751212339734034">Aforra tempo, escribe menos</translation>
 <translation id="1466035273550360103">Non hai ningunha pestana aberta</translation>
@@ -476,6 +475,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="3053332585453689122">Envía a Navegación segura de Google os URL que visites e unha pequena mostra do contido da páxina, das descargas, da actividade das extensións e da información do sistema para comprobar se son daniños.</translation>
 <translation id="3055102495753300780">Almacenamento de información</translation>
 <translation id="3059270601560379555">Nova busca</translation>
+<translation id="3064547930554042309">Xestionar as descargas</translation>
 <translation id="3072279342064724558">O contrasinal xa existe</translation>
 <translation id="3076846064362030967">Non se pechará sesión na túa Conta de Google. Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google <ph name="BEGIN_LINK" />outros datos da túa actividade<ph name="END_LINK" />. Podes eliminalos en calquera momento.
 
@@ -698,6 +698,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4154753961803534698">Buscar coa cámara</translation>
 <translation id="4158491215857439601">Xestor de contrasinais</translation>
 <translation id="4163699139741158298">{count,plural, =1{Gardouse o marcador en {title}. Está gardado só neste dispositivo.}other{Gardáronse {count} marcadores en {title}. Están gardados só neste dispositivo.}}</translation>
+<translation id="4164514562270305824">Eliminar descargas automaticamente</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> que remata en <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Non permitir</translation>
 <translation id="4172051516777682613">Mostrar sempre</translation>
@@ -1016,6 +1017,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5579012242779565775">Ocultar Lista de lectura</translation>
 <translation id="5585019845078534178">Tarxetas</translation>
 <translation id="5595485650161345191">Editar enderezo</translation>
+<translation id="559567008082979829">Configura as descargas para que se eliminen ao cabo dun mes.</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="560322036295180549">Opción desactivada pola túa organización</translation>
 <translation id="5611107723541161735">Os atallos aos sitios que visitases recentemente neste dispositivo.</translation>

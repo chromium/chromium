@@ -391,7 +391,6 @@ void GPUBuffer::OnMapAsyncCallback(
                                        String::FromUTF8(message));
       break;
     case wgpu::MapAsyncStatus::Error:
-    default:
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                        String::FromUTF8(message));
       break;

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <set>
 #include <string>
@@ -20,7 +21,6 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -181,7 +181,7 @@ void AttributionOsLevelManagerAndroid::Register(
   Registrar registrar = registration.registrar;
   attribution_reporting::mojom::RegistrationType type = registration.GetType();
   std::vector<ScopedJavaLocalRef<jobject>> registration_urls;
-  base::ranges::transform(
+  std::ranges::transform(
       registration.registration_items, std::back_inserter(registration_urls),
       [env](const attribution_reporting::OsRegistrationItem& item) {
         return url::GURLAndroid::FromNativeGURL(env, item.url);
@@ -281,7 +281,7 @@ void AttributionOsLevelManagerAndroid::ClearData(
   JNIEnv* env = AttachCurrentThread();
 
   std::vector<ScopedJavaLocalRef<jobject>> j_origins;
-  base::ranges::transform(
+  std::ranges::transform(
       origins, std::back_inserter(j_origins), [env](const url::Origin& origin) {
         return url::GURLAndroid::FromNativeGURL(env, origin.GetURL());
       });

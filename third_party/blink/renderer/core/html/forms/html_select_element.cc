@@ -362,7 +362,8 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
     // the grandparent.
     for (const Node* ancestor = descendant.parentNode()->parentNode(); ancestor;
          ancestor = ancestor->parentNode()) {
-      if (IsA<HTMLOptionElement>(*ancestor)) {
+      if (IsA<HTMLOptionElement>(*ancestor) ||
+          IsA<HTMLSelectedContentElement>(*ancestor)) {
         return CheckDescedantOfOption(descendant);
       }
       if (IsA<HTMLOptGroupElement>(*ancestor)) {

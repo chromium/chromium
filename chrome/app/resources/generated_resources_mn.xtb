@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Андройд апп-г ажиллуулахын тулд дискний багтаамжийг нэмэгдүүлнэ үү.</translation>
 <translation id="1033780634303702874">Цуваа төхөөрөмжүүд рүүгээ нэвтэр</translation>
 <translation id="1034484273907870301">Таблетын горимын өнгөц зургийн таб зурвас</translation>
+<translation id="1035289631433631911">Контент шилжүүлэх хэрэгсэл</translation>
 <translation id="1035875743511577452">Уран бүтээлчид, байгаль болон бусад зүйлээс урам зориг авсан загваруудыг судлахын тулд “Загвар өөрчлөх”-ийг товшино уу</translation>
 <translation id="1036348656032585052">Унтраа</translation>
 <translation id="1036511912703768636">Эдгээр USB төхөөрөмжийн аль нэгэнд нь нэвтрэх</translation>
@@ -380,6 +381,7 @@
 <translation id="1246863218384630739"><ph name="VM_NAME" />-г суулгаж чадсангүй: Зургийн URL <ph name="HTTP_ERROR" /> алдааны кодыг буцаасан. Админтайгаа холбогдоно уу.</translation>
 <translation id="1247372569136754018">Микрофон (дотоод)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Мэдэгдлийг 1 сайтад зөвшөөрөөгүй}other{Мэдэгдлийг {NUM_SITES} сайтад зөвшөөрөөгүй}}</translation>
+<translation id="125097549534200450">арилгана уу</translation>
 <translation id="1251366534849411931">Хээтэй хаалтыг нээхээр хүлээж байсан <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Мобайл дата сүлжээг скан хийж байна...</translation>
 <translation id="125220115284141797">Өгөгдмөл</translation>
@@ -5940,6 +5942,7 @@
 <translation id="5177479852722101802">Камер болон микрофон руу нэвтрэхийг үргэлжлүүлэн хориглох</translation>
 <translation id="5177549709747445269">Та хөдөлгөөнт мэдээлэл ашиглаж байна</translation>
 <translation id="5178667623289523808">Өмнөхийг хайж ол</translation>
+<translation id="5180276433875360121"><ph name="CERT_LIST" />-г харуулах</translation>
 <translation id="5181140330217080051">Татаж байна</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" />-н Google-н Нууц үгний менежерт</translation>
 <translation id="5181551096188687373">Энэ нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Үүнийг бусад төхөөрөмждөө ашиглахын тулд <ph name="USER_EMAIL" /> Google Бүртгэлдээ хадгална уу.</translation>
@@ -8532,6 +8535,7 @@
 <translation id="7063311912041006059"><ph name="SPECIAL_SYMBOL" />-тай URL-г асуулгад байршуулж болно</translation>
 <translation id="706342288220489463">Туслахдаа таны дэлгэц дээрх мэдээллийг ашиглан танд туслахыг зөвшөөрнө үү</translation>
 <translation id="70641621694466590">Нууц үгний хуудас руу очих</translation>
+<translation id="7064209589142995848">Контент шилжүүлэх</translation>
 <translation id="7064734931812204395">Linux контейнерыг тохируулж байна. Үүнд 30 минут хүртэлх хугацаа шаардлагатай байж болзошгүй.</translation>
 <translation id="7065223852455347715">Энэ төхөөрөмж нь аж ахуйн нэгжийн бүртгэлийг урьдчилан сэргийлэх горимд түгжигдсэн байна. Та төхөөрөмжөө бүртгүүлэх хүсэлтэй байгаа бол эхлээд төхөөрөмжөө сэргээх хэрэгтэй.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 нууц үгийг <ph name="USER_EMAIL" />-д зориулж <ph name="BRAND" /> руу импорт хийсэн}other{{NUM_PASSWORDS} нууц үгийг <ph name="USER_EMAIL" />-д зориулж <ph name="BRAND" /> руу импорт хийсэн}}</translation>
@@ -9570,6 +9574,7 @@
 <translation id="7810202088502699111">Зар сурталчилгааг энэ хуудсанд хориглосон байна.</translation>
 <translation id="7810367892333449285">Таны оролт <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ хаяг<ph name="LPA_2" />$<ph name="LPA_3" />нэмэлт таарах ID<ph name="LPA_4" /> гэсэн форматтай байх ёстой</translation>
 <translation id="7811263553491007091">Дахин оролдох эсвэл өмнө нь доор үүсгэсэн загваруудаас нэгийг сонгоно уу.</translation>
+<translation id="7811986034759500329">Системийн тохиргоонд тохируулах</translation>
 <translation id="7812170317334653156">Google Календарийг нуусан</translation>
 <translation id="7814090115158024843">Эдгээр сайт дээр бичих тусламжийг хэзээ ч бүү санал болго</translation>
 <translation id="7814458197256864873">Хуулах</translation>

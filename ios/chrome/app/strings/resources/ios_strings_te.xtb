@@ -110,7 +110,6 @@
 <translation id="143681031165817424">ఈ పరికరంలో మాత్రమే అడ్రస్ సేవ్ చేయబడింది</translation>
 <translation id="1445276840641906250">మీ అన్ని ట్యాబ్‌లు ఒకే బ్రౌజర్‌లో</translation>
 <translation id="1450170672351507823">స్టాండర్డ్ రక్షణ ఆన్‌లో ఉంది. మరింత సెక్యూరిటీ కోసం, మెరుగైన రక్షణను ఉపయోగించండి.</translation>
-<translation id="1454615514353469963">పాస్‌వర్డ్‌లు, పాస్-కీలు, ఇంకా ఇతర డేటా Google Password Manager నుండి శాశ్వతంగా తొలగించబడతాయి</translation>
 <translation id="1455660774629812862">దాచవద్దు</translation>
 <translation id="1460751212339734034">సమయాన్ని ఆదా చేసుకోండి, తక్కువ టైప్ చేయండి</translation>
 <translation id="1466035273550360103">తెరిచిన ట్యాబ్‌లు లేవు</translation>
@@ -563,6 +562,7 @@
 <translation id="3517216995152707259">మీ బ్రౌజింగ్ డేటాను తొలగిస్తే మీరు Google ఖాతా నుండి సైన్ అవుట్ అవ్వరు. ఇలా చేయడం కోసం, <ph name="BEGIN_LINK" />Chrome నుండి సైన్ అవుట్ అవ్వండి<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">వెబ్‌ను బ్రౌజ్ చేయడానికి ట్యాబ్‌ను తెరవండి.</translation>
 <translation id="3519905498307021260">{count,plural, =1{ట్యాబ్‌ను తెరవండి}other{{count} ట్యాబ్‌లను తెరవండి}}</translation>
+<translation id="3523513363815970085">"మీ టాప్ సైట్స్"‌ను దాచండి</translation>
 <translation id="3523789730715594198">మీరు సింక్ అవ్వడాన్ని ఏ సమయంలోనైనా సెట్టింగ్‌లలో ఆపివేయవచ్చు. మీ హిస్టరీ ఆధారంగా Searchను, ఇతర సర్వీస్‌లను Google వ్యక్తిగతీకరించవచ్చు.</translation>
 <translation id="3527085408025491307">ఫోల్డర్</translation>
 <translation id="3529024052484145543">సురక్షితం కాదు</translation>
@@ -838,6 +838,7 @@
 <translation id="4769198578611055647">ఏ పరికరంలోనైనా సేవ్ చేసిన పాస్-కీలను యాక్సెస్ చేయడంలో మీకు సహాయపడుతుంది</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">అజ్ఞాత మోడ్‌లో తెరవాలా?</translation>
+<translation id="479208892659046780">మీ టాప్ సైట్స్</translation>
 <translation id="4792385443586519711">కంపెనీ పేరు</translation>
 <translation id="479628432297359449">డౌన్‌లోడ్‌ను ఆపివేయాలా?</translation>
 <translation id="4796496140132859135">ట్యాబ్ గ్రూప్. కుదించబడింది.</translation>

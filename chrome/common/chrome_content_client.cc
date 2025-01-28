@@ -88,6 +88,7 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/common/constants.h"
+#include "components/pdf/common/pdf_util.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -403,4 +404,13 @@ void ChromeContentClient::ExposeInterfacesToBrowser(
         // which can only be accessed on this sequence.
         base::SequencedTaskRunner::GetCurrentDefault());
   }
+}
+
+bool ChromeContentClient::IsFilePickerAllowedForCrossOriginSubframe(
+    const url::Origin& origin) {
+#if BUILDFLAG(ENABLE_PDF)
+  return IsPdfExtensionOrigin(origin);
+#else
+  return false;
+#endif
 }

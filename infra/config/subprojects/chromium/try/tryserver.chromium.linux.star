@@ -493,6 +493,22 @@ try_.compilator_builder(
 )
 
 try_.builder(
+    name = "linux-rel-test-selection",
+    description_html = "Experimental " + linkify_builder("try", "linux-rel", "chromium") + " builder with smart tests selection. go/chrome-sts",
+    mirrors = builder_config.copy_from("linux-rel"),
+    gn_args = "try/linux-rel",
+    builderless = False,
+    contact_team_email = "chrome-sts@google.com",
+    experiments = {
+        "chromium_rts.rts": 100,
+    },
+    tryjob = try_.job(
+        experiment_percentage = 10,
+    ),
+    use_clang_coverage = True,
+)
+
+try_.builder(
     name = "linux-wayland-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [

@@ -72,8 +72,8 @@ import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
@@ -147,7 +147,7 @@ public class EdgeToEdgeControllerTest {
     @Mock private Tab mTab;
     @Mock private NativePage mKeyNativePage;
 
-    @Mock private WebContents mWebContents;
+    @Mock private MockWebContents mWebContents;
 
     @Mock private EdgeToEdgeOSWrapper mOsWrapper;
     @Mock private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
@@ -819,26 +819,45 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT)
     public void safeAreaConstraint() {
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
         assertFalse(
-                "Safe area constrain should default to false.",
+                "Safe area constraint should default to false.",
                 mEdgeToEdgeControllerImpl.getHasSafeAreaConstraintForTesting());
 
         mEdgeToEdgeControllerImpl.getWebContentsObserver().safeAreaConstraintChanged(true);
         assertTrue(
-                "Safe area constrain should be set by observer.",
+                "Safe area constraint should be set by observer.",
                 mEdgeToEdgeControllerImpl.getHasSafeAreaConstraintForTesting());
         verify(mChangeObserver).onSafeAreaConstraintChanged(true);
 
         mEdgeToEdgeControllerImpl.getWebContentsObserver().safeAreaConstraintChanged(false);
         assertFalse(
-                "Safe area constrain should be removed by observer.",
+                "Safe area constraint should be removed by observer.",
                 mEdgeToEdgeControllerImpl.getHasSafeAreaConstraintForTesting());
         verify(mChangeObserver).onSafeAreaConstraintChanged(false);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT)
+    public void safeAreaConstraint_disabled() {
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        verifyInteractions(mTab);
+        assertFalse(
+                "Safe area constraint should default to false.",
+                mEdgeToEdgeControllerImpl.getHasSafeAreaConstraintForTesting());
+
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().safeAreaConstraintChanged(true);
+        assertFalse(
+                "Safe area constraint disabled.",
+                mEdgeToEdgeControllerImpl.getHasSafeAreaConstraintForTesting());
+        verify(mChangeObserver, times(0)).onSafeAreaConstraintChanged(true);
     }
 
     @Test

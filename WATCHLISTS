@@ -57,6 +57,9 @@
     'agent_scheduling_group': {
       'filepath': '.*agent_scheduling_group|.*agent_group_scheduler',
     },
+    'ai_settings_page_desktop': {
+      'filepath': 'chrome/browser/resources/settings/ai_page/',
+    },
     'android_accessibility': {
       'filepath': 'WebContentsAccessibility' \
                   '|content/browser/accessibility/.*android'
@@ -1872,7 +1875,8 @@
                   '|chrome/browser/predictors/autocomplete_action_predictor\.(cc|h)$' \
                   '|chrome/browser/preloading/' \
                   '|content/browser/mojo_binder_policy' \
-                  '|content/browser/preloading/'
+                  '|content/browser/preloading/' \
+                  '|content/browser/renderer_host/render_frame_host_impl_interface_binders.cc'
     },
     'presentation': {
       'filepath': 'content/browser/presentation/' \
@@ -2473,6 +2477,7 @@
                           'webapks-watchlist@chromium.org'],
     'agent_scheduling_group': ['blink-isolation-reviews@chromium.org',
                                'chikamune+watch@chromium.org'],
+    'ai_settings_page_desktop': ['rainhard+watch@chromium.org'],
     'android_accessibility': ['mschillaci+watcha11y@google.com'],
     'android_browser_controls': ['peilinwang+watch@google.com'],
     'android_crash_reporting': ['asvitkine+watch@chromium.org',

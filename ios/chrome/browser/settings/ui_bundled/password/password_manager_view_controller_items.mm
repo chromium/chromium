@@ -6,10 +6,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import <algorithm>
+
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/containers/span.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"

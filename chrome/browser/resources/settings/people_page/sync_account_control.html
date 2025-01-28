@@ -192,7 +192,7 @@
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,
                 syncStatus.domain, syncStatus.signinPaused)]]"
             on-click="onMenuButtonClick_" id="dropdown-arrow"
-            aria-label="$i18n{useAnotherAccount}"
+            aria-label="$i18n{changeAccount}"
             aria-expanded="false">
         </cr-icon-button>
         <div class="separator"
@@ -270,7 +270,7 @@
           if="[[shouldAllowAccountSwitch_(syncStatus.signedInState,
               syncStatus.domain, syncStatus.signinPaused)]]" restamp>
         <cr-action-menu id="menu" auto-reposition
-            role-description="$i18n{menu}">
+            role-description="$i18n{menu}" on-close="onDropdownClose_">
           <template is="dom-repeat" items="[[storedAccounts_]]">
             <button class="dropdown-item" on-click="onAccountClick_">
               <img class="account-icon small" alt=""

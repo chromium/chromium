@@ -8,10 +8,18 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
+#include "chrome/common/extensions/extension_constants.h"
+#include "ui/accessibility/accessibility_features.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 using component_updater::ComponentUpdateService;
 
 namespace {
 
+const base::FilePath::CharType kManifestFileName[] =
+    FILE_PATH_LITERAL("wasm_tts_manifest.json");
 const base::FilePath::CharType kBindingsMainWasmFileName[] =
     FILE_PATH_LITERAL("bindings_main.wasm");
 const base::FilePath::CharType kBindingsMainJsFileName[] =
@@ -60,14 +68,24 @@ void WasmTtsEngineComponentInstallerPolicy::ComponentReady(
     base::Value::Dict /* manifest */) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
-  // TODO(crbug.com/390036636): install the extension with the resource files.
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (features::IsWasmTtsComponentUpdaterEnabled()) {
+    EmbeddedA11yExtensionLoader::GetInstance()->Init();
+    EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithIdAndPath(
+        extension_misc::kComponentUpdaterTTSEngineExtensionId, install_dir,
+        kManifestFileName,
+        /*should_localize=*/false);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 // Called during startup and installation before ComponentReady().
 bool WasmTtsEngineComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& /* manifest */,
     const base::FilePath& install_dir) const {
-  return base::PathExists(install_dir.Append(kBindingsMainWasmFileName)) &&
+  return base::PathExists(install_dir.Append(kManifestFileName)) &&
+         base::PathExists(install_dir.Append(kBindingsMainWasmFileName)) &&
          base::PathExists(install_dir.Append(kBindingsMainJsFileName)) &&
          base::PathExists(install_dir.Append(kTTSEngineJsBinFileName)) &&
          base::PathExists(install_dir.Append(kWorkletProcessorJsFileName)) &&

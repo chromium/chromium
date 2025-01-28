@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Oslobodite prostor na disku da biste pokrenuli Android aplikacije.</translation>
 <translation id="1033780634303702874">pristupiti vašim serijski spojenim uređajima</translation>
 <translation id="1034484273907870301">Vrpca kartica minijatura za način rada tableta</translation>
+<translation id="1035289631433631911">Prijenos sadržaja</translation>
 <translation id="1035875743511577452">Kliknite Promijenite temu da biste istražili teme nadahnute umjetnicima, prirodom i drugim sadržajima</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1036511912703768636">pristupiti bilo kojem od ovih USB uređaja</translation>
@@ -382,6 +383,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1246863218384630739">Instaliranje softvera <ph name="VM_NAME" /> nije uspjelo: URL slike vratio je kôd pogreške <ph name="HTTP_ERROR" />. Obratite se administratoru.</translation>
 <translation id="1247372569136754018">Mikrofon (ugrađeni)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Obavijesti nisu dopuštene za jednu web-lokaciju}one{Obavijesti nisu dopuštene za {NUM_SITES} web-lokaciju}few{Obavijesti nisu dopuštene za {NUM_SITES} web-lokacije}other{Obavijesti nisu dopuštene za {NUM_SITES} web-lokacija}}</translation>
+<translation id="125097549534200450">izbriši</translation>
 <translation id="1251366534849411931">Očekivano otvaranje vitičaste zagrade: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Traženje podatkovnih mreža...</translation>
 <translation id="125220115284141797">Zadano</translation>
@@ -5933,6 +5935,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5177479852722101802">Nastavi blokirati pristup kameri i mikrofonu</translation>
 <translation id="5177549709747445269">Upotrebljavate mobilne podatke</translation>
 <translation id="5178667623289523808">Traži prethodno</translation>
+<translation id="5180276433875360121">Prikaži <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">Preuzimanje</translation>
 <translation id="5181172023548002891">Na Google upravitelj zaporki za <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">Zaporka se sprema samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, spremite je na svoj Google račun, <ph name="USER_EMAIL" />.</translation>
@@ -8526,6 +8529,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7063311912041006059">URL sa simbolom <ph name="SPECIAL_SYMBOL" /> umjesto upita</translation>
 <translation id="706342288220489463">Dopustite Asistentu da koristi informacije na zaslonu kako bi vam pomogao</translation>
 <translation id="70641621694466590">Prelazak na stranicu Zaporke</translation>
+<translation id="7064209589142995848">Prijenos sadržaja</translation>
 <translation id="7064734931812204395">Konfigurira se Linuxov spremnik. To može potrajati 30 minuta.</translation>
 <translation id="7065223852455347715">Ovaj je uređaj zaključan u načinu koji sprječava registraciju u organizaciji. Ako želite registrirati uređaj, prvo morate izvršiti njegov oporavak.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{Jedna zaporka uvezena je na uslugu <ph name="BRAND" /> za <ph name="USER_EMAIL" />}one{{NUM_PASSWORDS} zaporka uvezena je na uslugu <ph name="BRAND" /> za <ph name="USER_EMAIL" />}few{{NUM_PASSWORDS} zaporke uvezene su na uslugu <ph name="BRAND" /> za <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} zaporki uvezeno je na uslugu <ph name="BRAND" /> za <ph name="USER_EMAIL" />}}</translation>
@@ -9565,6 +9569,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7810202088502699111">Na ovoj su stranici blokirani skočni prozori.</translation>
 <translation id="7810367892333449285">Unos treba biti u formatu <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ adresa<ph name="LPA_2" />$<ph name="LPA_3" />neobavezno podudaranje ID-ja<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Pokušajte ponovo ili odaberite jednu od prethodno generiranih tema u nastavku.</translation>
+<translation id="7811986034759500329">Postavite u postavkama sustava</translation>
 <translation id="7812170317334653156">Google kalendar je skriven</translation>
 <translation id="7814090115158024843">Nikad ne nudi pomoć pri pisanju na ovim web-lokacijama</translation>
 <translation id="7814458197256864873">&amp;Kopiraj</translation>

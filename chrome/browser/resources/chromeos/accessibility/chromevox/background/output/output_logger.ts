@@ -7,10 +7,10 @@
  */
 import {LocalStorage} from '/common/local_storage.js';
 
-import {LogType} from '../../common/log_types.js';
+import type {LogType} from '../../common/log_types.js';
 import {LogStore} from '../logging/log_store.js';
 
-import {OutputRuleSpecifier} from './output_rules.js';
+import type {OutputRuleSpecifier} from './output_rules.js';
 
 export class OutputFormatLogger {
   private str_: string = '';

@@ -52,3 +52,5 @@ documentation.
 | 15 | Protected Audience |               100 |               100 |       | Yes    |              |            3 |           |
 | 16 | Protected Audience |               100 |               100 |       | Yes    |              |     2^64 - 1 |         8 |
 | 17 | Protected Audience |                 1 |               100 |       | Yes    |              |     2^64 - 1 |         8 |
+| 18 | Protected Audience |                 1 |              1000 |       | Yes    |              |            3 |           |
+| 19 | Protected Audience |                 1 |              1000 |       |        |              |            3 |           |

@@ -70,6 +70,10 @@ class COMPONENT_EXPORT(DWA_RECORDER) DwaRecorder {
   // Returns true if |page_load_events_| is non-empty.
   bool HasPageLoadEvents();
 
+  // Returns a vector to internal list of DwaEntryPtr for testing.
+  const std::vector<metrics::dwa::mojom::DwaEntryPtr>& GetEntriesForTesting()
+      const;
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 

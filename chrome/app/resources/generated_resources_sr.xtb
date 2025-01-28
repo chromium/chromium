@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Ослободите простор на диску да бисте покренули Android апликације.</translation>
 <translation id="1033780634303702874">Приступ серијским уређајима</translation>
 <translation id="1034484273907870301">Трака са картицама која садржи сличице за режим таблета</translation>
+<translation id="1035289631433631911">Алатка Пренос садржаја</translation>
 <translation id="1035875743511577452">Кликните на Промени тему да бисте истражили теме инспирисане извођачима, природом и друго</translation>
 <translation id="1036348656032585052">Искључи</translation>
 <translation id="1036511912703768636">Приступ било ком од ових USB уређаја</translation>
@@ -382,6 +383,7 @@
 <translation id="1246863218384630739">Инсталирање <ph name="VM_NAME" />-а није успело: URL слике је приказао кôд грешке <ph name="HTTP_ERROR" />. Обратите се администратору.</translation>
 <translation id="1247372569136754018">Микрофон (интерни)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Обавештења нису дозвољена за 1 сајт}one{Обавештења нису дозвољена за {NUM_SITES} сајт}few{Обавештења нису дозвољена за {NUM_SITES} сајта}other{Обавештења нису дозвољена за {NUM_SITES} сајтова}}</translation>
+<translation id="125097549534200450">обришите</translation>
 <translation id="1251366534849411931">Недостаје отворена витичаста заграда: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Траже се мобилне мреже за пренос података...</translation>
 <translation id="125220115284141797">Подразумеване</translation>
@@ -5930,6 +5932,7 @@
 <translation id="5177479852722101802">Настави да блокираш приступ камери и микрофону</translation>
 <translation id="5177549709747445269">Користите податке на мрежи оператера</translation>
 <translation id="5178667623289523808">Пронађи претходно</translation>
+<translation id="5180276433875360121">Прикажите листу <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">Преузимање</translation>
 <translation id="5181172023548002891">У Google менаџеру лозинки за <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">Ова лозинка је сачувана само на овом уређају. Да бисте је користили на другим уређајима, сачувајте је на Google налогу, <ph name="USER_EMAIL" />.</translation>
@@ -7553,6 +7556,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Додајте породицу и пријатеље</translation>
 <translation id="6367097275976877956">Желите ли да активирате ChromeVox, уграђени читач екрана за Chrome ОС? Ако је тако, притисните тастер за размак.</translation>
+<translation id="6367396429435748845">Притисните <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> да бисте паузирали и наставили коришћење тастера миша</translation>
 <translation id="6367985768157257101">Желите да примате садржај помоћу Дељења у близини?</translation>
 <translation id="6368157733310917710">Адресе и друго</translation>
 <translation id="6368276408895187373">Омогућено – <ph name="VARIATION_NAME" /></translation>
@@ -8526,6 +8530,7 @@
 <translation id="7063311912041006059">URL са <ph name="SPECIAL_SYMBOL" /> уместо упита</translation>
 <translation id="706342288220489463">Дозволите Помоћнику да користи информације на екрану да би вам помогао</translation>
 <translation id="70641621694466590">Идите на страницу Лозинке</translation>
+<translation id="7064209589142995848">Пренос садржаја</translation>
 <translation id="7064734931812204395">Конфигурише се Linux контејнер. Ово може да потраје до 30 минута.</translation>
 <translation id="7065223852455347715">Овај уређај је закључан и налази се у режиму који спречава регистрацију за предузећа. Ако желите да региструјете уређај, прво морате да обавите опоравак уређаја.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{Увезена је 1 лозинка у <ph name="BRAND" /> за <ph name="USER_EMAIL" />}one{Увезена је {NUM_PASSWORDS} лозинка у <ph name="BRAND" /> за <ph name="USER_EMAIL" />}few{Увезене су {NUM_PASSWORDS} лозинке у <ph name="BRAND" /> за <ph name="USER_EMAIL" />}other{Увезено је {NUM_PASSWORDS} лозинки у <ph name="BRAND" /> за <ph name="USER_EMAIL" />}}</translation>
@@ -9211,6 +9216,7 @@
 <translation id="7568759527730933493">Користите безбедну везу да бисте потражили IP адресу сајта у DNS-у (систем имена домена). Овим користите добављача услуге којим се управља на <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> Безбедне везе се не користе за неке домене које је конфигурисао администратор.</translation>
 <translation id="756876171895853918">Прилагодите аватар</translation>
 <translation id="7568790562536448087">Ажурирање</translation>
+<translation id="7569113730576914983">Када Chrome пронађе неку од лозинки у повреди података, може да вам понуди да промени лозинку када се пријавите</translation>
 <translation id="7569983096843329377">Црна</translation>
 <translation id="7570548610653957960">Помоћ при читању</translation>
 <translation id="7571643774869182231">Нема довољно меморијског простора за ажурирање</translation>
@@ -9496,6 +9502,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> ће моћи да прегледа фајлове у фолдеру <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Промените</translation>
 <translation id="7768784765476638775">Изаберите за говор</translation>
+<translation id="7769709635093101687">Тастерска пречица за паузирање</translation>
 <translation id="7769748505895274502">Скупи недавно затворено</translation>
 <translation id="7770072242481632881">Бирач бочне табле</translation>
 <translation id="7770450735129978837">Клик на десни тастер миша</translation>
@@ -9565,6 +9572,7 @@
 <translation id="7810202088502699111">Искачући прозори су блокирани на овој страници.</translation>
 <translation id="7810367892333449285">Унос треба да буде у формату <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ адреса<ph name="LPA_2" />$<ph name="LPA_3" />опционално подударање ИД-а<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Пробајте поново или изаберите неку од претходно генерисаних тема у наставку.</translation>
+<translation id="7811986034759500329">Подесите у системским подешавањима</translation>
 <translation id="7812170317334653156">Google календар је скривен</translation>
 <translation id="7814090115158024843">Никада не нуди помоћ за писање на овим сајтовима</translation>
 <translation id="7814458197256864873">&amp;Копирај</translation>

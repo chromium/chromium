@@ -14,8 +14,9 @@ import {ExtensionApprovalsAfter} from './flows/extension_approvals_after.js';
 import {LocalWebApprovalsAfter} from './flows/local_web_approvals_after.js';
 import {getTemplate} from './parent_access_after.html.js';
 import {isParentAccessJellyEnabled, ParentAccessEvent} from './parent_access_app.js';
-import {ParentAccessScreen} from './parent_access_screen.js';
-import {ParentAccessParams_FlowType, ParentAccessResult, ParentAccessUiHandlerInterface} from './parent_access_ui.mojom-webui.js';
+import type {ParentAccessScreen} from './parent_access_screen.js';
+import type {ParentAccessUiHandlerInterface} from './parent_access_ui.mojom-webui.js';
+import {ParentAccessParams_FlowType, ParentAccessResult} from './parent_access_ui.mojom-webui.js';
 import {getParentAccessParams, getParentAccessUiHandler} from './parent_access_ui_handler.js';
 
 class ParentAccessAfter extends PolymerElement implements ParentAccessScreen {

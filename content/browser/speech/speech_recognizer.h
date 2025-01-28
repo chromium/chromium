@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
+#include "media/mojo/mojom/speech_recognition_recognition_context.h"
 
 namespace content {
 
@@ -27,6 +28,9 @@ class CONTENT_EXPORT SpeechRecognizer
   SpeechRecognizer& operator=(const SpeechRecognizer&) = delete;
 
   virtual void StartRecognition(const std::string& device_id) = 0;
+  virtual void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext&
+          recognition_context) = 0;
   virtual void AbortRecognition() = 0;
   virtual void StopAudioCapture() = 0;
   virtual bool IsActive() const = 0;

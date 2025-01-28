@@ -247,9 +247,7 @@ void WebVideoCaptureImplManager::UnrefDevice(
     return;
   Platform::Current()->GetIOTaskRunner()->DeleteSoon(FROM_HERE,
                                                      it->impl.release());
-
-  size_t index = std::distance(devices_.begin(), it);
-  devices_.EraseAt(index);
+  devices_.erase(it);
 }
 
 void WebVideoCaptureImplManager::SuspendDevices(

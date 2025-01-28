@@ -285,7 +285,7 @@ void OnDeviceExecution::OnResponse(
       logged_response->set_status(
           proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
       CancelPendingResponse(Result::kResponseHadRepeats,
-                            ModelExecutionError::kFiltered);
+                            ModelExecutionError::kResponseLowQuality);
       return;
     }
 

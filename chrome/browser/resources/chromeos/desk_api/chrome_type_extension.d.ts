@@ -52,17 +52,17 @@ declare namespace chrome.wmDesksPrivate {
   export function getDeskByID(
       deskUuid: string, callback: GetDeskByIdCallback): void;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   namespace OnDeskAdded {
     export function addListener(callback: DeskAddCallback): void;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   namespace OnDeskRemoved {
     export function addListener(callback: DeskIdCallback): void;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   namespace OnDeskSwitched {
     export function addListener(callback: DeskSwitchCallback): void;
   }

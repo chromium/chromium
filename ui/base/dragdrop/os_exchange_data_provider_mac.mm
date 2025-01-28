@@ -6,6 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <algorithm>
 #include <optional>
 
 #include "base/apple/foundation_util.h"
@@ -14,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/filename_util.h"

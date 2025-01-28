@@ -16,6 +16,7 @@
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace credential_provider {
@@ -43,8 +44,7 @@ std::wstring GcpUserPoliciesBaseTest::CreateUser() {
   CComBSTR sid_str;
   EXPECT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       kDefaultUsername, L"password", L"Full Name", L"comment",
-                      base::UTF8ToWide(kDefaultGaiaId), L"user@company.com",
-                      &sid_str));
+                      kDefaultGaiaId, L"user@company.com", &sid_str));
   return OLE2W(sid_str);
 }
 
@@ -181,7 +181,8 @@ TEST_P(GcpUserPoliciesFetchAndReadTest, CloudPoliciesWin) {
       UserPoliciesManager::Get()->GetGcpwServiceUserPoliciesUrl(sid_);
 
   ASSERT_TRUE(user_policies_url.is_valid());
-  ASSERT_NE(std::string::npos, user_policies_url.spec().find(kDefaultGaiaId));
+  ASSERT_NE(std::string::npos,
+            user_policies_url.spec().find(kDefaultGaiaId.ToString()));
 
   // Set valid cloud policies for all settings.
   fake_http_url_fetcher_factory()->SetFakeResponse(
@@ -280,8 +281,7 @@ TEST_P(GcpUserPoliciesExtensionTest, WithUserDeviceContext) {
     CComBSTR sid_str;
     ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                         kDefaultUsername, L"password", L"Full Name", L"comment",
-                        base::UTF8ToWide(kDefaultGaiaId), L"user@company.com",
-                        &sid_str));
+                        kDefaultGaiaId, L"user@company.com", &sid_str));
     user_sid = OLE2W(sid_str);
   }
 
@@ -298,7 +298,8 @@ TEST_P(GcpUserPoliciesExtensionTest, WithUserDeviceContext) {
 
   if (request_can_succeed) {
     ASSERT_TRUE(user_policies_url.is_valid());
-    ASSERT_NE(std::string::npos, user_policies_url.spec().find(kDefaultGaiaId));
+    ASSERT_NE(std::string::npos,
+              user_policies_url.spec().find(kDefaultGaiaId.ToString()));
     ASSERT_NE(std::string::npos, user_policies_url.spec().find(
                                      base::WideToUTF8(device_resource_id)));
     ASSERT_NE(std::string::npos,

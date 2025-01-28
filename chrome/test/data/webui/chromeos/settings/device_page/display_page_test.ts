@@ -1091,7 +1091,7 @@ suite('<settings-display>', () => {
 
     // Brightness slider should not be present when the flag is disabled.
     const displayBrightnessWrapper =
-        displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+        displayPage.shadowRoot!.querySelector<HTMLElement>(
             '#brightnessSliderWrapper');
     assertFalse(!!displayBrightnessWrapper);
 
@@ -1118,7 +1118,7 @@ suite('<settings-display>', () => {
     // Display brightness slider should be present on the internal display when
     // the flag is enabled.
     const displayBrightnessWrapper =
-        displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+        displayPage.shadowRoot!.querySelector<HTMLElement>(
             '#brightnessSliderWrapper');
     assertTrue(!!displayBrightnessWrapper);
 
@@ -1165,7 +1165,7 @@ suite('<settings-display>', () => {
     flush();
 
     const displayBrightness =
-        displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+        displayPage.shadowRoot!.querySelector<HTMLElement>(
             '#brightnessSliderWrapper');
 
     // Display brightness slider should not be present on external displays.
@@ -1195,7 +1195,7 @@ suite('<settings-display>', () => {
 
         // Display brightness slider should be present on the internal display.
         const displayBrightness =
-            displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+            displayPage.shadowRoot!.querySelector<HTMLElement>(
                 '#brightnessSliderWrapper');
         assertTrue(!!displayBrightness);
 
@@ -1411,7 +1411,7 @@ suite('<settings-display>', () => {
 
         // Switch auto-brightness to off by clicking on the row.
         const autoBrightnessToggleRow =
-            displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+            displayPage.shadowRoot!.querySelector<HTMLElement>(
                 '#autoBrightnessToggleRow');
         assertTrue(!!autoBrightnessToggleRow);
         autoBrightnessToggleRow.click();

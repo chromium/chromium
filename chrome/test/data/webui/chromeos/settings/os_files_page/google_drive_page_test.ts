@@ -52,7 +52,7 @@ suite('<settings-google-drive-subpage>', function() {
   let connectDisconnectButton: CrButtonElement;
   let testBrowserProxy: GoogleDriveTestBrowserProxy;
   let bulkPinningToggle: SettingsToggleButtonElement;
-  let offlineStorageSubtitle: HTMLDivElement;
+  let offlineStorageSubtitle: HTMLElement;
   let clearOfflineStorageButton: CrButtonElement;
   let driveDisabledOverCellularToggle: SettingsToggleButtonElement;
 
@@ -110,7 +110,7 @@ suite('<settings-google-drive-subpage>', function() {
         querySelectorShadow(page.shadowRoot!, ['#driveBulkPinning']) as
         SettingsToggleButtonElement;
 
-    offlineStorageSubtitle = page.shadowRoot!.querySelector<HTMLDivElement>(
+    offlineStorageSubtitle = page.shadowRoot!.querySelector<HTMLElement>(
         '#drive-offline-storage-row .secondary')!;
 
     clearOfflineStorageButton = page.shadowRoot!.querySelector<CrButtonElement>(

@@ -61,7 +61,7 @@ suite('textAcceleratorTest', function() {
     return getTextPartsContainer().querySelectorAll('#delimiter-icon');
   }
 
-  function getLockIcon(): HTMLDivElement {
+  function getLockIcon(): HTMLElement {
     return strictQuery(
         '.lock-icon-container', textAccelElement!.shadowRoot, HTMLDivElement);
   }

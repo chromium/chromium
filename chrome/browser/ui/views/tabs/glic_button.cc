@@ -29,7 +29,7 @@ namespace glic {
 GlicButton::GlicButton(TabStripController* tab_strip_controller)
     : TabStripControlButton(
           tab_strip_controller,
-          PressedCallback(base::BindRepeating(&GlicButton::LaunchUI,
+          PressedCallback(base::BindRepeating(&GlicButton::ToggleUI,
                                               base::Unretained(this))),
           kGlicButtonIcon) {
   tab_strip_controller_ = tab_strip_controller;
@@ -57,7 +57,7 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller)
 
 GlicButton::~GlicButton() = default;
 
-void GlicButton::LaunchUI() {
+void GlicButton::ToggleUI() {
   // Indicate that the glic button was pressed so that we can either close the
   // IPH promo (if present) or note that it has already been used to prevent
   // unnecessarily displaying the promo.
@@ -70,7 +70,7 @@ void GlicButton::LaunchUI() {
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicKeyedServiceFactory::GetGlicKeyedService(
       tab_strip_controller_->GetProfile())
-      ->LaunchUI(tab_strip_controller_->GetBrowserWindowInterface());
+      ->ToggleUI(tab_strip_controller_->GetBrowserWindowInterface());
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 

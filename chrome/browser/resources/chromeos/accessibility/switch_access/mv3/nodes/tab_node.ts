@@ -9,7 +9,7 @@ import {ActionResponse} from '../switch_access_constants.js';
 
 import {BackButtonNode} from './back_button_node.js';
 import {BasicNode, BasicRootNode} from './basic_node.js';
-import {SAChildNode, SARootNode} from './switch_access_node.js';
+import type {SAChildNode, SARootNode} from './switch_access_node.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
 import MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;

@@ -116,6 +116,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="1435593198351412143">Ireki PDFak automatikoki</translation>
 <translation id="1436784010935106834">Kendu egin da</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> aplikazioan exekutatzen</translation>
+<translation id="1448147069872048656">Egiaztatu zeu zarela gailu honetan dituzun pasahitz guztietarako sarbidea izateko</translation>
 <translation id="1448440926884431741">Antolatu jarraipena egiten diezun produktuak Laster-markak atalean</translation>
 <translation id="1460751212339734034">Aurreztu denbora, idatzi gutxiago</translation>
 <translation id="1466383950273130737">Hautatu Chrome-ren hizkuntza</translation>
@@ -847,6 +848,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4910889077668685004">Ordainketa-aplikazioak</translation>
 <translation id="4912413785358399818">Mugitu fitxa</translation>
 <translation id="4913169188695071480">Utzi freskatzeari</translation>
+<translation id="4913841543356834596">Jaso zure pasahitz guztietarako sarbidea</translation>
 <translation id="4918086044614829423">Onartu</translation>
 <translation id="4925120120285606924"><ph name="CURRENT_DATE_ISO" /> pantaila-argazkia</translation>
 <translation id="49268022542405662">Pasahitzak esportatu egingo dira, eta testu-fitxategi gisa deskargatu. Helburuko fitxategia erabiltzeko baimena duten pertsonek eta aplikazioek ikusi ahalko dituzte.</translation>
@@ -1330,6 +1332,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6987047470128880212">Ezkutuko modua ez dago erabilgarri gailu honetan</translation>
 <translation id="6991701761229081516">Pasahitzak CSV fitxategi gisa deskargatuko dira. Fitxategian sar daitezkeen guztiek (aplikazioak barne) ikusi ahal izango dituzte. Esportatutako pasahitzak Chrome-tik deskargatuko dira.</translation>
 <translation id="6996145122199359148">Deskargatu orri hau</translation>
+<translation id="7013627768165542797">Egiaztatu zeu zarela Google-ko kontuan dituzun pasahitzetarako sarbidea izateko</translation>
 <translation id="7013762323294215682">Sarbide-gakoa Pasahitz-kudeatzailea zerbitzuan gordeko da. Zerbitzu horretarako sarbidea duten guztiek erabili ahal izango dute sarbide-gakoa.</translation>
 <translation id="7020741890149022655">Gehitu irakurketa-zerrendan <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Ireki arakatzailean</translation>
@@ -1348,6 +1351,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7085332316435785646">Aukeratu ea Chrome-ko historia kontuan hartu nahi duzun ala ez Google-ren zerbitzuak modu pertsonalizatuago batean erabiltzeko</translation>
 <translation id="7088681679121566888">Eguneratuta dago Chrome</translation>
 <translation id="7094933634769755999">Ez da zuzena</translation>
+<translation id="7102843846294013537">Zure pasahitzetako batzuk ez daude erabilgarri gailu honetan</translation>
 <translation id="7106762743910369165">Zure erakundeak kudeatzen du arakatzailea</translation>
 <translation id="7111394291981742152">Chrome-k ikusten dituzun iragarkien gaineko kontrol handiagoa ematen dizu, eta webguneek iragarki pertsonalizatuak erakusten dizkizutenean zuri buruz atzi dezaketen informazioa mugatzen du.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Webgune baten baimenak berrikusi dira}other{# webguneren baimenak berrikusi dira}}</translation>

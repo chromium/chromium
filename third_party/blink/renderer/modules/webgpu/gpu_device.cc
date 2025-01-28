@@ -168,8 +168,7 @@ void GPUDevice::Initialize(wgpu::Device handle,
 
   // Increment subgroups features counter for OT.
   // TODO(crbug.com/349125474): Clean up after OT finished.
-  if (features_->has(V8GPUFeatureName::Enum::kSubgroups) ||
-      features_->has(V8GPUFeatureName::Enum::kSubgroupsF16)) {
+  if (features_->has(V8GPUFeatureName::Enum::kSubgroups)) {
     DCHECK(RuntimeEnabledFeatures::WebGPUSubgroupsFeaturesEnabled(
         GetExecutionContext()));
     UseCounter::Count(GetExecutionContext(),
@@ -486,8 +485,7 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
     }
 
     case wgpu::CreatePipelineAsyncStatus::InternalError:
-    case wgpu::CreatePipelineAsyncStatus::InstanceDropped:
-    default: {
+    case wgpu::CreatePipelineAsyncStatus::InstanceDropped: {
       resolver->Reject(GPUPipelineError::Create(
           script_state->GetIsolate(), StringFromASCIIAndUTF8(message),
           V8GPUPipelineErrorReason::Enum::kInternal));
@@ -519,8 +517,7 @@ void GPUDevice::OnCreateComputePipelineAsyncCallback(
     }
 
     case wgpu::CreatePipelineAsyncStatus::InternalError:
-    case wgpu::CreatePipelineAsyncStatus::InstanceDropped:
-    default: {
+    case wgpu::CreatePipelineAsyncStatus::InstanceDropped: {
       resolver->Reject(GPUPipelineError::Create(
           script_state->GetIsolate(), StringFromASCIIAndUTF8(message),
           V8GPUPipelineErrorReason::Enum::kInternal));
@@ -742,8 +739,7 @@ void GPUDevice::OnPopErrorScopeCallback(
       return;
     case wgpu::PopErrorScopeStatus::Success:
       break;
-    default:
-      // TODO(crbug.com/378453261): Explicitly handle EmptyStack.
+    case wgpu::PopErrorScopeStatus::EmptyStack:
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                        "No error scopes to pop");
       return;
@@ -765,7 +761,6 @@ void GPUDevice::OnPopErrorScopeCallback(
           StringFromASCIIAndUTF8(message)));
       break;
     case wgpu::ErrorType::Unknown:
-    default:
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                        "Unknown failure in popErrorScope");
       break;

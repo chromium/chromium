@@ -94,7 +94,7 @@ class TestSessionControllerClient final : public SessionControllerClient {
   // PrefService instance which will be used for the session. Passing nullptr
   // will result in a check failure.
   void AddUserSession(
-      const std::string& display_email,
+      std::string_view display_email,
       user_manager::UserType user_type = user_manager::UserType::kRegular,
       std::variant<bool, std::unique_ptr<PrefService>> provide_or_pref_service =
           true,
@@ -105,7 +105,7 @@ class TestSessionControllerClient final : public SessionControllerClient {
   // Adds a user session from a given AccountId.
   void AddUserSession(
       const AccountId& account_id,
-      const std::string& display_email,
+      std::string_view display_email,
       user_manager::UserType user_type = user_manager::UserType::kRegular,
       std::variant<bool, std::unique_ptr<PrefService>> provide_or_pref_service =
           true,

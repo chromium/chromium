@@ -463,8 +463,6 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   // network::mojom::URLLoaderClient methods
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -955,7 +953,6 @@ void InterceptionJob::GetResponseBody(
     body_reader_ = std::make_unique<BodyReader>(base::BindOnce(
         &InterceptionJob::ResponseBodyComplete, base::Unretained(this)));
     client_receiver_.Resume();
-    loader_->ResumeReadingBodyFromNet();
   }
   body_reader_->AddCallback(std::move(callback));
   // Needs to happen after |AddCallback| to avoid a DCHECK.
@@ -979,7 +976,6 @@ void InterceptionJob::TakeResponseBodyPipe(
   client_receiver_.Resume();
   if (body_)
     StartLoadingResponseBody(std::move(body_));
-  loader_->ResumeReadingBodyFromNet();
 }
 
 void InterceptionJob::ContinueInterceptedRequest(
@@ -1124,7 +1120,6 @@ Response InterceptionJob::InnerContinueRequest(
                                std::move(body_),
                                std::move(response_metadata_->cached_metadata));
     response_metadata_.reset();
-    loader_->ResumeReadingBodyFromNet();
     client_receiver_.Resume();
     return Response::Success();
   }
@@ -1648,16 +1643,6 @@ void InterceptionJob::SetPriority(net::RequestPriority priority,
     loader_->SetPriority(priority, intra_priority_value);
 }
 
-void InterceptionJob::PauseReadingBodyFromNet() {
-  if (!body_reader_ && loader_ && state_ != State::kResponseTaken)
-    loader_->PauseReadingBodyFromNet();
-}
-
-void InterceptionJob::ResumeReadingBodyFromNet() {
-  if (!body_reader_ && loader_ && state_ != State::kResponseTaken)
-    loader_->ResumeReadingBodyFromNet();
-}
-
 // URLLoaderClient methods
 void InterceptionJob::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
@@ -1675,7 +1660,6 @@ void InterceptionJob::OnReceiveResponse(
                                std::move(cached_metadata));
     return;
   }
-  loader_->PauseReadingBodyFromNet();
   client_receiver_.Pause();
   body_ = std::move(body);
 

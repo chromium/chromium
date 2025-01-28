@@ -4,8 +4,9 @@
 
 #include "content/browser/client_hints/client_hints.h"
 
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -77,10 +78,10 @@ class ClientHintsTest : public RenderViewHostImplTestHarness {
 
     std::vector<std::string> hints_list;
     const auto& map = network::GetClientHintToNameMap();
-    base::ranges::transform(hints.value(), std::back_inserter(hints_list),
-                            [&map](network::mojom::WebClientHintsType hint) {
-                              return map.at(hint);
-                            });
+    std::ranges::transform(hints.value(), std::back_inserter(hints_list),
+                           [&map](network::mojom::WebClientHintsType hint) {
+                             return map.at(hint);
+                           });
 
     return base::JoinString(hints_list, ",");
   }

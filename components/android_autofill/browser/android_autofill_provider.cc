@@ -77,9 +77,12 @@ std::unique_ptr<PasswordForm> ParseToPasswordForm(
   // On Chrome, the parser can use stored usernames to identify a filled
   // username field by the value it contains. Since we do not have access to
   // credentials, we leave it empty.
+  // UKM source id is required for recording metrics for parsing with the
+  // clientside TFLite model, and TFLite is not available on WebView.
   return parser.Parse(form_data,
                       password_manager::FormDataParser::Mode::kFilling,
-                      /*stored_usernames=*/{});
+                      /*stored_usernames=*/{},
+                      /*ukm_source_id=*/std::nullopt);
 }
 
 // Returns whether we should attempt to cache provider responses for this form.

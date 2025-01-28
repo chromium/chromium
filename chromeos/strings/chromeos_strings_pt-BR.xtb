@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1020274983236703756">Recursos exclusivos do <ph name="PRODUCT_NAME" /> já estão disponíveis</translation>
 <translation id="1022628058306505708">Fluxo da Terra</translation>
+<translation id="102432830749687801">Use o app Transferência de conteúdo do Google para transferir os dados da conta escolar para a pessoal antes de perder o acesso.</translation>
 <translation id="1026212596705997935">O atalho está sendo usado para "<ph name="CONFLICT_ACCEL_NAME" />". Pressione um novo atalho. Para substituir o atalho, pressione-o de novo.</translation>
 <translation id="1030856839388844477">Redefinir o uso de dados</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">O estojo tem <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="1397738625398125236">O gateway pode receber um ping</translation>
 <translation id="1398634363027580500">Latência de HTTPS muito alta</translation>
+<translation id="1406389211945506521">Agradecemos por compartilhar sua experiência. Seu feedback nos ajuda a criar conteúdo mais preciso e útil.</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1413240736185167732">Falha - Falha no filtro</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Arte clássica</translation>
 <translation id="181434555916624618">Por enquanto, os resultados com pessoas não vão aparecer. Tente algo diferente.</translation>
 <translation id="1815850098929213707">A tecla selecionada é <ph name="KEYS" />. Toque no botão para editar o controle.</translation>
+<translation id="1818174214124933000">Ao selecionar "Enviar", seu feedback e o conteúdo (mostrado abaixo) serão enviados ao Google, revisados por humanos e usados para treinar ou melhorar nossos produtos e serviços, de acordo com a <ph name="LINK_POLICY_BEGIN" />Política de Privacidade<ph name="LINK_POLICY_END" /> e os <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Termos de Serviço do Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Itens</translation>
 <translation id="1827738518074806965">Galeria de arte</translation>
+<translation id="183287940576828840">Ofensivo/Perigoso</translation>
 <translation id="1836553715834333258">Cor do sistema</translation>
 <translation id="183675228220305365">realista</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Falhas de solicitações UDP</translation>
 <translation id="1908394185991500139">seta para a esquerda</translation>
 <translation id="1914144885717544695">na sexta-feira</translation>
+<translation id="1915960750806557358">Deixe seu feedback ou descreva o problema. Não inclua informações pessoais, sensíveis ou confidenciais.</translation>
 <translation id="1923388006036088459">Cores de destaque</translation>
 <translation id="1945403655450283000">Gravador</translation>
 <translation id="1947737735496445907">Impresso</translation>
@@ -596,6 +601,7 @@
 <translation id="387301095347517405">O número de vezes que a bateria passou por um ciclo completo de carregamento</translation>
 <translation id="3877066159641251281">Ouvir tradução</translation>
 <translation id="3880601782712134623">Detectar vozes diferentes automaticamente e atribuir um identificador genérico a cada pessoa, como Falante 1 e Falante 2.</translation>
+<translation id="38811596981744338">Problema jurídico</translation>
 <translation id="3885327323343477505">Mudar o protetor de tela</translation>
 <translation id="3889914174935857450">Redefinir data</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356"><ph name="RATE" /> carregados em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4930320165497208503">Para definir ou atualizar uma conexão, acesse as <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" /> (abre em uma nova guia)</translation>
 <translation id="4946927805998996217">Gerando resumo</translation>
 <translation id="4950314376641394653">O firmware do <ph name="DEVICE_NAME" /> foi atualizado para a versão <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">túnel verde</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">Veja informações relacionadas à sua seleção</translation>
 <translation id="6694534975463174713">cadeado</translation>
 <translation id="6700703207451721535">Não é permitido acessar este link. Entre em contato com seu professor se precisar de acesso.</translation>
+<translation id="6703179086771097594">O que não deu certo?</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
 <translation id="6712933881624804031">vale</translation>
 <translation id="6716013206176357696">morangos</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">Baixe o modelo de transcrição nas Configurações</translation>
 <translation id="7058278511608979688">Concluir e salvar</translation>
 <translation id="7059230779847288458">Carregando. <ph name="TIME_VALUE" /> até a carga completa</translation>
+<translation id="7064209589142995848">Transferência de conteúdo</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> selecionado</translation>
 <translation id="7066538517128343186">a tecla <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Prepare o dispositivo</translation>
@@ -1592,6 +1601,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8476942730579767658">Janelas e espaços de trabalho</translation>
 <translation id="8477536061607044749">design gráfico</translation>
 <translation id="8477551185774834963">Latência do DNS um pouco acima do limite permitido</translation>
+<translation id="8481308460877552925">Fatos incorretos</translation>
 <translation id="8482376765267780829">Selecione um texto para simplificar</translation>
 <translation id="8483248364096924578">Endereço IP</translation>
 <translation id="8491311378305535241">O firewall impediu a conexão de apps Android a sites HTTP</translation>

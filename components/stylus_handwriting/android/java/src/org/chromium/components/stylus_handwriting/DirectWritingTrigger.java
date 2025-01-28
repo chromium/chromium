@@ -7,13 +7,11 @@ package org.chromium.components.stylus_handwriting;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.RequiresApi;
@@ -78,40 +76,30 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
     }
 
     @Override
-    public EditorBoundsInfo onFocusedNodeChanged(
+    public void onFocusedNodeChanged(
             Rect editableBoundsOnScreenDip,
             boolean isEditable,
             View currentView,
             float scaleFactor,
             int contentOffsetY) {
-        if (!mDwServiceEnabled || !mBinder.isServiceConnected()) return null;
+        if (!mDwServiceEnabled || !mBinder.isServiceConnected()) return;
 
-        RectF bounds =
-                new RectF(
-                        editableBoundsOnScreenDip.left * scaleFactor,
-                        editableBoundsOnScreenDip.top * scaleFactor,
-                        editableBoundsOnScreenDip.right * scaleFactor,
-                        editableBoundsOnScreenDip.bottom * scaleFactor);
+        Rect bounds =
+                new Rect(
+                        Math.round(editableBoundsOnScreenDip.left * scaleFactor),
+                        Math.round(editableBoundsOnScreenDip.top * scaleFactor),
+                        Math.round(editableBoundsOnScreenDip.right * scaleFactor),
+                        Math.round(editableBoundsOnScreenDip.bottom * scaleFactor));
         bounds.offset(0, contentOffsetY);
-        EditorBoundsInfo editorBoundsInfo = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            editorBoundsInfo =
-                    new EditorBoundsInfo.Builder()
-                            .setEditorBounds(bounds)
-                            .setHandwritingBounds(bounds)
-                            .build();
-        }
-        Rect roundedBounds = new Rect();
-        bounds.round(roundedBounds);
 
         if (isEditable) {
             if (!mStylusWritingDetected
                     && mNeedsFocusedNodeChangedAfterTouchUp
                     && mStylusUpEvent != null) {
-                mBinder.updateEditableBounds(roundedBounds, currentView, true);
+                mBinder.updateEditableBounds(bounds, currentView, true);
                 // Call onStopRecognition with editable bounds to show DW toolbar on Pen TAP in
                 // input field.
-                onStopRecognition(mStylusUpEvent, roundedBounds, currentView);
+                onStopRecognition(mStylusUpEvent, bounds, currentView);
                 mNeedsFocusedNodeChangedAfterTouchUp = false;
             }
         } else {
@@ -120,9 +108,8 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
             onStopRecognition(/* motionEvent= */ null, /* editableBounds= */ null, currentView);
         }
 
-        mEditableNodeBounds = roundedBounds;
-        mCallback.updateEditableBounds(roundedBounds, /* cursorPosition= */ new Point());
-        return editorBoundsInfo;
+        mEditableNodeBounds = bounds;
+        mCallback.updateEditableBounds(bounds, /* cursorPosition= */ new Point());
     }
 
     @Override
@@ -458,7 +445,7 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
     }
 
     @Override
-    public EditorBoundsInfo onEditElementFocusedForStylusWriting(
+    public void onEditElementFocusedForStylusWriting(
             Rect focusedEditBounds,
             Point cursorPosition,
             float scaleFactor,
@@ -466,26 +453,16 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
             View view) {
         // Don't start recognition if focused edit bounds are empty as it means stylus writable
         // element was not focused or bounds could not be obtained.
-        if (focusedEditBounds.isEmpty()) return null;
+        if (focusedEditBounds.isEmpty()) return;
 
-        if (!mStylusWritingDetected || mStylusWritingImeCallback == null) return null;
+        if (!mStylusWritingDetected || mStylusWritingImeCallback == null) return;
 
         focusedEditBounds.offset(0, contentOffsetY);
-        RectF bounds = new RectF(focusedEditBounds);
-        EditorBoundsInfo editorBoundsInfo = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            editorBoundsInfo =
-                    new EditorBoundsInfo.Builder()
-                            .setEditorBounds(bounds)
-                            .setHandwritingBounds(bounds)
-                            .build();
-        }
         StylusApiOption.recordStylusHandwritingTriggered(Api.DIRECT_WRITING);
         // Start recognition as stylus writable element is focused.
         startRecognition(focusedEditBounds);
         mCallback.updateEditableBounds(focusedEditBounds, cursorPosition);
         mBinder.updateEditableBounds(focusedEditBounds, view, false);
-        return editorBoundsInfo;
     }
 
     @Override

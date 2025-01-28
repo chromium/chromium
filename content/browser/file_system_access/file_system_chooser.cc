@@ -266,7 +266,7 @@ base::FilePath FileSystemChooser::Options::ResolveSuggestedNameExtension(
 
   // Check if the suggested extension is an accepted extension.
   for (auto i = 0u; i < file_types.extensions.size(); ++i) {
-    auto it = base::ranges::find(file_types.extensions[i], suggested_extension);
+    auto it = std::ranges::find(file_types.extensions[i], suggested_extension);
     if (it != file_types.extensions[i].end()) {
       // The suggested extension is an accepted extension. All is harmonious.
       default_file_type_index_ = i + 1;  // NOTE: 1-based index.

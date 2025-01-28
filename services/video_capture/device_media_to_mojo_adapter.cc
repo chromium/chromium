@@ -96,7 +96,7 @@ void DeviceMediaToMojoAdapter::Start(
   StartInternal(std::move(requested_settings),
                 std::move(video_frame_handler_pending_remote),
                 /*frame_handler=*/nullptr, /*start_in_process=*/false,
-                media::VideoEffectsContext({}));
+                media::VideoEffectsContext({}, {}));
 }
 
 void DeviceMediaToMojoAdapter::StartInProcess(

@@ -30,12 +30,14 @@ class PropertyTreeDelegate {
  public:
   virtual ~PropertyTreeDelegate() = default;
 
+  virtual void SetLayerTreeHost(LayerTreeHost* host) = 0;
+  virtual LayerTreeHost* host() = 0;
+
   // Called by LayerTreeHost::DoUpdateLayers() to ensure that the
   // property trees are up-to-date.
-  virtual void UpdatePropertyTreesIfNeeded(LayerTreeHost* host) = 0;
+  virtual void UpdatePropertyTreesIfNeeded() = 0;
 
   virtual void UpdateScrollOffsetFromImpl(
-      LayerTreeHost* host,
       const ElementId& id,
       const gfx::Vector2dF& delta,
       const std::optional<TargetSnapAreaElementIds>& snap_target_ids) = 0;

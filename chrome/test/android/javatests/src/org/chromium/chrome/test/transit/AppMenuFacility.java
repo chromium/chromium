@@ -14,6 +14,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
+import android.widget.ListView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
@@ -29,12 +30,14 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -49,6 +52,8 @@ import java.util.function.Function;
  */
 public abstract class AppMenuFacility<HostStationT extends Station<?>>
         extends ScrollableFacility<HostStationT> {
+
+    private ViewElement mMenuList;
 
     /** Create a new app menu item stub which throws UnsupportedOperationException if selected. */
     protected Item<Void> declareStubMenuItem(ItemsBuilder items, @IdRes int id) {
@@ -136,7 +141,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     @CallSuper
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareView(MENU_LIST);
+        mMenuList = elements.declareView(MENU_LIST);
 
         super.declareElements(elements);
     }
@@ -162,6 +167,11 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
                 .withIsOpeningTabs(1)
                 .withIsSelectingTabs(1)
                 .build();
+    }
+
+    /** Default behavior for "Delete browsing data". */
+    protected QuickDeleteDialogFacility createQuickDeleteDialogFacility() {
+        return new QuickDeleteDialogFacility();
     }
 
     /** Default behavior for "Settings". */
@@ -212,5 +222,11 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
                         Press.FINGER);
         mHostStation.exitFacilitySync(
                 this, () -> onView(MENU_LIST_MATCHER).perform(clickBetweenViewAndLeftEdge));
+    }
+
+    /** Get the menu list {@link ListView}. */
+    public ListView getView() {
+        assertSuppliersCanBeUsed();
+        return (ListView) mMenuList.get();
     }
 }

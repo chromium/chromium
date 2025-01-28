@@ -1534,9 +1534,11 @@ interface NetworkContext {
   AddHSTS(string host, mojo_base.mojom.Time expiry, bool include_subdomains)
       => ();
 
-  // Returns true if it is known that |host| has requested to always be
-  // accessed via HTTPS.
-  IsHSTSActiveForHost(string host) => (bool result);
+  // Returns true if it is known that `host` has requested to always be
+  // accessed via HTTPS. `is_top_level_nav` indicates whether or not the query
+  // for the HSTS state is being made by a top-level/primary/outermost frame
+  // navigation request.
+  IsHSTSActiveForHost(string host, bool is_top_level_nav) => (bool result);
 
   // Retrieve values from the HSTS state from the associated contexts
   // transport security state.

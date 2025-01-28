@@ -46,8 +46,7 @@ std::wstring AppInventoryManagerBaseTest::CreateUser() {
   CComBSTR sid_str;
   EXPECT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       kDefaultUsername, L"password", L"Full Name", L"comment",
-                      base::UTF8ToWide(kDefaultGaiaId), L"user@company.com",
-                      &sid_str));
+                      kDefaultGaiaId, L"user@company.com", &sid_str));
   return OLE2W(sid_str);
 }
 
@@ -111,8 +110,7 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
     CComBSTR sid_str;
     ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                         kDefaultUsername, L"password", L"Full Name", L"comment",
-                        base::UTF8ToWide(kDefaultGaiaId), L"user@company.com",
-                        &sid_str));
+                        kDefaultGaiaId, L"user@company.com", &sid_str));
     user_sid = OLE2W(sid_str);
   }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- ChromeOS-specific strings (included from generated_resources.grd).
-     Everything in this file is wrapped in <if expr="chromeos_ash">. -->
+     Everything in this file is wrapped in <if expr="is_chromeos">. -->
 <grit-part>
   <message name="IDS_EMPTY_STRING" desc="Empty string, exist only to make code generic. No translation required.">
   </message>

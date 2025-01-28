@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/printing/print_servers_manager.h"
 #include "chrome/common/buildflags.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
@@ -59,9 +58,7 @@ class PrintPreviewHandlerChromeOS
 
  private:
   friend class PrintPreviewHandlerChromeOSTest;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class TestPrintServersManager;
-#endif
 
   PrintPreviewHandler* GetPrintPreviewHandler();
 

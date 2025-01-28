@@ -3253,7 +3253,7 @@ void HTMLMediaElement::AudioTrackChanged(AudioTrack* track) {
 }
 
 void HTMLMediaElement::AudioTracksTimerFired(TimerBase*) {
-  Vector<WebMediaPlayer::TrackId> enabled_track_ids;
+  std::vector<WebMediaPlayer::TrackId> enabled_track_ids;
   for (unsigned i = 0; i < audioTracks().length(); ++i) {
     AudioTrack* track = audioTracks().AnonymousIndexedGetter(i);
     if (track->enabled())

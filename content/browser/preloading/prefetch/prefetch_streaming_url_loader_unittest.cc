@@ -53,8 +53,6 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
     void SetPriority(net::RequestPriority priority,
                      int32_t intra_priority_value) override {}
-    void PauseReadingBodyFromNet() override {}
-    void ResumeReadingBodyFromNet() override {}
 
    private:
     base::OnceClosure on_follow_redirect_closure_;

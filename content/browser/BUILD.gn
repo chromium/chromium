@@ -108,6 +108,8 @@ source_set("browser") {
     "//components/link_header_util",
     "//components/metrics",
     "//components/metrics:single_sample_metrics",
+    "//components/metrics/dwa:dwa",
+    "//components/metrics/dwa:dwa_builders",
     "//components/network_session_configurator/browser",
     "//components/offline_pages/buildflags",
     "//components/offline_pages/core/request_header",
@@ -1553,6 +1555,8 @@ source_set("browser") {
     "preloading/prefetch/prefetch_document_manager.h",
     "preloading/prefetch/prefetch_features.cc",
     "preloading/prefetch/prefetch_features.h",
+    "preloading/prefetch/prefetch_handle_impl.cc",
+    "preloading/prefetch/prefetch_handle_impl.h",
     "preloading/prefetch/prefetch_match_resolver.cc",
     "preloading/prefetch/prefetch_match_resolver.h",
     "preloading/prefetch/prefetch_metrics.cc",
@@ -3091,14 +3095,6 @@ source_set("browser") {
       "media/cdm_storage_database.h",
       "media/cdm_storage_manager.cc",
       "media/cdm_storage_manager.h",
-      "media/media_license_database.cc",
-      "media/media_license_database.h",
-      "media/media_license_manager.cc",
-      "media/media_license_manager.h",
-      "media/media_license_quota_client.cc",
-      "media/media_license_quota_client.h",
-      "media/media_license_storage_host.cc",
-      "media/media_license_storage_host.h",
     ]
   }
 

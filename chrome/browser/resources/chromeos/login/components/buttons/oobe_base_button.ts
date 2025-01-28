@@ -6,7 +6,7 @@ import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 
 import type {CrButtonElement} from '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert} from '//resources/js/assert.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeI18nMixin} from '../mixins/oobe_i18n_mixin.js';

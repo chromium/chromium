@@ -7,10 +7,11 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <algorithm>
+
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/threading/thread_restrictions.h"
 #include "v8/src/fuzzilli/cov.h"
 
@@ -70,14 +71,14 @@ int LLVMFuzzerRunDriverImpl(int* argc,
   ctrl_read_file.ReadAtCurrentPosAndCheck(
       base::as_writable_byte_span(actual_magic));
 
-  CHECK(base::ranges::equal(kHelloMessage, actual_magic));
+  CHECK(std::ranges::equal(kHelloMessage, actual_magic));
 
   while (true) {
     // Read the action message ("exec") from Fuzzilli.
     constexpr auto kExpectedAction = base::span_from_cstring("exec");
     uint8_t action_msg[kExpectedAction.size()];
     if (!ctrl_read_file.ReadAtCurrentPosAndCheck(base::span(action_msg)) ||
-        !base::ranges::equal(kExpectedAction, action_msg)) {
+        !std::ranges::equal(kExpectedAction, action_msg)) {
       LOG(WARNING) << "Unexpected message from Fuzzilli: " << action_msg;
       return 0;
     }

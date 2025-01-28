@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletWithImprovedSigninUISyncTest,
 
   histogram_tester_.ExpectUniqueSample(
       "Sync.PaymentsAccountStorageUponSyncConfiguration",
-      /*sample=*/0,  // kSignedInImplicitlyWithInMemoryStorage.
+      /*sample=*/4,  // kSignedInImplicitlyWithInMemoryStorage.
       /*expected_bucket_count=*/1);
 
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);

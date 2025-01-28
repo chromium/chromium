@@ -16,7 +16,6 @@
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -821,7 +820,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
     return child->HitTestPoint(point_in_child_coords);
   };
   const auto i =
-      base::ranges::find_if(base::Reversed(v->children()), is_point_in_child);
+      std::ranges::find_if(base::Reversed(v->children()), is_point_in_child);
   // If it's not inside any of our children, it's inside this view.
   return (i == v->children().rend()) ? GetNativeViewAccessible()
                                      : (*i)->GetNativeViewAccessible();
@@ -1030,7 +1029,7 @@ std::optional<int> ViewAXPlatformNodeDelegate::GetPosInSet() const {
     return std::nullopt;
   }
   // Check this is in views_in_group; it may be removed if it is ignored.
-  auto found_view = base::ranges::find(views_in_group, view());
+  auto found_view = std::ranges::find(views_in_group, view());
   if (found_view == views_in_group.end()) {
     return std::nullopt;
   }
@@ -1054,7 +1053,7 @@ std::optional<int> ViewAXPlatformNodeDelegate::GetSetSize() const {
     return std::nullopt;
   }
   // Check this is in views_in_group; it may be removed if it is ignored.
-  auto found_view = base::ranges::find(views_in_group, view());
+  auto found_view = std::ranges::find(views_in_group, view());
   if (found_view == views_in_group.end()) {
     return std::nullopt;
   }
@@ -1108,8 +1107,8 @@ ViewAXPlatformNodeDelegate::GetChildWidgets() const {
   Widget::GetAllOwnedWidgets(widget->GetNativeView(), &owned_widgets);
 
   std::vector<raw_ptr<Widget, VectorExperimental>> visible_widgets;
-  base::ranges::copy_if(owned_widgets, std::back_inserter(visible_widgets),
-                        &Widget::IsVisible);
+  std::ranges::copy_if(owned_widgets, std::back_inserter(visible_widgets),
+                       &Widget::IsVisible);
 
   // Focused child widgets should take the place of the web page they cover in
   // the accessibility tree.
@@ -1120,7 +1119,7 @@ ViewAXPlatformNodeDelegate::GetChildWidgets() const {
     return ViewAccessibilityUtils::IsFocusedChildWidget(child_widget,
                                                         focused_view);
   };
-  const auto i = base::ranges::find_if(visible_widgets, is_focused_child);
+  const auto i = std::ranges::find_if(visible_widgets, is_focused_child);
   // In order to support the "read title (NVDAKey+T)" and "read window
   // (NVDAKey+B)" commands in the NVDA screen reader, hide the rest of the UI
   // from the accessibility tree when a modal dialog is showing.

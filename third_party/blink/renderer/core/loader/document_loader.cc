@@ -35,6 +35,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -192,7 +193,7 @@ namespace blink {
 namespace {
 
 Vector<mojom::blink::OriginTrialFeature> CopyInitiatorOriginTrials(
-    const WebVector<int>& initiator_origin_trial_features) {
+    const std::vector<int>& initiator_origin_trial_features) {
   Vector<mojom::blink::OriginTrialFeature> result;
   for (auto feature : initiator_origin_trial_features) {
     // Convert from int to OriginTrialFeature. These values are passed between
@@ -204,10 +205,10 @@ Vector<mojom::blink::OriginTrialFeature> CopyInitiatorOriginTrials(
   return result;
 }
 
-WebVector<int> CopyInitiatorOriginTrials(
+std::vector<int> CopyInitiatorOriginTrials(
     const Vector<mojom::blink::OriginTrialFeature>&
         initiator_origin_trial_features) {
-  WebVector<int> result;
+  std::vector<int> result;
   for (auto feature : initiator_origin_trial_features) {
     // Convert from OriginTrialFeature to int. These values are passed between
     // blink navigations. OriginTrialFeature isn't visible outside of blink (and
@@ -219,7 +220,7 @@ WebVector<int> CopyInitiatorOriginTrials(
 }
 
 Vector<String> CopyForceEnabledOriginTrials(
-    const WebVector<WebString>& force_enabled_origin_trials) {
+    const std::vector<WebString>& force_enabled_origin_trials) {
   Vector<String> result;
   result.ReserveInitialCapacity(
       base::checked_cast<wtf_size_t>(force_enabled_origin_trials.size()));
@@ -228,18 +229,110 @@ Vector<String> CopyForceEnabledOriginTrials(
   return result;
 }
 
-WebVector<WebString> CopyForceEnabledOriginTrials(
+std::vector<WebString> CopyForceEnabledOriginTrials(
     const Vector<String>& force_enabled_origin_trials) {
-  WebVector<String> result;
-  for (const auto& trial : force_enabled_origin_trials)
-    result.emplace_back(trial);
-  return result;
+  return base::ToVector(force_enabled_origin_trials, ToWebString);
 }
 
 bool IsPagePopupRunningInWebTest(LocalFrame* frame) {
   return frame && frame->GetPage()->GetChromeClient().IsPopup() &&
          WebTestSupport::IsRunningWebTest();
 }
+
+void WarnIfSandboxIneffective(LocalDOMWindow* window) {
+  if (window->document()->IsInitialEmptyDocument()) {
+    return;
+  }
+
+  if (window->IsInFencedFrame()) {
+    return;
+  }
+
+  const Frame* frame = window->GetFrame();
+  if (!frame) {
+    return;
+  }
+
+  using WebSandboxFlags = network::mojom::blink::WebSandboxFlags;
+  const WebSandboxFlags& sandbox =
+      window->GetSecurityContext().GetSandboxFlags();
+
+  auto allow = [sandbox](WebSandboxFlags flag) {
+    return (sandbox & flag) == WebSandboxFlags::kNone;
+  };
+
+  if (allow(WebSandboxFlags::kAll)) {
+    return;
+  }
+
+  // "allow-scripts" + "allow-same-origin" allows escaping the sandbox, by
+  // accessing the parent via `eval` or `document.open`.
+  //
+  // Similarly to Firefox, warn only when this is a simply nested same-origin
+  // iframe
+  if (allow(WebSandboxFlags::kOrigin) && allow(WebSandboxFlags::kScripts) &&
+      window->parent() && window->parent()->GetFrame()->IsMainFrame() &&
+      !frame->IsCrossOriginToNearestMainFrame()) {
+    window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "An iframe which has both allow-scripts and allow-same-origin for its "
+        "sandbox attribute can escape its sandboxing."));
+    window->CountUse(WebFeature::kSandboxIneffectiveAllowOriginAllowScript);
+  }
+
+  // Note: It would be interesting to add additional warning. For instance,
+  // Firefox warn that "allow-top-navigation-by-user-activation" is useless if
+  // "allow-top-navigation" is set.
+}
+
+bool ShouldEmitNewNavigationHistogram(WebNavigationType navigation_type) {
+  switch (navigation_type) {
+    case kWebNavigationTypeBackForward:
+    case kWebNavigationTypeReload:
+    case kWebNavigationTypeRestore:
+    case kWebNavigationTypeFormResubmittedBackForward:
+    case kWebNavigationTypeFormResubmittedReload:
+      return false;
+    case kWebNavigationTypeLinkClicked:
+    case kWebNavigationTypeFormSubmitted:
+    case kWebNavigationTypeOther:
+      return true;
+  }
+}
+
+// Helpers to convert between base::flat_map and WTF::HashMap
+std::optional<
+    HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>>
+ConvertPermissionStatusFlatMapToHashMap(
+    const std::optional<base::flat_map<mojom::blink::PermissionName,
+                                       mojom::blink::PermissionStatus>>&
+        flat_map) {
+  if (!flat_map) {
+    return std::nullopt;
+  }
+
+  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
+      hash_map;
+  for (const auto& it : *flat_map) {
+    hash_map.insert(it.first, it.second);
+  }
+  return hash_map;
+}
+
+base::flat_map<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
+ConvertPermissionStatusHashMapToFlatMap(
+    const HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>&
+        hash_map) {
+  base::flat_map<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
+      flat_map;
+  for (const auto& it : hash_map) {
+    flat_map.try_emplace(it.key, it.value);
+  }
+  return flat_map;
+}
+
+}  // namespace
 
 struct SameSizeAsDocumentLoader
     : public GarbageCollected<SameSizeAsDocumentLoader>,
@@ -331,8 +424,10 @@ struct SameSizeAsDocumentLoader
   bool origin_agent_cluster_left_as_default;
   bool is_cross_site_cross_browsing_context_group;
   bool should_have_sticky_user_activation;
-  WebVector<WebHistoryItem> navigation_api_back_entries;
-  WebVector<WebHistoryItem> navigation_api_forward_entries;
+  std::vector<WebHistoryItem> navigation_api_back_entries
+      ALLOW_DISCOURAGED_TYPE("For same size");
+  std::vector<WebHistoryItem> navigation_api_forward_entries
+      ALLOW_DISCOURAGED_TYPE("For same size");
   Member<HistoryItem> navigation_api_previous_entry;
   std::unique_ptr<CodeCacheHost> code_cache_host;
   mojo::PendingRemote<mojom::blink::CodeCacheHost>
@@ -363,97 +458,6 @@ struct SameSizeAsDocumentLoader
 // please ensure that the attribute is copied correctly (if appropriate) in
 // DocumentLoader::CreateWebNavigationParamsToCloneDocument().
 ASSERT_SIZE(DocumentLoader, SameSizeAsDocumentLoader);
-
-void WarnIfSandboxIneffective(LocalDOMWindow* window) {
-  if (window->document()->IsInitialEmptyDocument())
-    return;
-
-  if (window->IsInFencedFrame())
-    return;
-
-  const Frame* frame = window->GetFrame();
-  if (!frame)
-    return;
-
-  using WebSandboxFlags = network::mojom::blink::WebSandboxFlags;
-  const WebSandboxFlags& sandbox =
-      window->GetSecurityContext().GetSandboxFlags();
-
-  auto allow = [sandbox](WebSandboxFlags flag) {
-    return (sandbox & flag) == WebSandboxFlags::kNone;
-  };
-
-  if (allow(WebSandboxFlags::kAll))
-    return;
-
-  // "allow-scripts" + "allow-same-origin" allows escaping the sandbox, by
-  // accessing the parent via `eval` or `document.open`.
-  //
-  // Similarly to Firefox, warn only when this is a simply nested same-origin
-  // iframe
-  if (allow(WebSandboxFlags::kOrigin) && allow(WebSandboxFlags::kScripts) &&
-      window->parent() && window->parent()->GetFrame()->IsMainFrame() &&
-      !frame->IsCrossOriginToNearestMainFrame()) {
-    window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "An iframe which has both allow-scripts and allow-same-origin for its "
-        "sandbox attribute can escape its sandboxing."));
-    window->CountUse(WebFeature::kSandboxIneffectiveAllowOriginAllowScript);
-  }
-
-  // Note: It would be interesting to add additional warning. For instance,
-  // Firefox warn that "allow-top-navigation-by-user-activation" is useless if
-  // "allow-top-navigation" is set.
-}
-
-bool ShouldEmitNewNavigationHistogram(WebNavigationType navigation_type) {
-  switch (navigation_type) {
-    case kWebNavigationTypeBackForward:
-    case kWebNavigationTypeReload:
-    case kWebNavigationTypeRestore:
-    case kWebNavigationTypeFormResubmittedBackForward:
-    case kWebNavigationTypeFormResubmittedReload:
-      return false;
-    case kWebNavigationTypeLinkClicked:
-    case kWebNavigationTypeFormSubmitted:
-    case kWebNavigationTypeOther:
-      return true;
-  }
-}
-
-// Helpers to convert between base::flat_map and WTF::HashMap
-std::optional<
-    HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>>
-ConvertPermissionStatusFlatMapToHashMap(
-    const std::optional<base::flat_map<mojom::blink::PermissionName,
-                                       mojom::blink::PermissionStatus>>&
-        flat_map) {
-  if (!flat_map) {
-    return std::nullopt;
-  }
-
-  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
-      hash_map;
-  for (const auto& it : *flat_map) {
-    hash_map.insert(it.first, it.second);
-  }
-  return hash_map;
-}
-
-base::flat_map<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
-ConvertPermissionStatusHashMapToFlatMap(
-    const HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>&
-        hash_map) {
-  base::flat_map<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
-      flat_map;
-  for (const auto& it : hash_map) {
-    flat_map.try_emplace(it.key, it.value);
-  }
-  return flat_map;
-}
-
-}  // namespace
 
 // Base class for body data received by the loader. This allows abstracting away
 // whether encoded or decoded data was received by the loader.
@@ -3559,7 +3563,8 @@ void DocumentLoader::RecordConsoleMessagesForCommit() {
 }
 
 void DocumentLoader::ApplyClientHintsConfig(
-    const WebVector<network::mojom::WebClientHintsType>& enabled_client_hints) {
+    const std::vector<network::mojom::WebClientHintsType>&
+        enabled_client_hints) {
   for (auto ch : enabled_client_hints) {
     client_hints_preferences_.SetShouldSend(ch);
   }
@@ -3739,7 +3744,7 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
       mojo::Clone(policy_container_->GetPolicies().content_security_policies));
 
   // Check if the embedder wants to add any default policies, and add them.
-  WebVector<WebContentSecurityPolicyHeader> embedder_default_csp;
+  std::vector<WebContentSecurityPolicyHeader> embedder_default_csp;
   Platform::Current()->AppendContentSecurityPolicy(WebURL(Url()),
                                                    &embedder_default_csp);
   for (const auto& header : embedder_default_csp) {

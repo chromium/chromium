@@ -370,6 +370,15 @@ const base::FeatureParam<base::TimeDelta>
         &ntp_features::kNtpCalendarModule,
         "NtpCalendarModuleWindowStartDeltaParam",
         base::Minutes(-15));
+const base::FeatureParam<bool> kNtpOutlookCalendarModuleAttachmentCheckParam(
+    &ntp_features::kNtpOutlookCalendarModule,
+    "NtpOutlookCalendarModuleAttachmentCheckParam",
+    true);
+extern const base::FeatureParam<bool>
+    kNtpOutlookCalendarModuleDisableAttachmentsParam(
+        &ntp_features::kNtpOutlookCalendarModule,
+        "NtpOutlookCalendarModuleDisableAttachmentsParam",
+        false);
 const base::FeatureParam<int> kNtpOutlookCalendarModuleMaxEventsParam(
     &ntp_features::kNtpOutlookCalendarModule,
     "NtpOutlookCalendarModuleMaxEventsParam",

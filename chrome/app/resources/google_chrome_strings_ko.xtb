@@ -362,6 +362,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5648328599815354043">Chrome은 더 많은 기능으로 온라인 안전을 강화합니다.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" />은(는) 위험할 수 있으므로 Chrome에서 차단했습니다.</translation>
 <translation id="566568153320186256">Chrome은 부드러운 스크롤 및 동영상 프레임 속도 같은 시각적 효과와 백그라운드 활동을 제한하여 배터리 전원을 절약합니다. <ph name="BEGIN_LINK" />에너지 절약 모드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="567202749201779594">계정의 Chrome 데이터 삭제</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="5686916850681061684">Chrome을 맞춤설정 및 제어합니다. 확인이 필요한 항목이 있습니다. 클릭하여 세부정보를 보세요.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -474,6 +475,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7024536598735240744">압축해제 오류(<ph name="UNPACK_ERROR" />)가 발생했습니다.</translation>
 <translation id="7025789849649390912">설치가 중단되었습니다.</translation>
 <translation id="7025800014283535195">여기에서 Chrome 프로필 간에 전환할 수 있습니다.</translation>
+<translation id="7031914411614877914">암호가 기억나지 않거나 이 설정을 변경하려면 계정에서 Chrome 데이터를 <ph name="SETTINGS_LINK" />하세요.</translation>
 <translation id="7048502283602470098">AI 살펴보기</translation>
 <translation id="7059914902409643750">나만의 Chrome 만들기</translation>
 <translation id="7071827361006050863">Chrome에서 곧 인터넷 사용 기록을 삭제합니다</translation>

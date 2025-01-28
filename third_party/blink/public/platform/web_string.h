@@ -190,6 +190,8 @@ class BLINK_PLATFORM_EXPORT WebString {
 inline WebString ToWebString(const WTF::String& s) {
   return WebString(s);
 }
+// To convert a std::vector<WebString> to WTF::Vector<String>, use
+//   WTF::Vector<String>(std_vector_web_string).
 #endif
 
 inline bool operator==(const WebString& a, const char* b) {

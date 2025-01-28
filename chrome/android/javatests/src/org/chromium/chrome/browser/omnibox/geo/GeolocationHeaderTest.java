@@ -208,6 +208,7 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
+    @DisabledTest(message = "Flaky. See crbug.com/392607758")
     public void testGeolocationHeaderPrimingDisabledPermissionAsk() {
         setPermission(ContentSettingValues.ASK);
         checkHeaderPriming(/* shouldPrimeHeader= */ false);

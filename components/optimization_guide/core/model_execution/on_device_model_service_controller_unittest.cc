@@ -2289,9 +2289,8 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAndCancelsResponse) {
 
   EXPECT_FALSE(response_.value());
   ASSERT_TRUE(response_.error());
-  EXPECT_EQ(
-      *response_.error(),
-      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  EXPECT_EQ(*response_.error(), OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kResponseLowQuality);
 
   ASSERT_TRUE(response_.log_entry());
   EXPECT_GT(response_.log_entry()

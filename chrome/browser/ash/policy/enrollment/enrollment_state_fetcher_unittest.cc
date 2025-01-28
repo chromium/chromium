@@ -20,7 +20,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_test_helper.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -216,9 +216,7 @@ class EnrollmentStateFetcherTest : public testing::Test {
     command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ash::switches::kEnterpriseEnableUnifiedStateDetermination,
         AutoEnrollmentTypeChecker::kUnifiedStateDeterminationAlways);
-
-    DeviceCloudPolicyManagerAsh::RegisterPrefs(local_state_.registry());
-    EnrollmentStateFetcher::RegisterPrefs(local_state_.registry());
+    RegisterLocalState(local_state_.registry());
 
     statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                              kTestSerialNumber);
@@ -348,8 +346,7 @@ TEST_F(EnrollmentStateFetcherTest, RegisterPrefs) {
   TestingPrefServiceSimple local_state;
   auto* registry = local_state.registry();
 
-  DeviceCloudPolicyManagerAsh::RegisterPrefs(registry);
-  EnrollmentStateFetcher::RegisterPrefs(registry);
+  RegisterLocalState(registry);
 
   const base::Value* value;
   auto defaults = registry->defaults();
@@ -361,6 +358,8 @@ TEST_F(EnrollmentStateFetcherTest, RegisterPrefs) {
   ASSERT_TRUE(
       defaults->GetValue(prefs::kEnrollmentPsmDeterminationTime, &value));
   EXPECT_EQ(value->GetString(), "0");
+  ASSERT_TRUE(defaults->GetValue(prefs::kEnrollmentRecoveryRequired, &value));
+  EXPECT_EQ(value->GetBool(), false);
 }
 
 TEST_F(EnrollmentStateFetcherTest, DisabledViaSwitches) {

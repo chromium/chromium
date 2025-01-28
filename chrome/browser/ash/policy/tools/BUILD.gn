@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 device_policy_remover_path = "$target_gen_dir/device_policy_remover.cc"
 

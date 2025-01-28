@@ -23,10 +23,17 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -439,6 +446,48 @@ void GetFormsPredictionsDataForModelPrototyping(
   }
   std::move(continue_callback).Run(std::move(data));
 }
+
+void GetFormDataByFieldGlobalIdForModelPrototyping(
+    content::WebContents* web_contents,
+    const optimization_guide::proto::AutofillFieldGlobalId& global_id_proto,
+    AiDataKeyedService::AiDataCallback continue_callback) {
+  AiDataKeyedService::AiData data = AiDataKeyedService::BrowserData();
+
+  // Construct an `autofill::FieldGlobalId` from `global_id_proto`.
+  std::optional<base::UnguessableToken> frame_token =
+      base::UnguessableToken::DeserializeFromString(
+          global_id_proto.frame_token());
+  if (!frame_token) {
+    std::move(continue_callback).Run(std::move(data));
+    return;
+  }
+  autofill::FieldGlobalId global_id = {
+      autofill::LocalFrameToken(*frame_token),
+      autofill::FieldRendererId(global_id_proto.renderer_id())};
+
+  // Look up the `global_id` in the main frame's manager. In the vast majority
+  // of cases, this suffices because the AutofillDriverRouter routes the forms
+  // to the main frame's manager. Since this is only used by internal
+  // extensions, the edge case in which the main frame's form may not yet be
+  // fully parsed is neglected.
+  autofill::ContentAutofillDriver* autofill_driver =
+      autofill::ContentAutofillDriver::GetForRenderFrameHost(
+          web_contents->GetPrimaryMainFrame());
+  if (!autofill_driver) {
+    std::move(continue_callback).Run(std::move(data));
+    return;
+  }
+  autofill::FormStructure* form_structure =
+      autofill_driver->GetAutofillManager().FindCachedFormById(global_id);
+  if (!form_structure) {
+    std::move(continue_callback).Run(std::move(data));
+    return;
+  }
+  *data->mutable_form_data() = autofill::ToFormDataProto(
+      form_structure->ToFormData(), /*field_eligibility_map=*/{},
+      /*field_value_sensitivity_map=*/{});
+  std::move(continue_callback).Run(std::move(data));
+}
 #endif
 
 std::string EncodePngOnBackgroundThread(const SkBitmap& bitmap) {
@@ -527,7 +576,7 @@ CreateDefaultPageContextSpecifier(int dom_node_id) {
   page_context_specifier->set_tab_screenshot(true);
   page_context_specifier->set_ax_tree(true);
   page_context_specifier->set_pdf_data(true);
-  page_context_specifier->set_forms_data(true);
+  page_context_specifier->set_forms_prediction(true);
   return page_context_specifier;
 }
 
@@ -596,9 +645,14 @@ void GetModelPrototypingAiData(AiDataKeyedService::AiDataSpecifier specifiers,
     GetTabDataForModelPrototyping(tabs_for_inner_text, web_contents,
                                   concurrent);
   }
-  if (page_context_specifier.forms_data()) {
+  if (page_context_specifier.forms_prediction()) {
     GetFormsPredictionsDataForModelPrototyping(web_contents,
                                                concurrent.CreateCallback());
+  }
+  if (page_context_specifier.has_field_global_id()) {
+    GetFormDataByFieldGlobalIdForModelPrototyping(
+        web_contents, page_context_specifier.field_global_id(),
+        concurrent.CreateCallback());
   }
 #endif
 #if BUILDFLAG(ENABLE_PDF)

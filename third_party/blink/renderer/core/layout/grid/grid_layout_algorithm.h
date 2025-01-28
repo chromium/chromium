@@ -261,6 +261,14 @@ class CORE_EXPORT GridLayoutAlgorithm
       LayoutUnit* intrinsic_block_size,
       LayoutUnit* offset_in_stitched_container);
 
+  // Constructs gap geometry for Gap Decorations. Each gap boundary is
+  // determined by its start and end offsets and stored in `gap_geometry`. For
+  // column gaps, the offsets correspond to inline coordinates; for row gaps,
+  // they correspond to block coordinates.
+  void BuildGapGeometry(GridTrackSizingDirection track_direction,
+                        const GridLayoutData& layout_data,
+                        GapFragmentData::GapGeometry* gap_geometry) const;
+
   // Computes the static position, grid area and its offset of out of flow
   // elements in the grid (as provided by `oof_children`).
   void PlaceOutOfFlowItems(const GridLayoutData& layout_data,

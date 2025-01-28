@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -336,6 +337,29 @@ public class InstantMessageDelegateImplUnitTest {
         assertEquals(MessageIdentifier.COLLABORATION_REMOVED, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(TAB_GROUP_TITLE));
+
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
+        verify(mSuccessCallback).onResult(true);
+    }
+
+    @Test
+    public void testCollaborationRemovedNullTitle() {
+        // Remove the group from the sync service, since it's being deleted. This will make fetching
+        // the title difficult.
+        reset(mTabGroupSyncService);
+        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(1);
+
+        InstantMessage message = newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED);
+        message.attribution.tabGroupMetadata.lastKnownTitle = null;
+        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
+
+        verify(mManagedMessageDispatcher)
+                .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        PropertyModel propertyModel = mPropertyModelCaptor.getValue();
+        @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
+        assertEquals(MessageIdentifier.COLLABORATION_REMOVED, messageIdentifier);
+        String title = propertyModel.get(TITLE);
+        assertTrue(title.contains("1 tab"));
 
         propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
         verify(mSuccessCallback).onResult(true);

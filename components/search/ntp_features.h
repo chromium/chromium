@@ -181,6 +181,13 @@ extern const base::FeatureParam<base::TimeDelta>
 // window.
 extern const base::FeatureParam<base::TimeDelta>
     kNtpCalendarModuleWindowStartDeltaParam;
+// Parameter determining whether the existence of Outlook attachment pages
+// should be checked.
+extern const base::FeatureParam<bool>
+    kNtpOutlookCalendarModuleAttachmentCheckParam;
+// Parameter determining whether attachments should be disabled.
+extern const base::FeatureParam<bool>
+    kNtpOutlookCalendarModuleDisableAttachmentsParam;
 // Parameter determining the max number of events to display on the Outlook
 // Calendar module.
 extern const base::FeatureParam<int> kNtpOutlookCalendarModuleMaxEventsParam;

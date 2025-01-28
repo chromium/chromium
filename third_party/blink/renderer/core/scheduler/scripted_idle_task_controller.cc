@@ -14,9 +14,39 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+
+namespace base {
+
+// Cancellation traits for a "scheduler idle task".
+template <>
+struct CallbackCancellationTraits<
+    blink::ScriptedIdleTaskController::SchedulerIdleTaskDeclType,
+    std::tuple<blink::WeakPersistent<blink::ScriptedIdleTaskController>,
+               blink::ScriptedIdleTaskController::CallbackId>> {
+  static constexpr bool is_cancellable = true;
+
+  static bool IsCancelled(
+      blink::ScriptedIdleTaskController::SchedulerIdleTaskDeclType,
+      const blink::WeakPersistent<blink::ScriptedIdleTaskController>&
+          controller,
+      const blink::ScriptedIdleTaskController::CallbackId& id) {
+    return !controller || !controller->HasCallback(id);
+  }
+
+  static bool MaybeValid(
+      blink::ScriptedIdleTaskController::SchedulerIdleTaskDeclType,
+      const blink::WeakPersistent<blink::ScriptedIdleTaskController>&,
+      const blink::ScriptedIdleTaskController::CallbackId&) {
+    // No effort is made return a thread-safe guess of validity.
+    return true;
+  }
+};
+
+}  // namespace base
 
 namespace blink {
 
@@ -37,26 +67,6 @@ void UpdateMaxIdleTasksCrashKey(size_t num_pending_idle_tasks) {
     base::debug::SetCrashKeyString(
         crash_key, base::NumberToString(num_pending_idle_tasks_rounded_down));
     crash_key_value = num_pending_idle_tasks_rounded_down;
-  }
-}
-
-void UpdateMaxSchedulerIdleTasksCrashKey(
-    size_t num_pending_scheduler_idle_tasks) {
-  // A crash key with the highest number of scheduler idle tasks outstanding for
-  // a single `ScriptedIdleTaskController` instance, rounded down to the nearest
-  // hundred to minimize the frequency of updates and reduce overhead.
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "max_scheduler_idle_tasks", base::debug::CrashKeySize::Size32);
-  static std::optional<size_t> crash_key_value;
-
-  const size_t num_pending_scheduler_idle_tasks_rounded_down =
-      (num_pending_scheduler_idle_tasks / 100) * 100;
-  if (!crash_key_value.has_value() ||
-      crash_key_value.value() < num_pending_scheduler_idle_tasks_rounded_down) {
-    base::debug::SetCrashKeyString(
-        crash_key,
-        base::NumberToString(num_pending_scheduler_idle_tasks_rounded_down));
-    crash_key_value = num_pending_scheduler_idle_tasks_rounded_down;
   }
 }
 
@@ -142,6 +152,10 @@ ScriptedIdleTaskController::RegisterCallback(
 void ScriptedIdleTaskController::PostSchedulerIdleAndTimeoutTasks(
     CallbackId id,
     uint32_t timeout_millis) {
+  auto it = idle_tasks_.find(id);
+  CHECK_NE(it, idle_tasks_.end());
+  CHECK(!it->value->delayed_task_handle_.IsValid());
+
   // Note: be careful about memory usage of this method.
   // 1. In certain corner case scenarios, millions of callbacks per minute could
   //    be processed. The memory usage per callback should be minimized as much
@@ -154,16 +168,12 @@ void ScriptedIdleTaskController::PostSchedulerIdleAndTimeoutTasks(
     auto callback =
         WTF::BindOnce(&ScriptedIdleTaskController::SchedulerTimeoutTask,
                       WrapWeakPersistent(this), id);
-    delayed_task_handle =
+    it->value->delayed_task_handle_ =
         GetExecutionContext()
             ->GetTaskRunner(TaskType::kIdleTask)
             ->PostCancelableDelayedTask(base::subtle::PostDelayedTaskPassKey(),
                                         FROM_HERE, std::move(callback),
                                         base::Milliseconds(timeout_millis));
-    auto it = idle_tasks_.find(id);
-    CHECK_NE(it, idle_tasks_.end());
-    CHECK(!it->value->delayed_task_handle_.IsValid());
-    it->value->delayed_task_handle_ = std::move(delayed_task_handle);
   }
 
   PostSchedulerIdleTask(id);
@@ -184,10 +194,11 @@ void ScriptedIdleTaskController::CancelCallback(CallbackId id) {
   RemoveIdleTask(id);
 }
 
-void ScriptedIdleTaskController::PostSchedulerIdleTask(CallbackId id) {
-  ++num_pending_scheduler_idle_tasks_;
-  UpdateMaxSchedulerIdleTasksCrashKey(num_pending_scheduler_idle_tasks_);
+bool ScriptedIdleTaskController::HasCallback(CallbackId id) const {
+  return idle_tasks_.Contains(id);
+}
 
+void ScriptedIdleTaskController::PostSchedulerIdleTask(CallbackId id) {
   scheduler_->PostIdleTask(
       FROM_HERE, WTF::BindOnce(&ScriptedIdleTaskController::SchedulerIdleTask,
                                WrapWeakPersistent(this), id));
@@ -196,9 +207,6 @@ void ScriptedIdleTaskController::PostSchedulerIdleTask(CallbackId id) {
 void ScriptedIdleTaskController::SchedulerIdleTask(
     CallbackId id,
     base::TimeTicks deadline) {
-  CHECK_GT(num_pending_scheduler_idle_tasks_, 0u, base::NotFatalUntil::M135);
-  --num_pending_scheduler_idle_tasks_;
-
   if (!idle_tasks_.Contains(id)) {
     return;
   }
@@ -316,8 +324,12 @@ void ScriptedIdleTaskController::ContextUnpaused() {
   paused_ = false;
 
   // Reschedule `IdleTask`s for which `SchedulerIdleTask` ran while paused.
-  for (auto& idle_task : idle_tasks_to_reschedule_) {
-    PostSchedulerIdleTask(idle_task);
+  for (auto& id : idle_tasks_to_reschedule_) {
+    auto it = idle_tasks_.find(id);
+    if (it == idle_tasks_.end()) {
+      continue;
+    }
+    PostSchedulerIdleTask(id);
   }
   idle_tasks_to_reschedule_.clear();
 }

@@ -143,7 +143,7 @@ class TestWidgetDelegate : public WidgetDelegate {
 
   // WidgetDelegate:
   void GetAccessiblePanes(std::vector<View*>* panes) override {
-    base::ranges::copy(accessible_panes_, std::back_inserter(*panes));
+    std::ranges::copy(accessible_panes_, std::back_inserter(*panes));
   }
 
   void SetAccessiblePanes(

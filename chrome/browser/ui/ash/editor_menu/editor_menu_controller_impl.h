@@ -11,7 +11,6 @@
 #include "ash/lobster/lobster_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_manager.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view_delegate.h"

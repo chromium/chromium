@@ -74,17 +74,22 @@ class BirchCalendarProviderTest : public BrowserWithTestWindowTest {
   BirchCalendarProviderTest() = default;
   ~BirchCalendarProviderTest() override = default;
 
+  // BrowserWithTestWindowTest:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
     calendar_client_ =
         std::make_unique<calendar_test_utils::CalendarClientTestImpl>();
+    CHECK(profile());
 
     AccountId account_id = AccountId::FromUserEmail("user1@email.com");
     Shell::Get()->calendar_controller()->SetActiveUserAccountIdForTesting(
         account_id);
     Shell::Get()->calendar_controller()->RegisterClientForUser(
         account_id, calendar_client_.get());
+  }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return "user1@email.com";
   }
 
  private:

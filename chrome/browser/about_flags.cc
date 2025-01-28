@@ -4166,6 +4166,18 @@ const FeatureEntry::FeatureVariation
          1, nullptr},
 };
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const FeatureEntry::FeatureParam kContextualCueingEnabledNoEngagementCap[] = {
+    {"BackoffTime", "0h"},
+    {"BackoffMultiplierBase", "0.0"},
+    {"NudgeCapTime", "0h"},
+    {"MinPageCountBetweenNudges", "0"}};
+const FeatureEntry::FeatureVariation kContextualCueingEnabledOptions[] = {
+    {"no engagement caps", kContextualCueingEnabledNoEngagementCap,
+     std::size(kContextualCueingEnabledNoEngagementCap), nullptr},
+};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 const FeatureEntry::FeatureParam
     kPartitionAllocWithAdvancedChecksEnabledProcesses_BrowserOnly[] = {
@@ -8825,7 +8837,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kFedCmMetricsEndpoint)},
 
     {"fedcm-multi-idp", flag_descriptions::kFedCmMultiIdpName,
-     flag_descriptions::kFedCmMultiIdpDescription, kOsDesktop,
+     flag_descriptions::kFedCmMultiIdpDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmMultipleIdentityProviders)},
 
     {"fedcm-selective-disclosure",
@@ -10745,15 +10757,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnableCertManagementUIV2EditCerts)},
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"autofill-skip-android-bottom-sheet-for-iban",
-     flag_descriptions::kAutofillSkipAndroidBottomSheetForIbanName,
-     flag_descriptions::kAutofillSkipAndroidBottomSheetForIbanDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillSkipAndroidBottomSheetForIban)},
-#endif
-
     {"password-leak-toggle-move",
      flag_descriptions::kPasswordLeakToggleMoveName,
      flag_descriptions::kPasswordLeakToggleMoveDescription, kOsAll,
@@ -11476,7 +11479,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"contextual-cueing", flag_descriptions::kContextualCueingName,
      flag_descriptions::kContextualCueingDescription,
      kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(contextual_cueing::kContextualCueing)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(contextual_cueing::kContextualCueing,
+                                    kContextualCueingEnabledOptions,
+                                    "ContextualCueingEnabledOptions")},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
     {"partitioned-popins", flag_descriptions::kPartitionedPopinsName,

@@ -680,13 +680,14 @@ class FileTransferConnectorFilesAppBrowserTestBase {
 
         // For report-only mode, the transfer is always allowed. It's blocked,
         // otherwise.
-        expected_results.push_back(safe_browsing::EventResultToString(
+        expected_results.push_back(enterprise_connectors::EventResultToString(
             options.file_transfer_connector_report_only
-                ? safe_browsing::EventResult::ALLOWED
-                : (should_warn ? (expect_proceed_warning_reports
-                                      ? safe_browsing::EventResult::BYPASSED
-                                      : safe_browsing::EventResult::WARNED)
-                               : safe_browsing::EventResult::BLOCKED)));
+                ? enterprise_connectors::EventResult::ALLOWED
+                : (should_warn
+                       ? (expect_proceed_warning_reports
+                              ? enterprise_connectors::EventResult::BYPASSED
+                              : enterprise_connectors::EventResult::WARNED)
+                       : enterprise_connectors::EventResult::BLOCKED)));
         expected_scan_ids.push_back(GetScanIDForFileName(file_name));
       }
 

@@ -508,6 +508,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/bookmarks/SharedBookmarkModelMocks.java",
       "src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryCoordinatorTest.java",
       "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarCoordinatorTest.java",
+      "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsLayoutManagerTest.java",
       "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProviderTest.java",
       "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtilsTest.java",
     ]
@@ -1174,6 +1175,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/ui/ExpandedSheetHelperImplUnitTest.java",
       "src/org/chromium/chrome/browser/ui/IncognitoRestoreAppLaunchDrawBlockerUnitTest.java",
       "src/org/chromium/chrome/browser/ui/fold_transitions/FoldTransitionControllerUnitTest.java",
+      "src/org/chromium/chrome/browser/ui/system/StatusBarColorControllerUnitTest.java",
     ]
 
     deps = chrome_junit_tests_deps

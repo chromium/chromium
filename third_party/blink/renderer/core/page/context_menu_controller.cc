@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -700,37 +701,27 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         spell_checker.SelectMisspellingAsync();
     const String& misspelled_word = misspelled_word_and_description.first;
     if (misspelled_word.length()) {
-      auto to_u16string = [](const String& s) -> std::u16string {
-        return s.empty() ? std::u16string()
-                         : WTF::VisitCharacters(s, [](auto chars) {
-                             return std::u16string(chars.begin(), chars.end());
-                           });
-      };
-      data.misspelled_word = to_u16string(misspelled_word);
+      data.misspelled_word = WebString(misspelled_word).Utf16();
       const String& description = misspelled_word_and_description.second;
       if (description.length()) {
         // Suggestions were cached for the misspelled word (not true for
         // Hunspell or Windows platform spellcheck).
         Vector<String> suggestions;
         description.Split('\n', suggestions);
-        WebVector<std::u16string> web_suggestions(suggestions.size());
-        base::ranges::transform(suggestions, web_suggestions.begin(),
-                                to_u16string);
-        data.dictionary_suggestions = web_suggestions.ReleaseVector();
+        data.dictionary_suggestions = base::ToVector(
+            suggestions, [](const String& s) { return WebString(s).Utf16(); });
       } else if (spell_checker.GetTextCheckerClient()) {
         // No suggestions cached for the misspelled word. Retrieve suggestions
         // for it (Windows platform spellchecker will do this later from
         // SpellingMenuObserver::InitMenu on the browser process side to avoid a
         // blocking IPC here).
         size_t misspelled_offset, misspelled_length;
-        WebVector<WebString> web_suggestions;
+        std::vector<WebString> suggestions;
         spell_checker.GetTextCheckerClient()->CheckSpelling(
             WebString::FromUTF16(data.misspelled_word), misspelled_offset,
-            misspelled_length, &web_suggestions);
-        WebVector<std::u16string> suggestions(web_suggestions.size());
-        base::ranges::transform(web_suggestions, suggestions.begin(),
-                                &WebString::Utf16);
-        data.dictionary_suggestions = suggestions.ReleaseVector();
+            misspelled_length, &suggestions);
+        data.dictionary_suggestions =
+            base::ToVector(suggestions, &WebString::Utf16);
       }
     }
   }
@@ -757,7 +748,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
   if (menu_provider_) {
     // Filter out custom menu elements and add them into the data.
-    data.custom_items = menu_provider_->PopulateContextMenu().ReleaseVector();
+    data.custom_items = menu_provider_->PopulateContextMenu();
   }
 
   // TODO(crbug.com/369219144): Should this be DynamicTo<HTMLAnchorElementBase>?

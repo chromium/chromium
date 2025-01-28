@@ -17239,6 +17239,33 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PasswordManager.Parsing">
+  <owner>kazinova@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Metrics related to password form parsing. Recorded when the form is parsed
+    for filling (so parsing for saving on every keystroke does not lead to
+    metric recording) by Password Manager (so parsing by other interested
+    components does not lead to metric recording). Recorded iff there is data
+    for any of the metrics below (e.g. when the parsed form contains either
+    current password fields, or fields irrelevant to password flow).
+  </summary>
+  <metric name="PasswordField.IsMasked" enum="Boolean">
+    <summary>
+      Reports whether the field predicted as password field in a parsed form is
+      masked (has HTML type &quot;password&quot;) or not. Recorded iff form
+      contains a field with PASSWORD type prediction.
+    </summary>
+  </metric>
+  <metric name="UnrelatedFields.AnyFieldIsMasked" enum="Boolean">
+    <summary>
+      Reports whether any of the fields predicted to be unrelated to password
+      flows is masked (has HTML type &quot;password&quot;) or not. Recorded iff
+      the form contains fields with UNKNOWN_TYPE prediction.
+    </summary>
+  </metric>
+</event>
+
 <event name="PasswordManager.PasswordChangeTriggered">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-duplex@google.com</owner>

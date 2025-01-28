@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("bruschetta") {
   sources = [
@@ -63,7 +63,6 @@ static_library("bruschetta") {
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/profiles",
-    "//chrome/browser/extensions/api/terminal:startup_status",
     "//chrome/browser/profiles",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/dlcservice",
@@ -145,7 +144,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os:test_support",
     "//chrome/browser/ash/guest_os/public",
-    "//chrome/browser/extensions/api/terminal:startup_status",
+    "//chrome/browser/extensions",
     "//chrome/browser/profiles",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/attestation",

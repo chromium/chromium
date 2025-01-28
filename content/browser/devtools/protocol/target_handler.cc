@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/protocol/target_handler.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 
@@ -16,7 +17,6 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -1407,8 +1407,8 @@ void TargetHandler::DisposeBrowserContext(
   }
   std::vector<content::BrowserContext*> contexts =
       delegate->GetBrowserContexts();
-  auto context_it = base::ranges::find(contexts, context_id,
-                                       &content::BrowserContext::UniqueId);
+  auto context_it = std::ranges::find(contexts, context_id,
+                                      &content::BrowserContext::UniqueId);
   if (context_it == contexts.end()) {
     callback->sendFailure(
         Response::ServerError("Failed to find context with id " + context_id));

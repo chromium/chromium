@@ -86,6 +86,7 @@ class DownloadsSettingsTableViewControllerTest
     controller.saveToPhotosSettingsMutator = save_to_photos_mutator_;
     controller.presentationDelegate = presentation_delegate_;
     controller.actionDelegate = action_delegate_;
+    [controller displaySaveToPhotosSettingsUI];
     return controller;
   }
 

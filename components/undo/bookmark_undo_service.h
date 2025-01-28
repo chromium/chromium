@@ -61,6 +61,8 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
                          bool added_by_user) override;
   void OnWillChangeBookmarkNode(const bookmarks::BookmarkNode* node) override;
   void OnWillReorderBookmarkNode(const bookmarks::BookmarkNode* node) override;
+  void ExtensiveBookmarkChangesBeginning() override;
+  void ExtensiveBookmarkChangesEnded() override;
   void GroupedBookmarkChangesBeginning() override;
   void GroupedBookmarkChangesEnded() override;
 

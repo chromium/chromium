@@ -11,8 +11,7 @@
 #include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_controller_impl.h"
@@ -27,7 +26,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -88,18 +86,14 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
 
     ChromeAshTestBase::SetUp();
 
-    // Creates test Crosapi manger, which depends on `ProfileManger` and
-    // `LoginState`. Otherwise there will be a null pointer issue, since
-    // `crosapi::CrosapiManager::Get()->crosapi_ash()` is null.
     CHECK(profile_manager_.SetUp());
     testing_profile_ =
         profile_manager_.CreateTestingProfile(chrome::kInitialProfile);
-    crosapi::IdleServiceAsh::DisableForTesting();
 
-    if (!ash::LoginState::IsInitialized()) {
-      ash::LoginState::Initialize();
-    }
-    crosapi_manager_ = std::make_unique<crosapi::CrosapiManager>();
+    // In production a shared instance of MagicBoostControllerAsh is initialized
+    // by ChromeBrowserMainPartsAsh in its PreProfileInit().
+    magic_boost_controller_ash_ =
+        std::make_unique<ash::MagicBoostControllerAsh>();
 
     // `ReadWriteCardsManagerImpl` will initialize `QuickAnswersState`
     // indirectly. `QuickAnswersState` depends on `MagicBoostState`.
@@ -110,11 +104,11 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
   bool IsMahiEnabled() { return GetParam(); }
 
   void TearDown() override {
-    crosapi_manager_.reset();
+    manager_.reset();
+    magic_boost_state_.reset();
+    magic_boost_controller_ash_.reset();
     testing_profile_ = nullptr;
     profile_manager_.DeleteTestingProfile(chrome::kInitialProfile);
-    magic_boost_state_.reset();
-    manager_.reset();
     ChromeAshTestBase::TearDown();
   }
 
@@ -175,8 +169,7 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
   chromeos::ScopedMahiMediaAppEventsProxySetter
       scoped_mahi_media_app_events_proxy_{&mock_mahi_media_app_events_proxy_};
 
-  // Providing the test crosapi manager.
-  std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
+  std::unique_ptr<ash::MagicBoostControllerAsh> magic_boost_controller_ash_;
   raw_ptr<TestingProfile> testing_profile_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
 };

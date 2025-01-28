@@ -11,26 +11,32 @@
 
 namespace cc {
 
-void PropertyTreeLayerTreeDelegate::UpdatePropertyTreesIfNeeded(
-    LayerTreeHost* host) {
+void PropertyTreeLayerTreeDelegate::SetLayerTreeHost(LayerTreeHost* host) {
+  host_ = host;
+}
+
+LayerTreeHost* PropertyTreeLayerTreeDelegate::host() {
+  return host_;
+}
+
+void PropertyTreeLayerTreeDelegate::UpdatePropertyTreesIfNeeded() {
   TRACE_EVENT0("cc",
                "PropertyTreeLayerTreeDelegate::UpdatePropertyTreesIfNeeded");
-  PropertyTreeBuilder::BuildPropertyTrees(host);
+  PropertyTreeBuilder::BuildPropertyTrees(host());
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                        "PropertyTreeLayerTreeDelegate::"
                        "UpdatePropertyTreesIfNeeded_BuiltPropertyTrees",
                        TRACE_EVENT_SCOPE_THREAD, "property_trees",
-                       host->property_trees()->AsTracedValue());
+                       host()->property_trees()->AsTracedValue());
 }
 
 void PropertyTreeLayerTreeDelegate::UpdateScrollOffsetFromImpl(
-    LayerTreeHost* host,
     const ElementId& id,
     const gfx::Vector2dF& delta,
     const std::optional<TargetSnapAreaElementIds>& snap_target_ids) {
-  if (Layer* layer = host->LayerByElementId(id)) {
+  if (Layer* layer = host()->LayerByElementId(id)) {
     layer->SetScrollOffsetFromImplSide(layer->scroll_offset() + delta);
-    host->SetNeedsUpdateLayers();
+    host()->SetNeedsUpdateLayers();
   }
 }
 

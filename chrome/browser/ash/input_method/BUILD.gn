@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("input_method") {
   sources = [
@@ -43,7 +43,6 @@ static_library("input_method") {
     "editor_client_connector.h",
     "editor_config_factory.cc",
     "editor_config_factory.h",
-    "editor_consent_enums.cc",
     "editor_consent_enums.h",
     "editor_consent_store.cc",
     "editor_consent_store.h",

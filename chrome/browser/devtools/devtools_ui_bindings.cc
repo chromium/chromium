@@ -474,12 +474,13 @@ class DevToolsUIBindings::NetworkResourceLoader
                      URLLoaderFactoryHolder url_loader_factory,
                      DevToolsUIBindings::DispatchCallback callback,
                      base::TimeDelta retry_delay = base::TimeDelta(),
-                     std::string post_body = "") {
+                     std::string post_body = "",
+                     std::optional<base::TimeDelta> timeout = std::nullopt) {
     auto resource_loader =
         std::make_unique<DevToolsUIBindings::NetworkResourceLoader>(
             stream_id, bindings, resource_request, traffic_annotation,
             std::move(url_loader_factory), std::move(callback), retry_delay,
-            post_body);
+            post_body, timeout);
     bindings->loaders_.insert(std::move(resource_loader));
   }
 
@@ -491,7 +492,8 @@ class DevToolsUIBindings::NetworkResourceLoader
       URLLoaderFactoryHolder url_loader_factory,
       DispatchCallback callback,
       base::TimeDelta delay,
-      std::string post_body)
+      std::string post_body,
+      std::optional<base::TimeDelta> timeout)
       : stream_id_(stream_id),
         bindings_(bindings),
         resource_request_(resource_request),
@@ -502,6 +504,9 @@ class DevToolsUIBindings::NetworkResourceLoader
         url_loader_factory_(std::move(url_loader_factory)),
         callback_(std::move(callback)),
         retry_delay_(delay) {
+    if (timeout.has_value()) {
+      loader_->SetTimeoutDuration(timeout.value());
+    }
     if (!post_body.empty()) {
       loader_->AttachStringForUpload(std::move(post_body));
     }
@@ -953,13 +958,16 @@ void DevToolsUIBindings::OnAidaConversationRequest(
       absl::get<network::ResourceRequest>(resource_request_or_error);
   resource_request.url =
       resource_request.url.Resolve(AidaClient::kDoConversationUrlPath);
+  // Set a maximum timeout value, individual features may send a shorter timeout
+  // in the DevTools repo.
+  base::TimeDelta timeout = base::Seconds(120);
   NetworkResourceLoader::Create(
       stream_id, this, resource_request, kAidaTrafficAnnotation,
       std::move(url_loader_factory),
       base::BindOnce(&DevToolsUIBindings::OnAidaConversationResponse,
                      base::Unretained(this), std::move(callback), stream_id,
                      request, delay, resource_request, base::TimeTicks::Now()),
-      delay, std::move(request));
+      delay, std::move(request), timeout);
 }
 
 void DevToolsUIBindings::OnRegisterAidaClientEventRequest(

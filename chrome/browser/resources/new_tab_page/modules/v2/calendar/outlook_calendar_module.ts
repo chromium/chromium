@@ -9,6 +9,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {CalendarEvent} from '../../../calendar_data.mojom-webui.js';
 import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import type {OutlookCalendarPageHandlerRemote} from '../../../outlook_calendar.mojom-webui.js';
+import {ParentTrustedDocumentProxy} from '../../microsoft_auth_frame_connector.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
@@ -70,6 +71,11 @@ export class OutlookCalendarModuleElement extends
           icon: 'modules:block',
           text: this.i18n('modulesOutlookCalendarDisableButtonText'),
         },
+        {
+          action: 'signout',
+          icon: 'modules:logout',
+          text: this.i18n('modulesMicrosoftSignOutButtonText'),
+        },
       ],
       [
         {
@@ -103,6 +109,10 @@ export class OutlookCalendarModuleElement extends
         restoreCallback: () => this.handler_.restoreModule(),
       },
     }));
+  }
+
+  protected onSignOutButtonClick_() {
+    ParentTrustedDocumentProxy.getInstance()?.getChildDocument().signOut();
   }
 }
 

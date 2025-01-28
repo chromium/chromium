@@ -476,6 +476,116 @@ TEST_F(
   mock_throttle.WillProcessResponse();
 }
 
+struct FPFGetActivationWithTrackingProtectionSettingTestCase {
+  std::string test_name;
+
+  // Configuration
+  bool is_incognito;
+  bool tps_fp_setting_enabled;
+
+  // Expectations
+  ActivationLevel expected_level;
+  ActivationDecision expected_decision;
+};
+
+class FPFPageActivationThrottleWithTrackingProtectionSettingTest
+    : public content::RenderViewHostTestHarness,
+      public testing::WithParamInterface<
+          FPFGetActivationWithTrackingProtectionSettingTestCase> {
+ public:
+  FPFPageActivationThrottleWithTrackingProtectionSettingTest() = default;
+
+  FPFPageActivationThrottleWithTrackingProtectionSettingTest(
+      const FPFPageActivationThrottleWithTrackingProtectionSettingTest&) =
+      delete;
+  FPFPageActivationThrottleWithTrackingProtectionSettingTest& operator=(
+      const FPFPageActivationThrottleWithTrackingProtectionSettingTest&) =
+      delete;
+
+  ~FPFPageActivationThrottleWithTrackingProtectionSettingTest() override =
+      default;
+
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+    mock_nav_handle_ = std::make_unique<content::MockNavigationHandle>(
+        RenderViewHostTestHarness::web_contents());
+    scoped_feature_list_.InitWithFeatures(
+        // FingerprintingProtectionUx flag isn't used together with
+        // `EnableFingerprintingProtectionFilter(InIncognito)`.
+        {privacy_sandbox::kFingerprintingProtectionUx},
+        /*disabled_features=*/{});
+  }
+
+  void TearDown() override {
+    scoped_feature_list_.Reset();
+    RenderViewHostTestHarness::TearDown();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  TestSupport test_support_;
+  std::unique_ptr<content::MockNavigationHandle> mock_nav_handle_;
+};
+
+const FPFGetActivationWithTrackingProtectionSettingTestCase
+    kGetActivationWithTrackingProtectionSettingTestCases[] = {
+        {.test_name = "TPSettingEnabled_Incognito_Enabled",
+         .is_incognito = true,
+         .tps_fp_setting_enabled = true,
+         .expected_level = ActivationLevel::kEnabled,
+         .expected_decision = ActivationDecision::ACTIVATED},
+        {.test_name = "TPSettingEnabled_NonIncognito_Disabled",
+         .is_incognito = false,
+         .tps_fp_setting_enabled = true,
+         .expected_level = ActivationLevel::kDisabled,
+         .expected_decision = ActivationDecision::ACTIVATION_DISABLED},
+        {.test_name = "TPSettingDisabled_Incognito_Disabled",
+         .is_incognito = true,
+         .tps_fp_setting_enabled = false,
+         .expected_level = ActivationLevel::kDisabled,
+         .expected_decision = ActivationDecision::ACTIVATION_DISABLED},
+        {.test_name = "TPSettingDisabled_NonIncognito_Disabled",
+         .is_incognito = false,
+         .tps_fp_setting_enabled = false,
+         .expected_level = ActivationLevel::kDisabled,
+         .expected_decision = ActivationDecision::ACTIVATION_DISABLED}};
+
+INSTANTIATE_TEST_SUITE_P(
+    FPFPageActivationThrottleWithTrackingProtectionSettingTestSuiteInstantiation,
+    FPFPageActivationThrottleWithTrackingProtectionSettingTest,
+    testing::ValuesIn<FPFGetActivationWithTrackingProtectionSettingTestCase>(
+        kGetActivationWithTrackingProtectionSettingTestCases),
+    [](const testing::TestParamInfo<
+        FPFPageActivationThrottleWithTrackingProtectionSettingTest::ParamType>&
+           info) { return info.param.test_name; });
+
+TEST_P(FPFPageActivationThrottleWithTrackingProtectionSettingTest,
+       GetActivationComputesLevelAndDecision) {
+  const FPFGetActivationWithTrackingProtectionSettingTestCase& test_case =
+      GetParam();
+
+  // Set FPP in Tracking Protection settings.
+  test_support_.prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
+                                    test_case.tps_fp_setting_enabled);
+
+  // Create TrackingProtectionSettings with specified incognito mode.
+  auto tracking_protection_settings =
+      std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
+          test_support_.prefs(), test_support_.content_settings(),
+          test_case.is_incognito);
+
+  // Create ActivationThrottle with the TrackingProtectionSettings, and
+  // specified incognito mode.
+  auto test_throttle = FingerprintingProtectionPageActivationThrottle(
+      mock_nav_handle_.get(), test_support_.content_settings(),
+      tracking_protection_settings.get(), test_support_.prefs(),
+      test_case.is_incognito);
+
+  GetActivationResult activation = test_throttle.GetActivation();
+  EXPECT_EQ(activation.level, test_case.expected_level);
+  EXPECT_EQ(activation.decision, test_case.expected_decision);
+}
+
 struct FPFRefreshHeuristicUmaTestCase {
   std::string test_name;
 

@@ -471,7 +471,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 // Returns the infobar in the active WebState's InfoBarManager with `type`.
 - (InfoBarIOS*)infobarWithType:(InfobarType)type {
   InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(self.webState);
-  const auto it = base::ranges::find(
+  const auto it = std::ranges::find(
       manager->infobars(), type, [](const infobars::InfoBar* infobar) {
         return static_cast<const InfoBarIOS*>(infobar)->infobar_type();
       });

@@ -46,7 +46,7 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
   return ProfileManager::GetLastUsedProfileAllowedByPolicy();
 }
 
-void GlicProfileManager::OnUILaunching(GlicKeyedService* glic) {
+void GlicProfileManager::SetActiveGlic(GlicKeyedService* glic) {
   if (active_glic_ && active_glic_.get() != glic) {
     active_glic_->ClosePanel();
   }
@@ -80,7 +80,7 @@ bool GlicProfileManager::ShouldPreloadForProfile(Profile* profile) const {
   return true;
 }
 
-bool GlicProfileManager::HasActiveGlicWindow() const {
+bool GlicProfileManager::HasActiveGlicService() const {
   return active_glic_ != nullptr;
 }
 

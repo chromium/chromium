@@ -181,7 +181,6 @@
   E_CPONLY(kColorHistoryEmbeddingsImageBackground) \
   E_CPONLY(kColorHistoryEmbeddingsImageBackgroundGradientEnd) \
   E_CPONLY(kColorHistoryEmbeddingsImageBackgroundGradientStart) \
-  E_CPONLY(kColorHistoryEmbeddingsWithAnswersBackground) \
   /* InfoBar colors. */ \
   E_CPONLY(kColorInfoBarBackground) \
   E_CPONLY(kColorInfoBarButtonIcon) \
@@ -789,6 +788,11 @@
   E_CPONLY(kColorTabSearchScrollbarThumb) \
   /* Task Manager colors. */ \
   E_CPONLY(kColorTaskManagerBackground) \
+  E_CPONLY(kColorTaskManagerTableBackground) \
+  E_CPONLY(kColorTaskManagerTableBackgroundAlternate) \
+  E_CPONLY(kColorTaskManagerTableBackgroundSelectedFocused) \
+  E_CPONLY(kColorTaskManagerTableBackgroundSelectedUnfocused) \
+  E_CPONLY(kColorTaskManagerTableHeaderBackground) \
   E_CPONLY(kColorTaskManagerSearchBarBackground) \
   E_CPONLY(kColorTaskManagerSearchBarHoverOn) \
   E_CPONLY(kColorTaskManagerSearchBarTransparent) \

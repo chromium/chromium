@@ -23,6 +23,7 @@
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
 #include "chrome/credential_provider/test/test_credential.h"
 #include "content/public/common/content_switches.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -121,8 +122,7 @@ TEST_F(GcpGaiaCredentialOtherUserTest, OnUserAuthenticated_DiffPassword) {
           L"foo_bar",
           base::UTF8ToWide(test_data_storage.GetSuccessPassword()).c_str(),
           base::UTF8ToWide(test_data_storage.GetSuccessFullName()).c_str(),
-          L"comment",
-          base::UTF8ToWide(test_data_storage.GetSuccessId()).c_str(),
+          L"comment", GaiaId(test_data_storage.GetSuccessId()),
           base::UTF8ToWide(test_data_storage.GetSuccessEmail()).c_str(), &sid));
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
 

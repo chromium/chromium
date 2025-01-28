@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <optional>
@@ -38,7 +39,6 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1410,34 +1410,6 @@ WebContentsImpl::~WebContentsImpl() {
   // Currently the only instances of the non-primary FrameTrees are for
   // prerendering. Shutdown them by destructing PrerenderHostRegistry.
   prerender_host_registry_.reset();
-
-  // For historical reasons, it is the requestor's responsibility to reset
-  // `PrefetchContainer`s that were created by the requestor (= `this`) but have
-  // not yet started prefetching (Otherwise, they will stay alive forever in
-  // `PrefetchService`).
-  // TODO(crbug.com/40946257): Refactor to handle this case better.
-  if (base::FeatureList::IsEnabled(
-          features::kPrefetchBrowserInitiatedTriggers)) {
-    PrefetchService* prefetch_service =
-        BrowserContextImpl::From(GetBrowserContext())->GetPrefetchService();
-    if (prefetch_service) {
-      for (const auto& prefetch_container : prefetch_containers_) {
-        if (prefetch_container) {
-          switch (prefetch_container->GetLoadState()) {
-            case PrefetchContainer::LoadState::kNotStarted:
-            case PrefetchContainer::LoadState::kEligible:
-            case PrefetchContainer::LoadState::kFailedIneligible:
-            case PrefetchContainer::LoadState::kFailedHeldback:
-              prefetch_service->ResetPrefetch(prefetch_container);
-              break;
-            case PrefetchContainer::LoadState::kStarted:
-              break;
-          }
-        }
-      }
-    }
-    prefetch_containers_.clear();
-  }
 
 #if BUILDFLAG(ENABLE_PPAPI)
   // Call this before WebContentsDestroyed() is broadcasted since
@@ -2846,10 +2818,10 @@ void WebContentsImpl::OnAudioStateChanged() {
       audio_stream_monitor_.IsCurrentlyAudible() ||
       (browser_plugin_embedder_ &&
        browser_plugin_embedder_->AreAnyGuestsCurrentlyAudible()) ||
-      base::ranges::any_of(GetInnerWebContents(),
-                           [](WebContents* inner_contents) {
-                             return inner_contents->IsCurrentlyAudible();
-                           });
+      std::ranges::any_of(GetInnerWebContents(),
+                          [](WebContents* inner_contents) {
+                            return inner_contents->IsCurrentlyAudible();
+                          });
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::OnAudioStateChanged",
                         "is_currently_audible", is_currently_audible,
                         "was_audible", is_currently_audible_);
@@ -4252,10 +4224,10 @@ bool WebContentsImpl::CanEnterFullscreenMode(
   // blocked. Therefore, disqualify it from fullscreen if it or any upstream
   // WebContents has an active blocker.
   return delegate_ &&
-         base::ranges::all_of(GetAllOpeningWebContents(this),
-                              [](auto* opener) {
-                                return opener->fullscreen_blocker_count_ == 0;
-                              }) &&
+         std::ranges::all_of(GetAllOpeningWebContents(this),
+                             [](auto* opener) {
+                               return opener->fullscreen_blocker_count_ == 0;
+                             }) &&
          delegate_->CanEnterFullscreenModeForTab(requesting_frame);
 }
 
@@ -11602,7 +11574,7 @@ WebContentsImpl::GetRenderInputRouterDelegateRemote() {
   return rir_delegate_remote_.get();
 }
 
-void WebContentsImpl::StartPrefetch(
+std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
     const GURL& prefetch_url,
     bool use_prefetch_proxy,
     const blink::mojom::Referrer& referrer,
@@ -11611,27 +11583,23 @@ void WebContentsImpl::StartPrefetch(
     std::optional<PreloadingHoldbackStatus> holdback_status_override) {
   if (!base::FeatureList::IsEnabled(
           features::kPrefetchBrowserInitiatedTriggers)) {
-    return;
+    return nullptr;
   }
 
   PrefetchService* prefetch_service =
       BrowserContextImpl::From(GetBrowserContext())->GetPrefetchService();
   if (!prefetch_service) {
-    return;
+    return nullptr;
   }
 
   PrefetchType prefetch_type(PreloadingTriggerType::kEmbedder,
                              use_prefetch_proxy);
-
   auto container = std::make_unique<PrefetchContainer>(
       *this, prefetch_url, prefetch_type, referrer, referring_origin,
       /*no_vary_search_hint=*/std::nullopt, std::move(attempt),
       holdback_status_override);
 
-  // TODO(crbug.com/40946257): Update this list when prefetch container is
-  // eliminated from `PrefetchService`.
-  prefetch_containers_.push_back(container->GetWeakPtr());
-  prefetch_service->AddPrefetchContainer(std::move(container));
+  return prefetch_service->AddPrefetchContainerWithHandle(std::move(container));
 }
 
 std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(

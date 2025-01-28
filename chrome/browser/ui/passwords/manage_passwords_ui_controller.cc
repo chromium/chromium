@@ -12,6 +12,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller_impl.h"
 #include "chrome/browser/ui/passwords/manage_passwords_icon_view.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
+#include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
 #include "chrome/browser/ui/simple_message_box.h"
@@ -1201,6 +1203,11 @@ PasswordChangeDelegate* ManagePasswordsUIController::GetPasswordChangeDelegate()
     return nullptr;
   }
   return password_change_service->GetPasswordChangeDelegate(web_contents());
+}
+
+PasswordsLeakDialogDelegate*
+ManagePasswordsUIController::GetPasswordsLeakDialogDelegate() {
+  return this;
 }
 
 // static

@@ -127,9 +127,6 @@ void CacheAliasSearchPrefetchURLLoader::RestartDirect(
   url_loader_receiver_.set_disconnect_handler(base::BindOnce(
       &CacheAliasSearchPrefetchURLLoader::MojoDisconnectWithNoFallback,
       base::Unretained(this)));
-  if (paused_) {
-    network_url_loader_->PauseReadingBodyFromNet();
-  }
 }
 
 void CacheAliasSearchPrefetchURLLoader::OnReceiveEarlyHints(
@@ -231,22 +228,6 @@ void CacheAliasSearchPrefetchURLLoader::SetPriority(
   }
 
   resource_request_->priority = priority;
-}
-
-void CacheAliasSearchPrefetchURLLoader::PauseReadingBodyFromNet() {
-  // Pass through.
-  if (network_url_loader_) {
-    network_url_loader_->PauseReadingBodyFromNet();
-  }
-  paused_ = true;
-}
-
-void CacheAliasSearchPrefetchURLLoader::ResumeReadingBodyFromNet() {
-  // Pass through.
-  if (network_url_loader_) {
-    network_url_loader_->ResumeReadingBodyFromNet();
-  }
-  paused_ = false;
 }
 
 void CacheAliasSearchPrefetchURLLoader::MojoDisconnectForPrefetch() {

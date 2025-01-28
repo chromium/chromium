@@ -9,20 +9,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
-namespace {
-bool ShouldShowAppMenuPrompt() {
-  PrefService* local_state = g_browser_process->local_state();
-  const PrefService::Preference* first_shown_time_pref =
-      local_state->FindPreference(prefs::kDefaultBrowserFirstShownTime);
-  base::Time first_shown_time =
-      local_state->GetTime(prefs::kDefaultBrowserFirstShownTime);
-
-  return first_shown_time_pref->IsDefaultValue() ||
-         (base::Time::Now() - first_shown_time) <
-             features::kDefaultBrowserAppMenuDuration.Get();
-}
-}  // namespace
-
 void chrome::startup::default_prompt::ResetPromptPrefs(Profile* profile) {
   profile->GetPrefs()->ClearPref(prefs::kDefaultBrowserLastDeclined);
 
@@ -48,17 +34,6 @@ void chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
 
 void chrome::startup::default_prompt::MaybeResetAppMenuPromptPrefs(
     Profile* profile) {
-  if (!base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh) ||
-      !features::kShowDefaultBrowserAppMenuChip.Get()) {
-    g_browser_process->local_state()->ClearPref(
-        prefs::kDefaultBrowserFirstShownTime);
-    return;
-  }
-
-  if (!ShouldShowAppMenuPrompt()) {
-    // Found that app menu should no longer be shown. Triggers an implicit
-    // dismissal so that the subsequent call to ShouldShowPrompts() will return
-    // false.
-    UpdatePrefsForDismissedPrompt(profile);
-  }
+  g_browser_process->local_state()->ClearPref(
+      prefs::kDefaultBrowserFirstShownTime);
 }

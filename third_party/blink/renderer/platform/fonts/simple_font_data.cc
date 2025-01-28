@@ -113,6 +113,14 @@ SimpleFontData::~SimpleFontData() {
   }
 }
 
+void SimpleFontData::Trace(Visitor* visitor) const {
+  visitor->Trace(platform_data_);
+  visitor->Trace(small_caps_);
+  visitor->Trace(emphasis_mark_);
+  visitor->Trace(custom_font_data_);
+  FontData::Trace(visitor);
+}
+
 void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
                                   const FontMetricsOverride& metrics_override) {
   if (!platform_data_->size()) {

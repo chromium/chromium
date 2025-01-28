@@ -152,7 +152,8 @@
   if (relyingPartyIdentifier) {
     // When showing passkeys, only include passwords if there's at least one
     // that matches the service identifiers.
-    includePasswords = [self hasPasswordThatMatchesServiceIdentifiers];
+    includePasswords = IsPasskeysM2Enabled() &&
+                       [self hasPasswordThatMatchesServiceIdentifiers];
     includePasskeys = YES;
   } else {
     includePasswords = YES;
@@ -171,12 +172,19 @@
                (includePasskeys && isValidPasskey);
       }]];
 
-  credentials = [credentials sortedArrayUsingComparator:^NSComparisonResult(
-                                 id<Credential> obj1, id<Credential> obj2) {
-    NSString* firstIdentifier = obj1.isPasskey ? obj1.rpId : obj1.serviceName;
-    NSString* secondIdentifier = obj2.isPasskey ? obj2.rpId : obj2.serviceName;
-    return [firstIdentifier compare:secondIdentifier];
-  }];
+  // Only sort `credentials` if the Passkeys M2 feature is enabled or if there's
+  // no relying party identifier. Otherwise, it means that the `credentials`
+  // list only contains passkeys, and hence there's no need to sort as they all
+  // have the same `rpId`.
+  if (IsPasskeysM2Enabled() || !relyingPartyIdentifier) {
+    credentials = [credentials sortedArrayUsingComparator:^NSComparisonResult(
+                                   id<Credential> obj1, id<Credential> obj2) {
+      NSString* firstIdentifier = obj1.isPasskey ? obj1.rpId : obj1.serviceName;
+      NSString* secondIdentifier =
+          obj2.isPasskey ? obj2.rpId : obj2.serviceName;
+      return [firstIdentifier compare:secondIdentifier];
+    }];
+  }
 
   return credentials;
 }
@@ -189,6 +197,12 @@
   // If the `allowedCredentials` array is empty, then the relying party accepts
   // any passkey credential.
   BOOL isAnyPasskeyAllowed = allowedCredentials.count == 0;
+  if (!IsPasskeysM2Enabled() && [self.UIHandler relyingPartyIdentifier] &&
+      isAnyPasskeyAllowed) {
+    // Return the `allCredentials` array as it only contains passkeys.
+    return self.allCredentials;
+  }
+
   for (id<Credential> credential in self.allCredentials) {
     if (credential.isPasskey) {
       if (isAnyPasskeyAllowed ||

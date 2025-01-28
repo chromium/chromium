@@ -8,6 +8,7 @@
 #import "base/test/task_environment.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_presentation_delegate.h"
@@ -93,7 +94,9 @@ class DownloadsSettingsCoordinatorTest : public PlatformTest {
                                                 GetForProfile(profile_.get())
                                 prefService:profile_->GetPrefs()
                             identityManager:IdentityManagerFactory::
-                                                GetForProfile(profile_.get())])
+                                                GetForProfile(profile_.get())
+                              photosService:PhotosServiceFactory::GetForProfile(
+                                                profile_.get())])
           .andReturn(mock_save_to_photos_settings_mediator_);
     }
   }
@@ -164,6 +167,8 @@ TEST_F(DownloadsSettingsCoordinatorTest,
                                             GetForProfile(profile_.get())
                             prefService:profile_->GetPrefs()
                         identityManager:IdentityManagerFactory::GetForProfile(
+                                            profile_.get())
+                          photosService:PhotosServiceFactory::GetForProfile(
                                             profile_.get())])
       .andReturn(mock_save_to_photos_settings_mediator_);
 

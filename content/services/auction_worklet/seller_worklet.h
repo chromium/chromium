@@ -529,6 +529,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
     const std::optional<uint16_t> experiment_group_id_;
     std::optional<bool> send_creative_scanning_metadata_;
+    const bool creative_scanning_enabled_;
 
     mojo::Remote<mojom::AuctionSharedStorageHost> shared_storage_host_remote_;
 

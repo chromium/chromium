@@ -160,7 +160,7 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   gfx::Point hot_point_;
 
   int large_cursor_size_in_dip_ = kDefaultLargeCursorSize;
-  SkColor cursor_color_ = kDefaultCursorColor;
+  SkColor cursor_color_ = ui::kDefaultCursorColor;
 
   // The display on which the cursor is drawn.
   // For mirroring mode, the display is always the primary display.

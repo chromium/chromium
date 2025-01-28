@@ -421,8 +421,6 @@ class FakeURLLoader : public network::mojom::URLLoader {
     set_priority_log_.push_back(PriorityInfo{
         .priority = priority, .intra_priority_value = intra_priority_value});
   }
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
   bool follow_redirect_called() const { return follow_redirect_called_; }
   const std::vector<PriorityInfo>& set_priority_log() const {

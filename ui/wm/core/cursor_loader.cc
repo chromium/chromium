@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/cursor_size.h"
@@ -73,6 +74,15 @@ void CursorLoader::SetSize(ui::CursorSize size) {
   UnloadCursors();
 }
 
+void CursorLoader::SetColor(SkColor color) {
+  if (color_ == color) {
+    return;
+  }
+
+  color_ = color;
+  UnloadCursors();
+}
+
 void CursorLoader::SetPlatformCursor(ui::Cursor* cursor) {
   DCHECK(cursor);
 
@@ -91,13 +101,23 @@ std::optional<ui::CursorData> CursorLoader::GetCursorData(
     return ui::CursorData();
 
   if (type == CursorType::kCustom) {
-    return ui::CursorData({cursor.custom_bitmap()}, cursor.custom_hotspot(),
+    SkBitmap custom_bitmap =
+        color_ == ui::kDefaultCursorColor
+            ? cursor.custom_bitmap()
+            : wm::GetColorAdjustedBitmap(cursor.custom_bitmap(), color_);
+    return ui::CursorData({custom_bitmap}, cursor.custom_hotspot(),
                           cursor.image_scale_factor());
   }
 
   if (use_platform_cursors_) {
     auto cursor_data = factory_->GetCursorData(type);
     if (cursor_data) {
+      if (color_ != ui::kDefaultCursorColor) {
+        std::for_each(cursor_data->bitmaps.begin(), cursor_data->bitmaps.end(),
+                      [&](SkBitmap& bitmap) {
+                        bitmap = wm::GetColorAdjustedBitmap(bitmap, color_);
+                      });
+      }
       // TODO(crbug.com/40175364): consider either passing `scale_` to
       // `CursorFactory::GetCursorData`, or relying on having called
       // `CursorFactory::SetDeviceScaleFactor`, instead of appending it here.
@@ -110,7 +130,7 @@ std::optional<ui::CursorData> CursorLoader::GetCursorData(
   // sense for the current use cases of `GetCursorData` (e.g. Chrome Remote
   // Desktop, WebRTC and VideoRecordingWatcher).
   return wm::GetCursorData(type, size_, resource_scale_, std::nullopt,
-                           display::Display::ROTATE_0);
+                           display::Display::ROTATE_0, color_);
 }
 
 scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
@@ -146,8 +166,8 @@ scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
 
 scoped_refptr<ui::PlatformCursor> CursorLoader::LoadCursorFromAsset(
     CursorType type) {
-  std::optional<ui::CursorData> cursor_data =
-      wm::GetCursorData(type, size_, resource_scale_, std::nullopt, rotation_);
+  std::optional<ui::CursorData> cursor_data = wm::GetCursorData(
+      type, size_, resource_scale_, std::nullopt, rotation_, color_);
   if (!cursor_data) {
     return nullptr;
   }

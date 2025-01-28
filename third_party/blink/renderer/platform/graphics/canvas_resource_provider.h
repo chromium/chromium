@@ -110,7 +110,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   static std::unique_ptr<CanvasResourceProvider> CreateBitmapProvider(
       gfx::Size size,
-      SkColorType sk_color_type,
+      viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
       ShouldInitialize initialize_provider,

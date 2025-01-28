@@ -69,6 +69,9 @@ PasswordChangeCredentialLeakBubbleView::PasswordChangeCredentialLeakBubbleView(
         // Cancel the flow if the dialog is explicitly closed.
         if (reason == ClosedReason::kCloseButtonClicked ||
             reason == ClosedReason::kEscKeyPressed) {
+          // `controller_.Cancel()` may trigger Save/Update password prompt, so
+          // we need to hide this bubble earlier.
+          view->GetWidget()->Hide();
           view->controller_.Cancel();
         }
       },
@@ -88,7 +91,7 @@ PasswordChangeCredentialLeakBubbleView::CreateBodyText() {
       /*text_message_id=*/
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_BUBBLE_DETAILS,
       /*link_message_id=*/
-      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_LINK,
       controller_.GetPrimaryAccountEmail(), open_password_manager_closure,
       CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_PRIMARY);
 }
@@ -111,7 +114,8 @@ void PasswordChangeCredentialLeakBubbleView::OnWidgetInitialized() {
                                      ui::kColorIconSecondary,
                                      GetLayoutConstant(PAGE_INFO_ICON_SIZE)));
   GetOkButton()->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
+  SetBubbleHeader(IDR_PASSWORD_CHANGE_WARNING,
+                  IDR_PASSWORD_CHANGE_WARNING_DARK);
 }
 
 BEGIN_METADATA(PasswordChangeCredentialLeakBubbleView)

@@ -21,8 +21,6 @@
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 
-class BookmarkUndoService;
-
 namespace favicon {
 class FaviconService;
 }
@@ -33,12 +31,11 @@ class BookmarkModelObserverImpl;
 class BookmarkModelView;
 
 class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
-                                   public syncer::DataTypeControllerDelegate {
+                                  public syncer::DataTypeControllerDelegate {
  public:
-  // `bookmark_undo_service` must not be nullptr and must outlive this object.
-  BookmarkDataTypeProcessor(BookmarkUndoService* bookmark_undo_service,
-                             syncer::WipeModelUponSyncDisabledBehavior
-                                 wipe_model_upon_sync_disabled_behavior);
+  explicit BookmarkDataTypeProcessor(
+      syncer::WipeModelUponSyncDisabledBehavior
+          wipe_model_upon_sync_disabled_behavior);
 
   BookmarkDataTypeProcessor(const BookmarkDataTypeProcessor&) = delete;
   BookmarkDataTypeProcessor& operator=(const BookmarkDataTypeProcessor&) =
@@ -169,9 +166,6 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   // has been loaded.
   raw_ptr<favicon::FaviconService, AcrossTasksDanglingUntriaged>
       favicon_service_ = nullptr;
-
-  // Used to suspend bookmark undo when processing remote changes.
-  const raw_ptr<BookmarkUndoService, DanglingUntriaged> bookmark_undo_service_;
 
   // Controls whether bookmarks should be wiped when sync is stopped.
   syncer::WipeModelUponSyncDisabledBehavior

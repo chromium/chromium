@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 
+#include <algorithm>
 #include <list>
 #include <optional>
 #include <string>
@@ -18,7 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -1274,7 +1274,7 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
   TRACE_EVENT0("navigation", "BackForwardCache::RestoreEntry");
 
   // Select the RenderFrameHostImpl matching the navigation entry.
-  auto matching_entry = base::ranges::find(
+  auto matching_entry = std::ranges::find(
       entries_, navigation_entry_id, [](std::unique_ptr<Entry>& entry) {
         return entry->render_frame_host()->nav_entry_id();
       });
@@ -1440,7 +1440,7 @@ BackForwardCacheImpl::GetEntriesForRenderViewHostImpl(
 base::expected<BackForwardCacheImpl::Entry*,
                BackForwardCacheImpl::GetEntryFailureCase>
 BackForwardCacheImpl::GetOrEvictEntry(int navigation_entry_id) {
-  auto matching_entry = base::ranges::find(
+  auto matching_entry = std::ranges::find(
       entries_, navigation_entry_id, [](std::unique_ptr<Entry>& entry) {
         return entry->render_frame_host()->nav_entry_id();
       });

@@ -413,7 +413,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      */
     public void refreshPopupBackground(@BrandedColorScheme int brandedColorScheme) {
         int color =
-                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColorForColorScheme(
+                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
                         getContext(), brandedColorScheme);
 
         if (!isHardwareAccelerated()) {

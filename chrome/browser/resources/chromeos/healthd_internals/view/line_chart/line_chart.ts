@@ -8,7 +8,7 @@ import './chart_summary_table.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LineChartController} from '../../controller/line_chart_controller.js'
+import {LineChartController} from '../../controller/line_chart_controller.js';
 import {CategoryTypeEnum} from '../../controller/system_trend_controller.js';
 import type {DataSeriesList} from '../../controller/system_trend_controller.js';
 import type {DataSeries} from '../../model/data_series.js';

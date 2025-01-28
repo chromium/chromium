@@ -6,6 +6,8 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,10 +54,12 @@ bool DidMatchCueingConditions(
 
 ContextualCueingHelper::ContextualCueingHelper(
     content::WebContents* web_contents,
-    OptimizationGuideKeyedService* ogks)
+    OptimizationGuideKeyedService* ogks,
+    ContextualCueingService* ccs)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<ContextualCueingHelper>(*web_contents),
-      optimization_guide_keyed_service_(ogks) {
+      optimization_guide_keyed_service_(ogks),
+      contextual_cueing_service_(ccs) {
   optimization_guide_keyed_service_->RegisterOptimizationTypes(
       {optimization_guide::proto::GLIC_CONTEXTUAL_CUEING});
 }
@@ -65,6 +69,15 @@ ContextualCueingHelper::~ContextualCueingHelper() = default;
 // content::WebContentsObserver
 void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   last_navigation_cue_label_.clear();
+  if (remaining_quiet_loads_ > 0) {
+    --remaining_quiet_loads_;
+    return;
+  }
+
+  if (!contextual_cueing_service_->CanShowNudge()) {
+    return;
+  }
+
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return;
@@ -94,6 +107,9 @@ void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
     }
   }
 
+  if (!last_navigation_cue_label_.empty()) {
+    remaining_quiet_loads_ = kMinPageCountBetweenNudges.Get();
+  }
   glic_nudge_controller->UpdateNudgeLabel(web_contents(),
                                           last_navigation_cue_label_);
 }
@@ -120,8 +136,15 @@ void ContextualCueingHelper::MaybeCreateForWebContents(
     return;
   }
 
-  ContextualCueingHelper::CreateForWebContents(
-      web_contents, optimization_guide_keyed_service);
+  auto* contextual_cueing_service =
+      ContextualCueingServiceFactory::GetForProfile(profile);
+  if (!contextual_cueing_service) {
+    return;
+  }
+
+  ContextualCueingHelper::CreateForWebContents(web_contents,
+                                               optimization_guide_keyed_service,
+                                               contextual_cueing_service);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 

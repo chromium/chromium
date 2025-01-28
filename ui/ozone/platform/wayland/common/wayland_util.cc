@@ -326,14 +326,10 @@ void SkColorToWlArray(const SkColor4f& color, wl_array& array) {
 }
 
 base::TimeTicks EventMillisecondsToTimeTicks(uint32_t milliseconds) {
-#if BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/40287874): `milliseconds` comes from Weston that
   // uses timestamp from libinput, which is different from TimeTicks.
   // Use EventTimeForNow(), for now.
   return ui::EventTimeForNow();
-#else
-  return base::TimeTicks() + base::Milliseconds(milliseconds);
-#endif
 }
 
 float ClampScale(float scale) {
@@ -368,7 +364,6 @@ bool MaybeHandlePlatformEventForDrag(const ui::PlatformEvent& event,
 }
 
 void RecordConnectionMetrics(wl_display* display) {
-#if BUILDFLAG(IS_LINUX)
   CHECK(display);
 
   // These values are logged to metrics so must not be changed.
@@ -453,7 +448,6 @@ void RecordConnectionMetrics(wl_display* display) {
   };
 
   base::UmaHistogramEnumeration("Linux.Wayland.Compositor", get_compositor());
-#endif
 }
 
 }  // namespace wl

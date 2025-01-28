@@ -19,7 +19,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -85,9 +84,9 @@ void GetModelIndexToRangeStart(
 
 // Returns the color id for the background of selected text. |has_focus|
 // indicates if the table has focus.
-ui::ColorId text_background_color_id(bool has_focus) {
-  return has_focus ? ui::kColorTableBackgroundSelectedFocused
-                   : ui::kColorTableBackgroundSelectedUnfocused;
+ui::ColorId text_background_color_id(const TableView& table, bool has_focus) {
+  return has_focus ? table.BackgroundSelectedFocusedColorId()
+                   : table.BackgroundSelectedUnfocusedColorId();
 }
 
 // Returns the color id for text. |has_focus| indicates if the table has focus.
@@ -381,8 +380,8 @@ void TableView::SetColumnVisibility(int id, bool is_visible) {
     visible_columns_.push_back(visible_column);
   } else {
     const auto i =
-        base::ranges::find(visible_columns_, id,
-                           [](const auto& column) { return column.column.id; });
+        std::ranges::find(visible_columns_, id,
+                          [](const auto& column) { return column.column.id; });
     if (i != visible_columns_.end()) {
       visible_columns_.erase(i);
       if (active_visible_column_index_.has_value() &&
@@ -1181,7 +1180,7 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
 
   ui::ColorProvider* color_provider = GetColorProvider();
   const SkColor default_bg_color =
-      color_provider->GetColor(ui::kColorTableBackground);
+      color_provider->GetColor(BackgroundColorId());
   canvas->DrawColor(default_bg_color);
 
   if (!GetRowCount() || visible_columns_.empty()) {
@@ -1194,12 +1193,12 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
   }
 
   const SkColor selected_bg_color =
-      color_provider->GetColor(text_background_color_id(HasFocus()));
+      color_provider->GetColor(text_background_color_id(*this, HasFocus()));
   const SkColor fg_color = color_provider->GetColor(ui::kColorTableForeground);
   const SkColor selected_fg_color =
       color_provider->GetColor(selected_text_color_id(HasFocus()));
   const SkColor alternate_bg_color =
-      color_provider->GetColor(ui::kColorTableBackgroundAlternate);
+      color_provider->GetColor(BackgroundAlternateColorId());
   const SkColor hovered_bg_color =
       color_provider->GetColor(ui::kColorTableRowHighlight);
   const int cell_margin = GetCellMargin();
@@ -1581,7 +1580,7 @@ void TableView::OnHoverChanged(std::optional<size_t> previous_hovered_row,
 }
 
 ui::TableColumn TableView::FindColumnByID(int id) const {
-  const auto i = base::ranges::find(columns_, id, &ui::TableColumn::id);
+  const auto i = std::ranges::find(columns_, id, &ui::TableColumn::id);
   DCHECK(i != columns_.cend());
   return *i;
 }
@@ -2314,6 +2313,27 @@ void TableView::SetHeaderStyle(const TableHeaderStyle& style) {
   }
 }
 
+void TableView::SetTableStyle(const TableStyle& style) {
+  table_style_ = style;
+  SchedulePaint();
+}
+
+ui::ColorId TableView::BackgroundColorId() const {
+  return table_style().background_tokens.background;
+}
+
+ui::ColorId TableView::BackgroundAlternateColorId() const {
+  return table_style().background_tokens.alternate;
+}
+
+ui::ColorId TableView::BackgroundSelectedFocusedColorId() const {
+  return table_style().background_tokens.selected_focused;
+}
+
+ui::ColorId TableView::BackgroundSelectedUnfocusedColorId() const {
+  return table_style().background_tokens.selected_unfocused;
+}
+
 AXVirtualView* TableView::GetVirtualAccessibilityCellImpl(
     AXVirtualView* ax_row,
     size_t visible_column_index) const {
@@ -2327,7 +2347,7 @@ AXVirtualView* TableView::GetVirtualAccessibilityCellImpl(
                ax::mojom::IntAttribute::kTableCellColumnIndex)) ==
            visible_column_index;
   };
-  const auto i = base::ranges::find_if(ax_row->children(), matches_index);
+  const auto i = std::ranges::find_if(ax_row->children(), matches_index);
   DCHECK(i != ax_row->children().cend())
       << "|visible_column_index| not found. Did you forget to call "
       << "RebuildVirtualAccessibilityChildren()?";

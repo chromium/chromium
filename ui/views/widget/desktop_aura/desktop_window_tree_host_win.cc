@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -1431,7 +1430,7 @@ bool DesktopWindowTreeHostWin::IsModalWindowActive() const {
                ui::mojom::ModalType::kNone &&
            child->TargetVisibility();
   };
-  return base::ranges::any_of(window()->children(), is_active);
+  return std::ranges::any_of(window()->children(), is_active);
 }
 
 void DesktopWindowTreeHostWin::CheckForMonitorChange() {

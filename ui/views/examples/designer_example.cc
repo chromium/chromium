@@ -4,10 +4,10 @@
 
 #include "ui/views/examples/designer_example.h"
 
+#include <ranges>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/ranges/ranges.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -477,7 +477,7 @@ void DesignerExample::GrabHandles::SetAttachedView(View* view) {
 }
 
 bool DesignerExample::GrabHandles::IsGrabHandle(View* view) {
-  return base::ranges::find(grab_handles_, view) != grab_handles_.end();
+  return std::ranges::find(grab_handles_, view) != grab_handles_.end();
 }
 
 DesignerExample::DesignerExample() : ExampleBase("Designer") {}

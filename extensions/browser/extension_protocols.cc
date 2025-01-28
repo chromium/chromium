@@ -547,8 +547,6 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
   }
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
  private:
   ~ExtensionURLLoader() override = default;

@@ -11,15 +11,11 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  color: var(--cr-primary-text-color);
   padding: 8px 12px;
 }
 
 :host h1 {
-  color: var(--cr-primary-text-color);
-}
-
-:host h2 {
-  color: var(--cr-primary-text-color);
 }
 
 :host h3 {
@@ -28,7 +24,6 @@
 
 .label {
   font-size: 1.2em;
-  color: var(--cr-primary-text-color);
 }
 
 .config-row {
@@ -59,3 +54,35 @@
 .spinner {
   --cr-spinner-size: 20px;
 }
+
+<if expr="is_win">
+/** Windows system tracing -------------------------------------------------- */
+
+#system-tracing {
+  align-items: center;
+  font-size: 1.2em;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+}
+
+#system-tracing-description {
+  padding-inline-end: 12px;
+}
+
+#system-tracing-description em {
+  display: block;
+}
+
+#system-tracing-toggle {
+  flex: none;
+}
+
+#system-tracing-shield {
+  padding-inline-start: 12px;
+}
+
+#system-tracing-toggle:not(:defined) {
+  width: 34px;
+}
+</if>

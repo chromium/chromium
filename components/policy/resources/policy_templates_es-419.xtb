@@ -3789,6 +3789,19 @@ Si se produce un error al salir de <ph name="PRODUCT_NAME" /> (por ejemplo, si f
 <translation id="3700193037252896716">La frecuencia con la cual se deben reiniciar los dispositivos.</translation>
 <translation id="3700318587977845664">La frecuencia con la que deben verificarse las actualizaciones.</translation>
 <translation id="3701121231485832347">Controla la configuración específica de los dispositivos <ph name="PRODUCT_OS_NAME" /> administrados por <ph name="MS_AD_NAME" />.</translation>
+<translation id="3701177991731919830">Esta política habilita la app de Transferencia de contenido para los usuarios administrados. La app de Transferencia de contenido ayuda a los usuarios a transferir sus datos de una cuenta administrada a una cuenta personal.
+
+Si estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> como <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, la app de Transferencia de contenido se mostrará en las fechas de inicio y finalización, y entre ellas, según la hora local.
+
+Si estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> como <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> o no la estableces, no se mostrará la app.
+
+Si no estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" />, la app se mostrará hasta la fecha de finalización.
+
+Si no estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />, la app se mostrará de forma indefinida a partir de la fecha de inicio.
+
+Si no estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> ni <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />, se mostrará la app de forma indefinida. Si las fechas de inicio y finalización no son válidas, no se mostrará la app de Transferencia de contenido. Por ejemplo, si las fechas proporcionadas no existen o si la fecha de finalización es anterior a la fecha de inicio.
+
+También se debe habilitar la transferencia de datos con Takeout para que la app de Transferencia de contenido funcione correctamente. Consulta https://support.google.com/a/answer/6364687 para obtener más información.</translation>
 <translation id="3702518095257671450">Certificación remota</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Pronto dejará de estar disponible el campo de una línea y desaparecerá. Empieza a usar el cuadro de texto de varias líneas que se encuentra a continuación).</translation>
 <translation id="3711561721191203926">Si habilitas esta política, cada vez que se deba mostrar
@@ -8726,6 +8739,14 @@ Si estableces esta política como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE
       Si no la estableces, se ubicará la biblioteca de forma predeterminada en la parte inferior de la pantalla y el usuario podrá cambiar su posición.</translation>
 <translation id="7039815268521168329">Mostrar el flujo de Voice Match de Asistente de Google durante la configuración inicial</translation>
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
+<translation id="7044626519138840387">Una lista de orígenes de apps de cliente de escritorio remoto que pueden ejecutar solicitudes a la API de WebAuthn
+que se originan a partir de una sesión de navegación en un host remoto.
+
+Cualquier origen configurado en esta política puede realizar solicitudes de WebAuthn para Relying
+Party IDs (RP IDs) que normalmente no se pueden reclamar.
+
+Solo se permiten orígenes HTTPS válidos. Los comodines no son compatibles.
+Se ignoran las entradas no válidas.</translation>
 <translation id="7044883996351280650">Controlar el servicio de restablecimiento y copias de seguridad</translation>
 <translation id="7045221780834308118">Si habilitas la política, las apps web de terceros podrán usar la API de Desk para controlar los escritorios de <ph name="PRODUCT_OS_NAME" />. Si no la estableces o la inhabilitas, la <ph name="DESK_API_NAME" /> no estará disponible. La política solo tendrá efecto en los dispositivos inscritos.</translation>
 <translation id="7046113122884041950">No permitir Smart Lock</translation>
@@ -10988,6 +11009,7 @@ el esquema https.</translation>
 <translation id="8734543507835977857">Iniciar los tiempos de espera para la administración de la energía y los límites de la extensión de la sesión al inicio de la sesión</translation>
 <translation id="8736538322216687231">Aplicar el modo restringido mínimo en YouTube</translation>
 <translation id="873800217865395140">Tasa de recopilación de telemetría de sitios web en milisegundos</translation>
+<translation id="8743149927570551353">Configurar en qué momento estará disponible la herramienta Transferencia de contenido de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8743902569031401303">Permitir encuestas de Navegación segura</translation>
 <translation id="8744844164152340112">Controla el tema que se usa para renderizar la IU durante la OOBE y en la sesión (oscuro, claro o automático).
       El modo automático alterna entre temas oscuros y claros de forma automática al amanecer y al atardecer.
@@ -11606,6 +11628,7 @@ Para obtener más información sobre contextos seguros, consulta https://www.w3.
 <translation id="9149075762533142978">La función Generador de códigos QR está habilitada.</translation>
 <translation id="9149678135092892302">Inhabilitar la generación de informes sobre la versión</translation>
 <translation id="9150416707757015439">Esta política no está aprobada. Usa IncognitoModeAvailability en su lugar. Esto habilita el modo incógnito en <ph name="PRODUCT_NAME" />. Si se habilita esta opción o si no se configura, los usuarios podrán abrir páginas web en modo incógnito. Si se inhabilita esta configuración, los usuarios no podrán abrir páginas web en modo incógnito. Si esta política no se configura, se habilitará esta opción y el usuario podrá usar el modo incógnito.</translation>
+<translation id="9151267823917882070">Orígenes permitidos para las solicitudes de WebAuthn con proxy desde aplicaciones de escritorio remoto.</translation>
 <translation id="9152473318295429890">Habilitar las sugerencias contextuales de páginas web relacionadas</translation>
 <translation id="9155218447258425310">Duración de la notificación ante la eliminación de la tarjeta inteligente para <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9155375380628728544">Si estableces la política, los usuarios podrán agregar a la lista de idiomas preferidos solo uno de los idiomas de la lista de esta política.

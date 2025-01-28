@@ -33641,6 +33641,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SafeBrowsing.SyncedEsbDialog.OkButtonClicked">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicked the ok button on the ESB synced to enabled dialog.
+  </description>
+</action>
+
+<action name="SafeBrowsing.SyncedEsbDialog.TurnOnButtonClicked">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicked the turn on button to turn on ESB on the ESB synced to disabled
+    dialog.
+  </description>
+</action>
+
 <action name="SafetyCheck.DetailKeepClicked">
   <owner>psarouthakis@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>

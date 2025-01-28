@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AutomationPredicate} from '/common/automation_predicate.js';
+import type {AutomationPredicate} from '/common/automation_predicate.js';
 import {constants} from '/common/constants.js';
 import {RepeatedEventHandler} from '/common/repeated_event_handler.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';

@@ -82,6 +82,18 @@ bool GetSupportsSpdy(HttpNetworkSession* session,
   return false;
 }
 
+base::Value::Dict GetServiceEndpointRequestAsValue(
+    HostResolver::ServiceEndpointRequest* request) {
+  base::Value::Dict dict;
+  base::Value::List endpoints;
+  for (const auto& endpoint : request->GetEndpointResults()) {
+    endpoints.Append(endpoint.ToValue());
+  }
+  dict.Set("endpoints", std::move(endpoints));
+  dict.Set("endpoints_crypto_ready", request->EndpointsCryptoReady());
+  return dict;
+}
+
 }  // namespace
 
 // Represents an in-flight stream attempt.
@@ -380,7 +392,16 @@ void HttpStreamPool::AttemptManager::StartJob(
   // HttpStreamPool should check the existing QUIC/SPDY sessions before calling
   // this method.
   DCHECK(!CanUseExistingQuicSession());
-  CHECK(!spdy_session_);
+  // TODO(crbug.com/385563837): Change to use CHECK(!spdy_session_) once we
+  // identified the cause of the issue.
+  if (spdy_session_) {
+    std::string stream_key_string = stream_key().ToString();
+    std::string spdy_session_string =
+        spdy_session_->GetInfoAsValue().DebugString();
+    DEBUG_ALIAS_FOR_CSTR(stream_key_cstr, stream_key_string.c_str(), 128);
+    DEBUG_ALIAS_FOR_CSTR(spdy_session_cstr, spdy_session_string.c_str(), 512);
+    CHECK(false);
+  }
   DCHECK(!spdy_session_pool()->FindAvailableSession(
       spdy_session_key(), IsIpBasedPoolingEnabled(),
       /*is_websocket=*/false, request_net_log));
@@ -456,6 +477,13 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointsUpdated() {
   // For plain HTTP request, we need to wait for HTTPS RR because we could
   // trigger HTTP -> HTTPS upgrade when HTTPS RR is received during the endpoint
   // resolution.
+  net_log().AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_UPDATED,
+      [&] {
+        return GetServiceEndpointRequestAsValue(
+            service_endpoint_request_.get());
+      });
+
   if (UsingTls() || service_endpoint_request_->EndpointsCryptoReady()) {
     ProcessServiceEndpointChanges();
   }
@@ -472,7 +500,8 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {
   net_log().AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_FINISHED,
       [&] {
-        base::Value::Dict dict;
+        base::Value::Dict dict =
+            GetServiceEndpointRequestAsValue(service_endpoint_request_.get());
         dict.Set("result", ErrorToString(rv));
         dict.Set("resolve_error", resolve_error_info_.error);
         return dict;
@@ -1011,9 +1040,24 @@ bool HttpStreamPool::AttemptManager::
           quic_task_result_ = OK;
           quic_task_.reset();
         }
+
+        net_log_.AddEvent(
+            NetLogEventType::
+                HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_QUIC_SESSION_MATCHED,
+            [&] {
+              base::Value::Dict dict;
+              QuicChromiumClientSession* quic_session =
+                  quic_session_pool()->FindExistingSession(
+                      quic_session_alias_key().session_key(),
+                      quic_session_alias_key().destination());
+              CHECK(quic_session);
+              quic_session->net_log().source().AddToEventParameters(dict);
+              return dict;
+            });
         base::UmaHistogramTimes(
             "Net.HttpStreamPool.ExistingQuicSessionFoundTime",
             base::TimeTicks::Now() - dns_resolution_start_time_);
+
         HandleQuicSessionReady(
             StreamSocketCloseReason::kUsingExistingQuicSession);
         // Use PostTask() because we could reach here from RequestStream()
@@ -1041,9 +1085,18 @@ bool HttpStreamPool::AttemptManager::
             spdy_session_key(), endpoint,
             service_endpoint_request_->GetDnsAliasResults());
     if (spdy_session_) {
+      net_log_.AddEvent(
+          NetLogEventType::
+              HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_SPDY_SESSION_MATCHED,
+          [&] {
+            base::Value::Dict dict;
+            spdy_session_->net_log().source().AddToEventParameters(dict);
+            return dict;
+          });
       base::UmaHistogramTimes(
           "Net.HttpStreamPool.ExistingSpdySessionFoundTime",
           base::TimeTicks::Now() - dns_resolution_start_time_);
+
       HandleSpdySessionReady(
           StreamSocketCloseReason::kUsingExistingSpdySession);
       // Use PostTask() because we could reach here from RequestStream()

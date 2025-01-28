@@ -10,93 +10,93 @@ chromium_strings.grd. -->
     <output filename="grit/branded_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
-    <output filename="google_chrome_strings_af.pak" type="data_package" lang="af" />
-    <output filename="google_chrome_strings_am.pak" type="data_package" lang="am" />
-    <output filename="google_chrome_strings_ar.pak" type="data_package" lang="ar" />
-    <output filename="google_chrome_strings_as.pak" type="data_package" lang="as" />
-    <output filename="google_chrome_strings_az.pak" type="data_package" lang="az" />
-    <output filename="google_chrome_strings_be.pak" type="data_package" lang="be" />
-    <output filename="google_chrome_strings_bg.pak" type="data_package" lang="bg" />
-    <output filename="google_chrome_strings_bn.pak" type="data_package" lang="bn" />
-    <output filename="google_chrome_strings_bs.pak" type="data_package" lang="bs" />
-    <output filename="google_chrome_strings_ca.pak" type="data_package" lang="ca" />
-    <output filename="google_chrome_strings_cs.pak" type="data_package" lang="cs" />
-    <output filename="google_chrome_strings_cy.pak" type="data_package" lang="cy" />
-    <output filename="google_chrome_strings_da.pak" type="data_package" lang="da" />
-    <output filename="google_chrome_strings_de.pak" type="data_package" lang="de" />
-    <output filename="google_chrome_strings_el.pak" type="data_package" lang="el" />
-    <output filename="google_chrome_strings_en-GB.pak" type="data_package" lang="en-GB" />
-    <output filename="google_chrome_strings_en-US.pak" type="data_package" lang="en" />
-    <output filename="google_chrome_strings_es.pak" type="data_package" lang="es" />
-    <output filename="google_chrome_strings_es-419.pak" type="data_package" lang="es-419" />
-    <output filename="google_chrome_strings_et.pak" type="data_package" lang="et" />
-    <output filename="google_chrome_strings_eu.pak" type="data_package" lang="eu" />
-    <output filename="google_chrome_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="google_chrome_strings_fi.pak" type="data_package" lang="fi" />
-    <output filename="google_chrome_strings_fil.pak" type="data_package" lang="fil" />
-    <output filename="google_chrome_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
-    <output filename="google_chrome_strings_fr.pak" type="data_package" lang="fr" />
-    <output filename="google_chrome_strings_gl.pak" type="data_package" lang="gl" />
-    <output filename="google_chrome_strings_gu.pak" type="data_package" lang="gu" />
-    <output filename="google_chrome_strings_he.pak" type="data_package" lang="he" />
-    <output filename="google_chrome_strings_hi.pak" type="data_package" lang="hi" />
-    <output filename="google_chrome_strings_hr.pak" type="data_package" lang="hr" />
-    <output filename="google_chrome_strings_hu.pak" type="data_package" lang="hu" />
-    <output filename="google_chrome_strings_hy.pak" type="data_package" lang="hy" />
-    <output filename="google_chrome_strings_id.pak" type="data_package" lang="id" />
-    <output filename="google_chrome_strings_is.pak" type="data_package" lang="is" />
-    <output filename="google_chrome_strings_it.pak" type="data_package" lang="it" />
-    <output filename="google_chrome_strings_ja.pak" type="data_package" lang="ja" />
-    <output filename="google_chrome_strings_ka.pak" type="data_package" lang="ka" />
-    <output filename="google_chrome_strings_kk.pak" type="data_package" lang="kk" />
-    <output filename="google_chrome_strings_km.pak" type="data_package" lang="km" />
-    <output filename="google_chrome_strings_kn.pak" type="data_package" lang="kn" />
-    <output filename="google_chrome_strings_ko.pak" type="data_package" lang="ko" />
-    <output filename="google_chrome_strings_ky.pak" type="data_package" lang="ky" />
-    <output filename="google_chrome_strings_lo.pak" type="data_package" lang="lo" />
-    <output filename="google_chrome_strings_lt.pak" type="data_package" lang="lt" />
-    <output filename="google_chrome_strings_lv.pak" type="data_package" lang="lv" />
-    <output filename="google_chrome_strings_mk.pak" type="data_package" lang="mk" />
-    <output filename="google_chrome_strings_ml.pak" type="data_package" lang="ml" />
-    <output filename="google_chrome_strings_mn.pak" type="data_package" lang="mn" />
-    <output filename="google_chrome_strings_mr.pak" type="data_package" lang="mr" />
-    <output filename="google_chrome_strings_ms.pak" type="data_package" lang="ms" />
-    <output filename="google_chrome_strings_my.pak" type="data_package" lang="my" />
-    <output filename="google_chrome_strings_ne.pak" type="data_package" lang="ne" />
-    <output filename="google_chrome_strings_nl.pak" type="data_package" lang="nl" />
+    <output filename="branded_strings_af.pak" type="data_package" lang="af" />
+    <output filename="branded_strings_am.pak" type="data_package" lang="am" />
+    <output filename="branded_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="branded_strings_as.pak" type="data_package" lang="as" />
+    <output filename="branded_strings_az.pak" type="data_package" lang="az" />
+    <output filename="branded_strings_be.pak" type="data_package" lang="be" />
+    <output filename="branded_strings_bg.pak" type="data_package" lang="bg" />
+    <output filename="branded_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="branded_strings_bs.pak" type="data_package" lang="bs" />
+    <output filename="branded_strings_ca.pak" type="data_package" lang="ca" />
+    <output filename="branded_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="branded_strings_cy.pak" type="data_package" lang="cy" />
+    <output filename="branded_strings_da.pak" type="data_package" lang="da" />
+    <output filename="branded_strings_de.pak" type="data_package" lang="de" />
+    <output filename="branded_strings_el.pak" type="data_package" lang="el" />
+    <output filename="branded_strings_en-GB.pak" type="data_package" lang="en-GB" />
+    <output filename="branded_strings_en-US.pak" type="data_package" lang="en" />
+    <output filename="branded_strings_es.pak" type="data_package" lang="es" />
+    <output filename="branded_strings_es-419.pak" type="data_package" lang="es-419" />
+    <output filename="branded_strings_et.pak" type="data_package" lang="et" />
+    <output filename="branded_strings_eu.pak" type="data_package" lang="eu" />
+    <output filename="branded_strings_fa.pak" type="data_package" lang="fa" />
+    <output filename="branded_strings_fi.pak" type="data_package" lang="fi" />
+    <output filename="branded_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="branded_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+    <output filename="branded_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="branded_strings_gl.pak" type="data_package" lang="gl" />
+    <output filename="branded_strings_gu.pak" type="data_package" lang="gu" />
+    <output filename="branded_strings_he.pak" type="data_package" lang="he" />
+    <output filename="branded_strings_hi.pak" type="data_package" lang="hi" />
+    <output filename="branded_strings_hr.pak" type="data_package" lang="hr" />
+    <output filename="branded_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="branded_strings_hy.pak" type="data_package" lang="hy" />
+    <output filename="branded_strings_id.pak" type="data_package" lang="id" />
+    <output filename="branded_strings_is.pak" type="data_package" lang="is" />
+    <output filename="branded_strings_it.pak" type="data_package" lang="it" />
+    <output filename="branded_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="branded_strings_ka.pak" type="data_package" lang="ka" />
+    <output filename="branded_strings_kk.pak" type="data_package" lang="kk" />
+    <output filename="branded_strings_km.pak" type="data_package" lang="km" />
+    <output filename="branded_strings_kn.pak" type="data_package" lang="kn" />
+    <output filename="branded_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="branded_strings_ky.pak" type="data_package" lang="ky" />
+    <output filename="branded_strings_lo.pak" type="data_package" lang="lo" />
+    <output filename="branded_strings_lt.pak" type="data_package" lang="lt" />
+    <output filename="branded_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="branded_strings_mk.pak" type="data_package" lang="mk" />
+    <output filename="branded_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="branded_strings_mn.pak" type="data_package" lang="mn" />
+    <output filename="branded_strings_mr.pak" type="data_package" lang="mr" />
+    <output filename="branded_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="branded_strings_my.pak" type="data_package" lang="my" />
+    <output filename="branded_strings_ne.pak" type="data_package" lang="ne" />
+    <output filename="branded_strings_nl.pak" type="data_package" lang="nl" />
     <!-- The translation console uses 'no' for Norwegian Bokmål. It should
          be 'nb'. -->
-    <output filename="google_chrome_strings_nb.pak" type="data_package" lang="no" />
-    <output filename="google_chrome_strings_pa.pak" type="data_package" lang="pa" />
-    <output filename="google_chrome_strings_pl.pak" type="data_package" lang="pl" />
-    <output filename="google_chrome_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
-    <output filename="google_chrome_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
-    <output filename="google_chrome_strings_or.pak" type="data_package" lang="or" />
-    <output filename="google_chrome_strings_ro.pak" type="data_package" lang="ro" />
-    <output filename="google_chrome_strings_ru.pak" type="data_package" lang="ru" />
-    <output filename="google_chrome_strings_si.pak" type="data_package" lang="si" />
-    <output filename="google_chrome_strings_sk.pak" type="data_package" lang="sk" />
-    <output filename="google_chrome_strings_sl.pak" type="data_package" lang="sl" />
-    <output filename="google_chrome_strings_sq.pak" type="data_package" lang="sq" />
-    <output filename="google_chrome_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
-    <output filename="google_chrome_strings_sr.pak" type="data_package" lang="sr" />
-    <output filename="google_chrome_strings_sv.pak" type="data_package" lang="sv" />
-    <output filename="google_chrome_strings_sw.pak" type="data_package" lang="sw" />
-    <output filename="google_chrome_strings_ta.pak" type="data_package" lang="ta" />
-    <output filename="google_chrome_strings_te.pak" type="data_package" lang="te" />
-    <output filename="google_chrome_strings_th.pak" type="data_package" lang="th" />
-    <output filename="google_chrome_strings_tr.pak" type="data_package" lang="tr" />
-    <output filename="google_chrome_strings_uk.pak" type="data_package" lang="uk" />
-    <output filename="google_chrome_strings_ur.pak" type="data_package" lang="ur" />
-    <output filename="google_chrome_strings_uz.pak" type="data_package" lang="uz" />
-    <output filename="google_chrome_strings_vi.pak" type="data_package" lang="vi" />
-    <output filename="google_chrome_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
-    <output filename="google_chrome_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
-    <output filename="google_chrome_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
-    <output filename="google_chrome_strings_zu.pak" type="data_package" lang="zu" />
+    <output filename="branded_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="branded_strings_pa.pak" type="data_package" lang="pa" />
+    <output filename="branded_strings_pl.pak" type="data_package" lang="pl" />
+    <output filename="branded_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
+    <output filename="branded_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="branded_strings_or.pak" type="data_package" lang="or" />
+    <output filename="branded_strings_ro.pak" type="data_package" lang="ro" />
+    <output filename="branded_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="branded_strings_si.pak" type="data_package" lang="si" />
+    <output filename="branded_strings_sk.pak" type="data_package" lang="sk" />
+    <output filename="branded_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="branded_strings_sq.pak" type="data_package" lang="sq" />
+    <output filename="branded_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+    <output filename="branded_strings_sr.pak" type="data_package" lang="sr" />
+    <output filename="branded_strings_sv.pak" type="data_package" lang="sv" />
+    <output filename="branded_strings_sw.pak" type="data_package" lang="sw" />
+    <output filename="branded_strings_ta.pak" type="data_package" lang="ta" />
+    <output filename="branded_strings_te.pak" type="data_package" lang="te" />
+    <output filename="branded_strings_th.pak" type="data_package" lang="th" />
+    <output filename="branded_strings_tr.pak" type="data_package" lang="tr" />
+    <output filename="branded_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="branded_strings_ur.pak" type="data_package" lang="ur" />
+    <output filename="branded_strings_uz.pak" type="data_package" lang="uz" />
+    <output filename="branded_strings_vi.pak" type="data_package" lang="vi" />
+    <output filename="branded_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="branded_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
+    <output filename="branded_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+    <output filename="branded_strings_zu.pak" type="data_package" lang="zu" />
     <!-- Pseudolocales -->
-    <output filename="google_chrome_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
-    <output filename="google_chrome_strings_en-XA.pak" type="data_package" lang="en-XA" />
+    <output filename="branded_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="branded_strings_en-XA.pak" type="data_package" lang="en-XA" />
 
     <!-- On Android, output some strings into Android's xml string format.
          These strings are tagged with formatter_data="android_java" -->
@@ -306,7 +306,7 @@ chromium_strings.grd. -->
           Welcome to Google Chrome
         </message>
       </if>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <if expr="reven">
           <message name="IDS_PRODUCT_OS_NAME" desc="The ChromeOS Flex application name">
             Google ChromeOS Flex
@@ -338,12 +338,12 @@ chromium_strings.grd. -->
           New window
         </message>
       </if>
-      <if expr="is_macosx or chromeos_ash">
+      <if expr="is_macosx or is_chromeos">
         <message name="IDS_TASK_MANAGER_TITLE" desc="The title of the Task Manager window">
           Task Manager
         </message>
       </if>
-      <if expr="not is_macosx and not chromeos_ash">
+      <if expr="not is_macosx and not is_chromeos">
         <message name="IDS_TASK_MANAGER_TITLE" desc="The title of the Task Manager window">
           Task Manager - Google Chrome
         </message>
@@ -375,13 +375,13 @@ chromium_strings.grd. -->
       <message name="IDS_SESSION_CRASHED_VIEW_UMA_OPTIN" desc="Text besides the checkbox to let users optin to UMA in the restore from previous crash bubble.">
         Help make Google Chrome better by sending crash reports and <ph name="UMA_LINK">$1<ex>usage statistics</ex></ph> to Google
       </message>
-      <if expr="not chromeos_ash">
+      <if expr="not is_chromeos">
         <!-- Browser Window Title Format -->
         <message name="IDS_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in tabs and popup windows">
           <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Google Chrome
         </message>
       </if>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <!-- Browser Window Title Format -->
         <message name="IDS_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in tabbed browser windows">
           Chrome - <ph name="PAGE_TITLE">$1<ex>Google</ex></ph>
@@ -425,7 +425,7 @@ chromium_strings.grd. -->
       <message name="IDS_ABOUT_VERSION_COPYRIGHT" desc="Copyright information on the about pages">
         Copyright <ph name="YEAR">{0,date,y}<ex>2016</ex></ph> Google LLC. All rights reserved.
       </message>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <if expr="reven">
           <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS Flex.">
             ChromeOS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
@@ -528,7 +528,7 @@ Google Chrome cannot read and write to its data directory:
 
 <ph name="USER_DATA_DIRECTORY">$1<ex>C:\Documents and Settings\devint\Local Settings\Application Data\Google\Chrome</ex></ph>
       </message>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <if expr="reven">
           <message name="IDS_EULA_CHECKBOX_ENABLE_LOGGING" desc="The label of the checkbox to enable/disable crash and user metrics logging on EULA screen.">
             Optional: Help improve ChromeOS Flex features and performance by automatically sending diagnostic and usage data to Google.
@@ -664,9 +664,6 @@ Google Chrome is unable to recover your settings.
       </if>
       <message name="IDS_DEFAULT_BROWSER_INFOBAR_TEXT" desc="Text to show in an infobar when Google Chrome is not the current default browser.">
         Google Chrome isn't your default browser
-      </message>
-      <message name="IDS_DEFAULT_BROWSER_INFOBAR_REFRESH_TEXT" desc="Text to show in an infobar when Google Chrome is not the current default browser.">
-        Google recommends setting Chrome as default
       </message>
       <!-- Download Bubble Items -->
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_UNKNOWN_SOURCE"
@@ -893,7 +890,7 @@ Google Chrome is unable to recover your settings.
         &amp;Open in Chrome
       </message>
 
-      <if expr="use_titlecase and not chromeos_ash">
+      <if expr="use_titlecase and not is_chromeos">
         <message name="IDS_ABOUT" desc="In Title Case: The text label of the About Chrome menu item">
           About &amp;Google Chrome
         </message>
@@ -901,7 +898,7 @@ Google Chrome is unable to recover your settings.
           Relaunch to Update &amp;Chrome
         </message>
       </if>
-      <if expr="not use_titlecase and not chromeos_ash">
+      <if expr="not use_titlecase and not is_chromeos">
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
           About &amp;Google Chrome
         </message>
@@ -909,7 +906,7 @@ Google Chrome is unable to recover your settings.
           Relaunch to update &amp;Chrome
         </message>
       </if>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
           About &amp;Google Chrome
         </message>
@@ -952,7 +949,7 @@ Google Chrome is unable to recover your settings.
       </message>
 
       <!-- One click sign-in infobar -->
-      <if expr="not chromeos_ash">
+      <if expr="not is_chromeos">
         <message name="IDS_SYNC_WRONG_EMAIL" desc="Message shown when sync setup failed due to the user entering the wrong email address for sign-in.">
           You were signed in to Chrome as <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph>. Please use the same account to sign in again.
         </message>
@@ -1032,7 +1029,7 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- about:browser-switch strings -->
-      <if expr="toolkit_views and not chromeos_ash">
+      <if expr="toolkit_views and not is_chromeos">
         <message name="IDS_ABOUT_BROWSER_SWITCH_DESCRIPTION_UNKNOWN_BROWSER" desc="Description shown while waiting for an alternative browser to open, when the browser name is not auto-detected">
           Your system administrator has configured Google Chrome to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME">$1<ex>example.com</ex></ph>.
         </message>
@@ -1047,7 +1044,7 @@ Google Chrome is unable to recover your settings.
       </message>
 
       <!-- Signin Email Confirmation tab modal dialog -->
-      <if expr="not chromeos_ash">
+      <if expr="not is_chromeos">
         <message name="IDS_SIGNIN_EMAIL_CONFIRMATION_TITLE" desc="Title of the signin email confirmation tab modal dialog.">
           <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph> was previously using Chrome
         </message>
@@ -1076,7 +1073,7 @@ Google Chrome is unable to recover your settings.
           Use Chrome Without an Account
         </message>
       </if>
-      <if expr="not chromeos_ash and not is_android">
+      <if expr="not is_chromeos and not is_android">
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE" desc="Title of the web signin interception bubble">
           Continue in a new Chrome profile?
         </message>
@@ -1152,11 +1149,6 @@ Google Chrome is unable to recover your settings.
           Chrome account requires re-authentication
         </message>
 
-         <message name="IDS_SIGNIN_CONTINUE_AS_BUTTON_ACCESSIBILITY_LABEL"
-          desc="Label of the 'Continue as' button of Chrome Signin promos. Spoken by screen readers when the button is focused.">
-          Sign in to Chrome as <ph name="USER_EMAIL">$1<ex>john@google.com</ex></ph>
-        </message>
-
         <!-- Autofill Sign In Promo Bubble -->
         <message name="IDS_AUTOFILL_SIGNIN_PROMO_SUBTITLE_PASSWORD"  desc="This is the body text of a confirmation message and means that the password was only saved locally to the user's device (not in their Google Account). It appears when the user is not signed in to Chrome and is after the 'Password saved to this device' string. If the user wants to save this data to their Google Account, they can click the 'Sign in to Chrome' button at the bottom of this message. The tone should be motivating.">
           To get your passwords and more on all your devices, sign in to Chrome. This password will be saved in your Google Account after you sign in.
@@ -1166,7 +1158,7 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
 
-      <if expr="not chromeos_ash and not is_android">
+      <if expr="not is_chromeos and not is_android">
         <!-- Profile Customization Web UI -->
         <message name="IDS_PROFILE_CUSTOMIZATION_TEXT" desc="Text of the profile customization bubble">
           Customize your new Chrome profile
@@ -1177,7 +1169,7 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- Sync/sign-in error messages -->
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <if expr="reven">
           <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for ChromeOS Flex Secondary Accounts.">
             ChromeOS Flex System
@@ -1254,7 +1246,7 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- App list -->
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_APP_LIST_EXTENSIONS_UNINSTALL" desc="Title text for the context menu item of a non-platform-app app list item that removes the app.">
           Remove from Chrome...
         </message>
@@ -1281,7 +1273,7 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- ChromeOS OOBE Terms of Service screen-->
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <if expr="reven">
           <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
             <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google ChromeOS Flex Terms.
@@ -1338,7 +1330,7 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- Material Design User Manager -->
-      <if expr="not is_android and not chromeos_ash">
+      <if expr="not is_android and not is_chromeos">
         <!-- User pod remove sync warning text -->
         <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_SYNC" desc="Main text shown as a warning when attempting to remove an user.">
           This person's browsing data will be deleted from this device. To recover the data, sign in to Chrome as <ph name="USER_EMAIL">$2<ex>foo@example.com</ex></ph>.
@@ -1640,7 +1632,7 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- Update Recommended dialog -->
-      <if expr="not chromeos_ash">
+      <if expr="not is_chromeos">
         <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE" desc="The window title for the Update Recommended dialog.">
           Relaunch Chrome
         </message>
@@ -1654,7 +1646,7 @@ Google Chrome is unable to recover your settings.
           Relaunch
         </message>
       </if>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <if expr="reven">
           <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE" desc="The window title for the Update Recommended dialog.">
             Restart ChromeOS Flex
@@ -2089,7 +2081,7 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- OOBE -->
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_INSTALLING_UPDATE" desc="Label shown on the updates installation screen during OOBE">
           Please wait while Chrome installs the latest system updates.
         </message>
@@ -2106,7 +2098,7 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- Welcome page (chrome://welcome) strings -->
-      <if expr="not chromeos_ash">
+      <if expr="not is_chromeos">
         <message name="IDS_WELCOME_HEADER" desc="A message which will appear as the header on the Welcome UI if the user has never run Chrome before.">
           Welcome to Chrome
         </message>
@@ -2120,7 +2112,7 @@ Google Chrome is unable to recover your settings.
       </if>
       <!-- Relaunch notification bubble and dialog. -->
       <if expr="not is_android">
-        <if expr="not chromeos_ash">
+        <if expr="not is_chromeos">
           <message name="IDS_RELAUNCH_RECOMMENDED_TITLE" desc="The title of a dialog that tells users that a browser relaunch is recommended for an update available for some number of days.">
             {0, plural,
               =0 {A Chrome update is available}
@@ -2164,7 +2156,7 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- Chrome launch blocking dialog. -->
-      <if expr="not is_android and not chromeos_ash">
+      <if expr="not is_android and not is_chromeos">
         <message name="IDS_ENTERPRISE_STARTUP_CLOUD_POLICY_ENROLLMENT_TOOLTIP" desc="The information message of Chrome launch blocking dialog for machine level user cloud policy enrollment.">
           Launching Chrome...
         </message>
@@ -2240,7 +2232,7 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
 
-      <if expr="not chromeos_ash and not is_android">
+      <if expr="not is_chromeos and not is_android">
         <!-- Enterprise profile welcome screen -->
         <message name="IDS_ENTERPRISE_WELCOME_PROFILE_INFORMATION_DETAILS" desc="Paragraph disclaiming to the user what their organization can do with their profile information.">
           Your organization can see and manage browsing data, such as your bookmarks, history, and passwords. It can't see browsing data in personal Chrome profiles.
@@ -2338,7 +2330,7 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- Strings for full restore notifications -->
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <if expr="reven">
           <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
             ChromeOS Flex system

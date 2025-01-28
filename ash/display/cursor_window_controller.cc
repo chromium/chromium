@@ -24,6 +24,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -50,58 +51,12 @@ namespace ash {
 
 namespace {
 
-SkBitmap GetColorAdjustedBitmap(const gfx::ImageSkiaRep& image_rep,
-                                SkColor cursor_color) {
-  const SkBitmap& bitmap = image_rep.GetBitmap();
-  // Recolor the black and greyscale parts of the image based on
-  // cursor_color_. Do not recolor pure white or tinted portions of the image,
-  // this ensures we do not impact the colored portions of cursors or the
-  // transition between the colored portion and white outline.
-  // TODO(crbug.com/40693635): Programmatically find a way to recolor the white
-  // parts in order to draw a black outline, but without impacting cursors
-  // like noDrop which contained tinted portions. Or, add new assets with
-  // black and white inverted for easier re-coloring.
-  SkBitmap recolored;
-  recolored.allocN32Pixels(bitmap.width(), bitmap.height());
-  recolored.eraseARGB(0, 0, 0, 0);
-  SkCanvas canvas(recolored);
-  canvas.drawImage(bitmap.asImage(), 0, 0);
-  color_utils::HSL cursor_hsl;
-  color_utils::SkColorToHSL(cursor_color, &cursor_hsl);
-  for (int y = 0; y < bitmap.height(); ++y) {
-    for (int x = 0; x < bitmap.width(); ++x) {
-      const SkColor color = bitmap.getColor(x, y);
-      // If the alpha is lower than 1, it's transparent, skip it.
-      if (SkColorGetA(color) < 1) {
-        continue;
-      }
-      // Convert to HSL: We want to change the hue and saturation, and
-      // map the lightness from 0-100 to cursor_hsl.l-100. This means that
-      // things which were black (l=0) become the cursor color lightness, and
-      // things which were white (l=100) stay white.
-      color_utils::HSL hsl;
-      color_utils::SkColorToHSL(color, &hsl);
-      // If it has color, do not change it.
-      if (hsl.s > 0.01) {
-        continue;
-      }
-      color_utils::HSL result;
-      result.h = cursor_hsl.h;
-      result.s = cursor_hsl.s;
-      result.l = hsl.l * (1 - cursor_hsl.l) + cursor_hsl.l;
-      SkPaint paint;
-      paint.setColor(color_utils::HSLToSkColor(result, SkColorGetA(color)));
-      canvas.drawRect(SkRect::MakeXYWH(x, y, 1, 1), paint);
-    }
-  }
-  return recolored;
-}
-
 std::vector<gfx::ImageSkia> GetCursorImages(
     ui::CursorSize cursor_size,
     ui::mojom::CursorType type,
     int target_cursor_size_in_dip,
     float dsf,
+    SkColor cursor_color,
     gfx::Point* out_hotspot_in_physical_pixels) {
   std::vector<gfx::ImageSkia> images;
   // Rotation is handled in viz (for aura::Window based cursor)
@@ -112,7 +67,7 @@ std::vector<gfx::ImageSkia> GetCursorImages(
       cursor_size == ui::CursorSize::kLarge
           ? std::make_optional(target_cursor_size_in_dip * dsf)
           : std::nullopt,
-      display::Display::ROTATE_0);
+      display::Display::ROTATE_0, cursor_color);
   if (!cursor_data) {
     return images;
   }
@@ -122,29 +77,6 @@ std::vector<gfx::ImageSkia> GetCursorImages(
   }
   return images;
 }
-
-// The ImageSkiaSource that translate the color of the cursor.
-class CursorImageSource : public gfx::ImageSkiaSource {
- public:
-  CursorImageSource(gfx::ImageSkia& image_skia, SkColor cursor_color)
-      : image_skia_(image_skia), cursor_color_(cursor_color) {
-    DCHECK_NE(cursor_color_, kDefaultCursorColor);
-  }
-  CursorImageSource(const CursorImageSource&) = delete;
-  CursorImageSource& operator=(const CursorImageSource&) = delete;
-  ~CursorImageSource() override = default;
-
-  // gfx::ImageSkiaSource:
-  gfx::ImageSkiaRep GetImageForScale(float scale) override {
-    const gfx::ImageSkiaRep& rep = image_skia_.GetRepresentation(scale);
-    return gfx::ImageSkiaRep(GetColorAdjustedBitmap(rep, cursor_color_),
-                             rep.scale());
-  }
-
- private:
-  gfx::ImageSkia image_skia_;
-  SkColor cursor_color_;
-};
 
 }  // namespace
 
@@ -318,9 +250,6 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
   }
 
   if (shell->fullscreen_magnifier_controller()->IsEnabled())
-    return true;
-
-  if (cursor_color_ != kDefaultCursorColor)
     return true;
 
   PrefService* prefs = shell->session_controller()->GetActivePrefService();
@@ -570,7 +499,8 @@ void CursorWindowController::UpdateCursorImage() {
             (4 - static_cast<int>(display_.rotation())) % 4);
     wm::ScaleAndRotateCursorBitmapAndHotpoint(1.0f, inverted_rotation, &bitmap,
                                               &hotspot);
-    images.push_back(gfx::ImageSkia::CreateFromBitmap(bitmap, cursor_scale));
+    images.push_back(gfx::ImageSkia::CreateFromBitmap(
+        wm::GetColorAdjustedBitmap(bitmap, cursor_color_), cursor_scale));
     hot_point_in_physical_pixels = hotspot;
 
     // Use `gfx::ToFlooredPoint` as `ImageSkiaRep::GetWidth` is implemented as
@@ -599,20 +529,12 @@ void CursorWindowController::UpdateCursorImage() {
 
     images =
         GetCursorImages(cursor_size_, cursor_.type(), large_cursor_size_in_dip_,
-                        dsf, &hot_point_in_physical_pixels);
+                        dsf, cursor_color_, &hot_point_in_physical_pixels);
     if (images.empty()) {
       return;
     }
     hot_point_ = gfx::ToFlooredPoint(
         gfx::ConvertPointToDips(hot_point_in_physical_pixels, dsf));
-  }
-
-  if (cursor_color_ != kDefaultCursorColor) {
-    for (size_t i = 0; i < images.size(); ++i) {
-      images[i] = gfx::ImageSkia(
-          std::make_unique<CursorImageSource>(images[i], cursor_color_),
-          images[i].size());
-    }
   }
 
   delegate_->SetCursorImage(images[0].size(), images);

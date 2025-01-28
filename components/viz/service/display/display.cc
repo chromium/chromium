@@ -249,9 +249,6 @@ Display::Display(
   }
 #endif
 
-  occlusion_culler_ = std::make_unique<OcclusionCuller>(
-      overlay_processor_.get(), settings_.occlusion_culler_settings);
-
   if (scheduler_)
     scheduler_->SetClient(this);
 }
@@ -321,6 +318,10 @@ void Display::Initialize(DisplayClient* client,
 
   damage_tracker_ = std::make_unique<DisplayDamageTracker>(surface_manager_,
                                                            aggregator_.get());
+  occlusion_culler_ = std::make_unique<OcclusionCuller>(
+      overlay_processor_.get(), resource_provider_.get(),
+      settings_.occlusion_culler_settings);
+
   if (scheduler_)
     scheduler_->SetDamageTracker(damage_tracker_.get());
 

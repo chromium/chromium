@@ -161,7 +161,7 @@ suite('acceleratorEditDialogTest', function() {
     // The "Add Shortcut" button should be visible and the pending accelerator
     // should not be visible.
     const buttonContainer =
-        dialog!.querySelector<HTMLDivElement>('#addAcceleratorContainer');
+        dialog!.querySelector<HTMLElement>('#addAcceleratorContainer');
     assertTrue(!!buttonContainer);
     assertFalse(buttonContainer!.hidden);
     let pendingAccelerator: AcceleratorEditViewElement|null =
@@ -389,7 +389,7 @@ suite('acceleratorEditDialogTest', function() {
 
     // Verify that the add button and restore button are hidden.
     let addButtonContainer =
-        dialog!.querySelector<HTMLDivElement>('#addAcceleratorContainer');
+        dialog!.querySelector<HTMLElement>('#addAcceleratorContainer');
     assertTrue(!!addButtonContainer);
 
     restoreDefaultButton =
@@ -414,7 +414,7 @@ suite('acceleratorEditDialogTest', function() {
 
     // Verify that the add button and restore button are shown.
     addButtonContainer =
-        dialog!.querySelector<HTMLDivElement>('#addAcceleratorContainer');
+        dialog!.querySelector<HTMLElement>('#addAcceleratorContainer');
     assertTrue(!!addButtonContainer);
 
     restoreDefaultButton =
@@ -645,11 +645,11 @@ suite('acceleratorEditDialogTest', function() {
 
     // Expect maxAccelsReachedHint is hidden and addButton is visible.
     const maxAccelReachedHint =
-        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+        viewElement!.shadowRoot!.querySelector<HTMLElement>(
             '#maxAcceleratorsReached');
     assertTrue(!!maxAccelReachedHint);
     const addButtonContainer =
-        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+        viewElement!.shadowRoot!.querySelector<HTMLElement>(
             '#addAcceleratorContainer');
     assertTrue(!!addButtonContainer);
     assertTrue(maxAccelReachedHint.hidden);
@@ -701,11 +701,11 @@ suite('acceleratorEditDialogTest', function() {
 
     // Expect maxAccelsReachedHint is visible and addButton is hidden.
     const maxAccelReachedHint =
-        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+        viewElement!.shadowRoot!.querySelector<HTMLElement>(
             '#maxAcceleratorsReached');
     assertTrue(!!maxAccelReachedHint);
     const addButtonContainer =
-        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+        viewElement!.shadowRoot!.querySelector<HTMLElement>(
             '#addAcceleratorContainer');
     assertTrue(!!addButtonContainer);
     assertFalse(maxAccelReachedHint.hidden);
@@ -758,11 +758,11 @@ suite('acceleratorEditDialogTest', function() {
 
     // Expect maxAccelsReachedHint is not visible and addButton is visible.
     const maxAccelReachedHint =
-        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+        viewElement!.shadowRoot!.querySelector<HTMLElement>(
             '#maxAcceleratorsReached');
     assertTrue(!!maxAccelReachedHint);
     const addButtonContainer =
-        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+        viewElement!.shadowRoot!.querySelector<HTMLElement>(
             '#addAcceleratorContainer');
     assertTrue(!!addButtonContainer);
     assertTrue(maxAccelReachedHint.hidden);
@@ -787,7 +787,7 @@ suite('acceleratorEditDialogTest', function() {
     assertTrue(dialog.open);
 
     let noShortcutAssigned =
-        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+        viewElement!.shadowRoot!.querySelector<HTMLElement>(
             '#noShortcutAssigned');
 
     // Expect "No shortcut assigned" message is shown when there's no enabled
@@ -805,7 +805,7 @@ suite('acceleratorEditDialogTest', function() {
 
     // Expect "No shortcut assigned" message is not displayed when ViewState
     // becomes ADD.
-    noShortcutAssigned = viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+    noShortcutAssigned = viewElement!.shadowRoot!.querySelector<HTMLElement>(
         '#noShortcutAssigned');
     assertFalse(!!noShortcutAssigned);
   });
@@ -835,7 +835,7 @@ suite('acceleratorEditDialogTest', function() {
     assertTrue(dialog.open);
 
     const addButtonContainer =
-        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+        viewElement!.shadowRoot!.querySelector<HTMLElement>(
             '#addAcceleratorContainer');
     assertTrue(!!addButtonContainer);
     const restoreButton =
@@ -964,11 +964,11 @@ suite('acceleratorEditDialogTest', function() {
 
     // Expect maxAccelsReachedHint is visible and addButton is hidden.
     const maxAccelReachedHint =
-        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+        viewElement!.shadowRoot!.querySelector<HTMLElement>(
             '#maxAcceleratorsReached');
     assertTrue(!!maxAccelReachedHint);
     const addButtonContainer =
-        viewElement!.shadowRoot!.querySelector<HTMLDivElement>(
+        viewElement!.shadowRoot!.querySelector<HTMLElement>(
             '#addAcceleratorContainer');
     assertTrue(!!addButtonContainer);
     assertTrue(maxAccelReachedHint.hidden);

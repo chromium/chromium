@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -83,7 +84,7 @@ class EditorPanelManagerDelegateForTesting
  public:
   EditorPanelManagerDelegateForTesting(
       EditorOpportunityMode opportunity_mode,
-      ConsentStatus consent_status,
+      chromeos::editor_menu::EditorConsentStatus consent_status,
       const std::vector<EditorBlockedReason>& blocked_reasons)
       : opportunity_mode_(opportunity_mode),
         consent_status_(consent_status),
@@ -115,11 +116,13 @@ class EditorPanelManagerDelegateForTesting
     return chromeos::editor_menu::EditorTextSelectionMode::kNoSelection;
   }
 
-  ConsentStatus GetConsentStatus() const override { return consent_status_; }
+  chromeos::editor_menu::EditorConsentStatus GetConsentStatus() const override {
+    return consent_status_;
+  }
 
  private:
   EditorOpportunityMode opportunity_mode_;
-  ConsentStatus consent_status_;
+  chromeos::editor_menu::EditorConsentStatus consent_status_;
   std::vector<EditorBlockedReason> blocked_reasons_;
   FakeSystem system_;
   FakeContextObserver context_observer_;
@@ -140,7 +143,8 @@ class EditorPanelManagerTest : public testing::Test {
 TEST_F(EditorPanelManagerTest,
        EditorPanelContextCallbackShouldReturnConsentStatusSettled) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kWrite, ConsentStatus::kApproved, {});
+      EditorOpportunityMode::kWrite,
+      chromeos::editor_menu::EditorConsentStatus::kApproved, {});
   EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   FakeEditorClient fake_editor_client;
 
@@ -161,7 +165,8 @@ TEST_F(EditorPanelManagerTest,
 TEST_F(EditorPanelManagerTest,
        GetEditorPanelContextCallbackShouldNotReturnConsentStatusSettled) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kWrite, ConsentStatus::kUnset, {});
+      EditorOpportunityMode::kWrite,
+      chromeos::editor_menu::EditorConsentStatus::kUnset, {});
   EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   FakeEditorClient fake_editor_client;
 
@@ -181,7 +186,8 @@ TEST_F(EditorPanelManagerTest,
 
 TEST_F(EditorPanelManagerTest, LogMetricsInWriteMode) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kWrite, ConsentStatus::kApproved, {});
+      EditorOpportunityMode::kWrite,
+      chromeos::editor_menu::EditorConsentStatus::kApproved, {});
   EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
 
   base::HistogramTester histogram_tester;
@@ -197,7 +203,8 @@ TEST_F(EditorPanelManagerTest, LogMetricsInWriteMode) {
 
 TEST_F(EditorPanelManagerTest, LogMetricsInRewriteMode) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kRewrite, ConsentStatus::kApproved, {});
+      EditorOpportunityMode::kRewrite,
+      chromeos::editor_menu::EditorConsentStatus::kApproved, {});
   EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   base::HistogramTester histogram_tester;
 
@@ -212,7 +219,8 @@ TEST_F(EditorPanelManagerTest, LogMetricsInRewriteMode) {
 
 TEST_F(EditorPanelManagerTest, LogMetricsInBlockedWriteMode) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kWrite, ConsentStatus::kDeclined,
+      EditorOpportunityMode::kWrite,
+      chromeos::editor_menu::EditorConsentStatus::kDeclined,
       {
           EditorBlockedReason::kBlockedByConsent,
           EditorBlockedReason::kBlockedByInvalidFormFactor,
@@ -247,7 +255,8 @@ TEST_F(EditorPanelManagerTest, LogMetricsInBlockedWriteMode) {
 
 TEST_F(EditorPanelManagerTest, LogMetricsInBlockedMode) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kRewrite, ConsentStatus::kApproved,
+      EditorOpportunityMode::kRewrite,
+      chromeos::editor_menu::EditorConsentStatus::kApproved,
       {
           EditorBlockedReason::kBlockedByApp,
           EditorBlockedReason::kBlockedByInputMethod,
@@ -275,7 +284,8 @@ TEST_F(EditorPanelManagerTest, LogMetricsInBlockedMode) {
 
 TEST_F(EditorPanelManagerTest, LogMetricWhenPromoCardIsExplicitlyDismissed) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kRewrite, ConsentStatus::kUnset, {});
+      EditorOpportunityMode::kRewrite,
+      chromeos::editor_menu::EditorConsentStatus::kUnset, {});
   EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   base::HistogramTester histogram_tester;
 
@@ -288,7 +298,8 @@ TEST_F(EditorPanelManagerTest, LogMetricWhenPromoCardIsExplicitlyDismissed) {
 
 TEST_F(EditorPanelManagerTest, LogMetricWhenPromoCardIsShown) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
-      EditorOpportunityMode::kWrite, ConsentStatus::kUnset, {});
+      EditorOpportunityMode::kWrite,
+      chromeos::editor_menu::EditorConsentStatus::kUnset, {});
   EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   base::HistogramTester histogram_tester;
 

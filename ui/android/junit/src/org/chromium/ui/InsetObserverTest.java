@@ -7,6 +7,8 @@ package org.chromium.ui;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -111,17 +113,18 @@ public class InsetObserverTest {
     @SmallTest
     public void applyInsets_NotifiesObservers() {
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
-        verify(mObserver, times(1)).onInsetChanged(1, 1, 1, 1);
+        verify(mObserver, times(1)).onInsetChanged();
 
         // Apply the insets a second time; the observer should not be notified.
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
-        verify(mObserver, times(1)).onInsetChanged(1, 1, 1, 1);
+        verify(mObserver, times(1)).onInsetChanged();
 
+        clearInvocations(mObserver);
         doReturn(Insets.of(1, 1, 1, 2))
                 .when(mInsets)
                 .getInsets(WindowInsetsCompat.Type.systemBars());
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
-        verify(mObserver).onInsetChanged(1, 1, 1, 2);
+        verify(mObserver).onInsetChanged();
     }
 
     @Test
@@ -136,7 +139,23 @@ public class InsetObserverTest {
 
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mInsetsConsumer1).onApplyWindowInsets(mContentView, mInsets);
-        verify(mObserver, times(1)).onInsetChanged(14, 17, 31, 43);
+        verify(mObserver, times(1)).onInsetChanged();
+    }
+
+    /** Test that consumed insets do not trigger observers. */
+    @Test
+    @SmallTest
+    public void applyInsets_retriggerOnApplyWindowInsets() {
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
+        verify(mObserver, times(1)).onInsetChanged();
+
+        doReturn(mModifiedInsets).when(mInsetsConsumer1).onApplyWindowInsets(mContentView, mInsets);
+        doReturn(Insets.NONE).when(mModifiedInsets).getInsets(anyInt());
+        mInsetObserver.addInsetsConsumer(mInsetsConsumer1, InsetConsumerSource.TEST_SOURCE);
+        mInsetObserver.retriggerOnApplyWindowInsets();
+
+        // Observer should be notified by the consumer change.
+        verify(mObserver, times(2)).onInsetChanged();
     }
 
     @Test

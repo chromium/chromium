@@ -1168,7 +1168,7 @@ suite('<settings-device-page>', () => {
         await flushTasks();
 
         const fallbackMessageSection =
-            audioPage.shadowRoot!.querySelector<HTMLDivElement>(
+            audioPage.shadowRoot!.querySelector<HTMLElement>(
                 '#voiceIsolationEffectFallbackMessageSection');
         assertTrue(!!fallbackMessageSection);
 
@@ -1562,7 +1562,7 @@ suite('<settings-device-page>', () => {
           spatialAudioSupportedAudioSystemProperties);
 
       const spatialAudioSubsection =
-          audioPage.shadowRoot!.querySelector<HTMLDivElement>(
+          audioPage.shadowRoot!.querySelector<HTMLElement>(
               '#audioOutputSpatialAudioSubsection');
       const activeDevice = crosAudioConfig.getDeviceByIdForTesting(
           fakeCrosAudioConfig.fakeSpeakerActive.id);
@@ -1587,7 +1587,7 @@ suite('<settings-device-page>', () => {
           spatialAudioSupportedAudioSystemProperties);
 
       const spatialAudioSubsection =
-          audioPage.shadowRoot!.querySelector<HTMLDivElement>(
+          audioPage.shadowRoot!.querySelector<HTMLElement>(
               '#audioOutputSpatialAudioSubsection');
       const spatialAudioToggle =
           audioPage.shadowRoot!.querySelector<CrToggleElement>(

@@ -21,7 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/lobster/lobster_service.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
@@ -39,6 +38,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -51,13 +51,18 @@ namespace chromeos::editor_menu {
 
 namespace {
 
-gfx::Rect CalculateCaretBounds() {
+ui::TextInputClient* GetCurrentTextInputClient() {
   const ui::InputMethod* input_method =
       ash::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
-  if (input_method && input_method->GetTextInputClient()) {
-    return input_method->GetTextInputClient()->GetCaretBounds();
-  }
-  return gfx::Rect();
+
+  return input_method != nullptr ? input_method->GetTextInputClient() : nullptr;
+}
+
+gfx::Rect CalculateCaretBounds() {
+  ui::TextInputClient* text_input_client = GetCurrentTextInputClient();
+
+  return text_input_client != nullptr ? text_input_client->GetCaretBounds()
+                                      : gfx::Rect();
 }
 
 std::unique_ptr<LobsterManager> CreateLobsterManager() {
@@ -68,9 +73,14 @@ std::unique_ptr<LobsterManager> CreateLobsterManager() {
     return nullptr;
   }
 
+  ui::TextInputClient* current_text_input_client = GetCurrentTextInputClient();
+
   std::unique_ptr<ash::LobsterController::Trigger> lobster_trigger =
-      lobster_controller->CreateTrigger(ash::LobsterEntryPoint::kRightClickMenu,
-                                        true, CalculateCaretBounds());
+      lobster_controller->CreateTrigger(
+          ash::LobsterEntryPoint::kRightClickMenu,
+          /*can_support_image_insertion=*/current_text_input_client != nullptr &&
+              current_text_input_client->CanInsertImage(),
+          CalculateCaretBounds());
 
   if (!lobster_trigger) {
     return nullptr;

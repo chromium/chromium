@@ -28,7 +28,7 @@
 import {KeyCode} from '/common/key_code.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {Command} from './command.js';
+import type {Command} from './command.js';
 
 export interface KeyBinding {
   command: Command;

@@ -272,6 +272,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">មិនអាច​កំណត់កូដ "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" នៅក្នុង​វចនានុក្រម​តែមួយ​ជាមួយកូដ "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" បានទេ</translation>
 <translation id="1455413310270022028">ជ័រលុប</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{មើលមតិវាយតម្លៃ 0}=1{មើល​មតិវាយតម្លៃ 1}other{មើល​មតិវាយតម្លៃទាំង #}}</translation>
 <translation id="1458059624921545588">មនុស្ស និង​សង្គម</translation>
 <translation id="1458140305240870199">ខោអាវ​ទ្រនាប់</translation>
 <translation id="1459693405370120464">អាកាសធាតុ</translation>
@@ -964,6 +965,7 @@
 <translation id="2674170444375937751">តើអ្នកប្រាកដថាចង់លុបទំព័រទាំងនេះចេញពីប្រវត្តិរបស់អ្នកឬទេ?</translation>
 <translation id="2674524144218093528">ការលាប និងកែលម្អ​ផ្ទះ</translation>
 <translation id="2674804415323431591">លាក់​ការ​ណែនាំ</translation>
+<translation id="26774279487328902">មិនអាចប្រើក្រុមផ្ទាំង <ph name="GROUP_COUNT" /> បានទៀតទេ</translation>
 <translation id="2677748264148917807">ចាកចេញ</translation>
 <translation id="2683195745483370038">បាន​រក​ឃើញ​លទ្ធផលផ្សេងទៀត</translation>
 <translation id="2686919536310834199">ផ្ញើមតិកែលម្អសម្រាប់ "ជួយខ្ញុំក្នុងការសរសេរ"។</translation>
@@ -1959,6 +1961,7 @@
 <translation id="4407758156081352648">ដើម្បីរក្សាសុវត្ថិភាព ស្ថាប័នរបស់អ្នកមិនអនុញ្ញាតឱ្យប្រើពាក្យ​សម្ងាត់ឡើងវិញនៅក្នុង Chrome ទេ។ ពាក្យ​សម្ងាត់នៅក្នុង Chrome ត្រូវបានអ៊ីនគ្រីប ដើម្បីការពារឯកជនភាពរបស់អ្នកប្រើប្រាស់។</translation>
 <translation id="4408413947728134509">ខូគី <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">ការកំណត់​រចនាសម្ព័ន្ធ​នេះ​ត្រូ​វបាន​សម្គាល់ថា​អាច​ដំឡើង​បាន ប៉ុន្តែ​មិនមាន​រូបភាពដែល​ត្រូវ​បាន​ផ្ដល់​ឱ្យ​សម្រាប់​ស្ថាបត្យកម្ម​នេះ​ទេ ដូច្នេះ​​មិន​អាច​ដំឡើង​វា​បាន​ទេ។</translation>
+<translation id="4412377069090572315">អ្វីដែលគេកំពុងនិយាយ</translation>
 <translation id="4414452699610169758">ប្រើកម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់ និងមុខងារបំពេញស្វ័យប្រវត្តិរបស់ Chrome ដើម្បីរក្សាទុក និងបំពេញពាក្យ​សម្ងាត់ វិធីបង់ប្រាក់ និងអាសយដ្ឋាន</translation>
 <translation id="4414515549596849729">ទិន្នន័យ​គេហទំព័រ និងខូគី</translation>
 <translation id="4415156962929755728">ប្លាស្ទិក (រលោងខ្លាំង)</translation>
@@ -2268,6 +2271,7 @@
 <translation id="5001526427543320409">ខូគី​ភាគីទីបី</translation>
 <translation id="5002932099480077015">បើបើកដំណើរការ នោះ Chrome នឹងផ្ទុកច្បាប់ចម្លងកាតរបស់អ្នកនៅលើឧបករណ៍នេះសម្រាប់ការបំពេញសំណុំបែបបទលឿនជាងមុន។</translation>
 <translation id="5007392906805964215">ពិនិត្យមើល</translation>
+<translation id="500790844453430087">មិនអាចប្រើក្រុមផ្ទាំង "<ph name="GROUP_TITLE_1" />" និង "<ph name="GROUP_TITLE_2" />" "បានទៀតទេ</translation>
 <translation id="5011561501798487822">ភាសាដែលបានសម្គាល់</translation>
 <translation id="5015510746216210676">ឈ្មោះ​ម៉ាស៊ីន​៖</translation>
 <translation id="5017554619425969104">ពាក្យដែល​អ្នកបាន​ចម្លង</translation>
@@ -2375,6 +2379,7 @@
 <translation id="519422657042045905">មិនមាន​ចំណារទេ</translation>
 <translation id="5200063972779787617">រក្សាទុក​អាសយដ្ឋាន​នៅក្នុង​គណនី</translation>
 <translation id="5201306358585911203">ទំព័របង្កប់​នៅលើ​ទំព័រ​នេះ​និយាយ​ថា</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab ដើម្បី​រុករក​សកម្មភាព​ដែលអាចធ្វើបាន រួច​ចុច Enter ដើម្បី​ប្រតិបត្តិ​សកម្មភាព​ដែល​បាន​ជ្រើសរើស។</translation>
 <translation id="5205222826937269299">តម្រូវឲ្យមានឈ្មោះ</translation>
 <translation id="5206392433295093945">បន្ទប់គេង</translation>
 <translation id="5209670883520018268">ទម្រទី 20</translation>
@@ -2740,6 +2745,7 @@
 <translation id="5866898949289125849">អ្នកកំពុងមើល​ទំព័រឧបករណ៍​របស់​អ្នកអភិវឌ្ឍន៍</translation>
 <translation id="5869405914158311789">គេហទំព័រនេះមិនអាចចូលបានទេ</translation>
 <translation id="5869522115854928033">ពាក្យសម្ងាត់ដែលបានរក្សាទុក</translation>
+<translation id="5872215789867188990">មិនអាចប្រើក្រុមផ្ទាំង "<ph name="GROUP_TITLE" />" បានទៀតទេ</translation>
 <translation id="5872692522325383488">បាន​រក្សាទុក IBAN</translation>
 <translation id="5873297634595728366">យានជំនិះ​ប្រើម៉ាស៊ូត</translation>
 <translation id="5877359070305966420">ធនធាន​មនុស្ស</translation>
@@ -2781,6 +2787,7 @@
 <translation id="5937560539988385583">​បានបកប្រែទំព័រ</translation>
 <translation id="5938153366081463283">បញ្ចូល​កាតនិម្មិត</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">ព័ត៌មាននេះបានមកពីគេហទំព័រមតិវាយតម្លៃឯករាជ្យ ដូចជា Trustpilot, ScamAdviser, Google និងគេហទំព័រជាច្រើនទៀត។ សេចក្ដីសង្ខេបត្រូវបានបង្កើតដោយប្រើ AI។</translation>
 <translation id="5944297261866530437">ក្រណាត់ (រលោងខ្លាំង)</translation>
 <translation id="5950901984834744590">ឡាម និងឧបករណ៍កោរ</translation>
 <translation id="5951495562196540101">មិន​អាច​ចុះឈ្មោះ​ដោយប្រើគណនី​អ្នក​ប្រើប្រាស់​បានទេ (មាន​អាជ្ញាបណ្ណ​ពាក់ព័ន្ធ)។</translation>
@@ -3147,6 +3154,7 @@
 <translation id="6567832540451970450">អ្នកគ្រប់គ្រងរបស់អ្នកអនុញ្ញាតឱ្យប្រើ<ph name="PERMISSION" />សម្រាប់គេហទំព័រនេះ</translation>
 <translation id="6568793038316600992">ប៊ូតុង "គ្រប់គ្រងវិធីបង់ប្រាក់", បើកដំណើរការ ដើម្បីគ្រប់គ្រងព័ត៌មានអំពីកាតឥណទាន និងការទូទាត់ប្រាក់របស់អ្នក​នៅក្នុងការកំណត់ Chrome</translation>
 <translation id="6569060085658103619">អ្នក​កំពុងមើល​ទំព័រ​កម្មវិធី​បន្ថែម</translation>
+<translation id="6572867903637058088">តើ​វាមានប្រយោជន៍​ទេ?</translation>
 <translation id="6573200754375280815">ចោះ​ពីររន្ធ​ខាងស្ដាំ</translation>
 <translation id="6574762126505704998">បំពេញ</translation>
 <translation id="6575408526598156416">រក្សាទុកនៅក្នុងគណនី</translation>
@@ -4327,9 +4335,11 @@
 <translation id="8672535691554698269">បណ្ដាញ​កុំព្យូទ័រ</translation>
 <translation id="8675446170353411473">ឯកសាររបស់​អ្នក​កំពុងត្រូវបាន​បង្ហោះ​ទៅ <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">គ្មាន​ការ​ពន្យារពេល</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{បានលុបតារាង {COUNT}}other{បានលុបតារាង {COUNT}}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ចមើ្លយ៖ <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">គេហទំព័រនៅ <ph name="PAGE" /> មិនអាចដំណើរការបានទេពីព្រោះ៖</translation>
 <translation id="8682297334444610648">ហ្គេមដាយ​ណូស័រ, ចុច​ដើម្បីលេង</translation>
+<translation id="8685225035093721011">មតិវាយតម្លៃហាង</translation>
 <translation id="8686424632716064939">សុវត្ថិភាព​កុំព្យូទ័រ</translation>
 <translation id="8687278439622293018">ការបញ្ចូល <ph name="ENTRY_VOICEOVER" /> ត្រូវបានលុប</translation>
 <translation id="8687429322371626002">ឧបករណ៍ និងគណនី​របស់អ្នកស្ថិតក្រោមការគ្រប់គ្រង​របស់ <ph name="MANAGER" />។</translation>

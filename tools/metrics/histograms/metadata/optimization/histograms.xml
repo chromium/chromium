@@ -36,6 +36,7 @@ chromium-metrics-reviews@google.com.
 <variants name="ModelExecutionFeature">
   <variant name="Compose" summary="Compose"/>
   <variant name="FormsAnnotations" summary="Forms Annotations"/>
+  <variant name="FormsClassifications" summary="Forms Classifications"/>
   <variant name="FormsPredictions" summary="Forms Predictions"/>
   <variant name="HistorySearch" summary="History Search"/>
   <variant name="PasswordChangeSubmission"
@@ -1375,7 +1376,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelHandler.HandlerCreated.{OptimizationTarget}"
-    enum="BooleanCreated" expires_after="2025-05-18">
+    enum="BooleanCreated" expires_after="2025-07-27">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1790,7 +1791,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded"
-    enum="BooleanSuccess" expires_after="2025-05-18">
+    enum="BooleanSuccess" expires_after="2025-07-27">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1963,7 +1964,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.PredictionModelStore.ModelRemovalReason.{OptimizationTarget}"
     enum="OptimizationGuidePredictionModelStoreModelRemovalReason"
-    expires_after="2025-05-18">
+    expires_after="2025-07-27">
   <owner>rajendrant@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

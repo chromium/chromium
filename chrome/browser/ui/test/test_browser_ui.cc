@@ -8,7 +8,6 @@
 #include "base/test/gtest_util.h"
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 

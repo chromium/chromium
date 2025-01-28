@@ -961,6 +961,7 @@
 <translation id="2674170444375937751">Желите ли стварно да избришете ове странице из историје?</translation>
 <translation id="2674524144218093528">Кречење и завршни радови</translation>
 <translation id="2674804415323431591">Сакријте предлоге</translation>
+<translation id="26774279487328902">Број група картица које више нису доступне је <ph name="GROUP_COUNT" /></translation>
 <translation id="2677748264148917807">Затвори</translation>
 <translation id="2683195745483370038">Пронађени су други резултати</translation>
 <translation id="2686919536310834199">Шаљите повратне информације за Помоћ при писању.</translation>
@@ -2264,6 +2265,7 @@
 <translation id="5001526427543320409">Колачићи треће стране</translation>
 <translation id="5002932099480077015">Ако је ова опција омогућена, Chrome ће складиштити копију картице на овом уређају ради бржег попуњавања образаца.</translation>
 <translation id="5007392906805964215">Прегледај</translation>
+<translation id="500790844453430087">Групе картица <ph name="GROUP_TITLE_1" /> и <ph name="GROUP_TITLE_2" /> више нису доступне</translation>
 <translation id="5011561501798487822">Откривени језик</translation>
 <translation id="5015510746216210676">Назив уређаја:</translation>
 <translation id="5017554619425969104">Текст који сте копирали</translation>
@@ -2736,6 +2738,7 @@
 <translation id="5866898949289125849">Прегледате страницу са алаткама за прогамере</translation>
 <translation id="5869405914158311789">Овај сајт није доступан</translation>
 <translation id="5869522115854928033">Сачуване лозинке</translation>
+<translation id="5872215789867188990"><ph name="GROUP_TITLE" /> група картица више није доступна</translation>
 <translation id="5872692522325383488">IBAN је сачуван</translation>
 <translation id="5873297634595728366">Дизел возила</translation>
 <translation id="5877359070305966420">Људски ресурси</translation>

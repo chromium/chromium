@@ -355,6 +355,7 @@
 <translation id="5648328599815354043">O Chrome vai além para proteger você on-line</translation>
 <translation id="565744775970812598">O arquivo <ph name="FILE_NAME" /> pode ser perigoso. Por isso, ele foi bloqueado pelo Chrome.</translation>
 <translation id="566568153320186256">O Chrome economiza energia da bateria limitando atividades em segundo plano e efeitos visuais, como rolagem suave e frame rates de vídeos. <ph name="BEGIN_LINK" />Saiba mais sobre a Economia de energia<ph name="END_LINK" /></translation>
+<translation id="567202749201779594">Limpar os dados do Chrome da sua conta</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Seu administrador pede que você reinicie o Chrome para que esta atualização seja feita.}=1{Seu administrador pede que você reinicie o Chrome para que esta atualização seja feita. Sua janela anônima não será aberta novamente.}one{Seu administrador pede que você reinicie o Chrome para que esta atualização seja feita. Sua janela anônima não será aberta novamente.}other{Seu administrador pede que você reinicie o Chrome para que esta atualização seja feita. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="5686916850681061684">Personalize e controle o Google Chrome. Algo precisa da sua atenção. Clique para ver mais detalhes.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -467,6 +468,7 @@
 <translation id="7024536598735240744">Erro ao descompactar: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalação interrompida.</translation>
 <translation id="7025800014283535195">Aqui, você pode alternar entre os perfis do Chrome</translation>
+<translation id="7031914411614877914">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="SETTINGS_LINK" /> exclua os dados do Chrome na sua conta.</translation>
 <translation id="7048502283602470098">Conheça a IA</translation>
 <translation id="7059914902409643750">Personalize o Chrome</translation>
 <translation id="7071827361006050863">O Chrome vai excluir os dados de navegação em breve</translation>

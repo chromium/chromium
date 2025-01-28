@@ -16,7 +16,6 @@
 #include "base/i18n/rtl.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/base_tracing.h"
@@ -2245,7 +2244,7 @@ bool Widget::ShouldDescendIntoChildForEventHandling(
   // Don't descend into |child| if there is a view with a Layer that contains
   // the point and is stacked above |child_layer|.
   auto child_layer_iter =
-      base::ranges::find(root_layer->children(), child_layer);
+      std::ranges::find(root_layer->children(), child_layer);
   if (child_layer_iter == root_layer->children().end()) {
     return true;
   }
@@ -2258,7 +2257,7 @@ bool Widget::ShouldDescendIntoChildForEventHandling(
     ui::Layer* layer = view->layer();
     DCHECK(layer);
     if (layer->visible() && layer->bounds().Contains(location)) {
-      auto root_layer_iter = base::ranges::find(root_layer->children(), layer);
+      auto root_layer_iter = std::ranges::find(root_layer->children(), layer);
       if (child_layer_iter > root_layer_iter) {
         // |child| is on top of the remaining layers, no need to continue.
         return true;

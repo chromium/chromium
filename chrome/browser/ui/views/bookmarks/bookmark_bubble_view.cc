@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"

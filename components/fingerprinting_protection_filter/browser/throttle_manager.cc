@@ -179,7 +179,7 @@ void ThrottleManager::MaybeAppendNavigationThrottles(
     if (parent_filter) {
       throttles->push_back(
           std::make_unique<FingerprintingProtectionChildNavigationThrottle>(
-              navigation_handle, parent_filter,
+              navigation_handle, parent_filter, is_incognito_,
               base::BindRepeating([](const GURL& url) {
                 return base::StringPrintf(
                     kDisallowChildFrameConsoleMessageFormat,

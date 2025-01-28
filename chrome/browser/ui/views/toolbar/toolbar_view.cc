@@ -1117,16 +1117,6 @@ void ToolbarView::UpdateTypeAndSeverity(
   }
   app_menu_button_->GetViewAccessibility().SetName(accname_app);
   app_menu_button_->SetTypeAndSeverity(type_and_severity);
-
-  if (base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh) &&
-      DefaultBrowserPromptManager::GetInstance()->get_show_app_menu_prompt()) {
-    // Anytime the default chip is eligible to be shown, log whether the prompt
-    // was actually shown. This helps us understand how often it is pre-empted.
-    base::UmaHistogramBoolean(
-        "DefaultBrowser.AppMenu.DefaultChipShown",
-        type_and_severity.type ==
-            AppMenuIconController::IconType::DEFAULT_BROWSER_PROMPT);
-  }
 }
 
 ExtensionsToolbarContainer* ToolbarView::GetExtensionsToolbarContainer() {

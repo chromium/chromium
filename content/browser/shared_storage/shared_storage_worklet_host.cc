@@ -1636,6 +1636,7 @@ SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
 
   std::optional<base::TimeDelta> timeout;
   if (PrivateAggregationManager::ShouldSendReportDeterministically(
+          PrivateAggregationCallerApi::kSharedStorage,
           private_aggregation_config->context_id,
           private_aggregation_config->filtering_id_max_bytes,
           /*max_contributions=*/std::nullopt)) {

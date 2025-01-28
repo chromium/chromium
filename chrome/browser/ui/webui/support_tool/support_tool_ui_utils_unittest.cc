@@ -28,9 +28,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using ::testing::ContainerEq;
 using ::testing::IsEmpty;
@@ -62,7 +62,7 @@ class SupportToolUiUtilsTest : public ::testing::Test {
   SupportToolUiUtilsTest(const SupportToolUiUtilsTest&) = delete;
   SupportToolUiUtilsTest& operator=(const SupportToolUiUtilsTest&) = delete;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -75,7 +75,7 @@ class SupportToolUiUtilsTest : public ::testing::Test {
     browser_manager_.reset();
     profile_manager_.reset();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Change included field of `included_data_collectors` in `data_collectors` as
   // true for testing.
@@ -113,10 +113,10 @@ class SupportToolUiUtilsTest : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 TEST_F(SupportToolUiUtilsTest, PiiItems) {

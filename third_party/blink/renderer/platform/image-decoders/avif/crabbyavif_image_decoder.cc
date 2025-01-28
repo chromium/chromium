@@ -115,10 +115,8 @@ gfx::ColorSpace GetColorSpace(
   if (color_space.IsSpecified()) {
     return color_space.ToGfxColorSpace();
   }
-  // media::VideoColorSpace and gfx::ColorSpace do not support CICP
-  // MatrixCoefficients 12, 13, 14.
-  DCHECK_GE(matrix, 12);
-  DCHECK_LE(matrix, 14);
+  // If the color space isn't specified by media::VideoColorSpace, use the
+  // default colorspace based on |yuv_range|.
   if (yuv_range == crabbyavif::AVIF_RANGE_FULL) {
     return gfx::ColorSpace::CreateJpeg();
   }

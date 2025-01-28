@@ -3801,6 +3801,19 @@ Jika <ph name="PRODUCT_NAME" /> tidak ditutup dengan benar (misalnya, browser at
 <translation id="3700193037252896716">Frekuensi saat mulai ulang harus dilakukan kembali.</translation>
 <translation id="3700318587977845664">Frekuensi pengulangan pemeriksaan update.</translation>
 <translation id="3701121231485832347">Mengontrol setelan khusus perangkat <ph name="PRODUCT_OS_NAME" />.yang dikelola <ph name="MS_AD_NAME" />.</translation>
+<translation id="3701177991731919830">Kebijakan ini mengaktifkan aplikasi Transfer konten untuk pengguna terkelola. Aplikasi Transfer konten membantu pengguna mentransfer data mereka dari akun terkelola ke akun konsumen.
+
+Jika <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> disetel ke <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, aplikasi Transfer konten akan ditampilkan pada dan di antara tanggal mulai dan tanggal akhir sesuai dengan waktu setempat.
+
+Jika <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> disetel ke <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> atau tidak disetel, aplikasi tidak akan ditampilkan.
+
+Jika <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> tidak disetel, aplikasi akan ditampilkan hingga tanggal akhir.
+
+Jika <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" /> tidak disetel, aplikasi akan ditampilkan tanpa batas waktu sejak tanggal mulai.
+
+Jika <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> dan <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" /> tidak disetel, aplikasi akan ditampilkan tanpa batas waktu. Jika tanggal mulai dan akhir tidak valid, aplikasi Transfer konten tidak akan ditampilkan. Hal ini mencakup jika tanggal yang diberikan tidak ada atau tanggal akhir jatuh sebelum tanggal mulai.
+
+Transfer data dengan Takeout juga harus diaktifkan agar aplikasi Transfer konten berfungsi dengan benar. Lihat https://support.google.com/a/answer/6364687 untuk mengetahui informasi tambahan.</translation>
 <translation id="3702518095257671450">Pengesahan jarak jauh</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Kolom 1 baris sudah tidak digunakan lagi dan akan dihapus di masa mendatang. Mulai gunakan kotak teks multibaris di bawah.)</translation>
 <translation id="3711561721191203926">Jika kebijakan ini disetel ke Aktif, permintaan utama akan diblokir setiap kali peringatan seharusnya
@@ -8739,6 +8752,14 @@ Jika kebijakan ini disetel ke <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR
       Jika kebijakan ini tidak ditetapkan, rak akan ditempatkan di bagian bawah layar secara default dan pengguna dapat mengubah posisi rak.</translation>
 <translation id="7039815268521168329">Tampilkan alur Voice Match Asisten Google selama penyiapan awal</translation>
 <translation id="7040229947030068419">Nilai contoh:</translation>
+<translation id="7044626519138840387">Daftar origin aplikasi klien desktop jarak jauh yang dapat mengeksekusi permintaan WebAuthn API
+yang berasal dari sesi penjelajahan pada host jarak jauh.
+
+Setiap origin yang dikonfigurasi dalam kebijakan ini dapat membuat permintaan WebAuthn untuk ID Pihak
+Tepercaya (RP ID) yang biasanya tidak diizinkan untuk diklaim.
+
+Hanya origin HTTPS yang valid yang diizinkan. Karakter pengganti tidak didukung.
+Entri yang tidak valid akan diabaikan.</translation>
 <translation id="7044883996351280650">Mengontrol layanan pencadangan dan pemulihan Android</translation>
 <translation id="7045221780834308118">Jika kebijakan disetel ke Aktif, aplikasi web pihak ketiga dapat menggunakan Desk API untuk mengontrol desktop <ph name="PRODUCT_OS_NAME" />. Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, <ph name="DESK_API_NAME" /> tidak akan tersedia. Kebijakan ini hanya akan berlaku di perangkat terdaftar.</translation>
 <translation id="7046113122884041950">Jangan izinkan Smart Lock</translation>
@@ -10973,6 +10994,7 @@ skema HTTPS.</translation>
 <translation id="8734543507835977857">Mulai penundaan pengelolaan daya dan batas durasi sesi pada awal sesi</translation>
 <translation id="8736538322216687231">Memaksa Mode Terbatas YouTube minimum</translation>
 <translation id="873800217865395140">Interval pengumpulan telemetri situs dalam milidetik.</translation>
+<translation id="8743149927570551353">Mengonfigurasi saat alat Transfer konten <ph name="PRODUCT_OS_NAME" /> tersedia</translation>
 <translation id="8743902569031401303">Mengizinkan Survei Safe Browsing</translation>
 <translation id="8744844164152340112">Mengontrol tema yang digunakan untuk merender UI selama OOBE dan dalam sesi (gelap/terang/otomatis).
       Mode otomatis akan mengubah tema antara gelap dan terang secara otomatis saat matahari terbit dan tenggelam.
@@ -11591,6 +11613,7 @@ Untuk mengetahui informasi selengkapnya tentang konteks aman, lihat https://www.
 <translation id="9149075762533142978">Fitur Generator Kode QR diaktifkan.</translation>
 <translation id="9149678135092892302">Nonaktifkan pelaporan informasi versi</translation>
 <translation id="9150416707757015439">Kebijakan ini sudah tidak digunakan lagi. Gunakan IncognitoModeAvailability sebagai gantinya. Aktifkan mode Samaran di <ph name="PRODUCT_NAME" />. Jika setelan ini diaktifkan atau tidak dikonfigurasi, pengguna dapat membuka halaman web dalam mode samaran. Jika setelan ini dinonaktifkan, pengguna tidak dapat membuka halaman web dalam mode samaran. Jika kebijakan ini dibiarkan tanpa disetel, kebijakan ini akan diaktifkan dan pengguna akan dapat menggunakan mode samaran.</translation>
+<translation id="9151267823917882070">Mengizinkan Origin untuk Permintaan WebAuthn yang Di-proxy dari Aplikasi Desktop Jarak Jauh.</translation>
 <translation id="9152473318295429890">Aktifkan saran kontekstual halaman terkait</translation>
 <translation id="9155218447258425310">Durasi notifikasi terkait penghapusan kartu smart untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9155375380628728544">Menetapkan kebijakan akan mengizinkan pengguna menambahkan hanya satu bahasa yang tercantum dalam kebijakan ini ke daftar bahasa yang diinginkan.

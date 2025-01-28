@@ -16,7 +16,6 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/sessions/session_service_base.h"

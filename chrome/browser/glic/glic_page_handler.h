@@ -58,6 +58,8 @@ class GlicPageHandler : public glic::mojom::PageHandler {
                     base::TimeDelta duration,
                     ResizeWidgetCallback callback) override;
 
+  void IsProfileEnabled(IsProfileEnabledCallback callback) override;
+
  private:
   GlicKeyedService* GetGlicService();
 

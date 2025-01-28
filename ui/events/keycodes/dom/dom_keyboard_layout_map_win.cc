@@ -4,6 +4,7 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <utility>
@@ -12,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map_base.h"
@@ -68,8 +68,7 @@ uint32_t DomKeyboardLayoutMapWin::GetKeyboardLayoutCount() {
   // the order of the layouts in the control panel so we use GetKeyboardLayout
   // to retrieve the current layout and swap (if needed) to ensure it is always
   // evaluated first.
-  auto iter =
-      base::ranges::find(keyboard_layout_handles_, GetKeyboardLayout(0));
+  auto iter = std::ranges::find(keyboard_layout_handles_, GetKeyboardLayout(0));
   if (iter != keyboard_layout_handles_.begin() &&
       iter != keyboard_layout_handles_.end())
     std::iter_swap(keyboard_layout_handles_.begin(), iter);

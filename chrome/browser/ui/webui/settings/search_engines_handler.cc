@@ -38,7 +38,7 @@
 #include "extensions/browser/management_policy.h"
 #include "extensions/common/extension.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/new_window_delegate.h"
 #endif
 
@@ -107,7 +107,7 @@ void SearchEnginesHandler::RegisterMessages() {
       base::BindRepeating(
           &SearchEnginesHandler::HandleSearchEngineEditCompleted,
           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
       "openBrowserSearchSettings",
       base::BindRepeating(
@@ -473,7 +473,7 @@ void SearchEnginesHandler::HandleSearchEngineEditCompleted(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void SearchEnginesHandler::HandleOpenBrowserSearchSettings(
     const base::Value::List& args) {
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(

@@ -68,6 +68,9 @@ NtpMicrosoftAuthUntrustedUI::NtpMicrosoftAuthUntrustedUI(content::WebUI* web_ui)
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc,
       "connect-src https://login.microsoftonline.com;");
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ChildSrc,
+      "child-src https://login.microsoftonline.com;");
 }
 
 NtpMicrosoftAuthUntrustedUI::~NtpMicrosoftAuthUntrustedUI() = default;

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/view.h"
@@ -109,24 +110,22 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
 
   // Given an email address of the child's parent, return the parents'
   // obfuscated gaia id.
-  std::string GetParentObfuscatedGaiaID(
-      const std::u16string& parent_email) const;
+  GaiaId GetParentObfuscatedGaiaID(const std::u16string& parent_email) const;
 
   // Starts the Reauth-scoped OAuth access token fetch process.
-  void StartReauthAccessTokenFetch(const std::string& parent_obfuscated_gaia_id,
+  void StartReauthAccessTokenFetch(const GaiaId& parent_obfuscated_gaia_id,
                                    const std::string& parent_credential);
 
   // Handles the result of the access token
-  void OnAccessTokenFetchComplete(const std::string& parent_obfuscated_gaia_id,
+  void OnAccessTokenFetchComplete(const GaiaId& parent_obfuscated_gaia_id,
                                   const std::string& parent_credential,
                                   GoogleServiceAuthError error,
                                   signin::AccessTokenInfo access_token_info);
 
   // Starts the Parent Reauth proof token fetch process.
-  void StartParentReauthProofTokenFetch(
-      const std::string& child_access_token,
-      const std::string& parent_obfuscated_gaia_id,
-      const std::string& credential);
+  void StartParentReauthProofTokenFetch(const std::string& child_access_token,
+                                        const GaiaId& parent_obfuscated_gaia_id,
+                                        const std::string& credential);
 
   // GaiaAuthConsumer
   void OnReAuthProofTokenSuccess(

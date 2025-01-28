@@ -15,7 +15,7 @@ import {CloudUploadTestBrowserProxy} from './cloud_upload_test_browser_proxy.js'
 
 suite('<connect-onedrive>', () => {
   /* Holds the <connect-onedrive> app. */
-  let container: HTMLDivElement;
+  let container: HTMLElement;
   /* The <connect-onedrive> app. */
   let connectOneDriveApp: ConnectOneDriveElement;
   /* The BrowserProxy element to make assertions on when mojo methods are

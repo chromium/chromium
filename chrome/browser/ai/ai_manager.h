@@ -71,9 +71,8 @@ class AIManager : public base::SupportsUserData::Data,
   // Return the max temperature for the LanguageModel API.
   float GetLanguageModelMaxTemperature();
 
-  // Return the model info like the sampling params config for the LanguageModel
-  // API.
-  blink::mojom::AIModelInfoPtr GetLanguageModelInfo();
+  // Return the default and max sampling params for the LanguageModel API.
+  blink::mojom::AILanguageModelParamsPtr GetLanguageModelParams();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerTest, CanCreate);
@@ -87,7 +86,7 @@ class AIManager : public base::SupportsUserData::Data,
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
           client,
       blink::mojom::AILanguageModelCreateOptionsPtr options) override;
-  void GetModelInfo(GetModelInfoCallback callback) override;
+  void GetLanguageModelParams(GetLanguageModelParamsCallback callback) override;
   void CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
                        CanCreateWriterCallback callback) override;
   void CreateWriter(

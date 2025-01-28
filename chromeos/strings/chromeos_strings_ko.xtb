@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">취소됨</translation>
 <translation id="1020274983236703756">이제 독점 <ph name="PRODUCT_NAME" /> 애셋 사용 가능</translation>
 <translation id="1022628058306505708">지구의 흐름</translation>
+<translation id="102432830749687801">액세스 권한을 잃기 전에 Google 콘텐츠 전송 앱을 사용하여 학교 계정 데이터를 개인 계정으로 이전하세요.</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />"에 단축키가 사용되고 있습니다. 새로운 단축키를 누르세요. 기존 단축키를 교체하려면 이 단축키를 다시 누르세요.</translation>
 <translation id="1030856839388844477">데이터 사용량 재설정</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />(스레드 <ph name="THREAD_COUNT" />개, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">기기의 케이스 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
 <translation id="1397738625398125236">핑할 수 있는 게이트웨이</translation>
 <translation id="1398634363027580500">HTTPS 지연 시간 매우 높음</translation>
+<translation id="1406389211945506521">경험을 공유해 주셔서 감사합니다. 의견을 보내 주시면 더욱 정확하고 유용한 콘텐츠를 만드는 데 도움이 됩니다</translation>
 <translation id="1407069428457324124">어두운 테마</translation>
 <translation id="1413240736185167732">실패 - 필터링 실패</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,11 @@
 <translation id="1808803439260407870">클래식 아트</translation>
 <translation id="181434555916624618">현재는 인물이 포함된 결과가 표시되지 않습니다. 다른 프롬프트를 사용해 보세요.</translation>
 <translation id="1815850098929213707">선택한 키는 <ph name="KEYS" />입니다. 컨트롤을 수정하려면 버튼을 탭하세요.</translation>
+<translation id="1818174214124933000">보내기를 선택하면 <ph name="LINK_POLICY_BEGIN" />개인정보처리방침<ph name="LINK_POLICY_END" /> 및 <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google 서비스 약관<ph name="LINK_TERMS_OF_SERVICE_END" />에 따라 의견과 콘텐츠(아래에 표시)가 Google로 전송되고, 검토자의 검토를 거치고, Google 제품 및 서비스를 학습시키거나 개선하는 데 사용됩니다.</translation>
 <translation id="1823120442877418684">캐릭터</translation>
 <translation id="1827738518074806965">아트 갤러리</translation>
+<translation id="183287940576828840">불쾌감을 주거나 안전하지 않음</translation>
+<translation id="1834032517784994783">스크립트 작성 언어 선택</translation>
 <translation id="1836553715834333258">시스템 색상</translation>
 <translation id="183675228220305365">사실주의</translation>
 <translation id="1838374766361614909">검색어 지우기</translation>
@@ -225,6 +230,7 @@
 <translation id="1908234395526491708">UDP 요청 실패</translation>
 <translation id="1908394185991500139">왼쪽 화살표입니다</translation>
 <translation id="1914144885717544695">금요일</translation>
+<translation id="1915960750806557358">의견을 공유하거나 문제를 설명해 주세요. 개인 정보, 민감한 정보 또는 기밀 정보는 포함하지 마세요.</translation>
 <translation id="1923388006036088459">강조 색상</translation>
 <translation id="1945403655450283000">녹음기</translation>
 <translation id="1947737735496445907">인쇄됨</translation>
@@ -596,6 +602,7 @@
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
 <translation id="3877066159641251281">번역 듣기</translation>
 <translation id="3880601782712134623">서로 다른 음성을 자동으로 감지하고 각 발화자에게 발화자 1, 발화자 2와 같은 일반 라벨을 지정합니다.</translation>
+<translation id="38811596981744338">법적 문제</translation>
 <translation id="3885327323343477505">화면 보호기 변경</translation>
 <translation id="3889914174935857450">날짜 재설정</translation>
 <translation id="3897092660631435901">메뉴</translation>
@@ -727,6 +734,7 @@
 <translation id="4483049906298469269">기본이 아닌 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
 <translation id="4483498983731992167">스크립트를 작성할 수 없음</translation>
 <translation id="4486524074141928967"><ph name="TIME" />에 로그아웃됩니다</translation>
+<translation id="4487890678161807486">스크립트 언어 선택 도구 열기</translation>
 <translation id="4500722292849917410">단축키를 사용할 수 없습니다. 특수키(Ctrl, Alt, Shift 또는 <ph name="META_KEY" />)를 사용하여 새 단축키를 누르세요.</translation>
 <translation id="4500966230243561393">인터페이스 색상</translation>
 <translation id="4503223151711056411">왼쪽 화살표</translation>
@@ -821,6 +829,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" />초 동안 <ph name="RATE" /> 충전했습니다.</translation>
 <translation id="4930320165497208503">연결을 설정하거나 업데이트하려면 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="4932733599132424254">날짜</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, 새 탭에서 열림</translation>
 <translation id="4946927805998996217">요약 생성 중</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> 펌웨어가 <ph name="VERSION" /> 버전으로 업데이트되었습니다</translation>
 <translation id="4950893758552030541">나무 터널</translation>
@@ -1208,6 +1217,7 @@
 <translation id="6692996468359469499">선택 항목과 관련된 정보 얻기</translation>
 <translation id="6694534975463174713">잠금</translation>
 <translation id="6700703207451721535">이 링크에 대한 액세스가 허용되지 않습니다. 액세스 권한이 필요한 경우 교사에게 문의하세요.</translation>
+<translation id="6703179086771097594">어떤 부분이 잘 작동하지 않았나요?</translation>
 <translation id="6704062477274546131">DNS 변환</translation>
 <translation id="6712933881624804031">계곡</translation>
 <translation id="6716013206176357696">딸기</translation>
@@ -1281,6 +1291,7 @@
 <translation id="7049916119678019302">설정에서 스크립트 작성 모델을 다운로드하세요.</translation>
 <translation id="7058278511608979688">종료 및 저장</translation>
 <translation id="7059230779847288458">충전 중, 완료까지 <ph name="TIME_VALUE" /> 남음</translation>
+<translation id="7064209589142995848">콘텐츠 전송</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> 선택됨</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> 키</translation>
 <translation id="7068619307603204412">기기 준비</translation>
@@ -1592,6 +1603,7 @@
 <translation id="8476942730579767658">창 및 데스크</translation>
 <translation id="8477536061607044749">그래픽 디자인</translation>
 <translation id="8477551185774834963">DNS 지연 시간이 허용되는 기준을 약간 초과했습니다.</translation>
+<translation id="8481308460877552925">사실과 다름</translation>
 <translation id="8482376765267780829">간결하게 바꿀 텍스트를 선택하세요.</translation>
 <translation id="8483248364096924578">IP 주소</translation>
 <translation id="8491311378305535241">Android 앱에서 방화벽으로 인해 HTTP 웹사이트에 연결할 수 없습니다.</translation>

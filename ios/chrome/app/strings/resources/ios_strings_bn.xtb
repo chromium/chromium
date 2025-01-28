@@ -110,7 +110,6 @@
 <translation id="143681031165817424">শুধু এই ডিভাইসে ঠিকানা সেভ করা হবে</translation>
 <translation id="1445276840641906250">একই ব্রাউজারে আপনার সব ট্যাব দেখুন</translation>
 <translation id="1450170672351507823">'স্ট্যান্ডার্ড সুরক্ষা' ফিচারটি চালু করা আছে। আরও উন্নত নিরাপত্তার জন্য 'স্ট্যান্ডার্ড সুরক্ষা' ফিচারটি চালু করুন।</translation>
-<translation id="1454615514353469963">Google Password Manager থেকে পাসওয়ার্ড, পাসকী ও অন্যান্য ডেটা স্থায়ীভাবে মুছে যাবে</translation>
 <translation id="1455660774629812862">লুকাবেন না</translation>
 <translation id="1460751212339734034">সময় বাঁচান, কম টাইপ করুন</translation>
 <translation id="1466035273550360103">কোন খোলা ট্যাব নেই</translation>
@@ -563,6 +562,7 @@
 <translation id="3517216995152707259">ব্রাউজ করা ডেটা মুছে দিলে, Google অ্যাকাউন্ট থেকে সাইন-আউট হয়ে যাবেন না। এটি করতে, <ph name="BEGIN_LINK" />Chrome থেকে সাইন-আউট করুন<ph name="END_LINK" />।</translation>
 <translation id="3519193562722059437">ওয়েব ব্রাউজ করার জন্য একটি ট্যাব খুলুন।</translation>
 <translation id="3519905498307021260">{count,plural, =1{ট্যাব খুলুন}one{{count}টি ট্যাব খুলুন}other{{count}টি ট্যাব খুলুন}}</translation>
+<translation id="3523513363815970085">"আপনার সেরা সাইট" বিকল্প লুকান</translation>
 <translation id="3523789730715594198">সেটিংস থেকে আপনি যেকোনও সময় সিঙ্ক করা বন্ধ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="3527085408025491307">ফোল্ডার</translation>
 <translation id="3529024052484145543">সুরক্ষিত নয়</translation>
@@ -838,6 +838,7 @@
 <translation id="4769198578611055647">যেকোনও ডিভাইসে আপনাকে সেভ করা পাসকী অ্যাক্সেস করতে সাহায্য করে</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">ছদ্মবেশী ট্যাবে খুলবেন?</translation>
+<translation id="479208892659046780">আপনার সেরা সাইট</translation>
 <translation id="4792385443586519711">কোম্পানির নাম</translation>
 <translation id="479628432297359449">ডাউনলোড বন্ধ করবেন?</translation>
 <translation id="4796496140132859135">ট্যাব গ্রুপ। আড়াল করা হয়েছে।</translation>

@@ -13,7 +13,6 @@
 
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -331,7 +330,7 @@ void StyledLabel::ClickFirstLinkForTesting() {
 }
 
 views::Link* StyledLabel::GetFirstLinkForTesting() {
-  const auto it = base::ranges::find_if(children(), &IsViewClass<LinkFragment>);
+  const auto it = std::ranges::find_if(children(), &IsViewClass<LinkFragment>);
   return (it == children().cend()) ? nullptr : static_cast<views::Link*>(*it);
 }
 
@@ -674,8 +673,8 @@ void StyledLabel::RecreateChildViews() {
         // Transfer ownership for any views in layout_views_->owned_views or
         // custom_views_.  The actual pointer is the same in both arms below.
         if (view->GetProperty(kStyledLabelCustomViewKey)) {
-          auto custom_view = base::ranges::find(custom_views_, view,
-                                                &std::unique_ptr<View>::get);
+          auto custom_view = std::ranges::find(custom_views_, view,
+                                               &std::unique_ptr<View>::get);
           DCHECK(custom_view != custom_views_.end());
           AddChildView(std::move(*custom_view));
           custom_views_.erase(custom_view);

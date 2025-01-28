@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Адреса је сачувана само на овом уређају</translation>
 <translation id="1445276840641906250">Све картице у једном прегледачу</translation>
 <translation id="1450170672351507823">Стандардна заштита је укључена. Користите напредну заштиту да бисте се додатно заштитили.</translation>
-<translation id="1454615514353469963">Лозинке, приступни кључеви и други подаци ће се трајно избрисати из Google менаџера лозинки</translation>
 <translation id="1455660774629812862">Не скривај</translation>
 <translation id="1460751212339734034">Уштедите време, куцајте мање</translation>
 <translation id="1466035273550360103">Нема отворених картица</translation>
@@ -563,6 +562,7 @@
 <translation id="3517216995152707259">Брисањем података прегледања не одјављујете се са Google налога. Да бисте то урадили, <ph name="BEGIN_LINK" />одјавите се из Chrome-а<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Отворите картицу да бисте прегледали веб.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Отвори картицу}one{Отвори {count} картицу}few{Отвори {count} картице}other{Отвори {count} картица}}</translation>
+<translation id="3523513363815970085">Сакриј Најпосећеније сајтове</translation>
 <translation id="3523789730715594198">Увек можете да зауставите синхронизацију у подешавањима. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
 <translation id="3527085408025491307">Фолдер</translation>
 <translation id="3529024052484145543">Није безбедно</translation>
@@ -838,6 +838,7 @@
 <translation id="4769198578611055647">Помаже вам да приступате сачуваним приступним кључевима на било ком уређају</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Желите да отворите у режиму без архивирања?</translation>
+<translation id="479208892659046780">Најпосећенији сајтови</translation>
 <translation id="4792385443586519711">Назив предузећа</translation>
 <translation id="479628432297359449">Желите да зауставите преузимање?</translation>
 <translation id="4796496140132859135">Група картица. Скупљено.</translation>

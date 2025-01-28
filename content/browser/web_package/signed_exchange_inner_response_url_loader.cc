@@ -178,16 +178,6 @@ void SignedExchangeInnerResponseURLLoader::SetPriority(
   // reading a blob.
 }
 
-void SignedExchangeInnerResponseURLLoader::PauseReadingBodyFromNet() {
-  // There is nothing to do, because we don't fetch the resource from the
-  // network.
-}
-
-void SignedExchangeInnerResponseURLLoader::ResumeReadingBodyFromNet() {
-  // There is nothing to do, because we don't fetch the resource from the
-  // network.
-}
-
 void SignedExchangeInnerResponseURLLoader::SendResponseBody() {
   mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;

@@ -1,0 +1,18 @@
+source_set("auto_deletion") {
+  sources = [
+    "auto_deletion_settings_consumer.h",
+    "auto_deletion_settings_mediator.h",
+    "auto_deletion_settings_mediator.mm",
+    "auto_deletion_settings_mutator.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/utils",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

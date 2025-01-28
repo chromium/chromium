@@ -32,7 +32,6 @@
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -296,7 +295,7 @@ bool PrivateAggregationHost::BindNewReceiver(
 
   const bool needs_deterministic_report_count =
       PrivateAggregationManager::ShouldSendReportDeterministically(
-          context_id, filtering_id_max_bytes, max_contributions);
+          caller_api, context_id, filtering_id_max_bytes, max_contributions);
 
   // Enforce that reduced delay is used iff null reports are enabled.
   if (timeout.has_value() != needs_deterministic_report_count) {
@@ -374,18 +373,18 @@ void PrivateAggregationHost::ContributeToHistogram(
   base::span<ContributionPtr> incoming_ptrs{contribution_ptrs};
 
   // Null pointers should fail mojo validation.
-  CHECK(base::ranges::none_of(incoming_ptrs, &ContributionPtr::is_null));
+  CHECK(std::ranges::none_of(incoming_ptrs, &ContributionPtr::is_null));
 
-  if (base::ranges::any_of(incoming_ptrs,
-                           [](const ContributionPtr& contribution) {
-                             return contribution->value < 0;
-                           })) {
+  if (std::ranges::any_of(incoming_ptrs,
+                          [](const ContributionPtr& contribution) {
+                            return contribution->value < 0;
+                          })) {
     mojo::ReportBadMessage("Negative value encountered");
     CloseCurrentPipe(PipeResult::kNegativeValue);
     return;
   }
 
-  if (base::ranges::any_of(
+  if (std::ranges::any_of(
           incoming_ptrs, [&](const ContributionPtr& contribution) {
             return static_cast<size_t>(
                        std::bit_width(contribution->filtering_id.value_or(0))) >
@@ -455,11 +454,11 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
   // sending a report deterministically.
   CHECK(!contributions.empty() ||
         PrivateAggregationManager::ShouldSendReportDeterministically(
-            context_id, filtering_id_max_bytes, max_contributions));
+            caller_api, context_id, filtering_id_max_bytes, max_contributions));
   CHECK(debug_mode_details);
 
   RecordFilteringIdStatusHistogram(
-      /*has_filtering_id=*/base::ranges::any_of(
+      /*has_filtering_id=*/std::ranges::any_of(
           contributions,
           [](blink::mojom::AggregatableReportHistogramContribution&
                  contribution) {

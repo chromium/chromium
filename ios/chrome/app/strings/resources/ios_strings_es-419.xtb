@@ -110,7 +110,6 @@
 <translation id="143681031165817424">La dirección se guardó únicamente en este dispositivo</translation>
 <translation id="1445276840641906250">Todas tus pestañas en un navegador</translation>
 <translation id="1450170672351507823">Se activó la protección estándar. Para obtener más seguridad, usa la protección mejorada.</translation>
-<translation id="1454615514353469963">Se borrarán de forma permanente las contraseñas, llaves de acceso y otros datos del Administrador de contraseñas de Google</translation>
 <translation id="1455660774629812862">No ocultar</translation>
 <translation id="1460751212339734034">Ahorra tiempo y escribe menos</translation>
 <translation id="1466035273550360103">No hay pestañas abiertas</translation>
@@ -476,6 +475,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="3053332585453689122">Envía a la Navegación segura de Google las URLs que visitas y una pequeña muestra del contenido de la página, las descargas, la actividad de las extensiones y la información del sistema para revisar si las URLs son dañinas.</translation>
 <translation id="3055102495753300780">Almacenamiento de información</translation>
 <translation id="3059270601560379555">Nueva búsqueda</translation>
+<translation id="3064547930554042309">Administra las descargas</translation>
 <translation id="3072279342064724558">La contraseña ya existe</translation>
 <translation id="3076846064362030967">No saldrás de tu Cuenta de Google. Es posible que se guarden <ph name="BEGIN_LINK" />otras formas de actividad<ph name="END_LINK" /> en tu Cuenta de Google cuando accedes. Podrás borrarlas en cualquier momento.
 
@@ -562,6 +562,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3517216995152707259">Si borras los datos de navegación, no saldrás de tu Cuenta de Google. Para ello, debes <ph name="BEGIN_LINK" />salir de Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Abre una pestaña para navegar por la Web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Abrir la pestaña}other{Abrir {count} pestañas}}</translation>
+<translation id="3523513363815970085">Ocultar "Tus sitios principales"</translation>
 <translation id="3523789730715594198">Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3529024052484145543">No seguro</translation>
@@ -698,6 +699,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4154753961803534698">Buscar con la cámara</translation>
 <translation id="4158491215857439601">Administrador de contraseñas</translation>
 <translation id="4163699139741158298">{count,plural, =1{El favorito se guardó en "{title}". Se guarda solo en este dispositivo.}other{{count} favoritos se guardaron en "{title}". Se guardan solo en este dispositivo.}}</translation>
+<translation id="4164514562270305824">Descargas con eliminación automática</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> que termina en <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">No permitir</translation>
 <translation id="4172051516777682613">Mostrar siempre</translation>
@@ -836,6 +838,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4769198578611055647">Te ayuda a acceder a las llaves de acceso guardadas en cualquier dispositivo</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">¿Quieres abrirlo en Incógnito?</translation>
+<translation id="479208892659046780">Tus sitios principales</translation>
 <translation id="4792385443586519711">Nombre de la editorial</translation>
 <translation id="479628432297359449">¿Quieres detener la descarga?</translation>
 <translation id="4796496140132859135">Grupo de pestañas. Contraído.</translation>
@@ -1016,6 +1019,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5579012242779565775">Ocultar la opción Lista de lectura</translation>
 <translation id="5585019845078534178">Tarjetas</translation>
 <translation id="5595485650161345191">Editar dirección</translation>
+<translation id="559567008082979829">Configura tus descargas para que se borren después de un mes.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="560322036295180549">Tu organización desactivó la opción.</translation>
 <translation id="5611107723541161735">Accesos directos a sitios que visitaste recientemente en este dispositivo.</translation>

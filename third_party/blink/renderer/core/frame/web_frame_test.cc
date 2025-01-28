@@ -37,6 +37,7 @@
 #include <optional>
 #include <tuple>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -1173,7 +1174,7 @@ TEST_F(WebFrameTest, FormWithNullFrame) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "form.html");
 
-  WebVector<WebFormElement> forms =
+  std::vector<WebFormElement> forms =
       web_view_helper.LocalMainFrame()->GetDocument().Forms();
   web_view_helper.Reset();
 
@@ -1312,8 +1313,8 @@ class CSSCallbackWebFrameClient
 
   // frame_test_helpers::TestWebFrameClient:
   void DidMatchCSS(
-      const WebVector<WebString>& newly_matching_selectors,
-      const WebVector<WebString>& stopped_matching_selectors) override;
+      const std::vector<WebString>& newly_matching_selectors,
+      const std::vector<WebString>& stopped_matching_selectors) override;
 
   HashSet<String>& MatchedSelectors() {
     auto it = matched_selectors_.find(Frame());
@@ -1329,8 +1330,8 @@ class CSSCallbackWebFrameClient
 };
 
 void CSSCallbackWebFrameClient::DidMatchCSS(
-    const WebVector<WebString>& newly_matching_selectors,
-    const WebVector<WebString>& stopped_matching_selectors) {
+    const std::vector<WebString>& newly_matching_selectors,
+    const std::vector<WebString>& stopped_matching_selectors) {
   ++update_count_;
 
   HashSet<String>& frame_selectors = MatchedSelectors();
@@ -1404,9 +1405,8 @@ TEST_F(WebFrameCSSCallbackTest, AuthorStyleSheet) {
       "<div class=\"initial_on\"></div>"
       "<div class=\"initial_off\"></div>");
 
-  Vector<WebString> selectors;
-  selectors.push_back(WebString::FromUTF8("div.initial_on"));
-  frame_->GetDocument().WatchCSSSelectors(WebVector<WebString>(selectors));
+  std::vector<WebString> selectors = {WebString::FromUTF8("div.initial_on")};
+  frame_->GetDocument().WatchCSSSelectors(selectors);
   frame_->View()->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
   RunPendingTasks();
@@ -1415,7 +1415,7 @@ TEST_F(WebFrameCSSCallbackTest, AuthorStyleSheet) {
 
   // Check that adding a watched selector calls back for already-present nodes.
   selectors.push_back(WebString::FromUTF8("div.initial_off"));
-  Doc().WatchCSSSelectors(WebVector<WebString>(selectors));
+  Doc().WatchCSSSelectors(selectors);
   frame_->View()->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
   RunPendingTasks();
@@ -1424,7 +1424,7 @@ TEST_F(WebFrameCSSCallbackTest, AuthorStyleSheet) {
               UnorderedElementsAre("div.initial_off", "div.initial_on"));
 
   // Check that we can turn off callbacks for certain selectors.
-  Doc().WatchCSSSelectors(WebVector<WebString>());
+  Doc().WatchCSSSelectors({});
   frame_->View()->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
   RunPendingTasks();
@@ -1434,9 +1434,7 @@ TEST_F(WebFrameCSSCallbackTest, AuthorStyleSheet) {
 
 TEST_F(WebFrameCSSCallbackTest, SharedComputedStyle) {
   // Check that adding an element calls back when it matches an existing rule.
-  Vector<WebString> selectors;
-  selectors.push_back(WebString::FromUTF8("span"));
-  Doc().WatchCSSSelectors(WebVector<WebString>(selectors));
+  Doc().WatchCSSSelectors({WebString::FromUTF8("span")});
 
   ExecuteScript(
       "i1 = document.createElement('span');"
@@ -1474,9 +1472,7 @@ TEST_F(WebFrameCSSCallbackTest, SharedComputedStyle) {
 TEST_F(WebFrameCSSCallbackTest, CatchesAttributeChange) {
   LoadHTML("<span></span>");
 
-  Vector<WebString> selectors;
-  selectors.push_back(WebString::FromUTF8("span[attr=\"value\"]"));
-  Doc().WatchCSSSelectors(WebVector<WebString>(selectors));
+  Doc().WatchCSSSelectors({WebString::FromUTF8("span[attr=\"value\"]")});
   RunPendingTasks();
 
   EXPECT_EQ(0, UpdateCount());
@@ -1491,9 +1487,7 @@ TEST_F(WebFrameCSSCallbackTest, CatchesAttributeChange) {
 TEST_F(WebFrameCSSCallbackTest, DisplayNone) {
   LoadHTML("<div style='display:none'><span></span></div>");
 
-  Vector<WebString> selectors;
-  selectors.push_back(WebString::FromUTF8("span"));
-  Doc().WatchCSSSelectors(WebVector<WebString>(selectors));
+  Doc().WatchCSSSelectors({WebString::FromUTF8("span")});
   RunPendingTasks();
 
   EXPECT_EQ(0, UpdateCount()) << "Don't match elements in display:none trees.";
@@ -1541,8 +1535,7 @@ TEST_F(WebFrameCSSCallbackTest, DisplayNone) {
 TEST_F(WebFrameCSSCallbackTest, DisplayContents) {
   LoadHTML("<div style='display:contents'><span></span></div>");
 
-  Vector<WebString> selectors(1u, WebString::FromUTF8("span"));
-  Doc().WatchCSSSelectors(WebVector<WebString>(selectors));
+  Doc().WatchCSSSelectors({WebString::FromUTF8("span")});
   frame_->View()->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
   RunPendingTasks();
@@ -1576,9 +1569,7 @@ TEST_F(WebFrameCSSCallbackTest, Reparenting) {
       "<div id='d1'><span></span></div>"
       "<div id='d2'></div>");
 
-  Vector<WebString> selectors;
-  selectors.push_back(WebString::FromUTF8("span"));
-  Doc().WatchCSSSelectors(WebVector<WebString>(selectors));
+  Doc().WatchCSSSelectors({WebString::FromUTF8("span")});
   frame_->View()->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
   RunPendingTasks();
@@ -1600,10 +1591,8 @@ TEST_F(WebFrameCSSCallbackTest, MultiSelector) {
 
   // Check that selector lists match as the whole list, not as each element
   // independently.
-  Vector<WebString> selectors;
-  selectors.push_back(WebString::FromUTF8("span"));
-  selectors.push_back(WebString::FromUTF8("span,p"));
-  Doc().WatchCSSSelectors(WebVector<WebString>(selectors));
+  Doc().WatchCSSSelectors(
+      {WebString::FromUTF8("span"), WebString::FromUTF8("span,p")});
   frame_->View()->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
   RunPendingTasks();
@@ -1616,11 +1605,11 @@ TEST_F(WebFrameCSSCallbackTest, InvalidSelector) {
   LoadHTML("<p><span></span></p>");
 
   // Build a list with one valid selector and one invalid.
-  Vector<WebString> selectors;
-  selectors.push_back(WebString::FromUTF8("span"));
-  selectors.push_back(WebString::FromUTF8("["));       // Invalid.
-  selectors.push_back(WebString::FromUTF8("p span"));  // Not compound.
-  Doc().WatchCSSSelectors(WebVector<WebString>(selectors));
+  Doc().WatchCSSSelectors({
+      WebString::FromUTF8("span"),
+      WebString::FromUTF8("["),      // Invalid.
+      WebString::FromUTF8("p span")  // Not compound.
+  });
   frame_->View()->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
   RunPendingTasks();
@@ -5296,7 +5285,7 @@ TEST_F(WebFrameTest, FindInPageMatchRects) {
   RunPendingTasks();
   EXPECT_TRUE(find_in_page_client.FindResultsAreReady());
 
-  WebVector<gfx::RectF> web_match_rects =
+  Vector<gfx::RectF> web_match_rects =
       main_frame->EnsureTextFinder().FindMatchRects();
   ASSERT_EQ(static_cast<size_t>(kNumResults), web_match_rects.size());
   int rects_version = main_frame->GetFindInPage()->FindMatchMarkersVersion();
@@ -5626,7 +5615,8 @@ TEST_F(WebFrameTest, SetTickmarks) {
     EXPECT_EQ(4u, original_tickmarks.size());
 
     // Override the tickmarks.
-    main_frame->SetTickmarks(WebElement(), kExpectedOverridingTickmarks);
+    main_frame->SetTickmarks(WebElement(),
+                             base::ToVector(kExpectedOverridingTickmarks));
 
     // Check the tickmarks are overridden correctly.
     Vector<gfx::Rect> overriding_tickmarks_actual =
@@ -5634,7 +5624,7 @@ TEST_F(WebFrameTest, SetTickmarks) {
     EXPECT_EQ(kExpectedOverridingTickmarksIntRect, overriding_tickmarks_actual);
 
     // Reset the tickmark behavior.
-    main_frame->SetTickmarks(WebElement(), kResetTickmarks);
+    main_frame->SetTickmarks(WebElement(), base::ToVector(kResetTickmarks));
 
     // Check that the original tickmarks are returned
     Vector<gfx::Rect> original_tickmarks_after_reset =
@@ -5657,7 +5647,8 @@ TEST_F(WebFrameTest, SetTickmarks) {
     EXPECT_EQ(0u, original_tickmarks.size());
 
     // Override the tickmarks.
-    main_frame->SetTickmarks(target, kExpectedOverridingTickmarks);
+    main_frame->SetTickmarks(target,
+                             base::ToVector(kExpectedOverridingTickmarks));
 
     // Check the tickmarks are overridden correctly.
     Vector<gfx::Rect> overriding_tickmarks_actual =
@@ -5665,7 +5656,7 @@ TEST_F(WebFrameTest, SetTickmarks) {
     EXPECT_EQ(kExpectedOverridingTickmarksIntRect, overriding_tickmarks_actual);
 
     // Reset the tickmark behavior.
-    main_frame->SetTickmarks(target, kResetTickmarks);
+    main_frame->SetTickmarks(target, base::ToVector(kResetTickmarks));
 
     // Check that the original tickmarks are returned
     Vector<gfx::Rect> original_tickmarks_after_reset =
@@ -6978,13 +6969,11 @@ class TextCheckClient : public WebTextCheckClient {
       const WebString&,
       std::unique_ptr<WebTextCheckingCompletion> completion) override {
     ++number_of_times_checked_;
-    Vector<WebTextCheckingResult> results;
     const int kMisspellingStartOffset = 1;
     const int kMisspellingLength = 8;
-    results.push_back(WebTextCheckingResult(
+    completion->DidFinishCheckingText({WebTextCheckingResult(
         kWebTextDecorationTypeSpelling, kMisspellingStartOffset,
-        kMisspellingLength, WebVector<WebString>()));
-    completion->DidFinishCheckingText(results);
+        kMisspellingLength, {})});
   }
 
   int NumberOfTimesChecked() const { return number_of_times_checked_; }
@@ -7082,15 +7071,6 @@ TEST_F(WebFrameTest, RemoveSpellingMarkers) {
                                  DocumentMarker::MarkerTypes::Spelling()));
 }
 
-static void GetSpellingMarkerOffsets(WebVector<unsigned>* offsets,
-                                     const Document& document) {
-  Vector<unsigned> result;
-  const DocumentMarkerVector& document_markers = document.Markers().Markers();
-  for (wtf_size_t i = 0; i < document_markers.size(); ++i)
-    result.push_back(document_markers[i]->StartOffset());
-  offsets->Assign(result);
-}
-
 TEST_F(WebFrameTest, RemoveSpellingMarkersUnderWords) {
   RegisterMockedHttpURLLoad("spell.html");
   frame_test_helpers::WebViewHelper web_view_helper;
@@ -7116,17 +7096,11 @@ TEST_F(WebFrameTest, RemoveSpellingMarkersUnderWords) {
       .GetIdleSpellCheckController()
       .ForceInvocationForTesting();
 
-  WebVector<unsigned> offsets1;
-  GetSpellingMarkerOffsets(&offsets1, *frame->GetDocument());
-  EXPECT_EQ(1U, offsets1.size());
+  EXPECT_EQ(1U, frame->GetDocument()->Markers().Markers().size());
 
-  Vector<String> words;
-  words.push_back("wellcome");
-  frame->RemoveSpellingMarkersUnderWords(words);
+  frame->RemoveSpellingMarkersUnderWords({"wellcome"});
 
-  WebVector<unsigned> offsets2;
-  GetSpellingMarkerOffsets(&offsets2, *frame->GetDocument());
-  EXPECT_EQ(0U, offsets2.size());
+  EXPECT_EQ(0U, frame->GetDocument()->Markers().Markers().size());
 }
 
 class StubbornTextCheckClient : public WebTextCheckClient {
@@ -7154,10 +7128,9 @@ class StubbornTextCheckClient : public WebTextCheckClient {
             WebTextDecorationType type) {
     if (!completion_)
       return;
-    Vector<WebTextCheckingResult> results;
+    std::vector<WebTextCheckingResult> results;
     if (misspelling_start_offset >= 0 && misspelling_length > 0) {
-      results.push_back(WebTextCheckingResult(type, misspelling_start_offset,
-                                              misspelling_length));
+      results.emplace_back(type, misspelling_start_offset, misspelling_length);
     }
     completion_->DidFinishCheckingText(results);
     completion_.reset();
@@ -7195,9 +7168,7 @@ TEST_F(WebFrameTest, SlowSpellcheckMarkerPosition) {
 
   textcheck.Kick();
 
-  WebVector<unsigned> offsets;
-  GetSpellingMarkerOffsets(&offsets, *frame->GetFrame()->GetDocument());
-  EXPECT_EQ(0U, offsets.size());
+  EXPECT_EQ(0U, document->Markers().Markers().size());
 }
 
 TEST_F(WebFrameTest, SpellcheckResultErasesMarkers) {
@@ -12552,7 +12523,7 @@ TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
   frame->EnsureTextFinder().StartScopingStringMatches(kFindIdentifier,
                                                       search_text, *options);
 
-  WebVector<gfx::RectF> web_match_rects =
+  Vector<gfx::RectF> web_match_rects =
       frame->EnsureTextFinder().FindMatchRects();
   ASSERT_EQ(2ul, web_match_rects.size());
 
@@ -13750,7 +13721,7 @@ void RecursiveCollectTextRunDOMNodeIds(
 
 std::vector<TextRunDOMNodeIdInfo> GetPrintedTextRunDOMNodeIds(
     WebLocalFrame* frame,
-    const WebVector<uint32_t>* pages = nullptr) {
+    const std::vector<uint32_t>* pages = nullptr) {
   gfx::Size page_size(500, 500);
   WebPrintParams print_params((gfx::SizeF(page_size)));
 
@@ -13773,10 +13744,7 @@ TEST_F(WebFrameTest, PrintSomePages) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "print-pages.html");
 
-  WebVector<uint32_t> pages;
-  pages.push_back(1);
-  pages.push_back(4);
-  pages.push_back(8);
+  std::vector<uint32_t> pages = {1, 4, 8};
   std::vector<TextRunDOMNodeIdInfo> text_runs =
       GetPrintedTextRunDOMNodeIds(web_view_helper.LocalMainFrame(), &pages);
 

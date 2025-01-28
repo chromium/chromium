@@ -122,7 +122,6 @@ class WaylandToplevelWindow : public WaylandWindow,
       bool allow_system_drag) override;
   bool SupportsPointerLock() override;
   void LockPointer(bool enabled) override;
-  bool GetTabletMode() override;
 
   // WorkspaceExtension:
   std::string GetWorkspace() const override;
@@ -183,10 +182,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   // The display ID to switch to in case the state is `kFullscreen`.
   int64_t fullscreen_display_id_ = display::kInvalidDisplayId;
 
-#if BUILDFLAG(IS_LINUX)
   // Contains the current state of the tiled edges.
   WindowTiledEdges tiled_state_;
-#endif
 
   bool is_active_ = false;
   bool is_suspended_ = false;

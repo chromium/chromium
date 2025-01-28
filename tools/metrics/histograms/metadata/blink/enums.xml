@@ -5840,6 +5840,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5248"
       label="V8AILanguageModelCapabilities_MaxTemperature_AttributeGetter"/>
   <int value="5249" label="AboutSrcdocToBeControlledByServiceWorker"/>
+  <int value="5250"
+      label="DisplayNoneComputedInContentVisibilityAutoLockedSubtree"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

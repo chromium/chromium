@@ -2271,6 +2271,9 @@ void HTMLInputElement::AdjustStyle(ComputedStyleBuilder& builder) {
 
 void HTMLInputElement::DidNotifySubtreeInsertionsToDocument() {
   input_type_view_->ListAttributeTargetChanged();
+  if (!RuntimeEnabledFeatures::DOMInsertionFasterEnabled()) {
+    PseudoStateChanged(CSSSelector::kPseudoHasDatalist);
+  }
 }
 
 AXObject* HTMLInputElement::PopupRootAXObject() {

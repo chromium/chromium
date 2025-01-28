@@ -836,14 +836,6 @@ bool ShoppingService::IsRegionLockedFeatureEnabled(
       locale_on_startup_);
 }
 
-bool ShoppingService::IsParcelTrackingEligible() {
-  if (!IsRegionLockedFeatureEnabled(kParcelTracking,
-                                    kParcelTrackingRegionLaunched)) {
-    return false;
-  }
-  return account_checker_ && account_checker_->IsSignedIn();
-}
-
 const std::vector<UrlInfo> ShoppingService::GetUrlInfosForActiveWebWrappers() {
   std::vector<UrlInfo> urls;
   for (auto web : open_web_wrappers_) {

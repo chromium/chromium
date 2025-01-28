@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">రద్దయింది</translation>
 <translation id="1020274983236703756">ప్రత్యేకించి <ph name="PRODUCT_NAME" />‌లో మాత్రమే ఉండే అస్సెట్‌లు ఇప్పుడు అందుబాటులో ఉన్నాయి</translation>
 <translation id="1022628058306505708">ఎర్త్ ఫ్లో</translation>
+<translation id="102432830749687801">మీరు స్కూల్ ఖాతాకు యాక్సెస్‌ను కోల్పోయే ముందు దానికి సంబంధించిన డేటాను మీ వ్యక్తిగత ఖాతాకు తరలించడానికి Googleకు చెందిన Content Transfer యాప్‌ను ఉపయోగించారని నిర్ధారించుకోండి.</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />"కు ఒక షార్ట్‌కట్ ఉపయోగించబడుతోంది. కొత్త షార్ట్‌కట్‌ను నొక్కండి. ఇప్పటికే ఉన్న షార్ట్‌కట్‌ను రీప్లేస్ చేయడానికి, ఈ షార్ట్‌కట్‌ను మళ్లీ నొక్కండి.</translation>
 <translation id="1030856839388844477">డేటా వినియోగాన్ని రీసెట్ చేయండి</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> థ్రెడ్‌లు, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">పరికరంలో <ph name="BATTERY_PERCENTAGE" />% కేస్ బ్యాటరీ ఉంది.</translation>
 <translation id="1397738625398125236">గేట్‌వేను పింగ్ చేయవచ్చు</translation>
 <translation id="1398634363027580500">అత్యధిక HTTPS ప్రతిస్పందన సమయం</translation>
+<translation id="1406389211945506521">మీ ఎక్స్‌పీరియన్స్‌ను షేర్ చేసుకున్నందుకు ధన్యవాదాలు. మీ ఫీడ్‌బ్యాక్ మరింత ఖచ్చితమైన, ప్రయోజనకరమైన కంటెంట్‌ను క్రియేట్ చేయడంలో మాకు సహాయపడుతుంది.</translation>
 <translation id="1407069428457324124">ముదురు రూపం</translation>
 <translation id="1413240736185167732">విఫలమైంది - ఫిల్టర్ విఫలమైంది</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">క్లాసిక్ ఆర్ట్</translation>
 <translation id="181434555916624618">ప్రస్తుతానికి, వ్యక్తులకు సంబంధించిన ఫలితాలు చూపబడవు. మరొక ప్రాంప్ట్‌ను ట్రై చేయండి.</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> కీ ఎంపిక చేయబడింది. కంట్రోల్‌ను ఎడిట్ చేయడానికి బటన్‌పై ట్యాప్ చేయండి</translation>
+<translation id="1818174214124933000">మీరు ఫీడ్‌బ్యాక్‌ను, కంటెంట్‌ను పంపడాన్ని ఎంచుకున్నప్పుడు, వాటిని (కింద చూడవచ్చు) Googleకు పంపడం జరుగుతుంది; ఆపై వాటిని మాన్యువల్‌గా రివ్యూ చేస్తారు; అదే విధంగా <ph name="LINK_POLICY_BEGIN" />గోప్యతా పాలసీ<ph name="LINK_POLICY_END" />, <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google సర్వీస్ నియమాల<ph name="LINK_TERMS_OF_SERVICE_END" />కు లోబడి వాటిని ప్రోడక్ట్‌లను, సర్వీస్‌లను మెరుగుపరచడానికి, ట్రెయినింగ్ ఇవ్వడానికి ఉపయోగిస్తారు.</translation>
 <translation id="1823120442877418684">పాత్రలు</translation>
 <translation id="1827738518074806965">చిత్రకళా గ్యాలరీ</translation>
+<translation id="183287940576828840">అభ్యంతరకరమైనది/సురక్షితం కానిది</translation>
 <translation id="1836553715834333258">సిస్టమ్ రంగు</translation>
 <translation id="183675228220305365">రియలిస్ట్</translation>
 <translation id="1838374766361614909">శోధనను తీసివేయండి</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">UDP రిక్వెస్ట్ వైఫల్యాలు</translation>
 <translation id="1908394185991500139">ఎడమ వైపు బాణం</translation>
 <translation id="1914144885717544695">శుక్రవారం నాడు</translation>
+<translation id="1915960750806557358">మీ ఫీడ్‌బ్యాక్‌ను షేర్ చేయండి లేదా మీ సమస్యను వివరించండి. వ్యక్తిగతమైన వాటిని, సున్నితమైన లేదా గోప్యమైన అంశాలను చేర్చకుండా చూసుకోండి.</translation>
 <translation id="1923388006036088459">యాక్సెంట్ రంగు</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">ప్రింట్ అయింది</translation>
@@ -596,6 +601,7 @@
 <translation id="387301095347517405">మీ బ్యాటరీ పూర్తిగా ఛార్జ్ అయిన పర్యాయాల సంఖ్య</translation>
 <translation id="3877066159641251281">అనువాదాన్ని వినండి</translation>
 <translation id="3880601782712134623">ఆటోమేటిక్‌గా విభిన్న వాయిస్‌లను గుర్తించి, ప్రతి ఒక్క స్పీకర్‌కు స్పీకర్ 1, స్పీకర్ 2 వంటి సాధారణ లేబుల్‌ను ఇస్తుంది</translation>
+<translation id="38811596981744338">చట్టపరమైన సమస్య</translation>
 <translation id="3885327323343477505">స్క్రీన్ సేవర్‌ను మార్చండి</translation>
 <translation id="3889914174935857450">తేదీని రీసెట్ చేయండి</translation>
 <translation id="3897092660631435901">మెనూ</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> ఛార్జ్ అయ్యింది.</translation>
 <translation id="4930320165497208503">కనెక్షన్‌ను సెటప్ చేయడానికి లేదా అప్‌డేట్ చేయడానికి, <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />కు వెళ్లండి.</translation>
 <translation id="4932733599132424254">తేదీ</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, కొత్త ట్యాబ్‌లో తెరవబడుతుంది</translation>
 <translation id="4946927805998996217">సారాంశాన్ని జెనరేట్ చేస్తోంది</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" />, <ph name="VERSION" /> వెర్షన్‌కు అప్‌డేట్ చేయబడింది</translation>
 <translation id="4950893758552030541">చెట్టు తొర్ర</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారాన్ని పొందండి</translation>
 <translation id="6694534975463174713">లాక్</translation>
 <translation id="6700703207451721535">ఈ లింక్ కోసం యాక్సెస్ అనుమతించబడదు. మీకు యాక్సెస్ కావాలంటే మీ టీచర్‌ను సంప్రదించండి.</translation>
+<translation id="6703179086771097594">తేడా ఎక్కడ ఉంది?</translation>
 <translation id="6704062477274546131">DNS రిజల్యూషన్</translation>
 <translation id="6712933881624804031">లోయ</translation>
 <translation id="6716013206176357696">స్ట్రాబెర్రీలు</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">సెట్టింగ్‌లలో మాటల టైపింగ్ మోడల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7058278511608979688">ఆపివేసి, సేవ్ చేయండి</translation>
 <translation id="7059230779847288458">ఛార్జ్ అవుతోంది, పూర్తి కావడానికి <ph name="TIME_VALUE" /> సమయం పడుతుంది</translation>
+<translation id="7064209589142995848">కంటెంట్ ట్రాన్స్‌ఫర్</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" />‌ను ఎంచుకోవడం జరిగింది</translation>
 <translation id="7066538517128343186">కీ <ph name="KEY" /></translation>
 <translation id="7068619307603204412">మీ పరికరాన్ని సిద్ధం చేయండి</translation>
@@ -1592,6 +1601,7 @@
 <translation id="8476942730579767658">విండోలు, డెస్క్‌లు</translation>
 <translation id="8477536061607044749">గ్రాఫిక్ రూపకల్పన</translation>
 <translation id="8477551185774834963">DNS ప్రతిస్పందన సమయం అనుమతించదగిన పరిమితికి కొద్దిగా మించి ఉంది</translation>
+<translation id="8481308460877552925">వాస్తవాలపరంగా తప్పు</translation>
 <translation id="8482376765267780829">సింప్లిఫై చేయడానికి కొంత టెక్స్ట్‌ను ఎంచుకోండి</translation>
 <translation id="8483248364096924578">IP అడ్రస్‌</translation>
 <translation id="8491311378305535241">Android యాప్‌ల నుండి HTTP వెబ్‌సైట్‌లకు ఫైర్‌వాల్ ద్వారా కనెక్ట్ చేయడం సాధ్యపడదు</translation>

@@ -389,7 +389,9 @@ enum class AuthenticationFlowInCurrentProfileState {
 }
 
 - (void)didFetchUserPolicyWithSuccess:(BOOL)success {
-  NOTREACHED();
+  DCHECK_EQ(AuthenticationFlowInCurrentProfileState::kFetchUserPolicy, _state);
+  DLOG_IF(ERROR, !success) << "Error fetching policy for user";
+  [self continueFlow];
 }
 
 - (void)didMakePersonalProfileManaged {

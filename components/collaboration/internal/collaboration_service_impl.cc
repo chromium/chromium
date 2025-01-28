@@ -22,6 +22,8 @@ using data_sharing::GroupMember;
 using data_sharing::GroupToken;
 using data_sharing::MemberRole;
 using Flow = CollaborationController::Flow;
+using metrics::CollaborationServiceJoinEvent;
+using metrics::CollaborationServiceShareOrManageEvent;
 
 CollaborationServiceImpl::CollaborationServiceImpl(
     tab_groups::TabGroupSyncService* tab_group_sync_service,
@@ -79,7 +81,7 @@ void CollaborationServiceImpl::StartJoinFlow(
 
   ExitConflictingFlows();
 
-  metrics::RecordJoinEvent(metrics::CollaborationServiceJoinEvent::kStarted);
+  RecordJoinEvent(CollaborationServiceJoinEvent::kStarted);
 
   // Invalid url parsing will start a new join flow with empty GroupToken. This
   // is needed in order to show the url parsing error message to the user.
@@ -103,6 +105,7 @@ void CollaborationServiceImpl::StartShareOrManageFlow(
 
   ExitConflictingFlows();
 
+  RecordShareOrManageEvent(CollaborationServiceShareOrManageEvent::kStarted);
   // Invalid url parsing will start a new join flow with empty GroupToken. This
   // is needed in order to show the url parsing error message to the user.
   share_controllers_.insert(

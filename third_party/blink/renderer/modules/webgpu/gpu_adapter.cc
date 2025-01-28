@@ -60,8 +60,6 @@ std::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(wgpu::FeatureName f) {
       return V8GPUFeatureName::Enum::kDualSourceBlending;
     case wgpu::FeatureName::Subgroups:
       return V8GPUFeatureName::Enum::kSubgroups;
-    case wgpu::FeatureName::SubgroupsF16:
-      return V8GPUFeatureName::Enum::kSubgroupsF16;
     case wgpu::FeatureName::ClipDistances:
       return V8GPUFeatureName::Enum::kClipDistances;
     case wgpu::FeatureName::MultiDrawIndirect:
@@ -98,9 +96,7 @@ GPUSupportedFeatures* MakeFeatureNameSet(wgpu::Adapter adapter,
       // Subgroups features are under OT.
       // TODO(crbug.com/349125474): remove this check after subgroups features
       // OT finished.
-      if ((feature_name_enum_optional == V8GPUFeatureName::Enum::kSubgroups) ||
-          (feature_name_enum_optional ==
-           V8GPUFeatureName::Enum::kSubgroupsF16)) {
+      if (feature_name_enum_optional == V8GPUFeatureName::Enum::kSubgroups) {
         if (!RuntimeEnabledFeatures::WebGPUSubgroupsFeaturesEnabled(
                 execution_context)) {
           continue;
@@ -299,7 +295,6 @@ void GPUAdapter::OnRequestDeviceCallback(
 
     case wgpu::RequestDeviceStatus::Error:
     case wgpu::RequestDeviceStatus::InstanceDropped:
-    default:
       if (dawn_device) {
         // A device provided with an error is already a lost device on the Dawn
         // side, reflect that by resolving the lost property immediately.

@@ -27,6 +27,8 @@ static_library("test_support") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/chromeos/policy/dlp/dialogs",
     "//chrome/browser/enterprise/data_controls",
@@ -37,11 +39,4 @@ static_library("test_support") {
     "//testing/gtest",
     "//url",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/ash/login/users:test_support",
-      "//chrome/browser/ash/policy/dlp",
-    ]
-  }
 }

@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Adresa a fost salvată numai pe acest dispozitiv</translation>
 <translation id="1445276840641906250">Toate filele într-un singur browser</translation>
 <translation id="1450170672351507823">Protecția standard este activată. Pentru securitate sporită, folosește Protecția îmbunătățită.</translation>
-<translation id="1454615514353469963">Parolele, cheile de acces și alte date se vor șterge definitiv din Managerul de parole Google</translation>
 <translation id="1455660774629812862">Nu ascunde</translation>
 <translation id="1460751212339734034">Economisește timp, tastează mai puțin</translation>
 <translation id="1466035273550360103">Nu există file deschise</translation>
@@ -563,6 +562,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3517216995152707259">Dacă ștergi datele de navigare, nu te vei deconecta de la Contul Google. Pentru a face acest lucru, <ph name="BEGIN_LINK" />deconectează-te de la Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Deschide o filă pentru a naviga pe web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Deschide fila}few{Deschide {count} file}other{Deschide {count} de file}}</translation>
+<translation id="3523513363815970085">Ascunde Site-uri accesate frecvent</translation>
 <translation id="3523789730715594198">Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="3527085408025491307">Dosar</translation>
 <translation id="3529024052484145543">Nesecurizat</translation>
@@ -838,6 +838,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4769198578611055647">Te ajută să accesezi cheile de acces salvate pe orice dispozitiv</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Deschizi în modul incognito?</translation>
+<translation id="479208892659046780">Site-uri accesate frecvent</translation>
 <translation id="4792385443586519711">Numele firmei</translation>
 <translation id="479628432297359449">Oprești descărcarea?</translation>
 <translation id="4796496140132859135">Grup de file. Restrâns.</translation>

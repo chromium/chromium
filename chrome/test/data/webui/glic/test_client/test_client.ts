@@ -7,8 +7,8 @@ import type {GlicBrowserHost, GlicWebClient, Observable, TabData} from 'chrome:/
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
 
 interface PageElementTypes {
-  status: HTMLDivElement;
-  pageHeader: HTMLDivElement;
+  status: HTMLElement;
+  pageHeader: HTMLElement;
   focusedFavicon: HTMLImageElement;
   focusedUrl: HTMLInputElement;
   contextAccessIndicator: HTMLInputElement;
@@ -28,11 +28,12 @@ interface PageElementTypes {
   URL: HTMLInputElement;
   innerTextCheckbox: HTMLInputElement;
   viewportScreenshotCheckbox: HTMLInputElement;
+  pdfDataCheckbox: HTMLInputElement;
   annotatedPageContentCheckbox: HTMLInputElement;
   screenshotImg: HTMLImageElement;
   faviconImg: HTMLImageElement;
   getlocation: HTMLButtonElement;
-  location: HTMLDivElement;
+  location: HTMLElement;
   permissionSelect: HTMLSelectElement;
   enabledSelect: HTMLSelectElement;
   closebn: HTMLButtonElement;
@@ -42,7 +43,7 @@ interface PageElementTypes {
   navigateWebviewUrl: HTMLInputElement;
   audioCapStop: HTMLButtonElement;
   audioCapStart: HTMLButtonElement;
-  audioStatus: HTMLDivElement;
+  audioStatus: HTMLElement;
   mic: HTMLAudioElement;
   audioDuckingOn: HTMLButtonElement;
   audioDuckingOff: HTMLButtonElement;
@@ -215,6 +216,9 @@ $.getpagecontext.addEventListener('click', async () => {
   if ($.viewportScreenshotCheckbox.checked) {
     options.viewportScreenshot = {};
   }
+  if ($.pdfDataCheckbox.checked) {
+    options.pdfData = true;
+  }
   if ($.annotatedPageContentCheckbox.checked) {
     options.annotatedPageContent = true;
   }
@@ -232,18 +236,25 @@ $.getpagecontext.addEventListener('click', async () => {
         $.faviconImg.src = URL.createObjectURL(favicon);
       }
     }
-    if (pageContent.annotatedPageData && pageContent.annotatedPageData.annotatedPageContent) {
-      const reader = pageContent.annotatedPageData.annotatedPageContent.getReader();
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          const uint8View = new Uint8Array(value);
-          logMessage(`Annotated page content data chunk length: ${uint8View.length}`);
-        }
-      } finally {
-        reader.releaseLock();
+    if (pageContent.pdfDocumentData) {
+      const pdfOrigin = pageContent.pdfDocumentData.origin;
+      const pdfSizeLimitExceeded =
+          pageContent.pdfDocumentData.pdfSizeLimitExceeded;
+      let pdfDataSize = 0;
+      if (pageContent.pdfDocumentData.pdfData) {
+        pdfDataSize =
+            (await readStream(pageContent.pdfDocumentData.pdfData!)).length;
       }
+      logMessage(`Got ${pdfDataSize} bytes of PDF data (origin=${
+          pdfOrigin}, sizeLimitExceeded=${pdfSizeLimitExceeded})`);
+    }
+    if (pageContent.annotatedPageData &&
+        pageContent.annotatedPageData.annotatedPageContent) {
+      const annotatedPageDataSize =
+          (await readStream(pageContent.annotatedPageData.annotatedPageContent))
+              .length;
+      logMessage(
+          `Annotated page content data length: ${annotatedPageDataSize}`);
     }
     logMessage(
         `Finished Get Page Context. Returned data: ${
@@ -363,3 +374,7 @@ window.addEventListener('load', () => {
     audioCapture.start();
   });
 });
+
+function readStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
+  return new Response(stream).bytes();
+}

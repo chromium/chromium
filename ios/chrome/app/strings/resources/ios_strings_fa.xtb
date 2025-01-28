@@ -110,7 +110,6 @@
 <translation id="143681031165817424">نشانی فقط در این دستگاه ذخیره می‌شود</translation>
 <translation id="1445276840641906250">همه برگه‌های شما در یک مرورگر</translation>
 <translation id="1450170672351507823">«محافظت استاندارد» روشن است. برای امنیت بیشتر، از «محافظت پیشرفته» استفاده کنید.</translation>
-<translation id="1454615514353469963">‏گذرواژه‌ها، گذرکلیدها، و دیگر داده‌ها برای همیشه از «مدیر گذرواژه Google» حذف خواهد شد</translation>
 <translation id="1455660774629812862">پنهان نشود</translation>
 <translation id="1460751212339734034">صرفه‌جویی در زمان، تایپ کمتر</translation>
 <translation id="1466035273550360103">برگه بازی وجود ندارد</translation>
@@ -563,6 +562,7 @@
 <translation id="3517216995152707259">‏حذف کردن داده‌های مرور باعث نمی‌شود از سیستم «حساب Google» خود خارج شوید. برای انجام این کار، <ph name="BEGIN_LINK" />از سیستم Chrome خارج شوید<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">برگه‌ای برای مرور وب باز کنید.</translation>
 <translation id="3519905498307021260">{count,plural, =1{باز کردن برگه}one{باز کردن {count} برگه}other{باز کردن {count} برگه}}</translation>
+<translation id="3523513363815970085">پنهان کردن «سایت‌های برتر شما»</translation>
 <translation id="3523789730715594198">‏هرزمان بخواهید می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی‌سازی کند.</translation>
 <translation id="3527085408025491307">پوشه</translation>
 <translation id="3529024052484145543">ناامن</translation>
@@ -838,6 +838,7 @@
 <translation id="4769198578611055647">به شما کمک می‌کند به گذرکلیدهای ذخیره‌شده‌تان در هر دستگاهی دسترسی پیدا کنید</translation>
 <translation id="4787847736989526091">‫<ph name="VALUE" />، <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">در حالت ناشناس باز شود؟</translation>
+<translation id="479208892659046780">سایت‌های برتر شما</translation>
 <translation id="4792385443586519711">نام شرکت</translation>
 <translation id="479628432297359449">بارگیری متوقف شود؟</translation>
 <translation id="4796496140132859135">گروه برگه. جمع‌شده.</translation>

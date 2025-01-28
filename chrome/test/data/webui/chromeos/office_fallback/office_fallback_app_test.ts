@@ -40,7 +40,7 @@ class OfficeFallbackTestBrowserProxy implements OfficeFallbackBrowserProxy {
 
 suite('<office-fallback>', () => {
   // Holds the <cloud-upload> app.
-  let container: HTMLDivElement;
+  let container: HTMLElement;
   // The <office-fallback> app.
   let officeFallbackApp: OfficeFallbackElement;
   // The BrowserProxy element to make assertions on when mojo methods are

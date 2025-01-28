@@ -7,6 +7,7 @@
 #import <algorithm>
 
 #import "base/check.h"
+#import "base/i18n/message_formatter.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
@@ -47,7 +48,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
-#import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/l10n/l10n_util.h"
 
 using ScopedTabGroupSyncObservation =
     base::ScopedObservation<tab_groups::TabGroupSyncService,
@@ -376,6 +377,32 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
   data.avatarPrimitive = _shareKitService->AvatarImage(config);
 
   return data;
+}
+
+#pragma mark - GridViewControllerMutator override
+
+- (void)closeItemWithIdentifier:(GridItemIdentifier*)identifier {
+  CHECK_EQ(identifier.type, GridItemType::kTab);
+  if (_tabGroup->range().count() > 1 || ![self isShared] ||
+      !_collaborationService) {
+    [self closeItemWithID:identifier.tabSwitcherItem.identifier];
+    return;
+  }
+
+  data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(
+      _tabGroup.get(), _tabGroupSyncService, _collaborationService);
+
+  switch (userRole) {
+    case data_sharing::MemberRole::kOwner:
+      [self.tabGroupDelegate tabGroupMediatorCloseLastTabAsOwner:self];
+      break;
+    case data_sharing::MemberRole::kMember:
+      [self.tabGroupDelegate tabGroupMediatorCloseLastTabAsMember:self];
+      break;
+    case data_sharing::MemberRole::kInvitee:
+    case data_sharing::MemberRole::kUnknown:
+      NOTREACHED();
+  }
 }
 
 #pragma mark - TabCollectionDragDropHandler override
@@ -719,25 +746,14 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     return;
   }
 
-  if (numOfTabsAdded == 0) {
-    [_groupConsumer
-        setActivitySummaryCellText:
-            l10n_util::GetNSStringF(
-                IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_TEXT_CLOSED_TABS_ONLY,
-                base::NumberToString16(numOfTabsRemoved))];
-  } else if (numOfTabsRemoved == 0) {
-    [_groupConsumer
-        setActivitySummaryCellText:
-            l10n_util::GetNSStringF(
-                IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_TEXT_NEW_TABS_ONLY,
-                base::NumberToString16(numOfTabsAdded))];
-  } else {
-    [_groupConsumer setActivitySummaryCellText:
-                        l10n_util::GetNSStringF(
-                            IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_TEXT,
-                            base::NumberToString16(numOfTabsAdded),
-                            base::NumberToString16(numOfTabsRemoved))];
-  }
+  [_groupConsumer
+      setActivitySummaryCellText:
+          base::SysUTF16ToNSString(
+              base::i18n::MessageFormatter::FormatWithNamedArgs(
+                  l10n_util::GetStringUTF16(
+                      IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_TEXT),
+                  "count_tab_added", numOfTabsAdded, "count_tab_removed",
+                  numOfTabsRemoved))];
 }
 
 // Returns YES if the tab specified by `localTabID` exists in the group.
@@ -752,6 +768,20 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     }
   }
   return NO;
+}
+
+// Returns YES if the group is shared.
+- (BOOL)isShared {
+  CHECK(_tabGroup);
+  BOOL isSharedTabGroupSupported =
+      _shareKitService && _shareKitService->IsSupported();
+
+  if (!isSharedTabGroupSupported || !_tabGroupSyncService) {
+    return NO;
+  }
+
+  return tab_groups::utils::IsTabGroupShared(_tabGroup.get(),
+                                             _tabGroupSyncService);
 }
 
 #pragma mark - MessagingBackendServiceObserving

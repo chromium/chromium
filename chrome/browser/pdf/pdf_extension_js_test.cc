@@ -8,11 +8,13 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/run_until.h"
 #include "base/test/with_feature_override.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -32,6 +34,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/scoped_time_zone.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -40,6 +43,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 
 class PDFExtensionJSTestBase : public PDFExtensionTestBase {
@@ -323,6 +327,29 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerToolbarDropdown) {
 }
 #endif  // BUILDFLAG(ENABLE_INK)
 
+class PDFExtensionFilePickerJSTest : public PDFExtensionJSTest {
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    auto enabled = PDFExtensionJSTest::GetEnabledFeatures();
+    enabled.push_back({chrome_pdf::features::kPdfUseShowSaveFilePicker, {}});
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionFilePickerJSTest, ViewerFilePicker) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath save_path = temp_dir.GetPath().AppendASCII("saved.pdf");
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{save_path}));
+  RunTestsInJsModule("viewer_file_picker_test.js", "test.pdf");
+}
+
 // PDFExtensionJSTest with forced Pacific Time Zone.
 class PDFExtensionPacificTimeZoneJSTest : public PDFExtensionJSTest {
   // This will apply to the new processes spawned within RunTestsInJsModule(),
@@ -599,6 +626,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2BeforeUnloadTest, Undo) {
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionFilePickerJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionPacificTimeZoneJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionContentSettingJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionWebUICodeCacheJSTest);

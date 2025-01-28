@@ -4,10 +4,11 @@
 
 #include "content/browser/site_info.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -54,7 +55,7 @@ bool IsWebUIAndUsesTLDForProcessLockURL(const GURL& url) {
   WebUIDomains domains = GetWebUIDomains(url);
   // This only applies to WebUI urls with two or more non-empty domains.
   return domains.size() >= 2 &&
-         base::ranges::all_of(domains, [](const std::string& domain) {
+         std::ranges::all_of(domains, [](const std::string& domain) {
            return !domain.empty();
          });
 }

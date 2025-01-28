@@ -6,11 +6,11 @@ import 'chrome://resources/ash/common/cr_elements/cr_search_field/cr_search_fiel
 import './emoji_category_button.js';
 import './emoji_group.js';
 
-import {CrSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_search_field/cr_search_field.js';
+import type {CrSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_search_field/cr_search_field.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {Size} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {PolymerSpliceChange} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {Size} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {PolymerSpliceChange} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NO_INTERNET_SEARCH_ERROR_MSG} from './constants.js';
@@ -19,7 +19,8 @@ import {getTemplate} from './emoji_search.html.js';
 import {createCustomEvent, EMOJI_IMG_BUTTON_CLICK, GIF_ERROR_TRY_AGAIN} from './events.js';
 import Fuse from './fuse.js';
 import {Status} from './tenor_types.mojom-webui.js';
-import {CategoryData, CategoryEnum, EmojiGroupData, EmojiVariants, Gender, Tone} from './types.js';
+import type {CategoryData, EmojiGroupData, EmojiVariants, Gender, Tone} from './types.js';
+import {CategoryEnum} from './types.js';
 
 declare global {
   interface HTMLElementTagNameMap {

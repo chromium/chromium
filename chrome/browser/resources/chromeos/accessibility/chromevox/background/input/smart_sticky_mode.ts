@@ -8,13 +8,14 @@
  * an editable.
  */
 import {AutomationUtil} from '/common/automation_util.js';
-import {CursorRange} from '/common/cursors/range.js';
+import type {CursorRange} from '/common/cursors/range.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EarconId} from '../../common/earcon_id.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 import {ChromeVox} from '../chromevox.js';
-import {ChromeVoxRange, ChromeVoxRangeObserver} from '../chromevox_range.js';
+import type {ChromeVoxRangeObserver} from '../chromevox_range.js';
+import {ChromeVoxRange} from '../chromevox_range.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {ChromeVoxPrefs} from '../prefs.js';
 

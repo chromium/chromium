@@ -1198,16 +1198,34 @@ const FeatureEntry::FeatureVariation kUpdatedFirstRunSequenceVariations[] = {
     {" - DB promo first and remove sign in & sync",
      kUpdatedFirstRunSequenceArm3, std::size(kUpdatedFirstRunSequenceArm3),
      nullptr}};
+
 const FeatureEntry::FeatureParam
     kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitial[] = {
         {kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam,
          "true"},
 };
+
+const FeatureEntry::FeatureParam kYoutubeIncognitoTargetAllowListed[] = {
+    {kYoutubeIncognitoTargetApps, kYoutubeIncognitoTargetAppsAllowlisted},
+};
+const FeatureEntry::FeatureParam kYoutubeIncognitoTargetFirstParty[] = {
+    {kYoutubeIncognitoTargetApps, kYoutubeIncognitoTargetAppsFirstParty},
+};
+const FeatureEntry::FeatureParam kYoutubeIncognitoTargetAll[] = {
+    {kYoutubeIncognitoTargetApps, kYoutubeIncognitoTargetAppsAll},
+};
+
 const FeatureEntry::FeatureVariation kYoutubeIncognitoVariations[] = {
     {"Error handling without Incognito Interstitial",
      kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitial,
      std::size(kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitial),
      nullptr},
+    {"Enable for listed apps", kYoutubeIncognitoTargetAllowListed,
+     std::size(kYoutubeIncognitoTargetAllowListed), nullptr},
+    {"Enable for first party apps", kYoutubeIncognitoTargetFirstParty,
+     std::size(kYoutubeIncognitoTargetFirstParty), nullptr},
+    {"Enable for all apps", kYoutubeIncognitoTargetAll,
+     std::size(kYoutubeIncognitoTargetAll), nullptr},
 };
 
 // To add a new entry, add to the end of kFeatureEntries. There are four

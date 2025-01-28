@@ -694,6 +694,10 @@ struct XRFrameData {
   // https://immersive-web.github.io/webxr/#eventdef-xrreferencespace-reset
   bool mojo_space_reset;
 
+  // A transform that will translate things from `mojom` space to the floor.
+  // Should only be set if the local-floor feature has been granted.
+  gfx.mojom.Transform? mojo_from_floor;
+
   // Exclusive session values
 
   // The frame_id maps frame data to a frame arriving from the compositor. IDs

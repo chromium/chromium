@@ -173,7 +173,7 @@ void PrivateAggregationManagerImpl::OnReportRequestDetailsReceivedFromHost(
 
   CHECK(!contributions.empty());
   int minimum_value_for_metrics =
-      base::ranges::min(
+      std::ranges::min(
           contributions, /*comp=*/{}, /*proj=*/
           &blink::mojom::AggregatableReportHistogramContribution::value)
           .value;
@@ -281,7 +281,7 @@ void PrivateAggregationManagerImpl::OnBudgeterGetAllDataKeysReturned(
   aggregation_service->GetPendingReportReportingOrigins(base::BindOnce(
       [](base::OnceCallback<void(std::set<DataKey>)> callback,
          std::set<DataKey> all_keys, std::set<url::Origin> pending_origins) {
-        base::ranges::transform(
+        std::ranges::transform(
             std::make_move_iterator(pending_origins.begin()),
             std::make_move_iterator(pending_origins.end()),
             std::inserter(all_keys, all_keys.begin()), [](url::Origin elem) {

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_utils.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -35,21 +36,21 @@ namespace payments {
 
 namespace {
 
-const char kLocale[] = "en_US";
-const char16_t kNameFull[] = u"Bob Jones";
-const char16_t kHomeAddress[] = u"42 Answers-All Avenue";
-const char16_t kHomeCity[] = u"Question-City";
-const char16_t kHomeZip[] = u"ziiiiiip";
-const char16_t kHomePhone[] =
+constexpr char kLocale[] = "en_US";
+constexpr char16_t kNameFull[] = u"Bob Jones";
+constexpr char16_t kHomeAddress[] = u"42 Answers-All Avenue";
+constexpr char16_t kHomeCity[] = u"Question-City";
+constexpr char16_t kHomeZip[] = u"ziiiiiip";
+constexpr char16_t kHomePhone[] =
     u"+1 575-555-5555";  // +1 555-555-5555 is invalid :-(.
-const char kAnyState[] = "any state";
-const char16_t kAnyState16[] = u"any state";
-const char kAnyStateCode[] = "AS";
-const char16_t kCountryWithoutStates[] = u"Albania";
-const char16_t kCountryWithoutStatesCode[] = u"AL";
-const char16_t kCountryWithoutStatesPhoneNumber[] = u"+35542223446";
+constexpr char kAnyState[] = "any state";
+constexpr char16_t kAnyState16[] = u"any state";
+constexpr char kAnyStateCode[] = "AS";
+constexpr char16_t kCountryWithoutStates[] = u"Albania";
+constexpr char16_t kCountryWithoutStatesCode[] = u"AL";
+constexpr char16_t kCountryWithoutStatesPhoneNumber[] = u"+35542223446";
 
-const base::Time kJanuary2017 =
+constexpr base::Time kJanuary2017 =
     base::Time::FromSecondsSinceUnixEpoch(1484505871);
 
 }  // namespace
@@ -202,7 +203,6 @@ class DISABLED_PaymentRequestShippingAddressEditorTest
     ASSERT_TRUE(WaitForObservedEvent());
   }
 
-  PersonalDataLoadedObserverMock personal_data_observer_;
   autofill::TestRegionDataLoader test_region_data_loader_;
 };
 
@@ -230,22 +230,14 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                                DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
-  // Verifying the data is in the DB.
-  autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
-
   // Wait until the web database has been updated and the notification sent.
-  base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-      .WillOnce(QuitMessageLoop(&data_loop));
+  autofill::AddressDataChangedWaiter waiter(address_data_manager());
   ClickOnDialogViewAndWait(DialogViewID::SAVE_ADDRESS_BUTTON);
-  data_loop.Run();
+  std::move(waiter).Wait();
 
-  personal_data_manager->RemoveObserver(&personal_data_observer_);
-  ASSERT_EQ(1UL,
-            personal_data_manager->address_data_manager().GetProfiles().size());
+  ASSERT_EQ(1UL, address_data_manager()->GetProfiles().size());
   const autofill::AutofillProfile* profile =
-      personal_data_manager->address_data_manager().GetProfiles()[0];
+      address_data_manager()->GetProfiles()[0];
   DCHECK(profile);
   EXPECT_EQ(country_code, profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
@@ -278,25 +270,16 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                                DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
-  // Verifying the data is in the DB.
-  autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
-
   // Wait until the web database has been updated and the notification sent.
-  base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-      .WillOnce(QuitMessageLoop(&data_loop));
   views::View* editor_sheet = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::SHIPPING_ADDRESS_EDITOR_SHEET));
   EXPECT_TRUE(editor_sheet->AcceleratorPressed(
       ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE)));
-  data_loop.Run();
+  autofill::AddressDataChangedWaiter(address_data_manager()).Wait();
 
-  personal_data_manager->RemoveObserver(&personal_data_observer_);
-  ASSERT_EQ(1UL,
-            personal_data_manager->address_data_manager().GetProfiles().size());
+  ASSERT_EQ(1UL, address_data_manager()->GetProfiles().size());
   const autofill::AutofillProfile* profile =
-      personal_data_manager->address_data_manager().GetProfiles()[0];
+      address_data_manager()->GetProfiles()[0];
   DCHECK(profile);
   EXPECT_EQ(country_code, profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
@@ -328,22 +311,14 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                                DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
-  // Verifying the data is in the DB.
-  autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
-
   // Wait until the web database has been updated and the notification sent.
-  base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-      .WillOnce(QuitMessageLoop(&data_loop));
+  autofill::AddressDataChangedWaiter waiter(address_data_manager());
   ClickOnDialogViewAndWait(DialogViewID::SAVE_ADDRESS_BUTTON);
-  data_loop.Run();
+  std::move(waiter).Wait();
 
-  personal_data_manager->RemoveObserver(&personal_data_observer_);
-  ASSERT_EQ(1UL,
-            personal_data_manager->address_data_manager().GetProfiles().size());
+  ASSERT_EQ(1UL, address_data_manager()->GetProfiles().size());
   const autofill::AutofillProfile* profile =
-      personal_data_manager->address_data_manager().GetProfiles()[0];
+      address_data_manager()->GetProfiles()[0];
   DCHECK(profile);
   EXPECT_EQ(country_code, profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
@@ -484,22 +459,14 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                                DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
-  // Verifying the data is in the DB.
-  autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
-
   // Wait until the web database has been updated and the notification sent.
-  base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-      .WillOnce(QuitMessageLoop(&data_loop));
+  autofill::AddressDataChangedWaiter waiter(address_data_manager());
   ClickOnDialogViewAndWait(DialogViewID::SAVE_ADDRESS_BUTTON);
-  data_loop.Run();
+  std::move(waiter).Wait();
 
-  personal_data_manager->RemoveObserver(&personal_data_observer_);
-  ASSERT_EQ(1UL,
-            personal_data_manager->address_data_manager().GetProfiles().size());
+  ASSERT_EQ(1UL, address_data_manager()->GetProfiles().size());
   const autofill::AutofillProfile* profile =
-      personal_data_manager->address_data_manager().GetProfiles()[0];
+      address_data_manager()->GetProfiles()[0];
   DCHECK(profile);
 
   EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
@@ -529,22 +496,14 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                                DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
-  // Verifying the data is in the DB.
-  autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
-
   // Wait until the web database has been updated and the notification sent.
-  base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-      .WillOnce(QuitMessageLoop(&data_loop));
+  autofill::AddressDataChangedWaiter waiter(address_data_manager());
   ClickOnDialogViewAndWait(DialogViewID::SAVE_ADDRESS_BUTTON);
-  data_loop.Run();
+  std::move(waiter).Wait();
 
-  personal_data_manager->RemoveObserver(&personal_data_observer_);
-  ASSERT_EQ(1UL,
-            personal_data_manager->address_data_manager().GetProfiles().size());
+  ASSERT_EQ(1UL, address_data_manager()->GetProfiles().size());
   const autofill::AutofillProfile* profile =
-      personal_data_manager->address_data_manager().GetProfiles()[0];
+      address_data_manager()->GetProfiles()[0];
   DCHECK(profile);
 
   EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
@@ -588,26 +547,19 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   SetEditorTextfieldValue(kCountryWithoutStatesPhoneNumber,
                           autofill::PHONE_HOME_WHOLE_NUMBER);
 
-  // Verifying the data is in the DB.
-  autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
 
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
                                DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
   // Wait until the web database has been updated and the notification sent.
-  base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-      .WillOnce(QuitMessageLoop(&data_loop));
+  autofill::AddressDataChangedWaiter waiter(address_data_manager());
   ClickOnDialogViewAndWait(DialogViewID::SAVE_ADDRESS_BUTTON);
-  data_loop.Run();
+  std::move(waiter).Wait();
 
-  personal_data_manager->RemoveObserver(&personal_data_observer_);
-  ASSERT_EQ(1UL,
-            personal_data_manager->address_data_manager().GetProfiles().size());
+  ASSERT_EQ(1UL, address_data_manager()->GetProfiles().size());
   const autofill::AutofillProfile* saved_profile =
-      personal_data_manager->address_data_manager().GetProfiles()[0];
+      address_data_manager()->GetProfiles()[0];
   DCHECK(saved_profile);
   EXPECT_EQ(kCountryWithoutStates,
             saved_profile->GetInfo(autofill::ADDRESS_HOME_COUNTRY, kLocale));
@@ -787,22 +739,14 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                                DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
-  // Verifying the data is in the DB.
-  autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
-
   // Wait until the web database has been updated and the notification sent.
-  base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-      .WillOnce(QuitMessageLoop(&data_loop));
+  autofill::AddressDataChangedWaiter waiter(address_data_manager());
   ClickOnDialogViewAndWait(DialogViewID::SAVE_ADDRESS_BUTTON);
-  data_loop.Run();
+  std::move(waiter).Wait();
 
-  personal_data_manager->RemoveObserver(&personal_data_observer_);
-  ASSERT_EQ(1UL,
-            personal_data_manager->address_data_manager().GetProfiles().size());
+  ASSERT_EQ(1UL, address_data_manager()->GetProfiles().size());
   const autofill::AutofillProfile* profile =
-      personal_data_manager->address_data_manager().GetProfiles()[0];
+      address_data_manager()->GetProfiles()[0];
   DCHECK(profile);
   // Use GetRawInfo to get the country code.
   EXPECT_EQ(kCountryWithoutStatesCode,
@@ -1246,19 +1190,9 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                                DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN});
 
-  // Verifying the data is in the DB.
-  autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  personal_data_manager->AddObserver(&personal_data_observer_);
-
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(0);
-  ClickOnDialogViewAndWait(DialogViewID::SAVE_ADDRESS_BUTTON);
-
-  personal_data_manager->RemoveObserver(&personal_data_observer_);
   // In incognito, the profile should be available in shipping_profiles but it
   // shouldn't be saved to the PersonalDataManager.
-  ASSERT_EQ(0UL,
-            personal_data_manager->address_data_manager().GetProfiles().size());
-
+  ASSERT_EQ(0UL, address_data_manager()->GetProfiles().size());
   ASSERT_EQ(1UL, request->state()->shipping_profiles().size());
   autofill::AutofillProfile* profile =
       request->state()->shipping_profiles().back();

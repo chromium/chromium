@@ -221,15 +221,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   FrameTree* frame_tree() const { return frame_tree_; }
   void SetFrameTree(FrameTree& frame_tree) { frame_tree_ = &frame_tree; }
 
-  void set_new_content_rendering_delay_for_testing(
-      const base::TimeDelta& delay) {
-    new_content_rendering_delay_ = delay;
-  }
-
-  base::TimeDelta new_content_rendering_delay() {
-    return new_content_rendering_delay_;
-  }
-
   void set_owner_delegate(RenderWidgetHostOwnerDelegate* owner_delegate) {
     owner_delegate_ = owner_delegate;
   }

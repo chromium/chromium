@@ -14,17 +14,23 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   void SetUp() override { BaseLayoutAlgorithmTest::SetUp(); }
 
-  void ComputeCrossAxisTrackSizes(const MasonryLayoutAlgorithm& algorithm) {
-    cross_axis_tracks_ = std::make_unique<GridSizingTrackCollection>(
-        algorithm.ComputeCrossAxisTrackSizes());
+  void ComputeGeometry(const MasonryLayoutAlgorithm& algorithm) {
+    grid_axis_tracks_ = std::make_unique<GridSizingTrackCollection>(
+        algorithm.BuildGridAxisTracks());
   }
 
-  const GridRangeVector& Ranges() const { return cross_axis_tracks_->ranges_; }
+  const GridRangeVector& Ranges() const { return grid_axis_tracks_->ranges_; }
+  wtf_size_t SetCount() const { return grid_axis_tracks_->GetSetCount(); }
 
-  std::unique_ptr<GridSizingTrackCollection> cross_axis_tracks_;
+  LayoutUnit TrackSize(wtf_size_t index) const {
+    return grid_axis_tracks_->GetSetOffset(index + 1) -
+           grid_axis_tracks_->GetSetOffset(index);
+  }
+
+  std::unique_ptr<GridSizingTrackCollection> grid_axis_tracks_;
 };
 
-TEST_F(MasonryLayoutAlgorithmTest, TemplateTracksExpandedRanges) {
+TEST_F(MasonryLayoutAlgorithmTest, BuildRanges) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #masonry {
@@ -47,23 +53,52 @@ TEST_F(MasonryLayoutAlgorithmTest, TemplateTracksExpandedRanges) {
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
   MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
-  ComputeCrossAxisTrackSizes(algorithm);
+  ComputeGeometry(algorithm);
 
   const auto& ranges = Ranges();
-  EXPECT_EQ(ranges.size(), 10u);
+  EXPECT_EQ(ranges.size(), 3u);
 
-  const Vector<wtf_size_t> expected_repeater_indices = {0, 1, 1, 1, 1,
-                                                        1, 1, 2, 2, 2};
-  const Vector<wtf_size_t> expected_repeater_offsets = {0, 0, 1, 0, 1,
-                                                        0, 1, 0, 1, 2};
+  const Vector<wtf_size_t> expected_start_lines = {0, 1, 7};
+  const Vector<wtf_size_t> expected_track_counts = {1, 6, 3};
 
   for (wtf_size_t i = 0; i < ranges.size(); ++i) {
-    EXPECT_EQ(ranges[i].begin_set_index, i);
-    EXPECT_EQ(ranges[i].repeater_index, expected_repeater_indices[i]);
-    EXPECT_EQ(ranges[i].repeater_offset, expected_repeater_offsets[i]);
-    EXPECT_EQ(ranges[i].set_count, 1u);
-    EXPECT_EQ(ranges[i].start_line, i);
-    EXPECT_EQ(ranges[i].track_count, 1u);
+    EXPECT_EQ(ranges[i].start_line, expected_start_lines[i]);
+    EXPECT_EQ(ranges[i].track_count, expected_track_counts[i]);
+    EXPECT_FALSE(ranges[i].IsCollapsed());
+  }
+}
+
+TEST_F(MasonryLayoutAlgorithmTest, BuildFixedTrackSizes) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #masonry {
+      display: masonry;
+      masonry-template-tracks: 5% repeat(3, 10px 15%) repeat(1, 15px 5px 20px);
+    }
+    </style>
+    <div id="masonry"></div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ComputeGeometry(algorithm);
+
+  const Vector<int> expected_track_sizes = {5, 30, 45, 15, 5, 20};
+
+  const auto set_count = SetCount();
+  EXPECT_EQ(set_count, expected_track_sizes.size());
+  for (wtf_size_t i = 0; i < set_count; ++i) {
+    EXPECT_EQ(TrackSize(i), LayoutUnit(expected_track_sizes[i]));
   }
 }
 

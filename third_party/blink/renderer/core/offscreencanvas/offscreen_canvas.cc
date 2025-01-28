@@ -560,6 +560,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
 
   const SkAlphaType alpha_type = GetRenderingContextAlphaType();
   const SkColorType sk_color_type = GetRenderingContextSkColorType();
+  const viz::SharedImageFormat format = GetRenderingContextFormat();
   const gfx::ColorSpace color_space = GetRenderingContextColorSpace();
   if (use_shared_image) {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
@@ -586,7 +587,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     // another type of resource prover above is a sign that the graphics
     // pipeline is in a bad state (e.g. gpu process crashed, out of memory)
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        Size(), sk_color_type, alpha_type, color_space,
+        Size(), format, alpha_type, color_space,
         CanvasResourceProvider::ShouldInitialize::kCallClear, this);
   }
 

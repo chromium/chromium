@@ -21,7 +21,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -4120,14 +4119,14 @@ void AXPlatformNodeAuraLinux::NotifyAccessibilityEvent(
 
 std::optional<std::pair<int, int>>
 AXPlatformNodeAuraLinux::GetEmbeddedObjectIndicesForId(int id) {
-  auto iterator = base::ranges::find(hypertext_.hyperlinks, id);
+  auto iterator = std::ranges::find(hypertext_.hyperlinks, id);
   if (iterator == hypertext_.hyperlinks.end())
     return std::nullopt;
   int hyperlink_index = std::distance(hypertext_.hyperlinks.begin(), iterator);
 
   auto offset =
-      base::ranges::find(hypertext_.hyperlink_offset_to_index, hyperlink_index,
-                         &AXLegacyHypertext::OffsetToIndex::value_type::second);
+      std::ranges::find(hypertext_.hyperlink_offset_to_index, hyperlink_index,
+                        &AXLegacyHypertext::OffsetToIndex::value_type::second);
   if (offset == hypertext_.hyperlink_offset_to_index.end())
     return std::nullopt;
 

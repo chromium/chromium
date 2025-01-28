@@ -62,7 +62,7 @@ function sanitizePath(path: string): string {
 
 suite('<manage-mirrorsync>', () => {
   /* Holds the <manage-mirrorsync> app */
-  let appHolder: HTMLDivElement;
+  let appHolder: HTMLElement;
   /* The <manage-mirrorsync> app, this gets cleared before every test */
   let manageMirrorSyncApp: HTMLElement;
   /* The BrowserProxy element to make assertions on when methods are called */

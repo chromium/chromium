@@ -962,6 +962,7 @@
 <translation id="2674170444375937751">আপনি কি আপনার ইতিহাস থেকে এই পৃষ্ঠাগুলি মোছার বিষয়ে নিশ্চিত?</translation>
 <translation id="2674524144218093528">বাড়ি রঙ করা ও ফিনিশিং</translation>
 <translation id="2674804415323431591">সাজেশন মেনু লুকান</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> ট্যাব গ্রুপ আর উপলভ্য নেই</translation>
 <translation id="2677748264148917807">ছেড়ে চলে যান</translation>
 <translation id="2683195745483370038">অন্য ফলাফল পাওয়া গেছে</translation>
 <translation id="2686919536310834199">'লিখতে সাহায্য করো' ফিচার সম্পর্কে মতামত পাঠান।</translation>
@@ -2265,6 +2266,7 @@
 <translation id="5001526427543320409">থার্ড-পার্টি কুকি</translation>
 <translation id="5002932099480077015">সক্রিয় করা হলে, ফর্ম পূরণের কাজ দ্রুত করতে Chrome এই ডিভাইসে আপনার কার্ডের একটি কপি স্টোর করবে।</translation>
 <translation id="5007392906805964215">পর্যালোচনা করুন</translation>
+<translation id="500790844453430087">"<ph name="GROUP_TITLE_1" />" ও "<ph name="GROUP_TITLE_2" />" ট্যাব গ্রুপ আর উপলভ্য নেই</translation>
 <translation id="5011561501798487822">শনাক্ত করা ভাষা</translation>
 <translation id="5015510746216210676">মেশিনের নাম:</translation>
 <translation id="5017554619425969104">আপনার কপি করা টেক্সট</translation>
@@ -2737,6 +2739,7 @@
 <translation id="5866898949289125849">আপনি ডেভেলপারের টুল পৃষ্ঠা দেখছেন</translation>
 <translation id="5869405914158311789">এই সাইটটিতে পৌছানো যাচ্ছে না</translation>
 <translation id="5869522115854928033">সংরক্ষিত পাসওয়ার্ড</translation>
+<translation id="5872215789867188990">"<ph name="GROUP_TITLE" />" ট্যাব গ্রুপ আর উপলভ্য নেই</translation>
 <translation id="5872692522325383488">IBAN সেভ করা হয়েছে</translation>
 <translation id="5873297634595728366">ডিজেলে চলা গাড়ি</translation>
 <translation id="5877359070305966420">মানব সম্পদ</translation>

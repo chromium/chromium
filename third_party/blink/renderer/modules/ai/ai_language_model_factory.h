@@ -44,7 +44,7 @@ class AILanguageModelFactory final : public ScriptWrappable,
   void OnGetModelInfoComplete(
       ScriptPromiseResolver<AILanguageModelCapabilities>* resolver,
       AILanguageModelCapabilities* capabilities,
-      mojom::blink::AIModelInfoPtr model_info);
+      mojom::blink::AILanguageModelParamsPtr params);
   void OnCanCreateSessionComplete(
       ScriptPromiseResolver<AILanguageModelCapabilities>* resolver,
       mojom::blink::ModelAvailabilityCheckResult check_result);

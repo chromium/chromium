@@ -363,6 +363,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="5648328599815354043">Chrome poduzima dodatne mjere da ostanete sigurni online</translation>
 <translation id="565744775970812598">Fajl <ph name="FILE_NAME" /> može biti opasan, pa ga je Chrome blokirao.</translation>
 <translation id="566568153320186256">Chrome štedi energiju baterije ograničavanjem pozadinske aktivnosti i vizuelnih efekata, poput glatkog klizanja i broja slika u sekundi videozapisa. <ph name="BEGIN_LINK" />Saznajte više o Uštedi energije<ph name="END_LINK" /></translation>
+<translation id="567202749201779594">Izbrišite Chromeove podatke na svojem računu</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja}=1{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaš anonimni prozor se neće ponovo otvoriti.}one{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaš # anonimni prozor se neće ponovo otvoriti.}few{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaša # anonimna prozora se neće ponovo otvoriti.}other{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaših # anonimnih prozora se neće ponovo otvoriti.}}</translation>
 <translation id="5686916850681061684">Prilagodite i kontrolirajte Google Chrome. Potrebna je vaša pažnja – kliknite za detalje.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -475,6 +476,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="7024536598735240744">Greška prilikom otpakivanja: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalacija je zaustavljena.</translation>
 <translation id="7025800014283535195">Ovdje možete prebacivati između Chrome profila</translation>
+<translation id="7031914411614877914">Ako ste zaboravili šifru ili želite promijeniti tu postavku, <ph name="SETTINGS_LINK" />Chromeove podatke na računu.</translation>
 <translation id="7048502283602470098">Istražite AI</translation>
 <translation id="7059914902409643750">Prilagodite Chrome sebi</translation>
 <translation id="7071827361006050863">Chrome će uskoro izbrisati podatke o pregledanju</translation>

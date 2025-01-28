@@ -28,6 +28,7 @@
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/register_ad_macro_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
+#include "content/services/auction_worklet/report_win_browser_signals_lazy_filler.h"
 #include "content/services/auction_worklet/seller_lazy_filler.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/set_priority_bindings.h"
@@ -109,7 +110,8 @@ class ContextRecyclerTest : public testing::Test {
     std::optional<std::string> error_msg;
     EXPECT_TRUE(helper_
                     ->Compile(code, bidding_logic_url_,
-                              /*debug_id=*/nullptr, error_msg)
+                              /*debug_id=*/nullptr, /*cached_data=*/nullptr,
+                              error_msg)
                     .ToLocal(&script));
     EXPECT_FALSE(error_msg.has_value()) << error_msg.value();
     return script;
@@ -2929,7 +2931,7 @@ TEST_F(ContextRecyclerTest, SellerBrowserSignalsLazyFiller) {
     context_recycler.AddSellerBrowserSignalsLazyFiller();
     EXPECT_TRUE(
         context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
-            browser_signal_render_url_1, o1));
+            browser_signal_render_url_1, /*ad_components=*/nullptr, o1));
 
     EXPECT_EQ("\"https://a.org/render_url1\"",
               RunExpectString(scope, script, "test", o1));
@@ -2942,7 +2944,7 @@ TEST_F(ContextRecyclerTest, SellerBrowserSignalsLazyFiller) {
 
     EXPECT_TRUE(
         context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
-            browser_signal_render_url_2, o2));
+            browser_signal_render_url_2, /*ad_components=*/nullptr, o2));
 
     EXPECT_EQ("\"https://a.org/render_url2\"",
               RunExpectString(scope, script, "test", o2));
@@ -2961,7 +2963,7 @@ TEST_F(ContextRecyclerTest, SellerBrowserSignalsLazyFiller) {
     // Now fill it in for later but don't access it.
     EXPECT_TRUE(
         context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
-            browser_signal_render_url_1, o1));
+            browser_signal_render_url_1, /*ad_components=*/nullptr, o1));
   }
 
   {
@@ -2971,12 +2973,385 @@ TEST_F(ContextRecyclerTest, SellerBrowserSignalsLazyFiller) {
     o2 = v8::Object::New(isolate);
     EXPECT_TRUE(
         context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
-            browser_signal_render_url_2, o2));
+            browser_signal_render_url_2, /*ad_components=*/nullptr, o2));
 
     EXPECT_EQ("\"https://a.org/render_url2\"",
               RunExpectString(scope, script, "test", o2));
     EXPECT_EQ("\"https://a.org/render_url2\"",
               RunExpectString(scope, script, "test", o1));
+  }
+}
+
+TEST_F(ContextRecyclerTest,
+       SellerBrowserSignalsLazyFillerAdComponentsCreativeScanningMetadata) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeTrustedSignalsKVv1CreativeScanning);
+
+  const char kScript[] = R"(
+    function test(browserSignals) {
+      if (!('adComponentsCreativeScanningMetadata' in browserSignals))
+        return 'missing';
+      if (!browserSignals.adComponentsCreativeScanningMetadata)
+        return typeof(browserSignals.adComponentsCreativeScanningMetadata);
+      return JSON.stringify(
+          browserSignals.adComponentsCreativeScanningMetadata);
+    }
+  )";
+
+  GURL browser_signal_render_url("https://a.org/render_url1");
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  v8::Isolate* isolate = helper_->isolate();
+  ContextRecycler context_recycler(helper_.get());
+  context_recycler.AddSellerBrowserSignalsLazyFiller();
+
+  v8::Local<v8::Object> o1;
+  v8::Local<v8::Object> o2;
+
+  std::vector<mojom::CreativeInfoWithoutOwnerPtr> ad_components;
+
+  {
+    // Null components vector.
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url, /*ad_components=*/nullptr, o1));
+
+    EXPECT_EQ("missing", RunExpectString(scope, script, "test", o1));
+  }
+
+  {
+    // Empty components vector.
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url, &ad_components, o1));
+
+    EXPECT_EQ("missing", RunExpectString(scope, script, "test", o1));
+  }
+
+  {
+    // Non-trivial value.
+    ad_components.push_back(
+        auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+            blink::AdDescriptor(GURL("https://bar.test/1")),
+            /*creative_scanning_metadata=*/std::nullopt));
+
+    ad_components.push_back(
+        auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+            blink::AdDescriptor(GURL("https://bar.test/2")),
+            /*creative_scanning_metadata=*/"a"));
+
+    ad_components.push_back(
+        auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+            blink::AdDescriptor(GURL("https://bar.test/2")),
+            /*creative_scanning_metadata=*/"b"));
+
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url, &ad_components, o1));
+
+    EXPECT_EQ(R"([null,"a","b"])", RunExpectString(scope, script, "test", o1));
+  }
+
+  {
+    // Fill in an object with a non-empty vector, and don't access it.
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url, &ad_components, o1));
+  }
+
+  {
+    // Fill in a new object with a null vector, access the old object.
+    // Should not crash.
+    ContextRecyclerScope scope(context_recycler);
+    o2 = v8::Object::New(isolate);
+
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url, nullptr, o2));
+
+    EXPECT_EQ("undefined", RunExpectString(scope, script, "test", o1));
+    EXPECT_EQ("missing", RunExpectString(scope, script, "test", o2));
+  }
+}
+
+TEST_F(ContextRecyclerTest,
+       SellerBrowserSignalsLazyFillerDisabledCreativeScanningMetadata) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kFledgeTrustedSignalsKVv1CreativeScanning);
+
+  const char kScript[] = R"(
+    function test(browserSignals) {
+      if (!('adComponentsCreativeScanningMetadata' in browserSignals))
+        return 'missing';
+      if (!browserSignals.adComponentsCreativeScanningMetadata)
+        return typeof(browserSignals.adComponentsCreativeScanningMetadata);
+      return JSON.stringify(
+          browserSignals.adComponentsCreativeScanningMetadata);
+    }
+  )";
+
+  GURL browser_signal_render_url("https://a.org/render_url1");
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  v8::Isolate* isolate = helper_->isolate();
+  ContextRecycler context_recycler(helper_.get());
+  context_recycler.AddSellerBrowserSignalsLazyFiller();
+
+  v8::Local<v8::Object> o1;
+
+  std::vector<mojom::CreativeInfoWithoutOwnerPtr> ad_components;
+
+  {
+    // Non-trivial value, but missing since feature disabled.
+    ad_components.push_back(
+        auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+            blink::AdDescriptor(GURL("https://bar.test/1")),
+            /*creative_scanning_metadata=*/std::nullopt));
+
+    ad_components.push_back(
+        auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+            blink::AdDescriptor(GURL("https://bar.test/2")),
+            /*creative_scanning_metadata=*/"a"));
+
+    ad_components.push_back(
+        auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+            blink::AdDescriptor(GURL("https://bar.test/2")),
+            /*creative_scanning_metadata=*/"b"));
+
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url, &ad_components, o1));
+
+    EXPECT_EQ("missing", RunExpectString(scope, script, "test", o1));
+  }
+}
+
+TEST_F(ContextRecyclerTest, ReportWinBrowserSignalsLazyFiller) {
+  const char kScript[] = R"(
+    function test(browserSignals) {
+      return JSON.stringify(browserSignals.modelingSignals) + " " +
+        JSON.stringify(browserSignals.joinCount) + " " +
+        JSON.stringify(browserSignals.recency);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  const uint16_t browser_signal_modeling_signals1 = 1;
+  const uint16_t browser_signal_modeling_signals2 = 4;
+
+  const uint8_t browser_signal_join_count1 = 2;
+  const uint8_t browser_signal_join_count2 = 5;
+
+  const uint8_t browser_signal_recency1 = 3;
+  const uint8_t browser_signal_recency2 = 6;
+
+  v8::Isolate* isolate = helper_->isolate();
+  ContextRecycler context_recycler(helper_.get());
+
+  v8::Local<v8::Object> o1;
+  v8::Local<v8::Object> o2;
+
+  {
+    // Fill in o1.
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+    context_recycler.AddReportWinBrowserSignalsLazyFiller();
+    EXPECT_TRUE(context_recycler.report_win_lazy_filler()->FillInObject(
+        browser_signal_modeling_signals1, browser_signal_join_count1,
+        browser_signal_recency1, o1));
+
+    EXPECT_EQ("1 2 3", RunExpectString(scope, script, "test", o1));
+  }
+
+  {
+    // Fill in o2 with a different value.
+    ContextRecyclerScope scope(context_recycler);
+    o2 = v8::Object::New(isolate);
+
+    EXPECT_TRUE(context_recycler.report_win_lazy_filler()->FillInObject(
+        browser_signal_modeling_signals2, browser_signal_join_count2,
+        browser_signal_recency2, o2));
+
+    EXPECT_EQ("4 5 6", RunExpectString(scope, script, "test", o2));
+    // o1 was already accessed in the previous test.
+    EXPECT_EQ("1 2 3", RunExpectString(scope, script, "test", o1));
+  }
+
+  {
+    // Make a new object that isn't filled.
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+
+    EXPECT_EQ("undefined undefined undefined",
+              RunExpectString(scope, script, "test", o1));
+
+    // Now fill it in for later but don't access it.
+    EXPECT_TRUE(context_recycler.report_win_lazy_filler()->FillInObject(
+        browser_signal_modeling_signals1, browser_signal_join_count1,
+        browser_signal_recency1, o1));
+  }
+
+  {
+    // Filling in o2 will overwrite the unaccessed value for o1.
+    ContextRecyclerScope scope(context_recycler);
+
+    o2 = v8::Object::New(isolate);
+    EXPECT_TRUE(context_recycler.report_win_lazy_filler()->FillInObject(
+        browser_signal_modeling_signals2, browser_signal_join_count2,
+        browser_signal_recency2, o2));
+
+    EXPECT_EQ("4 5 6", RunExpectString(scope, script, "test", o2));
+    EXPECT_EQ("4 5 6", RunExpectString(scope, script, "test", o1));
+  }
+
+  {
+    // no modeling signals passed results in that field being undefined
+    ContextRecyclerScope scope(context_recycler);
+
+    o1 = v8::Object::New(isolate);
+    EXPECT_TRUE(context_recycler.report_win_lazy_filler()->FillInObject(
+        std::nullopt, browser_signal_join_count1, browser_signal_recency1, o1));
+
+    EXPECT_EQ("undefined 2 3", RunExpectString(scope, script, "test", o1));
+  }
+
+  {
+    // no recency passed results in that field being undefined
+    ContextRecyclerScope scope(context_recycler);
+
+    o1 = v8::Object::New(isolate);
+    EXPECT_TRUE(context_recycler.report_win_lazy_filler()->FillInObject(
+        browser_signal_modeling_signals1, browser_signal_join_count1,
+        std::nullopt, o1));
+
+    EXPECT_EQ("1 2 undefined", RunExpectString(scope, script, "test", o1));
+  }
+}
+
+// Test to ensure that when we access any of the following:
+// - `modelingSignals`
+// - `joinCount`
+// - `recency`
+// that `ShouldBlockSendEncrypted()` will be false.
+TEST_F(ContextRecyclerTest, ReportWinBrowserSignalsLazyFillerCheckAccess) {
+  const char kScript[] = R"(
+    function accessModelingSignals(browserSignals) {
+      return JSON.stringify(browserSignals.modelingSignals);
+    }
+
+    function accessJoinCount(browserSignals) {
+      return JSON.stringify(browserSignals.joinCount);
+    }
+
+    function accessRecency(browserSignals) {
+      return JSON.stringify(browserSignals.recency);
+    }
+
+    function accessNothing(browserSignals) {
+      return "nothing accessed";
+    }
+
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  const uint16_t browser_signal_modeling_signals1 = 1;
+  const uint8_t browser_signal_join_count1 = 2;
+  const uint8_t browser_signal_recency1 = 3;
+
+  v8::Isolate* isolate = helper_->isolate();
+  ContextRecycler context_recycler(helper_.get());
+
+  v8::Local<v8::Object> o1;
+  context_recycler.AddReportWinBrowserSignalsLazyFiller();
+
+  {
+    // Accessing `modelingSignals` makes `ShouldBlockSendEncrypted()` return
+    // true.
+    ContextRecyclerScope scope(context_recycler);
+
+    o1 = v8::Object::New(isolate);
+    EXPECT_TRUE(context_recycler.report_win_lazy_filler()->FillInObject(
+        browser_signal_modeling_signals1, browser_signal_join_count1,
+        browser_signal_recency1, o1));
+
+    EXPECT_EQ("1", RunExpectString(scope, script, "accessModelingSignals", o1));
+    // Since we accessed one of the fields, this should be true;
+    EXPECT_EQ(
+        context_recycler.report_win_lazy_filler()->ShouldBlockSendEncrypted(),
+        true);
+  }
+
+  {
+    // Accessing `joinCount` makes `ShouldBlockSendEncrypted()` return true.
+    ContextRecyclerScope scope(context_recycler);
+
+    o1 = v8::Object::New(isolate);
+    EXPECT_TRUE(context_recycler.report_win_lazy_filler()->FillInObject(
+        browser_signal_modeling_signals1, browser_signal_join_count1,
+        browser_signal_recency1, o1));
+
+    EXPECT_EQ("2", RunExpectString(scope, script, "accessJoinCount", o1));
+    // Since we accessed one of the fields, this should be true;
+    EXPECT_EQ(
+        context_recycler.report_win_lazy_filler()->ShouldBlockSendEncrypted(),
+        true);
+  }
+
+  {
+    // Accessing `joinCount` makes `ShouldBlockSendEncrypted()` return true.
+    ContextRecyclerScope scope(context_recycler);
+
+    o1 = v8::Object::New(isolate);
+    EXPECT_TRUE(context_recycler.report_win_lazy_filler()->FillInObject(
+        browser_signal_modeling_signals1, browser_signal_join_count1,
+        browser_signal_recency1, o1));
+
+    EXPECT_EQ("3", RunExpectString(scope, script, "accessRecency", o1));
+    // Since we accessed one of the fields, this should be true;
+    EXPECT_EQ(
+        context_recycler.report_win_lazy_filler()->ShouldBlockSendEncrypted(),
+        true);
+  }
+
+  {
+    // Nothing accessed, `ShouldBlockSendEncrypted()` should return false.
+    ContextRecyclerScope scope(context_recycler);
+
+    o1 = v8::Object::New(isolate);
+    EXPECT_TRUE(context_recycler.report_win_lazy_filler()->FillInObject(
+        browser_signal_modeling_signals1, browser_signal_join_count1,
+        browser_signal_recency1, o1));
+
+    EXPECT_EQ("nothing accessed",
+              RunExpectString(scope, script, "accessNothing", o1));
+    // Since we did not access any one of the fields, this should be false;
+    EXPECT_EQ(
+        context_recycler.report_win_lazy_filler()->ShouldBlockSendEncrypted(),
+        false);
   }
 }
 

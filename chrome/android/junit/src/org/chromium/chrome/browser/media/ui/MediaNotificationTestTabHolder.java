@@ -17,7 +17,7 @@ import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.media_session.mojom.MediaSessionAction;
 import org.chromium.services.media_session.MediaMetadata;
 import org.chromium.url.GURL;
@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 /** Utility class for holding a Tab and relevant objects for media notification tests. */
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public class MediaNotificationTestTabHolder {
-    @Mock WebContents mWebContents;
+    @Mock MockWebContents mWebContents;
     @Mock MediaSession mMediaSession;
     @Mock Tab mTab;
 

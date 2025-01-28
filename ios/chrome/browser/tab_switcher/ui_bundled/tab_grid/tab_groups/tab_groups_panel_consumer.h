@@ -13,8 +13,9 @@
 // groups panel UI.
 @protocol TabGroupsPanelConsumer
 
-// Replace the Tab Groups panel's items with `items`.
-- (void)populateItems:(NSArray<TabGroupsPanelItem*>*)items;
+// Replace the Tab Groups panel's items with the given items.
+- (void)populateNotificationItem:(TabGroupsPanelItem*)notificationItem
+                   tabGroupItems:(NSArray<TabGroupsPanelItem*>*)tabGroupItems;
 
 // Reconfigures the given Tab Groups panel's item.
 - (void)reconfigureItem:(TabGroupsPanelItem*)item;

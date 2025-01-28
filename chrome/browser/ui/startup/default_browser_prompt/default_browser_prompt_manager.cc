@@ -62,13 +62,6 @@ DefaultBrowserPromptManager* DefaultBrowserPromptManager::GetInstance() {
   return base::Singleton<DefaultBrowserPromptManager>::get();
 }
 
-void DefaultBrowserPromptManager::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-void DefaultBrowserPromptManager::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 void DefaultBrowserPromptManager::MaybeShowPrompt() {
   CHECK(base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh));
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
@@ -80,10 +73,6 @@ void DefaultBrowserPromptManager::MaybeShowPrompt() {
 
   if (!ShouldShowPrompts()) {
     return;
-  }
-
-  if (features::kShowDefaultBrowserAppMenuChip.Get()) {
-    SetShowAppMenuPromptVisibility(true);
   }
 
   if (features::kShowDefaultBrowserInfoBar.Get()) {
@@ -99,8 +88,6 @@ void DefaultBrowserPromptManager::CloseAllPrompts(CloseReason close_reason) {
   NOTREACHED() << "Unsupported platforms for showing default browser prompts.";
 #else
   CloseAllInfoBars();
-
-  SetShowAppMenuPromptVisibility(false);
 
   if (close_reason == CloseReason::kAccept) {
     SetAppMenuItemVisibility(false);
@@ -146,54 +133,6 @@ void DefaultBrowserPromptManager::CloseAllInfoBars() {
   }
 
   infobars_.clear();
-}
-
-void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibility(bool show) {
-  if (show == show_app_menu_prompt_) {
-    return;
-  }
-
-  if (show) {
-    PrefService* local_state = g_browser_process->local_state();
-    base::TimeDelta app_menu_remaining_duration;
-    if (local_state->FindPreference(prefs::kDefaultBrowserFirstShownTime)
-            ->IsDefaultValue()) {
-      local_state->SetTime(prefs::kDefaultBrowserFirstShownTime,
-                           base::Time::Now());
-      app_menu_remaining_duration =
-          features::kDefaultBrowserAppMenuDuration.Get();
-    } else {
-      base::Time first_shown_time =
-          local_state->GetTime(prefs::kDefaultBrowserFirstShownTime);
-      // There is a chance the remaining duration is negative due to time
-      // passing since `ShouldShowAppMenuPrompt()` was last checked, so clamp to
-      // >= 0.
-      app_menu_remaining_duration =
-          std::max(features::kDefaultBrowserAppMenuDuration.Get() -
-                       (base::Time::Now() - first_shown_time),
-                   base::Microseconds(0));
-    }
-
-    app_menu_prompt_dismiss_timer_.Start(
-        FROM_HERE, app_menu_remaining_duration, base::BindOnce([]() {
-          Browser* last_active = BrowserList::GetInstance()->GetLastActive();
-          // If there is no active browser, just dismiss the prompts and the
-          // prefs will be updated on the next startup.
-          if (last_active) {
-            chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
-                last_active->profile());
-          }
-          DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
-              CloseReason::kDismiss);
-        }));
-  } else {
-    app_menu_prompt_dismiss_timer_.Stop();
-  }
-
-  show_app_menu_prompt_ = show;
-  for (auto& obs : observers_) {
-    obs.OnShowAppMenuPromptChanged();
-  }
 }
 
 void DefaultBrowserPromptManager::SetAppMenuItemVisibility(bool show) {

@@ -189,4 +189,11 @@ bool IsShoppingPageTypesApiEnabled(AccountChecker* account_checker) {
              kShoppingPageTypes, kShoppingPageTypesRegionLaunched,
              account_checker->GetCountry(), account_checker->GetLocale());
 }
+
+bool IsParcelTrackingEligible(AccountChecker* account_checker) {
+  return account_checker && account_checker->IsSignedIn() &&
+         commerce::IsRegionLockedFeatureEnabled(
+             kParcelTracking, kParcelTrackingRegionLaunched,
+             account_checker->GetCountry(), account_checker->GetLocale());
+}
 }  // namespace commerce

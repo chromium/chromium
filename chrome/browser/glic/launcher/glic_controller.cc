@@ -22,7 +22,7 @@ void GlicController::Show() {
     return;
   }
 
-  glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)->LaunchUI(
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)->ToggleUI(
       nullptr);
 }
 

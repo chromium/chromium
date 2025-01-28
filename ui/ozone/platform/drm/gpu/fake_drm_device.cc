@@ -9,12 +9,12 @@
 
 #include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -120,14 +120,14 @@ ScopedDrmObjectPropertyPtr CreatePropertyObject(
 
 template <class Type>
 Type* FindObjectById(uint32_t id, std::vector<Type>& properties) {
-  auto it = base::ranges::find(properties, id, &Type::id);
+  auto it = std::ranges::find(properties, id, &Type::id);
   return it != properties.end() ? &(*it) : nullptr;
 }
 
 // The const version of FindObjectById().
 template <class Type>
 const Type* FindObjectById(uint32_t id, const std::vector<Type>& properties) {
-  auto it = base::ranges::find(properties, id, &Type::id);
+  auto it = std::ranges::find(properties, id, &Type::id);
   return it != properties.end() ? &(*it) : nullptr;
 }
 

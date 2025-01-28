@@ -12,7 +12,6 @@
 #import "base/containers/contains.h"
 #import "base/containers/flat_set.h"
 #import "base/memory/raw_ptr.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "build/branding_buildflags.h"
@@ -278,7 +277,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   }
 
   // Map from CredentialDetails to CredentialUIEntry. Should support blocklists.
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       _credentials, [credentialDetails](const CredentialUIEntry& credential) {
         return MatchesRealmUsernamePasswordAndCreationTime(credentialDetails,
                                                            credential);
@@ -307,7 +306,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 
 - (void)moveCredentialToAccountStore:(CredentialDetails*)credentialDetails {
   // Map from CredentialDetails to CredentialUIEntry.
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       _credentials, [credentialDetails](const CredentialUIEntry& credential) {
         return MatchesRealmUsernamePasswordAndCreationTime(credentialDetails,
                                                            credential);
@@ -326,7 +325,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 
 - (void)moveCredentialToAccountStoreWithConflict:
     (CredentialDetails*)credentialDetails {
-  auto localCredential = base::ranges::find_if(
+  auto localCredential = std::ranges::find_if(
       _credentials, [credentialDetails](const CredentialUIEntry& credential) {
         return MatchesRealmUsernamePasswordAndCreationTime(credentialDetails,
                                                            credential);
@@ -354,7 +353,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 - (void)didConfirmWarningDismissalForPassword:
     (CredentialDetails*)credentialDetails {
   // Map from CredentialDetails to CredentialUIEntry.
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       _credentials, [credentialDetails](
                         const password_manager::CredentialUIEntry& credential) {
         return MatchesRealmUsernamePasswordAndCreationTime(credentialDetails,
@@ -385,7 +384,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   CredentialUIEntry updatedCredential;
   std::vector<CredentialUIEntry>::iterator it;
   if (credentialDetails.credentialType == CredentialTypePasskey) {
-    it = base::ranges::find_if(
+    it = std::ranges::find_if(
         _credentials, [credentialDetails, oldUsername, oldUserDisplayName](
                           const CredentialUIEntry& credential) {
           return AreMatchingCredentials(credential, credentialDetails,
@@ -402,7 +401,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
     updatedCredential.user_display_name =
         SysNSStringToUTF16(credentialDetails.userDisplayName);
   } else if ([credentialDetails.password length] != 0) {
-    it = base::ranges::find_if(
+    it = std::ranges::find_if(
         _credentials, [credentialDetails, oldUsername, oldPassword,
                        oldNote](const CredentialUIEntry& credential) {
           return AreMatchingCredentials(credential, credentialDetails,
@@ -614,7 +613,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   // All credentials for the same website are in `_credentials` due to password
   // grouping. So it's enough to search that reduced list and not all saved
   // passwords.
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       _credentials, [credentialDetails](const CredentialUIEntry& credential) {
         return credential.stored_in.contains(
                    password_manager::PasswordForm::Store::kAccountStore) &&

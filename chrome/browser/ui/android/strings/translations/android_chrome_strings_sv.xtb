@@ -116,6 +116,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="1435593198351412143">Öppna PDF-filer automatiskt</translation>
 <translation id="1436784010935106834">Borttagna</translation>
 <translation id="1437543266176261764">Körs i <ph name="APP_NAME" /></translation>
+<translation id="1448147069872048656">Verifiera din identitet för att få åtkomst till alla dina lösenord på den här enheten</translation>
 <translation id="1448440926884431741">Organisera bevakade produkter under Bokmärken</translation>
 <translation id="1460751212339734034">Skriv mindre och spara tid</translation>
 <translation id="1466383950273130737">Välj språk i Chrome</translation>
@@ -848,6 +849,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4910889077668685004">Betalningsappar</translation>
 <translation id="4912413785358399818">Flytta flik</translation>
 <translation id="4913169188695071480">Sluta uppdatera</translation>
+<translation id="4913841543356834596">Få åtkomst till alla dina lösenord</translation>
 <translation id="4918086044614829423">Acceptera</translation>
 <translation id="4925120120285606924">Skärmbild <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Dina lösenord exporteras och laddas ned som en textfil. De blir synliga för alla personer och appar som har åtkomst till målmappen.</translation>
@@ -1331,6 +1333,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6987047470128880212">Inkognito är inte tillgängligt på den här enheten</translation>
 <translation id="6991701761229081516">Dina lösenord laddas ned som en CSV-fil. De blir synliga för alla som har åtkomst till filen, inklusive appar. Exporterade lösenord raderas från Chrome.</translation>
 <translation id="6996145122199359148">Ladda ned den här sidan</translation>
+<translation id="7013627768165542797">Verifiera din identitet för att få åtkomst till lösenord i Google-kontot</translation>
 <translation id="7013762323294215682">Den här nyckeln sparas i lösenordshanteraren. Alla som har åtkomst till den kan använda den här nyckeln.</translation>
 <translation id="7020741890149022655">Lägg till i läslistan <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Öppna i webbläsaren</translation>
@@ -1349,6 +1352,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7085332316435785646">Välj om du vill inkludera Chrome-historiken och få en mer anpassad upplevelse i Googles tjänster</translation>
 <translation id="7088681679121566888">Chrome har uppdaterats</translation>
 <translation id="7094933634769755999">Felaktig</translation>
+<translation id="7102843846294013537">Vissa av dina lösenord är inte tillgängliga på den här enheten</translation>
 <translation id="7106762743910369165">Webbläsaren hanteras av din organisation</translation>
 <translation id="7111394291981742152">Chrome ger dig större kontroll över annonserna du ser och begränsar vilken information webbplatser kan få om dig när de visar anpassade annonser.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Behörigheter har granskats för 1 webbplats}other{Behörigheter har granskats för # webbplatser}}</translation>

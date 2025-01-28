@@ -157,6 +157,30 @@ def CheckNoNewJs(input_api, output_api):
   return presubmit_support.DisallowNewJsFiles(input_api, output_api,
                                               lambda f: not excluded_path(f))
 
+
+def CheckNoNewPolymer(input_api, output_api):
+  EXCLUDED_PATHS = [
+    'chrome/browser/resources/ash/',
+    'chrome/browser/resources/chromeos/',
+    'chrome/browser/resources/password_manager/',
+    'chrome/browser/resources/print_preview/',
+    'chrome/browser/resources/settings/',
+  ]
+
+  normalized_excluded_paths = []
+  for path in EXCLUDED_PATHS:
+    normalized_excluded_paths.append(input_api.os_path.normpath(path))
+
+  def excluded_path(f):
+    for path in normalized_excluded_paths:
+      if f.LocalPath().startswith(path):
+        return True
+    return False
+
+  presubmit_support = _ImportWebDevStyle(input_api)
+  return presubmit_support.DisallowNewPolymerElements(
+      input_api, output_api, lambda f: not excluded_path(f))
+
 def CheckPatchFormatted(input_api, output_api):
   results = input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
                                                          check_js=True)

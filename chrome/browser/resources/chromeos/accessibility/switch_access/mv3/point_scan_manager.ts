@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import {constants} from '/common/constants.js';
-import {EventGenerator, MouseClickParams} from '/common/event_generator.js';
+import type {MouseClickParams} from '/common/event_generator.js';
+import {EventGenerator} from '/common/event_generator.js';
 
 import {ActionManager} from './action_manager.js';
 import {FocusRingManager} from './focus_ring_manager.js';
-import {PointNavigatorInterface} from './navigator_interfaces.js';
+import type {PointNavigatorInterface} from './navigator_interfaces.js';
 import {SwitchAccess} from './switch_access.js';
 import {MenuType, Mode} from './switch_access_constants.js';
 

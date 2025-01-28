@@ -8,7 +8,7 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
+import type {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
 /**
  * An interface for clients who want to get notified when an utterance

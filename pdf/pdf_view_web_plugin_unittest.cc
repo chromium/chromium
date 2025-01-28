@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
@@ -114,6 +115,11 @@ using ::testing::Pointwise;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::SizeIs;
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+constexpr char kPdfLoadedWithV2InkAnnotationsMetric[] =
+    "PDF.LoadedWithV2InkAnnotations";
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 // `kCanvasSize` needs to be big enough to hold plugin's snapshots during
 // testing.
@@ -3039,6 +3045,51 @@ TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInEditMode) {
   })"));
 
   pdf_receiver_.FlushForTesting();
+}
+
+using PdfViewWebPluginInkMetricTest = PdfViewWebPluginInkTest;
+
+TEST_F(PdfViewWebPluginInkMetricTest, LoadedWithoutV2InkAnnotations) {
+  base::HistogramTester histograms;
+
+  EXPECT_CALL(*engine_ptr_, ContainsV2InkPath()).WillOnce(Return(false));
+  plugin_->DocumentLoadComplete();
+
+  histograms.ExpectUniqueSample(kPdfLoadedWithV2InkAnnotationsMetric, false, 1);
+}
+
+TEST_F(PdfViewWebPluginInkMetricTest, LoadedWithV2InkAnnotations) {
+  base::HistogramTester histograms;
+
+  EXPECT_CALL(*engine_ptr_, ContainsV2InkPath()).WillOnce(Return(true));
+  plugin_->DocumentLoadComplete();
+
+  histograms.ExpectUniqueSample(kPdfLoadedWithV2InkAnnotationsMetric, true, 1);
+}
+
+class PdfViewWebPluginPrintPreviewInkMetricTest
+    : public PdfViewWebPluginPrintPreviewTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
+};
+
+TEST_F(PdfViewWebPluginPrintPreviewInkMetricTest,
+       LoadedWithV2InkAnnotationsDoesNotCountPrintPreview) {
+  base::HistogramTester histograms;
+
+  OnMessageWithEngineUpdate(ParseMessage(R"({
+    "type": "resetPrintPreviewMode",
+    "url": "chrome-untrusted://print/0/0/print.pdf",
+    "grayscale": false,
+    "pageCount": 1,
+  })"));
+
+  EXPECT_CALL(*engine_ptr_, ContainsV2InkPath()).Times(0);
+  plugin_->DocumentLoadComplete();
+
+  // The V2 ink annotations PDF load metric should not increment for Print
+  // Preview.
+  histograms.ExpectTotalCount(kPdfLoadedWithV2InkAnnotationsMetric, 0);
 }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 

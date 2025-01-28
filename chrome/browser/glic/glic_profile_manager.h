@@ -36,13 +36,14 @@ class GlicProfileManager {
   Profile* GetProfileForLaunch() const;
 
   // Called by GlicKeyedService.
-  void OnUILaunching(GlicKeyedService* glic);
+  void SetActiveGlic(GlicKeyedService* glic);
 
   // True if the given profile should be considered for preloading.
   bool ShouldPreloadForProfile(Profile* profile) const;
 
-  // Returns true if there is an active Glic window.
-  bool HasActiveGlicWindow() const;
+  // Returns true if there is an active Glic service, whether or not that
+  // service's panel is showing.
+  bool HasActiveGlicService() const;
 
   // Static in order to permit setting forced values before the manager is
   // constructed.

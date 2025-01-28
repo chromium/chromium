@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_BUBBLE_VIEW_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharesheet/sharesheet_ui_delegate.h"
 #include "chromeos/components/sharesheet/constants.h"
 #include "components/services/app_service/public/cpp/intent.h"

@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
@@ -2147,7 +2148,7 @@ bool WebFrameWidgetImpl::Resizable() const {
   return resizable_;
 }
 
-const WebVector<gfx::Rect>& WebFrameWidgetImpl::ViewportSegments() const {
+const std::vector<gfx::Rect>& WebFrameWidgetImpl::ViewportSegments() const {
   return viewport_segments_;
 }
 
@@ -3005,8 +3006,8 @@ void WebFrameWidgetImpl::DisableDevicePostureOverrideForEmulation() {
 
 void WebFrameWidgetImpl::SetViewportSegments(
     const std::vector<gfx::Rect>& viewport_segments_param) {
-  WebVector<gfx::Rect> viewport_segments(viewport_segments_param);
-  if (!viewport_segments_.Equals(viewport_segments)) {
+  std::vector<gfx::Rect> viewport_segments(viewport_segments_param);
+  if (viewport_segments_ != viewport_segments) {
     viewport_segments_ = viewport_segments;
     LocalFrame* frame = LocalRootImpl()->GetFrame();
     frame->ViewportSegmentsChanged(viewport_segments_);
@@ -3960,7 +3961,7 @@ bool WebFrameWidgetImpl::SetComposition(
     return false;
 
   return controller->SetComposition(
-      text, ime_text_spans,
+      text, base::ToVector(ime_text_spans),
       replacement_range.IsValid()
           ? WebRange(base::checked_cast<int>(replacement_range.start()),
                      base::checked_cast<int>(replacement_range.length()))
@@ -3977,7 +3978,7 @@ void WebFrameWidgetImpl::CommitText(
   if (!controller)
     return;
   controller->CommitText(
-      text, ime_text_spans,
+      text, base::ToVector(ime_text_spans),
       replacement_range.IsValid()
           ? WebRange(base::checked_cast<int>(replacement_range.start()),
                      base::checked_cast<int>(replacement_range.length()))
@@ -4153,7 +4154,7 @@ void WebFrameWidgetImpl::GetCompositionCharacterBoundsInWindow(
     return;
   blink::WebInputMethodController* controller =
       focused_frame->GetInputMethodController();
-  blink::WebVector<gfx::Rect> bounds_from_blink;
+  std::vector<gfx::Rect> bounds_from_blink;
   if (!controller->GetCompositionCharacterBounds(bounds_from_blink))
     return;
 
@@ -4286,12 +4287,13 @@ void WebFrameWidgetImpl::AddImeTextSpansToExistingText(
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame)
     return;
-  focused_frame->AddImeTextSpansToExistingText(ime_text_spans, start, end);
+  focused_frame->AddImeTextSpansToExistingText(base::ToVector(ime_text_spans),
+                                               start, end);
 }
 
 Vector<ui::mojom::blink::ImeTextSpanInfoPtr>
 WebFrameWidgetImpl::GetImeTextSpansInfo(
-    const WebVector<ui::ImeTextSpan>& ime_text_spans) {
+    const std::vector<ui::ImeTextSpan>& ime_text_spans) {
   auto* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame)
     return Vector<ui::mojom::blink::ImeTextSpanInfoPtr>();
@@ -4328,7 +4330,8 @@ void WebFrameWidgetImpl::SetCompositionFromExistingText(
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame)
     return;
-  focused_frame->SetCompositionFromExistingText(start, end, ime_text_spans);
+  focused_frame->SetCompositionFromExistingText(start, end,
+                                                base::ToVector(ime_text_spans));
 }
 
 void WebFrameWidgetImpl::ExtendSelectionAndDelete(int32_t before,

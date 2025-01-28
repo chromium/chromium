@@ -23,7 +23,7 @@ using mojom::DataFilter::FilterType::REGEX;
 static DataAggregatorService* g_data_aggregator_service = nullptr;
 
 constexpr base::TimeDelta kFetchFrequency = base::Minutes(1);
-constexpr size_t kDefaultLogBatchSize = 500;  // lines
+constexpr size_t kDefaultLogBatchSize = 100;  // lines
 
 constexpr size_t kPayloadMaxSizeBytes = 500 * 1000;  // 500Kb
 constexpr base::TimeDelta kPayloadEnqueueTimeout = base::Minutes(10);
@@ -76,10 +76,10 @@ const char* kLocalCommandSourcesSlowPoll[] = {
 
 constexpr base::TimeDelta kDefaultLogPollFrequency = base::Seconds(10);
 const char* kLocalLogSources[] = {
-    kCfmAuditLogFile,  kCfmBiosInfoLogFile,     kCfmChromeLogFile,
-    kCfmCrosEcLogFile, kCfmEventlogLogFile,     kCfmFwupdLogFile,
-    kCfmLacrosLogFile, kCfmPowerdLogFile,       kCfmSyslogLogFile,
-    kCfmUiLogFile,     kCfmUpdateEngineLogFile, kCfmVariationsListLogFile,
+    kCfmAuditLogFile,      kCfmBiosInfoLogFile,     kCfmChromeLogFile,
+    kCfmChromeUserLogFile, kCfmCrosEcLogFile,       kCfmEventlogLogFile,
+    kCfmFwupdLogFile,      kCfmPowerdLogFile,       kCfmSyslogLogFile,
+    kCfmUiLogFile,         kCfmUpdateEngineLogFile, kCfmVariationsListLogFile,
 };
 
 }  // namespace

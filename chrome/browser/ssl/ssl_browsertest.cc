@@ -224,6 +224,7 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::WebContents;
@@ -5655,6 +5656,13 @@ IN_PROC_BROWSER_TEST_F(SSLUITestNoCert, NewCertificateAuthority) {
 // into their NSS databases.
 class SSLUITestCustomCACerts : public SSLUITestNoCert {
  public:
+  static inline constexpr char kPrimaryUserAccount[] = "test1@test.com";
+  static inline constexpr GaiaId::Literal kPrimaryUserGaiaId{"1234567890"};
+  static inline constexpr char kPrimaryUserHash[] = "test1-hash";
+  static inline constexpr char kSecondaryUserAccount[] = "test2@test.com";
+  static inline constexpr GaiaId::Literal kSecondaryUserGaiaId{"9876543210"};
+  static inline constexpr char kSecondaryUserHash[] = "test2-hash";
+
   SSLUITestCustomCACerts() = default;
 
   SSLUITestCustomCACerts(const SSLUITestCustomCACerts&) = delete;
@@ -5668,6 +5676,23 @@ class SSLUITestCustomCACerts : public SSLUITestNoCert {
     // code knows not to expect cached policy for the secondary profile.
     command_line->AppendSwitchASCII(ash::switches::kProfileRequiresPolicy,
                                     "false");
+
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
+                                    kPrimaryUserAccount);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
+                                    kPrimaryUserHash);
+  }
+
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    SSLUITestNoCert::SetUpLocalStatePrefService(local_state);
+
+    // Register a persisted user.
+    user_manager::TestHelper::RegisterPersistedUser(
+        *local_state, AccountId::FromUserEmailGaiaId(kPrimaryUserAccount,
+                                                     kPrimaryUserGaiaId));
+    user_manager::TestHelper::RegisterPersistedUser(
+        *local_state, AccountId::FromUserEmailGaiaId(kSecondaryUserAccount,
+                                                     kSecondaryUserGaiaId));
   }
 
   void SetUpOnMainThread() override {
@@ -5677,10 +5702,6 @@ class SSLUITestCustomCACerts : public SSLUITestNoCert {
 
     // Create a second profile.
     {
-      static const char kSecondProfileAccount[] = "profile2@test.com";
-      static const char kSecondProfileGaiaId[] = "9876543210";
-      static const char kSecondProfileHash[] = "testProfile2";
-
       ON_CALL(policy_for_profile_2_, IsInitializationComplete(testing::_))
           .WillByDefault(testing::Return(true));
       ON_CALL(policy_for_profile_2_, IsFirstPolicyLoadComplete(testing::_))
@@ -5691,12 +5712,12 @@ class SSLUITestCustomCACerts : public SSLUITestNoCert {
       base::FilePath user_data_directory;
       base::PathService::Get(chrome::DIR_USER_DATA, &user_data_directory);
       session_manager::SessionManager::Get()->CreateSession(
-          AccountId::FromUserEmailGaiaId(kSecondProfileAccount,
-                                         GaiaId(kSecondProfileGaiaId)),
-          kSecondProfileHash, false);
+          AccountId::FromUserEmailGaiaId(kSecondaryUserAccount,
+                                         kSecondaryUserGaiaId),
+          kSecondaryUserHash, false);
       // Set up the secondary profile.
       base::FilePath profile_dir = user_data_directory.Append(
-          ash::ProfileHelper::GetUserProfileDir(kSecondProfileHash).BaseName());
+          ash::ProfileHelper::GetUserProfileDir(kSecondaryUserHash).BaseName());
       profile_2_ =
           g_browser_process->profile_manager()->GetProfile(profile_dir);
     }

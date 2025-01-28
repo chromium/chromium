@@ -56,6 +56,11 @@ void SpeechRecognizerImplAndroid::StartRecognition(
           this, config.language, config.continuous, config.interim_results));
 }
 
+void SpeechRecognizerImplAndroid::UpdateRecognitionContext(
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  // TODO(crbug.com/383911744): Show a not-supported error to the client.
+}
+
 void SpeechRecognizerImplAndroid::StartRecognitionOnUIThread(
     const std::string& language,
     bool continuous,

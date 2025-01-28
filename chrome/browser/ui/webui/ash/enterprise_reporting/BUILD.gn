@@ -4,7 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash, "Enterprise Reporting WebUI is ChromeOS Ash only.")
+assert(is_chromeos, "Enterprise Reporting WebUI is ChromeOS only.")
 
 mojom("mojo_bindings") {
   sources = [ "enterprise_reporting.mojom" ]

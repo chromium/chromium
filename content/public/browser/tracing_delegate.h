@@ -5,10 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_TRACING_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_TRACING_DELEGATE_H_
 
-#include <optional>
-
-#include "base/functional/callback.h"
-#include "base/values.h"
+#include "base/functional/callback_forward.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -24,6 +22,28 @@ class CONTENT_EXPORT TracingDelegate {
 
   // Specifies whether traces that aren't uploaded should still be saved.
   virtual bool ShouldSaveUnuploadedTrace() const;
+
+#if BUILDFLAG(IS_WIN)
+  // Runs `on_tracing_state` (asynchronously) with the current state of the
+  // Windows system tracing service for the running browser:
+  // - `service_supported`: true if the service is supported.
+  // - `service_enabled`: true if the service is enabled.
+  virtual void GetSystemTracingState(
+      base::OnceCallback<void(bool service_supported, bool service_enabled)>
+          on_tracing_state);
+
+  // Enables the Windows system tracing service and runs `on_complete` with
+  // the result of the operation. The user must pass a UAC prompt to enable the
+  // service.
+  virtual void EnableSystemTracing(
+      base::OnceCallback<void(bool success)> on_complete);
+
+  // Disables the Windows system tracing service and runs `on_complete` with
+  // the result of the operation. The user must pass a UAC prompt to disable the
+  // service.
+  virtual void DisableSystemTracing(
+      base::OnceCallback<void(bool success)> on_complete);
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace content

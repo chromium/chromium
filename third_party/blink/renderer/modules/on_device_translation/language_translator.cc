@@ -32,7 +32,7 @@ void LanguageTranslator::Trace(Visitor* visitor) const {
   visitor->Trace(pending_resolvers_);
 }
 
-// TODO(crbug.com/322229993): The new version is AITranslator::translate().
+// TODO(crbug.com/392185835): The new version is AITranslator::translate().
 // Delete this old version.
 ScriptPromise<IDLString> LanguageTranslator::translate(
     ScriptState* script_state,
@@ -55,7 +55,7 @@ ScriptPromise<IDLString> LanguageTranslator::translate(
   pending_resolvers_.insert(resolver);
   ScriptPromise<IDLString> promise = resolver->Promise();
 
-  translator_remote_->Translate(
+  translator_remote_->TranslateDeprecated(
       input, WTF::BindOnce(&LanguageTranslator::OnTranslateFinished,
                            WrapWeakPersistent(this), WrapPersistent(resolver)));
   return promise;

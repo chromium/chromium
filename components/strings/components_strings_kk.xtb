@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" кілттерін "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" кілттерімен бір сөздікте орнату мүмкін емес.</translation>
 <translation id="1455413310270022028">Өшіргіш</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{0 пікірді көру}=1{1 пікірді көру}other{Барлық # пікірді көру}}</translation>
 <translation id="1458059624921545588">Адам және қоғам</translation>
 <translation id="1458140305240870199">Іш киім</translation>
 <translation id="1459693405370120464">Ауа райы</translation>
@@ -1955,6 +1956,7 @@
 <translation id="4407758156081352648">Қауіпсіздікті сақтау мақсатында ұйымыңыз Chrome-да құпия сөздерді қайта пайдалануға рұқсат бермейді. Chrome-дағы құпия сөздер пайдаланушының құпиялығын қорғау үшін шифрланған.</translation>
 <translation id="4408413947728134509">Cookie файлдары: <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Бұл конфигурация орнатуға болады деп белгіленген, бірақ бұл архитектура үшін образ берілмеген, сондықтан оны орнату мүмкін емес.</translation>
+<translation id="4412377069090572315">Адамдардың пікірі</translation>
 <translation id="4414452699610169758">Құпия сөздерді, төлеу әдістерін және мекенжайларды сақтау және толтыру үшін Google Password Manager және Chrome браузерінің автотолтыру функциясын пайдаланыңыз.</translation>
 <translation id="4414515549596849729">cookie файлдары және сайт деректері</translation>
 <translation id="4415156962929755728">Пластик (жылтырлығы жоғары)</translation>
@@ -2776,6 +2778,7 @@
 <translation id="5937560539988385583">Бет аударылды.</translation>
 <translation id="5938153366081463283">Виртуалдық карта қосыңыз.</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Бұл ақпарат Trustpilot, ScamAdviser, Google және т.б. сияқты тәуелсіз пікірлер веб-сайттарынан алынған. Қорытындылар AI арқылы жасалған.</translation>
 <translation id="5944297261866530437">Мата (жылтырлығы жоғары)</translation>
 <translation id="5950901984834744590">Қырыну құралдары</translation>
 <translation id="5951495562196540101">Тұтынушының аккаунтымен тіркеу мүмкін емес (лицензия пакеті бар).</translation>
@@ -3142,6 +3145,7 @@
 <translation id="6567832540451970450">Әкімшіңіз осы сайт үшін <ph name="PERMISSION" /> рұқсатын берді.</translation>
 <translation id="6568793038316600992">"Төлеу әдістерін басқару" түймесі, Chrome параметрлерінде төлемдеріңіз және несиелік картаңыз туралы ақпаратты басқару үшін белсендіріңіз</translation>
 <translation id="6569060085658103619">Кеңейтім бетін көрудесіз</translation>
+<translation id="6572867903637058088">Пайдалы болды ма?</translation>
 <translation id="6573200754375280815">Оң жағын екі рет тесу</translation>
 <translation id="6574762126505704998">Толтыру</translation>
 <translation id="6575408526598156416">Аккаунтқа сақтау</translation>
@@ -4320,9 +4324,11 @@
 <translation id="8672535691554698269">Компьютер желілері</translation>
 <translation id="8675446170353411473">Файлдарыңыз <ph name="CLOUD_PROVIDER" /> қызметіне жүктеп салынып жатыр</translation>
 <translation id="8676424191133491403">Кідіріс жоқ</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} кесте жойылды.}other{{COUNT} кесте жойылды.}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, жауап, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> мекенжайындағы веб-бетті жүктеу мүмкін болмады, себебі:</translation>
 <translation id="8682297334444610648">Dino ойыны. Ойнау үшін түртіңіз.</translation>
+<translation id="8685225035093721011">Дүкен туралы пікірлер</translation>
 <translation id="8686424632716064939">Компьютер қауіпсіздігі</translation>
 <translation id="8687278439622293018"><ph name="ENTRY_VOICEOVER" /> жазбасы жойылды</translation>
 <translation id="8687429322371626002">Құрылғы мен аккаунтты <ph name="MANAGER" /> басқарады.</translation>

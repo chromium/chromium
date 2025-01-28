@@ -600,8 +600,13 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
 
     // Unmap the underlying buffer.
     mapping.reset();
-    return sk_image ? UnacceleratedStaticBitmapImage::Create(sk_image)
-                    : nullptr;
+    if (!sk_image) {
+      return nullptr;
+    }
+
+    auto image = UnacceleratedStaticBitmapImage::Create(sk_image);
+    image->SetOriginClean(OriginClean());
+    return image;
   }
 
   // In order to avoid creating multiple representations for this shared image

@@ -42,6 +42,8 @@ SpeechRecognizerFsm::ExecuteTransitionAndGetNextState(
           return NotFeasible(event_args);
         case EVENT_STOP_CAPTURE:
           return AbortSilently(event_args);
+        case EVENT_UPDATE_RECOGNITION_CONTEXT:
+          return UpdateRecognitionContext(event_args);
         case EVENT_AUDIO_DATA:     // Corner cases related to queued messages
         case EVENT_ENGINE_RESULT:  // being lately dispatched.
         case EVENT_ENGINE_ERROR:
@@ -59,6 +61,8 @@ SpeechRecognizerFsm::ExecuteTransitionAndGetNextState(
           return StartRecording(event_args);
         case EVENT_STOP_CAPTURE:
           return AbortSilently(event_args);
+        case EVENT_UPDATE_RECOGNITION_CONTEXT:
+          return UpdateRecognitionContext(event_args);
         case EVENT_AUDIO_DATA:     // Corner cases related to queued messages
         case EVENT_ENGINE_RESULT:  // being lately dispatched.
         case EVENT_ENGINE_ERROR:
@@ -83,6 +87,8 @@ SpeechRecognizerFsm::ExecuteTransitionAndGetNextState(
             return ProcessIntermediateResult(event_args);
           }
           return NotFeasible(event_args);
+        case EVENT_UPDATE_RECOGNITION_CONTEXT:
+          return UpdateRecognitionContext(event_args);
         case EVENT_ENGINE_ERROR:
         case EVENT_AUDIO_ERROR:
           return AbortWithError(event_args);
@@ -102,6 +108,8 @@ SpeechRecognizerFsm::ExecuteTransitionAndGetNextState(
           return WaitEnvironmentEstimationCompletion(event_args);
         case EVENT_ENGINE_RESULT:
           return ProcessIntermediateResult(event_args);
+        case EVENT_UPDATE_RECOGNITION_CONTEXT:
+          return UpdateRecognitionContext(event_args);
         case EVENT_ENGINE_ERROR:
         case EVENT_AUDIO_ERROR:
           return AbortWithError(event_args);
@@ -121,6 +129,8 @@ SpeechRecognizerFsm::ExecuteTransitionAndGetNextState(
           return DetectUserSpeechOrTimeout(event_args);
         case EVENT_ENGINE_RESULT:
           return ProcessIntermediateResult(event_args);
+        case EVENT_UPDATE_RECOGNITION_CONTEXT:
+          return UpdateRecognitionContext(event_args);
         case EVENT_ENGINE_ERROR:
         case EVENT_AUDIO_ERROR:
           return AbortWithError(event_args);
@@ -140,6 +150,8 @@ SpeechRecognizerFsm::ExecuteTransitionAndGetNextState(
           return DetectEndOfSpeech(event_args);
         case EVENT_ENGINE_RESULT:
           return ProcessIntermediateResult(event_args);
+        case EVENT_UPDATE_RECOGNITION_CONTEXT:
+          return UpdateRecognitionContext(event_args);
         case EVENT_ENGINE_ERROR:
         case EVENT_AUDIO_ERROR:
           return AbortWithError(event_args);
@@ -158,6 +170,8 @@ SpeechRecognizerFsm::ExecuteTransitionAndGetNextState(
           return DoNothing(event_args);
         case EVENT_ENGINE_RESULT:
           return ProcessFinalResult(event_args);
+        case EVENT_UPDATE_RECOGNITION_CONTEXT:
+          return UpdateRecognitionContext(event_args);
         case EVENT_ENGINE_ERROR:
         case EVENT_AUDIO_ERROR:
           return AbortWithError(event_args);

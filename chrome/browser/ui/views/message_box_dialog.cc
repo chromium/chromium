@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/simple_message_box_internal.h"

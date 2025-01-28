@@ -20,7 +20,6 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -54,14 +53,11 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "components/drive/file_system_core_util.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "components/drive/file_system_core_util.h"
 #include "components/user_manager/user.h"
 #endif
 
@@ -85,7 +81,7 @@ class PrintingContextDelegate : public PrintingContext::Delegate {
 };
 
 const AccountId& GetAccountId(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
   return user ? user->GetAccountId() : EmptyAccountId();
 #else
@@ -192,7 +188,7 @@ void PrintToPdfCallback(scoped_refptr<base::RefCountedMemory> data,
 void OnPdfPrintedCallback(const AccountId& account_id,
                           const base::FilePath& path,
                           base::OnceClosure pdf_file_saved_closure) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* profile =
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   if (profile) {
@@ -533,7 +529,7 @@ void PdfPrinterHandler::OnDirectorySelected(const base::FilePath& filename,
 }
 
 base::FilePath PdfPrinterHandler::GetSaveLocation() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   drive::DriveIntegrationService* drive_service =
       drive::DriveIntegrationServiceFactory::GetForProfile(profile_);
   if (use_drive_mount_ && drive_service && drive_service->IsMounted()) {

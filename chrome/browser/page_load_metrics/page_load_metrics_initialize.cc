@@ -188,21 +188,21 @@ void PageLoadMetricsEmbedder::RegisterObservers(
         std::make_unique<HttpsEngagementPageLoadMetricsObserver>(
             web_contents()->GetBrowserContext()));
     tracker->AddObserver(std::make_unique<ProtocolPageLoadMetricsObserver>());
+    bool is_incognito = IsIncognito(tracker->GetWebContents());
     std::unique_ptr<page_load_metrics::AdsPageLoadMetricsObserver>
         ads_observer =
             page_load_metrics::AdsPageLoadMetricsObserver::CreateIfNeeded(
                 tracker->GetWebContents(),
                 HeavyAdServiceFactory::GetForBrowserContext(
                     tracker->GetWebContents()->GetBrowserContext()),
-                base::BindRepeating(&GetApplicationLocale),
-                IsIncognito(tracker->GetWebContents()));
+                base::BindRepeating(&GetApplicationLocale), is_incognito);
     if (ads_observer)
       tracker->AddObserver(std::move(ads_observer));
 
     tracker->AddObserver(std::make_unique<ThirdPartyMetricsObserver>());
 
     std::unique_ptr<page_load_metrics::PageLoadMetricsObserver> ukm_observer =
-        UkmPageLoadMetricsObserver::CreateIfNeeded();
+        UkmPageLoadMetricsObserver::CreateIfNeeded(is_incognito);
     if (ukm_observer)
       tracker->AddObserver(std::move(ukm_observer));
 

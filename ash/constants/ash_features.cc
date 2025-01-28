@@ -1203,6 +1203,11 @@ BASE_FEATURE(kGrowthCampaignsCrOSEvents,
              "GrowthCampaignsCrOSEvents",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables demo mode sign in with growth campaigns.
+BASE_FEATURE(kGrowthCampaignsDemoModeSignIn,
+             "GrowthCampaignsDemoModeSignIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether growth campaigns experiment tag targeting is enabled. The
 // flag also used by finch to tag the session with finch params.
 BASE_FEATURE(kGrowthCampaignsExperimentTagTargeting,
@@ -3683,6 +3688,10 @@ bool IsGrowthCampaignsNudgeParentToAppWindow() {
 
 bool IsGrowthCampaignsCrOSEventsEnabled() {
   return base::FeatureList::IsEnabled(kGrowthCampaignsCrOSEvents);
+}
+
+bool IsGrowthCampaignsDemoModeSignInEnabled() {
+  return base::FeatureList::IsEnabled(kGrowthCampaignsDemoModeSignIn);
 }
 
 bool IsGrowthCampaignsExperimentTagTargetingEnabled() {

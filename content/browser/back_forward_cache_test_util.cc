@@ -4,7 +4,8 @@
 
 #include "content/browser/back_forward_cache_test_util.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "content/common/content_navigation_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -20,7 +21,7 @@ using ::testing::UnorderedElementsAreArray;
 
 void AddSampleToBuckets(std::vector<base::Bucket>* buckets,
                         base::HistogramBase::Sample32 sample) {
-  auto it = base::ranges::find(*buckets, sample, &base::Bucket::min);
+  auto it = std::ranges::find(*buckets, sample, &base::Bucket::min);
   if (it == buckets->end()) {
     buckets->push_back(base::Bucket(sample, 1));
   } else {
@@ -206,15 +207,15 @@ void BackForwardCacheMetricsTestMatcher::ExpectReasons(
     base::Location location) {
   // Check that the expected reasons are consistent.
   bool expect_blocklisted =
-      base::ranges::count(
+      std::ranges::count(
           not_restored,
           BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures) > 0;
   bool has_blocklisted = block_listed.size() > 0;
   EXPECT_EQ(expect_blocklisted, has_blocklisted);
   bool expect_disabled_for_render_frame_host =
-      base::ranges::count(not_restored,
-                          BackForwardCacheMetrics::NotRestoredReason::
-                              kDisableForRenderFrameHostCalled) > 0;
+      std::ranges::count(not_restored,
+                         BackForwardCacheMetrics::NotRestoredReason::
+                             kDisableForRenderFrameHostCalled) > 0;
   bool has_disabled_for_render_frame_host =
       disabled_for_render_frame_host.size() > 0;
   EXPECT_EQ(expect_disabled_for_render_frame_host,

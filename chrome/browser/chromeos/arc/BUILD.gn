@@ -30,23 +30,18 @@ static_library("arc") {
   ]
 
   deps = [
+    "//ash/components/arc",
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/arc/intent_helper",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
     "//components/services/app_service",
     "//components/sharing_message",
     "//components/sync_device_info",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/components/arc",
-      "//chrome/browser/ash/arc/intent_helper",
-    ]
-  }
 }
 
 source_set("unit_tests") {

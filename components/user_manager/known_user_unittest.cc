@@ -135,28 +135,23 @@ TEST_F(KnownUserTest, FindPrefsMatchForGaiaAccountWithEmail) {
   KnownUser known_user(local_state());
   const char* kEmailA = "a@gmail.com";
   const char* kEmailB = "b@gmail.com";
-  const char* kGaiaIdA = "a";
-  const char* kGaiaIdB = "b";
+  const GaiaId kGaiaIdA("a");
+  const GaiaId kGaiaIdB("b");
 
-  known_user.SaveKnownUser(
-      AccountId::FromUserEmailGaiaId(kEmailA, GaiaId(kGaiaIdA)));
+  known_user.SaveKnownUser(AccountId::FromUserEmailGaiaId(kEmailA, kGaiaIdA));
 
   // Finding by itself should work
-  EXPECT_TRUE(
-      FindPrefs(AccountId::FromUserEmailGaiaId(kEmailA, GaiaId(kGaiaIdA))));
+  EXPECT_TRUE(FindPrefs(AccountId::FromUserEmailGaiaId(kEmailA, kGaiaIdA)));
   // Finding by gaia id should also work even if the e-mail doesn't match.
-  EXPECT_TRUE(
-      FindPrefs(AccountId::FromUserEmailGaiaId(kEmailB, GaiaId(kGaiaIdA))));
+  EXPECT_TRUE(FindPrefs(AccountId::FromUserEmailGaiaId(kEmailB, kGaiaIdA)));
   // Finding by e-mail should also work even if the gaia id doesn't match.
   // TODO(https://crbug.com/1190902): This should likely be EXPECT_FALSE going
   // forward.
-  EXPECT_TRUE(
-      FindPrefs(AccountId::FromUserEmailGaiaId(kEmailA, GaiaId(kGaiaIdB))));
+  EXPECT_TRUE(FindPrefs(AccountId::FromUserEmailGaiaId(kEmailA, kGaiaIdB)));
 
   // An unrelated gaia AccountId with the same Account Type doesn't find
   // anything.
-  EXPECT_FALSE(
-      FindPrefs(AccountId::FromUserEmailGaiaId(kEmailB, GaiaId(kGaiaIdB))));
+  EXPECT_FALSE(FindPrefs(AccountId::FromUserEmailGaiaId(kEmailB, kGaiaIdB)));
 
   // Looking up an AccountId stored as gaia by an unknown-type AccountId with
   // the same e-mail address succeeds.

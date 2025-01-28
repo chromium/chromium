@@ -36,6 +36,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
@@ -466,14 +467,26 @@ class MultiProfileDriveFileSystemExtensionApiTest
                                     "false");
   }
 
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    InProcessBrowserTest::SetUpLocalStatePrefService(local_state);
+
+    // Register persisted users.
+    user_manager::TestHelper::RegisterPersistedUser(
+        *local_state,
+        AccountId::FromUserEmailGaiaId("testuser@gmail.com", GaiaId("123456")));
+    user_manager::TestHelper::RegisterPersistedUser(
+        *local_state, AccountId::FromUserEmailGaiaId(kSecondProfileAccount,
+                                                     kSecondProfileGaiaId));
+  }
+
   void SetUpOnMainThread() override {
+    // Set up the secondary user session.
     base::FilePath user_data_directory;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_directory);
     session_manager::SessionManager::Get()->CreateSession(
         AccountId::FromUserEmailGaiaId(kSecondProfileAccount,
                                        kSecondProfileGaiaId),
         kSecondProfileHash, false);
-    // Set up the secondary profile.
     base::FilePath profile_dir = user_data_directory.AppendASCII(
         ash::BrowserContextHelper::GetUserBrowserContextDirName(
             kSecondProfileHash));

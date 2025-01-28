@@ -391,6 +391,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 
 #ifndef NDEBUG
 using WeakDocumentSet = blink::HeapHashSet<blink::WeakMember<blink::Document>>;
@@ -6843,8 +6844,7 @@ static bool IsValidNameNonASCII(base::span<const LChar> characters) {
 static bool IsValidNameNonASCII(base::span<const UChar> characters) {
   for (size_t i = 0; i < characters.size();) {
     bool first = i == 0;
-    UChar32 c;
-    U16_NEXT(characters, i, characters.size(), c);  // Increments i.
+    UChar32 c = CodePointAtAndNext(characters, i);
     if (first ? !IsValidNameStart(c) : !IsValidNamePart(c))
       return false;
   }
@@ -6910,8 +6910,7 @@ static ParseQualifiedNameResult ParseQualifiedNameInternal(
   size_t colon_pos = 0;
 
   for (size_t i = 0; i < characters.size();) {
-    UChar32 c;
-    U16_NEXT(characters, i, characters.size(), c);
+    UChar32 c = CodePointAtAndNext(characters, i);
     if (c == ':') {
       if (saw_colon)
         return ParseQualifiedNameResult(kQNMultipleColons);

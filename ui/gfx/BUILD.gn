@@ -222,6 +222,8 @@ component("gfx") {
       "win/d3d_shared_fence.h",
       "win/direct_write.cc",
       "win/direct_write.h",
+      "win/get_elevation_icon.cc",
+      "win/get_elevation_icon.h",
       "win/hwnd_util.cc",
       "win/hwnd_util.h",
       "win/msg_util.h",
@@ -787,7 +789,10 @@ test("gfx_unittests") {
     ]
   }
   if (is_win) {
-    sources += [ "font_fallback_win_unittest.cc" ]
+    sources += [
+      "font_fallback_win_unittest.cc",
+      "win/get_elevation_icon_unittest.cc",
+    ]
   }
   if (is_ios) {
     sources += [

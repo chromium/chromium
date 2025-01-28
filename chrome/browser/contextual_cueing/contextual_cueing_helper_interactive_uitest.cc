@@ -40,10 +40,17 @@ class FakeGlicNudgeObserver : public GlicNudgeObserver {
 class ContextualCueingHelperBrowserTest : public InProcessBrowserTest {
  public:
   ContextualCueingHelperBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton,
-         contextual_cueing::kContextualCueing},
-        {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        // Disable feature engagement logic.
+        {{contextual_cueing::kContextualCueing,
+          {{"BackoffTime", "0h"},
+           {"BackoffMultiplierBase", "0.0"},
+           {"NudgeCapTime", "0h"},
+           {"NudgeCapCount", "10"},
+           {"MinPageCountBetweenNudges", "0"}}},
+         {features::kGlic, {}},
+         {features::kTabstripComboButton, {}}},
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -133,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
-                       TestCueLabelDisplayedForActiveTab) {
+                       TestCueLabelClearedOnTabChange) {
   EnableSignIn();
   SetUpEnabledHints();
 
@@ -153,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   EXPECT_TRUE(nudge_observer.last_nudge_label_.empty());
 
   browser()->tab_strip_model()->ActivateTabAt(1);
-  EXPECT_EQ("test label", nudge_observer.last_nudge_label_);
+  EXPECT_TRUE(nudge_observer.last_nudge_label_.empty());
 
   browser()->tab_strip_model()->ActivateTabAt(2);
   EXPECT_TRUE(nudge_observer.last_nudge_label_.empty());

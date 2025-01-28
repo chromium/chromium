@@ -83,6 +83,29 @@ class FingerprintingProtectionPageActivationThrottle
                            GetActivationComputesLevelAndDecision);
   FRIEND_TEST_ALL_PREFIXES(FPFPageActivationThrottleTestRefreshHeuristicUmaTest,
                            RefreshHeuristicUmasAreLoggedCorrectly);
+  FRIEND_TEST_ALL_PREFIXES(
+      FPFPageActivationThrottleWithTrackingProtectionSettingTest,
+      GetActivationComputesLevelAndDecision);
+
+  // Helper for `GetActivation()`.
+  // If feature flags and related settings immediately determine the result of
+  // `GetActivation()` (i.e. with further exceptions and considerations being
+  // irrelevant), this returns true and sets `result` to the value that should
+  // be returned. Otherwise, returns false, which in the context of
+  // `GetActivation` means that FPP will be enabled unless there is an
+  // exception.
+  bool IsFpActivationDeterminedByFeatureFlags(
+      GetActivationResult* result) const;
+
+  // Helper for `GetActivation()`.
+  // Checks if the current URL has an exception due to the refresh heuristic.
+  // UMAs and a UKM may be logged.
+  bool DoesUrlHaveRefreshHeuristicException() const;
+
+  // Helper for `GetActivation()`.
+  // Checks if the current URL has a Tracking Protection exception. If it does,
+  // then a UKM is logged.
+  bool DoesUrlHaveTrackingProtectionException() const;
 
   // Computes the ActivationLevel and ActivationDecision for the current URL
   // based on feature flags/params and prefs. This function is necessary because

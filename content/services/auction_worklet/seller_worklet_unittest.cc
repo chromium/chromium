@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "content/services/auction_worklet/seller_worklet.h"
 
 #include <algorithm>
@@ -16,7 +15,6 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
@@ -1678,6 +1676,19 @@ TEST_F(SellerWorkletTest, ScoreAdMedata) {
   RunScoreAdWithReturnValueExpectingResult("1", 0);
 }
 
+TEST_F(SellerWorkletTest, ScoreAdCreativeScanningMetadata) {
+  // Passed in even when send_creative_scanning_metadata_ is false
+  send_creative_scanning_metadata_ = false;
+
+  creative_scanning_metadata_ = std::nullopt;
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('creativeScanningMetadata' in browserSignals ? 4 : 3)", 3);
+
+  creative_scanning_metadata_ = "hello";
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.creativeScanningMetadata === 'hello' ? 4 : 3)", 4);
+}
+
 TEST_F(SellerWorkletTest, ScoreAdSelectedBuyerAndSellerReportingId) {
   browser_signal_selected_buyer_and_seller_reporting_id_ = "foo";
 
@@ -1874,6 +1885,55 @@ TEST_F(SellerWorkletTest, ScoreAdAdComponents) {
       R"(browserSignals.adComponents[1] === "https://1.test/" ? 3 : 0)", 3);
   RunScoreAdWithReturnValueExpectingResult(
       R"(browserSignals.adComponents[2] === "https://3.test/" ? 3 : 0)", 3);
+}
+
+TEST_F(SellerWorkletTest, ScoreAdAdComponentsCreativeScanningMetadata) {
+  // Passed in even when send_creative_scanning_metadata_ is false
+  send_creative_scanning_metadata_ = false;
+
+  component_ads_.clear();
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('adComponentsCreativeScanningMetadata' in browserSignals? 3 : 2)", 2);
+
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://bar.test/path")),
+          /*creative_scanning_metadata=*/std::nullopt));
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponentsCreativeScanningMetadata.length)", 1);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponentsCreativeScanningMetadata[0] === null ?
+         3 : 0)",
+      3);
+
+  // These are not in lexical order to make sure ordering is preserved.
+  component_ads_.clear();
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://2.test/")),
+          /*creative_scanning_metadata=*/"2nd"));
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://1.test/")),
+          /*creative_scanning_metadata=*/std::nullopt));
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://3.test/")),
+          /*creative_scanning_metadata=*/"3rd"));
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponentsCreativeScanningMetadata.length)", 3);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponentsCreativeScanningMetadata[0] ===
+         "2nd" ? 3 : 0)",
+      3);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponentsCreativeScanningMetadata[1] ===
+         null ? 3 : 0)",
+      3);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponentsCreativeScanningMetadata[2] ===
+         "3rd" ? 3 : 0)",
+      3);
 }
 
 TEST_F(SellerWorkletTest, ScoreAdBid) {
@@ -3337,6 +3397,25 @@ TEST_F(SellerWorkletTest, ReportResultDateNotAvailable) {
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught ReferenceError: Date is not defined."});
+}
+
+TEST_F(SellerWorkletTest, ReportResultNoAdComponentsCreativeScanningMetadata) {
+  send_creative_scanning_metadata_ = true;
+
+  component_ads_.clear();
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://bar.test/path")),
+          /*creative_scanning_metadata=*/"stuff"));
+
+  const char kScript[] = R"(
+    sendReportTo("https://foo.test?" +
+        ('adComponentsCreativeScanningMetadata' in browserSignals? 3 : 2));
+  )";
+
+  RunReportResultCreatedScriptExpectingResult(
+      "1", kScript,
+      /*expected_signals_for_winner=*/"1", GURL("https://foo.test/?2"));
 }
 
 TEST_F(SellerWorkletTest, ReportResultTopWindowOrigin) {
@@ -5164,7 +5243,7 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
 
   // Should not see scriptParsed before resume.
   std::list<TestChannel::Event> events1 = channel1->TakeAllEvents();
-  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events1, is_script_parsed));
 
   // Unpause execution for #1.
   EXPECT_FALSE(run_loop1.AnyQuitCalled());
@@ -5183,7 +5262,7 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
 
   // There shouldn't be a parsed notification on channel 2, however.
   std::list<TestChannel::Event> events2 = channel2->TakeAllEvents();
-  EXPECT_TRUE(base::ranges::none_of(events2, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events2, is_script_parsed));
 
   // Unpause execution for #2.
   EXPECT_FALSE(run_loop2.AnyQuitCalled());
@@ -5207,8 +5286,8 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
   // No other scriptParsed events should be on either channel.
   events1 = channel1->TakeAllEvents();
   events2 = channel2->TakeAllEvents();
-  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
-  EXPECT_TRUE(base::ranges::none_of(events2, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events1, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events2, is_script_parsed));
 }
 
 TEST_F(SellerWorkletTwoThreadsTest, BasicV8Debug) {
@@ -5270,9 +5349,9 @@ TEST_F(SellerWorkletTwoThreadsTest, BasicV8Debug) {
 
   // Should not see scriptParsed before resume.
   std::list<TestChannel::Event> events0 = channel0->TakeAllEvents();
-  EXPECT_TRUE(base::ranges::none_of(events0, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events0, is_script_parsed));
   std::list<TestChannel::Event> events1 = channel1->TakeAllEvents();
-  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events1, is_script_parsed));
 
   // Unpause execution for `channel0`. Expect that `run_loop` hasn't quit, as
   // the worklet is waiting on both V8 threads to resume.
@@ -5293,7 +5372,7 @@ TEST_F(SellerWorkletTwoThreadsTest, BasicV8Debug) {
   // `channel0` should have had a parsed notification for kUrl1, as the
   // ScoreAd is executed on the corresponding thread.
   events1 = channel1->TakeAllEvents();
-  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events1, is_script_parsed));
 
   TestChannel::Event script_parsed0 =
       channel0->WaitForMethodNotification("Debugger.scriptParsed");
@@ -5308,8 +5387,8 @@ TEST_F(SellerWorkletTwoThreadsTest, BasicV8Debug) {
   // No other scriptParsed events should be on any channel.
   events0 = channel0->TakeAllEvents();
   events1 = channel1->TakeAllEvents();
-  EXPECT_TRUE(base::ranges::none_of(events0, is_script_parsed));
-  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events0, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events1, is_script_parsed));
 }
 
 TEST_F(SellerWorkletTest, ParseErrorV8Debug) {
@@ -5380,20 +5459,14 @@ TEST_F(SellerWorkletTwoThreadsTest, ParseErrorV8Debug) {
       R"({"id":3,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
   EXPECT_FALSE(WaitForDisconnect().empty());
 
-  // Should have gotten a parse error notification for each channel.
+  // Should have gotten a parse error notification for the first channel because
+  // we only compile on the first thread.
   TestChannel::Event parse_error0 =
       channel0->WaitForMethodNotification("Debugger.scriptFailedToParse");
   const std::string* error_url0 =
       parse_error0.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(error_url0);
   EXPECT_EQ(decision_logic_url_.spec(), *error_url0);
-
-  TestChannel::Event parse_error1 =
-      channel1->WaitForMethodNotification("Debugger.scriptFailedToParse");
-  const std::string* error_url1 =
-      parse_error1.value.GetDict().FindStringByDottedPath("params.url");
-  ASSERT_TRUE(error_url1);
-  EXPECT_EQ(decision_logic_url_.spec(), *error_url1);
 }
 
 TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
@@ -8862,6 +8935,30 @@ realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5})
       /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
+}
+
+class SellerWorkletCreativeScanningDisabledTest : public SellerWorkletTest {
+ public:
+  SellerWorkletCreativeScanningDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kFledgeTrustedSignalsKVv1CreativeScanning);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SellerWorkletCreativeScanningDisabledTest,
+       ScoreAdCreativeScanningMetadata) {
+  send_creative_scanning_metadata_ = true;
+
+  creative_scanning_metadata_ = std::nullopt;
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('creativeScanningMetadata' in browserSignals ? 4 : 3)", 3);
+
+  creative_scanning_metadata_ = "hello";
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('creativeScanningMetadata' in browserSignals ? 4 : 3)", 3);
 }
 
 }  // namespace

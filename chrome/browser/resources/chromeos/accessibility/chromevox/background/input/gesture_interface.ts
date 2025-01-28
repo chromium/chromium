@@ -6,7 +6,7 @@
  * @fileoverview Interface to prevent circular dependencies between
  * CommandHandler and GestureCommandHandler.
  */
-import {GestureGranularity} from '../../common/gesture_command_data.js';
+import type {GestureGranularity} from '../../common/gesture_command_data.js';
 
 type Getter = () => GestureGranularity;
 type Setter = (granularity: GestureGranularity) => void;

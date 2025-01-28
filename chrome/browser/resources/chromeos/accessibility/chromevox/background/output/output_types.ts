@@ -7,12 +7,12 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {EarconId} from '../../common/earcon_id.js';
-import {Spannable} from '../../common/spannable.js';
+import type {EarconId} from '../../common/earcon_id.js';
+import type {Spannable} from '../../common/spannable.js';
 import {ChromeVox} from '../chromevox.js';
 
-import {OutputFormatTree} from './output_format_tree.js';
-import {OutputFormatLogger} from './output_logger.js';
+import type {OutputFormatTree} from './output_format_tree.js';
+import type {OutputFormatLogger} from './output_logger.js';
 
 const AriaCurrentState = chrome.automation.AriaCurrentState;
 type AutomationNode = chrome.automation.AutomationNode;

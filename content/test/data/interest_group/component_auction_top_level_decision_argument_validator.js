@@ -190,13 +190,18 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
 
   // Fields that vary by method.
   if (isScoreAd) {
-    if (Object.keys(browserSignals).length !== 10) {
+    if (Object.keys(browserSignals).length !== 11) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
     const adComponentsJson = JSON.stringify(browserSignals.adComponents);
     if (adComponentsJson !== '["https://example.com/render-component"]')
       throw 'Wrong adComponents ' + adComponentsJson;
+    const componentsCreativeScanningMetadata =
+        JSON.stringify(browserSignals.adComponentsCreativeScanningMetadata);
+    if (componentsCreativeScanningMetadata !== '[null]')
+      throw 'Wrong adComponentsCreativeScanningMetadata ' +
+          componentsCreativeScanningMetadata;
     if (browserSignals.biddingDurationMsec < 0)
       throw 'Wrong biddingDurationMsec ' + browserSignals.biddingDurationMsec;
     if (browserSignals.dataVersion !== 1234)

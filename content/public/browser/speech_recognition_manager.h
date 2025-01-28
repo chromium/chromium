@@ -74,6 +74,12 @@ class SpeechRecognitionManager {
   // call will be processed, possibly ending up with a result.
   virtual void StopAudioCaptureForSession(int session_id) = 0;
 
+  // Updates the recognition context for an existing session.
+  virtual void UpdateRecognitionContextForSession(
+      int session_id,
+      const media::SpeechRecognitionRecognitionContext&
+          recognition_context) = 0;
+
   // Retrieves the configuration of a session, as provided by the caller
   // upon CreateSession.
   virtual const SpeechRecognitionSessionConfig& GetSessionConfig(

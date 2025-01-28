@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.ui.device_lock;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -54,14 +56,32 @@ public class DeviceLockView extends LinearLayout {
         mDescription = findViewById(R.id.device_lock_description);
         mNoticeText = findViewById(R.id.device_lock_notice);
         mNoticeTextLegacy = findViewById(R.id.device_lock_notice_legacy);
+        ImageView illustration = findViewById(R.id.device_lock_illustration);
+        int illustrationTopMargin;
 
         if (SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)) {
+            illustration.setBackgroundColor(Color.TRANSPARENT);
+            illustrationTopMargin =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.device_lock_dialog_illustration_top_margin);
             findViewById(R.id.device_lock_notice_container).setVisibility(View.GONE);
             mNoticeText.setVisibility(View.VISIBLE);
         } else {
+            illustration.setBackgroundColor(
+                    getContext().getColor(R.color.signin_header_animation_background));
+            illustrationTopMargin = 0;
             findViewById(R.id.device_lock_notice_container).setVisibility(View.VISIBLE);
             mNoticeText.setVisibility(View.GONE);
         }
+        MarginLayoutParams illustrationParams = (MarginLayoutParams) illustration.getLayoutParams();
+        illustrationParams.setMargins(
+                illustrationParams.leftMargin,
+                illustrationTopMargin,
+                illustrationParams.rightMargin,
+                illustrationParams.bottomMargin);
+        illustration.setLayoutParams(illustrationParams);
 
         mDismissButton =
                 DualControlLayout.createButtonForLayout(

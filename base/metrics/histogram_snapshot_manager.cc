@@ -49,6 +49,9 @@ void HistogramSnapshotManager::PrepareFinalDelta(
 void HistogramSnapshotManager::PrepareSamples(const HistogramBase* histogram,
                                               const HistogramSamples& samples) {
   DCHECK(histogram_flattener_);
+  if (samples.TotalCount() <= 0) {
+    return;
+  }
 
   // Crash if we detect that our histograms have been overwritten.  This may be
   // a fair distance from the memory smasher, but we hope to correlate these
@@ -83,9 +86,7 @@ void HistogramSnapshotManager::PrepareSamples(const HistogramBase* histogram,
     return;
   }
 
-  if (samples.TotalCount() > 0) {
-    histogram_flattener_->RecordDelta(*histogram, samples);
-  }
+  histogram_flattener_->RecordDelta(*histogram, samples);
 }
 
 }  // namespace base

@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/paint/element_id.h"
@@ -27,12 +28,16 @@ class LayerTreeHost;
 class CC_EXPORT PropertyTreeLayerTreeDelegate : public PropertyTreeDelegate {
  public:
   // PropertyTreeDelegate overrides.
-  void UpdatePropertyTreesIfNeeded(LayerTreeHost*) override;
+  void SetLayerTreeHost(LayerTreeHost* host) override;
+  LayerTreeHost* host() override;
+  void UpdatePropertyTreesIfNeeded() override;
   void UpdateScrollOffsetFromImpl(
-      LayerTreeHost* host,
       const ElementId& id,
       const gfx::Vector2dF& delta,
       const std::optional<TargetSnapAreaElementIds>& snap_target_ids) override;
+
+ private:
+  raw_ptr<LayerTreeHost> host_ = nullptr;
 };
 
 }  // namespace cc

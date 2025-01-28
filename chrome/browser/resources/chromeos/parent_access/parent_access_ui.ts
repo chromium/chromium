@@ -11,7 +11,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {ParentAccessEvent} from './parent_access_app.js';
 import {ParentAccessController} from './parent_access_controller.js';
 import {getTemplate} from './parent_access_ui.html.js';
-import {GetOauthTokenStatus, ParentAccessServerMessageType, ParentAccessUiHandlerInterface} from './parent_access_ui.mojom-webui.js';
+import type {ParentAccessUiHandlerInterface} from './parent_access_ui.mojom-webui.js';
+import {GetOauthTokenStatus, ParentAccessServerMessageType} from './parent_access_ui.mojom-webui.js';
 import {getParentAccessUiHandler} from './parent_access_ui_handler.js';
 import {WebviewManager} from './webview_manager.js';
 

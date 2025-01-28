@@ -23,7 +23,10 @@ component("features") {
     "fingerprinting_protection_filter_features.h",
   ]
   public_deps = [ "//base" ]
-  deps = [ "//components/subresource_filter/core/mojom" ]
+  deps = [
+    "//components/privacy_sandbox:features",
+    "//components/subresource_filter/core/mojom",
+  ]
 }
 
 source_set("prefs") {

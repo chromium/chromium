@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/first_run/first_run_dialog.h"
 #include "chrome/browser/headless/headless_mode_util.h"

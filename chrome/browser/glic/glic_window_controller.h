@@ -59,10 +59,9 @@ class GlicWindowController : public views::WidgetObserver {
   explicit GlicWindowController(Profile* profile);
   ~GlicWindowController() override;
 
-  // Creates the glic view, waits for the web client to initialize, and then
-  // shows the glic window. If `browser` is non-nullptr then glic will be
-  // attached to the browser. Otherwise glic will be detached.
-  void Show(BrowserWindowInterface* browser);
+  // Show, summon, or activate the panel if needed, or close it if it's already
+  // active.
+  void Toggle(BrowserWindowInterface* browser);
 
   // Attaches glic to the last focused Chrome window.
   void Attach();
@@ -161,6 +160,22 @@ class GlicWindowController : public views::WidgetObserver {
   // Returns the WebContents hosted in the glic window, or nullptr if none.
   content::WebContents* GetWebContents();
 
+  // Return the Browser to which the panel is attached, or null if detached.
+  Browser* GetAttachedBrowserForTesting() { return attached_browser_; }
+
+  // See class comment for details. Public for testing.
+  enum class State {
+    kClosed,
+    kOpenAnimation,
+    kWaitingForGlicToLoad,
+    kOpen,
+    kClosingToReopenDetached,
+    kCloseAnimation,
+  };
+  State state() const { return state_; }
+
+  void ShowDetachedForTesting();
+
  private:
   gfx::Rect GetInitialDetachedBounds();
 
@@ -168,8 +183,16 @@ class GlicWindowController : public views::WidgetObserver {
   // difference: currently attached has an animation, so we immediately show the
   // widget. Detached does not have an animation, and we wait until glic is
   // ready to show anything.
-  void OpenAttached(Browser* browser, views::View* glic_button_view);
+  void OpenAttached(Browser* browser);
   void OpenDetached();
+
+  // Creates the glic view, waits for the web client to initialize, and then
+  // shows the glic window. If `browser` is non-nullptr then glic will be
+  // attached to the browser. Otherwise glic will be detached.
+  void Show(Browser* browser);
+
+  // Close the widget and reopen in detached mode.
+  void CloseAndReopenDetached();
 
   // This sends a message to glic to get ready to show. This will eventually
   // result in the callback GlicLoaded().
@@ -183,6 +206,12 @@ class GlicWindowController : public views::WidgetObserver {
   // coordinate showing the window when glic and this class are both ready.
   // However this class already shows the window via animation.
   void ShowFinish();
+
+  // Finishes closing off the widget after running the closing animation.
+  void CloseFinish(bool reopen_detached);
+
+  // Causes an immediate close (eg, for during shutdown).
+  void ForceClose();
 
   // Determines the correct position for the glic window when attached to a
   // browser window.
@@ -227,6 +256,12 @@ class GlicWindowController : public views::WidgetObserver {
                      base::TimeDelta duration,
                      base::OnceClosure callback);
 
+  // Convenience method for AnimateBounds that takes a gfx::Size and maintains
+  // the top-right corner.
+  void AnimateSize(const gfx::Size& target_size,
+                   base::TimeDelta duration,
+                   base::OnceClosure callback);
+
   // Creates the glic widget.
   std::unique_ptr<views::Widget> CreateGlicWidget(
       Profile* profile,
@@ -264,8 +299,8 @@ class GlicWindowController : public views::WidgetObserver {
   // True if we've hit a login page (and have not yet shown).
   bool login_page_committed_ = false;
 
-  // This member contains the last size that glic requested. This is reset
-  // every time glic is closed.
+  // This member contains the last size that glic requested. This should be
+  // reset every time glic is closed but is currently cached.
   std::optional<gfx::Size> glic_size_;
 
   // Used to monitor key and mouse events from native window.
@@ -281,13 +316,6 @@ class GlicWindowController : public views::WidgetObserver {
 
   raw_ptr<GlicWebClientAccess> web_client_;
 
-  // See class comment for details.
-  enum class State {
-    kClosed,
-    kOpenAnimation,
-    kWaitingForGlicToLoad,
-    kOpen,
-  };
   State state_ = State::kClosed;
 
   // If State != kClosed, then the UI must either be associated with a browser

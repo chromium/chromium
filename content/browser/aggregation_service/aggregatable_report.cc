@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <bit>
 #include <limits>
@@ -29,7 +30,6 @@
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -546,7 +546,7 @@ bool FilteringIdsFitInMaxBytes(
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions,
     size_t filtering_id_max_bytes) {
-  return base::ranges::none_of(
+  return std::ranges::none_of(
       contributions,
       [&](const blink::mojom::AggregatableReportHistogramContribution&
               contribution) {
@@ -647,7 +647,7 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
     value.Set("debug_mode", "enabled");
   }
 
-  CHECK(base::ranges::none_of(additional_fields, [&value](const auto& e) {
+  CHECK(std::ranges::none_of(additional_fields, [&value](const auto& e) {
     return value.contains(e.first);
   })) << "Additional fields in shared_info cannot duplicate existing fields";
 
@@ -712,8 +712,8 @@ AggregatableReportRequest::CreateInternal(
     return std::nullopt;
   }
 
-  if (!base::ranges::all_of(processing_urls,
-                            network::IsUrlPotentiallyTrustworthy)) {
+  if (!std::ranges::all_of(processing_urls,
+                           network::IsUrlPotentiallyTrustworthy)) {
     DVLOG(1) << "Not all processing URLs are potentially trustworthy";
     return std::nullopt;
   }
@@ -725,7 +725,7 @@ AggregatableReportRequest::CreateInternal(
     return std::nullopt;
   }
 
-  if (base::ranges::any_of(
+  if (std::ranges::any_of(
           payload_contents.contributions,
           [](const blink::mojom::AggregatableReportHistogramContribution&
                  contribution) { return contribution.value < 0; })) {
@@ -772,12 +772,12 @@ AggregatableReportRequest::CreateInternal(
 
   // Ensure the ordering of urls is deterministic. This is required for
   // AggregatableReport construction later.
-  base::ranges::sort(processing_urls);
+    std::ranges::sort(processing_urls);
 
-  return AggregatableReportRequest(
-      std::move(processing_urls), std::move(payload_contents),
-      std::move(shared_info), delay_type, std::move(reporting_path), debug_key,
-      std::move(additional_fields), failed_send_attempts);
+    return AggregatableReportRequest(
+        std::move(processing_urls), std::move(payload_contents),
+        std::move(shared_info), delay_type, std::move(reporting_path),
+        debug_key, std::move(additional_fields), failed_send_attempts);
 }
 
 AggregatableReportRequest::AggregatableReportRequest(
@@ -906,7 +906,7 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
   // The urls must be sorted so we can ensure the ordering (and assignment of
   // DpfKey parties for the `kExperimentalPoplar` aggregation mode) is
   // deterministic.
-  CHECK(base::ranges::is_sorted(report_request.processing_urls()));
+  CHECK(std::ranges::is_sorted(report_request.processing_urls()));
 
   std::vector<std::vector<uint8_t>> unencrypted_payloads;
 

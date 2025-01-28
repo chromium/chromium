@@ -1582,7 +1582,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.LCPP.PaintTiming.ActualLCPIndex"
+<histogram name="PageLoad.Clients.LCPP.PaintTiming.ActualLCPIndex2"
     units="Index(1 origin)" expires_after="2025-06-22">
   <owner>yoichio@chromium.org</owner>
   <owner>
@@ -1595,6 +1595,21 @@ chromium-metrics-reviews@google.com.
     &quot;max_lcpp_histogram_buckets&quot; + 1 value. The metric is emitted only
     for navigations that LCP Critical Path Predictor provided non-empty hint
     data and only once when the user navigates away from the page.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.LCPP.PaintTiming.ActualLCPIsImage"
+    enum="BooleanEnabled" expires_after="2025-06-22">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records if the actual LCP element is image or not.
+
+    This metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only once when the user navigates away from
+    the page.
   </summary>
 </histogram>
 
@@ -1626,7 +1641,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.LCPP.PaintTiming.PredictHitIndex"
+<histogram name="PageLoad.Clients.LCPP.PaintTiming.PredictHitIndex2"
     units="Index(1 origin)" expires_after="2025-06-22">
   <owner>yoichio@chromium.org</owner>
   <owner>
@@ -1641,7 +1656,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.LCPP.PaintTiming.PredictLCPResult"
+<histogram name="PageLoad.Clients.LCPP.PaintTiming.PredictLCPResult2"
     enum="LcppPredictResult" expires_after="2025-06-15">
   <owner>yoichio@chromium.org</owner>
   <owner>
@@ -1651,6 +1666,20 @@ chromium-metrics-reviews@google.com.
     Records the result of LCP timing predictor. The metric is emitted only for
     navigations that LCP Critical Path Predictor provided non-empty hint data
     and only once when the user navigates away from the page.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.LCPP.PaintTiming.PredictSuccess.NavigationToLargestContentfulPaint"
+    units="ms" expires_after="2025-06-15">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Measures the time from navigation start to the largest contentful paint. The
+    metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only when LCPP prediction succeeded.
   </summary>
 </histogram>
 
@@ -1723,7 +1752,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.LinkPreview.Usage" enum="LinkPreviewUsage"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>toyoshim@chromium.org</owner>
   <owner>src/chrome/browser/preloading/preview/OWNERS</owner>
   <summary>
@@ -2043,7 +2072,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.ServiceWorker2.PaintTiming.{Timing}.RaceNetworkRequestEligible"
-    units="ms" expires_after="2025-05-16">
+    units="ms" expires_after="2025-07-27">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -2194,24 +2223,6 @@ chromium-metrics-reviews@google.com.
     deprecation experiment blocks third party cookies access while some
     mechanisms re-enable the third party cookie access. False means third party
     cookie access isn't blocked.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.TPCD.TopLevelTpcd.CrossSiteTrialChange"
-    enum="OriginTrialStatusChange" expires_after="2025-02-28">
-  <owner>jdh@chromium.org</owner>
-  <owner>src/chrome/browser/tpcd/OWNERS</owner>
-  <summary>
-    Record when a subresource (e.g. iframe) changes the status
-    (enables|disables) of the &quot;Trial for Third Party Cookie Deprecation for
-    Top Level Sites&quot; (TopLevelTpcd) for/in a cross-site context.
-
-    These trial status changes do not effect the cookie settings maintained for
-    the trial.
-
-    Note: in certain situations, such as when the trial token is provided in a
-    meta tag, this may be recorded multiple times for a given (cross-site) frame
-    load.
   </summary>
 </histogram>
 
@@ -2605,7 +2616,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.DocumentTiming.NavigationToLoadEventFired" units="ms"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -3547,7 +3558,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Internal.Prerender2.DomContentLoadedToActivation3{PreloadingTriggerType}"
-    units="ms" expires_after="2025-05-11">
+    units="ms" expires_after="2025-07-27">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -3859,6 +3870,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2.Incognito"
+    units="scorex10000" expires_after="2025-06-21">
+  <owner>kjarosz@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that has
+    occurred in a Window. The gap between two consecutive shifts in a window is
+    not bigger than 1000ms and the maximum window size is 5000ms. This metric's
+    integral value is 10000x the fractional cumulative layout shift score
+    described in the explainer. If {Bfcache} is triggered, we record the metric
+    when the user navigates away or closes the page after the page was restored
+    from back-forward cache. Otherwise, we record it at the end of the page
+    lifetime, such as when the page is being navigated away from or when a tab
+    is being closed.
+
+    This is an incognito-specific version of
+    PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2.
+
+    This histogram is of special interest to polonium@google.com. Do not modify
+    it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.LayoutInstability.MaxCumulativeShiftScoreAtFirstOnHidden.SessionWindow.Gap1000ms.Max5000ms"
     units="scorex10000" expires_after="never">
 <!-- expires-never: used in server pipeline to derive additional metrics -->
@@ -4052,7 +4087,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.NavigationToFirstPaint" units="ms"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -4329,7 +4364,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.ParseTiming.NavigationToParseStart" units="ms"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>

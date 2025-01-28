@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Address saved only on this device</translation>
 <translation id="1445276840641906250">All your tabs in one browser</translation>
 <translation id="1450170672351507823">Standard protection is on. For even more security, use enhanced protection.</translation>
-<translation id="1454615514353469963">Passwords, passkeys and other data will be permanently deleted from Google Password Manager</translation>
 <translation id="1455660774629812862">Don't hide</translation>
 <translation id="1460751212339734034">Save time, type less</translation>
 <translation id="1466035273550360103">No open tabs</translation>
@@ -476,6 +475,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="3053332585453689122">Sends the URLs you visit and a small sample of page content, downloads, extension activity and system information to Google Safe Browsing to check if they're harmful.</translation>
 <translation id="3055102495753300780">Information storage</translation>
 <translation id="3059270601560379555">New search</translation>
+<translation id="3064547930554042309">Manage downloads</translation>
 <translation id="3072279342064724558">Password already exists</translation>
 <translation id="3076846064362030967">You won't be signed out of your Google Account. <ph name="BEGIN_LINK" />Other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.
 
@@ -698,6 +698,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4154753961803534698">Search with camera</translation>
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bookmark saved to ‘{title}’. It is saved only to this device.}other{{count} bookmarks saved to ‘{title}’. They are saved only to this device.}}</translation>
+<translation id="4164514562270305824">Auto-delete downloads</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> ending in <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Don't allow</translation>
 <translation id="4172051516777682613">Always show</translation>
@@ -1016,6 +1017,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5579012242779565775">Hide reading list</translation>
 <translation id="5585019845078534178">Cards</translation>
 <translation id="5595485650161345191">Edit address</translation>
+<translation id="559567008082979829">Set your downloads to be deleted after one month.</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="560322036295180549">Turned off by your organisation</translation>
 <translation id="5611107723541161735">Shortcuts to sites that you've visited lately on this device.</translation>

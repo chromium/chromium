@@ -814,16 +814,13 @@ bool PaymentsAutofillTable::UpdateLocalCvc(const std::string& guid,
     return DeleteWhereColumnEq(db(), kLocalStoredCvcTable, kGuid, guid);
   }
   sql::Statement cvc_statement;
-  // If existing card doesn't have CVC, we will insert CVC into
-  // `kLocalStoredCvcTable` table. If existing card does have CVC, we will
-  // update CVC for `kLocalStoredCvcTable` table.
-  if (old_credit_card->cvc().empty()) {
-    InsertBuilder(db(), cvc_statement, kLocalStoredCvcTable,
-                  {kGuid, kValueEncrypted, kLastUpdatedTimestamp});
-  } else {
-    UpdateBuilder(db(), cvc_statement, kLocalStoredCvcTable,
-                  {kGuid, kValueEncrypted, kLastUpdatedTimestamp}, "guid=?1");
-  }
+  // The INSERT OR REPLACE inserts the new or updates an existing card.
+  // In particular, it gracefully handles the case where an entry for `guid`
+  // exists but `old_credit_card->cvc().empty()` because the decryption failed
+  // (crbug.com/392169470).
+  InsertBuilder(db(), cvc_statement, kLocalStoredCvcTable,
+                {kGuid, kValueEncrypted, kLastUpdatedTimestamp},
+                /*or_replace=*/true);
   BindLocalStoredCvcToStatement(guid, cvc, AutofillClock::Now(), &cvc_statement,
                                 *encryptor());
   bool cvc_result = cvc_statement.Run();
@@ -1030,8 +1027,14 @@ bool PaymentsAutofillTable::AddServerCvc(const ServerCvc& server_cvc) {
   }
 
   sql::Statement s;
+  // CreditCardDataManager decides between AddServerCvc() and UpdateServerCvc()
+  // by checking if the CVC of the `CreditCard` in the database is empty.
+  // However, decryption of the CVC may have failed (crbug.com/392169470), in
+  // which case there is an entry for `server_cvc.instrument_id` in the database
+  // already. To handle this case, we set `or_replace = true`.
   InsertBuilder(db(), s, kServerStoredCvcTable,
-                {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp});
+                {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp},
+                /*or_replace=*/true);
   BindServerCvcToStatement(server_cvc, *encryptor(), &s);
   s.Run();
   return db()->GetLastChangeCount() > 0;

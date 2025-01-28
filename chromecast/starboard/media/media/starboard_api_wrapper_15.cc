@@ -8,6 +8,7 @@
 #include <starboard/media.h>
 #include <starboard/player.h>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper_base.h"
 
@@ -96,6 +97,11 @@ class StarboardApiWrapper15 : public StarboardApiWrapperBase {
 
   void GetPlayerInfo(void* player, StarboardPlayerInfo* player_info) override {
     SbPlayerInfo sb_player_info = {};
+    if (!player) {
+      LOG(ERROR) << "player is nullptr";
+      return;
+    }
+    CHECK(player_info);
     SbPlayerGetInfo(static_cast<SbPlayer>(player), &sb_player_info);
 
     player_info->current_media_timestamp_micros =

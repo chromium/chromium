@@ -50,7 +50,7 @@ void SendCandidates(const std::vector<GURL>& urls,
                     mojo::Remote<blink::mojom::SpeculationHost>& remote) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.resize(urls.size());
-  base::ranges::transform(urls, candidates.begin(), &CreatePrerenderCandidate);
+  std::ranges::transform(urls, candidates.begin(), &CreatePrerenderCandidate);
   remote->UpdateSpeculationCandidates(std::move(candidates));
   remote.FlushForTesting();
 }

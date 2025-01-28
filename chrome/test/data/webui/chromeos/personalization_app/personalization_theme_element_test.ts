@@ -337,8 +337,8 @@ suite('PersonalizationThemeTest', function() {
         personalizationThemeElement.shadowRoot!.getElementById(
             'geolocationDialog')!;
     const dialogBodyText =
-        geolocationDialog.shadowRoot!
-            .querySelector<HTMLDivElement>('#dialogBody')!.innerText;
+        geolocationDialog.shadowRoot!.querySelector<HTMLElement>(
+                                         '#dialogBody')!.innerText;
     assertTrue(
         dialogBodyText.includes('6:00AM-6:00PM'),
         'dialog body doesn\'t include sunrise/sunset times');

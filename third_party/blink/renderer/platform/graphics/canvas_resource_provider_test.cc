@@ -585,7 +585,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
       SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
 
   auto provider = CanvasResourceProvider::CreateBitmapProvider(
-      kSize, kInfo.colorType(), kInfo.alphaType(),
+      kSize, GetN32FormatForCanvas(), kInfo.alphaType(),
       gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear);
 
@@ -722,17 +722,17 @@ TEST_F(CanvasResourceProviderTest,
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_Bitmap) {
   auto provider = CanvasResourceProvider::CreateBitmapProvider(
-      gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), kN32_SkColorType,
+      gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), GetN32FormatForCanvas(),
       kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateBitmapProvider(
-      gfx::Size(kMaxTextureSize, kMaxTextureSize), kN32_SkColorType,
+      gfx::Size(kMaxTextureSize, kMaxTextureSize), GetN32FormatForCanvas(),
       kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateBitmapProvider(
-      gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), kN32_SkColorType,
+      gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), GetN32FormatForCanvas(),
       kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());

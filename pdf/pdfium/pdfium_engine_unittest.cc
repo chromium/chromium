@@ -2046,6 +2046,20 @@ TEST_P(PDFiumEngineInkTest, CannotSelectTextInAnnotationMode) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 }
 
+TEST_P(PDFiumEngineInkTest, ContainsV2InkPath) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+  EXPECT_FALSE(engine->ContainsV2InkPath());
+
+  engine = InitializeEngine(&client, FILE_PATH_LITERAL("ink_v2.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+  EXPECT_TRUE(engine->ContainsV2InkPath());
+}
+
 TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =

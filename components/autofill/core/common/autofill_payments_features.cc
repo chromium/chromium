@@ -263,14 +263,6 @@ BASE_FEATURE(kAutofillShowManualFillForVirtualCards,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-// When enabled, IBAN Autofill suggestions are shown via the keyboard accessory
-// instead of the bottom sheet.
-BASE_FEATURE(kAutofillSkipAndroidBottomSheetForIban,
-             "AutofillSkipAndroidBottomSheetForIban",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // When enabled, adds a timeout on the network request for Unmask requests.
 BASE_FEATURE(kAutofillUnmaskCardRequestTimeout,
              "AutofillUnmaskCardRequestTimeout",

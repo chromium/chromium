@@ -1104,10 +1104,6 @@ void ServiceWorkerMainResourceLoader::SetPriority(
   NOTIMPLEMENTED();
 }
 
-void ServiceWorkerMainResourceLoader::PauseReadingBodyFromNet() {}
-
-void ServiceWorkerMainResourceLoader::ResumeReadingBodyFromNet() {}
-
 void ServiceWorkerMainResourceLoader::OnBlobReadingComplete(int net_error) {
   CommitCompleted(net_error, "Blob has been read.");
   body_as_blob_.reset();

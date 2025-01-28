@@ -330,4 +330,20 @@ EnterpriseReportingEventType GetUmaEnumFromEventName(
              : EnterpriseReportingEventType::kUnknownEvent;
 }
 
+std::string EventResultToString(EventResult result) {
+  switch (result) {
+    case EventResult::UNKNOWN:
+      return "EVENT_RESULT_UNKNOWN";
+    case EventResult::ALLOWED:
+      return "EVENT_RESULT_ALLOWED";
+    case EventResult::WARNED:
+      return "EVENT_RESULT_WARNED";
+    case EventResult::BLOCKED:
+      return "EVENT_RESULT_BLOCKED";
+    case EventResult::BYPASSED:
+      return "EVENT_RESULT_BYPASSED";
+  }
+  NOTREACHED();
+}
+
 }  // namespace enterprise_connectors

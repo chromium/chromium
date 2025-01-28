@@ -15,7 +15,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {PageCallbackRouter} from './borealis_installer.mojom-webui.js';
+import type {PageCallbackRouter} from './borealis_installer.mojom-webui.js';
 import {InstallResult} from './borealis_types.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import type {BorealisInstallerErrorDialogElement} from './error_dialog.js';

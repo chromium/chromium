@@ -271,6 +271,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Klavišų „<ph name="DATA_CONTROLS_FIRST_KEY_SET" />“ negalima nustatyti tame pačiame žodyne, kur nustatyti klavišai „<ph name="DATA_CONTROLS_SECOND_KEY_SET" />“</translation>
 <translation id="1455413310270022028">Trintukas</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Peržiūrėti 0 apžvalgų}=1{Peržiūrėti 1 apžvalgą}one{Peržiūrėti visus # apžvalgą}few{Peržiūrėti visus # apžvalgas}many{Peržiūrėti visus # apžvalgos}other{Peržiūrėti visus # apžvalgų}}</translation>
 <translation id="1458059624921545588">Žmonės ir visuomenė</translation>
 <translation id="1458140305240870199">Apatinis trikotažas</translation>
 <translation id="1459693405370120464">Oras</translation>
@@ -1957,6 +1958,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4407758156081352648">Siekdama užtikrinti saugą, jūsų organizacija neleidžia pakartotinai naudoti slaptažodžių naršyklėje „Chrome“. „Chrome“ slaptažodžiai yra užšifruoti, siekiant apsaugoti naudotojų privatumą.</translation>
 <translation id="4408413947728134509">Slapukai <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Ši konfigūracija pažymėta kaip įdiegiama, bet nepateiktas joks šios konstrukcijos vaizdas, todėl jos negalima įdiegti.</translation>
+<translation id="4412377069090572315">Ką žmonės sako</translation>
 <translation id="4414452699610169758">Naudokite „Google“ slaptažodžių tvarkyklę ir „Chrome“ automatinio pildymo funkciją, kad išsaugotumėte ir užpildytumėte slaptažodžius, mokėjimo metodus ir adresus</translation>
 <translation id="4414515549596849729">slapukai ir svetainės duomenys</translation>
 <translation id="4415156962929755728">Plastikas (itin blizgus)</translation>
@@ -2778,6 +2780,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5937560539988385583">Puslapis išverstas</translation>
 <translation id="5938153366081463283">Pridėkite virtualią kortelę</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Ši informacija gaunama iš nepriklausomų apžvalgų svetainių, pvz., „Trustpilot“, „ScamAdviser“, „Google“ ir kt. Suvestinės sukurtos naudojant DI.</translation>
 <translation id="5944297261866530437">Audinys (itin blizgus)</translation>
 <translation id="5950901984834744590">Skustuvai ir skutimosi priemonės</translation>
 <translation id="5951495562196540101">Nepavyko prisiregistruoti su kliento paskyra (galima įsigyti licencijos paketą).</translation>
@@ -3144,6 +3147,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6567832540451970450">Administratorius leidžia šioje svetainėje: <ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">Mygtukas „Tvarkyti mokėjimo metodus“; suaktyvinkite, kad būtų galima tvarkyti mokėjimų ir kredito kortelės informaciją „Chrome“ nustatymuose</translation>
 <translation id="6569060085658103619">Peržiūrite plėtinio puslapį</translation>
+<translation id="6572867903637058088">Ar tai naudinga?</translation>
 <translation id="6573200754375280815">Dvi skylės dešinėje</translation>
 <translation id="6574762126505704998">Užpildyti</translation>
 <translation id="6575408526598156416">Išsaugojimas paskyroje</translation>
@@ -4324,9 +4328,11 @@ Papildoma išsami informacija:
 <translation id="8672535691554698269">Kompiuterių tinklai</translation>
 <translation id="8675446170353411473">Jūsų failai įkeliami į „<ph name="CLOUD_PROVIDER" />“</translation>
 <translation id="8676424191133491403">Be delsos</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} lentelė ištrinta}one{{COUNT} lentelė ištrinta}few{{COUNT} lentelės ištrintos}many{{COUNT} lentelės ištrinta}other{{COUNT} lentelių ištrinta}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, atsakymas, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Tinklalapio adresu <ph name="PAGE" /> nepavyko įkelti, nes:</translation>
 <translation id="8682297334444610648">Dinozauro žaidimas, palieskite, jei norite žaisti</translation>
+<translation id="8685225035093721011">Parduotuvės apžvalgos</translation>
 <translation id="8686424632716064939">Kompiuterio sauga</translation>
 <translation id="8687278439622293018">Įrašas <ph name="ENTRY_VOICEOVER" /> ištrintas</translation>
 <translation id="8687429322371626002">Jūsų įrenginį ir paskyrą valdo <ph name="MANAGER" />.</translation>

@@ -96,6 +96,7 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncAlignedPresent);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAllowForceMergeRenderPassWithRequireOverlayQuads);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOcclusionCullingForTextureQuads);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameAcks);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameThrottleVideo);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdpf);
@@ -163,6 +164,7 @@ VIZ_COMMON_EXPORT bool UseSurfaceLayerForVideo();
 VIZ_COMMON_EXPORT int MaxOverlaysConsidered();
 VIZ_COMMON_EXPORT bool ShouldOnBeginFrameThrottleVideo();
 VIZ_COMMON_EXPORT bool IsOnBeginFrameAcksEnabled();
+VIZ_COMMON_EXPORT bool IsOcclusionCullingForTextureQuadsEnabled();
 VIZ_COMMON_EXPORT bool ShouldDrawImmediatelyWhenInteractive();
 VIZ_COMMON_EXPORT std::optional<double> SnapshotEvictedRootSurfaceScale();
 VIZ_COMMON_EXPORT bool IsVSyncAlignedPresentEnabled();

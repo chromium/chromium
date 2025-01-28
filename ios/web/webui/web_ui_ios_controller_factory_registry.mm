@@ -6,10 +6,10 @@
 
 #import <stddef.h>
 
+#import <algorithm>
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "base/ranges/algorithm.h"
 #import "ios/web/public/webui/web_ui_ios_controller.h"
 #import "url/gurl.h"
 #import "url/url_constants.h"
@@ -31,7 +31,7 @@ void WebUIIOSControllerFactory::RegisterFactory(
 void WebUIIOSControllerFactory::DeregisterFactory(
     WebUIIOSControllerFactory* factory) {
   std::vector<WebUIIOSControllerFactory*>& factories = GetGlobalFactories();
-  auto position = base::ranges::find(factories, factory);
+  auto position = std::ranges::find(factories, factory);
   if (position != factories.end()) {
     factories.erase(position);
   }

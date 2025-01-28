@@ -109,6 +109,8 @@ static_library("safe_browsing") {
       "chrome_client_side_detection_host_delegate.h",
       "chrome_client_side_detection_service_delegate.cc",
       "chrome_client_side_detection_service_delegate.h",
+      "chrome_enterprise_url_lookup_service.cc",
+      "chrome_enterprise_url_lookup_service.h",
       "chrome_enterprise_url_lookup_service_factory.cc",
       "chrome_enterprise_url_lookup_service_factory.h",
       "chrome_password_protection_service.cc",
@@ -147,6 +149,8 @@ static_library("safe_browsing") {
       "phishy_interaction_tracker.h",
       "safe_browsing_navigation_observer_manager_factory.cc",
       "safe_browsing_navigation_observer_manager_factory.h",
+      "safe_browsing_pref_change_handler.cc",
+      "safe_browsing_pref_change_handler.h",
       "safe_browsing_service.cc",
       "safe_browsing_service.h",
       "services_delegate.cc",
@@ -228,13 +232,6 @@ static_library("safe_browsing") {
       "//content/public/browser",
       "//services/preferences/public/mojom:mojom",
     ]
-
-    if (enterprise_cloud_content_analysis) {
-      sources += [
-        "chrome_enterprise_url_lookup_service.cc",
-        "chrome_enterprise_url_lookup_service.h",
-      ]
-    }
 
     allow_circular_includes_from += [ "//chrome/browser/ui/safety_hub" ]
     if (safe_browsing_mode == 1) {

@@ -180,6 +180,7 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
       property_tree_delegate_ = owned_property_tree_delegate_.get();
     }
   }
+  property_tree_delegate_->SetLayerTreeHost(this);
 }
 
 bool LayerTreeHost::IsMobileOptimized() const {
@@ -282,6 +283,8 @@ LayerTreeHost::~LayerTreeHost() {
     // outlive them, and we must make good.
     thread_unsafe_commit_state().root_layer = nullptr;
   }
+
+  property_tree_delegate_->SetLayerTreeHost(nullptr);
 
   // Fail any pending image decodes.
   for (auto& pair : pending_image_decodes_)
@@ -978,7 +981,7 @@ bool LayerTreeHost::DoUpdateLayers() {
 
   UpdateHudLayer(pending_commit_state()->debug_state.ShouldCreateHudLayer());
 
-  property_tree_delegate_->UpdatePropertyTreesIfNeeded(this);
+  property_tree_delegate_->UpdatePropertyTreesIfNeeded();
 
 #if DCHECK_IS_ON()
   // Ensure property tree nodes were created for all layers. When using layer
@@ -1080,7 +1083,7 @@ void LayerTreeHost::UpdateScrollOffsetFromImpl(
     const ElementId& id,
     const gfx::Vector2dF& delta,
     const std::optional<TargetSnapAreaElementIds>& snap_target_ids) {
-  property_tree_delegate_->UpdateScrollOffsetFromImpl(this, id, delta,
+  property_tree_delegate_->UpdateScrollOffsetFromImpl(id, delta,
                                                       snap_target_ids);
 }
 

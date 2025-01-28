@@ -123,6 +123,8 @@ message StudentDevice {
     STUDENT_DEVICE_STATE_UNKNOWN = 0;
 
     ACTIVE = 1;
+
+    INACTIVE = 2;
   }
 
   StudentDeviceState state = 2;

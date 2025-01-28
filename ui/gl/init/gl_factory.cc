@@ -4,6 +4,7 @@
 
 #include "ui/gl/init/gl_factory.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"

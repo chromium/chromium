@@ -12,6 +12,7 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <string>
@@ -23,7 +24,6 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util.h"
@@ -498,7 +498,7 @@ SAFEARRAY* AXPlatformNodeWin::CreateUIAElementsArrayForReverseRelation(
       GetDelegate()->GetSourceNodesForReverseRelations(attribute);
 
   std::vector<int32_t> id_list;
-  base::ranges::transform(
+  std::ranges::transform(
       reverse_relations, std::back_inserter(id_list),
       [](AXPlatformNode* platform_node) {
         return static_cast<AXPlatformNodeWin*>(platform_node)->GetData().id;

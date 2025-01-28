@@ -391,8 +391,10 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
 
   if (auto r = receiver.As<
                discardable_memory::mojom::DiscardableSharedMemoryManager>()) {
-    discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
-        std::move(r));
+    if (discardable_memory::DiscardableSharedMemoryManager::Get()) {
+      discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
+          std::move(r));
+    }
     return;
   }
 

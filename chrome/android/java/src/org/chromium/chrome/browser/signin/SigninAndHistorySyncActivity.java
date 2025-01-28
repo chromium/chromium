@@ -239,7 +239,10 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
     /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
     @Override
     public void setStatusBarColor(int statusBarColor) {
-        StatusBarColorController.setStatusBarColor(getWindow(), statusBarColor);
+        StatusBarColorController.setStatusBarColor(
+                getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper(),
+                getWindow(),
+                statusBarColor);
     }
 
     @Override

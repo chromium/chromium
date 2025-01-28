@@ -104,6 +104,11 @@ class AuraContext::NativeCursorManager : public wm::NativeCursorManager {
     }
   }
 
+  void SetCursorColor(SkColor color,
+                      wm::NativeCursorManagerDelegate* delegate) override {
+    NOTIMPLEMENTED();
+  }
+
   // The set of hosts to notify of changes in cursor state.
   base::flat_set<raw_ptr<aura::WindowTreeHost, CtnExperimental>> hosts_;
 

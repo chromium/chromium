@@ -36,7 +36,8 @@ AutofillWalletDataTypeController::AutofillWalletDataTypeController(
         delegate_for_transport_mode,
     PrefService* pref_service,
     syncer::SyncService* sync_service,
-    base::RepeatingCallback<void(bool)> on_load_models_with_transport_only_cb)
+    base::RepeatingCallback<void(bool, bool)>
+        on_load_models_with_transport_only_cb)
     : DataTypeController(type,
                          std::move(delegate_for_full_sync_mode),
                          std::move(delegate_for_transport_mode)),
@@ -64,7 +65,7 @@ void AutofillWalletDataTypeController::LoadModels(
     const ModelLoadCallback& model_load_callback) {
   if (configure_context.sync_mode == syncer::SyncMode::kTransportOnly) {
     on_load_models_with_transport_only_cb_.Run(
-        IsSignedInExplicitly(pref_service_));
+        IsSignedInExplicitly(pref_service_), sync_service_->HasSyncConsent());
   }
   DataTypeController::LoadModels(configure_context, model_load_callback);
 }

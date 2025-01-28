@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerT
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -356,7 +357,9 @@ class BottomControlsMediator
 
     @Override
     public int getType() {
-        return LayerType.TABSTRIP_TOOLBAR;
+        return ChromeFeatureList.sAndroidBottomToolbar.isEnabled()
+                ? LayerType.TABSTRIP_TOOLBAR_BELOW_READALOUD
+                : LayerType.TABSTRIP_TOOLBAR;
     }
 
     @Override
@@ -366,7 +369,9 @@ class BottomControlsMediator
 
     @Override
     public @LayerScrollBehavior int getScrollBehavior() {
-        return LayerScrollBehavior.ALWAYS_SCROLL_OFF;
+        return ChromeFeatureList.sAndroidBottomToolbar.isEnabled()
+                ? LayerScrollBehavior.DEFAULT_SCROLL_OFF
+                : LayerScrollBehavior.ALWAYS_SCROLL_OFF;
     }
 
     @Override

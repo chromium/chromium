@@ -38,6 +38,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
@@ -241,6 +242,7 @@ public class ToolbarPositionControllerTest {
     private ToolbarPositionController mController;
     private ObservableSupplierImpl<Integer> mBottomToolbarOffsetSupplier =
             new ObservableSupplierImpl<>();
+    private HistogramWatcher mStartupExpectation;
 
     static class FakeKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
         private boolean mIsShowing;
@@ -280,6 +282,9 @@ public class ToolbarPositionControllerTest {
 
         ResettersForTesting.register(
                 ToolbarPositionController::resetCachedToolbarConfigurationForTesting);
+        mStartupExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.ToolbarPosition.PositionAtStartup", ControlsPosition.TOP);
 
         mController =
                 new ToolbarPositionController(
@@ -352,6 +357,24 @@ public class ToolbarPositionControllerTest {
         shadowPackageManager.setSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE, true);
         assertTrue(
                 ToolbarPositionController.isToolbarPositionCustomizationEnabled(mContext, false));
+    }
+
+    @Test
+    @Config(qualifiers = "sw400dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
+    public void testMetrics() {
+        mStartupExpectation.assertExpected();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Android.ToolbarPosition.PositionPrefChanged",
+                                ControlsPosition.BOTTOM,
+                                ControlsPosition.TOP)
+                        .build();
+
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
+        watcher.assertExpected();
     }
 
     @Test

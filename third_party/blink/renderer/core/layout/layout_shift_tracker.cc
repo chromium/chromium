@@ -833,8 +833,7 @@ void LayoutShiftTracker::SendLayoutShiftRectsToHud(
         blink_region.Union(rect);
       for (gfx::Rect rect : blink_region)
         rects.emplace_back(rect);
-      cc_layer->layer_tree_host()->hud_layer()->SetLayoutShiftRects(
-          rects.ReleaseVector());
+      cc_layer->layer_tree_host()->hud_layer()->SetLayoutShiftRects(rects);
       cc_layer->layer_tree_host()->hud_layer()->SetNeedsPushProperties();
     }
   }

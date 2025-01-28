@@ -1065,7 +1065,7 @@ int WebAppRegistrar::CountUserInstalledDiyApps() const {
 std::vector<content::StoragePartitionConfig>
 WebAppRegistrar::GetIsolatedWebAppStoragePartitionConfigs(
     const webapps::AppId& isolated_web_app_id) const {
-  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
+  if (!content::AreIsolatedWebAppsEnabled(profile_)) {
     return {};
   }
   const WebApp* isolated_web_app = GetAppById(isolated_web_app_id);

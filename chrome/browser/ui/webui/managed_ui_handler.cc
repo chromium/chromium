@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -117,7 +116,7 @@ base::Value::Dict ManagedUIHandler::GetDataSourceUpdate() const {
   update.Set("managedByIcon", GetManagedUiWebUIIcon(profile_));
   update.Set("managementPageUrl", GetManagedUiUrl(profile_).spec());
   update.Set("browserManagedByOrg", GetManagedUiWebUILabel(profile_));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   update.Set("deviceManagedByOrg", GetDeviceManagedUiWebUILabel());
 #endif
   update.Set("isManaged", managed_);

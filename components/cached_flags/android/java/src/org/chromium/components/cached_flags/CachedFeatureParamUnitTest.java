@@ -21,6 +21,7 @@ import org.chromium.base.test.util.BaseFlagTestRule;
 import org.chromium.base.test.util.Features.EnableFeatures;
 
 import java.util.List;
+import java.util.Map;
 
 /** Unit Tests for {@link CachedFeatureParam} and its subclasses. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -68,7 +69,7 @@ public class CachedFeatureParamUnitTest {
     private DoubleCachedFeatureParam mDoubleParam;
     private StringCachedFeatureParam mString2Param;
 
-    private List<CachedFeatureParam<?>> mParamsToCache;
+    private List<List<CachedFeatureParam<?>>> mParamsToCache;
 
     @Before
     public void setUp() {
@@ -104,7 +105,13 @@ public class CachedFeatureParamUnitTest {
                 new StringCachedFeatureParam(
                         mFeatureMap, FEATURE_A, STRING2_PARAM_NAME, STRING2_PARAM_DEFAULT);
         mParamsToCache =
-                List.of(mStringParam, mBooleanParam, mIntParam, mDoubleParam, mString2Param);
+                List.of(
+                        List.of(
+                                mStringParam,
+                                mBooleanParam,
+                                mIntParam,
+                                mDoubleParam,
+                                mString2Param));
     }
 
     @Test
@@ -196,6 +203,45 @@ public class CachedFeatureParamUnitTest {
         // Should not take priority over the overrides
         CachedFlagUtils.cacheFeatureParams(mParamsToCache);
 
+        assertValuesAreOverrides();
+    }
+
+    @Test
+    public void testCacheFeatureParamsImmediately() {
+        CachedFlagUtils.setFullListOfFeatureParams(mParamsToCache);
+
+        Map<String, Map<String, String>> paramsToCache1 =
+                Map.of(
+                        FEATURE_A,
+                        Map.of(
+                                STRING_PARAM_NAME, STRING_PARAM_NATIVE,
+                                BOOLEAN_PARAM_NAME, String.valueOf(BOOLEAN_PARAM_NATIVE),
+                                INT_PARAM_NAME, String.valueOf(INT_PARAM_NATIVE),
+                                DOUBLE_PARAM_NAME, String.valueOf(DOUBLE_PARAM_NATIVE),
+                                STRING2_PARAM_NAME, STRING2_PARAM_NATIVE));
+        CachedFlagUtils.cacheFeatureParamsImmediately(paramsToCache1);
+
+        // param.getValue() should return the value cached in
+        // CachedFlagUtils.cacheFeatureParamsImmediately()
+        assertValuesAreFromNative();
+
+        Map<String, Map<String, String>> paramsToCache2 =
+                Map.of(
+                        FEATURE_A,
+                        Map.of(
+                                STRING_PARAM_NAME, STRING_PARAM_TEST_OVERRIDE,
+                                BOOLEAN_PARAM_NAME, String.valueOf(BOOLEAN_PARAM_TEST_OVERRIDE),
+                                INT_PARAM_NAME, String.valueOf(INT_PARAM_TEST_OVERRIDE),
+                                DOUBLE_PARAM_NAME, String.valueOf(DOUBLE_PARAM_TEST_OVERRIDE),
+                                STRING2_PARAM_NAME, STRING2_PARAM_TEST_OVERRIDE));
+        CachedFlagUtils.cacheFeatureParamsImmediately(paramsToCache2);
+
+        // Clear the values previously stored in ValuesReturned
+        // so that param.getValue() returns the newly cached values.
+        ValuesReturned.clearForTesting();
+
+        // param.getValue() should return the value cached in the
+        // most recent call to CachedFlagUtils.cacheFeatureParamsImmediately()
         assertValuesAreOverrides();
     }
 

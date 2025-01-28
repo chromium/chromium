@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -24,12 +23,12 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "chrome/browser/ash/bluetooth/debug_logs_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "device/bluetooth/chromeos_platform_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/permissions/android/android_permission_util.h"
@@ -39,7 +38,7 @@ namespace {
 using content::RenderFrameHost;
 using content::WebContents;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 using ash::bluetooth_config::mojom::BluetoothSystemState;
 
 constexpr char kBtsnoopFileName[] = "capture.btsnoop";
@@ -65,7 +64,7 @@ class BluetoothBtsnoop : public mojom::BluetoothBtsnoop {
   mojo::Receiver<mojom::BluetoothBtsnoop> receiver_;
   base::OnceCallback<void(StopCallback callback)> on_stop_callback_;
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace
 
 BluetoothInternalsHandler::BluetoothInternalsHandler(
@@ -73,23 +72,23 @@ BluetoothInternalsHandler::BluetoothInternalsHandler(
     mojo::PendingReceiver<mojom::BluetoothInternalsHandler> receiver)
     : render_frame_host_(*render_frame_host),
       receiver_(this, std::move(receiver)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::GetBluetoothConfigService(
       remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
   remote_cros_bluetooth_config_->ObserveSystemProperties(
       cros_system_properties_observer_receiver_.BindNewPipeAndPassRemote());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 BluetoothInternalsHandler::~BluetoothInternalsHandler() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!turning_bluetooth_off_ && !turning_bluetooth_on_) {
     return;
   }
 
   remote_cros_bluetooth_config_->SetBluetoothEnabledState(
       bluetooth_initial_state_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void BluetoothInternalsHandler::GetAdapter(GetAdapterCallback callback) {
@@ -107,7 +106,7 @@ void BluetoothInternalsHandler::GetDebugLogsChangeHandler(
   mojo::PendingRemote<mojom::DebugLogsChangeHandler> handler_remote;
   bool initial_toggle_value = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   using ash::bluetooth::DebugLogsManager;
 
   // If no logs manager exists for this user, debug logs are not supported.
@@ -184,7 +183,7 @@ void BluetoothInternalsHandler::RequestLocationServices(
   std::move(callback).Run();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void BluetoothInternalsHandler::RestartSystemBluetooth(
     RestartSystemBluetoothCallback callback) {
   if (bluetooth_system_state_ == BluetoothSystemState::kUnavailable) {
@@ -238,10 +237,10 @@ void BluetoothInternalsHandler::OnPropertiesUpdated(
     std::move(restart_system_bluetooth_callback_).Run();
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void BluetoothInternalsHandler::StartBtsnoop(StartBtsnoopCallback callback) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::DebugDaemonClient::Get()->BluetoothStartBtsnoop(
       base::BindOnce(&BluetoothInternalsHandler::OnStartBtsnoopResp,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -252,7 +251,7 @@ void BluetoothInternalsHandler::StartBtsnoop(StartBtsnoopCallback callback) {
 
 void BluetoothInternalsHandler::IsBtsnoopFeatureEnabled(
     IsBtsnoopFeatureEnabledCallback callback) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool enabled = base::FeatureList::IsEnabled(
       chromeos::bluetooth::features::kBluetoothBtsnoopInternals);
   std::move(callback).Run(enabled);
@@ -261,7 +260,7 @@ void BluetoothInternalsHandler::IsBtsnoopFeatureEnabled(
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void BluetoothInternalsHandler::OnStartBtsnoopResp(
     StartBtsnoopCallback callback,
     bool success) {
@@ -324,4 +323,4 @@ std::optional<base::FilePath> BluetoothInternalsHandler::GetDownloadsPath() {
 void BluetoothBtsnoop::Stop(StopCallback callback) {
   std::move(on_stop_callback_).Run(std::move(callback));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

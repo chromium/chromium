@@ -523,6 +523,22 @@ void SpeechRecognitionManagerImpl::StopAudioCaptureForSession(int session_id) {
                                 EVENT_STOP_CAPTURE));
 }
 
+void SpeechRecognitionManagerImpl::UpdateRecognitionContextForSession(
+    int session_id,
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  CHECK_CURRENTLY_ON(BrowserThread::IO);
+  auto iter = sessions_.find(session_id);
+  if (iter == sessions_.end()) {
+    return;
+  }
+  iter->second->recognition_context = recognition_context;
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
+                                weak_factory_.GetWeakPtr(), session_id,
+                                EVENT_UPDATE_RECOGNITION_CONTEXT));
+}
+
 // Here begins the SpeechRecognitionEventListener interface implementation,
 // which will simply relay the events to the proper listener registered for the
 // particular session and to the catch-all listener provided by the delegate
@@ -726,6 +742,8 @@ void SpeechRecognitionManagerImpl::ExecuteTransitionAndGetNextState(
       switch (event) {
         case EVENT_START:
           return SessionStart(*session);
+        case EVENT_UPDATE_RECOGNITION_CONTEXT:
+          return SessionUpdateRecognitionContext(*session);
         case EVENT_ABORT:
           return SessionAbort(*session);
         case EVENT_RECOGNITION_ENDED:
@@ -738,6 +756,8 @@ void SpeechRecognitionManagerImpl::ExecuteTransitionAndGetNextState(
       break;
     case SESSION_STATE_CAPTURING_AUDIO:
       switch (event) {
+        case EVENT_UPDATE_RECOGNITION_CONTEXT:
+          return SessionUpdateRecognitionContext(*session);
         case EVENT_STOP_CAPTURE:
           return SessionStopAudioCapture(*session);
         case EVENT_ABORT:
@@ -751,6 +771,8 @@ void SpeechRecognitionManagerImpl::ExecuteTransitionAndGetNextState(
       break;
     case SESSION_STATE_WAITING_FOR_RESULT:
       switch (event) {
+        case EVENT_UPDATE_RECOGNITION_CONTEXT:
+          return SessionUpdateRecognitionContext(*session);
         case EVENT_ABORT:
           return SessionAbort(*session);
         case EVENT_AUDIO_ENDED:
@@ -798,6 +820,12 @@ void SpeechRecognitionManagerImpl::SessionStart(const Session& session) {
   }
 
   session.recognizer->StartRecognition(device_id);
+}
+
+void SpeechRecognitionManagerImpl::SessionUpdateRecognitionContext(
+    const Session& session) {
+  CHECK(session.recognizer.get());
+  session.recognizer->UpdateRecognitionContext(session.recognition_context);
 }
 
 void SpeechRecognitionManagerImpl::SessionAbort(const Session& session) {

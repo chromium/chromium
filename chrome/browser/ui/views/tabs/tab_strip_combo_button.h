@@ -31,6 +31,9 @@ class TabStripComboButton : public views::View {
   void DidBecomeInactive(BrowserWindowInterface* browser);
   void UpdateSeparatorVisibility();
 
+  // views::View:
+  void OnThemeChanged() override;
+
   views::Button* new_tab_button() { return new_tab_button_; }
 
   TabSearchButton* tab_search_button() { return tab_search_button_; }
@@ -44,6 +47,7 @@ class TabStripComboButton : public views::View {
 
   base::TimeTicks new_tab_button_last_pressed_;
   base::TimeTicks tab_search_button_last_pressed_;
+  bool using_custom_theme_ = false;
   std::list<base::CallbackListSubscription> subscriptions_;
 };
 

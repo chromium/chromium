@@ -60,6 +60,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   enum class PolicyType {
     // Original ONC policy as provided by cloud policy.
     kOriginal,
+    // ONC policy with variables expanded (but the certificates are not
+    // resolved).
+    kWithVariablesExpanded,
     // ONC policy with runtime values set, i.e. variables can be expanded and a
     // resolved client certificate set.
     kWithRuntimeValues,

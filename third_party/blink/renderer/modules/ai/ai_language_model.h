@@ -29,7 +29,7 @@ class AILanguageModel final : public EventTarget,
       ExecutionContext* execution_context,
       mojo::PendingRemote<mojom::blink::AILanguageModel> pending_remote,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      mojom::blink::AILanguageModelInfoPtr info);
+      mojom::blink::AILanguageModelInstanceInfoPtr info);
   ~AILanguageModel() override = default;
 
   void Trace(Visitor* visitor) const override;

@@ -20,6 +20,10 @@
 #include "base/memory/raw_span.h"
 #include "base/values.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/cached_flags/android/jni_delegate.h"
+#endif
+
 namespace flags_ui {
 
 // Internal functionality exposed for tests.
@@ -274,6 +278,12 @@ class FlagsState {
                           const std::string& name,
                           int platform_mask) const;
 
+  // Stores the flags in both FlagsStorage and SharedPreferences.
+  // Call FlagsStorage.SetFlags() to store the flags in FlagsStorage.
+  // Make the appropriate JNI calls to store the flags in SharedPreferences.
+  void SetFlags(FlagsStorage* flags_storage,
+                const std::set<std::string>& flags) const;
+
   const base::raw_span<const FeatureEntry> feature_entries_;
 
   bool needs_restart_;
@@ -286,6 +296,17 @@ class FlagsState {
   // Delegate used for embedders to control display and application of flags.
   // May be null.
   raw_ptr<Delegate> delegate_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Delegate used by internal code to make JNI calls.
+  std::unique_ptr<cached_flags::JniDelegate> jni_delegate_;
+
+ public:
+  void SetJniDelegateForTesting(
+      std::unique_ptr<cached_flags::JniDelegate> delegate) {
+    jni_delegate_ = std::move(delegate);
+  }
+#endif
 };
 
 }  // namespace flags_ui

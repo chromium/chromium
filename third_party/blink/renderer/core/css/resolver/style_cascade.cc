@@ -1411,6 +1411,36 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
   AtomicString var_name = ConsumeVariableName(stream);
   DCHECK(stream.AtEnd() || (stream.Peek().GetType() == kCommaToken));
 
+  // If we have a fallback, we must process it to look for cycles,
+  // even if we are not going to use the fallback.
+  //
+  // https://drafts.csswg.org/css-variables/#cycles
+  TokenSequence fallback;
+  bool has_fallback = false;
+  // Note: has_comma may be `true` even for fallbacks which contain
+  // invalid var(). This is needed for syntax validation of fallbacks for
+  // registered custom properties.
+  // TODO(crbug.com/372475301): Remove this, if possible.
+  bool has_comma = false;
+  if (ConsumeComma(stream)) {
+    has_comma = true;
+    stream.ConsumeWhitespace();
+    has_fallback =
+        ResolveTokensInto(stream, resolver, context, function_context,
+                          /* stop_type */ kEOFToken, fallback);
+    // Even if the above call to ResolveTokensInto caused a cycle
+    // (resolver.InCycle()==true), we must proceed to look for cycles in the
+    // non-fallback branch. For example, suppose we are currently resolving
+    // the ', var(--z)' part of the following:
+    //
+    //  --x: var(--y, var(--z));
+    //  --y: var(--x);
+    //  --z: var(--x);
+    //
+    // The properties --x and --z would be detected as cyclic as a result,
+    // but we also need to discover the cycle between --x and --y.
+  }
+
   // Within a function context (i.e. when resolving values within the body of
   // an @function rule), var() must first look for local variables
   // and arguments.
@@ -1465,9 +1495,12 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     // a reference to 'property' during that resolution.
     LookupAndApply(property, resolver);
   }
-
-  // Note that even if we are in a cycle, we must proceed in order to discover
-  // secondary cycles via the var() fallback.
+  // Note that this check catches cycles detected by the DetectCycle call
+  // immediately above, but also any cycles detected during processing of the
+  // fallback near the start of this function.
+  if (resolver.InCycle()) {
+    return false;
+  }
 
   CSSVariableData* data = GetVariableData(property);
 
@@ -1479,34 +1512,24 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     data = nullptr;
   }
 
-  // If we have a fallback, we must process it to look for cycles,
-  // even if we aren't going to use the fallback.
+  // The fallback must match the syntax of the referenced custom
+  // property, even if the fallback isn't used.
   //
-  // https://drafts.csswg.org/css-variables/#cycles
-  if (ConsumeComma(stream)) {
-    stream.ConsumeWhitespace();
-
-    TokenSequence fallback;
-    bool success = ResolveTokensInto(stream, resolver, context,
-                                     /* function_context */ nullptr,
-                                     /* stop_type */ kEOFToken, fallback);
-    // The fallback must match the syntax of the referenced custom property.
-    // https://drafts.css-houdini.org/css-properties-values-api-1/#fallbacks-in-var-references
-    //
-    // TODO(sesse): Do we need the token range here anymore?
-    if (!ValidateFallback(property, fallback.OriginalText())) {
-      // TODO(crbug.com/372475301): We should not validate the fallback.
-      CountUse(WebFeature::kVarFallbackValidation);
-      return false;
-    }
-    if (!data) {
-      return success && out.AppendFallback(
-                            fallback, !fallback.GetAttrTaintedRanges()->empty(),
-                            CSSVariableData::kMaxVariableBytes);
-    }
+  // TODO(crbug.com/372475301): Remove this, if possible.
+  //
+  // https://drafts.css-houdini.org/css-properties-values-api-1/#fallbacks-in-var-references
+  if (has_comma && !ValidateFallback(property, fallback.OriginalText())) {
+    CountUse(WebFeature::kVarFallbackValidation);
+    return false;
   }
 
-  if (!data || resolver.InCycle()) {
+  if (!data) {
+    // No substitution value found; attempt fallback.
+    if (has_fallback) {
+      return out.AppendFallback(fallback,
+                                !fallback.GetAttrTaintedRanges()->empty(),
+                                CSSVariableData::kMaxVariableBytes);
+    }
     return false;
   }
 

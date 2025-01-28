@@ -550,9 +550,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_BILLING_ADDRESS" desc="Label for a spinner input field containing a list of billing addresses for a credit card. [CHAR_LIMIT=32]">
         Billing address
       </message>
-      <message name="IDS_AUTOFILL_PAYMENTS_AUTHENTICATOR_SELECTION_DIALOG_FOOTER" desc="Footer for the dialog where the user selects an authenticator from a list of options.">
-        Not seeing your current info? Please contact your bank to update it.
-      </message>
       <message name="IDS_AUTOFILL_PAYMENTS_AUTHENTICATOR_SELECTION_DIALOG_PROGRESS_BAR_MESSAGE" desc="Message shown on the progress bar after the user selects an authenticator from a list of options and proceeds.">
         Contacting your bank\u2026
       </message>

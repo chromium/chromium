@@ -50,6 +50,7 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
       extension_misc::kReadingModeGDocsHelperExtensionId,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
       extension_misc::kTTSEngineExtensionId,
+      extension_misc::kComponentUpdaterTTSEngineExtensionId,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   });
 

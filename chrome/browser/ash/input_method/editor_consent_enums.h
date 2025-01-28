@@ -23,26 +23,6 @@ enum class ConsentAction : int {
   kDecline
 };
 
-// Defines the status of the consent which we ask the user to provide before
-// we can display the feature to them.
-// Only append new entries to the end of the enum value list and do not reorder
-// the enum value list to maintain compatibility with the integer values saved
-// in the pref storage.
-enum class ConsentStatus : int {
-  // User has agreed to consent by pressing "Yes/Agree" button to all dialogs
-  // from the consent window.
-  kApproved = 0,
-  // User has disagreed to consent by pressing "No/Disagree" button to any
-  // dialog from the consent window.
-  kDeclined = 1,
-  // Invalid state of the consent result.
-  kInvalid = 2,
-  // No explicit consent to use the feature has been received yet.
-  kPending = 3,
-  // No request has been sent to users to collect their consent.
-  kUnset = 4,
-};
-
 enum class EditorOpportunityMode {
   kInvalidInput,
   kRewrite,
@@ -87,8 +67,6 @@ enum class EditorBlockedReason {
   // Blocked because there is a policy that disables the feature.
   kBlockedByPolicy,
 };
-
-ConsentStatus GetConsentStatusFromInteger(int status_value);
 
 }  // namespace ash::input_method
 

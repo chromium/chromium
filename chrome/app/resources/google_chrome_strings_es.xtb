@@ -363,6 +363,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5648328599815354043">Chrome hace más para protegerte online</translation>
 <translation id="565744775970812598">Es posible que <ph name="FILE_NAME" /> sea peligroso, por lo que Chrome lo ha bloqueado.</translation>
 <translation id="566568153320186256">Chrome ahorra batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento fluido y la velocidad de fotogramas de los vídeos. <ph name="BEGIN_LINK" />Más información sobre Ahorro de energía<ph name="END_LINK" /></translation>
+<translation id="567202749201779594">Borra los datos de Chrome de tu cuenta</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Tu administrador pide que reinicies Chrome para aplicar esta actualización}=1{Tu administrador pide que reinicies Chrome para aplicar esta actualización. La ventana de Incógnito no se volverá a abrir.}other{Tu administrador pide que reinicies Chrome para aplicar esta actualización. Las # ventanas de Incógnito no se volverán a abrir.}}</translation>
 <translation id="5686916850681061684">Personaliza y controla Google Chrome. Se requiere tu intervención. Haz clic aquí para obtener más información.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -475,6 +476,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7024536598735240744">Error al descomprimir: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalación detenida.</translation>
 <translation id="7025800014283535195">Puedes cambiar de un perfil de Chrome a otro aquí</translation>
+<translation id="7031914411614877914">Si has olvidado tu frase de contraseña o quieres cambiar este ajuste, <ph name="SETTINGS_LINK" /> los datos de Chrome de tu cuenta.</translation>
 <translation id="7048502283602470098">Descubrir la IA</translation>
 <translation id="7059914902409643750">Personaliza Chrome a tu gusto</translation>
 <translation id="7071827361006050863">Chrome eliminará los datos de navegación dentro de poco</translation>

@@ -4,7 +4,7 @@
 
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {SelectToSpeakConstants} from './select_to_speak_constants.js';
+import type {SelectToSpeakConstants} from './select_to_speak_constants.js';
 
 /**
  * Manages getting and storing user preferences.
@@ -56,7 +56,7 @@ export class PrefsManager {
    * Get the list of TTS voices, and set the default voice if not already set.
    */
   private updateDefaultVoice_(): void {
-    var uiLocale = chrome.i18n.getMessage('@@ui_locale');
+    let uiLocale = chrome.i18n.getMessage('@@ui_locale');
     uiLocale = uiLocale.replace('_', '-').toLowerCase();
 
     chrome.tts.getVoices(voices => {
@@ -90,8 +90,8 @@ export class PrefsManager {
           if (voice.lang === undefined) {
             return -1;
           }
-          var lang = voice.lang.toLowerCase();
-          var s = 0;
+          const lang = voice.lang.toLowerCase();
+          let s = 0;
           if (lang === uiLocale) {
             s += 2;
           }

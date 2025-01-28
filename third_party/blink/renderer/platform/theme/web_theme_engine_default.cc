@@ -261,6 +261,9 @@ SkColor4f WebThemeEngineDefault::GetScrollbarThumbColor(
     WebThemeEngine::State state,
     const WebThemeEngine::ExtraParams* extra_params,
     const ui::ColorProvider* color_provider) const {
+  if (!color_provider) {
+    return SkColors::kRed;
+  }
   const ui::NativeTheme::ScrollbarThumbExtraParams native_theme_extra_params =
       absl::get<ui::NativeTheme::ScrollbarThumbExtraParams>(
           GetNativeThemeExtraParams(

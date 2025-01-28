@@ -138,10 +138,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     const gfx::Rect& dest_rect,
     bool prefer_tagged_orientation,
     bool reinterpret_video_as_srgb) {
-  auto frame_sk_color_space = frame->CompatRGBColorSpace().ToSkColorSpace();
-  if (!frame_sk_color_space) {
-    frame_sk_color_space = SkColorSpace::MakeSRGB();
-  }
+  auto frame_color_space = frame->CompatRGBColorSpace();
 
   DCHECK(frame);
   const auto transform =
@@ -151,6 +148,10 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
       CanUseZeroCopyImages(*frame)) {
     // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
     // may never happen, and SkColorSpace doesn't know about it.
+    auto frame_sk_color_space = frame_color_space.ToSkColorSpace();
+    if (!frame_sk_color_space) {
+      frame_sk_color_space = SkColorSpace::MakeSRGB();
+    }
     const SkImageInfo sk_image_info = SkImageInfo::Make(
         frame->coded_size().width(), frame->coded_size().height(),
         kN32_SkColorType, kUnpremul_SkAlphaType, frame_sk_color_space);
@@ -207,15 +208,13 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   }
 
   auto raster_context_provider = GetRasterContextProvider();
-  // TODO(https://crbug.com/1341235): The choice of color type and alpha type
-  // inappropriate in many circumstances.
-  const auto resource_provider_info = SkImageInfo::Make(
-      gfx::SizeToSkISize(final_dest_rect.size()), kN32_SkColorType,
-      kPremul_SkAlphaType, frame_sk_color_space);
   std::unique_ptr<CanvasResourceProvider> local_resource_provider;
+  // TODO(https://crbug.com/1341235): The choice of format and alpha type
+  // is inappropriate in many circumstances.
   if (!resource_provider) {
     local_resource_provider = CreateResourceProviderForVideoFrame(
-        resource_provider_info, raster_context_provider.get());
+        final_dest_rect.size(), GetN32FormatForCanvas(), kPremul_SkAlphaType,
+        frame_color_space, raster_context_provider.get());
     if (!local_resource_provider) {
       DLOG(ERROR) << "Failed to create CanvasResourceProvider.";
       return nullptr;
@@ -353,8 +352,7 @@ std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
       CanvasResourceProvider::ShouldInitialize::kNo;
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
     return CanvasResourceProvider::CreateBitmapProvider(
-        size, viz::ToClosestSkColorType(format), alpha_type, color_space,
-        kShouldInitialize);
+        size, format, alpha_type, color_space, kShouldInitialize);
   }
   return CanvasResourceProvider::CreateSharedImageProvider(
       size, viz::ToClosestSkColorType(format), alpha_type, color_space,

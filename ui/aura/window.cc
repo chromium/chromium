@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <sstream>
 #include <utility>
 
@@ -25,7 +26,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1148,7 +1148,7 @@ void Window::RemoveChildImpl(Window* child, Window* new_parent) {
   if (child->OwnsLayer())
     layer()->Remove(child->layer());
   child->parent_ = nullptr;
-  auto i = base::ranges::find(children_, child);
+  auto i = std::ranges::find(children_, child);
   CHECK(i != children_.end(), base::NotFatalUntil::M130);
   children_.erase(i);
   child->OnParentChanged();
@@ -1181,9 +1181,9 @@ void Window::StackChildRelativeTo(Window* child,
     return;
 
   const size_t child_i =
-      base::ranges::find(children_, child) - children_.begin();
+      std::ranges::find(children_, child) - children_.begin();
   const size_t target_i =
-      base::ranges::find(children_, target) - children_.begin();
+      std::ranges::find(children_, target) - children_.begin();
 
   DCHECK_LT(child_i, children_.size()) << "Child was not in list of children!";
   DCHECK_LT(target_i, children_.size())

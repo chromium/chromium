@@ -4,6 +4,7 @@
 
 #include "storage/browser/test/mock_quota_client.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <utility>
@@ -13,7 +14,6 @@
 #include "base/location.h"
 #include "base/memory/singleton.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"

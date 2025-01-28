@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/chrome_typography_provider.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "ui/base/default_style.h"

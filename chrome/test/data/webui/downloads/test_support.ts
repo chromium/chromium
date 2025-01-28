@@ -31,13 +31,9 @@ class FakePageHandler implements PageHandlerInterface {
     'logEsbPromotionRowViewed',
     'openEsbSettings',
     'recordCancelBypassWarningDialog',
-    'recordCancelBypassWarningInterstitial',
     'recordOpenBypassWarningDialog',
-    'recordOpenBypassWarningInterstitial',
-    'recordOpenSurveyOnDangerousInterstitial',
     'remove',
     'saveDangerousFromDialogRequiringGesture',
-    'saveDangerousFromInterstitialNeedGesture',
     'saveSuspiciousRequiringGesture',
   ]);
 
@@ -53,21 +49,8 @@ class FakePageHandler implements PageHandlerInterface {
     this.callTracker_.methodCalled('recordCancelBypassWarningDialog', id);
   }
 
-  recordCancelBypassWarningInterstitial(id: string) {
-    this.callTracker_.methodCalled('recordCancelBypassWarningInterstitial', id);
-  }
-
   recordOpenBypassWarningDialog(id: string) {
     this.callTracker_.methodCalled('recordOpenBypassWarningDialog', id);
-  }
-
-  recordOpenBypassWarningInterstitial(id: string) {
-    this.callTracker_.methodCalled('recordOpenBypassWarningInterstitial', id);
-  }
-
-  recordOpenSurveyOnDangerousInterstitial(id: string) {
-    this.callTracker_.methodCalled(
-        'recordOpenSurveyOnDangerousInterstitial', id);
   }
 
   async remove(id: string) {
@@ -83,11 +66,6 @@ class FakePageHandler implements PageHandlerInterface {
   saveDangerousFromDialogRequiringGesture(id: string) {
     this.callTracker_.methodCalled(
         'saveDangerousFromDialogRequiringGesture', id);
-  }
-
-  saveDangerousFromInterstitialNeedGesture(id: string) {
-    this.callTracker_.methodCalled(
-        'saveDangerousFromInterstitialNeedGesture', id);
   }
 
   saveSuspiciousRequiringGesture(id: string) {

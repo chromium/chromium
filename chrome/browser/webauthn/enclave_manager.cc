@@ -1542,8 +1542,12 @@ class EnclaveManager::StateMachine {
       }
 
       is_pin_renewal_ = true;
-      state_ = State::kDownloadingRecoveryKeyStoreKeys;
-      DownloadRecoveryKeyStoreKeys();
+      if (base::FeatureList::IsEnabled(
+              device::kSyncSecurityDomainBeforePINRenewal)) {
+        SyncWithSecurityDomain();
+      } else {
+        DownloadRecoveryKeyStoreKeys();
+      }
       return;
     }
 
@@ -1984,6 +1988,12 @@ class EnclaveManager::StateMachine {
       return;
     }
 
+    if (is_pin_renewal_) {
+      // The PIN isn't being changed, so no need to hash.
+      DownloadRecoveryKeyStoreKeys();
+      return;
+    }
+
     state_ = State::kHashingPIN;
     HashPIN(action_->set_pin.empty() ? std::move(action_->updated_pin)
                                      : std::move(action_->set_pin));
@@ -2001,7 +2011,6 @@ class EnclaveManager::StateMachine {
     }
     wrapped_pin_proto_ = hashed_pin_->ToWrappedPIN(generation);
 
-    state_ = State::kDownloadingRecoveryKeyStoreKeys;
     DownloadRecoveryKeyStoreKeys();
   }
 
@@ -2587,6 +2596,7 @@ class EnclaveManager::StateMachine {
   }
 
   void DownloadRecoveryKeyStoreKeys() {
+    state_ = State::kDownloadingRecoveryKeyStoreKeys;
     cert_xml_loader_ = FetchURL(
         manager_->url_loader_factory_.get(),
         device::enclave::kRecoveryKeyStoreCertFileURL,

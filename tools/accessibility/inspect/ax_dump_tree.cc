@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <iostream>
 #include <numeric>
 #include <string>
@@ -10,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "tools/accessibility/inspect/ax_tree_server.h"
@@ -38,7 +38,7 @@ std::vector<ui::AXApiType::Type> SupportedApis() {
   std::vector<ui::AXApiType::Type> apis =
       content::AXInspectFactory::SupportedApis();
   std::vector<ui::AXApiType::Type> filter_apis;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       apis, std::back_inserter(filter_apis),
       [](ui::AXApiType::Type t) { return t != ui::AXApiType::kBlink; });
   return filter_apis;

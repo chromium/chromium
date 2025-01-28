@@ -4,6 +4,7 @@
 
 #include "content/browser/web_contents/web_contents_impl.h"
 
+#include <algorithm>
 #include <array>
 #include <optional>
 #include <tuple>
@@ -21,7 +22,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
@@ -971,7 +971,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, LoadProgress) {
 
   const std::vector<double>& progresses = delegate->progresses;
   // All updates should be in order ...
-  if (base::ranges::adjacent_find(progresses, std::greater<>()) !=
+  if (std::ranges::adjacent_find(progresses, std::greater<>()) !=
       progresses.end()) {
     ADD_FAILURE() << "Progress values should be in order: "
                   << ::testing::PrintToString(progresses);
@@ -992,7 +992,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, LoadProgressWithFrames) {
 
   const std::vector<double>& progresses = delegate->progresses;
   // All updates should be in order ...
-  if (base::ranges::adjacent_find(progresses, std::greater<>()) !=
+  if (std::ranges::adjacent_find(progresses, std::greater<>()) !=
       progresses.end()) {
     ADD_FAILURE() << "Progress values should be in order: "
                   << ::testing::PrintToString(progresses);

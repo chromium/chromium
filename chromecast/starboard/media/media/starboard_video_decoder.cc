@@ -215,7 +215,10 @@ void StarboardVideoDecoder::GetStatistics(Statistics* statistics) {
   }
 
   StarboardPlayerInfo player_info = {};
-  GetStarboardApi().GetPlayerInfo(GetPlayer(), &player_info);
+  auto* player = GetPlayer();
+  if (player) {
+    GetStarboardApi().GetPlayerInfo(player, &player_info);
+  }
 
   statistics->decoded_bytes = decoded_bytes_;
   statistics->decoded_frames = player_info.total_video_frames;

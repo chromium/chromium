@@ -9,6 +9,7 @@
 
 #include "fuchsia_web/webengine/browser/content_directory_loader_factory.h"
 
+#include <fuchsia/io/cpp/fidl.h>
 #include <lib/fdio/directory.h>
 #include <lib/fdio/fd.h>
 
@@ -266,8 +267,6 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
       const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
  private:
   // Called when body_writer_->Write() has completed asynchronously.
@@ -310,11 +309,11 @@ net::Error OpenFileFromDirectory(
           .Append(relative_file_path);
 
   const zx_status_t status =
-      fdio_open(absolute_file_path.value().c_str(),
-                static_cast<uint32_t>(fuchsia::io::OpenFlags::RIGHT_READABLE),
-                file_request.TakeChannel().release());
+      fdio_open3(absolute_file_path.value().c_str(),
+                 static_cast<uint64_t>(fuchsia::io::PERM_READABLE),
+                 file_request.TakeChannel().release());
   if (status != ZX_OK) {
-    ZX_DLOG(WARNING, status) << "fdio_open";
+    ZX_DLOG(WARNING, status) << "fdio_open3";
     return net::ERR_FILE_NOT_FOUND;
   }
 

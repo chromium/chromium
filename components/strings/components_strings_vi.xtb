@@ -271,6 +271,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Không thể thiết lập khoá "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" trong cùng một từ điển với khoá "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
 <translation id="1455413310270022028">Tẩy</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Xem 0 bài đánh giá}=1{Xem 1 bài đánh giá}other{Xem tất cả # bài đánh giá}}</translation>
 <translation id="1458059624921545588">Con người và xã hội</translation>
 <translation id="1458140305240870199">Đồ lót</translation>
 <translation id="1459693405370120464">Thời tiết</translation>
@@ -961,6 +962,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2674170444375937751">Bạn có chắc chắn muốn xóa những trang này khỏi nhật ký duyệt web của mình không?</translation>
 <translation id="2674524144218093528">Sơn và hoàn thiện nhà cửa</translation>
 <translation id="2674804415323431591">Ẩn các đề xuất</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> nhóm thẻ không còn hoạt động</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>
 <translation id="2683195745483370038">Kết quả tìm được khác</translation>
 <translation id="2686919536310834199">Gửi phản hồi về tính năng Giúp tôi viết.</translation>
@@ -1956,6 +1958,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4407758156081352648">Nhằm duy trì tính bảo mật, tổ chức của bạn không cho phép sử dụng lại mật khẩu trong Chrome. Mật khẩu trong Chrome được mã hoá để bảo vệ quyền riêng tư của người dùng.</translation>
 <translation id="4408413947728134509">Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Cấu hình này được đánh dấu là dễ dàng cài đặt, nhưng vì không có hình ảnh nào được cung cấp cho cấu trúc này nên bạn không thể cài đặt cấu hình này.</translation>
+<translation id="4412377069090572315">Nhận xét của mọi người</translation>
 <translation id="4414452699610169758">Sử dụng Trình quản lý mật khẩu của Google và tính năng Tự động điền của Chrome để lưu và điền mật khẩu, phương thức thanh toán và địa chỉ</translation>
 <translation id="4414515549596849729">cookie và dữ liệu trang web</translation>
 <translation id="4415156962929755728">Nhựa (Độ bóng cao)</translation>
@@ -2264,6 +2267,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5001526427543320409">Cookie của bên thứ ba</translation>
 <translation id="5002932099480077015">Nếu được bật, Chrome sẽ lưu trữ bản sao thẻ của bạn trên thiết bị này để điền vào biểu mẫu nhanh hơn.</translation>
 <translation id="5007392906805964215">Xem</translation>
+<translation id="500790844453430087">Nhóm thẻ "<ph name="GROUP_TITLE_1" />" và "<ph name="GROUP_TITLE_2" />" không còn hoạt động</translation>
 <translation id="5011561501798487822">Ngôn ngữ được phát hiện</translation>
 <translation id="5015510746216210676">Tên máy:</translation>
 <translation id="5017554619425969104">Văn bản bạn đã sao chép</translation>
@@ -2736,6 +2740,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5866898949289125849">Bạn đang xem trang công cụ dành cho nhà phát triển</translation>
 <translation id="5869405914158311789">Không thể truy cập trang web này</translation>
 <translation id="5869522115854928033">Mật khẩu đã lưu</translation>
+<translation id="5872215789867188990">Nhóm thẻ "<ph name="GROUP_TITLE" />" không còn hoạt động</translation>
 <translation id="5872692522325383488">Đã lưu IBAN</translation>
 <translation id="5873297634595728366">Xe chạy động cơ diesel</translation>
 <translation id="5877359070305966420">Nguồn nhân lực</translation>
@@ -2777,6 +2782,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5937560539988385583">Đã dịch trang</translation>
 <translation id="5938153366081463283">Thêm thẻ ảo</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Thông tin này đến từ các trang web đánh giá độc lập như Trustpilot, ScamAdviser, Google, v.v. Bản tóm tắt được tạo bằng AI.</translation>
 <translation id="5944297261866530437">Vải (Độ bóng cao)</translation>
 <translation id="5950901984834744590">Dao cạo và máy cạo râu</translation>
 <translation id="5951495562196540101">Không thể đăng ký bằng tài khoản người dùng thông thường (có sẵn giấy phép theo gói).</translation>
@@ -3143,6 +3149,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6567832540451970450">Quản trị viên của bạn cho phép trang web này sử dụng <ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">Nút Quản lý phương thức thanh toán, hãy nhấn nút này để quản lý thông tin thanh toán và thẻ tín dụng của bạn trong phần cài đặt của Chrome</translation>
 <translation id="6569060085658103619">Bạn đang xem trang tiện ích</translation>
+<translation id="6572867903637058088">Thông tin này có hữu ích không?</translation>
 <translation id="6573200754375280815">Đục 2 lỗ bên phải</translation>
 <translation id="6574762126505704998">Toàn bộ ảnh</translation>
 <translation id="6575408526598156416">Lưu vào tài khoản</translation>
@@ -4323,9 +4330,11 @@ Thông tin chi tiết bổ sung:
 <translation id="8672535691554698269">Mạng máy tính</translation>
 <translation id="8675446170353411473">Đang tải các tệp của bạn lên <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Không trì hoãn</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{Đã xoá {COUNT} bảng}other{Đã xoá {COUNT} bảng}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, câu trả lời, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Không thể tải trang web tại <ph name="PAGE" /> do:</translation>
 <translation id="8682297334444610648">Trò chơi khủng long, nhấn để chơi trò chơi này</translation>
+<translation id="8685225035093721011">Bài đánh giá cửa hàng</translation>
 <translation id="8686424632716064939">Bảo mật máy tính</translation>
 <translation id="8687278439622293018">Mục nhập <ph name="ENTRY_VOICEOVER" /> đã bị xoá</translation>
 <translation id="8687429322371626002">Thiết bị và tài khoản của bạn do <ph name="MANAGER" /> quản lý.</translation>

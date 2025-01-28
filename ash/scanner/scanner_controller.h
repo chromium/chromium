@@ -12,9 +12,12 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/scanner/scanner_session.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+
+class PrefRegistrySimple;
 
 namespace manta::proto {
 class ScannerAction;
@@ -24,6 +27,7 @@ namespace ash {
 
 class ScannerCommandDelegateImpl;
 class ScannerDelegate;
+class SessionControllerImpl;
 
 // This is the top level controller used for Scanner. It acts as a mediator
 // between Scanner and any consuming features.
@@ -31,10 +35,13 @@ class ASH_EXPORT ScannerController : public SessionObserver {
  public:
   using OnActionFinishedCallback = base::OnceCallback<void(bool success)>;
 
-  explicit ScannerController(std::unique_ptr<ScannerDelegate> delegate);
+  explicit ScannerController(std::unique_ptr<ScannerDelegate> delegate,
+                             SessionControllerImpl& session_controller);
   ScannerController(const ScannerController&) = delete;
   ScannerController& operator=(const ScannerController&) = delete;
   ~ScannerController() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -76,7 +83,10 @@ class ASH_EXPORT ScannerController : public SessionObserver {
 
   // Opens a feedback dialog for an action that has been performed, and the
   // (resized) screenshot which initiated the action.
-  void OpenFeedbackDialog(manta::proto::ScannerAction action,
+  // WARNING: This function does not check whether the account has feedback
+  // enabled or not!
+  void OpenFeedbackDialog(const AccountId& account_id,
+                          manta::proto::ScannerAction action,
                           scoped_refptr<base::RefCountedMemory> screenshot);
 
   bool HasActiveSessionForTesting() const;
@@ -104,6 +114,10 @@ class ASH_EXPORT ScannerController : public SessionObserver {
   std::unique_ptr<ScannerSession> scanner_session_;
 
   OnActionFinishedCallback on_action_finished_for_testing_;
+
+  // External dependencies not owned by this class:
+  // Session controller, stored in `Shell`. Always outlives this class.
+  raw_ref<SessionControllerImpl> session_controller_;
 
   ScopedSessionObserver session_observer_{this};
 

@@ -8,7 +8,7 @@ import {CrCheckboxElement} from '//resources/ash/common/cr_elements/cr_checkbox/
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DataSeriesList} from '../../controller/system_trend_controller.js';
+import type {DataSeriesList} from '../../controller/system_trend_controller.js';
 
 import {getTemplate} from './data_series_checkbox.html.js';
 

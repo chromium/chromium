@@ -439,7 +439,7 @@ void MaybeReportDangerousDownloadBlocked(
         download->GetURL(), download->GetTabUrl(), download_path,
         base::HexEncode(raw_digest_sha256), danger_type,
         download->GetMimeType(), /*scan_id*/ "", download->GetTotalBytes(),
-        safe_browsing::EventResult::BLOCKED);
+        enterprise_connectors::EventResult::BLOCKED);
   }
 #endif
 }

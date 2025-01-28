@@ -4,10 +4,10 @@
 
 #include "content/public/test/fenced_frame_test_util.h"
 
+#include <algorithm>
 #include <string_view>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/run_until.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
@@ -310,7 +310,7 @@ bool RevokeFencedFrameUntrustedNetwork(RenderFrameHost* rfh) {
 
 void ExemptUrlsFromFencedFrameNetworkRevocation(RenderFrameHost* rfh,
                                                 const std::vector<GURL>& urls) {
-  base::ranges::for_each(urls, [rfh](GURL url) {
+  std::ranges::for_each(urls, [rfh](GURL url) {
     static_cast<RenderFrameHostImpl*>(rfh)
         ->ExemptUrlFromNetworkRevocationForTesting(url, base::DoNothing());
   });

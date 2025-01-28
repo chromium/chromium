@@ -312,15 +312,6 @@ class FaviconDatabase {
   // Helper function to handle cleanup on upgrade failures.
   sql::InitStatus CantUpgradeToVersion(int cur_version);
 
-  // Adds support for size in favicons table.
-  bool UpgradeToVersion6();
-
-  // Removes sizes column.
-  bool UpgradeToVersion7();
-
-  // Adds support for bitmap usage tracking.
-  bool UpgradeToVersion8();
-
   // Returns true if the `favicons` database is missing a column.
   bool IsFaviconDBStructureIncorrect();
 

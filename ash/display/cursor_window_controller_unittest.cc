@@ -394,9 +394,14 @@ TEST_F(CursorWindowControllerTest, ShouldEnableCursorCompositing) {
   EXPECT_FALSE(cursor_window_controller()->is_cursor_compositing_enabled());
 }
 
-TEST_F(CursorWindowControllerTest, CursorColoringSpotCheck) {
-  SetCursorCompositionEnabled(false);
-  EXPECT_FALSE(cursor_window_controller()->is_cursor_compositing_enabled());
+// Test that cursor color works correctly when large cursor is enabled.
+TEST_F(CursorWindowControllerTest, LargeCursorColoringSpotCheck) {
+  // Enable large cursor, cursor compositing should be enabled and thus
+  // colored cursor should also be composited cursor.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
+  ASSERT_TRUE(cursor_window_controller()->is_cursor_compositing_enabled());
 
   // Try a few colors to ensure colorizing is working appropriately.
   const struct {
@@ -414,18 +419,15 @@ TEST_F(CursorWindowControllerTest, CursorColoringSpotCheck) {
       // The no drop cursor has red in it, check it's still there:
       // Most of the cursor should be colored, but the red part shouldn't be
       // re-colored.
-      {SK_ColorBLUE, SK_ColorGREEN, SkColorSetRGB(173, 8, 8),
+      {SK_ColorBLUE, SK_ColorGREEN, SkColorSetRGB(172, 0, 0),
        CursorType::kNoDrop},
       // Similarly, the copy cursor has green in it.
-      {SK_ColorBLUE, SK_ColorRED, SkColorSetRGB(19, 137, 16),
+      {SK_ColorBLUE, SK_ColorRED, SkColorSetRGB(25, 140, 22),
        CursorType::kCopy},
   };
 
   for (const auto& test : kTestCases) {
-    // Setting a color enables cursor compositing.
     cursor_window_controller()->SetCursorColor(test.cursor_color);
-    Shell::Get()->UpdateCursorCompositingEnabled();
-    EXPECT_TRUE(cursor_window_controller()->is_cursor_compositing_enabled());
     cursor_window_controller()->SetCursor(test.cursor);
     const SkBitmap* bitmap = GetCursorImage().bitmap();
     // We should find |cursor_color| pixels in the cursor, but no black or
@@ -458,9 +460,8 @@ TEST_F(CursorWindowControllerTest, CursorColoringSpotCheck) {
   }
 
   // Set back to the default color and ensure cursor compositing is disabled.
-  cursor_window_controller()->SetCursorColor(kDefaultCursorColor);
-  Shell::Get()->UpdateCursorCompositingEnabled();
-  EXPECT_FALSE(cursor_window_controller()->is_cursor_compositing_enabled());
+  prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, false);
+  SetCursorCompositionEnabled(false);
 }
 
 }  // namespace ash

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
@@ -40,6 +41,7 @@ import org.chromium.ui.base.ViewUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -92,6 +94,34 @@ public class TileRenderer {
         }
     }
 
+    /** Simple multimap from SiteSuggestion to SuggestionsTileView. */
+    private static class SuggestionsTileViewCache {
+        private final Map<SiteSuggestion, LinkedList<SuggestionsTileView>> mStorage =
+                new HashMap<SiteSuggestion, LinkedList<SuggestionsTileView>>();
+
+        void put(SiteSuggestion key, @NonNull SuggestionsTileView value) {
+            LinkedList<SuggestionsTileView> bucket = mStorage.get(key);
+            if (bucket == null) {
+                bucket = new LinkedList<SuggestionsTileView>();
+                mStorage.put(key, bucket);
+            }
+            bucket.addLast(value);
+        }
+
+        @Nullable
+        SuggestionsTileView remove(SiteSuggestion key) {
+            SuggestionsTileView ret = null;
+            LinkedList<SuggestionsTileView> bucket = mStorage.get(key);
+            if (bucket != null) {
+                ret = bucket.removeFirst(); // FIFO, for consistecy.
+                if (bucket.isEmpty()) {
+                    mStorage.remove(key);
+                }
+            }
+            return ret;
+        }
+    }
+
     public TileRenderer(
             Context context, @TileStyle int style, int titleLines, ImageFetcher imageFetcher) {
         mImageFetcher = imageFetcher;
@@ -131,7 +161,7 @@ public class TileRenderer {
             List<Tile> sectionTiles, ViewGroup parent, TileGroup.TileSetupDelegate setupDelegate) {
         try (TraceEvent e = TraceEvent.scoped("TileRenderer.renderTileSection")) {
             // Map the old tile views by url so they can be reused later.
-            Map<SiteSuggestion, SuggestionsTileView> oldTileViews = new HashMap<>();
+            SuggestionsTileViewCache oldTileViews = new SuggestionsTileViewCache();
             int childCount = parent.getChildCount();
             for (int i = 0; i < childCount; i++) {
                 SuggestionsTileView tileView = (SuggestionsTileView) parent.getChildAt(i);
@@ -143,11 +173,10 @@ public class TileRenderer {
             parent.removeAllViews();
 
             for (Tile tile : sectionTiles) {
-                SuggestionsTileView tileView = oldTileViews.get(tile.getData());
+                SuggestionsTileView tileView = oldTileViews.remove(tile.getData());
                 if (tileView == null) {
                     tileView = buildTileView(tile, parent, setupDelegate);
                 }
-
                 parent.addView(tileView);
             }
         }

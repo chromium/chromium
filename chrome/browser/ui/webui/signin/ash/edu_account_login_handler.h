@@ -25,6 +25,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
@@ -48,9 +49,9 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
     // an empty gfx::Image() will be returned.
     ProfileImageFetcher(
         image_fetcher::ImageFetcher* image_fetcher,
-        const std::map<std::string, GURL>& profile_image_urls,
-        base::OnceCallback<
-            void(std::map<std::string, gfx::Image> profile_images)> callback);
+        const std::map<GaiaId, GURL>& profile_image_urls,
+        base::OnceCallback<void(std::map<GaiaId, gfx::Image> profile_images)>
+            callback);
     ProfileImageFetcher(const ProfileImageFetcher&) = delete;
     ProfileImageFetcher& operator=(const ProfileImageFetcher&) = delete;
     ~ProfileImageFetcher();
@@ -65,20 +66,20 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
     // Called for each profile provided in |profile_image_urls_|. If
     // |profile_image_url| is valid - fetches the image. Otherwise calls
     // |OnImageFetched| with an empty image.
-    void FetchProfileImage(const std::string& obfuscated_gaia_id,
+    void FetchProfileImage(const GaiaId& obfuscated_gaia_id,
                            const GURL& profile_image_url);
 
     // Called for each profile provided in |profile_image_urls_|. After all
     // images are fetched resolves |callback_| with profile images.
-    void OnImageFetched(const std::string& obfuscated_gaia_id,
+    void OnImageFetched(const GaiaId& obfuscated_gaia_id,
                         const gfx::Image& image,
                         const image_fetcher::RequestMetadata& metadata);
 
     raw_ptr<image_fetcher::ImageFetcher> image_fetcher_ = nullptr;
-    const std::map<std::string, GURL> profile_image_urls_;
-    base::OnceCallback<void(std::map<std::string, gfx::Image> profile_images)>
+    const std::map<GaiaId, GURL> profile_image_urls_;
+    base::OnceCallback<void(std::map<GaiaId, gfx::Image> profile_images)>
         callback_;
-    std::map<std::string, gfx::Image> fetched_profile_images_;
+    std::map<GaiaId, gfx::Image> fetched_profile_images_;
     base::WeakPtrFactory<ProfileImageFetcher> weak_ptr_factory_{this};
   };
 
@@ -105,15 +106,14 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
   void HandleParentSignin(const base::Value::List& args);
 
   virtual void FetchFamilyMembers();
-  virtual void FetchParentImages(
-      base::Value::List parents,
-      std::map<std::string, GURL> profile_image_urls);
-  virtual void FetchAccessToken(const std::string& obfuscated_gaia_id,
+  virtual void FetchParentImages(base::Value::List parents,
+                                 std::map<GaiaId, GURL> profile_image_urls);
+  virtual void FetchAccessToken(const GaiaId& obfuscated_gaia_id,
                                 const std::string& password);
 
   virtual void FetchReAuthProofTokenForParent(
       const std::string& child_oauth_access_token,
-      const std::string& parent_obfuscated_gaia_id,
+      const GaiaId& parent_obfuscated_gaia_id,
       const std::string& parent_credential);
 
   // ListFamilyMembers fetch handlers.
@@ -128,11 +128,11 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
   // ProfileImageFetcher callback
   void OnParentProfileImagesFetched(
       base::Value::List parents,
-      std::map<std::string, gfx::Image> profile_images);
+      std::map<GaiaId, gfx::Image> profile_images);
 
   // signin::PrimaryAccountAccessTokenFetcher callback
   void CreateReAuthProofTokenForParent(
-      const std::string& parent_obfuscated_gaia_id,
+      const GaiaId& parent_obfuscated_gaia_id,
       const std::string& parent_credential,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);

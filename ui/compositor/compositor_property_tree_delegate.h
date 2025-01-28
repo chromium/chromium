@@ -49,10 +49,9 @@ class COMPOSITOR_EXPORT CompositorPropertyTreeDelegate
   void SetObserverForTesting(Observer*);
 
   // PropertyTreeDelegate overrides.
-  void UpdatePropertyTreesIfNeeded(cc::LayerTreeHost*) override;
+  void UpdatePropertyTreesIfNeeded() override;
 
   void UpdateScrollOffsetFromImpl(
-      cc::LayerTreeHost* host,
       const cc::ElementId& id,
       const gfx::Vector2dF& delta,
       const std::optional<cc::TargetSnapAreaElementIds>& snap_target_ids)

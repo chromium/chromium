@@ -22,21 +22,21 @@ class NATIVE_THEME_EXPORT ScrollbarAnimationTimerMac {
  public:
   ScrollbarAnimationTimerMac(
       base::RepeatingCallback<void(double)> callback,
-      double duration,
+      base::TimeDelta duration,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   ~ScrollbarAnimationTimerMac();
 
   void Start();
   void Stop();
-  void SetDuration(double duration);
+  void SetDuration(base::TimeDelta duration);
 
  private:
   void TimerFired();
 
   base::RepeatingTimer timer_;
-  double start_time_;  // In seconds.
-  double duration_;    // In seconds.
+  base::TimeTicks start_time_;
+  base::TimeDelta duration_;
   base::RepeatingCallback<void(double)> callback_;
   std::unique_ptr<gfx::CubicBezierTimingFunction> timing_function_;
 };
@@ -105,8 +105,8 @@ class NATIVE_THEME_EXPORT OverlayScrollbarAnimatorMac {
   bool mouse_in_track_ = false;
   bool animations_enabled_;
 
-  static const float kAnimationDurationSeconds;
-  static const base::TimeDelta kFadeOutDelay;
+  static constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
+  static constexpr base::TimeDelta kFadeOutDelay = base::Milliseconds(500);
 
   // Animator for expanding `thumb_width_` when the mouse enters the
   // scrollbar area.

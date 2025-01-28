@@ -6,7 +6,7 @@ import("//build/chromeos/crosier_tests.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("arc") {
   sources = [

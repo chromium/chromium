@@ -9,7 +9,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"

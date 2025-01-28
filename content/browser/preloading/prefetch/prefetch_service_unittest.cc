@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -11,7 +12,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -216,7 +216,7 @@ class PrefetchFakeServiceWorkerContext : public FakeServiceWorkerContext {
       std::move(callback).Run(ServiceWorkerCapability::NO_SERVICE_WORKER);
       return;
     }
-    auto service_worker_info = base::ranges::find_if(
+    auto service_worker_info = std::ranges::find_if(
         service_worker_scopes_,
         [url](const std::pair<GURL, ServiceWorkerCapability>&
                   service_worker_info) {
@@ -1017,10 +1017,10 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
   network::TestURLLoaderFactory::PendingRequest* GetPendingRequestByUrl(
       const GURL& url) {
     auto& pending_requests = *test_url_loader_factory_.pending_requests();
-    auto it = base::ranges::find(pending_requests, url,
-                                 [](const auto& pending_request) {
-                                   return pending_request.request.url;
-                                 });
+    auto it = std::ranges::find(pending_requests, url,
+                                [](const auto& pending_request) {
+                                  return pending_request.request.url;
+                                });
     if (it == pending_requests.end()) {
       return nullptr;
     }

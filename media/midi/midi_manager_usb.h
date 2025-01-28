@@ -80,6 +80,9 @@ class USB_MIDI_EXPORT MidiManagerUsb : public MidiManager,
   void OnEnumerateDevicesDone(bool result, UsbMidiDevice::Devices* devices);
   bool AddPorts(UsbMidiDevice* device, int device_id);
 
+  // MidiManager implementation.
+  const char* GetBackendName() const override;
+
   // TODO(toyoshim): Remove |lock_| once dynamic instantiation mode is enabled
   // by default. This protects objects allocated on the I/O thread from doubly
   // released on the main thread.

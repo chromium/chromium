@@ -26,6 +26,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
@@ -635,12 +636,35 @@ class TrustedSignalsCacheImpl::CompressionGroupData
     return --num_handles_;
   }
 
-  void set_lru_list_it(std::optional<LruList::iterator> lru_list_it) {
-    // There should be no Handles when calling this method, regardless of
-    // whether `lru_list_it` is nullopt or not - it should be removed from the
-    // LruList before any handle is created.
+  // Sets `lru_list_it_` and calculates `scheduled_cleanup_time_`, though the
+  // caller is responsible for destroying `this` once the cleanup time is
+  // reached.
+  void SetLruListIt(LruList::iterator lru_list_it) {
+    // There should be no Handles when calling this method - it should be
+    // removed from the LruList before any handle is created.
     DCHECK_EQ(num_handles_, 0u);
+    DCHECK(!lru_list_it_);
+    DCHECK(!scheduled_cleanup_time_);
+
     lru_list_it_ = std::move(lru_list_it);
+    scheduled_cleanup_time_ = base::TimeTicks::Now() + kMinUnusedCleanupTime;
+  }
+
+  // Clears `lru_list_it_` and `scheduled_cleanup_time_`. Should be called when
+  // removing `this` from the LruList, either for use by a Handle or in order to
+  // destroy it.
+  void ClearLruListIt() {
+    // This should be called before adding any handles.
+    DCHECK_EQ(num_handles_, 0u);
+
+    lru_list_it_ = std::nullopt;
+    scheduled_cleanup_time_ = std::nullopt;
+  }
+
+  // Returns `scheduled_cleanup_time_`. To call this method, `this` must be in
+  // the LruList, and thus have a scheduled removal time.
+  base::TimeTicks scheduled_cleanup_time() const {
+    return *scheduled_cleanup_time_;
   }
 
  private:
@@ -675,6 +699,10 @@ class TrustedSignalsCacheImpl::CompressionGroupData
 
   // Expiration time. Populated when `data_` is set.
   std::optional<base::TimeTicks> expiry_;
+
+  // When `this` should be removed from the LruList to reduce memory usage. Only
+  // set when added to the LRUCache.
+  std::optional<base::TimeTicks> scheduled_cleanup_time_;
 
   // All *CacheEntries associated with this CompressionGroupData. The maps are
   // indexed by partition ID. Each CompressionGroupData may only have bidding or
@@ -1336,14 +1364,21 @@ void TrustedSignalsCacheImpl::OnLastHandleDestroyed(
   // below.
   auto it =
       lru_list_.emplace(lru_list_.end(), std::move(compression_group_data));
-  (*it)->set_lru_list_it(it);
+  (*it)->SetLruListIt(it);
+  MaybeStartCleanupTimer();
 }
 
 void TrustedSignalsCacheImpl::RemoveFromLruList(LruList::iterator lru_list_it) {
   // This needs to be done before removing the CompressionGroupData from the
   // LruList, as removal may destroy the CompressionGroupData.
-  (*lru_list_it)->set_lru_list_it(std::nullopt);
+  (*lru_list_it)->ClearLruListIt();
   lru_list_.erase(lru_list_it);
+
+  // Stop the timer if it's no longer needed. This makes timeouts a easier to
+  // reason about for testing.
+  if (lru_list_.empty()) {
+    cleanup_timer_.Stop();
+  }
 }
 
 void TrustedSignalsCacheImpl::OnCompressionGroupDataDestroyed(
@@ -1425,6 +1460,29 @@ base::UnguessableToken TrustedSignalsCacheImpl::GetNetworkPartitionNonce(
                                             base::UnguessableToken::Create());
   }
   return it->second;
+}
+
+void TrustedSignalsCacheImpl::MaybeStartCleanupTimer() {
+  if (cleanup_timer_.IsRunning() || lru_list_.empty()) {
+    return;
+  }
+
+  // Unretained is safe here because `cleanup_timer_` won't run tasks after it
+  // has been destroyed, and `this` owns `cleanup_timer_`.
+  cleanup_timer_.Start(FROM_HERE,
+                       (*lru_list_.begin())->scheduled_cleanup_time() -
+                           base::TimeTicks::Now() + kCleanupInterval,
+                       base::BindOnce(&TrustedSignalsCacheImpl::Cleanup,
+                                      base::Unretained(this)));
+}
+
+void TrustedSignalsCacheImpl::Cleanup() {
+  base::TimeTicks now = base::TimeTicks::Now();
+  while (!lru_list_.empty() &&
+         (*lru_list_.begin())->scheduled_cleanup_time() <= now) {
+    RemoveFromLruList(lru_list_.begin());
+  }
+  MaybeStartCleanupTimer();
 }
 
 std::unique_ptr<TrustedSignalsFetcher>

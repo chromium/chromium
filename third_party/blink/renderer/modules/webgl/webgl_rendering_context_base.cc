@@ -832,7 +832,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
           RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-        size, GetSkColorType(), GetAlphaType(), GetColorSpace(),
+        size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
         CanvasResourceProvider::ShouldInitialize::kNo);
   }
 
@@ -8644,8 +8644,9 @@ CanvasResourceProvider* WebGLRenderingContextBase::
   } else {
     // TODO(fserb): why is this a BITMAP?
     temp = CanvasResourceProvider::CreateBitmapProvider(
-        gfx::Size(size.width(), size.height()), sk_color_type, alpha_type,
-        SkColorSpaceToGfxColorSpace(sk_color_space),
+        gfx::Size(size.width(), size.height()),
+        viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
+        alpha_type, SkColorSpaceToGfxColorSpace(sk_color_space),
         CanvasResourceProvider::ShouldInitialize::kNo);  // TODO: should this
                                                          // use the canvas's
   }

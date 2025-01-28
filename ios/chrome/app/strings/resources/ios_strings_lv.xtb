@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Adrese tika saglabāta tikai šajā ierīcē</translation>
 <translation id="1445276840641906250">Visas jūsu cilnes vienā pārlūkā</translation>
 <translation id="1450170672351507823">Ir ieslēgta standarta aizsardzība. Lai iegūtu lielāku drošību, izmantojiet uzlaboto aizsardzību.</translation>
-<translation id="1454615514353469963">Paroles, piekļuves atslēgas un citi dati tiks neatgriezeniski dzēsti no Google paroļu pārvaldnieka.</translation>
 <translation id="1455660774629812862">Neslēpt</translation>
 <translation id="1460751212339734034">Ietaupiet laiku — rakstiet mazāk</translation>
 <translation id="1466035273550360103">Nav atvērtu ciļņu</translation>
@@ -476,6 +475,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="3053332585453689122">Uz funkciju “Google droša pārlūkošana” tiek sūtīti jūsu apmeklētie vietrāži URL, nelieli lapu satura paraugi, informācija par lejupielādēm un paplašinājumu darbību, kā arī sistēmas informācija, lai pārbaudītu, vai šie vietrāži, lejupielādes un paplašinājumi nav kaitīgi.</translation>
 <translation id="3055102495753300780">Informācijas glabāšana</translation>
 <translation id="3059270601560379555">Jauns meklējums</translation>
+<translation id="3064547930554042309">Lejupielāžu pārvaldība</translation>
 <translation id="3072279342064724558">Parole jau pastāv</translation>
 <translation id="3076846064362030967">Jūs netiksiet izrakstīts no sava Google konta. Kad esat pierakstījies, jūsu Google kontā var saglabāt <ph name="BEGIN_LINK" />arī cita veida darbības<ph name="END_LINK" />. Jebkurā laikā varat tās izdzēst.
 
@@ -698,6 +698,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4154753961803534698">Meklēt ar kameru</translation>
 <translation id="4158491215857439601">Paroļu pārvaldnieks</translation>
 <translation id="4163699139741158298">{count,plural, =1{Grāmatzīme tika saglabāta šeit: “{title}”. Tā ir saglabāta tikai šajā ierīcē.}zero{{count} grāmatzīmes tika saglabātas šeit: “{title}”. Tās ir saglabātas tikai šajā ierīcē.}one{{count} grāmatzīme tika saglabāta šeit: “{title}”. Tās ir saglabātas tikai šajā ierīcē.}other{{count} grāmatzīmes tika saglabātas šeit: “{title}”. Tās ir saglabātas tikai šajā ierīcē.}}</translation>
+<translation id="4164514562270305824">Automātiski dzēst lejupielādes</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, pēdējie cipari ir <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Neatļaut</translation>
 <translation id="4172051516777682613">Vienmēr rādīt</translation>
@@ -1016,6 +1017,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5579012242779565775">Paslēpt vienumu “Lasīšanas saraksts”</translation>
 <translation id="5585019845078534178">Kartes</translation>
 <translation id="5595485650161345191">Rediģēt adresi</translation>
+<translation id="559567008082979829">Iestatiet, lai lejupielādes tiktu dzēstas pēc viena mēneša.</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
 <translation id="560322036295180549">Funkciju izslēdza jūsu organizācija.</translation>
 <translation id="5611107723541161735">Saīsnes uz šajā ierīcē nesen apmeklētajām vietnēm.</translation>

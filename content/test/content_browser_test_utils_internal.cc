@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -15,7 +16,6 @@
 #include "base/containers/stack.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -448,7 +448,7 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
 std::string FrameTreeVisualizer::GetName(SiteInstance* site_instance) {
   // Indices into the vector correspond to letters of the alphabet.
   size_t index =
-      base::ranges::find(seen_site_instance_ids_, site_instance->GetId()) -
+      std::ranges::find(seen_site_instance_ids_, site_instance->GetId()) -
       seen_site_instance_ids_.begin();
   if (index == seen_site_instance_ids_.size())
     seen_site_instance_ids_.push_back(site_instance->GetId());

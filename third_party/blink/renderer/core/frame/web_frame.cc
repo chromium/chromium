@@ -5,6 +5,8 @@
 #include "third_party/blink/public/web/web_frame.h"
 
 #include <algorithm>
+
+#include "base/containers/to_vector.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
@@ -67,7 +69,7 @@ mojom::blink::InsecureRequestPolicy WebFrame::GetInsecureRequestPolicy() const {
 WebVector<unsigned> WebFrame::GetInsecureRequestToUpgrade() const {
   const SecurityContext::InsecureNavigationsSet& set =
       ToCoreFrame(*this)->GetSecurityContext()->InsecureNavigationsToUpgrade();
-  return SecurityContext::SerializeInsecureNavigationSet(set);
+  return base::ToVector(SecurityContext::SerializeInsecureNavigationSet(set));
 }
 
 WebFrame* WebFrame::Opener() const {

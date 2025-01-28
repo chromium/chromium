@@ -1,0 +1,11 @@
+source_set("auto_deletion") {
+  sources = [
+    "auto_deletion_service.h",
+    "auto_deletion_service.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
+}

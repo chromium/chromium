@@ -18,9 +18,5 @@ static_library("accessibility_service_private") {
 
   public_deps = [ "//extensions/browser" ]
 
-  deps = []
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/accessibility" ]
-  }
+  deps = [ "//chrome/browser/ash/accessibility" ]
 }

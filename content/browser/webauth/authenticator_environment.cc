@@ -4,12 +4,12 @@
 
 #include "content/browser/webauth/authenticator_environment.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_discovery.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
@@ -104,7 +104,7 @@ bool AuthenticatorEnvironment::HasVirtualUserVerifyingPlatformAuthenticator(
   }
   std::vector<VirtualAuthenticator*> authenticators =
       authenticator_manager->GetAuthenticators();
-  return base::ranges::any_of(authenticators, [](VirtualAuthenticator* a) {
+  return std::ranges::any_of(authenticators, [](VirtualAuthenticator* a) {
     return a->is_user_verifying_platform_authenticator();
   });
 }

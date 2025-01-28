@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -46,7 +46,7 @@ aura::Window* RootWindowForPoint(const gfx::Point& point,
   // doesn't rely on having a DesktopScreenX11.
   std::vector<aura::Window*> windows =
       views::DesktopWindowTreeHostPlatform::GetAllOpenWindows();
-  const auto i = base::ranges::find_if(windows, [point](auto* window) {
+  const auto i = std::ranges::find_if(windows, [point](auto* window) {
     return window->GetBoundsInScreen().Contains(point) || window->HasCapture();
   });
 

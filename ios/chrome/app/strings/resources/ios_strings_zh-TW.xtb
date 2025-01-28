@@ -110,7 +110,6 @@
 <translation id="143681031165817424">地址只會儲存在這部裝置上</translation>
 <translation id="1445276840641906250">在同一個瀏覽器集中使用所有分頁</translation>
 <translation id="1450170672351507823">已啟用標準防護功能。如需更完整的安全防護，請使用強化防護功能。</translation>
-<translation id="1454615514353469963">密碼、密碼金鑰和其他資料將從 Google 密碼管理工具中永久刪除</translation>
 <translation id="1455660774629812862">不要隱藏</translation>
 <translation id="1460751212339734034">不必重複輸入網址，節省寶貴時間</translation>
 <translation id="1466035273550360103">沒有開啟的分頁</translation>
@@ -563,6 +562,7 @@
 <translation id="3517216995152707259">刪除瀏覽資料並不會登出 Google 帳戶。必須<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />，才能登出帳戶。</translation>
 <translation id="3519193562722059437">透過新開啟的分頁瀏覽網頁。</translation>
 <translation id="3519905498307021260">{count,plural, =1{開啟分頁}other{開啟 {count} 個分頁}}</translation>
+<translation id="3523513363815970085">隱藏「常用網站」</translation>
 <translation id="3523789730715594198">你隨時可以透過「設定」停止同步作業。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="3527085408025491307">資料夾</translation>
 <translation id="3529024052484145543">不安全</translation>
@@ -838,6 +838,7 @@
 <translation id="4769198578611055647">協助你在所有裝置上存取已儲存的密碼金鑰</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">要以無痕模式開啟嗎？</translation>
+<translation id="479208892659046780">常用網站</translation>
 <translation id="4792385443586519711">公司名稱</translation>
 <translation id="479628432297359449">要停止下載嗎？</translation>
 <translation id="4796496140132859135">分頁群組已收合。</translation>

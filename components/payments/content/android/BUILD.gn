@@ -218,7 +218,6 @@ android_library("full_java") {
     "//mojo/public/java:system_java",
     "//services/service_manager/public/java:service_manager_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
@@ -300,6 +299,7 @@ generate_jni("minimal_jni") {
 android_library("minimal_java") {
   sources = [
     "java/src/org/chromium/components/payments/CSPChecker.java",
+    "java/src/org/chromium/components/payments/DialogController.java",
     "java/src/org/chromium/components/payments/MojoStructCollection.java",
     "java/src/org/chromium/components/payments/PaymentApp.java",
     "java/src/org/chromium/components/payments/PaymentAppFactoryDelegate.java",

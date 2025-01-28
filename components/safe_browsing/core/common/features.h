@@ -93,10 +93,6 @@ BASE_DECLARE_FEATURE(kCreateNotificationsAcceptedClientSafeBrowsingReports);
 // Creates and sends CSBRRs when warnings are first shown to users.
 BASE_DECLARE_FEATURE(kCreateWarningShownClientSafeBrowsingReports);
 
-// Enables the interstitial warning prompt on dangerous downloads. This replaces
-// the current prompt which is a dialog/modal.
-BASE_DECLARE_FEATURE(kDangerousDownloadInterstitial);
-
 // Controls whether we use new broader criteria for deep scans.
 BASE_DECLARE_FEATURE(kDeepScanningCriteria);
 

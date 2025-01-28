@@ -43,6 +43,7 @@
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_pref_change_handler.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -80,15 +81,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/toasts/api/toast_id.h"
-#include "chrome/browser/ui/toasts/toast_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -230,6 +222,9 @@ void SafeBrowsingServiceImpl::Initialize() {
   WebUIInfoSingleton::GetInstance()->set_safe_browsing_service(this);
 
   ui_manager_ = CreateUIManager();
+
+  safe_browsing_pref_change_handler_ =
+      std::make_unique<SafeBrowsingPrefChangeHandler>();
 
   services_delegate_->Initialize();
 
@@ -562,65 +557,8 @@ base::CallbackListSubscription SafeBrowsingServiceImpl::RegisterStateCallback(
 void SafeBrowsingServiceImpl::EnhancedProtectionPrefChange(Profile* profile) {
   RefreshState();
   UpdateMinAllowedTimeForReferrerChains(profile);
-  MaybeShowEnhancedProtectionSettingChangeToast(profile);
-}
-
-// TODO(crbug.com/378888301): Add tests for Chrome Toast Logic.
-// Currently, zackhan@ is investigating how to effectively mock or simulate the
-// Chrome toast controller within the existing safe_browsing_service browser
-// tests.
-void SafeBrowsingServiceImpl::MaybeShowEnhancedProtectionSettingChangeToast(
-    Profile* profile) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC)
-  if (!base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting) ||
-      !profile) {
-    return;
-  }
-  Browser* const browser = chrome::FindBrowserWithProfile(profile);
-  if (!browser) {
-    return;
-  }
-  ToastController* const controller =
-      browser->browser_window_features()->toast_controller();
-  if (!controller) {
-    return;
-  }
-  // We need to handle the toast for the security settings page differently:
-  // 1. If the user has turned off ESB and is on the security page, we show
-  // the toast but without the action button that prompts users to the
-  // settings page.
-  // 2. If the user has turned off ESB and is on the security page, we do
-  // not show a toast at all.
-  TabStripModel* tab_strip_model = browser->GetTabStripModel();
-  content::WebContents* web_contents = tab_strip_model->GetActiveWebContents();
-  bool is_security_page =
-      web_contents ? web_contents->GetLastCommittedURL().spec().starts_with(
-                         "chrome://settings/security")
-                   : false;
-
-  // Extract the enhanced protection pref value.
-  bool is_enhanced_enabled = IsEnhancedProtectionEnabled(*profile->GetPrefs());
-
-  // The enhanced protection setting has been updated. To reflect this
-  // change, we will show toasts to the user, taking into account both the
-  // new setting value and whether they are currently on the settings page.
-  if (is_enhanced_enabled) {
-    // When the user is currently on the security settings page, show a
-    // toast without the action button to go to the settings page.
-    // Otherwise, we should a button that takes user to the settings page to
-    // change the enhanced protection settings.
-    controller->MaybeShowToast(
-        ToastParams(is_security_page ? ToastId::kSyncEsbOnWithoutActionButton
-                                     : ToastId::kSyncEsbOn));
-  } else if (!is_security_page) {
-    // Toast messages are not displayed on the security page when a user
-    // disables a security setting. This applies whether the user disables
-    // the setting on the current device or the change is synced from
-    // another device.
-    controller->MaybeShowToast(ToastParams(ToastId::kSyncEsbOff));
-  }
-#endif
+  safe_browsing_pref_change_handler_
+      ->MaybeShowEnhancedProtectionSettingChangeNotification(profile);
 }
 
 void SafeBrowsingServiceImpl::UpdateMinAllowedTimeForReferrerChains(

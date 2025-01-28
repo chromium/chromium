@@ -58,28 +58,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Dialog dismissed"/>
 </enum>
 
-<!-- LINT.IfChange(DangerousDownloadInterstitialAction) -->
-
-<enum name="DangerousDownloadInterstitialAction">
-  <int value="0" label="OpenInterstitial"/>
-  <int value="1" label="CancelInterstitial"/>
-  <int value="2" label="OpenSurvey"/>
-  <int value="3" label="SaveDangerous"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/webui/downloads/downloads_dom_handler.h:DangerousDownloadInterstitialAction)-->
-
-<!-- LINT.IfChange(DangerousDownloadInterstitialSurveyOptions) -->
-
-<enum name="DangerousDownloadInterstitialSurveyOptions">
-  <int value="0" label="User did not respond to survey"/>
-  <int value="1" label="User created file"/>
-  <int value="2" label="User trust site"/>
-  <int value="3" label="User accepts risk"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/webui/downloads/downloads.mojom:DangerousDownloadInterstitialSurveyOptions)-->
-
 <enum name="Download.DragInfo">
   <int value="0" label="DRAG_STARTED"/>
   <int value="1" label="DOWNLOAD_COMPLETE"/>

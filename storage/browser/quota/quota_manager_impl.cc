@@ -99,6 +99,11 @@ constexpr double kStoragePressureThresholdRatio = 0.02;
 constexpr base::TimeDelta kStoragePressureCheckDiskStatsInterval =
     base::Minutes(5);
 
+// The path where media license data is persisted on disk, relative to the path
+// for the respective storage bucket.
+constexpr base::FilePath::CharType kMediaLicenseDirectory[] =
+    FILE_PATH_LITERAL("Media Licenses");
+
 bool IsSupportedType(StorageType type) {
   return type == StorageType::kTemporary || type == StorageType::kSyncable;
 }
@@ -130,6 +135,12 @@ void DidGetUsageAndQuotaStripOverride(
     blink::mojom::UsageBreakdownPtr usage_breakdown) {
   DCHECK(callback);
   std::move(callback).Run(status, usage, quota, std::move(usage_breakdown));
+}
+
+base::FilePath CreateMediaLicenseBucketPath(const base::FilePath& profile_path,
+                                            const BucketLocator& bucket) {
+  base::FilePath bucket_directory = CreateBucketPath(profile_path, bucket);
+  return bucket_directory.Append(kMediaLicenseDirectory);
 }
 
 }  // namespace
@@ -2347,9 +2358,8 @@ void QuotaManagerImpl::DidGetBucketsForMediaLicenseDeletion(
 
   for (const BucketLocator& bucket : buckets) {
     if (bucket.storage_key.IsFirstPartyContext()) {
-      base::FilePath media_license_bucket_path = CreateClientBucketPath(
-          profile_path_, bucket, QuotaClientType::kMediaLicense);
-      media_license_dir_paths.push_back(media_license_bucket_path);
+      media_license_dir_paths.push_back(
+          CreateMediaLicenseBucketPath(profile_path_, bucket));
     }
   }
 

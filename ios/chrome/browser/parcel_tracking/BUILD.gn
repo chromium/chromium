@@ -93,6 +93,8 @@ source_set("util") {
     ":prefs",
     ":tracking_source",
     "//base",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:feature_utils",
     "//components/commerce/core:proto",
     "//components/commerce/core:shopping_service",
     "//components/prefs",

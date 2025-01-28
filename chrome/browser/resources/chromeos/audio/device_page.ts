@@ -4,7 +4,7 @@
 
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {DeviceData, PageCallbackRouter, PageHandlerRemote} from './audio.mojom-webui.js';
+import type {DeviceData, PageCallbackRouter, PageHandlerRemote} from './audio.mojom-webui.js';
 import {AudioBroker} from './audio_broker.js';
 import {DeviceTable} from './device_table.js';
 import {InputPage} from './input_page.js';

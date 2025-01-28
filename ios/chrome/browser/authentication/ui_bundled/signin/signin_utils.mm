@@ -371,14 +371,8 @@ void MultiProfileSignOut(Browser* browser,
                          bool force_snackbar_over_toolbar,
                          MDCSnackbarMessage* snackbar_message,
                          ProceduralBlock signout_completion) {
-  SceneState* scene_state = browser->GetSceneState();
-  if (browser->type() != Browser::Type::kRegular) {
-    // Regardless of the current browser type, the corresponding regular browser
-    // should be used to execute the signout. Note: if the brower is derived at
-    // a later stage from the SceneState, the mainBrowserProvider should be
-    // used.
-    browser = scene_state.browserProviderInterface.mainBrowserProvider.browser;
-  }
+  // The regular browser should be used to execute the signout.
+  CHECK_EQ(browser->type(), Browser::Type::kRegular);
 
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
@@ -393,6 +387,7 @@ void MultiProfileSignOut(Browser* browser,
           signout_source, force_snackbar_over_toolbar, snackbar_message,
           signout_completion);
 
+  SceneState* scene_state = browser->GetSceneState();
   if (!should_switch_profile_at_signout) {
     std::move(continuation).Run(scene_state, base::DoNothing());
     return;

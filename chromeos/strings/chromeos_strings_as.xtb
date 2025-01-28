@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">বাতিল কৰা হ’ল</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" />ৰ বিশেষ সম্পদসমূহ এতিয়া উপলব্ধ</translation>
 <translation id="1022628058306505708">পৃথিৱী প্ৰবাহ</translation>
+<translation id="102432830749687801">আপুনি এক্সেছ হেৰুওৱাৰ আগতেই আপোনাৰ বিদ্যালয়ৰ একাউণ্টৰ ডেটা আপোনাৰ ব্যক্তিগত একাউণ্টলৈ নিবলৈ Googleৰ Content Transfer এপ্‌টো ব্যৱহাৰ কৰাটো নিশ্চিত কৰক।</translation>
 <translation id="1026212596705997935">শ্বৰ্টকাটটো "<ph name="CONFLICT_ACCEL_NAME" />"ৰ বাবে ব্যৱহাৰ কৰি থকা হৈছে। এটা নতুন শ্বৰ্টকাটত টিপক। আগৰে পৰা থকা শ্বৰ্টকাটটো সলনি কৰিবলৈ, এই শ্বৰ্টকাটটোত পুনৰ টিপক।</translation>
 <translation id="1030856839388844477">ডেটাৰ ব্যৱহাৰ ৰিছেট কৰক</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> টা থ্ৰেড, <ph name="CPU_MAX_CLOCK_SPEED" /> গিগাহাৰ্টজ)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">ডিভাইচটোৰ কেছত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
 <translation id="1397738625398125236">গে’টৱে’ পিং কৰিব পৰা যায়</translation>
 <translation id="1398634363027580500">HTTPSৰ অতি বেছি বিলম্বতা</translation>
+<translation id="1406389211945506521">আপোনাৰ অভিজ্ঞতা শ্বেয়াৰ কৰাৰ বাবে ধন্যবাদ। আপোনাৰ মতামতে আমাক অধিক সঠিক আৰু উপযোগী সমল সৃষ্টি কৰাত সহায় কৰে।</translation>
 <translation id="1407069428457324124">গাঢ় ৰঙৰ থীম</translation>
 <translation id="1413240736185167732">বিফল হৈছে - ফিল্টাৰ বিফল হৈছে</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">ধ্ৰূপদী কলা</translation>
 <translation id="181434555916624618">এতিয়াৰ বাবে, লোকৰ সৈতে ওলোৱা ফলাফল দেখুওৱা নহ’ব। আন এটা প্ৰ’ম্পট্‌ ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="1815850098929213707">বাছনি কৰা কীটো <ph name="KEYS" />। নিয়ন্ত্ৰণটো সম্পাদনা কৰিবলৈ বুটামটোত টিপক</translation>
+<translation id="1818174214124933000">আপুনি পঠিয়াওক বাছনি কৰিলে, আপোনাৰ মতামত আৰু সমল (তলত দেখুওৱা) Googleলৈ পঠিওৱা হ’ব, মানুহে পৰ্যালোচনা কৰিব আৰু <ph name="LINK_POLICY_BEGIN" />গোপনীয়তাৰ নীতি<ph name="LINK_POLICY_END" /> আৰু <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Googleৰ সেৱাৰ চৰ্তাৱলী<ph name="LINK_TERMS_OF_SERVICE_END" />ৰ অধীনত আমাৰ প্ৰ’ডাক্ট আৰু সেৱাসমূহক প্ৰশিক্ষণ দিবলৈ বা সেইসমূহ উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব।</translation>
 <translation id="1823120442877418684">বৰ্ণ</translation>
 <translation id="1827738518074806965">আর্ট গেলাৰী</translation>
+<translation id="183287940576828840">আপত্তিজনক/সুৰক্ষিত নহয়</translation>
 <translation id="1836553715834333258">ছিষ্টেমৰ ৰং</translation>
 <translation id="183675228220305365">বাস্তৱবাদী</translation>
 <translation id="1838374766361614909">সন্ধান কৰা বস্তুবোৰ মচক</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">বিফল UDP অনুৰোধসমূহ</translation>
 <translation id="1908394185991500139">বাওঁফালৰ নিৰ্দেশ কৰা কাঁড় চিহ্ন</translation>
 <translation id="1914144885717544695">শুক্ৰবাৰে</translation>
+<translation id="1915960750806557358">আপোনাৰ মতামত পঠিয়াওক বা আপোনাৰ সমস্যাটো বৰ্ণনা কৰক। কোনো ব্যক্তিগত, সংবেদনশীল বা গোপনীয় বিষয় অন্তৰ্ভুক্ত নকৰাটো নিশ্চিত কৰক।</translation>
 <translation id="1923388006036088459">বৈশিষ্ট্যপূৰ্ণ ৰং</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">প্ৰিণ্ট কৰা হ’ল</translation>
@@ -596,6 +601,7 @@
 <translation id="387301095347517405">আপোনাৰ বেটাৰীটোৱে এটা সম্পূৰ্ণ চাৰ্জিং চক্ৰৰ মাজেৰে যোৱাৰ সংখ্যা</translation>
 <translation id="3877066159641251281">অনুবাদটো শুনক</translation>
 <translation id="3880601782712134623">স্বয়ংক্ৰিয়ভাৱে ভইচ চিনাক্ত কৰক আৰু প্ৰতিগৰাকী স্পীকাৰত এটা সাধাৰণ লেবেল যোগ দিয়ক, যেনে, স্পীকাৰ ১ আৰু স্পীকাৰ ২</translation>
+<translation id="38811596981744338">আইনী সমস্যা</translation>
 <translation id="3885327323343477505">স্ক্ৰীন ছেভাৰ সলনি কৰক</translation>
 <translation id="3889914174935857450">ৰিছেট কৰাৰ তাৰিখ</translation>
 <translation id="3897092660631435901">মেনু</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ হৈছে।</translation>
 <translation id="4930320165497208503">কোনো সংযোগ ছেট আপ কৰিবলৈ অথবা আপডে’ট কৰিবলৈ, <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" />লৈ যাওক।</translation>
 <translation id="4932733599132424254">তাৰিখ</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, নতুন টেবত খোলে</translation>
 <translation id="4946927805998996217">সাৰাংশ সৃষ্টি কৰি থকা হৈছে</translation>
 <translation id="4950314376641394653">ফাৰ্মৱেৰ <ph name="DEVICE_NAME" /> সংস্কৰণ <ph name="VERSION" />লৈ আপডে’ট কৰা হ’ল</translation>
 <translation id="4950893758552030541">গছৰ টানেল</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">আপুনি বাছনি সম্পর্কীয় তথ্য পাওক</translation>
 <translation id="6694534975463174713">লক কৰক</translation>
 <translation id="6700703207451721535">এই লিংকটোৰ বাবে এক্সেছৰ অনুমতি নাই। যদি আপোনাক এক্সেছ লাগে, আপোনাৰ শিক্ষকক সোধক।</translation>
+<translation id="6703179086771097594">কিহে ভালদৰে কাম নকৰিলে?</translation>
 <translation id="6704062477274546131">DNS ৰিজ’লিউশ্বন</translation>
 <translation id="6712933881624804031">উপত্যকা</translation>
 <translation id="6716013206176357696">ষ্ট্ৰবেৰী</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">ছেটিঙত ট্ৰেন্সক্ৰিপশ্বনৰ মডেল ডাউনল’ড কৰক</translation>
 <translation id="7058278511608979688">সমাপ্ত কৰি ছেভ কৰক</translation>
 <translation id="7059230779847288458">চাৰ্জ কৰি থকা হৈছে, সম্পূৰ্ণ হ’বলৈ <ph name="TIME_VALUE" /> বাকী</translation>
+<translation id="7064209589142995848">Content Transfer</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> বাছনি কৰা হৈছে</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> কী</translation>
 <translation id="7068619307603204412">আপোনাৰ ডিভাইচটো সাজু কৰক</translation>
@@ -1592,6 +1601,7 @@
 <translation id="8476942730579767658">ৱিণ্ড’ আৰু ডেস্ক</translation>
 <translation id="8477536061607044749">গ্ৰাফিক ডিজাইন</translation>
 <translation id="8477551185774834963">DNSৰ বিলম্বতা সামান্য পৰিমাণে অনুমতি দিয়া সীমাতকৈ ওপৰত আছে</translation>
+<translation id="8481308460877552925">তথ্যগতভাৱে অশুদ্ধ</translation>
 <translation id="8482376765267780829">সৰলীকৰণ কৰিবলৈ কিছু পাঠ বাছনি কৰক</translation>
 <translation id="8483248364096924578">IP ঠিকনা</translation>
 <translation id="8491311378305535241">Android এপৰ পৰা ফায়াৰৱালৰ জৰিয়তে HTTP ৱেবছাইটসমূহৰ সৈতে সংযোগ কৰিব নোৱাৰি</translation>

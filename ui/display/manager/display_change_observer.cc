@@ -270,12 +270,14 @@ float DisplayChangeObserver::FindDeviceScaleFactor(
     float dpi,
     const gfx::Size& size_in_pixels) {
   // Nocturne has special scale factor 3000/1332=2.252.. for the panel 3kx2k.
-  constexpr gfx::Size k225DisplaySizeHackNocturne(3000, 2000);
+  constexpr gfx::Size k225DisplaySizeHackNocturne = kNocturne;  // (3000, 2000);
   // Keep the Chell's scale factor 2.252 until we make decision.
-  constexpr gfx::Size k2DisplaySizeHackChell(3200, 1800);
-  constexpr gfx::Size k18DisplaySizeHackCoachZ(2160, 1440);
-  // Only change the OLED display scale factor for Xol device.
-  constexpr gfx::Size k12DisplaySizeHackXol(1920, 1080);
+  constexpr gfx::Size k2DisplaySizeHackChell = kQHD_PLUS;  // (3200, 1800);
+  constexpr gfx::Size k18DisplaySizeHackCoachZ = kLux;     // (2160, 1440);
+  // Change the OLED display scale factor for Xol device.
+  constexpr gfx::Size k12DisplaySizeHackXol = kFHD;
+  // Change the OLED display scale factor for Navi device.
+  constexpr gfx::Size k12DisplaySizeHackNavi = kWUXGA;
 
   if (size_in_pixels == k225DisplaySizeHackNocturne) {
     return kDsf_2_252;
@@ -287,9 +289,12 @@ float DisplayChangeObserver::FindDeviceScaleFactor(
     return kDsf_1_8;
   }
 
-  if (display::features::IsOledScaleFactorEnabled() &&
-      size_in_pixels == k12DisplaySizeHackXol) {
-    return 1.2f;
+  if (display::features::IsOledScaleFactorEnabled()) {
+    if (size_in_pixels == k12DisplaySizeHackXol) {
+      return 1.2f;
+    } else if (size_in_pixels == k12DisplaySizeHackNavi) {
+      return kDsf_1_333;
+    }
   }
 
   for (size_t i = 0; i < std::size(kThresholdTableForInternal); ++i) {

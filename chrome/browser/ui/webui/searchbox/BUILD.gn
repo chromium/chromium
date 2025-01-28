@@ -31,7 +31,6 @@ source_set("searchbox") {
   ]
   deps = [
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",

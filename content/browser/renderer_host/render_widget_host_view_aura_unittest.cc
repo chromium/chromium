@@ -5648,7 +5648,7 @@ TEST_F(RenderWidgetHostViewAuraTest, MAYBE_NewContentRenderingTimeout) {
 
   InitViewForFrame(nullptr);
   ParentHostView(view_, parent_view_);
-  widget_host_->set_new_content_rendering_delay_for_testing(kTimeout);
+  widget_host_->SetNewContentRenderingTimeoutForTesting(kTimeout);
 
   viz::LocalSurfaceId id0 = view_->GetLocalSurfaceId();
   EXPECT_TRUE(id0.is_valid());

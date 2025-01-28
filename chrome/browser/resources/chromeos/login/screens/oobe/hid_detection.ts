@@ -17,7 +17,7 @@ import '../../components/dialogs/oobe_modal_dialog.js';
 import '../../components/buttons/oobe_text_button.js';
 
 import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';

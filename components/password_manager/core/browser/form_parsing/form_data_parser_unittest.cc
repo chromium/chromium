@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
@@ -27,6 +28,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -47,6 +49,8 @@ using testing::NotNull;
 // Use this value in FieldDataDescription.value to get an arbitrary unique value
 // generated in GetFormDataAndExpectation().
 constexpr char16_t kNonimportantValue[] = u"non-important unique";
+
+constexpr ukm::SourceId kTestUkmSourceId = 0x1234;
 
 // Use this in FieldDataDescription below to mark the expected username and
 // password fields.
@@ -278,6 +282,7 @@ FormFieldData CreateField(FormControlType type, std::u16string value) {
 class FormParserTest : public testing::Test {
  protected:
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::u16string GetFieldNameByIndex(size_t index) {
     return u"field" + base::NumberToString16(index);
@@ -419,7 +424,7 @@ class FormParserTest : public testing::Test {
             << (mode == FormDataParser::Mode::kFilling ? "Filling" : "Saving"));
 
         FormParsingResult parsing_result = parser.ParseAndReturnParsingResult(
-            form_data, mode, /*stored_usernames=*/{});
+            form_data, mode, /*stored_usernames=*/{}, kTestUkmSourceId);
         const ParseResultIds& expected_ids =
             mode == FormDataParser::Mode::kFilling ? fill_result : save_result;
 
@@ -3070,9 +3075,11 @@ TEST_F(FormParserTest, InvalidURL) {
   form_data.set_url(GURL("FilEsysteM:htTp:E=/."));
   FormDataParser parser;
   EXPECT_FALSE(parser.Parse(form_data, FormDataParser::Mode::kFilling,
-                            /*stored_usernames=*/{}));
+                            /*stored_usernames=*/{},
+                            /*ukm_source_id=*/std::nullopt));
   EXPECT_FALSE(parser.Parse(form_data, FormDataParser::Mode::kSaving,
-                            /*stored_usernames=*/{}));
+                            /*stored_usernames=*/{},
+                            /*ukm_source_id=*/std::nullopt));
 }
 
 TEST_F(FormParserTest, FindUsernameInHtmlParserResult_SkipPrediction) {
@@ -3169,9 +3176,11 @@ TEST_F(FormParserTest, SkipHiddenValueField) {
         /*save_result=*/nullptr);
     FormDataParser parser;
     EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling,
-                             /*stored_usernames=*/{}));
+                             /*stored_usernames=*/{},
+                             /*ukm_source_id=*/std::nullopt));
     EXPECT_FALSE(parser.Parse(form_data, FormDataParser::Mode::kSaving,
-                              /*stored_usernames=*/{}));
+                              /*stored_usernames=*/{},
+                              /*ukm_source_id=*/std::nullopt));
   }
 }
 
@@ -3220,9 +3229,11 @@ TEST_F(FormParserTest, DontSkipNotHiddenValues) {
         /*save_result=*/nullptr);
     FormDataParser parser;
     EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling,
-                             /*stored_usernames=*/{}));
+                             /*stored_usernames=*/{},
+                             /*ukm_source_id=*/std::nullopt));
     EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kSaving,
-                             /*stored_usernames=*/{}));
+                             /*stored_usernames=*/{},
+                             /*ukm_source_id=*/std::nullopt));
   }
 }
 
@@ -3418,7 +3429,8 @@ TEST_F(FormParserTest, UsernameFoundByServerPredictions) {
   auto [result, username_detection_method, is_new_password_reliable,
         suggestion_banned_fields, manual_generation_enabled_field] =
       parser.ParseAndReturnParsingResult(
-          form_data, FormDataParser::Mode::kSaving, /*stored_usernames=*/{});
+          form_data, FormDataParser::Mode::kSaving, /*stored_usernames=*/{},
+          kTestUkmSourceId);
   EXPECT_EQ(username_detection_method,
             UsernameDetectionMethod::kServerSidePrediction);
 }
@@ -3434,8 +3446,9 @@ TEST_F(FormParserTest, BaseHeuristicsFindUsernameFieldWithStoredUsername) {
   FormDataParser parser;
   auto [password_form, username_detection_method, is_new_password_reliable,
         suggestion_banned_fields, manual_generation_enabled_field] =
-      parser.ParseAndReturnParsingResult(
-          form_data, FormDataParser::Mode::kFilling, {kUsername});
+      parser.ParseAndReturnParsingResult(form_data,
+                                         FormDataParser::Mode::kFilling,
+                                         {kUsername}, kTestUkmSourceId);
   ASSERT_TRUE(password_form);
 
   EXPECT_EQ(username_detection_method, UsernameDetectionMethod::kBaseHeuristic);
@@ -3733,6 +3746,7 @@ TEST_F(FormParserTest, ModelPredictions_ClearTextPasswordFields) {
 
 TEST_F(FormParserTest, PasswordFieldIsMaskedMetric_Recorded) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   CheckTestData({{
       .fields =
           {
@@ -3744,10 +3758,17 @@ TEST_F(FormParserTest, PasswordFieldIsMaskedMetric_Recorded) {
   }});
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.Parsing.PasswordField.IsMasked", true, 1);
+
+  auto ukm_entries =
+      test_ukm_recorder.GetEntriesByName("PasswordManager.Parsing");
+  ASSERT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "PasswordField.IsMasked",
+                                      true);
 }
 
 TEST_F(FormParserTest, PasswordFieldIsMaskedMetric_NotRecorded) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   CheckTestData({{
       .fields =
           {
@@ -3759,10 +3780,17 @@ TEST_F(FormParserTest, PasswordFieldIsMaskedMetric_NotRecorded) {
   // No password field prediction, no metric.
   histogram_tester.ExpectTotalCount(
       "PasswordManager.Parsing.PasswordField.IsMasked", 0);
+
+  auto ukm_entries =
+      test_ukm_recorder.GetEntriesByName("PasswordManager.Parsing");
+  ASSERT_EQ(1u, ukm_entries.size());
+  EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(ukm_entries[0],
+                                                "PasswordField.IsMasked"));
 }
 
 TEST_F(FormParserTest, UnrelatedFieldsAnyFieldIsMaskedMetric_Recorded) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   CheckTestData({{
       .fields =
           {
@@ -3779,10 +3807,17 @@ TEST_F(FormParserTest, UnrelatedFieldsAnyFieldIsMaskedMetric_Recorded) {
   }});
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.Parsing.UnrelatedFields.AnyFieldIsMasked", true, 1);
+
+  auto ukm_entries =
+      test_ukm_recorder.GetEntriesByName("PasswordManager.Parsing");
+  ASSERT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0],
+                                      "UnrelatedFields.AnyFieldIsMasked", true);
 }
 
 TEST_F(FormParserTest, UnrelatedFieldsAnyFieldIsMaskedMetric_NotRecorded) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   CheckTestData({{
       .fields =
           {
@@ -3799,6 +3834,12 @@ TEST_F(FormParserTest, UnrelatedFieldsAnyFieldIsMaskedMetric_NotRecorded) {
   // No unrelated fields - no metric.
   histogram_tester.ExpectTotalCount(
       "PasswordManager.Parsing.UnrelatedFields.AnyFieldIsMasked", 0);
+
+  auto ukm_entries =
+      test_ukm_recorder.GetEntriesByName("PasswordManager.Parsing");
+  ASSERT_EQ(1u, ukm_entries.size());
+  EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
+      ukm_entries[0], "UnrelatedFields.AnyFieldIsMasked"));
 }
 
 }  // namespace

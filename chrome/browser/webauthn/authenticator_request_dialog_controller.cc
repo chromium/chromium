@@ -206,7 +206,8 @@ password_manager::PasskeyCredential::Source ToPasswordManagerSource(
 void MaybeStoreLastUsedPairing(
     content::RenderFrameHost* rfh,
     const std::array<uint8_t, device::kP256X962Length>& pairing_public_key) {
-  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext())
+                         ->GetOriginalProfile();
   profile->GetPrefs()->SetString(
       webauthn::pref_names::kLastUsedPairingFromSyncPublicKey,
       base::Base64Encode(pairing_public_key));
@@ -216,7 +217,8 @@ void MaybeStoreLastUsedPairing(
 // available.
 std::optional<std::vector<uint8_t>> RetrieveLastUsedPairing(
     content::RenderFrameHost* rfh) {
-  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext())
+                         ->GetOriginalProfile();
   std::string maybe_last_used_pairing = profile->GetPrefs()->GetString(
       webauthn::pref_names::kLastUsedPairingFromSyncPublicKey);
   std::optional<std::vector<uint8_t>> last_used_pairing;

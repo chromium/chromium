@@ -82,13 +82,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
       bool subpixel_ascent_descent = false,
       const FontMetricsOverride& metrics_override = FontMetricsOverride());
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(platform_data_);
-    visitor->Trace(small_caps_);
-    visitor->Trace(emphasis_mark_);
-    visitor->Trace(custom_font_data_);
-    FontData::Trace(visitor);
-  }
+  void Trace(Visitor* visitor) const override;
 
   SimpleFontData(const SimpleFontData&) = delete;
   SimpleFontData(SimpleFontData&&) = delete;

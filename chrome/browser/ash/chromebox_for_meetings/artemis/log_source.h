@@ -15,6 +15,7 @@
 namespace ash::cfm {
 
 inline constexpr char kCfmChromeLogFile[] = "/var/log/chrome/chrome";
+inline constexpr char kCfmChromeUserLogFile[] = "/home/chronos/user/log/chrome";
 inline constexpr char kCfmCrosEcLogFile[] = "/var/log/cros_ec.log";
 inline constexpr char kCfmFwupdLogFile[] = "/var/log/fwupd.log";
 inline constexpr char kCfmPowerdLogFile[] = "/var/log/powerd.out";
@@ -48,6 +49,8 @@ class LogSource : public LocalDataSource {
                                            base::TimeDelta poll_rate,
                                            size_t batch_size);
 
+  bool InitializeFile();
+
  protected:
   int GetCurrentFileInode();
   bool DidFileRotate();
@@ -58,9 +61,8 @@ class LogSource : public LocalDataSource {
 
   std::string filepath_;
 
-  // Set to true if we can access the file and false if not.
-  // If false, all future operations are no-ops.
-  bool file_is_accessible_ = true;
+  // The number of times we've attempted to open the file.
+  int num_failed_open_attempts_ = 0;
 
   // Contains a handle to the log file on disk
   // TODO(b/320996557): this should be a collection of log files

@@ -5,7 +5,8 @@
 #import "ios/chrome/browser/webui/ui_bundled/autofill_and_password_manager_internals/internals_ui_handler.h"
 
 #import "components/autofill/core/browser/logging/log_router.h"
-#import "components/grit/dev_ui_components_resources.h"
+#import "components/grit/autofill_and_password_manager_internals_resources.h"
+#import "components/grit/autofill_and_password_manager_internals_resources_map.h"
 #import "components/version_info/version_info.h"
 #import "components/webui/version/version_handler_helper.h"
 #import "components/webui/version/version_ui_constants.h"
@@ -26,9 +27,10 @@ web::WebUIIOSDataSource* CreateInternalsHTMLSource(
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(source_name);
 
-  source->AddResourcePath("autofill_and_password_manager_internals.js",
-                          IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_JS);
-  source->SetDefaultResource(IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_HTML);
+  source->AddResourcePaths(kAutofillAndPasswordManagerInternalsResources);
+  source->AddResourcePath(
+      "",
+      IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_HTML);
   // Data strings:
   source->AddString(version_ui::kVersion,
                     std::string(version_info::GetVersionNumber()));

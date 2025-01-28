@@ -1111,27 +1111,37 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     const blob = new Blob(dataArray);
     const fileName = this.attachments_[index].name;
-    // TODO(crbug.com/373852607): Update to `showSaveFilePicker`.
-    chrome.fileSystem.chooseEntry(
-        {type: 'saveFile', suggestedName: fileName},
-        (entry?: FileSystemFileEntry) => {
-          if (chrome.runtime.lastError) {
-            if (chrome.runtime.lastError.message !== 'User cancelled') {
-              console.error(
-                  'chrome.fileSystem.chooseEntry failed: ' +
-                  chrome.runtime.lastError.message);
-            }
-            return;
-          }
-          entry!.createWriter((writer: FileWriter) => {
-            writer.write(blob);
-            // <if expr="enable_ink">
-            // Unblock closing the window now that the user has saved
-            // successfully.
-            this.setShowBeforeUnloadDialog_(false);
-            // </if>
-          });
+    if (this.pdfUseShowSaveFilePicker_) {
+      try {
+        const fileHandle = await window.showSaveFilePicker({
+          suggestedName: fileName,
         });
+
+        const writable = await fileHandle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          console.error('window.showSaveFilePicker failed: ' + error);
+        }
+      }
+    } else {
+      chrome.fileSystem.chooseEntry(
+          {type: 'saveFile', suggestedName: fileName},
+          (entry?: FileSystemFileEntry) => {
+            if (chrome.runtime.lastError) {
+              if (chrome.runtime.lastError.message !== 'User cancelled') {
+                console.error(
+                    'chrome.fileSystem.chooseEntry failed: ' +
+                    chrome.runtime.lastError.message);
+              }
+              return;
+            }
+            entry!.createWriter((writer: FileWriter) => {
+              writer.write(blob);
+            });
+          });
+    }
   }
 
   /**
@@ -1343,10 +1353,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     // Create blob before callback to avoid race condition.
     const blob = new Blob([result.dataToSave], {type: 'application/pdf'});
-    // TODO(crbug.com/373852607): When  OOPIF PDF is enabled, cross origin
-    // checks block the request for `showSaveFilePicker`. Fix the issue by
-    // allow-listing the request from PDF Viewer.
-    if (!this.pdfOopifEnabled && this.pdfUseShowSaveFilePicker_) {
+    if (this.pdfUseShowSaveFilePicker_) {
       try {
         const fileHandle = await window.showSaveFilePicker({
           suggestedName: fileName,

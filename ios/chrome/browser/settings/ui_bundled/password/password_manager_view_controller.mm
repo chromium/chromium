@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <algorithm>
 #import <optional>
 #import <utility>
 #import <vector>
@@ -14,7 +15,6 @@
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -143,14 +143,14 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
 // TODO(crbug.com/40261300): Remove when CredentialUIEntry operator== is fixed.
 template <typename T>
 bool AreNotesEqual(const T& lhs, const T& rhs) {
-  return base::ranges::equal(lhs, rhs, {},
-                             &password_manager::CredentialUIEntry::note,
-                             &password_manager::CredentialUIEntry::note);
+  return std::ranges::equal(lhs, rhs, {},
+                            &password_manager::CredentialUIEntry::note,
+                            &password_manager::CredentialUIEntry::note);
 }
 
 bool AreNotesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                    const std::vector<password_manager::AffiliatedGroup>& rhs) {
-  return base::ranges::equal(
+  return std::ranges::equal(
       lhs, rhs,
       AreNotesEqual<base::span<const password_manager::CredentialUIEntry>>,
       &password_manager::AffiliatedGroup::GetCredentials,
@@ -159,14 +159,14 @@ bool AreNotesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 template <typename T>
 bool AreStoresEqual(const T& lhs, const T& rhs) {
-  return base::ranges::equal(lhs, rhs, {},
-                             &password_manager::CredentialUIEntry::stored_in,
-                             &password_manager::CredentialUIEntry::stored_in);
+  return std::ranges::equal(lhs, rhs, {},
+                            &password_manager::CredentialUIEntry::stored_in,
+                            &password_manager::CredentialUIEntry::stored_in);
 }
 
 bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                     const std::vector<password_manager::AffiliatedGroup>& rhs) {
-  return base::ranges::equal(
+  return std::ranges::equal(
       lhs, rhs,
       AreStoresEqual<base::span<const password_manager::CredentialUIEntry>>,
       &password_manager::AffiliatedGroup::GetCredentials,
@@ -175,14 +175,14 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 template <typename T>
 bool AreIssuesEqual(const T& lhs, const T& rhs) {
-  return base::ranges::equal(
+  return std::ranges::equal(
       lhs, rhs, {}, &password_manager::CredentialUIEntry::password_issues,
       &password_manager::CredentialUIEntry::password_issues);
 }
 
 bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                     const std::vector<password_manager::AffiliatedGroup>& rhs) {
-  return base::ranges::equal(
+  return std::ranges::equal(
       lhs, rhs,
       AreIssuesEqual<base::span<const password_manager::CredentialUIEntry>>,
       &password_manager::AffiliatedGroup::GetCredentials,
@@ -1494,7 +1494,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
               .affiliatedGroup;
 
       // Remove from local cache.
-      auto iterator = base::ranges::find(_affiliatedGroups, affiliatedGroup);
+      auto iterator = std::ranges::find(_affiliatedGroups, affiliatedGroup);
       if (iterator != _affiliatedGroups.end()) {
         _affiliatedGroups.erase(iterator);
       }
@@ -1511,7 +1511,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       auto removeCredential =
           [](std::vector<password_manager::CredentialUIEntry>& credentials,
              const password_manager::CredentialUIEntry& credential) {
-            auto iterator = base::ranges::find(credentials, credential);
+            auto iterator = std::ranges::find(credentials, credential);
             if (iterator != credentials.end()) {
               credentials.erase(iterator);
             }

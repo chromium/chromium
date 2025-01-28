@@ -271,6 +271,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">De sleutels '<ph name="DATA_CONTROLS_FIRST_KEY_SET" />' kunnen niet worden ingesteld in hetzelfde woordenboek als de sleutels '<ph name="DATA_CONTROLS_SECOND_KEY_SET" />'</translation>
 <translation id="1455413310270022028">Gum</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{0 reviews bekijken}=1{1 review bekijken}other{Alle # reviews bekijken}}</translation>
 <translation id="1458059624921545588">Mensen en samenleving</translation>
 <translation id="1458140305240870199">Onderkleding</translation>
 <translation id="1459693405370120464">Weer</translation>
@@ -961,6 +962,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2674170444375937751">Weet je zeker dat je deze pagina's uit je geschiedenis wilt verwijderen?</translation>
 <translation id="2674524144218093528">Schilderen en afwerken van huizen</translation>
 <translation id="2674804415323431591">Suggesties verbergen</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> tabbladgroepen zijn niet meer beschikbaar</translation>
 <translation id="2677748264148917807">Verlaten</translation>
 <translation id="2683195745483370038">Andere resultaten gevonden</translation>
 <translation id="2686919536310834199">Stuur feedback voor Help me met schrijven.</translation>
@@ -1950,6 +1952,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4407758156081352648">Je organisatie staat niet toe dat wachtwoorden worden hergebruikt in Chrome om de beveiliging te behouden. Wachtwoorden in Chrome worden versleuteld om de privacy van gebruikers te beschermen.</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> cookies</translation>
 <translation id="4412074349188076601">Deze configuratie is gemarkeerd als installeerbaar, maar er is geen image opgegeven voor deze architectuur, dus deze kan niet worden geïnstalleerd.</translation>
+<translation id="4412377069090572315">Wat mensen zeggen</translation>
 <translation id="4414452699610169758">Gebruik Google Wachtwoordmanager en automatisch invullen van Chrome om wachtwoorden, betaalmethoden en adressen op te slaan en in te vullen</translation>
 <translation id="4414515549596849729">cookies en sitegegevens</translation>
 <translation id="4415156962929755728">Plastic (hoogglans)</translation>
@@ -2258,6 +2261,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5001526427543320409">Cookies van derden</translation>
 <translation id="5002932099480077015">Als deze optie aanstaat, slaat Chrome een kopie van je pas op dit apparaat op zodat formulieren sneller kunnen worden ingevuld.</translation>
 <translation id="5007392906805964215">Bekijken</translation>
+<translation id="500790844453430087">Tabbladgroepen <ph name="GROUP_TITLE_1" /> en <ph name="GROUP_TITLE_2" /> zijn niet meer beschikbaar</translation>
 <translation id="5011561501798487822">Waargenomen taal</translation>
 <translation id="5015510746216210676">Naam apparaat:</translation>
 <translation id="5017554619425969104">Tekst die je hebt gekopieerd</translation>
@@ -2730,6 +2734,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5866898949289125849">Je bekijkt een Developer Tools-pagina</translation>
 <translation id="5869405914158311789">Deze site is niet bereikbaar</translation>
 <translation id="5869522115854928033">Opgeslagen wachtwoorden</translation>
+<translation id="5872215789867188990">Tabbladgroep <ph name="GROUP_TITLE" /> is niet meer beschikbaar</translation>
 <translation id="5872692522325383488">IBAN opgeslagen</translation>
 <translation id="5873297634595728366">Dieselvoertuigen</translation>
 <translation id="5877359070305966420">Human Resources</translation>
@@ -2771,6 +2776,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5937560539988385583">Pagina vertaald</translation>
 <translation id="5938153366081463283">Virtuele kaart toevoegen</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Deze informatie komt van onafhankelijke reviewwebsites zoals Trustpilot, ScamAdviser en Google. Samenvattingen worden gemaakt met AI.</translation>
 <translation id="5944297261866530437">Stof (hoogglans)</translation>
 <translation id="5950901984834744590">Scheermessen en scheerapparaten</translation>
 <translation id="5951495562196540101">Kan consumentenaccount niet inschrijven (verpakte licentie beschikbaar).</translation>
@@ -3136,6 +3142,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6567832540451970450">Je beheerder staat <ph name="PERMISSION" /> toe voor deze site</translation>
 <translation id="6568793038316600992">Knop Betaalmethoden beheren. Activeer deze om betalingen en creditcardgegevens te beheren in de Chrome-instellingen.</translation>
 <translation id="6569060085658103619">Je bekijkt een extensiepagina</translation>
+<translation id="6572867903637058088">Is dit nuttig?</translation>
 <translation id="6573200754375280815">Twee perforaties rechts</translation>
 <translation id="6574762126505704998">Uitvullen</translation>
 <translation id="6575408526598156416">Opslaan in account</translation>
@@ -4315,9 +4322,11 @@ Aanvullende informatie:
 <translation id="8672535691554698269">Computernetwerken</translation>
 <translation id="8675446170353411473">Je bestanden worden geüpload naar <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Geen vertraging</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} tabel verwijderd}other{{COUNT} tabellen verwijderd}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, antwoord, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">De webpagina op <ph name="PAGE" /> kan niet worden geladen vanwege het volgende:</translation>
 <translation id="8682297334444610648">Dino-game, tik om te spelen</translation>
+<translation id="8685225035093721011">Winkelreviews</translation>
 <translation id="8686424632716064939">Computerbeveiliging</translation>
 <translation id="8687278439622293018">Invoer <ph name="ENTRY_VOICEOVER" /> is verwijderd</translation>
 <translation id="8687429322371626002">Je apparaat en account worden beheerd door <ph name="MANAGER" />.</translation>

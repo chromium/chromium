@@ -122,6 +122,11 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
     idle_tasks_.pop_front();
     return idle_task;
   }
+  void RemoveCancelledIdleTasks() {
+    std::erase_if(idle_tasks_, [](const Thread::IdleTask& task) {
+      return task.IsCancelled();
+    });
+  }
 
   scoped_refptr<TestTaskRunner> TaskRunner() { return task_runner_; }
 
@@ -372,7 +377,7 @@ TEST_F(ScriptedIdleTaskControllerTest, NoUnnecessaryRepostOnUnpause) {
 }
 
 TEST_F(ScriptedIdleTaskControllerTest,
-       SchedulerTimeoutTaskCanceledOnIdleTaskCanceled) {
+       SchedulerTasksCancelledOnIdleTaskCancelled) {
   InitializeScheduler(ShouldYield(false));
 
   // Register and cancel an idle task with a timeout.
@@ -380,11 +385,14 @@ TEST_F(ScriptedIdleTaskControllerTest,
   IdleRequestOptions* options = IdleRequestOptions::Create();
   options->setTimeout(1);
   const int id = GetController()->RegisterCallback(idle_task, options);
+  EXPECT_EQ(1u, scheduler_->GetNumIdleTasks());
   GetController()->CancelCallback(id);
-
-  // The scheduler timeout task should be canceled. Otherwise, it stays in the
-  // queue until the timeout expires which unnecessarily uses memory.
   EXPECT_EQ(scheduler_->TaskRunner()->GetTaskCanceledCount(), 1);
+
+  // Ask the scheduler to remove cancelled idle tasks. This should remove all
+  // idle tasks.
+  scheduler_->RemoveCancelledIdleTasks();
+  EXPECT_EQ(0u, scheduler_->GetNumIdleTasks());
 }
 
 }  // namespace blink

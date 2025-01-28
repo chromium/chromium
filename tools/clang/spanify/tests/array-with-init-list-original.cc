@@ -99,7 +99,14 @@ void test_with_static() {
 
 void test_with_constexpr() {
   // Expected rewrite:
-  // constexpr const auto data = std::to_array<int>({1, 2, 3});
+  // constexpr auto data = std::to_array<int>({1, 2, 3});
+  constexpr int data[] = {1, 2, 3};
+  (void)data[0];
+}
+
+void test_with_constexpr_const() {
+  // Expected rewrite:
+  // constexpr auto data = std::to_array<int>({1, 2, 3});
   constexpr const int data[] = {1, 2, 3};
   (void)data[0];
 }

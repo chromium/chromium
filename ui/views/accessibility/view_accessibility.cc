@@ -4,12 +4,12 @@
 
 #include "ui/views/accessibility/view_accessibility.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/buildflag.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -156,8 +156,8 @@ bool ViewAccessibility::Contains(const AXVirtualView* virtual_view) const {
 std::optional<size_t> ViewAccessibility::GetIndexOf(
     const AXVirtualView* virtual_view) const {
   DCHECK(virtual_view);
-  const auto iter = base::ranges::find(virtual_children_, virtual_view,
-                                       &std::unique_ptr<AXVirtualView>::get);
+  const auto iter = std::ranges::find(virtual_children_, virtual_view,
+                                      &std::unique_ptr<AXVirtualView>::get);
   return iter != virtual_children_.end()
              ? std::make_optional(
                    static_cast<size_t>(iter - virtual_children_.begin()))

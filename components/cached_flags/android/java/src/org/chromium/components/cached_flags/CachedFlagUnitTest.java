@@ -27,6 +27,7 @@ import org.chromium.base.test.util.Features;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /** Unit Tests for {@link CachedFlag}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -140,6 +141,41 @@ public class CachedFlagUnitTest {
 
         // Verify that the forced value is returned.
         assertTrue(featureA.isEnabled());
+        assertFalse(featureB.isEnabled());
+    }
+
+    @Test
+    public void testCacheNativeFlagsImmediately() {
+        CachedFlag featureA = new CachedFlag(mFeatureMap, FEATURE_A, false);
+        CachedFlag featureB = new CachedFlag(mFeatureMap, FEATURE_B, true);
+
+        List<List<CachedFlag>> listsOfCachedFlags = List.of(List.of(featureA, featureB));
+        CachedFlagUtils.setFullListOfFlags(listsOfCachedFlags);
+
+        Map<String, String> flagsToCache1 =
+                Map.of(
+                        FEATURE_A, "true",
+                        FEATURE_B, "true");
+        CachedFlagUtils.cacheNativeFlagsImmediately(flagsToCache1);
+
+        // flag.isEnabled() should return the value cached in
+        // CachedFlagUtils.cacheNativeFlagsImmediately()
+        assertTrue(featureA.isEnabled());
+        assertTrue(featureA.isEnabled());
+
+        Map<String, String> flagsToCache2 =
+                Map.of(
+                        FEATURE_A, "false",
+                        FEATURE_B, "false");
+        CachedFlagUtils.cacheNativeFlagsImmediately(flagsToCache2);
+
+        // Clear the values previously stored in ValuesReturned
+        // so that flag.isEnabled() returns the newly cached values.
+        ValuesReturned.clearForTesting();
+
+        // flag.isEnabled() should return the value cached in the
+        // most recent call to CachedFlagUtils.cacheNativeFlagsImmediately()
+        assertFalse(featureA.isEnabled());
         assertFalse(featureB.isEnabled());
     }
 }

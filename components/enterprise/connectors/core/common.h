@@ -286,9 +286,6 @@ DataRegion ChromeDataRegionSettingToEnum(int chrome_data_region_setting);
 EnterpriseReportingEventType GetUmaEnumFromEventName(
     std::string_view eventName);
 
-// TODO(crbug.com/390419758): Migrate all the safe_browing::EventResult
-// references to use this struct.
-//
 //  The resulting action that chrome performed in response to a scan request.
 //  This maps to the event result in the real-time reporting.
 enum class EventResult {
@@ -308,6 +305,10 @@ enum class EventResult {
   // rules.
   BYPASSED,
 };
+
+// Helper function to convert a EventResult to a string that.  The format of
+// string returned is processed by the sever.
+std::string EventResultToString(EventResult result);
 
 }  // namespace enterprise_connectors
 

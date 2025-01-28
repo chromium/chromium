@@ -23,7 +23,7 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 
 import {CrCheckboxElement} from '//resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeUiState} from '../../components/display_manager_types.js';

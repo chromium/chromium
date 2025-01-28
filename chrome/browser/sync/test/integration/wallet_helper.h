@@ -24,6 +24,7 @@ class CreditCard;
 struct CreditCardCloudTokenData;
 struct PaymentsCustomerData;
 struct PaymentsMetadata;
+class PaymentsDataManager;
 class PersonalDataManager;
 struct ServerCvc;
 }  // namespace autofill
@@ -41,7 +42,12 @@ inline constexpr char kDefaultBillingAddressID[] = "billing address entity ID";
 inline constexpr char kDefaultCreditCardCloudTokenDataID[] =
     "cloud token data ID";
 
-// Used to access the personal data manager within a particular sync profile.
+// Used to access the `PaymentsDataManager` for a particular sync profile.
+[[nodiscard]] autofill::PaymentsDataManager* GetPaymentsDataManager(int index);
+
+// Used to access the `PersonalDataManager` for a particular sync profile.
+// Prefer using `GetPaymentsDataManager` instead - Wallet should not need to
+// know address-related information.
 [[nodiscard]] autofill::PersonalDataManager* GetPersonalDataManager(int index);
 
 // Used to access the web data service within a particular sync profile.

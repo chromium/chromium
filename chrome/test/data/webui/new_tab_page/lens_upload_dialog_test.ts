@@ -17,8 +17,8 @@ import {installMock} from './test_support.js';
 
 suite('LensUploadDialogTest', () => {
   let uploadDialog: LensUploadDialogElement;
-  let wrapperElement: HTMLDivElement;
-  let outsideClickTarget: HTMLDivElement;
+  let wrapperElement: HTMLElement;
+  let outsideClickTarget: HTMLElement;
   let windowProxy: TestMock<WindowProxy>;
   let metrics: MetricsTracker;
 

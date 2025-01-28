@@ -10,7 +10,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/devtools_agent_host.h"

@@ -1487,5 +1487,55 @@ TEST(BrowserControlsOffsetManagerTest, MinHeightDecreasedByMoreThanHeight) {
   EXPECT_FLOAT_EQ(0.f, manager->BottomControlsMinHeightOffset());
 }
 
+TEST(BrowserControlsOffsetManagerTest, ShowAnimateToleratesTopAlreadyShown) {
+  MockBrowserControlsOffsetManagerClient client(
+      /*top_controls_height=*/100.f,
+      /*browser_controls_show_threshold=*/0.5f,
+      /*float browser_controls_hide_threshold=*/0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  client.SetBrowserControlsParams(
+      {/*top_controls_height=*/100, /*top_controls_min_height=*/0,
+       /*bottom_controls_height=*/100, /*bottom_controls_min_height=*/0,
+       /*animate_browser_controls_height_changes=*/false,
+       /*browser_controls_shrink_blink_size=*/false});
+  client.SetCurrentBrowserControlsShownRatio(/*top_ratio=*/1.0,
+                                             /*bottom_ratio=*/0.0);
+  manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
+                                      BrowserControlsState::kShown, true,
+                                      std::nullopt);
+  EXPECT_TRUE(manager->HasAnimation());
+  base::TimeTicks time = base::TimeTicks::Now();
+
+  while (manager->HasAnimation()) {
+    time = base::Microseconds(100) + time;
+    manager->Animate(time);
+  }
+  EXPECT_FALSE(manager->HasAnimation());
+}
+
+TEST(BrowserControlsOffsetManagerTest,
+     ScrollWithMinBottomHeightEqualToTotalBottomHeight) {
+  MockBrowserControlsOffsetManagerClient client(
+      /*top_controls_height=*/100.f,
+      /*browser_controls_show_threshold=*/0.5f,
+      /*float browser_controls_hide_threshold=*/0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  client.SetBrowserControlsParams(
+      {/*top_controls_height=*/0, /*top_controls_min_height=*/0,
+       /*bottom_controls_height=*/100, /*bottom_controls_min_height=*/100,
+       /*animate_browser_controls_height_changes=*/false,
+       /*browser_controls_shrink_blink_size=*/false});
+
+  // ScrollVerticallyBy will trip an assertion in
+  // MockBrowserControlsOffsetManagerClient::AssertAndClamp if the resulting
+  // ratio is NaN which is the bug being tested here.
+  manager->ScrollBegin();
+  client.ScrollVerticallyBy(30.f);
+  manager->ScrollEnd();
+  EXPECT_FLOAT_EQ(30.f, client.ViewportScrollOffset().y());
+}
+
 }  // namespace
 }  // namespace cc

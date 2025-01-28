@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <set>
@@ -14,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/gtest_util.h"
@@ -4822,7 +4822,7 @@ TEST_F(WidgetTest, GetAllChildWidgets) {
   std::set<raw_ptr<Widget, SetExperimental>> child_widgets;
   Widget::GetAllChildWidgets(toplevel->GetNativeView(), &child_widgets);
 
-  EXPECT_TRUE(base::ranges::equal(expected, child_widgets));
+  EXPECT_TRUE(std::ranges::equal(expected, child_widgets));
 
   // Check GetAllOwnedWidgets(). On Aura, this includes "transient" children.
   // Otherwise (on all platforms), it should be the same as GetAllChildWidgets()
@@ -4832,7 +4832,7 @@ TEST_F(WidgetTest, GetAllChildWidgets) {
   std::set<raw_ptr<Widget, SetExperimental>> owned_widgets;
   Widget::GetAllOwnedWidgets(toplevel->GetNativeView(), &owned_widgets);
 
-  EXPECT_TRUE(base::ranges::equal(expected, owned_widgets));
+  EXPECT_TRUE(std::ranges::equal(expected, owned_widgets));
 }
 
 // Used by DestroyChildWidgetsInOrder. On destruction adds the supplied name to

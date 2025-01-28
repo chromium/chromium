@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Eliberează spațiu pe disc pentru a lansa aplicații Android.</translation>
 <translation id="1033780634303702874">Accesează dispozitivele seriale</translation>
 <translation id="1034484273907870301">Bara de file cu miniaturi pentru modul tabletă</translation>
+<translation id="1035289631433631911">Instrumentul Transferul conținutului</translation>
 <translation id="1035875743511577452">Dă clic pe Schimbă tema pentru a explora teme inspirate de artiști, natură și multe altele</translation>
 <translation id="1036348656032585052">Dezactivează</translation>
 <translation id="1036511912703768636">Accesează oricare dintre aceste dispozitive USB</translation>
@@ -381,6 +382,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1246863218384630739">Nu s-a putut instala <ph name="VM_NAME" />: adresa URL a imaginii a returnat un cod de eroare <ph name="HTTP_ERROR" />. Contactează administratorul.</translation>
 <translation id="1247372569136754018">Microfon (intern)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Notificările nu sunt permise pentru un site}few{Notificările nu sunt permise pentru {NUM_SITES} site-uri}other{Notificările nu sunt permise pentru {NUM_SITES} de site-uri}}</translation>
+<translation id="125097549534200450">șterge</translation>
 <translation id="1251366534849411931">Se așteaptă o acoladă de deschidere: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Se caută rețele de date mobile...</translation>
 <translation id="125220115284141797">Prestabilită</translation>
@@ -5931,6 +5933,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5177479852722101802">Blocați în continuare accesul la cameră și microfon</translation>
 <translation id="5177549709747445269">Folosești date mobile</translation>
 <translation id="5178667623289523808">Găsește anteriorul</translation>
+<translation id="5180276433875360121">Afișează <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">Se descarcă</translation>
 <translation id="5181172023548002891">În Manager de parole Google pentru <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">Parola se salvează numai pe acest dispozitiv. Pentru a-l folosi pe celelalte dispozitive, salvează-l în Contul Google <ph name="USER_EMAIL" />.</translation>
@@ -8525,6 +8528,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7063311912041006059">Adresă URL cu <ph name="SPECIAL_SYMBOL" /> în loc de interogare</translation>
 <translation id="706342288220489463">Permite Asistentului să folosească informații de pe ecran pentru a te ajuta</translation>
 <translation id="70641621694466590">Accesează pagina Parole</translation>
+<translation id="7064209589142995848">Transferul conținutului</translation>
 <translation id="7064734931812204395">Se configurează containerul Linux. Poate dura până la 30 de minute.</translation>
 <translation id="7065223852455347715">Acest dispozitiv este blocat într-un mod care împiedică înregistrarea în sistemul companiei. Dacă dorești să înregistrezi dispozitivul, trebuie să parcurgi mai întâi procesul de recuperare a dispozitivului.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{O parolă importată în <ph name="BRAND" /> pentru <ph name="USER_EMAIL" />}few{{NUM_PASSWORDS} parole importate în <ph name="BRAND" /> pentru <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} de parole importate în <ph name="BRAND" /> pentru <ph name="USER_EMAIL" />}}</translation>
@@ -9564,6 +9568,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7810202088502699111">Ferestrele pop-up au fost blocate pe această pagină.</translation>
 <translation id="7810367892333449285">Intrarea trebuie să aibă formatul <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+address<ph name="LPA_2" />$<ph name="LPA_3" />cod opțional corespunzător<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Încearcă din nou sau selectează una dintre temele generate anterior de mai jos.</translation>
+<translation id="7811986034759500329">Setează în setările de sistem</translation>
 <translation id="7812170317334653156">Google Calendar a fost ascuns</translation>
 <translation id="7814090115158024843">Nu oferi niciodată ajutor la scriere pe aceste site-uri</translation>
 <translation id="7814458197256864873">&amp;Copiază</translation>

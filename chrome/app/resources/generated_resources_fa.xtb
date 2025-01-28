@@ -55,6 +55,7 @@
 <translation id="103279545524624934">‏برای راه‌اندازی برنامه‌های Android فضای دیسک را خالی کنید.</translation>
 <translation id="1033780634303702874">دسترسی به دستگاه‌های سریال خودتان</translation>
 <translation id="1034484273907870301">نوار برگه ریزعکس برای حالت رایانه لوحی</translation>
+<translation id="1035289631433631911">ابزار «انتقال محتوا»</translation>
 <translation id="1035875743511577452">برای کاوش زمینه‌هایی که از هنرمندان، طبیعت، و موارد دیگر الهام گرفته است، روی «تغییر زمینه» کلیک کنید</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1036511912703768636">‏دسترسی به هر یک از این دستگاه‌های USB</translation>
@@ -267,7 +268,7 @@
 <translation id="1176471985365269981">اجازه ندارد فایل‌ها یا پوشه‌های درون دستگاه را ویرایش کند</translation>
 <translation id="1177073277575830464">‏راه‌اندازی سریع Android تمام شد. راه‌اندازی را در <ph name="DEVICE_TYPE" /> خود ادامه دهید.</translation>
 <translation id="1177440945615690056">می‌توانید در «تنظیمات» به هر شبکه تلفن همراه واجدشرایطی متصل شوید</translation>
-<translation id="1177548198167638471">دوباره سؤال نشود</translation>
+<translation id="1177548198167638471">دوباره پرسیده نشود</translation>
 <translation id="1177863135347784049">سفارشی</translation>
 <translation id="1178093605842850860">اجازه دارد این سایت را بخواند و تغییر دهد</translation>
 <translation id="1178581264944972037">مکث</translation>
@@ -381,6 +382,7 @@
 <translation id="1246863218384630739"><ph name="VM_NAME" /> نصب نشد: نشانی وب تصویر کد خطای <ph name="HTTP_ERROR" /> را برگرداند. لطفاً با سرپرست تماس بگیرید.</translation>
 <translation id="1247372569136754018">میکروفون (داخلی)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{اعلان‌های یک سایت مجاز نیستند}one{اعلان‌های {NUM_SITES} سایت مجاز نیستند}other{اعلان‌های {NUM_SITES} سایت مجاز نیستند}}</translation>
+<translation id="125097549534200450">پاک کنید</translation>
 <translation id="1251366534849411931">اینجا باید آکولاد باز باشد: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">درحال اسکن کردن شبکه‌های داده تلفن همراه…</translation>
 <translation id="125220115284141797">پیش‌فرض</translation>
@@ -5942,6 +5944,7 @@
 <translation id="5177479852722101802">ادامه مسدود کردن دسترسی به دوربین و میکروفن</translation>
 <translation id="5177549709747445269">از داده تلفن همراه استفاده می‌کنید</translation>
 <translation id="5178667623289523808">یافتن قبلی</translation>
+<translation id="5180276433875360121">نمایش <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">در حال بارگیری</translation>
 <translation id="5181172023548002891">‏در «مدیر گذرواژه Google» برای <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">‏این گذرواژه فقط در این دستگاه ذخیره می‌شود. برای استفاده از آن در دستگاه‌های دیگرتان، آن را در «حساب Google» خود (<ph name="USER_EMAIL" />) ذخیره کنید.</translation>
@@ -7566,6 +7569,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">افزودن خانواده و دوستان</translation>
 <translation id="6367097275976877956">‏مایلید ChromeVox (صفحه‌خوان داخلی ChromeOS) را فعال کنید؟ اگر مایلید، کلید فاصله را فشار دهید.</translation>
+<translation id="6367396429435748845">برای توقف موقت و ازسرگیری کلیدهای موشواره، <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> را فشار دهید</translation>
 <translation id="6367985768157257101">«هم‌رسانی با اطراف» دریافت شود؟</translation>
 <translation id="6368157733310917710">&amp;نشانی‌ها و موارد دیگر</translation>
 <translation id="6368276408895187373">فعال – <ph name="VARIATION_NAME" /></translation>
@@ -8537,6 +8541,7 @@
 <translation id="7063311912041006059">نشانی وب با <ph name="SPECIAL_SYMBOL" /> به‌جای پرسش</translation>
 <translation id="706342288220489463">به «دستیار» اجازه دهید برای ارائه کمک از بافت صفحه استفاده کند</translation>
 <translation id="70641621694466590">رفتن به صفحه «گذرواژه‌ها»</translation>
+<translation id="7064209589142995848">انتقال محتوا</translation>
 <translation id="7064734931812204395">‏درحال پیکربندی محتوی Linux. این کار ممکن است تا ۳۰ دقیقه طول بکشد.</translation>
 <translation id="7065223852455347715">این دستگاه در حالتی قفل شده است که از ثبت‌نام شرکتی جلوگیری می‌کند. اگر می‌خواهید دستگاه را ثبت‌نام کنید ابتدا باید دستگاه را بازیابی کنید.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{یک گذرواژه از <ph name="USER_EMAIL" /> به <ph name="BRAND" /> وارد شد}one{{NUM_PASSWORDS} گذرواژه از <ph name="USER_EMAIL" /> به <ph name="BRAND" /> وارد شد}other{{NUM_PASSWORDS} گذرواژه از <ph name="USER_EMAIL" /> به <ph name="BRAND" /> وارد شد}}</translation>
@@ -9222,6 +9227,7 @@
 <translation id="7568759527730933493">‏برای جستجوی نشانی IP سایت در ساناد (سیستم نامگذاری دامنه) از اتصال ایمن استفاده می‌شود. این ویژگی از رساننده خدمات تحت مدیریت <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> استفاده می‌کند. برای برخی‌از دامنه‌هایی که سرپرستتان پیکربندی کرده است، از اتصال ایمن استفاده نمی‌شود.</translation>
 <translation id="756876171895853918">سفارشی کردن چهرک</translation>
 <translation id="7568790562536448087">در حال به‌روزرسانی</translation>
+<translation id="7569113730576914983">‏وقتی Chrome یکی از گذرواژه‌هایتان را در سرقت اطلاعات شبکه پیدا کند، می‌تواند هنگام وارد شدن به سیستم به شما پیشنهاد دهد آن را تغییر دهید</translation>
 <translation id="7569983096843329377">سیاه</translation>
 <translation id="7570548610653957960">کمک گرفتن در خواندن</translation>
 <translation id="7571643774869182231">فضای ذخیره‌سازی برای به‌روزرسانی کافی نیست</translation>
@@ -9507,6 +9513,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> خواهد توانست فایل‌های <ph name="FOLDERNAME" /> را مشاهده کند</translation>
 <translation id="7768770796815395237">تغییر دادن</translation>
 <translation id="7768784765476638775">انتخاب برای شنیدن</translation>
+<translation id="7769709635093101687">میان‌بر صفحه‌کلید برای توقف موقت</translation>
 <translation id="7769748505895274502">جمع کردن موارد اخیراً بسته‌شده</translation>
 <translation id="7770072242481632881">گزینشگر پانل کناری</translation>
 <translation id="7770450735129978837">کلیک سمت راست موشواره</translation>
@@ -9575,6 +9582,7 @@
 <translation id="7810202088502699111">پنجره‌های بازشو در این صفحه مسدود شده‌اند.</translation>
 <translation id="7810367892333449285">‏ورودی باید در قالب <ph name="LPA_0" />$<ph name="LPA_1" />SM-‏DP+ نشانی<ph name="LPA_2" />$<ph name="LPA_3" />شناسه انطباق اختیاری<ph name="LPA_4" /> باشد</translation>
 <translation id="7811263553491007091">دوباره امتحان کنید یا یکی از مضمون‌های قبلاً تولیدشده را در زیر انتخاب کنید.</translation>
+<translation id="7811986034759500329">تنظیم در تنظیمات سیستم</translation>
 <translation id="7812170317334653156">‏«تقویم Google» پنهان شد</translation>
 <translation id="7814090115158024843">هرگز در این سایت‌ها کمک برای نوشتن پیشنهاد نمی‌شود</translation>
 <translation id="7814458197256864873">&amp;کپی</translation>

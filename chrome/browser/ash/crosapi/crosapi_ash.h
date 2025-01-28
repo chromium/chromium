@@ -31,7 +31,6 @@ class DigitalGoodsFactoryAsh;
 
 namespace ash {
 class DiagnosticsServiceAsh;
-class MagicBoostControllerAsh;
 class ProbeServiceAsh;
 class TelemetryDiagnosticsRoutineServiceAsh;
 class TelemetryEventServiceAsh;
@@ -247,8 +246,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<
           chromeos::machine_learning::mojom::MachineLearningService> receiver)
       override;
-  void BindMagicBoostController(
-      mojo::PendingReceiver<mojom::MagicBoostController> receiver) override;
   void BindMahiBrowserDelegate(
       mojo::PendingReceiver<mojom::MahiBrowserDelegate> receiver) override;
   void BindMediaUI(mojo::PendingReceiver<mojom::MediaUI> receiver) override;
@@ -461,10 +458,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   LoginStateAsh* login_state_ash() { return login_state_ash_.get(); }
 
-  ash::MagicBoostControllerAsh* magic_boost_controller_ash() {
-    return magic_boost_controller_ash_.get();
-  }
-
   MediaUIAsh* media_ui_ash() { return media_ui_ash_.get(); }
 
   MultiCaptureServiceAsh* multi_capture_service_ash() {
@@ -582,7 +575,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<LoginAsh> login_ash_;
   std::unique_ptr<LoginScreenStorageAsh> login_screen_storage_ash_;
   std::unique_ptr<LoginStateAsh> login_state_ash_;
-  std::unique_ptr<ash::MagicBoostControllerAsh> magic_boost_controller_ash_;
   std::unique_ptr<MediaUIAsh> media_ui_ash_;
   std::unique_ptr<MultiCaptureServiceAsh> multi_capture_service_ash_;
   std::unique_ptr<NativeThemeServiceAsh> native_theme_service_ash_;

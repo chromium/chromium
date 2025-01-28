@@ -19,7 +19,7 @@ import {CloudUploadTestBrowserProxy} from './cloud_upload_test_browser_proxy.js'
 
 suite('<move-confirmation-page>', () => {
   /* Holds the <move-confirmation-page> app. */
-  let container: HTMLDivElement;
+  let container: HTMLElement;
   /* The <move-confirmation-page> app. */
   let moveConfirmationPageApp: MoveConfirmationPageElement;
   /* The BrowserProxy element to make assertions on when mojo methods are

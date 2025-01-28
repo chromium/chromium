@@ -16,7 +16,7 @@ import {SwitchAccessPredicate} from '../switch_access_predicate.js';
 import {BackButtonNode} from './back_button_node.js';
 import {BasicNode, BasicRootNode} from './basic_node.js';
 import {GroupNode} from './group_node.js';
-import {SAChildNode, SARootNode} from './switch_access_node.js';
+import type {SAChildNode, SARootNode} from './switch_access_node.js';
 
 type AutomationEvent = chrome.automation.AutomationEvent;
 type AutomationNode = chrome.automation.AutomationNode;

@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <set>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -95,8 +95,8 @@ typename std::vector<std::pair<FirstType, SecondType>>::const_iterator
 FindInVectorOfPairs(
     FirstType first,
     const std::vector<std::pair<FirstType, SecondType>>& vector) {
-  return base::ranges::find(vector, first,
-                            &std::pair<FirstType, SecondType>::first);
+  return std::ranges::find(vector, first,
+                           &std::pair<FirstType, SecondType>::first);
 }
 
 }  // namespace
@@ -520,7 +520,7 @@ void AXNodeData::SetName(const std::string& name) {
       << "' because a valid role is needed to set the default NameFrom "
          "attribute. Set the role first.";
 
-  auto iter = base::ranges::find(
+  auto iter = std::ranges::find(
       string_attributes, ax::mojom::StringAttribute::kName,
       &std::pair<ax::mojom::StringAttribute, std::string>::first);
 

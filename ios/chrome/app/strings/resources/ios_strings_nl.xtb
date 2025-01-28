@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Adres alleen opgeslagen op dit apparaat</translation>
 <translation id="1445276840641906250">Al je tabbladen in één browser</translation>
 <translation id="1450170672351507823">Standaardbeveiliging staat aan. Gebruik verbeterde beveiliging voor nog meer bescherming.</translation>
-<translation id="1454615514353469963">Wachtwoorden, toegangssleutels en andere gegevens worden definitief verwijderd uit Google Wachtwoordmanager</translation>
 <translation id="1455660774629812862">Niet verbergen</translation>
 <translation id="1460751212339734034">Bespaar tijd en typ minder</translation>
 <translation id="1466035273550360103">Geen geopende tabbladen</translation>
@@ -563,6 +562,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3517216995152707259">Als je je browsegegevens verwijdert, word je niet uitgelogd van je Google-account. <ph name="BEGIN_LINK" />Log hiervoor uit bij Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Open een tabblad om op internet te surfen.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Het tabblad openen}other{{count} tabbladen openen}}</translation>
+<translation id="3523513363815970085">Je topsites verbergen</translation>
 <translation id="3523789730715594198">Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="3527085408025491307">Map</translation>
 <translation id="3529024052484145543">Niet beveiligd</translation>
@@ -838,6 +838,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4769198578611055647">Hiermee kun je op elk apparaat toegang krijgen tot opgeslagen toegangssleutels</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Openen in incognitomodus?</translation>
+<translation id="479208892659046780">Je topsites</translation>
 <translation id="4792385443586519711">Bedrijfsnaam</translation>
 <translation id="479628432297359449">Download stoppen?</translation>
 <translation id="4796496140132859135">Tabbladgroep. Samengevouwen.</translation>

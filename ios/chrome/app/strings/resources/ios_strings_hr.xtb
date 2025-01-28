@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Adresa je spremljena samo na ovom uređaju</translation>
 <translation id="1445276840641906250">Sve vaše kartice u jednom pregledniku</translation>
 <translation id="1450170672351507823">Uključena je standardna zaštita. Za još veću sigurnost koristite poboljšanu zaštitu.</translation>
-<translation id="1454615514353469963">Zaporke, pristupni ključevi i drugi podaci trajno će se izbrisati iz Google upravitelja zaporki</translation>
 <translation id="1455660774629812862">Nemoj sakriti</translation>
 <translation id="1460751212339734034">Uštedite vrijeme, tipkajte manje</translation>
 <translation id="1466035273550360103">Nema otvorenih kartica</translation>
@@ -563,6 +562,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3517216995152707259">Brisanjem podataka o pregledavanju nećete se odjaviti s Google računa. Da biste to učinili, <ph name="BEGIN_LINK" />odjavite se iz Chromea<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Otvorite karticu da biste pregledavali web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Otvori karticu}one{Otvori {count} karticu}few{Otvori {count} kartice}other{Otvori {count} kartica}}</translation>
+<translation id="3523513363815970085">Sakrij modul Vaše najpopularnije web-lokacije</translation>
 <translation id="3523789730715594198">Sinkronizaciju možete uvijek zaustaviti u postavkama. Google može prilagoditi Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
 <translation id="3527085408025491307">Mapa</translation>
 <translation id="3529024052484145543">Nije sigurno</translation>
@@ -838,6 +838,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4769198578611055647">Pomaže vam da pristupite spremljenim pristupnim ključevima na bilo kojem uređaju</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Otvoriti u anonimnom načinu?</translation>
+<translation id="479208892659046780">Vaše najpopularnije web-lokacije</translation>
 <translation id="4792385443586519711">Naziv tvrtke</translation>
 <translation id="479628432297359449">Želite li zaustaviti preuzimanje?</translation>
 <translation id="4796496140132859135">Grupa kartica. Sažeto.</translation>

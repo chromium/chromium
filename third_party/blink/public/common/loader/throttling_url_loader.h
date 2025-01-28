@@ -142,8 +142,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers);
   void SetPriority(net::RequestPriority priority, int32_t intra_priority_value);
-  void PauseReadingBodyFromNet();
-  void ResumeReadingBodyFromNet();
 
   // Restarts the load immediately with |factory| and |url_loader_options|.
   // It must only be called when the following conditions are met:

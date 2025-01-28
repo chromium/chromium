@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Configuration for an Android 16 (Baklava Developer Preview 1) AVD on google_apis on x86_64
+# Configuration for an Android 16 (Baklava Beta 1) AVD on google_apis on x86_64
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
@@ -11,13 +11,13 @@ emulator_package {
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-baklava/google_apis/x86_64"
-    version: "4Hz6NKLpNeRQgUbzHhpArXl4xhQySAbE406KXvgBj7YC"  # (v2) BP21.241121.010
+  version: "ly6e302ZivQeSDIEjrw4VA2X9W5u9Nqh34Zp7HE_NskC"  # (v3) BP22.250103.003
 }
 system_image_name: "system-images;android-Baklava;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-baklava/google_apis/x86_64"
-  version: "hZ01gjSBryEGDpemKMCFAvYHOxykyUHJMkdR_89tDD4C"
+  version: "NiUdfK52dd95Jg31iuLsUo8MWtJivde2HtdAOzBcb9MC"
 }
 avd_name: "android_b_google_apis_x64"
 

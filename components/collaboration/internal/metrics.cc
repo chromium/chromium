@@ -12,4 +12,9 @@ void RecordJoinEvent(CollaborationServiceJoinEvent event) {
   base::UmaHistogramEnumeration("CollaborationService.JoinFlow", event);
 }
 
+void RecordShareOrManageEvent(CollaborationServiceShareOrManageEvent event) {
+  base::UmaHistogramEnumeration("CollaborationService.ShareOrManageFlow",
+                                event);
+}
+
 }  // namespace collaboration::metrics

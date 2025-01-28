@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/launcher/glic_controller.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_tray.h"
+#include "chrome/common/chrome_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
@@ -56,7 +58,11 @@ class MockGlicController : public GlicController {
 
 class GlicStatusIconTest : public testing::Test {
  public:
-  GlicStatusIconTest() = default;
+  GlicStatusIconTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
+        /*disabled_features=*/{});
+  }
   ~GlicStatusIconTest() override = default;
 
   void SetUp() override {
@@ -77,6 +83,7 @@ class GlicStatusIconTest : public testing::Test {
   std::unique_ptr<GlicStatusIcon> glic_status_icon_;
   MockStatusTray status_tray_;
   MockGlicController glic_controller_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(GlicStatusIconTest, OnStatusIconClicked) {

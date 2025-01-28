@@ -12,6 +12,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
+#include "chrome/browser/permissions/prediction_model_handler_provider.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"
 #include "chrome/browser/permissions/prediction_service_request.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,7 +39,6 @@
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #include "components/permissions/prediction_service/prediction_model_handler.h"
-#include "components/permissions/prediction_service/prediction_model_handler_provider.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace {
@@ -64,6 +64,9 @@ constexpr size_t kRequestedPermissionMinimumHistoricalActions = 4;
 // The maximum length of a page's content. It is needed to limit on-device ML
 // input to reduce processing latency.
 constexpr size_t kPageContentMaxLength = 500;
+// The minimum length of a page's content. It is needed to avoid analyzing pages
+// with too short text.
+constexpr size_t kPageContentMinLength = 10;
 
 std::optional<
     permissions::PermissionPrediction_Likelihood_DiscretizedLikelihood>
@@ -113,8 +116,8 @@ PredictionBasedPermissionUiSelector::~PredictionBasedPermissionUiSelector() =
     default;
 
 void PredictionBasedPermissionUiSelector::InquireServerModel(
-    PredictionRequestFeatures features,
-    permissions::RequestType request_type) {
+    const permissions::PredictionRequestFeatures& features,
+    const permissions::RequestType& request_type) {
   permissions::PredictionService* service =
       PredictionServiceFactory::GetForProfile(profile_);
 
@@ -131,8 +134,8 @@ void PredictionBasedPermissionUiSelector::InquireServerModel(
 }
 
 void PredictionBasedPermissionUiSelector::InquireTfliteOnDeviceModelIfAvailable(
-    PredictionRequestFeatures features,
-    permissions::RequestType request_type) {
+    const permissions::PredictionRequestFeatures& features,
+    const permissions::RequestType& request_type) {
 #if !BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   VLOG(1) << "[CPSS] Client doesn't support tflite";
   std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
@@ -167,13 +170,14 @@ void PredictionBasedPermissionUiSelector::InquireTfliteOnDeviceModelIfAvailable(
 
 void PredictionBasedPermissionUiSelector::
     InquireGenAiOnDeviceAndServerModelIfAvailable(
-        PredictionRequestFeatures features,
-        permissions::RequestType request_type) {
-  VLOG(1) << "[PermissionsAIv1] On device genAI prediction requested";
-  // TODO(crbug.com/382447738) Call genAi model via model_handler_provider
-  // and provide GenAIModelExecutionCallback
-  VLOG(1) << "[PermissionsAIv1] On device genAI model session unavailable";
-  InquireServerModel(features, request_type);
+        content::RenderFrameHost* rfh,
+        const PredictionRequestFeatures& features,
+        const permissions::RequestType& request_type) {
+  content_extraction::GetInnerText(
+      *rfh, /*node_id=*/std::nullopt,
+      base::BindOnce(
+          &PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel,
+          weak_ptr_factory_.GetWeakPtr(), features, request_type));
 }
 
 void PredictionBasedPermissionUiSelector::SelectUiToUse(
@@ -225,17 +229,12 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
 
   DCHECK(!request_);
 
-  // TODO(crbug.com/382447738): refactor it later to use a proper
-  // `PredictionSource`.
-  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
-    FetchInnerTextForFrame(web_contents->GetPrimaryMainFrame());
-    return;
-  }
-
   switch (prediction_source) {
     case PredictionSource::USE_ONDEVICE_GENAI_AND_SERVER_SIDE:
-      return InquireGenAiOnDeviceAndServerModelIfAvailable(
-          features, request->request_type());
+      InquireGenAiOnDeviceAndServerModelIfAvailable(
+          web_contents->GetPrimaryMainFrame(), features,
+          request->request_type());
+      return;
     case PredictionSource::USE_SERVER_SIDE:
       return InquireServerModel(features, request->request_type());
     case PredictionSource::USE_ONDEVICE_TFLITE:
@@ -247,33 +246,36 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
 }
 
 void PredictionBasedPermissionUiSelector::FetchInnerTextForFrame(
-    content::RenderFrameHost* rfh) {
+    content::RenderFrameHost* rfh,
+    const permissions::PredictionRequestFeatures& features,
+    const permissions::RequestType& request_type) {
   content_extraction::GetInnerText(
       *rfh, /*node_id=*/std::nullopt,
       base::BindOnce(
           &PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), features, request_type));
 }
 
 void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
+    const permissions::PredictionRequestFeatures& features,
+    const permissions::RequestType& request_type,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
-  if (result && !result->inner_text.empty()) {
+  if (result && result->inner_text.size() > kPageContentMinLength) {
     std::string inner_text = std::move(result->inner_text);
 
     if (inner_text.size() > kPageContentMaxLength) {
       inner_text.resize(kPageContentMaxLength);
     }
+    VLOG(1) << "[PermissionsAIv1] On device genAI prediction requested";
     // TODO(crbug.com/382447738): Use `inner_text` as an input for an on-device
     // ML model.
-
-    // TODO(crbug.com/382447738): The next line is a temporary solution until
-    // on-device ML execution is ready.
-    std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+    // TODO(crbug.com/382447738) Call genAi model via model_handler_provider
+    // and provide GenAIModelExecutionCallback
+    VLOG(1) << "[PermissionsAIv1] On device genAI model session unavailable";
+    InquireServerModel(features, request_type);
   } else {
-    // TODO(crbug.com/382447738): If text is empty, run CPSSv3 logic instead of
-    // showing the loud UI.
-    VLOG(1) << "[CPSS] Cannot fetch page's content";
-    std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+    VLOG(1) << "[PermissionsAIv1] The page's contnet too short or empty";
+    InquireServerModel(features, request_type);
   }
 }
 

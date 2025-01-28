@@ -9,7 +9,7 @@
 import {CursorRange} from '/common/cursors/range.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
+import type {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
 import {EventSource} from '../event_source.js';

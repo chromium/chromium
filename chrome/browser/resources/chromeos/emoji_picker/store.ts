@@ -5,7 +5,8 @@
 import {EMOJI_PER_ROW} from './constants.js';
 import {Category} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
-import {CategoryEnum, Emoji, EmojiHistoryItem, EmojiVariants, Gender, PreferenceMapping, Tone, VisualContent} from './types.js';
+import type {Emoji, EmojiHistoryItem, EmojiVariants, Gender, PreferenceMapping, Tone, VisualContent} from './types.js';
+import {CategoryEnum} from './types.js';
 
 const MAX_RECENTS = EMOJI_PER_ROW * 2;
 

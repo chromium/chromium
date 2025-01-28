@@ -105,12 +105,12 @@ suite('acceleratorViewTest', function() {
         ShortcutInputKeyElement);
   }
 
-  function getLockIcon(): HTMLDivElement {
+  function getLockIcon(): HTMLElement {
     return strictQuery(
         '.lock-icon-container', viewElement!.shadowRoot, HTMLDivElement);
   }
 
-  function getEditIcon(): HTMLDivElement {
+  function getEditIcon(): HTMLElement {
     return strictQuery(
         '.edit-icon-container', viewElement!.shadowRoot, HTMLDivElement);
   }
@@ -600,7 +600,7 @@ suite('acceleratorViewTest', function() {
     await flush();
 
     const viewContainer =
-        viewElement.shadowRoot!.querySelector<HTMLDivElement>('#container');
+        viewElement.shadowRoot!.querySelector<HTMLElement>('#container');
     assertTrue(!!viewContainer);
     // The icon label is 'show windows'.
     const regex = /^(search|launcher) alt shift show windows$/;
@@ -622,7 +622,7 @@ suite('acceleratorViewTest', function() {
     await flush();
 
     const viewContainer =
-        viewElement.shadowRoot!.querySelector<HTMLDivElement>('#container');
+        viewElement.shadowRoot!.querySelector<HTMLElement>('#container');
     assertTrue(!!viewContainer);
     const regex = /^(search|launcher)$/;
     assertTrue(!!viewContainer.ariaLabel);

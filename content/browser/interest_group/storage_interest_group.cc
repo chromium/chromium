@@ -4,10 +4,10 @@
 
 #include "content/browser/interest_group/storage_interest_group.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/base64.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "third_party/blink/public/common/features.h"

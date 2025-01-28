@@ -52,6 +52,7 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -63,7 +64,7 @@ import org.chromium.url.GURL;
 @SuppressWarnings("DoNotMock") // Mocking GURL
 public class MerchantTrustBottomSheetMediatorTest {
 
-    @Mock private WebContents mMockWebContents;
+    @Mock private MockWebContents mMockWebContents;
 
     @Mock private GURL mMockDestinationGurl;
 

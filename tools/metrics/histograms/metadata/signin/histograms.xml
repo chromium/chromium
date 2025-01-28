@@ -618,7 +618,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidDeviceAccountsNumberWhenEnteringFRE"
-    units="count" expires_after="2025-05-25">
+    units="count" expires_after="2025-07-27">
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -2380,13 +2380,20 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SignIn.Completed" enum="SigninAccessPoint"
-    expires_after="2025-07-13">
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
   <owner>bsazonov@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-ds@google.com</owner>
   <summary>
     Records that the user signed in to Chrome, and logs the original access
     point associated with this event.
+
+    This histogram is of special interest to the chrome-ds@. Do not change its
+    semantics or retire it without talking to them first.
   </summary>
 </histogram>
 
@@ -2475,12 +2482,12 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SigninManager.SigninAccessPoint"
-    enum="SigninAccessPoint" expires_after="2025-04-27">
+    enum="SigninAccessPoint" expires_after="2025-07-27">
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the access point used by the `SigninManager` when setting the
-    primary account. This is a subset of the histogram Signin.Signin.Completed,
+    primary account. This is a subset of the histogram Signin.SignIn.Completed,
     exclusively for the case when the primary account is set by `SigninManager`.
   </summary>
 </histogram>
@@ -2569,15 +2576,22 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SignOut.Completed" enum="SigninSignoutProfile"
-    expires_after="2025-07-13">
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
   <owner>bsazonov@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-ds@google.com</owner>
   <summary>
     Records that the user signed out of Chrome, and logs the original access
     point associated with this event. Note that turning off Sync almost always
     signs the user out, in which case both this histogram and
     Signin.SyncTurnOff.Completed are recorded.
+
+    This histogram is of special interest to the chrome-ds@. Do not change its
+    semantics or retire it without talking to them first.
   </summary>
 </histogram>
 

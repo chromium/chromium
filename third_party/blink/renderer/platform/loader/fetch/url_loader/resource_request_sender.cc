@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -70,9 +71,9 @@ namespace WTF {
 
 template <>
 struct CrossThreadCopier<
-    blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>> {
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>>> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>;
+  using Type = std::vector<std::unique_ptr<blink::URLLoaderThrottle>>;
   static Type Copy(Type&& value) { return std::move(value); }
 };
 
@@ -87,8 +88,8 @@ struct CrossThreadCopier<net::NetworkTrafficAnnotationTag>
 };
 
 template <>
-struct CrossThreadCopier<blink::WebVector<blink::WebString>>
-    : public CrossThreadCopierPassThrough<blink::WebVector<blink::WebString>> {
+struct CrossThreadCopier<std::vector<blink::WebString>>
+    : public CrossThreadCopierPassThrough<std::vector<blink::WebString>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
@@ -151,7 +152,7 @@ void ResourceRequestSender::SendSync(
     uint32_t loader_options,
     SyncLoadResponse* response,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
+    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
     base::TimeDelta timeout,
     const Vector<String>& cors_exempt_header_list,
     base::WaitableEvent* terminate_sync_load_event,
@@ -253,7 +254,7 @@ int ResourceRequestSender::SendAsync(
     const Vector<String>& cors_exempt_header_list,
     scoped_refptr<ResourceRequestClient> client,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
+    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
     CodeCacheHost* code_cache_host,
@@ -305,17 +306,15 @@ int ResourceRequestSender::SendAsync(
       request->url, std::move(evict_from_bfcache_callback),
       std::move(did_buffer_load_while_in_bfcache_callback));
 
-  std::vector<std::string> std_cors_exempt_header_list(
-      cors_exempt_header_list.size());
-  base::ranges::transform(cors_exempt_header_list,
-                          std_cors_exempt_header_list.begin(),
-                          [](const WebString& h) { return h.Latin1(); });
+  std::vector<std::string> std_cors_exempt_header_list =
+      base::ToVector(cors_exempt_header_list,
+                     [](const String& s) { return WebString(s).Latin1(); });
   std::unique_ptr<ThrottlingURLLoader> url_loader =
       ThrottlingURLLoader::CreateLoaderAndStart(
-          std::move(url_loader_factory), throttles.ReleaseVector(), request_id,
+          std::move(url_loader_factory), std::move(throttles), request_id,
           loader_options, request.get(), url_loader_client.get(),
           traffic_annotation, std::move(loading_task_runner),
-          std::make_optional(std_cors_exempt_header_list));
+          std::make_optional(std::move(std_cors_exempt_header_list)));
 
   // The request may be canceled by `ThrottlingURLLoader::CreateAndStart()`, in
   // which case `DeletePendingRequest()` has reset the `request_info_` to
@@ -420,12 +419,8 @@ void ResourceRequestSender::FollowPendingRedirect(
       request_info->modified_headers.Clear();
       request_info->url_loader->FollowRedirectForcingRestart();
     } else {
-      std::vector<std::string> removed_headers(
-          request_info_->removed_headers.size());
-      base::ranges::transform(request_info_->removed_headers,
-                              removed_headers.begin(), &WebString::Ascii);
       request_info->url_loader->FollowRedirect(
-          removed_headers, request_info->modified_headers,
+          request_info_->removed_headers, request_info->modified_headers,
           {} /* modified_cors_exempt_headers */);
       request_info->modified_headers.Clear();
     }
@@ -580,12 +575,7 @@ void ResourceRequestSender::OnFollowRedirectCallback(
     return;
   }
 
-  // TODO(yoav): If request_info doesn't change above, we could avoid this
-  // copy.
-  WebVector<WebString> vector(removed_headers.size());
-  base::ranges::transform(removed_headers, vector.begin(),
-                          &WebString::FromASCII);
-  request_info_->removed_headers = vector;
+  request_info_->removed_headers = std::move(removed_headers);
   request_info_->response_url = KURL(redirect_info.new_url);
   request_info_->has_pending_redirect = true;
   request_info_->resource_load_info_notifier_wrapper

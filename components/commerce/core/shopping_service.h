@@ -364,12 +364,6 @@ class ShoppingService : public KeyedService,
   virtual void WaitForReady(
       base::OnceCallback<void(ShoppingService*)> callback);
 
-  // Check if parcel tracking is eligible for use. This not only checks the
-  // feature flag, but also checks user's sign in state, country code, etc. The
-  // value returned here can change during runtime so it should not be used
-  // when deciding to build infrastructure.
-  virtual bool IsParcelTrackingEligible();
-
   // Returns a list of URLs corresponding to active WebWrappers the shopping
   // service is keeping track of. This does not map to open tabs across all
   // platforms. Excludes non-HTTP/HTTPS URLs.

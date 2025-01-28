@@ -419,8 +419,9 @@ ReadAnythingAppController::ReadAnythingAppController(
       factory.BindNewPipeAndPassReceiver());
   ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
-    model_.SetDataCollectionForScreen2xCallback(base::BindRepeating(
-        &ReadAnythingAppController::Distill, weak_ptr_factory_.GetWeakPtr()));
+    model_.SetDataCollectionForScreen2xCallback(
+        base::BindOnce(&ReadAnythingAppController::DistillAndScreenshot,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   model_observer_.Observe(&model_);
@@ -495,7 +496,7 @@ void ReadAnythingAppController::AccessibilityEventReceived(
   }
 
   if (model_.requires_distillation()) {
-    Distill();
+    Distill(/*for_training_data=*/false);
   }
 
   if (model_.redraw_required()) {
@@ -575,7 +576,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // case, do not distill.
   if (model_.active_tree_id() != ui::AXTreeIDUnknown() &&
       model_.ContainsTree(model_.active_tree_id())) {
-    Distill();
+    Distill(/*for_training_data=*/false);
   }
 }
 
@@ -592,7 +593,25 @@ void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   model_.OnAXTreeDestroyed(tree_id);
 }
 
-void ReadAnythingAppController::Distill() {
+void ReadAnythingAppController::DistillAndScreenshot() {
+  // For screen2x data generation mode, chrome is opened from the CLI to a
+  // specific URL. The caller monitors for a dump of the distilled proto written
+  // to a local file. Distill should only be called once the page finished
+  // loading and is stable, so the proto represents the entire webpage.
+  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+  CHECK(model_.PageFinishedLoadingForDataCollection());
+  CHECK(model_.ScreenAIServiceReadyForDataCollection());
+
+  Distill(/*for_training_data=*/true);
+  page_handler_->OnScreenshotRequested();
+}
+
+void ReadAnythingAppController::Distill(bool for_training_data) {
+  if (!for_training_data &&
+      features::IsDataCollectionModeForScreen2xEnabled()) {
+    return;
+  }
+
   if (model_.distillation_in_progress() || read_aloud_model_.speech_playing()) {
     // When distillation is in progress, the model may have queued up tree
     // updates. In those cases, assume we eventually get to `OnAXTreeDistilled`,
@@ -601,22 +620,6 @@ void ReadAnythingAppController::Distill() {
     // re-request `Distill`.
     model_.set_requires_distillation(true);
     return;
-  }
-
-  // For screen2x data generation mode, chrome is open from the CLI to a
-  // specific URL. The caller monitors for a dump of the distilled proto written
-  // to a local file. Distill should only be called once the page is finished
-  // loading, so we have the proto representing the entire webpage.
-  if (features::IsDataCollectionModeForScreen2xEnabled()) {
-    if (!model_.PageFinishedLoadingForDataCollection() ||
-        !model_.ScreenAIServiceReadyForDataColletion()) {
-      return;
-    }
-    // Request a screenshot of the active page when no more distillations are
-    // required. Send a screenshot request to its browser controller using
-    // `PaintPreview` to take a whole-page screenshot of the active web
-    // contents.
-    page_handler_->OnScreenshotRequested();
   }
 
   model_.set_requires_distillation(false);
@@ -729,7 +732,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // `requires_distillation()` state below).
   model_.UnserializePendingUpdates(tree_id);
   if (model_.requires_distillation()) {
-    Distill();
+    Distill(/*for_training_data=*/false);
   }
 }
 
@@ -810,7 +813,7 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
 
 void ReadAnythingAppController::ScreenAIServiceReady() {
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
-    model_.SetScreenAIServiceReadyForDataColletion(true);
+    model_.SetScreenAIServiceReadyForDataCollection();
   }
   distiller_->ScreenAIServiceReady();
 }
@@ -1761,7 +1764,7 @@ void ReadAnythingAppController::OnSpeechPlayingStateChanged(
     // TODO: b/40927698 - Do something smarter than completely re-distilling
     // when the update is small. Right now this resets the speech position to
     // the beginning which is annoying if the page is mostly the same.
-    Distill();
+    Distill(/*for_training_data=*/false);
   }
 }
 

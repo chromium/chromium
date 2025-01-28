@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {DialogTask, MetricsRecordedSetupPage, UserAction} from './cloud_upload.mojom-webui.js';
+import type {DialogTask} from './cloud_upload.mojom-webui.js';
+import {MetricsRecordedSetupPage, UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
-import {AccordionTopCardElement, BaseCardElement, CloudProviderCardElement, CloudProviderType, FileHandlerCardElement, LocalHandlerCardElement} from './file_handler_card.js';
+import type {BaseCardElement, FileHandlerCardElement} from './file_handler_card.js';
+import {AccordionTopCardElement, CloudProviderCardElement, CloudProviderType, LocalHandlerCardElement} from './file_handler_card.js';
 import {getTemplate} from './file_handler_page.html.js';
 
 /**

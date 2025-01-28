@@ -61,7 +61,7 @@ class CloneLanguageModelClient
   // mojom::blink::AIManagerCreateLanguageModelClient implementation.
   void OnResult(
       mojo::PendingRemote<mojom::blink::AILanguageModel> language_model_remote,
-      mojom::blink::AILanguageModelInfoPtr info) override {
+      mojom::blink::AILanguageModelInstanceInfoPtr info) override {
     if (!GetResolver()) {
       return;
     }
@@ -153,7 +153,7 @@ AILanguageModel::AILanguageModel(
     ExecutionContext* execution_context,
     mojo::PendingRemote<mojom::blink::AILanguageModel> pending_remote,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    blink::mojom::blink::AILanguageModelInfoPtr info)
+    blink::mojom::blink::AILanguageModelInstanceInfoPtr info)
     : ExecutionContextClient(execution_context),
       task_runner_(task_runner),
       language_model_remote_(execution_context) {

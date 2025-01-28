@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/media_engagement_service.h"
@@ -94,6 +95,14 @@ const char kVideoConferencingHistogram[] =
 const char kMediaPlaybackHistogram[] =
     "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
     "MediaPlayback.PromptResultV2";
+
+const char kVideoConferencingTotalTimeHistogram[] =
+    "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+    "VideoConferencing.TotalTime";
+
+const char kMediaPlaybackTotalTimeHistogram[] =
+    "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+    "MediaPlayback.TotalTime";
 
 class MockInputObserver : public content::RenderWidgetHost::InputEventObserver {
  public:
@@ -1128,6 +1137,72 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, samples->GetCount(7));  // Not shown incognito
 }
 
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       VideoConferencingTotalTimeRecorded) {
+  // Load a page that registers for autopip and starts using camera/microphone.
+  LoadCameraMicrophonePage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(web_contents);
+
+  // Set clock for testing.
+  base::SimpleTestTickClock test_clock;
+  test_clock.SetNowTicks(base::TimeTicks::Now());
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  tab_helper->set_clock_for_testing(&test_clock);
+
+  // Trigger metric recording.
+  base::HistogramTester histograms;
+  SwitchToNewTabAndWaitForAutoPip();
+  test_clock.Advance(base::Milliseconds(5000));
+  SwitchBackToOpenerAndWaitForPipToClose();
+
+  // Verify expectations.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples = histograms.GetHistogramSamplesSinceCreation(
+      kVideoConferencingTotalTimeHistogram);
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(5000));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutoPictureInPictureTabHelperBrowserTest,
+    ManuallyOpenedPip_VideoConferencingTotalTimeNotRecorded) {
+  // Load a page that registers for autopip and starts using camera/microphone.
+  LoadCameraMicrophonePage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(web_contents);
+
+  // Set clock for testing.
+  base::SimpleTestTickClock test_clock;
+  test_clock.SetNowTicks(base::TimeTicks::Now());
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  tab_helper->set_clock_for_testing(&test_clock);
+
+  base::HistogramTester histograms;
+
+  // Open a picture-in-picture window manually.
+  content::MediaStartStopObserver enter_pip_observer(
+      web_contents,
+      content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
+      u"openPip({disallowReturnToOpener: false})", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
+  enter_pip_observer.Wait();
+
+  // Trigger metric recording.
+  test_clock.Advance(base::Milliseconds(5000));
+  web_contents->ClosePage();
+  ui_test_utils::WaitForBrowserToClose(browser());
+
+  // Verify expectations.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples = histograms.GetHistogramSamplesSinceCreation(
+      kVideoConferencingTotalTimeHistogram);
+  EXPECT_EQ(0, samples->TotalCount());
+}
+
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        DoesNotAutopipWithoutPlayback) {
   // Load a page that registers for autopip but doesn't start playback.
@@ -1933,4 +2008,70 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   // the video conferencing check is always performed first.
   EXPECT_EQ(1, samples->TotalCount());
   EXPECT_EQ(1, samples->GetCount(3));  // Allow this time
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       MediaPlaybackTotalTimeRecorded) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
+
+  // Set clock for testing.
+  base::SimpleTestTickClock test_clock;
+  test_clock.SetNowTicks(base::TimeTicks::Now());
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  tab_helper->set_clock_for_testing(&test_clock);
+
+  // Trigger metric recording.
+  base::HistogramTester histograms;
+  SwitchToNewTabAndWaitForAutoPip();
+  test_clock.Advance(base::Milliseconds(5000));
+  SwitchBackToOpenerAndWaitForPipToClose();
+
+  // Verify expectations.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples = histograms.GetHistogramSamplesSinceCreation(
+      kMediaPlaybackTotalTimeHistogram);
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(5000));
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       ManuallyOpenedPip_MediaPlaybackTotalTimeNotRecorded) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Set clock for testing.
+  base::SimpleTestTickClock test_clock;
+  test_clock.SetNowTicks(base::TimeTicks::Now());
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  tab_helper->set_clock_for_testing(&test_clock);
+
+  base::HistogramTester histograms;
+
+  // Open a picture-in-picture window manually.
+  content::MediaStartStopObserver enter_pip_observer(
+      web_contents,
+      content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+  OpenPipManually(web_contents);
+  enter_pip_observer.Wait();
+
+  // Trigger metric recording.
+  test_clock.Advance(base::Milliseconds(5000));
+  web_contents->ClosePage();
+  ui_test_utils::WaitForBrowserToClose(browser());
+
+  // Verify expectations.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples = histograms.GetHistogramSamplesSinceCreation(
+      kMediaPlaybackTotalTimeHistogram);
+  EXPECT_EQ(0, samples->TotalCount());
 }

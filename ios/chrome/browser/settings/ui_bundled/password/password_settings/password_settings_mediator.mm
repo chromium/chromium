@@ -423,9 +423,9 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   int passwordsCount = 0;
   for (password_manager::AffiliatedGroup group :
        _savedPasswordsPresenter->GetAffiliatedGroups()) {
-    passwordsCount += base::ranges::count_if(group.GetCredentials().begin(),
-                                             group.GetCredentials().end(),
-                                             IsCredentialLocalPassword);
+    passwordsCount += std::ranges::count_if(group.GetCredentials().begin(),
+                                            group.GetCredentials().end(),
+                                            IsCredentialLocalPassword);
   }
   return passwordsCount;
 }
@@ -439,9 +439,9 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 
   for (const password_manager::AffiliatedGroup& group :
        _savedPasswordsPresenter->GetAffiliatedGroups()) {
-    auto credential = base::ranges::find_if(group.GetCredentials().begin(),
-                                            group.GetCredentials().end(),
-                                            IsCredentialLocalPassword);
+    auto credential = std::ranges::find_if(group.GetCredentials().begin(),
+                                           group.GetCredentials().end(),
+                                           IsCredentialLocalPassword);
 
     // If a credential exists in this group that is in the profile store, append
     // the group's display name to the distinct domains.

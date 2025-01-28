@@ -22,6 +22,7 @@
 #include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_frame_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_effects/public/cpp/buildflags.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
@@ -50,11 +51,6 @@ CAPTURE_EXPORT BASE_DECLARE_FEATURE(kFallbackToSharedMemoryIfNotNv12OnMac);
 // `VideoCaptureDeviceClient` to apply video effects.
 class CAPTURE_EXPORT VideoEffectsContext {
  public:
-  explicit VideoEffectsContext(
-      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote);
-  // TODO(crbug.com/377532863): Use ReadonlyVideoEffectsManager new parameter.
-  // Also, remove the single argument constructor in a follow-up CL after all
-  // usage adjustment.
   VideoEffectsContext(
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
           processor_remote,
@@ -72,9 +68,15 @@ class CAPTURE_EXPORT VideoEffectsContext {
   mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>&&
   TakeVideoEffectsProcessor();
 
+  mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>&&
+  TakeReadonlyVideoEffectsManager();
+
  private:
   mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
       video_effects_processor_;
+
+  mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+      readonly_video_effects_manager_;
 };
 
 // Implementation of VideoCaptureDevice::Client that uses a buffer pool
@@ -91,8 +93,11 @@ class CAPTURE_EXPORT VideoEffectsContext {
 // v4l2_thread on Linux, and the UI thread for tab capture.
 // The owner is responsible for making sure that the instance outlives these
 // calls.
-class CAPTURE_EXPORT VideoCaptureDeviceClient
-    : public VideoCaptureDevice::Client {
+class CAPTURE_EXPORT VideoCaptureDeviceClient :
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+    public media::mojom::VideoEffectsConfigurationObserver,
+#endif
+    public VideoCaptureDevice::Client {
  public:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   VideoCaptureDeviceClient(
@@ -198,6 +203,12 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       int frame_feedback_id);
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+  // media::mojom::VideoEffectsConfigurationObserver impl.
+  void OnConfigurationChanged(
+      media::mojom::VideoEffectsConfigurationPtr configuration) override;
+
+  bool ShouldApplyVideoEffects() const;
+
   std::optional<VideoCaptureDevice::Client::Buffer> ReserveEffectsOutputBuffer(
       const VideoCaptureFormat& format,
       const int frame_feedback_id);
@@ -223,8 +234,13 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
   VideoPixelFormat last_captured_pixel_format_;
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+  bool has_active_effects_ = false;
   scoped_refptr<base::SequencedTaskRunner> effects_processor_task_runner_;
   std::unique_ptr<VideoCaptureEffectsProcessor> effects_processor_;
+  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager>
+      readonly_effects_manager_remote_;
+  mojo::Receiver<media::mojom::VideoEffectsConfigurationObserver>
+      effects_configuration_observer_{this};
 #endif  // !BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
   // Thread collision warner to ensure that producer-facing API is not called

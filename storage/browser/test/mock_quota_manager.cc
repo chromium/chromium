@@ -4,6 +4,7 @@
 
 #include "storage/browser/test/mock_quota_manager.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <tuple>
@@ -14,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_waitable_event.h"
@@ -209,7 +209,7 @@ bool MockQuotaManager::AddBucket(const BucketInfo& bucket,
                                  QuotaClientTypes quota_client_types,
                                  base::Time modified) {
   DCHECK(
-      base::ranges::none_of(buckets_, [bucket](const BucketData& bucket_data) {
+      std::ranges::none_of(buckets_, [bucket](const BucketData& bucket_data) {
         return bucket.id == bucket_data.bucket.id ||
                (bucket.name == bucket_data.bucket.name &&
                 bucket.storage_key == bucket_data.bucket.storage_key &&
@@ -241,7 +241,7 @@ bool MockQuotaManager::BucketHasData(const BucketInfo& bucket,
 }
 
 int MockQuotaManager::BucketDataCount(QuotaClientType quota_client) {
-  return base::ranges::count_if(
+  return std::ranges::count_if(
       buckets_, [quota_client](const BucketData& bucket) {
         return bucket.quota_client_types.contains(quota_client);
       });
@@ -309,7 +309,7 @@ void MockQuotaManager::UpdateBucketPersistence(
     BucketId bucket,
     bool persistent,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       buckets_, bucket,
       [](const BucketData& bucket_data) { return bucket_data.bucket.id; });
   if (it != buckets_.end()) {
@@ -331,7 +331,7 @@ MockQuotaManager::~MockQuotaManager() = default;
 
 QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucketById(
     const BucketId& bucket_id) {
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       buckets_, bucket_id,
       [](const BucketData& bucket_data) { return bucket_data.bucket.id; });
   if (it != buckets_.end()) {
@@ -344,8 +344,8 @@ QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucket(
     const blink::StorageKey& storage_key,
     const std::string& bucket_name,
     blink::mojom::StorageType type) {
-  auto it = base::ranges::find_if(buckets_, [storage_key, bucket_name, type](
-                                                const BucketData& bucket_data) {
+  auto it = std::ranges::find_if(buckets_, [storage_key, bucket_name, type](
+                                               const BucketData& bucket_data) {
     return bucket_data.bucket.storage_key == storage_key &&
            bucket_data.bucket.name == bucket_name &&
            bucket_data.bucket.type == type;
@@ -359,7 +359,7 @@ QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucket(
 QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucket(
     const BucketLocator& locator) {
   auto it =
-      base::ranges::find_if(buckets_, [locator](const BucketData& bucket_data) {
+      std::ranges::find_if(buckets_, [locator](const BucketData& bucket_data) {
         return bucket_data.bucket.ToBucketLocator().IsEquivalentTo(locator);
       });
   if (it != buckets_.end()) {
@@ -371,7 +371,7 @@ QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucket(
 QuotaErrorOr<BucketInfo> MockQuotaManager::FindAndUpdateBucket(
     const BucketInitParams& params,
     blink::mojom::StorageType type) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       buckets_, [params, type](const BucketData& bucket_data) {
         return bucket_data.bucket.storage_key == params.storage_key &&
                bucket_data.bucket.name == params.name &&

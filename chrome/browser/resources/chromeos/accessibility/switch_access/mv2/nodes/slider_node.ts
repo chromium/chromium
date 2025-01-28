@@ -8,7 +8,7 @@ import {KeyCode} from '/common/key_code.js';
 import {ActionResponse} from '../switch_access_constants.js';
 
 import {BasicNode} from './basic_node.js';
-import {SARootNode} from './switch_access_node.js';
+import type {SARootNode} from './switch_access_node.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
 import MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;

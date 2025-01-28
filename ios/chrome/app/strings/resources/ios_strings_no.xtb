@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Adressen er kun lagret på denne enheten</translation>
 <translation id="1445276840641906250">Alle fanene dine i én nettleser</translation>
 <translation id="1450170672351507823">Standardbeskyttelse er på. Bruk økt beskyttelse om du vil ha enda mer sikkerhet.</translation>
-<translation id="1454615514353469963">Passord, passnøkler og andre data slettes permanent fra Google Passordlagring</translation>
 <translation id="1455660774629812862">Ikke skjul</translation>
 <translation id="1460751212339734034">Spar tid – skriv mindre</translation>
 <translation id="1466035273550360103">Ingen åpne faner</translation>
@@ -563,6 +562,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3517216995152707259">Du blir ikke logget av Google-kontoen din selv om du sletter nettlesingsdataene dine. For å gjøre det, <ph name="BEGIN_LINK" />logg av Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Åpne en fane for å surfe på nettet.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Åpne fanen}other{Åpne {count} faner}}</translation>
+<translation id="3523513363815970085">Skjul «Nettstedene du besøker mest»</translation>
 <translation id="3523789730715594198">Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="3527085408025491307">Mappe</translation>
 <translation id="3529024052484145543">Ikke sikker</translation>
@@ -838,6 +838,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4769198578611055647">Hjelper deg med å få tilgang til lagrede passnøkler på alle enheter</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Vil du åpne linken i Inkognito?</translation>
+<translation id="479208892659046780">Nettstedene du besøker mest</translation>
 <translation id="4792385443586519711">Firmanavn</translation>
 <translation id="479628432297359449">Vil du stoppe nedlastingen?</translation>
 <translation id="4796496140132859135">Fanegruppe. Skjult.</translation>

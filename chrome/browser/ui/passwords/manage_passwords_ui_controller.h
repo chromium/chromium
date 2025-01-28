@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
@@ -262,6 +263,8 @@ class ManagePasswordsUIController
   void OnVisibilityChanged(content::Visibility visibility) override;
 
   PasswordChangeDelegate* GetPasswordChangeDelegate() const override;
+
+  PasswordsLeakDialogDelegate* GetPasswordsLeakDialogDelegate() override;
 
  private:
   friend class content::WebContentsUserData<ManagePasswordsUIController>;

@@ -279,7 +279,7 @@ suite('shortcutCustomizationAppTest', function() {
             .querySelector('navigation-selector');
     const navMenuItems =
         navSelector!.shadowRoot!.querySelector('#navigationSelectorMenu')!
-            .querySelectorAll<HTMLDivElement>('.navigation-item');
+            .querySelectorAll<HTMLElement>('.navigation-item');
     navMenuItems[1]!.click();
 
     await flushTasks();
@@ -1346,7 +1346,7 @@ suite('shortcutCustomizationAppTest', function() {
     page = initShortcutCustomizationAppElement();
     await flushTasks();
     const policyIndicator =
-        getPage().shadowRoot!.querySelector<HTMLDivElement>('#policyIndicator');
+        getPage().shadowRoot!.querySelector<HTMLElement>('#policyIndicator');
     assertTrue(!!policyIndicator);
   });
 
@@ -1355,7 +1355,7 @@ suite('shortcutCustomizationAppTest', function() {
     page = initShortcutCustomizationAppElement();
     await flushTasks();
     const policyIndicator =
-        getPage().shadowRoot!.querySelector<HTMLDivElement>('#policyIndicator');
+        getPage().shadowRoot!.querySelector<HTMLElement>('#policyIndicator');
     assertFalse(!!policyIndicator);
   });
 });

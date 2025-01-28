@@ -60,6 +60,18 @@ struct TableHeaderStyle {
   std::optional<int> separator_horizontal_padding;
   std::optional<gfx::Font::Weight> font_weight;
   std::optional<ui::ColorId> separator_horizontal_color_id;
+  std::optional<ui::ColorId> background_color_id;
+};
+
+struct TableBackgroundStyle {
+  ui::ColorId background = ui::kColorTableBackground;
+  ui::ColorId alternate = ui::kColorTableBackgroundAlternate;
+  ui::ColorId selected_focused = ui::kColorTableBackgroundSelectedFocused;
+  ui::ColorId selected_unfocused = ui::kColorTableBackgroundSelectedUnfocused;
+};
+
+struct TableStyle {
+  TableBackgroundStyle background_tokens;
 };
 
 // The cell's in the first column of a table can contain:
@@ -274,6 +286,14 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   void SetHeaderStyle(const TableHeaderStyle& style);
   const TableHeaderStyle& header_style() const { return header_style_; }
+
+  void SetTableStyle(const TableStyle& style);
+  const TableStyle& table_style() const { return table_style_; }
+
+  ui::ColorId BackgroundColorId() const;
+  ui::ColorId BackgroundAlternateColorId() const;
+  ui::ColorId BackgroundSelectedFocusedColorId() const;
+  ui::ColorId BackgroundSelectedUnfocusedColorId() const;
 
   // View overrides:
   void Layout(PassKey) override;
@@ -627,6 +647,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   // Customization for the header. Includes options such as padding.
   TableHeaderStyle header_style_;
+
+  // Customization for the table.
+  TableStyle table_style_;
 
   // TODO(crbug.com/388086397): Enable by mouse hovering by default when color
   // tokens are refined on all platforms.

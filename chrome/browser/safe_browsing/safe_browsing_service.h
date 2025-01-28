@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/safe_browsing/phishy_interaction_tracker.h"
+#include "chrome/browser/safe_browsing/safe_browsing_pref_change_handler.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
@@ -420,6 +421,11 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
 
   scoped_refptr<network::SharedURLLoaderFactory>
       url_loader_factory_for_testing_;
+
+  // Manages the logic for handling preference changes, including displaying
+  // specific UI elements in response to certain preference changes.
+  std::unique_ptr<SafeBrowsingPrefChangeHandler>
+      safe_browsing_pref_change_handler_;
 };
 
 // TODO(crbug.com/41437292): Remove this once dependencies are using the

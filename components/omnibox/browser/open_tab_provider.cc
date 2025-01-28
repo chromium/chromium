@@ -9,6 +9,9 @@
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "components/browser_ui/util/android/url_constants.h"
+#endif
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -23,6 +26,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -35,6 +39,17 @@ constexpr int kOpenTabDefaultScore = 1500;
 int Score(const AutocompleteInput& input,
           const query_parser::QueryNodeVector& input_query_nodes,
           const TabMatcher::TabWrapper tab) {
+// For Hub Search, remove both ZPS and search suggestions that involve open
+// chrome prefixed tabs.
+#if BUILDFLAG(IS_ANDROID)
+  if (input.current_page_classification() ==
+          ::metrics::OmniboxEventProto::ANDROID_HUB &&
+      (tab.url.SchemeIs(browser_ui::kChromeUINativeScheme) ||
+       tab.url.SchemeIs(content::kChromeUIScheme))) {
+    return 0;
+  }
+#endif
+
   if ((input.IsZeroSuggest() || input.text().empty()) && is_android) {
     return kOpenTabDefaultScore +
            tab.last_shown_time.InSecondsFSinceUnixEpoch();

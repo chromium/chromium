@@ -98,6 +98,10 @@ class AndroidDriverFactory(DriverFactory):
       options.add_argument(
         f'variations-test-seed-path={installed_seed_path}')
       options.add_argument(f'--fake-variations-channel={self.channel}')
+      # TODO(http://crbug.com/379869158) -- remove this once the new
+      # seed loading mechanism is fixed.
+      options.add_argument(
+        '--force-fieldtrials=SeedFileTrial/Default')
 
     driver = None
     try:

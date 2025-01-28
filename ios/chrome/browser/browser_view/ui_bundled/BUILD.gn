@@ -25,6 +25,8 @@ source_set("ui_bundled") {
     "//base",
     "//base:i18n",
     "//components/bookmarks/browser",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:feature_utils",
     "//components/commerce/core:shopping_service",
     "//components/enterprise/idle",
     "//components/feature_engagement/public",

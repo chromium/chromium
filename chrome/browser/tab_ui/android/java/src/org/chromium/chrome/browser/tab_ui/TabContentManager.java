@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.os.SystemClock;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -81,6 +82,9 @@ public class TabContentManager {
     @VisibleForTesting
     public static final String UMA_THUMBNAIL_FETCHING_RESULT =
             "Android.GridTabSwitcher.ThumbnailFetchingResult";
+
+    private static final String UMA_THUMBNAIL_CAPTURE_DURATION =
+            "Android.TabContentManager.CaptureThumbnail.Duration";
 
     private float mThumbnailScale;
 
@@ -575,6 +579,7 @@ public class TabContentManager {
             return;
         }
 
+        long startTime = SystemClock.elapsedRealtime();
         if (tab.getNativePage() != null || isNativeViewShowing(tab)) {
             // If we use readbackNativeBitmap() with a downsampled scale and not saving it through
             // TabContentManagerJni.get().cacheTabWithBitmap(), the logic
@@ -595,15 +600,31 @@ public class TabContentManager {
             Bitmap resized =
                     Bitmap.createBitmap(
                             bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            long durationMs = SystemClock.elapsedRealtime() - startTime;
+            RecordHistogram.recordTimesHistogram(
+                    UMA_THUMBNAIL_CAPTURE_DURATION + ".NativePage", durationMs);
             callback.onResult(resized);
         } else {
             if (tab.getWebContents() == null) {
                 Callback.runNullSafe(callback, null);
                 return;
             }
+            Callback<Bitmap> wrappedCallback =
+                    (Bitmap bitmap) -> {
+                        if (bitmap != null) {
+                            long durationMs = SystemClock.elapsedRealtime() - startTime;
+                            RecordHistogram.recordTimesHistogram(
+                                    UMA_THUMBNAIL_CAPTURE_DURATION + ".WebContent", durationMs);
+                        }
+                        Callback.runNullSafe(callback, bitmap);
+                    };
             TabContentManagerJni.get()
                     .captureThumbnail(
-                            mNativeTabContentManager, tab, mThumbnailScale, returnBitmap, callback);
+                            mNativeTabContentManager,
+                            tab,
+                            mThumbnailScale,
+                            returnBitmap,
+                            wrappedCallback);
         }
     }
 

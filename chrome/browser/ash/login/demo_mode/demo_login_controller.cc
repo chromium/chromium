@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check_is_test.h"
@@ -23,6 +24,8 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
+#include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -73,6 +76,8 @@ constexpr int kMaxResponseSize = 1024 * 1024;
 const char kErrorCodePath[] = "error.code";
 const char kErrorMessagePath[] = "error.message";
 const char kErrorStatusPath[] = "error.status";
+
+constexpr char kDemoModeSignInEnabledPath[] = "forceEnabled";
 
 constexpr net::NetworkTrafficAnnotationTag kSetupAccountTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("demo_login_controller", R"(
@@ -333,6 +338,8 @@ policy::DeviceCloudPolicyManagerAsh* GetDeviceCloudPolicyManager() {
 DemoLoginController::DemoLoginController(
     base::RepeatingClosure configure_auto_login_callback)
     : configure_auto_login_callback_(std::move(configure_auto_login_callback)) {
+  state_ = State::kLoadingAvailibility;
+
   auto* cloud_policy_manager = GetDeviceCloudPolicyManager();
   if (!cloud_policy_manager) {
     CHECK_IS_TEST();
@@ -340,11 +347,29 @@ DemoLoginController::DemoLoginController(
     return;
   }
 
-  if (cloud_policy_manager->IsConnected()) {
-    state_ = State::kReadyForLoginWithDemoAccount;
-  } else {
-    state_ = State::kLoadingAvailibility;
+  is_policy_manager_connected_ = cloud_policy_manager->IsConnected();
+
+  // Sign in experience relies on DM Token for device verification. DM Token is
+  // fetched using policy client, so we need to wait for policy manager to be
+  // connected.
+  if (!is_policy_manager_connected_) {
     observation_.Observe(cloud_policy_manager);
+  }
+
+  is_feature_eligiblity_loaded_ = features::IsDemoModeSignInEnabled();
+
+  if (is_feature_eligiblity_loaded_ && is_policy_manager_connected_) {
+    // Do not call `MaybeTriggerAutoLogin` since `DemoLoginController` is not
+    // finished construction here.
+    state_ = State::kReadyForLoginWithDemoAccount;
+    return;
+  }
+
+  if (!is_feature_eligiblity_loaded_) {
+    // If `DemoModeSignIn` is not enabled with feature flag, we fallback to
+    // check if the feature is enabled by Growth Framework. This is used when we
+    // are running pilot.
+    LoadFeatureEligibilityFromGrowth();
   }
 }
 
@@ -407,6 +432,7 @@ void DemoLoginController::OnSetupDemoAccountComplete(
     std::unique_ptr<std::string> response_body) {
   auto result = GetDemoAccountRequestResult(url_loader_.get(), *response_body);
   url_loader_.reset();
+
   if (result == ResultCode::kSuccess) {
     HandleSetupDemoAcountResponse(sign_in_scoped_device_id,
                                   std::move(response_body));
@@ -469,14 +495,23 @@ void DemoLoginController::OnSetupDemoAccountError(
 }
 
 void DemoLoginController::OnDeviceCloudPolicyManagerConnected() {
-  DCHECK_EQ(State::kLoadingAvailibility, state_);
-  state_ = State::kReadyForLoginWithDemoAccount;
+  is_policy_manager_connected_ = true;
   observation_.Reset();
-  configure_auto_login_callback_.Run();
+
+  MaybeTriggerAutoLogin();
 }
 
 void DemoLoginController::OnDeviceCloudPolicyManagerGotRegistry() {
   // Do nothing.
+}
+
+void DemoLoginController::LoadFeatureEligibilityFromGrowth() {
+  // Start loading growth campaign to check whether the feature is enabled.
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  campaigns_manager->LoadCampaigns(
+      base::BindOnce(&DemoLoginController::OnCampaignsLoaded,
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*in_oobe=*/false);
 }
 
 void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
@@ -569,6 +604,55 @@ std::optional<base::Value::Dict> DemoLoginController::GetDeviceIdentifier(
       .Set(kClientID, client_id)
       .Set(kDeviceMachineId, GetMachineID())
       .Set(kLoginScopeDeviceId, login_scope_device_id);
+}
+
+void DemoLoginController::HandleFeatureEligibility(bool is_sign_in_enable) {
+  // Enable sign in demo account globally:
+  demo_mode::SetForceEnableDemoAccountSignIn(is_sign_in_enable);
+
+  is_feature_eligiblity_loaded_ = true;
+  MaybeTriggerAutoLogin();
+}
+
+void DemoLoginController::OnCampaignsLoaded() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  auto* campaign = campaigns_manager->GetCampaignBySlot(
+      growth::Slot::kDemoModeSignInExperience);
+
+  // TODO(crbug.com/364214790): Record metric for the campaigns loading failure.
+  if (!campaign) {
+    VLOG(1) << "No campaign matched. Fallback to login as MGS.";
+    HandleFeatureEligibility(/*is_sign_in_enable=*/false);
+    return;
+  }
+
+  auto* payload =
+      GetPayloadBySlot(campaign, growth::Slot::kDemoModeSignInExperience);
+  if (!payload) {
+    VLOG(1) << "No valid payload found.Fallback to login as MGS.";
+    HandleFeatureEligibility(/*is_sign_in_enable=*/false);
+    return;
+  }
+  std::optional<bool> enabled = payload->FindBool(kDemoModeSignInEnabledPath);
+
+  bool force_demo_sign_in_by_growth = enabled.has_value() && *enabled;
+  HandleFeatureEligibility(/*is_sign_in_enable=*/force_demo_sign_in_by_growth);
+}
+
+void DemoLoginController::MaybeTriggerAutoLogin() {
+  CHECK_EQ(State::kLoadingAvailibility, state_);
+  bool is_loading_finished =
+      is_policy_manager_connected_ && is_feature_eligiblity_loaded_;
+  if (!is_loading_finished) {
+    return;
+  }
+  bool is_sign_in_enable = demo_mode::IsDemoAccountSignInEnabled();
+  state_ = is_sign_in_enable ? State::kReadyForLoginWithDemoAccount
+                             : State::kLoginToMGS;
+
+  configure_auto_login_callback_.Run();
 }
 
 }  // namespace ash

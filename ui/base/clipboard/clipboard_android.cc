@@ -21,7 +21,6 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -677,7 +676,7 @@ void ClipboardAndroid::ReadFilenames(ClipboardBuffer buffer,
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kFilenames);
-  base::ranges::copy(g_map.Get().GetFilenames(), std::back_inserter(*result));
+  std::ranges::copy(g_map.Get().GetFilenames(), std::back_inserter(*result));
 }
 
 // 'data_dst' and 'title' are not used. It's only passed to be consistent with

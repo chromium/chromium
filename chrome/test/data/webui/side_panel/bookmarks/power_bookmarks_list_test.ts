@@ -901,7 +901,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertEquals(1, nestedBookmarkElement.depth);
 
     const bookmarkDiv =
-        nestedBookmarkElement.shadowRoot!.querySelector<HTMLDivElement>(
+        nestedBookmarkElement.shadowRoot!.querySelector<HTMLElement>(
             '#bookmark');
     assertTrue(!!bookmarkDiv);
 

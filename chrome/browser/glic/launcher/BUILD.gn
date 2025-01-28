@@ -37,7 +37,6 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/glic",
-    "//chrome/browser/glic:enabling",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",

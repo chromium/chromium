@@ -533,7 +533,7 @@ bool WaylandScreen::VerifyOutputStateConsistentForTesting() const {
   // Both the display_list_ and the display_id_map_ should be tracking the same
   // displays.
   for (const auto& pair : display_id_map_) {
-    if (base::ranges::find(displays, pair.second, &display::Display::id) ==
+    if (std::ranges::find(displays, pair.second, &display::Display::id) ==
         displays.end()) {
       return false;
     }

@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/display/tablet_state.h"
 #include "ui/gl/gl_display.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/single_pixel_buffer.h"
@@ -313,15 +312,6 @@ class WaylandConnection {
 
   wl::SerialTracker& serial_tracker() { return serial_tracker_; }
 
-  void set_tablet_layout_state(display::TabletState tablet_layout_state) {
-    tablet_layout_state_ = tablet_layout_state;
-  }
-  bool GetTabletMode() {
-    return tablet_layout_state_ == display::TabletState::kInTabletMode ||
-           tablet_layout_state_ == display::TabletState::kEnteringTabletMode;
-  }
-  display::TabletState GetTabletState() { return tablet_layout_state_; }
-
   void DumpState(std::ostream& out) const;
 
   bool UseImplicitSyncInterop() const {
@@ -517,10 +507,6 @@ class WaylandConnection {
   std::unique_ptr<wl::WaylandProxy> wayland_proxy_;
 
   raw_ptr<WaylandCursorBufferListener> listener_ = nullptr;
-
-  // The current window table mode layout state.
-  display::TabletState tablet_layout_state_ =
-      display::TabletState::kInClamshellMode;
 
   // This is set if wp_viewporter may be used to instruct the compositor to
   // properly scale fractional scaled surfaces.

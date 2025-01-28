@@ -26,8 +26,23 @@ inline UChar32 CodePointAt(base::span<const UChar> text, size_t offset) {
   return code_point;
 }
 
+// U16_NEXT() for base::span.
+// The return value is same as CodePointAt()'s. `offset` argument is updated
+// to point the next of the read character.
+template <typename T>
+UChar32 CodePointAtAndNext(base::span<const UChar> text, T& offset) {
+  UChar32 code_point;
+  U16_NEXT(text, offset, text.size(), code_point);
+  return code_point;
+}
+template <typename T>
+UChar32 CodePointAtAndNext(base::span<const LChar> text, T& offset) {
+  return text[offset++];
+}
+
 }  // namespace WTF
 
 using WTF::CodePointAt;
+using WTF::CodePointAtAndNext;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_UTF16_H_

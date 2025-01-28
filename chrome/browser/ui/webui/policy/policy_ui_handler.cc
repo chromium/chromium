@@ -32,7 +32,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -95,7 +94,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -310,7 +309,7 @@ void PolicyUIHandler::HandleListenPoliciesUpdates(
 
 void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
   reload_policies_count_ += 1;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Allow user to manually fetch remote commands. Useful for testing or when
   // the invalidation service is not working properly.
   policy::CloudPolicyManager* const device_manager =

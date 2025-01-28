@@ -1527,7 +1527,7 @@ void PasswordAutofillAgent::SendPasswordForms(
     }
 
     std::vector<WebFormControlElement> control_elements =
-        form_element.GetFormControlElements().ReleaseVector();  // nocheck
+        form_element.GetFormControlElements();  // nocheck
     // Sometimes JS can change autofilled forms. In this case we try to restore
     // values for the changed elements.
     TryFixAutofilledForm(control_elements);

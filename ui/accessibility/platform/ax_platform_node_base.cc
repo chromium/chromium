@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <limits>
 #include <set>
@@ -15,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1815,7 +1815,7 @@ int32_t AXPlatformNodeBase::GetHyperlinkIndexFromChild(
     return -1;
 
   auto iterator =
-      base::ranges::find(hypertext_.hyperlinks, child->GetUniqueId());
+      std::ranges::find(hypertext_.hyperlinks, child->GetUniqueId());
   if (iterator == hypertext_.hyperlinks.end())
     return -1;
 

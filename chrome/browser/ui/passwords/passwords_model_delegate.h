@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
@@ -207,6 +208,8 @@ class PasswordsModelDelegate {
 
   // Returns the delegate for the password change flow.
   virtual PasswordChangeDelegate* GetPasswordChangeDelegate() const = 0;
+
+  virtual PasswordsLeakDialogDelegate* GetPasswordsLeakDialogDelegate() = 0;
 
  protected:
   virtual ~PasswordsModelDelegate() = default;

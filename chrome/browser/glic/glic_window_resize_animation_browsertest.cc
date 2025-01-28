@@ -68,7 +68,7 @@ class GlicWindowResizeAnimationTest : public InProcessBrowserTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ExpandsWidgetSize) {
-  window_controller().Show(nullptr);
+  window_controller().Toggle(nullptr);
   ASSERT_TRUE(window_controller().GetGlicWidget());
 
   gfx::Rect test_initial_bounds =
@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ExpandsWidgetSize) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ShrinksWidgetSize) {
-  window_controller().Show(nullptr);
+  window_controller().Toggle(nullptr);
   ASSERT_TRUE(window_controller().GetGlicWidget());
 
   gfx::Rect test_initial_bounds =
@@ -123,13 +123,15 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ShrinksWidgetSize) {
 
 IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest,
                        MovesAndChangesWidgetSize) {
-  window_controller().Show(nullptr);
+  window_controller().Toggle(browser());
   ASSERT_TRUE(window_controller().GetGlicWidget());
 
   gfx::Rect test_initial_bounds =
       window_controller().GetGlicWidget()->GetWindowBoundsInScreen();
   gfx::Rect test_new_bounds;
-  test_new_bounds.set_origin(gfx::Point(0, 0));
+
+  test_new_bounds.set_origin(
+      gfx::Point(test_initial_bounds.x() + 10, test_initial_bounds.y() + 10));
   test_new_bounds.set_size(gfx::Size(1, 80));
   auto animation = std::make_unique<GlicWindowResizeAnimation>(
       window_controller().GetWeakPtr().get(), test_new_bounds,

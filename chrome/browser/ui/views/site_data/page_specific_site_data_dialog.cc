@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/user_metrics_action.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"

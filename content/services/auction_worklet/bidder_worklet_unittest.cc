@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <optional>
@@ -18,7 +19,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -8712,7 +8712,7 @@ TEST_F(BidderWorkletTest, BasicV8Debug) {
 
   // Should not see scriptParsed before resume.
   std::list<TestChannel::Event> events1 = channel1->TakeAllEvents();
-  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events1, is_script_parsed));
 
   // Unpause execution for #1.
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
@@ -8736,7 +8736,7 @@ TEST_F(BidderWorkletTest, BasicV8Debug) {
 
   // There shouldn't be a parsed notification on channel 2, however.
   std::list<TestChannel::Event> events2 = channel2->TakeAllEvents();
-  EXPECT_TRUE(base::ranges::none_of(events2, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events2, is_script_parsed));
 
   // Unpause execution for #2.
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
@@ -8765,8 +8765,8 @@ TEST_F(BidderWorkletTest, BasicV8Debug) {
   // No other scriptParsed events should be on either channel.
   events1 = channel1->TakeAllEvents();
   events2 = channel2->TakeAllEvents();
-  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
-  EXPECT_TRUE(base::ranges::none_of(events2, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events1, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events2, is_script_parsed));
 }
 
 TEST_F(BidderWorkletTwoThreadsTest, BasicV8Debug) {
@@ -8814,9 +8814,9 @@ TEST_F(BidderWorkletTwoThreadsTest, BasicV8Debug) {
 
   // Should not see scriptParsed before resume.
   std::list<TestChannel::Event> events0 = channel0->TakeAllEvents();
-  EXPECT_TRUE(base::ranges::none_of(events0, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events0, is_script_parsed));
   std::list<TestChannel::Event> events1 = channel1->TakeAllEvents();
-  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events1, is_script_parsed));
 
   // Unpause execution for #0. Expect that no bid is generated yet, as the
   // worklet is waiting on both V8 threads to resume.
@@ -8850,7 +8850,7 @@ TEST_F(BidderWorkletTwoThreadsTest, BasicV8Debug) {
 
   // There shouldn't be a parsed notification on channel1, however.
   events1 = channel1->TakeAllEvents();
-  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events1, is_script_parsed));
 
   worklet.reset();
   task_environment_.RunUntilIdle();
@@ -8858,8 +8858,8 @@ TEST_F(BidderWorkletTwoThreadsTest, BasicV8Debug) {
   // No other scriptParsed events should be on either channel.
   events0 = channel0->TakeAllEvents();
   events1 = channel1->TakeAllEvents();
-  EXPECT_TRUE(base::ranges::none_of(events0, is_script_parsed));
-  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events0, is_script_parsed));
+  EXPECT_TRUE(std::ranges::none_of(events1, is_script_parsed));
 }
 
 TEST_F(BidderWorkletTest, ParseErrorV8Debug) {
@@ -8938,20 +8938,14 @@ TEST_F(BidderWorkletTwoThreadsTest, ParseErrorV8Debug) {
   // Worklet should disconnect with an error message.
   EXPECT_FALSE(WaitForDisconnect().empty());
 
-  // Should have gotten a parse error notification for each channel.
+  // Should have gotten a parse error notification for the first channel because
+  // we compile on the first channel only.
   TestChannel::Event parse_error0 =
       channel0->WaitForMethodNotification("Debugger.scriptFailedToParse");
   const std::string* error_url0 =
       parse_error0.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(error_url0);
   EXPECT_EQ(interest_group_bidding_url_.spec(), *error_url0);
-
-  TestChannel::Event parse_error1 =
-      channel1->WaitForMethodNotification("Debugger.scriptFailedToParse");
-  const std::string* error_url1 =
-      parse_error1.value.GetDict().FindStringByDottedPath("params.url");
-  ASSERT_TRUE(error_url1);
-  EXPECT_EQ(interest_group_bidding_url_.spec(), *error_url1);
 }
 
 TEST_F(BidderWorkletTest, BasicDevToolsDebug) {

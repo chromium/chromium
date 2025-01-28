@@ -97,6 +97,9 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
     // True if a global `QuickPairMediator` should be created.
     bool create_quick_pair_mediator = true;
+
+    // True to auto create prefs services.
+    bool auto_create_prefs_services = true;
   };
 
   // Instantiates/destroys an AshTestHelper. This can happen in a
@@ -206,8 +209,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
       std::make_unique<base::test::ScopedCommandLine>();
   std::unique_ptr<system::ScopedFakeStatisticsProvider> statistics_provider_ =
       std::make_unique<system::ScopedFakeStatisticsProvider>();
-  std::unique_ptr<TestPrefServiceProvider> prefs_provider_ =
-      std::make_unique<TestPrefServiceProvider>();
+  std::unique_ptr<TestPrefServiceProvider> prefs_provider_;
   std::unique_ptr<TestNotifierSettingsController>
       notifier_settings_controller_ =
           std::make_unique<TestNotifierSettingsController>();

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.collaboration;
 import android.app.Activity;
 import android.content.Intent;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -25,7 +27,6 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
-import org.chromium.components.collaboration.Type;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
@@ -34,6 +35,13 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** An interface to manage collaboration flow UI screens. */
@@ -82,13 +90,56 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     /**
      * Show an error dialog.
      *
-     * @param errorType The type of error.
+     * @param titleText The title text of the error dialog.
+     * @param messageParagraphText the body text of the error dialog.
      * @param resultCallback The callback to notify the outcome of the UI screen.
      */
     @CalledByNative
-    void showError(@Type int errorType, long resultCallback) {
-        CollaborationControllerDelegateImplJni.get()
-                .runResultCallback(Outcome.FAILURE, resultCallback);
+    void showError(String titleText, String messageParagraphText, long resultCallback) {
+        @Nullable
+        ModalDialogManager modalDialogManager =
+                mDataSharingTabManager.getWindowAndroid().getModalDialogManager();
+        assert modalDialogManager != null;
+
+        ModalDialogProperties.Controller controller =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onClick(PropertyModel model, @ButtonType int buttonType) {
+                        modalDialogManager.dismissDialog(
+                                model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                    }
+
+                    @Override
+                    public void onDismiss(
+                            PropertyModel model, @DialogDismissalCause int dismissalCause) {
+                        CollaborationControllerDelegateImplJni.get()
+                                .runResultCallback(Outcome.SUCCESS, resultCallback);
+                    }
+                };
+        PropertyModel model =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, controller)
+                        .with(ModalDialogProperties.TITLE, titleText)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, messageParagraphText)
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                mActivity.getString(
+                                        R.string.data_sharing_invitation_failure_button))
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .build();
+
+        if (mCloseScreenRunnable != null) {
+            mCloseScreenRunnable.run();
+        }
+        modalDialogManager.showDialog(model, ModalDialogType.APP);
+
+        mCloseScreenRunnable =
+                () -> {
+                    modalDialogManager.dismissDialog(model, DialogDismissalCause.NAVIGATE);
+                };
     }
 
     /**

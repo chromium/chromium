@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_mutator.h"
 
 class ChromeAccountManagerService;
+class PhotosService;
 class PrefService;
 @protocol SaveToPhotosSettingsMediatorDelegate;
 @protocol SaveToPhotosSettingsAccountConfirmationConsumer;
@@ -37,6 +38,7 @@ class IdentityManager;
                                   prefService:(PrefService*)prefService
                               identityManager:
                                   (signin::IdentityManager*)identityManager
+                                photosService:(PhotosService*)photosService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

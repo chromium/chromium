@@ -72,7 +72,7 @@ void FrameSensorProviderProxy::OnMojoConnectionError() {
 
 void FrameSensorProviderProxy::GetSensor(device::mojom::SensorType type,
                                          GetSensorCallback callback) {
-  const bool passes_permissions_policy_check = base::ranges::all_of(
+  const bool passes_permissions_policy_check = std::ranges::all_of(
       SensorTypeToPermissionsPolicyFeatures(type),
       [this](blink::mojom::PermissionsPolicyFeature feature) {
         return render_frame_host().IsFeatureEnabled(feature);

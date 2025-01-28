@@ -173,7 +173,6 @@
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "content/browser/media/cdm_storage_common.h"
 #include "content/browser/media/cdm_storage_manager.h"
-#include "content/browser/media/media_license_manager.h"
 #include "content/public/browser/cdm_storage_data_model.h"
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
@@ -810,9 +809,6 @@ storage::QuotaClientTypes StoragePartitionImpl::GenerateQuotaClientTypes(
   }
   if (remove_mask & StoragePartition::REMOVE_DATA_MASK_BACKGROUND_FETCH) {
     quota_client_types.insert(storage::QuotaClientType::kBackgroundFetch);
-  }
-  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_MEDIA_LICENSES) {
-    quota_client_types.insert(storage::QuotaClientType::kMediaLicense);
   }
   return quota_client_types;
 }
@@ -1874,11 +1870,6 @@ void StoragePartitionImpl::SetFontAccessManagerForTesting(
 }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-MediaLicenseManager* StoragePartitionImpl::GetMediaLicenseManager() {
-  DCHECK(initialized_);
-  return media_license_manager_.get();
-}
-
 CdmStorageDataModel* StoragePartitionImpl::GetCdmStorageDataModel() {
   DCHECK(initialized_);
   return cdm_storage_manager_.get();
@@ -2885,7 +2876,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  if ((remove_mask_ & REMOVE_DATA_MASK_MEDIA_LICENSES) && cdm_storage_manager) {
+  if ((remove_mask_ & REMOVE_DATA_MASK_MEDIA_LICENSES)) {
     auto cdm_deletion_callback = base::BindOnce(
         base::IgnoreArgs<bool>(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             CreateTaskCompletionClosure(TracingDataType::kCdmStorage))));
@@ -2895,14 +2886,11 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-  // TODO(crbug.com/40272342): Remove REMOVE_DATA_MASK_MEDIA_LICENSES from here
-  // when MediaLicense is removed from Quota types.
   if (remove_mask_ & REMOVE_DATA_MASK_INDEXEDDB ||
       remove_mask_ & REMOVE_DATA_MASK_WEBSQL ||
       remove_mask_ & REMOVE_DATA_MASK_FILE_SYSTEMS ||
       remove_mask_ & REMOVE_DATA_MASK_SERVICE_WORKERS ||
-      remove_mask_ & REMOVE_DATA_MASK_CACHE_STORAGE ||
-      remove_mask_ & REMOVE_DATA_MASK_MEDIA_LICENSES) {
+      remove_mask_ & REMOVE_DATA_MASK_CACHE_STORAGE) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&DataDeletionHelper::ClearQuotaManagedDataOnIOThread,

@@ -40,6 +40,12 @@
 namespace content {
 namespace {
 
+// Some tests need a small, non-zero time, so tests can simulate time passing
+// until just before something should happen, and then skip forward to exactly
+// when it should happen, to make sure the passage of time is handled correctly.
+// Time is mocked out in these tests, so a small value will never cause flake.
+const base::TimeDelta kTinyTime = base::Milliseconds(1);
+
 // Generic success/error strings used in most tests.
 const char kSuccessBody[] = "Successful result";
 const char kOtherSuccessBody[] = "Other successful result";
@@ -516,7 +522,7 @@ TrustedSignalsFetcher::CompressionGroupResult CreateCompressionGroupResult(
     auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme =
         auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
     std::string_view body = kSuccessBody,
-    base::TimeDelta ttl = base::Hours(1)) {
+    base::TimeDelta ttl = base::Days(1)) {
   TrustedSignalsFetcher::CompressionGroupResult result;
   result.compression_group_data =
       base::Value::BlobStorage(body.begin(), body.end());
@@ -531,7 +537,7 @@ CreateCompressionGroupResultMap(
     auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme =
         auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
     std::string_view body = kSuccessBody,
-    base::TimeDelta ttl = base::Hours(1)) {
+    base::TimeDelta ttl = base::Days(1)) {
   TrustedSignalsFetcher::CompressionGroupResultMap map;
   map[compression_group_id] =
       CreateCompressionGroupResult(compression_scheme, body, ttl);
@@ -547,7 +553,7 @@ void RespondToFetchWithSuccess(
     auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme =
         auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
     std::string_view body = kSuccessBody,
-    base::TimeDelta ttl = base::Hours(1)) {
+    base::TimeDelta ttl = base::Days(1)) {
   // Shouldn't be calling this after the fetcher was destroyed.
   ASSERT_TRUE(trusted_signals_fetch.fetcher_alive);
 
@@ -1384,8 +1390,6 @@ TYPED_TEST(TrustedSignalsCacheTest, GetAfterFetchFails) {
 // Check that fetches are automatically started after kAutoStartDelay has
 // elapsed.
 TYPED_TEST(TrustedSignalsCacheTest, AutoStart) {
-  base::TimeDelta kTinyTime = base::Milliseconds(1);
-
   auto params = this->CreateDefaultParams();
   auto [handle, partition_id] =
       this->RequestTrustedSignals(params, /*start_fetch=*/false);
@@ -1409,8 +1413,6 @@ TYPED_TEST(TrustedSignalsCacheTest, AutoStart) {
 // Check that fetches are automatically started after kAutoStartDelay, even if a
 // second request is merged into it.
 TYPED_TEST(TrustedSignalsCacheTest, AutoStartTwoRequests) {
-  base::TimeDelta kTinyTime = base::Milliseconds(1);
-
   auto params = this->CreateDefaultParams();
   auto [handle1, partition_id1] =
       this->RequestTrustedSignals(params, /*start_fetch=*/false);
@@ -1889,10 +1891,6 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsNotReused) {
 // outstanding Handle, but the response has expired.
 TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleResponseExpired) {
   const base::TimeDelta kTtl = base::Minutes(10);
-  // A small amount of time. Test will wait until this much time before
-  // expiration, and then wait for this much time to pass, to check before/after
-  // expiration behavior.
-  const base::TimeDelta kTinyTime = base::Milliseconds(1);
 
   auto params = this->CreateDefaultParams();
   auto [handle1, partition_id1] = this->RequestTrustedSignals(params);
@@ -2150,10 +2148,6 @@ TYPED_TEST(TrustedSignalsCacheTest, ReusableUntilExpires) {
 TYPED_TEST(TrustedSignalsCacheTest,
            OutstandingHandleResponseExpiredSharedCompressionGroup) {
   const base::TimeDelta kTtl = base::Minutes(10);
-  // A small amount of time. Test will wait until this much time before
-  // expiration, and then wait for this much time to pass, to check before/after
-  // expiration behavior.
-  const base::TimeDelta kTinyTime = base::Milliseconds(1);
 
   auto params1 = this->CreateDefaultParams();
   auto params2 = this->CreateDefaultParams();
@@ -2243,10 +2237,6 @@ TYPED_TEST(TrustedSignalsCacheTest,
            OutstandingHandleResponseExpiredDifferentCompressionGroup) {
   const base::TimeDelta kTtl1 = base::Minutes(5);
   const base::TimeDelta kTtl2 = base::Minutes(10);
-  // A small amount of time. Test will wait until this much time before
-  // expiration, and then wait for this much time to pass, to check before/after
-  // expiration behavior.
-  const base::TimeDelta kTinyTime = base::Milliseconds(1);
 
   auto params1 = this->CreateDefaultParams();
   auto params2 = this->CreateDefaultParams();
@@ -4058,6 +4048,216 @@ TYPED_TEST(TrustedSignalsCacheTest, MultipleLiveHandles) {
       .WaitForSuccess(
           auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
           CreateString(0, kEntrySize));
+}
+
+// Test that a single entry is still usable after the Handle has been destroyed
+// for less than `kMinUnusedCleanupTime` or `kMaxUnusedCleanupTime`. The latter
+// won't always be the case - the guarantee is just that unused entries will be
+// cleaned sometime between `kMinUnusedCleanupTime` and `kMaxUnusedCleanupTime`,
+// but when there's a single entry, it will be expired at exactly
+// `kMaxUnusedCleanupTime`.
+//
+// Also, wait a variable amount of time before destroying the Handle, to make
+// sure that the timer doesn't start until the Handle is released
+TYPED_TEST(TrustedSignalsCacheTest, CleanupTimerBeforeTimerTriggers) {
+  auto params = this->CreateDefaultParams();
+
+  for (base::TimeDelta time_to_wait_before_destroying_handle :
+       {base::TimeDelta(), TrustedSignalsCacheImpl::kMinUnusedCleanupTime,
+        TrustedSignalsCacheImpl::kMaxUnusedCleanupTime,
+        20 * TrustedSignalsCacheImpl::kMaxUnusedCleanupTime}) {
+    for (base::TimeDelta time_to_wait_after_destroying_handle :
+         {TrustedSignalsCacheImpl::kMinUnusedCleanupTime - kTinyTime,
+          TrustedSignalsCacheImpl::kMaxUnusedCleanupTime - kTinyTime}) {
+      // Start with a clean slate for each test.
+      this->CreateCache();
+
+      auto [handle, partition_id] = this->RequestTrustedSignals(params);
+      auto fetch = this->WaitForSignalsFetch();
+      ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                          partition_id);
+      RespondToFetchWithSuccess(fetch);
+      EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1u);
+
+      // Destroy the Handle and wait for `time_to_wait`, get a new Handle, and
+      // verify the data is accessible. Do this several times, to check that
+      // accessing the entry resets the timer.
+      for (int i = 0; i < 5; ++i) {
+        this->task_environment_.FastForwardBy(
+            time_to_wait_before_destroying_handle);
+        handle.reset();
+        this->task_environment_.FastForwardBy(
+            time_to_wait_after_destroying_handle);
+        EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1u);
+
+        // Check the result is still usable.
+        handle = std::move(this->RequestTrustedSignals(params).first);
+        TestTrustedSignalsCacheClient(handle.get(), this->cache_mojo_pipe_)
+            .WaitForSuccess();
+      }
+    }
+  }
+}
+
+// Test that the cleanup timer triggers at exactly `kMaxUnusedCleanupTime` after
+// a lone entry has been destroyed. Adding multiple entries would potentially
+// affect when the timeout timer triggers.
+TYPED_TEST(TrustedSignalsCacheTest, CleanupTimerTriggers) {
+  auto params = this->CreateDefaultParams();
+
+  for (base::TimeDelta time_to_wait_before_destroying_handle :
+       {base::TimeDelta(), TrustedSignalsCacheImpl::kMinUnusedCleanupTime,
+        TrustedSignalsCacheImpl::kMaxUnusedCleanupTime,
+        20 * TrustedSignalsCacheImpl::kMaxUnusedCleanupTime}) {
+    // Start with a clean slate for each test.
+    this->CreateCache();
+
+    auto [handle1, partition_id1] = this->RequestTrustedSignals(params);
+    auto fetch1 = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch1, params, /*expected_compression_group_id=*/0,
+                        partition_id1);
+    RespondToFetchWithSuccess(fetch1);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1u);
+
+    // Destroy the Handle and wait for `time_to_wait_before_destroying_handle`.
+    // The timer should only start after the Handle has been destroyed.
+    this->task_environment_.FastForwardBy(
+        time_to_wait_before_destroying_handle);
+    handle1.reset();
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1u);
+
+    // Wait until just before the timer triggers. The compression group should
+    // still exist. Can't request it through a new Handle, since that would
+    // extend the lifetime. Could access it through a cached compression group
+    // token with no live Handle, but that's not a guaranteed part of the API.
+    this->task_environment_.FastForwardBy(
+        TrustedSignalsCacheImpl::kMaxUnusedCleanupTime - kTinyTime);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 1u);
+
+    // Check that the data is destroyed on schedule, and that trying to access
+    // it results in a new fetch.
+    this->task_environment_.FastForwardBy(kTinyTime);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 0u);
+    auto [handle2, partition_id2] = this->RequestTrustedSignals(params);
+    auto fetch2 = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch2, params, /*expected_compression_group_id=*/0,
+                        partition_id2);
+  }
+}
+
+// Add several entries within `kCleanupInterval` of each other, and test that
+// the cleanup timer clears them all at once.
+TYPED_TEST(TrustedSignalsCacheTest, CleanupTimerCleansMultipleEntries) {
+  auto params = this->CreateDefaultParams();
+
+  // Create 3 requests within `kCleanupInterval` of each other. Destroy each
+  // Handle immediately after providing the response.
+  for (size_t i = 0u; i < 3u; ++i) {
+    SCOPED_TRACE(i);
+
+    // It doesn't matter if time is fast forwarded or not before the first entry
+    // is added.
+    if (i > 0u) {
+      this->task_environment_.FastForwardBy(
+          TrustedSignalsCacheImpl::kCleanupInterval / 2);
+    }
+
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+    RespondToFetchWithSuccess(fetch);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), i + 1);
+  }
+
+  // Wait until just before `kMaxUnusedCleanupTime` (which is `kCleanupInterval`
+  // + `kMinUnusedCleanupTime`)  has passed since the first request's Handle was
+  // destroyed. The cleanup timer should not have triggered yet.
+  this->task_environment_.FastForwardBy(
+      TrustedSignalsCacheImpl::kMinUnusedCleanupTime - kTinyTime);
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 3u);
+
+  // Wait just long enough for the cleanup timer to trigger, which should delete
+  // all entries.
+  this->task_environment_.FastForwardBy(kTinyTime);
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 0u);
+
+  // Verify no entries were in the cache by making sure re-requesting them
+  // triggers a signals fetch.
+  for (size_t i = 0u; i < 3u; ++i) {
+    SCOPED_TRACE(i);
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+  }
+}
+
+// Add several entries that each expire just after `kMaxUnusedCleanupTime` has
+// passed since the previous entry has expired, so when the cleanup timer
+// triggers, only a single entry will be destroyed.
+TYPED_TEST(TrustedSignalsCacheTest,
+           CleanupTimerCleansSingleEntriesSuccessively) {
+  // Near the smallest time between Handle destruction of different entries
+  // where the cleanup timer for the previous entry won't destroy the next one
+  // as well.
+  const base::TimeDelta kTimeDelta =
+      TrustedSignalsCacheImpl::kCleanupInterval + kTinyTime;
+  auto params = this->CreateDefaultParams();
+
+  // Create 3 requests `kTimeDelta` apart. Destroy each Handle immediately after
+  // providing the response.
+  for (size_t i = 0u; i < 3u; ++i) {
+    SCOPED_TRACE(i);
+
+    // It doesn't matter if time is fast forwarded or not before the first entry
+    // is added.
+    if (i > 0u) {
+      this->task_environment_.FastForwardBy(kTimeDelta);
+    }
+
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+    RespondToFetchWithSuccess(fetch);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), i + 1);
+  }
+
+  // Wait until just before `kMinUnusedCleanupTime - kTinyTime`  has passed
+  // since the first request's Handle was destroyed. At this point, the first
+  // entry should be removed at `kTimeDelta`, and each of the other two should
+  // be removed `kTimeDelta` after the previous entry.
+  this->task_environment_.FastForwardBy(
+      TrustedSignalsCacheImpl::kMinUnusedCleanupTime - 2 * kTimeDelta -
+      kTinyTime);
+  EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 3u);
+
+  // Wait for each entry to be destroyed, one-by-one, and check that a new
+  // request for it will indeed trigger a fetch. Can't check that other entries
+  // are still in the cache, other than probing `num_groups_for_testing()`,
+  // since actually creating a new Handle and fetching the response will extend
+  // the life of the response in the cache. Could cache the compression group
+  // tokens and partition IDs the Handle before destroying it the first time,
+  // but prefer not to relying on IDs persisting and being fetchable when there
+  // are no matching Handles.
+  for (size_t i = 0; i < 3u; ++i) {
+    SCOPED_TRACE(i);
+    this->task_environment_.FastForwardBy(
+        TrustedSignalsCacheImpl::kCleanupInterval);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 3u - i);
+    this->task_environment_.FastForwardBy(kTinyTime);
+    EXPECT_EQ(this->trusted_signals_cache_->num_groups_for_testing(), 2u - i);
+
+    params.trusted_signals_url = CreateUrl(i);
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+  }
 }
 
 }  // namespace

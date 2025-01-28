@@ -116,14 +116,6 @@ void OfflinePageURLLoader::SetPriority(net::RequestPriority priority,
   // Ignore: this class doesn't have a concept of priority.
 }
 
-void OfflinePageURLLoader::PauseReadingBodyFromNet() {
-  // Ignore: this class doesn't read from network.
-}
-
-void OfflinePageURLLoader::ResumeReadingBodyFromNet() {
-  // Ignore: this class doesn't read from network.
-}
-
 void OfflinePageURLLoader::FallbackToDefault() {
   std::move(loader_callback_).Run({});
 }

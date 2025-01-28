@@ -53,6 +53,7 @@ robolectric_library("junit") {
     "//components/payments/mojom:mojom_java",
     "//components/security_state/core:security_state_enums_java",
     "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
     "//mojo/public/java:bindings_java",
     "//mojo/public/java:system_java",
     "//services/service_manager/public/java:service_manager_java",

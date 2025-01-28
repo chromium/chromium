@@ -969,7 +969,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.LoadingTimeOnMainThread" units="ms"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>fedegermi@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
@@ -1077,7 +1077,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.StorageFormat" enum="SessionStorageFormat"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>fedegermi@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
@@ -1105,7 +1105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.StorageMigrationStatus"
-    enum="SessionStorageMigrationStatus" expires_after="2025-05-25">
+    enum="SessionStorageMigrationStatus" expires_after="2025-07-27">
   <owner>fedegermi@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>

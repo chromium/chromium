@@ -610,6 +610,21 @@ public class SharedPreferencesManager {
      */
     public void removeKeysWithPrefix(KeyPrefix prefix) {
         checkIsPrefixInUse(prefix);
+        removeKeysWithPrefixInternal(prefix);
+    }
+
+    /**
+     * Removes all shared preference entries which have a prefix of prefix.createKey(infix + "*").
+     *
+     * @param prefix The KeyPrefix from which the prefix is constructed.
+     * @param infix The String infix from which the prefix is constructed.
+     */
+    public void removeKeysWithPrefix(KeyPrefix prefix, String infix) {
+        checkIsPrefixInUse(prefix);
+        removeKeysWithPrefixInternal(new KeyPrefix(prefix.createKey(infix + "*")));
+    }
+
+    private void removeKeysWithPrefixInternal(KeyPrefix prefix) {
         SharedPreferences.Editor ed = getEditor();
         Map<String, ?> allPrefs = ContextUtils.getAppSharedPreferences().getAll();
         for (Map.Entry<String, ?> pref : allPrefs.entrySet()) {

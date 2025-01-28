@@ -242,7 +242,6 @@ TracingScenario::TracingScenario(
     bool is_local_scenario,
     bool request_startup_tracing)
     : TracingScenarioBase(config.scenario_name()),
-      config_hash_(base::MD5String(config.SerializeAsString())),
       privacy_filtering_enabled_(enable_privacy_filter),
       is_local_scenario_(is_local_scenario),
       request_startup_tracing_(request_startup_tracing),

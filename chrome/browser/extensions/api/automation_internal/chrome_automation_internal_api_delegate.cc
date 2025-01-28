@@ -11,8 +11,8 @@
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
@@ -119,9 +119,9 @@ ChromeAutomationInternalApiDelegate::GetActiveUserContext() {
   // Use the main profile on ChromeOS. Desktop platforms don't have the concept
   // of a "main" profile, so pick the "last used" profile instead.
 #if BUILDFLAG(IS_CHROMEOS)
-  return profile_util::GetActiveUserProfile();
+  return ProfileManager::GetActiveUserProfile();
 #else
-  return profile_util::GetLastUsedProfile();
+  return ProfileManager::GetLastUsedProfile();
 #endif
 }
 

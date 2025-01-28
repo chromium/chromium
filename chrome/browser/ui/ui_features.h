@@ -12,7 +12,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -39,15 +38,9 @@ extern const base::FeatureParam<std::string>
 // Whether to show the default browser info bar prompt.
 extern const base::FeatureParam<bool> kShowDefaultBrowserInfoBar;
 
-// Whether to show the default browser app menu chip prompt.
-extern const base::FeatureParam<bool> kShowDefaultBrowserAppMenuChip;
-
 // Whether to show the default browser app menu item anytime the browser isn't
 // default, even if the app menu chip prompt isn't enabled.
 extern const base::FeatureParam<bool> kShowDefaultBrowserAppMenuItem;
-
-// Whether to show the updated info bar strings.
-extern const base::FeatureParam<bool> kUpdatedInfoBarCopy;
 
 // Base duration after which the user may be remprompted.
 extern const base::FeatureParam<base::TimeDelta> kRepromptDuration;
@@ -58,12 +51,6 @@ extern const base::FeatureParam<int> kMaxPromptCount;
 
 // Exponential backoff multiplier for the reprompt duration.
 extern const base::FeatureParam<int> kRepromptDurationMultiplier;
-
-// The duration after which the app menu prompt should not longer be shown.
-extern const base::FeatureParam<base::TimeDelta> kDefaultBrowserAppMenuDuration;
-
-// Whether the app menu chip should use more prominent colors.
-extern const base::FeatureParam<bool> kAppMenuChipColorPrimary;
 
 BASE_DECLARE_FEATURE(kExtensionsMenuInAppMenu);
 bool IsExtensionMenuInRootAppMenu();

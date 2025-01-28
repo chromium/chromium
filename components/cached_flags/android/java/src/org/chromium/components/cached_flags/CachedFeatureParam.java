@@ -100,4 +100,12 @@ public abstract class CachedFeatureParam<T> extends FeatureParam<T> {
      * loaded yet.
      */
     abstract void writeCacheValueToEditor(SharedPreferences.Editor editor);
+
+    /**
+     * Assumes the parameter value is the current value of the parameter and writes it to the
+     * provided SharedPreferences editor. Does not apply or commit the change, that is left up to
+     * the caller to perform. Calls to getValue() in a future run will return the value cached in
+     * this method, if native is not loaded yet.
+     */
+    abstract void writeCacheValueToEditor(SharedPreferences.Editor editor, String value);
 }

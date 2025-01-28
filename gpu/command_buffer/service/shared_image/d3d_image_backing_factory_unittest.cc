@@ -2215,6 +2215,54 @@ TEST_F(D3DImageBackingFactoryTest, CanProduceDCompTextureOverlay) {
   ASSERT_TRUE(dcomp_texture);
 }
 
+TEST_F(D3DImageBackingFactoryTest, CanProduceVideoForExternalDevice) {
+  constexpr gfx::Size size(32, 32);
+  constexpr SkAlphaType alpha_type = kPremul_SkAlphaType;
+  constexpr gfx::ColorSpace color_space;
+  constexpr gpu::SharedImageUsageSet usage =
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  constexpr auto format = viz::SinglePlaneFormat::kBGRA_8888;
+  const gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+
+  auto owned_backing = shared_image_factory_->CreateSharedImage(
+      mailbox, format, kNullSurfaceHandle, size, color_space,
+      kTopLeft_GrSurfaceOrigin, alpha_type, usage, "TestLabel",
+      /*is_thread_safe=*/false);
+  ASSERT_NE(owned_backing, nullptr);
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image_ref =
+      shared_image_manager_.Register(std::move(owned_backing),
+                                     memory_type_tracker_.get());
+  ASSERT_TRUE(shared_image_ref);
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
+  UINT creation_flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+  static const D3D_FEATURE_LEVEL feature_levels[] = {
+      D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1,
+      D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3,  D3D_FEATURE_LEVEL_9_2,
+      D3D_FEATURE_LEVEL_9_1};
+  HRESULT hr =
+      D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, creation_flags,
+                        feature_levels, std::size(feature_levels),
+                        D3D11_SDK_VERSION, &d3d11_device, nullptr, nullptr);
+  if (FAILED(hr)) {
+    hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_WARP, 0, creation_flags,
+                           feature_levels, std::size(feature_levels),
+                           D3D11_SDK_VERSION, &d3d11_device, nullptr, nullptr);
+  }
+  if (FAILED(hr)) {
+    GTEST_SKIP()
+        << " cannot produce a d3d video representation on this platform";
+  }
+
+  auto representation = shared_image_manager_.ProduceVideo(
+      d3d11_device, mailbox, memory_type_tracker_.get());
+  EXPECT_NE(representation, nullptr);
+  auto read_access = representation->BeginScopedReadAccess();
+  EXPECT_NE(read_access->GetD3D11Texture(), nullptr);
+}
+
 class D3DImageBackingFactoryBufferTest : public D3DImageBackingFactoryTestBase {
  public:
   void SetUp() override {

@@ -275,9 +275,13 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
 
   User* user = FindUserInListAndModify(account_id);
 
-  const UserType user_type =
-      CalculateUserType(account_id, user, browser_restart, is_child);
-  if (active_user_ && user) {
+  if (!logged_in_users_.empty()) {
+    // Handle multi sign-in case. For multi-sign in, there already should be
+    // active_user_ set, and the user to be logged in should be found
+    // in the persistent user list.
+    CHECK(active_user_);
+    CHECK(user);
+
     user->set_is_logged_in(true);
     user->set_username_hash(username_hash);
     logged_in_users_.push_back(user);
@@ -300,7 +304,12 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
     return;
   }
 
+  // There are no logged in users. `active_user_` should not be set.
+  CHECK(!active_user_);
+
   // Ensure User is there.
+  const UserType user_type =
+      CalculateUserType(account_id, user, browser_restart, is_child);
   switch (user_type) {
     case UserType::kRegular:
     case UserType::kChild:
@@ -374,18 +383,11 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
   logged_in_users_.push_back(active_user_.get());
   SetLRUUser(active_user_);
 
-  if (!primary_user_) {
-    primary_user_ = active_user_;
-    delegate_->OverrideDirHome(*primary_user_);
-    if (primary_user_->HasGaiaAccount()) {
-      SendGaiaUserLoginMetrics(account_id);
-    }
-  } else if (primary_user_ != active_user_) {
-    // This is only needed for tests where a new user session is created
-    // for non-existent user. The new user is created and automatically set
-    // to active and there will be no pending user switch in such case.
-    SetIsCurrentUserNew(true);
-    NotifyUserAddedToSession(active_user_);
+  CHECK(!primary_user_);
+  primary_user_ = active_user_;
+  delegate_->OverrideDirHome(*primary_user_);
+  if (primary_user_->HasGaiaAccount()) {
+    SendGaiaUserLoginMetrics(account_id);
   }
 
   base::UmaHistogramEnumeration("UserManager.LoginUserType",

@@ -98,7 +98,9 @@ class ProfileNetworkContextService
 
     cert_verifier::mojom::AdditionalCertificatesPtr certificate_policies;
 
+#if !BUILDFLAG(IS_CHROMEOS)
     bool is_include_system_trust_store_managed;
+#endif
 
     std::vector<std::vector<uint8_t>> full_distrusted_certs;
   };

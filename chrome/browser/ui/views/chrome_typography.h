@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CHROME_TYPOGRAPHY_H_
 #define CHROME_BROWSER_UI_VIEWS_CHROME_TYPOGRAPHY_H_
 
-#include "build/chromeos_buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font.h"
 #include "ui/views/style/typography.h"

@@ -4,6 +4,7 @@
 
 #include "google_apis/gaia/fake_gaia.h"
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -368,7 +368,7 @@ void FakeGaia::Initialize() {
 
 FakeGaia::RequestHandlerMap::iterator FakeGaia::FindHandlerByPathPrefix(
     const std::string& request_path) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       request_handlers_,
       [request_path](std::pair<std::string, HttpRequestHandlerCallback> entry) {
         return base::StartsWith(request_path, entry.first,

@@ -158,4 +158,8 @@ void ReportEraseStroke(float size, ink::StrokeInput::ToolType tool_type) {
   ReportStrokeInputDeviceType(tool_type);
 }
 
+void RecordPdfLoadedWithV2InkAnnotations(bool has_annotations) {
+  base::UmaHistogramBoolean("PDF.LoadedWithV2InkAnnotations", has_annotations);
+}
+
 }  // namespace chrome_pdf

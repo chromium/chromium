@@ -4,12 +4,12 @@
 
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/page_handler.h"
@@ -42,7 +42,7 @@ ServiceWorkerDevToolsAgentHost*
 ServiceWorkerDevToolsManager::GetDevToolsAgentHostForNewInstallingWorker(
     const ServiceWorkerContextWrapper* context_wrapper,
     int64_t version_id) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       new_installing_hosts_,
       [&context_wrapper, &version_id](
           const scoped_refptr<ServiceWorkerDevToolsAgentHost>& agent_host) {
@@ -359,7 +359,7 @@ scoped_refptr<ServiceWorkerDevToolsAgentHost>
 ServiceWorkerDevToolsManager::TakeStoppedHost(
     const ServiceWorkerContextWrapper* context_wrapper,
     int64_t version_id) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       stopped_hosts_, [&context_wrapper, &version_id](
                           ServiceWorkerDevToolsAgentHost* agent_host) {
         return agent_host->context_wrapper() == context_wrapper &&
@@ -376,7 +376,7 @@ scoped_refptr<ServiceWorkerDevToolsAgentHost>
 ServiceWorkerDevToolsManager::TakeNewInstallingHost(
     const ServiceWorkerContextWrapper* context_wrapper,
     int64_t version_id) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       new_installing_hosts_,
       [&context_wrapper, &version_id](
           const scoped_refptr<ServiceWorkerDevToolsAgentHost>& agent_host) {

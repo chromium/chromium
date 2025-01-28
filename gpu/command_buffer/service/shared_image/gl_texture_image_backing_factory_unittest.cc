@@ -422,6 +422,59 @@ TEST_F(GLTextureImageBackingFactoryTest, TexImageTexStorageEquivalence) {
   }
 }
 
+#if BUILDFLAG(IS_WIN)
+TEST_F(GLTextureImageBackingFactoryTest, ProduceVideo) {
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  auto mailbox = Mailbox::Generate();
+  gfx::Size size(256, 256);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+  // Note: The specific usage doesn't matter here as long as it's supported by
+  // GLTextureImageBacking.
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
+
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {});
+  ASSERT_TRUE(supported);
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, surface_handle, size, color_space, surface_origin,
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+  ASSERT_TRUE(backing);
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
+  UINT creation_flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+  static const D3D_FEATURE_LEVEL feature_levels[] = {
+      D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1,
+      D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3,  D3D_FEATURE_LEVEL_9_2,
+      D3D_FEATURE_LEVEL_9_1};
+  HRESULT hr =
+      D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, creation_flags,
+                        feature_levels, std::size(feature_levels),
+                        D3D11_SDK_VERSION, &d3d11_device, nullptr, nullptr);
+  if (FAILED(hr)) {
+    hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_WARP, 0, creation_flags,
+                           feature_levels, std::size(feature_levels),
+                           D3D11_SDK_VERSION, &d3d11_device, nullptr, nullptr);
+  }
+  if (FAILED(hr)) {
+    GTEST_SKIP()
+        << " cannot produce a d3d video representation on this platform";
+  }
+
+  auto representation = shared_image_manager_.ProduceVideo(
+      d3d11_device, mailbox, &memory_type_tracker_);
+  EXPECT_NE(representation, nullptr);
+  auto read_access = representation->BeginScopedReadAccess();
+  EXPECT_NE(read_access->GetD3D11Texture(), nullptr);
+}
+#endif
+
 TEST_P(GLTextureImageBackingFactoryWithFormatTest, IsSupported) {
   auto format = get_format();
   gfx::Size size(256, 256);

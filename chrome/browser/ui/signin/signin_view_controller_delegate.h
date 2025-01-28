@@ -9,7 +9,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
 

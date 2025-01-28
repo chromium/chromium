@@ -9,6 +9,7 @@
 
 #include "content/renderer/render_thread_impl.h"
 
+#include <algorithm>
 #include <atomic>
 #include <limits>
 #include <map>
@@ -42,7 +43,6 @@
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -917,7 +917,7 @@ void RenderThreadImpl::InitializeRenderer(
 
   blink::WebVector<blink::WebString> web_cors_exempt_header_list(
       cors_exempt_header_list.size());
-  base::ranges::transform(
+  std::ranges::transform(
       cors_exempt_header_list, web_cors_exempt_header_list.begin(),
       [](const auto& header) { return blink::WebString::FromLatin1(header); });
   blink::SetCorsExemptHeaderList(web_cors_exempt_header_list);

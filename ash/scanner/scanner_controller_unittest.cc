@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_feedback_info.h"
@@ -42,6 +43,7 @@
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
+#include "components/account_id/account_id.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
@@ -462,6 +464,45 @@ TEST_F(ScannerControllerTest, ActionSuccessToastButtonOpensFeedbackDialog) {
   })json"));
 }
 
+TEST_F(ScannerControllerTest, ActionSuccessToastDoesNotHaveButtonIfDisabled) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kScannerFeedbackEnabled, false);
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+  manta::proto::ScannerOutput output;
+  output.add_objects()
+      ->add_actions()
+      ->mutable_copy_to_clipboard()
+      ->set_html_text("<b>Hello</b>");
+  FakeScannerProfileScopedDelegate& fake_profile_scoped_delegate =
+      *GetFakeScannerProfileScopedDelegate(*scanner_controller);
+  // Mock a successful action.
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus()));
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionDetailsForImage)
+      .WillOnce(RunOnceCallback<2>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+
+  // Fetch an action and execute it.
+  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
+                                           actions_future.GetCallback());
+  std::vector<ScannerActionViewModel> actions = actions_future.Take();
+  ASSERT_THAT(actions, SizeIs(1));
+  scanner_controller->ExecuteAction(actions[0]);
+
+  EXPECT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionSuccessToastId));
+  ToastOverlay* overlay =
+      Shell::Get()->toast_manager()->GetCurrentOverlayForTesting();
+  ASSERT_TRUE(overlay);
+  views::Button* button = overlay->button_for_testing();
+  EXPECT_FALSE(button);
+}
+
 TEST_F(ScannerControllerTest, OpenFeedbackDialogCallsDelegate) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
@@ -479,13 +520,15 @@ TEST_F(ScannerControllerTest, OpenFeedbackDialogCallsDelegate) {
   new_event.set_dates("20241014T160000/20241014T161500");
   new_event.set_location("Wonderland");
   auto image = base::MakeRefCounted<base::RefCountedString>("testimage");
+  AccountId active_account =
+      Shell::Get()->session_controller()->GetActiveAccountId();
 
-  scanner_controller->OpenFeedbackDialog(std::move(action), std::move(image));
+  scanner_controller->OpenFeedbackDialog(active_account, std::move(action),
+                                         std::move(image));
 
   auto [account_id, feedback_dialog_info, unused_send_feedback_callback] =
       feedback_info_future.Take();
-  EXPECT_EQ(account_id,
-            Shell::Get()->session_controller()->GetActiveAccountId());
+  EXPECT_EQ(account_id, active_account);
   EXPECT_THAT(feedback_dialog_info.action_details, IsJson(R"json({
     "new_event": {
       "title": "🌏",
@@ -510,10 +553,10 @@ TEST_F(ScannerControllerTest, OpenFeedbackDialogCallbackSendsFeedback) {
   fake_scanner_delegate.SetOpenFeedbackDialogCallback(
       feedback_info_future.GetRepeatingCallback());
   base::test::TestFuture<std::string> description_future;
+  AccountId active_account =
+      Shell::Get()->session_controller()->GetActiveAccountId();
   EXPECT_CALL(mock_send_specialized_feature_feedback(),
-              Run(/*account_id=*/Shell::Get()
-                      ->session_controller()
-                      ->GetActiveAccountId(),
+              Run(/*account_id=*/active_account,
                   /*product_id=*/feedback::kScannerFeedbackProductId,
                   /*description=*/_,
                   /*image=*/Optional(Eq("testimage")),
@@ -528,7 +571,8 @@ TEST_F(ScannerControllerTest, OpenFeedbackDialogCallbackSendsFeedback) {
   new_event.set_location("Wonderland");
   auto image = base::MakeRefCounted<base::RefCountedString>("testimage");
 
-  scanner_controller->OpenFeedbackDialog(std::move(action), std::move(image));
+  scanner_controller->OpenFeedbackDialog(active_account, std::move(action),
+                                         std::move(image));
   auto [unused_account_id, feedback_dialog_info, send_feedback_callback] =
       feedback_info_future.Take();
   std::move(send_feedback_callback)
@@ -577,7 +621,7 @@ TEST_F(ScannerControllerTest,
       .WillOnce(Return(true));
 
   scanner_controller->OpenFeedbackDialog(
-      manta::proto::ScannerAction(),
+      original_account, manta::proto::ScannerAction(),
       base::MakeRefCounted<base::RefCountedString>());
   auto [account_id, feedback_dialog_info, send_feedback_callback] =
       feedback_info_future.Take();
@@ -870,7 +914,8 @@ TEST(ScannerControllerNoFixtureTest, RunningNewContactActionOpensUrl) {
                                "https://contacts.google.com/person/c1?edit=1"),
                       _, _))
       .Times(1);
-  ScannerController scanner_controller(std::make_unique<FakeScannerDelegate>());
+  ScannerController scanner_controller(std::make_unique<FakeScannerDelegate>(),
+                                       session_controller);
   ScannerSession* session = scanner_controller.StartNewSession();
   ASSERT_TRUE(session);
   FakeScannerProfileScopedDelegate& delegate =

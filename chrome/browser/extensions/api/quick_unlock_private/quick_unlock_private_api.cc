@@ -20,8 +20,8 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_ash_utils.h"
-#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -196,7 +196,7 @@ Profile* GetActiveProfile(content::BrowserContext* browser_context) {
   // When OOBE continues in-session as Furst Run UI, it is still executed
   // under Sign-In profile.
   if (ash::ProfileHelper::IsSigninProfile(profile))
-    return profile_util::GetPrimaryUserProfile();
+    return ProfileManager::GetPrimaryUserProfile();
 
   return profile;
 }

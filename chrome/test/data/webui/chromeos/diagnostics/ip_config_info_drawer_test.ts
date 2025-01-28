@@ -50,9 +50,9 @@ suite('ipConfigInfoDrawerTestSuite', function() {
   /**
    * Selects the drawer's hideable content area if the drawer is expanded.
    */
-  function getDrawerContentContainer(): HTMLDivElement|null {
+  function getDrawerContentContainer(): HTMLElement|null {
     assert(ipConfigInfoDrawerElement);
-    return ipConfigInfoDrawerElement.shadowRoot!.querySelector<HTMLDivElement>(
+    return ipConfigInfoDrawerElement.shadowRoot!.querySelector<HTMLElement>(
         '#ipConfigInfoElement');
   }
 

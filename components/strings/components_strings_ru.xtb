@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Ключи <ph name="DATA_CONTROLS_FIRST_KEY_SET" /> невозможно добавить в тот же словарь, что и ключи <ph name="DATA_CONTROLS_SECOND_KEY_SET" />.</translation>
 <translation id="1455413310270022028">Ластик</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Показать отзывы}=1{Показать 1 отзыв}one{Показать все отзывы (#)}few{Показать все # отзыва}many{Показать все # отзывов}other{Показать все # отзыва}}</translation>
 <translation id="1458059624921545588">Люди и общество</translation>
 <translation id="1458140305240870199">Нижнее белье</translation>
 <translation id="1459693405370120464">Погода</translation>
@@ -1955,6 +1956,7 @@
 <translation id="4407758156081352648">В целях безопасности ваша организация запретила повторно использовать пароли в Chrome. Мы шифруем пароли, чтобы защищать конфиденциальность пользователей.</translation>
 <translation id="4408413947728134509">Настройки файлов cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Установка ВМ в этой конфигурации допустима, однако это невозможно сделать, так как для данной архитектуры отсутствует необходимый образ.</translation>
+<translation id="4412377069090572315">Отзывы</translation>
 <translation id="4414452699610169758">Использовать Google Менеджер паролей и автозаполнение в Chrome, чтобы сохранять и вставлять пароли, адреса и данные способов оплаты</translation>
 <translation id="4414515549596849729">Файлы cookie и данные сайтов</translation>
 <translation id="4415156962929755728">Пластик (глянцевый)</translation>
@@ -2776,6 +2778,7 @@
 <translation id="5937560539988385583">Страница переведена</translation>
 <translation id="5938153366081463283">Добавить виртуальную карту</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Эта информация берется с независимых сайтов, содержащих отзывы, например Trustpilot, ScamAdviser и Google. При создании сводок используется ИИ.</translation>
 <translation id="5944297261866530437">Ткань (с высоким лоском)</translation>
 <translation id="5950901984834744590">Бритвы и станки для бритья</translation>
 <translation id="5951495562196540101">Регистрация невозможна, так как тип аккаунта не соответствует лицензии на устройстве.</translation>
@@ -3142,6 +3145,7 @@
 <translation id="6567832540451970450">Ваш администратор предоставил этому сайту разрешение "<ph name="PERMISSION" />".</translation>
 <translation id="6568793038316600992">Кнопка "Настроить способы оплаты". Нажмите ее, чтобы изменить данные о способах оплаты и банковских картах в настройках Chrome.</translation>
 <translation id="6569060085658103619">Вы просматриваете страницу расширения</translation>
+<translation id="6572867903637058088">Эта информация полезна?</translation>
 <translation id="6573200754375280815">Два отверстия справа</translation>
 <translation id="6574762126505704998">Заполнить</translation>
 <translation id="6575408526598156416">Сохранить в аккаунте</translation>
@@ -4321,9 +4325,11 @@
 <translation id="8672535691554698269">Компьютерные сети</translation>
 <translation id="8675446170353411473">Файлы загружаются в сервис "<ph name="CLOUD_PROVIDER" />"</translation>
 <translation id="8676424191133491403">Без задержки</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{Удалена {COUNT} таблица.}one{Удалена {COUNT} таблица.}few{Удалено {COUNT} таблицы.}many{Удалено {COUNT} таблиц.}other{Удалено {COUNT} таблицы.}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ответ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">При загрузке веб-страницы <ph name="PAGE" /> произошла ошибка по следующим причинам:</translation>
 <translation id="8682297334444610648">Игра Chrome Dino. Нажмите, чтобы начать.</translation>
+<translation id="8685225035093721011">Отзывы о магазине</translation>
 <translation id="8686424632716064939">Компьютерная безопасность</translation>
 <translation id="8687278439622293018">Удалена запись "<ph name="ENTRY_VOICEOVER" />"</translation>
 <translation id="8687429322371626002">Вашим устройством и аккаунтом управляет <ph name="MANAGER" />.</translation>

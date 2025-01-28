@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <string>
@@ -17,7 +18,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
@@ -169,7 +169,7 @@ void TestInterestGroupPrivateAggregationManager::LogPrivateAggregationRequests(
   logged_private_aggregation_requests_.reserve(
       logged_private_aggregation_requests_.size() +
       private_aggregation_requests.size());
-  base::ranges::for_each(
+  std::ranges::for_each(
       private_aggregation_requests,
       [this](
           const auction_worklet::mojom::PrivateAggregationRequestPtr& request) {

@@ -36,10 +36,10 @@
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
@@ -1193,7 +1193,7 @@ class ExtensionWindowCreateIwaTest
   Profile* profile() {
     // We cannot use `browser()->profile()` here, because `browser()` is
     // `nullptr` due to the command line switches above.
-    return profile_util::GetLastUsedProfile();
+    return ProfileManager::GetLastUsedProfile();
   }
 
  protected:

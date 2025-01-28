@@ -24,8 +24,29 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public abstract class WebContentsObserver {
+    /**
+     * Indicates this is a class controlling a {@link WebContents} that can be observed.
+     *
+     * <p>This exists primarily for testability / mocking above the //content layer. If that was not
+     * a requirement, this class could internally cast to WebContentsImpl.
+     */
+    public interface Observable {
+        /**
+         * Add an observer to the WebContents
+         *
+         * @param observer The observer to add.
+         */
+        void addObserver(WebContentsObserver observer);
+
+        /**
+         * Remove an observer from the WebContents
+         *
+         * @param observer The observer to remove.
+         */
+        void removeObserver(WebContentsObserver observer);
+    }
+
     private @Nullable WebContents mWebContents;
-    private boolean mHasBeenDestroyed;
 
     public WebContentsObserver(@NonNull WebContents webContents) {
         observe(webContents);
@@ -260,11 +281,10 @@ public abstract class WebContentsObserver {
      */
     public final void observe(@Nullable WebContents webContents) {
         if (mWebContents == webContents) return;
-        if (mWebContents != null) mWebContents.removeObserver(this);
+        if (mWebContents != null) ((Observable) mWebContents).removeObserver(this);
         mWebContents = webContents;
         if (mWebContents != null) {
-            assert !mHasBeenDestroyed;
-            mWebContents.addObserver(this);
+            ((Observable) mWebContents).addObserver(this);
         }
     }
 

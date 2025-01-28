@@ -13,6 +13,7 @@
 #include "content/services/auction_worklet/auction_worklet_util.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "v8/include/v8-container.h"
@@ -175,15 +176,26 @@ SellerBrowserSignalsLazyFiller::SellerBrowserSignalsLazyFiller(
 
 void SellerBrowserSignalsLazyFiller::Reset() {
   browser_signal_render_url_ = nullptr;
+  ad_components_ = nullptr;
 }
 
 bool SellerBrowserSignalsLazyFiller::FillInObject(
     const GURL& browser_signal_render_url,
+    const std::vector<mojom::CreativeInfoWithoutOwnerPtr>* ad_components,
     v8::Local<v8::Object> object) {
   browser_signal_render_url_ = &browser_signal_render_url;
+  ad_components_ = ad_components;
   // TODO(crbug.com/40266734): Remove deprecated `renderUrl` alias.
   if (!DefineLazyAttribute(object, "renderUrl", &HandleDeprecatedRenderUrl)) {
     return false;
+  }
+  if (ad_components_ && !ad_components_->empty() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kFledgeTrustedSignalsKVv1CreativeScanning)) {
+    if (!DefineLazyAttribute(object, "adComponentsCreativeScanningMetadata",
+                             &HandleAdComponentsCreativeScanningMetadata)) {
+      return false;
+    }
   }
   return true;
 }
@@ -204,6 +216,31 @@ void SellerBrowserSignalsLazyFiller::HandleDeprecatedRenderUrl(
       gin::TryConvertToV8(isolate, self->browser_signal_render_url_->spec(),
                           &value)) {
     SetResult(info, value);
+  }
+}
+
+void SellerBrowserSignalsLazyFiller::HandleAdComponentsCreativeScanningMetadata(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  SellerBrowserSignalsLazyFiller* self =
+      GetSelf<SellerBrowserSignalsLazyFiller>(info);
+  AuctionV8Helper* v8_helper = self->v8_helper();
+  v8::Isolate* isolate = v8_helper->isolate();
+  if (self->ad_components_) {
+    v8::LocalVector<v8::Value> ad_components_creative_scan_metadata(isolate);
+    for (const auto& creative_info : *self->ad_components_) {
+      v8::Local<v8::Value> meta = v8::Null(isolate);
+      if (creative_info->creative_scanning_metadata.has_value()) {
+        if (!gin::TryConvertToV8(
+                isolate, *creative_info->creative_scanning_metadata, &meta)) {
+          return;
+        }
+      }
+      ad_components_creative_scan_metadata.push_back(meta);
+    }
+    SetResult(info, v8::Array::New(
+                        isolate, ad_components_creative_scan_metadata.data(),
+                        ad_components_creative_scan_metadata.size()));
   }
 }
 

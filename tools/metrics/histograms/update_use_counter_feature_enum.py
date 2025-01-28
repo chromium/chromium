@@ -25,7 +25,7 @@ if __name__ == '__main__':
   START_MARKER = '^enum WebFeature {'
   END_MARKER = '^kNumberOfFeatures'
 
-  UpdateHistogramEnum('tools/metrics/histograms/enums.xml',
+  UpdateHistogramEnum('tools/metrics/histograms/metadata/blink/enums.xml',
                       histogram_enum_name='FeatureObserver',
                       source_enum_path=web_feature_source,
                       start_marker=START_MARKER,

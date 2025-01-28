@@ -29,6 +29,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/to_vector.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
@@ -303,13 +304,12 @@ Vector<MessagePortChannel> MessagePort::DisentanglePorts(
 MessagePortArray* MessagePort::EntanglePorts(
     ExecutionContext& context,
     Vector<MessagePortChannel> channels) {
-  return EntanglePorts(context,
-                       WebVector<MessagePortChannel>(std::move(channels)));
+  return EntanglePorts(context, base::ToVector(std::move(channels)));
 }
 
 MessagePortArray* MessagePort::EntanglePorts(
     ExecutionContext& context,
-    WebVector<MessagePortChannel> channels) {
+    std::vector<MessagePortChannel> channels) {
   // https://html.spec.whatwg.org/C/#message-ports
   // |ports| should be an empty array, not null even when there is no ports.
   wtf_size_t count = base::checked_cast<wtf_size_t>(channels.size());

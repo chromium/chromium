@@ -31,6 +31,7 @@ group("resources") {
     ":components_resources",
     ":components_scaled_resources",
     ":dev_ui_components_resources",
+    "../autofill/core/browser/autofill_and_password_manager_internals:resources",
     "../crash/core/browser/resources:resources",
     "../flags_ui/resources:resources",
     "../gcm_driver/resources:resources",

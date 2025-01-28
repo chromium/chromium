@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.AnimationPlaybackRateChanged"
-    enum="DevToolsAnimationPlaybackRateChanged" expires_after="2025-04-20">
+    enum="DevToolsAnimationPlaybackRateChanged" expires_after="2025-07-27">
   <owner>yangguo@google.com</owner>
   <owner>changhaohan@google.com</owner>
   <owner>ergunsh@google.com</owner>
@@ -520,7 +520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.VisualLogging.ProcessingTime" units="ms"
-    expires_after="2025-02-02">
+    expires_after="2025-12-31">
   <owner>danilsomsikov@google.com</owner>
   <owner>hablich@google.com</owner>
   <summary>

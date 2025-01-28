@@ -408,8 +408,7 @@ void ProfilePolicyConnector::Init(
     // Note that |DeviceLocalAccountPolicyProvider::Create| returns nullptr when
     // the user supplied is not a device-local account user or not in demo mode.
     std::string user_id = user->GetAccountId().GetUserEmail();
-    if (ash::features::IsDemoModeSignInEnabled() &&
-        ash::demo_mode::IsDeviceInDemoMode()) {
+    if (ash::demo_mode::IsDemoAccountSignInEnabled()) {
       // TODO(crbug.com/355043200): Figure out if it is safe to do so.
       std::vector<DeviceLocalAccount> device_local_accounts =
           GetDeviceLocalAccounts(ash::CrosSettings::Get());

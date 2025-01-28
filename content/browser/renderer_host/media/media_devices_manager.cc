@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <functional>
 #include <map>
 #include <string>
@@ -17,7 +18,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
@@ -284,7 +284,7 @@ std::string GuessVideoGroupID(const blink::WebMediaDeviceInfoArray& audio_infos,
           return IsRealAudioDeviceID(audio_info.device_id) &&
                  (*callback).Run(audio_info);
         };
-    auto it_first = base::ranges::find_if(audio_infos, real_device_matches);
+    auto it_first = std::ranges::find_if(audio_infos, real_device_matches);
     if (it_first == audio_infos.end())
       continue;
 
@@ -1192,9 +1192,9 @@ void MediaDevicesManager::UpdateSnapshot(
 
   // Update the cached snapshot and send notifications only if the device list
   // has changed.
-  if (!base::ranges::equal(new_snapshot, old_snapshot,
-                           ignore_group_id ? EqualDeviceExcludingGroupID
-                                           : EqualDeviceIncludingGroupID)) {
+  if (!std::ranges::equal(new_snapshot, old_snapshot,
+                          ignore_group_id ? EqualDeviceExcludingGroupID
+                                          : EqualDeviceIncludingGroupID)) {
     // Prevent sending notifications until group IDs are updated using
     // a heuristic in ProcessRequests().
     // TODO(crbug.com/41263713): Remove |is_video_with_group_ids| and the

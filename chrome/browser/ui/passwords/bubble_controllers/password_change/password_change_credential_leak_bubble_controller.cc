@@ -67,4 +67,5 @@ void PasswordChangeCredentialLeakBubbleController::ChangePassword() {
 void PasswordChangeCredentialLeakBubbleController::Cancel() {
   CHECK(password_change_delegate_);
   password_change_delegate_->Stop();
+  delegate_->GetPasswordsLeakDialogDelegate()->OnLeakDialogHidden();
 }

@@ -183,4 +183,9 @@ BASE_FEATURE(kWebAuthnNoAccountTimeout,
              "WebAuthenticationNoAccountTimeout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Default enabled in M134. Remove in or after M137.
+BASE_FEATURE(kSyncSecurityDomainBeforePINRenewal,
+             "kWebAuthenticationSyncSecurityDomainBeforePINRenewal",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

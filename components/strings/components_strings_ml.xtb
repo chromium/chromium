@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941"><ph name="DATA_CONTROLS_FIRST_KEY_SET" /> എന്നീ കീകൾ, <ph name="DATA_CONTROLS_SECOND_KEY_SET" /> എന്നീ കീകളുള്ളത് പോലെ ഒരേ നിഘണ്ടുവിൽ സജ്ജീകരിക്കാനാകില്ല</translation>
 <translation id="1455413310270022028">ഇറേസർ</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{0 റിവ്യൂകൾ കാണുക}=1{ഒരു റിവ്യൂ കാണുക}other{ആകെയുള്ള # റിവ്യൂകളും കാണുക}}</translation>
 <translation id="1458059624921545588">ആളുകളും സമൂഹവും</translation>
 <translation id="1458140305240870199">അടിവസ്‌ത്രങ്ങൾ</translation>
 <translation id="1459693405370120464">കാലാവസ്ഥ</translation>
@@ -1955,6 +1956,7 @@
 <translation id="4407758156081352648">സുരക്ഷ നിലനിർത്താൻ, Chrome-ൽ പാസ്‌വേഡുകൾ വീണ്ടും ഉപയോഗിക്കാൻ നിങ്ങളുടെ ഓർഗനൈസേഷൻ അനുവദിക്കുന്നില്ല. ഉപയോക്തൃ സ്വകാര്യത പരിരക്ഷിക്കുന്നതിന്, Chrome-ലെ പാസ്‌വേഡുകൾ എൻക്രിപ്റ്റ് ചെയ്തിരിക്കുന്നു.</translation>
 <translation id="4408413947728134509">കുക്കികൾ <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">ഈ കോൺഫിഗറേഷൻ ഇൻസ്റ്റാൾ ചെയ്യാവുന്നത് എന്ന് അടയാളപ്പെടുത്തിയിരിക്കുന്നു, എന്നാൽ ഈ ആർക്കിടെക്ച്ചർ സംബന്ധിച്ച ചിത്രങ്ങളൊന്നും നൽകാത്തതിനാൽ ഇത് ഇൻസ്റ്റാൾ ചെയ്യാനാകില്ല.</translation>
+<translation id="4412377069090572315">ആളുകൾ എന്താണ് പറയുന്നത്</translation>
 <translation id="4414452699610169758">പാസ്‌വേഡുകൾ, പേയ്‌മെന്റ് രീതികൾ, വിലാസങ്ങൾ എന്നിവ സംരക്ഷിക്കാനും പൂരിപ്പിക്കാനും Google Password Manager-ഉം Chrome സ്വയമേവ പൂരിപ്പിക്കലും ഉപയോഗിക്കുക</translation>
 <translation id="4414515549596849729">കുക്കികളും സൈറ്റ് ഡാറ്റയും</translation>
 <translation id="4415156962929755728">പ്ലാസ്റ്റിക് (ഹൈ ഗ്ലോസ്)</translation>
@@ -2776,6 +2778,7 @@
 <translation id="5937560539988385583">പേജ് വിവർത്തനം ചെയ്‌തു</translation>
 <translation id="5938153366081463283">വെർച്വൽ കാർഡ് ചേർക്കുക</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">ഈ വിവരങ്ങൾ Trustpilot, ScamAdviser, Google തുടങ്ങിയ സ്വതന്ത്ര റിവ്യൂ വെബ്സൈറ്റുകളിൽ നിന്നുള്ളതാണ്. AI ഉപയോഗിച്ചാണ് സംഗ്രഹങ്ങൾ സൃഷ്ടിച്ചിട്ടുള്ളത്.</translation>
 <translation id="5944297261866530437">ഫാബ്രിക് (ഹൈ ഗ്ലോസ്)</translation>
 <translation id="5950901984834744590">റേസറുകളും ഷേവറുകളും</translation>
 <translation id="5951495562196540101">ഉപയോക്തൃ അക്കൗണ്ട് ഉപയോഗിച്ച് എൻറോൾ ചെയ്യാനാവില്ല (പാക്കേജ് ചെയ്‌ത ലൈസൻസ് ലഭ്യമാണ്).</translation>
@@ -3142,6 +3145,7 @@
 <translation id="6567832540451970450">നിങ്ങളുടെ അഡ്‌മിൻ ഈ സൈറ്റിന് <ph name="PERMISSION" /> അനുവദിക്കുന്നു</translation>
 <translation id="6568793038316600992">'പേയ്‌മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക ബട്ടൺ', Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പേയ്‌മെന്റുകളും ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങളും മാനേജ് ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="6569060085658103619">നിങ്ങൾ ഒരു വിപുലീകരണ പേജാണ് കാണുന്നത്</translation>
+<translation id="6572867903637058088">ഇത് സഹായകരമാണോ?</translation>
 <translation id="6573200754375280815">വലതുവശത്ത് ഇരട്ട പഞ്ച് ചെയ്യുക</translation>
 <translation id="6574762126505704998">ഫിൽ</translation>
 <translation id="6575408526598156416">അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
@@ -4319,9 +4323,11 @@
 <translation id="8672535691554698269">കമ്പ്യൂട്ടർ നെറ്റ്‌വർക്കുകൾ</translation>
 <translation id="8675446170353411473">നിങ്ങളുടെ ഫയലുകൾ <ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് അപ്‌ലോഡ് ചെയ്യുകയാണ്</translation>
 <translation id="8676424191133491403">കാലതാമസമില്ല</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} പട്ടിക ഇല്ലാതാക്കി}other{{COUNT} പട്ടികകൾ ഇല്ലാതാക്കി}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ഉത്തരം, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">ഇനിപ്പറയുന്ന കാരണങ്ങളാൽ <ph name="PAGE" /> എന്നതിലെ വെബ്‌പേജ് ലോഡ് ചെയ്യാനായില്ല:</translation>
 <translation id="8682297334444610648">ദിനോസർ ഗെയിം, കളിക്കാൻ ടാപ്പ് ചെയ്യൂ</translation>
+<translation id="8685225035093721011">സ്റ്റോർ റിവ്യൂകൾ</translation>
 <translation id="8686424632716064939">കമ്പ്യൂട്ടർ സുരക്ഷ</translation>
 <translation id="8687278439622293018"><ph name="ENTRY_VOICEOVER" /> എന്ന എൻട്രി ഇല്ലാതാക്കി</translation>
 <translation id="8687429322371626002">നിങ്ങളുടെ ഉപകരണവും അക്കൗണ്ടും മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്.</translation>

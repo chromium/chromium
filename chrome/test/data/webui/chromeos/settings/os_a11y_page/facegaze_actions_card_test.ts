@@ -42,18 +42,18 @@ suite('<facegaze-actions-card>', () => {
   }
 
   function assertActionSettingsRow(commandPair: FaceGazeCommandPair):
-      HTMLDivElement {
+      HTMLElement {
     const domRepeat = faceGazeActionsCard.shadowRoot!.querySelector<DomRepeat>(
         '#faceGazeActionsCommandPairs');
     assertTrue(!!domRepeat);
     const settingsRows =
-        faceGazeActionsCard.shadowRoot!.querySelectorAll<HTMLDivElement>(
+        faceGazeActionsCard.shadowRoot!.querySelectorAll<HTMLElement>(
             '.command-pair');
     const row =
         Array.from(settingsRows.values())
             .find(
                 (row) => domRepeat.itemForElement(row)!.equals(commandPair)) as
-        HTMLDivElement;
+        HTMLElement;
     assertTrue(!!row);
     return row;
   }

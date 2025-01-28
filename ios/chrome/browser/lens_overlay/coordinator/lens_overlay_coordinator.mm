@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
@@ -1019,6 +1020,13 @@ const int kExpectedExitAnimationCount = 2;
   if (!_associatedTabHelper || !sceneWindow) {
     return;
   }
+
+  // The Lens overlay is locked to portrait.  Skip displaying the restoration
+  // window on landscape to avoid stretching the snapshot.
+  if (IsLandscape(sceneWindow)) {
+    return;
+  }
+
   UIImage* viewportSnapshot = _associatedTabHelper->GetViewportSnapshot();
   // If no snapshot was stored, it means that a restoration of state is not
   // needed.

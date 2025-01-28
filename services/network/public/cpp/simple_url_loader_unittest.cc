@@ -2350,8 +2350,6 @@ class MockURLLoader : public network::mojom::URLLoader {
                    int32_t intra_priority_value) override {
     NOTREACHED();
   }
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
   network::mojom::URLLoaderClient* client() const { return client_.get(); }
 

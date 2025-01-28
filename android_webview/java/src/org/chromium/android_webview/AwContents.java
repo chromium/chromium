@@ -537,7 +537,7 @@ public class AwContents implements SmartClipProvider {
 
     private OnscreenContentProvider mOnscreenContentProvider;
 
-    private AwDisplayCutoutController mDisplayCutoutController;
+    private final AwDisplayCutoutController mDisplayCutoutController;
     private final AwDisplayModeController mDisplayModeController;
     private final Rect mCachedSafeAreaRect = new Rect();
 
@@ -1019,27 +1019,24 @@ public class AwContents implements SmartClipProvider {
                                 }
                             },
                             containerView);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                mDisplayCutoutController =
-                        new AwDisplayCutoutController(
-                                new AwDisplayCutoutController.Delegate() {
-                                    @Override
-                                    public float getDipScale() {
-                                        WindowAndroid windowAndroid =
-                                                mWindowAndroid.getWindowAndroid();
-                                        return windowAndroid.getDisplay().getDipScale();
-                                    }
+            mDisplayCutoutController =
+                    AwDisplayCutoutController.maybeCreate(
+                            new AwDisplayCutoutController.Delegate() {
+                                @Override
+                                public float getDipScale() {
+                                    WindowAndroid windowAndroid = mWindowAndroid.getWindowAndroid();
+                                    return windowAndroid.getDisplay().getDipScale();
+                                }
 
-                                    @Override
-                                    public void setDisplayCutoutSafeArea(
-                                            AwDisplayCutoutController.Insets insets) {
-                                        if (mWebContents == null) return;
-                                        mWebContents.setDisplayCutoutSafeArea(
-                                                insets.toRect(mCachedSafeAreaRect));
-                                    }
-                                },
-                                containerView);
-            }
+                                @Override
+                                public void setDisplayCutoutSafeArea(
+                                        AwDisplayCutoutController.Insets insets) {
+                                    if (mWebContents == null) return;
+                                    mWebContents.setDisplayCutoutSafeArea(
+                                            insets.toRect(mCachedSafeAreaRect));
+                                }
+                            },
+                            containerView);
             mRendererPriority = RendererPriority.HIGH;
             mSettings = settings;
             updateDefaultLocale();
@@ -1406,10 +1403,8 @@ public class AwContents implements SmartClipProvider {
         ViewUtils.requestLayout(mContainerView, "AwContents.onContainerViewChanged");
         if (mAutofillProvider != null) mAutofillProvider.onContainerViewChanged(mContainerView);
         mDisplayModeController.setCurrentContainerView(mContainerView);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            if (mDisplayCutoutController != null) {
-                mDisplayCutoutController.setCurrentContainerView(mContainerView);
-            }
+        if (mDisplayCutoutController != null) {
+            mDisplayCutoutController.setCurrentContainerView(mContainerView);
         }
     }
 
@@ -3336,12 +3331,11 @@ public class AwContents implements SmartClipProvider {
                 AwWindowCoverageTracker.getOrCreateForRootView(this, mContainerView.getRootView());
         mAwWindowCoverageTracker.trackContents(this);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
-        }
+        if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
 
-        mAwFrameMetricsListener = AwFrameMetricsListener
-                .maybeCreate(mContainerView, mWindowAndroid.getWindowAndroid());
+        mAwFrameMetricsListener =
+                AwFrameMetricsListener.maybeCreate(
+                        mContainerView, mWindowAndroid.getWindowAndroid());
 
         ViewGroup.LayoutParams viewGroupParams = mContainerView.getRootView().getLayoutParams();
         if (viewGroupParams instanceof WindowManager.LayoutParams params) {
@@ -3403,12 +3397,12 @@ public class AwContents implements SmartClipProvider {
         mTemporarilyDetached = false;
     }
 
-    /** @see android.view.View#onSizeChanged() */
+    /**
+     * @see android.view.View#onSizeChanged()
+     */
     public void onSizeChanged(int w, int h, int ow, int oh) {
         mAwViewMethods.onSizeChanged(w, h, ow, oh);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            if (mDisplayCutoutController != null) mDisplayCutoutController.onSizeChanged();
-        }
+        if (mDisplayCutoutController != null) mDisplayCutoutController.onSizeChanged();
     }
 
     /** @see android.view.View#onVisibilityChanged() */
@@ -3773,6 +3767,7 @@ public class AwContents implements SmartClipProvider {
     }
 
     @VisibleForTesting
+    @Nullable
     public AwDisplayCutoutController getDisplayCutoutController() {
         return mDisplayCutoutController;
     }

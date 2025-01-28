@@ -345,6 +345,8 @@ public class TileGroupUnitTest {
         assertThat(layout.getChildCount(), is(2));
         assertThat(((SuggestionsTileView) layout.getChildAt(0)).getUrl().getSpec(), is(URLS[0]));
         assertThat(((SuggestionsTileView) layout.getChildAt(1)).getUrl().getSpec(), is(URLS[1]));
+        // Rerun to test SuggestionsTileView caching.
+        refreshData(tileGroup, layout);
     }
 
     /** Check for https://crbug.com/703628: don't crash on duplicated URLs. */
@@ -369,6 +371,8 @@ public class TileGroupUnitTest {
         mMostVisitedSites.setTileSuggestions(URLS[0], URLS[1], URLS[0]);
 
         // Render them to the layout. The duplicated URL should not trigger an exception.
+        refreshData(tileGroup, layout);
+        // Rerun to test SuggestionsTileView caching.
         refreshData(tileGroup, layout);
     }
 
@@ -403,6 +407,8 @@ public class TileGroupUnitTest {
         assertThat(layout.getChildCount(), is(2));
         assertThat(layout.indexOfChild(view1), is(-1));
         assertThat(layout.indexOfChild(view2), is(-1));
+        // Rerun to test SuggestionsTileView caching.
+        refreshData(tileGroup, layout);
     }
 
     @Test
@@ -436,6 +442,8 @@ public class TileGroupUnitTest {
         assertThat(layout.getChildCount(), is(2));
         assertThat(layout.getChildAt(0), CoreMatchers.is(view1));
         assertThat(layout.getChildAt(1), CoreMatchers.is(view2));
+        // Rerun to test SuggestionsTileView caching.
+        refreshData(tileGroup, layout);
     }
 
     @Test

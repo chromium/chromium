@@ -3052,6 +3052,7 @@ test("content_unittests") {
     "//components/attribution_reporting:mojom",
     "//components/cbor",
     "//components/input",
+    "//components/metrics/dwa:dwa",
     "//components/network_session_configurator/browser",
     "//components/network_session_configurator/common",
     "//components/offline_pages/buildflags",
@@ -3275,8 +3276,6 @@ test("content_unittests") {
       "../browser/media/cdm_storage_database_unittest.cc",
       "../browser/media/cdm_storage_manager_unittest.cc",
       "../browser/media/key_system_support_impl_unittest.cc",
-      "../browser/media/media_license_manager_unittest.cc",
-      "../browser/media/media_license_storage_host_unittest.cc",
     ]
   }
 

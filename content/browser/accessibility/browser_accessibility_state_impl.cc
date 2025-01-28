@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
@@ -17,7 +18,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -643,7 +643,7 @@ void BrowserAccessibilityStateImpl::OnModeChangedForProcess(
 
   // Combine the new mode for the process with the effective mode for each
   // WebContents and its associated BrowserContext.
-  base::ranges::for_each(
+  std::ranges::for_each(
       WebContentsImpl::GetAllWebContents(),
       [new_mode](WebContentsImpl* web_contents) {
         if (!web_contents->IsBeingDestroyed()) {
@@ -692,7 +692,7 @@ void BrowserAccessibilityStateImpl::OnModeChangedForBrowserContext(
 
   // Combine this with the effective mode for each WebContents associated with
   // `browser_context`.
-  base::ranges::for_each(
+  std::ranges::for_each(
       WebContentsImpl::GetAllWebContents(),
       [browser_context, mode_for_context](WebContentsImpl* web_contents) {
         if (!web_contents->IsBeingDestroyed() &&

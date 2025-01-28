@@ -40,7 +40,7 @@ export function getSystemServicesFromSubpage(
 export function getSystemServicePermissionText(
     systemService: SettingsPrivacyHubSystemServiceRow): string {
   return systemService.shadowRoot!
-      .querySelector<HTMLDivElement>('#permissionState')!.innerText.trim();
+      .querySelector<HTMLElement>('#permissionState')!.innerText.trim();
 }
 
 export function getSystemServiceName(

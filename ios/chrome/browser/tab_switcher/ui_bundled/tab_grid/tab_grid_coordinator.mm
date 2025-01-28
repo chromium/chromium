@@ -1747,13 +1747,14 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                animated:YES];
 }
 
-- (void)showTabGroupsPanelAnimated:(BOOL)animated {
-  CHECK(IsTabGroupSyncEnabled());
-  // Return to Normal mode if needed, as Tab Groups panel doesn't support
-  // Search nor Selection modes.
-  [self setActiveMode:TabGridMode::kNormal];
-  [self.baseViewController setCurrentPageAndPageControl:TabGridPageTabGroups
-                                               animated:animated];
+- (void)showPage:(TabGridPage)page animated:(BOOL)animated {
+  if (page == TabGridPageTabGroups) {
+    CHECK(IsTabGroupSyncEnabled());
+    // Return to Normal mode if needed, as Tab Groups panel doesn't support
+    // Search.
+    [self setActiveMode:TabGridMode::kNormal];
+  }
+  [self.baseViewController setCurrentPageAndPageControl:page animated:animated];
 }
 
 - (void)exitTabGrid {

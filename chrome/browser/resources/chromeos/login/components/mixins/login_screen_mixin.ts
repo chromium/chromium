@@ -8,9 +8,10 @@ import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 
 import {Oobe} from '../../cr_ui.js';
 import {OobeUiState} from '../display_manager_types.js';
-import {OobeTypes} from '../oobe_types.js';
+import type {OobeTypes} from '../oobe_types.js';
 
-import {OobeBaseMixin, OobeBaseMixinInterface} from './oobe_base_mixin.js';
+import type {OobeBaseMixinInterface} from './oobe_base_mixin.js';
+import {OobeBaseMixin} from './oobe_base_mixin.js';
 
 /**
  * @fileoverview

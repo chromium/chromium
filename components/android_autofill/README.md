@@ -157,6 +157,19 @@ Autofill Services can read the Chrome setting to understand whether Chrome uses 
 For that purpose, Chrome defines the [AutofillThirdPartyModeContentProvider.java](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/autofill/android/java/src/org/chromium/chrome/browser/autofill/AutofillThirdPartyModeContentProvider.java).
 This [`ContentProvider`](https://developer.android.com/reference/android/content/ContentProvider)
 allows reading whether Chrome is in "3P mode", i.e. uses Android Autofill.
+To read the status of the setting, declare the permission for the Chrome channel
+you are interested in in your `AndroidManifest.xml`:
+```xml
+  <uses-permission android:name="android.permission.READ_USER_DICTIONARY"/>
+  <queries>
+    <package android:name="com.chrome.canary" />
+    <package android:name="com.chrome.dev" />
+    <package android:name="com.chrome.beta" />
+    <package android:name="com.google.android.apps.chrome" />
+    <package android:name="org.chromium.chrome" />
+    <package android:name="com.android.chrome" />
+  </queries>
+```
 
 ```java
 final String CHROME_CHANNEL_PACKAGE = "com.android.chrome";  // Chrome Stable.
@@ -176,6 +189,10 @@ final Cursor cursor = getContentResolver().query(
                   /*selection=*/ null,
                   /*selectionArgs=*/ null,
                   /*sortOrder=*/ null);
+
+if (cursor == null) {
+  // Terminate now! Older versions of Chromium don't provide this information.
+}
 
 cursor.moveToFirst(); // Retrieve the result;
 

@@ -4,12 +4,12 @@
 
 #include "ui/views/corewm/tooltip_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/at_exit.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -715,7 +715,7 @@ namespace {
 
 // Returns the index of |window| in its parent's children.
 int IndexInParent(const aura::Window* window) {
-  auto i = base::ranges::find(window->parent()->children(), window);
+  auto i = std::ranges::find(window->parent()->children(), window);
   return i == window->parent()->children().end()
              ? -1
              : static_cast<int>(i - window->parent()->children().begin());

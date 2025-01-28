@@ -45,7 +45,11 @@ export interface Setting {
   unavailableValue: any;
   valid: boolean;
   available: boolean;
-  setByPolicy: boolean;
+  // This property is set to true when this setting has a single value allowed
+  // by a group/OU-wide policy (e.g. PrintingAllowedDuplexModes). These
+  // restrictions will be applied to all the printers available for a user.
+  // The property is set to false otherwise.
+  setByGlobalPolicy: boolean;
   setFromUi: boolean;
   key: string;
   updatesPreview: boolean;
@@ -302,7 +306,7 @@ function createSettings(): Settings {
       unavailableValue: [],
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: '',
       updatesPreview: false,
@@ -312,7 +316,7 @@ function createSettings(): Settings {
       unavailableValue: 1,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: '',
       updatesPreview: false,
@@ -322,7 +326,7 @@ function createSettings(): Settings {
       unavailableValue: false,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'isCollateEnabled',
       updatesPreview: false,
@@ -332,7 +336,7 @@ function createSettings(): Settings {
       unavailableValue: false,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'isLandscapeEnabled',
       updatesPreview: true,
@@ -342,7 +346,7 @@ function createSettings(): Settings {
       unavailableValue: false,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'isColorEnabled',
       updatesPreview: true,
@@ -359,7 +363,7 @@ function createSettings(): Settings {
       },
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'mediaSize',
       updatesPreview: true,
@@ -369,7 +373,7 @@ function createSettings(): Settings {
       unavailableValue: false,
       valid: true,
       available: false,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'borderless',
       updatesPreview: true,
@@ -379,7 +383,7 @@ function createSettings(): Settings {
       unavailableValue: '',
       valid: true,
       available: false,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'mediaType',
       updatesPreview: false,
@@ -389,7 +393,7 @@ function createSettings(): Settings {
       unavailableValue: MarginsType.DEFAULT,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'marginsType',
       updatesPreview: true,
@@ -399,7 +403,7 @@ function createSettings(): Settings {
       unavailableValue: {},
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'customMargins',
       updatesPreview: true,
@@ -409,7 +413,7 @@ function createSettings(): Settings {
       unavailableValue: {},
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'dpi',
       updatesPreview: false,
@@ -419,7 +423,7 @@ function createSettings(): Settings {
       unavailableValue: '100',
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'scaling',
       updatesPreview: true,
@@ -429,7 +433,7 @@ function createSettings(): Settings {
       unavailableValue: ScalingType.DEFAULT,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'scalingType',
       updatesPreview: true,
@@ -439,7 +443,7 @@ function createSettings(): Settings {
       unavailableValue: ScalingType.DEFAULT,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'scalingTypePdf',
       updatesPreview: true,
@@ -449,7 +453,7 @@ function createSettings(): Settings {
       unavailableValue: false,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'isDuplexEnabled',
       updatesPreview: false,
@@ -459,7 +463,7 @@ function createSettings(): Settings {
       unavailableValue: false,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'isDuplexShortEdge',
       updatesPreview: false,
@@ -469,7 +473,7 @@ function createSettings(): Settings {
       unavailableValue: false,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'isCssBackgroundEnabled',
       updatesPreview: true,
@@ -479,7 +483,7 @@ function createSettings(): Settings {
       unavailableValue: false,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: '',
       updatesPreview: true,
@@ -489,7 +493,7 @@ function createSettings(): Settings {
       unavailableValue: false,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'isHeaderFooterEnabled',
       updatesPreview: true,
@@ -499,7 +503,7 @@ function createSettings(): Settings {
       unavailableValue: false,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: '',
       updatesPreview: true,
@@ -509,7 +513,7 @@ function createSettings(): Settings {
       unavailableValue: {},
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'vendorOptions',
       updatesPreview: false,
@@ -519,7 +523,7 @@ function createSettings(): Settings {
       unavailableValue: 1,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: '',
       updatesPreview: true,
@@ -531,7 +535,7 @@ function createSettings(): Settings {
       unavailableValue: null,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: '',
       updatesPreview: false,
@@ -543,7 +547,7 @@ function createSettings(): Settings {
       unavailableValue: [],
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: '',
       updatesPreview: true,
@@ -553,7 +557,7 @@ function createSettings(): Settings {
       unavailableValue: [],
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'recentDestinations',
       updatesPreview: false,
@@ -564,7 +568,7 @@ function createSettings(): Settings {
       unavailableValue: false,
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'isPinEnabled',
       updatesPreview: false,
@@ -574,7 +578,7 @@ function createSettings(): Settings {
       unavailableValue: '',
       valid: true,
       available: true,
-      setByPolicy: false,
+      setByGlobalPolicy: false,
       setFromUi: false,
       key: 'pinValue',
       updatesPreview: false,
@@ -719,7 +723,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    */
   setSetting(settingName: keyof Settings, value: any, noSticky?: boolean) {
     const setting = this.getSetting(settingName);
-    if (setting.setByPolicy) {
+    if (setting.setByGlobalPolicy) {
       return;
     }
     const fireStickyEvent = !noSticky && setting.value !== value && setting.key;
@@ -743,7 +747,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       settingName: keyof Settings, start: number, end: number, newValue: any,
       noSticky?: boolean) {
     const setting = this.getSetting(settingName);
-    if (setting.setByPolicy) {
+    if (setting.setByGlobalPolicy) {
       return;
     }
     if (newValue) {
@@ -1524,7 +1528,7 @@ export class PrintPreviewModelElement extends PolymerElement {
           this.set(
               'settings.color.value',
               policyEntry.value === ColorModeRestriction.COLOR);
-          this.set('settings.color.setByPolicy', policyEntry.managed);
+          this.set('settings.color.setByGlobalPolicy', policyEntry.managed);
           continue;
         }
         if (settingName === 'duplex') {
@@ -1546,9 +1550,9 @@ export class PrintPreviewModelElement extends PolymerElement {
                 policyEntry.value === DuplexModeRestriction.SHORT_EDGE);
           }
 
-          this.set('settings.duplex.setByPolicy', policyEntry.managed);
+          this.set('settings.duplex.setByGlobalPolicy', policyEntry.managed);
           // Duplex mode is never set by policy
-          this.set('settings.duplexShortEdge.setByPolicy', false);
+          this.set('settings.duplexShortEdge.setByGlobalPolicy', false);
           continue;
         }
         if (settingName === 'pin') {
@@ -1561,7 +1565,7 @@ export class PrintPreviewModelElement extends PolymerElement {
                 'settings.pin.value',
                 policyEntry.value === PinModeRestriction.PIN);
           }
-          this.set('settings.pin.setByPolicy', policyEntry.managed);
+          this.set('settings.pin.setByGlobalPolicy', policyEntry.managed);
           continue;
         }
         // </if>
@@ -1586,7 +1590,7 @@ export class PrintPreviewModelElement extends PolymerElement {
           this.setSetting(
               settingName as keyof Settings, policyEntry.value, true);
           if (policyEntry.managed) {
-            this.set(`settings.${settingName}.setByPolicy`, true);
+            this.set(`settings.${settingName}.setByGlobalPolicy`, true);
           }
         }
       }
@@ -1825,7 +1829,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     // </if>
     this.settingsManaged = managedSettings.some(settingName => {
       const setting = this.getSetting(settingName);
-      return setting.available && setting.setByPolicy;
+      return setting.available && setting.setByGlobalPolicy;
     });
 
     // <if expr="is_chromeos">

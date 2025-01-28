@@ -54,17 +54,20 @@ struct ChromeRootStoreInfo {
   array<ChromeRootCertInfo> root_cert_info;
 };
 
+[EnableIf=is_platform_root_store_info_supported]
 enum CertificateTrust {
   kUnspecified,
   kDistrusted,
   kTrusted,
 };
 
+[EnableIf=is_platform_root_store_info_supported]
 struct PlatformCertInfo {
   array<uint8> cert;
   CertificateTrust trust_setting;
 };
 
+[EnableIf=is_platform_root_store_info_supported]
 struct PlatformRootStoreInfo {
   array<PlatformCertInfo> user_added_certs;
 };
@@ -112,7 +115,7 @@ interface CertVerifierServiceFactory {
   GetChromeRootStoreInfo() => (ChromeRootStoreInfo root_store_info);
 
   // Returns information about the current Platform Root Store.
-  [EnableIf=is_chrome_root_store_supported]
+  [EnableIf=is_platform_root_store_info_supported]
   GetPlatformRootStoreInfo() => (PlatformRootStoreInfo root_store_info);
 
   // Updates the time used for certificate verification. After this is called,

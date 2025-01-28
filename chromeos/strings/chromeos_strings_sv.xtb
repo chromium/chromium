@@ -296,6 +296,7 @@
 <translation id="2240366984605217732">Tangenten som byter tangentbordslayout</translation>
 <translation id="2244834438220057800">grön</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
+<translation id="2265792117169966196">Välj och ladda ned transkriptionsmodell för <ph name="LANGUAGE_NAME" /></translation>
 <translation id="2267285889943769271">Lägg till skärmdump</translation>
 <translation id="2268044343513325586">Finjustera</translation>
 <translation id="2271469253353559191">Schema för mörkt läge</translation>
@@ -774,6 +775,7 @@
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4744944742468440486">Information om det som är markerat</translation>
 <translation id="4750394297954878236">Förslag</translation>
+<translation id="4763771683769971829">Lista över tillgängliga språk</translation>
 <translation id="4771607256327216405">öka ljusstyrkan på tangentbordet</translation>
 <translation id="4771923071974529837">i morgon</translation>
 <translation id="4773299976671772492">Har stoppats</translation>
@@ -855,6 +857,7 @@
 <translation id="5095761549884461003">Koppla bort USB-kabeln från <ph name="DEVICE_NAME" /> och anslut den sedan igen för att fortsätta uppdateringsprocessen</translation>
 <translation id="5099354524039520280">upp</translation>
 <translation id="5107243100836678918">Ett kortkommando utan <ph name="META_KEY" />tangenten kan hamna i konflikt med ett kortkommando för en viss app. Tryck på kortkommandot igen om du vill fortsätta använda det, eller tryck på ett nytt kortkommando med <ph name="KEY" />tangenten. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">Det gick inte att ladda ned transkriptionsmodellen för <ph name="LANGUAGE_NAME" />. Försök igen eller starta om Chromebook</translation>
 <translation id="5108781503443873320">Liknande:</translation>
 <translation id="5121677070210013200">Det gick inte att ladda ned transkriptionsmodellen. Försök igen eller starta om Chromebook.</translation>
 <translation id="5130848777448318809">ponnyer</translation>
@@ -1278,6 +1281,7 @@
 <translation id="7049916119678019302">Ladda ned transkriptionsmodell i inställningarna</translation>
 <translation id="7058278511608979688">Avsluta och spara</translation>
 <translation id="7059230779847288458">Laddas – fulladdat om <ph name="TIME_VALUE" /></translation>
+<translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> har valts</translation>
 <translation id="7066538517128343186">nyckeln <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Förbered enheten</translation>
 <translation id="7076851914315147928">Välj en bakgrund</translation>
@@ -1371,6 +1375,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7415801143053185905">Mycket hög HTTS-latens</translation>
 <translation id="7418738250896500352">Det går inte att förenkla med så många ord</translation>
 <translation id="7425037327577270384">Hjälp mig skriva</translation>
+<translation id="7425832472614771259">Transkriptionsmodellen för <ph name="LANGUAGE_NAME" /> har laddats ned till <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Det gick inte att inaktivera eller ta bort detta APN. Se till att aktiverade <ph name="ATTACH" />-APN inaktiveras eller tas bort.</translation>
 <translation id="7453118953486228603">Klicka för att sammanfatta den markerade texten</translation>
@@ -1407,6 +1412,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> återstår</translation>
 <translation id="7600430297804876776">Administratören för <ph name="MANAGER" /> har ställt in när denna <ph name="DEVICE_TYPE" /> får användas.</translation>
 <translation id="7613724632293948900">Flytta med musen eller piltangenterna.</translation>
+<translation id="7618216277886673749">Välj <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutralt</translation>
 <translation id="7620771111601174153">Läs mer i hjälpcentret</translation>
 <translation id="7625095758347640998">AI-bakgrunder</translation>

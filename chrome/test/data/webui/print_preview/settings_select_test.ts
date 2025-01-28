@@ -59,7 +59,7 @@ suite('SettingsSelectTest', function() {
         unavailableValue: {},
         valid: true,
         available: true,
-        setByPolicy: false,
+        setByGlobalPolicy: false,
         setFromUi: false,
         key: 'headerFooter',
       },

@@ -104,6 +104,7 @@ interface AITranslator
     method constructor
     method destroy
     method translate
+    method translateStreaming
 interface AITranslatorCapabilities
     attribute @@toStringTag
     getter available

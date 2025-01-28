@@ -10,7 +10,8 @@ import {PrefNames, SettingsPath} from './constants.js';
 import {GestureHandler} from './gesture_handler.js';
 import {MetricsUtils} from './metrics_utils.js';
 import {MouseController} from './mouse_controller.js';
-import {FaceLandmarkerResultWithLatency, WebCamFaceLandmarker} from './web_cam_face_landmarker.js';
+import type {FaceLandmarkerResultWithLatency} from './web_cam_face_landmarker.js';
+import {WebCamFaceLandmarker} from './web_cam_face_landmarker.js';
 
 type PrefObject = chrome.settingsPrivate.PrefObject;
 

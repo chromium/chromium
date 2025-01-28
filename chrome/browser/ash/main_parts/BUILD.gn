@@ -5,7 +5,7 @@
 import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("main_parts") {
   sources = [
@@ -62,6 +62,7 @@ static_library("main_parts") {
     "//chrome/browser/ash/login/osauth",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/users/avatar",
+    "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/mahi/web_contents",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/net/network_health",

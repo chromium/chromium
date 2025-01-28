@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_AUTO_PICTURE_IN_PICTURE_TAB_HELPER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
@@ -143,6 +144,10 @@ class AutoPictureInPictureTabHelper
   // any auto-pip window we have open, though there might also not be one.
   void OnTabBecameActive();
 
+  void set_clock_for_testing(const base::TickClock* testing_clock) {
+    clock_ = testing_clock;
+  }
+
  private:
   explicit AutoPictureInPictureTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;
@@ -228,6 +233,15 @@ class AutoPictureInPictureTabHelper
   // conditions are met, an empty string will be returned.
   std::string GetHistogramNameForReason() const;
 
+  // Records the total time spent on a picture in picture window, regardless of
+  // the Picture-in-Picture window type (document vs video) and the reason for
+  // closing the window (UI interaction, returning back to opener tab, etc.).
+  //
+  // The resulting histogram is configured to allow analyzing closures that take
+  // place within a short period of time, to account for user reaction time
+  // (~273 ms).
+  void MaybeRecordPictureInPictureChanged(bool is_picture_in_picture);
+
   // HostContentSettingsMap is tied to the Profile which outlives the
   // WebContents (which we're tied to), so this is safe.
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
@@ -305,6 +319,14 @@ class AutoPictureInPictureTabHelper
   // This is safe since the `MediaEngagementService` is tied to the Profile
   // which outlives the WebContents (which `this` is tied to).
   raw_ptr<MediaEngagementService> media_engagement_service_ = nullptr;
+
+  // Set to the current time when `this` calls the MediaSession
+  // `EnterAutoPictureInPicture` method.
+  std::optional<base::TimeTicks> current_enter_pip_time_ = std::nullopt;
+
+  // Clock used for metric related to the total time spent with a
+  // picture-in-picture window open.
+  raw_ptr<const base::TickClock> clock_;
 
   // WeakPtrFactory used only for requesting URL safety. This weak ptr factory
   // is invalidated during calls to `StopAndResetAsyncTasks`.

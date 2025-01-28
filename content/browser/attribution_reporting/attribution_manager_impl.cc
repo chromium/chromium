@@ -5,7 +5,9 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <functional>
 #include <optional>
@@ -32,7 +34,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
@@ -48,6 +49,8 @@
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "components/metrics/dwa/dwa_builders.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
@@ -245,6 +248,12 @@ void RecordCreateReportStatus(const CreateReportResult& result) {
   base::UmaHistogramEnumeration(
       "Conversions.AggregatableReport.CreateReportStatus4",
       result.aggregatable_status());
+
+  dwa::builders::AttributionConversionsCreateReport()
+      .SetContent(result.trigger().reporting_origin().Serialize())
+      .SetEventLevelStatus(static_cast<int64_t>(result.event_level_status()))
+      .SetAggregatableStatus(static_cast<int64_t>(result.aggregatable_status()))
+      .Record(metrics::dwa::DwaRecorder::Get());
 }
 
 void RecordReportRetriesEventLevel(int retry_attempts,
@@ -510,9 +519,9 @@ void LogMetricsOnReportSent(const AttributionReport& report,
 }
 
 bool HasNonDefaultFilteringId(const AttributionTrigger& trigger) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       trigger.registration().aggregatable_values, [](const auto& value) {
-        return base::ranges::any_of(value.values(), [](const auto& val) {
+        return std::ranges::any_of(value.values(), [](const auto& val) {
           return val.second.filtering_id() !=
                  attribution_reporting::kDefaultFilteringId;
         });

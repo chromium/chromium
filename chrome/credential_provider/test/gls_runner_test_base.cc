@@ -37,7 +37,7 @@ namespace testing {
 
 // Corresponding default email and username for tests that don't override them.
 const char kDefaultEmail[] = "foo@gmail.com";
-const char kDefaultGaiaId[] = "test-gaia-id";
+const GaiaId::Literal kDefaultGaiaId("test-gaia-id");
 const wchar_t kDefaultUsername[] = L"foo";
 const char kDefaultInvalidTokenHandleResponse[] = "{}";
 const char kDefaultValidTokenHandleResponse[] = "{\"expires_in\":1}";
@@ -86,7 +86,7 @@ MULTIPROCESS_TEST_MAIN(gls_main) {
     EXPECT_EQ(gls_email, std::string());
   }
   if (expected_gaia_id.empty())
-    expected_gaia_id = GaiaId(kDefaultGaiaId);
+    expected_gaia_id = kDefaultGaiaId;
 
   if (gaia_password.empty())
     gaia_password = "password";

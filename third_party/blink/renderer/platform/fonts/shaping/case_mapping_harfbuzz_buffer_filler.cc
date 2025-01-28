@@ -12,6 +12,7 @@
 #include <unicode/utf16.h>
 
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 
 namespace blink {
 
@@ -89,9 +90,7 @@ void CaseMappingHarfBuzzBufferFiller::FillSlowCase(
       case_mapped_char = case_map.ToLower(char_by_char);
 
     for (unsigned j = 0; j < case_mapped_char.length();) {
-      UChar32 codepoint = 0;
-      U16_NEXT(case_mapped_char.Characters16(), j, case_mapped_char.length(),
-               codepoint);
+      UChar32 codepoint = CodePointAtAndNext(case_mapped_char.Span16(), j);
       // Add all characters of the case mapping result at the same cluster
       // position.
       hb_buffer_add(harfbuzz_buffer_, codepoint, char_index);

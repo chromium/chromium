@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
@@ -305,7 +304,7 @@ void FileSystemAccessWatcherManager::RemoveObserver(
   base::EraseIf(owned_sources_, [&](const auto& source) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return source->scope().Contains(newly_unobserved_scope) &&
-           base::ranges::none_of(
+           std::ranges::none_of(
                observation_groups_, [&source](const auto& observation) {
                  return source->scope().Contains(observation.scope());
                });
@@ -330,7 +329,7 @@ void FileSystemAccessWatcherManager::RemoveQuotaManager(
 bool FileSystemAccessWatcherManager::HasSourceContainingScopeForTesting(
     const FileSystemAccessWatchScope& scope) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       all_sources_,
       [&scope](const raw_ref<FileSystemAccessChangeSource> source) {
         return source->scope().Contains(scope);
@@ -360,7 +359,7 @@ void FileSystemAccessWatcherManager::EnsureSourceIsInitializedForScope(
   // sources.
 
   FileSystemAccessChangeSource* raw_change_source = nullptr;
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       all_sources_,
       [&scope](const raw_ref<FileSystemAccessChangeSource> source) {
         return source->scope().GetWatchType() ==

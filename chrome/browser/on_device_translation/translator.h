@@ -9,6 +9,7 @@
 #include "components/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-forward.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
 
 namespace content {
@@ -33,7 +34,11 @@ class Translator : public blink::mojom::Translator {
   ~Translator() override;
 
   // `blink::mojom::Translator` implementation.
-  void Translate(const std::string& input, TranslateCallback callback) override;
+  void Translate(const std::string& input,
+                 mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+                     pending_responder) override;
+  void TranslateDeprecated(const std::string& input,
+                           TranslateDeprecatedCallback callback) override;
 
  private:
   base::WeakPtr<content::BrowserContext> browser_context_;

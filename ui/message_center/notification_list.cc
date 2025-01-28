@@ -453,7 +453,7 @@ NotificationList::GetVisibleNotificationsWithoutBlocker(
     const NotificationBlocker* ignored_blocker) const {
   Notifications result;
   for (const auto& tuple : notifications_) {
-    auto it = (base::ranges::find_if(
+    auto it = (std::ranges::find_if(
         blockers, [&ignored_blocker,
                    &tuple](message_center::NotificationBlocker* blocker) {
           return blocker != ignored_blocker &&

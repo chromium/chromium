@@ -2046,12 +2046,13 @@ IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Success) {
   run_loop.Run();
   ASSERT_TRUE(metrics_request_origin_);
   EXPECT_TRUE(metrics_request_origin_->starts_with("https://rp.example:"));
+  EXPECT_EQ("success", metrics_parameters_["outcome"]);
   EXPECT_EQ(1ul, metrics_parameters_.count("time_to_show_ui"));
   EXPECT_EQ(1ul, metrics_parameters_.count("time_to_continue"));
   EXPECT_EQ(1ul, metrics_parameters_.count("time_to_receive_token"));
   EXPECT_EQ(1ul, metrics_parameters_.count("turnaround_time"));
   EXPECT_EQ(0ul, metrics_parameters_.count("error_code"));
-  EXPECT_EQ("true", metrics_parameters_["did_show_ui"]);
+  EXPECT_EQ(0ul, metrics_parameters_.count("did_show_ui"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, IdpLoginClosed) {
@@ -2117,6 +2118,7 @@ IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, IdpLoginClosed) {
   run_loop.Run();
 
   EXPECT_EQ("null", metrics_request_origin_);
+  EXPECT_EQ("failure", metrics_parameters_["outcome"]);
   // In the failure case we should not send timing data.
   EXPECT_EQ(0ul, metrics_parameters_.count("time_to_show_ui"));
   EXPECT_EQ(0ul, metrics_parameters_.count("time_to_continue"));
@@ -2150,6 +2152,7 @@ IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Failure) {
   EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
   run_loop.Run();
   EXPECT_EQ("null", metrics_request_origin_);
+  EXPECT_EQ("failure", metrics_parameters_["outcome"]);
   // In the failure case we should not send timing data.
   EXPECT_EQ(0ul, metrics_parameters_.count("time_to_show_ui"));
   EXPECT_EQ(0ul, metrics_parameters_.count("time_to_continue"));

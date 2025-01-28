@@ -31,7 +31,7 @@
 #include "net/dns/public/util.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/net/ash_dns_over_https_config_source.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
@@ -58,7 +58,7 @@ base::Value::Dict CreateSecureDnsSettingDict(
   base::Value::Dict dict;
   dict.Set("mode", SecureDnsConfig::ModeToString(config.mode()));
   dict.Set("config", config.doh_servers().ToString());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::SecureDnsManager* secure_dns_manager =
       g_browser_process->platform_part()->secure_dns_manager();
   dict.Set("osMode",
@@ -106,7 +106,7 @@ void SecureDnsHandler::OnJavascriptAllowed() {
   // Register for updates to the underlying secure DNS prefs so that the
   // secure DNS setting can be updated to reflect the current host resolver
   // configuration.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   doh_source_ = std::make_unique<ash::AshDnsOverHttpsConfigSource>(
       g_browser_process->platform_part()->secure_dns_manager(),
       g_browser_process->local_state());

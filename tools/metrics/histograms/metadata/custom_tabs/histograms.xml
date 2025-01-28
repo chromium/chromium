@@ -228,7 +228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ContextMenu.UrlScheme" enum="CustomTabsUrlScheme"
-    expires_after="2025-05-03">
+    expires_after="2025-07-27">
   <owner>jinsukkim@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -314,7 +314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.GoogleBottomBar.Button.Shown"
-    enum="GoogleBottomBarButtonEvent" expires_after="2025-05-16">
+    enum="GoogleBottomBarButtonEvent" expires_after="2025-07-27">
   <owner>tivi@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -337,7 +337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.GoogleBottomBar.Created"
-    enum="GoogleBottomBarCreatedEvent" expires_after="2025-05-16">
+    enum="GoogleBottomBarCreatedEvent" expires_after="2025-07-27">
   <owner>tivi@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -360,7 +360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.GoogleBottomBar.Variant.Created"
-    enum="GoogleBottomBarVariantCreatedEvent" expires_after="2025-05-16">
+    enum="GoogleBottomBarVariantCreatedEvent" expires_after="2025-07-27">
   <owner>tivi@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -446,7 +446,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.IncognitoCCTCallerIsTrusted" enum="Boolean"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>dullweber@google.com</owner>
   <owner>chrome-incognito@google.com</owner>
   <owner>cct-team@google.com</owner>
@@ -592,7 +592,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.PageNavigation.ErrorCode" enum="NetErrorCodes"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>jinsukkim@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>

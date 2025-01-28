@@ -87,13 +87,12 @@
      */
     var LogType;
     (function (LogType) {
-        // keep-sorted start
         LogType["bidi"] = "bidi";
         LogType["cdp"] = "cdp";
         LogType["debug"] = "debug";
         LogType["debugError"] = "debug:error";
         LogType["debugInfo"] = "debug:info";
-        // keep-sorted end
+        LogType["debugWarn"] = "debug:warn";
     })(LogType || (LogType = {}));
 
     /**
@@ -176,7 +175,6 @@
      */
     var BiDiModule;
     (function (BiDiModule) {
-        // keep-sorted start
         BiDiModule["Bluetooth"] = "bluetooth";
         BiDiModule["Browser"] = "browser";
         BiDiModule["BrowsingContext"] = "browsingContext";
@@ -187,16 +185,13 @@
         BiDiModule["Network"] = "network";
         BiDiModule["Script"] = "script";
         BiDiModule["Session"] = "session";
-        // keep-sorted end
     })(BiDiModule || (BiDiModule = {}));
     var Script$2;
     (function (Script) {
         (function (EventNames) {
-            // keep-sorted start
             EventNames["Message"] = "script.message";
             EventNames["RealmCreated"] = "script.realmCreated";
             EventNames["RealmDestroyed"] = "script.realmDestroyed";
-            // keep-sorted end
         })(Script.EventNames || (Script.EventNames = {}));
     })(Script$2 || (Script$2 = {}));
     var Log$1;
@@ -208,7 +203,6 @@
     var BrowsingContext$2;
     (function (BrowsingContext) {
         (function (EventNames) {
-            // keep-sorted start
             EventNames["ContextCreated"] = "browsingContext.contextCreated";
             EventNames["ContextDestroyed"] = "browsingContext.contextDestroyed";
             EventNames["DomContentLoaded"] = "browsingContext.domContentLoaded";
@@ -221,19 +215,16 @@
             EventNames["NavigationStarted"] = "browsingContext.navigationStarted";
             EventNames["UserPromptClosed"] = "browsingContext.userPromptClosed";
             EventNames["UserPromptOpened"] = "browsingContext.userPromptOpened";
-            // keep-sorted end
         })(BrowsingContext.EventNames || (BrowsingContext.EventNames = {}));
     })(BrowsingContext$2 || (BrowsingContext$2 = {}));
     var Network$2;
     (function (Network) {
         (function (EventNames) {
-            // keep-sorted start
             EventNames["AuthRequired"] = "network.authRequired";
             EventNames["BeforeRequestSent"] = "network.beforeRequestSent";
             EventNames["FetchError"] = "network.fetchError";
             EventNames["ResponseCompleted"] = "network.responseCompleted";
             EventNames["ResponseStarted"] = "network.responseStarted";
-            // keep-sorted end
         })(Network.EventNames || (Network.EventNames = {}));
     })(Network$2 || (Network$2 = {}));
     var Bluetooth$2;
@@ -243,13 +234,12 @@
         })(Bluetooth.EventNames || (Bluetooth.EventNames = {}));
     })(Bluetooth$2 || (Bluetooth$2 = {}));
     const EVENT_NAMES = new Set([
-        // keep-sorted start
         ...Object.values(BiDiModule),
+        ...Object.values(Bluetooth$2.EventNames),
         ...Object.values(BrowsingContext$2.EventNames),
         ...Object.values(Log$1.EventNames),
         ...Object.values(Network$2.EventNames),
         ...Object.values(Script$2.EventNames),
-        // keep-sorted end
     ]);
 
     class Exception extends Error {
@@ -386,7 +376,6 @@
      */
     class BidiNoOpParser {
         // Bluetooth module
-        // keep-sorted start block=yes
         parseHandleRequestDevicePromptParams(params) {
             return params;
         }
@@ -399,15 +388,11 @@
         parseSimulatePreconnectedPeripheralParameters(params) {
             return params;
         }
-        // keep-sorted end
         // Browser module
-        // keep-sorted start block=yes
         parseRemoveUserContextParams(params) {
             return params;
         }
-        // keep-sorted end
         // Browsing Context module
-        // keep-sorted start block=yes
         parseActivateParams(params) {
             return params;
         }
@@ -444,9 +429,7 @@
         parseTraverseHistoryParams(params) {
             return params;
         }
-        // keep-sorted end
         // CDP module
-        // keep-sorted start block=yes
         parseGetSessionParams(params) {
             return params;
         }
@@ -456,9 +439,7 @@
         parseSendCommandParams(params) {
             return params;
         }
-        // keep-sorted end
         // Script module
-        // keep-sorted start block=yes
         parseAddPreloadScriptParams(params) {
             return params;
         }
@@ -477,9 +458,7 @@
         parseRemovePreloadScriptParams(params) {
             return params;
         }
-        // keep-sorted end
         // Input module
-        // keep-sorted start block=yes
         parsePerformActionsParams(params) {
             return params;
         }
@@ -489,9 +468,7 @@
         parseSetFilesParams(params) {
             return params;
         }
-        // keep-sorted end
         // Network module
-        // keep-sorted start block=yes
         parseAddInterceptParams(params) {
             return params;
         }
@@ -516,19 +493,17 @@
         parseSetCacheBehavior(params) {
             return params;
         }
-        // keep-sorted end
         // Permissions module
-        // keep-sorted start block=yes
         parseSetPermissionsParams(params) {
             return params;
         }
-        // keep-sorted end
         // Session module
-        // keep-sorted start block=yes
         parseSubscribeParams(params) {
             return params;
         }
-        // keep-sorted end
+        parseUnsubscribeParams(params) {
+            return params;
+        }
         // Storage module
         parseDeleteCookiesParams(params) {
             return params;
@@ -3021,6 +2996,21 @@
         }, '');
         return new TextEncoder().encode(requestHeaders).length;
     }
+    function stringToBase64(str) {
+        return typedArrayToBase64(new TextEncoder().encode(str));
+    }
+    function typedArrayToBase64(typedArray) {
+        // chunkSize should be less V8 limit on number of arguments!
+        // https://github.com/v8/v8/blob/d3de848bea727518aee94dd2fd42ba0b62037a27/src/objects/code.h#L444
+        const chunkSize = 65534;
+        const chunks = [];
+        for (let i = 0; i < typedArray.length; i += chunkSize) {
+            const chunk = typedArray.subarray(i, i + chunkSize);
+            chunks.push(String.fromCodePoint.apply(null, chunk));
+        }
+        const binaryString = chunks.join('');
+        return btoa(binaryString);
+    }
     /** Converts from CDP Network domain headers to BiDi network headers. */
     function bidiNetworkHeadersFromCdpNetworkHeaders(headers) {
         if (!headers) {
@@ -4288,6 +4278,10 @@
             };
         }
         async unsubscribe(params, channel = {}) {
+            if ('subscriptions' in params) {
+                await this.#eventManager.unsubscribeByIds(params.subscriptions);
+                return {};
+            }
             await this.#eventManager.unsubscribe(params.events, params.contexts ?? [], channel);
             return {};
         }
@@ -4544,7 +4538,6 @@
      * limitations under the License.
      */
     class CommandProcessor extends EventEmitter {
-        // keep-sorted start
         #bluetoothProcessor;
         #browserProcessor;
         #browsingContextProcessor;
@@ -4555,7 +4548,6 @@
         #scriptProcessor;
         #sessionProcessor;
         #storageProcessor;
-        // keep-sorted end
         #parser;
         #logger;
         constructor(cdpConnection, browserCdpClient, eventManager, browsingContextStorage, realmStorage, preloadScriptStorage, networkStorage, bluetoothProcessor, parser = new BidiNoOpParser(), initConnection, logger) {
@@ -4563,7 +4555,6 @@
             this.#parser = parser;
             this.#logger = logger;
             this.#bluetoothProcessor = bluetoothProcessor;
-            // keep-sorted start block=yes
             this.#browserProcessor = new BrowserProcessor(browserCdpClient, browsingContextStorage);
             this.#browsingContextProcessor = new BrowsingContextProcessor(browserCdpClient, browsingContextStorage, eventManager);
             this.#cdpProcessor = new CdpProcessor(browsingContextStorage, realmStorage, cdpConnection, browserCdpClient);
@@ -4573,12 +4564,10 @@
             this.#scriptProcessor = new ScriptProcessor(eventManager, browsingContextStorage, realmStorage, preloadScriptStorage, logger);
             this.#sessionProcessor = new SessionProcessor(eventManager, browserCdpClient, initConnection);
             this.#storageProcessor = new StorageProcessor(browserCdpClient, browsingContextStorage, logger);
-            // keep-sorted end
         }
         async #processCommand(command) {
             switch (command.method) {
                 // Bluetooth module
-                // keep-sorted start block=yes
                 case 'bluetooth.handleRequestDevicePrompt':
                     return await this.#bluetoothProcessor.handleRequestDevicePrompt(this.#parser.parseHandleRequestDevicePromptParams(command.params));
                 case 'bluetooth.simulateAdapter':
@@ -4587,9 +4576,7 @@
                     return await this.#bluetoothProcessor.simulateAdvertisement(this.#parser.parseSimulateAdvertisementParameters(command.params));
                 case 'bluetooth.simulatePreconnectedPeripheral':
                     return await this.#bluetoothProcessor.simulatePreconnectedPeripheral(this.#parser.parseSimulatePreconnectedPeripheralParameters(command.params));
-                // keep-sorted end
                 // Browser module
-                // keep-sorted start block=yes
                 case 'browser.close':
                     return this.#browserProcessor.close();
                 case 'browser.createUserContext':
@@ -4602,9 +4589,7 @@
                     return await this.#browserProcessor.removeUserContext(this.#parser.parseRemoveUserContextParams(command.params));
                 case 'browser.setClientWindowState':
                     throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
-                // keep-sorted end
                 // Browsing Context module
-                // keep-sorted start block=yes
                 case 'browsingContext.activate':
                     return await this.#browsingContextProcessor.activate(this.#parser.parseActivateParams(command.params));
                 case 'browsingContext.captureScreenshot':
@@ -4629,37 +4614,32 @@
                     return await this.#browsingContextProcessor.setViewport(this.#parser.parseSetViewportParams(command.params));
                 case 'browsingContext.traverseHistory':
                     return await this.#browsingContextProcessor.traverseHistory(this.#parser.parseTraverseHistoryParams(command.params));
-                // keep-sorted end
                 // CDP module
-                // keep-sorted start block=yes
                 case 'goog:cdp.getSession':
                     return this.#cdpProcessor.getSession(this.#parser.parseGetSessionParams(command.params));
                 case 'goog:cdp.resolveRealm':
                     return this.#cdpProcessor.resolveRealm(this.#parser.parseResolveRealmParams(command.params));
                 case 'goog:cdp.sendCommand':
                     return await this.#cdpProcessor.sendCommand(this.#parser.parseSendCommandParams(command.params));
-                // keep-sorted end
                 // CDP deprecated domain.
                 // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844
-                // keep-sorted start block=yes
                 case 'cdp.getSession':
+                    this.#logger?.(LogType.debugWarn, `Legacy '${command.method}' command is deprecated and will not supported soon. Use 'goog:${command.method}' instead.`);
                     return this.#cdpProcessor.getSession(this.#parser.parseGetSessionParams(command.params));
                 case 'cdp.resolveRealm':
+                    this.#logger?.(LogType.debugWarn, `Legacy '${command.method}' command is deprecated and will not supported soon. Use 'goog:${command.method}' instead.`);
                     return this.#cdpProcessor.resolveRealm(this.#parser.parseResolveRealmParams(command.params));
                 case 'cdp.sendCommand':
+                    this.#logger?.(LogType.debugWarn, `Legacy '${command.method}' command is deprecated and will not supported soon. Use 'goog:${command.method}' instead.`);
                     return await this.#cdpProcessor.sendCommand(this.#parser.parseSendCommandParams(command.params));
-                // keep-sorted end
                 // Input module
-                // keep-sorted start block=yes
                 case 'input.performActions':
                     return await this.#inputProcessor.performActions(this.#parser.parsePerformActionsParams(command.params));
                 case 'input.releaseActions':
                     return await this.#inputProcessor.releaseActions(this.#parser.parseReleaseActionsParams(command.params));
                 case 'input.setFiles':
                     return await this.#inputProcessor.setFiles(this.#parser.parseSetFilesParams(command.params));
-                // keep-sorted end
                 // Network module
-                // keep-sorted start block=yes
                 case 'network.addIntercept':
                     return await this.#networkProcessor.addIntercept(this.#parser.parseAddInterceptParams(command.params));
                 case 'network.continueRequest':
@@ -4676,14 +4656,10 @@
                     return await this.#networkProcessor.removeIntercept(this.#parser.parseRemoveInterceptParams(command.params));
                 case 'network.setCacheBehavior':
                     return await this.#networkProcessor.setCacheBehavior(this.#parser.parseSetCacheBehavior(command.params));
-                // keep-sorted end
                 // Permissions module
-                // keep-sorted start block=yes
                 case 'permissions.setPermission':
                     return await this.#permissionsProcessor.setPermissions(this.#parser.parseSetPermissionsParams(command.params));
-                // keep-sorted end
                 // Script module
-                // keep-sorted start block=yes
                 case 'script.addPreloadScript':
                     return await this.#scriptProcessor.addPreloadScript(this.#parser.parseAddPreloadScriptParams(command.params));
                 case 'script.callFunction':
@@ -4696,9 +4672,7 @@
                     return this.#scriptProcessor.getRealms(this.#parser.parseGetRealmsParams(command.params));
                 case 'script.removePreloadScript':
                     return await this.#scriptProcessor.removePreloadScript(this.#parser.parseRemovePreloadScriptParams(command.params));
-                // keep-sorted end
                 // Session module
-                // keep-sorted start block=yes
                 case 'session.end':
                     throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
                 case 'session.new':
@@ -4708,24 +4682,19 @@
                 case 'session.subscribe':
                     return await this.#sessionProcessor.subscribe(this.#parser.parseSubscribeParams(command.params), command.channel);
                 case 'session.unsubscribe':
-                    return await this.#sessionProcessor.unsubscribe(this.#parser.parseSubscribeParams(command.params), command.channel);
-                // keep-sorted end
+                    return await this.#sessionProcessor.unsubscribe(this.#parser.parseUnsubscribeParams(command.params), command.channel);
                 // Storage module
-                // keep-sorted start block=yes
                 case 'storage.deleteCookies':
                     return await this.#storageProcessor.deleteCookies(this.#parser.parseDeleteCookiesParams(command.params));
                 case 'storage.getCookies':
                     return await this.#storageProcessor.getCookies(this.#parser.parseGetCookiesParams(command.params));
                 case 'storage.setCookie':
                     return await this.#storageProcessor.setCookie(this.#parser.parseSetCookieParams(command.params));
-                // keep-sorted end
                 // WebExtension module
-                // keep-sorted start block=yes
                 case 'webExtension.install':
                     throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
                 case 'webExtension.uninstall':
                     throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
-                // keep-sorted end
             }
             // Intentionally kept outside the switch statement to ensure that
             // ESLint @typescript-eslint/switch-exhaustiveness-check triggers if a new
@@ -6110,7 +6079,6 @@
         }
         dispose(emitContextDestroyed) {
             this.#navigationTracker.dispose();
-            this.#deleteAllChildren();
             this.#realmStorage.deleteRealms({
                 browsingContextId: this.id,
             });
@@ -6124,9 +6092,11 @@
                 this.#eventManager.registerEvent({
                     type: 'event',
                     method: BrowsingContext$2.EventNames.ContextDestroyed,
-                    params: this.serializeToBidiValue(),
+                    params: this.serializeToBidiValue(null),
                 }, this.id);
             }
+            // Dispose children after the events are emitted.
+            this.#deleteAllChildren();
             this.#eventManager.clearBufferedEvents(this.id);
             this.#browsingContextStorage.deleteContextById(this.id);
         }
@@ -6237,6 +6207,9 @@
             // through evaluation.
             return maybeSandboxes[0];
         }
+        /**
+         * Implements https://w3c.github.io/webdriver-bidi/#get-the-navigable-info.
+         */
         serializeToBidiValue(maxDepth = 0, addParentField = true) {
             return {
                 context: this.#id,
@@ -6245,8 +6218,8 @@
                 originalOpener: this.#originalOpener ?? null,
                 // TODO(#2646): Implement Client Window correctly
                 clientWindow: '',
-                children: maxDepth > 0
-                    ? this.directChildren.map((c) => c.serializeToBidiValue(maxDepth - 1, false))
+                children: maxDepth === null || maxDepth > 0
+                    ? this.directChildren.map((c) => c.serializeToBidiValue(maxDepth === null ? maxDepth : maxDepth - 1, false))
                     : null,
                 ...(addParentField ? { parent: this.#parentId } : {}),
             };
@@ -8171,7 +8144,6 @@
                 this.#handleTargetCrashedEvent(cdpClient);
             });
             cdpClient.on('Page.frameAttached', this.#handleFrameAttachedEvent.bind(this));
-            cdpClient.on('Page.frameDetached', this.#handleFrameDetachedEvent.bind(this));
             cdpClient.on('Page.frameSubtreeWillBeDetached', this.#handleFrameSubtreeWillBeDetached.bind(this));
         }
         #handleFrameAttachedEvent(params) {
@@ -8182,13 +8154,6 @@
                 // later.
                 'about:blank', undefined, this.#unhandledPromptBehavior, this.#logger);
             }
-        }
-        #handleFrameDetachedEvent(params) {
-            // In case of OOPiF no need in deleting BrowsingContext.
-            if (params.reason === 'swap') {
-                return;
-            }
-            this.#browsingContextStorage.findContext(params.frameId)?.dispose(true);
         }
         #handleFrameSubtreeWillBeDetached(params) {
             this.#browsingContextStorage.findContext(params.frameId)?.dispose(true);
@@ -9317,7 +9282,7 @@
     function getCdpBodyFromBiDiBytesValue(body) {
         let parsedBody;
         if (body?.type === 'string') {
-            parsedBody = btoa(body.value);
+            parsedBody = stringToBase64(body.value);
         }
         else if (body?.type === 'base64') {
             parsedBody = body.value;
@@ -9830,6 +9795,7 @@
     }
     class SubscriptionManager {
         #subscriptions = [];
+        #knownSubscriptionIds = new Set();
         #browsingContextStorage;
         constructor(browsingContextStorage) {
             this.#browsingContextStorage = browsingContextStorage;
@@ -9921,6 +9887,7 @@
                 channel,
             };
             this.#subscriptions.push(subscription);
+            this.#knownSubscriptionIds.add(subscription.id);
             return subscription;
         }
         /**
@@ -10029,8 +9996,16 @@
         /**
          * Unsubscribes by subscriptionId.
          */
-        unsubscribeById(_subscription) {
-            // TODO: implement.
+        unsubscribeById(subscriptionIds) {
+            const subscriptionIdsSet = new Set(subscriptionIds);
+            const unknownIds = difference(subscriptionIdsSet, this.#knownSubscriptionIds);
+            if (unknownIds.size !== 0) {
+                throw new InvalidArgumentException('No subscription found');
+            }
+            this.#subscriptions = this.#subscriptions.filter((subscription) => {
+                return !subscriptionIdsSet.has(subscription.id);
+            });
+            this.#knownSubscriptionIds = difference(this.#knownSubscriptionIds, subscriptionIdsSet);
         }
     }
     /**
@@ -10245,6 +10220,10 @@
                 assertSupportedEvent(name);
             }
             this.#subscriptionManager.unsubscribe(eventNames, contextIds, channel);
+            await this.toggleModulesIfNeeded();
+        }
+        async unsubscribeByIds(subscriptionIds) {
+            this.#subscriptionManager.unsubscribeById(subscriptionIds);
             await this.toggleModulesIfNeeded();
         }
         async toggleModulesIfNeeded() {
@@ -15485,11 +15464,14 @@
     (function (Session) {
         Session.UnsubscribeSchema = z.lazy(() => z.object({
             method: z.literal('session.unsubscribe'),
-            params: z.union([
-                Session.UnsubscribeByAttributesRequestSchema,
-                Session.UnsubscribeByIdRequestSchema,
-            ]),
+            params: Session.UnsubscribeParametersSchema,
         }));
+    })(Session$1 || (Session$1 = {}));
+    (function (Session) {
+        Session.UnsubscribeParametersSchema = z.lazy(() => z.union([
+            Session.UnsubscribeByAttributesRequestSchema,
+            Session.UnsubscribeByIdRequestSchema,
+        ]));
     })(Session$1 || (Session$1 = {}));
     const BrowserCommandSchema = z.lazy(() => z.union([
         Browser$1.CloseSchema,
@@ -16997,6 +16979,7 @@
                 .array(BrowsingContext$1.BrowsingContextSchema)
                 .min(1)
                 .optional(),
+            userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
             sandbox: z.string().optional(),
         }));
     })(Script$1 || (Script$1 = {}));
@@ -17702,6 +17685,13 @@
             return parseObject(params, Session$1.SubscriptionRequestSchema);
         }
         Session.parseSubscribeParams = parseSubscribeParams;
+        function parseUnsubscribeParams(params) {
+            if (params && typeof params === 'object' && 'subscriptions' in params) {
+                return parseObject(params, Session$1.UnsubscribeByIdRequestSchema);
+            }
+            return parseObject(params, Session$1.UnsubscribeParametersSchema);
+        }
+        Session.parseUnsubscribeParams = parseUnsubscribeParams;
     })(Session || (Session = {}));
     var Input;
     (function (Input) {
@@ -17812,7 +17802,6 @@
 
     class BidiParser {
         // Bluetooth module
-        // keep-sorted start block=yes
         parseHandleRequestDevicePromptParams(params) {
             return Bluetooth.parseHandleRequestDevicePromptParams(params);
         }
@@ -17825,15 +17814,11 @@
         parseSimulatePreconnectedPeripheralParameters(params) {
             return Bluetooth.parseSimulatePreconnectedPeripheralParams(params);
         }
-        // keep-sorted end
         // Browser module
-        // keep-sorted start block=yes
         parseRemoveUserContextParams(params) {
             return Browser.parseRemoveUserContextParams(params);
         }
-        // keep-sorted end
         // Browsing Context module
-        // keep-sorted start block=yes
         parseActivateParams(params) {
             return BrowsingContext.parseActivateParams(params);
         }
@@ -17870,9 +17855,7 @@
         parseTraverseHistoryParams(params) {
             return BrowsingContext.parseTraverseHistoryParams(params);
         }
-        // keep-sorted end
         // CDP module
-        // keep-sorted start block=yes
         parseGetSessionParams(params) {
             return Cdp.parseGetSessionRequest(params);
         }
@@ -17882,9 +17865,7 @@
         parseSendCommandParams(params) {
             return Cdp.parseSendCommandRequest(params);
         }
-        // keep-sorted end
         // Input module
-        // keep-sorted start block=yes
         parsePerformActionsParams(params) {
             return Input.parsePerformActionsParams(params);
         }
@@ -17894,9 +17875,7 @@
         parseSetFilesParams(params) {
             return Input.parseSetFilesParams(params);
         }
-        // keep-sorted end
         // Network module
-        // keep-sorted start block=yes
         parseAddInterceptParams(params) {
             return Network.parseAddInterceptParameters(params);
         }
@@ -17921,15 +17900,11 @@
         parseSetCacheBehavior(params) {
             return Network.parseSetCacheBehavior(params);
         }
-        // keep-sorted end
         // Permissions module
-        // keep-sorted start block=yes
         parseSetPermissionsParams(params) {
             return Permissions.parseSetPermissionsParams(params);
         }
-        // keep-sorted end
         // Script module
-        // keep-sorted start block=yes
         parseAddPreloadScriptParams(params) {
             return Script.parseAddPreloadScriptParams(params);
         }
@@ -17948,13 +17923,13 @@
         parseRemovePreloadScriptParams(params) {
             return Script.parseRemovePreloadScriptParams(params);
         }
-        // keep-sorted end
         // Session module
-        // keep-sorted start block=yes
         parseSubscribeParams(params) {
             return Session.parseSubscribeParams(params);
         }
-        // keep-sorted end
+        parseUnsubscribeParams(params) {
+            return Session.parseUnsubscribeParams(params);
+        }
         // Storage module
         parseDeleteCookiesParams(params) {
             return Storage.parseDeleteCookiesParams(params);
@@ -18030,6 +18005,7 @@
     class WindowBidiTransport {
         static LOGGER_PREFIX_RECV = `${LogType.bidi}:RECV ◂`;
         static LOGGER_PREFIX_SEND = `${LogType.bidi}:SEND ▸`;
+        static LOGGER_PREFIX_WARN = LogType.debugWarn;
         #onMessage = null;
         constructor() {
             window.onBidiMessage = (message) => {
@@ -18131,6 +18107,7 @@
                 }
             }
             else if (command.channel !== undefined) {
+                log(_a.LOGGER_PREFIX_WARN, 'Legacy `channel` parameter is deprecated and will not supported soon. Use `goog:channel` instead.');
                 const channelType = _a.#getJsonType(command.channel);
                 if (channelType !== 'string') {
                     throw new Error(`Expected string 'channel' but got ${channelType}`);

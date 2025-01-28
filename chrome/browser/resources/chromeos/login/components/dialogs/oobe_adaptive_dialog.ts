@@ -13,7 +13,7 @@ import '../oobe_vars/oobe_shared_vars.css.js';
 import {CrButtonElement} from '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrLazyRenderElement} from '//resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from '//resources/js/assert.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './oobe_adaptive_dialog.html.js';

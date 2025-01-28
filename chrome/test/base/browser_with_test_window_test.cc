@@ -88,13 +88,13 @@ void BrowserWithTestWindowTest::SetUp() {
   {
     ash::AshTestHelper::InitParams ash_init;
     ash_init.local_state = g_browser_process->local_state();
-    ash_test_helper_.SetUp(std::move(ash_init));
+    ash_init.start_session = false;
 
-    // Do not auto create user pref service because it will be provided
-    // in `CreateProfile`.
-    ash_test_helper()
-        ->test_session_controller_client()
-        ->set_default_provide_pref_service(false);
+    // Do not auto create user pref service. PrefService will be created by
+    // TestingProfile.
+    ash_init.auto_create_prefs_services = false;
+
+    ash_test_helper_.SetUp(std::move(ash_init));
   }
 #endif
 
@@ -360,6 +360,8 @@ void BrowserWithTestWindowTest::OnUserProfileCreated(const std::string& email,
 void BrowserWithTestWindowTest::SwitchActiveUser(const std::string& email) {
   ash_test_helper()->test_session_controller_client()->SwitchActiveUser(
       AccountId::FromUserEmail(email));
+  ash_test_helper()->test_session_controller_client()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
 }
 
 void BrowserWithTestWindowTest::OnProfileWillBeDestroyed(Profile* profile) {

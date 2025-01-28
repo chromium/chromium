@@ -366,6 +366,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="6145820983052037069">Med profili v Chromiumu lahko preklapljate tukaj</translation>
 <translation id="615103374448673771">Če omogočite piškotke, jih bo Chromium morda uporabil za vnaprejšnje nalaganje</translation>
 <translation id="6165508094623778733">Več o tem</translation>
+<translation id="6173308241973263798">Izbris podatkov iz Chromiuma v računu</translation>
 <translation id="6174920971222007286">Ta datoteka je morda nevarna<ph name="LINE_BREAK" />Chromium lahko preveri ta prenos, če navedete geslo. Podatki o datoteki se pošljejo v Google Varno brskanje, vsebina datoteke in geslo pa ostaneta v napravi.</translation>
 <translation id="6182736845697986886">Namestitev ni uspela zaradi notranje napake strežnika za posodobitve.</translation>
 <translation id="6183079672144801177">Preverite, ali ste v napravi <ph name="TARGET_DEVICE_NAME" /> prijavljeni v Chromium, nato poskusite znova poslati.</translation>
@@ -432,6 +433,7 @@ Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali upor
 <translation id="684888714667046800">Internetne povezave ni mogoče vzpostaviti. Če uporabljate požarni zid, poskrbite, da je <ph name="PRODUCT_EXE_NAME" /> na seznamu dovoljenih.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium je ugotovil, da razširitev »<ph name="EXTENSION_NAME" />« vsebuje zlonamerno programsko opremo.</translation>
+<translation id="6877631896957360295">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="SETTINGS_LINK" /> podatke iz Chromiuma v računu.</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6929417474050522668">Če so preizkusi vklopljeni, merjenje oglasov spletnim mestom omogoča, da od Chromiuma zahtevajo podatke, ki jim pomagajo pri merjenju učinkovitosti oglasov. Merjenje oglasov omejuje sledenje na več spletnih mestih s prenašanjem čim manj podatkov med spletnimi mesti.</translation>
 <translation id="6940431691900807093">Pozneje lahko stran, ki jo obiščete, od Chromiuma zahteva ogled vaših zanimanj zaradi osebnega prilagajanja oglasov, ki so vam prikazani. Chromium lahko deli do 3 zanimanja.</translation>

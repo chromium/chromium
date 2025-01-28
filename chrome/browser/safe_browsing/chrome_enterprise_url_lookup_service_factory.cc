@@ -23,10 +23,7 @@
 #include "components/safe_browsing/core/common/utils.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
-
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 namespace safe_browsing {
 
@@ -59,9 +56,7 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(VerdictCacheManagerFactory::GetInstance());
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   DependsOn(SafeBrowsingNavigationObserverManagerFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
@@ -69,7 +64,6 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::
 std::unique_ptr<KeyedService> ChromeEnterpriseRealTimeUrlLookupServiceFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   if (!g_browser_process->safe_browsing_service()) {
     return nullptr;
   }
@@ -87,9 +81,6 @@ std::unique_ptr<KeyedService> ChromeEnterpriseRealTimeUrlLookupServiceFactory::
           profile),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile));
-#else
-  return nullptr;
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 }  // namespace safe_browsing

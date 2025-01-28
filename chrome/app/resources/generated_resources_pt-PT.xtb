@@ -72,6 +72,7 @@
 <translation id="1043505821207197890">Algo correu mal. O Linux pode ter sido atualizado apenas parcialmente. Consulte os registos para obter mais informações. Os registos foram guardados em Files &gt; Os meus ficheiros &gt; <ph name="LOG_FILE" /></translation>
 <translation id="104385770822424034">Adicionar ação</translation>
 <translation id="104419033123549300">Estilo do esquema do teclado</translation>
+<translation id="1045487161760507186">Não precisa de memorizar a palavra-passe porque esta é guardada no Gestor de Palavras-passe da Google</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 palavra-passe importada para o <ph name="BRAND" /> neste dispositivo}other{{NUM_PASSWORDS} palavras-passe importadas para o <ph name="BRAND" /> neste dispositivo}}</translation>
 <translation id="1046572983040892965">Janela movida para cima e para a esquerda</translation>
 <translation id="104710386808485638">Quer reiniciar o Linux?</translation>
@@ -1874,6 +1875,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2297705863329999812">Pesquisar impressoras</translation>
 <translation id="2297822946037605517">Partilhar esta página</translation>
 <translation id="229871422646860597">Desafixar da barra de ferramentas</translation>
+<translation id="2299685119225839832">Pode receber um resumo da opinião das pessoas nas respetivas críticas</translation>
 <translation id="2299734369537008228">Controlo de deslize: de <ph name="MIN_LABEL" /> a <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Inclua todos os ficheiros de registo recolhidos por debugd como um arquivo separado.</translation>
 <translation id="2300214399009193026">PCIe</translation>
@@ -5247,6 +5249,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4676616966096505747">Alguns dados ainda não foram guardados na sua conta</translation>
 <translation id="4677772697204437347">Memória de GPU</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4678729681411398877">Quando uma das suas palavras-passe é encontrada numa violação de dados, o Gestor de Palavras-passe da Google pergunta se quer alterá-la para uma palavra-passe forte</translation>
 <translation id="4678848110205818817">Cartão de crédito/débito</translation>
 <translation id="4679018849559620189">Isto ajuda a aceder às suas chaves de acesso guardadas em qualquer dispositivo</translation>
 <translation id="4680105648806843642">O som foi desativado nesta página.</translation>
@@ -6817,6 +6820,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5828545842856466741">Adicionar perfil…</translation>
 <translation id="5828633471261496623">A imprimir...</translation>
 <translation id="5830205393314753525">Não é possível abrir a app <ph name="APP_NAME" /></translation>
+<translation id="5830512293931520102">A sua palavra-passe é encriptada e nunca é visível para ninguém</translation>
 <translation id="5830720307094128296">Guard&amp;ar Página Como...</translation>
 <translation id="583179300286794292">Com sessão iniciada como <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Eliminar os dados e as autorizações do site <ph name="SITE_NAME" />, de todos os sites associados ao mesmo e da respetiva app instalada?</translation>
@@ -10151,6 +10155,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8215129063232901118">Aceda às capacidades do seu telemóvel a partir do seu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8217212468862726597">Realçar ponteiro</translation>
 <translation id="8217399928341212914">Continuar a bloquear transferências automáticas de vários ficheiros</translation>
+<translation id="8219785583603399823">Veja as classificações desta loja</translation>
 <translation id="822050276545350872">A partir deste momento, não é preciso esperar</translation>
 <translation id="8222112516148944758">Os seus grupos de separadores são guardados e atualizados automaticamente em todos os seus dispositivos</translation>
 <translation id="8222674561049363989">O ficheiro não é um documento válido</translation>

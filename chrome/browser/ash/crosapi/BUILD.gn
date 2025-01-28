@@ -7,7 +7,7 @@ import("//build/config/ui.gni")
 import("//media/media_options.gni")
 import("//printing/buildflags/buildflags.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 assert(use_ozone)
 
 static_library("browser_util") {
@@ -249,7 +249,6 @@ static_library("crosapi") {
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/screens",
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",

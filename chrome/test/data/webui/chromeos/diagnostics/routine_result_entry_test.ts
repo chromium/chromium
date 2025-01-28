@@ -83,7 +83,7 @@ suite('routineResultEntryTestSuite', function() {
   function getNameText(): string {
     assert(routineResultEntryElement);
     const name =
-        routineResultEntryElement.shadowRoot!.querySelector<HTMLDivElement>(
+        routineResultEntryElement.shadowRoot!.querySelector<HTMLElement>(
             '#routine');
     assert(name);
     return name!.textContent!.trim();

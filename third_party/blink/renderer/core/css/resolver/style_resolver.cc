@@ -539,23 +539,6 @@ static CSSPropertyValueSet* UniversalOverlayUserAgentDeclaration() {
   return decl;
 }
 
-// UA rule: ::scroll-marker-group { contain: layout size !important; }
-// The generation of ::scroll-marker pseudo-elements
-// cannot invalidate layout outside of this pseudo-element.
-static CSSPropertyValueSet* ScrollMarkerGroupUserAgentDeclaration() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<MutableCSSPropertyValueSet>, decl,
-      (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
-
-  if (decl->IsEmpty()) {
-    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-    list->Append(*CSSIdentifierValue::Create(CSSValueID::kLayout));
-    list->Append(*CSSIdentifierValue::Create(CSSValueID::kSize));
-    decl->SetProperty(CSSPropertyID::kContain, *list, /*important=*/true);
-  }
-  return decl;
-}
-
 static void CollectScopedResolversForHostedShadowTrees(
     const Element& element,
     HeapVector<Member<ScopedStyleResolver>, 8>& resolvers) {
@@ -1678,13 +1661,6 @@ void StyleResolver::ApplyBaseStyleNoCache(
                                  state.InsideLink());
 
   if (element->IsPseudoElement() || style_request.IsPseudoStyleRequest()) {
-    if (element->IsScrollMarkerGroupPseudoElement() ||
-        style_request.pseudo_id == kPseudoIdScrollMarkerGroup) {
-      cascade.MutableMatchResult().AddMatchedProperties(
-          ScrollMarkerGroupUserAgentDeclaration(),
-          {.origin = CascadeOrigin::kUserAgent});
-    }
-
     collector.SetPseudoElementStyleRequest(style_request);
     if (element->IsPseudoElement()) {
       GetDocument().GetStyleEngine().EnsureUAStyleForPseudoElement(

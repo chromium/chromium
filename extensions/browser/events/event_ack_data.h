@@ -53,6 +53,12 @@ class EventAckData {
                               bool worker_stopped,
                               base::OnceClosure failure_callback);
 
+  // Removes any `unacked_events_` for `render_process_id`.
+  void ClearUnackedEventsForRenderProcess(int render_process_id);
+
+  bool HasUnackedEventForTesting(int event_id);
+
+ private:
   // Information about an unacked event.
   struct EventInfo {
     EventInfo(
@@ -88,16 +94,11 @@ class EventAckData {
     events::HistogramValue histogram_value;
   };
 
-  // Removes any `unacked_events_` for `render_process_id`.
-  void ClearUnackedEventsForRenderProcess(int render_process_id);
-
-  EventAckData::EventInfo* GetUnackedEventForTesting(int event_id);
-
- private:
   // Emits a stale event ack metric if an event with `event_id` is not present
   // in `unacked_events_`. Meaning that the event was not yet acked by the
   // renderer to the browser.
   void EmitLateAckedEventTask(int event_id);
+  void EmitLateAckedEventTaskMetrics(const EventInfo& event_info);
 
   // Emit all the time related event dispatch metrics when an event is acked
   // from the renderer.

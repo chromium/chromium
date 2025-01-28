@@ -464,7 +464,7 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   // Move eager candidates to the front. This will avoid unnecessarily
   // marking some non-eager candidates as on-standby when there is an eager
   // candidate with the same URL that will be processed immediately.
-  base::ranges::stable_partition(candidates, [&](const auto& candidate) {
+  std::ranges::stable_partition(candidates, [&](const auto& candidate) {
     return candidate->eagerness == blink::mojom::SpeculationEagerness::kEager;
   });
 
@@ -519,7 +519,7 @@ PreloadingDecider::GetMatchedPreloadingCandidate(
   auto it = on_standby_candidates_.find(lookup_key);
   if (it != on_standby_candidates_.end()) {
     auto inner_it =
-        base::ranges::find_if(it->second, [&](const auto& candidate) {
+        std::ranges::find_if(it->second, [&](const auto& candidate) {
           return IsSuitableCandidate(candidate, enacting_predictor, confidence,
                                      lookup_key.second);
         });
@@ -570,7 +570,7 @@ PreloadingDecider::GetMatchedPreloadingCandidateByNoVarySearchHint(
     // has a No-Vary-Search hint that is matching.
     auto standby_it = on_standby_candidates_.find(standby_key);
     CHECK(standby_it != on_standby_candidates_.end());
-    auto inner_it = base::ranges::find_if(
+    auto inner_it = std::ranges::find_if(
         standby_it->second, [&](const auto& on_standby_candidate) {
           return on_standby_candidate->no_vary_search_hint &&
                  no_vary_search::ParseHttpNoVarySearchDataFromMojom(

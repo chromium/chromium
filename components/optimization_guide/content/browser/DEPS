@@ -16,4 +16,7 @@ specific_include_rules = {
     "+content/shell",
     "+components/network_session_configurator/common/network_switches.h",
   ],
+  "page_content_proto_util_unittest\.cc": [
+    "+third_party/blink/renderer/platform/graphics",
+  ],
 }

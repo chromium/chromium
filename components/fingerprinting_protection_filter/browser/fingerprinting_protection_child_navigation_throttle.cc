@@ -26,6 +26,7 @@ FingerprintingProtectionChildNavigationThrottle::
     FingerprintingProtectionChildNavigationThrottle(
         content::NavigationHandle* handle,
         subresource_filter::AsyncDocumentSubresourceFilter* parent_frame_filter,
+        bool is_incognito,
         base::RepeatingCallback<std::string(const GURL& url)>
             disallow_message_callback)
     : subresource_filter::ChildFrameNavigationFilteringThrottle(
@@ -34,7 +35,8 @@ FingerprintingProtectionChildNavigationThrottle::
           /*alias_check_enabled=*/
           base::FeatureList::IsEnabled(
               features::kUseCnameAliasesForFingerprintingProtectionFilter),
-          std::move(disallow_message_callback)) {}
+          std::move(disallow_message_callback)),
+      is_incognito_(is_incognito) {}
 
 FingerprintingProtectionChildNavigationThrottle::
     ~FingerprintingProtectionChildNavigationThrottle() {
@@ -44,6 +46,11 @@ FingerprintingProtectionChildNavigationThrottle::
   UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(        \
       name, total_defer_time_, base::Microseconds(1), base::Seconds(10), 50)
   if (did_alias_check_) {
+    if (is_incognito_) {
+      SUBFRAME_FILTERING_HISTOGRAM(
+          "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
+          "NameAlias.Checked.Incognito");
+    }
     SUBFRAME_FILTERING_HISTOGRAM(
         "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
         "NameAlias.Checked");
@@ -52,15 +59,30 @@ FingerprintingProtectionChildNavigationThrottle::
     case subresource_filter::LoadPolicy::EXPLICITLY_ALLOW:
       [[fallthrough]];
     case subresource_filter::LoadPolicy::ALLOW:
+      if (is_incognito_) {
+        SUBFRAME_FILTERING_HISTOGRAM(
+            "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
+            "Allowed.Incognito");
+      }
       SUBFRAME_FILTERING_HISTOGRAM(
           "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
           "Allowed");
       break;
     case subresource_filter::LoadPolicy::WOULD_DISALLOW:
       if (did_alias_check_determine_load_policy_) {
+        if (is_incognito_) {
+          SUBFRAME_FILTERING_HISTOGRAM(
+              "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
+              "NameAlias.WouldDisallow.Incognito");
+        }
         SUBFRAME_FILTERING_HISTOGRAM(
             "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
             "NameAlias.WouldDisallow");
+      }
+      if (is_incognito_) {
+        SUBFRAME_FILTERING_HISTOGRAM(
+            base::StrCat({"FingerprintingProtection.DocumentLoad."
+                          "SubframeFilteringDelay.WouldDisallow.Incognito"}));
       }
       SUBFRAME_FILTERING_HISTOGRAM(
           "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
@@ -68,9 +90,19 @@ FingerprintingProtectionChildNavigationThrottle::
       break;
     case subresource_filter::LoadPolicy::DISALLOW:
       if (did_alias_check_determine_load_policy_) {
+        if (is_incognito_) {
+          SUBFRAME_FILTERING_HISTOGRAM(
+              "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
+              "NameAlias.Disallowed.Incognito");
+        }
         SUBFRAME_FILTERING_HISTOGRAM(
             "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
             "NameAlias.Disallowed");
+      }
+      if (is_incognito_) {
+        SUBFRAME_FILTERING_HISTOGRAM(
+            "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
+            "Disallowed.Incognito");
       }
       SUBFRAME_FILTERING_HISTOGRAM(
           "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
@@ -89,9 +121,9 @@ bool FingerprintingProtectionChildNavigationThrottle::ShouldDeferNavigation()
     const {
   // If the embedder document has activation enabled, we calculate frame load
   // policy before proceeding with navigation as filtered navigations are not
-  // allowed to get a response. As a result, we must defer while
-  // we wait for the ruleset check to complete and pass handling the navigation
-  // decision to the callback.
+  // allowed to get a response. As a result, we must defer while we wait for
+  // the ruleset check to complete and pass handling the navigation decision to
+  // the callback.
   return parent_frame_filter_->activation_state().activation_level ==
          subresource_filter::mojom::ActivationLevel::kEnabled;
 }

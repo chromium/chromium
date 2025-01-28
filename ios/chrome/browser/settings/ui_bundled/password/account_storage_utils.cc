@@ -4,10 +4,11 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/account_storage_utils.h"
 
+#import <algorithm>
+
 #import "base/containers/flat_set.h"
 #import "base/containers/span.h"
 #import "base/notreached.h"
-#import "base/ranges/algorithm.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
@@ -49,10 +50,10 @@ bool ShouldShowLocalOnlyIcon(const CredentialUIEntry& credential,
 
 bool ShouldShowLocalOnlyIconForGroup(const AffiliatedGroup& affiliated_group,
                                      const syncer::SyncService* sync_service) {
-  return base::ranges::any_of(affiliated_group.GetCredentials(),
-                              [&](const CredentialUIEntry& c) {
-                                return ShouldShowLocalOnlyIcon(c, sync_service);
-                              });
+  return std::ranges::any_of(affiliated_group.GetCredentials(),
+                             [&](const CredentialUIEntry& c) {
+                               return ShouldShowLocalOnlyIcon(c, sync_service);
+                             });
 }
 
 }  // namespace password_manager

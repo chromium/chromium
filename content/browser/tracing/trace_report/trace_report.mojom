@@ -7,6 +7,8 @@ module trace_report.mojom;
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/token.mojom";
+[EnableIf=is_win]
+import "url/mojom/url.mojom";
 
 // Keep in sync with ReportUploadState from
 // content/browser/tracing/trace_report/trace_report_database.h
@@ -64,7 +66,6 @@ struct ClientTraceReport {
 };
 
 struct Scenario {
-  string hash;
   string scenario_name;
 };
 
@@ -112,6 +113,28 @@ interface PageHandler {
   // Saves user-controlled pref to enable privacy filter on local
   // traces.
   SetPrivacyFilterEnabled(bool enable);
+
+  // Returns the current state of the Windows system tracing service for the
+  // running browser:
+  // - `service_supported`: true if the service is supported.
+  // - `service_enabled`: true if the service is enabled.
+  [EnableIf=is_win]
+  GetSystemTracingState() => (bool service_supported,
+                              bool service_registered);
+
+  // Returns a data URI containing an encoding of the system's security shield
+  // icon scaled for the current DPI for use for UAC prompts, or an empty URL if
+  // UAC is disabled.
+  [EnableIf=is_win]
+  GetSecurityShieldIconUrl() => (url.mojom.Url shield_icon_url);
+
+  // Enables the Windows system tracing service.
+  [EnableIf=is_win]
+  EnableSystemTracing() => (bool success);
+
+  // Disables the Windows system tracing service.
+  [EnableIf=is_win]
+  DisableSystemTracing() => (bool success);
 };
 
 // WebUI-side handler for requests from the browser.

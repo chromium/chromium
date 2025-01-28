@@ -34,7 +34,7 @@ export class WordUtils {
       const startCharInParent = ParagraphUtils.getStartCharIndexInParent(node);
       // TODO(b/314203187): Not nulls asserted, check these to make sure they
       // are correct.
-      for (var i = 0; i < node.wordStarts!.length; i++) {
+      for (let i = 0; i < node.wordStarts!.length; i++) {
         if (node.wordStarts![i] + startChar + startCharInParent < indexAfter) {
           continue;
         }
@@ -77,7 +77,7 @@ export class WordUtils {
       const startCharInParent = ParagraphUtils.getStartCharIndexInParent(node);
       // TODO(b/314203187): Not nulls asserted, check these to make sure they
       // are correct.
-      for (var i = 0; i < node.wordEnds!.length; i++) {
+      for (let i = 0; i < node.wordEnds!.length; i++) {
         if (node.wordEnds![i] + startChar + startCharInParent - 1 <
             indexAfter) {
           continue;

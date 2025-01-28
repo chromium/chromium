@@ -70,18 +70,14 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_init_params.h"
 #endif
 
 namespace {
-
-enum {
-  DUMMY_ACCOUNT_INDEX = 0,
-  PRIMARY_ACCOUNT_INDEX = 1,
-  SECONDARY_ACCOUNT_INDEX_START = 2,
-};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Structure to describe an account info.
@@ -1047,9 +1043,9 @@ class MultiProfileDownloadNotificationTest
 
     // Logs in to a dummy profile.
     command_line->AppendSwitchASCII(ash::switches::kLoginUser,
-                                    kTestAccounts[DUMMY_ACCOUNT_INDEX].email);
+                                    kTestAccounts[0].email);
     command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
-                                    kTestAccounts[DUMMY_ACCOUNT_INDEX].hash);
+                                    kTestAccounts[0].hash);
     // Don't require policy for our sessions - this is required because
     // this test creates a secondary profile synchronously, so we need to
     // let the policy code know not to expect cached policy.
@@ -1057,24 +1053,24 @@ class MultiProfileDownloadNotificationTest
                                     "false");
   }
 
-  // Logs in to the primary profile.
-  void SetUpOnMainThread() override {
-    const TestAccountInfo& info = kTestAccounts[PRIMARY_ACCOUNT_INDEX];
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    InProcessBrowserTest::SetUpLocalStatePrefService(local_state);
 
-    AddUser(info, true);
-    DownloadNotificationTestBase::SetUpOnMainThread();
+    // Register a persisted user.
+    ScopedListPrefUpdate prefs_user_update(
+        local_state, user_manager::prefs::kRegularUsersPref);
+    for (const auto& test_account : kTestAccounts) {
+      prefs_user_update->Append(test_account.email);
+    }
   }
 
-  // Loads all users to the current session and sets up necessary fields.
-  // This is used for preparing all accounts in PRE_ test setup, and for testing
-  // actual login behavior.
-  void AddAllUsers() {
-    for (size_t i = 0; i < std::size(kTestAccounts); ++i) {
-      // The primary account was already set up in SetUpOnMainThread, so skip it
-      // here.
-      if (i == PRIMARY_ACCOUNT_INDEX)
-        continue;
-      AddUser(kTestAccounts[i], i >= SECONDARY_ACCOUNT_INDEX_START);
+  // Logs in to the primary profile.
+  void SetUpOnMainThread() override {
+    DownloadNotificationTestBase::SetUpOnMainThread();
+
+    // Add all users, except the first one, which is already logged in.
+    for (size_t i = 1; i < std::size(kTestAccounts); ++i) {
+      AddUser(kTestAccounts[i]);
     }
   }
 
@@ -1085,12 +1081,11 @@ class MultiProfileDownloadNotificationTest
   }
 
   // Adds a new user for testing to the current session.
-  void AddUser(const TestAccountInfo& info, bool log_in) {
-    if (log_in) {
-      session_manager::SessionManager::Get()->CreateSession(
-          AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.gaia_id)),
-          info.hash, false);
-    }
+  void AddUser(const TestAccountInfo& info) {
+    session_manager::SessionManager::Get()->CreateSession(
+        AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.gaia_id)),
+        info.hash, false);
+
     user_manager::UserManager::Get()->SaveUserDisplayName(
         AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.gaia_id)),
         base::UTF8ToUTF16(info.display_name));
@@ -1110,14 +1105,7 @@ class MultiProfileDownloadNotificationTest
 };
 
 IN_PROC_BROWSER_TEST_F(MultiProfileDownloadNotificationTest,
-                       PRE_DownloadMultipleFiles) {
-  AddAllUsers();
-}
-
-IN_PROC_BROWSER_TEST_F(MultiProfileDownloadNotificationTest,
                        DownloadMultipleFiles) {
-  AddAllUsers();
-
   GURL url(SlowDownloadInterceptor::kUnknownSizeUrl);
 
   Profile* profile1 = GetProfileByIndex(1);

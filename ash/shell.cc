@@ -573,8 +573,7 @@ void Shell::SetLargeCursorSizeInDip(int large_cursor_size_in_dip) {
 }
 
 void Shell::SetCursorColor(SkColor cursor_color) {
-  window_tree_host_manager_->cursor_window_controller()->SetCursorColor(
-      cursor_color);
+  cursor_manager_->SetCursorColor(cursor_color);
 }
 
 void Shell::UpdateCursorCompositingEnabled() {
@@ -1837,8 +1836,9 @@ void Shell::Init(
   }
 
   if (features::IsScannerEnabled()) {
+    // Depends on `session_controller_` (instantiated in the constructor).
     scanner_controller_ = std::make_unique<ScannerController>(
-        shell_delegate_->CreateScannerDelegate());
+        shell_delegate_->CreateScannerDelegate(), *session_controller_);
   }
 
   if (features::IsTilingWindowResizeEnabled()) {

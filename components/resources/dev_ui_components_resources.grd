@@ -16,7 +16,6 @@ Feature Module (DevUI DFM) for Android Chrome. More info:
   </outputs>
   <release seq="1">
     <includes>
-      <part file="autofill_and_password_manager_internals_resources.grdp" />
       <part file="local_state.grdp" />
       <part file="security_interstitials_dev_ui_resources.grdp" />
     </includes>

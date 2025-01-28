@@ -122,7 +122,7 @@ suite('<settings-customize-pen-buttons-subpage>', () => {
             Router.getInstance().currentRoute, routes.CUSTOMIZE_PEN_BUTTONS);
         assertEquals(
             'Add or locate buttons on your pen',
-            page.shadowRoot!.querySelector<HTMLDivElement>(
+            page.shadowRoot!.querySelector<HTMLElement>(
                                 '.help-title')!.textContent!.trim());
         // Go to the second pen subpage with metadata.
         const url = new URLSearchParams({
@@ -136,7 +136,7 @@ suite('<settings-customize-pen-buttons-subpage>', () => {
             Router.getInstance().currentRoute, routes.CUSTOMIZE_PEN_BUTTONS);
         assertEquals(
             'Locate buttons on your pen',
-            page.shadowRoot!.querySelector<HTMLDivElement>(
+            page.shadowRoot!.querySelector<HTMLElement>(
                                 '.help-title')!.textContent!.trim());
       });
 });

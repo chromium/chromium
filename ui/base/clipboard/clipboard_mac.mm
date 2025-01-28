@@ -12,6 +12,7 @@
 #import <Cocoa/Cocoa.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <string_view>
 
@@ -23,7 +24,6 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -392,7 +392,7 @@ void ClipboardMac::ReadFilenames(ClipboardBuffer buffer,
 
   std::vector<ui::FileInfo> files =
       clipboard_util::FilesFromPasteboard(GetPasteboard());
-  base::ranges::move(files, std::back_inserter(*result));
+  std::ranges::move(files, std::back_inserter(*result));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

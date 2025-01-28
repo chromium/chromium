@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "components/favicon/core/favicon_database.h"
+
 #include <stddef.h>
 
 #include <algorithm>
@@ -19,7 +21,6 @@
 #include "base/path_service.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/favicon/core/favicon_database.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "sql/database.h"
@@ -120,8 +121,9 @@ void VerifyDatabaseEmpty(sql::Database* db) {
   // Scan for the expected type.
   std::vector<IconMapping>::const_iterator iter = icon_mappings.begin();
   for (; iter != icon_mappings.end(); ++iter) {
-    if (iter->icon_type == expected_icon_type)
+    if (iter->icon_type == expected_icon_type) {
       break;
+    }
   }
   if (iter == icon_mappings.end()) {
     ADD_FAILURE() << "failed to find `expected_icon_type`";
@@ -978,18 +980,8 @@ TEST_F(FaviconDatabaseTest, Version7) {
   ASSERT_TRUE(db);
   VerifyTablesAndColumns(&db->db_);
 
-  EXPECT_TRUE(CheckPageHasIcon(db.get(), kPageUrl1,
-                               favicon_base::IconType::kFavicon, kIconUrl1,
-                               kLargeSize, sizeof(kBlob1), kBlob1));
-  EXPECT_TRUE(CheckPageHasIcon(db.get(), kPageUrl2,
-                               favicon_base::IconType::kFavicon, kIconUrl2,
-                               kLargeSize, sizeof(kBlob2), kBlob2));
-  EXPECT_TRUE(CheckPageHasIcon(db.get(), kPageUrl3,
-                               favicon_base::IconType::kFavicon, kIconUrl1,
-                               kLargeSize, sizeof(kBlob1), kBlob1));
-  EXPECT_TRUE(CheckPageHasIcon(db.get(), kPageUrl3,
-                               favicon_base::IconType::kTouchIcon, kIconUrl3,
-                               kLargeSize, sizeof(kBlob2), kBlob2));
+  // Version 7 is deprecated, the data should all be gone.
+  VerifyDatabaseEmpty(&db->db_);
 }
 
 // Test loading version 8 database.
@@ -1012,7 +1004,7 @@ TEST_F(FaviconDatabaseTest, Version8) {
                                kLargeSize, sizeof(kBlob2), kBlob2));
 }
 
-TEST_F(FaviconDatabaseTest, Recovery) {
+TEST_F(FaviconDatabaseTest, Recovery8) {
   // Create an example database.
   {
     EXPECT_TRUE(history::CreateDatabaseFromSQL(file_name_, "Favicons.v8.sql"));
@@ -1130,104 +1122,9 @@ TEST_F(FaviconDatabaseTest, Recovery7) {
   // (which would upgrade it).
   EXPECT_TRUE(history::CreateDatabaseFromSQL(file_name_, "Favicons.v7.sql"));
 
-  // Corrupt the `icon_mapping.page_url` index by zeroing its root page.
-  {
-    sql::Database raw_db(sql::test::kTestTag);
-    EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
-  }
-  static const char kIndexName[] = "icon_mapping_page_url_idx";
-  ASSERT_TRUE(sql::test::CorruptIndexRootPage(file_name_, kIndexName));
-
-  // Database should be corrupt at the SQLite level.
-  {
-    sql::Database raw_db(sql::test::kTestTag);
-    EXPECT_TRUE(raw_db.Open(file_name_));
-    EXPECT_NE("ok", sql::test::IntegrityCheck(raw_db));
-  }
-
-  // Open the database and access the corrupt index. Note that this upgrades
-  // the database.
-  {
-    FaviconDatabase db;
-    ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
-    {
-      sql::test::ScopedErrorExpecter expecter;
-      expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
-      // Accessing the index will throw SQLITE_CORRUPT. The corruption handler
-      // will recover the database and poison the handle, so the outer call
-      // fails.
-      EXPECT_FALSE(db.GetIconMappingsForPageURL(kPageUrl2, nullptr));
-      EXPECT_TRUE(expecter.SawExpectedErrors());
-    }
-  }
-
-  // Check that the database is recovered at the SQLite level.
-  {
-    sql::Database raw_db(sql::test::kTestTag);
-    EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
-
-    // Check that the expected tables exist.
-    VerifyTablesAndColumns(&raw_db);
-  }
-
-  // Database should also be recovered at higher levels. Recovery should have
-  // regenerated the index with no data loss.
-  {
-    FaviconDatabase db;
-    ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
-
-    EXPECT_TRUE(CheckPageHasIcon(&db, kPageUrl1,
-                                 favicon_base::IconType::kFavicon, kIconUrl1,
-                                 kLargeSize, sizeof(kBlob1), kBlob1));
-    EXPECT_TRUE(CheckPageHasIcon(&db, kPageUrl2,
-                                 favicon_base::IconType::kFavicon, kIconUrl2,
-                                 kLargeSize, sizeof(kBlob2), kBlob2));
-  }
-
-  // Corrupt the database again by adjusting the header.
-  EXPECT_TRUE(sql::test::CorruptSizeInHeader(file_name_));
-
-  // Database is unusable at the SQLite level.
-  {
-    sql::Database raw_db(sql::test::kTestTag);
-    {
-      sql::test::ScopedErrorExpecter expecter;
-      expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
-      ASSERT_FALSE(raw_db.Open(file_name_));
-      EXPECT_TRUE(expecter.SawExpectedErrors());
-    }
-    EXPECT_EQ("ok", sql::test::IntegrityCheck(raw_db));
-  }
-
-  // Database should be recovered during open.
-  {
-    FaviconDatabase db;
-    {
-      sql::test::ScopedErrorExpecter expecter;
-      expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
-      ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
-      EXPECT_TRUE(expecter.SawExpectedErrors());
-    }
-
-    EXPECT_TRUE(CheckPageHasIcon(&db, kPageUrl1,
-                                 favicon_base::IconType::kFavicon, kIconUrl1,
-                                 kLargeSize, sizeof(kBlob1), kBlob1));
-    EXPECT_TRUE(CheckPageHasIcon(&db, kPageUrl2,
-                                 favicon_base::IconType::kFavicon, kIconUrl2,
-                                 kLargeSize, sizeof(kBlob2), kBlob2));
-  }
-}
-
-TEST_F(FaviconDatabaseTest, Recovery6) {
-  // Create an example database without loading into FaviconDatabase
-  // (which would upgrade it).
-  EXPECT_TRUE(history::CreateDatabaseFromSQL(file_name_, "Favicons.v6.sql"));
-
-  // Corrupt the database by adjusting the header.  This form of corruption will
-  // cause immediate failures during Open(), before the migration code runs, so
-  // the recovery code will run.
+  // Corrupt the database by adjusting the header. This form of corruption will
+  // cause immediate failures during Open(), before the database is razed due to
+  // its version being deprecated for being too old.
   EXPECT_TRUE(sql::test::CorruptSizeInHeader(file_name_));
 
   // Database is unusable at the SQLite level.
@@ -1261,53 +1158,7 @@ TEST_F(FaviconDatabaseTest, Recovery6) {
     // Check that the expected tables exist.
     VerifyTablesAndColumns(&raw_db);
 
-    // Version 6 recovery is deprecated, the data should all be gone.
-    VerifyDatabaseEmpty(&raw_db);
-  }
-}
-
-TEST_F(FaviconDatabaseTest, Recovery5) {
-  // Create an example database without loading into FaviconDatabase
-  // (which would upgrade it).
-  EXPECT_TRUE(history::CreateDatabaseFromSQL(file_name_, "Favicons.v5.sql"));
-
-  // Corrupt the database by adjusting the header.  This form of corruption will
-  // cause immediate failures during Open(), before the migration code runs, so
-  // the recovery code will run.
-  EXPECT_TRUE(sql::test::CorruptSizeInHeader(file_name_));
-
-  // Database is unusable at the SQLite level.
-  {
-    sql::Database raw_db(sql::test::kTestTag);
-    {
-      sql::test::ScopedErrorExpecter expecter;
-      expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
-      EXPECT_FALSE(raw_db.Open(file_name_));
-      EXPECT_TRUE(expecter.SawExpectedErrors());
-    }
-    EXPECT_EQ("ok", sql::test::IntegrityCheck(raw_db));
-  }
-
-  // Database open should succeed.
-  {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
-    FaviconDatabase db;
-    ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
-    ASSERT_TRUE(expecter.SawExpectedErrors());
-  }
-
-  // The database should be usable at the SQLite level, with a current schema
-  // and no data.
-  {
-    sql::Database raw_db(sql::test::kTestTag);
-    EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
-
-    // Check that the expected tables exist.
-    VerifyTablesAndColumns(&raw_db);
-
-    // Version 5 recovery is deprecated, the data should all be gone.
+    // Version 7 recovery is deprecated, the data should all be gone.
     VerifyDatabaseEmpty(&raw_db);
   }
 }

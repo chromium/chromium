@@ -8,6 +8,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
@@ -25,6 +26,9 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
+
+using collaboration::CollaborationServiceFactory;
+using collaboration::messaging::MessagingBackendServiceFactory;
 
 @interface TabGroupsPanelCoordinator () <TabGroupsPanelMediatorDelegate>
 @end
@@ -81,8 +85,10 @@
       initWithTabGroupSyncService:tab_groups::TabGroupSyncServiceFactory::
                                       GetForProfile(profile)
                   shareKitService:ShareKitServiceFactory::GetForProfile(profile)
-             collaborationService:collaboration::CollaborationServiceFactory::
-                                      GetForProfile(profile)
+             collaborationService:CollaborationServiceFactory::GetForProfile(
+                                      profile)
+                 messagingService:MessagingBackendServiceFactory::GetForProfile(
+                                      profile)
               regularWebStateList:self.browser->GetWebStateList()
                     faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
                                       profile)

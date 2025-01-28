@@ -4,9 +4,10 @@
 
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -529,20 +530,6 @@ void PrefetchResponseReader::SetPriority(net::RequestPriority priority,
   }
 }
 
-void PrefetchResponseReader::PauseReadingBodyFromNet() {
-  // Forward calls from the serving URL loader to the prefetch URL loader.
-  if (streaming_url_loader_) {
-    streaming_url_loader_->PauseReadingBodyFromNet();
-  }
-}
-
-void PrefetchResponseReader::ResumeReadingBodyFromNet() {
-  // Forward calls from the serving URL loader to the prefetch URL loader.
-  if (streaming_url_loader_) {
-    streaming_url_loader_->ResumeReadingBodyFromNet();
-  }
-}
-
 PrefetchStreamingURLLoaderStatus PrefetchResponseReader::GetStatusForRecording()
     const {
   switch (load_state_) {
@@ -610,7 +597,7 @@ void PrefetchResponseReader::StoreInfoFromResponseHead(
   if (vary_on_cookie && head.parsed_headers->cookie_indices.has_value()) {
     auto& indices = cookie_indices_.emplace();
     indices.cookie_names = *head.parsed_headers->cookie_indices;
-    base::ranges::sort(indices.cookie_names);
+    std::ranges::sort(indices.cookie_names);
     auto repeated = std::ranges::unique(indices.cookie_names);
     indices.cookie_names.erase(repeated.begin(), repeated.end());
     indices.cookie_names.shrink_to_fit();

@@ -197,8 +197,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   // net::URLRequest::Delegate implementation:
   int OnConnected(net::URLRequest* url_request,
@@ -739,10 +737,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   const std::optional<std::string> devtools_request_id_;
 
   const int32_t options_;
-
-  bool should_pause_reading_body_ = false;
-  // The response body stream is open, but transferring data is paused.
-  bool paused_reading_body_ = false;
 
   // This is used to compute the delta since last time received
   // encoded body size was reported to the client.

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -16,7 +17,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_util.h"
@@ -129,7 +129,7 @@ const ui::Layer* NextLayer(const ui::Layer* layer) {
   }
   const std::vector<raw_ptr<ui::Layer, VectorExperimental>> children =
       parent->children();
-  const auto i = base::ranges::find(children, layer) + 1;
+  const auto i = std::ranges::find(children, layer) + 1;
   return (i == children.cend()) ? parent : FirstLayer(*i);
 }
 

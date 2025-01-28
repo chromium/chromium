@@ -41,16 +41,6 @@
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// It looks that screen_ai_library "PresandboxInit" reads uninitialized value
-// and MSan tests are failing.
-//
-// TODO(b:392474272): Fix it and Reenable these tests.
-#if defined(MEMORY_SANITIZER)
-#define DISABLE_MSAN(x) DISABLED_##x
-#else
-#define DISABLE_MSAN(x) x
-#endif
-
 class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
  public:
   AXMainNodeAnnotatorControllerBrowserTest() {
@@ -146,7 +136,7 @@ class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
 // Changing the kAccessibilityMainNodeAnnotationsEnabled pref should affect the
 // accessibility mode of a new WebContents for this profile.
 IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
-                       DISABLE_MSAN(NewWebContents)) {
+                       NewWebContents) {
   Connect();
   EnableScreenReader(true);
   ui::AXMode ax_mode =
@@ -185,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
 // Changing the kAccessibilityMainNodeAnnotationsEnabled pref should affect the
 // accessibility mode of existing WebContents in this profile.
 IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
-                       DISABLE_MSAN(ExistingWebContents)) {
+                       ExistingWebContents) {
   Connect();
   EnableScreenReader(true);
   content::WebContents* web_contents =
@@ -207,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
-                       DISABLE_MSAN(NotEnabledWithoutScreenReader)) {
+                       NotEnabledWithoutScreenReader) {
   Connect();
   EnableScreenReader(false);
   content::WebContents* web_contents =
@@ -250,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
 // When the preference is present at startup, the feature should become enabled
 // when a screenreader is discovered.
 IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
-                       DISABLE_MSAN(EnabledByPreference)) {
+                       EnabledByPreference) {
   // If the test is run with --force-renderer-accessibility, then initializing
   // the class causes the service to kick off. We need to force it to complete.
   if (accessibility_state_utils::IsScreenReaderEnabled()) {

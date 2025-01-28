@@ -767,8 +767,8 @@ void WebContentsViewAura::PrepareDropData(
     if (std::optional<std::vector<ui::FileInfo>> virtual_filenames =
             data.GetVirtualFilenames();
         virtual_filenames.has_value()) {
-      base::ranges::move(virtual_filenames.value(),
-                         std::back_inserter(drop_data->filenames));
+      std::ranges::move(virtual_filenames.value(),
+                        std::back_inserter(drop_data->filenames));
     }
   }
 #endif

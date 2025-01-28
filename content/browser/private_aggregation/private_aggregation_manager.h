@@ -48,8 +48,8 @@ class CONTENT_EXPORT PrivateAggregationManager {
   //   `AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes`.
   // * `max_contributions`, if set, is positive.
   // * `timeout` is set iff a report should be sent deterministically, i.e.
-  //   `PrivateAggregationManager::ShouldSendReportDeterministically(context_id,
-  //   filtering_id_max_bytes, max_contributions)` is true.
+  //   `PrivateAggregationManager::ShouldSendReportDeterministically(caller_api,
+  //   context_id, filtering_id_max_bytes, max_contributions)` is true.
   //
   // When `timeout` is set and developer mode is not enabled, this host will
   // send a report after the given duration of time has passed, regardless of
@@ -91,9 +91,10 @@ class CONTENT_EXPORT PrivateAggregationManager {
   // delay", meaning they may be sent after a fixed duration of time relative to
   // an event outside of the isolated context.
   [[nodiscard]] static bool ShouldSendReportDeterministically(
+      PrivateAggregationCallerApi caller_api,
       const std::optional<std::string>& context_id,
       base::StrictNumeric<size_t> filtering_id_max_bytes,
-      std::optional<size_t> max_contributions);
+      std::optional<size_t> requested_max_contributions);
 };
 
 }  // namespace content

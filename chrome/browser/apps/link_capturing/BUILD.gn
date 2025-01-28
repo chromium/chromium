@@ -50,6 +50,8 @@ source_set("link_capturing") {
       "chromeos_apps_intent_picker_delegate.h",
       "chromeos_link_capturing_delegate.cc",
       "chromeos_link_capturing_delegate.h",
+      "chromeos_reimpl_navigation_capturing_throttle.cc",
+      "chromeos_reimpl_navigation_capturing_throttle.h",
       "metrics/intent_handling_metrics.cc",
       "metrics/intent_handling_metrics.h",
     ]

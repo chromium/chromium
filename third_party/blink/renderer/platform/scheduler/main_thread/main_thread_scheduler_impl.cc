@@ -66,7 +66,7 @@
 
 namespace base {
 class LazyNow;
-}
+}  // namespace base
 
 namespace blink {
 namespace scheduler {
@@ -1992,33 +1992,22 @@ blink::MainThreadScheduler* MainThreadSchedulerImpl::ToMainThreadScheduler() {
   return this;
 }
 
-void MainThreadSchedulerImpl::RunIdleTask(Thread::IdleTask task,
-                                          base::TimeTicks deadline) {
-  std::move(task).Run(deadline);
-}
-
 void MainThreadSchedulerImpl::PostIdleTask(const base::Location& location,
                                            Thread::IdleTask task) {
-  IdleTaskRunner()->PostIdleTask(
-      location,
-      base::BindOnce(&MainThreadSchedulerImpl::RunIdleTask, std::move(task)));
+  IdleTaskRunner()->PostIdleTask(location, std::move(task));
 }
 
 void MainThreadSchedulerImpl::PostDelayedIdleTask(
     const base::Location& location,
     base::TimeDelta delay,
     Thread::IdleTask task) {
-  IdleTaskRunner()->PostDelayedIdleTask(
-      location, delay,
-      base::BindOnce(&MainThreadSchedulerImpl::RunIdleTask, std::move(task)));
+  IdleTaskRunner()->PostDelayedIdleTask(location, delay, std::move(task));
 }
 
 void MainThreadSchedulerImpl::PostNonNestableIdleTask(
     const base::Location& location,
     Thread::IdleTask task) {
-  IdleTaskRunner()->PostNonNestableIdleTask(
-      location,
-      base::BindOnce(&MainThreadSchedulerImpl::RunIdleTask, std::move(task)));
+  IdleTaskRunner()->PostNonNestableIdleTask(location, std::move(task));
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -2242,6 +2231,17 @@ void MainThreadSchedulerImpl::OnPageFrozen(
   main_thread_only().renderer_frozen_metadata.emplace(
       "MainThreadSchedulerImpl.RendererFrozen", /* is_frozen */ 1,
       base::SampleMetadataScope::kProcess);
+#if BUILDFLAG(IS_ANDROID)
+  memory_purge_manager_.SetOnAllPagesFrozenCallback(base::BindRepeating(
+      [](MainThreadSchedulerImpl* s, bool is_frozen) {
+        if (s->isolate()) {
+          s->isolate()->Freeze(is_frozen);
+        }
+      },
+      // |memory_purge_manager_| is a member of |this|, and will be deleted
+      // first, so a raw pointer is safe here.
+      base::Unretained(this)));
+#endif
   memory_purge_manager_.OnPageFrozen(called_from);
   UpdatePolicy();
 }

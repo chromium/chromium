@@ -309,7 +309,7 @@ if (is_android) {
   # value of the arguments set above.
   declare_args() {
     # Default value for targetSdkVersion for APK and bundle targets.
-    default_target_sdk_version = "34"
+    default_target_sdk_version = "35"
 
     # Whether java assertions and Preconditions checks are enabled.
     enable_java_asserts = dcheck_always_on || !is_official_build

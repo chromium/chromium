@@ -18,7 +18,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -379,7 +378,7 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
   for (const DrmDisplayParams& params : displays_to_create) {
     // If the DrmDisplay was present previously, copy its origin to the
     // corresponding DisplaySnapshot before creating a new DrmDisplay.
-    auto old_drm_display_it = base::ranges::find_if(
+    auto old_drm_display_it = std::ranges::find_if(
         old_displays, DisplayComparator(params.drm, *params.display_info));
     if (old_drm_display_it != old_displays.end()) {
       params.snapshot->set_origin(old_drm_display_it->get()->origin());
@@ -762,8 +761,8 @@ void DrmGpuDisplayManager::NotifyScreenManager(
     const std::vector<std::unique_ptr<DrmDisplay>>& old_displays) const {
   ScreenManager::CrtcsWithDrmList controllers_to_remove;
   for (const auto& old_display : old_displays) {
-    if (base::ranges::none_of(new_displays,
-                              DisplayComparator(old_display.get()))) {
+    if (std::ranges::none_of(new_displays,
+                             DisplayComparator(old_display.get()))) {
       for (const auto& crtc_connector_pair :
            old_display->crtc_connector_pairs()) {
         controllers_to_remove.emplace_back(crtc_connector_pair.crtc_id,
@@ -775,8 +774,8 @@ void DrmGpuDisplayManager::NotifyScreenManager(
     screen_manager_->RemoveDisplayControllers(controllers_to_remove);
 
   for (const auto& new_display : new_displays) {
-    if (base::ranges::none_of(old_displays,
-                              DisplayComparator(new_display.get()))) {
+    if (std::ranges::none_of(old_displays,
+                             DisplayComparator(new_display.get()))) {
       screen_manager_->AddDisplayControllersForDisplay(*new_display);
     }
   }

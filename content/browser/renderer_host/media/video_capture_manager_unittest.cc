@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -156,7 +156,7 @@ class WrappedDeviceFactory final : public media::FakeVideoCaptureDeviceFactory {
   void OnDeviceCreated(WrappedDevice* device) { devices_.push_back(device); }
 
   void OnDeviceDestroyed(WrappedDevice* device) {
-    const auto it = base::ranges::find(devices_, device);
+    const auto it = std::ranges::find(devices_, device);
     CHECK(it != devices_.end());
     devices_.erase(it);
   }

@@ -9,6 +9,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.test.transit.AppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
 
 import java.util.Collections;
@@ -25,7 +26,7 @@ public class TabSwitcherAppMenuFacility extends AppMenuFacility<TabSwitcherStati
     private Item<Void> mCloseAllTabs;
     private Item<Void> mCloseIncognitoTabs;
     private Item<TabSwitcherListEditorFacility> mSelectTabs;
-    private Item<Void> mClearBrowsingData;
+    private Item<QuickDeleteDialogFacility> mQuickDelete;
     private Item<SettingsStation> mSettings;
 
     public TabSwitcherAppMenuFacility(boolean isIncognito) {
@@ -66,7 +67,9 @@ public class TabSwitcherAppMenuFacility extends AppMenuFacility<TabSwitcherStati
                     declareDisabledMenuItem(items, SELECT_TABS_ID);
                 }
             }
-            mClearBrowsingData = declareStubMenuItem(items, DELETE_BROWSING_DATA_ID);
+            mQuickDelete =
+                    declareMenuItemToFacility(
+                            items, DELETE_BROWSING_DATA_ID, this::createQuickDeleteDialogFacility);
         } else {
             // Incognito Hub Tab Switcher
 
@@ -103,5 +106,10 @@ public class TabSwitcherAppMenuFacility extends AppMenuFacility<TabSwitcherStati
 
     private TabSwitcherListEditorFacility createListEditorFacility() {
         return new TabSwitcherListEditorFacility(Collections.emptyList(), Collections.emptyList());
+    }
+
+    public QuickDeleteDialogFacility clearBrowsingData() {
+        assert !mIsIncognito;
+        return mQuickDelete.scrollToAndSelect();
     }
 }

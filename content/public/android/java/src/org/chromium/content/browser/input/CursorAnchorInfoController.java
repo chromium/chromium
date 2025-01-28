@@ -162,23 +162,8 @@ final class CursorAnchorInfoController {
     }
 
     /**
-     * Sends one CursorAnchorInfo object with the EditorBoundsInfo field set. All subsequent
-     * CursorAnchorInfo updates will not have this field set unless they are sent through this
-     * method.
-     *
-     * @param editorBoundsInfo The EditorBoundsInfo sent with the CursorAnchorInfo. This is not
-     *     cached.
-     * @param view The attached view.
-     */
-    // TODO(crbug.com/40940885): Remove this method and call sites.
-    public void updateWithEditorBoundsInfo(@Nullable EditorBoundsInfo editorBoundsInfo, View view) {
-        if (!mIsEditable) return;
-        mLastCursorAnchorInfo = null;
-        updateCursorAnchorInfo(view);
-    }
-
-    /**
      * Sets coordinates system parameters and selection marker information.
+     *
      * @param scale device scale factor.
      * @param contentOffsetYPix Y offset below the browser controls.
      * @param hasInsertionMarker {@code true} if the insertion marker exists.

@@ -690,6 +690,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                     new AndroidPaymentApp(
                             new AndroidPaymentApp.LauncherImpl(
                                     mFactoryDelegate.getParams().getWebContents()),
+                            mFactoryDelegate.getDialogController(),
                             packageName,
                             resolveInfo.activityInfo.name,
                             mIsReadyToPayServices.get(packageName),

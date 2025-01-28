@@ -364,6 +364,7 @@
 <translation id="6145820983052037069">Aici poți comuta între profilurile Chromium</translation>
 <translation id="615103374448673771">Dacă permiți cookie-uri, Chromium le poate folosi pentru preîncărcare</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
+<translation id="6173308241973263798">Șterge datele Chromium din cont</translation>
 <translation id="6174920971222007286">Fișierul poate fi periculos<ph name="LINE_BREAK" />Chromium poate verifica descărcarea dacă introduci parola. Informațiile despre fișier sunt trimise la Navigarea sigură Google, dar conținutul și parola fișierului rămân pe dispozitiv.</translation>
 <translation id="6182736845697986886">Nu s-a instalat, din cauza unei erori interne a serverului de actualizare.</translation>
 <translation id="6183079672144801177">Asigură-te că te-ai conectat la Chromium pe <ph name="TARGET_DEVICE_NAME" /> și încearcă din nou să trimiți.</translation>
@@ -430,6 +431,7 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="684888714667046800">Nu se poate realiza conexiunea la internet. Dacă folosești un firewall, verifică dacă <ph name="PRODUCT_EXE_NAME" /> se află în lista cu acces permis.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium a descoperit că <ph name="EXTENSION_NAME" /> conține programe malware</translation>
+<translation id="6877631896957360295">Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="SETTINGS_LINK" /> datele Chromium din cont.</translation>
 <translation id="6896758677409633944">Copiază</translation>
 <translation id="6929417474050522668">În versiunile de încercare, Ad measurement le dă site-urilor pe care le accesezi posibilitatea de a solicita informații de la Chromium care le ajută să măsoare performanța anunțurilor asociate. Ad measurement restricționează urmărirea pe mai multe site-uri prin transferul câtor mai puține informații între site-uri.</translation>
 <translation id="6940431691900807093">Ulterior, un site pe care-l accesezi poate solicita browserului Chromium să vadă interesele tale pentru a personaliza anunțurile pe care le vezi. Chromium poate afișa până la trei interese.</translation>

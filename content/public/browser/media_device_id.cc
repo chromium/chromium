@@ -4,7 +4,8 @@
 
 #include "content/public/browser/media_device_id.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/media/media_devices_util.h"

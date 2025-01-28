@@ -75,8 +75,8 @@ suite('DestinationDropdown', () => {
     });
   }
 
-  function getDropdownContent(): HTMLDivElement {
-    return strictQuery<HTMLDivElement>(
+  function getDropdownContent(): HTMLElement {
+    return strictQuery<HTMLElement>(
         contentSelector, element.shadowRoot, HTMLDivElement);
   }
 
@@ -94,7 +94,7 @@ suite('DestinationDropdown', () => {
 
   async function clickDropdownRowFor(destinationId: string): Promise<void> {
     assert(element.shadowRoot);
-    const content = strictQuery<HTMLDivElement>(
+    const content = strictQuery<HTMLElement>(
         '#content', element.shadowRoot, HTMLDivElement);
     assertTrue(isVisible(content), 'Dropdown needs to be open');
     const destinationRow = strictQuery<DestinationRowElement>(

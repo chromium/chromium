@@ -27,6 +27,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
@@ -146,10 +147,13 @@ bool IsAppTypeAllowed(chromeos::AppType app_type) {
   return !kAppTypeDenylist.contains(app_type);
 }
 
-bool IsTriggerableFromConsentStatus(ConsentStatus consent_status) {
-  return consent_status == ConsentStatus::kApproved ||
-         consent_status == ConsentStatus::kPending ||
-         consent_status == ConsentStatus::kUnset;
+bool IsTriggerableFromConsentStatus(
+    chromeos::editor_menu::EditorConsentStatus consent_status) {
+  return consent_status ==
+             chromeos::editor_menu::EditorConsentStatus::kApproved ||
+         consent_status ==
+             chromeos::editor_menu::EditorConsentStatus::kPending ||
+         consent_status == chromeos::editor_menu::EditorConsentStatus::kUnset;
 }
 
 bool IsUrlAllowed(GURL url) {
@@ -321,8 +325,9 @@ bool EditorSwitch::CanShowNoticeBanner() const {
   //  2. The consent status is currently disabled.
   return pref->IsManagedPreference(prefs::kOrcaEnabled) &&
          pref->GetBoolean(prefs::kOrcaEnabled) &&
-         GetConsentStatusFromInteger(pref->GetInteger(
-             prefs::kOrcaConsentStatus)) == ConsentStatus::kDeclined;
+         chromeos::editor_menu::GetConsentStatusFromInteger(
+             pref->GetInteger(prefs::kOrcaConsentStatus)) ==
+             chromeos::editor_menu::EditorConsentStatus::kDeclined;
 }
 
 EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
@@ -370,8 +375,9 @@ std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
     }
   }
 
-  if (!IsTriggerableFromConsentStatus(GetConsentStatusFromInteger(
-          profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus)))) {
+  if (!IsTriggerableFromConsentStatus(
+          chromeos::editor_menu::GetConsentStatusFromInteger(
+              profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus)))) {
     blocked_reasons.push_back(EditorBlockedReason::kBlockedByConsent);
   }
 
@@ -420,8 +426,9 @@ bool EditorSwitch::CanBeTriggered() const {
     return false;
   }
 
-  ConsentStatus current_consent_status = GetConsentStatusFromInteger(
-      profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));
+  chromeos::editor_menu::EditorConsentStatus current_consent_status =
+      chromeos::editor_menu::GetConsentStatusFromInteger(
+          profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));
 
   return IsAllowedForUse() &&
          IsInputMethodEngineAllowed(ime_allowlist_,
@@ -449,11 +456,14 @@ chromeos::editor_menu::EditorMode EditorSwitch::GetEditorMode() const {
     return chromeos::editor_menu::EditorMode::kSoftBlocked;
   }
 
-  ConsentStatus current_consent_status = GetConsentStatusFromInteger(
-      profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));
+  chromeos::editor_menu::EditorConsentStatus current_consent_status =
+      chromeos::editor_menu::GetConsentStatusFromInteger(
+          profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));
 
-  if (current_consent_status == ConsentStatus::kPending ||
-      current_consent_status == ConsentStatus::kUnset) {
+  if (current_consent_status ==
+          chromeos::editor_menu::EditorConsentStatus::kPending ||
+      current_consent_status ==
+          chromeos::editor_menu::EditorConsentStatus::kUnset) {
     return chromeos::editor_menu::EditorMode::kConsentNeeded;
   } else if (context_->selected_text_length() > 0) {
     return chromeos::editor_menu::EditorMode::kRewrite;

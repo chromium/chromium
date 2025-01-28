@@ -198,8 +198,8 @@ SolidColorSurfacePool::GetSolidColorSurface(const SkColor4f& color) {
   auto first_unused_surface_it =
       std::next(tracked_surfaces_.begin(), num_used_this_frame_);
 
-  if (auto found_color_it = base::ranges::find(tracked_surfaces_, color,
-                                               &SolidColorSurface::color_);
+  if (auto found_color_it = std::ranges::find(tracked_surfaces_, color,
+                                              &SolidColorSurface::color_);
       found_color_it != tracked_surfaces_.end()) {
     // We found an existing surface in the pool that already has the requested
     // color.
@@ -1175,7 +1175,7 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
                "num_overlays", overlays.size());
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> root_swap_chain;
-  auto it = base::ranges::find(overlays, 0, &DCLayerOverlayParams::z_order);
+  auto it = std::ranges::find(overlays, 0, &DCLayerOverlayParams::z_order);
   if (it != overlays.end() && (*it)->overlay_image) {
     Microsoft::WRL::ComPtr<IUnknown> root_visual_content =
         (*it)->overlay_image->dcomp_visual_content();

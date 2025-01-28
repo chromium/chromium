@@ -324,7 +324,8 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
 
   PasswordForm Parse(const FormData& form_data) {
     return *FormDataParser().Parse(form_data, FormDataParser::Mode::kSaving,
-                                   /*stored_usernames=*/{});
+                                   /*stored_usernames=*/{},
+                                   /*ukm_source_id=*/std::nullopt);
   }
 
   void DestroySaveManagerAndMetricsRecorder() {

@@ -5,7 +5,7 @@
 import {SACache} from './cache.js';
 import {Navigator} from './navigator.js';
 import {DesktopNode} from './nodes/desktop_node.js';
-import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
+import type {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
 import {SwitchAccessPredicate} from './switch_access_predicate.js';
 
 type AutomationNode = chrome.automation.AutomationNode;

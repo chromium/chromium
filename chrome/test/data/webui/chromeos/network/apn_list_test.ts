@@ -63,9 +63,8 @@ suite('ApnListTest', () => {
       'Custom Access Point Default and Attach Disabled', 'AP-name-custom-10',
       ApnState.kDisabled, [ApnType.kDefault, ApnType.kAttach], '10');
 
-  function getZeroStateContent(): HTMLDivElement|null {
-    return apnList.shadowRoot!.querySelector<HTMLDivElement>(
-        '#zeroStateContent');
+  function getZeroStateContent(): HTMLElement|null {
+    return apnList.shadowRoot!.querySelector<HTMLElement>('#zeroStateContent');
   }
 
   function getApnSettingsZeroStateDescriptionWithAddLink():
@@ -178,7 +177,7 @@ suite('ApnListTest', () => {
         apnList.i18n('apnSettingsDescriptionNoLink').toString(),
         descriptionWithoutLink.innerHTML.trim());
     const apnDescription =
-        apnList.shadowRoot!.querySelector<HTMLDivElement>('#apnDescription');
+        apnList.shadowRoot!.querySelector<HTMLElement>('#apnDescription');
     assertTrue(!!apnDescription);
     assertEquals('assertive', apnDescription.ariaLive);
   });

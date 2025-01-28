@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">לא ניתן להגדיר את המפתחות <ph name="DATA_CONTROLS_FIRST_KEY_SET" /> באותו מילון שבו מוגדרים המפתחות <ph name="DATA_CONTROLS_SECOND_KEY_SET" /></translation>
 <translation id="1455413310270022028">כלי מחיקה</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{אין ביקורות להצגה}=1{הצגת ביקורת אחת}one{הצגת כל # הביקורות}two{הצגת כל # הביקורות}other{הצגת כל # הביקורות}}</translation>
 <translation id="1458059624921545588">אנשים וחברה</translation>
 <translation id="1458140305240870199">הלבשה תחתונה</translation>
 <translation id="1459693405370120464">מזג אוויר</translation>
@@ -1956,6 +1957,7 @@
 <translation id="4407758156081352648">‏מטעמי אבטחה, הארגון שלך לא מאפשר שימוש חוזר בסיסמאות ב-Chrome. הסיסמאות ב-Chrome מוצפנות כדי להגן על פרטיות המשתמשים.</translation>
 <translation id="4408413947728134509">‏קובצי Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">ההגדרה הזו מסומנת כניתנת להתקנה, אבל אין תמונה לארכיטקטורה הזו, לכן לא ניתן להתקין אותה.</translation>
+<translation id="4412377069090572315">מה אנשים אומרים</translation>
 <translation id="4414452699610169758">‏שימוש במנהל הסיסמאות של Google ובמילוי האוטומטי של Chrome לשמירה ומילוי של סיסמאות, אמצעי תשלום וכתובות</translation>
 <translation id="4414515549596849729">‏קובצי Cookie ונתונים מאתרים</translation>
 <translation id="4415156962929755728">Plastic (High Gloss)</translation>
@@ -2782,6 +2784,7 @@ Del</translation>
 <translation id="5937560539988385583">הדף תורגם</translation>
 <translation id="5938153366081463283">הוספת כרטיס וירטואלי</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">‏המידע הזה מגיע מאתרי ביקורות עצמאיים כמו Trustpilot,‏ ScamAdviser,‏ Google ועוד. הסיכומים נוצרים באמצעות AI.</translation>
 <translation id="5944297261866530437">Fabric (High-Gloss)</translation>
 <translation id="5950901984834744590">סכיני גילוח ומכונות גילוח</translation>
 <translation id="5951495562196540101">אי אפשר להירשם באמצעות חשבון פרטי (יש רישיון משויך זמין).</translation>
@@ -3148,6 +3151,7 @@ Del</translation>
 <translation id="6567832540451970450">האדמין שלך מאשר את השימוש ב<ph name="PERMISSION" /> באתר הזה</translation>
 <translation id="6568793038316600992">‏הכפתור לניהול אמצעי התשלום, מפעילים אותו כדי לנהל את פרטי כרטיסי האשראי והתשלומים שלך בהגדרות Chrome</translation>
 <translation id="6569060085658103619">זהו דף של תוסף</translation>
+<translation id="6572867903637058088">המידע הזה מועיל?</translation>
 <translation id="6573200754375280815">שני ניקובים בצד ימין</translation>
 <translation id="6574762126505704998">מילוי המסך</translation>
 <translation id="6575408526598156416">שמירה בחשבון</translation>
@@ -4327,9 +4331,11 @@ Del</translation>
 <translation id="8672535691554698269">רשתות מחשבים</translation>
 <translation id="8675446170353411473">מתבצעת העלאת קבצים אל <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">ללא עיכוב</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{טבלה אחת ({COUNT}) נמחקה}one{‫{COUNT} טבלאות נמחקו}two{‫{COUNT} טבלאות נמחקו}other{‫{COUNT} טבלאות נמחקו}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" /> , תשובה, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">לא ניתן היה לטעון את דף האינטרנט בכתובת <ph name="PAGE" /> מהסיבות הבאות:</translation>
 <translation id="8682297334444610648">‏המשחק Dino, צריך ללחוץ כדי לשחק</translation>
+<translation id="8685225035093721011">ביקורות על החנות</translation>
 <translation id="8686424632716064939">אבטחת מחשבים</translation>
 <translation id="8687278439622293018">הרשומה <ph name="ENTRY_VOICEOVER" /> נמחקה</translation>
 <translation id="8687429322371626002">המכשיר והחשבון שלך מנוהלים על ידי <ph name="MANAGER" />.</translation>
