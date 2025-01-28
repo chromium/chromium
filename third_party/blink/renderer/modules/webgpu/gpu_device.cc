@@ -168,8 +168,7 @@ void GPUDevice::Initialize(wgpu::Device handle,
 
   // Increment subgroups features counter for OT.
   // TODO(crbug.com/349125474): Clean up after OT finished.
-  if (features_->has(V8GPUFeatureName::Enum::kSubgroups) ||
-      features_->has(V8GPUFeatureName::Enum::kSubgroupsF16)) {
+  if (features_->has(V8GPUFeatureName::Enum::kSubgroups)) {
     DCHECK(RuntimeEnabledFeatures::WebGPUSubgroupsFeaturesEnabled(
         GetExecutionContext()));
     UseCounter::Count(GetExecutionContext(),

@@ -718,8 +718,6 @@ wgpu::FeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return wgpu::FeatureName::DualSourceBlending;
     case V8GPUFeatureName::Enum::kSubgroups:
       return wgpu::FeatureName::Subgroups;
-    case V8GPUFeatureName::Enum::kSubgroupsF16:
-      return wgpu::FeatureName::SubgroupsF16;
     case V8GPUFeatureName::Enum::kClipDistances:
       return wgpu::FeatureName::ClipDistances;
     case V8GPUFeatureName::Enum::kChromiumExperimentalMultiDrawIndirect:
