@@ -76,10 +76,10 @@ const char* kLocalCommandSourcesSlowPoll[] = {
 
 constexpr base::TimeDelta kDefaultLogPollFrequency = base::Seconds(10);
 const char* kLocalLogSources[] = {
-    kCfmAuditLogFile,  kCfmBiosInfoLogFile,     kCfmChromeLogFile,
-    kCfmCrosEcLogFile, kCfmEventlogLogFile,     kCfmFwupdLogFile,
-    kCfmLacrosLogFile, kCfmPowerdLogFile,       kCfmSyslogLogFile,
-    kCfmUiLogFile,     kCfmUpdateEngineLogFile, kCfmVariationsListLogFile,
+    kCfmAuditLogFile,      kCfmBiosInfoLogFile,     kCfmChromeLogFile,
+    kCfmChromeUserLogFile, kCfmCrosEcLogFile,       kCfmEventlogLogFile,
+    kCfmFwupdLogFile,      kCfmPowerdLogFile,       kCfmSyslogLogFile,
+    kCfmUiLogFile,         kCfmUpdateEngineLogFile, kCfmVariationsListLogFile,
 };
 
 }  // namespace
