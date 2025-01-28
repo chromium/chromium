@@ -37,7 +37,10 @@ class CORE_EXPORT OptionListIterator final {
         break;
     }
   }
-  HTMLOptionElement& operator*() { return *current_; }
+  HTMLOptionElement& operator*() {
+    DCHECK(current_);
+    return *current_;
+  }
   HTMLOptionElement* operator->() { return current_; }
   OptionListIterator& operator++() {
     if (current_) {
