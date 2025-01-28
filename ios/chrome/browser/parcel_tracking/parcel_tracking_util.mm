@@ -10,7 +10,9 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/commerce_types.h"
+#import "components/commerce/core/feature_utils.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
@@ -39,7 +41,8 @@ bool IsUserEligibleParcelTrackingOptInPrompt(
                  : GetApplicationContext()->GetLocalState()) &&
          !pref_service->GetBoolean(
              prefs::kIosParcelTrackingOptInPromptDisplayLimitMet) &&
-         shopping_service->IsParcelTrackingEligible();
+         commerce::IsParcelTrackingEligible(
+             shopping_service->GetAccountChecker());
 }
 
 std::vector<std::pair<commerce::ParcelIdentifier::Carrier, std::string>>
