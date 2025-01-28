@@ -542,6 +542,10 @@ public class TabGroupModelFilterImplUnitTest {
                 Tab.INVALID_TAB_ID,
                 mTabGroupModelFilter.getRootIdFromStableId(new Token(93L, 42L)));
         assertEquals(null, mTabGroupModelFilter.getStableIdFromRootId(1000));
+
+        // Test null/invalid inputs.
+        assertEquals(Tab.INVALID_TAB_ID, mTabGroupModelFilter.getRootIdFromStableId(null));
+        assertEquals(null, mTabGroupModelFilter.getStableIdFromRootId(Tab.INVALID_TAB_ID));
     }
 
     @Test

@@ -1534,10 +1534,11 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public int getRootIdFromStableId(@NonNull Token stableId) {
+    public int getRootIdFromStableId(@Nullable Token stableId) {
+        if (stableId == null) return Tab.INVALID_TAB_ID;
         for (int i = 0; i < getTabModel().getCount(); i++) {
             Tab tab = getTabModel().getTabAt(i);
-            if (stableId.equals(tab.getTabGroupId())) return tab.getRootId();
+            if (Objects.equals(stableId, tab.getTabGroupId())) return tab.getRootId();
         }
         return Tab.INVALID_TAB_ID;
     }

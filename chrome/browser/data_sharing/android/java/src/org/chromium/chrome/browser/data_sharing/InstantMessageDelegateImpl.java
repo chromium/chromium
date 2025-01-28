@@ -446,15 +446,18 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             InstantMessage message, Context context, TabGroupModelFilter tabGroupModelFilter) {
         String messageTitle = MessageUtils.extractTabGroupTitle(message);
         if (TextUtils.isEmpty(messageTitle)) {
-            // Shouldn't need to check for any failure cases, should claim 1 tab if not found.
-            String syncId = MessageUtils.extractSyncTabGroupId(message);
-            SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(syncId);
-            Token token = syncGroup.localId == null ? null : syncGroup.localId.tabGroupId;
+            @Nullable String syncId = MessageUtils.extractSyncTabGroupId(message);
+            @Nullable SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(syncId);
+            @Nullable Token token = extractLocalId(syncGroup);
             int rootId = tabGroupModelFilter.getRootIdFromStableId(token);
             int tabCount = tabGroupModelFilter.getRelatedTabCountForRootId(rootId);
             return TabGroupTitleUtils.getDefaultTitle(context, tabCount);
         } else {
             return messageTitle;
         }
+    }
+
+    private @Nullable Token extractLocalId(@Nullable SavedTabGroup syncGroup) {
+        return syncGroup == null || syncGroup.localId == null ? null : syncGroup.localId.tabGroupId;
     }
 }
