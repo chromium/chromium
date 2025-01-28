@@ -77,10 +77,10 @@ if (enable_swiftshader) {
   packaging_files += [ "$root_out_dir/vk_swiftshader_icd.json" ]
 }
 
-if (use_qt) {
-  # Even though this is a shared library, add it to `packaging_files` instead of
-  # `packaging_files_shlibs` to skip the dependency check.  This is intentional
-  # to prevent a hard dependency on QT for the package.
+# Even though this is a shared library, add it to `packaging_files` instead of
+# `packaging_files_shlibs` to skip the dependency check.  This is intentional
+# to prevent a hard dependency on QT for the package.
+if (use_qt5) {
   packaging_files += [ "$root_out_dir/libqt5_shim.so" ]
 }
 if (use_qt6) {
@@ -206,7 +206,7 @@ if (build_with_internal_optimization_guide) {
   }
 }
 
-if (use_qt) {
+if (use_qt5) {
   strip_binary("strip_qt5_shim") {
     binary_input = "$root_out_dir/libqt5_shim.so"
     deps = [ "//ui/qt:qt5_shim" ]
@@ -399,7 +399,7 @@ group("installer_deps") {
       "//components/optimization_guide/internal:optimization_guide_internal",
     ]
   }
-  if (use_qt) {
+  if (use_qt5) {
     public_deps += [
       ":strip_qt5_shim",
       "//ui/qt:qt5_shim",
