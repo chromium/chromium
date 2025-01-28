@@ -92,9 +92,7 @@ group("api_implementations") {
         "//chrome/browser/extensions/api/enterprise_platform_keys_private",
         "//chrome/browser/extensions/api/input_ime",
         "//chrome/browser/extensions/api/platform_keys",
-        "//chrome/browser/extensions/api/quick_unlock_private",
         "//chrome/browser/extensions/api/shared_storage",
-        "//chrome/browser/extensions/api/terminal",
       ]
     }
   }  # if (enable_extensions)

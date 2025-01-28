@@ -122,7 +122,6 @@ static_library("crostini") {
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
-    "//chrome/browser/extensions/api/terminal:startup_status",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/webui/ash/crostini_installer",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",
