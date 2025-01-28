@@ -5957,6 +5957,13 @@
        {}
       ]
      ],
+     "nth-child-spurious-brace-crash.html": [
+      "5860b25ae4be19239811fb2119f41a542bb7dce6",
+      [
+       null,
+       {}
+      ]
+     ],
      "pseudo-where-crash.html": [
       "ad683ac8b9e0223666b6e3ccfc951a9817be0d32",
       [
@@ -168210,6 +168217,23 @@
         [
          [
           "/css/css-overflow/line-clamp/reference/block-ellipsis-009-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-ellipsis-010.html": [
+       "2351a20e8cfe6bf0c4d4a40b15792fb3a6af4320",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/block-ellipsis-010-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-overflow/line-clamp/reference/block-ellipsis-010-alt-ref.html",
           "=="
          ]
         ],
@@ -335120,7 +335144,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "c1bb36589f4ead8a0c6b13d45a76e8c95154b68e",
+      "124b27e4f64556b42b09267e9f9ebace418110f8",
       []
      ],
      "inheritance-expected.txt": [
@@ -348653,6 +348677,14 @@
        ],
        "block-ellipsis-009-ref.html": [
         "949ba2f6032285e636e6ade2021ee4d6f7d80d79",
+        []
+       ],
+       "block-ellipsis-010-alt-ref.html": [
+        "6ab795eb4190074910290e1e47726f587ee9bd6f",
+        []
+       ],
+       "block-ellipsis-010-ref.html": [
+        "b5f15ca3dcdf00d68fd2c11611aa69853cc07414",
         []
        ],
        "line-clamp-010-ref.html": [
@@ -373160,7 +373192,7 @@
       []
      ],
      "insertorderedlist.js": [
-      "71aacdd9c277e0b34cd5888711128fc56f04c406",
+      "1e67f50c959ec15aed67316caf1f2e78afff4ed3",
       []
      ],
      "insertparagraph.js": [
@@ -373172,7 +373204,7 @@
       []
      ],
      "insertunorderedlist.js": [
-      "6401e8d9675cbe213ca3ce4aec6d07b044086e75",
+      "93afe7d41c17b56731e9db860130f4abce696f46",
       []
      ],
      "italic.js": [
@@ -373990,11 +374022,11 @@
       []
      ],
      "insertorderedlist_1-1000-expected.txt": [
-      "a8643401fd6a7d9eae6855908a8ac399a08944a2",
+      "98515658a93736431cc8d0dd8a32bc1941f13d4d",
       []
      ],
      "insertorderedlist_1001-last-expected.txt": [
-      "53555aafb689cf80b812f1a27b35268f7951eb73",
+      "84f752d881109bc952ad034fc5253b39176cf346",
       []
      ],
      "insertparagraph_1-1000-expected.txt": [
@@ -374034,7 +374066,7 @@
       []
      ],
      "insertunorderedlist_1-1000-expected.txt": [
-      "2aed9746a2ff6c916c2d5b7c07b3e606aaa783c8",
+      "aba397cc512180f9c4899b60fd8d1d9d04513adf",
       []
      ],
      "insertunorderedlist_1001-2000-expected.txt": [
@@ -403210,7 +403242,7 @@
     ]
    },
    "lint.ignore": [
-    "27728b07fc2af6687ef827e2ba52a0c976db6847",
+    "4dd0b96460ca5f6212ff2c25a0b324f5cffb9790",
     []
    ],
    "loading": {
@@ -486815,7 +486847,7 @@
       ]
      ],
      "idlharness.html": [
-      "ecc601bcf6a97a1722e3901d731f9f424d0a79e1",
+      "c51e106ccc5ece7087068036e6d755581fed89b7",
       [
        null,
        {}
@@ -509947,6 +509979,13 @@
        {
         "testdriver": true
        }
+      ]
+     ],
+     "interactivity-inert-find.html": [
+      "03570e5f790613f460fa6da784535cccbaa0d557",
+      [
+       null,
+       {}
       ]
      ],
      "interactivity-inert-focus.html": [
@@ -654183,7 +654222,7 @@
       ]
      ],
      "event-constructor.html": [
-      "89ac934020eec9c7771b2fbd608a95e730b5d093",
+      "863681ced730d1c3f441a6f8b21db7b890301d25",
       [
        null,
        {}
@@ -654330,14 +654369,14 @@
       ]
      ],
      "navigate-anchor-cross-origin.html": [
-      "a69b78196ff288fb251a1393436e4714d7925701",
+      "62e5adb20ae88c33c3f76b527d98502d38db3a52",
       [
        null,
        {}
       ]
      ],
      "navigate-anchor-download-userInitiated.html": [
-      "17109a2ae82049bba0afbec4df059fe43150164d",
+      "69181425292e758ac5bdccaec51b95f3670ecb71",
       [
        null,
        {
@@ -654346,28 +654385,28 @@
       ]
      ],
      "navigate-anchor-download.html": [
-      "fbeeb69b9563f7246079242a31063e584e3e420a",
+      "d04245ec253ce0b9f56afa9fbc598730924ba40e",
       [
        null,
        {}
       ]
      ],
      "navigate-anchor-fragment.html": [
-      "69400c3d2f31f8df45dfef9062904035800c4ac5",
+      "6443ccecd1d702cc1210857bd9c7013721d88fa6",
       [
        null,
        {}
       ]
      ],
      "navigate-anchor-same-origin-cross-document.html": [
-      "084993540a18dc90da1cd747de05fdcef6cc093a",
+      "5a6dce7ec8bcc9b349494ff151428d219ee7bfc0",
       [
        null,
        {}
       ]
      ],
      "navigate-anchor-userInitiated.html": [
-      "686d7ad6ee393e6ca5cc65193e35f7bdf8fda416",
+      "bb76e7a3fbe65121452fb39218f89c567bafac48",
       [
        null,
        {
@@ -654376,7 +654415,7 @@
       ]
      ],
      "navigate-anchor-with-target.html": [
-      "de74239b3bee8b3cc0e7e27c899e8b620245d925",
+      "e4b897d82f3ddc62e64f9a7489969425338b29f9",
       [
        null,
        {}
@@ -654397,35 +654436,35 @@
       ]
      ],
      "navigate-destination-getState-back-forward.html": [
-      "b206981821b5441534f2c19b3f8076308ec3e0bf",
+      "869fc1648157b25f296c69f8163a441a0101277b",
       [
        null,
        {}
       ]
      ],
      "navigate-destination-getState-navigate.html": [
-      "1e622f99117c192a0081cdf92e2d2b9605fa182c",
+      "d19a16851453a0ea5f9b7ac72ea2bb9e70e98199",
       [
        null,
        {}
       ]
      ],
      "navigate-destination-getState-reload.html": [
-      "be33b8120da70a1269efeb6cef3beb2c8a9922a6",
+      "ac6528ce7ef261ac087105f54d52d0ef381cb231",
       [
        null,
        {}
       ]
      ],
      "navigate-form-get.html": [
-      "59661a1caf77a5da1672bf0fb4ace357e970292a",
+      "7a71a1c3050a0cceca5ca0e9415a830ae8210356",
       [
        null,
        {}
       ]
      ],
      "navigate-form-reload.html": [
-      "cdd3ade4ff2c54e889183a852bc4d42611e8e19f",
+      "217169053722c2b4c4ecdbaed4b9a8e263fbb97a",
       [
        null,
        {}
@@ -654439,14 +654478,14 @@
       ]
      ],
      "navigate-form-traverse.html": [
-      "72b8dc36acb3a7d64f91cc59a261b971d0836312",
+      "b9665c805665956fe57bf6640cb292be71f447f3",
       [
        null,
        {}
       ]
      ],
      "navigate-form-userInitiated.html": [
-      "079f546771ff669f48c69bb8ead2932ceeb24324",
+      "246e028a0dbf241f1667c380a0255396d13b1553",
       [
        null,
        {
@@ -654455,28 +654494,28 @@
       ]
      ],
      "navigate-form-with-target.html": [
-      "07418366a7644104ac31db6ef0bb881a7b499cd4",
+      "4b1a8ce9d3a975f839f0af2a91e0a600a8ea827e",
       [
        null,
        {}
       ]
      ],
      "navigate-form.html": [
-      "8cea889bec185a26797b8df559682a78cfe9b14b",
+      "653ef3b8eba65a79f631ac392c9cdf8b0ec77d9b",
       [
        null,
        {}
       ]
      ],
      "navigate-history-back-after-fragment.html": [
-      "4529fe25ac3b4f84410dad36a09a7dd5f0f4c036",
+      "9da4ddcd50779229c550452987ce153671a4e093",
       [
        null,
        {}
       ]
      ],
      "navigate-history-back-after-pushState.html": [
-      "06c3b89bbcf4141de35e8d65d002b798f3fea651",
+      "fdee41a312191455e0f7babdad75d281b6fc6755",
       [
        null,
        {}
@@ -654490,7 +654529,7 @@
       ]
      ],
      "navigate-history-back-cross-document.html": [
-      "a34b20a5e539fae8437d112025e56b5924d182a8",
+      "29c626a522145f5a26b050e9e97aeff4d213cad8",
       [
        null,
        {}
@@ -654504,77 +654543,77 @@
       ]
      ],
      "navigate-history-go-0.html": [
-      "cd716bfafb1b4cc425ee0a387f590cc773340cd7",
+      "5508928e198dd9a4d88fe6ac3b50a99286c2e825",
       [
        null,
        {}
       ]
      ],
      "navigate-history-pushState.html": [
-      "f89288b6edf4685c24b974b34f2ae778efe7bb6c",
+      "5079b21078178175df99bdb1875889b9328fed34",
       [
        null,
        {}
       ]
      ],
      "navigate-history-replaceState.html": [
-      "d18feb2bc1debbde82708d3442c46d387ca2394a",
+      "444116a6324c361b6876f3370bbcf4f579c7f0f4",
       [
        null,
        {}
       ]
      ],
      "navigate-iframe-location.html": [
-      "c00a6e010db8e21cd5a01ec5972300792add9033",
+      "1bd79188231b6ff973fe9e741f9d554be252bd72",
       [
        null,
        {}
       ]
      ],
      "navigate-location.html": [
-      "b1ce204a626a5ada1410426fcdbfd56e4337d628",
+      "a0ed4dc0aac5886cee3496a4aac007eaddaee46e",
       [
        null,
        {}
       ]
      ],
      "navigate-meta-refresh.html": [
-      "f64484c3055cbb2d761dd1a5cdc858f61d28d75d",
+      "d4d5b1c8e13927eaa3bbda1d973cc1413421c753",
       [
        null,
        {}
       ]
      ],
      "navigate-navigation-back-cross-document.html": [
-      "de87fbbb800d1681c9d1b7ed925085dbac2ad7ba",
+      "084051539b8db3f50edb4e3037c9dd8882a6bbe6",
       [
        null,
        {}
       ]
      ],
      "navigate-navigation-back-same-document-in-iframe.html": [
-      "3d810d2f1de5a8e2a3054465844a2edec7783901",
+      "42c694e2905d73eb7ba92dc7a96c3c3152febf8e",
       [
        null,
        {}
       ]
      ],
      "navigate-navigation-back-same-document.html": [
-      "0f2faff7d7b06238d106b5f54210ab60d29c0cca",
+      "b08bbfcbf11430e3e5f6131e91fb8b90ea82a891",
       [
        null,
        {}
       ]
      ],
      "navigate-navigation-navigate.html": [
-      "5dd1892cc001a77ca24b530ca7c7bd8e017860d9",
+      "c56af1b40df8fd0720f0114f687ef78fed88a074",
       [
        null,
        {}
       ]
      ],
      "navigate-svg-anchor-fragment.html": [
-      "647496fd5c6980e8a977317a40c5e7e0424573c5",
+      "c6d210cccb1335983ba3df95788e1f7e7caa3dc8",
       [
        null,
        {}
@@ -654588,21 +654627,21 @@
       ]
      ],
      "navigate-to-srcdoc.html": [
-      "bb598d8b90292904fe669c6dd2414faa8460b586",
+      "ea5c3f92168500ed6966dd1211447eb0bbcc7280",
       [
        null,
        {}
       ]
      ],
      "navigate-window-open-self.html": [
-      "1ef65ed82ba23a297e1a84eda5a200319e4db105",
+      "4e569b6d548f165cd7939b5e51d7da19957b0f69",
       [
        null,
        {}
       ]
      ],
      "navigate-window-open.html": [
-      "13cdefb5d3b559ec92a92d689d499727d02fac24",
+      "42828308d7709e717402e126f7aebbf1d6e0896c",
       [
        null,
        {}
