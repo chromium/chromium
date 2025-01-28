@@ -1550,7 +1550,7 @@ deps = {
       'packages' : [
           {
               'package': 'infra/3pp/tools/copybara',
-              'version': '_rad--EmYH2N8Qy7KNGyo4OnjbEVF67u2mqff_Q6lg8C',
+              'version': '43CLI1CWoib0HVXMFhLdtsCNvdKQP1UGEBiocFvW5EoC',
           },
       ],
       'condition': 'host_os == "linux" and checkout_copybara',
