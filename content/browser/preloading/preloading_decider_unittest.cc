@@ -62,7 +62,7 @@ class TestPrefetchService : public PrefetchService {
     ASSERT_TRUE(prefetches_[index]);
     base::WeakPtr<PrefetchContainer> prefetch_container = prefetches_[index];
     prefetches_.erase(prefetches_.begin() + index);
-    ResetPrefetch(prefetch_container);
+    MayReleasePrefetch(prefetch_container);
   }
 
   std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;

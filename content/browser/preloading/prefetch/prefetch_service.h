@@ -20,6 +20,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/service_worker_context.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/url_request/redirect_info.h"
@@ -118,12 +119,19 @@ class CONTENT_EXPORT PrefetchService {
   // `AddPrefetchContainer()` synchronously destruct `prefetch_container` if the
   // key conflicted to the one already added with migration of some attributes.
   // See also `MigrateNewlyaAdded()`.
+  //
+  // `AddPrefetchContainerWithHandle()` additionally returns PrefetchHandle so
+  // that the caller can control prefetch resources associated with this.
   void AddPrefetchContainer(
+      std::unique_ptr<PrefetchContainer> prefetch_container);
+  std::unique_ptr<PrefetchHandle> AddPrefetchContainerWithHandle(
       std::unique_ptr<PrefetchContainer> prefetch_container);
   void AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::unique_ptr<PrefetchContainer> prefetch_container);
 
-  void ResetPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
+  // An interface to notify `PrefetchService` that the given `PrefetchContainer`
+  // is no longer needed from outside of the service.
+  void MayReleasePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Called by PrefetchDocumentManager when it finishes processing the latest
   // update of speculation candidates.
@@ -390,6 +398,9 @@ class CONTENT_EXPORT PrefetchService {
   // Records the result to a UMA histogram.
   void RecordExistingPrefetchWithMatchingURL(
       base::WeakPtr<PrefetchContainer> prefetch_container) const;
+
+  void ResetPrefetchContainer(
+      base::WeakPtr<PrefetchContainer> prefetch_container);
 
   void DumpPrefetchesForDebug() const;
 

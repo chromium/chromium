@@ -1428,7 +1428,7 @@ WebContentsImpl::~WebContentsImpl() {
             case PrefetchContainer::LoadState::kEligible:
             case PrefetchContainer::LoadState::kFailedIneligible:
             case PrefetchContainer::LoadState::kFailedHeldback:
-              prefetch_service->ResetPrefetch(prefetch_container);
+              prefetch_service->MayReleasePrefetch(prefetch_container);
               break;
             case PrefetchContainer::LoadState::kStarted:
               break;

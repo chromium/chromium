@@ -77,8 +77,8 @@ PrefetchDocumentManager::~PrefetchDocumentManager() {
     return;
 
   // Invalidate weak pointers to `this` a little earlier to avoid callbacks to
-  // `this` (especially `PrefetchWillBeDestroyed()`) during `ResetPrefetch()`
-  // below.
+  // `this` (especially `PrefetchWillBeDestroyed()`) during
+  // `MayReleasePrefetch()` below.
   weak_method_factory_.InvalidateWeakPtrs();
 
   // On destruction, removes any prefetches that not yet start prefetching from
@@ -91,7 +91,7 @@ PrefetchDocumentManager::~PrefetchDocumentManager() {
         case PrefetchContainer::LoadState::kEligible:
         case PrefetchContainer::LoadState::kFailedIneligible:
         case PrefetchContainer::LoadState::kFailedHeldback:
-          prefetch_service->ResetPrefetch(prefetch_iter.second);
+          prefetch_service->MayReleasePrefetch(prefetch_iter.second);
           break;
         case PrefetchContainer::LoadState::kStarted:
           break;
@@ -173,7 +173,7 @@ void PrefetchDocumentManager::ProcessCandidates(
             PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved);
         break;
     }
-    GetPrefetchService()->ResetPrefetch(prefetch);
+    GetPrefetchService()->MayReleasePrefetch(prefetch);
   }
 
   auto should_process_entry =
@@ -400,7 +400,7 @@ void PrefetchDocumentManager::ResetPrefetchAheadOfPrerenderIfExist(
       break;
   }
 
-  GetPrefetchService()->ResetPrefetch(prefetch);
+  GetPrefetchService()->MayReleasePrefetch(prefetch);
   all_prefetches_.erase(it);
 }
 
