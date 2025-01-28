@@ -268,6 +268,11 @@ message BrowserDataCollectionSpecifier {
   HistoryQuerySpecifiers history_query_specifiers = 6;
 }
 
+message AutofillFieldGlobalId {
+  string frame_token = 1;
+  uint64 renderer_id = 2;
+}
+
 // Specifies the context to collect for a single page.
 message PageContextSpecifier {
   // Send the default data (a subset of the data below) in addition to any
@@ -289,11 +294,14 @@ message PageContextSpecifier {
   // Whether to collect the PDF data.
   bool pdf_data = 6;
 
-  // Whether to collect the forms data.
-  bool forms_data = 7;
+  // Whether to collect the last FormsPredictions request and response.
+  bool forms_prediction = 7;
 
   // Whether to collect the annotated page content.
   bool annotated_page_content = 8;
+
+  // The global ID of the field whose form should be extract (if any).
+  AutofillFieldGlobalId field_global_id = 9;
 }
 
 // Used to specify the context to collect for a set of tabs.

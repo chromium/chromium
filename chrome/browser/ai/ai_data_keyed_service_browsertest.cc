@@ -24,7 +24,12 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
@@ -111,19 +116,26 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
 
   GURL url() { return url_; }
 
+  AiDataKeyedService* ai_data_service() {
+    return AiDataKeyedServiceFactory::GetAiDataKeyedService(
+        browser()->profile());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
   const AiDataKeyedService::AiData& ai_data() { return ai_data_; }
 
-  void LoadSimplePageAndData() {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url_, 1);
+  void LoadSimplePage() {
+    content::NavigateToURLBlockUntilNavigationsComplete(web_contents(), url_,
+                                                        1);
+  }
 
-    AiDataKeyedService* ai_data_service =
-        AiDataKeyedServiceFactory::GetAiDataKeyedService(browser()->profile());
-
+  void QueryAiData() {
     base::RunLoop run_loop;
-    ai_data_service->GetAiData(
-        1, web_contents, "",
+    ai_data_service()->GetAiData(
+        1, web_contents(), "",
         base::BindOnce(&AiDataKeyedServiceBrowserTest::SetAiData,
                        base::Unretained(this), run_loop.QuitClosure()),
         1);
@@ -131,25 +143,29 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
     DCHECK(ai_data());
   }
 
-  void LoadSimplePageAndDataWithSpecifier(
-      AiDataKeyedService::AiDataSpecifier specifier) {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url_, 1);
-
-    AiDataKeyedService* ai_data_service =
-        AiDataKeyedServiceFactory::GetAiDataKeyedService(browser()->profile());
-
+  void QueryAiDataWithSpecifier(AiDataKeyedService::AiDataSpecifier specifier) {
     base::RunLoop run_loop;
-    ai_data_service->GetAiDataWithSpecifier(
-        web_contents, std::move(specifier),
+    ai_data_service()->GetAiDataWithSpecifier(
+        web_contents(), std::move(specifier),
         base::BindOnce(&AiDataKeyedServiceBrowserTest::SetAiData,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     DCHECK(ai_data());
   }
 
+  void LoadSimplePageAndData() {
+    LoadSimplePage();
+    QueryAiData();
+  }
+
+  void LoadSimplePageAndDataWithSpecifier(
+      AiDataKeyedService::AiDataSpecifier specifier) {
+    LoadSimplePage();
+    QueryAiDataWithSpecifier(std::move(specifier));
+  }
+
  private:
+  autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
   GURL url_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   AiDataKeyedService::AiData ai_data_;
@@ -284,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabInnerTextLimit) {
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, Screenshot) {
   LoadSimplePageAndData();
-  content::RequestFrame(browser()->tab_strip_model()->GetActiveWebContents());
+  content::RequestFrame(web_contents());
   EXPECT_NE(ai_data()->page_context().tab_screenshot(), "");
 }
 
@@ -315,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SpecifierOn) {
   foreground_tab_specifier->set_tab_screenshot(true);
   foreground_tab_specifier->set_ax_tree(true);
   foreground_tab_specifier->set_pdf_data(true);
-  foreground_tab_specifier->set_forms_data(true);
+  foreground_tab_specifier->set_forms_prediction(true);
   auto* general_tabs_specifier =
       browser_specifier->mutable_tabs_context_specifier()
           ->mutable_general_tab_specifier();
@@ -387,9 +403,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithFormsPredictions,
       .WillOnce(ReturnRef(request));
   EXPECT_CALL(*mock_autofill_ai_model_executor, GetLatestResponse)
       .WillOnce(ReturnRef(response));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents());
   ASSERT_TRUE(tab)
       << "Active WebContents isn't a tab. TabInterface::GetFromContents() "
          "was expected to crash.";
@@ -420,6 +434,46 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithFormsPredictions,
                 .filled_form_field_data()[0]
                 .normalized_label(),
             "test_label");
+}
+
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
+                       GetFormDataByFieldGlobalIdForModelPrototyping) {
+  // Simulate loading `expected_form`.
+  LoadSimplePage();
+  autofill::ContentAutofillDriver* driver =
+      autofill::ContentAutofillDriver::GetForRenderFrameHost(
+          web_contents()->GetPrimaryMainFrame());
+  const autofill::FormData expected_form = autofill::test::GetFormData(
+      {.fields = {{.label = u"Field 1"}, {.label = u"Field 2"}}});
+  ASSERT_TRUE(driver);
+  autofill::TestAutofillManagerSingleEventWaiter wait_for_forms_seen(
+      driver->GetAutofillManager(),
+      &autofill::AutofillManager::Observer::OnAfterFormsSeen,
+      testing::ElementsAre(expected_form.global_id()), testing::IsEmpty());
+  driver->GetAutofillManager().OnFormsSeen(/*updated_forms=*/{expected_form},
+                                           /*removed_forms=*/{});
+  std::move(wait_for_forms_seen).Wait();
+
+  // Query the API for `expected_form`'s first field.
+  AiDataKeyedService::AiDataSpecifier specifier;
+  auto* global_id = specifier.mutable_browser_data_collection_specifier()
+                        ->mutable_foreground_tab_page_context_specifier()
+                        ->mutable_field_global_id();
+  global_id->set_frame_token(
+      expected_form.fields()[0].global_id().frame_token->ToString());
+  global_id->set_renderer_id(
+      expected_form.fields()[0].global_id().renderer_id.value());
+  QueryAiDataWithSpecifier(std::move(specifier));
+
+  // Expect that the result matches `expected_form`.
+  ASSERT_TRUE(ai_data()->has_form_data());
+  const optimization_guide::proto::FormData& actual_form =
+      ai_data()->form_data();
+  ASSERT_EQ(actual_form.fields_size(), 2);
+  EXPECT_EQ(actual_form.fields(0).field_label(),
+            base::UTF16ToUTF8(expected_form.fields()[0].label()));
+  EXPECT_EQ(actual_form.fields(1).field_label(),
+            base::UTF16ToUTF8(expected_form.fields()[1].label()));
 }
 #endif
 

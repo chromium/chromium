@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 
+#include <algorithm>
+
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
@@ -517,6 +519,18 @@ size_t AutofillManager::FindCachedFormsBySignature(
 FormStructure* AutofillManager::FindCachedFormById(FormGlobalId form_id) const {
   auto it = form_structures_.find(form_id);
   return it != form_structures_.end() ? it->second.get() : nullptr;
+}
+
+FormStructure* AutofillManager::FindCachedFormById(
+    FieldGlobalId field_id) const {
+  for (const auto& [form_id, form_structure] : form_structures_) {
+    if (std::ranges::any_of(*form_structure, [&](const auto& field) {
+          return field->global_id() == field_id;
+        })) {
+      return form_structure.get();
+    }
+  }
+  return nullptr;
 }
 
 bool AutofillManager::CanShowAutofillUi() const {

@@ -60,6 +60,8 @@ source_set("impl") {
   deps = [
     ":ai",
     "//chrome/browser/ui/tabs:tabs_public",
+    "//components/autofill/content/browser",
+    "//components/autofill/core/browser",
     "//components/history_embeddings",
     "//components/language/core/common",
     "//components/optimization_guide/content/browser",
