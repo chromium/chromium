@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/page/context_menu_provider.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
@@ -65,7 +66,7 @@ namespace blink {
 class FrontendMenuProvider final : public ContextMenuProvider {
  public:
   FrontendMenuProvider(DevToolsHost* devtools_host,
-                       WebVector<MenuItemInfo> items)
+                       std::vector<MenuItemInfo> items)
       : devtools_host_(devtools_host), items_(std::move(items)) {}
   ~FrontendMenuProvider() override {
     // Verify that this menu provider has been detached.
@@ -88,7 +89,7 @@ class FrontendMenuProvider final : public ContextMenuProvider {
     items_.clear();
   }
 
-  WebVector<MenuItemInfo> PopulateContextMenu() override {
+  std::vector<MenuItemInfo> PopulateContextMenu() override {
     return std::move(items_);
   }
 
@@ -101,7 +102,8 @@ class FrontendMenuProvider final : public ContextMenuProvider {
 
  private:
   Member<DevToolsHost> devtools_host_;
-  WebVector<MenuItemInfo> items_;
+  std::vector<MenuItemInfo> items_
+      ALLOW_DISCOURAGED_TYPE("Matches ContextMenuData");
 };
 
 DevToolsHost::DevToolsHost(InspectorFrontendClient* client,

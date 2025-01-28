@@ -480,7 +480,7 @@ void MojoURLLoaderClient::FlushDeferredMessages() {
   if (freeze_mode_ != LoaderFreezeMode::kNone) {
     return;
   }
-  WebVector<std::unique_ptr<DeferredMessage>> messages;
+  Vector<std::unique_ptr<DeferredMessage>> messages;
   messages.swap(deferred_messages_);
   bool has_completion_message = false;
   base::WeakPtr<MojoURLLoaderClient> weak_this = weak_factory_.GetWeakPtr();

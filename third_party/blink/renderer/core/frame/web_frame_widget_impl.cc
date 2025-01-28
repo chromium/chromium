@@ -2148,7 +2148,7 @@ bool WebFrameWidgetImpl::Resizable() const {
   return resizable_;
 }
 
-const WebVector<gfx::Rect>& WebFrameWidgetImpl::ViewportSegments() const {
+const std::vector<gfx::Rect>& WebFrameWidgetImpl::ViewportSegments() const {
   return viewport_segments_;
 }
 
@@ -3006,7 +3006,7 @@ void WebFrameWidgetImpl::DisableDevicePostureOverrideForEmulation() {
 
 void WebFrameWidgetImpl::SetViewportSegments(
     const std::vector<gfx::Rect>& viewport_segments_param) {
-  WebVector<gfx::Rect> viewport_segments(viewport_segments_param);
+  std::vector<gfx::Rect> viewport_segments(viewport_segments_param);
   if (viewport_segments_ != viewport_segments) {
     viewport_segments_ = viewport_segments;
     LocalFrame* frame = LocalRootImpl()->GetFrame();
@@ -4154,7 +4154,7 @@ void WebFrameWidgetImpl::GetCompositionCharacterBoundsInWindow(
     return;
   blink::WebInputMethodController* controller =
       focused_frame->GetInputMethodController();
-  blink::WebVector<gfx::Rect> bounds_from_blink;
+  std::vector<gfx::Rect> bounds_from_blink;
   if (!controller->GetCompositionCharacterBounds(bounds_from_blink))
     return;
 
@@ -4293,7 +4293,7 @@ void WebFrameWidgetImpl::AddImeTextSpansToExistingText(
 
 Vector<ui::mojom::blink::ImeTextSpanInfoPtr>
 WebFrameWidgetImpl::GetImeTextSpansInfo(
-    const WebVector<ui::ImeTextSpan>& ime_text_spans) {
+    const std::vector<ui::ImeTextSpan>& ime_text_spans) {
   auto* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame)
     return Vector<ui::mojom::blink::ImeTextSpanInfoPtr>();

@@ -159,7 +159,7 @@ class WebCrypto {
   // Inputs
   // -----------------------
   //
-  //   * Data buffers are transfered as WebVectors. Implementations are free
+  //   * Data buffers are transferred as std::vectors. Implementations are free
   //     to re-use or transfer their storage.
   //
   //   * All WebCryptoKeys are guaranteeed to be !IsNull().

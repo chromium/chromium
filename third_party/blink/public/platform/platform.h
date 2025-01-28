@@ -801,7 +801,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   // `url`. This allows the embedder to customize the applied CSP.
   virtual void AppendContentSecurityPolicy(
       const WebURL& url,
-      blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {}
+      std::vector<WebContentSecurityPolicyHeader>* csp) {}
 
   // Cross-origin subframes are generally not allowed to display a file picker
   // for security reasons. This method allows content embedders to specify

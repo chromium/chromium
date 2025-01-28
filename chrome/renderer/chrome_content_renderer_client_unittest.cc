@@ -34,14 +34,12 @@
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
 using blink::WebPluginParams;
 using blink::WebString;
-using blink::WebVector;
 #endif
 
 using content::WebPluginInfo;

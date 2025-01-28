@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/page/drag_controller.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/graphics/apply_viewport_changes.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -246,7 +247,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   mojom::blink::DisplayMode DisplayMode() const override;
   ui::mojom::blink::WindowShowState WindowShowState() const override;
   bool Resizable() const override;
-  const WebVector<gfx::Rect>& ViewportSegments() const override;
+  const std::vector<gfx::Rect>& ViewportSegments() const override;
   void SetDelegatedInkMetadata(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) final;
   void InjectScrollbarGestureScroll(const gfx::Vector2dF& delta,
@@ -294,7 +295,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetEditCommandsForNextKeyEvent(
       Vector<mojom::blink::EditCommandPtr> edit_commands) override;
   Vector<ui::mojom::blink::ImeTextSpanInfoPtr> GetImeTextSpansInfo(
-      const WebVector<ui::ImeTextSpan>& ime_text_spans) override;
+      const std::vector<ui::ImeTextSpan>& ime_text_spans) override;
   void RequestMouseLock(
       bool has_transient_user_activation,
       bool request_unadjusted_movement,
@@ -1115,7 +1116,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   ui::mojom::blink::WindowShowState window_show_state_;
   bool resizable_;
 
-  WebVector<gfx::Rect> viewport_segments_;
+  std::vector<gfx::Rect> viewport_segments_
+      ALLOW_DISCOURAGED_TYPE("Will be passed to FrameVisualProperties");
 
   // This is owned by the LayerTreeHostImpl, and should only be used on the
   // compositor thread, so we keep the TaskRunner where you post tasks to

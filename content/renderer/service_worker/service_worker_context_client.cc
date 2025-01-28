@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -442,11 +443,8 @@ ServiceWorkerContextClient::CreateWorkerFetchContextOnInitiatorThread() {
       std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(std::move(
           service_worker_provider_info_->script_loader_factory_remote));
 
-  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
-      cors_exempt_header_list_.size());
-  std::ranges::transform(
-      cors_exempt_header_list_, web_cors_exempt_header_list.begin(),
-      [](const auto& header) { return blink::WebString::FromLatin1(header); });
+  std::vector<blink::WebString> web_cors_exempt_header_list =
+      base::ToVector(cors_exempt_header_list_, &blink::WebString::FromLatin1);
 
   return blink::WebServiceWorkerFetchContext::Create(
       renderer_preferences_, script_url_, loader_factories_->PassInterface(),

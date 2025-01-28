@@ -1274,13 +1274,16 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   template <wtf_size_t otherCapacity>
   Vector& operator=(const Vector<T, otherCapacity, Allocator>&);
 
-  // Creates a vector with elements copied from an input and sized range, with
-  // optional projection.
+  // Creates a vector with elements copied or moved from an input and sized
+  // range, with optional projection. To move elements, use
+  // base::RangeAsRvalues(std::move(range)) as the first parameter.
   template <typename Range, typename Proj = std::identity>
     requires VectorCanAssignFromRange<T, InlineCapacity, Allocator, Range, Proj>
   explicit Vector(Range&&, Proj = {});
 
-  // Replaces the vector with elements copied from an input and sized range.
+  // Replaces the vector with elements copied or moved from an input and sized
+  // range. To move elements, use base::RangeAsRvalues(std::move(range)) as the
+  // first parameter.
   template <typename Range, typename Proj = std::identity>
     requires VectorCanAssignFromRange<T, InlineCapacity, Allocator, Range, Proj>
   void assign(Range&&, Proj = {});
@@ -1467,7 +1470,10 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   //     Insert multiple elements represented by (1) |buffer| and |size|
   //     (for append), (2) |vector| (for AppendVector), (3) a pair of
   //     iterators (for AppendRange), or (4) |span| (for AppendSpan) to the
-  //     back. The elements will be copied.
+  //     back. Except for AppendRange, the elements will be copied. For
+  //     AppendRange, the elements will be copied or moved depending on the
+  //     iterators. For example, the elements will be moved if the iterators
+  //     are from std::make_move_iterator().
   // UncheckedAppend(value)
   //     Insert a single element like push_back(), but this function assumes
   //     the vector has enough capacity such that it can store the new element
@@ -2565,8 +2571,9 @@ wtf_size_t EraseIf(Vector<T, inline_capacity, Allocator>& v, Pred pred) {
 }
 
 // The WTF version of base::ToVector. This is more convenient to use than
-// Vector::Vector(range[, proj]), while the latter enables more control over
-// the template parameters of Vector.
+// Vector::Vector(range[, proj]) in some cases, e.g. when a temporary vector is
+// needed and the desired result type is the same as the deducted return type.
+// See Vector::Vector(range, proj) and Vector::assign() about copying vs moving.
 template <typename Range, typename Proj = std::identity>
   requires std::ranges::sized_range<Range> && std::ranges::input_range<Range> &&
            std::indirectly_unary_invocable<Proj,

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_MOJO_URL_LOADER_CLIENT_H_
 
 #include <stdint.h>
+
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -19,7 +20,6 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -101,7 +101,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   void EvictFromBackForwardCacheDueToTimeout();
   void StopBackForwardCacheEvictionTimer();
 
-  WebVector<std::unique_ptr<DeferredMessage>> deferred_messages_;
+  Vector<std::unique_ptr<DeferredMessage>> deferred_messages_;
   std::unique_ptr<BodyBuffer> body_buffer_;
   base::OneShotTimer back_forward_cache_eviction_timer_;
   base::TimeDelta back_forward_cache_timeout_;

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -300,16 +301,10 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistrations(
 
   DCHECK(!error_msg);
   DCHECK(infos);
-  blink::WebVector<blink::WebServiceWorkerRegistrationObjectInfo> registrations;
-  registrations.reserve(infos->size());
-  for (size_t i = 0; i < infos->size(); ++i) {
-    DCHECK_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
-              (*infos)[i]->registration_id);
-    registrations.emplace_back(
-        std::move((*infos)[i])
-            .To<blink::WebServiceWorkerRegistrationObjectInfo>());
-  }
-  callbacks->OnSuccess(std::move(registrations));
+  callbacks->OnSuccess(base::ToVector(std::move(*infos), [](auto&& info) {
+    return std::move(info)
+        .template To<blink::WebServiceWorkerRegistrationObjectInfo>();
+  }));
 }
 
 void WebServiceWorkerProviderImpl::OnDidGetRegistrationForReady(

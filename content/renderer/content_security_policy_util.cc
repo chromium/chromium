@@ -43,7 +43,7 @@ network::mojom::CSPSourceListPtr BuildCSPSourceList(
       source_list.report_sample, source_list.report_hash_algorithm);
 }
 
-std::vector<blink::WebString> ToWebVectorOfWebStrings(
+std::vector<blink::WebString> ToVectorOfWebStrings(
     std::vector<std::string> list_in) {
   return base::ToVector(list_in, &blink::WebString::FromUTF8);
 }
@@ -67,7 +67,7 @@ blink::WebCSPHashSource ToWebCSPHashSource(
 blink::WebCSPSourceList ToWebCSPSourceList(
     network::mojom::CSPSourceListPtr source_list) {
   return {base::ToVector(std::move(source_list->sources), ToWebCSPSource),
-          ToWebVectorOfWebStrings(std::move(source_list->nonces)),
+          ToVectorOfWebStrings(std::move(source_list->nonces)),
           base::ToVector(std::move(source_list->hashes), ToWebCSPHashSource),
           source_list->allow_self,
           source_list->allow_star,
@@ -87,7 +87,7 @@ std::optional<blink::WebCSPTrustedTypes> ToOptionalWebCSPTrustedTypes(
   if (!trusted_types)
     return std::nullopt;
   return blink::WebCSPTrustedTypes{
-      ToWebVectorOfWebStrings(std::move(trusted_types->list)),
+      ToVectorOfWebStrings(std::move(trusted_types->list)),
       trusted_types->allow_any, trusted_types->allow_duplicates};
 }
 
@@ -156,10 +156,10 @@ blink::WebContentSecurityPolicy ToWebContentSecurityPolicy(
           policy_in->sandbox,
           ToWebContentSecurityPolicyHeader(std::move(policy_in->header)),
           policy_in->use_reporting_api,
-          ToWebVectorOfWebStrings(std::move(policy_in->report_endpoints)),
+          ToVectorOfWebStrings(std::move(policy_in->report_endpoints)),
           policy_in->require_trusted_types_for,
           ToOptionalWebCSPTrustedTypes(std::move(policy_in->trusted_types)),
-          ToWebVectorOfWebStrings(std::move(policy_in->parsing_errors))};
+          ToVectorOfWebStrings(std::move(policy_in->parsing_errors))};
 }
 
 std::vector<blink::WebContentSecurityPolicy> ToWebContentSecurityPolicies(

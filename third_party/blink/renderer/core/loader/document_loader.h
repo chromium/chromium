@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -127,9 +128,7 @@ namespace mojom {
 enum class CommitResult : int32_t;
 }  // namespace mojom
 
-namespace {
 struct SameSizeAsDocumentLoader;
-}  // namespace
 
 enum class FirePopstate { kYes, kNo };
 
@@ -602,7 +601,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   ProcessBackgroundDataCallback TakeProcessBackgroundDataCallback() override;
 
   void ApplyClientHintsConfig(
-      const WebVector<network::mojom::WebClientHintsType>&
+      const std::vector<network::mojom::WebClientHintsType>&
           enabled_client_hints);
 
   // If the page was loaded from a signed exchange which has "allowed-alt-sxg"
@@ -818,8 +817,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // the previously committed document did, and the navigation was same-site.
   bool should_have_sticky_user_activation_ = false;
 
-  WebVector<WebHistoryItem> navigation_api_back_entries_;
-  WebVector<WebHistoryItem> navigation_api_forward_entries_;
+  std::vector<WebHistoryItem> navigation_api_back_entries_
+      ALLOW_DISCOURAGED_TYPE("Matches WebNavigationParams");
+  std::vector<WebHistoryItem> navigation_api_forward_entries_
+      ALLOW_DISCOURAGED_TYPE("Matches WebNavigationParams");
   Member<HistoryItem> navigation_api_previous_entry_;
 
   // This is the interface that handles generated code cache
