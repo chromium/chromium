@@ -12,10 +12,8 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/borealis",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/login/users",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/ui/webui/ash/settings/os_settings_features_util.h",
   "+chrome/browser/ui/webui/ash/settings/calculator",

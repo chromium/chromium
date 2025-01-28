@@ -6843,9 +6843,6 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_SETTINGS_STORAGE_ITEM_BROWSING_DATA" desc="In Device Settings > Storage, label for the size of browsing data.">
     Browsing data
   </message>
-  <message name="IDS_SETTINGS_STORAGE_ITEM_BROWSING_DATA_LACROS" desc="In Device Settings > Storage, label for the size of browsing data, showing which user account it applies to.">
-    Browsing data <ph name="DISPLAY_NAME">$1<ex>John</ex></ph>
-  </message>
   <message name="IDS_SETTINGS_STORAGE_ITEM_APPS" desc="In Device Settings > Storage, label for the total size of Android apps and web store apps and extensions.">
     Apps and extensions
   </message>
