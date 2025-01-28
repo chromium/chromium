@@ -122,12 +122,6 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
                    int32_t intra_priority_value) override {
     source_url_loader_->SetPriority(priority, intra_priority_value);
   }
-  void PauseReadingBodyFromNet() override {
-    source_url_loader_->PauseReadingBodyFromNet();
-  }
-  void ResumeReadingBodyFromNet() override {
-    source_url_loader_->ResumeReadingBodyFromNet();
-  }
 
   // mojo::DataPipeDrainer
   void OnDataAvailable(base::span<const uint8_t> data) override {

@@ -153,16 +153,6 @@ void ServiceWorkerUpdatedScriptLoader::SetPriority(
     network_loader_->SetPriority(priority, intra_priority_value);
 }
 
-void ServiceWorkerUpdatedScriptLoader::PauseReadingBodyFromNet() {
-  if (network_loader_)
-    network_loader_->PauseReadingBodyFromNet();
-}
-
-void ServiceWorkerUpdatedScriptLoader::ResumeReadingBodyFromNet() {
-  if (network_loader_)
-    network_loader_->ResumeReadingBodyFromNet();
-}
-
 // URLLoaderClient for network loader ------------------------------------------
 
 void ServiceWorkerUpdatedScriptLoader::OnReceiveEarlyHints(

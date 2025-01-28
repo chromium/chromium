@@ -529,20 +529,6 @@ void PrefetchResponseReader::SetPriority(net::RequestPriority priority,
   }
 }
 
-void PrefetchResponseReader::PauseReadingBodyFromNet() {
-  // Forward calls from the serving URL loader to the prefetch URL loader.
-  if (streaming_url_loader_) {
-    streaming_url_loader_->PauseReadingBodyFromNet();
-  }
-}
-
-void PrefetchResponseReader::ResumeReadingBodyFromNet() {
-  // Forward calls from the serving URL loader to the prefetch URL loader.
-  if (streaming_url_loader_) {
-    streaming_url_loader_->ResumeReadingBodyFromNet();
-  }
-}
-
 PrefetchStreamingURLLoaderStatus PrefetchResponseReader::GetStatusForRecording()
     const {
   switch (load_state_) {

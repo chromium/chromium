@@ -72,12 +72,6 @@ class KeepAliveURLLoadersTestObserver {
   // `error_codes.size()` times, and the error codes from all previous calls to
   // that method should match `error_codes`.
   void WaitForTotalOnCompleteProcessed(const std::vector<int>& error_codes);
-  // Waits for `KeepAliveURLLoader::PauseReadingBodyFromNetProcessed()` to be
-  // called `total` times.
-  void WaitForTotalPauseReadingBodyFromNetProcessed(size_t total);
-  // Waits for `KeepAliveURLLoader::ResumeReadingBodyFromNetProcessed()` to be
-  // called `total` times.
-  void WaitForTotalResumeReadingBodyFromNetProcessed(size_t total);
 
  private:
   std::unique_ptr<KeepAliveURLLoadersTestObserverImpl> impl_;

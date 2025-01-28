@@ -110,8 +110,6 @@ class RedirectURLLoader : public network::mojom::URLLoader {
   }
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override {}
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
   mojo::Remote<network::mojom::URLLoaderClient> client_;
   network::ResourceRequest request_;

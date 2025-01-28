@@ -172,8 +172,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   void OnBlobReadingComplete(int net_error);
 

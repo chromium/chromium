@@ -1496,30 +1496,6 @@ void URLLoader::SetPriority(net::RequestPriority priority,
   }
 }
 
-void URLLoader::PauseReadingBodyFromNet() {
-  DVLOG(1) << "URLLoader pauses fetching response body for "
-           << (url_request_ ? url_request_->original_url().spec()
-                            : "a URL that has completed loading or failed.");
-
-  // Please note that we pause reading body in all cases. Even if the URL
-  // request indicates that the response was cached, there could still be
-  // network activity involved. For example, the response was only partially
-  // cached.
-  should_pause_reading_body_ = true;
-}
-
-void URLLoader::ResumeReadingBodyFromNet() {
-  DVLOG(1) << "URLLoader resumes fetching response body for "
-           << (url_request_ ? url_request_->original_url().spec()
-                            : "a URL that has completed loading or failed.");
-  should_pause_reading_body_ = false;
-
-  if (paused_reading_body_) {
-    paused_reading_body_ = false;
-    ReadMore();
-  }
-}
-
 PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
     const net::TransportInfo& transport_info) {
   PrivateNetworkAccessCheckResult result =
@@ -2255,11 +2231,6 @@ void URLLoader::ReadMore() {
   // Once the MIME type is sniffed, all data is sent as soon as it is read from
   // the network.
   DCHECK(consumer_handle_.is_valid() || !pending_write_);
-
-  if (should_pause_reading_body_) {
-    paused_reading_body_ = true;
-    return;
-  }
 
   // TODO(ricea): Refactor this method and DidRead() to reduce duplication.
   if (options_ & mojom::kURLLoadOptionReadAndDiscardBody) {

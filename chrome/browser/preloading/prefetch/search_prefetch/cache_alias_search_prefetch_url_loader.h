@@ -69,8 +69,6 @@ class CacheAliasSearchPrefetchURLLoader
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   // network::mojom::URLLoaderClient
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -122,10 +120,6 @@ class CacheAliasSearchPrefetchURLLoader
   // Whether we are serving from disk cache. If yes, this loader can fallback to
   // the network if the cache is not available.
   bool can_fallback_ = true;
-
-  // If the owner paused network activity, we need to propagate that if a
-  // fallback occurs.
-  bool paused_ = false;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

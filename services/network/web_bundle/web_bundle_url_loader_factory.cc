@@ -339,9 +339,6 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     // Not supported (do nothing).
   }
 
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
-
   void OnMojoDisconnect() { deleteThis(); }
 
   const GURL url_;

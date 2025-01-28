@@ -397,20 +397,6 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::SetPriority(
   }
 }
 
-void WebRequestProxyingURLLoaderFactory::InProgressRequest::
-    PauseReadingBodyFromNet() {
-  if (target_loader_.is_bound()) {
-    target_loader_->PauseReadingBodyFromNet();
-  }
-}
-
-void WebRequestProxyingURLLoaderFactory::InProgressRequest::
-    ResumeReadingBodyFromNet() {
-  if (target_loader_.is_bound()) {
-    target_loader_->ResumeReadingBodyFromNet();
-  }
-}
-
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   target_client_->OnReceiveEarlyHints(std::move(early_hints));

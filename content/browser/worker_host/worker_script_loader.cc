@@ -199,18 +199,6 @@ void WorkerScriptLoader::SetPriority(net::RequestPriority priority,
   if (url_loader_)
     url_loader_->SetPriority(priority, intra_priority_value);
 }
-
-void WorkerScriptLoader::PauseReadingBodyFromNet() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (url_loader_)
-    url_loader_->PauseReadingBodyFromNet();
-}
-
-void WorkerScriptLoader::ResumeReadingBodyFromNet() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (url_loader_)
-    url_loader_->ResumeReadingBodyFromNet();
-}
 // URLLoader end --------------------------------------------------------------
 
 // URLLoaderClient ------------------------------------------------------------

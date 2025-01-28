@@ -966,18 +966,6 @@ void ThrottlingURLLoader::UpdateDeferredResponseHead(
   body_ = std::move(body);
 }
 
-void ThrottlingURLLoader::PauseReadingBodyFromNet() {
-  if (url_loader_) {
-    url_loader_->PauseReadingBodyFromNet();
-  }
-}
-
-void ThrottlingURLLoader::ResumeReadingBodyFromNet() {
-  if (url_loader_) {
-    url_loader_->ResumeReadingBodyFromNet();
-  }
-}
-
 void ThrottlingURLLoader::InterceptResponse(
     mojo::PendingRemote<network::mojom::URLLoader> new_loader,
     mojo::PendingReceiver<network::mojom::URLLoaderClient> new_client_receiver,
@@ -989,7 +977,6 @@ void ThrottlingURLLoader::InterceptResponse(
 
   body->swap(body_);
   if (original_loader) {
-    url_loader_->ResumeReadingBodyFromNet();
     *original_loader = url_loader_.Unbind();
   }
   url_loader_.Bind(std::move(new_loader));

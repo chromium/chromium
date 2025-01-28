@@ -245,8 +245,6 @@ class MockLoader : public network::mojom::URLLoader {
   }
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
   void SetFollowRedirectCallback(RepeatingFollowRedirectCallback callback) {
     follow_redirect_callback_ = std::move(callback);

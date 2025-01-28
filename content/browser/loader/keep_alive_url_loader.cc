@@ -431,45 +431,6 @@ void KeepAliveURLLoader::SetPriority(net::RequestPriority priority,
   url_loader_->SetPriority(priority, intra_priority_value);
 }
 
-void KeepAliveURLLoader::PauseReadingBodyFromNet() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT("loading", "KeepAliveURLLoader::PauseReadingBodyFromNet",
-              "request_id", request_id_);
-  if (HasReceivedResponse()) {
-    // This may come from a renderer that tries to process a redirect which has
-    // been previously handled in this loader.
-    return;
-  }
-
-  // Let `url_loader_` handles how to forward the action to the network service.
-  url_loader_->PauseReadingBodyFromNet();
-
-  if (observer_for_testing_) {
-    CHECK_IS_TEST();
-    observer_for_testing_->PauseReadingBodyFromNetProcessed(this);
-  }
-}
-
-// TODO(crbug.com/40236167): Add test coverage.
-void KeepAliveURLLoader::ResumeReadingBodyFromNet() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT("loading", "KeepAliveURLLoader::ResumeReadingBodyFromNet",
-              "request_id", request_id_);
-  if (HasReceivedResponse()) {
-    // This may come from a renderer that tries to process a redirect which has
-    // been previously handled in this loader.
-    return;
-  }
-
-  // Let `url_loader_` handles how to forward the action to the network service.
-  url_loader_->ResumeReadingBodyFromNet();
-
-  if (observer_for_testing_) {
-    CHECK_IS_TEST();
-    observer_for_testing_->ResumeReadingBodyFromNetProcessed(this);
-  }
-}
-
 void KeepAliveURLLoader::EndReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {

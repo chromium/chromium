@@ -68,8 +68,6 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
 
   // Called from PrefetchResponseReader.
   void SetPriority(net::RequestPriority priority, int32_t intra_priority_value);
-  void PauseReadingBodyFromNet();
-  void ResumeReadingBodyFromNet();
 
   base::WeakPtr<PrefetchStreamingURLLoader> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

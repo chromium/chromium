@@ -114,8 +114,6 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
  private:
   bool ParseRange(const net::HttpRequestHeaders& headers);

@@ -107,14 +107,6 @@ class RedirectResponseURLLoader : public network::mojom::URLLoader {
                    int intra_priority_value) override {
     // There is nothing to do, because this class just calls OnReceiveRedirect.
   }
-  void PauseReadingBodyFromNet() override {
-    // There is nothing to do, because we don't fetch the resource from the
-    // network.
-  }
-  void ResumeReadingBodyFromNet() override {
-    // There is nothing to do, because we don't fetch the resource from the
-    // network.
-  }
 
   mojo::Remote<network::mojom::URLLoaderClient> client_;
 };

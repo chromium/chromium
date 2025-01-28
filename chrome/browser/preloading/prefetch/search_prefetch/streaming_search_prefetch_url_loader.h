@@ -138,8 +138,6 @@ class StreamingSearchPrefetchURLLoader
         const std::optional<GURL>& new_url) override;
     void SetPriority(net::RequestPriority priority,
                      int32_t intra_priority_value) override;
-    void PauseReadingBodyFromNet() override;
-    void ResumeReadingBodyFromNet() override;
 
     // Sets date pipe up between this instance and its client.
     void StartReadingResponseFromData(
@@ -267,8 +265,6 @@ class StreamingSearchPrefetchURLLoader
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   // network::mojom::URLLoaderClient
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -429,10 +425,6 @@ class StreamingSearchPrefetchURLLoader
 
   // Whether fallback has started.
   bool is_in_fallback_ = false;
-
-  // If the navigation path paused the url loader. Used to pause the network url
-  // loader on fallback.
-  bool paused_ = false;
 
   // Whenever an error is reported, it needs to be reported to the service via
   // this callback.

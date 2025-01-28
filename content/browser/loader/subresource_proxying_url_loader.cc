@@ -78,14 +78,6 @@ void SubresourceProxyingURLLoader::SetPriority(net::RequestPriority priority,
   loader_->SetPriority(priority, intra_priority_value);
 }
 
-void SubresourceProxyingURLLoader::PauseReadingBodyFromNet() {
-  loader_->PauseReadingBodyFromNet();
-}
-
-void SubresourceProxyingURLLoader::ResumeReadingBodyFromNet() {
-  loader_->ResumeReadingBodyFromNet();
-}
-
 void SubresourceProxyingURLLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   forwarding_client_->OnReceiveEarlyHints(std::move(early_hints));
