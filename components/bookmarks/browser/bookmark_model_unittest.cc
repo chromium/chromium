@@ -1560,19 +1560,40 @@ TEST_F(BookmarkModelTest, MostRecentlyAddedEntries) {
   // Make sure order is honored.
   std::vector<const BookmarkNode*> recently_added;
   GetMostRecentlyAddedEntries(model_.get(), 2, &recently_added);
-  ASSERT_EQ(2U, recently_added.size());
-  ASSERT_EQ(n1, recently_added[0]);
-  ASSERT_EQ(n2, recently_added[1]);
+  EXPECT_THAT(recently_added, ElementsAre(n1, n2));
 
   // swap 1 and 2, then check again.
   recently_added.clear();
   SwapDateAdded(n1, n2);
   GetMostRecentlyAddedEntries(model_.get(), 4, &recently_added);
-  ASSERT_EQ(4U, recently_added.size());
-  ASSERT_EQ(n2, recently_added[0]);
-  ASSERT_EQ(n1, recently_added[1]);
-  ASSERT_EQ(n3, recently_added[2]);
-  ASSERT_EQ(n4, recently_added[3]);
+  EXPECT_THAT(recently_added, ElementsAre(n2, n1, n3, n4));
+}
+
+// Make sure MostRecentlyAddedEntries applies across local and account
+// bookmarks.
+TEST_F(BookmarkModelTest, MostRecentlyAddedEntriesLocalAndAccountBookmarks) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      syncer::kSyncEnableBookmarksInTransportMode};
+  model_->CreateAccountPermanentFolders();
+
+  // Add nodes such that the following holds for the creation time of the
+  // nodes: n1 > n2 > n3.
+  const Time kBaseTime = Time::Now();
+  BookmarkNode* n1 = AsMutable(model_->AddURL(
+      model_->bookmark_bar_node(), 0, u"blah", GURL("http://foo.com/1")));
+  BookmarkNode* n2 =
+      AsMutable(model_->AddURL(model_->account_bookmark_bar_node(), 0, u"blah",
+                               GURL("http://foo.com/2")));
+  BookmarkNode* n3 = AsMutable(model_->AddURL(
+      model_->bookmark_bar_node(), 1, u"blah", GURL("http://foo.com/3")));
+  n1->set_date_added(kBaseTime + base::Days(3));
+  n2->set_date_added(kBaseTime + base::Days(2));
+  n3->set_date_added(kBaseTime + base::Days(1));
+
+  // Make sure order is honored across storages.
+  std::vector<const BookmarkNode*> recently_added;
+  GetMostRecentlyAddedEntries(model_.get(), 3, &recently_added);
+  EXPECT_THAT(recently_added, ElementsAre(n1, n2, n3));
 }
 
 // Make sure GetMostRecentlyUsedEntries stays in sync.
@@ -1598,19 +1619,13 @@ TEST_F(BookmarkModelTest, GetMostRecentlyUsedEntries) {
   // Make sure order is honored.
   std::vector<const BookmarkNode*> recently_used;
   GetMostRecentlyUsedEntries(model_.get(), 2, &recently_used);
-  ASSERT_EQ(2U, recently_used.size());
-  ASSERT_EQ(n1, recently_used[0]);
-  ASSERT_EQ(n2, recently_used[1]);
+  EXPECT_THAT(recently_used, ElementsAre(n1, n2));
 
   // swap 1 and 2, then check again.
   recently_used.clear();
   SwapDateUsed(n1, n2);
   GetMostRecentlyUsedEntries(model_.get(), 4, &recently_used);
-  ASSERT_EQ(4U, recently_used.size());
-  ASSERT_EQ(n2, recently_used[0]);
-  ASSERT_EQ(n1, recently_used[1]);
-  ASSERT_EQ(n3, recently_used[2]);
-  ASSERT_EQ(n4, recently_used[3]);
+  EXPECT_THAT(recently_used, ElementsAre(n2, n1, n3, n4));
 }
 
 // Makes sure GetMostRecentlyAddedUserNodeForURL stays in sync.
