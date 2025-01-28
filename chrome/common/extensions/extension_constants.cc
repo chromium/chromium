@@ -48,6 +48,7 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
 #endif        // !BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     kTTSEngineExtensionId,
+    kComponentUpdaterTTSEngineExtensionId,
 #endif        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     nullptr,  // Null-terminated array.
 };

@@ -337,6 +337,8 @@ inline constexpr base::FilePath::CharType
 // Google voices.
 inline constexpr char kTTSEngineExtensionId[] =
     "kfgdcmdikpmgdjhgfpbfgkomboamacbb";
+inline constexpr char kComponentUpdaterTTSEngineExtensionId[] =
+    "gjjabgpgjpampikjhjpfhneeoapjbjaf";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 // What causes an extension to be installed? Used in histograms, so don't
