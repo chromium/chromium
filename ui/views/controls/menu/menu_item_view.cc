@@ -999,14 +999,25 @@ void MenuItemView::UpdateEmptyMenusAndMetrics() {
   const Views children = submenu_->children();
   bool has_visible_menu_items = false;
   for (View* child : children) {
+    MenuItemView* const child_menu = AsViewClass<MenuItemView>(child);
+    if (!child_menu) {
+      continue;
+    }
     if (IsViewClass<EmptyMenuMenuItem>(child)) {
-      submenu_->RemoveChildViewT(child);
+      // Prevent view destruction until selection is updated.
+      // We remove the child before updating selection in case of re-entrancy.
+      std::unique_ptr<View> removed_child = submenu_->RemoveChildViewT(child);
+      if (child_menu->IsSelected()) {
+        // Update selection to this menu before deleting the currently
+        // selected child.
+        GetMenuController()->SetSelection(
+            this, MenuController::SELECTION_UPDATE_IMMEDIATELY);
+      }
       submenu_
           ->InvalidateLayout();  // Ideally the submenu would have a layout
                                  // manager that would do this automatically.
     } else {
-      has_visible_menu_items |=
-          IsViewClass<MenuItemView>(child) && child->GetVisible();
+      has_visible_menu_items |= child->GetVisible();
     }
   }
 
