@@ -2660,7 +2660,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.PasswordDropdownShown.TotalCount"
-    units="credentials" expires_after="2025-03-09">
+    units="credentials" expires_after="2025-07-13">
   <owner>derinel@google.com</owner>
   <owner>markusheintz@google.com</owner>
   <summary>
