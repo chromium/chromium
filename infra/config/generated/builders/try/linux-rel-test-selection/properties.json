@@ -2,10 +2,38 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/Linux Builder/gn-args.json"
+        "infra/config/generated/builders/try/linux-rel-test-selection/gn-args.json"
       ],
       "builder_db": {
         "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "GPU Linux Builder",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-gpu-archive",
+              "builder_group": "chromium.gpu",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "use_clang_coverage",
+                  "chromium_with_telemetry_dependencies"
+                ],
+                "config": "chromium"
+              }
+            }
+          },
           {
             "builder_id": {
               "bucket": "ci",
@@ -31,6 +59,38 @@
                   "chromium_with_telemetry_dependencies"
                 ],
                 "config": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Linux Release (NVIDIA)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-gpu-archive",
+              "builder_group": "chromium.gpu",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "use_clang_coverage"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU Linux Builder",
+                "project": "chromium"
               }
             }
           },
@@ -71,6 +131,11 @@
       "builder_ids": [
         {
           "bucket": "ci",
+          "builder": "GPU Linux Builder",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
           "builder": "Linux Builder",
           "project": "chromium"
         }
@@ -78,35 +143,24 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
+          "builder": "Linux Release (NVIDIA)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
           "builder": "Linux Tests",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-dcheck-off-rel",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux-full-remote-rel",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux-rel",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux-rel-test-selection",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux_chromium_compile_rel_ng",
-          "group": "tryserver.chromium.linux"
-        }
-      ],
-      "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux Builder/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-rel-test-selection/targets"
     }
+  },
+  "$build/code_coverage": {
+    "use_clang_coverage": true
+  },
+  "$build/flakiness": {
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
   },
   "$build/siso": {
     "configs": [
@@ -119,8 +173,7 @@
     "experiments": [],
     "metrics_project": "chromium-reclient-metrics",
     "output_local_strategy": "minimum",
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 500
+    "project": "rbe-chromium-untrusted"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -129,12 +182,7 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.linux",
-  "gardener_rotations": [
-    "chromium"
-  ],
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.linux",
+  "cq": "required",
+  "recipe": "chromium_trybot"
 }

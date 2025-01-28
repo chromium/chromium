@@ -830,6 +830,7 @@
     "linux-oi-rel": "try/linux-oi-rel/gn-args.json",
     "linux-perfetto-rel": "try/linux-perfetto-rel/gn-args.json",
     "linux-rel": "try/linux-rel/gn-args.json",
+    "linux-rel-test-selection": "try/linux-rel-test-selection/gn-args.json",
     "linux-trees-in-viz-rel": "try/linux-trees-in-viz-rel/gn-args.json",
     "linux-v4l2-codec-rel": "try/linux-v4l2-codec-rel/gn-args.json",
     "linux-viz-rel": "try/linux-viz-rel/gn-args.json",

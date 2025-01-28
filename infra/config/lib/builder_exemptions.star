@@ -1434,6 +1434,7 @@ mega_cq_excluded_builders = [
     "lacros-arm-archive-rel",
     "lacros64-archive-rel",
     "linux-chromeos-archive-rel",
+    "linux-rel-test-selection",
     "mac-arm64-dbg",
 ]
 
