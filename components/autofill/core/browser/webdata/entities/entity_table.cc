@@ -8,7 +8,6 @@
 #include <optional>
 #include <ranges>
 
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -81,57 +80,39 @@ std::optional<EntityInstance> ValidateEntityInstance(
   return std::move(entity);
 }
 
-// If "--autofill-wipe-entities" is present, drops the tables and creates
-// new ones. This allows us to do breaking changes the schema without having to
-// write migration logic as long as the feature rollout hasn't been started.
-//
-// If "--autofill-add-test-entities" is present, adds two example entities.
-//
 // TODO(crbug.com/388590912): Remove when test data is no longer needed.
-void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
-  const bool wipe = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      "autofill-wipe-entities");
-  const bool add = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      "autofill-add-test-entities");
-  if (!wipe && !add) {
+void AddTestDataIfNeeded(EntityTable& table) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAiTestData)) {
     return;
   }
 
-  // Handle the switches only once.
+  // We skip subsequent calls so that test data isn't re-added after it was
+  // deleted.
   static bool has_been_called = false;
   if (has_been_called) {
     return;
   }
   has_been_called = true;
 
-  if (wipe) {
-    DropTableIfExists(db, attributes::kTableName);
-    DropTableIfExists(db, entities::kTableName);
-    table.CreateTablesIfNecessary();
-  }
-
-  if (add) {
-    using enum AttributeTypeName;
-    table.AddEntityInstance(EntityInstance(
-        EntityType(EntityTypeName::kPassport),
-        {AttributeInstance(AttributeType(kPassportNumber), "123", {}),
-         AttributeInstance(AttributeType(kPassportName), "Pippi Långstrump",
-                           {}),
-         AttributeInstance(AttributeType(kPassportCountry), "Sweden", {}),
-         AttributeInstance(AttributeType(kPassportExpiryDate), "09/2098", {}),
-         AttributeInstance(AttributeType(kPassportIssueDate), "10/1998", {})},
-        base::Uuid::ParseLowercase("00000000-0000-4000-8000-000000000000"),
-        "Passie", base::Time::Now()));
-    table.AddEntityInstance(EntityInstance(
-        EntityType(EntityTypeName::kLoyaltyCard),
-        {AttributeInstance(AttributeType(kLoyaltyCardProgram),
-                           "Asterisk Alliance", {}),
-         AttributeInstance(AttributeType(kLoyaltyCardProvider),
-                           "Propeller Airways", {}),
-         AttributeInstance(AttributeType(kLoyaltyCardMemberId), "987", {})},
-        base::Uuid::ParseLowercase("11111111-1111-4111-8111-111111111111"),
-        "Loyie", base::Time::Now()));
-  }
+  using enum AttributeTypeName;
+  table.AddEntityInstance(EntityInstance(
+      EntityType(EntityTypeName::kPassport),
+      {AttributeInstance(AttributeType(kPassportNumber), "123", {}),
+       AttributeInstance(AttributeType(kPassportName), "Pippi Långstrump", {}),
+       AttributeInstance(AttributeType(kPassportCountry), "Sweden", {}),
+       AttributeInstance(AttributeType(kPassportExpiryDate), "09/2098", {}),
+       AttributeInstance(AttributeType(kPassportIssueDate), "10/1998", {})},
+      base::Uuid::ParseLowercase("00000000-0000-4000-8000-000000000000"),
+      "Passie", base::Time::Now()));
+  table.AddEntityInstance(EntityInstance(
+      EntityType(EntityTypeName::kLoyaltyCard),
+      {AttributeInstance(AttributeType(kLoyaltyCardProgram),
+                         "Asterisk Alliance", {}),
+       AttributeInstance(AttributeType(kLoyaltyCardProvider),
+                         "Propeller Airways", {}),
+       AttributeInstance(AttributeType(kLoyaltyCardMemberId), "987", {})},
+      base::Uuid::ParseLowercase("11111111-1111-4111-8111-111111111111"),
+      "Loyie", base::Time::Now()));
 }
 
 }  // namespace
@@ -196,7 +177,7 @@ bool EntityTable::MigrateToVersion(int version,
 }
 
 bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
-  HandleTestSwitchesIfNeeded(db(), *this);
+  AddTestDataIfNeeded(*this);
 
   sql::Transaction transaction(db());
   if (!transaction.Begin()) {
@@ -233,7 +214,7 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
 }
 
 bool EntityTable::UpdateEntityInstance(const EntityInstance& entity) {
-  HandleTestSwitchesIfNeeded(db(), *this);
+  AddTestDataIfNeeded(*this);
 
   sql::Transaction transaction(db());
   return transaction.Begin() && RemoveEntityInstance(entity.guid()) &&
@@ -241,7 +222,7 @@ bool EntityTable::UpdateEntityInstance(const EntityInstance& entity) {
 }
 
 bool EntityTable::RemoveEntityInstance(const base::Uuid& guid) {
-  HandleTestSwitchesIfNeeded(db(), *this);
+  AddTestDataIfNeeded(*this);
 
   sql::Transaction transaction(db());
   return transaction.Begin() &&
@@ -255,7 +236,7 @@ bool EntityTable::RemoveEntityInstance(const base::Uuid& guid) {
 
 bool EntityTable::RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
                                                        base::Time delete_end) {
-  HandleTestSwitchesIfNeeded(db(), *this);
+  AddTestDataIfNeeded(*this);
 
   if (delete_begin.is_null()) {
     delete_begin = base::Time::Min();
@@ -291,7 +272,7 @@ bool EntityTable::RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
 }
 
 std::vector<EntityInstance> EntityTable::GetEntityInstances() const {
-  HandleTestSwitchesIfNeeded(db(), const_cast<EntityTable&>(*this));
+  AddTestDataIfNeeded(const_cast<EntityTable&>(*this));
 
   // Collects all attributes, keyed by the owning entity's GUID.
   std::map<base::Uuid, std::vector<AttributeInstance>> attributes;
