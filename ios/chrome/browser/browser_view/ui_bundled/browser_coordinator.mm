@@ -2225,7 +2225,8 @@ enum class ToolbarKind {
 }
 
 - (BOOL)navigateBackWithAnimationIfNeeded {
-  if (!IsLensOverlaySameTabNavigationEnabled()) {
+  if (!IsLensOverlaySameTabNavigationEnabled() ||
+      IsCompactHeight(self.viewController)) {
     return NO;
   }
 

@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/card_side_swipe_view.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_gesture_recognizer.h"
@@ -825,7 +826,14 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
 // Returns YES, if the the whole page should be swiped.
 - (BOOL)swipingFullScreenContent:(UISwipeGestureRecognizerDirection)direction {
-  return [self swipingBackToLensOverlay:direction];
+  if ([self swipingBackToLensOverlay:direction]) {
+    // The Lens overlay is locked to portrait orientation.Full-screen swipes
+    // are only enabled in portrait mode to prevent stretching the overlay
+    // snapshot.
+    return !IsCompactHeight([_swipeDelegate sideSwipeFullscreenView]);
+  }
+
+  return NO;
 }
 
 // Returns YES, if the the side swipe leads to navigating back to lens
