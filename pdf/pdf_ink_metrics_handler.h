@@ -105,6 +105,8 @@ void ReportDrawStroke(PdfInkBrush::Type type,
 
 void ReportEraseStroke(float size, ink::StrokeInput::ToolType tool_type);
 
+void RecordPdfLoadedWithV2InkAnnotations(bool has_annotations);
+
 }  // namespace chrome_pdf
 
 #endif  // PDF_PDF_INK_METRICS_HANDLER_H_

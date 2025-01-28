@@ -150,6 +150,20 @@ std::optional<ink::PartitionedMesh> ReadV2InkModeledShapeFromPath(
 
 }  // namespace
 
+bool PageContainsV2InkPath(FPDF_PAGE page) {
+  if (!page) {
+    return false;
+  }
+
+  const int page_object_count = FPDFPage_CountObjects(page);
+  for (int i = 0; i < page_object_count; ++i) {
+    if (IsV2InkPath(FPDFPage_GetObject(page, i))) {
+      return true;
+    }
+  }
+  return false;
+}
+
 std::vector<ReadV2InkPathResult> ReadV2InkPathsFromPageAsModeledShapes(
     FPDF_PAGE page) {
   std::vector<ReadV2InkPathResult> results;
