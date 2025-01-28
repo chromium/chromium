@@ -4572,10 +4572,10 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.PaymentsDataManager.LocalCardAdded" enum="Boolean"
-    expires_after="2025-02-01">
+    expires_after="2025-05-01">
   <owner>npnavarro@google.com</owner>
   <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Logs when a credit card is saved locally for any reason. This includes when
     a server card upload fails, or when the user adds a new local card through
