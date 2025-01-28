@@ -10,12 +10,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Build;
 import android.provider.Settings;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 
@@ -127,7 +125,7 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
     }
 
     @Override
-    public EditorBoundsInfo onEditElementFocusedForStylusWriting(
+    public void onEditElementFocusedForStylusWriting(
             Rect focusedEditBounds,
             Point cursorPosition,
             float scaleFactor,
@@ -138,30 +136,6 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
         // Start stylus writing after edit element is focused so that InputConnection is current
         // focused element.
         mInputMethodManager.startStylusHandwriting(view);
-        RectF bounds =
-                new RectF(
-                        focusedEditBounds.left / scaleFactor,
-                        focusedEditBounds.top / scaleFactor,
-                        focusedEditBounds.right / scaleFactor,
-                        focusedEditBounds.bottom / scaleFactor);
-        return new EditorBoundsInfo.Builder()
-                .setEditorBounds(bounds)
-                .setHandwritingBounds(bounds)
-                .build();
-    }
-
-    @Override
-    public EditorBoundsInfo onFocusedNodeChanged(
-            Rect editableBoundsOnScreenDip,
-            boolean isEditable,
-            View currentView,
-            float scaleFactor,
-            int contentOffsetY) {
-        RectF bounds = new RectF(editableBoundsOnScreenDip);
-        return new EditorBoundsInfo.Builder()
-                .setEditorBounds(bounds)
-                .setHandwritingBounds(bounds)
-                .build();
     }
 
     @Override

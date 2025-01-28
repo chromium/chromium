@@ -9,7 +9,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.EditorInfo;
 
 import org.chromium.build.annotations.NullMarked;
@@ -51,14 +50,12 @@ public interface StylusWritingHandler {
      * @param isEditable is true if focused node is of editable type.
      * @param currentView the {@link View} in which the focused node changed.
      */
-    default @Nullable EditorBoundsInfo onFocusedNodeChanged(
+    default void onFocusedNodeChanged(
             Rect editableBoundsOnScreenDip,
             boolean isEditable,
             View currentView,
             float scaleFactor,
-            int contentOffsetY) {
-        return null;
-    }
+            int contentOffsetY) {}
 
     /**
      * Handle touch events if needed for stylus writing.
@@ -109,14 +106,12 @@ public interface StylusWritingHandler {
      * @param contentOffsetY the Physical on-screen Y offset amount below the browser controls
      * @param view the view on which to start stylus handwriting
      */
-    default @Nullable EditorBoundsInfo onEditElementFocusedForStylusWriting(
+    default void onEditElementFocusedForStylusWriting(
             Rect focusedEditBounds,
             Point cursorPosition,
             float scaleFactor,
             int contentOffsetY,
-            View view) {
-        return null;
-    }
+            View view) {}
 
     /** Notify that ImeAdapter is destroyed. */
     default void onImeAdapterDestroyed() {}
