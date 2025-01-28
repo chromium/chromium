@@ -185,22 +185,6 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
       delete;
 
   MOCK_METHOD1(DisplayBlockingPage, void(const UnsafeResource& resource));
-
-  // Helper function which calls OnBlockingPageComplete for this client
-  // object.
-  void InvokeOnBlockingPageComplete(
-    const security_interstitials::UnsafeResource::UrlCheckCallback& callback) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    // Note: this will delete the client object in the case of the CsdClient
-    // implementation.
-    if (!callback.is_null()) {
-      security_interstitials::UnsafeResource::UrlCheckResult result(
-          false /*proceed*/, true /*showed_interstitial*/,
-          false /*has_post_commit_interstitial_skipped*/);
-      callback.Run(result);
-    }
-  }
-
  protected:
   ~MockSafeBrowsingUIManager() override = default;
 };
@@ -605,12 +589,6 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   EXPECT_EQ(web_contents(),
             unsafe_resource_util::GetWebContentsForResource(resource));
 
-  // Make sure the client object will be deleted.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MockSafeBrowsingUIManager::InvokeOnBlockingPageComplete,
-                     ui_manager_, resource.callback));
-
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy",
       false, 1);
@@ -681,12 +659,6 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   EXPECT_EQ(ThreatSource::CLIENT_SIDE_DETECTION, resource.threat_source);
   EXPECT_EQ(web_contents(),
             unsafe_resource_util::GetWebContentsForResource(resource));
-
-  // Make sure the client object will be deleted.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MockSafeBrowsingUIManager::InvokeOnBlockingPageComplete,
-                     ui_manager_, resource.callback));
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneVerdictNotPhishing) {
@@ -748,12 +720,6 @@ TEST_F(
   EXPECT_EQ(ThreatSource::CLIENT_SIDE_DETECTION, resource.threat_source);
   EXPECT_EQ(web_contents(),
             unsafe_resource_util::GetWebContentsForResource(resource));
-
-  // Make sure the client object will be deleted.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MockSafeBrowsingUIManager::InvokeOnBlockingPageComplete,
-                     ui_manager_, resource.callback));
 
   // Test that the histogram has been logged that the allowlist did exist with
   // the server model verdict phishy.
