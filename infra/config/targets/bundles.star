@@ -2775,6 +2775,7 @@ targets.bundle(
         "boringssl_crypto_tests",
         "boringssl_ssl_tests",
         "capture_unittests",
+        "cast_unittests",
         "cc_unittests",
         "components_browsertests",
         "components_unittests",
@@ -2785,6 +2786,8 @@ targets.bundle(
         "display_unittests",
         "events_unittests",
         "filesystem_service_unittests",
+        # TODO(crbug.com/40821369): Enable this suite.
+        # "flatbuffers_unittests",
         "gcm_unit_tests",
         "gfx_unittests",
         "gin_unittests",
@@ -2795,6 +2798,8 @@ targets.bundle(
         "headless_unittests",
         "ipc_tests",
         "latency_unittests",
+        "liburlpattern_unittests",
+        "libjingle_xmpp_unittests",
         "media_unittests",
         "message_center_unittests",
         "midi_unittests",
@@ -2804,8 +2809,7 @@ targets.bundle(
         "ozone_gl_unittests",
         "ozone_unittests",
         "perfetto_unittests",
-        # TODO(crbug.com/40274401): Enable this.
-        # "rust_gtest_interop_unittests",
+        "rust_gtest_interop_unittests",
         "services_unittests",
         "shell_dialogs_unittests",
         "skia_unittests",
@@ -2924,6 +2928,7 @@ targets.bundle(
     name = "fuchsia_isolated_scripts",
     targets = [
         "chromium_webkit_isolated_scripts",
+        # TODO(crbug.com/40821367): Enable content_shell_crash_test
         "gpu_angle_fuchsia_unittests_isolated_scripts",
     ],
 )
