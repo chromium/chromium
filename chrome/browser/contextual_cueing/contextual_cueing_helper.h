@@ -52,7 +52,7 @@ class ContextualCueingHelper
   // A counter for how many subsequent page load events will be prevented from
   // showing a nudge. This is to limit the frequency at which consecutive page
   // loads can trigger nudges.
-  int remaining_quiet_loads_;
+  int remaining_quiet_loads_ = 0;
 
   friend WebContentsUserData<ContextualCueingHelper>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();

@@ -31,6 +31,6 @@ const base::FeatureParam<int> kNudgeCapCount(&kContextualCueing,
 const base::FeatureParam<int> kMinPageCountBetweenNudges(
     &kContextualCueing,
     "MinPageCountBetweenNudges",
-    24);
+    3);
 
 }  // namespace contextual_cueing

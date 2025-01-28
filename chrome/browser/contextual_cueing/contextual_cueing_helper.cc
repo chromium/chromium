@@ -59,8 +59,7 @@ ContextualCueingHelper::ContextualCueingHelper(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<ContextualCueingHelper>(*web_contents),
       optimization_guide_keyed_service_(ogks),
-      contextual_cueing_service_(ccs),
-      remaining_quiet_loads_(kMinPageCountBetweenNudges.Get()) {
+      contextual_cueing_service_(ccs) {
   optimization_guide_keyed_service_->RegisterOptimizationTypes(
       {optimization_guide::proto::GLIC_CONTEXTUAL_CUEING});
 }
@@ -108,7 +107,9 @@ void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
     }
   }
 
-  remaining_quiet_loads_ = kMinPageCountBetweenNudges.Get();
+  if (!last_navigation_cue_label_.empty()) {
+    remaining_quiet_loads_ = kMinPageCountBetweenNudges.Get();
+  }
   glic_nudge_controller->UpdateNudgeLabel(web_contents(),
                                           last_navigation_cue_label_);
 }
