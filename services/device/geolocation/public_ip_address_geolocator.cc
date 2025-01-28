@@ -41,6 +41,9 @@ void PublicIpAddressGeolocator::QueryNextPosition(
     return;
   }
 
+  // Retain the callback to use if/when we get a new position.
+  query_next_position_callback_ = std::move(callback);
+
   DCHECK(notifier_);
   // Request the next position after the latest one we received.
   notifier_->QueryNextPosition(
@@ -48,9 +51,6 @@ void PublicIpAddressGeolocator::QueryNextPosition(
       base::BindOnce(&PublicIpAddressGeolocator::OnPositionUpdate,
                      base::Unretained(this)));
   RecordUmaPublicIpAddressGeolocatorClientId(client_id_);
-
-  // Retain the callback to use if/when we get a new position.
-  query_next_position_callback_ = std::move(callback);
 }
 
 // Low/high accuracy toggle is ignored by this implementation.
