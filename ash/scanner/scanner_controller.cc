@@ -257,8 +257,9 @@ void OnFeedbackFormSendButtonClicked(const AccountId& account_id,
 
 }  // namespace
 
-ScannerController::ScannerController(std::unique_ptr<ScannerDelegate> delegate)
-    : delegate_(std::move(delegate)) {}
+ScannerController::ScannerController(std::unique_ptr<ScannerDelegate> delegate,
+                                     SessionControllerImpl& session_controller)
+    : delegate_(std::move(delegate)), session_controller_(session_controller) {}
 
 ScannerController::~ScannerController() = default;
 
@@ -371,8 +372,7 @@ void ScannerController::OpenFeedbackDialog(
     scoped_refptr<base::RefCountedMemory> screenshot) {
   // TODO: b/367882164 - Pass in the account ID to this method to ensure that
   // the feedback form is shown for the same account that performed the action.
-  const AccountId& account_id =
-      Shell::Get()->session_controller()->GetActiveAccountId();
+  const AccountId& account_id = session_controller_->GetActiveAccountId();
 
   base::Value::Dict action_dict = ScannerActionToDict(std::move(action));
   std::optional<std::string> pretty_printed_action = base::WriteJsonWithOptions(

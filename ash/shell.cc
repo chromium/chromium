@@ -1837,8 +1837,9 @@ void Shell::Init(
   }
 
   if (features::IsScannerEnabled()) {
+    // Depends on `session_controller_` (instantiated in the constructor).
     scanner_controller_ = std::make_unique<ScannerController>(
-        shell_delegate_->CreateScannerDelegate());
+        shell_delegate_->CreateScannerDelegate(), *session_controller_);
   }
 
   if (features::IsTilingWindowResizeEnabled()) {

@@ -870,7 +870,8 @@ TEST(ScannerControllerNoFixtureTest, RunningNewContactActionOpensUrl) {
                                "https://contacts.google.com/person/c1?edit=1"),
                       _, _))
       .Times(1);
-  ScannerController scanner_controller(std::make_unique<FakeScannerDelegate>());
+  ScannerController scanner_controller(std::make_unique<FakeScannerDelegate>(),
+                                       session_controller);
   ScannerSession* session = scanner_controller.StartNewSession();
   ASSERT_TRUE(session);
   FakeScannerProfileScopedDelegate& delegate =

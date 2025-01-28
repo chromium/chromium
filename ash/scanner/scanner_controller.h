@@ -12,6 +12,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/scanner/scanner_session.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -24,6 +25,7 @@ namespace ash {
 
 class ScannerCommandDelegateImpl;
 class ScannerDelegate;
+class SessionControllerImpl;
 
 // This is the top level controller used for Scanner. It acts as a mediator
 // between Scanner and any consuming features.
@@ -31,7 +33,8 @@ class ASH_EXPORT ScannerController : public SessionObserver {
  public:
   using OnActionFinishedCallback = base::OnceCallback<void(bool success)>;
 
-  explicit ScannerController(std::unique_ptr<ScannerDelegate> delegate);
+  explicit ScannerController(std::unique_ptr<ScannerDelegate> delegate,
+                             SessionControllerImpl& session_controller);
   ScannerController(const ScannerController&) = delete;
   ScannerController& operator=(const ScannerController&) = delete;
   ~ScannerController() override;
@@ -104,6 +107,10 @@ class ASH_EXPORT ScannerController : public SessionObserver {
   std::unique_ptr<ScannerSession> scanner_session_;
 
   OnActionFinishedCallback on_action_finished_for_testing_;
+
+  // External dependencies not owned by this class:
+  // Session controller, stored in `Shell`. Always outlives this class.
+  raw_ref<SessionControllerImpl> session_controller_;
 
   ScopedSessionObserver session_observer_{this};
 
