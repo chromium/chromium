@@ -8,10 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -287,44 +284,20 @@ public final class BaseSuggestionViewBinder<T extends View>
         // Use a throwaway metadata object if caching is off to simplify branching; the performance
         // difference will still manifest because it's not persisted.
         BaseSuggestionViewMetadata metadata = ensureViewMetadata(view);
+        Drawable background;
 
-        if (sFocusableDrawableState != null) {
+        if (sFocusableDrawableState == null) {
+            background =
+                    OmniboxResourceProvider.getStatefulSuggestionBackground(
+                            view.getContext(), model.get(SuggestionCommonProperties.COLOR_SCHEME));
+            sFocusableDrawableState = background.getConstantState();
+        } else {
             if (sFocusableDrawableState == metadata.backgroundConstantState) return;
-            view.setBackground(sFocusableDrawableState.newDrawable());
-            metadata.backgroundConstantState = sFocusableDrawableState;
-            return;
+            background = sFocusableDrawableState.newDrawable();
         }
 
-        // Background color to be used for suggestions
-        var ctx = view.getContext();
-        boolean incognito = isIncognito(model);
-        var background =
-                new ColorDrawable(
-                        OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
-                                ctx, incognito));
-        var hover =
-                new ColorDrawable(
-                        OmniboxResourceProvider.getHoverSuggestionBackgroundColor(ctx, incognito));
-
-        // Ripple effect to use when the user interacts with the suggestion.
-        var ripple =
-                OmniboxResourceProvider.resolveAttributeToDrawable(
-                        ctx,
-                        model.get(SuggestionCommonProperties.COLOR_SCHEME),
-                        R.attr.selectableItemBackground);
-
-        var statefulBackground = new StateListDrawable();
-        statefulBackground.addState(new int[] {android.R.attr.state_selected}, hover);
-        statefulBackground.addState(new int[] {android.R.attr.state_hovered}, hover);
-        statefulBackground.addState(new int[] {}, background);
-
-        var layer = new LayerDrawable(new Drawable[] {statefulBackground, ripple});
-
-        // Cache the drawable state for faster retrieval.
-        // See go/omnibox:drawables for more details.
-        sFocusableDrawableState = layer.getConstantState();
+        view.setBackground(background);
         metadata.backgroundConstantState = sFocusableDrawableState;
-        view.setBackground(layer);
     }
 
     /**

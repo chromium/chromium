@@ -312,7 +312,7 @@ public class ToolbarPhoneTest {
         verify(mLocationbarBackgroundDrawable)
                 .setTint(
                         OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
-                                mToolbar.getContext(), /* isIncognito= */ false));
+                                mToolbar.getContext(), BrandedColorScheme.APP_DEFAULT));
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setCornerRadius(focusedRadius);
 
         // Clear focus on the Omnibox

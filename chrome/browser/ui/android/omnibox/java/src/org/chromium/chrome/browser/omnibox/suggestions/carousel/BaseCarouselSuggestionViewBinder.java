@@ -14,7 +14,6 @@ import androidx.annotation.Px;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,12 +57,10 @@ public interface BaseCarouselSuggestionViewBinder {
             // Specific values to apply if background is enabled.
             if (useBackground) {
                 // Note: this assumes carousel is not showing in the incognito mode.
-                boolean isIncognito =
-                        model.get(SuggestionCommonProperties.COLOR_SCHEME)
-                                == BrandedColorScheme.INCOGNITO;
                 bgColor =
                         OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
-                                view.getContext(), isIncognito);
+                                view.getContext(),
+                                model.get(SuggestionCommonProperties.COLOR_SCHEME));
                 horizontalMargin = OmniboxResourceProvider.getSideSpacing(view.getContext());
                 outline =
                         new RoundedCornerOutlineProvider(

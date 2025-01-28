@@ -497,7 +497,7 @@ public class ToolbarPhone extends ToolbarLayout
 
             // Omnibox has same background as the Omnibox suggestion.
             return OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
-                    getContext(), isIncognitoBranded());
+                    getContext(), mThemeColorProvider.getBrandedColorScheme());
         }
         return getLocationBarColorForToolbarColor(toolbarColor);
     }
