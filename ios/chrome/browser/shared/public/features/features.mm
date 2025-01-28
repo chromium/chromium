@@ -1144,8 +1144,33 @@ BASE_FEATURE(kYoutubeIncognito,
              "YoutubeIncognito",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kYoutubeIncognitoTargetApps[] = "youtube-incognito-target-apps";
+
+const char kYoutubeIncognitoTargetAppsAllowlisted[] = "allow-listed";
+const char kYoutubeIncognitoTargetAppsFirstParty[] = "first-party";
+const char kYoutubeIncognitoTargetAppsAll[] = "all";
+
 const char kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam[] =
     "youtube-incognito-error-handling-without-incognito-interstitial";
+
+bool IsYoutubeIncognitoTargetAllowListedEnabled() {
+  std::string target_apps = base::GetFieldTrialParamByFeatureAsString(
+      kYoutubeIncognito, kYoutubeIncognitoTargetApps, "");
+  return target_apps == kYoutubeIncognitoTargetAppsAllowlisted ||
+         target_apps == "";
+}
+
+bool IsYoutubeIncognitoTargetFirstPartyEnabled() {
+  std::string target_apps = base::GetFieldTrialParamByFeatureAsString(
+      kYoutubeIncognito, kYoutubeIncognitoTargetApps, "");
+  return target_apps == kYoutubeIncognitoTargetAppsFirstParty;
+}
+
+bool IsYoutubeIncognitoTargetAllEnabled() {
+  std::string target_apps = base::GetFieldTrialParamByFeatureAsString(
+      kYoutubeIncognito, kYoutubeIncognitoTargetApps, "");
+  return target_apps == kYoutubeIncognitoTargetAppsAll;
+}
 
 bool IsYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
