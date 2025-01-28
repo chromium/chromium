@@ -123,20 +123,6 @@ const UpdateChannel kBetaChannel = UpdateChannel::Create("beta").value();
 using UpdateDiscoveryTaskFuture =
     base::test::TestFuture<IsolatedWebAppUpdateDiscoveryTask::CompletionStatus>;
 
-blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
-                                                std::u16string_view short_name,
-                                                const base::Version& version) {
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->id = application_url.DeprecatedGetOriginAsURL();
-  manifest->scope = application_url.Resolve("/");
-  manifest->start_url = application_url.Resolve("/testing-start-url.html");
-  manifest->display = DisplayMode::kStandalone;
-  manifest->short_name = short_name;
-  manifest->version = base::UTF8ToUTF16(version.GetString());
-
-  return manifest;
-}
-
 MATCHER_P(IsDict, dict_matcher, "") {
   return ExplainMatchResult(
       Property("GetDict", &base::Value::GetDict, dict_matcher), arg,
@@ -350,19 +336,20 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
       IsolatedWebAppBuilder(
           ManifestBuilder().SetVersion("1.0.0").SetName("intiial iwa"))
           .BuildBundle(bundle_id, {test::GetDefaultEd25519KeyPair()});
-  auto& page_state = initial_bundle->FakeInstallPageState(profile());
-
-  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info,
-                       initial_bundle->InstallWithSource(
-                           profile(), &IsolatedWebAppInstallSource::FromDevUi));
-
-  page_state.manifest_before_default_processing = CreateDefaultManifest(
-      url_info.origin().GetURL(), u"updated iwa", base::Version("2.0.0"));
 
   auto update_bundle =
       IsolatedWebAppBuilder(
           ManifestBuilder().SetVersion("2.0.0").SetName("updated iwa"))
           .BuildBundle(bundle_id, {test::GetDefaultEd25519KeyPair()});
+
+  ASSERT_OK_AND_ASSIGN(
+      IsolatedWebAppUrlInfo url_info,
+      initial_bundle->InstallWithSource(
+          profile(), &IsolatedWebAppInstallSource::FromDevUi,
+          web_app::IwaSourceBundleDevFileOp::kCopy,
+          ScopedBundledIsolatedWebApp::DoNotFakeInstallPage()));
+
+  update_bundle->FakeInstallPageState(profile());
 
   base::test::TestFuture<base::expected<base::Version, std::string>> future;
   provider().iwa_update_manager().DiscoverApplyAndPrioritizeLocalDevModeUpdate(
