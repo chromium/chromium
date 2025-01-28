@@ -33,6 +33,8 @@ static constexpr std::string_view kJpPrefSelectionShortcut =
 static constexpr std::string_view kJpPrefKeymapStyle = "JapaneseKeymapStyle";
 static constexpr std::string_view kJpPrefDisablePersonalizedSuggestions =
     "JapaneseDisableSuggestions";
+// This option does not do anything, as all usage data uses UMA and adheres to
+// UMA settings.
 static constexpr std::string_view kJpPrefAutomaticallySendStatisticsToGoogle =
     "AutomaticallySendStatisticsToGoogle";
 // LINT.ThenChange(/chrome/browser/resources/ash/settings/os_languages_page/input_method_util.ts:JpOptionCategories)
