@@ -8,6 +8,8 @@
 #include "base/functional/callback.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -20,19 +22,32 @@ namespace collaboration {
 class CollaborationControllerDelegate {
  public:
   struct ErrorInfo {
-    // GENERATED_JAVA_ENUM_PACKAGE: (
-    //   org.chromium.components.collaboration)
     enum class Type {
       kUnknown = 0,
       // Show the generic error dialog.
       kGenericError = 1,
     };
 
-    explicit ErrorInfo(Type type) : type(type) {}
-
-    Type type;
+    explicit ErrorInfo(Type type) : type(type) { GetStringForErrorType(); }
 
     bool operator==(const ErrorInfo& other) const { return type == other.type; }
+
+    std::string error_header;
+    std::string error_body;
+
+   private:
+    void GetStringForErrorType() {
+      switch (type) {
+        case Type::kGenericError:
+        default:
+          error_header = l10n_util::GetStringUTF8(
+              IDS_COLLABORATION_SOMETHING_WENT_WRONG_HEADER);
+          error_body = l10n_util::GetStringUTF8(
+              IDS_COLLABORATION_SOMETHING_WENT_WRONG_BODY);
+      };
+    }
+
+    Type type;
   };
 
   // GENERATED_JAVA_ENUM_PACKAGE: (

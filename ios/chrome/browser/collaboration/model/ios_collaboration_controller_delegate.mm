@@ -78,17 +78,8 @@ void IOSCollaborationControllerDelegate::PrepareFlowUI(
 
 void IOSCollaborationControllerDelegate::ShowError(const ErrorInfo& error,
                                                    ResultCallback result) {
-  NSString* title = nil;
-  NSString* message = nil;
-  switch (error.type) {
-    case ErrorInfo::Type::kUnknown:
-      NOTREACHED();
-    case ErrorInfo::Type::kGenericError: {
-      title = l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_ERROR_TITLE);
-      message = l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_ERROR_MESSAGE);
-      break;
-    }
-  }
+  NSString* title = base::SysUTF8ToNSString(error.error_header);
+  NSString* message = base::SysUTF8ToNSString(error.error_body);
 
   auto result_block = base::CallbackToBlock(std::move(result));
   alert_coordinator_ =

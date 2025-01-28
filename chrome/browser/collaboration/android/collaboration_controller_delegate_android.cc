@@ -109,7 +109,9 @@ void CollaborationControllerDelegateAndroid::ShowError(const ErrorInfo& error,
                                                        ResultCallback result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CollaborationControllerDelegateImpl_showError(
-      env, java_obj_, static_cast<int>(error.type),
+      env, java_obj_,
+      base::android::ConvertUTF8ToJavaString(env, error.error_header),
+      base::android::ConvertUTF8ToJavaString(env, error.error_body),
       conversion::GetJavaResultCallbackPtr(std::move(result)));
 }
 

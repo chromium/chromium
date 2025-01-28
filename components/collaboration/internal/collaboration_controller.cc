@@ -617,7 +617,6 @@ class ErrorState : public ControllerState {
       : ControllerState(id, controller) {}
 
   void OnEnter(const ErrorInfo& error) override {
-    DCHECK(error.type != ErrorInfo::Type::kUnknown);
     controller->delegate()->ShowError(
         error, base::BindOnce(&ErrorState::ProcessOutcome,
                               local_weak_ptr_factory_.GetWeakPtr()));
