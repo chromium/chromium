@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/credential_provider/gaiacp/experiments_manager.h"
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/credential_provider/extension/task.h"
 #include "chrome/credential_provider/gaiacp/experiments_fetcher.h"
-#include "chrome/credential_provider/gaiacp/experiments_manager.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"
@@ -64,10 +65,9 @@ TEST_P(ExperimentsManagerGcpwE2ETest, FetchingExperiments) {
 
   // Create a fake user that has the same gaia id as the test gaia id.
   CComBSTR sid;
-  ASSERT_EQ(S_OK,
-            fake_os_user_manager()->CreateTestOSUser(
-                L"foo", L"password", L"Full Name", L"comment",
-                base::UTF8ToWide(kDefaultGaiaId), L"user@company.com", &sid));
+  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
+                      L"foo", L"password", L"Full Name", L"comment",
+                      kDefaultGaiaId, L"user@company.com", &sid));
 
   std::wstring device_resource_id = L"foo_resource_id";
   ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid), L"device_resource_id",
@@ -138,10 +138,9 @@ TEST_P(ExperimentsManagerESAE2ETest, FetchingExperiments) {
 
   // Create a fake user that has the same gaia id as the test gaia id.
   CComBSTR sid;
-  ASSERT_EQ(S_OK,
-            fake_os_user_manager()->CreateTestOSUser(
-                L"foo", L"password", L"Full Name", L"comment",
-                base::UTF8ToWide(kDefaultGaiaId), L"user@company.com", &sid));
+  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
+                      L"foo", L"password", L"Full Name", L"comment",
+                      kDefaultGaiaId, L"user@company.com", &sid));
 
   ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid));
 
