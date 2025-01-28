@@ -61997,6 +61997,32 @@
         {}
        ]
       ],
+      "border-collapse-visibility-collapse-001.tentative.html": [
+       "d2d6e9242b98eb82e41a90b865b3e0f4204d4464",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-collapse-visibility-collapse-002.tentative.html": [
+       "582934960946f65b2aa4f076e1ad4c3320e2352f",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "border-conflict-element-001a.xht": [
        "585957f13b22ec2d0208f07deb127698d15ddea5",
        [
@@ -376259,6 +376285,10 @@
       "681fcd6787525632b0e5f1f24b2ca308d7fe6b82",
       []
      ],
+     "idp_close.html": [
+      "84c0dfa88b791edff35649d1627e004a824e5d36",
+      []
+     ],
      "iframe-mark-signedin.html": [
       "4ca0125cde2e4ec7a404ba360becf22a66eb3e40",
       []
@@ -376293,6 +376323,10 @@
      ],
      "manifest.py": [
       "ed984a42387198f95b2510041e5f73758541e9d3",
+      []
+     ],
+     "manifest_broken_login.json": [
+      "d42bf8fb2692c50648ad412b46014a1a8c60e730",
       []
      ],
      "manifest_check_disclosure_shown_false.json": [
@@ -386892,23 +386926,23 @@
         []
        ],
        "testharness_element_grid.html": [
-        "c5bcc7df90872e2d3185e29d11896098c10ac834",
+        "4ad42a88803b090beb4cb936b334bf7dac86cb85",
         []
        ],
        "testharness_offscreen.html": [
-        "c13cf83448302787b29f70bd04f15ab8c8b40b91",
+        "62226a30d7b95766e8b9b04e62c32cb5b900761c",
         []
        ],
        "testharness_offscreen_grid.html": [
-        "c63bd732bfdd458e9cdbb95120b6175c0d11d63d",
+        "bf6e39431e9e489dd324ea9ae225c75ad0147a92",
         []
        ],
        "testharness_worker.js": [
-        "570d479a0a6d6231885b2353c851b2b709b6054a",
+        "96d23617e155c8ad87ba5a472b4c8119f38505df",
         []
        ],
        "testharness_worker_grid.js": [
-        "53c3b69cb669e077e4de85fdbd0cb25e60ed114b",
+        "385a89d3af92e64f1126235c7cfb33518994112b",
         []
        ]
       },
@@ -386919,13 +386953,13 @@
       "yaml": {
        "element": {
         "meta.yaml": [
-         "b67f77ed04ff784be432d72be839a26204f8aae1",
+         "9ebe42e6081c7cf9362c2ac0ca742a18fb798b7a",
          []
         ]
        },
        "offscreen": {
         "meta.yaml": [
-         "6d74cdb18a87daa63171ea205a53b4b8780413f0",
+         "e9f42392fa83f622e73b81e14833e8e8d02ce086",
          []
         ]
        }
@@ -414661,7 +414695,7 @@
        []
       ],
       "router-rules.js": [
-       "71c09e7079cce089d8037b34f3e479f6e83e04c1",
+       "58c0e5cbbaf0f3bbb5ea753548eb0a0fe9550eaa",
        []
       ],
       "sample-worker-interceptor.js": [
@@ -494258,6 +494292,13 @@
        {}
       ]
      ],
+     "nested-error-recovery.html": [
+      "2e04582dc2232f52c08447a2c8b1dc8fe3189070",
+      [
+       null,
+       {}
+      ]
+     ],
      "nested-rule-cssom-invalidation.html": [
       "14f88904460e1d8ccdea8a3bc1de26a8e287710e",
       [
@@ -509906,6 +509947,15 @@
        {}
       ]
      ],
+     "interactivity-inert-fullscreen-ua.html": [
+      "4cd69ccd7f1cb3d5156c2d1781f1e4da4156b41d",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "interactivity-inert-html-attribute-ua.html": [
       "1f118d56f7967227c2548ba10d0c2b5d5549d1e6",
       [
@@ -509914,7 +509964,7 @@
       ]
      ],
      "interactivity-inert-modal-dialog-ua.html": [
-      "e8094f88a695900f59e18be0a742c8dd735c5b7b",
+      "25d4638700e8b06a18e8d77d4e0ef0698c43b774",
       [
        null,
        {}
@@ -524454,7 +524504,7 @@
        ]
       ],
       "observable-from.any.js": [
-       "f305d2de670769bcc2f68cfc60639af3164d9099",
+       "7819bd43586aa0e9babae6f63b2b3c648c419385",
        [
         "dom/observable/tentative/observable-from.any.html",
         {}
@@ -546048,7 +546098,7 @@
     ],
     "fedcm-login-status": {
      "confirm-idp-login.https.html": [
-      "0f8df72b615b5fadb9e17decd69c670652d06d21",
+      "174cdafd50266a6e212efdb8028a3806eeaa890a",
       [
        null,
        {
@@ -546067,6 +546117,15 @@
      ],
      "logged-out.https.html": [
       "51c7c1a710b5e3d9cca1783d031350a5e98b6d4a",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "login-page-broken.https.html": [
+      "cda9ee4fd509ea971f95d249117645a423a2549f",
       [
        null,
        {
@@ -590493,35 +590552,35 @@
         ]
        ],
        "2d.composite.uncovered.nocontext.copy.html": [
-        "748ee28b47f8a1ee4c7f787d7ddf1876712ef39d",
+        "a6d64d68b2d60473ecb55ac01cc68709a2334c83",
         [
          null,
          {}
         ]
        ],
        "2d.composite.uncovered.nocontext.destination-atop.html": [
-        "c46ffbf5ee24c10347a69e80cb1732f4f4c13c39",
+        "818a13626df6f85a699df6751ee8652b24b94f55",
         [
          null,
          {}
         ]
        ],
        "2d.composite.uncovered.nocontext.destination-in.html": [
-        "87a997861507cebbbf7db9b8e82b4e0efaffe6eb",
+        "8b66279a74529c945f1715f9c1c1975fbcec0912",
         [
          null,
          {}
         ]
        ],
        "2d.composite.uncovered.nocontext.source-in.html": [
-        "2787477dd05e604b2faa608aba2f22b7004dee34",
+        "13b92f5c5bd2d07a0153c959e37f0190d4f5f614",
         [
          null,
          {}
         ]
        ],
        "2d.composite.uncovered.nocontext.source-out.html": [
-        "f7047a7733beeb853e3ca140ceecbd0c049d62d9",
+        "8dc445c3e238005d1a409774d422c9f719bc88ed",
         [
          null,
          {}
@@ -598012,168 +598071,168 @@
       },
       "compositing": {
        "2d.composite.canvas.clear.html": [
-        "ba919272057b96b5b3bb8c9fce73aa53b999f2bf",
+        "4e81c6a82645732b0db7ce37a9150bb9ef4d5d21",
         [
          null,
          {}
         ]
        ],
        "2d.composite.canvas.clear.worker.js": [
-        "b2883874750dfb8c380c33c0db099d93a18b41ff",
+        "3f17857e4ceb549550f59b2b3d55129e1096aed1",
         [
          "html/canvas/offscreen/compositing/2d.composite.canvas.clear.worker.html",
          {}
         ]
        ],
        "2d.composite.canvas.copy.html": [
-        "ebaad553d6e43f58e1b8db7acd4932946e1c565d",
+        "249db0fe80265ca09c5ded661ef98e9c4e5bda09",
         [
          null,
          {}
         ]
        ],
        "2d.composite.canvas.copy.worker.js": [
-        "4a996330cd4e907d1a764d52dd1ea7bba7896572",
+        "75c504990bad5932fc037547cac39bab09e6e00e",
         [
          "html/canvas/offscreen/compositing/2d.composite.canvas.copy.worker.html",
          {}
         ]
        ],
        "2d.composite.canvas.destination-atop.html": [
-        "c99eb32bc23bad57988da9196e9f5da5669cb479",
+        "f10d00c5723c82e434fcb5b298dedcdfbd0547c0",
         [
          null,
          {}
         ]
        ],
        "2d.composite.canvas.destination-atop.worker.js": [
-        "0ce8fc7ff1adc09a3423af80f09f658056edc4be",
+        "fcdd5efe7df59d9ea61b3040270b05946d9fe77a",
         [
          "html/canvas/offscreen/compositing/2d.composite.canvas.destination-atop.worker.html",
          {}
         ]
        ],
        "2d.composite.canvas.destination-in.html": [
-        "11b45c8378c77e38c88f281b3cc2d92dd10be1cd",
+        "f0bcba1fe90733f49548fec026646622b2c99bb3",
         [
          null,
          {}
         ]
        ],
        "2d.composite.canvas.destination-in.worker.js": [
-        "63214c4a42947b6f08690215bb409e80cc76d524",
+        "5d507461ecfce702000fa60a27adbef7badf8cad",
         [
          "html/canvas/offscreen/compositing/2d.composite.canvas.destination-in.worker.html",
          {}
         ]
        ],
        "2d.composite.canvas.destination-out.html": [
-        "6315a78a78891b09be25646727f6d2dc9b1a1250",
+        "f4bb383e0fbe3e3b7e89ee6d1884bc6c1181922c",
         [
          null,
          {}
         ]
        ],
        "2d.composite.canvas.destination-out.worker.js": [
-        "ae3c550b3600686a89f6799819b78b482fe0211d",
+        "7958eccfac3bd65526791bd8ca8efdf82cb0e629",
         [
          "html/canvas/offscreen/compositing/2d.composite.canvas.destination-out.worker.html",
          {}
         ]
        ],
        "2d.composite.canvas.destination-over.html": [
-        "4c76fc48badab9aa3671c3c4ba0f24f3f8fdc40f",
+        "eb5fb1edc6b9f608d869ce8793a60b67bd8d5e2c",
         [
          null,
          {}
         ]
        ],
        "2d.composite.canvas.destination-over.worker.js": [
-        "452b95c6648d21d649a59037cdb100518acb264c",
+        "aea0df09c35466c6eba6f60721f8c9a6a5f1bf0c",
         [
          "html/canvas/offscreen/compositing/2d.composite.canvas.destination-over.worker.html",
          {}
         ]
        ],
        "2d.composite.canvas.lighter.html": [
-        "5c6563f5eb9dca438642be1dee650943057de67f",
+        "131631b42a31e031fa79d716a6e7913f4c63abc9",
         [
          null,
          {}
         ]
        ],
        "2d.composite.canvas.lighter.worker.js": [
-        "b8d755f6db9257d57e0f3be7f122c5ddf6988d02",
+        "0ec46bf886daec47af85d736ef03166016da67e6",
         [
          "html/canvas/offscreen/compositing/2d.composite.canvas.lighter.worker.html",
          {}
         ]
        ],
        "2d.composite.canvas.source-atop.html": [
-        "0cd164e30ae1ff2aad31e95057a3143aa8ec8722",
+        "88f80622b4ccb86b5fedaffc87739f1cc3e80056",
         [
          null,
          {}
         ]
        ],
        "2d.composite.canvas.source-atop.worker.js": [
-        "015ac35c66068b2b2b9644b27f9a9ca8720a6796",
+        "197660894fdecfc3e11842ff47875a5ca04edb23",
         [
          "html/canvas/offscreen/compositing/2d.composite.canvas.source-atop.worker.html",
          {}
         ]
        ],
        "2d.composite.canvas.source-in.html": [
-        "079a0fbef37d893e2b208b0dbb94d29bad1931a7",
+        "3959fe8d6026b7d0478af46f5396a8c4e682ce7f",
         [
          null,
          {}
         ]
        ],
        "2d.composite.canvas.source-in.worker.js": [
-        "dc73c4d81428cb756599ee938010f2b2646ba157",
+        "293b9c12415bde9a71a52a4f30814a0b4d6805b3",
         [
          "html/canvas/offscreen/compositing/2d.composite.canvas.source-in.worker.html",
          {}
         ]
        ],
        "2d.composite.canvas.source-out.html": [
-        "822ac0182254679e3654ebf8f8b5bc9b841b12a9",
+        "d4b355a9bf917868b70dbcfc2604636be42e9e6d",
         [
          null,
          {}
         ]
        ],
        "2d.composite.canvas.source-out.worker.js": [
-        "0897f08fab90a9181748fcc8e6b0db05eba09f79",
+        "49ff15abf8871226cbd0cab4e42b17150e9e987b",
         [
          "html/canvas/offscreen/compositing/2d.composite.canvas.source-out.worker.html",
          {}
         ]
        ],
        "2d.composite.canvas.source-over.html": [
-        "6d828e8b0cd81a73db93aa9bd7d2b3acfcfccf77",
+        "b1ba16a4de22cc45127276cd10ffc34a2989ebe0",
         [
          null,
          {}
         ]
        ],
        "2d.composite.canvas.source-over.worker.js": [
-        "34a53a39582c76055433491ea26b64ce6d71fc35",
+        "9f2d549d8f009f0673913f1d4e58ab31baa973b0",
         [
          "html/canvas/offscreen/compositing/2d.composite.canvas.source-over.worker.html",
          {}
         ]
        ],
        "2d.composite.canvas.xor.html": [
-        "708c40e47e6e40b4b060e275eedaafe4902a9716",
+        "185de6bdeeeda71112448c86822ef25679d1f4a9",
         [
          null,
          {}
         ]
        ],
        "2d.composite.canvas.xor.worker.js": [
-        "721cef641a6ce95827f80abbc9ad4c3e935b521d",
+        "4e70cf2b881dc0c1a311aa9b3d3cd8b63373e82f",
         [
          "html/canvas/offscreen/compositing/2d.composite.canvas.xor.worker.html",
          {}
@@ -599254,70 +599313,70 @@
         ]
        ],
        "2d.composite.uncovered.nocontext.copy.html": [
-        "50243ce401d2e29611164c68938cc848044d8b6b",
+        "ee7742a8170ebd6117b82e0efa128d7ccb5d5c52",
         [
          null,
          {}
         ]
        ],
        "2d.composite.uncovered.nocontext.copy.worker.js": [
-        "1f285eae4c0dabcf8c2c5b577745078fd69e205b",
+        "251f8ac5fa43bdc70a4f143a8fbf08c6b5db13e7",
         [
          "html/canvas/offscreen/compositing/2d.composite.uncovered.nocontext.copy.worker.html",
          {}
         ]
        ],
        "2d.composite.uncovered.nocontext.destination-atop.html": [
-        "0c4e8cbf3e2c86bd985757d64f4bb1193a8390e8",
+        "bb0368d439dc2a27eef2341337abd40ac41a1b3f",
         [
          null,
          {}
         ]
        ],
        "2d.composite.uncovered.nocontext.destination-atop.worker.js": [
-        "a9beb0f27edefe06e7582e96282f79c1e73d856f",
+        "4ed132e87ed72dcb3086dcf064ba3900ac8eafaa",
         [
          "html/canvas/offscreen/compositing/2d.composite.uncovered.nocontext.destination-atop.worker.html",
          {}
         ]
        ],
        "2d.composite.uncovered.nocontext.destination-in.html": [
-        "0258ed830ba09bfbb75282695601469b93d7eb8f",
+        "6e49330e633fa69e68fc6d6226307daef3b2cfec",
         [
          null,
          {}
         ]
        ],
        "2d.composite.uncovered.nocontext.destination-in.worker.js": [
-        "e146e2e91ad94e124c5c9714cea4c9f3ef4bcaa5",
+        "d33eb3544cdb26f9038aa1ce1145ba84a2781fd3",
         [
          "html/canvas/offscreen/compositing/2d.composite.uncovered.nocontext.destination-in.worker.html",
          {}
         ]
        ],
        "2d.composite.uncovered.nocontext.source-in.html": [
-        "1f081e433a2b9fc3160716650648bc75f4a000d6",
+        "4e98879c1dc44858a0e237e7ee938e930277540e",
         [
          null,
          {}
         ]
        ],
        "2d.composite.uncovered.nocontext.source-in.worker.js": [
-        "cce4b54bd5fedc405f6536e99cb7d728938a26f6",
+        "eb90a7e3b8be441dea8bb1cf09dc1420bb8633a2",
         [
          "html/canvas/offscreen/compositing/2d.composite.uncovered.nocontext.source-in.worker.html",
          {}
         ]
        ],
        "2d.composite.uncovered.nocontext.source-out.html": [
-        "93fdb52bded2ae7ef77fa99b864ea8eaf103d36e",
+        "929dc6325728ac134f8674eb672c0167b8683327",
         [
          null,
          {}
         ]
        ],
        "2d.composite.uncovered.nocontext.source-out.worker.js": [
-        "501a84f7e7b264fc3fe7361f134220c875bb9d58",
+        "269adf9dcbb85b0083e81df6721f8d14b78c4ac8",
         [
          "html/canvas/offscreen/compositing/2d.composite.uncovered.nocontext.source-out.worker.html",
          {}
@@ -635910,7 +635969,7 @@
         ]
        ],
        "interestevent-dispatch-shadow.tentative.html": [
-        "146f7fb5ec4e301dce0f08391950f1ae44011f04",
+        "ac1b72b0ef8e0d31c2dc17f518a0e78785e87482",
         [
          null,
          {
@@ -635928,7 +635987,7 @@
         ]
        ],
        "interesttarget-anchor-event-dispatch.tentative.html": [
-        "931ea1cfdef7823ec4a96517207fb213369c204d",
+        "ae9198a91d55d2cfa6968917b26f8f2b3f71ffc2",
         [
          null,
          {
@@ -635937,7 +635996,7 @@
         ]
        ],
        "interesttarget-area-event-dispatch.tentative.html": [
-        "eadc8fb1759a38c041579fc2c9b671c8eb6633eb",
+        "4bd5165198eb206224cc19067745fcd45ce3815d",
         [
          null,
          {
@@ -635956,7 +636015,7 @@
         ]
        ],
        "interesttarget-button-event-dispatch.tentative.html": [
-        "6057f4ca60fe260b6572b7b54c993210731d86ae",
+        "67ab884d01d91490d9c861cd2fe9c9f61009ac4d",
         [
          null,
          {
@@ -635965,10 +636024,26 @@
         ]
        ],
        "interesttarget-css-properties.tentative.html": [
-        "b91614b163c88f301b5c2198f568286044ee4f9c",
+        "8e918b0434c11e626fbb24a9007fe91b9d9de588",
         [
          null,
          {}
+        ]
+       ],
+       "interesttarget-css-shorthands.tentative.html": [
+        "e3260d1b052da5d6c204746980d495a4e0c4d7ad",
+        [
+         null,
+         {}
+        ]
+       ],
+       "interesttarget-has-interest-pseudo.tentative.html": [
+        "2c097a5824945027b978c3e51b28ac239c92d1c6",
+        [
+         null,
+         {
+          "testdriver": true
+         }
         ]
        ],
        "interesttarget-hide-delay.tentative.html": [
@@ -635982,7 +636057,7 @@
         ]
        ],
        "interesttarget-on-popover-behavior.tentative.html": [
-        "40027f0cccceab1a8f1c0dc32bb941d9547446ab",
+        "44071a9ac93aff2a6645fb4c4a45b0d97da8f061",
         [
          null,
          {
@@ -636001,7 +636076,7 @@
         ]
        ],
        "interesttarget-svg-a-event-dispatch.tentative.html": [
-        "31a59f5c281fdda5497edd6256ac556b282cf6de",
+        "d5db05023212ca5b8491a91954a0997278fbc6d1",
         [
          null,
          {
@@ -687348,7 +687423,7 @@
       ]
      ],
      "static-router-invalid-rules.https.html": [
-      "05f39f2c9dce40a789ee20cc8056d3bd38adf258",
+      "616f85bd618d34be499747e25f196603ece0c227",
       [
        null,
        {}
@@ -688819,7 +688894,7 @@
        ]
       ],
       "dom-mutation.html": [
-       "54479e00dca3ad7108460bc334ca4229d7bae36f",
+       "91a94158ccf4da6a77cbfe006477225b10d26a52",
        [
         null,
         {
