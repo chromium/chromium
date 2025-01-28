@@ -142,6 +142,7 @@ export type Event = WebDriverBidi.Event | Cdp.Event | BluetoothEvent;
 export const EVENT_NAMES = new Set([
   // keep-sorted start
   ...Object.values(BiDiModule),
+  ...Object.values(Bluetooth.EventNames),
   ...Object.values(BrowsingContext.EventNames),
   ...Object.values(Log.EventNames),
   ...Object.values(Network.EventNames),

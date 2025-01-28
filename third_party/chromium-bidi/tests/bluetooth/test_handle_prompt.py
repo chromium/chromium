@@ -74,7 +74,7 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
     if test_headless_mode == "old":
         pytest.xfail("Old headless mode does not support Bluetooth")
 
-    await subscribe(websocket, ['bluetooth'])
+    await subscribe(websocket, ['bluetooth.requestDevicePromptUpdated'])
 
     url = html(HTML_SINGLE_PERIPHERAL)
     await goto_url(websocket, context_id, url)
