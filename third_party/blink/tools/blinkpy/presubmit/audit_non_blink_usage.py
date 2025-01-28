@@ -24,8 +24,11 @@ _DISALLOW_NON_BLINK_MOJOM = (
     # network::mojom::Foo is allowed to use as non-blink mojom type.
     # mojom::RendererContentSettingsPtr is allowed.
     '(?!network::)(\w+::)?mojom::(?!RendererContentSettingsPtr)(?!blink).+',
-    'Using non-blink mojom types, consider using "::mojom::blink::Foo" instead '
-    'of "::mojom::Foo" unless you have clear reasons not to do so.',
+    'Consider using "ns::mojom::blink::Foo" instead of "[[::]ns::]mojom::Foo" '
+    'for non-blink mojom types, or "mojom::blink::Foo" instead of '
+    '"[[::]blink::]mojom::Foo" for blink mojom types, unless you have clear '
+    'reasons not to do so. Make sure to include '
+    '".../foo-mojom-blink[-forward].h".',
     'Warning')
 
 _DISALLOW_CONTINUATION_DATA_ = (
