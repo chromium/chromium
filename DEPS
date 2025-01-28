@@ -2930,7 +2930,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/eche_app/app',
-        'version': 'VrtpVbLsJVvUmXkrgmUcyxRjopg_7wNOwSuo9kDWXxAC',
+        'version': 'Ihx-kXXQGZaTKDprSbCRcq5kUszzvDM8cP2aNJNNIhQC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
