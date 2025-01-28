@@ -2531,6 +2531,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="AccessLossWarningType" variants="AccessLossWarningType"/>
 </histogram>
 
+<histogram name="PasswordManager.PasswordChange.InformationBubble"
+    enum="PasswordManagerUIDismissalReason" expires_after="2025-11-30">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records the result of interaction with the status information bubble showin
+    in the password change flow. This bubble is only displayed if the user
+    clicks on the omnibox icon. The metric is recorded during the bubble
+    closure.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordChange.PrivacyNoticeBubble"
     enum="PasswordManagerUIDismissalReason" expires_after="2025-11-30">
   <owner>atsvirchkova@google.com</owner>
