@@ -4727,15 +4727,40 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   update.nodes = {root, node};
   update.root_id = root.id;
 
-  // When the load complete event is received, and the tree is stable for 10s,
-  // the controller calls distiller_->Distill().
-  EXPECT_CALL(*distiller_, Distill).Times(1);
-  EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(1);
+  // When the tree is stable for 10s, the controller still waits for 30s after
+  // page load completion.
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+  EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(0);
   SetScreenAIServiceReady();
   ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
   OnActiveAXTreeIDChanged(tree_id_);
   AccessibilityEventReceived({update}, {load_complete});
   task_environment_.FastForwardBy(base::Seconds(11));
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
+       DistillsAfterDelayWhenTreeIsNotStable) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData root;
+  root.id = 1;
+  ui::AXNodeData node;
+  node.id = 2;
+  root.child_ids = {node.id};
+  update.nodes = {root, node};
+  update.root_id = root.id;
+
+  // If the tree changes in the 30s after page load completion, distillation is
+  // delayed for another 10s.
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+  EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(0);
+  SetScreenAIServiceReady();
+  OnActiveAXTreeIDChanged(tree_id_);
+  task_environment_.FastForwardBy(base::Seconds(29));
+  ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
+  AccessibilityEventReceived({update}, {load_complete});
+  task_environment_.FastForwardBy(base::Seconds(9));
   Mock::VerifyAndClearExpectations(distiller_);
 }
 

@@ -144,12 +144,11 @@ class ReadAnythingAppModel {
   // The following methods are used for the screen2x data collection pipeline.
   // They all have CHECKs to ensure that the DataCollectionModeForScreen2x
   // feature flag is enabled.
-  bool ScreenAIServiceReadyForDataColletion() const;
-  void SetScreenAIServiceReadyForDataColletion(bool value);
+  bool ScreenAIServiceReadyForDataCollection() const;
+  void SetScreenAIServiceReadyForDataCollection();
   bool PageFinishedLoadingForDataCollection() const;
-  void SetPageFinishedLoadingForDataCollection(bool value);
   void SetDataCollectionForScreen2xCallback(
-      base::RepeatingCallback<void()> callback);
+      base::OnceCallback<void()> callback);
 
   bool page_finished_loading() const { return page_finished_loading_; }
   void set_page_finished_loading(bool value) { page_finished_loading_ = value; }
@@ -284,6 +283,9 @@ class ReadAnythingAppModel {
   // when the DataCollectionModeForScreen2x feature is enabled.
   void MaybeRunDataCollectionForScreen2xCallback();
 
+  void OnPageLoadTimerTriggered();
+  void OnTreeChangeTimerTriggered();
+
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>
       tree_infos_;
@@ -359,11 +361,12 @@ class ReadAnythingAppModel {
   // webpage. We record the result of the distill() call for this entire
   // webpage, so we only make the call once the webpage finished loading and
   // screen ai has loaded.
-  bool ScreenAIServiceReadyForDataColletion_ = false;
-  bool PageFinishedLoadingForDataCollection_ = false;
+  bool screen_ai_service_ready_for_data_collection_ = false;
+  bool waiting_for_page_load_completion_timer_trigger_ = true;
+  bool waiting_for_tree_change_timer_trigger_ = true;
   base::OneShotTimer timer_since_page_load_for_data_collection_;
   base::RetainingOneShotTimer timer_since_tree_changed_for_data_collection_;
-  base::RepeatingCallback<void()> data_collection_for_screen2x_callback_;
+  base::OnceCallback<void()> data_collection_for_screen2x_callback_;
 
   // Whether the webpage has finished loading or not.
   bool page_finished_loading_ = false;

@@ -257,7 +257,7 @@ class ReadAnythingAppController
       const std::string& locale,
       const std::string& display_locale) const;
 
-  void Distill();
+  void Distill(bool for_training_data);
   void Draw(bool recompute_display_nodes);
   void DrawSelection();
   void DrawEmptyState();
@@ -379,6 +379,13 @@ class ReadAnythingAppController
   void UpdateDependencyParserModel(base::File model_file);
 
   DependencyParserModel& GetDependencyParserModelForTesting();
+
+  // Stores a screenshot of the page and triggers distillation to record protos.
+  // This function is not used in production and is behind the disabled
+  // `DataCollectionModeForScreen2x` flag.
+  // This function is expected to be called just once. There would be a mismatch
+  // between the training protos and the screenshot if it runs more than once.
+  void DistillAndScreenshot();
 
   std::unique_ptr<AXTreeDistiller> distiller_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandlerFactory>
