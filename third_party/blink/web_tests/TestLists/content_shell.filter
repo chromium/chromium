@@ -582,11 +582,9 @@ external/wpt/editing/other/empty-elements-insertion.html
 external/wpt/editing/other/exec-command-without-editable-element.tentative.html
 external/wpt/editing/other/exec-command-with-text-editor.tentative.html*
 external/wpt/editing/other/fire-selection-change-on-deleting-empty-element.html
-external/wpt/editing/other/html-text-copy-paste-of-anchor-with-href-in-content-editable.html
 external/wpt/editing/other/insertparagraph-in-non-splittable-element.html
 external/wpt/editing/other/join-pre-and-other-block.html*
 external/wpt/editing/other/no-beforeinput-when-no-selection.html
-external/wpt/editing/other/paste-in-list-with-inline-style.tentative.html
 external/wpt/editing/other/paste_text_with_text_transform.html
 external/wpt/editing/other/plain-text-copy-paste-of-paragraph-ending-with-non-layed-out-content.html
 external/wpt/editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=DesignMode
