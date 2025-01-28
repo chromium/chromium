@@ -20,7 +20,7 @@ braille_ime_mv3_out_dir = "$braille_ime_out_dir/mv3"
 # TS files to compile.
 ts_modules = [
   "braille_ime.ts",
-  "main.ts",
+  "braille_ime_loader.ts",
 ]
 
 group("build") {
