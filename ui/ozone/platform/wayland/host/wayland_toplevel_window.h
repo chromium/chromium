@@ -122,7 +122,6 @@ class WaylandToplevelWindow : public WaylandWindow,
       bool allow_system_drag) override;
   bool SupportsPointerLock() override;
   void LockPointer(bool enabled) override;
-  bool GetTabletMode() override;
 
   // WorkspaceExtension:
   std::string GetWorkspace() const override;

@@ -830,8 +830,4 @@ void WaylandToplevelWindow::UpdateWindowMask() {
                                                     : region);
 }
 
-bool WaylandToplevelWindow::GetTabletMode() {
-  return connection()->GetTabletMode();
-}
-
 }  // namespace ui
