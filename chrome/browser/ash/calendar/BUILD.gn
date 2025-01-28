@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("calendar") {
   sources = [

@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("auth") {
   sources = [

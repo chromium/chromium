@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("web_contents") {
   sources = [

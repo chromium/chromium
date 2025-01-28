@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("remote_commands") {
   sources = [

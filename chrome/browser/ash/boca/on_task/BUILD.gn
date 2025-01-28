@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash, "OnTask is only supported in Ash")
+assert(is_chromeos, "OnTask is only supported in Ash")
 
 static_library("on_task") {
   sources = [
