@@ -30,12 +30,14 @@ COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 BASE_DECLARE_FEATURE(kEnableFingerprintingProtectionFilterInIncognito);
 
 // Returns true if either of the Fingerprinting Protection feature flags are
-// enabled. Notably, does not check UX flags.
+// enabled, or if the Tracking Protection kFingerprintingProtectionUx flag is
+// enabled.
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 bool IsFingerprintingProtectionFeatureEnabled();
 
 // Returns true if Fingerprinting Protection is enabled for the given incognito
-// state.
+// state. Also returns true if the Tracking Protection
+// kFingerprintingProtectionUx flag is enabled when `is_incognito` is true.
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 bool IsFingerprintingProtectionEnabledForIncognitoState(bool is_incognito);
 

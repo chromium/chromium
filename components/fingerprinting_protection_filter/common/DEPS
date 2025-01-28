@@ -2,5 +2,6 @@ include_rules = [
   "+components/subresource_filter/core/common",
   "+components/subresource_filter/core/mojom",
   "+components/prefs",
+  "+components/privacy_sandbox/privacy_sandbox_features.h",
   "+net"
 ]

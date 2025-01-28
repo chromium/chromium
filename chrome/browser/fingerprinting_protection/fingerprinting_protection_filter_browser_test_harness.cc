@@ -6,8 +6,12 @@
 
 #include <cstdint>
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -225,6 +229,30 @@ void FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest::
   // "google.test" and work as desired.
   host_resolver()->AddRule("google.test",
                            embedded_test_server()->base_url().host_piece());
+}
+
+// ==== FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest ====
+
+FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest::
+    FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest() {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+
+      {// Enable FPP setting in Tracking Protection UX.
+       // This flag isn't used together with
+       // `EnableFingerprintingProtectionFilter(InIncognito)`.
+       privacy_sandbox::kFingerprintingProtectionUx},
+      /*disabled_features=*/{});
+}
+
+FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest::
+    ~FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest() =
+        default;
+
+void FingerprintingProtectionFilterTrackingProtectionSettingBrowserTest::
+    SetUpOnMainThread() {
+  FingerprintingProtectionFilterBrowserTest::SetUpOnMainThread();
+  ASSERT_TRUE(embedded_test_server()->Start());
 }
 
 }  // namespace fingerprinting_protection_filter
