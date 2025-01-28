@@ -56,6 +56,7 @@
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -292,7 +293,7 @@ void Preferences::RegisterProfilePrefs(
       prefs::kManagedPhysicalKeyboardPredictiveWritingAllowed, true);
   registry->RegisterIntegerPref(
       prefs::kOrcaConsentStatus,
-      base::to_underlying(input_method::ConsentStatus::kUnset));
+      base::to_underlying(chromeos::editor_menu::EditorConsentStatus::kUnset));
   registry->RegisterIntegerPref(prefs::kOrcaConsentWindowDismissCount, 0);
   registry->RegisterBooleanPref(prefs::kEmojiPickerGifSupportEnabled, true);
   registry->RegisterDictionaryPref(prefs::kEmojiPickerHistory);

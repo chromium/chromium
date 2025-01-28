@@ -46,6 +46,7 @@ static_library("preferences") {
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus/pciguard",
     "//chromeos/ash/components/dbus/update_engine:proto",
+    "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/ash/components/geolocation",
     "//chromeos/ash/components/peripheral_notification",
     "//chromeos/ash/components/settings",

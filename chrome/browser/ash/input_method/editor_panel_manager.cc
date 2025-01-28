@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
@@ -79,7 +80,7 @@ void EditorPanelManagerImpl::GetEditorPanelContext(
       /*mode=*/editor_panel_mode,
       /*text_selection_mode=*/delegate_->GetEditorTextSelectionMode(),
       /*consent_status_settled=*/delegate_->GetConsentStatus() !=
-          ConsentStatus::kUnset,
+          chromeos::editor_menu::EditorConsentStatus::kUnset,
       chromeos::editor_menu::PresetTextQueries()));
 }
 
@@ -127,7 +128,7 @@ void EditorPanelManagerImpl::OnGetPresetTextQueriesResult(
   std::move(callback).Run(chromeos::editor_menu::EditorContext(
       mode, /*text_selection_mode=*/delegate_->GetEditorTextSelectionMode(),
       /*consent_status_settled=*/delegate_->GetConsentStatus() !=
-          ConsentStatus::kUnset,
+          chromeos::editor_menu::EditorConsentStatus::kUnset,
 
       text_queries));
 }

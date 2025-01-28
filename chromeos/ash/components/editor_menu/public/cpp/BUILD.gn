@@ -10,6 +10,8 @@ component("cpp") {
   defines = [ "IS_EDITOR_MENU_PUBLIC_CPP_IMPL" ]
 
   sources = [
+    "editor_consent_status.cc",
+    "editor_consent_status.h",
     "editor_context.cc",
     "editor_context.h",
     "editor_helpers.cc",

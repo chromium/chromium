@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/input_method/editor_transition_enums.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -83,7 +84,7 @@ class EditorMediator : public EditorContext::Observer,
   chromeos::editor_menu::EditorMode GetEditorMode() const override;
   chromeos::editor_menu::EditorTextSelectionMode GetEditorTextSelectionMode()
       const override;
-  ConsentStatus GetConsentStatus() const override;
+  chromeos::editor_menu::EditorConsentStatus GetConsentStatus() const override;
   // This method is currently used for metric purposes to understand the ratio
   // of requests being blocked vs. the potential requests that can be
   // accommodated.
