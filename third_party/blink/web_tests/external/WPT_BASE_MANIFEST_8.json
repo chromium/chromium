@@ -194707,6 +194707,19 @@
        {}
       ]
      ],
+     "out-of-order-elements-collapsed-border.html": [
+      "9a431baf17cc9ed84cf1ddfa6240f85913b19368",
+      [
+       null,
+       [
+        [
+         "/css/css-tables/out-of-order-elements-collapsed-border-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "paint": {
       "col-change-span-bg-invalidation-001.html": [
        "997745954eb2543d711e6791da4f82957208fcfc",
@@ -355269,6 +355282,10 @@
       "53f89af133dace914ebaaf7dfb3e517e8a4193fb",
       []
      ],
+     "out-of-order-elements-collapsed-border-ref.html": [
+      "5d7f6a5c947290db91a77abf34221abe0242dce1",
+      []
+     ],
      "paint": {
       "col-paint-htb-rtl-ref.html": [
        "107a960958a762fb5579593760d9957b7b9d7d07",
@@ -373276,7 +373293,7 @@
     ],
     "include": {
      "editor-test-utils.js": [
-      "0bf2d4b2fae5264154216718366ff3f630535514",
+      "f88a9bac3b4d71f19da915ae1f43114d862f3cf7",
       []
      ],
      "implementation.js": [
@@ -524552,7 +524569,7 @@
        ]
       ],
       "observable-from.any.js": [
-       "7819bd43586aa0e9babae6f63b2b3c648c419385",
+       "e204ece52da34f0db25c63d2871c46095ecc8a85",
        [
         "dom/observable/tentative/observable-from.any.html",
         {}
@@ -525847,6 +525864,15 @@
      ],
      "delete-in-shadow-hosted-in-body.html": [
       "4b02719ea0246b2ca9a7a1f7dd15326b591a3eab",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "delete-last-word-in-inline-block-editing-host.html": [
+      "3b3a60829f3f99dfeb36f04b31373007e3d97e56",
       [
        null,
        {
@@ -529489,7 +529515,7 @@
       ]
      ],
      "delete-chars-following-collapsible-white-space.html": [
-      "7340a9ebf72e776c2d291f626fd6a9b0a87d984e",
+      "077dd4180ed2353fb741a1b547e94af2a06259a5",
       [
        null,
        {
@@ -529670,7 +529696,7 @@
       ]
      ],
      "forwarddelete-chars-following-collapsible-white-space.html": [
-      "9cfdd9879ec25a209c6b43269c3e4cbc68054763",
+      "2c42f0c91d01f77c869a195eb02f867b131bb36c",
       [
        null,
        {
