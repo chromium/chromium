@@ -520,7 +520,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        NoForcedInterceptionShowsDialogIfFeatureEnabled) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeature(
-      features::kEnterpriseUpdatedProfileCreationScreen);
+      switches::kShowEnterpriseDialogForAllManagedAccountsSignin);
   // Reauth intercepted if enterprise confirmation not shown yet for forced
   // managed separation.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(

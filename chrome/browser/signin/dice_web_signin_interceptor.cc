@@ -760,12 +760,10 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
   if (intercepted_account_info.IsManaged() &&
       IsReauthPrimaryAccount(state_->new_account_interception_,
                              intercepted_account_info.account_id,
-                             identity_manager_)) {
-    // Sync users are considered to have implicitly accepted management.
-    // Returns true only for reauth for primary accounts without sync where
-    // management hasn't been accepted.
-    return !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-           !enterprise_util::UserAcceptedAccountManagement(profile_);
+                             identity_manager_) &&
+      (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
+       enterprise_util::UserAcceptedAccountManagement(profile_))) {
+    return false;
   }
 
   if (!signin_util::IsAccountExemptedFromEnterpriseProfileSeparation(
@@ -781,8 +779,7 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
     return false;
   }
 
-  return state_->new_account_interception_ &&
-         intercepted_account_info.IsManaged();
+  return intercepted_account_info.IsManaged();
 }
 
 bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
@@ -790,7 +787,7 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
   DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
 
   if (!base::FeatureList::IsEnabled(
-          features::kEnterpriseUpdatedProfileCreationScreen)) {
+          switches::kShowEnterpriseDialogForAllManagedAccountsSignin)) {
     return false;
   }
 
@@ -814,7 +811,8 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
     return true;
   }
 
-  return false;
+  // If there is no primary account, propose to the user to sign into Chrome.
+  return !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 bool DiceWebSigninInterceptor::ShouldShowEnterpriseBubble(
@@ -1387,6 +1385,14 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
   } else {
     DCHECK_EQ(SigninInterceptionResult::kDeclined, create)
         << "The user can only accept or decline";
+    if (account_info == identity_manager_->GetPrimaryAccountInfo(
+                            signin::ConsentLevel::kSignin)) {
+      auto* primary_account_mutator =
+          IdentityManagerFactory::GetForProfile(profile_)
+              ->GetPrimaryAccountMutator();
+      primary_account_mutator->ClearPrimaryAccount(
+          signin_metrics::ProfileSignout::kAbortSignin);
+    }
     if (state_->interception_type_ ==
         WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced) {
       auto* accounts_mutator = identity_manager_->GetAccountsMutator();
