@@ -9,6 +9,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -48,6 +49,7 @@ class TailoredSecurityConsentedModalAndroidTest : public testing::Test {
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   base::UserActionTester user_action_tester_;
   std::unique_ptr<content::WebContents> web_contents_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TailoredSecurityConsentedModalAndroidTest,
@@ -59,6 +61,31 @@ TEST_F(TailoredSecurityConsentedModalAndroidTest,
       user_action_tester_.GetActionCount(
           "SafeBrowsing.AccountIntegration.DisabledDialog.OkButtonClicked"),
       1);
+}
+
+TEST_F(
+    TailoredSecurityConsentedModalAndroidTest,
+    DisabledDialogHandleMessageAcceptedSyncEsbTurnOnButtonClickLogsUserAction) {
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kEsbAsASyncedSetting);
+  TailoredSecurityConsentedModalAndroid consented_modal(
+      web_contents_.get(), /*enabled=*/false, base::DoNothing());
+  DoMessageAccepted(&consented_modal);
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "SafeBrowsing.SyncedEsbDialog.TurnOnButtonClicked"),
+            1);
+}
+
+TEST_F(TailoredSecurityConsentedModalAndroidTest,
+       DisabledDialogHandleMessageAcceptedSyncEsbOkButtonClickLogsUserAction) {
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kEsbAsASyncedSetting);
+  TailoredSecurityConsentedModalAndroid consented_modal(
+      web_contents_.get(), /*enabled=*/true, base::DoNothing());
+  DoMessageAccepted(&consented_modal);
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "SafeBrowsing.SyncedEsbDialog.OkButtonClicked"),
+            1);
 }
 
 TEST_F(TailoredSecurityConsentedModalAndroidTest,
@@ -108,6 +135,18 @@ TEST_F(TailoredSecurityConsentedModalAndroidTest,
       user_action_tester_.GetActionCount(
           "SafeBrowsing.AccountIntegration.EnabledDialog.OkButtonClicked"),
       1);
+}
+
+TEST_F(TailoredSecurityConsentedModalAndroidTest,
+       EnabledDialogHandleMessageAcceptedSyncEsbOkButtonClickLogsUserAction) {
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kEsbAsASyncedSetting);
+  TailoredSecurityConsentedModalAndroid consented_modal(
+      web_contents_.get(), /*enabled=*/true, base::DoNothing());
+  DoMessageAccepted(&consented_modal);
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "SafeBrowsing.SyncedEsbDialog.OkButtonClicked"),
+            1);
 }
 
 TEST_F(TailoredSecurityConsentedModalAndroidTest,

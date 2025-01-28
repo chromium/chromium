@@ -17741,6 +17741,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_TAILORED_SECURITY_CONSENTED_MESSAGE_OK_BUTTON" desc="The text on the ok button in the Android message when the account tailored security setting changes for a consented primary account">
       OK
     </message>
+    <message name="IDS_TAILORED_SECURITY_CONSENTED_ENHANCED_PROTECTION_ENABLE_MESSAGE_TITLE" desc="Title shown in the Android message when the account tailored security setting changes for a consented primary account">
+      Enhanced protection is on
+    </message>
 
     <!-- App uninstall prompt title -->
     <message name="IDS_PROMPT_APP_UNINSTALL_TITLE" desc="Title text for uninstalling an app.">
@@ -17957,6 +17960,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Continue
       </message>
     </if>
+    <message name="IDS_TAILORED_SECURITY_CONSENTED_PROMOTION_MESSAGE_TURN_ON" desc="Turn On button shown in the message shown when a user changes their account-level tailored security setting allowing them to re-enable Enhanced Safe Browsing">
+      Turn on
+    </message>
+    <message name="IDS_TAILORED_SECURITY_CONSENTED_ESB_OFF_MESSAGE_TITLE" desc="Title shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
+      Enhanced protection is off
+    </message>
 
     <!-- FedCM Account Selection strings -->
     <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT_SIGN_IN" desc="Header for sign-in sheet. Sheet is shown to prompt the user to sign-in to a website using an account from an identity provider.">
