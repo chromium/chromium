@@ -1672,7 +1672,7 @@ public class AwSettingsTest {
                         getTitleOnUiThread());
             }
 
-            ThreadUtils.runOnUiThreadBlocking(() -> webContents.removeObserver(observer));
+            ThreadUtils.runOnUiThreadBlocking(() -> observer.observe(null));
         }
 
         private String getData() {

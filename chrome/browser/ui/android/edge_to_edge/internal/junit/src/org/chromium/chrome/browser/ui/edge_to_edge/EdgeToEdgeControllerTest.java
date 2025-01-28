@@ -72,8 +72,8 @@ import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
@@ -147,7 +147,7 @@ public class EdgeToEdgeControllerTest {
     @Mock private Tab mTab;
     @Mock private NativePage mKeyNativePage;
 
-    @Mock private WebContents mWebContents;
+    @Mock private MockWebContents mWebContents;
 
     @Mock private EdgeToEdgeOSWrapper mOsWrapper;
     @Mock private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;

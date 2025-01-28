@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.url.JUnitTestGURLs;
 
 /**
@@ -97,7 +98,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public ToolbarManager toolbarManager;
     @Mock public ChromeBrowserInitializer browserInitializer;
     @Mock public TabModelInitializer tabModelInitializer;
-    @Mock public WebContents webContents;
+    @Mock public MockWebContents webContents;
     @Mock public CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
     @Mock public ProfileProvider profileProvider;
     @Mock public CipherFactory cipherFactory;

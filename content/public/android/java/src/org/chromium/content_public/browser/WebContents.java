@@ -462,30 +462,10 @@ public interface WebContents extends Parcelable {
     StylusWritingImeCallback getStylusWritingImeCallback();
 
     /**
-     * Returns {@link EventForwarder} which is used to forward input/view events
-     * to native content layer.
+     * Returns {@link EventForwarder} which is used to forward input/view events to native content
+     * layer.
      */
     EventForwarder getEventForwarder();
-
-    /**
-     * Avoid calling directly, prefer to use {@link WebContentsObserver#observe(WebContents)} or
-     * {@link WebContentsObserver#WebContentsObserver(WebContents)}.
-     *
-     * <p>Add an observer to the WebContents
-     *
-     * @param observer The observer to add.
-     */
-    void addObserver(WebContentsObserver observer);
-
-    /**
-     * Avoid calling directly, prefer to pass null to {@link
-     * WebContentsObserver#observe(WebContents)}.
-     *
-     * <p>Remove an observer from the WebContents
-     *
-     * @param observer The observer to remove.
-     */
-    void removeObserver(WebContentsObserver observer);
 
     /**
      * Sets a handler to handle swipe to refresh events.

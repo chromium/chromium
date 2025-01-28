@@ -120,7 +120,7 @@ public class EngagementSignalsInitialScrollObserver extends CustomTabTabObserver
                 };
 
         mWebContentsObserver =
-                new WebContentsObserver() {
+                new WebContentsObserver(mWebContents) {
                     @Override
                     public void navigationEntryCommitted(LoadCommittedDetails details) {
                         if (details.isMainFrame() && !details.isSameDocument()) {
@@ -135,7 +135,6 @@ public class EngagementSignalsInitialScrollObserver extends CustomTabTabObserver
             gestureListenerManager.addListener(
                     mGestureStateListener, RootScrollOffsetUpdateFrequency.NONE);
         }
-        mWebContents.addObserver(mWebContentsObserver);
     }
 
     private void cleanUpListeners() {
@@ -146,7 +145,7 @@ public class EngagementSignalsInitialScrollObserver extends CustomTabTabObserver
                         .removeListener(mGestureStateListener);
             }
             if (mWebContentsObserver != null) {
-                mWebContents.removeObserver(mWebContentsObserver);
+                mWebContentsObserver.observe(null);
             }
         }
         mWebContents = null;

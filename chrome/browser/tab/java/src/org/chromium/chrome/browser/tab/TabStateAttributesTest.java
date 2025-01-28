@@ -41,6 +41,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -56,7 +57,7 @@ public class TabStateAttributesTest {
     @Rule public final MockitoRule mockito = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
-    @Mock private WebContents mWebContents;
+    @Mock private MockWebContents mWebContents;
     @Mock private TabStateAttributes.Observer mAttributesObserver;
 
     @Captor ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;

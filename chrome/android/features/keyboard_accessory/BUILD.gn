@@ -163,6 +163,7 @@ robolectric_binary("keyboard_accessory_junit_tests") {
     "//components/feature_engagement/public:public_java",
     "//components/module_installer/android:module_installer_java",
     "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

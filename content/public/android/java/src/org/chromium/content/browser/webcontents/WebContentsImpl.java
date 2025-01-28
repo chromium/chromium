@@ -86,7 +86,11 @@ import java.util.UUID;
  */
 @JNINamespace("content")
 @NullMarked
-public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, WindowEventObserver {
+public class WebContentsImpl
+        implements WebContents,
+                WebContentsObserver.Observable,
+                RenderFrameHostDelegate,
+                WindowEventObserver {
     private static final String TAG = "WebContentsImpl";
 
     private static final String PARCEL_VERSION_KEY = "version";

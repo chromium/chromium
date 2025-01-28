@@ -95,6 +95,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.display.DisplayAndroid;
@@ -338,7 +339,7 @@ public class ManualFillingControllerTest {
                 .thenReturn(RuntimeEnvironment.application.getPackageManager());
         when(mMockActivity.findViewById(android.R.id.content)).thenReturn(mMockContentView);
         when(mMockContentView.getRootView()).thenReturn(mock(View.class));
-        mLastMockWebContents = mock(WebContents.class);
+        mLastMockWebContents = mock(MockWebContents.class);
         when(mMockActivity.getCurrentWebContents()).then(i -> mLastMockWebContents);
 
         ProfileJni.setInstanceForTesting(mProfileJniMock);
@@ -1448,7 +1449,7 @@ public class ManualFillingControllerTest {
         Tab tab = mock(Tab.class);
         when(tab.getId()).thenReturn(id);
         when(tab.getUserDataHost()).thenReturn(mUserDataHost);
-        mLastMockWebContents = mock(WebContents.class);
+        mLastMockWebContents = mock(MockWebContents.class);
         when(tab.getWebContents()).thenReturn(mLastMockWebContents);
         mCache.getStateFor(tab)
                 .getWebContentsObserverForTesting()

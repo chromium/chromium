@@ -166,6 +166,7 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

@@ -20,7 +20,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarMediator.PaymentHandlerToolbarMediatorDelegate;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A test for PaymentHandlerToolbarMediator. */
@@ -28,7 +28,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class PaymentHandlerToolbarMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private WebContents mMockWebContents;
+    @Mock private MockWebContents mMockWebContents;
     @Mock private PaymentHandlerToolbarMediatorDelegate mMockDelegate;
 
     private PropertyModel mModel;

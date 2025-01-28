@@ -39,7 +39,7 @@ import org.chromium.url.GURL;
 
 /** Mock class for {@link WebContents}. */
 @SuppressLint("ParcelCreator")
-public class MockWebContents implements WebContents {
+public class MockWebContents implements WebContents, WebContentsObserver.Observable {
     public RenderFrameHost renderFrameHost;
     private GURL mLastCommittedUrl;
 

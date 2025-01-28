@@ -38,8 +38,8 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.MediaSession;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +57,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private Tab mTab;
-    @Mock private WebContents mWebContents;
+    @Mock private MockWebContents mWebContents;
     @Mock private InfoBarContainer mInfoBarContainer;
     @Mock private MediaSession mMediaSession;
     @Mock private PowerManager mPowerManager;
