@@ -180,8 +180,6 @@ class PLATFORM_EXPORT CanvasResource
                  SkAlphaType alpha_type,
                  const gfx::ColorSpace& color_space);
 
-  // Returns true if the resource is backed by memory such that it can be used
-  // for direct scanout by the display.
   virtual gfx::HDRMetadata GetHDRMetadata() const { return gfx::HDRMetadata(); }
   virtual viz::TransferableResource::ResourceSource
   GetTransferableResourceSource() const {
