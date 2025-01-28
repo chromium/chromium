@@ -170,6 +170,7 @@ class GlicWindowController : public views::WidgetObserver {
     kWaitingForGlicToLoad,
     kOpen,
     kClosingToReopenDetached,
+    kCloseAnimation,
   };
   State state() const { return state_; }
 
@@ -205,6 +206,9 @@ class GlicWindowController : public views::WidgetObserver {
   // coordinate showing the window when glic and this class are both ready.
   // However this class already shows the window via animation.
   void ShowFinish();
+
+  // Finishes closing off the widget after running the closing animation.
+  void CloseFinish(bool reopen_detached);
 
   // Determines the correct position for the glic window when attached to a
   // browser window.

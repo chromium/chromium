@@ -133,7 +133,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                   PressButton(kGlicButtonElementId),
                   WaitForEvent(kGlicButtonElementId, kGlicWidgetAttached),
                   CheckControllerHasWidget(true),
-                  CheckControllerWidgetMode(GlicWindowMode::kAttached));
+                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
+                  CloseGlicWindow(), CheckControllerHasWidget(false));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,

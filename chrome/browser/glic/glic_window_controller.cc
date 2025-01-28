@@ -46,7 +46,7 @@ constexpr static int kAttachmentBuffer = 20;
 
 constexpr static int kWidgetDefaultWidth = 400;
 constexpr static int kWidgetTopBarHeight = 80;
-static constexpr int kEntryDurationMs = 300;
+static constexpr int kAnimationDurationMs = 300;
 
 constexpr char kHistogramGlicPanelPresentationTimeAllModes[] =
     "Glic.PanelPresentationTime.All";
@@ -429,7 +429,7 @@ void GlicWindowController::OpenAttached(Browser* browser) {
       views::CreateRoundedRectBackground(SK_ColorBLACK, 12));
 
   // If there's a browser, then animate.
-  AnimateBounds(target_bounds, base::Milliseconds(kEntryDurationMs),
+  AnimateBounds(target_bounds, base::Milliseconds(kAnimationDurationMs),
                 base::BindOnce(&GlicWindowController::OpenAnimationFinished,
                                GetWeakPtr()));
 }
@@ -515,7 +515,7 @@ void GlicWindowController::ShowFinish() {
   if (glic_size_) {
     gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
     if (*glic_size_ != current_bounds.size()) {
-      AnimateSize(*glic_size_, base::Milliseconds(kEntryDurationMs),
+      AnimateSize(*glic_size_, base::Milliseconds(kAnimationDurationMs),
                   base::DoNothing());
     }
   }
@@ -561,6 +561,7 @@ gfx::Point GlicWindowController::GetTopRightPositionForDetachedGlicWindow() {
 
 void GlicWindowController::AttachedBrowserDidClose(
     BrowserWindowInterface* browser) {
+  attached_browser_ = nullptr;
   Close();
 }
 
@@ -593,7 +594,7 @@ void GlicWindowController::Detach() {
   gfx::Rect widget_bounds = glic_widget_->GetWindowBoundsInScreen();
   widget_bounds.set_origin(
       gfx::Point(screen_size.width() - widget_bounds.width(), 0));
-  AnimateBounds(widget_bounds, base::Milliseconds(kEntryDurationMs),
+  AnimateBounds(widget_bounds, base::Milliseconds(kAnimationDurationMs),
                 base::DoNothing());
 }
 
@@ -724,11 +725,32 @@ void GlicWindowController::SetDraggableAreas(
 }
 
 void GlicWindowController::Close() {
-  if (state_ == State::kClosed) {
+  if (state_ == State::kCloseAnimation || state_ == State::kClosed) {
     return;
   }
 
   const bool reopen_detached = state_ == State::kClosingToReopenDetached;
+
+  if (attached_browser_) {
+    state_ = State::kCloseAnimation;
+    GetGlicView()->web_view()->SetWebContents(nullptr);
+    GlicButton* glic_button = attached_browser_->window()
+                                  ->AsBrowserView()
+                                  ->tab_strip_region_view()
+                                  ->GetGlicButton();
+    AnimateBounds(glic_button->GetBoundsInScreen(),
+                  base::Milliseconds(kAnimationDurationMs),
+                  base::BindOnce(&GlicWindowController::CloseFinish,
+                                 GetWeakPtr(), reopen_detached));
+  } else {
+    CloseFinish(reopen_detached);
+  }
+}
+
+void GlicWindowController::CloseFinish(bool reopen_detached) {
+  if (state_ == State::kClosed) {
+    return;
+  }
 
   state_ = State::kClosed;
   attached_browser_ = nullptr;
@@ -871,7 +893,7 @@ void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
   // Avoid conversions between pixels and DIP on non 1.0 scale factor displays
   // changing widget width and height.
   if (animate) {
-    AnimateBounds(new_bounds, base::Milliseconds(kEntryDurationMs),
+    AnimateBounds(new_bounds, base::Milliseconds(kAnimationDurationMs),
                   base::DoNothing());
   } else {
     GetGlicWidget()->SetBounds(new_bounds);
@@ -942,7 +964,7 @@ void GlicWindowController::NotifyIfPanelStateChanged() {
 
 mojom::PanelState GlicWindowController::ComputePanelState() const {
   mojom::PanelState panel_state;
-  if (state_ == State::kClosed) {
+  if (state_ == State::kClosed || state_ == State::kCloseAnimation) {
     panel_state.kind = mojom::PanelState_Kind::kHidden;
   } else if (attached_browser_) {
     panel_state.kind = mojom::PanelState_Kind::kAttached;
@@ -958,7 +980,7 @@ bool GlicWindowController::IsActive() {
 }
 
 bool GlicWindowController::IsShowing() const {
-  return state_ != State::kClosed;
+  return !(state_ == State::kClosed || state_ == State::kCloseAnimation);
 }
 
 bool GlicWindowController::IsAttached() {
