@@ -989,7 +989,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sSafetyHubAndroidSurveyV2 =
             newMutableFlagWithSafeDefault(SAFETY_HUB_ANDROID_SURVEY_V2, false);
     public static final MutableFlagWithSafeDefault sSafetyHubFollowup =
-            newMutableFlagWithSafeDefault(SAFETY_HUB_FOLLOWUP, false);
+            newMutableFlagWithSafeDefault(SAFETY_HUB_FOLLOWUP, true);
     public static final MutableFlagWithSafeDefault sShowNewTabAnimations =
             newMutableFlagWithSafeDefault(SHOW_NEW_TAB_ANIMATIONS, false);
     public static final MutableFlagWithSafeDefault sSuppressionToolbarCaptures =

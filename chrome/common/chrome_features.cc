@@ -980,7 +980,7 @@ BASE_FEATURE(kSafetyHubMagicStack,
 // Enables Safety Hub followup work.
 BASE_FEATURE(kSafetyHubFollowup,
              "SafetyHubFollowup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Safety Hub organic HaTS survey on Android.
 BASE_FEATURE(kSafetyHubAndroidOrganicSurvey,
