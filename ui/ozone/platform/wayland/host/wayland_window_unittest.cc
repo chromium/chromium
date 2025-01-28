@@ -86,10 +86,7 @@
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
-
-#if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/platform/wayland/host/wayland_async_cursor.h"
-#endif
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -168,11 +165,7 @@ constexpr BoundsChange kDefaultBoundsChange{false};
 
 scoped_refptr<PlatformCursor> AsPlatformCursor(
     scoped_refptr<BitmapCursor> bitmap_cursor) {
-#if BUILDFLAG(IS_LINUX)
   return base::MakeRefCounted<WaylandAsyncCursor>(bitmap_cursor);
-#else
-  return bitmap_cursor;
-#endif
 }
 
 using DispatchEventCallback = base::OnceCallback<void(Event*)>;
@@ -566,7 +559,6 @@ TEST_P(WaylandWindowTest, ApplyPendingStatesAndCommit) {
   WaylandTestBase::SyncDisplay();
 }
 
-#if BUILDFLAG(IS_LINUX)
 // Checks that when the window gets some of its edges tiled, it notifies the
 // delegate appropriately.
 TEST_P(WaylandWindowTest, HandleTiledEdges) {
@@ -609,7 +601,6 @@ TEST_P(WaylandWindowTest, HandleTiledEdges) {
     VerifyAndClearExpectations();
   }
 }
-#endif
 
 TEST_P(WaylandWindowTest, DisregardUnpassedWindowConfigure) {
   constexpr gfx::Rect kNormalBounds1{500, 300};

@@ -53,11 +53,7 @@ namespace {
 // Only enable the preedit string for sequence mode (i.e. when using dead keys
 // or the Compose key) on Linux ozone/wayland (see b/220370007).
 constexpr CharacterComposer::PreeditStringMode kPreeditStringMode =
-#if BUILDFLAG(IS_LINUX)
     CharacterComposer::PreeditStringMode::kAlwaysEnabled;
-#else
-    CharacterComposer::PreeditStringMode::kHexModeOnly;
-#endif  // BUILDFLAG(IS_LINUX)
 
 std::optional<size_t> OffsetFromUTF8Offset(std::string_view text,
                                            uint32_t offset) {
