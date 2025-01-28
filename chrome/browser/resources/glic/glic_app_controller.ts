@@ -197,7 +197,9 @@ export class GlicAppController {
   }
 
   updateOnlineState(online: boolean): void {
-    $.loadingPanel.hidden = true;
+    if (this.webViewLoaded) {
+      return;
+    }
     if (online) {
       this.beginLoadingSequence();
     } else {
