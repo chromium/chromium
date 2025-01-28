@@ -343,9 +343,6 @@
 [submodule "third_party/libaom/source/libaom"]
 	path = third_party/libaom/source/libaom
 	url = https://aomedia.googlesource.com/aom
-[submodule "third_party/libavif/src"]
-	path = third_party/libavif/src
-	url = https://chromium.googlesource.com/external/github.com/AOMediaCodec/libavif
 [submodule "third_party/crabbyavif/src"]
 	path = third_party/crabbyavif/src
 	url = https://chromium.googlesource.com/external/github.com/webmproject/CrabbyAvif
