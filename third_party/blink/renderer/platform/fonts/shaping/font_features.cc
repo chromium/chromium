@@ -13,9 +13,11 @@ namespace blink {
 
 namespace {
 
+constexpr FontFeatureRange kChws{{{'c', 'h', 'w', 's'}, 1}};
+
 FontFeatures CreateInitial() {
   FontFeatures features;
-  features.Append({{{'c', 'h', 'w', 's'}, 1}});
+  features.Append(kChws);
   return features;
 }
 
@@ -40,12 +42,13 @@ static_assert(offsetof(FontFeatureRange, start) ==
 static_assert(offsetof(FontFeatureRange, end) == offsetof(hb_feature_t, end));
 
 const FontFeatures& FontFeatures::Initial() {
-  DEFINE_STATIC_LOCAL(FontFeatures, initial_features, (CreateInitial()));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(FontFeatures, initial_features,
+                                  (CreateInitial()));
   return initial_features;
 }
 
 bool FontFeatures::IsInitial() const {
-  return size() == 1 && (*this)[0] == Initial()[0];
+  return size() == 1 && (*this)[0] == kChws;
 }
 
 const hb_feature_t* FontFeatures::ToHarfBuzzData() const {
