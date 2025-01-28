@@ -36,6 +36,7 @@
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 using autofill::FieldGlobalId;
 using autofill::FieldPropertiesFlags;
@@ -222,7 +223,7 @@ struct SignificantFields {
   // True if the current form has only username, but no passwords.
   bool is_single_username = false;
 
-  // True if the current form accepts webauthn crendentials from an active
+  // True if the current form accepts webauthn credentials from an active
   // webauthn request.
   bool accepts_webauthn_credentials = false;
 
@@ -901,6 +902,7 @@ bool ParseUsingModelPredictions(
     std::vector<ProcessedField>& processed_fields,
     const base::flat_map<FieldRendererId, autofill::FieldType>& predictions,
     FormDataParser::Mode mode,
+    std::optional<ukm::SourceId> ukm_source_id,
     SignificantFields* result) {
   // Verify that predictions are available for all fields.
   bool predictions_complete = true;
@@ -978,6 +980,19 @@ bool ParseUsingModelPredictions(
       base::UmaHistogramBoolean(
           "PasswordManager.Parsing.UnrelatedFields.AnyFieldIsMasked",
           unrelated_fields_contain_masked_fields.value());
+    }
+
+    if (ukm_source_id && (password_field_is_masked.has_value() ||
+                          unrelated_fields_contain_masked_fields.has_value())) {
+      ukm::builders::PasswordManager_Parsing ukm_builder(ukm_source_id.value());
+      if (password_field_is_masked.has_value()) {
+        ukm_builder.SetPasswordField_IsMasked(password_field_is_masked.value());
+      }
+      if (unrelated_fields_contain_masked_fields.has_value()) {
+        ukm_builder.SetUnrelatedFields_AnyFieldIsMasked(
+            unrelated_fields_contain_masked_fields.value());
+      }
+      ukm_builder.Record(ukm::UkmRecorder::Get());
     }
   }
 
@@ -1224,7 +1239,8 @@ FormDataParser::~FormDataParser() = default;
 FormParsingResult FormDataParser::ParseAndReturnParsingResult(
     const FormData& form_data,
     Mode mode,
-    const base::flat_set<std::u16string>& stored_usernames) {
+    const base::flat_set<std::u16string>& stored_usernames,
+    std::optional<ukm::SourceId> ukm_source_id) {
   if (form_data.fields().size() > kMaxParseableFields) {
     return FormParsingResult();
   }
@@ -1249,8 +1265,9 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
   // (1) Parse with model predictions if they are available.
   bool parsing_complete_with_model_predictions = false;
   if (model_predictions_.has_value()) {
-    parsing_complete_with_model_predictions = ParseUsingModelPredictions(
-        processed_fields, *model_predictions_, mode, &significant_fields);
+    parsing_complete_with_model_predictions =
+        ParseUsingModelPredictions(processed_fields, *model_predictions_, mode,
+                                   ukm_source_id, &significant_fields);
     if (ShouldUpdateUsernameDetectionMethod(method, significant_fields)) {
       method = UsernameDetectionMethod::kModelPrediction;
     }
@@ -1416,8 +1433,10 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
 std::unique_ptr<PasswordForm> FormDataParser::Parse(
     const FormData& form_data,
     Mode mode,
-    const base::flat_set<std::u16string>& stored_usernames) {
-  return ParseAndReturnParsingResult(form_data, mode, stored_usernames)
+    const base::flat_set<std::u16string>& stored_usernames,
+    std::optional<ukm::SourceId> ukm_source_id) {
+  return ParseAndReturnParsingResult(form_data, mode, stored_usernames,
+                                     ukm_source_id)
       .password_form;
 }
 
@@ -1455,9 +1474,15 @@ autofill::PasswordFormClassification ClassifyAsPasswordForm(
   parser.set_server_predictions(form_predictions);
   // The parser can use stored usernames to identify a filled username field by
   // the value it contains. Here it remains empty.
-  std::unique_ptr<PasswordForm> pw_form =
-      parser.Parse(renderer_form, FormDataParser::Mode::kFilling,
-                   /*stored_usernames=*/{});
+  std::unique_ptr<PasswordForm> pw_form = parser.Parse(
+      renderer_form, FormDataParser::Mode::kFilling,
+      /*stored_usernames=*/{},
+      // UKM source ID is required to record UKMs on ML predictions. So far they
+      // are applicable only to parsing initiated by the Password Manager, and
+      // not by other components that invoke this method.
+      // TODO(crbug.com/391846387): Update this call when ML predictions are
+      // used by parsing done by other components.
+      /*ukm_source_id=*/std::nullopt);
   if (!pw_form) {
     return {};
   }

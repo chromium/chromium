@@ -884,8 +884,9 @@ void PasswordFormManager::OnFetchCompleted() {
   // show the message for it because it would be hidden behind a sign in
   // dialog and the user could miss it.
   if (observed_form() != nullptr && error.has_value()) {
-    std::unique_ptr<PasswordForm> password_form = parser_.Parse(
-        *observed_form(), FormDataParser::Mode::kFilling, GetStoredUsernames());
+    std::unique_ptr<PasswordForm> password_form =
+        parser_.Parse(*observed_form(), FormDataParser::Mode::kFilling,
+                      GetStoredUsernames(), client_->GetUkmSourceId());
 
     client_->ShowPasswordManagerErrorMessage(
         password_form && (password_form->IsLikelySignupForm() ||
@@ -1328,8 +1329,8 @@ void PasswordFormManager::FillHttpAuth() {
 FormParsingResult PasswordFormManager::ParseFormAndMakeLogging(
     const FormData& form,
     FormDataParser::Mode mode) {
-  FormParsingResult form_parsing_result =
-      parser_.ParseAndReturnParsingResult(form, mode, GetStoredUsernames());
+  FormParsingResult form_parsing_result = parser_.ParseAndReturnParsingResult(
+      form, mode, GetStoredUsernames(), client_->GetUkmSourceId());
 
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
