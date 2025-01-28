@@ -593,7 +593,7 @@ void GaiaAuthFetcher::StartLogOut() {
 
 void GaiaAuthFetcher::StartCreateReAuthProofTokenForParent(
     const std::string& child_oauth_access_token,
-    const std::string& parent_obfuscated_gaia_id,
+    const GaiaId& parent_obfuscated_gaia_id,
     const std::string& parent_credential) {
   // Create the post body.
   base::Value::Dict post_body_value;
@@ -644,7 +644,8 @@ void GaiaAuthFetcher::StartCreateReAuthProofTokenForParent(
 
   // Create the ReAuth URL.
   GURL reauth_url = GaiaUrls::GetInstance()->reauth_api_url().Resolve(
-      parent_obfuscated_gaia_id + "/reauthProofTokens?delegationType=unicorn");
+      parent_obfuscated_gaia_id.ToString() +
+      "/reauthProofTokens?delegationType=unicorn");
   DCHECK(reauth_url.is_valid());
 
   // Start the request.

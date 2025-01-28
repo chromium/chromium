@@ -493,7 +493,7 @@ bool ParentPermissionDialogView::Accept() {
   // Clear out the invalid credential label, so that it disappears/reappears to
   // the user to emphasize that the password check happened again.
   invalid_credential_label_->SetText(std::u16string());
-  std::string parent_obfuscated_gaia_id =
+  GaiaId parent_obfuscated_gaia_id =
       GetParentObfuscatedGaiaID(selected_parent_permission_email_);
   std::string parent_credential =
       base::UTF16ToUTF8(parent_permission_credential_);
@@ -723,7 +723,7 @@ void ParentPermissionDialogView::CloseWithReason(
   }
 }
 
-std::string ParentPermissionDialogView::GetParentObfuscatedGaiaID(
+GaiaId ParentPermissionDialogView::GetParentObfuscatedGaiaID(
     const std::u16string& parent_email) const {
   supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(params_->profile);
@@ -739,7 +739,7 @@ std::string ParentPermissionDialogView::GetParentObfuscatedGaiaID(
 }
 
 void ParentPermissionDialogView::StartReauthAccessTokenFetch(
-    const std::string& parent_obfuscated_gaia_id,
+    const GaiaId& parent_obfuscated_gaia_id,
     const std::string& parent_credential) {
   // The first step of Reauth is to fetch an OAuth2 access token for the
   // Reauth API scope.
@@ -757,7 +757,7 @@ void ParentPermissionDialogView::StartReauthAccessTokenFetch(
 }
 
 void ParentPermissionDialogView::OnAccessTokenFetchComplete(
-    const std::string& parent_obfuscated_gaia_id,
+    const GaiaId& parent_obfuscated_gaia_id,
     const std::string& parent_credential,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
@@ -776,7 +776,7 @@ void ParentPermissionDialogView::OnAccessTokenFetchComplete(
 
 void ParentPermissionDialogView::StartParentReauthProofTokenFetch(
     const std::string& child_access_token,
-    const std::string& parent_obfuscated_gaia_id,
+    const GaiaId& parent_obfuscated_gaia_id,
     const std::string& credential) {
   reauth_token_fetcher_ = std::make_unique<GaiaAuthFetcher>(
       this, gaia::GaiaSource::kChromeOS,

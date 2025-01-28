@@ -279,7 +279,7 @@ class OAuth2AccessTokenManagerTest : public testing::Test {
   }
 
   void SetUp() override {
-    account_id_ = CoreAccountId::FromGaiaId(GaiaId(kTestAccountId));
+    account_id_ = CoreAccountId::FromGaiaId(kTestAccountId);
     delegate_.AddAccount(account_id_, "fake_refresh_token");
   }
 

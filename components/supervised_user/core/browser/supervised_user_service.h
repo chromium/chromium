@@ -6,6 +6,7 @@
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SERVICE_H_
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
 
@@ -20,6 +21,7 @@
 #include "components/supervised_user/core/browser/remote_web_approvals_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_users.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class PrefService;
@@ -81,7 +83,7 @@ class SupervisedUserService : public KeyedService {
   std::string GetCustodianEmailAddress() const;
 
   // Returns the obfuscated GAIA id of the custodian.
-  std::string GetCustodianObfuscatedGaiaId() const;
+  GaiaId GetCustodianObfuscatedGaiaId() const;
 
   // Returns the name of the custodian, or the email address if the name is
   // empty.
@@ -93,7 +95,7 @@ class SupervisedUserService : public KeyedService {
 
   // Returns the obfuscated GAIA id of the second custodian or the empty
   // string if there is no second custodian.
-  std::string GetSecondCustodianObfuscatedGaiaId() const;
+  GaiaId GetSecondCustodianObfuscatedGaiaId() const;
 
   // Returns the name of the second custodian, or the email address if the name
   // is empty, or the empty string if there is no second custodian.
