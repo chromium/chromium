@@ -110,7 +110,6 @@ enum AXIgnoredReason {
   kAXAriaHiddenSubtree,
   kAXEmptyAlt,
   kAXEmptyText,
-  kAXHiddenByChildTree,
   kAXInertElement,
   kAXInertSubtree,
   kAXLabelContainer,
