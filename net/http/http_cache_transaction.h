@@ -633,6 +633,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   int RestartWithoutNoVarySearchCache(RestartCacheEntryAction entry_action,
                                       NoVarySearchUseResult restart_reason);
 
+  // If `mutable_request_` has not been initialized, initialize it by making a
+  // shallow copy of `request_`, and then modify `request_` to point to it.
+  void EnsureMutableRequest();
+
   State next_state_{STATE_NONE};
 
   // Set when a HTTPCache transaction is pending in parallel with other IO.
@@ -649,11 +653,14 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Initial request with which Start() was invoked.
   raw_ptr<const HttpRequestInfo> initial_request_ = nullptr;
 
-  // `custom_request_` is assigned to `request_` after allocation. It must be
+  // `mutable_request_` is assigned to `request_` after allocation. It must be
   // declared before `request_` so that it will be destroyed afterwards to
   // prevent that pointer from dangling.
-  std::unique_ptr<HttpRequestInfo> custom_request_;
+  std::unique_ptr<HttpRequestInfo> mutable_request_;
 
+  // The request this transaction is currently processing. Always points either
+  // to `initial_request_` or `mutable_request_`. Is set back to
+  // `initial_request_` when the transaction is restarted.
   raw_ptr<const HttpRequestInfo> request_ = nullptr;
 
   std::string method_;
