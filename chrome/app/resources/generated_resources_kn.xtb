@@ -5925,6 +5925,7 @@
 <translation id="5177479852722101802">ಕ್ಯಾಮರಾ ಹಾಗೂ ಮೈಕ್ರೋಫೋನ್ ಆ್ಯಕ್ಸೆಸ್ ನಿರ್ಬಂಧಿಸುವುದನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="5177549709747445269">ನೀವು ಮೊಬೈಲ್ ಡೇಟಾವನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ</translation>
 <translation id="5178667623289523808">ಹಿಂದೆ ಕಂಡುಹಿಡಿಯಿರಿ</translation>
+<translation id="5180276433875360121"><ph name="CERT_LIST" /> ತೋರಿಸಿ</translation>
 <translation id="5181140330217080051">ಡೌನ್‌ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" /> ಗಾಗಿ Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="5181551096188687373">ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ನಿಮ್ಮ Google ಖಾತೆ, <ph name="USER_EMAIL" /> ನಲ್ಲಿ ಇದನ್ನು ಸೇವ್ ಮಾಡಿ.</translation>
@@ -10845,7 +10846,7 @@
 <translation id="8714838604780058252">ಹಿನ್ನೆಲೆ ಗ್ರಾಫಿಕ್ಸ್</translation>
 <translation id="871515167518607670">ಸಾಧನವನ್ನು ಆರಿಸಿ. ನಂತರ ಪುಟವನ್ನು ನೋಡಲು, ಅಲ್ಲಿ Chrome ತೆರೆಯಿರಿ.</translation>
 <translation id="8715480913140015283">ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್ ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
-<translation id="8716931980467311658">ಈ <ph name="DEVICE_TYPE" /> ನಿಂದ ಎಲ್ಲಾ Linux ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಹಾಗೂ ನಿಮ್ಮ Linux ಫೈಲ್‌ಗಳ ಫೋಲ್ಡರ್‌ನಲ್ಲಿರುವ ಡೇಟಾವನ್ನು ಅಳಿಸುವುದೇ?</translation>
+<translation id="8716931980467311658">ಈ <ph name="DEVICE_TYPE" /> ನಿಂದ ಎಲ್ಲಾ Linux ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಹಾಗೂ ನಿಮ್ಮ Linux ಫೈಲ್‌ಗಳ ಫೋಲ್ಡರ್‌ನಲ್ಲಿರುವ ಡೇಟಾವನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
 <translation id="8717864919010420084">ಲಿಂಕ್ ನಕಲಿಸಿ</translation>
 <translation id="8718994464069323380">ಟಚ್‌ಸ್ಕ್ರೀನ್ ಪತ್ತೆಯಾಗಿದೆ</translation>
 <translation id="8719472795285728850">ವಿಸ್ತರಣೆ ಚಟುವಟಿಕೆಗಳನ್ನು ಆಲಿಸಲಾಗುತ್ತಿದೆ...</translation>

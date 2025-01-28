@@ -267,7 +267,7 @@
 <translation id="1176471985365269981">اجازه ندارد فایل‌ها یا پوشه‌های درون دستگاه را ویرایش کند</translation>
 <translation id="1177073277575830464">‏راه‌اندازی سریع Android تمام شد. راه‌اندازی را در <ph name="DEVICE_TYPE" /> خود ادامه دهید.</translation>
 <translation id="1177440945615690056">می‌توانید در «تنظیمات» به هر شبکه تلفن همراه واجدشرایطی متصل شوید</translation>
-<translation id="1177548198167638471">دوباره سؤال نشود</translation>
+<translation id="1177548198167638471">دوباره پرسیده نشود</translation>
 <translation id="1177863135347784049">سفارشی</translation>
 <translation id="1178093605842850860">اجازه دارد این سایت را بخواند و تغییر دهد</translation>
 <translation id="1178581264944972037">مکث</translation>
@@ -5930,6 +5930,7 @@
 <translation id="5177479852722101802">ادامه مسدود کردن دسترسی به دوربین و میکروفن</translation>
 <translation id="5177549709747445269">از داده تلفن همراه استفاده می‌کنید</translation>
 <translation id="5178667623289523808">یافتن قبلی</translation>
+<translation id="5180276433875360121">نمایش <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">در حال بارگیری</translation>
 <translation id="5181172023548002891">‏در «مدیر گذرواژه Google» برای <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">‏این گذرواژه فقط در این دستگاه ذخیره می‌شود. برای استفاده از آن در دستگاه‌های دیگرتان، آن را در «حساب Google» خود (<ph name="USER_EMAIL" />) ذخیره کنید.</translation>

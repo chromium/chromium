@@ -5907,6 +5907,7 @@
 <translation id="5177479852722101802">カメラとマイクへのアクセスを引き続きブロックする</translation>
 <translation id="5177549709747445269">モバイルデータ接続を使用しています</translation>
 <translation id="5178667623289523808">前を検索</translation>
+<translation id="5180276433875360121"><ph name="CERT_LIST" /> を表示</translation>
 <translation id="5181140330217080051">ダウンロードしています</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" /> の Google パスワード マネージャー</translation>
 <translation id="5181551096188687373">このパスワードは、このデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（<ph name="USER_EMAIL" />）に保存してください。</translation>
