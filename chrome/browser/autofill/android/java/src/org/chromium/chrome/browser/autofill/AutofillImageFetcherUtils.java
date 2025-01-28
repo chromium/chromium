@@ -150,10 +150,9 @@ final class AutofillImageFetcherUtils {
         Bitmap compositeBitmapWithRoundCorners = roundCorners(compositeBitmap, iconCornerRadius);
 
         // Add the grey border.
-        // TODO(crbug.com/389947287): Verify the border color.
         int greyColor =
                 ContextCompat.getColor(
-                        ContextUtils.getApplicationContext(), R.color.baseline_neutral_90);
+                        ContextUtils.getApplicationContext(), R.color.baseline_neutral_variant_90);
         Bitmap compositeBitmapWithRoundCornersAndGreyBorder =
                 addBorder(
                         compositeBitmapWithRoundCorners,
