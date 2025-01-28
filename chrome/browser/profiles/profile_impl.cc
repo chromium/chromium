@@ -1007,14 +1007,7 @@ Profile* ProfileImpl::GetOffTheRecordProfile(const OTRProfileID& otr_profile_id,
     return nullptr;
   if (IsGuestSession()) {
     // Guest Session has only one primary OTR.
-#if BUILDFLAG(IS_CHROMEOS)
     CHECK_EQ(otr_profile_id, OTRProfileID::PrimaryID());
-#else
-    // TODO(crbug.com/374351946): Remove macro in m135.
-    if (otr_profile_id != OTRProfileID::PrimaryID()) {
-      NOTREACHED(base::NotFatalUntil::M135);
-    }
-#endif
   }
 
   // Create a new OffTheRecordProfile
