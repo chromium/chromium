@@ -70,11 +70,6 @@ class PasswordsPrivateDelegate
   virtual std::optional<api::passwords_private::UrlCollection> GetUrlCollection(
       const std::string& url) = 0;
 
-  // Returns whether the account store is a default location for saving
-  // passwords. False means the device store is a default one. Must be called
-  // when account storage is enabled.
-  virtual bool IsAccountStoreDefault(content::WebContents* web_contents) = 0;
-
   // Adds the |username| and |password| corresponding to the |url| to the
   // specified store and returns true if the operation succeeded. Fails and
   // returns false if the data is invalid or an entry with such origin and

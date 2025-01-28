@@ -171,12 +171,8 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   private updateDefaultStore_() {
     if (this.isAccountStoreUser) {
-      PasswordManagerImpl.getInstance().isAccountStoreDefault().then(
-          isAccountStoreDefault => {
-            this.selectedStoreOption_ = isAccountStoreDefault ?
-                chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT :
-                chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
-          });
+      this.selectedStoreOption_ =
+          chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
     }
   }
 

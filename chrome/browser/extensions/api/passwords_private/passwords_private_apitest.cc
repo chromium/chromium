@@ -143,10 +143,6 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     test_delegate_->AddCompromisedCredential(id);
   }
 
-  void SetIsAccountStoreDefault(bool is_default) {
-    test_delegate_->SetIsAccountStoreDefault(is_default);
-  }
-
   const std::vector<int>& last_moved_passwords() const {
     return test_delegate_->last_moved_passwords();
   }
@@ -180,17 +176,6 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
 };
 
 }  // namespace
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       IsAccountStoreDefaultWhenFalse) {
-  EXPECT_TRUE(RunPasswordsSubtest("isAccountStoreDefaultWhenFalse"))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, IsAccountStoreDefaultWhenTrue) {
-  SetIsAccountStoreDefault(true);
-  EXPECT_TRUE(RunPasswordsSubtest("isAccountStoreDefaultWhenTrue")) << message_;
-}
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
                        GetUrlCollectionWhenUrlValidSucceeds) {
