@@ -519,6 +519,9 @@ void ServiceWorkerContextClient::SendWorkerStarted(
   DCHECK(context_);
 
   if (GetContentClient()->renderer()) {  // nullptr in unit_tests.
+    // TODO(crbug.com/389971360) Remove this once the bug is fixed.
+    SCOPED_CRASH_KEY_NUMBER("extensions", "service_worker_start_status",
+                            static_cast<int>(status));
     GetContentClient()->renderer()->DidStartServiceWorkerContextOnWorkerThread(
         service_worker_version_id_, service_worker_scope_, script_url_);
   }
