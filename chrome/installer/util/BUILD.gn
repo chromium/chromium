@@ -156,6 +156,8 @@ static_library("with_no_strings") {
       "scoped_token_privilege.h",
       "shell_util.cc",
       "shell_util.h",
+      "system_tracing_util.cc",
+      "system_tracing_util.h",
       "taskbar_util.cc",
       "taskbar_util.h",
     ]

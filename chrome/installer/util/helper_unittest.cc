@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <shlobj.h>
+
 #include <optional>
 #include <string_view>
 
@@ -20,6 +22,7 @@
 #include "base/win/registry.h"
 #include "build/build_config.h"
 #include "chrome/install_static/install_util.h"
+#include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/google_update_constants.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/util_constants.h"
@@ -582,5 +585,82 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
 
                         ));
+
+class IsCurrentProcessInstalledTest : public testing::TestWithParam<bool> {
+ protected:
+  void SetUp() override {
+    if (GetParam() && !::IsUserAnAdmin()) {
+      GTEST_SKIP() << "Test requires admin rights";
+    }
+    ASSERT_NO_FATAL_FAILURE(registry_override_manager_.OverrideRegistry(
+        GetParam() ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER));
+  }
+
+  void SetInstalledDirectory(const base::FilePath& installed_dir) {
+    const HKEY kRoot = GetParam() ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+    base::win::RegKey clients_key(kRoot,
+                                  install_static::GetClientsKeyPath().c_str(),
+                                  KEY_SET_VALUE | KEY_WOW64_32KEY);
+    ASSERT_EQ(
+        clients_key.WriteValue(google_update::kRegVersionField, L"1.0.0.0"),
+        ERROR_SUCCESS);
+
+    base::win::RegKey client_state_key(
+        kRoot, install_static::GetClientStateKeyPath().c_str(),
+        KEY_SET_VALUE | KEY_WOW64_32KEY);
+    ASSERT_EQ(client_state_key.WriteValue(
+                  kUninstallStringField,
+                  installed_dir.AppendASCII("1.0.0.0\\Installer\\setup.exe")
+                      .value()
+                      .c_str()),
+              ERROR_SUCCESS);
+  }
+
+ private:
+  install_static::ScopedInstallDetails install_details_{
+      /*system_level=*/GetParam()};
+  registry_util::RegistryOverrideManager registry_override_manager_;
+};
+
+// Tests that IsCurrentProcessInstalled returns false when the product is not
+// registered with the updater.
+TEST_P(IsCurrentProcessInstalledTest, NotInstalled) {
+  ASSERT_FALSE(IsCurrentProcessInstalled());
+}
+
+// Tests that IsCurrentProcessInstalled returns false when the product is
+// registered with the updater but the current exe resides elsewhere.
+TEST_P(IsCurrentProcessInstalledTest, InstalledNotInDir) {
+  ASSERT_NO_FATAL_FAILURE(
+      SetInstalledDirectory(base::PathService::CheckedGet(base::DIR_TEMP)));
+
+  ASSERT_FALSE(IsCurrentProcessInstalled());
+}
+
+// Tests that IsCurrentProcessInstalled returns true when the product is
+// registered with the updater and the current exe resides in the same dir.
+TEST_P(IsCurrentProcessInstalledTest, InstalledInDir) {
+  ASSERT_NO_FATAL_FAILURE(
+      SetInstalledDirectory(base::PathService::CheckedGet(base::DIR_EXE)));
+
+  ASSERT_TRUE(IsCurrentProcessInstalled());
+}
+
+// Tests that IsCurrentProcessInstalled returns true when the product is
+// registered with the updater and the current exe resides in a subdir.
+TEST_P(IsCurrentProcessInstalledTest, InstalledInSubDir) {
+  ASSERT_NO_FATAL_FAILURE(SetInstalledDirectory(
+      base::PathService::CheckedGet(base::DIR_EXE).DirName()));
+
+  ASSERT_TRUE(IsCurrentProcessInstalled());
+}
+
+INSTANTIATE_TEST_SUITE_P(UserLevelTest,
+                         IsCurrentProcessInstalledTest,
+                         testing::Values(false));
+
+INSTANTIATE_TEST_SUITE_P(SystemLevelTest,
+                         IsCurrentProcessInstalledTest,
+                         testing::Values(true));
 
 }  // namespace installer
