@@ -307,12 +307,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   }
 
   protected onRemoveButtonClick_() {
-    this.pageHandler_.removeVisits(this.visitsToBeRemoved_).then(() => {
-      // The returned promise resolves with whether the request succeeded in the
-      // browser. That value may be used to show a toast but is ignored for now.
-      // Allow remove requests again.
-      this.visitsToBeRemoved_ = [];
-    });
+    this.removeVisits_();
     this.getConfirmationDialog_().close();
   }
 
@@ -351,16 +346,19 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     }
 
     this.visitsToBeRemoved_ = event.detail;
-    if (this.visitsToBeRemoved_.length > 1) {
-      if (!this.showConfirmationDialog_) {
-        this.showConfirmationDialog_ = true;
-        await this.updateComplete;
-      }
-      this.getConfirmationDialog_().showModal();
-    } else {
-      // Bypass the confirmation dialog if removing one visit only.
-      this.onRemoveButtonClick_();
+
+    // Bypass the confirmation dialog if removing one visit only.
+    if (this.visitsToBeRemoved_.length === 1) {
+      this.removeVisits_();
+      return;
     }
+
+    // Show a confirmation dialog.
+    if (!this.showConfirmationDialog_) {
+      this.showConfirmationDialog_ = true;
+      await this.updateComplete;
+    }
+    this.getConfirmationDialog_().showModal();
   }
 
   setScrollDebounceForTest(debounce: number) {
@@ -548,6 +546,15 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     if (lowerScroll < 500) {
       this.onScrolledToBottom_();
     }
+  }
+
+  private removeVisits_() {
+    this.pageHandler_.removeVisits(this.visitsToBeRemoved_).then(() => {
+      // The returned promise resolves with whether the request succeeded in the
+      // browser. That value may be used to show a toast but is ignored for now.
+      // Allow remove requests again.
+      this.visitsToBeRemoved_ = [];
+    });
   }
 }
 
