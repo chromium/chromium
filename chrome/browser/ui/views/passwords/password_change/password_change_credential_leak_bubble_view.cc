@@ -111,7 +111,8 @@ void PasswordChangeCredentialLeakBubbleView::OnWidgetInitialized() {
                                      ui::kColorIconSecondary,
                                      GetLayoutConstant(PAGE_INFO_ICON_SIZE)));
   GetOkButton()->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
+  SetBubbleHeader(IDR_PASSWORD_CHANGE_WARNING,
+                  IDR_PASSWORD_CHANGE_WARNING_DARK);
 }
 
 BEGIN_METADATA(PasswordChangeCredentialLeakBubbleView)
