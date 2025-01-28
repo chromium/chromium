@@ -174,7 +174,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   BrowsingInstanceId GetBrowsingInstanceId() override;
   bool HasProcess() override;
   RenderProcessHost* GetProcess() override;
-  RenderProcessHost* GetOrCreateProcess() override;
   SiteInstanceGroupId GetSiteInstanceGroupId() override;
   BrowserContext* GetBrowserContext() override;
   const GURL& GetSiteURL() override;
@@ -373,16 +372,15 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // that, unlike active_frame_count, this does not count pending RFHs.
   void DecrementRelatedActiveContentsCount();
 
-  // Whether GetOrCreateProcess() method (when it needs to find a new process to
+  // Whether GetProcess() method (when it needs to find a new process to
   // associate with the current SiteInstanceImpl) can return a spare process.
   bool CanAssociateWithSpareProcess();
 
   // Has no effect if the SiteInstanceImpl already has a |process_|.
-  // Otherwise, prevents GetOrCreateProcess() from associating this
-  // SiteInstanceImpl with the spare RenderProcessHost - instead
-  // GetOrCreateProcess will either need to create a new,
-  // not-yet-initialized/spawned RenderProcessHost or will need to reuse one of
-  // existing RenderProcessHosts.
+  // Otherwise, prevents GetProcess() from associating this SiteInstanceImpl
+  // with the spare RenderProcessHost - instead GetProcess will either need to
+  // create a new, not-yet-initialized/spawned RenderProcessHost or will need to
+  // reuse one of existing RenderProcessHosts.
   //
   // See also:
   // - https://crbug.com/840409.
@@ -632,10 +630,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // BrowsingInstance to which this SiteInstance belongs.
   scoped_refptr<BrowsingInstance> browsing_instance_;
 
-  // Describes the desired behavior when GetOrCreateProcess() method needs to
-  // find a new process to associate with the current SiteInstanceImpl.  If
-  // |false|, then prevents the spare RenderProcessHost from being taken and
-  // stored in |process_|.
+  // Describes the desired behavior when GetProcess() method needs to find a new
+  // process to associate with the current SiteInstanceImpl.  If |false|, then
+  // prevents the spare RenderProcessHost from being taken and stored in
+  // |process_|.
   bool can_associate_with_spare_process_;
 
   // The SiteInfo that this SiteInstance is rendering pages for.

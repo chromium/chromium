@@ -979,7 +979,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(current_si->IsCrossOriginIsolated());
-    EXPECT_NE(current_si->GetProcess(), previous_si->GetOrCreateProcess());
+    EXPECT_NE(current_si->GetProcess(), previous_si->GetProcess());
 
     // The navigation triggers a speculative BrowsingInstance swap because it is
     // browser-initiated and end up being cross-site due to the DIP mismatch.
@@ -993,7 +993,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     EXPECT_TRUE(NavigateToURL(shell(), non_isolated_page));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_FALSE(current_si->IsCrossOriginIsolated());
-    EXPECT_NE(current_si->GetProcess(), previous_si->GetOrCreateProcess());
+    EXPECT_NE(current_si->GetProcess(), previous_si->GetProcess());
 
     // The navigation triggers a speculative BrowsingInstance swap because it is
     // browser-initiated and end up being cross-site due to the DIP mismatch.
@@ -1009,7 +1009,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(current_si->IsCrossOriginIsolated());
-    EXPECT_NE(current_si->GetProcess(), previous_si->GetOrCreateProcess());
+    EXPECT_NE(current_si->GetProcess(), previous_si->GetProcess());
 
     // The navigation triggers a speculative BrowsingInstance swap because it is
     // browser-initiated and end up being cross-site due to the DIP mismatch.
@@ -1024,7 +1024,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_FALSE(current_si->IsCrossOriginIsolated());
-    EXPECT_NE(current_si->GetProcess(), previous_si->GetOrCreateProcess());
+    EXPECT_NE(current_si->GetProcess(), previous_si->GetProcess());
 
     // The navigation triggers a speculative BrowsingInstance swap because it is
     // browser-initiated and end up being cross-site due to the DIP mismatch.
@@ -1040,8 +1040,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     SiteInstanceImpl* site_instance_2 = current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(site_instance_1->IsCrossOriginIsolated());
     EXPECT_TRUE(site_instance_2->IsCrossOriginIsolated());
-    EXPECT_NE(site_instance_1->GetOrCreateProcess(),
-              site_instance_2->GetProcess());
+    EXPECT_NE(site_instance_1->GetProcess(), site_instance_2->GetProcess());
 
     // The navigation triggers a speculative BrowsingInstance swap because it is
     // browser-initiated and cross-site.
@@ -1074,7 +1073,7 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), isolated_page));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(current_si->IsCrossOriginIsolated());
-    EXPECT_NE(current_si->GetProcess(), previous_si->GetOrCreateProcess());
+    EXPECT_NE(current_si->GetProcess(), previous_si->GetProcess());
 
     // When BfCache is enabled, a pro-active BrowsingInstance swap happens.
     if (IsBackForwardCacheEnabled()) {
@@ -1101,7 +1100,7 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), non_isolated_page));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_FALSE(current_si->IsCrossOriginIsolated());
-    EXPECT_NE(current_si->GetProcess(), previous_si->GetOrCreateProcess());
+    EXPECT_NE(current_si->GetProcess(), previous_si->GetProcess());
 
     // When BfCache is enabled, a pro-active BrowsingInstance swap happens.
     if (IsBackForwardCacheEnabled()) {
@@ -1119,7 +1118,7 @@ IN_PROC_BROWSER_TEST_P(
     ASSERT_TRUE(WaitForLoadStop(web_contents()));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(current_si->IsCrossOriginIsolated());
-    EXPECT_NE(current_si->GetProcess(), previous_si->GetOrCreateProcess());
+    EXPECT_NE(current_si->GetProcess(), previous_si->GetProcess());
 
     // When BfCache is enabled, a pro-active BrowsingInstance swap happens.
     if (IsBackForwardCacheEnabled()) {
@@ -1138,8 +1137,7 @@ IN_PROC_BROWSER_TEST_P(
     SiteInstanceImpl* site_instance_2 = current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(site_instance_1->IsCrossOriginIsolated());
     EXPECT_TRUE(site_instance_2->IsCrossOriginIsolated());
-    EXPECT_NE(site_instance_1->GetOrCreateProcess(),
-              site_instance_2->GetProcess());
+    EXPECT_NE(site_instance_1->GetProcess(), site_instance_2->GetProcess());
 
     // When BfCache is enabled, a pro-active BrowsingInstance swap happens.
     if (IsBackForwardCacheEnabled()) {
@@ -1239,7 +1237,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), non_isolated_page));
     main_si = current_frame_host()->GetSiteInstance();
     EXPECT_FALSE(main_si->IsCrossOriginIsolated());
-    EXPECT_NE(main_si->GetProcess(), previous_si->GetOrCreateProcess());
+    EXPECT_NE(main_si->GetProcess(), previous_si->GetProcess());
 
     // When BfCache is enabled, a pro-active BrowsingInstance swap happens.
     if (IsBackForwardCacheEnabled()) {
@@ -1431,7 +1429,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     } else {
       EXPECT_TRUE(current_si->IsRelatedSiteInstance(previous_si.get()));
     }
-    EXPECT_NE(current_si->GetProcess(), previous_si->GetOrCreateProcess());
+    EXPECT_NE(current_si->GetProcess(), previous_si->GetProcess());
     EXPECT_FALSE(current_si->IsCrossOriginIsolated());
   }
 
@@ -1501,7 +1499,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   EXPECT_NE(main_si, current_frame_host()->GetSiteInstance());
   EXPECT_TRUE(
       main_si->IsRelatedSiteInstance(current_frame_host()->GetSiteInstance()));
-  EXPECT_NE(main_si->GetOrCreateProcess(),
+  EXPECT_NE(main_si->GetProcess(),
             current_frame_host()->GetSiteInstance()->GetProcess());
 }
 
@@ -1528,7 +1526,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   EXPECT_NE(main_si, current_frame_host()->GetSiteInstance());
   EXPECT_TRUE(
       main_si->IsRelatedSiteInstance(current_frame_host()->GetSiteInstance()));
-  EXPECT_NE(main_si->GetOrCreateProcess(),
+  EXPECT_NE(main_si->GetProcess(),
             current_frame_host()->GetSiteInstance()->GetProcess());
 }
 

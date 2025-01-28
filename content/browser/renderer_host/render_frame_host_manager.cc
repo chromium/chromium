@@ -538,13 +538,11 @@ void RecordWastedAndReplacementRFHDiff(
                       ".WastedSpeculativeRFH.CrossOriginIsolationDiffers"}),
         wasted_rfh_site_instance->IsCrossOriginIsolated() !=
             new_site_instance->IsCrossOriginIsolated());
-    RenderProcessHost* new_rph = new_site_instance->HasProcess()
-                                     ? new_site_instance->GetProcess()
-                                     : nullptr;
     base::UmaHistogramBoolean(
         base::StrCat({"Navigation.", initiator_type,
                       ".WastedSpeculativeRFH.ProcessDiffers"}),
-        wasted_rfh_site_instance->GetProcess() != new_rph);
+        wasted_rfh_site_instance->GetProcess() !=
+            new_site_instance->GetProcess());
     // If the previous speculative RFH's process only has the speculative RFH in
     // it, it's likely that the renderer process was created for that
     // speculative RFH (it's also possible but less likely that all other RFH
@@ -560,7 +558,7 @@ void RecordWastedAndReplacementRFHDiff(
     base::UmaHistogramBoolean(
         base::StrCat({"Navigation.", initiator_type,
                       ".WastedSpeculativeRFH.ReplacementRFHCreatedNewProcess"}),
-        (!new_rph || new_rph->GetRenderFrameHostCount() == 0));
+        new_site_instance->GetProcess()->GetRenderFrameHostCount() == 0);
   }
 }
 
@@ -4018,7 +4016,7 @@ RenderFrameHostManager::CreateRenderFrameHost(
   DCHECK_EQ(create_frame_case != CreateFrameCase::kInitChild,
             frame_routing_id == MSG_ROUTING_NONE);
   if (frame_routing_id == MSG_ROUTING_NONE) {
-    frame_routing_id = site_instance->GetOrCreateProcess()->GetNextRoutingID();
+    frame_routing_id = site_instance->GetProcess()->GetNextRoutingID();
   }
 
   // Check to see if a speculative RenderViewHost is needed. It is needed for
@@ -4144,9 +4142,8 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
   // another host that already initialized it) or may not (we have our own
   // process or the existing process crashed) have been initialized. Calling
   // Init() multiple times will be ignored, so this is safe.
-  if (!new_instance->GetOrCreateProcess()->Init()) {
+  if (!new_instance->GetProcess()->Init())
     return false;
-  }
 
   scoped_refptr<BrowsingContextState> browsing_context_state;
   if (features::GetBrowsingContextMode() ==

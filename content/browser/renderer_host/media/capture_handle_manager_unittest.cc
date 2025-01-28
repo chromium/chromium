@@ -97,7 +97,7 @@ class CaptureHandleManagerTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<TestWebContents> MakeTestWebContents() {
     scoped_refptr<SiteInstance> instance =
         SiteInstance::Create(GetBrowserContext());
-    instance->GetOrCreateProcess()->Init();
+    instance->GetProcess()->Init();
 
     return TestWebContents::Create(GetBrowserContext(), std::move(instance));
   }

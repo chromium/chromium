@@ -4349,8 +4349,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // creation time.
   // This ref is used to avoid recreating the renderer process if it has
   // crashed, since using
-  // SiteInstance::GetOrCreateProcess()/GetOrCreateAgentSchedulingGroupHost()
-  // has the side effect of creating the process again if it is gone.
+  // SiteInstance::GetProcess()/GetOrCreateAgentSchedulingGroupHost() has the
+  // side effect of creating the process again if it is gone.
   //
   // It is a `SafeRef` so that the browser process crashes cleanly if `this`
   // unintentionally outlives its associated `RenderFrameProcessHost` but tries

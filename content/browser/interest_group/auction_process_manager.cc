@@ -790,7 +790,7 @@ InRendererAuctionProcessManager::CreateProcessInternal(
   }
 
   mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
-  site_instance->GetOrCreateProcess()->Init();
+  site_instance->GetProcess()->Init();
   site_instance->GetProcess()->BindReceiver(
       service.InitWithNewPipeAndPassReceiver());
   return WorkletProcess::ProcessContext(std::move(service),

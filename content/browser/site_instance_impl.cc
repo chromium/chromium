@@ -62,19 +62,6 @@ bool ShouldCompareEffectiveURLs(BrowserContext* browser_context,
 
 SiteInstanceId::Generator g_site_instance_id_generator;
 
-// Produce a crash report stack trace when GetProcess() is called on a
-// SiteInstance that does not have a bound process.
-// These calls should either be replaced with GetOrCreateProcess() if process
-// creation was intentional, or the caller should be changed to avoid
-// unnecessarily creating a process.
-BASE_FEATURE(kTraceSiteInstanceGetProcessCreation,
-             "TraceSiteInstanceGetProcessCreation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Whether to crash if GetProcess is called on a SiteInstance without a process.
-const base::FeatureParam<bool> kCrashOnGetProcessCreation{
-    &kTraceSiteInstanceGetProcessCreation, "crash_on_creation", true};
-
 }  // namespace
 
 // static
@@ -303,10 +290,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
         browser_context, embedder_site_instance->GetStoragePartitionConfig()));
   }
   DCHECK_EQ(embedder_site_instance->IsGuest(), site_instance->IsGuest());
-  if (embedder_site_instance->HasProcess()) {
-    site_instance->ReuseExistingProcessIfPossible(
-        embedder_site_instance->GetProcess());
-  }
+  site_instance->ReuseExistingProcessIfPossible(
+      embedder_site_instance->GetProcess());
   return site_instance;
 }
 
@@ -327,9 +312,6 @@ SiteInstanceImpl::CreateReusableInstanceForTesting(
       UrlInfo(UrlInfoInit(url)), /* allow_default_instance */ false);
   site_instance->set_process_reuse_policy(
       ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME);
-  // Proactively create a process since many callers of this function in tests
-  // rely on site_instance->GetProcess().
-  site_instance->GetOrCreateProcess();
   return site_instance;
 }
 
@@ -427,7 +409,7 @@ bool SiteInstanceImpl::HasProcess() {
     return true;
 
   // If we would use process-per-site for this site, also check if there is an
-  // existing process that we would use if GetOrCreateProcess() were called.
+  // existing process that we would use if GetProcess() were called.
   if (ShouldUseProcessPerSite() &&
       RenderProcessHostImpl::GetSoleProcessHostForSite(GetIsolationContext(),
                                                        site_info_)) {
@@ -438,22 +420,6 @@ bool SiteInstanceImpl::HasProcess() {
 }
 
 RenderProcessHost* SiteInstanceImpl::GetProcess() {
-  // TODO(crbug.com/388998723):
-  // Change this function to either add a CHECK(HasProcess()) or return null if
-  // there is no bound process after collecting and fixing any
-  // DumpWithoutCrashing reports.
-  if (!HasProcess() &&
-      base::FeatureList::IsEnabled(kTraceSiteInstanceGetProcessCreation)) {
-    if (kCrashOnGetProcessCreation.Get()) {
-      CHECK(false);
-    } else {
-      base::debug::DumpWithoutCrashing();
-    }
-  }
-  return GetOrCreateProcess();
-}
-
-RenderProcessHost* SiteInstanceImpl::GetOrCreateProcess() {
   // Create a new SiteInstanceGroup and RenderProcessHost if there isn't one.
   // All SiteInstances within a SiteInstanceGroup share a process and
   // AgentSchedulingGroupHost. A group must have a process. If the process gets
@@ -800,30 +766,8 @@ SiteInstanceImpl::GetCoopRelatedSiteInstanceImpl(const UrlInfo& url_info) {
 }
 
 AgentSchedulingGroupHost& SiteInstanceImpl::GetOrCreateAgentSchedulingGroup() {
-  // Currently GetOrCreateAgentSchedulingGroup is called in the following
-  // cases:
-  // * From the RFH constructor created by CreateSpeculativeRenderFrameHost,
-  //   the function will explicitly create the process for the site instance
-  //   before constructing the RFH.
-  // * From the RFH constructor created by InitRoot, the function will
-  //   explicitly create the process for the site instance before
-  //   constructing the RFH.
-  // * From the RFH constructor created by InitChild, the child RFH is assumed
-  //   to share the same process as the parent so the process will already be
-  //   present.
-  // * In SharedStorageRenderThreadWorkletDriver::StartWorkletService, the
-  //   constructor of SharedStorageRenderThreadWorkletDriver will create
-  //   the process for the site instance.
-  // Since this is called when SiteInstance already has a process in all these
-  // cases, and since site_instance_group_ is created when the SiteInstance's
-  // process is set, there should be no case here when there is no
-  // site_instance_group_, and no need to call GetOrCreateProcess().
-  //
-  // TODO(crbug.com/388998723): Remove the call to GetProcess() after
-  // verifying there is no DumpWithoutCrashing reports.
-  if (!site_instance_group_) {
+  if (!site_instance_group_)
     GetProcess();
-  }
 
   return site_instance_group_->agent_scheduling_group();
 }

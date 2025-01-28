@@ -2264,7 +2264,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteCoopTest,
           web_contents->GetPrimaryMainFrame()->GetSiteInstance());
   EXPECT_FALSE(site_instance_2->IsRelatedSiteInstance(site_instance_3.get()));
   EXPECT_FALSE(site_instance_2->HasProcess());
-  EXPECT_TRUE(site_instance_3->GetProcess());
+  EXPECT_NE(site_instance_2->GetProcess(), site_instance_3->GetProcess());
 
   // 4) Do a back navigation to title2.html.
   RenderFrameDeletedObserver rfh_3_deleted_observer(

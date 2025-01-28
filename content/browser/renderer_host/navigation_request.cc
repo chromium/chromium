@@ -1901,12 +1901,8 @@ NavigationRequest::NavigationRequest(
     Referrer referrer(*common_params_->referrer);
     ui::PageTransition transition =
         ui::PageTransitionFromInt(common_params_->transition);
-    // TODO(crbug.com/388998723): Avoid unintentionally creating a process for
-    // source_site_instance_ if it doesn't have one.
     GetContentClient()->browser()->OverrideNavigationParams(
-        source_site_instance_->GetOrCreateProcess()
-            ->GetProcessLock()
-            .site_url(),
+        source_site_instance_->GetProcess()->GetProcessLock().site_url(),
         &transition, &is_renderer_initiated, &referrer,
         &common_params_->initiator_origin);
     common_params_->transition = transition;
@@ -3415,12 +3411,9 @@ void NavigationRequest::OnRequestRedirected(
   // For renderer-initiated navigations we need to check if the source has
   // access to the URL. Browser-initiated navigations only rely on the
   // |CanRedirectToURL| test above.
-  // TODO(crbug.com/388998723): The check may unintentionally create a process
-  // for the source site instance. Consider removing this potential process
-  // creation while keeping the security check.
   if (!commit_params_->is_browser_initiated && GetSourceSiteInstance() &&
       !ChildProcessSecurityPolicyImpl::GetInstance()->CanRequestURL(
-          GetSourceSiteInstance()->GetOrCreateProcess()->GetDeprecatedID(),
+          GetSourceSiteInstance()->GetProcess()->GetDeprecatedID(),
           redirect_info.new_url)) {
     DVLOG(1) << "Denied unauthorized redirect for "
              << redirect_info.new_url.possibly_invalid_spec();
@@ -3584,8 +3577,6 @@ void NavigationRequest::OnRequestRedirected(
   // Check what the process of the SiteInstance is. It will be passed to the
   // NavigationHandle, and informed to expect a navigation to the redirected
   // URL.
-  // TODO(crbug.com/388998723): Remove the comment about the side effect
-  // of GetProcess() after the full migration to GetOrCreateProcess().
   // Note: calling GetProcess on the SiteInstance can lead to the creation of a
   // new process if it doesn't have one. In this case, it should only be called
   // on a SiteInstance that already has a process.
