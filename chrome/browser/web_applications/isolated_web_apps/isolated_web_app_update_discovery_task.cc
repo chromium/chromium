@@ -164,11 +164,15 @@ IsolatedWebAppUpdateDiscoveryTask::IsolatedWebAppUpdateDiscoveryTask(
     IwaUpdateDiscoveryTaskParams task_params,
     WebAppCommandScheduler& command_scheduler,
     WebAppRegistrar& registrar,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive)
     : task_params_(std::move(task_params)),
       command_scheduler_(command_scheduler),
       registrar_(registrar),
-      url_loader_factory_(std::move(url_loader_factory)) {
+      url_loader_factory_(std::move(url_loader_factory)),
+      optional_keep_alive_(std::move(optional_keep_alive)),
+      optional_profile_keep_alive_(std::move(optional_profile_keep_alive)) {
   CHECK(url_loader_factory_);
   debug_log_ =
       base::Value::Dict()
@@ -388,9 +392,8 @@ void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
                 expected_version, task_params_.allow_downgrades());
 
   command_scheduler_->PrepareAndStoreIsolatedWebAppUpdate(
-      update_info, task_params_.url_info(),
-      /*optional_keep_alive=*/nullptr,
-      /*optional_profile_keep_alive=*/nullptr,
+      update_info, task_params_.url_info(), std::move(optional_keep_alive_),
+      std::move(optional_profile_keep_alive_),
       base::BindOnce(&IsolatedWebAppUpdateDiscoveryTask::OnUpdateDryRunDone,
                      weak_factory_.GetWeakPtr()));
 }

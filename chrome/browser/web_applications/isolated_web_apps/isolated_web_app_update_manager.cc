@@ -485,12 +485,22 @@ void IsolatedWebAppUpdateManager::DiscoverUpdatesForApp(
     bool allow_downgrades,
     const std::optional<base::Version>& pinned_version,
     bool dev_mode) {
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::ISOLATED_WEB_APP_UPDATE,
+      KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive =
+      profile_->IsOffTheRecord()
+          ? nullptr
+          : std::make_unique<ScopedProfileKeepAlive>(
+                &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate);
+
   task_queue_.Push(std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
       IwaUpdateDiscoveryTaskParams(update_manifest_url, update_channel,
                                    allow_downgrades, pinned_version, url_info,
                                    dev_mode),
       provider_->scheduler(), provider_->registrar_unsafe(),
-      profile_->GetURLLoaderFactory()));
+      profile_->GetURLLoaderFactory(), std::move(keep_alive),
+      std::move(profile_keep_alive)));
 
   task_queue_.MaybeStartNextTask();
 }
