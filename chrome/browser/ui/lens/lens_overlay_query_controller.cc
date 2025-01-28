@@ -1189,6 +1189,25 @@ void LensOverlayQueryController::SendInteraction(
   additional_search_query_params =
       AddStartTimeQueryParam(additional_search_query_params);
 
+  // If the cluster info is missing and the full image response has already been
+  // received, we must restart the query flow by resending the full image
+  // request.
+  if (!cluster_info_.has_value()) {
+    pending_interaction_callback_ =
+        base::BindOnce(&LensOverlayQueryController::SendInteraction,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(region),
+                       query_text, object_id, selection_type,
+                       additional_search_query_params, region_bytes);
+
+    if (query_controller_state_ ==
+            QueryControllerState::kReceivedFullImageResponse ||
+        query_controller_state_ ==
+            QueryControllerState::kReceivedFullImageErrorResponse) {
+      PrepareAndFetchFullImageRequest();
+    }
+    return;
+  }
+
   if (!latest_full_image_request_data_) {
     // The request id sequence for the interaction request must follow a full
     // image request. If we have not yet created a full image request id, the
@@ -1350,23 +1369,6 @@ void LensOverlayQueryController::TryPerformInteractionRequest(int sequence_id) {
     pending_interaction_callback_ = base::BindOnce(
         &LensOverlayQueryController::TryPerformInteractionRequest,
         weak_ptr_factory_.GetWeakPtr(), sequence_id);
-    return;
-  }
-
-  // If the cluster info is missing and the full image response has already been
-  // received, we must restart the query flow by resending the full image
-  // request.
-  if (!cluster_info_.has_value()) {
-    pending_interaction_callback_ = base::BindOnce(
-        &LensOverlayQueryController::TryPerformInteractionRequest,
-        weak_ptr_factory_.GetWeakPtr(), sequence_id);
-
-    if (query_controller_state_ ==
-            QueryControllerState::kReceivedFullImageResponse ||
-        query_controller_state_ ==
-            QueryControllerState::kReceivedFullImageErrorResponse) {
-      PrepareAndFetchFullImageRequest();
-    }
     return;
   }
 
@@ -1771,6 +1773,7 @@ void LensOverlayQueryController::ResetRequestClusterInfoState() {
   cluster_info_ = std::nullopt;
   request_id_generator_->ResetRequestId();
   parent_query_sent_ = false;
+  page_contents_request_sent_ = false;
 }
 
 void LensOverlayQueryController::RunSuggestInputsCallback() {
