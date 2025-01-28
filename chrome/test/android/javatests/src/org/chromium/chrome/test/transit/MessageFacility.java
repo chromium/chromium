@@ -22,11 +22,10 @@ import androidx.test.espresso.action.ViewActions;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.Transition.Trigger;
+import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.test.R;
@@ -66,33 +65,28 @@ public class MessageFacility<HostStationT extends PageStation> extends Facility<
 
     /** Dismiss the message banner. */
     public void dismiss() {
-        Trigger dismissTrigger;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // b/329707221: For S+, GeneralSwipeAction is not working in the current version of
             // Espresso (3.2). Workaround by using the test helpers to dismiss the popup
             // programmatically.
-            dismissTrigger =
-                    () ->
-                            ThreadUtils.runOnUiThreadBlocking(
-                                    () -> {
-                                        MessageDispatcher messageDispatcher =
-                                                MessageDispatcherProvider.from(
-                                                        mHostStation
-                                                                .getActivity()
-                                                                .getWindowAndroid());
-                                        assert messageDispatcher != null;
-                                        List<MessageStateHandler> messages =
-                                                MessagesTestHelper.getEnqueuedMessages(
-                                                        messageDispatcher,
-                                                        MessageIdentifier.POPUP_BLOCKED);
-                                        assert !messages.isEmpty();
-                                        PropertyModel m =
-                                                MessagesTestHelper.getCurrentMessage(
-                                                        messages.get(0));
-                                        messageDispatcher.dismissMessage(m, DismissReason.GESTURE);
-                                    });
+            mHostStation.exitFacilitySync(
+                    this,
+                    Transition.runTriggerOnUiThreadOption(),
+                    () -> {
+                        MessageDispatcher messageDispatcher =
+                                MessageDispatcherProvider.from(
+                                        mHostStation.getActivity().getWindowAndroid());
+                        assert messageDispatcher != null;
+                        List<MessageStateHandler> messages =
+                                MessagesTestHelper.getEnqueuedMessages(
+                                        messageDispatcher, MessageIdentifier.POPUP_BLOCKED);
+                        assert !messages.isEmpty();
+                        PropertyModel m = MessagesTestHelper.getCurrentMessage(messages.get(0));
+                        messageDispatcher.dismissMessage(m, DismissReason.GESTURE);
+                    });
         } else {
-            dismissTrigger =
+            mHostStation.exitFacilitySync(
+                    this,
                     () ->
                             MESSAGE_BANNER.perform(
                                     ViewActions.actionWithAssertions(
@@ -100,9 +94,8 @@ public class MessageFacility<HostStationT extends PageStation> extends Facility<
                                                     Swipe.FAST,
                                                     GeneralLocation.CENTER,
                                                     GeneralLocation.TOP_CENTER,
-                                                    Press.FINGER)));
+                                                    Press.FINGER))));
         }
-        mHostStation.exitFacilitySync(this, dismissTrigger);
     }
 
     /** Create a {@link ViewSpec} expecting the message's |title|. */
