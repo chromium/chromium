@@ -121,6 +121,7 @@ void ConvertTextInfo(const blink::mojom::AIPageContentTextInfo& mojom_text_info,
   text_style->set_text_size(
       ConvertTextSize(mojom_text_info.text_style->text_size));
   text_style->set_has_emphasis(mojom_text_info.text_style->has_emphasis);
+  text_style->set_color(mojom_text_info.text_style->color);
 }
 
 void ConvertImageInfo(
