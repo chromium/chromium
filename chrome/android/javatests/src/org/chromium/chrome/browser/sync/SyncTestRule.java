@@ -38,14 +38,17 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.internal.SyncPrefNames;
 import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.components.sync.protocol.WalletMaskedCreditCard;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.Collections;
 import java.util.List;
@@ -367,6 +370,10 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                     mSyncService = null;
                     mFakeServerHelper = null;
                     FakeServerHelper.destroyInstance();
+
+                    // Clear selected types for all accounts to reset the state
+                    // across different tests, to allow test batching.
+                    getPrefService().clearPref(SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT);
                 });
     }
 
@@ -450,5 +457,9 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         SyncTestUtil.waitForSyncFeatureActive();
         SyncTestUtil.triggerSyncAndWaitForCompletion();
         return accountInfo;
+    }
+
+    private static PrefService getPrefService() {
+        return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
     }
 }

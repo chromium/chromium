@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -43,6 +44,7 @@ import java.util.List;
 /** Test suite for the bookmarks sync data type. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class BookmarksTest {
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
 
@@ -185,7 +187,6 @@ public class BookmarksTest {
         Bookmark item0 = clientBookmarks.get(0);
         Bookmark item1 = clientBookmarks.get(1);
         Assert.assertTrue(item0.isFolder() != item1.isFolder());
-        final int bookmarkIndex = item0.isFolder() ? 1 : 0;
         final Bookmark folder = item0.isFolder() ? item0 : item1;
         final Bookmark bookmark = item0.isFolder() ? item1 : item0;
 
