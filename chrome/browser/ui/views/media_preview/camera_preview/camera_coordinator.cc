@@ -124,12 +124,20 @@ void CameraCoordinator::OnVideoSourceChanged(
     // permanent.
     mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
         video_effects_processor;
+    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+        readonly_video_effects_manager;
 
     media_effects::BindVideoEffectsProcessor(
         active_device_id_, browser_context_.get(),
         video_effects_processor.InitWithNewPipeAndPassReceiver());
     video_source->RegisterVideoEffectsProcessor(
         std::move(video_effects_processor));
+
+    media_effects::BindReadonlyVideoEffectsManager(
+        active_device_id_, browser_context_.get(),
+        readonly_video_effects_manager.InitWithNewPipeAndPassReceiver());
+    video_source->RegisterReadonlyVideoEffectsManager(
+        std::move(readonly_video_effects_manager));
   }
 
   video_stream_coordinator_->ConnectToDevice(device_info,

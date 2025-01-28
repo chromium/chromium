@@ -293,15 +293,12 @@ class BufferPoolBufferHandleProvider
 };
 
 VideoEffectsContext::VideoEffectsContext(
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote)
-    : video_effects_processor_(std::move(remote)) {}
-
-VideoEffectsContext::VideoEffectsContext(
     mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
         processor_remote,
     mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
         readonly_manager_remote)
-    : video_effects_processor_(std::move(processor_remote)) {}
+    : video_effects_processor_(std::move(processor_remote)),
+      readonly_video_effects_manager_(std::move(readonly_manager_remote)) {}
 
 VideoEffectsContext::VideoEffectsContext(VideoEffectsContext&& other) = default;
 VideoEffectsContext& VideoEffectsContext::operator=(
@@ -312,6 +309,11 @@ VideoEffectsContext::~VideoEffectsContext() = default;
 mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>&&
 VideoEffectsContext::TakeVideoEffectsProcessor() {
   return std::move(video_effects_processor_);
+}
+
+mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>&&
+VideoEffectsContext::TakeReadonlyVideoEffectsManager() {
+  return std::move(readonly_video_effects_manager_);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -343,6 +345,14 @@ VideoCaptureDeviceClient::VideoCaptureDeviceClient(
         base::SequencedTaskRunner::GetCurrentDefault();
     effects_processor_ = std::make_unique<VideoCaptureEffectsProcessor>(
         video_effects_context->TakeVideoEffectsProcessor());
+
+    auto pending_readonly_effects_manager_remote =
+        video_effects_context->TakeReadonlyVideoEffectsManager();
+    CHECK(pending_readonly_effects_manager_remote);
+    readonly_effects_manager_remote_.Bind(
+        std::move(pending_readonly_effects_manager_remote));
+    readonly_effects_manager_remote_->AddObserver(
+        effects_configuration_observer_.BindNewPipeAndPassRemote());
   }
 #endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 }
@@ -383,6 +393,24 @@ void VideoCaptureDeviceClient::OnCaptureConfigurationChanged() {
 }
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+void VideoCaptureDeviceClient::OnConfigurationChanged(
+    media::mojom::VideoEffectsConfigurationPtr configuration) {
+  if (configuration.is_null()) {
+    has_active_effects_ = false;
+  } else if (configuration->blur.is_null() &&
+             configuration->framing.is_null() &&
+             configuration->image_enhancement.is_null()) {
+    has_active_effects_ = false;
+  } else {
+    has_active_effects_ = true;
+  }
+}
+
+bool VideoCaptureDeviceClient::ShouldApplyVideoEffects() const {
+  return base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
+         effects_processor_ && has_active_effects_;
+}
+
 std::optional<VideoCaptureDevice::Client::Buffer>
 VideoCaptureDeviceClient::ReserveEffectsOutputBuffer(
     const VideoCaptureFormat& format,
@@ -526,8 +554,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
   }
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
-      effects_processor_) {
+  if (ShouldApplyVideoEffects()) {
     auto data_span = base::span(data, base::checked_cast<size_t>(length));
 
     mojom::VideoFrameInfoPtr info = CreateNewVideoFrameInfo(
@@ -733,12 +760,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
   // TODO(https://crbug.com/377955425): Add unittests for enabled
   // media::kCameraMicEffects flag.
 
-  if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
-      switches::IsVideoCaptureUseGpuMemoryBufferEnabled() &&
-      effects_processor_) {
-    // TODO(https://crbug.com/377532863): Skip effects service overhead when
-    // having no-op effects config.
-
+  if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled() &&
+      ShouldApplyVideoEffects()) {
     mojom::VideoFrameInfoPtr info = CreateNewVideoFrameInfo(
         reference_time, timestamp, capture_begin_timestamp, buffer.format,
         metadata, visible_rect, /*is_premapped=*/false, buffer.color_space);
@@ -974,8 +997,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
       visible_rect, buffer.is_premapped, color_space);
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
-      effects_processor_) {
+  if (ShouldApplyVideoEffects()) {
     auto out_buffer_optional =
         ReserveEffectsOutputBuffer(format, /*frame_feedback_id=*/0);
     if (!out_buffer_optional) {
