@@ -27,6 +27,220 @@ interface Context {
   type: string;
 }
 
+/**
+ * Regular expression that matches a string that starts with at least one
+ * non-whitespace character.
+ */
+const STARTS_WITH_NON_WHITESPACE_RE = /^\S/;
+
+/**
+ * Regular expression that matches a string that ends with at least one
+ * non-whitespace character.
+ */
+const ENDS_WITH_NON_WHITESPACE_RE = /\S$/;
+
+
+type EntryStateConstructor =
+    new (handler: BrailleInputHandler, translator: LibLouis.Translator) =>
+        EntryState;
+
+/**
+ * The entry state is the state related to entering a series of braille cells
+ * without 'interruption', where interruption can be things like non braille
+ * keyboard input or unexpected changes to the text surrounding the cursor.
+ */
+class EntryState {
+  inputHandler: BrailleInputHandler|null;
+  /** Braille cells that have been typed by the user so far. */
+  cells: number[] = [];
+  /** Text resulting from translating this.cells. */
+  text = '';
+
+  /**
+   * List of strings that we expect to be set as preceding text of the
+   * selection. This is populated when we send text changes to the IME so
+   * that our own changes don't reset the pending cells.
+   */
+  protected pendingTextsBefore_: string[] = [];
+
+  constructor(
+      inputHandler: BrailleInputHandler,
+      private translator_: LibLouis.Translator) {
+    this.inputHandler = inputHandler;
+  }
+
+  /**
+   * @return The translator used by this entry state. This doesn't change for a
+   * given object.
+   */
+  get translator(): LibLouis.Translator {
+    return this.translator_;
+  }
+
+  /**
+   * Appends a braille cell to the current input and updates the text if
+   * necessary.
+   * @param cell The braille cell to append.
+   */
+  appendCell(cell: number): void {
+    this.cells.push(cell);
+    this.updateText_();
+  }
+
+  /**
+   * Deletes the last cell of the input and updates the text if neccary.
+   * If there's no more input in this object afterwards, clears the entry state
+   * of the input handler.
+   */
+  deleteLastCell(): void {
+    if (--this.cells.length <= 0) {
+      this.sendTextChange_('');
+      this.inputHandler?.clearEntryState();
+      return;
+    }
+    this.updateText_();
+  }
+
+  /**
+   * Called when the text before the cursor changes giving this object a
+   * chance to clear the entry state of the input handler if the change
+   * wasn't expected.
+   * @param newText New text before the cursor.
+   */
+  onTextBeforeChanged(newText: string): void {
+    // See if we are expecting this change as a result of one of our own
+    // edits. Allow changes to be coalesced by the input system in an attempt
+    // to not be too brittle.
+    for (let i = 0; i < this.pendingTextsBefore_.length; ++i) {
+      if (newText === this.pendingTextsBefore_[i]) {
+        // Delete all previous expected changes and ignore this one.
+        this.pendingTextsBefore_.splice(0, i + 1);
+        return;
+      }
+    }
+    // There was an actual text change (or cursor movement) that we hadn't
+    // caused ourselves, reset any pending input.
+    this.inputHandler?.clearEntryState();
+  }
+
+  /**
+   * Makes sure the current text is permanently added to the edit field.
+   * After this call, this object should be abandoned.
+   */
+  commit(): void {}
+
+  /**
+   * @return true if the entry state uses uncommitted cells.
+   */
+  get usesUncommittedCells(): boolean {
+    return false;
+  }
+
+  /**
+   * Updates the translated text based on the current cells and sends the
+   * delta to the IME.
+   */
+  private updateText_(): void {
+    const cellsBuffer = new Uint8Array(this.cells).buffer;
+    const commit = this.lastCellIsBlank_;
+    if (!commit && this.usesUncommittedCells) {
+      this.inputHandler?.updateUncommittedCells(cellsBuffer);
+    }
+    this.translator_.backTranslate(cellsBuffer, result => {
+      if (result === null) {
+        console.error('Error when backtranslating braille cells');
+        return;
+      }
+      if (!this.inputHandler) {
+        return;
+      }
+      this.sendTextChange_(result);
+      this.text = result;
+      if (commit) {
+        this.inputHandler.commitAndClearEntryState();
+      }
+    });
+  }
+
+  private get lastCellIsBlank_(): boolean {
+    return this.cells[this.cells.length - 1] === 0;
+  }
+
+  /**
+   * Sends new text to the IME.  This should be overridden by subclasses.
+   * The old text is still available in the text property.
+   */
+  protected sendTextChange_(_newText: string): void {}
+}
+
+/**
+ * Entry state that uses deleteSurroundingText and commitText calls to the IME
+ * to update the currently entered text.
+ */
+class EditsEntryState extends EntryState {
+  protected override sendTextChange_(newText: string): void {
+    const oldText = this.text;
+    // Find the common prefix of the old and new text.
+    const commonPrefixLength =
+        StringUtil.longestCommonPrefixLength(oldText, newText);
+    // How many characters we need to delete from the existing text to replace
+    // them with characters from the new text.
+    const deleteLength = oldText.length - commonPrefixLength;
+    // New text, if any, to insert after deleting the deleteLength characters
+    // before the cursor.
+    const toInsert = newText.substring(commonPrefixLength);
+    if (deleteLength > 0 || toInsert.length > 0) {
+      // After deleting, we expect this text to be present before the cursor.
+      const textBeforeAfterDelete =
+          this.inputHandler?.currentTextBefore.substring(
+              0, this.inputHandler.currentTextBefore.length - deleteLength);
+      if (deleteLength > 0 && textBeforeAfterDelete) {
+        // Queue this text up to be ignored when the change comes in.
+        this.pendingTextsBefore_.push(textBeforeAfterDelete);
+      }
+      if (toInsert.length > 0) {
+        // Likewise, queue up what we expect to be before the cursor after
+        // the replacement text is inserted.
+        this.pendingTextsBefore_.push(textBeforeAfterDelete + toInsert);
+      }
+      // Send the replace operation to be performed asynchronously by the IME.
+      this.inputHandler?.postImeMessage({
+        type: 'replaceText',
+        contextID: this.inputHandler.inputContext?.contextID,
+        deleteBefore: deleteLength,
+        newText: toInsert,
+      });
+    }
+  }
+}
+
+
+/**
+ * Entry state that only updates the edit field when a blank cell is entered.
+ * During the input of a single 'word', the uncommitted text is stored by the
+ * IME.
+ */
+class LateCommitEntryState extends EntryState {
+  override commit(): void {
+    this.inputHandler?.postImeMessage({
+      type: 'commitUncommitted',
+      contextID: this.inputHandler.inputContext?.contextID,
+    });
+  }
+
+  override get usesUncommittedCells(): boolean {
+    return true;
+  }
+
+  protected override sendTextChange_(newText: string): void {
+    this.inputHandler?.postImeMessage({
+      type: 'setUncommitted',
+      contextID: this.inputHandler.inputContext?.contextID,
+      text: newText,
+    });
+  }
+}
+
 export class BrailleInputHandler {
   /** Port of the connected IME if any. */
   private imePort_: Port|null = null;
@@ -365,223 +579,6 @@ export class BrailleInputHandler {
       shift: Boolean(event.shiftKey),
       ctrl: Boolean(event.ctrlKey),
       alt: Boolean(event.altKey),
-    });
-  }
-}
-
-// Local to module.
-
-/**
- * Regular expression that matches a string that starts with at least one
- * non-whitespace character.
- */
-const STARTS_WITH_NON_WHITESPACE_RE = /^\S/;
-
-/**
- * Regular expression that matches a string that ends with at least one
- * non-whitespace character.
- */
-const ENDS_WITH_NON_WHITESPACE_RE = /\S$/;
-
-
-type EntryStateConstructor =
-    new (handler: BrailleInputHandler, translator: LibLouis.Translator) =>
-        EntryState;
-
-/**
- * The entry state is the state related to entering a series of braille cells
- * without 'interruption', where interruption can be things like non braille
- * keyboard input or unexpected changes to the text surrounding the cursor.
- */
-class EntryState {
-  inputHandler: BrailleInputHandler|null;
-  /** Braille cells that have been typed by the user so far. */
-  cells: number[] = [];
-  /** Text resulting from translating this.cells. */
-  text = '';
-
-  /**
-   * List of strings that we expect to be set as preceding text of the
-   * selection. This is populated when we send text changes to the IME so
-   * that our own changes don't reset the pending cells.
-   */
-  protected pendingTextsBefore_: string[] = [];
-
-  constructor(
-      inputHandler: BrailleInputHandler,
-      private translator_: LibLouis.Translator) {
-    this.inputHandler = inputHandler;
-  }
-
-  /**
-   * @return The translator used by this entry state. This doesn't change for a
-   * given object.
-   */
-  get translator(): LibLouis.Translator {
-    return this.translator_;
-  }
-
-  /**
-   * Appends a braille cell to the current input and updates the text if
-   * necessary.
-   * @param cell The braille cell to append.
-   */
-  appendCell(cell: number): void {
-    this.cells.push(cell);
-    this.updateText_();
-  }
-
-  /**
-   * Deletes the last cell of the input and updates the text if neccary.
-   * If there's no more input in this object afterwards, clears the entry state
-   * of the input handler.
-   */
-  deleteLastCell(): void {
-    if (--this.cells.length <= 0) {
-      this.sendTextChange_('');
-      this.inputHandler?.clearEntryState();
-      return;
-    }
-    this.updateText_();
-  }
-
-  /**
-   * Called when the text before the cursor changes giving this object a
-   * chance to clear the entry state of the input handler if the change
-   * wasn't expected.
-   * @param newText New text before the cursor.
-   */
-  onTextBeforeChanged(newText: string): void {
-    // See if we are expecting this change as a result of one of our own
-    // edits. Allow changes to be coalesced by the input system in an attempt
-    // to not be too brittle.
-    for (let i = 0; i < this.pendingTextsBefore_.length; ++i) {
-      if (newText === this.pendingTextsBefore_[i]) {
-        // Delete all previous expected changes and ignore this one.
-        this.pendingTextsBefore_.splice(0, i + 1);
-        return;
-      }
-    }
-    // There was an actual text change (or cursor movement) that we hadn't
-    // caused ourselves, reset any pending input.
-    this.inputHandler?.clearEntryState();
-  }
-
-  /**
-   * Makes sure the current text is permanently added to the edit field.
-   * After this call, this object should be abandoned.
-   */
-  commit(): void {}
-
-  /**
-   * @return true if the entry state uses uncommitted cells.
-   */
-  get usesUncommittedCells(): boolean {
-    return false;
-  }
-
-  /**
-   * Updates the translated text based on the current cells and sends the
-   * delta to the IME.
-   */
-  private updateText_(): void {
-    const cellsBuffer = new Uint8Array(this.cells).buffer;
-    const commit = this.lastCellIsBlank_;
-    if (!commit && this.usesUncommittedCells) {
-      this.inputHandler?.updateUncommittedCells(cellsBuffer);
-    }
-    this.translator_.backTranslate(cellsBuffer, result => {
-      if (result === null) {
-        console.error('Error when backtranslating braille cells');
-        return;
-      }
-      if (!this.inputHandler) {
-        return;
-      }
-      this.sendTextChange_(result);
-      this.text = result;
-      if (commit) {
-        this.inputHandler.commitAndClearEntryState();
-      }
-    });
-  }
-
-  private get lastCellIsBlank_(): boolean {
-    return this.cells[this.cells.length - 1] === 0;
-  }
-
-  /**
-   * Sends new text to the IME.  This should be overridden by subclasses.
-   * The old text is still available in the text property.
-   */
-  protected sendTextChange_(_newText: string): void {}
-}
-
-
-/**
- * Entry state that uses deleteSurroundingText and commitText calls to the IME
- * to update the currently entered text.
- */
-class EditsEntryState extends EntryState {
-  protected override sendTextChange_(newText: string): void {
-    const oldText = this.text;
-    // Find the common prefix of the old and new text.
-    const commonPrefixLength =
-        StringUtil.longestCommonPrefixLength(oldText, newText);
-    // How many characters we need to delete from the existing text to replace
-    // them with characters from the new text.
-    const deleteLength = oldText.length - commonPrefixLength;
-    // New text, if any, to insert after deleting the deleteLength characters
-    // before the cursor.
-    const toInsert = newText.substring(commonPrefixLength);
-    if (deleteLength > 0 || toInsert.length > 0) {
-      // After deleting, we expect this text to be present before the cursor.
-      const textBeforeAfterDelete =
-          this.inputHandler?.currentTextBefore.substring(
-              0, this.inputHandler.currentTextBefore.length - deleteLength);
-      if (deleteLength > 0 && textBeforeAfterDelete) {
-        // Queue this text up to be ignored when the change comes in.
-        this.pendingTextsBefore_.push(textBeforeAfterDelete);
-      }
-      if (toInsert.length > 0) {
-        // Likewise, queue up what we expect to be before the cursor after
-        // the replacement text is inserted.
-        this.pendingTextsBefore_.push(textBeforeAfterDelete + toInsert);
-      }
-      // Send the replace operation to be performed asynchronously by the IME.
-      this.inputHandler?.postImeMessage({
-        type: 'replaceText',
-        contextID: this.inputHandler.inputContext?.contextID,
-        deleteBefore: deleteLength,
-        newText: toInsert,
-      });
-    }
-  }
-}
-
-
-/**
- * Entry state that only updates the edit field when a blank cell is entered.
- * During the input of a single 'word', the uncommitted text is stored by the
- * IME.
- */
-class LateCommitEntryState extends EntryState {
-  override commit(): void {
-    this.inputHandler?.postImeMessage({
-      type: 'commitUncommitted',
-      contextID: this.inputHandler.inputContext?.contextID,
-    });
-  }
-
-  override get usesUncommittedCells(): boolean {
-    return true;
-  }
-
-  protected override sendTextChange_(newText: string): void {
-    this.inputHandler?.postImeMessage({
-      type: 'setUncommitted',
-      contextID: this.inputHandler.inputContext?.contextID,
-      text: newText,
     });
   }
 }
