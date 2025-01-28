@@ -4539,19 +4539,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Midi.SendReceiveUsage" enum="MidiSendReceiveUsage"
-    expires_after="2025-06-01">
+<histogram name="Media.Midi.SendReceiveUsage{BackendType}"
+    enum="MidiSendReceiveUsage" expires_after="2025-06-01">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
   <summary>
-    Reports whether any data was sent or received by a MidiManager. Recorded
+    Reports whether any data was sent or received by {BackendType}. Recorded
     once per MidiManager instantiation, upon destruction. MidiManager is
     instantiated when the first Web MIDI client starts a session, and destroyed
     when the last client ends the session.
 
     Warning: this histogram was expired from M86 to M91; data may be missing.
   </summary>
+  <token key="BackendType">
+    <variant name="" summary="any kind of MidiManagers"/>
+    <variant name=".Usb" summary="a MidiManagerUsb"/>
+  </token>
 </histogram>
 
 <histogram name="Media.Midi.SysExMessageSizeUpTo1MB" units="bytes"
