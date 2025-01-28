@@ -201,7 +201,7 @@ class PasswordManagerViewControllerTest
         GetPasswordManagerViewController();
     NSInteger insecure_count = 0;
     for (const auto& signon_realm_forms : GetTestStore().stored_passwords()) {
-      insecure_count += base::ranges::count_if(
+      insecure_count += std::ranges::count_if(
           signon_realm_forms.second, [](const PasswordForm& form) {
             return !form.password_issues.empty();
           });

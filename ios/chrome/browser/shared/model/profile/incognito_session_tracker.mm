@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/shared/model/profile/incognito_session_tracker.h"
 
-#import "base/ranges/algorithm.h"
+#import <algorithm>
+
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -146,7 +147,7 @@ void IncognitoSessionTracker::Observer::WebStateListDidChange(
 }
 
 void IncognitoSessionTracker::Observer::OnWebStateListChanged() {
-  const bool has_incognito_tabs = base::ranges::any_of(
+  const bool has_incognito_tabs = std::ranges::any_of(
       web_state_list_observations_.sources(),
       [](WebStateList* web_state_list) { return !web_state_list->empty(); });
 
@@ -241,7 +242,7 @@ void IncognitoSessionTracker::OnIncognitoSessionStateChanged(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const bool has_incognito_session_tabs =
       has_incognito_tabs ||
-      base::ranges::any_of(
+      std::ranges::any_of(
           observers_, &Observer::has_incognito_tabs,
           [](auto& pair) -> const Observer& { return *pair.second; });
 

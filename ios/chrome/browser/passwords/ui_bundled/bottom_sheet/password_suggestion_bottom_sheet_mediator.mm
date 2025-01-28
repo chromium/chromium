@@ -430,7 +430,7 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
         stringByReplacingOccurrencesOfString:kPasswordFormSuggestionSuffix
                                   withString:@""];
   }
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       _credentials,
       [username](const password_manager::CredentialUIEntry& credential) {
         CHECK(!credential.facets.empty());

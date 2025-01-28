@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <algorithm>
 #import <memory>
 #import <string>
 #import <vector>
@@ -9,7 +10,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/functional/callback.h"
 #import "base/notreached.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/form_structure.h"
@@ -353,7 +353,7 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
                delegate {
   // We only want Autofill suggestions.
   std::vector<autofill::Suggestion> filtered_suggestions;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       suggestions, std::back_inserter(filtered_suggestions),
       [](const autofill::Suggestion& suggestion) {
         return suggestion.type == autofill::SuggestionType::kAddressEntry ||

@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -25,7 +25,7 @@ ProfileAttributesStorageIOS::ProfileAttributesStorageIOS(PrefService* prefs)
   for (const auto pair : prefs_->GetDict(prefs::kProfileInfoCache)) {
     sorted_keys_.push_back(pair.first);
   }
-  base::ranges::sort(sorted_keys_);
+  std::ranges::sort(sorted_keys_);
 
   // If the personal profile name is set, ensure a profile entry with that name
   // actually exists. Note: Can't use `GetPersonalProfileName()` since that
@@ -41,7 +41,7 @@ ProfileAttributesStorageIOS::~ProfileAttributesStorageIOS() = default;
 
 void ProfileAttributesStorageIOS::AddProfile(std::string_view name) {
   // Inserts the profile name in sorted position.
-  auto iterator = base::ranges::lower_bound(sorted_keys_, name);
+  auto iterator = std::ranges::lower_bound(sorted_keys_, name);
   CHECK(iterator == sorted_keys_.end() || *iterator != name);
   sorted_keys_.insert(iterator, std::string(name));
 
@@ -61,7 +61,7 @@ void ProfileAttributesStorageIOS::RemoveProfile(std::string_view name) {
   DCHECK_NE(name, GetPersonalProfileName());
 
   // Remove the profile name from the sorted dictionary.
-  auto iterator = base::ranges::find(sorted_keys_, name);
+  auto iterator = std::ranges::find(sorted_keys_, name);
   CHECK(iterator != sorted_keys_.end() && *iterator == name);
   sorted_keys_.erase(iterator);
 
@@ -187,7 +187,7 @@ void ProfileAttributesStorageIOS::RegisterPrefs(PrefRegistrySimple* registry) {
 
 size_t ProfileAttributesStorageIOS::GetIndexOfProfileWithName(
     std::string_view name) const {
-  auto iterator = base::ranges::lower_bound(sorted_keys_, name);
+  auto iterator = std::ranges::lower_bound(sorted_keys_, name);
   if (iterator == sorted_keys_.end() || *iterator != name) {
     return std::string::npos;
   }

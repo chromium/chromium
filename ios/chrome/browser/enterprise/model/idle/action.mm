@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/enterprise/model/idle/action.h"
 
+#import <algorithm>
 #import <cstring>
 #import <utility>
 #import <vector>
@@ -15,7 +16,6 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
-#import "base/ranges/algorithm.h"
 #import "base/scoped_observation.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_view_controller.h"
 
+#import <algorithm>
 #import <set>
 
 #import "base/apple/foundation_util.h"
@@ -16,7 +17,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/numerics/safe_conversions.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -1705,8 +1705,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   std::vector<const BookmarkNode*> nodes;
   if (self.mediator.currentlyShowingSearchResults) {
     // Create a vector of edit nodes in the same order as the selected nodes.
-    base::ranges::copy(self.mediator.selectedNodesForEditMode,
-                       std::back_inserter(nodes));
+    std::ranges::copy(self.mediator.selectedNodesForEditMode,
+                      std::back_inserter(nodes));
   } else {
     // Create a vector of edit nodes in the same order as the nodes in folder.
     for (const auto& child : self.mediator.displayedNode->children()) {

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 
+#import <algorithm>
 #import <optional>
 #import <utility>
 #import <vector>
@@ -15,7 +16,6 @@
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -465,9 +465,9 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
 
     // Find the form to which `field_id` belongs.
     auto renderer_forms_it =
-        base::ranges::find_if(renderer_forms, [field_id](const FormData& form) {
-          return base::ranges::find(form.fields(), field_id,
-                                    &FormFieldData::global_id) !=
+        std::ranges::find_if(renderer_forms, [field_id](const FormData& form) {
+          return std::ranges::find(form.fields(), field_id,
+                                   &FormFieldData::global_id) !=
                  form.fields().end();
         });
     if (renderer_forms_it == renderer_forms.end()) {
@@ -498,7 +498,7 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
 
 AutofillSaveCardInfoBarDelegateIOS*
 ChromeAutofillClientIOS::GetAutofillSaveCardInfoBarDelegateIOS() {
-  const auto save_card_infobar = base::ranges::find(
+  const auto save_card_infobar = std::ranges::find(
       infobar_manager_->infobars(),
       infobars::InfoBarDelegate::AUTOFILL_CC_INFOBAR_DELEGATE_MOBILE,
       &infobars::InfoBar::GetIdentifier);
@@ -509,7 +509,7 @@ ChromeAutofillClientIOS::GetAutofillSaveCardInfoBarDelegateIOS() {
 }
 
 void ChromeAutofillClientIOS::RemoveAutofillSaveCardInfoBar() {
-  const auto save_card_infobar = base::ranges::find(
+  const auto save_card_infobar = std::ranges::find(
       infobar_manager_->infobars(),
       infobars::InfoBarDelegate::AUTOFILL_CC_INFOBAR_DELEGATE_MOBILE,
       &infobars::InfoBar::GetIdentifier);

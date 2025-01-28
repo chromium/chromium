@@ -30,7 +30,7 @@
   // NOTE: The inactive browser is always created even if the feature is
   // disabled, in order to ensure to restore all saved tabs.
   DCHECK(browsers.size() == 2);
-  std::set<Browser*>::iterator iterator = base::ranges::find_if(
+  std::set<Browser*>::iterator iterator = std::ranges::find_if(
       browsers, [](Browser* browser) { return !browser->IsInactive(); });
   DCHECK(iterator != browsers.end());
   FullscreenController* fullscreenController =

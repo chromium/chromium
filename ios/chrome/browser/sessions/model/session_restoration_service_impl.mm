@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/sessions/model/session_restoration_service_impl.h"
 
+#import <algorithm>
 #import <concepts>
 
 #import "base/check.h"
@@ -14,7 +15,6 @@
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/ranges/algorithm.h"
 #import "ios/chrome/browser/sessions/model/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/sessions/model/session_internal_util.h"

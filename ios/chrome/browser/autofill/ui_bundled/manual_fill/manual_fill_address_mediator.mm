@@ -46,7 +46,7 @@ std::vector<AutofillProfile> FetchAddresses(
   // Make copies of the received `fetched_addresses` to not make any assumption
   // over their lifetime and make sure that the AutofillProfile objects stay
   // valid throughout the lifetime of this class.
-  base::ranges::transform(
+  std::ranges::transform(
       fetched_addresses, std::back_inserter(addresses),
       [](const AutofillProfile* address) { return *address; });
 

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_table_view_controller.h"
 
+#import <algorithm>
+#import <functional>
 #import <memory>
 
 #import "base/apple/foundation_util.h"
@@ -12,8 +14,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "base/ranges/algorithm.h"
-#import "base/ranges/functional.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
@@ -496,9 +496,9 @@ const char kUmaSelectDefaultSearchEngine[] =
                     });
 
   // Keep the search engines visited within `kMaxVisitAge` and erase others.
-  auto cutBegin = base::ranges::lower_bound(
+  auto cutBegin = std::ranges::lower_bound(
       begin, pivot, base::Time::Now() - kMaxVisitAge,
-      base::ranges::greater_equal(), &TemplateURL::last_visited);
+      std::ranges::greater_equal(), &TemplateURL::last_visited);
   _secondList.erase(cutBegin, end);
 }
 

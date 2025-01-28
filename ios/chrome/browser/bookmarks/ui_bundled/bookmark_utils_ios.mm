@@ -22,7 +22,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -560,7 +559,7 @@ void UpdateFoldersFromNode(const BookmarkNode* folder,
 
   bookmark_utils_ios::SortFolders(&directDescendants);
 
-  auto it = base::ranges::find(*results, folder);
+  auto it = std::ranges::find(*results, folder);
   DCHECK(it != results->end());
   ++it;
   results->insert(it, directDescendants.begin(), directDescendants.end());

@@ -7,8 +7,9 @@
 #import <BackgroundTasks/BackgroundTasks.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import <algorithm>
+
 #import "base/barrier_callback.h"
-#import "base/ranges/algorithm.h"
 #import "components/metrics/metrics_service.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
@@ -106,7 +107,7 @@ base::OnceCallback<R(Args...)> EnsureCallbackCalled(
 
 // Returns whether `values` only contains `true`.
 bool AllOperationSucceeded(std::vector<bool> values) {
-  return base::ranges::all_of(values, std::identity());
+  return std::ranges::all_of(values, std::identity());
 }
 
 // Wraps a list of DiscoverFeedProfileHelper. This code is derived
