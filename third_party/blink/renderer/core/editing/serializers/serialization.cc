@@ -683,9 +683,14 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
         markup, document, *fragment, *context_element, parser_content_policy,
         parser_behavior, &log_tag_stats);
     if (parsed_fast_path) {
-      fragment->SetHoldsUnnotifiedChildren(true);
-      fragment->ParserFinishedBuildingDocumentFragment(
-          DocumentFragment::ShouldNotifyInsertedNodes::kSkip);
+      if (RuntimeEnabledFeatures::DOMInsertionFasterEnabled()) {
+        fragment->SetHoldsUnnotifiedChildren(true);
+        fragment->ParserFinishedBuildingDocumentFragment(
+            DocumentFragment::ShouldNotifyInsertedNodes::kSkip);
+      } else {
+        fragment->ParserFinishedBuildingDocumentFragment(
+            DocumentFragment::ShouldNotifyInsertedNodes::kNotify);
+      }
       LogFastPathParserTotalTime(parse_timer.Elapsed());
 #if DCHECK_IS_ON()
       // As a sanity check for the fast-path, create another fragment using
