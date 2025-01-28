@@ -383,18 +383,11 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
   logged_in_users_.push_back(active_user_.get());
   SetLRUUser(active_user_);
 
-  if (!primary_user_) {
-    primary_user_ = active_user_;
-    delegate_->OverrideDirHome(*primary_user_);
-    if (primary_user_->HasGaiaAccount()) {
-      SendGaiaUserLoginMetrics(account_id);
-    }
-  } else if (primary_user_ != active_user_) {
-    // This is only needed for tests where a new user session is created
-    // for non-existent user. The new user is created and automatically set
-    // to active and there will be no pending user switch in such case.
-    SetIsCurrentUserNew(true);
-    NotifyUserAddedToSession(active_user_);
+  CHECK(!primary_user_);
+  primary_user_ = active_user_;
+  delegate_->OverrideDirHome(*primary_user_);
+  if (primary_user_->HasGaiaAccount()) {
+    SendGaiaUserLoginMetrics(account_id);
   }
 
   base::UmaHistogramEnumeration("UserManager.LoginUserType",
