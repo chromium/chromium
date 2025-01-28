@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -162,6 +163,11 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
                 .withIsOpeningTabs(1)
                 .withIsSelectingTabs(1)
                 .build();
+    }
+
+    /** Default behavior for "Delete browsing data". */
+    protected QuickDeleteDialogFacility createQuickDeleteDialogFacility() {
+        return new QuickDeleteDialogFacility();
     }
 
     /** Default behavior for "Settings". */
