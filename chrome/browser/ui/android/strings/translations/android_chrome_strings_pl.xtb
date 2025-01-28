@@ -1210,6 +1210,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Zostaną zamknięte karty: <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_ONE" /> inna}few{Zostaną zamknięte karty: <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_MANY" /> inne}many{Zostaną zamknięte karty: <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_MANY" /> innych}other{Zostaną zamknięte karty: <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_MANY" /> innej}}</translation>
 <translation id="6560414384669816528">Szukaj w Sogou</translation>
 <translation id="656065428026159829">Pokaż więcej</translation>
+<translation id="6564820424018738527">Twoje urządzenie z Androidem może mieć podobne ustawienie. Jeśli w Chrome i na Twoim urządzeniu z Androidem jest włączony pomiar skuteczności reklam, firma może mierzyć skuteczność reklam w odwiedzanych przez Ciebie witrynach i w aplikacjach, z których korzystasz.</translation>
 <translation id="6565959834589222080">Sieć Wi-Fi jest używana, gdy jest dostępna</translation>
 <translation id="6569373978618239158">Po otwarciu nowej karty będziesz teraz widzieć nowe relacje ze strony <ph name="SITE_NAME" />. Strony, które obserwujesz, są zapisywane na Twoim koncie Google. Możesz nimi zarządzać w ustawieniach kart Discover.</translation>
 <translation id="6570116402456758630">Podsumowanie strony</translation>

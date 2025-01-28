@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Cyfeiriad wedi'i gadw ar y ddyfais hon yn unig</translation>
 <translation id="1445276840641906250">Eich holl dabiau mewn un porwr</translation>
 <translation id="1450170672351507823">Mae amddiffyniad safonol wedi'i droi ymlaen. Am fwy fyth o ddiogelwch, defnyddiwch Gwell amddiffyniad.</translation>
-<translation id="1454615514353469963">Bydd cyfrineiriau, codau pas a data eraill yn cael eu dileu yn barhaol o Reolwr Cyfrineiriau Google</translation>
 <translation id="1455660774629812862">Peidio â chuddio</translation>
 <translation id="1460751212339734034">Arbed amser, teipio llai</translation>
 <translation id="1466035273550360103">Dim tabiau ar agor</translation>
@@ -476,6 +475,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="3053332585453689122">Yn anfon y cyfeiriadau URL rydych yn ymweld â nhw a sampl bach o gynnwys tudalen, lawrlwythiadau, gweithgarwch estyniadau, a gwybodaeth system i Bori'n Ddiogel gyda Google i wirio a ydyn nhw'n niweidiol.</translation>
 <translation id="3055102495753300780">Storfa gwybodaeth</translation>
 <translation id="3059270601560379555">Chwiliad newydd</translation>
+<translation id="3064547930554042309">Rheoli Lawrlwythiadau</translation>
 <translation id="3072279342064724558">Cyfrinair sydd eisoes yn bodoli</translation>
 <translation id="3076846064362030967">Ni fyddwch yn cael eich allgofnodi o'ch Cyfrif Google. Gall <ph name="BEGIN_LINK" />mathau eraill o weithgarwch<ph name="END_LINK" /> gael eu cadw i'ch Cyfrif Google pan fyddwch wedi mewngofnodi. Gallwch eu dileu ar unrhyw adeg.
 
@@ -698,6 +698,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4154753961803534698">Chwilio gyda chamera</translation>
 <translation id="4158491215857439601">Rheolwr Cyfrineiriau</translation>
 <translation id="4163699139741158298">{count,plural, =1{Mae'r nod tudalen wedi'i gadw i "{title}". Mae wedi'i gadw i'r ddyfais hon yn unig.}zero{Mae {count} nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}two{Mae {count} nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}few{Mae {count} nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}many{Mae {count} nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}other{Mae {count} nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}}</translation>
+<translation id="4164514562270305824">Awtoddileu Lawrlwythiadau</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> sy'n gorffen â <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Peidio â chaniatáu</translation>
 <translation id="4172051516777682613">Dangos bob tro</translation>
@@ -1016,6 +1017,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5579012242779565775">Cuddio Rhestr ddarllen</translation>
 <translation id="5585019845078534178">Cardiau</translation>
 <translation id="5595485650161345191">Golygu cyfeiriad</translation>
+<translation id="559567008082979829">Gosodwch eich lawrlwythiadau i gael eu dileu ar ôl un mis.</translation>
 <translation id="5596627076506792578">Rhagor o ddewisiadau</translation>
 <translation id="560322036295180549">Wedi'i ddiffodd gan eich sefydliad</translation>
 <translation id="5611107723541161735">Llwybrau byr i wefannau rydych wedi ymweld â nhw yn ddiweddar ar y ddyfais hon.</translation>

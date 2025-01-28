@@ -296,6 +296,7 @@
 <translation id="2240366984605217732">Išdėstymo jungiklis</translation>
 <translation id="2244834438220057800">žalios spalvos</translation>
 <translation id="225692081236532131">Aktyvinimo būsena</translation>
+<translation id="2265792117169966196">Pasirinkite ir atsisiųskite <ph name="LANGUAGE_NAME" /> k. transkribavimo modelį</translation>
 <translation id="2267285889943769271">Pridėti ekrano kopiją</translation>
 <translation id="2268044343513325586">Patikslinti</translation>
 <translation id="2271469253353559191">Tamsaus režimo planavimas</translation>
@@ -774,6 +775,7 @@
 <translation id="473775607612524610">Atnaujinti</translation>
 <translation id="4744944742468440486">Informacija, susijusi su jūsų pasirinkimu</translation>
 <translation id="4750394297954878236">Pasiūlymai</translation>
+<translation id="4763771683769971829">Pasiekiamų kalbų sąrašas</translation>
 <translation id="4771607256327216405">klaviatūros pašviesinimas</translation>
 <translation id="4771923071974529837">rytoj</translation>
 <translation id="4773299976671772492">Sustabdyta</translation>
@@ -855,6 +857,7 @@
 <translation id="5095761549884461003">Jei norite tęsti atnaujinimo procesą, atjunkite „<ph name="DEVICE_NAME" />“ USB laidą ir vėl jį prijunkite</translation>
 <translation id="5099354524039520280">aukštyn</translation>
 <translation id="5107243100836678918">Spartusis klavišas be klavišo „<ph name="META_KEY" />“ gali būti nesuderinamas su kai kurių programų sparčiaisiais klavišais. Dar kartą paspauskite šį spartųjį klavišą, jei norite toliau jį naudoti, arba paspauskite naują spartųjį klavišą naudodami klavišą „<ph name="KEY" />“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
+<translation id="5107402373921342399">Nepavyko atsisiųsti <ph name="LANGUAGE_NAME" /> k. transkribavimo modelio. Bandykite dar kartą arba paleiskite „Chromebook“ iš naujo</translation>
 <translation id="5108781503443873320">Panašūs:</translation>
 <translation id="5121677070210013200">Nepavyko atsisiųsti transkribavimo modelio. Bandykite dar kartą arba paleiskite „Chromebook“ iš naujo.</translation>
 <translation id="5130848777448318809">poniai</translation>
@@ -1278,6 +1281,7 @@
 <translation id="7049916119678019302">Atsisiųskite transkribavimo modelį skiltyje „Nustatymai“</translation>
 <translation id="7058278511608979688">Baigti ir išsaugoti</translation>
 <translation id="7059230779847288458">Kraunama, <ph name="TIME_VALUE" />, kol bus įkrauta</translation>
+<translation id="7065336548231472971">Pasirinkta: <ph name="LANGUAGE_NAME" /> k.</translation>
 <translation id="7066538517128343186">klavišas „<ph name="KEY" />“</translation>
 <translation id="7068619307603204412">Įrenginio paruošimas</translation>
 <translation id="7076851914315147928">Pasirinkite ekrano foną</translation>
@@ -1371,6 +1375,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7415801143053185905">Itin didelė HTTP delsa</translation>
 <translation id="7418738250896500352">Per daug žodžių, kad būtų galima supaprastinti</translation>
 <translation id="7425037327577270384">Padėkite man rašyti</translation>
+<translation id="7425832472614771259">Atsisiųsta <ph name="PROGRESS_PERCENTAGE" /> % <ph name="LANGUAGE_NAME" /> k. transkribavimo modelio</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Šio APN negalima išjungti arba pašalinti. Įsitikinkite, kad įgalinti <ph name="ATTACH" /> APN yra išjungti arba pašalinti.</translation>
 <translation id="7453118953486228603">Spustelėkite, kad apibendrintumėte pasirinktą tekstą</translation>
@@ -1407,6 +1412,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7595982850646262331">Liko <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> administratorius apribojo šio „<ph name="DEVICE_TYPE" />“ naudojimo laiką.</translation>
 <translation id="7613724632293948900">Pakeiskite padėtį naudodami pelės arba rodyklių klavišus.</translation>
+<translation id="7618216277886673749">Pasirinkite <ph name="LANGUAGE_NAME" /> k.</translation>
 <translation id="7618774594543487847">Neutrali</translation>
 <translation id="7620771111601174153">Sužinokite daugiau pagalbos centre</translation>
 <translation id="7625095758347640998">DI ekrano fonai</translation>

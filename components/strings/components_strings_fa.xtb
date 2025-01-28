@@ -101,7 +101,7 @@
 <translation id="1175393348063009671">عکس (مات)</translation>
 <translation id="1175875016430184367">سه منگنه در راست</translation>
 <translation id="1176123604678140687">ماه انقضا</translation>
-<translation id="1177548198167638471">دوباره سؤال نشود</translation>
+<translation id="1177548198167638471">دوباره پرسیده نشود</translation>
 <translation id="1177863135347784049">سفارشی</translation>
 <translation id="1178581264944972037">مکث</translation>
 <translation id="1178821169867863726">۱۶ × ۱۲ اینچ</translation>
@@ -188,7 +188,7 @@
 <translation id="1314784609072437689">ملغی کردن صفحه‌کلید</translation>
 <translation id="1316805916535763484">دوره‌های آموزش آنلاین آزاد</translation>
 <translation id="1318023360584041678">در گروه برگه ذخیره شد</translation>
-<translation id="1319245136674974084">دیگر برای این برنامه سؤال نشود</translation>
+<translation id="1319245136674974084">برای این برنامه دوباره پرسیده نشود</translation>
 <translation id="1322083935398004629">سیاست</translation>
 <translation id="132301787627749051">جستجوی تصویر بریده‌دان</translation>
 <translation id="1323433172918577554">نمایش موارد بیشتر</translation>
@@ -961,6 +961,7 @@
 <translation id="2674170444375937751">آیا مطمئن هستید می‌خواهید این صفحات را از سابقه خود حذف کنید؟</translation>
 <translation id="2674524144218093528">نقاشی خانه و نازک‌کاری</translation>
 <translation id="2674804415323431591">پنهان کردن پیشنهادها</translation>
+<translation id="26774279487328902">‫<ph name="GROUP_COUNT" /> گروه برگه دیگر دردسترس نیست</translation>
 <translation id="2677748264148917807">خروج</translation>
 <translation id="2683195745483370038">نتایج دیگری پیدا شد</translation>
 <translation id="2686919536310834199">درباره «کمک به نوشتن» بازخورد ارسال کنید.</translation>
@@ -2264,6 +2265,7 @@
 <translation id="5001526427543320409">کوکی‌های طرف سوم</translation>
 <translation id="5002932099480077015">‏اگر فعال شود، Chrome یک کپی از کارت شما را برای پرکردن سریع‌تر فرم در این دستگاه ذخیره می‌کند.</translation>
 <translation id="5007392906805964215">مرور</translation>
+<translation id="500790844453430087">گروه‌های برگه «<ph name="GROUP_TITLE_1" />» و «<ph name="GROUP_TITLE_2" />» دیگر دردسترس نیستند</translation>
 <translation id="5011561501798487822">زبان شناسایی‌شده</translation>
 <translation id="5015510746216210676">نام ماشین:</translation>
 <translation id="5017554619425969104">نوشتاری که کپی کرده‌اید</translation>
@@ -2736,6 +2738,7 @@
 <translation id="5866898949289125849">درحال مشاهده یک صفحه ابزار برنامه‌نویس هستید</translation>
 <translation id="5869405914158311789">دسترسی به این سایت امکان‌پذیر نیست</translation>
 <translation id="5869522115854928033">گذرواژه‌های ذخیره‌شده</translation>
+<translation id="5872215789867188990">گروه برگه «<ph name="GROUP_TITLE" />» دیگر دردسترس نیست</translation>
 <translation id="5872692522325383488">‏IBAN ذخیره شد</translation>
 <translation id="5873297634595728366">خودروهای دیزلی</translation>
 <translation id="5877359070305966420">منابع انسانی</translation>

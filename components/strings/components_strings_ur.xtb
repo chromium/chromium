@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">کلیدیں "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" کلیدوں کی طرح ایک ہی ڈکشنری میں سیٹ نہیں کی جا سکتیں</translation>
 <translation id="1455413310270022028">صافی</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{‫0 جائزے ملاحظہ کریں}=1{‫1 جائزہ ملاحظہ کریں}other{سبھی # جائزے ملاحظہ کریں}}</translation>
 <translation id="1458059624921545588">لوگ اور معاشرہ</translation>
 <translation id="1458140305240870199">زیر جامے</translation>
 <translation id="1459693405370120464">موسم</translation>
@@ -1957,6 +1958,7 @@
 <translation id="4407758156081352648">‏سیکیورٹی کو برقرار رکھنے کے لیے، آپ کی تنظیم Chrome میں پاس ورڈز کو دوبارہ استعمال کرنے کی اجازت نہیں دیتی ہے۔ ‫Chrome میں پاس ورڈز کو صارف کی رازداری کے تحفظ کے لیے مرموز کیا جاتا ہے۔</translation>
 <translation id="4408413947728134509">کوکیز <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">اس کنفیگریشن کو قابل انسٹال کے طور پر نشان زد کیا جاتا ہے لیکن اس فن تعمیر کے لیے کوئی تصویر فراہم نہیں کی جاتی ہے، لہذا اسے انسٹال نہیں کیا جا سکتا۔</translation>
+<translation id="4412377069090572315">لوگ کیا کہہ رہے ہیں</translation>
 <translation id="4414452699610169758">‏پاس ورڈز، ادائیگی کے طریقے اور پتے محفوظ کرنے اور پُر کرنے کے لیے Google پاس ورڈ مینیجر اور Chrome آٹو فِل کا استعمال کریں</translation>
 <translation id="4414515549596849729">کوکیز اور سائٹ کا ڈیٹا</translation>
 <translation id="4415156962929755728">پلاسٹک (ہائی گلوس)</translation>
@@ -2778,6 +2780,7 @@
 <translation id="5937560539988385583">صفحہ کا ترجمہ ہو گیا</translation>
 <translation id="5938153366081463283">ورچوئل کارڈ شامل کریں</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">‏یہ معلومات آزاد جائزہ کی ویب سائٹس جیسے Trustpilot, ScamAdviser, Google اور مزید سے آتی ہے۔ خلاصے AI کے ساتھ بنائے جاتے ہیں۔</translation>
 <translation id="5944297261866530437">فیبرک (ہائی گلوس)</translation>
 <translation id="5950901984834744590">ریزرز اور شیورز</translation>
 <translation id="5951495562196540101">صارف اکاؤنٹ کے ذریعے اندراج نہیں کر سکتے (پیکیج شدہ لائسنس دستیاب ہے)۔</translation>
@@ -3145,6 +3148,7 @@
 <translation id="6567832540451970450">آپ کا منتظم اس سائٹ کے لیے <ph name="PERMISSION" /> کی اجازت دیتا ہے</translation>
 <translation id="6568793038316600992">‏ادائیگی کے طریقوں کا نظم کریں بٹن Chrome کی ترتیبات میں اپنی ادائیگیوں اور کریڈٹ کارڈ کی معلومات کا نظم کرنے کے لیے فعال کریں</translation>
 <translation id="6569060085658103619">آپ ایک ایکسٹینشن صفحہ دیکھ رہے ہیں</translation>
+<translation id="6572867903637058088">کیا یہ مددگار ہے؟</translation>
 <translation id="6573200754375280815">دائیں طرف دُہرا سوراخ</translation>
 <translation id="6574762126505704998">بھریں</translation>
 <translation id="6575408526598156416">اکاؤنٹ میں محفوظ کریں</translation>
@@ -4323,9 +4327,11 @@
 <translation id="8672535691554698269">کمپیوٹر نیٹ ورکس</translation>
 <translation id="8675446170353411473">آپ کی فائلز <ph name="CLOUD_PROVIDER" /> میں اپ لوڈ ہو رہی ہیں</translation>
 <translation id="8676424191133491403">کوئی تاخیر نہیں</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{‫{COUNT} ٹیبل حذف ہو گیا}other{‫{COUNT} ٹیبلز حذف ہو گئے}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />، جواب، <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> پر موجود ویب صفحہ لوڈ نہیں ہو سکا کیوںکہ:</translation>
 <translation id="8682297334444610648">‏‫Dino گیم، کھیلنے کے لیے تھپتھپائیں</translation>
+<translation id="8685225035093721011">اسٹور کے جائزے</translation>
 <translation id="8686424632716064939">کمپیوٹر سیکیورٹی</translation>
 <translation id="8687278439622293018">اندراج <ph name="ENTRY_VOICEOVER" /> کو حذف کر دیا گیا ہے</translation>
 <translation id="8687429322371626002">آپ کا آلہ اور اکاؤنٹ <ph name="MANAGER" /> کے زیر انتظام ہے۔</translation>

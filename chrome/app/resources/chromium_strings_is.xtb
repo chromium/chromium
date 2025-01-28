@@ -366,6 +366,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="6145820983052037069">Hér geturðu skipt á milli Chromium prófíla</translation>
 <translation id="615103374448673771">Ef þú leyfir fótspor kann Chromium að nota þau við forhleðslu</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
+<translation id="6173308241973263798">Eyddu Chromium-gögnum af reikningnum þínum</translation>
 <translation id="6174920971222007286">Þessi skrá kann að vera hættuleg<ph name="LINE_BREAK" />Chromium getur athugað niðurhalið fyrir þig ef þú gefur upp aðgangsorðið. Upplýsingar um skrána verða sendar í örugga vefskoðun Google en efni og aðgangsorð hennar verða eftir í tækinu þínu.</translation>
 <translation id="6182736845697986886">Uppsetning mistókst vegna innri villu uppfærsluþjóns.</translation>
 <translation id="6183079672144801177">Vertu viss um að þú sért skráð(ur) inn á Chromium í <ph name="TARGET_DEVICE_NAME" /> og reyndu svo að senda aftur.</translation>
@@ -432,6 +433,7 @@ Sumir eiginleikar kunna að verða óaðgengilegir. Tilgreindu aðra prófílam�
 <translation id="684888714667046800">Ekki er hægt að tengjast internetinu. Ef þú notar eldvegg skaltu tryggja að <ph name="PRODUCT_EXE_NAME" /> sé á hvíta listanum.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium komst að því að „<ph name="EXTENSION_NAME" />“ inniheldur spilliforrit</translation>
+<translation id="6877631896957360295">Ef þú gleymdir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="SETTINGS_LINK" /> Chromium-gögnunum á reikningnum þínum.</translation>
 <translation id="6896758677409633944">Afrita</translation>
 <translation id="6929417474050522668">Þegar kveikt er á prufuútgáfum gera auglýsingamælingar vefsvæðum sem þú opnar kleift að biðja Chromium um upplýsingar sem hjálpa vefsvæðinu að mæla afköst auglýsinga þess. Auglýsingamælingar takmarka rakningu á milli vefsvæða með því að flytja eins lítið magn upplýsinga á milli vefsvæða og mögulegt er.</translation>
 <translation id="6940431691900807093">Seinna getur vefsvæði sem þú opnar beðið Chrome um að sýna áhugasvið þitt til að hægt sé að sérsníða auglýsingarnar sem þú sérð. Chromium getur deilt allt að 3 áhugasviðum.</translation>

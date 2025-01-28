@@ -110,7 +110,6 @@
 <translation id="143681031165817424">پتہ صرف اس آلہ پر محفوظ ہے</translation>
 <translation id="1445276840641906250">ایک ہی براؤزر میں آپ کے سبھی ٹیبز</translation>
 <translation id="1450170672351507823">معیاری تحفظ آن ہے۔ اور بھی مزید سیکیورٹی کے لیے، بہتر تحفظ کا استعمال کریں۔</translation>
-<translation id="1454615514353469963">‏پاس ورڈز، پاس کیز اور دیگر ڈیٹا کو Google پاس ورڈ مینیجر سے مستقل طور پر حذف کر دیا جائے گا</translation>
 <translation id="1455660774629812862">مت چھپائیں</translation>
 <translation id="1460751212339734034">وقت کی بچت کریں، کم ٹائپ کریں</translation>
 <translation id="1466035273550360103">کوئی کھلے ٹیبز نہیں ہیں</translation>
@@ -476,6 +475,7 @@
 <translation id="3053332585453689122">‏آپ کے ملاحظہ کردہ URLs اور صفحہ کے مواد، ڈاؤن لوڈز، ایکسٹینشن کی سرگرمی اور سسٹم کی معلومات کا ایک چھوٹا سا نمونہ Google محفوظ براؤزنگ کو یہ چیک کرنے کے لیے بھیجتا ہے کہ آیا وہ نقصان دہ ہیں۔</translation>
 <translation id="3055102495753300780">معلوماتی اسٹوریج</translation>
 <translation id="3059270601560379555">نئی تلاش</translation>
+<translation id="3064547930554042309">ڈاؤن لوڈز کا نظم کریں</translation>
 <translation id="3072279342064724558">پاس ورڈ پہلے سے موجود ہے</translation>
 <translation id="3076846064362030967">‏آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔ سائن ان ہونے پر آپ کے Google اکاؤنٹ میں <ph name="BEGIN_LINK" />سرگرمی کی دیگر اقسام<ph name="END_LINK" /> محفوظ ہو سکتی ہیں۔ آپ انہیں کسی بھی وقت حذف کر سکتے ہیں۔
 
@@ -699,6 +699,7 @@
 <translation id="4154753961803534698">کیمرا سے تلاش کریں</translation>
 <translation id="4158491215857439601">پاس ورڈ مینیجر</translation>
 <translation id="4163699139741158298">{count,plural, =1{بک مارک "{title}" میں محفوظ کیا گیا۔ یہ صرف اس آلہ پر محفوظ ہے۔}other{‫{count} بک مارکس "{title}" میں محفوظ کیے گئے۔ یہ صرف اس آلے پر محفوظ ہیں۔}}</translation>
+<translation id="4164514562270305824">ازخود حذف ہونے والے ڈاؤن لوڈز</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" /> پر ختم ہونے والا <ph name="NETWORK_NAME" /></translation>
 <translation id="4169535189173047238">اجازت نہ دیں</translation>
 <translation id="4172051516777682613">ہمیشہ دکھائیں</translation>
@@ -1018,6 +1019,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5579012242779565775">پڑھنے کی فہرست کو چھپائیں</translation>
 <translation id="5585019845078534178">کارڈز</translation>
 <translation id="5595485650161345191">پتے میں ترمیم کریں</translation>
+<translation id="559567008082979829">اپنے ڈاؤن لوڈز کو ایک ماہ کے بعد حذف ہونے کیلئے سیٹ کریں۔</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>
 <translation id="560322036295180549">آپ کی تنظیم کے ذریعے اف کر دیا گیا</translation>
 <translation id="5611107723541161735">ان سائٹس کے شارٹ کٹس جنہیں آپ نے اس آلے پر حال ہی میں ملاحظہ کیا ہے۔</translation>

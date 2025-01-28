@@ -271,6 +271,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Les claus "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" no es poden establir en el mateix diccionari que les claus "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
 <translation id="1455413310270022028">Goma d'esborrar</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Mostra 0 ressenyes}=1{Mostra 1 ressenya}other{Mostra les # ressenyes}}</translation>
 <translation id="1458059624921545588">Gent i societat</translation>
 <translation id="1458140305240870199">Roba interior</translation>
 <translation id="1459693405370120464">Temps</translation>
@@ -961,6 +962,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2674170444375937751">Confirmes que vols suprimir aquestes pàgines de l'historial?</translation>
 <translation id="2674524144218093528">Pintura i acabaments de cases</translation>
 <translation id="2674804415323431591">Amaga els suggeriments</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> grups de pestanyes ja no estan disponibles</translation>
 <translation id="2677748264148917807">Surt</translation>
 <translation id="2683195745483370038">S'han trobat altres resultats</translation>
 <translation id="2686919536310834199">Envia suggeriments sobre la funció Ajuda'm a escriure.</translation>
@@ -1956,6 +1958,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4407758156081352648">Per motius de seguretat, la teva organització no permet reutilitzar contrasenyes a Chrome. Les contrasenyes a Chrome estan encriptades per protegir la privadesa de l'usuari.</translation>
 <translation id="4408413947728134509">Galetes <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Aquesta configuració està marcada com a instal·lable, però no s'ha proporcionat cap imatge per a aquesta arquitectura, de manera que no es pot instal·lar.</translation>
+<translation id="4412377069090572315">Què en diuen altres persones</translation>
 <translation id="4414452699610169758">Utilitza el gestor de contrasenyes de Google i Emplenament automàtic de Chrome per desar i emplenar contrasenyes, formes de pagament i adreces</translation>
 <translation id="4414515549596849729">dades de llocs web i galetes</translation>
 <translation id="4415156962929755728">Plàstic (brillantor alta)</translation>
@@ -2264,6 +2267,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5001526427543320409">Galetes de tercers</translation>
 <translation id="5002932099480077015">Si s'activa, Chrome emmagatzemarà una còpia de la targeta en aquest dispositiu per agilitzar l'emplenament de formularis.</translation>
 <translation id="5007392906805964215">Revisa</translation>
+<translation id="500790844453430087">Els grups de pestanyes <ph name="GROUP_TITLE_1" /> i <ph name="GROUP_TITLE_2" /> ja no estan disponibles</translation>
 <translation id="5011561501798487822">Idioma detectat</translation>
 <translation id="5015510746216210676">Nom de l'ordinador:</translation>
 <translation id="5017554619425969104">Text que has copiat</translation>
@@ -2736,6 +2740,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5866898949289125849">Estàs consultant una pàgina d'eines per a desenvolupadors</translation>
 <translation id="5869405914158311789">No es pot accedir a aquest lloc web</translation>
 <translation id="5869522115854928033">Contrasenyes desades</translation>
+<translation id="5872215789867188990">El grup de pestanyes <ph name="GROUP_TITLE" /> ja no està disponible</translation>
 <translation id="5872692522325383488">L'IBAN s'ha desat</translation>
 <translation id="5873297634595728366">Vehicles dièsel</translation>
 <translation id="5877359070305966420">Recursos humans</translation>
@@ -2777,6 +2782,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5937560539988385583">S'ha traduït la pàgina</translation>
 <translation id="5938153366081463283">Afegeix una targeta virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Aquesta informació prové de llocs web independents de ressenyes, com ara Trustpilot, ScamAdviser, Google i d'altres. Els resums es creen amb IA.</translation>
 <translation id="5944297261866530437">Tela (brillantor alta)</translation>
 <translation id="5950901984834744590">Màquines i fulles d'afaitar</translation>
 <translation id="5951495562196540101">El dispositiu no es pot inscriure amb un compte de consumidor (hi ha una llicència associada disponible).</translation>
@@ -3143,6 +3149,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6567832540451970450">El teu administrador ha concedit permís de <ph name="PERMISSION" /> a aquest lloc web</translation>
 <translation id="6568793038316600992">Botó Gestiona les formes de pagament: activa'l per gestionar la informació dels pagaments i de les targetes de crèdit a la configuració de Chrome</translation>
 <translation id="6569060085658103619">Estàs consultant la pàgina d'una extensió</translation>
+<translation id="6572867903637058088">Et sembla útil?</translation>
 <translation id="6573200754375280815">Encunyació doble a la dreta</translation>
 <translation id="6574762126505704998">Emplena</translation>
 <translation id="6575408526598156416">Desa al compte</translation>
@@ -4322,9 +4329,11 @@ Detalls addicionals:
 <translation id="8672535691554698269">Xarxes informàtiques</translation>
 <translation id="8675446170353411473">Els fitxers s'estan penjant a <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Sense retard</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{S'ha suprimit {COUNT} taula}other{S'han suprimit {COUNT} taules}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">La pàgina web <ph name="PAGE" /> no s'ha pogut carregar pels motius següents:</translation>
 <translation id="8682297334444610648">Joc del dinosaure. Toca per jugar-hi.</translation>
+<translation id="8685225035093721011">Ressenyes de la botiga</translation>
 <translation id="8686424632716064939">Seguretat informàtica</translation>
 <translation id="8687278439622293018">L'entrada <ph name="ENTRY_VOICEOVER" /> s'ha suprimit</translation>
 <translation id="8687429322371626002">El dispositiu i el compte estan gestionats per <ph name="MANAGER" />.</translation>

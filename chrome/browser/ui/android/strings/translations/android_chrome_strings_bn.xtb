@@ -1210,6 +1210,7 @@
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> এবং আরও <ph name="TAB_COUNT_ONE" />টি ট্যাব বন্ধ করা হবে}one{<ph name="TAB_TITLE" /> এবং আরও <ph name="TAB_COUNT_MANY" />টি ট্যাব বন্ধ করা হবে}other{<ph name="TAB_TITLE" /> এবং আরও <ph name="TAB_COUNT_MANY" />টি ট্যাব বন্ধ করা হবে}}</translation>
 <translation id="6560414384669816528">Sogou দিয়ে খুঁজুন</translation>
 <translation id="656065428026159829">আরও দেখুন</translation>
+<translation id="6564820424018738527">আপনার Android ডিভাইসে একই ধরনের সেটিংস অন্তর্ভুক্ত থাকতে পারে। যদি Chrome এবং আপনার Android ডিভাইসে বিজ্ঞাপন পরিমাপ করার প্রসেস চালু থাকে, তাহলে কোনও কোম্পানি আপনার ভিজিট করা ওয়েবসাইট এবং ব্যবহার করা বিভিন্ন অ্যাপ জুড়ে বিজ্ঞাপনের কার্যকারিতা হয়ত পরিমাপ করতে পারবে।</translation>
 <translation id="6565959834589222080">ওয়াই-ফাই উপলভ্য হলে ব্যবহার করা হয়</translation>
 <translation id="6569373978618239158">এখন আপনি নতুন কোনও ট্যাব খুললেই, <ph name="SITE_NAME" />-এর গল্প পড়তে পারবেন। আপনি যেসব সাইট ফলো করেন, সেগুলি আপনার Google অ্যাকাউন্টে সেভ হয়ে যায়। আপনি 'ডিসকভার' সেটিংসে গিয়ে সেগুলি ম্যানেজ করতে পারেন।</translation>
 <translation id="6570116402456758630">পৃষ্ঠার সারাংশ</translation>

@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Хаягийг зөвхөн энэ төхөөрөмжид хадгалдаг</translation>
 <translation id="1445276840641906250">Таны бүх таб нэг хөтчид</translation>
 <translation id="1450170672351507823">Стандарт хамгаалалт асаалттай байна. Аюулгүй байдлаа улам нэмэгдүүлэхийг хүсвэл сайжруулсан хамгаалалтыг ашиглаарай.</translation>
-<translation id="1454615514353469963">Нууц үг, нэвтрэх түлхүүр болон бусад өгөгдлийг Google Нууц үгний менежерээс бүрмөсөн устгана</translation>
 <translation id="1455660774629812862">Бүү нуу</translation>
 <translation id="1460751212339734034">Цаг хэмнэж, бага бичээрэй</translation>
 <translation id="1466035273550360103">Ямар ч нээлттэй таб байхгүй</translation>
@@ -563,6 +562,7 @@
 <translation id="3517216995152707259">Интернэтээр үзсэн өгөгдлөө устгах нь таныг Google Бүртгэлээс тань гаргахгүй. Ингэхийн тулд <ph name="BEGIN_LINK" />Chrome-с гарна уу<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Веб-д зочлохын тулд цонх нээнэ үү.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Табыг нээх}other{{count} табыг нээх}}</translation>
+<translation id="3523513363815970085">"Таны шилдэг сайтууд"-ыг нуух</translation>
 <translation id="3523789730715594198">Та тохиргоонд хүссэн үедээ синк хийхийг зогсоох боломжтой. Google таны түүхэд тулгуурлан Хайлт болон бусад үйлчилгээг хувийн болгож магадгүй.</translation>
 <translation id="3527085408025491307">Хавтас</translation>
 <translation id="3529024052484145543">Аюултай</translation>
@@ -838,6 +838,7 @@
 <translation id="4769198578611055647">Танд дурын төхөөрөмж дээр хадгалсан нэвтрэх түлхүүрт хандахад тусалдаг</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Нууцлалтай горимд нээх үү?</translation>
+<translation id="479208892659046780">Таны шилдэг сайтууд</translation>
 <translation id="4792385443586519711">Компанийн нэр</translation>
 <translation id="479628432297359449">Татахыг зогсоох уу?</translation>
 <translation id="4796496140132859135">Табын бүлэг. Хураасан.</translation>

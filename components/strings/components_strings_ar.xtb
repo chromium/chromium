@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">لا يمكن ضبط المفاتيح "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" في القاموس ذاته مثل مفاتيح "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />".</translation>
 <translation id="1455413310270022028">ممحاة</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{ما مِن مراجعات لعرضها}=1{عرض مراجعة واحدة}two{عرض كل المراجعات البالغ عددها #}few{عرض كل المراجعات البالغ عددها #}many{عرض كل المراجعات البالغ عددها #}other{عرض كل المراجعات البالغ عددها #}}</translation>
 <translation id="1458059624921545588">ناس ومجتمعات</translation>
 <translation id="1458140305240870199">ملابس داخلية</translation>
 <translation id="1459693405370120464">الطقس</translation>
@@ -1957,6 +1958,7 @@
 <translation id="4407758156081352648">‏للحفاظ على الأمان، لا تسمح مؤسستك بإعادة استخدام كلمات المرور في Chrome. ويتمّ تشفير كلمات المرور في Chrome لحماية خصوصية المستخدم.</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> من ملفات تعريف الارتباط</translation>
 <translation id="4412074349188076601">تم وضع علامة على هذه الإعدادات تشير إلى أنّها قابلة للتثبيت، إلا أنّه لم يتم تقديم أي نسخة لهذه البنية، لذا لا يمكن تثبيتها.</translation>
+<translation id="4412377069090572315">آراء الأشخاص</translation>
 <translation id="4414452699610169758">‏يمكنك استخدام "مدير كلمات المرور في Google" وميزة "الملء التلقائي" في Chrome لحفظ كلمات المرور وطرق الدفع والعناوين وملئها تلقائيًا</translation>
 <translation id="4414515549596849729">ملفات تعريف الارتباط وبيانات المواقع الإلكترونية
 </translation>
@@ -2779,6 +2781,7 @@
 <translation id="5937560539988385583">تمت ترجمة الصفحة</translation>
 <translation id="5938153366081463283">إضافة بطاقة افتراضية</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">‏يتم الحصول على هذه المعلومات من مواقع إلكترونية مستقلة لكتابة المراجعات، مثل Trustpilot وScamAdviser وGoogle وغير ذلك. ويتم إنشاء الملخّصات باستخدام الذكاء الاصطناعي.</translation>
 <translation id="5944297261866530437">نسيج (شديد اللمعان)</translation>
 <translation id="5950901984834744590">أدوات وماكينات حلاقة</translation>
 <translation id="5951495562196540101">لا يمكن التسجيل باستخدام حساب المستهلك (الترخيص المجمّع متوفّر).</translation>
@@ -3145,6 +3148,7 @@
 <translation id="6567832540451970450">يسمح المشرف باستخدام <ph name="PERMISSION" /> لهذا الموقع الإلكتروني</translation>
 <translation id="6568793038316600992">‏زر إدارة طرق الدفع: انقر على هذا الزر لإدارة الدفعات ومعلومات بطاقة الائتمان في إعدادات Chrome.</translation>
 <translation id="6569060085658103619">أنت تعرض صفحة إضافة</translation>
+<translation id="6572867903637058088">هل هذه المعلومات مفيدة؟</translation>
 <translation id="6573200754375280815">عمل ثقبَين يمينًا</translation>
 <translation id="6574762126505704998">تعبئة</translation>
 <translation id="6575408526598156416">الحفظ في الحساب</translation>
@@ -4327,9 +4331,11 @@
 <translation id="8672535691554698269">شبكات كمبيوتر</translation>
 <translation id="8675446170353411473">جارٍ الآن تحميل ملفاتك إلى <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">بلا تأخير</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{تم حذف جدول واحد ({COUNT})}zero{تم حذف {COUNT} جدول}two{تم حذف جدولَين ({COUNT})}few{تم حذف {COUNT} جداول}many{تم حذف {COUNT} جدولاً}other{تم حذف {COUNT} جدول}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />، إجابة، <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">تعذر تحميل صفحة الويب على <ph name="PAGE" /> لأن:</translation>
 <translation id="8682297334444610648">انقر لبدء لعبة الديناصور</translation>
+<translation id="8685225035093721011">مراجعات المتجر</translation>
 <translation id="8686424632716064939">أمان أجهزة الكمبيوتر</translation>
 <translation id="8687278439622293018">تم حذف الإدخال <ph name="ENTRY_VOICEOVER" />.</translation>
 <translation id="8687429322371626002">يدير <ph name="MANAGER" /> جهازك وحسابك.</translation>

@@ -110,7 +110,6 @@
 <translation id="143681031165817424">ವಿಳಾಸವನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1445276840641906250">ಒಂದೇ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="1450170672351507823">ಪ್ರಮಾಣಿತ ಸುರಕ್ಷತೆ ಆನ್ ಆಗಿದೆ. ಇನ್ನೂ ಹೆಚ್ಚಿನ ಸುರಕ್ಷತೆಗಾಗಿ, ವರ್ಧಿತ ರಕ್ಷಣೆಯನ್ನು ಬಳಸಿ.</translation>
-<translation id="1454615514353469963">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಪಾಸ್‌ಕೀಗಳು ಮತ್ತು ಇತರ ಡೇಟಾವನ್ನು Google Password Manager ನಿಂದ ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="1455660774629812862">ಮರೆಮಾಡಬೇಡಿ</translation>
 <translation id="1460751212339734034">ಸಮಯ ಉಳಿಸಿ, ಕಡಿಮೆ ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="1466035273550360103">ಯಾವುದೇ ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಿಲ್ಲ</translation>
@@ -563,6 +562,7 @@
 <translation id="3517216995152707259">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸುವುದರಿಂದ ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಸೈನ್ ಔಟ್ ಆಗುವುದಿಲ್ಲ. ಹಾಗೆ ಮಾಡಲು, <ph name="BEGIN_LINK" />Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">ವೆಬ್ ಬ್ರೌಸ್ ಮಾಡಲು ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ.</translation>
 <translation id="3519905498307021260">{count,plural, =1{ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ}one{{count} ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ}other{{count} ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ}}</translation>
+<translation id="3523513363815970085">"ನಿಮ್ಮ ಟಾಪ್ ಸೈಟ್‌ಗಳನ್ನು" ಮರೆಮಾಡಿ</translation>
 <translation id="3523789730715594198">ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಸಿಂಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು. Google, ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ಆಧರಿಸಿ Search ಮತ್ತು ಇತರ ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಬಹುದು.</translation>
 <translation id="3527085408025491307">ಫೋಲ್ಡರ್</translation>
 <translation id="3529024052484145543">ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
@@ -838,6 +838,7 @@
 <translation id="4769198578611055647">ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡಿದ ಪಾಸ್‌ಕೀಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ತೆರೆಯಬೇಕೆ?</translation>
+<translation id="479208892659046780">ನಿಮ್ಮ ಟಾಪ್ ಸೈಟ್‌ಗಳು</translation>
 <translation id="4792385443586519711">ಕಂಪನಿ ಹೆಸರು</translation>
 <translation id="479628432297359449">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಬೇಕೆ?</translation>
 <translation id="4796496140132859135">ಟ್ಯಾಬ್‌ ಗುಂಪು. ಕುಗ್ಗಿಸಲಾಗಿದೆ.</translation>

@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Anwani imehifadhiwa kwenye kifaa hiki</translation>
 <translation id="1445276840641906250">Vichupo vyako vyote katika kivinjari kimoja</translation>
 <translation id="1450170672351507823">Kipengele cha ulinzi wa kawaida kimewashwa. Kwa usalama zaidi, tumia kipengele cha usalama Ulioboreshwa.</translation>
-<translation id="1454615514353469963">Manenosiri, funguo za siri na data nyingine itafutwa kabisa kwenye Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="1455660774629812862">Usivifiche</translation>
 <translation id="1460751212339734034">Okoa muda, andika kidogo</translation>
 <translation id="1466035273550360103">Hakuna vichupo vilivyofunguliwa</translation>
@@ -563,6 +562,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3517216995152707259">Hatua ya kufuta data yako ya kuvinjari haikuondoi kwenye Akaunti yako ya Google. Ili ufanye hivyo, <ph name="BEGIN_LINK" />ondoka kwenye akaunti ya Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Fungua kichupo ili uvinjari wavuti.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Fungua kichupo}other{Fungua vichupo {count}}}</translation>
+<translation id="3523513363815970085">Ficha "Tovuti zako maarufu"</translation>
 <translation id="3523789730715594198">Unaweza kuacha kusawazisha wakati wowote katika mipangilio. Google inaweza kuweka mapendeleo kwenye huduma ya Tafuta na huduma nyinginezo kulingana na historia yako.</translation>
 <translation id="3527085408025491307">Folda</translation>
 <translation id="3529024052484145543">Si salama</translation>
@@ -838,6 +838,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4769198578611055647">Hukusaidia kufikia funguo za siri zilizohifadhiwa kwenye kifaa chochote</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Ungependa kufungua katika hali fiche?</translation>
+<translation id="479208892659046780">Tovuti zako maarufu</translation>
 <translation id="4792385443586519711">Jina la kampuni</translation>
 <translation id="479628432297359449">Ungependa kuacha kupakua?</translation>
 <translation id="4796496140132859135">Kikundi cha vichupo. Kimekunjwa.</translation>

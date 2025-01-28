@@ -360,6 +360,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5648328599815354043">Chrome doet meer om je online te beschermen</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan gevaarlijk zijn en is daarom door Chrome geblokkeerd.</translation>
 <translation id="566568153320186256">Chrome spaart de batterij door achtergrondactiviteit en visuele effecten te beperken, zoals vloeiend scrollen en videoframesnelheden. <ph name="BEGIN_LINK" />Meer informatie over Energiebesparing<ph name="END_LINK" /></translation>
+<translation id="567202749201779594">De Chrome-gegevens in je account wissen</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Je beheerder vraagt je Chrome opnieuw te starten om deze update uit te voeren.}=1{Je beheerder vraagt je Chrome opnieuw te starten om deze update uit te voeren. Je incognitovenster kan niet opnieuw worden geopend.}other{Je beheerder vraagt je Chrome opnieuw te starten om deze update uit te voeren. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
 <translation id="5686916850681061684">Pas Google Chrome aan en beheer de instellingen. Je aandacht is vereist. Klik voor meer informatie.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -472,6 +473,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="7024536598735240744">Fout bij uitpakken: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installatie gestopt.</translation>
 <translation id="7025800014283535195">Je kunt hier schakelen tussen verschillende Chrome-profielen</translation>
+<translation id="7031914411614877914">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, moet je de Chrome-gegevens in je account <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7048502283602470098">AI verkennen</translation>
 <translation id="7059914902409643750">Chrome personaliseren</translation>
 <translation id="7071827361006050863">Chrome verwijdert zo meteen browsegegevens</translation>

@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">لغو شده</translation>
 <translation id="1020274983236703756">اکنون دارایی‌های انحصاری <ph name="PRODUCT_NAME" /> دردسترس است</translation>
 <translation id="1022628058306505708">جریان خاک</translation>
+<translation id="102432830749687801">‏قبل‌از اینکه دسترسی‌تان را ازدست بدهید، حتماً داده‌های حساب تحصیلی خود را بااستفاده از برنامه «انتقال محتوا» که Google ارائه کرده است به حساب شخصی خود انتقال دهید.</translation>
 <translation id="1026212596705997935">از این میان‌بر برای «<ph name="CONFLICT_ACCEL_NAME" />» استفاده می‌شود. میان‌بر جدیدی اختصاص دهید. برای جایگزین کردن میان‌بر موجود، این میان‌بر را دوباره فشار دهید.</translation>
 <translation id="1030856839388844477">بازنشانی مصرف داده</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> رشته، <ph name="CPU_MAX_CLOCK_SPEED" /> گیگاهرتز)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">باتری قاب دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="1397738625398125236">دروازه را می‌توان پینگ کرد</translation>
 <translation id="1398634363027580500">‏تأخیر بسیار بالا در HTTPS</translation>
+<translation id="1406389211945506521">بابت هم‌رسانی تجربه‌تان سپاس‌گزاریم. بازخورد شما به ما کمک می‌کند محتوای دقیق‌تر و مفیدتری بسازیم.</translation>
 <translation id="1407069428457324124">زمینه تاریک</translation>
 <translation id="1413240736185167732">انجام نشد - فیلتر کار نکرد</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,11 @@
 <translation id="1808803439260407870">هنر کلاسیک</translation>
 <translation id="181434555916624618">فعلاً نتایج حاوی افراد نمایش داده نخواهد شد. پیام‌واره دیگری را امتحان کنید.</translation>
 <translation id="1815850098929213707">کلید انتخاب‌شده <ph name="KEYS" /> است. برای ویرایش کنترل، روی دکمه تک‌ضرب بزنید</translation>
+<translation id="1818174214124933000">‏وقتی ارسال را انتخاب کنید، بازخوردتان و محتوا (نشان‌داده‌شده در زیر) به Google ارسال خواهد شد، افرادی آن‌ها را بازبینی خواهند کرد و از آن‌ها برای آموزش یا بهبود محصولات و سرویس‌های ما مطابق با <ph name="LINK_POLICY_BEGIN" />خط‌مشی رازداری<ph name="LINK_POLICY_END" /> و <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />شرایط خدمات Google<ph name="LINK_TERMS_OF_SERVICE_END" /> استفاده خواهد شد.</translation>
 <translation id="1823120442877418684">شخصیت‌ها</translation>
 <translation id="1827738518074806965">گالری هنری</translation>
+<translation id="183287940576828840">توهین‌آمیز/ غیرایمن</translation>
+<translation id="1834032517784994783">انتخاب زبان ترانویسی</translation>
 <translation id="1836553715834333258">رنگ سیستم</translation>
 <translation id="183675228220305365">واقع‌گرا</translation>
 <translation id="1838374766361614909">پاک کردن جستجو</translation>
@@ -225,6 +230,7 @@
 <translation id="1908234395526491708">‏خطاهای درخواست UDP</translation>
 <translation id="1908394185991500139">پیکان چپ</translation>
 <translation id="1914144885717544695">در روز جمعه</translation>
+<translation id="1915960750806557358">بازخوردتان را با ما درمیان بگذارید یا مشکلتان را شرح دهید. مطمئن شوید اطلاعات شخصی، حساس، یا محرمانه وارد نکنید.</translation>
 <translation id="1923388006036088459">رنگ‌های ثانویه</translation>
 <translation id="1945403655450283000">ضبط‌صوت</translation>
 <translation id="1947737735496445907">چاپ‌شده</translation>
@@ -596,6 +602,7 @@
 <translation id="387301095347517405">تعداد دفعاتی که باتری‌تان یک دوره شارژ کامل را گذرانده است</translation>
 <translation id="3877066159641251281">گوش دادن به ترجمه</translation>
 <translation id="3880601782712134623">شناسایی خودکار صداهای متمایز و اختصاص برچسب عمومی به آن‌ها، مثل «گوینده ۱» و «گوینده ۲»</translation>
+<translation id="38811596981744338">مشکل حقوقی</translation>
 <translation id="3885327323343477505">تغییر محافظ صفحه‌نمایش</translation>
 <translation id="3889914174935857450">بازنشانی تاریخ</translation>
 <translation id="3897092660631435901">منو</translation>
@@ -727,6 +734,7 @@
 <translation id="4483049906298469269">پینگ کردن دروازه شبکه غیر پیش‌فرض انجام نشد</translation>
 <translation id="4483498983731992167">ترانویسی ایجاد نشد</translation>
 <translation id="4486524074141928967">در <ph name="TIME" /> از سیستم خارج خواهید شد</translation>
+<translation id="4487890678161807486">باز کردن انتخابگر زبان ترانویسی</translation>
 <translation id="4500722292849917410">میان‌بر دردسترس نیست. میان‌بر جدیدی را بااستفاده از یکی از کلیدهای توصیف‌گر (مهار، دگرساز، تبدیل، یا <ph name="META_KEY" />) فشار دهید.</translation>
 <translation id="4500966230243561393">رنگ میانا</translation>
 <translation id="4503223151711056411">جهت‌نمای چپ</translation>
@@ -821,6 +829,7 @@
 <translation id="4921665434385737356">در <ph name="NUM_SECONDS" /> ثانیه <ph name="RATE" /> شارژ شد.</translation>
 <translation id="4930320165497208503">برای راه‌اندازی یا به‌روزرسانی اتصال، به <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> بروید.</translation>
 <translation id="4932733599132424254">تاریخ</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />، در برگه جدیدی باز می‌شود</translation>
 <translation id="4946927805998996217">درحال تولید کردن خلاصه</translation>
 <translation id="4950314376641394653">سفت‌افزار <ph name="DEVICE_NAME" /> به نسخه <ph name="VERSION" /> به‌روزرسانی شد</translation>
 <translation id="4950893758552030541">تونل درختان</translation>
@@ -1208,6 +1217,7 @@
 <translation id="6692996468359469499">دریافت اطلاعاتی که با انتخابتان مرتبط است</translation>
 <translation id="6694534975463174713">قفل کردن</translation>
 <translation id="6700703207451721535">دسترسی به این پیوند مجاز نیست. درصورت نیاز به دسترسی، با معلم خود تماس بگیرید.</translation>
+<translation id="6703179086771097594">چه چیزی درست کار نکرد؟</translation>
 <translation id="6704062477274546131">وضوح ساناد</translation>
 <translation id="6712933881624804031">دره</translation>
 <translation id="6716013206176357696">توت فرنگی</translation>
@@ -1281,6 +1291,7 @@
 <translation id="7049916119678019302">مدل ترانویسی را در «تنظیمات» بارگیری کنید</translation>
 <translation id="7058278511608979688">پایان و ذخیره</translation>
 <translation id="7059230779847288458">درحال شارژ، <ph name="TIME_VALUE" /> تا شارژ کامل</translation>
+<translation id="7064209589142995848">انتقال محتوا</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> انتخاب شد</translation>
 <translation id="7066538517128343186">کلید <ph name="KEY" /></translation>
 <translation id="7068619307603204412">آماده کردن دستگاه</translation>
@@ -1592,6 +1603,7 @@
 <translation id="8476942730579767658">پنجره‌ها و میزکارها</translation>
 <translation id="8477536061607044749">طراحی گرافیک</translation>
 <translation id="8477551185774834963">تأخیر در ساناد اندکی از آستانه مجاز بالاتر است</translation>
+<translation id="8481308460877552925">درواقع نادرست</translation>
 <translation id="8482376765267780829">بخشی از نوشتار را برای ساده کردن انتخاب کنید</translation>
 <translation id="8483248364096924578">‏نشانی IP</translation>
 <translation id="8491311378305535241">‏نمی‌توان در برنامه‌های Android ازطریق دیوار آتش به وب‌سایت‌های HTTPS متصل شد</translation>

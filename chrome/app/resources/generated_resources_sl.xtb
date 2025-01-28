@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Če želite zagnati aplikacije za Android, sprostite prostor na disku.</translation>
 <translation id="1033780634303702874">Dostop do serijskih naprav</translation>
 <translation id="1034484273907870301">Trak z zavihki s sličicami za način tabličnega računalnika</translation>
+<translation id="1035289631433631911">Orodje za prenos vsebine</translation>
 <translation id="1035875743511577452">Kliknite »Spremeni temo«, če želite raziskati teme po navdihu umetnikov, narave in drugega.</translation>
 <translation id="1036348656032585052">Izklop</translation>
 <translation id="1036511912703768636">Dostop do katere koli od teh naprav USB</translation>
@@ -383,6 +384,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1246863218384630739">Navideznega računalnika <ph name="VM_NAME" /> ni bilo mogoče namestiti: URL slike je vrnil kodo napake <ph name="HTTP_ERROR" />. Obrnite se na skrbnika.</translation>
 <translation id="1247372569136754018">Mikrofon (vgrajeni)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Obvestila niso dovoljena za 1 spletno mesto.}one{Obvestila niso dovoljena za {NUM_SITES} spletno mesto.}two{Obvestila niso dovoljena za {NUM_SITES} spletni mesti.}few{Obvestila niso dovoljena za {NUM_SITES} spletna mesta.}other{Obvestila niso dovoljena za {NUM_SITES} spletnih mest.}}</translation>
+<translation id="125097549534200450">brisanje</translation>
 <translation id="1251366534849411931">Pričakovan zaviti oklepaj: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Iskanje mobilnih podatkovnih omrežij …</translation>
 <translation id="125220115284141797">Privzeto</translation>
@@ -5948,6 +5950,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5177479852722101802">Še naprej blokiraj dostop do kamere in mikrofona</translation>
 <translation id="5177549709747445269">Uporabljate prenos podatkov v mobilnem omrežju</translation>
 <translation id="5178667623289523808">Poišči prejšnje</translation>
+<translation id="5180276433875360121">Pokaži <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">Prenos</translation>
 <translation id="5181172023548002891">V Googlov upravitelj gesel za <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">To geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v računu Google, <ph name="USER_EMAIL" />.</translation>
@@ -8549,6 +8552,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7063311912041006059">URL s simbolom <ph name="SPECIAL_SYMBOL" /> na mestu poizvedbe</translation>
 <translation id="706342288220489463">Omogočanje Pomočniku, da za pomoč uporabi podatke na zaslonu</translation>
 <translation id="70641621694466590">Na stran za gesla</translation>
+<translation id="7064209589142995848">Prenos vsebine</translation>
 <translation id="7064734931812204395">Konfiguriranje vsebnika za Linux. Traja lahko največ 30 minut.</translation>
 <translation id="7065223852455347715">Ta naprava je zaklenjena v načinu, ki onemogoča včlanitev v podjetje. Če želite napravo včlaniti, jo morate najprej obnoviti.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 geslo je bilo uvoženo v storitev <ph name="BRAND" /> za račun <ph name="USER_EMAIL" />.}one{{NUM_PASSWORDS} geslo je bilo uvoženo v storitev <ph name="BRAND" /> za račun <ph name="USER_EMAIL" />.}two{{NUM_PASSWORDS} gesli sta bili uvoženi v storitev <ph name="BRAND" /> za račun <ph name="USER_EMAIL" />.}few{{NUM_PASSWORDS} gesla so bila uvožena v storitev <ph name="BRAND" /> za račun <ph name="USER_EMAIL" />.}other{{NUM_PASSWORDS} gesel je bilo uvoženih v storitev <ph name="BRAND" /> za račun <ph name="USER_EMAIL" />.}}</translation>
@@ -9588,6 +9592,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7810202088502699111">Pojavna okna na tej strani so blokirana.</translation>
 <translation id="7810367892333449285">Vnos mora biti v obliki <ph name="LPA_0" />$<ph name="LPA_1" />naslov SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />izbirni ujemajoči se ID<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Poskusite znova ali izberite eno od že ustvarjenih spodnjih tem.</translation>
+<translation id="7811986034759500329">Nastavljeno v sistemskih nastavitvah</translation>
 <translation id="7812170317334653156">Google Koledar je skrit</translation>
 <translation id="7814090115158024843">Na teh spletnih mestih nikoli ne ponudi pomoči za pisanje</translation>
 <translation id="7814458197256864873">&amp;Kopiraj</translation>

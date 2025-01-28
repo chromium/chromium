@@ -271,6 +271,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Nie można ustawić kluczy „<ph name="DATA_CONTROLS_FIRST_KEY_SET" />” w tym samym słowniku, w którym są już klucze „<ph name="DATA_CONTROLS_SECOND_KEY_SET" />”</translation>
 <translation id="1455413310270022028">Gumka</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Wyświetl 0 opinii}=1{Wyświetl 1 opinię}few{Wyświetl wszystkie # opinie}many{Wyświetl wszystkie # opinii}other{Wyświetl wszystkie # opinii}}</translation>
 <translation id="1458059624921545588">Ludzie i społeczeństwo</translation>
 <translation id="1458140305240870199">Bielizna</translation>
 <translation id="1459693405370120464">Pogoda</translation>
@@ -961,6 +962,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2674170444375937751">Czy na pewno chcesz usunąć te strony z historii?</translation>
 <translation id="2674524144218093528">Malowanie i wykończenie domu</translation>
 <translation id="2674804415323431591">Ukryj sugestie</translation>
+<translation id="26774279487328902">Grupy kart (<ph name="GROUP_COUNT" />) nie są już dostępne</translation>
 <translation id="2677748264148917807">Wyjdź</translation>
 <translation id="2683195745483370038">Znaleziono inne wyniki</translation>
 <translation id="2686919536310834199">Prześlij opinię na temat opcji Pomóż mi napisać.</translation>
@@ -1956,6 +1958,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4407758156081352648">Aby zapewnić bezpieczeństwo, Twoja organizacja nie zezwala na ponowne używanie haseł w Chrome. Hasła w Chrome są szyfrowane, aby chronić prywatność użytkowników.</translation>
 <translation id="4408413947728134509">Pliki cookie (<ph name="NUM_COOKIES" />)</translation>
 <translation id="4412074349188076601">Ta konfiguracja jest oznaczona jako możliwa do zainstalowania, ale nie można jej zainstalować, bo nie udostępniono obrazu dla tej architektury.</translation>
+<translation id="4412377069090572315">Opinie użytkowników</translation>
 <translation id="4414452699610169758">Używaj Menedżera haseł Google i autouzupełniania w Chrome, aby zapisywać i uzupełniać hasła, formy płatności i adresy</translation>
 <translation id="4414515549596849729">pliki cookie i dane witryn</translation>
 <translation id="4415156962929755728">Plastik (wysoki połysk)</translation>
@@ -2264,6 +2267,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5001526427543320409">Pliki cookie innych firm</translation>
 <translation id="5002932099480077015">Jeśli włączysz tę opcję, Chrome zapisze kopię Twojej karty na tym urządzeniu, by umożliwić Ci szybsze wypełnianie formularzy.</translation>
 <translation id="5007392906805964215">Sprawdź</translation>
+<translation id="500790844453430087">Grupy kart „<ph name="GROUP_TITLE_1" />” i „<ph name="GROUP_TITLE_2" />” nie są już dostępne</translation>
 <translation id="5011561501798487822">Wykryty język</translation>
 <translation id="5015510746216210676">Nazwa komputera:</translation>
 <translation id="5017554619425969104">Skopiowany tekst</translation>
@@ -2736,6 +2740,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5866898949289125849">To jest strona z narzędziami dla programistów</translation>
 <translation id="5869405914158311789">Ta witryna jest nieosiągalna</translation>
 <translation id="5869522115854928033">Zapisane hasła</translation>
+<translation id="5872215789867188990">Grupa kart „<ph name="GROUP_TITLE" />” nie jest już dostępna</translation>
 <translation id="5872692522325383488">Numer IBAN został zapisany</translation>
 <translation id="5873297634595728366">Pojazdy z silnikami Diesla</translation>
 <translation id="5877359070305966420">Zarządzanie zasobami ludzkimi</translation>
@@ -2777,6 +2782,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5937560539988385583">Strona została przetłumaczona</translation>
 <translation id="5938153366081463283">Dodaj kartę wirtualną</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Te informacje pochodzą z niezależnych stron z recenzjami, takich jak Trustpilot, ScamAdviser czy Google. Podsumowania są tworzone przez AI.</translation>
 <translation id="5944297261866530437">Tkanina (wysoki połysk)</translation>
 <translation id="5950901984834744590">Maszynki do golenia</translation>
 <translation id="5951495562196540101">Nie można zarejestrować się przy użyciu konta klienta (w pakiecie dostępna jest licencja).</translation>
@@ -3143,6 +3149,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6567832540451970450">Administrator zezwala tej witrynie na dostęp do uprawnienia <ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">Przycisk Zarządzaj formami płatności; aktywuj, aby zarządzać informacjami o płatnościach i danymi kart kredytowych w ustawieniach Chrome</translation>
 <translation id="6569060085658103619">Przeglądasz stronę rozszerzenia</translation>
+<translation id="6572867903637058088">Czy to jest przydatne?</translation>
 <translation id="6573200754375280815">Dwa otwory po prawej</translation>
 <translation id="6574762126505704998">Wypełnienie</translation>
 <translation id="6575408526598156416">Zapisz na koncie</translation>
@@ -4322,9 +4329,11 @@ Dodatkowe informacje:
 <translation id="8672535691554698269">Sieci komputerowe</translation>
 <translation id="8675446170353411473">Twoje pliki są przesyłane do usługi <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Bez opóźnienia</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} tabela została usunięta}few{{COUNT} tabele zostały usunięte}many{{COUNT} tabel zostało usuniętych}other{{COUNT} tabeli zostało usunięte}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, odpowiedź, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Nie można załadować strony <ph name="PAGE" />, ponieważ:</translation>
 <translation id="8682297334444610648">Gra z dinozaurem. Aby zagrać, kliknij</translation>
+<translation id="8685225035093721011">Opinie o sklepie</translation>
 <translation id="8686424632716064939">Zabezpieczenia komputerowe</translation>
 <translation id="8687278439622293018">Wpis <ph name="ENTRY_VOICEOVER" /> został usunięty</translation>
 <translation id="8687429322371626002">Twoim urządzeniem i kontem zarządza <ph name="MANAGER" />.</translation>

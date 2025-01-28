@@ -116,6 +116,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1435593198351412143">Obre els PDF automàticament</translation>
 <translation id="1436784010935106834">Eliminat</translation>
 <translation id="1437543266176261764">S'està executant a <ph name="APP_NAME" /></translation>
+<translation id="1448147069872048656">Verifica la teva identitat per assegurar-te que pots accedir a totes les contrasenyes des d'aquest dispositiu</translation>
 <translation id="1448440926884431741">Organitza els productes que segueixes a Adreces d'interès</translation>
 <translation id="1460751212339734034">Estalvia temps, escriu menys</translation>
 <translation id="1466383950273130737">Tria l'idioma de Chrome</translation>
@@ -847,6 +848,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4910889077668685004">Aplicacions de pagament</translation>
 <translation id="4912413785358399818">Mou la pestanya</translation>
 <translation id="4913169188695071480">Deixa d'actualitzar</translation>
+<translation id="4913841543356834596">Obtén accés a totes les teves contrasenyes</translation>
 <translation id="4918086044614829423">Accepta</translation>
 <translation id="4925120120285606924">Captura de pantalla del dia <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Les teves contrasenyes s'exportaran i es baixaran com a fitxer de text. Qualsevol persona o aplicació que tingui accés a la carpeta de destinació podrà veure també les teves contrasenyes.</translation>
@@ -1208,6 +1210,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Es tancaran <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_ONE" /> pestanya més}other{Es tancaran <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_MANY" /> pestanyes més}}</translation>
 <translation id="6560414384669816528">Cerca amb Sogou</translation>
 <translation id="656065428026159829">Mostra'n més</translation>
+<translation id="6564820424018738527">És possible que el teu dispositiu Android inclogui una opció de configuració similar. Si el mesurament d'anuncis està activat a Chrome i al teu dispositiu Android, les empreses podrien mesurar l'efectivitat d'un anunci als llocs web que visites i a les aplicacions que fas servir.</translation>
 <translation id="6565959834589222080">S'utilitza la Wi‑Fi quan està disponible</translation>
 <translation id="6569373978618239158">Quan obris una pestanya nova, ara veuràs històries de: <ph name="SITE_NAME" />. Els llocs web que segueixes es desen al teu Compte de Google. Pots gestionar-los a la configuració de Discover.</translation>
 <translation id="6570116402456758630">Resum de la pàgina</translation>
@@ -1330,6 +1333,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6987047470128880212">El mode d'incògnit no està disponible en aquest dispositiu</translation>
 <translation id="6991701761229081516">Les contrasenyes es baixaran com a fitxer CSV. Seran visibles per a tothom que pugui accedir al fitxer, incloses les aplicacions. Les contrasenyes exportades se suprimiran de Chrome.</translation>
 <translation id="6996145122199359148">Baixa aquesta pàgina</translation>
+<translation id="7013627768165542797">Verifica la teva identitat per accedir a les contrasenyes del teu Compte de Google</translation>
 <translation id="7013762323294215682">Aquesta clau d'accés es desarà al teu gestor de contrasenyes. Qualsevol persona que hi tingui accés podrà utilitzar aquesta clau d'accés.</translation>
 <translation id="7020741890149022655">Inclou a llista de lectura <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Obre al navegador</translation>
@@ -1348,6 +1352,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7085332316435785646">Tria si vols incloure l'historial de Chrome per obtenir experiències més personalitzades als serveis de Google</translation>
 <translation id="7088681679121566888">Chrome està actualitzat</translation>
 <translation id="7094933634769755999">És imprecís</translation>
+<translation id="7102843846294013537">Algunes de les teves contrasenyes no estan disponibles en aquest dispositiu</translation>
 <translation id="7106762743910369165">La teva organització gestiona el navegador</translation>
 <translation id="7111394291981742152">Chrome et proporciona més control sobre els anuncis que veus i limita la informació que els llocs web poden obtenir sobre tu quan et mostren anuncis personalitzats.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{S'han revisat els permisos per a 1 lloc web}other{S'han revisat els permisos per a # llocs web}}</translation>

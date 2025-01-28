@@ -110,7 +110,6 @@
 <translation id="143681031165817424">住所はこのデバイスにのみ保存されました</translation>
 <translation id="1445276840641906250">1 つのブラウザですべてのタブを管理</translation>
 <translation id="1450170672351507823">標準保護機能がオンになっています。セキュリティをさらに強化するには、保護強化機能を使用してください。</translation>
-<translation id="1454615514353469963">パスワード、パスキー、およびその他のデータが Google パスワード マネージャーから完全に削除されます</translation>
 <translation id="1455660774629812862">非表示にしない</translation>
 <translation id="1460751212339734034">入力を省いて、時間を節約</translation>
 <translation id="1466035273550360103">開いているタブはありません</translation>
@@ -563,6 +562,7 @@
 <translation id="3517216995152707259">閲覧履歴データを削除しても、Google アカウントからはログアウトされません。ログアウトするには、<ph name="BEGIN_LINK" />Chrome からログアウト<ph name="END_LINK" />する手順を行います。</translation>
 <translation id="3519193562722059437">ウェブを閲覧するにはタブを開きます。</translation>
 <translation id="3519905498307021260">{count,plural, =1{タブを開く}other{{count} 個のタブを開く}}</translation>
+<translation id="3523513363815970085">[よく使用するサイト] を非表示にする</translation>
 <translation id="3523789730715594198">同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをパーソナライズすることがあります。</translation>
 <translation id="3527085408025491307">フォルダ</translation>
 <translation id="3529024052484145543">保護されていません</translation>
@@ -838,6 +838,7 @@
 <translation id="4769198578611055647">どのデバイスからでも保存済みのパスキーにアクセスできるようになります</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />、<ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">シークレット モードで開きますか？</translation>
+<translation id="479208892659046780">よく使用するサイト</translation>
 <translation id="4792385443586519711">会社名</translation>
 <translation id="479628432297359449">ダウンロードを中止しますか？</translation>
 <translation id="4796496140132859135">タブグループ。閉じています。</translation>

@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Dibatalkan</translation>
 <translation id="1020274983236703756">Aset <ph name="PRODUCT_NAME" /> eksklusif kini tersedia</translation>
 <translation id="1022628058306505708">Aliran Bumi</translation>
+<translation id="102432830749687801">Pastikan untuk menggunakan aplikasi Transfer konten dari Google untuk memindahkan data akun sekolah ke akun pribadi Anda sebelum Anda kehilangan akses.</translation>
 <translation id="1026212596705997935">Pintasan digunakan untuk "<ph name="CONFLICT_ACCEL_NAME" />". Tekan pintasan baru. Untuk mengganti pintasan lama, tekan lagi pintasan ini.</translation>
 <translation id="1030856839388844477">Reset penggunaan data</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai casing.</translation>
 <translation id="1397738625398125236">Gateway Dapat Di-ping</translation>
 <translation id="1398634363027580500">Latensi HTTPS sangat tinggi</translation>
+<translation id="1406389211945506521">Terima kasih telah membagikan masukan terkait pengalaman Anda. Masukan Anda membantu kami membuat konten yang lebih akurat dan bermanfaat.</translation>
 <translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1413240736185167732">Gagal - Filter gagal</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Seni klasik</translation>
 <translation id="181434555916624618">Untuk saat ini, hasil yang berisi orang tidak akan ditampilkan. Coba perintah lain.</translation>
 <translation id="1815850098929213707">Tombol yang dipilih adalah <ph name="KEYS" />. Ketuk tombol untuk mengedit kontrol</translation>
+<translation id="1818174214124933000">Saat memilih kirim, masukan dan konten Anda (ditampilkan di bawah) akan dikirim ke Google, ditinjau secara manual, dan digunakan untuk melatih atau meningkatkan kualitas produk dan layanan kami yang tunduk pada <ph name="LINK_POLICY_BEGIN" />Kebijakan Privasi<ph name="LINK_POLICY_END" /> dan <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Persyaratan Layanan Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Karakter</translation>
 <translation id="1827738518074806965">Galeri seni</translation>
+<translation id="183287940576828840">Menyinggung/Tidak Aman</translation>
 <translation id="1836553715834333258">Warna sistem</translation>
 <translation id="183675228220305365">realis</translation>
 <translation id="1838374766361614909">Hapus penelusuran</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
 <translation id="1908394185991500139">panah kiri</translation>
 <translation id="1914144885717544695">pada hari Jumat</translation>
+<translation id="1915960750806557358">Sampaikan masukan atau jelaskan masalah Anda. Pastikan untuk tidak menyertakan informasi apa pun yang bersifat pribadi, sensitif, atau rahasia.</translation>
 <translation id="1923388006036088459">Warna aksen</translation>
 <translation id="1945403655450283000">Perekam Suara</translation>
 <translation id="1947737735496445907">Tercetak</translation>
@@ -596,6 +601,7 @@
 <translation id="387301095347517405">Frekuensi baterai melalui siklus pengisian daya penuh</translation>
 <translation id="3877066159641251281">Dengarkan terjemahan</translation>
 <translation id="3880601782712134623">Otomatis mendeteksi suara yang berbeda dan memberikan label umum pada masing-masing pembicara seperti Pembicara 1 dan Pembicara 2</translation>
+<translation id="38811596981744338">Masalah hukum</translation>
 <translation id="3885327323343477505">Ubah screensaver</translation>
 <translation id="3889914174935857450">Reset tanggal</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356">Terisi <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="4930320165497208503">Untuk menyiapkan atau memperbarui koneksi, buka <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tanggal</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, terbuka di tab baru</translation>
 <translation id="4946927805998996217">Membuat ringkasan</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" /> telah diupdate ke versi <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">terowongan pohon</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">Dapatkan info terkait pilihan Anda</translation>
 <translation id="6694534975463174713">kunci</translation>
 <translation id="6700703207451721535">Akses tidak diizinkan untuk link ini. Tanyakan kepada pengajar Anda jika Anda memerlukan akses.</translation>
+<translation id="6703179086771097594">Apa saja yang belum berfungsi dengan baik?</translation>
 <translation id="6704062477274546131">Resolusi DNS</translation>
 <translation id="6712933881624804031">lembah</translation>
 <translation id="6716013206176357696">stroberi</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">Download model transkripsi di Setelan</translation>
 <translation id="7058278511608979688">Akhiri &amp; simpan</translation>
 <translation id="7059230779847288458">Mengisi daya, <ph name="TIME_VALUE" /> sampai penuh</translation>
+<translation id="7064209589142995848">Transfer konten</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> dipilih</translation>
 <translation id="7066538517128343186">tombol <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Siapkan perangkat Anda</translation>
@@ -1592,6 +1601,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8476942730579767658">Jendela dan desktop</translation>
 <translation id="8477536061607044749">desain grafis</translation>
 <translation id="8477551185774834963">Latensi DNS sedikit melebihi ambang batas yang diizinkan</translation>
+<translation id="8481308460877552925">Tidak sesuai fakta</translation>
 <translation id="8482376765267780829">Pilih beberapa teks untuk disederhanakan</translation>
 <translation id="8483248364096924578">Alamat IP</translation>
 <translation id="8491311378305535241">Tidak dapat terhubung melewati firewall ke situs HTTP dari aplikasi Android</translation>

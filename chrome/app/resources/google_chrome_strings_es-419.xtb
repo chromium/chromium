@@ -355,6 +355,7 @@
 <translation id="5648328599815354043">Chrome hace más para protegerte en línea</translation>
 <translation id="565744775970812598">Chrome bloqueó <ph name="FILE_NAME" /> porque es posible que sea un archivo peligroso.</translation>
 <translation id="566568153320186256">Chrome limita la actividad en segundo plano y los efectos visuales, como el desplazamiento fluido y las velocidades de fotogramas para conservar la batería. <ph name="BEGIN_LINK" />Obtén más información sobre el Ahorro de energía<ph name="END_LINK" /></translation>
+<translation id="567202749201779594">Borra los datos de Chrome de tu cuenta</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Tu administrador solicita que reinicies Chrome para aplicar esta actualización}=1{Tu administrador solicita que reinicies Chrome para aplicar esta actualización. No se volverá a abrir la ventana de incógnito.}other{Tu administrador solicita que reinicies Chrome para aplicar esta actualización. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="5686916850681061684">Personalizar y controlar Google Chrome. Una alerta necesita tu atención: haz clic para ver los detalles.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -467,6 +468,7 @@
 <translation id="7024536598735240744">Error al momento de desempaquetar: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Se detuvo la instalación.</translation>
 <translation id="7025800014283535195">Puedes alternar entre los perfiles de Chrome aquí</translation>
+<translation id="7031914411614877914">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="SETTINGS_LINK" /> los datos de Chrome de tu cuenta.</translation>
 <translation id="7048502283602470098">Explorar la IA</translation>
 <translation id="7059914902409643750">Personaliza Chrome a tu medida</translation>
 <translation id="7071827361006050863">Chrome borrará los datos de navegación pronto</translation>

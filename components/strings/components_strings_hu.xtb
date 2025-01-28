@@ -271,6 +271,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">A(z) „<ph name="DATA_CONTROLS_FIRST_KEY_SET" />” kulcsokat nem lehet ugyanabban a szótárban beállítani, mint a(z) „<ph name="DATA_CONTROLS_SECOND_KEY_SET" />” kulcsokat</translation>
 <translation id="1455413310270022028">Radír</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{0 vélemény megtekintése}=1{1 vélemény megtekintése}other{Az összes (#) vélemény megtekintése}}</translation>
 <translation id="1458059624921545588">Emberek és társadalom</translation>
 <translation id="1458140305240870199">Alsóruházat</translation>
 <translation id="1459693405370120464">Időjárás</translation>
@@ -961,6 +962,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2674170444375937751">Biztosan törölni szeretné ezeket az oldalakat az előzmények közül?</translation>
 <translation id="2674524144218093528">Házfestés és dekoráció</translation>
 <translation id="2674804415323431591">Javaslatok elrejtése</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> lapcsoport már nem áll rendelkezésre</translation>
 <translation id="2677748264148917807">Lap elhagyása</translation>
 <translation id="2683195745483370038">További találatok vannak</translation>
 <translation id="2686919536310834199">Visszajelzés küldése a Segítség az íráshoz funkcióval kapcsolatban.</translation>
@@ -1953,6 +1955,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4407758156081352648">Biztonsági okok miatt a szervezete nem engedélyezi a jelszavak újrafelhasználását a Chrome-ban. A Chrome-ban tárolt jelszavak titkosítva vannak a felhasználók adatainak védelme érdekében.</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> cookie</translation>
 <translation id="4412074349188076601">Ez a konfiguráció telepítendőként van megjelölve, de nincs megadva kép az architektúrához, ezért nem lehet telepíteni.</translation>
+<translation id="4412377069090572315">Mit mondanak mások?</translation>
 <translation id="4414452699610169758">A Google Jelszókezelőnek és a Chrome automatikus kitöltés funkciójának segítségével mentheti és kitöltheti a jelszavait, fizetési módjait és címeit.</translation>
 <translation id="4414515549596849729">cookie-k és webhelyadatok</translation>
 <translation id="4415156962929755728">Műanyag (magas fényű)</translation>
@@ -2261,6 +2264,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5001526427543320409">Harmadik felektől származó cookie-k</translation>
 <translation id="5002932099480077015">Ha engedélyezi, a Chrome megőrzi a kártya másolatát ezen az eszközön a gyorsabb űrlapkitöltés érdekében.</translation>
 <translation id="5007392906805964215">Áttekintés</translation>
+<translation id="500790844453430087">A(z) „<ph name="GROUP_TITLE_1" />” és a(z) „<ph name="GROUP_TITLE_2" />” lapcsoportok már nem állnak rendelkezésre</translation>
 <translation id="5011561501798487822">Észlelt nyelv</translation>
 <translation id="5015510746216210676">Számítógépnév:</translation>
 <translation id="5017554619425969104">Vágólapra másolt szöveg</translation>
@@ -2733,6 +2737,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5866898949289125849">A fejlesztői eszközök egyik oldalát látja</translation>
 <translation id="5869405914158311789">A webhely nem érhető el</translation>
 <translation id="5869522115854928033">Mentett jelszavak</translation>
+<translation id="5872215789867188990">A(z) „<ph name="GROUP_TITLE" />” lapcsoport már nem áll rendelkezésre</translation>
 <translation id="5872692522325383488">IBAN-kód mentve</translation>
 <translation id="5873297634595728366">Dízel gépjárművek</translation>
 <translation id="5877359070305966420">Humán erőforrások</translation>
@@ -2774,6 +2779,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5937560539988385583">Oldal lefordítva</translation>
 <translation id="5938153366081463283">Hozzáadhat virtuális kártyát</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Az információk független véleményező webhelyekről származnak, például a Trustpilotról, a ScamAdviserről és a Google-ról. Az összefoglalók AI segítségével készülnek.</translation>
 <translation id="5944297261866530437">Szövet (magasfényű)</translation>
 <translation id="5950901984834744590">Borotvák</translation>
 <translation id="5951495562196540101">Fogyasztói fiókkal nem lehet regisztrálni (a csomaghoz tartozik licenc is).</translation>
@@ -3140,6 +3146,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6567832540451970450">A rendszergazdája engedélyezi a következő használatát ezen a webhelyen: <ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">Fizetési módok kezelése gomb. A gombot megnyomva kezelheti fizetési és hitelkártyaadatait a Chrome-beállítások között.</translation>
 <translation id="6569060085658103619">Jelenleg bővítményoldalt tekint meg</translation>
+<translation id="6572867903637058088">Hasznosnak találta?</translation>
 <translation id="6573200754375280815">Kettő lyuk a jobb oldalon</translation>
 <translation id="6574762126505704998">Kitöltés</translation>
 <translation id="6575408526598156416">Mentés a fiókba</translation>
@@ -4321,9 +4328,11 @@ További részletek:
 <translation id="8672535691554698269">Számítógép-hálózatok</translation>
 <translation id="8675446170353411473">Fájljai feltöltése folyamtban ide: <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Nincs késleltetés</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} táblázat törölve}other{{COUNT} táblázat törölve}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />. A válasz: <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">A(z) <ph name="PAGE" /> webhelyen található oldal betöltése a következő okból nem sikerült:</translation>
 <translation id="8682297334444610648">Dinós játék, koppintson a játékhoz</translation>
+<translation id="8685225035093721011">Vélemények az üzletről</translation>
 <translation id="8686424632716064939">Számítógépes biztonság</translation>
 <translation id="8687278439622293018">A(z) <ph name="ENTRY_VOICEOVER" /> bejegyzés törölve</translation>
 <translation id="8687429322371626002">Eszközét és fiókját a következő kezeli: <ph name="MANAGER" />.</translation>

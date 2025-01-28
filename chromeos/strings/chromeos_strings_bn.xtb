@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">বাতিল হয়েছে</translation>
 <translation id="1020274983236703756">এক্সক্লুসিভ <ph name="PRODUCT_NAME" /> অ্যাসেট এখন উপলভ্য</translation>
 <translation id="1022628058306505708">আর্থ ফ্লো</translation>
+<translation id="102432830749687801">অ্যাক্সেস হারানোর আগে, Google-এর কন্টেন্ট ট্রান্সফার অ্যাপের সাহায্যে স্কুল অ্যাকাউন্টের ডেটা আপনার ব্যক্তিগত অ্যাকাউন্টে পাঠাতে ভুলবেন না।</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />"-এর জন্য শর্টকাট ব্যবহার করা হচ্ছে। নতুন শর্টকাট প্রেস করুন। আগে থাকা শর্টকাট পরিবর্তন করতে, আবার এই শর্টকাটে প্রেস করুন।</translation>
 <translation id="1030856839388844477">ডেটা ব্যবহার রিসেট করুন</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />টি থ্রেড, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">ডিভাইসের কেসে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
 <translation id="1397738625398125236">গেটওয়ে পিং করা যেতে পারে</translation>
 <translation id="1398634363027580500">খুব বেশি HTTPS লেটেন্সি</translation>
+<translation id="1406389211945506521">আপনার অভিজ্ঞতা শেয়ার করার জন্য ধন্যবাদ। আপনার মতামত আমাদের আরও সঠিক এবং উপকারী কন্টেন্ট তৈরি করতে সহায়তা করে।</translation>
 <translation id="1407069428457324124">ডার্ক থিম</translation>
 <translation id="1413240736185167732">প্রিন্ট করা যায়নি - ফিল্টার কাজ করছে না</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,11 @@
 <translation id="1808803439260407870">ক্লাসিক আর্ট</translation>
 <translation id="181434555916624618">এই মুহূর্তে, লোকজন আছে এমন ছবি দেখানো হবে না। অন্য প্রম্পট ব্যবহার করে দেখুন।</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> কী বেছে নেওয়া হয়েছে। নিয়ন্ত্রণ এডিট করতে বোতামে ট্যাপ করুন</translation>
+<translation id="1818174214124933000">আপনি 'পাঠান' বিকল্পটি বেছে নিলে, আপনার মতামত এবং কন্টেন্ট (নিচে দেখানো হয়েছে) Google-এ পাঠানো হবে, হিউম্যান রিভিউয়াররা তা পর্যালোচনা করবেন এবং <ph name="LINK_POLICY_BEGIN" />গোপনীয়তা নীতি<ph name="LINK_POLICY_END" /> ও <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google পরিষেবার শর্তাবলী<ph name="LINK_TERMS_OF_SERVICE_END" /> মেনে আমাদের প্রোডাক্ট ও পরিষেবার প্রশিক্ষণ বা উন্নতির কাজে তা ব্যবহার করা হবে।</translation>
 <translation id="1823120442877418684">অক্ষর</translation>
 <translation id="1827738518074806965">আর্ট গ্যালারি</translation>
+<translation id="183287940576828840">আপত্তিকর/অসুরক্ষিত</translation>
+<translation id="1834032517784994783">ট্রান্সক্রিপশনের ভাষা বেছে নিন</translation>
 <translation id="1836553715834333258">সিস্টেমের রঙ</translation>
 <translation id="183675228220305365">রিয়েলিস্ট</translation>
 <translation id="1838374766361614909">সার্চ সাফ করুন</translation>
@@ -225,6 +230,7 @@
 <translation id="1908234395526491708">UDP-এর অনুরোধ করা যায়নি</translation>
 <translation id="1908394185991500139">বাঁদিকের তীরচিহ্ন</translation>
 <translation id="1914144885717544695">শুক্রবারে</translation>
+<translation id="1915960750806557358">আপনার মতামত শেয়ার করুন বা সমস্যার বিবরণ দিন। ব্যক্তিগত, সংবেদনশীল বা গোপনীয় কোনও তথ্য যেন অন্তর্ভুক্ত না থাকে তা ভালো করে দেখে নেবেন।</translation>
 <translation id="1923388006036088459">অ্যাকসেন্ট কালার</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">প্রিন্ট করা হয়েছে</translation>
@@ -596,6 +602,7 @@
 <translation id="387301095347517405">আপনার ব্যাটারি যতবার পুরো চার্জ দেওয়া হয়েছে</translation>
 <translation id="3877066159641251281">অনুবাদ শুনুন</translation>
 <translation id="3880601782712134623">অটোমেটিক স্বতন্ত্র ভয়েস শনাক্ত করা ও প্রত্যেক স্পিকারকে জেনেরিক লেবেল দেওয়া, যেমন স্পিকার ১ এবং স্পিকার ২</translation>
+<translation id="38811596981744338">আইনি সমস্যা</translation>
 <translation id="3885327323343477505">স্ক্রিন সেভার পরিবর্তন করুন</translation>
 <translation id="3889914174935857450">তারিখ রিসেট করুন</translation>
 <translation id="3897092660631435901">মেনু</translation>
@@ -727,6 +734,7 @@
 <translation id="4483049906298469269">ডিফল্ট অবস্থায় নেই এমন নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
 <translation id="4483498983731992167">ট্রানস্ক্রিপ্ট তৈরি করা যাচ্ছে না</translation>
 <translation id="4486524074141928967">আপনি <ph name="TIME" />-এ সাইন-আউট হয়ে যাবেন</translation>
+<translation id="4487890678161807486">ট্রান্সক্রিপশনের ভাষা বাছাইকারী খুলুন</translation>
 <translation id="4500722292849917410">শর্টকাট উপলভ্য নেই। 'পরিবর্তক কী' (ctrl, alt, shift অথবা <ph name="META_KEY" />) ব্যবহার করে নতুন শর্টকাট প্রেস করুন।</translation>
 <translation id="4500966230243561393">ইন্টারফেসের রঙ</translation>
 <translation id="4503223151711056411">বাঁদিকে তীরচিহ্ন</translation>
@@ -821,6 +829,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> সেকেন্ডে <ph name="RATE" /> চার্জ হয়েছে।</translation>
 <translation id="4930320165497208503">কানেকশন আপডেট করতে বা সেট আপ করতে<ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্পে যান।</translation>
 <translation id="4932733599132424254">তারিখ</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, নতুন ট্যাবে খোলে</translation>
 <translation id="4946927805998996217">সারাংশ তৈরি হচ্ছে</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> ফার্মওয়্যার <ph name="VERSION" /> ভার্সনে আপডেট করা হয়েছে</translation>
 <translation id="4950893758552030541">ট্রি টানেল</translation>
@@ -1181,7 +1190,7 @@
 <translation id="6579509898032828423">এই ফটো ব্যবহার করুন</translation>
 <translation id="6587870930887634392">শুষ্ক আবহাওয়ার গাছ</translation>
 <translation id="6595046262780525922">ট্রান্সক্রিপশন চালু করে ট্রান্সক্রিপশন মডেল ডাউনলোড করতে চান?</translation>
-<translation id="6596816719288285829">আইপি অ্যাড্রেস</translation>
+<translation id="6596816719288285829">IP অ্যাড্রেস</translation>
 <translation id="6599673642868607614">আপনার প্রতিক্রিয়া আমাদের জানানোর জন্য ধন্যবাদ। আপনার প্রতিক্রিয়া আমাদের Chromebook অভিজ্ঞতা উন্নত করতে সাহায্য করে এবং আমাদের টিম দ্বারা পর্যালোচনা করা হবে। অনেক বেশি সংখ্যক রিপোর্টের কারণে, আমরা উত্তর দিতে পারব না।</translation>
 <translation id="660846213831377756">মাউস কী</translation>
 <translation id="6618744767048954150">চলছে</translation>
@@ -1208,6 +1217,7 @@
 <translation id="6692996468359469499">আপনার বেছে নেওয়া প্রশ্ন সম্পর্কিত উত্তর পান</translation>
 <translation id="6694534975463174713">লক</translation>
 <translation id="6700703207451721535">এই লিঙ্ক অ্যাক্সেস করার অনুমতি দেওয়া হয়নি। অ্যাক্সেস চাইলে শিক্ষকের সঙ্গে যোগাযোগ করতে হবে।</translation>
+<translation id="6703179086771097594">কোনটি ভালো কাজ করেনি?</translation>
 <translation id="6704062477274546131">DNS রেজোলিউশন</translation>
 <translation id="6712933881624804031">ভ্যালি</translation>
 <translation id="6716013206176357696">স্ট্রবেরি</translation>
@@ -1281,6 +1291,7 @@
 <translation id="7049916119678019302">সেটিংস থেকে ট্রান্সক্রিপশন মডেল ডাউনলোড করুন</translation>
 <translation id="7058278511608979688">সম্পূর্ণ করে সেভ করুন</translation>
 <translation id="7059230779847288458">চার্জ করা হচ্ছে, সম্পূর্ণ চার্জ হতে <ph name="TIME_VALUE" /> সময় লাগবে</translation>
+<translation id="7064209589142995848">কন্টেন্ট ট্রান্সফার</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" />টি বেছে নেওয়া হয়েছে</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> কী</translation>
 <translation id="7068619307603204412">আপনার ডিভাইস রেডি করুন</translation>
@@ -1592,8 +1603,9 @@
 <translation id="8476942730579767658">উইন্ডো ও ডেস্ক</translation>
 <translation id="8477536061607044749">গ্রাফিক ডিজাইন</translation>
 <translation id="8477551185774834963">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি তার চেয়ে বেশি</translation>
+<translation id="8481308460877552925">তথ্যগত দিক দিয়ে সঠিক নয়</translation>
 <translation id="8482376765267780829">সহজে বোঝার জন্য কিছু টেক্সট বেছে নিন</translation>
-<translation id="8483248364096924578">আইপি অ্যাড্রেস</translation>
+<translation id="8483248364096924578">IP অ্যাড্রেস</translation>
 <translation id="8491311378305535241">Android অ্যাপ থেকে ফায়ারওয়ালের সাহায্যে HTTPS ওয়েবসাইটের সাথে কানেক্ট করা যাচ্ছে না</translation>
 <translation id="8495070016475833911">ফেল্ট</translation>
 <translation id="8498220429738806196">ট্রাফিক কাউন্টার্স</translation>

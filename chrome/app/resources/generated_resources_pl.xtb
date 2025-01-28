@@ -72,6 +72,7 @@
 <translation id="1043505821207197890">Coś poszło nie tak. Linux mógł nie zostać w pełni uaktualniony. Aby dowiedzieć się więcej, przejrzyj dzienniki. Zostały one zapisane tutaj: Pliki &gt; Moje pliki &gt; <ph name="LOG_FILE" /></translation>
 <translation id="104385770822424034">Dodaj działanie</translation>
 <translation id="104419033123549300">Styl mapy klawiszy</translation>
+<translation id="1045487161760507186">Nie musisz pamiętać hasła, bo zapisze je za Ciebie Menedżer haseł Google</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{Do usługi <ph name="BRAND" /> na tym urządzeniu zaimportowano 1 hasło}few{Do usługi <ph name="BRAND" /> na tym urządzeniu zaimportowano {NUM_PASSWORDS} hasła}many{Do usługi <ph name="BRAND" /> na tym urządzeniu zaimportowano {NUM_PASSWORDS} haseł}other{Do usługi <ph name="BRAND" /> na tym urządzeniu zaimportowano {NUM_PASSWORDS} hasła}}</translation>
 <translation id="1046572983040892965">Okno zostało przeniesione w górę i w lewo</translation>
 <translation id="104710386808485638">Uruchomić Linuksa ponownie?</translation>
@@ -1875,6 +1876,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2297705863329999812">Wyszukaj drukarki</translation>
 <translation id="2297822946037605517">Udostępnij tę stronę</translation>
 <translation id="229871422646860597">Odepnij z paska narzędzi</translation>
+<translation id="2299685119225839832">Możesz zobaczyć podsumowanie opinii użytkowników</translation>
 <translation id="2299734369537008228">Suwak: od <ph name="MIN_LABEL" /> do <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Uwzględnij wszystkie pliki dzienników zebrane przez debugd jako osobne archiwum.</translation>
 <translation id="2300214399009193026">PCIe</translation>
@@ -5230,6 +5232,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4676616966096505747">Niektóre dane nie zostały jeszcze zapisane na Twoim koncie</translation>
 <translation id="4677772697204437347">Pamięć GPU</translation>
 <translation id="467809019005607715">Prezentacje Google</translation>
+<translation id="4678729681411398877">Gdy jedno z Twoich haseł zostanie ujawnione w wyniku naruszenia bezpieczeństwa danych, Menedżer haseł Google zapyta, czy chcesz je zmienić na silne</translation>
 <translation id="4678848110205818817">Karta kredytowa lub debetowa</translation>
 <translation id="4679018849559620189">To ułatwia dostęp do zapisanych kluczy dostępu na dowolnym urządzeniu</translation>
 <translation id="4680105648806843642">Dźwięk na tej stronie został wyciszony</translation>
@@ -6796,6 +6799,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5828545842856466741">Dodaj profil…</translation>
 <translation id="5828633471261496623">Trwa drukowanie...</translation>
 <translation id="5830205393314753525">Nie można otworzyć aplikacji <ph name="APP_NAME" /></translation>
+<translation id="5830512293931520102">Twoje hasło jest zaszyfrowane i nikt go nie widzi</translation>
 <translation id="5830720307094128296">Zapisz stronę &amp;jako...</translation>
 <translation id="583179300286794292">Zalogowano jako <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Czy chcesz usunąć dane i uprawnienia witryny <ph name="SITE_NAME" /> i jej witryn podrzędnych oraz zainstalowanej z niej aplikacji?</translation>
@@ -7540,6 +7544,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Dodaj rodzinę i znajomych</translation>
 <translation id="6367097275976877956">Czy chcesz włączyć ChromeVoksa, czyli wbudowany czytnik ekranu w Chrome OS? Jeśli tak, naciśnij spację.</translation>
+<translation id="6367396429435748845">Naciśnij <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" />, aby wstrzymać i wznowić klawisze myszy</translation>
 <translation id="6367985768157257101">Odebrać przez Udostępnianie w pobliżu?</translation>
 <translation id="6368157733310917710">&amp;Adresy i inne dane</translation>
 <translation id="6368276408895187373">Włączono – <ph name="VARIATION_NAME" /></translation>
@@ -9196,6 +9201,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7568759527730933493">Używanie bezpiecznego połączenia do wyszukiwania adresu IP witryny w Systemie nazw domenowych (DNS). Funkcja korzysta z usługi zarządzanej dostawcy na <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Bezpieczne połączenia nie są używane w przypadku niektórych domen skonfigurowanych przez administratora.</translation>
 <translation id="756876171895853918">Dostosuj awatara</translation>
 <translation id="7568790562536448087">Aktualizowanie</translation>
+<translation id="7569113730576914983">Gdy Chrome wykryje, że któreś z Twoich haseł zostało ujawnione w wyniku naruszenia bezpieczeństwa danych, może zaproponować zmianę hasła podczas logowania</translation>
 <translation id="7569983096843329377">Czarny</translation>
 <translation id="7570548610653957960">Pomóż mi czytać</translation>
 <translation id="7571643774869182231">Za mało miejsca na aktualizację</translation>
@@ -9481,6 +9487,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7768526219335215384">Strona <ph name="ORIGIN" /> będzie mogła wyświetlać pliki z folderu <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Zmień</translation>
 <translation id="7768784765476638775">Przeczytaj na głos</translation>
+<translation id="7769709635093101687">Skrót klawiszowy do wstrzymywania</translation>
 <translation id="7769748505895274502">Zwiń ostatnio zamknięte</translation>
 <translation id="7770072242481632881">Selektor panelu bocznego</translation>
 <translation id="7770450735129978837">Kliknięcie prawym przyciskiem myszy</translation>
@@ -10131,6 +10138,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8215129063232901118">Korzystaj z funkcji swojego telefonu na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Podświetlenie wskaźnika</translation>
 <translation id="8217399928341212914">Dalej blokuj automatyczne pobieranie wielu plików</translation>
+<translation id="8219785583603399823">Zobacz oceny tego sklepu</translation>
 <translation id="822050276545350872">W przyszłości nie będzie trzeba czekać</translation>
 <translation id="8222112516148944758">Grupy kart są automatycznie zapisywane i aktualizowane na wszystkich Twoich urządzeniach</translation>
 <translation id="8222674561049363989">Plik nie jest prawidłowym dokumentem</translation>

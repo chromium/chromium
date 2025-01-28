@@ -116,6 +116,7 @@ Siirry <ph name="BEGIN_LINK2" />Googlen palveluihin<ph name="END_LINK2" />, jos 
 <translation id="1435593198351412143">Avaa PDF-tiedostot automaattisesti</translation>
 <translation id="1436784010935106834">Poistettu</translation>
 <translation id="1437543266176261764">Käynnissä: <ph name="APP_NAME" /></translation>
+<translation id="1448147069872048656">Vahvista henkilöllisyytesi, jotta saat pääsyn kaikkiin salasanoihisi tällä laitteella</translation>
 <translation id="1448440926884431741">Järjestele seurattuja tuotteita kirjanmerkeissä</translation>
 <translation id="1460751212339734034">Säästä aikaa ja kirjoita vähemmän</translation>
 <translation id="1466383950273130737">Valitse Chromen kieli</translation>
@@ -847,6 +848,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4910889077668685004">Maksusovellukset</translation>
 <translation id="4912413785358399818">Siirrä välilehti</translation>
 <translation id="4913169188695071480">Lopeta päivittäminen</translation>
+<translation id="4913841543356834596">Käytä kaikkia salasanojasi</translation>
 <translation id="4918086044614829423">Hyväksy</translation>
 <translation id="4925120120285606924">Kuvakaappaus <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Salasanasi viedään ja ladataan tekstitiedostona. Ne näkyvät kaikille käyttäjille ja sovelluksille, joilla on pääsy kohdekansioon.</translation>
@@ -1330,6 +1332,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6987047470128880212">Incognito ei ole käytettävissä tällä laitteella</translation>
 <translation id="6991701761229081516">Salasanat ladataan CSV-tiedostona. Ne näkyvät kaikille, joilla on pääsy tiedostoon (myös sovelluksille). Viedyt salasanat poistetaan Chromesta.</translation>
 <translation id="6996145122199359148">Lataa tämä sivu</translation>
+<translation id="7013627768165542797">Vahvista henkilöllisyytesi, jotta voit käyttää Google-tilisi salasanoja</translation>
 <translation id="7013762323294215682">Avainkoodi tallennetaan salasanoihin. Avainkoodia voi käyttää kuka tahansa, jolla on pääsy siihen.</translation>
 <translation id="7020741890149022655">Lisää lukulistaan <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Avaa selaimessa</translation>
@@ -1348,6 +1351,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7085332316435785646">Valitse, käytetäänkö Chrome-historiaa personoituun kokemukseen Google-palveluissa</translation>
 <translation id="7088681679121566888">Chrome on ajan tasalla</translation>
 <translation id="7094933634769755999">Epätarkka</translation>
+<translation id="7102843846294013537">Kaikki salasanasi eivät ole käytettävissä tällä laitteella</translation>
 <translation id="7106762743910369165">Organisaatiosi ylläpitää selainta</translation>
 <translation id="7111394291981742152">Chromen avulla voit vaikuttaa enemmän näkemiisi mainoksiin ja rajoittaa, mitä tietoa sivustot saavat sinusta, kun ne näyttävät sinulle personoituja mainoksia.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Yhden sivuston luvat tarkistettu}other{# sivuston luvat tarkistettu}}</translation>

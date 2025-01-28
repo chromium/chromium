@@ -110,7 +110,6 @@
 <translation id="143681031165817424">L'adreça només s'ha desat en aquest dispositiu</translation>
 <translation id="1445276840641906250">Totes les pestanyes en un navegador</translation>
 <translation id="1450170672351507823">La protecció estàndard està activada. Per augmentar la seguretat, utilitza la protecció millorada.</translation>
-<translation id="1454615514353469963">Les contrasenyes, les claus d'accés i altres dades se suprimiran permanentment del gestor de contrasenyes de Google</translation>
 <translation id="1455660774629812862">No amaguis</translation>
 <translation id="1460751212339734034">Estalvia temps, escriu menys</translation>
 <translation id="1466035273550360103">No hi ha pestanyes obertes</translation>
@@ -476,6 +475,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="3053332585453689122">Envia a Navegació segura de Google els URL que visites i una petita mostra del contingut de les pàgines, les baixades, l'activitat de les extensions i informació del sistema per comprovar si són perjudicials.</translation>
 <translation id="3055102495753300780">Emmagatzematge d'informació</translation>
 <translation id="3059270601560379555">Cerca nova</translation>
+<translation id="3064547930554042309">Gestiona les baixades</translation>
 <translation id="3072279342064724558">La contrasenya ja existeix</translation>
 <translation id="3076846064362030967">No se't tancarà la sessió del Compte de Google. És possible que es desin <ph name="BEGIN_LINK" />altres tipus d'activitats<ph name="END_LINK" /> al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.
 
@@ -698,6 +698,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4154753961803534698">Cerca amb la càmera</translation>
 <translation id="4158491215857439601">Gestor de contrasenyes</translation>
 <translation id="4163699139741158298">{count,plural, =1{L'adreça d'interès s'ha desat a {title} i només en aquest dispositiu.}other{S'han desat {count} adreces d'interès a {title} i només en aquest dispositiu.}}</translation>
+<translation id="4164514562270305824">Suprimeix les baixades automàticament</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, que acaba en <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">No permetis</translation>
 <translation id="4172051516777682613">Mostra sempre</translation>
@@ -1016,6 +1017,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5579012242779565775">Amaga l'opció Llista de lectura</translation>
 <translation id="5585019845078534178">Targetes</translation>
 <translation id="5595485650161345191">Edita l'adreça</translation>
+<translation id="559567008082979829">Configura les baixades perquè se suprimeixin al cap d'un mes.</translation>
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="560322036295180549">Desactivat per l'organització</translation>
 <translation id="5611107723541161735">Dreceres a llocs web que has visitat darrerament en aquest dispositiu.</translation>

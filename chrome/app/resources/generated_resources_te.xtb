@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Android యాప్‌లను ప్రారంభించడానికి డిస్క్ స్థలాన్ని ఖాళీ చేయండి.</translation>
 <translation id="1033780634303702874">మీ క్రమానుసార పరికరాలను యాక్సెస్ చేయడం</translation>
 <translation id="1034484273907870301">టాబ్లెట్ మోడ్ కోసం థంబ్‌నెయిల్ ట్యాబ్‌ల బార్</translation>
+<translation id="1035289631433631911">కంటెంట్ ట్రాన్స్‌ఫర్ టూల్</translation>
 <translation id="1035875743511577452">ఆర్టిస్ట్‌లు, ప్రకృతి, మరిన్నింటి ద్వారా స్ఫూర్తి పొందిన రూపాలను అన్వేషించడానికి “రూపాన్ని మార్చండి” ఆప్షన్‌ను క్లిక్ చేయండి</translation>
 <translation id="1036348656032585052">ఆఫ్ చేయి</translation>
 <translation id="1036511912703768636">ఈ USB పరికరాల్లో వేటికైనా యాక్సెస్</translation>
@@ -380,6 +381,7 @@
 <translation id="1246863218384630739"><ph name="VM_NAME" />‌ను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు: ఇమేజ్ URL <ph name="HTTP_ERROR" /> ఎర్రర్ కోడ్‌ను అందించింది. దయచేసి మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
 <translation id="1247372569136754018">మైక్రోఫోన్ (అంతర్గతం)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 సైట్‌లో నోటిఫికేషన్‌లకు అనుమతి లేదు}other{{NUM_SITES} సైట్‌లలో నోటిఫికేషన్‌లకు అనుమతి లేదు}}</translation>
+<translation id="125097549534200450">తీసివేయండి</translation>
 <translation id="1251366534849411931">తెరిచి ఉన్న వంకర కలుపు ఉండాలి: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">మొబైల్ డేటా నెట్‌వర్క్‌ల కోసం స్కాన్ చేస్తోంది...</translation>
 <translation id="125220115284141797">ఆటోమేటిక్ సెట్టింగ్</translation>
@@ -5943,6 +5945,7 @@
 <translation id="5177479852722101802">కెమెరా మరియు మైక్రోఫోన్ యాక్సెస్‌ను బ్లాక్ చేయడాన్ని కొనసాగించండి</translation>
 <translation id="5177549709747445269">మీరు మొబైల్ డేటాను వినియోగిస్తున్నారు</translation>
 <translation id="5178667623289523808">మునుపటిని కనుగొనండి</translation>
+<translation id="5180276433875360121"><ph name="CERT_LIST" />‌ను చూపించండి</translation>
 <translation id="5181140330217080051">డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" /> కోసం Google Password Managerకు</translation>
 <translation id="5181551096188687373">ఈ పాస్‌వర్డ్ ఈ పరికరంలో మాత్రమే సేవ్ చేయబడింది. దీన్ని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, మీ Google ఖాతా, <ph name="USER_EMAIL" />‌లో దీన్ని సేవ్ చేయండి.</translation>
@@ -8535,6 +8538,7 @@
 <translation id="7063311912041006059">ప్రశ్న యొక్క ప్రదేశంలో <ph name="SPECIAL_SYMBOL" />తో URL</translation>
 <translation id="706342288220489463">సహాయం చేయడానికి మీ Assistantను మీ స్క్రీన్‌పై సమాచారాన్ని ఉపయోగించనివ్వండి</translation>
 <translation id="70641621694466590">పాస్‌వర్డ్‌ల పేజీకి వెళ్లండి</translation>
+<translation id="7064209589142995848">కంటెంట్ ట్రాన్స్‌ఫర్</translation>
 <translation id="7064734931812204395">Linux కంటైనర్ కాన్ఫిగర్ అవుతోంది. దీనికి 30 నిమిషాల వరకు పట్టవచ్చు.</translation>
 <translation id="7065223852455347715">బిజినెస్ నమోదును నిరోధించే మోడ్‌లో ఈ పరికరం లాక్ చేయబడింది. మీరు పరికరాన్ని నమోదు చేయాలనుకుంటే ముందుగా పరికరాన్ని పునరుద్ధరించాలి.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> కోసం 1 పాస్‌వర్డ్ <ph name="BRAND" />కి దిగుమతి చేయబడింది}other{<ph name="USER_EMAIL" /> కోసం {NUM_PASSWORDS} పాస్‌వర్డ్‌లు <ph name="BRAND" />కి దిగుమతి చేయబడ్డాయి}}</translation>
@@ -9573,6 +9577,7 @@
 <translation id="7810202088502699111">ఈ పేజీపై పాప్-అప్‌లు నిరోధించబడ్డాయి.</translation>
 <translation id="7810367892333449285">మీ ఎంట్రీ <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ అడ్రస్ <ph name="LPA_2" />$<ph name="LPA_3" /> ఆప్షనల్ మ్యాచింగ్ id ఫార్మాట్‌లో ఉండాలి<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">మళ్లీ ట్రై చేయండి లేదా గతంలో రూపొందించిన రూపాలలో ఒక దానిని దిగువున ఎంచుకోండి.</translation>
+<translation id="7811986034759500329">సిస్టమ్ సెట్టింగ్‌లలో సెట్ చేయండి</translation>
 <translation id="7812170317334653156">Google Calendar దాచబడింది</translation>
 <translation id="7814090115158024843">ఈ సైట్‌లలో రాయడానికి సహాయాన్ని ఎప్పుడూ ఆఫర్ చేయవద్దు</translation>
 <translation id="7814458197256864873">&amp;కాపీ</translation>

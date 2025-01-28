@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Avbrutt</translation>
 <translation id="1020274983236703756">Eksklusivt <ph name="PRODUCT_NAME" />-innhold er tilgjengelig nå</translation>
 <translation id="1022628058306505708">Jordflyt</translation>
+<translation id="102432830749687801">Sørg for å bruke Innholdsoverføring-appen fra Google for å flytte dataene fra skolekontoen til den personlige kontoen din før du mister tilgangen.</translation>
 <translation id="1026212596705997935">Hurtigtasten brukes til «<ph name="CONFLICT_ACCEL_NAME" />». Trykk på en ny hurtigtast. For å erstatte den eksisterende hurtigtasten, trykk på denne hurtigtasten på nytt.</translation>
 <translation id="1030856839388844477">Tilbakestill databruk</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> tråder, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri i etuiet.</translation>
 <translation id="1397738625398125236">Gatewayen kan pinges</translation>
 <translation id="1398634363027580500">Svært høy HTTPS-tidsforsinkelse</translation>
+<translation id="1406389211945506521">Takk for at du forteller om opplevelsen din. Tilbakemeldingene dine hjelper oss med å lage mer nøyaktig og nyttig innhold.</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1413240736185167732">Mislykket – filtersvikt</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Klassisk kunst</translation>
 <translation id="181434555916624618">Foreløpig vises ikke resultater med personer. Prøv en annen forespørsel.</translation>
 <translation id="1815850098929213707">Den valgte tasten er <ph name="KEYS" />. Trykk på knappen for å endre kontrollen</translation>
+<translation id="1818174214124933000">Når du velger Send, blir tilbakemeldingen og innholdet i den (som du ser nedenfor) sendt til Google, gjennomgått av mennesker og brukt til å lære opp eller forbedre produktene og tjenestene våre, i henhold til <ph name="LINK_POLICY_BEGIN" />personvernreglene<ph name="LINK_POLICY_END" /> og <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Googles vilkår for bruk<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Tegn</translation>
 <translation id="1827738518074806965">Kunstgalleri</translation>
+<translation id="183287940576828840">Støtende/farlig</translation>
 <translation id="1836553715834333258">Systemfarge</translation>
 <translation id="183675228220305365">realisme</translation>
 <translation id="1838374766361614909">Fjern søket</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Mislykkede UDP-forespørsler</translation>
 <translation id="1908394185991500139">pil venstre</translation>
 <translation id="1914144885717544695">på fredag</translation>
+<translation id="1915960750806557358">Del tilbakemeldingen eller beskriv problemet. Pass på at du ikke tar med noe som er personlig, sensitivt eller konfidensielt.</translation>
 <translation id="1923388006036088459">Markeringsfarger</translation>
 <translation id="1945403655450283000">Lydopptaker</translation>
 <translation id="1947737735496445907">Skrevet ut</translation>
@@ -596,6 +601,7 @@
 <translation id="387301095347517405">Antall ganger batteriet har gjennomgått en fullstendig ladesyklus</translation>
 <translation id="3877066159641251281">Lytt til oversettelsen</translation>
 <translation id="3880601782712134623">registrere unike stemmer automatisk og gi hver person en generisk etikett, for eksempel Person 1 og Person 2</translation>
+<translation id="38811596981744338">Juridisk problem</translation>
 <translation id="3885327323343477505">Bytt skjermsparer</translation>
 <translation id="3889914174935857450">Tilbakestillingsdato</translation>
 <translation id="3897092660631435901">Meny</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356">Ladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4930320165497208503">For å konfigurere eller oppdatere en tilkobling, gå til <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Dato</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" /> – åpnes på en ny fane</translation>
 <translation id="4946927805998996217">Genererer sammendrag</translation>
 <translation id="4950314376641394653">Fastvaren for <ph name="DEVICE_NAME" /> er oppdatert til versjon <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">tretunnel</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">Få informasjon tilknyttet det du har merket</translation>
 <translation id="6694534975463174713">lås</translation>
 <translation id="6700703207451721535">Tilgang er ikke tillatt for denne linken. Spør læreren din om du trenger tilgang.</translation>
+<translation id="6703179086771097594">Hva fungerte dårlig?</translation>
 <translation id="6704062477274546131">DNS-konvertering</translation>
 <translation id="6712933881624804031">dal</translation>
 <translation id="6716013206176357696">jordbær</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">Last ned transkripsjonsmodellen i innstillingene</translation>
 <translation id="7058278511608979688">Avslutt og lagre</translation>
 <translation id="7059230779847288458">Lader – fulladet om <ph name="TIME_VALUE" /></translation>
+<translation id="7064209589142995848">Innholdsoverføring</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> er valgt</translation>
 <translation id="7066538517128343186"><ph name="KEY" />-nøkkelen</translation>
 <translation id="7068619307603204412">Gjør enheten klar</translation>
@@ -1592,6 +1601,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8476942730579767658">Vinduer og skrivebord</translation>
 <translation id="8477536061607044749">grafisk design</translation>
 <translation id="8477551185774834963">DNS-forsinkelsen er noe høyere enn den tillatte grenseverdien</translation>
+<translation id="8481308460877552925">Faktafeil</translation>
 <translation id="8482376765267780829">Marker tekst for å forenkle den</translation>
 <translation id="8483248364096924578">IP-adresse</translation>
 <translation id="8491311378305535241">Kan ikke koble til HTTP-nettsteder fra Android-apper gjennom brannmuren</translation>

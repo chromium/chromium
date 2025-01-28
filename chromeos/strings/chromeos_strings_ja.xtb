@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">キャンセルされました</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> 限定アセットが利用可能</translation>
 <translation id="1022628058306505708">地球の動き</translation>
+<translation id="102432830749687801">Google のコンテンツ移行アプリを使用して、アクセス権が失われる前に、学校用アカウントのデータを個人アカウントに移動してください。</translation>
 <translation id="1026212596705997935">ショートカットは「<ph name="CONFLICT_ACCEL_NAME" />」で使用しています。新しいショートカットを押してください。既存のショートカットを置き換えるには、このショートカットをもう一度押します。</translation>
 <translation id="1030856839388844477">データ使用量をリセット</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（スレッド数 <ph name="THREAD_COUNT" />、<ph name="CPU_MAX_CLOCK_SPEED" /> GHz）</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">デバイスのケースのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="1397738625398125236">ゲートウェイへの ping</translation>
 <translation id="1398634363027580500">HTTPS レイテンシが非常に高くなっています</translation>
+<translation id="1406389211945506521">ご回答いただきありがとうございます。フィードバックは、より正確で有益なコンテンツの作成に役立てさせていただきます。</translation>
 <translation id="1407069428457324124">ダークモード</translation>
 <translation id="1413240736185167732">失敗 - フィルタエラー</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">クラシック アート</translation>
 <translation id="181434555916624618">現時点では、人物が含まれる結果は表示されません。別のプロンプトをお試しください。</translation>
 <translation id="1815850098929213707">選択したキーは <ph name="KEYS" /> です。コントロールを編集するにはボタンをタップします</translation>
+<translation id="1818174214124933000">[送信] を選択すると、フィードバックとコンテンツ（以下に表示）が Google に送信され、人間による確認が行われます。また、<ph name="LINK_POLICY_BEGIN" />プライバシー ポリシー<ph name="LINK_POLICY_END" />と <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google 利用規約<ph name="LINK_TERMS_OF_SERVICE_END" />に沿って、プロダクトおよびサービスのトレーニングや改善の目的で使用されます。</translation>
 <translation id="1823120442877418684">キャラクター</translation>
 <translation id="1827738518074806965">アート ギャラリー</translation>
+<translation id="183287940576828840">不適切 / 危険</translation>
 <translation id="1836553715834333258">システムカラー</translation>
 <translation id="183675228220305365">写実主義</translation>
 <translation id="1838374766361614909">検索をクリア</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">UDP リクエストに失敗しました</translation>
 <translation id="1908394185991500139">左矢印</translation>
 <translation id="1914144885717544695">金曜日</translation>
+<translation id="1915960750806557358">フィードバックまたは問題の内容を記入します。個人情報や機密情報は含めないようにしてください。</translation>
 <translation id="1923388006036088459">アクセント カラー</translation>
 <translation id="1945403655450283000">レコーダー</translation>
 <translation id="1947737735496445907">印刷完了</translation>
@@ -596,6 +601,7 @@
 <translation id="387301095347517405">電池がフル充電されたサイクルの回数です</translation>
 <translation id="3877066159641251281">翻訳を聞く</translation>
 <translation id="3880601782712134623">異なる話し手を自動的に検出し、それぞれに「スピーカー 1」や「スピーカー 2」などの汎用的なラベルを付ける</translation>
+<translation id="38811596981744338">法的問題</translation>
 <translation id="3885327323343477505">スクリーン セーバーを変更</translation>
 <translation id="3889914174935857450">リセット日</translation>
 <translation id="3897092660631435901">メニュー</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 充電しました。</translation>
 <translation id="4930320165497208503">接続を設定または更新するには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] に移動します。</translation>
 <translation id="4932733599132424254">日付</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />、新しいタブで開く</translation>
 <translation id="4946927805998996217">要約を生成しています</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> のファームウェアがバージョン <ph name="VERSION" /> に更新されました</translation>
 <translation id="4950893758552030541">樹木のトンネル</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">選択した項目に関連する情報を取得する</translation>
 <translation id="6694534975463174713">ロック</translation>
 <translation id="6700703207451721535">このリンクへのアクセスは許可されていません。アクセスが必要な場合は、教師に確認してください。</translation>
+<translation id="6703179086771097594">うまくいかなかった点</translation>
 <translation id="6704062477274546131">DNS の解決</translation>
 <translation id="6712933881624804031">渓谷</translation>
 <translation id="6716013206176357696">イチゴ</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">[設定] で音声文字変換モデルをダウンロードしてください</translation>
 <translation id="7058278511608979688">終了して保存</translation>
 <translation id="7059230779847288458">充電中、フル充電まで <ph name="TIME_VALUE" /></translation>
+<translation id="7064209589142995848">コンテンツ移行</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> を選択しました</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> キー</translation>
 <translation id="7068619307603204412">デバイスの準備</translation>
@@ -1592,6 +1601,7 @@
 <translation id="8476942730579767658">ウィンドウとデスク</translation>
 <translation id="8477536061607044749">グラフィック デザイン</translation>
 <translation id="8477551185774834963">DNS の応答時間が許容値を少し超えています</translation>
+<translation id="8481308460877552925">事実と異なる</translation>
 <translation id="8482376765267780829">簡略化するテキストを選択</translation>
 <translation id="8483248364096924578">IP アドレス</translation>
 <translation id="8491311378305535241">Android アプリからファイアウォールを介して HTTP ウェブサイトに接続できません</translation>

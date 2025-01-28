@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" 키는 "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" 키와 같은 사전에서 설정할 수 없습니다.</translation>
 <translation id="1455413310270022028">지우개</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{리뷰 0개 보기}=1{리뷰 1개 보기}other{리뷰 #개 보기}}</translation>
 <translation id="1458059624921545588">인물 및 사회</translation>
 <translation id="1458140305240870199">속옷</translation>
 <translation id="1459693405370120464">날씨</translation>
@@ -961,6 +962,7 @@
 <translation id="2674170444375937751">방문 기록에서 이 페이지를 삭제하시겠습니까?</translation>
 <translation id="2674524144218093528">페인트칠 및 마감</translation>
 <translation id="2674804415323431591">추천 숨기기</translation>
+<translation id="26774279487328902">탭 그룹 <ph name="GROUP_COUNT" />개를 더 이상 사용할 수 없음</translation>
 <translation id="2677748264148917807">나가기</translation>
 <translation id="2683195745483370038">다른 검색 결과가 표시됨</translation>
 <translation id="2686919536310834199">작성 지원 기능에 관한 의견을 보냅니다.</translation>
@@ -1956,6 +1958,7 @@
 <translation id="4407758156081352648">보안을 유지하기 위해 조직에서는 Chrome에서 비밀번호를 재사용하는 것을 허용하지 않습니다. Chrome의 비밀번호는 사용자 개인 정보를 보호하기 위해 암호화됩니다.</translation>
 <translation id="4408413947728134509">쿠키 <ph name="NUM_COOKIES" />개</translation>
 <translation id="4412074349188076601">이 구성은 설치 가능으로 표시되지만 이 아키텍처에 제공된 이미지가 없으므로 설치할 수 없습니다.</translation>
+<translation id="4412377069090572315">다른 사람들의 의견</translation>
 <translation id="4414452699610169758">Google 비밀번호 관리자 및 Chrome 자동 완성을 사용하여 비밀번호, 결제 수단, 주소를 저장하고 입력합니다</translation>
 <translation id="4414515549596849729">쿠키 및 사이트 데이터</translation>
 <translation id="4415156962929755728">플라스틱(고광택)</translation>
@@ -2264,6 +2267,7 @@
 <translation id="5001526427543320409">서드 파티 쿠키</translation>
 <translation id="5002932099480077015">선택하면 Chrome에서 양식을 더 빠르게 작성할 수 있도록 이 기기에 카드 사본을 저장합니다.</translation>
 <translation id="5007392906805964215">검토</translation>
+<translation id="500790844453430087">"<ph name="GROUP_TITLE_1" />" 및 "<ph name="GROUP_TITLE_2" />" 탭 그룹을 더 이상 사용할 수 없음</translation>
 <translation id="5011561501798487822">감지된 언어</translation>
 <translation id="5015510746216210676">컴퓨터 이름:</translation>
 <translation id="5017554619425969104">복사한 텍스트</translation>
@@ -2736,6 +2740,7 @@
 <translation id="5866898949289125849">개발자 도구 페이지를 보는 중입니다.</translation>
 <translation id="5869405914158311789">사이트에 연결할 수 없음</translation>
 <translation id="5869522115854928033">저장된 비밀번호</translation>
+<translation id="5872215789867188990">"<ph name="GROUP_TITLE" />" 탭 그룹을 더 이상 사용할 수 없음</translation>
 <translation id="5872692522325383488">IBAN이 저장됨</translation>
 <translation id="5873297634595728366">디젤 자동차</translation>
 <translation id="5877359070305966420">인사 관리</translation>
@@ -2744,7 +2749,7 @@
 <translation id="5880050725127890683">Chrome 안전 확인으로 이동</translation>
 <translation id="5884465125445718607">봉투 Chinese #6</translation>
 <translation id="5886961930368713749">비교에 관한 의견 보내기</translation>
-<translation id="5887400589839399685">저장된 카드</translation>
+<translation id="5887400589839399685">카드 저장됨</translation>
 <translation id="5887687176710214216">최근 방문: 어제</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5895187275912066135">발급일:</translation>
@@ -2777,6 +2782,7 @@
 <translation id="5937560539988385583">페이지 번역됨</translation>
 <translation id="5938153366081463283">가상 카드 추가</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">이 정보는 Trustpilot, ScamAdviser, Google 등의 독립적인 리뷰 웹사이트에서 제공합니다. 요약은 AI를 사용해 생성됩니다.</translation>
 <translation id="5944297261866530437">패브릭(고광택)</translation>
 <translation id="5950901984834744590">면도기</translation>
 <translation id="5951495562196540101">일반 계정으로 등록할 수 없습니다(패키지 라이선스 사용 가능).</translation>
@@ -3143,6 +3149,7 @@
 <translation id="6567832540451970450">관리자가 이 사이트에 <ph name="PERMISSION" /> 권한을 허용합니다</translation>
 <translation id="6568793038316600992">결제 수단 관리 버튼, Chrome 설정에서 결제 및 신용카드 정보를 관리하려면 활성화하세요.</translation>
 <translation id="6569060085658103619">확장 프로그램 페이지를 보는 중</translation>
+<translation id="6572867903637058088">도움이 되었나요?</translation>
 <translation id="6573200754375280815">오른쪽 2공 펀칭</translation>
 <translation id="6574762126505704998">채우기</translation>
 <translation id="6575408526598156416">계정에 저장</translation>
@@ -4321,9 +4328,11 @@
 <translation id="8672535691554698269">컴퓨터 네트워크</translation>
 <translation id="8675446170353411473"><ph name="CLOUD_PROVIDER" />에 파일을 업로드하는 중입니다</translation>
 <translation id="8676424191133491403">지연 없음</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{표 {COUNT}개 삭제됨}other{표 {COUNT}개 삭제됨}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, 답변, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">다음 이유로 <ph name="PAGE" />의 웹페이지를 로드할 수 없습니다.</translation>
 <translation id="8682297334444610648">공룡 게임입니다, 탭하여 플레이하세요</translation>
+<translation id="8685225035093721011">매장 리뷰</translation>
 <translation id="8686424632716064939">컴퓨터 보안</translation>
 <translation id="8687278439622293018"><ph name="ENTRY_VOICEOVER" /> 항목이 삭제되었습니다.</translation>
 <translation id="8687429322371626002">내 기기와 계정은 <ph name="MANAGER" />에서 관리합니다.</translation>

@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Gailu honetan baino ez da gorde helbidea</translation>
 <translation id="1445276840641906250">Fitxa guztiak arakatzaile berean</translation>
 <translation id="1450170672351507823">Babes estandarra dago aktibatuta. Segurtasuna areagotzeko, erabili babes hobetua.</translation>
-<translation id="1454615514353469963">Pasahitzak, sarbide-gakoak eta bestelako datuak betiko ezabatuko dira Google-ren Pasahitz-kudeatzailea zerbitzutik</translation>
 <translation id="1455660774629812862">Ez ezkutatu</translation>
 <translation id="1460751212339734034">Aurreztu denbora, idatzi gutxiago</translation>
 <translation id="1466035273550360103">Ez dago irekitako fitxarik</translation>
@@ -476,6 +475,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="3053332585453689122">Bisitatzen dituzun URLak eta orrien edukiaren, deskargen, luzapenen jardueren eta sistemaren informazioaren lagin txiki bat bidaltzen dizkio Google-ren Arakatze segurua eginbideari, kaltegarriak diren egiaztatzeko.</translation>
 <translation id="3055102495753300780">Informazioaren biltegiratzea</translation>
 <translation id="3059270601560379555">Bilaketa berria</translation>
+<translation id="3064547930554042309">Kudeatu deskargak</translation>
 <translation id="3072279342064724558">Jadanik badago pasahitza</translation>
 <translation id="3076846064362030967">Ez da amaituko Google-ko kontuko saioa. Litekeena da <ph name="BEGIN_LINK" />beste jarduera batzuk<ph name="END_LINK" /> Google-ko kontuan gordetzea saioa hasita daukazun bitartean. Nahi duzunean ezaba ditzakezu.
 
@@ -698,6 +698,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4154753961803534698">Bilatu kamerarekin</translation>
 <translation id="4158491215857439601">Pasahitz-kudeatzailea</translation>
 <translation id="4163699139741158298">{count,plural, =1{Laster-marka gorde da "{title}" karpetan. Gailu honetan soilik dago gordeta.}other{{count} laster-marka gorde dira "{title}" karpetan. Gailu honetan soilik daude gordeta.}}</translation>
+<translation id="4164514562270305824">Ezabatu deskargak automatikoki</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" /> amaiera daukan <ph name="NETWORK_NAME" /></translation>
 <translation id="4169535189173047238">Ez eman baimenik</translation>
 <translation id="4172051516777682613">Erakutsi beti</translation>
@@ -1016,6 +1017,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5579012242779565775">Ezkutatu "Irakurketa-zerrenda"</translation>
 <translation id="5585019845078534178">Txartelak</translation>
 <translation id="5595485650161345191">Editatu helbidea</translation>
+<translation id="559567008082979829">Konfiguratu deskargak hilabeteren buruan ezabatzeko.</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="560322036295180549">Erakundeak desaktibatu du</translation>
 <translation id="5611107723541161735">Azkenaldian gailu honetan bisitatu dituzun webguneetarako lasterbideak.</translation>

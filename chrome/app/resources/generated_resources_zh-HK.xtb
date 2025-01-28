@@ -55,6 +55,7 @@
 <translation id="103279545524624934">請釋出磁碟的儲存空間，以啟動 Android 應用程式。</translation>
 <translation id="1033780634303702874">存取您的序列裝置</translation>
 <translation id="1034484273907870301">平板電腦模式適用的縮圖分頁列</translation>
+<translation id="1035289631433631911">內容轉移工具</translation>
 <translation id="1035875743511577452">按一下「變更主題」以探索靈感來自藝術家、大自然和更多元素的主題</translation>
 <translation id="1036348656032585052">停用</translation>
 <translation id="1036511912703768636">存取清單中所有 USB 裝置</translation>
@@ -380,6 +381,7 @@
 <translation id="1246863218384630739">無法安裝「<ph name="VM_NAME" />」：圖片網址已傳回 <ph name="HTTP_ERROR" /> 錯誤代碼。請聯絡您的管理員。</translation>
 <translation id="1247372569136754018">麥克風 (內置)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{已禁止 1 個網站傳送通知}other{已禁止 {NUM_SITES} 個網站傳送通知}}</translation>
+<translation id="125097549534200450">清除</translation>
 <translation id="1251366534849411931">缺少預期的開頭大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">正在掃瞄流動數據網絡…</translation>
 <translation id="125220115284141797">預設</translation>
@@ -5934,6 +5936,7 @@
 <translation id="5177479852722101802">繼續封鎖存取相機和麥克風</translation>
 <translation id="5177549709747445269">您正在使用流動數據</translation>
 <translation id="5178667623289523808">尋找上一個項目</translation>
+<translation id="5180276433875360121">顯示<ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">下載中</translation>
 <translation id="5181172023548002891">儲存至 <ph name="ACCOUNT" /> 的「Google 密碼管理工具」</translation>
 <translation id="5181551096188687373">此密碼只會儲存至此裝置。如要在其他裝置上使用此書籤，請將書籤儲存至 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
@@ -8523,6 +8526,7 @@
 <translation id="7063311912041006059">以 <ph name="SPECIAL_SYMBOL" /> 取代查詢的網址</translation>
 <translation id="706342288220489463">讓「Google 助理」使用畫面上的資料提供協助</translation>
 <translation id="70641621694466590">去密碼頁面</translation>
+<translation id="7064209589142995848">內容轉移</translation>
 <translation id="7064734931812204395">正在設定 Linux 容器。過程可能需時 30 分鐘。</translation>
 <translation id="7065223852455347715">這部裝置已鎖定為防止企業註冊的模式。如果您要使用該裝置註冊，必須先完成裝置復原操作。</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{已將 1 個密碼匯入至 <ph name="USER_EMAIL" /> 的「<ph name="BRAND" />」}other{已將 {NUM_PASSWORDS} 個密碼匯入至 <ph name="USER_EMAIL" /> 的「<ph name="BRAND" />」}}</translation>
@@ -9561,6 +9565,7 @@
 <translation id="7810202088502699111">系統已封鎖此網頁的彈出式視窗。</translation>
 <translation id="7810367892333449285">輸入的內容應採用以下格式：<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ 地址<ph name="LPA_2" />$<ph name="LPA_3" />選填的相符 ID<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">請再試一次，或選取下方其中一個先前生成的主題。</translation>
+<translation id="7811986034759500329">在系統設定中設置</translation>
 <translation id="7812170317334653156">「Google 日曆」已隱藏</translation>
 <translation id="7814090115158024843">一律在這些網站上停用撰寫協助</translation>
 <translation id="7814458197256864873">複製(&amp;C)</translation>

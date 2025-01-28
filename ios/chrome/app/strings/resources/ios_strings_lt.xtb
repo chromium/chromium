@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Adresas išsaugotas tik šiame įrenginyje</translation>
 <translation id="1445276840641906250">Visi skirtukai vienoje naršyklėje</translation>
 <translation id="1450170672351507823">Įprasta apsauga įjungta. Jei norite apsisaugoti dar labiau, naudokite sustiprintą apsaugą.</translation>
-<translation id="1454615514353469963">Slaptažodžiai, prieigos raktai ir kiti duomenys bus visam laikui ištrinti iš „Google“ slaptažodžių tvarkyklės</translation>
 <translation id="1455660774629812862">Neslėpti</translation>
 <translation id="1460751212339734034">Sutaupykite laiko, veskite mažiau teksto</translation>
 <translation id="1466035273550360103">Nėra atidarytų skirtukų</translation>
@@ -476,6 +475,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="3053332585453689122">Siunčia URL, kuriais lankotės, ir nedidelį puslapio turinio, atsisiuntimų, plėtinių veiklos ir sistemos informacijos pavyzdį „Google“ saugaus naršymo paslaugai, kad patikrintų, ar jie yra žalingi.</translation>
 <translation id="3055102495753300780">Informacijos saugykla</translation>
 <translation id="3059270601560379555">Nauja paieška</translation>
+<translation id="3064547930554042309">Atsisiuntimų tvarkymas</translation>
 <translation id="3072279342064724558">Slaptažodis jau yra</translation>
 <translation id="3076846064362030967">Nebūsite atjungti nuo „Google“ paskyros. <ph name="BEGIN_LINK" />Kitos veiklos formos<ph name="END_LINK" /> gali būti išsaugotos jūsų „Google“ paskyroje, kai esate prisijungę. Galite bet kada jas ištrinti.
 
@@ -698,6 +698,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4154753961803534698">Ieškoti naudojant fotoaparatą</translation>
 <translation id="4158491215857439601">Slaptažodžių tvarkytuvė</translation>
 <translation id="4163699139741158298">{count,plural, =1{Žymė išsaugota skiltyje „{title}“. Ji išsaugoma tik šiame įrenginyje.}one{{count} žymė išsaugota skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}few{{count} žymės išsaugotos skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}many{{count} žymės išsaugota skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}other{{count} žymių išsaugota skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}}</translation>
+<translation id="4164514562270305824">Automatiškai ištrinti atsisiuntimus</translation>
 <translation id="4168651806173792090">„<ph name="NETWORK_NAME" />“, kurios numeris baigiasi <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Neleisti</translation>
 <translation id="4172051516777682613">Visada rodyti</translation>
@@ -1016,6 +1017,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5579012242779565775">Slėpti skaitymo sąrašą</translation>
 <translation id="5585019845078534178">Kortelės</translation>
 <translation id="5595485650161345191">Adreso redagavimas</translation>
+<translation id="559567008082979829">Nustatykite, kad atsisiuntimai būtų ištrinti po vieno mėnesio.</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
 <translation id="560322036295180549">Išjungė jūsų organizacija</translation>
 <translation id="5611107723541161735">Šiame įrenginyje neseniai aplankytų svetainių šaukiniai.</translation>

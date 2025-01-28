@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">ਕੁੰਜੀਆਂ "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" ਨੂੰ "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" ਕੁੰਜੀਆਂ ਵਾਂਗ ਸ਼ਬਦਕੋਸ਼ ਵਿੱਚ ਸੈੱਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="1455413310270022028">ਰਬੜ</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{ਦੇਖਣ ਲਈ ਕੋਈ ਸਮੀਖਿਆ ਨਹੀਂ ਹੈ}=1{1 ਸਮੀਖਿਆ ਦੇਖੋ}other{ਸਾਰੀਆਂ # ਸਮੀਖਿਆਵਾਂ ਦੇਖੋ}}</translation>
 <translation id="1458059624921545588">ਲੋਕ ਅਤੇ ਸਮਾਜ</translation>
 <translation id="1458140305240870199">ਅੰਦਰੂਨੀ ਵਸਤਰ</translation>
 <translation id="1459693405370120464">ਮੌਸਮ</translation>
@@ -961,6 +962,7 @@
 <translation id="2674170444375937751">ਕੀ ਤੁਸੀਂ ਪੱਕੇ ਤੌਰ 'ਤੇ ਇਹਨਾਂ ਪੰਨਿਆਂ ਨੂੰ ਆਪਣੇ ਇਤਿਹਾਸ ਵਿੱਚੋਂ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2674524144218093528">ਘਰ ਨੂੰ ਰੰਗਣਾ ਅਤੇ ਸਜਾਵਟ</translation>
 <translation id="2674804415323431591">ਸੁਝਾਅ ਲੁਕਾਓ</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> ਟੈਬ ਗਰੁੱਪ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹਨ</translation>
 <translation id="2677748264148917807">ਛੱਡੋ</translation>
 <translation id="2683195745483370038">ਹੋਰ ਨਤੀਜੇ ਮਿਲੇ</translation>
 <translation id="2686919536310834199">'ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਲਈ ਵਿਚਾਰ ਭੇਜੋ।</translation>
@@ -1953,6 +1955,7 @@
 <translation id="4407758156081352648">ਸੁਰੱਖਿਆ ਬਣਾਈ ਰੱਖਣ ਲਈ, ਤੁਹਾਡੀ ਸੰਸਥਾ Chrome ਵਿੱਚ ਪਾਸਵਰਡਾਂ ਦੀ ਮੁੜ-ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੰਦੀ ਹੈ। ਵਰਤੋਂਕਾਰ ਦੀ ਪਰਦੇਦਾਰੀ ਦੀ ਰੱਖਿਆ ਲਈ Chrome ਵਿੱਚ ਪਾਸਵਰਡ ਇਨਕ੍ਰਿਪਟ ਕੀਤੇ ਜਾਂਦੇ ਹਨ।</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> ਕੁਕੀਜ਼</translation>
 <translation id="4412074349188076601">ਇਸ ਸੰਰੂਪਣ ਦੀ ਸਥਾਪਤ ਕਰਨਯੋਗ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਕੀਤੀ ਗਈ ਹੈ, ਪਰ ਇਸ ਆਰਕੀਟੈਕਚਰ ਲਈ ਕੋਈ ਚਿੱਤਰ ਮੁਹੱਈਆ ਨਹੀਂ ਕਰਵਾਇਆ ਗਿਆ, ਇਸ ਲਈ ਇਸਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
+<translation id="4412377069090572315">ਲੋਕਾਂ ਦਾ ਕੀ ਕਹਿਣਾ ਹੈ</translation>
 <translation id="4414452699610169758">ਪਾਸਵਰਡ, ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤਿਆਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਅਤੇ ਭਰਨ ਲਈ, Google Password Manager ਅਤੇ Chrome ਆਟੋਫਿਲ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="4414515549596849729">ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ</translation>
 <translation id="4415156962929755728">ਪਲਾਸਟਿਕ (ਹਾਈ ਗਲੋਸ)</translation>
@@ -2261,6 +2264,7 @@
 <translation id="5001526427543320409">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼</translation>
 <translation id="5002932099480077015">ਜੇਕਰ ਚਾਲੂ ਹੈ, ਤਾਂ Chrome ਤੇਜ਼ੀ ਨਾਲ ਫ਼ਾਰਮ ਭਰਨ ਲਈ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਤੁੁਹਾਡੇ ਕਾਰਡ ਦੀ ਇੱਕ ਕਾਪੀ ਸਟੋਰ ਕਰੇਗਾ।</translation>
 <translation id="5007392906805964215">ਸਮੀਖਿਆ ਕਰੋ</translation>
+<translation id="500790844453430087">"<ph name="GROUP_TITLE_1" />" ਅਤੇ "<ph name="GROUP_TITLE_2" />" "ਟੈਬ ਗਰੁੱਪ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹਨ</translation>
 <translation id="5011561501798487822">ਪਛਾਣੀ ਗਈ ਭਾਸ਼ਾ</translation>
 <translation id="5015510746216210676">ਮਸ਼ੀਨ ਦਾ ਨਾਮ:</translation>
 <translation id="5017554619425969104">ਤੁਹਾਡੇ ਵੱਲੋਂ ਕਾਪੀ ਕੀਤੀ ਲਿਖਤ</translation>
@@ -2733,6 +2737,7 @@
 <translation id="5866898949289125849">ਤੁਸੀਂ ਵਿਕਾਸਕਾਰ ਟੂਲਾਂ ਵਾਲਾ ਪੰਨਾ ਦੇਖ ਰਹੇ ਹੋ</translation>
 <translation id="5869405914158311789">ਇਸ ਸਾਈਟ 'ਤੇ ਪਹੁੰਚਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="5869522115854928033">ਸੁਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ</translation>
+<translation id="5872215789867188990">"<ph name="GROUP_TITLE" />" ਟੈਬ ਗਰੁੱਪ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="5872692522325383488">IBAN ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5873297634595728366">ਡੀਜ਼ਲ ਵਾਹਨ</translation>
 <translation id="5877359070305966420">ਮਾਨਵ ਸੰਸਾਧਨ</translation>
@@ -2774,6 +2779,7 @@
 <translation id="5937560539988385583">ਪੰਨੇ ਦਾ ਅਨੁਵਾਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5938153366081463283">ਆਭਾਸੀ ਕਾਰਡ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">ਇਹ ਜਾਣਕਾਰੀ ਸੁਤੰਤਰ ਸਮੀਖਿਆ ਵੈੱਬਸਾਈਟਾਂ ਜਿਵੇਂ ਕਿ Trustpilot, ScamAdviser, Google ਅਤੇ ਹੋਰਾਂ ਤੋਂ ਮਿਲਦੀ ਹੈ। ਸਾਰਾਂਸ਼ AI ਨਾਲ ਬਣਾਏ ਜਾਂਦੇ ਹਨ।</translation>
 <translation id="5944297261866530437">ਕੱਪੜਾ (ਹਾਈ-ਗਲੋਸ)</translation>
 <translation id="5950901984834744590">ਉਸਤਰੇ ਅਤੇ ਸ਼ੇਵਰ</translation>
 <translation id="5951495562196540101">ਖਪਤਕਾਰ ਖਾਤੇ ਨਾਲ ਦਰਜ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ (ਪੈਕੇਜਡ ਲਾਇਸੰਸ ਉਪਲਬਧ ਹਨ)।</translation>
@@ -3139,6 +3145,7 @@
 <translation id="6567832540451970450">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਸਾਈਟ ਲਈ <ph name="PERMISSION" /> ਦੀ ਆਗਿਆ ਦਿੰਦਾ ਹੈ</translation>
 <translation id="6568793038316600992">'ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ' ਬਟਨ, Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਭੁਗਤਾਨਾਂ ਅਤੇ ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="6569060085658103619">ਤੁਸੀਂ ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਪੰਨਾ ਦੇਖ ਰਹੇ ਹੋ</translation>
+<translation id="6572867903637058088">ਕੀ ਇਹ ਲਾਹੇਵੰਦ ਹੈ?</translation>
 <translation id="6573200754375280815">ਸੱਜੇ ਦੋ ਮੋਰੀਆਂ</translation>
 <translation id="6574762126505704998">ਭਰੋ</translation>
 <translation id="6575408526598156416">ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -4317,9 +4324,11 @@
 <translation id="8672535691554698269">ਕੰਪਿਊਟਰ ਨੈੱਟਵਰਕ</translation>
 <translation id="8675446170353411473">ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="CLOUD_PROVIDER" /> 'ਤੇ ਅੱਪਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="8676424191133491403">ਕੋਈ ਦੇਰੀ ਨਹੀਂ</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} ਸਾਰਨੀ ਮਿਟਾਈ ਗਈ}one{{COUNT} ਸਾਰਨੀ ਮਿਟਾਈ ਗਈ}other{{COUNT} ਸਾਰਨੀਆਂ ਮਿਟਾਈਆਂ ਗਈਆਂ}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ਜਵਾਬ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> ਤੇ ਵੈਬਸਫ਼ਾ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ:</translation>
 <translation id="8682297334444610648">Dino ਗੇਮ, ਖੇਡਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
+<translation id="8685225035093721011">ਸਟੋਰ ਸਮੀਖਿਆਵਾਂ</translation>
 <translation id="8686424632716064939">ਕੰਪਿਊਟਰ ਸੁਰੱਖਿਆ</translation>
 <translation id="8687278439622293018"><ph name="ENTRY_VOICEOVER" /> ਇੰਦਰਾਜ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="8687429322371626002">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਅਤੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="MANAGER" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>

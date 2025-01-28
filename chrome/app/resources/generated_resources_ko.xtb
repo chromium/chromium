@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Android 앱을 실행하려면 디스크 저장 공간을 확보하세요.</translation>
 <translation id="1033780634303702874">직렬 기기에 액세스</translation>
 <translation id="1034484273907870301">태블릿 모드의 썸네일 탭 표시줄</translation>
+<translation id="1035289631433631911">콘텐츠 전송 도구</translation>
 <translation id="1035875743511577452">'테마 변경'을 클릭하여 아티스트, 자연 등에서 영감을 받은 테마를 살펴봅니다.</translation>
 <translation id="1036348656032585052">사용 중지</translation>
 <translation id="1036511912703768636">이 USB 기기에 액세스</translation>
@@ -71,6 +72,7 @@
 <translation id="1043505821207197890">문제가 발생했습니다. Linux 부분 업그레이드만 진행할 수 있습니다. 자세한 정보는 로그를 검토하세요. 로그는 파일 &gt; 내 파일 &gt; <ph name="LOG_FILE" />에 저장되어 있습니다.</translation>
 <translation id="104385770822424034">작업 추가</translation>
 <translation id="104419033123549300">키맵 스타일</translation>
+<translation id="1045487161760507186">Google 비밀번호 관리자에 저장되므로 비밀번호를 기억하지 않아도 됩니다.</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{비밀번호 1개를 이 기기의 <ph name="BRAND" />에 가져왔습니다.}other{비밀번호 {NUM_PASSWORDS}개를 이 기기의 <ph name="BRAND" />에 가져왔습니다.}}</translation>
 <translation id="1046572983040892965">창이 왼쪽 위로 이동함</translation>
 <translation id="104710386808485638">Linux를 다시 시작하시겠습니까?</translation>
@@ -380,6 +382,7 @@
 <translation id="1246863218384630739"><ph name="VM_NAME" /> VM을 설치할 수 없습니다. 이미지 URL이 <ph name="HTTP_ERROR" /> 오류 코드를 반환했습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="1247372569136754018">마이크(내부)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{사이트 1개에 알림이 허용되지 않음}other{사이트 {NUM_SITES}개에 알림이 허용되지 않음}}</translation>
+<translation id="125097549534200450">삭제</translation>
 <translation id="1251366534849411931">열림 중괄호 누락: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">모바일 데이터 네트워크를 스캔하는 중...</translation>
 <translation id="125220115284141797">기본</translation>
@@ -1886,6 +1889,7 @@
 <translation id="2297705863329999812">프린터 검색</translation>
 <translation id="2297822946037605517">이 페이지 공유</translation>
 <translation id="229871422646860597">툴바에서 고정 해제</translation>
+<translation id="2299685119225839832">리뷰에서 사람들이 말하는 내용을 요약해서 볼 수 있습니다</translation>
 <translation id="2299734369537008228">슬라이더: <ph name="MIN_LABEL" />~<ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">debugd로 수집된 모든 로그 파일을 별도의 보관 파일로 포함합니다.</translation>
 <translation id="2300214399009193026">PCIe</translation>
@@ -5258,6 +5262,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4676616966096505747">일부 데이터가 아직 계정에 저장되지 않았습니다</translation>
 <translation id="4677772697204437347">GPU 메모리</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4678729681411398877">정보 유출로 인해 비밀번호 중 하나가 노출된 경우 Google 비밀번호 관리자에서 안전한 비밀번호로 변경할지 묻습니다.</translation>
 <translation id="4678848110205818817">신용카드/체크카드</translation>
 <translation id="4679018849559620189">이렇게 하면 모든 기기에서 저장된 패스키에 액세스할 수 있습니다.</translation>
 <translation id="4680105648806843642">이 페이지가 음소거됨</translation>
@@ -5946,6 +5951,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5177479852722101802">카메라 및 마이크 액세스 계속 차단</translation>
 <translation id="5177549709747445269">모바일 데이터 사용 중</translation>
 <translation id="5178667623289523808">이전 찾기</translation>
+<translation id="5180276433875360121"><ph name="CERT_LIST" /> 표시</translation>
 <translation id="5181140330217080051">다운로드 중</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" />의 Google 비밀번호 관리자에</translation>
 <translation id="5181551096188687373">이 비밀번호는 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="USER_EMAIL" />)에 저장하세요.</translation>
@@ -6826,6 +6832,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5828545842856466741">프로필 추가...</translation>
 <translation id="5828633471261496623">인쇄 중...</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> 앱을 열 수 없습니다</translation>
+<translation id="5830512293931520102">비밀번호는 암호화되어 있으며 누구에게도 공개되지 않습니다.</translation>
 <translation id="5830720307094128296">페이지를 다른 이름으로 저장(&amp;A)...</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> 계정으로 로그인되었습니다</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" /> 및 모든 하위 사이트, 설치된 앱의 사이트 데이터와 권한을 삭제하시겠습니까?</translation>
@@ -7570,6 +7577,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">친구 및 가족 추가</translation>
 <translation id="6367097275976877956">ChromeOS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 스페이스바를 누르세요.</translation>
+<translation id="6367396429435748845">마우스 키를 일시중지하고 다시 시작하려면 <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> 키를 누르세요.</translation>
 <translation id="6367985768157257101">Nearby Share로 받으시겠습니까?</translation>
 <translation id="6368157733310917710">주소 및 기타</translation>
 <translation id="6368276408895187373">사용 설정됨, <ph name="VARIATION_NAME" /></translation>
@@ -8539,6 +8547,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7063311912041006059">URL(검색어 자리에 <ph name="SPECIAL_SYMBOL" /> 입력)</translation>
 <translation id="706342288220489463">어시스턴트가 화면에 표시된 정보를 사용하여 지원하도록 허용하기</translation>
 <translation id="70641621694466590">비밀번호 페이지로 이동</translation>
+<translation id="7064209589142995848">콘텐츠 전송</translation>
 <translation id="7064734931812204395">Linux 컨테이너를 설정하는 중입니다. 여기에는 최대 30분이 걸릴 수 있습니다.</translation>
 <translation id="7065223852455347715">이 기기는 엔터프라이즈 등록을 방지하는 모드로 잠긴 상태입니다. 기기를 등록하려면 먼저 기기를 복구해야 합니다.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" />의 비밀번호 1개를 <ph name="BRAND" />에 가져왔습니다.}other{<ph name="USER_EMAIL" />의 비밀번호 {NUM_PASSWORDS}개를 <ph name="BRAND" />에 가져왔습니다.}}</translation>
@@ -9223,6 +9232,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7568759527730933493">보안 연결을 사용하여 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회합니다. DNS는 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />에서 관리형 서비스 제공업체를 사용합니다. 관리자가 구성한 일부 도메인에는 보안 연결이 사용되지 않습니다.</translation>
 <translation id="756876171895853918">아바타 맞춤설정</translation>
 <translation id="7568790562536448087">업데이트</translation>
+<translation id="7569113730576914983">Chrome에서 정보 유출로 인해 노출된 비밀번호를 발견하면 로그인 시 비밀번호를 변경할 수 있도록 제안합니다.</translation>
 <translation id="7569983096843329377">검정색</translation>
 <translation id="7570548610653957960">읽기 도우미</translation>
 <translation id="7571643774869182231">저장용량이 부족하여 업데이트할 수 없음</translation>
@@ -9508,6 +9518,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />에 있는 파일을 볼 수 있게 됩니다.</translation>
 <translation id="7768770796815395237">변경</translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
+<translation id="7769709635093101687">일시중지 단축키</translation>
 <translation id="7769748505895274502">최근에 닫은 탭 접기</translation>
 <translation id="7770072242481632881">측면 패널 선택기</translation>
 <translation id="7770450735129978837">마우스 오른쪽 버튼 클릭</translation>
@@ -9577,6 +9588,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7810202088502699111">이 페이지에서 팝업이 차단되었습니다.</translation>
 <translation id="7810367892333449285">입력되는 내용은 <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ 주소<ph name="LPA_2" />$<ph name="LPA_3" />일치 ID(선택사항)<ph name="LPA_4" /> 형식이어야 합니다.</translation>
 <translation id="7811263553491007091">다시 시도하거나 아래에서 이전에 생성한 테마 중 하나를 선택하세요.</translation>
+<translation id="7811986034759500329">시스템 설정에서 설정</translation>
 <translation id="7812170317334653156">Google Calendar 숨김</translation>
 <translation id="7814090115158024843">이 사이트에서 글쓰기 도움을 제공하지 않음</translation>
 <translation id="7814458197256864873">복사(&amp;C)</translation>
@@ -10158,6 +10170,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8215129063232901118"><ph name="DEVICE_TYPE" />에서 휴대전화의 기능에 액세스</translation>
 <translation id="8217212468862726597">포인터 강조표시</translation>
 <translation id="8217399928341212914">여러 파일을 다운로드하지 못하도록 계속 차단</translation>
+<translation id="8219785583603399823">이 매장의 평점 보기</translation>
 <translation id="822050276545350872">이제부터는 기다릴 필요 없습니다</translation>
 <translation id="8222112516148944758">탭 그룹이 모든 기기에서 자동으로 저장되고 업데이트됩니다.</translation>
 <translation id="8222674561049363989">유효한 파일 문서가 아닙니다</translation>

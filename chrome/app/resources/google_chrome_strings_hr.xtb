@@ -355,6 +355,7 @@
 <translation id="5648328599815354043">Chrome čini više za vašu sigurnost online</translation>
 <translation id="565744775970812598">Datoteka <ph name="FILE_NAME" /> mogla bi biti opasna, pa ju je Chrome blokirao.</translation>
 <translation id="566568153320186256">Chrome štedi bateriju ograničavajući pozadinsku aktivnost i vizualne efekte, kao što je glatko pomicanje i broj sličica u sekundi videozapisa. <ph name="BEGIN_LINK" />Saznajte više o štednji energije<ph name="END_LINK" /></translation>
+<translation id="567202749201779594">Izbrišite Chromeove podatke na svojem računu</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Vaš administrator traži da ponovno pokrenete Chrome radi primjene tog ažuriranja}=1{Vaš administrator traži da ponovno pokrenete Chrome radi primjene tog ažuriranja. Anonimni se prozor neće ponovno otvoriti.}one{Vaš administrator traži da ponovno pokrenete Chrome radi primjene tog ažuriranja. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Vaš administrator traži da ponovno pokrenete Chrome radi primjene tog ažuriranja. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Vaš administrator traži da ponovno pokrenete Chrome radi primjene tog ažuriranja. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="5686916850681061684">Prilagodite Google Chrome i upravljajte njime. Trebate obratiti pozornost na nešto – kliknite za pojedinosti.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -467,6 +468,7 @@
 <translation id="7024536598735240744">Pogreška pri raspakiranju: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instaliranje je zaustavljeno.</translation>
 <translation id="7025800014283535195">Ovdje se možete prebacivati između profila u Chromeu</translation>
+<translation id="7031914411614877914">Ako ste zaboravili šifru ili želite promijeniti tu postavku, <ph name="SETTINGS_LINK" />Chromeove podatke na računu.</translation>
 <translation id="7048502283602470098">Istraži umjetnu inteligenciju</translation>
 <translation id="7059914902409643750">Prilagodite Chrome sebi</translation>
 <translation id="7071827361006050863">Chrome će uskoro izbrisati podatke o pregledavanju</translation>

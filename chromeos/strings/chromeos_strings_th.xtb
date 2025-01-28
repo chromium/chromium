@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">ตัวละคร</translation>
 <translation id="1827738518074806965">แกลเลอรีศิลปะ</translation>
 <translation id="183287940576828840">ไม่เหมาะสม/ไม่ปลอดภัย</translation>
+<translation id="1834032517784994783">เลือกภาษาในการถอดเสียงเป็นคำ</translation>
 <translation id="1836553715834333258">สีของระบบ</translation>
 <translation id="183675228220305365">สมจริง</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
@@ -733,6 +734,7 @@
 <translation id="4483049906298469269">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายที่ไม่ใช่ค่าเริ่มต้นไม่สำเร็จ</translation>
 <translation id="4483498983731992167">สร้างข้อความถอดเสียงไม่ได้</translation>
 <translation id="4486524074141928967">ระบบจะนำคุณออกจากระบบในเวลา <ph name="TIME" /></translation>
+<translation id="4487890678161807486">เปิดเครื่องมือเลือกภาษาสำหรับการถอดเสียงเป็นคำ</translation>
 <translation id="4500722292849917410">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยใช้แป้นกดร่วม (Ctrl, Alt, Shift หรือ<ph name="META_KEY" />)</translation>
 <translation id="4500966230243561393">สีของอินเทอร์เฟซ</translation>
 <translation id="4503223151711056411">ลูกศรซ้าย</translation>

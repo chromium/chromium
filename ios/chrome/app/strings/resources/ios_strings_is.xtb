@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Heimilisfang er aðeins vistað á þessu tæki</translation>
 <translation id="1445276840641906250">Allir fliparnir þínir í einum vafra</translation>
 <translation id="1450170672351507823">Kveikt er á hefðbundinni vörn. Þú getur aukið öryggið með því að nota aukna vörn.</translation>
-<translation id="1454615514353469963">Aðgangsorðum, aðgangslyklum og öðrum gögnum verður varanlega eytt úr Google-aðgangsstjórnun</translation>
 <translation id="1455660774629812862">Ekki fela</translation>
 <translation id="1460751212339734034">Sparaðu tíma, sláðu minna inn</translation>
 <translation id="1466035273550360103">Engir opnir flipar</translation>
@@ -476,6 +475,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="3053332585453689122">Sendir vefslóðirnar sem þú heimsækir og sýnishorn af efni á síðu, niðurhal, virkni viðbótar og kerfisupplýsingum til öruggrar vefskoðunar Google til að athuga hvort þær séu skaðlegar.</translation>
 <translation id="3055102495753300780">Upplýsingageymsla</translation>
 <translation id="3059270601560379555">Ný leit</translation>
+<translation id="3064547930554042309">Stjórna niðurhali</translation>
 <translation id="3072279342064724558">Aðgangsorð er þegar til</translation>
 <translation id="3076846064362030967">Þú verður ekki skráð(ur) út af Google reikningnum þínum. <ph name="BEGIN_LINK" />Aðrar aðgerðir<ph name="END_LINK" /> kunna að vera vistaðar á Google reikningnum þínum þegar þú ert innskráð(ur). Þú getur eytt þessu hvenær sem er.
 
@@ -562,6 +562,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3517216995152707259">Þú skráist ekki út af Google-reikningnum þínum þegar þú eyðir vefskoðunargögnum. Til að gera það skaltu <ph name="BEGIN_LINK" />skrá þig út úr Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Opnaðu flipa til að vafra.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Opna flipann}one{Opna {count} flipa}other{Opna {count} flipa}}</translation>
+<translation id="3523513363815970085">Fela „Vinsælustu vefsvæðin þín“</translation>
 <translation id="3523789730715594198">Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="3527085408025491307">Mappa</translation>
 <translation id="3529024052484145543">Ekki öruggt</translation>
@@ -698,6 +699,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4154753961803534698">Leita með myndavél</translation>
 <translation id="4158491215857439601">Aðgangsorðastjórnun</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bókamerki vistað í „{title}“. Það er aðeins vistað í þessu tæki.}one{{count} bókamerki vistað í „{title}“. Þau eru aðeins vistuð í þessu tæki.}other{{count} bókamerki vistuð í „{title}“. Þau eru aðeins vistuð í þessu tæki.}}</translation>
+<translation id="4164514562270305824">Eyða niðurhali sjálfvirkt</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> sem endar á <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Ekki leyfa</translation>
 <translation id="4172051516777682613">Sýna alltaf</translation>
@@ -836,6 +838,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4769198578611055647">Auðveldar þér aðgang að vistuðum aðgangslyklum í öllum tækjum</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Opna í huliðsstillingu?</translation>
+<translation id="479208892659046780">Vinsælustu vefsvæðin þín</translation>
 <translation id="4792385443586519711">Heiti fyrirtækis</translation>
 <translation id="479628432297359449">Stöðva niðurhal?</translation>
 <translation id="4796496140132859135">Flipahópur. Minnkaður.</translation>
@@ -1016,6 +1019,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5579012242779565775">Fela „Leslisti“</translation>
 <translation id="5585019845078534178">Kort</translation>
 <translation id="5595485650161345191">Breyta heimilisfangi</translation>
+<translation id="559567008082979829">Stilla niðurhal á eyðingu eftir einn mánuð.</translation>
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="560322036295180549">Fyrirtækið þitt slökkti á þessu</translation>
 <translation id="5611107723541161735">Flýtileiðir á vefsvæði sem þú hefur heimsótt nýlega í þessu tæki.</translation>

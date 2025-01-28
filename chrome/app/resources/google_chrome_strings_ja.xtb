@@ -354,6 +354,7 @@
 <translation id="5648328599815354043">Chrome はオンラインのユーザーをさまざまな方法で安全に保護します</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> は危険なファイルの可能性があるため、Chrome でブロックしました。</translation>
 <translation id="566568153320186256">バックグラウンド アクティビティと視覚効果（スムーズ スクロールや動画フレームレートなど）を制限することで、バッテリーを節約します。<ph name="BEGIN_LINK" />省エネモードの詳細<ph name="END_LINK" /></translation>
+<translation id="567202749201779594">アカウントの Chrome データを消去</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{管理者が、このアップデートを適用するために Chrome を再起動するよう求めています}=1{管理者が、このアップデートを適用するために Chrome を再起動するよう求めています。シークレット ウィンドウは、再起動後は自動的には開きません。}other{管理者が、このアップデートを適用するために Chrome を再起動するよう求めています。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="5686916850681061684">Google Chrome をカスタマイズ、制御します。確認の必要な項目があります。クリックして詳細をご覧ください。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -466,6 +467,7 @@
 <translation id="7024536598735240744">解凍エラー: <ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">インストールが停止しました。</translation>
 <translation id="7025800014283535195">こちらで Chrome プロファイルを切り替えることができます</translation>
+<translation id="7031914411614877914">パスフレーズを忘れた場合や、この設定を変更する場合は、アカウントの Chrome データを<ph name="SETTINGS_LINK" />してください。</translation>
 <translation id="7048502283602470098">AI 機能を見る</translation>
 <translation id="7059914902409643750">Chrome を自分用にカスタマイズ</translation>
 <translation id="7071827361006050863">Chrome でまもなく閲覧データが削除されます</translation>

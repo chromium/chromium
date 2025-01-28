@@ -355,6 +355,7 @@
 <translation id="5648328599815354043">A Chrome többet tesz azért, hogy megőrizzük a felhasználók biztonságát az interneten</translation>
 <translation id="565744775970812598">A(z) <ph name="FILE_NAME" /> veszélyes lehet, ezért a Chrome letiltotta.</translation>
 <translation id="566568153320186256">A Chrome kíméli az akkumulátort: korlátozza a háttértevékenységeket és a vizuális effekteket, például a fionomgörgetést és a videók képkockasebességét. <ph name="BEGIN_LINK" />További információ az Energiatakarékos módról<ph name="END_LINK" />.</translation>
+<translation id="567202749201779594">Törölje a fiókjában lévő Chrome-adatokat</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Rendszergazdája arra kéri, hogy indítsa újra a Chrome-ot a frissítés alkalmazásához.}=1{Rendszergazdája arra kéri, hogy indítsa újra a Chrome-ot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{Rendszergazdája arra kéri, hogy indítsa újra a Chrome-ot a frissítés alkalmazásához. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
 <translation id="5686916850681061684">A Google Chrome személyre szabása és beállításai Figyelmet kell fordítania valamire – a részletekért kattintson.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -467,6 +468,7 @@
 <translation id="7024536598735240744">Kicsomagolási hiba: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Telepítés leállítva.</translation>
 <translation id="7025800014283535195">Itt válthat a Chrome-profilok között</translation>
+<translation id="7031914411614877914">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="SETTINGS_LINK" /> törölje a fiókjában lévő Chrome-adatokat.</translation>
 <translation id="7048502283602470098">Az AI felfedezése</translation>
 <translation id="7059914902409643750">Tegye személyessé a Chrome-ot</translation>
 <translation id="7071827361006050863">A Chrome hamarosan törli a böngészési adatokat</translation>

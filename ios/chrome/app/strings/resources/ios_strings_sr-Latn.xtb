@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Adresa je sačuvana samo na ovom uređaju</translation>
 <translation id="1445276840641906250">Sve kartice u jednom pregledaču</translation>
 <translation id="1450170672351507823">Standardna zaštita je uključena. Koristite naprednu zaštitu da biste se dodatno zaštitili.</translation>
-<translation id="1454615514353469963">Lozinke, pristupni ključevi i drugi podaci će se trajno izbrisati iz Google menadžera lozinki</translation>
 <translation id="1455660774629812862">Ne skrivaj</translation>
 <translation id="1460751212339734034">Uštedite vreme, kucajte manje</translation>
 <translation id="1466035273550360103">Nema otvorenih kartica</translation>
@@ -563,6 +562,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3517216995152707259">Brisanjem podataka pregledanja ne odjavljujete se sa Google naloga. Da biste to uradili, <ph name="BEGIN_LINK" />odjavite se iz Chrome-a<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Otvorite karticu da biste pregledali veb.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Otvori karticu}one{Otvori {count} karticu}few{Otvori {count} kartice}other{Otvori {count} kartica}}</translation>
+<translation id="3523513363815970085">Sakrij Najposećenije sajtove</translation>
 <translation id="3523789730715594198">Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3529024052484145543">Nije bezbedno</translation>
@@ -838,6 +838,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4769198578611055647">Pomaže vam da pristupate sačuvanim pristupnim ključevima na bilo kom uređaju</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Želite da otvorite u režimu bez arhiviranja?</translation>
+<translation id="479208892659046780">Najposećeniji sajtovi</translation>
 <translation id="4792385443586519711">Naziv preduzeća</translation>
 <translation id="479628432297359449">Želite da zaustavite preuzimanje?</translation>
 <translation id="4796496140132859135">Grupa kartica. Skupljeno.</translation>

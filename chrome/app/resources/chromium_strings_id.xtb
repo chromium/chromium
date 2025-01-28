@@ -364,6 +364,7 @@
 <translation id="6145820983052037069">Anda dapat berpindah-pindah profil Chromium di sini</translation>
 <translation id="615103374448673771">Jika Anda mengizinkan cookie, Chromium dapat menggunakannya saat melakukan pramuat</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
+<translation id="6173308241973263798">Hapus data Chromium di akun Anda</translation>
 <translation id="6174920971222007286">File ini mungkin berbahaya<ph name="LINE_BREAK" />Chromium dapat memeriksa hasil download ini untuk Anda jika Anda memberikan sandi. Info tentang file ini akan dikirim ke Google Safe Browsing, tetapi konten dan sandi file tidak dikirim ke luar perangkat Anda.</translation>
 <translation id="6182736845697986886">Penginstalan gagal karena server update mengalami error internal.</translation>
 <translation id="6183079672144801177">Pastikan Anda login ke Chromium di <ph name="TARGET_DEVICE_NAME" /> Anda, lalu coba kirimkan lagi.</translation>
@@ -430,6 +431,7 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="684888714667046800">Tidak dapat terhubung ke internet. Jika Anda menggunakan firewall, pastikan <ph name="PRODUCT_EXE_NAME" /> tercantum dalam daftar yang diizinkan.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium menemukan bahwa "<ph name="EXTENSION_NAME" />" berisi malware</translation>
+<translation id="6877631896957360295">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="SETTINGS_LINK" /> data Chromium di akun Anda.</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6929417474050522668">Jika uji coba diaktifkan, Pengukuran iklan akan memungkinkan situs yang Anda buka untuk meminta informasi dari Chromium yang membantu situs mengukur performa iklannya. Pengukuran iklan membatasi pelacakan lintas situs dengan mentransfer sesedikit mungkin informasi antar-situs.</translation>
 <translation id="6940431691900807093">Kemudian, situs yang Anda buka dapat meminta Chromium untuk melihat minat Anda agar dapat mempersonalisasi iklan yang Anda lihat. Chromium dapat membagikan hingga 3 minat.</translation>

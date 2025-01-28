@@ -363,6 +363,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5648328599815354043">Chrome gerir meira til að veita þér vernd á netinu</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> gæti verið skaðleg skrá og Chrome útilokaði hana.</translation>
 <translation id="566568153320186256">Chromium sparar rafhlöðunotkun með því að takmarka bakgrunnsvirkni og myndáhrif, s.s. mjúkflettingu og vídeórammatíðni. <ph name="BEGIN_LINK" />Nánar um orkusparnað<ph name="END_LINK" /></translation>
+<translation id="567202749201779594">Eyddu Chrome-gögnum af reikningnum þínum</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Kerfisstjórinn þinn vill að þú endurræsir Chrome til að setja upp þessa uppfærslu}=1{Kerfisstjórinn þinn vill að þú endurræsir Chrome til að setja upp þessa uppfærslu. Huliðsglugginn enduropnast ekki.}one{Kerfisstjórinn þinn vill að þú endurræsir Chrome til að setja upp þessa uppfærslu. # huliðsgluggi enduropnast ekki.}other{Kerfisstjórinn þinn vill að þú endurræsir Chrome til að setja upp þessa uppfærslu. # huliðsgluggar enduropnast ekki.}}</translation>
 <translation id="5686916850681061684">Sérsníða og stýra Google Chrome. Eitthvað krefst athygli þinnar – smelltu til að sjá nánar.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -475,6 +476,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7024536598735240744">Villa við afpökkun: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Uppsetning var stöðvuð.</translation>
 <translation id="7025800014283535195">Hér geturðu skipt á milli Chrome prófíla</translation>
+<translation id="7031914411614877914">Ef þú gleymdir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="SETTINGS_LINK" /> Chrome-gögnunum á reikningnum þínum.</translation>
 <translation id="7048502283602470098">Kanna gervigreind</translation>
 <translation id="7059914902409643750">Lagaðu Chrome að þínum þörfum</translation>
 <translation id="7071827361006050863">Chrome mun bráðlega eyða vefskoðunargögnum</translation>

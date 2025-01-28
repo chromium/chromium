@@ -116,6 +116,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="1435593198351412143">Automatinis PDF failų atidarymas</translation>
 <translation id="1436784010935106834">Pašalinta</translation>
 <translation id="1437543266176261764">Vykdoma programoje „<ph name="APP_NAME" />“</translation>
+<translation id="1448147069872048656">Patvirtinkite tapatybę, kad galėtumėte pasiekti visus slaptažodžius šiame įrenginyje</translation>
 <translation id="1448440926884431741">Tvarkykite stebimus produktus Žymėse</translation>
 <translation id="1460751212339734034">Sutaupykite laiko, veskite mažiau teksto</translation>
 <translation id="1466383950273130737">„Chrome“ kalbos pasirinkimas</translation>
@@ -847,6 +848,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4910889077668685004">Mokėjimo programos</translation>
 <translation id="4912413785358399818">Perkelti skirtuką</translation>
 <translation id="4913169188695071480">Sustabdyti atnaujinimą</translation>
+<translation id="4913841543356834596">Gaukite prieigą prie visų slaptažodžių</translation>
 <translation id="4918086044614829423">Priimti</translation>
 <translation id="4925120120285606924"><ph name="CURRENT_DATE_ISO" /> ekrano kopija</translation>
 <translation id="49268022542405662">Jūsų slaptažodžiai bus išeksportuoti ir atsisiųsti kaip teksto failas. Juos matys visi ir bet kuri programa, turinti paskirties aplanko prieigą.</translation>
@@ -1330,6 +1332,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6987047470128880212">Inkognito režimas šiame įrenginyje nepasiekiamas</translation>
 <translation id="6991701761229081516">Slaptažodžiai bus atsisiųsti kaip CSV failas. Jie bus matomi visiems žmonėms, galintiems pasiekti failą, įskaitant programas. Eksportuoti slaptažodžiai bus ištrinti iš „Chrome“.</translation>
 <translation id="6996145122199359148">Atsisiųsti šį puslapį</translation>
+<translation id="7013627768165542797">Patvirtinkite tapatybę, kad galėtumėte pasiekti slaptažodžius „Google“ paskyroje</translation>
 <translation id="7013762323294215682">Šis prieigos raktas bus išsaugotas slaptažodžių tvarkyklėje. Visi jį galintys pasiekti asmenys galės naudoti šį prieigos raktą.</translation>
 <translation id="7020741890149022655">Pridėti į skaitymo sąrašą<ph name="BEGIN_NEW" />Nauja<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Atidaryti naršyklėje</translation>
@@ -1348,6 +1351,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7085332316435785646">Pasirinkite, ar įtraukti „Chrome“ istoriją, kad būtų teikiamos labiau suasmenintos funkcijos „Google“ paslaugose</translation>
 <translation id="7088681679121566888">„Chrome“ atnaujinta</translation>
 <translation id="7094933634769755999">Netikslu</translation>
+<translation id="7102843846294013537">Kai kurie slaptažodžiai nepasiekiami šiame įrenginyje</translation>
 <translation id="7106762743910369165">Jūsų naršyklę tvarko jūsų organizacija</translation>
 <translation id="7111394291981742152">„Chrome“ suteikia daugiau galimybių valdyti matomus skelbimus ir apriboja, ką svetainės gali sužinoti apie jus, kai jose rodomi suasmeninti skelbimai.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Peržiūrėti vienos svetainės leidimai}one{Peržiūrėti # svetainės leidimai}few{Peržiūrėti # svetainių leidimai}many{Peržiūrėti # svetainės leidimai}other{Peržiūrėti # svetainių leidimai}}</translation>

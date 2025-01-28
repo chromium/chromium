@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Libere espaço em disco para iniciar apps Android.</translation>
 <translation id="1033780634303702874">Acessar seus dispositivos seriais</translation>
 <translation id="1034484273907870301">Barra de guias com miniaturas no modo tablet</translation>
+<translation id="1035289631433631911">Ferramenta de Transferência de conteúdo</translation>
 <translation id="1035875743511577452">Clique em "Mudar tema" para conferir temas inspirados em artistas, na natureza e muito mais</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1036511912703768636">Acessar qualquer um desses dispositivos USB</translation>
@@ -381,6 +382,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1246863218384630739">Não foi possível instalar o <ph name="VM_NAME" />: o URL da imagem retornou um código de erro <ph name="HTTP_ERROR" />. Entre em contato com o administrador.</translation>
 <translation id="1247372569136754018">Microfone (interno)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{As notificações de 1 site foram bloqueadas}one{As notificações de {NUM_SITES} site foram bloqueadas}other{As notificações de {NUM_SITES} sites foram bloqueadas}}</translation>
+<translation id="125097549534200450">limpar</translation>
 <translation id="1251366534849411931">Chave de abertura esperada: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Procurando redes de dados móveis…</translation>
 <translation id="125220115284141797">Padrão</translation>
@@ -5946,6 +5948,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5177479852722101802">Continuar bloqueando acesso à câmera e ao microfone</translation>
 <translation id="5177549709747445269">Você está usando dados móveis</translation>
 <translation id="5178667623289523808">Localizar anterior</translation>
+<translation id="5180276433875360121">Mostrar <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">Fazendo download</translation>
 <translation id="5181172023548002891">No Gerenciador de senhas do Google da conta <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">A senha é salva apenas neste dispositivo. Para usar em outros dispositivos, salve-a na sua Conta do Google <ph name="USER_EMAIL" />.</translation>
@@ -8542,6 +8545,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7063311912041006059">URL com <ph name="SPECIAL_SYMBOL" /> no lugar da consulta</translation>
 <translation id="706342288220489463">Permita que o Google Assistente use as informações exibidas na tela para ajudar você</translation>
 <translation id="70641621694466590">Acessar a página "Senhas"</translation>
+<translation id="7064209589142995848">Transferência de conteúdo</translation>
 <translation id="7064734931812204395">Configurando o contêiner Linux. Isso pode levar até 30 minutos.</translation>
 <translation id="7065223852455347715">Este dispositivo está bloqueado de tal modo que impede o registro empresarial. Se quiser inscrever o dispositivo, primeiro é necessário realizar a recuperação dele.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 senha importada para o <ph name="BRAND" /> de <ph name="USER_EMAIL" />}one{{NUM_PASSWORDS} senha importada para o <ph name="BRAND" /> de <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} senhas importadas para o <ph name="BRAND" /> de <ph name="USER_EMAIL" />}}</translation>
@@ -9581,6 +9585,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7810202088502699111">As pop-ups foram bloqueadas nesta página.</translation>
 <translation id="7810367892333449285">A entrada precisa ter o formato <ph name="LPA_0" />$<ph name="LPA_1" />endereço SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID correspondente opcional<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Tente de novo ou selecione um dos temas gerados anteriormente abaixo.</translation>
+<translation id="7811986034759500329">Definir nas configurações do sistema</translation>
 <translation id="7812170317334653156">Google Agenda oculto</translation>
 <translation id="7814090115158024843">Nunca oferecer ajuda para escrever nestes sites</translation>
 <translation id="7814458197256864873">Co&amp;piar</translation>

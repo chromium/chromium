@@ -110,7 +110,6 @@
 <translation id="143681031165817424">تم حفظ العنوان على هذا الجهاز فقط.</translation>
 <translation id="1445276840641906250">جميع علامات التبويب في متصفِّح واحد</translation>
 <translation id="1450170672351507823">الحماية العادية مفعَّلة. لزيادة مستوى الأمان، يمكنك استخدام "الحماية المُحسَّنة".</translation>
-<translation id="1454615514353469963">‏سيتم حذف كلمات المرور ومفاتيح المرور والبيانات الأخرى نهائيًا من "مدير كلمات المرور في Google"</translation>
 <translation id="1455660774629812862">عدم الإخفاء</translation>
 <translation id="1460751212339734034">وقت أكثر، كتابة أقلّ</translation>
 <translation id="1466035273550360103">ليست هناك أي علامات تبويب مفتوحة</translation>
@@ -563,6 +562,7 @@
 <translation id="3517216995152707259">‏لا يؤدي حذف بيانات التصفّح إلى تسجيل خروجك من حسابك على Google. لإجراء ذلك، <ph name="BEGIN_LINK" />سجِّل الخروج من Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">افتح علامة تبويب لتصفح الويب.</translation>
 <translation id="3519905498307021260">{count,plural, =1{فتح علامة التبويب}zero{فتح {count} علامة تبويب}two{فتح علامتَي التبويب ({count})}few{فتح {count} علامات تبويب}many{فتح {count} علامة تبويب}other{فتح {count} علامة تبويب}}</translation>
+<translation id="3523513363815970085">إخفاء بطاقة "المواقع الإلكترونية الأكثر زيارةً"</translation>
 <translation id="3523789730715594198">‏يمكنك إيقاف المزامنة في أي وقت من خلال الإعدادات. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="3527085408025491307">المجلد</translation>
 <translation id="3529024052484145543">غير آمن</translation>
@@ -838,6 +838,7 @@
 <translation id="4769198578611055647">يساعدك رقم التعريف الشخصي في الوصول إلى مفاتيح المرور المحفوظة على أي جهاز</translation>
 <translation id="4787847736989526091">‫<ph name="VALUE" />، <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">هل تريد فتح الرابط في وضع "التصفُّح المتخفي"؟</translation>
+<translation id="479208892659046780">المواقع الإلكترونية الأكثر زيارةً</translation>
 <translation id="4792385443586519711">اسم الشركة</translation>
 <translation id="479628432297359449">هل تريد إيقاف عملية التنزيل؟</translation>
 <translation id="4796496140132859135">مجموعة علامات تبويب مصغَّرة</translation>

@@ -3789,6 +3789,19 @@ Se o <ph name="PRODUCT_NAME" /> não for fechado corretamente (por exemplo, se o
 <translation id="3700193037252896716">Frequência com que a reinicialização acontecerá.</translation>
 <translation id="3700318587977845664">Periodicidade de recorrência da verificação de atualização.</translation>
 <translation id="3701121231485832347">Controla configurações específicas de dispositivos <ph name="PRODUCT_OS_NAME" /> gerenciados pelo <ph name="MS_AD_NAME" />.</translation>
+<translation id="3701177991731919830">Esta política ativa o app Transferência de conteúdo para usuários gerenciados. O app Transferência de conteúdo ajuda os usuários a transferir os dados da conta gerenciada para uma pessoal.
+
+Se o campo <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> for definido como <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, o app será mostrado nas datas de início e término e entre elas, de acordo com o horário local.
+
+Se o campo <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> for definido como <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> ou deixado sem definição, o app não será mostrado.
+
+Se a <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> não for definida, o app será mostrado até a data de término.
+
+Se a <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" /> for deixada sem definição, o app será mostrado indefinidamente a partir da data de início.
+
+Se as <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> e <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" /> não forem definidas, o app será mostrado por tempo indefinido. Se as datas de início e término forem inválidas, o app não será mostrado. Isso inclui situações em que as datas fornecidas não existem ou quando a data de término é anterior à data de início.
+
+A transferência de dados com o Takeout também precisa estar ativada para que o app Transferência de conteúdo funcione corretamente. Para saber mais, consulte https://support.google.com/a/answer/6364687.</translation>
 <translation id="3702518095257671450">Atestado remoto</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />: o campo de linha única é obsoleto e será removido no futuro. Comece a usar a caixa de texto de várias linhas abaixo.</translation>
 <translation id="3711561721191203926">Se esta política for ativada, a solicitação principal será bloqueada sempre que um aviso precisar ser
@@ -8714,6 +8727,13 @@ Se a política for definida como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_
       Se esta política não for definida, a estante será posicionada na parte inferior da tela por padrão, e o usuário poderá mudar a posição da estante.</translation>
 <translation id="7039815268521168329">Mostrar o fluxo do Voice Match do Google Assistente durante a configuração inicial</translation>
 <translation id="7040229947030068419">Exemplo de valor:</translation>
+<translation id="7044626519138840387">Uma lista de origens de apps cliente de Área de Trabalho remota que podem executar solicitações de API
+WebAuthn originadas de uma sessão de navegação em um host remoto.
+
+Qualquer origem configurada nesta política pode fazer solicitações WebAuthn para IDs de terceiros confiáveis (RP IDs) que normalmente não seriam permitidos.
+
+Somente origens HTTPS válidas são permitidas. Caracteres curinga não são aceitos.
+As entradas inválidas são ignoradas.</translation>
 <translation id="7044883996351280650">Controlar o serviço de backup e restauração do Android</translation>
 <translation id="7045221780834308118">Se a política for ativada, os aplicativos da Web de terceiros poderão usar a API Desk para controlar os espaços de trabalho do <ph name="PRODUCT_OS_NAME" />. Se a política for desativada ou deixada sem definição, o <ph name="DESK_API_NAME" /> vai ficar indisponível. A política só será aplicada em dispositivos registrados.</translation>
 <translation id="7046113122884041950">Não permitir o Smart Lock</translation>
@@ -10953,6 +10973,7 @@ o esquema https.</translation>
 <translation id="8734543507835977857">Iniciar atrasos no gerenciamento de energia e limites de duração da sessão no início dela</translation>
 <translation id="8736538322216687231">Aplicar o Modo restrito mínimo do YouTube</translation>
 <translation id="873800217865395140">Frequência (em milissegundos) de coleta da telemetria de uso do site.</translation>
+<translation id="8743149927570551353">Configurar a disponibilidade da ferramenta de transferência de conteúdo do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8743902569031401303">Permitir pesquisas da Navegação segura</translation>
 <translation id="8744844164152340112">Controla o tema usado para renderizar a interface na configuração inicial feita pelo usuário e durante a sessão (escuro/claro/automático).
       O modo automático troca automaticamente entre os temas claro e escuro ao amanhecer e ao anoitecer.
@@ -11566,6 +11587,7 @@ Para mais informações sobre contextos seguros, acesse https://www.w3.org/TR/se
 <translation id="9149075762533142978">O recurso do gerador de QR code está ativado.</translation>
 <translation id="9149678135092892302">Desativar relatórios sobre informações de versão</translation>
 <translation id="9150416707757015439">Esta política é obsoleta. Utilize IncognitoModeAvailability em seu lugar, que ativa o modo de navegação anônima em <ph name="PRODUCT_NAME" />. Caso esta configuração seja ativada ou não configurada, os usuários podem abrir páginas da Web no modo de navegação anônima. Se essa configuração for desativada, os usuários não podem abrir páginas da Web usando o modo de navegação anônima. Se esta política for deixada sem definição, esta opção será ativada e o usuário será capaz de usar o modo de navegação anônima.</translation>
+<translation id="9151267823917882070">Origens permitidas para solicitações de WebAuthn transmitidas por proxy de aplicativos de área de trabalho remota.</translation>
 <translation id="9152473318295429890">Ativa sugestões contextuais de páginas da Web relacionadas</translation>
 <translation id="9155218447258425310">Duração da notificação sobre a remoção do cartão inteligente do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9155375380628728544">A definição da política permite que os usuários adicionem apenas um dos idiomas listados nesta política à lista de idiomas preferidos.

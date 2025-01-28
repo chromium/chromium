@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1020274983236703756">ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್ <ph name="PRODUCT_NAME" /> ಸ್ವತ್ತುಗಳು ಈಗ ಲಭ್ಯವಿವೆ</translation>
 <translation id="1022628058306505708">ಅರ್ಥ್ ಫ್ಲೋ</translation>
+<translation id="102432830749687801">ನೀವು ಆ್ಯಕ್ಸೆಸ್‌ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುವ ಮೊದಲು ನಿಮ್ಮ ಶಾಲೆಯ ಖಾತೆಯ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಖಾತೆಗೆ ಸರಿಸಲು Google ನಿಂದ ಕಂಟೆಂಟ್‌ ವರ್ಗಾವಣೆ ಆ್ಯಪ್‌ ಅನ್ನು ಬಳಸುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />" ಗಾಗಿ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬಳಸಲಾಗುತ್ತಿದೆ. ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿರಿ. ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಾಯಿಸಲು, ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಮತ್ತೊಮ್ಮೆ ಒತ್ತಿರಿ.</translation>
 <translation id="1030856839388844477">ಡೇಟಾ ಬಳಕೆಯನ್ನು ರೀಸೆಟ್‌ ಮಾಡಿ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ಥ್ರೆಡ್‌ಗಳು, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">ಸಾಧನವು <ph name="BATTERY_PERCENTAGE" />% ಕೇಸ್ ಬ್ಯಾಟರಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="1397738625398125236">ಗೇಟ್‌ವೇ ಅನ್ನು ಪಿಂಗ್ ಮಾಡಬಹುದು</translation>
 <translation id="1398634363027580500">ಅತ್ಯಧಿಕ HTTPS ವಿಳಂಬ</translation>
+<translation id="1406389211945506521">ನಿಮ್ಮ ಅನುಭವವನ್ನು ಹಂಚಿಕೊಂಡಿದ್ದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು. ನಿಮ್ಮ ಫೀಡ್‌ಬ್ಯಾಕ್ ಹೆಚ್ಚು ನಿಖರವಾದ ಮತ್ತು ಪ್ರಯೋಜನಕಾರಿ ಕಂಟೆಂಟ್ ಅನ್ನು ರಚಿಸಲು ನಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="1407069428457324124">ಡಾರ್ಕ್ ಥೀಮ್</translation>
 <translation id="1413240736185167732">ವಿಫಲವಾಗಿದೆ - ಫಿಲ್ಟರ್ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">ಕ್ಲಾಸಿಕ್ ಆರ್ಟ್</translation>
 <translation id="181434555916624618">ಸದ್ಯಕ್ಕೆ, ಜನರನ್ನು ಹೊಂದಿರುವ ಫಲಿತಾಂಶಗಳನ್ನು ತೋರಿಸಲಾಗುವುದಿಲ್ಲ. ಬೇರೆ ಪ್ರಾಂಪ್ಟ್‌ ಅನ್ನು ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="1815850098929213707">ಆಯ್ಕೆಮಾಡಿರುವ ಕೀ <ph name="KEYS" /> ಆಗಿದೆ. ನಿಯಂತ್ರಣವನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಬಟನ್ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
+<translation id="1818174214124933000">ನೀವು ಕಳುಹಿಸಿ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿದಾಗ, ನಿಮ್ಮ ಫೀಡ್‌ಬ್ಯಾಕ್ ಮತ್ತು ಕಂಟೆಂಟ್ ಅನ್ನು (ಕೆಳಗೆ ತೋರಿಸಲಾಗಿದೆ) Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ, ಮಾನವರಿಂದ ಪರಿಶೀಲಿಸಲಾಗುತ್ತದೆ ಮತ್ತು <ph name="LINK_POLICY_BEGIN" />ಗೌಪ್ಯತೆ ನೀತಿ<ph name="LINK_POLICY_END" /> ಮತ್ತು <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="LINK_TERMS_OF_SERVICE_END" /> ಒಳಪಟ್ಟು ನಮ್ಮ ಉತ್ಪನ್ನಗಳು ಮತ್ತು ಸೇವೆಗಳನ್ನು ತರಬೇತಿಗೊಳಿಸಲು ಅಥವಾ ಸುಧಾರಿಸಲು ಬಳಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1823120442877418684">ಪಾತ್ರಗಳು</translation>
 <translation id="1827738518074806965">ಆರ್ಟ್ ಗ್ಯಾಲರಿ</translation>
+<translation id="183287940576828840">ಆಕ್ಷೇಪಾರ್ಹ/ಅಸುರಕ್ಷಿತವಾಗಿದೆ</translation>
 <translation id="1836553715834333258">ಸಿಸ್ಟಮ್ ಬಣ್ಣ</translation>
 <translation id="183675228220305365">ನೈಜ</translation>
 <translation id="1838374766361614909">ಹುಡುಕಾಟ ತೆರವುಗೊಳಿಸಿ</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">UDP ವಿನಂತಿ ವೈಫಲ್ಯಗಳು</translation>
 <translation id="1908394185991500139">ಎಡ ಆ್ಯರೋ</translation>
 <translation id="1914144885717544695">ಶುಕ್ರವಾರದಂದು</translation>
+<translation id="1915960750806557358">ನಿಮ್ಮ ಫೀಡ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮ್ಮ ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ. ವೈಯಕ್ತಿಕ, ಸೂಕ್ಷ್ಮ ಅಥವಾ ಗೌಪ್ಯವಾದ ಯಾವ ವಿಚಾರವನ್ನೂ ಒಳಗೊಂಡಿಲ್ಲ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="1923388006036088459">ಆ್ಯಕ್ಸೆಂಟ್‌ನ ಬಣ್ಣಗಳು</translation>
 <translation id="1945403655450283000">ರೆಕಾರ್ಡರ್</translation>
 <translation id="1947737735496445907">ಮುದ್ರಿಸಲಾಗಿದೆ</translation>
@@ -596,6 +601,7 @@
 <translation id="387301095347517405">ನಿಮ್ಮ ಬ್ಯಾಟರಿಯನ್ನು ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಮಾಡಿರುವ ಸಂಖ್ಯೆ</translation>
 <translation id="3877066159641251281">ಅನುವಾದವನ್ನು ಆಲಿಸಿ</translation>
 <translation id="3880601782712134623">ವಿಭಿನ್ನ ಧ್ವನಿಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆಹಚ್ಚಲು ಹಾಗೂ ಪ್ರತಿಯೊಬ್ಬ ಸ್ಪೀಕರ್‌ಗೆ ಸ್ಪೀಕರ್ 1 ಮತ್ತು ಸ್ಪೀಕರ್ 2 ಎಂಬಂತಹ ಸಾಮಾನ್ಯ ಲೇಬಲ್ ಅನ್ನು ನೀಡಲು</translation>
+<translation id="38811596981744338">ಕಾನೂನಾತ್ಮಕ ಸಮಸ್ಯೆ</translation>
 <translation id="3885327323343477505">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಬದಲಾಯಿಸಿ</translation>
 <translation id="3889914174935857450">ದಿನಾಂಕವನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="3897092660631435901">ಮೆನು</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಶುಲ್ಕವನ್ನು ವಿಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="4930320165497208503">ಕನೆಕ್ಷನ್ ಸೆಟಪ್ ಮಾಡಲು ಅಥವಾ ಅಪ್‌ಡೇಟ್ ಮಾಡಲು, <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="END_LINK" /> ಹೋಗಿ.</translation>
 <translation id="4932733599132424254">ದಿನಾಂಕ</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ</translation>
 <translation id="4946927805998996217">ಸಾರಾಂಶವನ್ನು ಜನರೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4950314376641394653">ಫರ್ಮ್‌‌ವೇರ್‌‌ <ph name="DEVICE_NAME" /> ಅನ್ನು <ph name="VERSION" /> ಆವೃತ್ತಿಗೆ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4950893758552030541">ಟ್ರೀ ಟನಲ್</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಪಡೆಯಿರಿ</translation>
 <translation id="6694534975463174713">ಲಾಕ್</translation>
 <translation id="6700703207451721535">ಈ ಲಿಂಕ್‌ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ. ನಿಮಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅಗತ್ಯವಿದ್ದರೆ ನಿಮ್ಮ ಶಿಕ್ಷಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
+<translation id="6703179086771097594">ಯಾವುದು ಚೆನ್ನಾಗಿ ಕೆಲಸ ಮಾಡಲಿಲ್ಲ?</translation>
 <translation id="6704062477274546131">DNS ರೆಸಲ್ಯೂಷನ್‌‌</translation>
 <translation id="6712933881624804031">ಕಣಿವೆ</translation>
 <translation id="6716013206176357696">ಸ್ಟ್ರಾಬೆರಿಗಳು</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್ ಮಾಡಲ್ ಅನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="7058278511608979688">ಕೊನೆಗೊಳಿಸಿ ಮತ್ತು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="7059230779847288458">ಚಾರ್ಜಿಂಗ್ ಆಗುತ್ತಿದೆ, ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಆಗಲು <ph name="TIME_VALUE" /> ಸಮಯ ಬೇಕು</translation>
+<translation id="7064209589142995848">ಕಂಟೆಂಟ್ ಟ್ರಾನ್ಸ್‌ಫರ್</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> ಕೀ</translation>
 <translation id="7068619307603204412">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಸಿದ್ಧಪಡಿಸಿ</translation>
@@ -1592,6 +1601,7 @@
 <translation id="8476942730579767658">ವಿಂಡೋಗಳು ಮತ್ತು ಡೆಸ್ಕ್‌ಗಳು</translation>
 <translation id="8477536061607044749">ಗ್ರಾಫಿಕ್ ಡಿಸೈನ್</translation>
 <translation id="8477551185774834963">ಅನುಮತಿಸಬಹುದಾದ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ಗಿಂತ DNS ವಿಳಂಬವು ಸ್ವಲ್ಪ ಮೇಲಿದೆ</translation>
+<translation id="8481308460877552925">ನಿಜವಾಗಿಯೂ ತಪ್ಪಾಗಿದೆ</translation>
 <translation id="8482376765267780829">ಸರಳಗೊಳಿಸಲು ಕೆಲವು ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8483248364096924578">ಐಪಿ ವಿಳಾಸ</translation>
 <translation id="8491311378305535241">Android ಆ್ಯಪ್‌ಗಳಿಂದ ಫೈರ್‌ವಾಲ್ ಮೂಲಕ HTTP ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>

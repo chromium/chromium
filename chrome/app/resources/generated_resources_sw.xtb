@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Futa maudhui katika hifadhi ya diski ili ufungue programu za Android.</translation>
 <translation id="1033780634303702874">Fikia vifaa vyako tambulishi</translation>
 <translation id="1034484273907870301">Ukanda wa vichupo wenye vijipicha katika hali ya kompyuta kibao</translation>
+<translation id="1035289631433631911">Zana ya uhamishaji wa maudhui</translation>
 <translation id="1035875743511577452">Bofya “Badilisha mandhari” ili utumie mandhari zilizohamasishwa na wasanii, zinazorejelea asili na zaidi</translation>
 <translation id="1036348656032585052">Zima</translation>
 <translation id="1036511912703768636">Fikia chochote kati ya vifaa hivi vya USB</translation>
@@ -380,6 +381,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1246863218384630739">Imeshindwa kusakinisha <ph name="VM_NAME" />: URL ya picha imeleta msimbo wa hitilafu wa <ph name="HTTP_ERROR" />. Tafadhali wasiliana na msimamizi wako.</translation>
 <translation id="1247372569136754018">Maikrofoni (ya ndani)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Arifa zimezuiwa katika tovuti 1}other{Arifa zimezuiwa katika tovuti {NUM_SITES}}}</translation>
+<translation id="125097549534200450">futa</translation>
 <translation id="1251366534849411931">Hamna mchirizi wa kufungua: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Inatafuta mitandao ya data ya simu...</translation>
 <translation id="125220115284141797">Chaguomsingi</translation>
@@ -5940,6 +5942,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5177479852722101802">Endelea kuzuia ufikiaji wa kamera na maikrofoni</translation>
 <translation id="5177549709747445269">Unatumia data ya kifaa cha mkononi</translation>
 <translation id="5178667623289523808">Pata Iliyotangulia</translation>
+<translation id="5180276433875360121">Onyesha <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">Inapakua</translation>
 <translation id="5181172023548002891">Kwenye Kidhibiti cha Manenosiri cha <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">Nenosiri hili limehifadhiwa kwenye kifaa hiki pekee. Ili uitumie kwenye vifaa vingine, lihifadhi katika Akaunti yako ya Google, <ph name="USER_EMAIL" />.</translation>
@@ -8533,6 +8536,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7063311912041006059">URL iliyo na <ph name="SPECIAL_SYMBOL" /> katika nafasi ya hoja</translation>
 <translation id="706342288220489463">Ruhusu programu ya Mratibu itumie maelezo yaliyo kwenye skrini yako kukusaidia</translation>
 <translation id="70641621694466590">Nenda kwenye ukurasa wa Manenosiri</translation>
+<translation id="7064209589142995848">Uhamishaji wa maudhui</translation>
 <translation id="7064734931812204395">Inaweka mipangilio ya metadata ya Linux. Huenda shughuli hii ikachukua hadi dakika 30.</translation>
 <translation id="7065223852455347715">Kifaa hiki kimefungwa katika hali ambayo inazuia usajili wa biashara. Ikiwa unataka kusajili kifaa unahitaji kupitia urejeshaji wa kifaa kwanza.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{Nenosiri 1 limepakiwa kwenye <ph name="BRAND" /> kwa ajilli ya <ph name="USER_EMAIL" />}other{Manenosiri {NUM_PASSWORDS} yamepakiwa kwenye <ph name="BRAND" /> kwa ajilli ya <ph name="USER_EMAIL" />}}</translation>
@@ -9573,6 +9577,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7810202088502699111">Madirisha ibukizi yalizuiwa kwenye ukurasa huu.</translation>
 <translation id="7810367892333449285">Msimbo wako unapaswa kuwa na muundo wa <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ anwani<ph name="LPA_2" />$<ph name="LPA_3" />kitambulisho kinacholingana ambacho si cha lazima<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Jaribu tena au uchague mojawapo ya mandhari uliyobuni awali hapa chini.</translation>
+<translation id="7811986034759500329">Weka kwenye mipangilio ya mfumo</translation>
 <translation id="7812170317334653156">Kalenda ya Google imefichwa</translation>
 <translation id="7814090115158024843">Kamwe usitoe usaidizi wa kuandika kwenye tovuti hizi</translation>
 <translation id="7814458197256864873">&amp;Nakili</translation>

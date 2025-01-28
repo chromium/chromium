@@ -55,6 +55,7 @@
 <translation id="103279545524624934">Frigjør lagringsplass for å starte Android-apper.</translation>
 <translation id="1033780634303702874">bruke de seriekoblede enhetene dine</translation>
 <translation id="1034484273907870301">Fanerad med miniatyrbilder for nettbrettmodus</translation>
+<translation id="1035289631433631911">Innholdsoverføring-verktøy</translation>
 <translation id="1035875743511577452">Klikk på «Bytt tema» for å utforske temaer inspirert av kunstnere, natur med mer</translation>
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1036511912703768636">Les enhver av disse USB-enhetene</translation>
@@ -380,6 +381,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1246863218384630739">Kunne ikke installere <ph name="VM_NAME" />: Nettadressen til bildet returnerte feilkoden <ph name="HTTP_ERROR" />. Kontakt administratoren din.</translation>
 <translation id="1247372569136754018">Mikrofon (intern)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Varsler er ikke tillatt for 1 nettsted}other{Varsler er ikke tillatt for {NUM_SITES} nettsteder}}</translation>
+<translation id="125097549534200450">tøm</translation>
 <translation id="1251366534849411931">Forventet venstrestilt krøllparentes: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Skanner etter mobildatanettverk …</translation>
 <translation id="125220115284141797">Standard</translation>
@@ -5936,6 +5938,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5177479852722101802">Fortsett blokkering av kamera- og mikrofontilgang</translation>
 <translation id="5177549709747445269">Du bruker mobildata</translation>
 <translation id="5178667623289523808">Finn forrige</translation>
+<translation id="5180276433875360121">Vis <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">Laster ned</translation>
 <translation id="5181172023548002891">I Google Passordlagring for <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">Dette passordet er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din (<ph name="USER_EMAIL" />).</translation>
@@ -8527,6 +8530,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7063311912041006059">Nettadresse med <ph name="SPECIAL_SYMBOL" /> i stedet for søket</translation>
 <translation id="706342288220489463">La assistenten bruke informasjon på skjermen for å hjelpe deg</translation>
 <translation id="70641621694466590">Gå til Passord-siden</translation>
+<translation id="7064209589142995848">Innholdsoverføring</translation>
 <translation id="7064734931812204395">Konfigurerer Linux-beholderen. Dette kan ta opptil 30 minutter.</translation>
 <translation id="7065223852455347715">Denne enheten er låst i en modus som forhindrer bedriftsregistrering. Hvis du vil registrere enheten, må du du gjenopprette enheten først.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 passord er importert til <ph name="BRAND" /> for <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} passord er importert til <ph name="BRAND" /> for <ph name="USER_EMAIL" />}}</translation>
@@ -9566,6 +9570,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7810202088502699111">Forgrunnsvinduer er blokkert på siden.</translation>
 <translation id="7810367892333449285">Oppføringen må ha formatet <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+-adresse<ph name="LPA_2" />$<ph name="LPA_3" />valgfri samsvars-ID<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Prøv på nytt, eller velg ett av temaene som ble generert tidligere nedenfor.</translation>
+<translation id="7811986034759500329">Angi i systeminnstillingene</translation>
 <translation id="7812170317334653156">Google Kalender er skjult</translation>
 <translation id="7814090115158024843">Tilby aldri skrivehjelp på disse nettstedene</translation>
 <translation id="7814458197256864873">&amp;Kopier</translation>

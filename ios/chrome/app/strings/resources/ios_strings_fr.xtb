@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Adresse enregistrée uniquement sur cet appareil</translation>
 <translation id="1445276840641906250">Tous vos onglets dans un seul navigateur</translation>
 <translation id="1450170672351507823">La protection standard est activée. Pour un niveau de sécurité supérieur, activez la protection renforcée.</translation>
-<translation id="1454615514353469963">Les mots de passe, clés d'accès et autres données seront définitivement supprimés du Gestionnaire de mots de passe de Google</translation>
 <translation id="1455660774629812862">Ne pas masquer</translation>
 <translation id="1460751212339734034">Tapez moins et gagnez du temps</translation>
 <translation id="1466035273550360103">Aucun onglet ouvert</translation>
@@ -476,6 +475,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="3053332585453689122">Envoie les URL que vous consultez et un petit échantillon du contenu des pages, les téléchargements, l'activité des extensions et des informations système à la navigation sécurisée Google pour vérifier s'ils sont dangereux.</translation>
 <translation id="3055102495753300780">Stockage des informations</translation>
 <translation id="3059270601560379555">Nouvelle recherche</translation>
+<translation id="3064547930554042309">Gérer les téléchargements</translation>
 <translation id="3072279342064724558">Ce mot de passe existe déjà</translation>
 <translation id="3076846064362030967">Vous ne serez pas déconnecté de votre compte Google. D'<ph name="BEGIN_LINK" />autres formes d'activité<ph name="END_LINK" /> peuvent y être enregistrées lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.
 
@@ -698,6 +698,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4154753961803534698">Rechercher avec l'appareil photo</translation>
 <translation id="4158491215857439601">Gestionnaire de mots de passe</translation>
 <translation id="4163699139741158298">{count,plural, =1{Favori enregistré dans "{title}". Il n'est enregistré que sur cet appareil.}one{{count} favori enregistré dans "{title}". Il n'est enregistré que sur cet appareil.}other{{count} favoris enregistrés dans "{title}". Ils ne sont enregistrés que sur cet appareil.}}</translation>
+<translation id="4164514562270305824">Supprimer automatiquement les téléchargements</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> se terminant par <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Ne pas autoriser</translation>
 <translation id="4172051516777682613">Toujours afficher</translation>
@@ -1016,6 +1017,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5579012242779565775">Masquer "Liste de lecture"</translation>
 <translation id="5585019845078534178">Fiches</translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
+<translation id="559567008082979829">Activer la suppression de vos téléchargements au bout d'un mois.</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="560322036295180549">Désactivé par votre organisation</translation>
 <translation id="5611107723541161735">Raccourcis vers les sites que vous avez consultés récemment sur cet appareil.</translation>

@@ -7576,6 +7576,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Tambahkan keluarga dan rakan</translation>
 <translation id="6367097275976877956">Adakah anda mahu mengaktifkan ChromeVox, pembaca skrin terbina dalam untuk Chrome OS? Jika ya, tekan bar ruang.</translation>
+<translation id="6367396429435748845">Tekan <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> untuk menjeda dan menyambung semula kekunci tetikus</translation>
 <translation id="6367985768157257101">Terima dengan Kongsi Berdekatan?</translation>
 <translation id="6368157733310917710">&amp;Alamat dan pelbagai lagi</translation>
 <translation id="6368276408895187373">Didayakan – <ph name="VARIATION_NAME" /></translation>
@@ -8255,6 +8256,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6848388270925200958">Sekarang, anda mempunyai beberapa kad yang boleh digunakan pada peranti ini sahaja</translation>
 <translation id="6848716236260083778">Untuk menyediakan cap jari, minta anak anda menyentuh penderia cap jari. Data cap jari anak anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="6850286078059909152">Warna teks</translation>
+<translation id="6850925512806464982">Semua orang akan kehilangan akses kepada kumpulan tab ini dengan serta-merta dan kumpulan tab ini akan dipadamkan daripada semua peranti</translation>
 <translation id="6851181413209322061">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini tidak akan digunakan untuk mengenal pasti anak anda dan akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Tetapan ini dikuatkuasakan oleh pemilik. Jika Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Akaun Googlenya.</translation>
 <translation id="6851497530878285708">Apl Didayakan</translation>
 <translation id="6852290167968069627">ChromeOS tidak dapat menyambung semula sesi terdahulu anda kerana masalah rangkaian. Sambungkan kepada rangkaian yang stabil dan cuba semula.</translation>
@@ -9231,6 +9233,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7568759527730933493">Gunakan sambungan selamat untuk mencari alamat IP laman dalam DNS (Sistem Nama Domain). Langkah ini menggunakan penyedia perkhidmatan terurus pada <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Sambungan selamat tidak digunakan untuk sesetengah domain yang dikonfigurasikan oleh pentadbir anda.</translation>
 <translation id="756876171895853918">Sesuaikan avatar</translation>
 <translation id="7568790562536448087">Mengemas kini</translation>
+<translation id="7569113730576914983">Apabila Chrome menemukan satu daripada kata laluan anda dalam pelanggaran data, Chrome boleh menawarkan untuk kata laluan anda untuk anda apabila anda log masuk</translation>
 <translation id="7569983096843329377">Hitam</translation>
 <translation id="7570548610653957960">Bantu Saya Baca</translation>
 <translation id="7571643774869182231">Storan tidak mencukupi untuk kemas kini</translation>
@@ -9516,6 +9519,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7768526219335215384"><ph name="ORIGIN" /> akan dapat melihat fail dalam <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Tukar</translation>
 <translation id="7768784765476638775">Pilih untuk bercakap</translation>
+<translation id="7769709635093101687">Pintasan papan kekunci untuk menjeda</translation>
 <translation id="7769748505895274502">Kuncupkan ditutup baru-baru Ini</translation>
 <translation id="7770072242481632881">Pemilih Panel Sisi</translation>
 <translation id="7770450735129978837">Klik kanan tetikus</translation>

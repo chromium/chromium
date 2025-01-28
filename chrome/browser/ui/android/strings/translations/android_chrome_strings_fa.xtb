@@ -1210,6 +1210,7 @@
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> و <ph name="TAB_COUNT_ONE" /> برگه دیگر بسته خواهند شد}one{<ph name="TAB_TITLE" /> و <ph name="TAB_COUNT_MANY" /> برگه دیگر بسته خواهند شد}other{<ph name="TAB_TITLE" /> و <ph name="TAB_COUNT_MANY" /> برگه دیگر بسته خواهند شد}}</translation>
 <translation id="6560414384669816528">‏جستجو با Sogou</translation>
 <translation id="656065428026159829">موارد بیشتر</translation>
+<translation id="6564820424018738527">‏دستگاه Android شما ممکن است تنظیم مشابهی داشته باشد. اگر «سنجش آگهی» در Chrome و دستگاه Android شما روشن باشد، ممکن است شرکتی بتواند اثربخشی آگهی را در وب‌سایت‌هایی که بازدید می‌کنید و برنامه‌هایی که استفاده می‌کنید بسنجد.</translation>
 <translation id="6565959834589222080">‏استفاده از Wi-Fi هنگام دردسترس بودن</translation>
 <translation id="6569373978618239158">‏اکنون وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="SITE_NAME" /> خواهید دید. سایت‌هایی که دنبال می‌کنید در «حساب Google» شما ذخیره می‌شوند. می‌توانید در تنظیمات «یافته‌ها»، آن‌ها را مدیریت کنید.</translation>
 <translation id="6570116402456758630">خلاصه صفحه</translation>

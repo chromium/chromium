@@ -962,6 +962,7 @@
 <translation id="2674170444375937751">คุณแน่ใจหรือไม่ว่าต้องการนำออกหน้าเหล่านี้ออกจากประวัติการเข้าชมของคุณ</translation>
 <translation id="2674524144218093528">การทาสีบ้านและการเก็บรายละเอียด</translation>
 <translation id="2674804415323431591">ซ่อนคำแนะนำ</translation>
+<translation id="26774279487328902">กลุ่มแท็บ <ph name="GROUP_COUNT" /> กลุ่มใช้งานไม่ได้อีกต่อไป</translation>
 <translation id="2677748264148917807">ออก</translation>
 <translation id="2683195745483370038">พบผลการค้นหาอื่นๆ</translation>
 <translation id="2686919536310834199">ส่งความคิดเห็นเกี่ยวกับฟีเจอร์ "ช่วยฉันเขียน"</translation>
@@ -2265,6 +2266,7 @@
 <translation id="5001526427543320409">คุกกี้ของบุคคลที่สาม</translation>
 <translation id="5002932099480077015">หากเปิดใช้ Chrome จะเก็บสำเนาการ์ดของคุณในอุปกรณ์นี้เพื่อให้การกรอกฟอร์มทำได้เร็วขึ้น</translation>
 <translation id="5007392906805964215">ดู</translation>
+<translation id="500790844453430087">กลุ่มแท็บ "<ph name="GROUP_TITLE_1" />" และ "<ph name="GROUP_TITLE_2" />" ใช้งานไม่ได้อีกต่อไป</translation>
 <translation id="5011561501798487822">ภาษาที่ตรวจพบ</translation>
 <translation id="5015510746216210676">ชื่อเครื่อง:</translation>
 <translation id="5017554619425969104">ข้อความที่คุณคัดลอก</translation>
@@ -2737,6 +2739,7 @@
 <translation id="5866898949289125849">คุณกำลังดูหน้าเครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="5869405914158311789">ไม่สามารถเข้าถึงเว็บไซต์นี้</translation>
 <translation id="5869522115854928033">รหัสผ่านที่บันทึกไว้</translation>
+<translation id="5872215789867188990">กลุ่มแท็บ "<ph name="GROUP_TITLE" />" ใช้งานไม่ได้อีกต่อไป</translation>
 <translation id="5872692522325383488">บันทึก IBAN แล้ว</translation>
 <translation id="5873297634595728366">ยานพาหนะดีเซล</translation>
 <translation id="5877359070305966420">ทรัพยากรบุคคล</translation>

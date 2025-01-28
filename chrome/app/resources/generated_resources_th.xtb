@@ -7556,6 +7556,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">เพิ่มครอบครัวและเพื่อนๆ</translation>
 <translation id="6367097275976877956">คุณต้องการเปิดใช้งาน ChromeVox ซึ่งเป็นโปรแกรมอ่านหน้าจอในตัวสำหรับ Chrome OS ไหม ถ้าต้องการ ให้กดแป้นเว้นวรรค</translation>
+<translation id="6367396429435748845">กด <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> เพื่อหยุดชั่วคราวและใช้งานแป้นเมาส์ต่อ</translation>
 <translation id="6367985768157257101">ต้องการรับด้วยการแชร์ใกล้เคียงไหม</translation>
 <translation id="6368157733310917710">ที่อยู่และอื่นๆ</translation>
 <translation id="6368276408895187373">เปิดใช้อยู่ - <ph name="VARIATION_NAME" /></translation>
@@ -9210,6 +9211,7 @@
 <translation id="7568759527730933493">ใช้การเชื่อมต่อที่ปลอดภัยเพื่อค้นหาที่อยู่ IP ของเว็บไซต์ใน DNS (ระบบชื่อโดเมน) ระบบนี้ใช้ผู้ให้บริการที่มีการจัดการที่ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> ระบบจะไม่ใช้การเชื่อมต่อที่ปลอดภัยกับบางโดเมนที่ผู้ดูแลระบบกำหนดค่าไว้</translation>
 <translation id="756876171895853918">ปรับแต่งรูปโปรไฟล์</translation>
 <translation id="7568790562536448087">การอัปเดต</translation>
+<translation id="7569113730576914983">เมื่อ Chrome พบรหัสผ่านของคุณในการละเมิดข้อมูล Chrome จะเสนอที่จะเปลี่ยนรหัสผ่านให้คุณเมื่อลงชื่อเข้าใช้</translation>
 <translation id="7569983096843329377">สีดำ</translation>
 <translation id="7570548610653957960">ช่วยฉันอ่าน</translation>
 <translation id="7571643774869182231">มีพื้นที่เก็บข้อมูลไม่เพียงพอสำหรับอัปเดต</translation>
@@ -9495,6 +9497,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> จะดูไฟล์ใน <ph name="FOLDERNAME" /> ได้</translation>
 <translation id="7768770796815395237">เปลี่ยน</translation>
 <translation id="7768784765476638775">เลือกเพื่อให้อ่าน</translation>
+<translation id="7769709635093101687">แป้นพิมพ์ลัดเพื่อหยุดชั่วคราว</translation>
 <translation id="7769748505895274502">ยุบรายการแท็บที่เพิ่งปิดไป</translation>
 <translation id="7770072242481632881">ตัวเลือกแผงด้านข้าง</translation>
 <translation id="7770450735129978837">คลิกเมาส์ขวา</translation>

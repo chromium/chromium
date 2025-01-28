@@ -363,6 +363,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5648328599815354043">Chrome hufanya mengi ili kuimarisha usalama wako mtandaoni</translation>
 <translation id="565744775970812598">Huenda <ph name="FILE_NAME" /> ni hatari, kwa hivyo Chromium imeizuia.</translation>
 <translation id="566568153320186256">Chrome huhifadhi chaji ya betri kwa kudhibiti shughuli za chinichini na madoido ya picha kama vile, usogezaji rahisi na kasi za picha za video. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu Kiokoa Nishati<ph name="END_LINK" /></translation>
+<translation id="567202749201779594">Futa data ya Chrome kwenye akaunti yako</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho hili}=1{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho hili. Haitafungua upya dirisha fiche.}other{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho hili. Haitafungua upya madirisha # fiche.}}</translation>
 <translation id="5686916850681061684">Dhibiti na uweke mapendeleo kwenye Google Chrome. Unahitaji kushughulikia jambo fulani. Bofya ili upate maelezo.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -475,6 +476,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7024536598735240744">Hitilafu ya kutekeleza kiendelezi cha ndani: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Usakinishaji Umesimamishwa.</translation>
 <translation id="7025800014283535195">Unaweza kubadilisha kati ya wasifu mmoja wa Chrome na mwingine hapa</translation>
+<translation id="7031914411614877914">Ikiwa ulisahau kauli yako ya siri au ungependa kubadilisha mipangilio hii, <ph name="SETTINGS_LINK" /> data ya Chrome kwenye akaunti yako.</translation>
 <translation id="7048502283602470098">Gundua AI</translation>
 <translation id="7059914902409643750">Weka Mipangilio ya Chrome Upendavyo</translation>
 <translation id="7071827361006050863">Chrome itafuta data ya kuvinjari hivi karibuni</translation>

@@ -110,7 +110,6 @@
 <translation id="143681031165817424">Adressen er kun gemt på denne enhed</translation>
 <translation id="1445276840641906250">Alle dine faner i én browser</translation>
 <translation id="1450170672351507823">Standardbeskyttelse er aktiveret. Du kan øge sikkerheden ved at bruge forbedret beskyttelse.</translation>
-<translation id="1454615514353469963">Adgangskoder, adgangsnøgler og andre data slettes permanent fra Google Adgangskodeadministrator</translation>
 <translation id="1455660774629812862">Skjul ikke</translation>
 <translation id="1460751212339734034">Spar tid ved at indtaste mindre</translation>
 <translation id="1466035273550360103">Ingen åbne faner</translation>
@@ -476,6 +475,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="3053332585453689122">Sender de webadresser, du besøger, samt et lille uddrag af sideindhold, downloads, udvidelsesaktivitet og systemoplysninger til Google Beskyttet browsing for at tjekke, om indholdet er skadeligt.</translation>
 <translation id="3055102495753300780">Datamængde</translation>
 <translation id="3059270601560379555">Ny søgning</translation>
+<translation id="3064547930554042309">Administrer downloads</translation>
 <translation id="3072279342064724558">Adgangskoden findes allerede</translation>
 <translation id="3076846064362030967">Du bliver ikke logget ud af din Google-konto. <ph name="BEGIN_LINK" />Andre former for aktivitet<ph name="END_LINK" /> kan blive gemt på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.
 
@@ -698,6 +698,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4154753961803534698">Søg med kameraet</translation>
 <translation id="4158491215857439601">Adgangskodeadministrator</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bogmærket er gemt i "{title}". Det gemmes kun på denne enhed.}one{{count} bogmærke er gemt i "{title}". Det gemmes kun på denne enhed.}other{{count} bogmærker er gemt i "{title}". De gemmes kun på denne enhed.}}</translation>
+<translation id="4164514562270305824">Automatisk sletning af downloads</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, der slutter med <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Tillad ikke</translation>
 <translation id="4172051516777682613">Vis altid</translation>
@@ -1016,6 +1017,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5579012242779565775">Skjul læseliste</translation>
 <translation id="5585019845078534178">Kort</translation>
 <translation id="5595485650161345191">Rediger adresse</translation>
+<translation id="559567008082979829">Angiv, at dine downloads skal slettes efter én måned.</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="560322036295180549">Deaktiveret af din organisation</translation>
 <translation id="5611107723541161735">Genveje til de websites, du har besøgt for nylig, på denne enhed.</translation>

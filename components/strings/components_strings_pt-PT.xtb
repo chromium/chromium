@@ -271,6 +271,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Não é possível definir as chaves "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" no mesmo dicionário que as chaves "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
 <translation id="1455413310270022028">Borracha</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Ver 0 críticas}=1{Ver 1 crítica}other{Ver as # críticas}}</translation>
 <translation id="1458059624921545588">Pessoas e sociedade</translation>
 <translation id="1458140305240870199">Roupa interior</translation>
 <translation id="1459693405370120464">Meteorologia</translation>
@@ -1956,6 +1957,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4407758156081352648">Para manter a segurança, a sua organização não permite que as palavras-passe voltem a ser usadas no Chrome. As palavras-passe no Chrome são encriptadas para proteger a privacidade do utilizador.</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Esta configuração está marcada como instalável, mas não é fornecida nenhuma imagem para esta arquitetura e, por isso, não pode ser instalada.</translation>
+<translation id="4412377069090572315">Opinião das pessoas</translation>
 <translation id="4414452699610169758">Use o Gestor de Palavras-passe da Google e o preenchimento automático do Chrome para guardar e preencher palavras-passe, métodos de pagamento e moradas</translation>
 <translation id="4414515549596849729">cookies e dados de sites</translation>
 <translation id="4415156962929755728">Plástico (alto brilho)</translation>
@@ -2777,6 +2779,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5937560539988385583">Página traduzida</translation>
 <translation id="5938153366081463283">Adicione um cartão virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Estas informações provêm de Websites de críticas independentes, como o Trustpilot, o ScamAdviser, o Google e outros. Os resumos são criados com IA.</translation>
 <translation id="5944297261866530437">Tecido (alto brilho)</translation>
 <translation id="5950901984834744590">Giletes e máquinas de barbear</translation>
 <translation id="5951495562196540101">Não é possível inscrever-se com conta de consumidor (licença incluída disponível).</translation>
@@ -3143,6 +3146,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6567832540451970450">O seu administrador permite o acesso ao(à) <ph name="PERMISSION" /> para este site</translation>
 <translation id="6568793038316600992">Botão Gerir métodos de pagamento; ative para gerir as suas informações de cartões de crédito e pagamentos nas definições do Chrome</translation>
 <translation id="6569060085658103619">Está a ver a página de uma extensão</translation>
+<translation id="6572867903637058088">Isto é útil?</translation>
 <translation id="6573200754375280815">Perfuração dupla à direita</translation>
 <translation id="6574762126505704998">Preenchimento</translation>
 <translation id="6575408526598156416">Guarde na conta</translation>
@@ -4322,9 +4326,11 @@ Detalhes adicionais:
 <translation id="8672535691554698269">Redes de computadores</translation>
 <translation id="8675446170353411473">Os seus ficheiros estão a ser carregados para o <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Sem atraso</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} tabela eliminada}other{{COUNT} tabelas eliminadas}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Não foi possível carregar a página Web em <ph name="PAGE" /> porque:</translation>
 <translation id="8682297334444610648">Jogo Dino, toque para jogar</translation>
+<translation id="8685225035093721011">Críticas da loja</translation>
 <translation id="8686424632716064939">Segurança informática</translation>
 <translation id="8687278439622293018">A entrada <ph name="ENTRY_VOICEOVER" /> foi eliminada</translation>
 <translation id="8687429322371626002">O seu dispositivo e conta são geridos por <ph name="MANAGER" />.</translation>

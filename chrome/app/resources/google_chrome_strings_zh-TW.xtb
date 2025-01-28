@@ -356,6 +356,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5648328599815354043">Chrome 會進一步保護你的上網安全</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能不安全，因此遭到 Chrome 封鎖。</translation>
 <translation id="566568153320186256">Chrome 會限制背景活動和視覺效果 (例如順暢捲動和視訊畫面更新率)，以節省電池電力。<ph name="BEGIN_LINK" />進一步瞭解節能模式<ph name="END_LINK" /></translation>
+<translation id="567202749201779594">清除帳戶中的 Chrome 資料</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{系統管理員要求你重新啟動 Chrome，以套用這項更新}=1{系統管理員要求你重新啟動 Chrome，以套用這項更新。你的無痕視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用這項更新。你的 # 個無痕視窗不會重新開啟。}}</translation>
 <translation id="5686916850681061684">自訂及管理 Google Chrome。重要注意事項 - 按這裡瞭解詳情。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -468,6 +469,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7024536598735240744">解壓縮錯誤：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安裝。</translation>
 <translation id="7025800014283535195">你可以在這裡切換不同的 Chrome 設定檔</translation>
+<translation id="7031914411614877914">如果忘記通關密語或想要變更這項設定，請<ph name="SETTINGS_LINK" />帳戶中的 Chrome 資料。</translation>
 <translation id="7048502283602470098">瞭解 AI 功能</translation>
 <translation id="7059914902409643750">使用你專屬的 Chrome</translation>
 <translation id="7071827361006050863">Chrome 即將刪除瀏覽資料</translation>

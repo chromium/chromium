@@ -71,6 +71,7 @@
 <translation id="1043505821207197890">Произошла ошибка. Возможно, ОС Linux обновлена только частично. Дополнительные сведения можно посмотреть в журнале (Файлы &gt; Мои файлы &gt; <ph name="LOG_FILE" />).</translation>
 <translation id="104385770822424034">Добавить действие</translation>
 <translation id="104419033123549300">Стиль раскладки</translation>
+<translation id="1045487161760507186">Вам не нужно запоминать пароли, поскольку они сохраняются в Google Менеджере паролей.</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 пароль импортирован в <ph name="BRAND" /> этом устройстве.}one{{NUM_PASSWORDS} пароль импортирован в <ph name="BRAND" /> на этом устройстве.}few{{NUM_PASSWORDS} пароля импортировано в <ph name="BRAND" /> на этом устройстве.}many{{NUM_PASSWORDS} паролей импортировано в <ph name="BRAND" /> на этом устройстве.}other{{NUM_PASSWORDS} пароля импортировано в <ph name="BRAND" /> на этом устройстве.}}</translation>
 <translation id="1046572983040892965">Окно перемещено вверх и влево</translation>
 <translation id="104710386808485638">Перезапустить Linux?</translation>
@@ -1874,6 +1875,7 @@
 <translation id="2297705863329999812">Найти принтеры</translation>
 <translation id="2297822946037605517">Поделиться этой страницей</translation>
 <translation id="229871422646860597">Открепить от панели инструментов</translation>
+<translation id="2299685119225839832">Вы можете посмотреть сводку отзывов.</translation>
 <translation id="2299734369537008228">Ползунок с минимальным значением "<ph name="MIN_LABEL" />" и максимальным значением "<ph name="MAX_LABEL" />"</translation>
 <translation id="2299941608784654630">Включать все файлы журналов, собранные сервисом debugd, в виде отдельного архива</translation>
 <translation id="2300214399009193026">PCIe</translation>
@@ -5246,6 +5248,7 @@
 <translation id="4676616966096505747">Некоторые данные ещё не сохранены в вашем аккаунте</translation>
 <translation id="4677772697204437347">Память GPU</translation>
 <translation id="467809019005607715">Google Презентации</translation>
+<translation id="4678729681411398877">Если обнаружится, что один из ваших паролей раскрыт в результате утечки данных, Google Менеджер паролей предложит заменить его на более надежный.</translation>
 <translation id="4678848110205818817">Кредитная/дебетовая карта</translation>
 <translation id="4679018849559620189">Он позволит вам использовать сохраненные ключи доступа на любом устройстве.</translation>
 <translation id="4680105648806843642">Звук на этой странице был отключен</translation>
@@ -6813,6 +6816,7 @@
 <translation id="5828545842856466741">Добавить профиль…</translation>
 <translation id="5828633471261496623">Печать...</translation>
 <translation id="5830205393314753525">Не удалось открыть приложение "<ph name="APP_NAME" />"</translation>
+<translation id="5830512293931520102">Пароли зашифрованы и видны только вам.</translation>
 <translation id="5830720307094128296">Сохранить страницу как...</translation>
 <translation id="583179300286794292">Вы вошли как <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" />.</translation>
 <translation id="5831950941058843834">Удалить данные и разрешения сайта <ph name="SITE_NAME" />, всех связанных с ним сайтов и связанного установленного приложения?</translation>
@@ -10150,6 +10154,7 @@
 <translation id="8215129063232901118">Доступ к функциям телефона на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Выделение указателя мыши</translation>
 <translation id="8217399928341212914">Всегда блокировать автоскачивание нескольких файлов</translation>
+<translation id="8219785583603399823">Оценки магазина</translation>
 <translation id="822050276545350872">Вам больше не придется ждать</translation>
 <translation id="8222112516148944758">Группы вкладок автоматически сохраняются и обновляются на всех ваших устройствах.</translation>
 <translation id="8222674561049363989">Формат файла не поддерживается.</translation>
