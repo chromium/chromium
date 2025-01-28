@@ -89,19 +89,12 @@ BASE_FEATURE(kAdjustLocalHistoryZeroSuggestRelevanceScore,
              "AdjustLocalHistoryZeroSuggestRelevanceScore",
              DISABLED);
 
-// Enables on-clobber (i.e., when the user clears the whole omnibox text)
-// zero-prefix suggestions on the Open Web, that are contextual to the current
-// URL. Will only work if user is signed-in and syncing, or is otherwise
-// eligible to send the current page URL to the suggest server.
-BASE_FEATURE(kClobberTriggersContextualWebZeroSuggest,
-             "OmniboxClobberTriggersContextualWebZeroSuggest",
-             enable_if(!IS_IOS));
-
-// Enables on-clobber (i.e., when the user clears the whole omnibox text)
-// zero-prefix suggestions on the SRP.
-BASE_FEATURE(kClobberTriggersSRPZeroSuggest,
-             "OmniboxClobberTriggersSRPZeroSuggest",
-             enable_if(!IS_IOS));
+// Enables omnibox focus as a trigger for zero-prefix suggestions on web and
+// SRP, subject to the same requirements and conditions as on-clobber
+// suggestions.
+BASE_FEATURE(kFocusTriggersWebAndSRPZeroSuggest,
+             "OmniboxFocusTriggersWebAndSRPZeroSuggest",
+             DISABLED);
 
 // Enables local history zero-prefix suggestions in every context in which the
 // remote zero-prefix suggestions are enabled.

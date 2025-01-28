@@ -12675,8 +12675,6 @@ from previous Chrome versions.
   <int value="-591874964" label="LiteVideo:enabled"/>
   <int value="-591219096" label="SystemChinesePhysicalTyping:enabled"/>
   <int value="-589096918" label="ash-enable-fullscreen-app-list"/>
-  <int value="-588669613"
-      label="OmniboxClobberIsZeroSuggestEntrypoint:enabled"/>
   <int value="-588245348"
       label="history-clusters-should-show-all-clusters-on-prominent-ui-surfaces"/>
   <int value="-588163454"
@@ -12815,8 +12813,6 @@ from previous Chrome versions.
   <int value="-538003236" label="OneTimePermission:disabled"/>
   <int value="-536289234" label="ssl-interstitial-v2-colorful"/>
   <int value="-536230323" label="SingleClickAutofill:disabled"/>
-  <int value="-536003711"
-      label="OmniboxClobberTriggersContextualWebZeroSuggest:enabled"/>
   <int value="-535662704" label="BundledConnectionHelp:enabled"/>
   <int value="-535226444" label="PictureInPictureV2:enabled"/>
   <int value="-535208779" label="enable-native-cups"/>
@@ -15385,8 +15381,6 @@ from previous Chrome versions.
   <int value="480677983" label="WebXRARDOMOverlay:disabled"/>
   <int value="481506759" label="ServiceWorkerScriptStreaming:enabled"/>
   <int value="482232604" label="PercentBasedScrolling:enabled"/>
-  <int value="482429100"
-      label="OmniboxClobberIsZeroSuggestEntrypoint:disabled"/>
   <int value="483155358" label="GlobalMediaControlsForChromeOS:disabled"/>
   <int value="483173979" label="SecurePaymentConfirmationExtensions:disabled"/>
   <int value="483473934" label="HelpAppOnboardingRevamp:enabled"/>
@@ -16805,8 +16799,6 @@ from previous Chrome versions.
   <int value="1057709415" label="DeprecateAltBasedSixPack:disabled"/>
   <int value="1057887829" label="AutofillScanThemeDialog:disabled"/>
   <int value="1059007599" label="enable-gpu-appcontainer"/>
-  <int value="1059283439"
-      label="OmniboxClobberTriggersContextualWebZeroSuggest:disabled"/>
   <int value="1059698271" label="EnableZeroStateSuggestions:disabled"/>
   <int value="1060127537" label="TabSwitcherFullNewTabButton:disabled"/>
   <int value="1060319397" label="enable-data-reduction-proxy-carrier-test"/>
