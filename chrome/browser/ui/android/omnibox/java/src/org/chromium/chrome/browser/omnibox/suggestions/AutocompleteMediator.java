@@ -79,7 +79,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 /** Handles updating the model state for the currently visible omnibox suggestions. */
 class AutocompleteMediator
@@ -365,7 +364,7 @@ class AutocompleteMediator
         }
 
         CachedZeroSuggestionsManager.saveToCache(
-                mAutocompleteInput.getPageClassification().getAsInt(), result);
+                mAutocompleteInput.getPageClassification(), result);
     }
 
     /** Serve AutocompleteResult from Cache if Autocomplete is not yet initialized. */
@@ -375,7 +374,7 @@ class AutocompleteMediator
         }
         onSuggestionsReceived(
                 CachedZeroSuggestionsManager.readFromCache(
-                        mAutocompleteInput.getPageClassification().getAsInt()),
+                        mAutocompleteInput.getPageClassification()),
                 true);
     }
 
@@ -447,10 +446,7 @@ class AutocompleteMediator
                     mOmniboxFocusResultedInNavigation);
             OmniboxMetrics.recordRefineActionUsage(mRefineActionUsage);
             OmniboxMetrics.recordSuggestionsListScrolled(
-                    mAutocompleteInput.getPageClassification().getAsInt(),
-                    mSuggestionsListScrolled);
-
-            mAutocompleteInput.reset();
+                    mAutocompleteInput.getPageClassification(), mSuggestionsListScrolled);
 
             // Reset the per omnibox session state of touch down prefetch.
             OmniboxMetrics.recordNumPrefetchesStartedInOmniboxSession(
@@ -897,15 +893,12 @@ class AutocompleteMediator
 
             postAutocompleteRequest(
                     () -> {
-                        if (mAutocompleteInput.getPageClassification().isEmpty()) return;
                         startMeasuringSuggestionRequestToUiModelTime();
                         mAutocomplete.ifPresent(
                                 a ->
                                         a.start(
                                                 currentUrl,
-                                                mAutocompleteInput
-                                                        .getPageClassification()
-                                                        .getAsInt(),
+                                                mAutocompleteInput.getPageClassification(),
                                                 textWithoutAutocomplete,
                                                 cursorPosition,
                                                 preventAutocomplete));
@@ -961,9 +954,7 @@ class AutocompleteMediator
         final String urlText = mUrlBarEditingTextProvider.getTextWithAutocomplete();
         cancelAutocompleteRequests();
 
-        if (mAutocompleteInput.getPageClassification().isPresent()
-                && mAutocompleteInput.getPageClassification().getAsInt()
-                        == PageClassification.ANDROID_HUB_VALUE) {
+        if (mAutocompleteInput.getPageClassification() == PageClassification.ANDROID_HUB_VALUE) {
             RecordUserAction.record("HubSearch.KeyboardEnterPressed");
 
             if (!OmniboxFeatures.sAndroidHubSearchEnterPerformsSearch.getValue()) {
@@ -1128,11 +1119,10 @@ class AutocompleteMediator
         if (mDelegate.isUrlBarFocused()) {
             mAutocomplete.ifPresent(
                     a -> {
-                        if (mAutocompleteInput.getPageClassification().isEmpty()) return;
                         a.startZeroSuggest(
                                 mUrlBarEditingTextProvider.getTextWithAutocomplete(),
                                 mDataProvider.getCurrentGurl(),
-                                mAutocompleteInput.getPageClassification().getAsInt(),
+                                mAutocompleteInput.getPageClassification(),
                                 mDataProvider.getTitle());
                     });
         }
@@ -1145,11 +1135,11 @@ class AutocompleteMediator
      */
     @VisibleForTesting
     void propagateOmniboxSessionStateChange(boolean isActive) {
-        OptionalInt pageClassification = mAutocompleteInput.getPageClassification();
-        if (isActive && pageClassification.isPresent()) {
+        if (isActive) {
             mListPropertyModel.set(
                     SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE,
-                    pageClassification.getAsInt() == PageClassification.ANDROID_HUB_VALUE);
+                    mAutocompleteInput.getPageClassification()
+                            == PageClassification.ANDROID_HUB_VALUE);
         }
 
         boolean wasActive = mListPropertyModel.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE);
@@ -1190,6 +1180,8 @@ class AutocompleteMediator
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void stopAutocomplete(boolean clear) {
         mAutocomplete.ifPresent(a -> a.stop(clear));
+        // All suggestions are now removed.
+        if (clear) mAutocompleteInput.reset();
         cancelAutocompleteRequests();
     }
 
@@ -1270,7 +1262,7 @@ class AutocompleteMediator
                                 suggestionLine,
                                 disposition,
                                 currentPageUrl,
-                                mAutocompleteInput.getPageClassification().getAsInt(),
+                                mAutocompleteInput.getPageClassification(),
                                 elapsedTimeSinceModified,
                                 autocompleteLength,
                                 webContents));
