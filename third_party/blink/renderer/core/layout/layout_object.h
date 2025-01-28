@@ -1065,6 +1065,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   inline bool IsAfterContent() const;
   inline bool IsPickerIconContent() const;
   inline bool IsMarkerContent() const;
+  inline bool IsScrollButtonContent() const;
+  inline bool IsScrollMarkerContent() const;
+  inline bool IsScrollButtonOrMarkerContent() const;
   inline bool IsBeforeOrAfterContent() const;
   static inline bool IsAfterContent(const LayoutObject* obj) {
     return obj && obj->IsAfterContent();
@@ -4215,6 +4218,36 @@ inline bool LayoutObject::IsMarkerContent() const {
   if (IsText() && !IsBR())
     return false;
   return true;
+}
+
+inline bool LayoutObject::IsScrollButtonContent() const {
+  if (StyleRef().StyleType() != kPseudoIdScrollButton &&
+      StyleRef().StyleType() != kPseudoIdScrollButtonBlockStart &&
+      StyleRef().StyleType() != kPseudoIdScrollButtonInlineStart &&
+      StyleRef().StyleType() != kPseudoIdScrollButtonInlineEnd &&
+      StyleRef().StyleType() != kPseudoIdScrollButtonBlockEnd) {
+    return false;
+  }
+  // Text nodes don't have their own styles, so ignore the style on a text node.
+  if (IsText() && !IsBR()) {
+    return false;
+  }
+  return true;
+}
+
+inline bool LayoutObject::IsScrollMarkerContent() const {
+  if (StyleRef().StyleType() != kPseudoIdScrollMarker) {
+    return false;
+  }
+  // Text nodes don't have their own styles, so ignore the style on a text node.
+  if (IsText() && !IsBR()) {
+    return false;
+  }
+  return true;
+}
+
+inline bool LayoutObject::IsScrollButtonOrMarkerContent() const {
+  return IsScrollButtonContent() || IsScrollMarkerContent();
 }
 
 inline bool LayoutObject::IsBeforeOrAfterContent() const {
