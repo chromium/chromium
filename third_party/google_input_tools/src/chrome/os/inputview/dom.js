@@ -109,28 +109,6 @@ i18n.input.common.dom.getSameDomainFrameDoc = function(element) {
 
 
 /**
- * Gets the same domain iframe or frame document in given document, default
- * given document is current document.
- *
- * @param {Document=} opt_doc The given document.
- * @return {Array.<!Document>} The same domain iframe document.
- */
-i18n.input.common.dom.getSameDomainDocuments = function(opt_doc) {
-  var doc = opt_doc || document;
-  var iframes = [];
-  var rets = [];
-  goog.array.extend(iframes,
-      doc.getElementsByTagName(goog.dom.TagName.IFRAME),
-      doc.getElementsByTagName(goog.dom.TagName.FRAME));
-  goog.array.forEach(iframes, function(frame) {
-    var frameDoc = i18n.input.common.dom.getSameDomainFrameDoc(frame);
-    frameDoc && rets.push(frameDoc);
-  });
-  return rets;
-};
-
-
-/**
  * Create the iframe in given document or default document. Then the input tool
  * UI element will be create inside the iframe document to avoid CSS conflict.
  *
