@@ -11,30 +11,26 @@ import("//tools/typescript/ts_library.gni")
 import("strings/accessibility_strings.gni")
 import("tools/run_jsbundler.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 accessibility_out_dir = "$root_out_dir/resources/chromeos/accessibility/"
 
 group("build") {
   deps = [
+    ":accessibility_common_manifests",
     ":accessibility_strings",
     ":chromevox_manifests",
+    ":enhanced_network_tts_manifests",
+    ":select_to_speak_manifests",
+    ":switch_access_manifests",
+    "accessibility_common:build",
     "braille_ime:build",
     "chromevox:build",
     "common:build",
+    "enhanced_network_tts:build",
+    "select_to_speak:build",
+    "switch_access/mv2:build",
   ]
-  if (is_chromeos_ash) {
-    deps += [
-      ":accessibility_common_manifests",
-      ":enhanced_network_tts_manifests",
-      ":select_to_speak_manifests",
-      ":switch_access_manifests",
-      "accessibility_common:build",
-      "enhanced_network_tts:build",
-      "select_to_speak:build",
-      "switch_access/mv2:build",
-    ]
-  }
 }
 
 manifest_variants("accessibility_common_manifests") {
@@ -88,15 +84,13 @@ accessibility_strings("accessibility_strings") {
 
 group("browser_tests") {
   testonly = true
-  if (is_chromeos_ash) {
-    deps = [
-      "accessibility_common:browser_tests",
-      "braille_ime:browser_tests",
-      "chromevox:browser_tests",
-      "common:browser_tests",
-      "enhanced_network_tts:browser_tests",
-      "select_to_speak:browser_tests",
-      "switch_access/mv2:browser_tests",
-    ]
-  }
+  deps = [
+    "accessibility_common:browser_tests",
+    "braille_ime:browser_tests",
+    "chromevox:browser_tests",
+    "common:browser_tests",
+    "enhanced_network_tts:browser_tests",
+    "select_to_speak:browser_tests",
+    "switch_access/mv2:browser_tests",
+  ]
 }

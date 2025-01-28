@@ -96,23 +96,17 @@ source_set("test_support") {
   sources = [
     "fake_events_service.cc",
     "fake_events_service.h",
+    "fake_events_service_factory.cc",
+    "fake_events_service_factory.h",
   ]
 
   deps = [ "//base/test:test_support" ]
 
   public_deps = [
+    "//chromeos/ash/components/telemetry_extension/events",
     "//chromeos/crosapi/mojom",
     "//mojo/public/cpp/bindings",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [
-      "fake_events_service_factory.cc",
-      "fake_events_service_factory.h",
-    ]
-
-    public_deps += [ "//chromeos/ash/components/telemetry_extension/events" ]
-  }
 }
 
 source_set("browser_tests") {

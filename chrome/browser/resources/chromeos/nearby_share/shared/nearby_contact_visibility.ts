@@ -17,10 +17,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './nearby_page_template.js';
 import './nearby_shared_icons.html.js';
-// <if expr='chromeos_ash'>
 import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
-
-// </if>
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';

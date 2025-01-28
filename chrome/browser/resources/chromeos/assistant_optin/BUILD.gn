@@ -10,7 +10,7 @@ import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos_ash, "Only available in ash Chrome.")
+assert(is_chromeos, "Only available in ChromeOS.")
 
 ###################
 #### RESOURCES ####

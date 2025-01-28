@@ -10,7 +10,7 @@ import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
 import("//tools/typescript/ts_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 group("build") {
   deps = [ ":copied_files" ]

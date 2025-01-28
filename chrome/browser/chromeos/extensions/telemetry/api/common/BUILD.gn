@@ -44,6 +44,8 @@ source_set("util") {
   ]
 
   deps = [
+    "//ash/constants",
+    "//ash/webui/shimless_rma/backend",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_strip",
@@ -53,13 +55,6 @@ source_set("util") {
     "//components/security_state/core",
     "//extensions/common",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/constants",
-      "//ash/webui/shimless_rma/backend",
-    ]
-  }
 }
 
 source_set("remote_probe_strategy") {

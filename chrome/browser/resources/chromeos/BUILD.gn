@@ -7,8 +7,7 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 
-assert(is_chromeos_ash,
-       "Only ChromeOS Ash resources in //c/b/resources//chromeos.")
+assert(is_chromeos, "Only ChromeOS resources in //c/b/resources/chromeos.")
 
 group("resources") {
   public_deps = [

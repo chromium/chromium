@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(is_chromeos_ash, "Nearby Share is CrOS only")
+assert(is_chromeos, "Nearby Share is CrOS only")
 
 build_webui("build") {
   grd_prefix = "nearby_share_dialog"
