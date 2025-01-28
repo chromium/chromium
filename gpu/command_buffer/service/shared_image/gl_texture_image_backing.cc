@@ -40,7 +40,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "gpu/command_Buffer/service/shared_image/d3d_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/d3d_image_representation.h"
 #endif
 
 namespace gpu {
