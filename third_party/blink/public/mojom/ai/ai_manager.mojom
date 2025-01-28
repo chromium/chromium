@@ -115,9 +115,9 @@ interface AIManager {
   CreateSummarizer(
     pending_remote<AIManagerCreateSummarizerClient> client,
     AISummarizerCreateOptions options);
-  // Returns the default configuration for the text model information.
-  GetModelInfo() => (
-    AIModelInfo model_info
+  // Returns the model params for the language model API.
+  GetLanguageModelParams() => (
+    AILanguageModelParams? language_model_params
   );
   // Returns writer model availability info from the underlying service.
   CanCreateWriter(AIWriterCreateOptions options) =>

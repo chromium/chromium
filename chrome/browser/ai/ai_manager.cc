@@ -317,7 +317,7 @@ void AIManager::CreateLanguageModel(
                          mojo::PendingRemote<blink::mojom::AILanguageModel>,
                          blink::mojom::AIManagerCreateLanguageModelError>
                          remote,
-                     blink::mojom::AILanguageModelInfoPtr info) {
+                     blink::mojom::AILanguageModelInstanceInfoPtr info) {
                     if (remote.has_value()) {
                       client_remote->OnResult(std::move(remote.value()),
                                               std::move(info));
@@ -327,8 +327,9 @@ void AIManager::CreateLanguageModel(
                   },
                   std::move(client_remote)));
         } else {
-          client_remote->OnResult(language_model->TakePendingRemote(),
-                                  language_model->GetLanguageModelInfo());
+          client_remote->OnResult(
+              language_model->TakePendingRemote(),
+              language_model->GetLanguageModelInstanceInfo());
         }
 
         context_bound_object_set.AddContextBoundObject(
@@ -366,8 +367,8 @@ void AIManager::CreateSummarizer(
                      std::move(client));
 }
 
-blink::mojom::AIModelInfoPtr AIManager::GetLanguageModelInfo() {
-  auto model_info = blink::mojom::AIModelInfo::New(
+blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams() {
+  auto model_info = blink::mojom::AILanguageModelParams::New(
       blink::mojom::AILanguageModelSamplingParams::New(),
       blink::mojom::AILanguageModelSamplingParams::New());
   model_info->max_sampling_params->top_k = GetLanguageModelMaxTopK();
@@ -408,9 +409,9 @@ blink::mojom::AIModelInfoPtr AIManager::GetLanguageModelInfo() {
 }
 
 // This is the method to get the info for AILanguageModel.
-// TODO(crbug.com/367771112): rename the mojom method to make this clear.
-void AIManager::GetModelInfo(GetModelInfoCallback callback) {
-  std::move(callback).Run(GetLanguageModelInfo());
+void AIManager::GetLanguageModelParams(
+    GetLanguageModelParamsCallback callback) {
+  std::move(callback).Run(GetLanguageModelParams());
 }
 
 void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
@@ -547,7 +548,7 @@ void AIManager::CreateLanguageModelForCloning(
         CHECK(language_model);
 
         client_remote->OnResult(language_model->TakePendingRemote(),
-                                language_model->GetLanguageModelInfo());
+                                language_model->GetLanguageModelInstanceInfo());
         context_bound_object_set.AddContextBoundObject(
             std::move(language_model));
       },

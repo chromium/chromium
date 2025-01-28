@@ -288,7 +288,7 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
   initial_prompts.prompts.Swap(initial_request.mutable_initial_prompts());
   context_ = std::make_unique<Context>(max_token, std::move(initial_prompts),
                                        context_->use_prompt_api_proto());
-  std::move(callback).Run(TakePendingRemote(), GetLanguageModelInfo());
+  std::move(callback).Run(TakePendingRemote(), GetLanguageModelInstanceInfo());
 }
 
 void AILanguageModel::ModelExecutionCallback(
@@ -461,10 +461,11 @@ void AILanguageModel::Destroy() {
   responder_set_.Clear();
 }
 
-blink::mojom::AILanguageModelInfoPtr AILanguageModel::GetLanguageModelInfo() {
+blink::mojom::AILanguageModelInstanceInfoPtr
+AILanguageModel::GetLanguageModelInstanceInfo() {
   const optimization_guide::SamplingParams session_sampling_params =
       session_->GetSamplingParams();
-  return blink::mojom::AILanguageModelInfo::New(
+  return blink::mojom::AILanguageModelInstanceInfo::New(
       context_->max_tokens(), context_->current_tokens(),
       blink::mojom::AILanguageModelSamplingParams::New(
           session_sampling_params.top_k, session_sampling_params.temperature));

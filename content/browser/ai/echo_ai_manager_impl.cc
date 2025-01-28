@@ -59,7 +59,7 @@ void EchoAIManagerImpl::CreateLanguageModel(
     return;
   }
 
-  auto return_langauge_model_callback =
+  auto return_language_model_callback =
       base::BindOnce(&EchoAIManagerImpl::ReturnAILanguageModelCreationResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(client_remote));
 
@@ -70,7 +70,7 @@ void EchoAIManagerImpl::CreateLanguageModel(
       FROM_HERE,
       base::BindOnce(&EchoAIManagerImpl::DoMockDownloadingAndReturn,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(return_langauge_model_callback)),
+                     std::move(return_language_model_callback)),
       base::Milliseconds(kMockDownloadPreparationTimeMillisecond));
 }
 
@@ -109,8 +109,9 @@ void EchoAIManagerImpl::CreateSummarizer(
   }
 }
 
-void EchoAIManagerImpl::GetModelInfo(GetModelInfoCallback callback) {
-  std::move(callback).Run(blink::mojom::AIModelInfo::New(
+void EchoAIManagerImpl::GetLanguageModelParams(
+    GetLanguageModelParamsCallback callback) {
+  std::move(callback).Run(blink::mojom::AILanguageModelParams::New(
       blink::mojom::AILanguageModelSamplingParams::New(
           optimization_guide::features::GetOnDeviceModelDefaultTopK(),
           optimization_guide::features::GetOnDeviceModelDefaultTemperature()),
@@ -161,7 +162,7 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
                               language_model.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(
       std::move(language_model),
-      blink::mojom::AILanguageModelInfo::New(
+      blink::mojom::AILanguageModelInstanceInfo::New(
           kMaxContextSizeInTokens,
           /*current_tokens=*/0,
           blink::mojom::AILanguageModelSamplingParams::New(

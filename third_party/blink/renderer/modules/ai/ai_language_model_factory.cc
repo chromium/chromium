@@ -98,7 +98,7 @@ class CreateLanguageModelClient
   // mojom::blink::AIManagerCreateLanguageModelClient implementation.
   void OnResult(
       mojo::PendingRemote<mojom::blink::AILanguageModel> language_model_remote,
-      mojom::blink::AILanguageModelInfoPtr info) override {
+      mojom::blink::AILanguageModelInstanceInfoPtr info) override {
     if (!GetResolver()) {
       return;
     }
@@ -168,13 +168,13 @@ void AILanguageModelFactory::Trace(Visitor* visitor) const {
 void AILanguageModelFactory::OnGetModelInfoComplete(
     ScriptPromiseResolver<AILanguageModelCapabilities>* resolver,
     AILanguageModelCapabilities* capabilities,
-    mojom::blink::AIModelInfoPtr model_info) {
-  CHECK(model_info);
-  capabilities->SetDefaultTopK(model_info->default_sampling_params->top_k);
+    mojom::blink::AILanguageModelParamsPtr params) {
+  CHECK(params);
+  capabilities->SetDefaultTopK(params->default_sampling_params->top_k);
   capabilities->SetDefaultTemperature(
-      model_info->default_sampling_params->temperature);
-  capabilities->SetMaxTopK(model_info->max_sampling_params->top_k);
-  capabilities->SetMaxTemperature(model_info->max_sampling_params->temperature);
+      params->default_sampling_params->temperature);
+  capabilities->SetMaxTopK(params->max_sampling_params->top_k);
+  capabilities->SetMaxTemperature(params->max_sampling_params->temperature);
 
   resolver->Resolve(capabilities);
 }
@@ -192,7 +192,7 @@ void AILanguageModelFactory::OnCanCreateSessionComplete(
     return;
   }
 
-  ai_->GetAIRemote()->GetModelInfo(WTF::BindOnce(
+  ai_->GetAIRemote()->GetLanguageModelParams(WTF::BindOnce(
       &AILanguageModelFactory::OnGetModelInfoComplete, WrapPersistent(this),
       WrapPersistent(resolver), WrapPersistent(capabilities)));
 }

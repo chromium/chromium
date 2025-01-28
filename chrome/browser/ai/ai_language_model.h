@@ -43,7 +43,7 @@ class AILanguageModel : public AIContextBoundObject,
   using CreateLanguageModelCallback = base::OnceCallback<void(
       base::expected<mojo::PendingRemote<blink::mojom::AILanguageModel>,
                      blink::mojom::AIManagerCreateLanguageModelError>,
-      blink::mojom::AILanguageModelInfoPtr)>;
+      blink::mojom::AILanguageModelInstanceInfoPtr)>;
 
   // The minimum version of the model execution config for prompt API that
   // starts using proto instead of string value for the request.
@@ -158,7 +158,7 @@ class AILanguageModel : public AIContextBoundObject,
       std::vector<blink::mojom::AILanguageModelInitialPromptPtr>
           initial_prompts,
       CreateLanguageModelCallback callback);
-  blink::mojom::AILanguageModelInfoPtr GetLanguageModelInfo();
+  blink::mojom::AILanguageModelInstanceInfoPtr GetLanguageModelInstanceInfo();
   mojo::PendingRemote<blink::mojom::AILanguageModel> TakePendingRemote();
 
  private:

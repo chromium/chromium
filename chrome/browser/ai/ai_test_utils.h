@@ -92,7 +92,7 @@ class AITestUtils {
         void,
         OnResult,
         (mojo::PendingRemote<blink::mojom::AILanguageModel> language_model,
-         blink::mojom::AILanguageModelInfoPtr info),
+         blink::mojom::AILanguageModelInstanceInfoPtr info),
         (override));
 
     MOCK_METHOD(void,

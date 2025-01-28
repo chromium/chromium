@@ -169,19 +169,19 @@ CreateLanguageModelOnDeviceSessionTask::CreateLanguageModelOnDeviceSessionTask(
           browser_context,
           optimization_guide::ModelBasedCapabilityKey::kPromptApi),
       completion_callback_(std::move(completion_callback)) {
-  auto language_model_info = ai_manager.GetLanguageModelInfo();
+  auto language_model_params = ai_manager.GetLanguageModelParams();
   if (sampling_params) {
     sampling_params_ = optimization_guide::SamplingParams{
         .top_k = std::min(sampling_params->top_k,
-                          language_model_info->max_sampling_params->top_k),
+                          language_model_params->max_sampling_params->top_k),
         .temperature =
             std::min(sampling_params->temperature,
-                     language_model_info->max_sampling_params->temperature)};
+                     language_model_params->max_sampling_params->temperature)};
   } else {
     sampling_params_ = optimization_guide::SamplingParams{
-        .top_k = language_model_info->default_sampling_params->top_k,
+        .top_k = language_model_params->default_sampling_params->top_k,
         .temperature =
-            language_model_info->default_sampling_params->temperature};
+            language_model_params->default_sampling_params->temperature};
   }
 }
 

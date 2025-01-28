@@ -328,7 +328,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
     EXPECT_CALL(mock_create_language_model_client, OnResult(_, _))
         .WillOnce([&](mojo::PendingRemote<blink::mojom::AILanguageModel>
                           language_model,
-                      blink::mojom::AILanguageModelInfoPtr info) {
+                      blink::mojom::AILanguageModelInstanceInfoPtr info) {
           EXPECT_TRUE(language_model);
           EXPECT_EQ(info->max_tokens,
                     AITestUtils::GetFakeTokenLimits().max_context_tokens);
@@ -383,7 +383,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
         .WillOnce(testing::Invoke(
             [&](mojo::PendingRemote<blink::mojom::AILanguageModel>
                     language_model,
-                blink::mojom::AILanguageModelInfoPtr info) {
+                blink::mojom::AILanguageModelInstanceInfoPtr info) {
               EXPECT_TRUE(language_model);
               mock_cloned_session = mojo::Remote<blink::mojom::AILanguageModel>(
                   std::move(language_model));
@@ -716,7 +716,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
     EXPECT_CALL(mock_create_language_model_client, OnResult(_, _))
         .WillOnce([&](mojo::PendingRemote<blink::mojom::AILanguageModel>
                           language_model,
-                      blink::mojom::AILanguageModelInfoPtr info) {
+                      blink::mojom::AILanguageModelInstanceInfoPtr info) {
           EXPECT_TRUE(language_model);
           mock_session = mojo::Remote<blink::mojom::AILanguageModel>(
               std::move(language_model));
