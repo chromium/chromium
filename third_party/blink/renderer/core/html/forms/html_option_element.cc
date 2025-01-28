@@ -124,6 +124,7 @@ HTMLOptionElement* HTMLOptionElement::CreateForJSConstructor(
 
 void HTMLOptionElement::Trace(Visitor* visitor) const {
   visitor->Trace(text_observer_);
+  visitor->Trace(nearest_ancestor_select_);
   HTMLElement::Trace(visitor);
 }
 
@@ -357,24 +358,31 @@ HTMLDataListElement* HTMLOptionElement::OwnerDataListElement() const {
   return Traversal<HTMLDataListElement>::FirstAncestor(*this);
 }
 
-HTMLSelectElement* HTMLOptionElement::OwnerSelectElement() const {
-  if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
-    // TODO(crbug.com/1511354): Consider using a flat tree traversal here
-    // instead of a node traversal. That would probably also require
-    // changing HTMLOptionsCollection to support flat tree traversals as well.
-    // TODO(crbug.com/351990825): Cache the owner select ancestor on insertion
-    // rather than doing a tree traversal here every time OwnerSelectElement is
-    // called, which may be a lot.
-    for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
-      if (IsA<HTMLOptionElement>(ancestor)) {
-        // Don't associate nested <option>s with <select>s. This matches the
-        // traversals in OptionList and HTMLOptionElement::InsertedInto.
-        return nullptr;
-      }
-      if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
-        return select;
-      }
+namespace {
+HTMLSelectElement* NearestAncestorSelectNoNesting(
+    const HTMLOptionElement& option) {
+  for (Node& ancestor : NodeTraversal::AncestorsOf(option)) {
+    if (IsA<HTMLOptionElement>(ancestor)) {
+      // Don't associate nested <option>s with <select>s. This matches the
+      // traversals in OptionList and HTMLOptionElement::InsertedInto.
+      return nullptr;
     }
+    if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
+      return select;
+    }
+  }
+  return nullptr;
+}
+}  // namespace
+
+HTMLSelectElement* HTMLOptionElement::OwnerSelectElement(
+    bool skip_check) const {
+  if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+    if (!skip_check) {
+      DCHECK_EQ(nearest_ancestor_select_,
+                NearestAncestorSelectNoNesting(*this));
+    }
+    return nearest_ancestor_select_;
   } else {
     if (!parentNode()) {
       return nullptr;
@@ -387,6 +395,12 @@ HTMLSelectElement* HTMLOptionElement::OwnerSelectElement() const {
     }
   }
   return nullptr;
+}
+
+void HTMLOptionElement::SetOwnerSelectElement(HTMLSelectElement* select) {
+  CHECK(RuntimeEnabledFeatures::SelectParserRelaxationEnabled());
+  DCHECK_EQ(select, NearestAncestorSelectNoNesting(*this));
+  nearest_ancestor_select_ = select;
 }
 
 String HTMLOptionElement::label() const {
@@ -515,6 +529,7 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
     // the code here which avoids handling it.
     // TODO(crbug.com/1511354): This UsesMenuList check doesn't account for
     // the case when the select's rendering is changed after insertion.
+    SetOwnerSelectElement(parent_select);
     SetTextOnlyRendering(!parent_select->UsesMenuList());
     return return_value;
   }
@@ -533,6 +548,7 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
       passed_insertion_point = true;
     }
     if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
+      SetOwnerSelectElement(select);
       if (passed_insertion_point) {
         // TODO(crbug.com/1511354): This UsesMenuList check doesn't account for
         // the case when the select's rendering is changed after insertion.
@@ -579,6 +595,7 @@ void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
       insertion_point_passed && is_parent_select_or_optgroup;
 
   if (was_removed_from_select_parent) {
+    SetOwnerSelectElement(nullptr);
     // Don't call select->OptionRemoved() in this case because
     // HTMLSelectElement::ChildrenChanged or
     // HTMLOptGroupElement::ChildrenChanged will call it for us.
@@ -596,6 +613,8 @@ void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
       return;
     }
   }
+
+  SetOwnerSelectElement(nullptr);
 
   for (Node& ancestor : NodeTraversal::InclusiveAncestorsOf(insertion_point)) {
     if (IsA<HTMLOptionElement>(ancestor)) {
