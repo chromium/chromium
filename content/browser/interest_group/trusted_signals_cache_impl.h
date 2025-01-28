@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -190,6 +191,24 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   static constexpr size_t kMaxCacheSizeBytes = 10 * 1024 * 1024;
 
   static constexpr size_t kNonceCacheSize = 50;
+
+  // If data for a compression group has no outstanding Handle for this amount
+  // of time, it will be removed to save memory. Entries are guaranteed to be
+  // destroyed between `kMinUnusedCleanupTime` and `kMaxUnusedCleanupTime` times
+  // - the logic records when the minimum time is when a compression group is
+  // added to the LruList, but the shared-across-groups cleanup timer is set to
+  // run after the expiration time of the next group to expire plus the
+  // `kCleanupInterval` has passed, and then cleans up all entries that are past
+  // the `kMinUnusedCleanupTime`. This avoids potentially running a bunch of
+  // very short timers when there are a lot of entries that expire at about the
+  // same time. Unclear if the extra complexity is worth it.
+  //
+  // None of this logic currently takes into account when a compression group's
+  // TTL from the server has been reached.
+  static constexpr base::TimeDelta kMinUnusedCleanupTime = base::Minutes(10);
+  static constexpr base::TimeDelta kCleanupInterval = base::Seconds(30);
+  static constexpr base::TimeDelta kMaxUnusedCleanupTime =
+      kMinUnusedCleanupTime + kCleanupInterval;
 
   // If StartFetch() isn't called on any handle for a request that has been
   // around this long, automatically call SetFetchCanStart() for the fetch.
@@ -608,6 +627,14 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   base::UnguessableToken GetNetworkPartitionNonce(
       const NetworkPartitionNonceKey& network_partition_nonce_key);
 
+  // Starts `cleanup_lru_timer_` if it's not already running and `lru_list_` is
+  // not empty.
+  void MaybeStartCleanupTimer();
+
+  // Removes up all entries in `lru_list_` that have passed their scheduled
+  // removal time.
+  void Cleanup();
+
   // Virtual for testing.
   virtual std::unique_ptr<TrustedSignalsFetcher> CreateFetcher();
 
@@ -655,6 +682,8 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
 
   // See LruList for details.
   LruList lru_list_;
+
+  base::OneShotTimer cleanup_timer_;
 };
 
 }  // namespace content
