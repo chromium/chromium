@@ -5649,7 +5649,6 @@ static_library("ui") {
     ]
     deps += [
       "//chrome/browser/glic",
-      "//chrome/browser/glic:enabling",
       "//chrome/browser/glic:impl",
       "//chrome/browser/glic/launcher:launcher",
     ]

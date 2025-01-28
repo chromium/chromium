@@ -37,6 +37,6 @@ source_set("impl") {
     "//url",
   ]
   if (enable_glic) {
-    deps += [ "//chrome/browser/glic:enabling" ]
+    deps += [ "//chrome/browser/glic" ]
   }
 }

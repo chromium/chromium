@@ -360,10 +360,7 @@ if (!is_android) {
     }
 
     if (enable_glic) {
-      deps += [
-        "//chrome/browser/glic",
-        "//chrome/browser/glic:enabling",
-      ]
+      deps += [ "//chrome/browser/glic" ]
     }
   }
 
