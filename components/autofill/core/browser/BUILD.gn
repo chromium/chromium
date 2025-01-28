@@ -913,6 +913,8 @@ static_library("test_support") {
     "data_manager/entities/test_entity_data_manager.h",
     "data_manager/payments/payments_data_manager_test_api.cc",
     "data_manager/payments/payments_data_manager_test_api.h",
+    "data_manager/payments/payments_data_manager_test_utils.cc",
+    "data_manager/payments/payments_data_manager_test_utils.h",
     "data_manager/payments/test_payments_data_manager.cc",
     "data_manager/payments/test_payments_data_manager.h",
     "data_manager/personal_data_manager_test_utils.cc",
