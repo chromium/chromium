@@ -81,6 +81,10 @@ class DemoLoginController
   void OnDeviceCloudPolicyManagerConnected() override;
   void OnDeviceCloudPolicyManagerGotRegistry() override;
 
+  // Call if feature `GrowthCampaignsDemoModeSignIn` is enable but feature
+  // `DemoModeSignIn` not enabled.
+  void LoadFeatureEligibilityFromGrowth();
+
   // Maybe send clean up request to clean up account used in last session if
   // presents.
   void MaybeCleanupPreviousDemoAccount();
@@ -106,6 +110,16 @@ class DemoLoginController
   std::optional<base::Value::Dict> GetDeviceIdentifier(
       const std::string& login_scope_device_id);
 
+  // Called on the feature is finished loading from growth.
+  void HandleFeatureEligibility(bool is_sign_in_enable);
+
+  // Called on growth campaign is loaded, parse campaign result.
+  void OnCampaignsLoaded();
+
+  // Call to update `state_` from State:kLoading to next state and maybe trigger
+  // auto login.
+  void MaybeTriggerAutoLogin();
+
   // We only allow 1 demo account request at a time.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
@@ -114,6 +128,10 @@ class DemoLoginController
   base::RepeatingClosure configure_auto_login_callback_;
 
   State state_ = State::kUnknown;
+
+  // Determine whether `State::kLoading` is finished (when both are `true`).
+  bool is_policy_manager_connected_ = false;
+  bool is_feature_eligiblity_loaded_ = false;
 
   FailedRequestCallback setup_failed_callback_for_testing_;
   FailedRequestCallback clean_up_failed_callback_for_testing_;

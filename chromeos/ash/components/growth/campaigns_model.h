@@ -40,7 +40,8 @@ enum class Slot {
   kNudge = 2,
   kNotification = 3,
   kOobePerkDiscovery = 4,
-  kMaxValue = kOobePerkDiscovery
+  kDemoModeSignInExperience = 5,
+  kMaxValue = kDemoModeSignInExperience
 };
 
 // These values are deserialized from Growth Campaign, so entries should not

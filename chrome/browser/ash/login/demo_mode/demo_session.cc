@@ -748,7 +748,7 @@ void DemoSession::OnDemoAppComponentLoaded() {
 
   TriggerLaunchDemoModeApp();
 
-  if (features::IsDemoModeSignInEnabled() && window_closer_) {
+  if (demo_mode::IsDemoAccountSignInEnabled() && window_closer_) {
     idle_handler_ = std::make_unique<DemoModeIdleHandler>(window_closer_.get());
   }
 }

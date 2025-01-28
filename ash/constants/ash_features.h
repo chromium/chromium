@@ -403,6 +403,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsNudgeParentToAppWindow);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsCrOSEvents);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kGrowthCampaignsDemoModeSignIn);
 // Predefined Growth Framework experiments.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsExperiment1);
@@ -1149,6 +1151,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthFrameworkEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsNudgeParentToAppWindow();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthCampaignsCrOSEventsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsGrowthCampaignsDemoModeSignInEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsExperimentTagTargetingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
