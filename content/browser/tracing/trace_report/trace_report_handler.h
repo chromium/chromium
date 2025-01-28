@@ -60,6 +60,8 @@ class CONTENT_EXPORT TraceReportHandler
 
 #if BUILDFLAG(IS_WIN)
   void GetSystemTracingState(GetSystemTracingStateCallback callback) override;
+  void GetSecurityShieldIconUrl(
+      GetSecurityShieldIconUrlCallback callback) override;
   void EnableSystemTracing(EnableSystemTracingCallback callback) override;
   void DisableSystemTracing(DisableSystemTracingCallback callback) override;
 #endif  // BUILDFLAG(IS_WIN)

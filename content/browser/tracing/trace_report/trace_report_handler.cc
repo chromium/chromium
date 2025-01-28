@@ -19,6 +19,17 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/task/thread_pool.h"
+#include "skia/ext/codec_utils.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkPixmap.h"
+#include "ui/gfx/win/get_elevation_icon.h"
+#endif
+
 namespace content {
 
 TraceReportHandler::TraceReportHandler(
@@ -153,6 +164,22 @@ void TraceReportHandler::GetSystemTracingState(
     return;
   }
   tracing_delegate_->GetSystemTracingState(std::move(callback));
+}
+
+void TraceReportHandler::GetSecurityShieldIconUrl(
+    GetSecurityShieldIconUrlCallback callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&gfx::win::GetElevationIcon),
+      base::BindOnce(
+          [](GetSecurityShieldIconUrlCallback callback, SkBitmap shield_icon) {
+            if (!shield_icon.empty()) {
+              std::move(callback).Run(
+                  GURL(skia::EncodePngAsDataUri(shield_icon.pixmap())));
+            } else {
+              std::move(callback).Run({});
+            }
+          },
+          std::move(callback)));
 }
 
 void TraceReportHandler::EnableSystemTracing(

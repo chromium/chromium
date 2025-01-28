@@ -63,6 +63,10 @@ function getSystemTracingHtml(this: TracingScenariosConfigElement) {
           ?checked="${this.tracingServiceRegistered_}"
           @change="${this.onSystemTracingChange_}">
       </cr-toggle>
+      ${this.securityShieldIconUrl_
+          ? html`<img id="system-tracing-shield"
+                      src="${this.securityShieldIconUrl_}"/>`
+          : nothing}
     </div>`;
   // </if>
   // <if expr="not is_win">

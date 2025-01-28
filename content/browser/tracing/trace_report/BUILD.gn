@@ -9,6 +9,10 @@ mojom("mojo_bindings") {
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/"
 
+  if (is_win) {
+    public_deps += [ "//url/mojom:url_mojom_gurl" ]
+  }
+
   cpp_typemaps = [
     {
       types = [

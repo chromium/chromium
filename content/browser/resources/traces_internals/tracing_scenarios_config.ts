@@ -68,6 +68,7 @@ export class TracingScenariosConfigElement extends CrLitElement {
   // <if expr="is_win">
   protected tracingServiceSupported_: boolean = false;
   protected tracingServiceRegistered_: boolean = false;
+  protected securityShieldIconUrl_: string = '';
   // </if>
 
   override connectedCallback(): void {
@@ -118,7 +119,14 @@ export class TracingScenariosConfigElement extends CrLitElement {
 
     this.tracingServiceSupported_ = serviceSupported;
     this.tracingServiceRegistered_ = serviceRegistered;
+
+    if (this.tracingServiceSupported_) {
+      this.securityShieldIconUrl_ =
+          (await this.traceReportProxy_.handler.getSecurityShieldIconUrl())
+              .shieldIconUrl.url;
+    }
     // </if>
+
     this.isLoading_ = false;
   }
 

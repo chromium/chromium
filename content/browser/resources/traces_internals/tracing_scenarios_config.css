@@ -78,6 +78,10 @@
   flex: none;
 }
 
+#system-tracing-shield {
+  padding-inline-start: 12px;
+}
+
 #system-tracing-toggle:not(:defined) {
   width: 34px;
 }
