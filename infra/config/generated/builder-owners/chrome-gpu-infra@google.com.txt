@@ -132,13 +132,13 @@ ci/Win10 FYI x64 Experimental Release (Intel)
 ci/Win10 FYI x64 Release (AMD RX 5500 XT)
 ci/Win10 FYI x64 Release (Intel UHD 770)
 ci/Win10 FYI x64 Release (Intel)
-ci/Win10 FYI x64 Release (NVIDIA RTX 4070 Super)
 ci/Win10 FYI x64 Release (NVIDIA)
 ci/Win10 FYI x64 Release XR Perf (NVIDIA)
 ci/Win10 FYI x86 Release (NVIDIA)
 ci/Win10 x64 Debug (NVIDIA)
 ci/Win10 x64 Release (NVIDIA)
 ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)
+ci/Win11 FYI x64 Release (NVIDIA RTX 4070 Super)
 ci/linux-swangle-chromium-x64
 ci/linux-swangle-chromium-x64-exp
 ci/linux-swangle-tot-swiftshader-x64
@@ -218,13 +218,13 @@ try/gpu-fyi-try-win10-amd-rel-64
 try/gpu-fyi-try-win10-intel-exp-64
 try/gpu-fyi-try-win10-intel-rel-64
 try/gpu-fyi-try-win10-intel-uhd770-rel
-try/gpu-fyi-try-win10-nvidia-4070-rel-64
 try/gpu-fyi-try-win10-nvidia-dbg-64
 try/gpu-fyi-try-win10-nvidia-dx12vk-dbg-64
 try/gpu-fyi-try-win10-nvidia-dx12vk-rel-64
 try/gpu-fyi-try-win10-nvidia-exp-64
 try/gpu-fyi-try-win10-nvidia-rel-32
 try/gpu-fyi-try-win10-nvidia-rel-64
+try/gpu-fyi-try-win11-nvidia-4070-rel-64
 try/gpu-fyi-try-win11-qualcomm-rel-64
 try/gpu-try-android-m-nexus-5x-64
 try/gpu-try-android-pixel-2-64

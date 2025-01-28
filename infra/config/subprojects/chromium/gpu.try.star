@@ -608,11 +608,11 @@ gpu_win_builder(
 )
 
 gpu_win_builder(
-    name = "gpu-fyi-try-win10-nvidia-4070-rel-64",
+    name = "gpu-fyi-try-win11-nvidia-4070-rel-64",
     description_html = "Runs GPU tests on NVIDIA RTX 4070 Super GPUs",
     mirrors = [
         "ci/GPU FYI Win x64 Builder",
-        "ci/Win10 FYI x64 Release (NVIDIA RTX 4070 Super)",
+        "ci/Win11 FYI x64 Release (NVIDIA RTX 4070 Super)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder",
 )

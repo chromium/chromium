@@ -1,6 +1,5 @@
 {
-  "GPU FYI Win x64 Builder": {},
-  "Win10 FYI x64 Release (NVIDIA RTX 4070 Super)": {
+  "Win11 FYI x64 Release (NVIDIA RTX 4070 Super)": {
     "gtest_tests": [
       {
         "merge": {

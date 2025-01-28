@@ -177,7 +177,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Win10 FYI x64 Release (NVIDIA RTX 4070 Super)",
+              "builder": "Win10 FYI x64 Release (NVIDIA)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -206,7 +206,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Win10 FYI x64 Release (NVIDIA)",
+              "builder": "Win11 FYI x64 Release (NVIDIA RTX 4070 Super)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -269,12 +269,12 @@
         },
         {
           "bucket": "ci",
-          "builder": "Win10 FYI x64 Release (NVIDIA RTX 4070 Super)",
+          "builder": "Win10 FYI x64 Release (NVIDIA)",
           "project": "chromium"
         },
         {
           "bucket": "ci",
-          "builder": "Win10 FYI x64 Release (NVIDIA)",
+          "builder": "Win11 FYI x64 Release (NVIDIA RTX 4070 Super)",
           "project": "chromium"
         }
       ],
@@ -296,15 +296,15 @@
           "group": "tryserver.chromium.win"
         },
         {
-          "builder": "gpu-fyi-try-win10-nvidia-4070-rel-64",
-          "group": "tryserver.chromium.win"
-        },
-        {
           "builder": "gpu-fyi-try-win10-nvidia-exp-64",
           "group": "tryserver.chromium.win"
         },
         {
           "builder": "gpu-fyi-try-win10-nvidia-rel-64",
+          "group": "tryserver.chromium.win"
+        },
+        {
+          "builder": "gpu-fyi-try-win11-nvidia-4070-rel-64",
           "group": "tryserver.chromium.win"
         }
       ],

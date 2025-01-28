@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/gpu-fyi-try-win10-nvidia-4070-rel-64/gn-args.json"
+        "infra/config/generated/builders/try/gpu-fyi-try-win11-nvidia-4070-rel-64/gn-args.json"
       ],
       "builder_db": {
         "entries": [
@@ -32,7 +32,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Win10 FYI x64 Release (NVIDIA RTX 4070 Super)",
+              "builder": "Win11 FYI x64 Release (NVIDIA RTX 4070 Super)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -70,11 +70,11 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "Win10 FYI x64 Release (NVIDIA RTX 4070 Super)",
+          "builder": "Win11 FYI x64 Release (NVIDIA RTX 4070 Super)",
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-win10-nvidia-4070-rel-64/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-win11-nvidia-4070-rel-64/targets"
     }
   },
   "$build/reclient": {
