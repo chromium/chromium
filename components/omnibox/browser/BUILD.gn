@@ -396,6 +396,7 @@ static_library("browser") {
     ]
     deps += [
       ":jni_headers",
+      "//components/browser_ui/util/android",
       "//url",
     ]
   } else {
