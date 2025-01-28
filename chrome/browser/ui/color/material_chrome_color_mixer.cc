@@ -238,7 +238,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
   // History Embeddings colors.
-  mixer[kColorHistoryEmbeddingsBackground] = {ui::kColorSysSurface};
+  mixer[kColorHistoryEmbeddingsBackground] = {
+      ui::kColorSysBaseContainerElevated};
   mixer[kColorHistoryEmbeddingsDivider] = {ui::kColorSysDivider};
   mixer[kColorHistoryEmbeddingsForeground] = {ui::kColorSysOnSurface};
   mixer[kColorHistoryEmbeddingsForegroundSubtle] = {
@@ -249,8 +250,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysGradientTertiary};
   mixer[kColorHistoryEmbeddingsImageBackgroundGradientStart] = {
       ui::kColorSysGradientPrimary};
-  mixer[kColorHistoryEmbeddingsWithAnswersBackground] = {
-      ui::kColorSysBaseContainerElevated};
 
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;
