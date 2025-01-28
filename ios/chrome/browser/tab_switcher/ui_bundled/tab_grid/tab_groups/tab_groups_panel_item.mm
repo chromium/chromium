@@ -6,7 +6,29 @@
 
 #import "base/uuid.h"
 
-@implementation TabGroupsPanelItem
+@implementation TabGroupsPanelItem {
+  NSUInteger _hash;
+}
+
+- (instancetype)initWithNotificationText:(NSString*)text {
+  self = [super init];
+  if (self) {
+    _type = TabGroupsPanelItemType::kNotification;
+    _notificationText = [text copy];
+    _hash = text.hash;
+  }
+  return self;
+}
+
+- (instancetype)initWithSavedTabGroupID:(base::Uuid)savedTabGroupID {
+  self = [super init];
+  if (self) {
+    _type = TabGroupsPanelItemType::kSavedTabGroup;
+    _savedTabGroupID = savedTabGroupID;
+    _hash = base::UuidHash()(_savedTabGroupID);
+  }
+  return self;
+}
 
 #pragma mark NSObject
 
@@ -21,7 +43,7 @@
 }
 
 - (NSUInteger)hash {
-  return base::UuidHash()(_savedTabGroupID);
+  return _hash;
 }
 
 #pragma mark Private
@@ -30,7 +52,15 @@
   if (self == item) {
     return YES;
   }
-  return _savedTabGroupID == item.savedTabGroupID;
+  if (_type != item.type) {
+    return NO;
+  }
+  switch (_type) {
+    case TabGroupsPanelItemType::kNotification:
+      return [self.notificationText isEqualToString:item.notificationText];
+    case TabGroupsPanelItemType::kSavedTabGroup:
+      return self.savedTabGroupID == item.savedTabGroupID;
+  }
 }
 
 @end

@@ -17,6 +17,9 @@ class Uuid;
 
 namespace collaboration {
 class CollaborationService;
+namespace messaging {
+class MessagingBackendService;
+}  // namespace messaging
 }  // namespace collaboration
 
 class BrowserList;
@@ -53,16 +56,19 @@ class TabGroupSyncService;
 // - `regularWebStateList`: used to configure the Done button. Must not be null.
 // - `disabled`: tells the mediator whether the Tab Groups panel is disabled, to
 //     configure the toolbars.
-- (instancetype)initWithTabGroupSyncService:
-                    (tab_groups::TabGroupSyncService*)tabGroupSyncService
-                            shareKitService:(ShareKitService*)shareKitService
-                       collaborationService:
-                           (collaboration::CollaborationService*)
-                               collaborationService
-                        regularWebStateList:(WebStateList*)regularWebStateList
-                              faviconLoader:(FaviconLoader*)faviconLoader
-                           disabledByPolicy:(BOOL)disabled
-                                browserList:(BrowserList*)browserList
+- (instancetype)
+    initWithTabGroupSyncService:
+        (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                shareKitService:(ShareKitService*)shareKitService
+           collaborationService:
+               (collaboration::CollaborationService*)collaborationService
+               messagingService:
+                   (collaboration::messaging::MessagingBackendService*)
+                       messagingService
+            regularWebStateList:(WebStateList*)regularWebStateList
+                  faviconLoader:(FaviconLoader*)faviconLoader
+               disabledByPolicy:(BOOL)disabled
+                    browserList:(BrowserList*)browserList
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
