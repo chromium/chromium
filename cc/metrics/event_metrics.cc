@@ -10,6 +10,7 @@
 #include "cc/metrics/event_metrics.h"
 
 #include <algorithm>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -338,7 +339,7 @@ EventMetrics::EventMetrics(const EventMetrics& other)
 EventMetrics::~EventMetrics() {
   if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
-        this, base::TimeTicks::Now(), base::TimeDelta(), nullptr, nullptr);
+        this, base::TimeTicks::Now(), nullptr, nullptr, nullptr, std::nullopt);
   }
 }
 
@@ -561,7 +562,7 @@ ScrollEventMetrics::ScrollEventMetrics(const ScrollEventMetrics&) = default;
 ScrollEventMetrics::~ScrollEventMetrics() {
   if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
-        this, base::TimeTicks::Now(), base::TimeDelta(), nullptr, nullptr);
+        this, base::TimeTicks::Now(), nullptr, nullptr, nullptr, std::nullopt);
   }
 }
 
@@ -731,7 +732,7 @@ ScrollUpdateEventMetrics::ScrollUpdateEventMetrics(
 ScrollUpdateEventMetrics::~ScrollUpdateEventMetrics() {
   if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
-        this, base::TimeTicks::Now(), base::TimeDelta(), nullptr, nullptr);
+        this, base::TimeTicks::Now(), nullptr, nullptr, nullptr, std::nullopt);
   }
 }
 
@@ -825,7 +826,7 @@ PinchEventMetrics::PinchEventMetrics(const PinchEventMetrics&) = default;
 PinchEventMetrics::~PinchEventMetrics() {
   if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
-        this, base::TimeTicks::Now(), base::TimeDelta(), nullptr, nullptr);
+        this, base::TimeTicks::Now(), nullptr, nullptr, nullptr, std::nullopt);
   }
 }
 
