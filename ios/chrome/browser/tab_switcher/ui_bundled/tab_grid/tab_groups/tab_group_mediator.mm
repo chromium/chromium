@@ -379,6 +379,32 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
   return data;
 }
 
+#pragma mark - GridViewControllerMutator override
+
+- (void)closeItemWithIdentifier:(GridItemIdentifier*)identifier {
+  CHECK_EQ(identifier.type, GridItemType::kTab);
+  if (_tabGroup->range().count() > 1 || ![self isShared] ||
+      !_collaborationService) {
+    [self closeItemWithID:identifier.tabSwitcherItem.identifier];
+    return;
+  }
+
+  data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(
+      _tabGroup.get(), _tabGroupSyncService, _collaborationService);
+
+  switch (userRole) {
+    case data_sharing::MemberRole::kOwner:
+      [self.tabGroupDelegate tabGroupMediatorCloseLastTabAsOwner:self];
+      break;
+    case data_sharing::MemberRole::kMember:
+      [self.tabGroupDelegate tabGroupMediatorCloseLastTabAsMember:self];
+      break;
+    case data_sharing::MemberRole::kInvitee:
+    case data_sharing::MemberRole::kUnknown:
+      NOTREACHED();
+  }
+}
+
 #pragma mark - TabCollectionDragDropHandler override
 
 // Overrides the parent as the given destination index do not take into account
@@ -742,6 +768,20 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     }
   }
   return NO;
+}
+
+// Returns YES if the group is shared.
+- (BOOL)isShared {
+  CHECK(_tabGroup);
+  BOOL isSharedTabGroupSupported =
+      _shareKitService && _shareKitService->IsSupported();
+
+  if (!isSharedTabGroupSupported || !_tabGroupSyncService) {
+    return NO;
+  }
+
+  return tab_groups::utils::IsTabGroupShared(_tabGroup.get(),
+                                             _tabGroupSyncService);
 }
 
 #pragma mark - MessagingBackendServiceObserving

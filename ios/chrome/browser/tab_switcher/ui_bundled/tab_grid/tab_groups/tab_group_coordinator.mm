@@ -48,6 +48,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 @interface TabGroupCoordinator () <
     GridViewControllerDelegate,
     SharedTabGroupUserEducationCoordinatorDelegate,
+    TabGroupMediatorDelegate,
     TabGroupPresentationCommands>
 @end
 
@@ -121,6 +122,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   _mediator.tabGroupsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
   _mediator.tabGridIdleStatusHandler = self.tabGridIdleStatusHandler;
+  _mediator.tabGroupDelegate = self;
 
   _tabContextMenuHelper = [[TabContextMenuHelper alloc]
              initWithProfile:browser->GetProfile()
@@ -397,6 +399,16 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
     (SharedTabGroupUserEducationCoordinator*)coordinator {
   [_userEducationCoordinator stop];
   _userEducationCoordinator = nil;
+}
+
+#pragma mark - TabGroupMediatorDelegate
+
+- (void)tabGroupMediatorCloseLastTabAsOwner:(TabGroupMediator*)mediator {
+  CHECK_EQ(_mediator, mediator);
+}
+
+- (void)tabGroupMediatorCloseLastTabAsMember:(TabGroupMediator*)mediator {
+  CHECK_EQ(_mediator, mediator);
 }
 
 #pragma mark - Private
