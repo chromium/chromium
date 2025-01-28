@@ -417,9 +417,12 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     public void clearSharedTabGroup() {
         mIsShared = false;
-        mSharedImageTilesCoordinator = null;
         mAvatarResource = null;
         mAvatarWidthWithPadding = 0;
+        if (mSharedImageTilesCoordinator != null) {
+            mSharedImageTilesCoordinator.destroy();
+            mSharedImageTilesCoordinator = null;
+        }
     }
 
     /**
