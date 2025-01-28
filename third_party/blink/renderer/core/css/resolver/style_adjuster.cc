@@ -1110,6 +1110,20 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
                             element ? &element->GetDocument() : nullptr);
     }
 
+    if (builder.StyleType() == kPseudoIdScrollMarkerGroup) {
+      // A scroll marker group always needs layout containment, since it
+      // modifies its layout box structure during layout. Only in-flow
+      // positioned scroll marker groups need size containment, though, since
+      // the size of out-of-flow positioned scroll marker groups don't affect
+      // anything on the outside (which is precisely why we DO need it for
+      // in-flow groups).
+      unsigned containment = builder.Contain() | kContainsLayout;
+      if (!builder.HasOutOfFlowPosition()) {
+        containment |= kContainsSize;
+      }
+      builder.SetContain(containment);
+    }
+
     // If this is a child of a LayoutCustom, we need the name of the parent
     // layout function for invalidation purposes.
     if (layout_parent_style.IsDisplayLayoutCustomBox()) {
