@@ -44,6 +44,7 @@ TestSessionControllerClient::TestSessionControllerClient(
     bool create_signin_pref_service)
     : controller_(controller), prefs_provider_(prefs_provider) {
   CHECK(controller_);
+  CHECK(prefs_provider_);
   Reset();
 
   if (create_signin_pref_service) {
