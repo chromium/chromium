@@ -256,7 +256,7 @@ void GlicWindowController::OnWidgetDestroyed(views::Widget* widget) {
 void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
                                                  const gfx::Rect& new_bounds) {
   if (attached_browser_ &&
-      attached_browser_->GetBrowserView().GetWidget() == widget) {
+      attached_browser_->GetBrowserView().GetWidgetForAnchoring() == widget) {
     MovePositionToBrowserGlicButton(attached_browser_, false);
   }
 }
@@ -599,7 +599,7 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
   holder_widget_.reset();
 
   views::Widget* browser_widget =
-      browser->window()->AsBrowserView()->GetWidget();
+      browser->window()->AsBrowserView()->GetWidgetForAnchoring();
   CHECK(browser_widget);
 
   // Makes the glic widget a child view of the given widget's browser.
