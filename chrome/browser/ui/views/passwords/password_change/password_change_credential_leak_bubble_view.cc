@@ -88,7 +88,7 @@ PasswordChangeCredentialLeakBubbleView::CreateBodyText() {
       /*text_message_id=*/
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_BUBBLE_DETAILS,
       /*link_message_id=*/
-      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_LINK,
       controller_.GetPrimaryAccountEmail(), open_password_manager_closure,
       CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_PRIMARY);
 }
