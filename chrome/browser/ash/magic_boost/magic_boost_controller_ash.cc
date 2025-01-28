@@ -44,13 +44,6 @@ MagicBoostControllerAsh::~MagicBoostControllerAsh() {
   g_instance = nullptr;
 }
 
-void MagicBoostControllerAsh::BindReceiver(
-    mojo::PendingReceiver<crosapi::mojom::MagicBoostController> receiver) {
-  // The receiver is only from lacros chrome as present, but more mojo clients
-  // may be added in the future.
-  receivers_.Add(this, std::move(receiver));
-}
-
 void MagicBoostControllerAsh::ShowDisclaimerUi(int64_t display_id,
                                                TransitionAction action,
                                                OptInFeatures opt_in_features) {

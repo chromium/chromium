@@ -249,7 +249,6 @@ static_library("crosapi") {
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/screens",
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",

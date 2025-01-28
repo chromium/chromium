@@ -411,11 +411,7 @@ interface Crosapi {
   [MinVersion=17] BindMachineLearningService@22(
       pending_receiver<chromeos.machine_learning.mojom.MachineLearningService> receiver);
 
-  // MagicBoostController is a service to allow lacros to open the magic boost
-  // opt-in flow.
-  // Added in M127.
-  [MinVersion=142] BindMagicBoostController@144(
-      pending_receiver<MagicBoostController> receiver);
+  // BindMagicBoostController@144 was removed.
 
   // Binds the mahi browser delegate to the mahi browser client.
   // Added in M123.
