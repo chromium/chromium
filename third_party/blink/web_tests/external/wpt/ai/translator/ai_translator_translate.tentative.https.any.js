@@ -1,6 +1,7 @@
 // META: title=Translate from English to Japanese
 // META: global=window,worker
 // META: timeout=long
+// META: script=../resources/util.js
 //
 // Setting `timeout=long` as this test may require downloading the translation
 // library and the language models.
@@ -10,10 +11,8 @@
 promise_test(async t => {
   const translatorFactory = ai.translator;
   assert_not_equals(translatorFactory, null);
-  const translator = await translatorFactory.create({
-    sourceLanguage: "en",
-    targetLanguage: "ja"
-  });
+  const translator = await translatorFactory.create(
+      {sourceLanguage: 'en', targetLanguage: 'ja'});
   assert_equals(await translator.translate('hello'), 'こんにちは');
 });
 
@@ -42,4 +41,12 @@ promise_test(async t => {
       translator.translate('hello', {signal: controller.signal});
 
   await promise_rejects_dom(t, 'AbortError', translatePromise);
-})
+}, 'AITranslator.translate() call with an aborted signal.')
+
+promise_test(async t => {
+  const translator =
+      await ai.translator.create({sourceLanguage: 'en', targetLanguage: 'ja'});
+  await testAbortPromise(t, signal => {
+    return translator.translate('hello', {signal});
+  });
+}, 'Aborting AITranslator.translate().');

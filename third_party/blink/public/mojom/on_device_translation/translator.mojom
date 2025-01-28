@@ -4,10 +4,16 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
+
 // The translator that provides the translation functionalities.
 interface Translator {
   // Translate the given `input` from the source language to the
   // target language. If the translation fails, the output would
   // be null.
-  Translate(string input) => (string? output);
+  Translate(string input,
+            pending_remote<ModelStreamingResponder> pending_responder);
+
+  // TODO(crbug.com/392185835): Remove once window.translation is removed.
+  TranslateDeprecated(string input) => (string? output);
 };

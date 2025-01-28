@@ -28,6 +28,7 @@ chromium-metrics-reviews@google.com.
   <variant name="LanguageModel" summary="AI language model session"/>
   <variant name="Rewriter" summary="AI rewriter session"/>
   <variant name="Summarizer" summary="AI summarizer session"/>
+  <variant name="Translator" summary="AI translator session"/>
   <variant name="Writer" summary="AI writer session"/>
 </variants>
 

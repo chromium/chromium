@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
 
 namespace on_device_translation {
@@ -27,8 +28,53 @@ Translator::Translator(
 
 Translator::~Translator() = default;
 
-void Translator::Translate(const std::string& input,
-                           TranslateCallback callback) {
+void Translator::Translate(
+    const std::string& input,
+    mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+        pending_responder) {
+  CHECK(browser_context_);
+  mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
+      std::move(pending_responder));
+  if (!Profile::FromBrowserContext(browser_context_.get())
+           ->GetPrefs()
+           ->GetBoolean(prefs::kTranslatorAPIAllowed)) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+    return;
+  }
+
+  RecordTranslationAPICallForLanguagePair("Translate", source_lang_,
+                                          target_lang_);
+  RecordTranslationCharacterCount(source_lang_, target_lang_, input.size());
+  if (translator_remote_.is_connected()) {
+    translator_remote_->Translate(
+        input,
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            base::BindOnce(
+                [](mojo::Remote<blink::mojom::ModelStreamingResponder>
+                       responder,
+                   const std::optional<std::string>& output) {
+                  if (!output) {
+                    responder->OnError(
+                        blink::mojom::ModelStreamingResponseStatus::
+                            kErrorGenericFailure);
+                    return;
+                  }
+                  responder->OnStreaming(
+                      *output,
+                      blink::mojom::ModelStreamingResponderAction::kReplace);
+                  responder->OnCompletion(/*context_info=*/nullptr);
+                },
+                std::move(responder)),
+            std::nullopt));
+  } else {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+  }
+}
+
+void Translator::TranslateDeprecated(const std::string& input,
+                                     TranslateDeprecatedCallback callback) {
   CHECK(browser_context_);
   if (!Profile::FromBrowserContext(browser_context_.get())
            ->GetPrefs()

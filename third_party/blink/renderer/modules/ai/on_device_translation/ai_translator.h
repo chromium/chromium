@@ -41,6 +41,7 @@ class AITranslator final : public ScriptWrappable {
   void destroy(ScriptState*);
 
  private:
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<blink::mojom::blink::Translator> translator_remote_{nullptr};
 
   String source_language_;
