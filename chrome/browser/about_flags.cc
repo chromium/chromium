@@ -4166,6 +4166,18 @@ const FeatureEntry::FeatureVariation
          1, nullptr},
 };
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const FeatureEntry::FeatureParam kContextualCueingEnabledNoEngagementCap[] = {
+    {"BackoffTime", "0h"},
+    {"BackoffMultiplierBase", "0.0"},
+    {"NudgeCapTime", "0h"},
+    {"MinPageCountBetweenNudges", "0"}};
+const FeatureEntry::FeatureVariation kContextualCueingEnabledOptions[] = {
+    {"no engagement caps", kContextualCueingEnabledNoEngagementCap,
+     std::size(kContextualCueingEnabledNoEngagementCap), nullptr},
+};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 const FeatureEntry::FeatureParam
     kPartitionAllocWithAdvancedChecksEnabledProcesses_BrowserOnly[] = {
@@ -11467,7 +11479,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"contextual-cueing", flag_descriptions::kContextualCueingName,
      flag_descriptions::kContextualCueingDescription,
      kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(contextual_cueing::kContextualCueing)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(contextual_cueing::kContextualCueing,
+                                    kContextualCueingEnabledOptions,
+                                    "ContextualCueingEnabledOptions")},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
     {"partitioned-popins", flag_descriptions::kPartitionedPopinsName,
