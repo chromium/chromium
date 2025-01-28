@@ -1077,10 +1077,18 @@ ManagedNetworkConfigurationHandlerImpl::FindPolicyByGuidAndProfile(
   if (!policies)
     return nullptr;
 
-  const base::Value::Dict* policy =
-      (policy_type == PolicyType::kOriginal)
-          ? policies->GetOriginalPolicyByGuid(guid)
-          : policies->GetPolicyByGuid(guid);
+  const base::Value::Dict* policy = nullptr;
+  switch (policy_type) {
+    case PolicyType::kOriginal:
+      policy = policies->GetOriginalPolicyByGuid(guid);
+      break;
+    case PolicyType::kWithVariablesExpanded:
+      policy = policies->GetPolicyWithVariablesExpandedByGuid(guid);
+      break;
+    case PolicyType::kWithRuntimeValues:
+      policy = policies->GetPolicyByGuid(guid);
+      break;
+  }
   if (policy && out_onc_source) {
     *out_onc_source =
         (profile->userhash.empty() ? ::onc::ONC_SOURCE_DEVICE_POLICY
