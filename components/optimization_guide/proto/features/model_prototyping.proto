@@ -115,7 +115,8 @@ message ModelPrototypingRequest {
 
 // A representation of an ongoing conversation.
 message Conversation {
-  // The turns of various messages in the conversation.
+  // The turns of various messages in the conversation. Media turns are not
+  // included in this list.
   repeated ConversationTurn conversation_turns = 1;
 }
 
