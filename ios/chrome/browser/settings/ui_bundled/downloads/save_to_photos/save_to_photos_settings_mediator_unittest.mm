@@ -9,6 +9,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
+#import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_confirmation_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_selection_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_mediator_delegate.h"
@@ -59,6 +60,11 @@
     (NSArray<AccountPickerSelectionScreenIdentityItemConfigurator*>*)
         configurators {
   self.identityConfigurators = configurators;
+}
+
+- (void)displaySaveToPhotosSettingsUI {
+}
+- (void)hideSaveToPhotosSettingsUI {
 }
 
 @end
@@ -119,7 +125,9 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     mediator_ = [[SaveToPhotosSettingsMediator alloc]
         initWithAccountManagerService:account_manager_service
                           prefService:pref_service
-                      identityManager:identity_manager];
+                      identityManager:identity_manager
+                        photosService:PhotosServiceFactory::GetForProfile(
+                                          profile_.get())];
     return mediator_;
   }
 
@@ -290,23 +298,6 @@ TEST_F(SaveToPhotosSettingsMediatorTest,
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_);
   EXPECT_TRUE(fake_consumer.askEveryTimeSwitchOn);
   EXPECT_EQ(2U, fake_consumer.identityConfigurators.count);
-
-  [mediator disconnect];
-}
-
-// Tests that the mediator asks to hide Save to Photos settings if the user
-// signs out.
-TEST_F(SaveToPhotosSettingsMediatorTest, HidesSettingsIfUserSignsOut) {
-  SaveToPhotosSettingsMediator* mediator = CreateSaveToPhotosSettingsMediator();
-
-  FakeSaveToPhotosSettingsMediatorDelegate* fake_delegate =
-      [[FakeSaveToPhotosSettingsMediatorDelegate alloc] init];
-  mediator.delegate = fake_delegate;
-
-  signin::ClearPrimaryAccount(
-      IdentityManagerFactory::GetForProfile(profile_.get()));
-
-  EXPECT_TRUE(fake_delegate.hideSaveToPhotosSettingsCalled);
 
   [mediator disconnect];
 }
