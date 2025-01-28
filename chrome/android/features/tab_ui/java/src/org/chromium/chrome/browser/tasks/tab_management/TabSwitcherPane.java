@@ -359,7 +359,12 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
         if (paneHubController == null) return;
 
         TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
-        if (coordinator == null) return;
+        // Skip showing IPH if the tab grid dialog is open as it will appear atop the dialog which
+        // looks incorrect.
+        if (coordinator == null
+                || Boolean.TRUE.equals(coordinator.getTabGridDialogVisibilitySupplier().get())) {
+            return;
+        }
 
         TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
         @Nullable Pair<Integer, Integer> range = coordinator.getVisibleRange();
@@ -372,21 +377,18 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             if (tab == null || !filter.isTabInTabGroup(tab)) continue;
 
             @Nullable Token tabGroupId = tab.getTabGroupId();
-            if (tabGroupId == null) return;
+            if (tabGroupId == null) continue;
             @Nullable
             SavedTabGroup savedTabGroup =
                     mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
-            // Don't try to show the IPH if the group is:
+            // Don't try to show the IPH for this group if the group is:
             // 1) Not in TabGroupSyncService for some reason.
             // 2) A shared tab group.
             // 3) Created locally.
-            // 4) The tab grid dialog is visible.
             if (savedTabGroup == null
                     || TabShareUtils.isCollaborationIdValid(savedTabGroup.collaborationId)
-                    || !mTabGroupSyncService.isRemoteDevice(savedTabGroup.creatorCacheGuid)
-                    || Boolean.TRUE.equals(
-                            coordinator.getTabGridDialogVisibilitySupplier().get())) {
-                return;
+                    || !mTabGroupSyncService.isRemoteDevice(savedTabGroup.creatorCacheGuid)) {
+                continue;
             }
 
             @Nullable View anchorView = coordinator.getViewByIndex(viewIndex);
