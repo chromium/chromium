@@ -6399,7 +6399,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NQE.RTT.Error.Absolute" units="ms" expires_after="2025-02-01">
+<histogram name="NQE.RTT.Error.Absolute" units="ms" expires_after="2025-06-08">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
