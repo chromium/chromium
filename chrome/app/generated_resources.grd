@@ -14261,9 +14261,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DEFAULT_BROWSER_INFOBAR_OK_BUTTON_LABEL" desc="The label of the 'set as default' button on the default browser infobar.">
         Set as default
       </message>
-      <message name="IDS_DEFAULT_BROWSER_INFOBAR_REFRESH_OK_BUTTON_LABEL" desc="The label of the 'set as default' button on the default browser infobar.">
-        Set as default
-      </message>
 
       <if expr="is_linux">
         <message name="IDS_MINIMIZE_WINDOW_MENU" desc="The Linux browser window menu item text for minimizing the window.">

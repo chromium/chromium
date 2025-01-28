@@ -194,33 +194,3 @@ INSTANTIATE_TEST_SUITE_P(
 #else
 INSTANTIATE_TEST_SUITE_P(All, AppMenuIconControllerTest, ::testing::Values(0));
 #endif
-
-#if !BUILDFLAG(IS_CHROMEOS)
-class AppMenuControllerDefaultPromptTest : public BrowserWithTestWindowTest {
- public:
-  AppMenuControllerDefaultPromptTest()
-      : BrowserWithTestWindowTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDefaultBrowserPromptRefresh,
-        {{features::kShowDefaultBrowserAppMenuChip.name, "true"}});
-    BrowserWithTestWindowTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(AppMenuControllerDefaultPromptTest, SetsDefaultPromptTypeAndSeverity) {
-  ::testing::StrictMock<MockAppMenuIconControllerDelegate> mock_delegate;
-  AppMenuIconController controller(profile(), &mock_delegate);
-
-  EXPECT_CALL(mock_delegate,
-              UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                  AppMenuIconController::IconType::DEFAULT_BROWSER_PROMPT,
-                  AppMenuIconController::Severity::LOW}));
-  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
-}
-#endif

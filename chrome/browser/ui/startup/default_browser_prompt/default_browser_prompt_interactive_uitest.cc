@@ -37,22 +37,10 @@ class DefaultBrowserPromptInteractiveTest
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kDefaultBrowserPromptRefresh,
         {{features::kShowDefaultBrowserInfoBar.name, "true"},
-         {features::kShowDefaultBrowserAppMenuChip.name, "true"},
          {features::kShowDefaultBrowserAppMenuItem.name, "true"}});
 
     shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
     InteractiveBrowserTest::SetUp();
-  }
-
-  static base::OnceCallback<bool(AppMenuButton*)>
-  IsAppMenuChipDefaultBrowserPromptShowing(bool showing) {
-    return base::BindOnce(
-        [](bool showing, AppMenuButton* app_menu_button) {
-          return showing == (app_menu_button->GetText() ==
-                             l10n_util::GetStringUTF16(
-                                 IDS_APP_MENU_BUTTON_DEFAULT_PROMPT));
-        },
-        showing);
   }
 
   InteractiveTestApi::MultiStep DoesAppMenuItemExist(bool exists) {
@@ -69,21 +57,16 @@ class DefaultBrowserPromptInteractiveTest
   InteractiveTestApi::MultiStep RemovesAllBrowserDefaultPromptsWhen(
       InteractiveTestApi::MultiStep steps,
       bool preserve_app_menu_item = false) {
-    return Steps(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
-                 WaitForShow(kToolbarAppMenuButtonElementId),
-                 CheckView(kToolbarAppMenuButtonElementId,
-                           IsAppMenuChipDefaultBrowserPromptShowing(true)),
-                 DoesAppMenuItemExist(true),
-                 AddInstrumentedTab(kSecondTabContents,
-                                    GURL(chrome::kChromeUINewTabURL)),
-                 WaitForShow(ConfirmInfoBar::kInfoBarElementId),
-                 std::move(steps),
-                 WaitForHide(ConfirmInfoBar::kInfoBarElementId),
-                 SelectTab(kTabStripElementId, 0),
-                 WaitForHide(ConfirmInfoBar::kInfoBarElementId),
-                 CheckView(kToolbarAppMenuButtonElementId,
-                           IsAppMenuChipDefaultBrowserPromptShowing(false)),
-                 DoesAppMenuItemExist(preserve_app_menu_item));
+    return Steps(
+        WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+        WaitForShow(kToolbarAppMenuButtonElementId), DoesAppMenuItemExist(true),
+        AddInstrumentedTab(kSecondTabContents,
+                           GURL(chrome::kChromeUINewTabURL)),
+        WaitForShow(ConfirmInfoBar::kInfoBarElementId), std::move(steps),
+        WaitForHide(ConfirmInfoBar::kInfoBarElementId),
+        SelectTab(kTabStripElementId, 0),
+        WaitForHide(ConfirmInfoBar::kInfoBarElementId),
+        DoesAppMenuItemExist(preserve_app_menu_item));
   }
 
  private:
@@ -132,37 +115,6 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTest,
             SelectTab(kTabStripElementId, 1))));
 }
 #endif
-
-class DefaultBrowserPromptInteractiveTestWithAppMenuDuration
-    : public DefaultBrowserPromptInteractiveTest {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDefaultBrowserPromptRefresh,
-        {{features::kShowDefaultBrowserInfoBar.name, "true"},
-         {features::kShowDefaultBrowserAppMenuChip.name, "true"},
-         {features::kShowDefaultBrowserAppMenuItem.name, "true"},
-         {features::kDefaultBrowserAppMenuDuration.name, "1s"}});
-
-    InteractiveBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTestWithAppMenuDuration,
-                       RemovesAllBrowserDefaultPromptsOnAppMenuChipTimeout) {
-  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
-  RunTestSequence(
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      WaitForHide(ConfirmInfoBar::kInfoBarElementId),
-      SelectTab(kTabStripElementId, 0),
-      WaitForHide(ConfirmInfoBar::kInfoBarElementId),
-      CheckView(kToolbarAppMenuButtonElementId,
-                IsAppMenuChipDefaultBrowserPromptShowing(false)),
-      DoesAppMenuItemExist(true));
-}
 
 class DefaultBrowserPromptHeadlessBrowserTest
     : public DefaultBrowserPromptInteractiveTest {

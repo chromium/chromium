@@ -99,10 +99,6 @@ void DefaultBrowserInfoBarDelegate::InfoBarDismissed() {
 }
 
 std::u16string DefaultBrowserInfoBarDelegate::GetMessageText() const {
-  if (base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh) &&
-      features::kUpdatedInfoBarCopy.Get()) {
-    return l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_INFOBAR_REFRESH_TEXT);
-  }
   return l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_INFOBAR_TEXT);
 }
 
@@ -113,11 +109,6 @@ int DefaultBrowserInfoBarDelegate::GetButtons() const {
 std::u16string DefaultBrowserInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK_EQ(BUTTON_OK, button);
-  if (base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh) &&
-      features::kUpdatedInfoBarCopy.Get()) {
-    return l10n_util::GetStringUTF16(
-        IDS_DEFAULT_BROWSER_INFOBAR_REFRESH_OK_BUTTON_LABEL);
-  }
   return l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_INFOBAR_OK_BUTTON_LABEL);
 }
 
