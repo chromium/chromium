@@ -947,7 +947,7 @@
       Choose how you'll verify it's you
   </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_ISSUER_CONFIRMATION_TEXT" desc="The issuer confirmation text shown in the Autofill card unmask authentication selection dialog on Desktop and Clank. This is the header text of the dialog, and it is the text stating that the issuer wants additional authentication. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card." formatter_data="android_java">
-      Your bank wants to make sure it's you
+      Your card provider wants to make sure it's you
   </message>
   <message name="IDS_AUTOFILL_AUTHENTICATION_MODE_SECURITY_CODE" desc="The label for the 3 digit security code authentication option shown in the Autofill card unmask authentication selection dialog on Desktop. Only shown when there are multiple unmask options presented to the user. If selected, the user will be prompted to enter their security code.">
     Enter your security code
@@ -964,8 +964,8 @@
   <message name="IDS_AUTOFILL_AUTHENTICATION_MODE_THREE_DOMAIN_SECURE" desc="The label for the text message authentication mode option shown in the Autofill card unmask authentication selection dialog on Desktop. Only shown when there are multiple unmask options presented to the user. If selected, Chrome will open a pop-up so that the user can verify on their bank's website.">
     Via Strong Customer Authentication (SCA)
   </message>
-  <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CURRENT_INFO_NOT_SEEN_TEXT" desc="The current info not seen text shown in the Autofill card unmask authentication selection dialog on Desktop. It is the footer text on the dialog, and it instructs the user on what to do if they can not see their most up to date authentication information. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
-    Not seeing your current info? Contact your bank to update it.
+  <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CURRENT_INFO_NOT_SEEN_TEXT" desc="The current info not seen text shown in the Autofill card unmask authentication selection dialog on Desktop and Android. It is the footer text on the dialog, and it instructs the user on what to do if they can not see their most up to date authentication information. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card." formatter_data="android_java">
+    Not seeing your current info? Contact your provider to update it.
   </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_CONTINUE" desc="The continue button label shown in the Autofill card unmask authentication selection dialog on Desktop. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card. This label is used when the challenge option just requires the user to continue the flow." formatter_data="android_java">
     Continue

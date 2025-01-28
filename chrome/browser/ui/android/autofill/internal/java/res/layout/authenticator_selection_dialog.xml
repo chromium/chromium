@@ -44,7 +44,7 @@ found in the LICENSE file.
             style="@style/AlertDialogContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/autofill_payments_authenticator_selection_dialog_footer"/>
+            android:text="@string/autofill_card_unmask_authentication_selection_dialog_current_info_not_seen_text"/>
       </LinearLayout>
       <LinearLayout
             android:id="@+id/progress_bar_overlay"
