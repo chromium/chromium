@@ -14,7 +14,21 @@ promise_test(async t => {
   const translator = await translatorFactory.create(
       {sourceLanguage: 'en', targetLanguage: 'ja'});
   assert_equals(await translator.translate('hello'), 'こんにちは');
-});
+}, 'Simple AITranslator.translate() call');
+
+promise_test(async () => {
+  const translator =
+      await ai.translator.create({sourceLanguage: 'en', targetLanguage: 'ja'});
+  const streamingResponse = translator.translateStreaming('hello');
+  assert_equals(
+      Object.prototype.toString.call(streamingResponse),
+      '[object ReadableStream]');
+  let result = '';
+  for await (const chunk of streamingResponse) {
+    result += chunk;
+  }
+  assert_equals(await translator.translate('hello'), 'こんにちは');
+}, 'Simple AITranslator.translateStreaming() call');
 
 promise_test(async t => {
   const translator =

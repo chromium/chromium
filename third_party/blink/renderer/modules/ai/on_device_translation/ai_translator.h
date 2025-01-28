@@ -14,6 +14,9 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
+
+class ReadableStream;
+
 class AITranslator final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -38,6 +41,13 @@ class AITranslator final : public ScriptWrappable {
                                      const WTF::String& input,
                                      AITranslatorTranslateOptions* options,
                                      ExceptionState& exception_state);
+
+  // ai_translator.idl implementation
+  ReadableStream* translateStreaming(ScriptState* script_state,
+                                     const WTF::String& input,
+                                     AITranslatorTranslateOptions* options,
+                                     ExceptionState& exception_state);
+
   void destroy(ScriptState*);
 
  private:

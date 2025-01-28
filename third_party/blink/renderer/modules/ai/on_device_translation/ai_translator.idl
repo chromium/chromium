@@ -10,7 +10,11 @@ interface AITranslator {
 ]
   Promise<DOMString> translate(DOMString input, optional AITranslatorTranslateOptions options = {});
 
-// TODO(crbug.com/322229993): Add `translateStreaming()`.
+[
+  CallWith=ScriptState,
+  RaisesException
+]
+  ReadableStream translateStreaming(DOMString input, optional AITranslatorTranslateOptions options = {});
 
   readonly attribute DOMString sourceLanguage;
   readonly attribute DOMString targetLanguage;

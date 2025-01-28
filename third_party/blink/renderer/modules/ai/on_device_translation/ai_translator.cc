@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -84,6 +85,42 @@ ScriptPromise<IDLString> AITranslator::translate(
   translator_remote_->Translate(input, std::move(pending_remote));
 
   return promise;
+}
+
+ReadableStream* AITranslator::translateStreaming(
+    ScriptState* script_state,
+    const WTF::String& input,
+    AITranslatorTranslateOptions* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return nullptr;
+  }
+
+  CHECK(options);
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
+    return nullptr;
+  }
+
+  if (!translator_remote_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kExceptionMessageTranslatorDestroyed);
+    return nullptr;
+  }
+
+  auto [readable_stream, pending_remote] =
+      CreateModelExecutionStreamingResponder(
+          script_state, signal, task_runner_,
+          AIMetrics::AISessionType::kTranslator,
+          /*complete_callback=*/base::DoNothing(),
+          /*overflow_callback=*/base::DoNothing());
+
+  // TODO(crbug.com/335374928): Implement the error handling for the translation
+  // service crash.
+  translator_remote_->Translate(input, std::move(pending_remote));
+
+  return readable_stream;
 }
 
 void AITranslator::destroy(ScriptState*) {
