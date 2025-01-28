@@ -90,4 +90,8 @@ void PropertyTreeLayerListDelegate::UpdateScrollOffsetFromImpl(
   scroll_tree.NotifyDidCompositorScroll(id, new_offset, snap_target_ids);
 }
 
+void PropertyTreeLayerListDelegate::OnAnimateLayers() {
+  // This is a no-op in layer list mode.
+}
+
 }  // namespace cc

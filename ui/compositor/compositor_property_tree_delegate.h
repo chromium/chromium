@@ -50,12 +50,12 @@ class COMPOSITOR_EXPORT CompositorPropertyTreeDelegate
 
   // PropertyTreeDelegate overrides.
   void UpdatePropertyTreesIfNeeded() override;
-
   void UpdateScrollOffsetFromImpl(
       const cc::ElementId& id,
       const gfx::Vector2dF& delta,
       const std::optional<cc::TargetSnapAreaElementIds>& snap_target_ids)
       override;
+  void OnAnimateLayers() override;
 
  private:
   raw_ptr<Observer> observer_ = nullptr;

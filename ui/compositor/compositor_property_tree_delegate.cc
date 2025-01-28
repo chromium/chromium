@@ -47,6 +47,13 @@ void CompositorPropertyTreeDelegate::UpdateScrollOffsetFromImpl(
       id, delta, snap_target_ids);
 }
 
+void CompositorPropertyTreeDelegate::OnAnimateLayers() {
+  // TODO(crbug.com/389771428): Implement this w/ layer lists. For now,
+  // just call the base class implementation to ensure that we don't get
+  // out of date.
+  cc::PropertyTreeLayerTreeDelegate::OnAnimateLayers();
+}
+
 void CompositorPropertyTreeDelegate::SetObserverForTesting(Observer* observer) {
   observer_ = observer;
 }

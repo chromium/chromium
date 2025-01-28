@@ -40,4 +40,10 @@ void PropertyTreeLayerTreeDelegate::UpdateScrollOffsetFromImpl(
   }
 }
 
+void PropertyTreeLayerTreeDelegate::OnAnimateLayers() {
+  // Animation state changes will require rebuilding property trees to
+  // track them.
+  host()->property_trees()->set_needs_rebuild(true);
+}
+
 }  // namespace cc

@@ -41,6 +41,8 @@ class PropertyTreeDelegate {
       const ElementId& id,
       const gfx::Vector2dF& delta,
       const std::optional<TargetSnapAreaElementIds>& snap_target_ids) = 0;
+
+  virtual void OnAnimateLayers() = 0;
 };
 
 }  // namespace cc
