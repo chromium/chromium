@@ -110,7 +110,8 @@ class ContextRecyclerTest : public testing::Test {
     std::optional<std::string> error_msg;
     EXPECT_TRUE(helper_
                     ->Compile(code, bidding_logic_url_,
-                              /*debug_id=*/nullptr, error_msg)
+                              /*debug_id=*/nullptr, /*cached_data=*/nullptr,
+                              error_msg)
                     .ToLocal(&script));
     EXPECT_FALSE(error_msg.has_value()) << error_msg.value();
     return script;

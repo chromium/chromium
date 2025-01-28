@@ -8938,20 +8938,14 @@ TEST_F(BidderWorkletTwoThreadsTest, ParseErrorV8Debug) {
   // Worklet should disconnect with an error message.
   EXPECT_FALSE(WaitForDisconnect().empty());
 
-  // Should have gotten a parse error notification for each channel.
+  // Should have gotten a parse error notification for the first channel because
+  // we compile on the first channel only.
   TestChannel::Event parse_error0 =
       channel0->WaitForMethodNotification("Debugger.scriptFailedToParse");
   const std::string* error_url0 =
       parse_error0.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(error_url0);
   EXPECT_EQ(interest_group_bidding_url_.spec(), *error_url0);
-
-  TestChannel::Event parse_error1 =
-      channel1->WaitForMethodNotification("Debugger.scriptFailedToParse");
-  const std::string* error_url1 =
-      parse_error1.value.GetDict().FindStringByDottedPath("params.url");
-  ASSERT_TRUE(error_url1);
-  EXPECT_EQ(interest_group_bidding_url_.spec(), *error_url1);
 }
 
 TEST_F(BidderWorkletTest, BasicDevToolsDebug) {

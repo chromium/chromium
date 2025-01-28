@@ -7,12 +7,16 @@
 
 #include <stddef.h>
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -142,16 +146,22 @@ class CONTENT_EXPORT WorkletLoaderBase {
       scoped_refptr<AuctionV8Helper::DebugId> debug_id,
       std::unique_ptr<std::string> body,
       std::optional<std::string> error_msg,
+      const std::optional<scoped_refptr<base::RefCountedBytes>>
+          cached_data_to_use,
       WorkletLoaderBase::Result::V8Data* out_data,
       scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
       base::WeakPtr<WorkletLoaderBase> weak_instance);
 
-  static bool CompileJs(const std::string& body,
-                        scoped_refptr<AuctionV8Helper> v8_helper,
-                        const GURL& source_url,
-                        AuctionV8Helper::DebugId* debug_id,
-                        std::optional<std::string>& error_msg,
-                        WorkletLoaderBase::Result::V8Data* out_data);
+  static bool CompileJs(
+      const std::string& body,
+      scoped_refptr<AuctionV8Helper> v8_helper,
+      const GURL& source_url,
+      AuctionV8Helper::DebugId* debug_id,
+      std::optional<std::string>& error_msg,
+      const std::optional<scoped_refptr<base::RefCountedBytes>>
+          cached_data_to_use,
+      std::optional<scoped_refptr<base::RefCountedBytes>>& cached_data_output,
+      WorkletLoaderBase::Result::V8Data* out_data);
 
   static bool CompileWasm(const std::string& body,
                           scoped_refptr<AuctionV8Helper> v8_helper,
@@ -160,15 +170,20 @@ class CONTENT_EXPORT WorkletLoaderBase {
                           std::optional<std::string>& error_msg,
                           WorkletLoaderBase::Result::V8Data* out_data);
 
-  void DeliverCallbackOnUserThread(bool success,
-                                   std::optional<std::string> error_msg,
-                                   bool download_success);
+  void DeliverCallbackOnUserThread(
+      bool success,
+      std::optional<std::string> error_msg,
+      bool download_success,
+      std::optional<scoped_refptr<base::RefCountedBytes>> cached_data);
 
   const GURL source_url_;
   const AuctionDownloader::MimeType mime_type_;
   const std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers_;
   const std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids_;
   const base::TimeTicks start_time_;
+
+  std::unique_ptr<std::string> body_;
+  std::optional<std::string> error_msg_;
 
   size_t response_received_count_ = 0;
 

@@ -59,9 +59,9 @@ class WebIDLCompatTest : public testing::Test {
                                      const std::string& script_source,
                                      AuctionV8Helper::Result expect_result) {
     std::optional<std::string> error;
-    v8::MaybeLocal<v8::UnboundScript> maybe_script =
-        v8_helper_->Compile(script_source, GURL("https://example.org"),
-                            /*debug_id=*/nullptr, error);
+    v8::MaybeLocal<v8::UnboundScript> maybe_script = v8_helper_->Compile(
+        script_source, GURL("https://example.org"),
+        /*debug_id=*/nullptr, /*cached_data=*/nullptr, error);
     EXPECT_EQ(error.value_or(""), "");
     v8::Local<v8::UnboundScript> script = maybe_script.ToLocalChecked();
 
