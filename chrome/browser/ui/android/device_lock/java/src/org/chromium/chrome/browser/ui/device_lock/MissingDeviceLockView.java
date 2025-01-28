@@ -4,11 +4,13 @@
 package org.chromium.chrome.browser.ui.device_lock;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,6 +18,7 @@ import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.ui.base.ViewUtils;
 
 /**
  * View shown to a user who has removed the device lock to inform them that their private data will
@@ -71,11 +74,26 @@ public class MissingDeviceLockView extends LinearLayout {
         mButtonBar = findViewById(R.id.dual_control_button_bar);
         mButtonBar.addView(mContinueButton);
         mButtonBar.addView(mCreateDeviceLockButton);
+
+        ImageView illustration = findViewById(R.id.missing_device_lock_illustration);
+        int illustrationTopMargin;
         if (SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)) {
+            illustration.setBackgroundColor(Color.TRANSPARENT);
+            illustrationTopMargin = ViewUtils.dpToPx(getContext(), 16);
             mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.END);
         } else {
+            illustration.setBackgroundColor(
+                    getContext().getColor(R.color.signin_header_animation_background));
+            illustrationTopMargin = 0;
             mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.APART);
         }
+        MarginLayoutParams illustrationParams = (MarginLayoutParams) illustration.getLayoutParams();
+        illustrationParams.setMargins(
+                illustrationParams.leftMargin,
+                illustrationTopMargin,
+                illustrationParams.rightMargin,
+                illustrationParams.bottomMargin);
+        illustration.setLayoutParams(illustrationParams);
     }
 
     TextView getTitle() {
