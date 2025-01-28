@@ -23,13 +23,16 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/containers/stack.h"
 #include "base/functional/bind.h"
 #include "base/i18n/string_compare.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -43,6 +46,7 @@
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/common/android/bookmark_type.h"
@@ -1664,7 +1668,7 @@ void BookmarkBridge::ReorderChildren(
   const long bookmark_id = JavaBookmarkIdGetId(env, j_bookmark_id_obj);
   const int bookmark_type = JavaBookmarkIdGetType(env, j_bookmark_id_obj);
 
-  const BookmarkNode* bookmark_node = GetNodeByID(bookmark_id, bookmark_type);
+  const BookmarkNode* parent_node = GetNodeByID(bookmark_id, bookmark_type);
 
   // populate a vector
   std::vector<const BookmarkNode*> ordered_nodes;
@@ -1673,10 +1677,15 @@ void BookmarkBridge::ReorderChildren(
 
   // iterate through array, adding the BookmarkNode*s of the objects
   for (int i = 0; i < arraySize; ++i) {
+    const BookmarkNode* child_node = GetNodeByID(elements[i], bookmark_type);
+    CHECK(child_node->parent() == parent_node, base::NotFatalUntil::M135);
+    CHECK(
+        base::checked_cast<jsize>(parent_node->children().size()) == arraySize,
+        base::NotFatalUntil::M135);
     ordered_nodes.push_back(GetNodeByID(elements[i], 0));
   }
 
-  bookmark_model_->ReorderChildren(bookmark_node, ordered_nodes);
+  bookmark_model_->ReorderChildren(parent_node, ordered_nodes);
 }
 
 // Should destroy the bookmark bridge, if OTR profile is destroyed not to delete
