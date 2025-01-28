@@ -93,10 +93,8 @@ BASE_FEATURE(kEnableChromeRefreshTokenBinding,
 
 bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs) {
   // Enterprise policy takes precedence over the feature value.
-  // Do not allow force-enabling because the feature isn't complete yet.
-  if (profile_prefs->HasPrefPath(prefs::kBoundSessionCredentialsEnabled) &&
-      !profile_prefs->GetBoolean(prefs::kBoundSessionCredentialsEnabled)) {
-    return false;
+  if (profile_prefs->HasPrefPath(prefs::kBoundSessionCredentialsEnabled)) {
+    return profile_prefs->GetBoolean(prefs::kBoundSessionCredentialsEnabled);
   }
 
   return base::FeatureList::IsEnabled(kEnableChromeRefreshTokenBinding);
