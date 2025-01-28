@@ -13,9 +13,12 @@
 #include "cc/base/math_util.h"
 #include "cc/base/region.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -88,53 +91,6 @@ gfx::Rect SafeConvertRectForRegion(const gfx::Rect& r) {
     safe_rect.set_height(INT_MAX - 1);
   }
   return safe_rect;
-}
-
-// Decides whether or not a DrawQuad should be split into a more complex visible
-// region in order to avoid overdraw.
-bool CanSplitQuad(const DrawQuad::Material quad_material,
-                  const std::vector<gfx::Rect>& visible_region_rects,
-                  const gfx::Size& visible_region_bounding_size,
-                  int minimum_fragments_reduced,
-                  float device_scale_factor) {
-  static constexpr DrawQuad::Material kNonSplittableMaterials[] = {
-      // Exclude debug quads from quad splitting.
-      DrawQuad::Material::kDebugBorder,
-      // Exclude possible overlay candidates from quad splitting
-      // See `OverlayCandidate::FromDrawQuad()`.
-      DrawQuad::Material::kTextureContent,
-      DrawQuad::Material::kVideoHole,
-  };
-
-  if (base::Contains(kNonSplittableMaterials, quad_material)) {
-    return false;
-  }
-
-  base::CheckedNumeric<int> area = 0;
-  for (const auto& r : visible_region_rects) {
-    area += r.size().GetCheckedArea();
-    // In calculations below, assume false if this addition overflows.
-    if (!area.IsValid()) {
-      return false;
-    }
-  }
-
-  base::CheckedNumeric<int> visible_region_bounding_area =
-      visible_region_bounding_size.GetCheckedArea();
-  if (!visible_region_bounding_area.IsValid()) {
-    // In calculations below, assume true if this overflows.
-    return true;
-  }
-
-  area = visible_region_bounding_area - area;
-  if (!area.IsValid()) {
-    // In calculations below, assume false if this subtraction underflows.
-    return false;
-  }
-
-  const int int_area = area.ValueOrDie();
-  return int_area * device_scale_factor * device_scale_factor >
-         minimum_fragments_reduced;
 }
 
 // Returns the bounds for the largest rect that can be inscribed in a rounded
@@ -234,8 +190,11 @@ void MaybeReduceOccluderComplexity(cc::Region& occluder,
 
 OcclusionCuller::OcclusionCuller(
     OverlayProcessorInterface* overlay_processor,
+    DisplayResourceProvider* resource_provider,
     const RendererSettings::OcclusionCullerSettings& settings)
-    : overlay_processor_(overlay_processor), settings_(settings) {}
+    : overlay_processor_(overlay_processor),
+      resource_provider_(resource_provider),
+      settings_(settings) {}
 
 OcclusionCuller::~OcclusionCuller() = default;
 
@@ -433,10 +392,8 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
             !visible_region.Intersects(render_pass_quads_in_content_space) &&
             ReduceComplexity(visible_region, settings_.quad_split_limit,
                              reduced_visible_region) &&
-            CanSplitQuad(quad->material, reduced_visible_region,
-                         visible_region.bounds().size(),
-                         settings_.minimum_fragments_reduced,
-                         device_scale_factor_);
+            CanSplitDrawQuad(*quad, visible_region.bounds().size(),
+                             reduced_visible_region);
         if (should_split_quads) {
           auto new_quad = pass->quad_list.InsertCopyBeforeDrawQuad(
               quad, reduced_visible_region.size() - 1);
@@ -461,6 +418,54 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
       ++quad;
     }
   }
+}
+
+bool OcclusionCuller::CanSplitDrawQuad(
+    const DrawQuad* quad,
+    const gfx::Size& visible_region_bounding_size,
+    const std::vector<gfx::Rect>& visible_region_rects) {
+  if (quad->material == DrawQuad::Material::kDebugBorder ||
+      quad->material == DrawQuad::Material::kVideoHole) {
+    return false;
+  }
+
+  if (quad->material == DrawQuad::Material::kTextureContent) {
+    if (!features::IsOcclusionCullingForTextureQuadsEnabled()) {
+      return false;
+    }
+
+    // Exclude possible overlay candidates from quad splitting. See
+    // `OverlayCandidateFactory::FromDrawQuad()`.
+    if (resource_provider_->IsOverlayCandidate(quad->resource_id)) {
+      return false;
+    }
+  }
+
+  base::CheckedNumeric<int> area = 0;
+  for (const auto& r : visible_region_rects) {
+    area += r.size().GetCheckedArea();
+    // In calculations below, assume false if this addition overflows.
+    if (!area.IsValid()) {
+      return false;
+    }
+  }
+
+  base::CheckedNumeric<int> visible_region_bounding_area =
+      visible_region_bounding_size.GetCheckedArea();
+  if (!visible_region_bounding_area.IsValid()) {
+    // In calculations below, assume true if this overflows.
+    return true;
+  }
+
+  area = visible_region_bounding_area - area;
+  if (!area.IsValid()) {
+    // In calculations below, assume false if this subtraction underflows.
+    return false;
+  }
+
+  const int int_area = area.ValueOrDie();
+  return int_area * device_scale_factor_ * device_scale_factor_ >
+         settings_.minimum_fragments_reduced;
 }
 
 }  // namespace viz

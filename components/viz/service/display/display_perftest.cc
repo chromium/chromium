@@ -18,6 +18,7 @@
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/display/aggregated_frame.h"
+#include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/occlusion_culler.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
@@ -70,8 +71,11 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
     DCHECK(!occlusion_culler_);
 
     overlay_processor_ = std::make_unique<OverlayProcessorStub>();
+    display_resource_provider_ =
+        std::make_unique<DisplayResourceProviderSkia>();
     occlusion_culler_ = std::make_unique<OcclusionCuller>(
-        overlay_processor_.get(), RendererSettings::OcclusionCullerSettings());
+        overlay_processor_.get(), display_resource_provider_.get(),
+        RendererSettings::OcclusionCullerSettings());
     occlusion_culler_->UpdateDeviceScaleFactor(kDeviceScaleFactor);
   }
 
@@ -305,6 +309,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
  private:
   AggregatedFrame frame_;
   base::LapTimer timer_;
+  std::unique_ptr<DisplayResourceProvider> display_resource_provider_;
   std::unique_ptr<OverlayProcessorInterface> overlay_processor_;
   std::unique_ptr<OcclusionCuller> occlusion_culler_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
