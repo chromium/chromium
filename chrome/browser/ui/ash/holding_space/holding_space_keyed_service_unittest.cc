@@ -768,7 +768,7 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
     // needed because `profile_` is owned by the test not `TestProfileManager`.
     ash_test_helper()->prefs_provider()->ClearUnownedUserPrefs(
         AccountId::FromUserEmail(profile_->GetProfileUserName()));
-    profile_.reset();
+    profile_ = nullptr;
     HoldingSpaceKeyedServiceWithExperimentalFeatureTest::TearDown();
   }
 
@@ -785,6 +785,7 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
             user->GetAccountId()),
         /*browser_restart=*/false,
         /*is_child=*/false);
+    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
@@ -795,8 +796,6 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
     // Profile is created outside of TestingProfileManager management
     // to inject more factories.
     TestingProfile::Builder guest_profile_builder;
-    guest_profile_builder.SetGuestSession();
-    guest_profile_builder.SetProfileName(profile_name);
     guest_profile_builder.AddTestingFactories(
         {TestingProfile::TestingFactory{
              arc::ArcFileSystemBridge::GetFactory(),
@@ -804,9 +803,10 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
          TestingProfile::TestingFactory{
              file_manager::VolumeManagerFactory::GetInstance(),
              base::BindRepeating(&BuildVolumeManager)}});
-    profile_ = guest_profile_builder.Build();
-    OnUserProfileCreated(profile_name, profile_.get());
-    return profile_.get();
+    profile_ =
+        profile_manager()->CreateGuestProfile(std::move(guest_profile_builder));
+    OnUserProfileCreated(profile_name, profile_);
+    return profile_;
   }
 
   std::unique_ptr<Browser> CreateBrowser(
@@ -819,7 +819,7 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
   }
 
  private:
-  std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> profile_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

@@ -86,7 +86,6 @@ class TestingProfileManager : public ProfileObserver {
       bool is_main_profile = false,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
           nullptr);
-
   // Small helpers for creating testing profiles. Just forward to above.
   TestingProfile* CreateTestingProfile(
       const std::string& name,
@@ -101,11 +100,13 @@ class TestingProfileManager : public ProfileObserver {
           nullptr);
 
   // Creates a new guest TestingProfile whose data lives in the guest profile
-  // test environment directory, as specified by the profile manager.
-  // This profile will not be added to the ProfileAttributesStorage. This will
-  // register the TestingProfile with the profile subsystem as well.
-  // The subsystem owns the Profile and returns a weak pointer.
-  TestingProfile* CreateGuestProfile();
+  // test environment directory, as specified by the profile manager. If the
+  // builder is given, it will be used to create a guest profile.  This profile
+  // will not be added to the ProfileAttributesStorage. This will register the
+  // TestingProfile with the profile subsystem as well.  The subsystem owns the
+  // Profile and returns a weak pointer.
+  TestingProfile* CreateGuestProfile(
+      std::optional<TestingProfile::Builder> builder = std::nullopt);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   // Creates a new system TestingProfile whose data lives in the system profile

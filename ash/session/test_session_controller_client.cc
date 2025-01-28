@@ -4,7 +4,7 @@
 
 #include "ash/session/test_session_controller_client.h"
 
-#include <algorithm>
+#include <ranges>
 #include <string>
 
 #include "ash/login/login_screen_controller.h"
@@ -16,10 +16,11 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user_type.h"
 #include "ui/views/widget/widget.h"
@@ -31,10 +32,8 @@ namespace {
 // Returns the "canonicalized" email from a given |email| address. Note
 // production code should use gaia::CanonicalizeEmail. This is used in tests
 // without introducing dependency on google_api.
-std::string GetUserIdFromEmail(const std::string& email) {
-  std::string user_id = email;
-  std::ranges::transform(user_id, user_id.begin(), ::tolower);
-  return user_id;
+std::string GetUserIdFromEmail(std::string_view email) {
+  return base::ToLowerASCII(email);
 }
 
 }  // namespace
@@ -47,7 +46,7 @@ TestSessionControllerClient::TestSessionControllerClient(
   CHECK(controller_);
   Reset();
 
-  if (create_signin_pref_service && prefs_provider_) {
+  if (create_signin_pref_service) {
     prefs_provider_->CreateSigninPrefsIfNeeded();
   }
 }
@@ -112,7 +111,7 @@ void TestSessionControllerClient::SetIsDemoSession() {
 }
 
 void TestSessionControllerClient::AddUserSession(
-    const std::string& display_email,
+    std::string_view display_email,
     user_manager::UserType user_type,
     std::variant<bool, std::unique_ptr<PrefService>> provide_or_pref_service,
     bool is_new_profile,
@@ -128,7 +127,7 @@ void TestSessionControllerClient::AddUserSession(
 
 void TestSessionControllerClient::AddUserSession(
     const AccountId& account_id,
-    const std::string& display_email,
+    std::string_view display_email,
     user_manager::UserType user_type,
     std::variant<bool, std::unique_ptr<PrefService>> provide_or_pref_service,
     bool is_new_profile,
@@ -141,7 +140,7 @@ void TestSessionControllerClient::AddUserSession(
 
   if (std::holds_alternative<bool>(provide_or_pref_service)) {
     bool provide = std::get<bool>(provide_or_pref_service);
-    if (provide && prefs_provider_ && default_provide_pref_service_ &&
+    if (provide && default_provide_pref_service_ &&
         !controller_->GetUserPrefServiceForUser(account_id)) {
       ProvidePrefServiceForUser(account_id, /*notify*=*/false);
     }
@@ -310,12 +309,12 @@ void TestSessionControllerClient::ShowMultiProfileLogin() {
 void TestSessionControllerClient::EmitAshInitialized() {}
 
 PrefService* TestSessionControllerClient::GetSigninScreenPrefService() {
-  return prefs_provider_ ? prefs_provider_->GetSigninPrefs() : nullptr;
+  return prefs_provider_->GetSigninPrefs();
 }
 
 PrefService* TestSessionControllerClient::GetUserPrefService(
     const AccountId& account_id) {
-  return prefs_provider_ ? prefs_provider_->GetUserPrefs(account_id) : nullptr;
+  return prefs_provider_->GetUserPrefs(account_id);
 }
 
 base::FilePath TestSessionControllerClient::GetProfilePath(

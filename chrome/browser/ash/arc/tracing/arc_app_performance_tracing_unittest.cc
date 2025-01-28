@@ -438,6 +438,8 @@ TEST_F(ArcAppPerformanceTracingTest, ApplicationStatisticsReported) {
     EXPECT_EQ(0L, ReadStatistics("JanksPerMinute2", application.name));
     EXPECT_EQ(0L, ReadStatistics("JanksPercentage2", application.name));
     arc_widget->Close();
+    // aura::Window will be closed asynchronosly. Reset the active task here.
+    shell_root_surface_.reset();
   }
 }
 

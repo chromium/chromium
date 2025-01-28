@@ -478,8 +478,10 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
-    return profile_manager()->CreateTestingProfile(
+    auto* testing_profile = profile_manager()->CreateTestingProfile(
         profile_name, {}, u"user_name", /*avatar_id=*/0, GetTestingFactories());
+    OnUserProfileCreated(profile_name, testing_profile);
+    return testing_profile;
   }
 
   void SetUpReleaseNotesStorage() {

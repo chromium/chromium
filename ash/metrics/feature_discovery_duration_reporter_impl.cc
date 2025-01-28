@@ -275,6 +275,7 @@ void FeatureDiscoveryDurationReporterImpl::Activate() {
 
 void FeatureDiscoveryDurationReporterImpl::Deactivate() {
   if (!active_time_recordings_.empty()) {
+    CHECK(active_pref_service_);
     ScopedDictPrefUpdate update(active_pref_service_, kObservedFeatures);
     base::Value::Dict& mutable_observed_features_dict = update.Get();
 

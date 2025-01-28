@@ -758,7 +758,7 @@ void ScreenLocker::ScreenLockReady() {
     fingerprint_pref_change_registrar_->Add(
         prefs::kQuickUnlockFingerprintRecord,
         base::BindRepeating(&ScreenLocker::UpdateFingerprintStateForUser,
-                            base::Unretained(this), primary_user));
+                            weak_factory_.GetWeakPtr(), primary_user));
   }
 
   MaybeDisablePinAndFingerprintFromTimeout("ScreenLockReady",

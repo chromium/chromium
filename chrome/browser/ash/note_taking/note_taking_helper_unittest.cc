@@ -382,6 +382,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
         /*browser_restart=*/false,
         /*is_child=*/false);
+    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {

@@ -54,6 +54,7 @@ class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::LogIn(email, gaia_id);
     user_manager()->SetUserAffiliated(
         AccountId::FromUserEmailGaiaId(email, gaia_id), true);
+    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
   }
 
   // Derived classes can override this method to set the required authenticated

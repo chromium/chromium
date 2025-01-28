@@ -423,6 +423,7 @@ class ApiGuardDelegateAffiliatedUserTest : public ApiGuardDelegateTest {
     BrowserWithTestWindowTest::LogIn(email, gaia_id);
     user_manager()->SetUserAffiliated(
         AccountId::FromUserEmailGaiaId(email, gaia_id), true);
+    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
