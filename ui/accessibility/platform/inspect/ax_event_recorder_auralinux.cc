@@ -393,7 +393,7 @@ void AXEventRecorderAuraLinux::ProcessATSPIEvent(const AtspiEvent* event) {
   g_array_free(state_array, TRUE);
   g_object_unref(atspi_states);
   output << " ";
-  base::ranges::copy(states, std::ostream_iterator<std::string>(output, ", "));
+  std::ranges::copy(states, std::ostream_iterator<std::string>(output, ", "));
 
   OnEvent(output.str());
 }

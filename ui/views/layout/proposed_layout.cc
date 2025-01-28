@@ -4,11 +4,11 @@
 
 #include "ui/views/layout/proposed_layout.h"
 
+#include <algorithm>
 #include <map>
 #include <sstream>
 #include <string>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/view.h"
@@ -48,7 +48,7 @@ ChildLayout* ProposedLayout::GetLayoutFor(const View* child_view) {
 }
 
 const ChildLayout* ProposedLayout::GetLayoutFor(const View* child_view) const {
-  const auto found = base::ranges::find_if(
+  const auto found = std::ranges::find_if(
       child_layouts, [child_view](const auto& child_layout) {
         return child_view == child_layout.child_view;
       });

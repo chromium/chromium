@@ -4,13 +4,13 @@
 
 #include "ui/accessibility/platform/inspect/ax_event_recorder_win_uia.h"
 
+#include <psapi.h>
+
+#include <algorithm>
 #include <numeric>
 #include <utility>
 
-#include <psapi.h>
-
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -270,7 +270,7 @@ AXEventRecorderWinUia::Thread::EventHandler::HandleFocusChangedEvent(
   }
   if (auto lock_scope = id.CreateLockScope<VT_I4>()) {
     // Debounce focus events received from the same |sender|.
-    if (base::ranges::equal(*lock_scope, last_focused_runtime_id_)) {
+    if (std::ranges::equal(*lock_scope, last_focused_runtime_id_)) {
       return S_OK;
     }
 

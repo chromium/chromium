@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -2029,7 +2029,7 @@ TextAttributeMap BrowserAccessibility::ComputeTextAttributeMap(
       TextAttributeList previous_attributes = attributes_map.rbegin()->second;
       // Must check the size, otherwise if attributes is a subset of
       // prev_attributes, they would appear to be equal.
-      if (!base::ranges::equal(attributes, previous_attributes)) {
+      if (!std::ranges::equal(attributes, previous_attributes)) {
         attributes_map[start_offset] = attributes;
       }
     }

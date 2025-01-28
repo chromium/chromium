@@ -4,6 +4,7 @@
 
 #include "ui/wm/core/cursor_util.h"
 
+#include <algorithm>
 #include <array>
 #include <cfloat>
 #include <memory>
@@ -14,7 +15,6 @@
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"

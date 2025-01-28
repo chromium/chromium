@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
@@ -336,8 +336,8 @@ void TouchFactory::CacheTouchscreenIds(x11::Input::DeviceId device_id) {
     return;
   std::vector<TouchscreenDevice> touchscreens =
       DeviceDataManager::GetInstance()->GetTouchscreenDevices();
-  const auto it = base::ranges::find(touchscreens, static_cast<int>(device_id),
-                                     &TouchscreenDevice::id);
+  const auto it = std::ranges::find(touchscreens, static_cast<int>(device_id),
+                                    &TouchscreenDevice::id);
   // Internal displays will have a vid and pid of 0. Ignore them.
   if (it != touchscreens.end() && it->vendor_id && it->product_id)
     touchscreen_ids_.emplace(it->vendor_id, it->product_id);

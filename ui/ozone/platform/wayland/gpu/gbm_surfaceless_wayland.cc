@@ -6,6 +6,7 @@
 
 #include <sync/sync.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -13,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -54,8 +54,8 @@ GbmSurfacelessWayland::SolidColorBufferHolder::GetOrCreateSolidColorBuffer(
   BufferId next_buffer_id = 0;
 
   // First try for an existing buffer.
-  auto it = base::ranges::find(available_solid_color_buffers_, color,
-                               &SolidColorBuffer::color);
+  auto it = std::ranges::find(available_solid_color_buffers_, color,
+                              &SolidColorBuffer::color);
   if (it != available_solid_color_buffers_.end()) {
     // This is a prefect color match so use this directly.
     next_buffer_id = it->buffer_id;
@@ -85,8 +85,8 @@ void GbmSurfacelessWayland::SolidColorBufferHolder::OnSubmission(
   // them. Instead, they are tracked by GbmSurfacelessWayland. In the future,
   // when SharedImageFactory allows to create non-backed shared images, this
   // should be removed from here.
-  auto it = base::ranges::find(inflight_solid_color_buffers_, buffer_id,
-                               &SolidColorBuffer::buffer_id);
+  auto it = std::ranges::find(inflight_solid_color_buffers_, buffer_id,
+                              &SolidColorBuffer::buffer_id);
   if (it != inflight_solid_color_buffers_.end()) {
     available_solid_color_buffers_.emplace_back(std::move(*it));
     inflight_solid_color_buffers_.erase(it);

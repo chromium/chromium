@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <set>
@@ -22,7 +23,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -194,7 +194,7 @@ DecoratedText::RangedAttribute CreateRangedAttribute(
     Font::Weight weight,
     int style_mask) {
   const auto iter =
-      base::ranges::find_if(font_spans, [font_index](const FontSpan& span) {
+      std::ranges::find_if(font_spans, [font_index](const FontSpan& span) {
         return IndexInRange(span.second, font_index);
       });
   CHECK(font_spans.end() != iter);
@@ -232,9 +232,9 @@ void VerifyDecoratedWordsAreEqual(const DecoratedText& expected,
       return IndexInRange(attr.range, i);
     };
     const auto expected_attr =
-        base::ranges::find_if(expected.attributes, find_attribute_func);
+        std::ranges::find_if(expected.attributes, find_attribute_func);
     const auto actual_attr =
-        base::ranges::find_if(actual.attributes, find_attribute_func);
+        std::ranges::find_if(actual.attributes, find_attribute_func);
     ASSERT_NE(expected.attributes.end(), expected_attr);
     ASSERT_NE(actual.attributes.end(), actual_attr);
 
@@ -497,7 +497,7 @@ class RenderTextTest : public testing::Test {
     test_api()->EnsureLayout();
 
     std::vector<FontSpan> spans;
-    base::ranges::transform(
+    std::ranges::transform(
         GetHarfBuzzRunList()->runs(), std::back_inserter(spans),
         [this](const auto& run) {
           return FontSpan(
@@ -6726,7 +6726,7 @@ TEST_F(RenderTextTest, HarfBuzz_Clusters) {
   run.shape.glyph_to_char.resize(4);
 
   for (size_t i = 0; i < std::size(cases); ++i) {
-    base::ranges::copy(cases[i].glyph_to_char, run.shape.glyph_to_char.begin());
+    std::ranges::copy(cases[i].glyph_to_char, run.shape.glyph_to_char.begin());
     run.font_params.is_rtl = cases[i].is_rtl;
 
     for (size_t j = 0; j < 4; ++j) {
@@ -6820,7 +6820,7 @@ TEST_F(RenderTextTest, HarfBuzz_SubglyphGraphemePartition) {
   render_text->SetText(u"abcd");
 
   for (size_t i = 0; i < std::size(cases); ++i) {
-    base::ranges::copy(cases[i].glyph_to_char, run.shape.glyph_to_char.begin());
+    std::ranges::copy(cases[i].glyph_to_char, run.shape.glyph_to_char.begin());
     run.font_params.is_rtl = cases[i].is_rtl;
     for (int j = 0; j < 2; ++j)
       run.shape.positions[j].set(j * 10, 0);

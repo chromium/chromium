@@ -4,6 +4,7 @@
 
 #include "ui/views/focus/focus_manager.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/input_method.h"
@@ -94,7 +94,7 @@ bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
         return v != focused_view_ &&
                !v->GetViewAccessibility().IsAccessibilityFocusable();
       });
-      View::Views::const_iterator i = base::ranges::find(views, focused_view_);
+      View::Views::const_iterator i = std::ranges::find(views, focused_view_);
       DCHECK(i != views.end());
       auto index = static_cast<size_t>(i - views.begin());
       if (next && index == views.size() - 1) {

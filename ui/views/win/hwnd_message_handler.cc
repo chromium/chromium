@@ -11,6 +11,7 @@
 #include <shellapi.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -23,7 +24,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util_win.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1821,7 +1821,7 @@ void HWNDMessageHandler::OnDestroy() {
   // If the window going away is a fullscreen window then remove its references
   // from the full screen window map.
   auto& map = fullscreen_monitor_map_.Get();
-  const auto i = base::ranges::find(
+  const auto i = std::ranges::find(
       map, this, &FullscreenWindowMonitorMap::value_type::second);
   if (i != map.end()) {
     map.erase(i);

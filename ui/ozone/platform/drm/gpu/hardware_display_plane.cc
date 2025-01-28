@@ -12,11 +12,11 @@
 #include <drm_fourcc.h>
 #include <drm_mode.h>
 
+#include <algorithm>
 #include <string>
 
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/traced_value.h"
@@ -293,7 +293,7 @@ std::vector<uint64_t> HardwareDisplayPlane::ModifiersForFormat(
     uint32_t format) const {
   std::vector<uint64_t> modifiers;
 
-  auto it = base::ranges::find(supported_formats_, format);
+  auto it = std::ranges::find(supported_formats_, format);
   if (it == supported_formats_.end())
     return modifiers;
 

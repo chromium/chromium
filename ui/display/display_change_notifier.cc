@@ -6,9 +6,10 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "build/buildflag.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -48,7 +49,7 @@ void DisplayChangeNotifier::NotifyDisplaysChanged(
   // Display present in both might have been modified.
   for (auto new_it = new_displays.begin(); new_it != new_displays.end();
        ++new_it) {
-    auto old_it = base::ranges::find(old_displays, new_it->id(), &Display::id);
+    auto old_it = std::ranges::find(old_displays, new_it->id(), &Display::id);
 
     if (old_it == old_displays.end()) {
       observer_list_.Notify(&DisplayObserver::OnDisplayAdded, *new_it);

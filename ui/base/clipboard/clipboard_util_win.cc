@@ -13,6 +13,7 @@
 #include <wininet.h>  // For INTERNET_MAX_URL_LENGTH.
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <limits>
 #include <optional>
 #include <string_view>
@@ -20,7 +21,6 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -110,11 +110,11 @@ void SplitUrlAndTitle(const std::u16string& str,
 bool ContainsFilePathCaseInsensitive(
     const std::vector<base::FilePath>& existing_filenames,
     const base::FilePath& candidate_path) {
-  return base::ranges::any_of(existing_filenames,
-                              [&candidate_path](const base::FilePath& elem) {
-                                return base::FilePath::CompareEqualIgnoreCase(
-                                    elem.value(), candidate_path.value());
-                              });
+  return std::ranges::any_of(existing_filenames,
+                             [&candidate_path](const base::FilePath& elem) {
+                               return base::FilePath::CompareEqualIgnoreCase(
+                                   elem.value(), candidate_path.value());
+                             });
 }
 
 // Returns a unique display name for a virtual file, as it is possible that the

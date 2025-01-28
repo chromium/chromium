@@ -20,7 +20,6 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/base/cursor/cursor.h"
@@ -1519,7 +1518,7 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   }
 
   if (!force) {
-    int in_flight_applied = base::ranges::count_if(
+    int in_flight_applied = std::ranges::count_if(
         in_flight_requests_,
         [](const StateRequest& req) { return req.applied; });
 
@@ -1550,7 +1549,7 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   if (UseTestConfigForPlatformWindows()) {
     latest_applied_viz_seq_for_testing_ = std::max(
         latest_applied_viz_seq_for_testing_,
-        base::ranges::max(in_flight_requests_, {}, [](const StateRequest& req) {
+        std::ranges::max(in_flight_requests_, {}, [](const StateRequest& req) {
           return req.viz_seq;
         }).viz_seq);
   }

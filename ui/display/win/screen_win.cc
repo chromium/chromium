@@ -21,7 +21,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -331,7 +330,7 @@ std::vector<ScreenWinDisplay> DisplayInfosToScreenWinDisplays(
   }
   // Find and extract the primary display.
   std::vector<internal::DisplayInfo> display_infos_remaining = display_infos;
-  auto primary_display_iter = base::ranges::find_if(
+  auto primary_display_iter = std::ranges::find_if(
       display_infos_remaining, [](const internal::DisplayInfo& display_info) {
         // See `IsPrimaryScreenWinDisplay` for the definition of primary.
         return display_info.screen_rect().origin().IsOrigin();
@@ -365,7 +364,7 @@ std::vector<ScreenWinDisplay> DisplayInfosToScreenWinDisplays(
   std::map<int64_t, bool> hdr_enabled;
   if (dxgi_info) {
     for (const auto& dxgi_output_desc : dxgi_info->output_descs) {
-      auto display_info_iter = base::ranges::find_if(
+      auto display_info_iter = std::ranges::find_if(
           display_infos, [&](const internal::DisplayInfo& display_info) {
             return display_info.device_name() == dxgi_output_desc->device_name;
           });
@@ -760,7 +759,7 @@ void ScreenWin::SetDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) {
 ScreenWinDisplay ScreenWin::GetScreenWinDisplayWithDisplayId(int64_t id) {
   if (!g_instance)
     return ScreenWinDisplay();
-  const auto it = base::ranges::find(
+  const auto it = std::ranges::find(
       g_instance->screen_win_displays_, id,
       [](const auto& display) { return display.display().id(); });
   // There is 1:1 correspondence between MONITORINFOEX and ScreenWinDisplay.
@@ -1024,7 +1023,7 @@ void ScreenWin::OnColorProfilesChanged() {
   // The color profile reader will often just confirm that our guess that the
   // color profile was sRGB was indeed correct. Avoid doing an update in these
   // cases.
-  if (base::ranges::any_of(displays_, [this](const auto& display) {
+  if (std::ranges::any_of(displays_, [this](const auto& display) {
         return display.GetColorSpaces().GetRasterColorSpace() !=
                color_profile_reader_->GetDisplayColorSpace(display.id());
       })) {
@@ -1093,7 +1092,7 @@ ScreenWinDisplay ScreenWin::GetScreenWinDisplayNearestDIPRect(
 }
 
 ScreenWinDisplay ScreenWin::GetPrimaryScreenWinDisplay() const {
-  const auto it = base::ranges::find_if(
+  const auto it = std::ranges::find_if(
       screen_win_displays_,
       [](const auto& display) { return IsPrimaryScreenWinDisplay(display); });
   if (it == screen_win_displays_.end()) {
@@ -1121,7 +1120,7 @@ ScreenWinDisplay ScreenWin::GetScreenWinDisplay(
   if (monitor_info) {
     const int64_t id =
         internal::DisplayInfo::DisplayIdFromMonitorInfo(*monitor_info);
-    const auto it = base::ranges::find(
+    const auto it = std::ranges::find(
         screen_win_displays_, id,
         [](const auto& display) { return display.display().id(); });
     // There is 1:1 correspondence between MONITORINFOEX and ScreenWinDisplay.

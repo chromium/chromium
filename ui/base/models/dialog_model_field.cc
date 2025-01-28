@@ -390,7 +390,7 @@ base::CallbackListSubscription DialogModelSection::AddOnFieldChangedCallback(
 DialogModelField* DialogModelSection::GetFieldByUniqueId(ElementIdentifier id) {
   // Assert that there are not duplicate fields corresponding to `id`. There
   // could be no matches in `fields_` if `id` corresponds to a button.
-  CHECK_EQ(static_cast<int>(base::ranges::count_if(
+  CHECK_EQ(static_cast<int>(std::ranges::count_if(
                fields_,
                [id](auto& field) {
                  // TODO(pbos): This does not

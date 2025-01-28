@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -14,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/events/base_event_utils.h"
@@ -899,7 +899,7 @@ void WaylandEventSource::HandleTouchFocusChange(WaylandWindow* window,
 // Focus must not be unset if there is another touch point within |window|.
 bool WaylandEventSource::ShouldUnsetTouchFocus(WaylandWindow* win,
                                                PointerId id) {
-  return base::ranges::none_of(touch_points_, [win, id](auto& p) {
+  return std::ranges::none_of(touch_points_, [win, id](auto& p) {
     return p.second->window == win && p.first != id;
   });
 }

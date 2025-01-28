@@ -5,11 +5,12 @@
 #ifndef UI_BASE_MODELS_TREE_NODE_ITERATOR_H_
 #define UI_BASE_MODELS_TREE_NODE_ITERATOR_H_
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/containers/stack.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 
 namespace ui {
 
@@ -36,7 +37,7 @@ class TreeNodeIterator {
     // Position at the top of the _positions list must point to a node the
     // iterator will be returning.
     const auto i =
-        base::ranges::find_if(node->children(), [prune](const auto& child) {
+        std::ranges::find_if(node->children(), [prune](const auto& child) {
           return prune.is_null() || !prune.Run(child.get());
         });
     if (i != node->children().cend())

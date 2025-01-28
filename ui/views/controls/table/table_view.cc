@@ -19,7 +19,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -381,8 +380,8 @@ void TableView::SetColumnVisibility(int id, bool is_visible) {
     visible_columns_.push_back(visible_column);
   } else {
     const auto i =
-        base::ranges::find(visible_columns_, id,
-                           [](const auto& column) { return column.column.id; });
+        std::ranges::find(visible_columns_, id,
+                          [](const auto& column) { return column.column.id; });
     if (i != visible_columns_.end()) {
       visible_columns_.erase(i);
       if (active_visible_column_index_.has_value() &&
@@ -1581,7 +1580,7 @@ void TableView::OnHoverChanged(std::optional<size_t> previous_hovered_row,
 }
 
 ui::TableColumn TableView::FindColumnByID(int id) const {
-  const auto i = base::ranges::find(columns_, id, &ui::TableColumn::id);
+  const auto i = std::ranges::find(columns_, id, &ui::TableColumn::id);
   DCHECK(i != columns_.cend());
   return *i;
 }
@@ -2327,7 +2326,7 @@ AXVirtualView* TableView::GetVirtualAccessibilityCellImpl(
                ax::mojom::IntAttribute::kTableCellColumnIndex)) ==
            visible_column_index;
   };
-  const auto i = base::ranges::find_if(ax_row->children(), matches_index);
+  const auto i = std::ranges::find_if(ax_row->children(), matches_index);
   DCHECK(i != ax_row->children().cend())
       << "|visible_column_index| not found. Did you forget to call "
       << "RebuildVirtualAccessibilityChildren()?";

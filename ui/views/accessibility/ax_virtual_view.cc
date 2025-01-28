@@ -13,7 +13,6 @@
 #include "base/containers/adapters.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -199,7 +198,7 @@ std::optional<size_t> AXVirtualView::GetIndexOf(
     const AXVirtualView* view) const {
   DCHECK(view);
   const auto iter =
-      base::ranges::find(children_, view, &std::unique_ptr<AXVirtualView>::get);
+      std::ranges::find(children_, view, &std::unique_ptr<AXVirtualView>::get);
   return iter != children_.end()
              ? std::make_optional(static_cast<size_t>(iter - children_.begin()))
              : std::nullopt;

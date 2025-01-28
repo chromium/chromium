@@ -9,12 +9,12 @@
 #include <stdint.h>
 #include <xf86drmMode.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/files/file_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -1431,8 +1431,8 @@ TEST_F(HardwareDisplayControllerTest, CheckPinningAfterFailedPageFlip) {
   EXPECT_TRUE(last_presentation_feedback_.failed());
 
   size_t in_use_planes =
-      base::ranges::count_if(drm_->plane_manager()->planes(),
-                             [](const auto& plane) { return plane->in_use(); });
+      std::ranges::count_if(drm_->plane_manager()->planes(),
+                            [](const auto& plane) { return plane->in_use(); });
   EXPECT_EQ(0u, in_use_planes) << "Planes, including pinned planes, should not "
                                   "be in use after a failed flip.";
 }

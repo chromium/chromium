@@ -13,6 +13,7 @@
 #include <linux/input-event-codes.h>
 #include <linux/input.h>
 
+#include <algorithm>
 #include <cstring>
 #include <functional>
 #include <memory>
@@ -31,8 +32,6 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -407,7 +406,7 @@ IdentifyKeyboardInfo(const KeyboardDevice& keyboard) {
   // not considered a custom top row keyboard.
   if (!top_row_scan_codes.empty()) {
     null_top_row =
-        base::ranges::all_of(top_row_scan_codes, [](const uint32_t scancode) {
+        std::ranges::all_of(top_row_scan_codes, [](const uint32_t scancode) {
           return scancode == kCustomNullScanCode;
         });
     if (base::FeatureList::IsEnabled(ash::features::kNullTopRowFix) &&
@@ -639,8 +638,7 @@ std::optional<KeyboardCode> KeyboardCapability::GetCorrespondingFunctionKey(
     return std::nullopt;
   }
 
-  auto iter =
-      base::ranges::find(keyboard_info->top_row_action_keys, action_key);
+  auto iter = std::ranges::find(keyboard_info->top_row_action_keys, action_key);
   if (iter == keyboard_info->top_row_action_keys.end()) {
     return std::nullopt;
   }
@@ -1245,28 +1243,28 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
       DeviceDataManager::GetInstance()->GetKeyboardDevices();
   std::vector<int> sorted_keyboard_ids;
   sorted_keyboard_ids.reserve(sorted_keyboards.size());
-  base::ranges::transform(sorted_keyboards,
-                          std::back_inserter(sorted_keyboard_ids),
-                          &KeyboardDevice::id);
-  base::ranges::sort(sorted_keyboard_ids);
+  std::ranges::transform(sorted_keyboards,
+                         std::back_inserter(sorted_keyboard_ids),
+                         &KeyboardDevice::id);
+  std::ranges::sort(sorted_keyboard_ids);
 
   // Generate a vector with only the device ids from the
   // `keyboard_info_map_` map. Guaranteed to be sorted as flat_map is always
   // in sorted order by key.
   std::vector<int> cached_keyboard_info_ids;
   cached_keyboard_info_ids.reserve(keyboard_info_map_.size());
-  base::ranges::transform(keyboard_info_map_,
-                          std::back_inserter(cached_keyboard_info_ids),
-                          [](const auto& pair) { return pair.first; });
-  DCHECK(base::ranges::is_sorted(cached_keyboard_info_ids));
+  std::ranges::transform(keyboard_info_map_,
+                         std::back_inserter(cached_keyboard_info_ids),
+                         [](const auto& pair) { return pair.first; });
+  DCHECK(std::ranges::is_sorted(cached_keyboard_info_ids));
 
   // Compares the `cached_keyboard_info_ids` to `sorted_keyboard_ids`. Ids that
   // are in `cached_keyboard_info_ids` but not in `sorted_keyboard_ids` are
   // inserted into `keyboard_ids_to_remove`. `sorted_keyboard_ids` and
   // `cached_keyboard_info_ids` must be sorted.
   std::vector<int> keyboard_ids_to_remove;
-  base::ranges::set_difference(cached_keyboard_info_ids, sorted_keyboard_ids,
-                               std::back_inserter(keyboard_ids_to_remove));
+  std::ranges::set_difference(cached_keyboard_info_ids, sorted_keyboard_ids,
+                              std::back_inserter(keyboard_ids_to_remove));
 
   for (const auto& id : keyboard_ids_to_remove) {
     keyboard_info_map_.erase(id);

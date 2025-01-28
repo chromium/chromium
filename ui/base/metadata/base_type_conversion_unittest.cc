@@ -4,7 +4,8 @@
 
 #include "ui/base/metadata/base_type_conversion.h"
 
-#include "base/ranges/ranges.h"
+#include <ranges>
+
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"

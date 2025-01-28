@@ -9,10 +9,11 @@
 
 #include "ui/ozone/platform/x11/x11_window.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -1900,7 +1901,7 @@ void X11Window::CloseXWindow() {
   // Unregister from the global security surface list if necessary.
   if (is_security_surface_) {
     auto& security_surfaces = GetSecuritySurfaces();
-    security_surfaces.erase(base::ranges::find(security_surfaces, xwindow_),
+    security_surfaces.erase(std::ranges::find(security_surfaces, xwindow_),
                             security_surfaces.end());
   }
 

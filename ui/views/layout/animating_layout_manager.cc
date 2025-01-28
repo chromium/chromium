@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer.h"
@@ -72,9 +71,9 @@ enum class LayoutFadeType {
 ProposedLayout WithOnlyVisibleViews(const ProposedLayout layout) {
   ProposedLayout result;
   result.host_size = layout.host_size;
-  base::ranges::copy_if(layout.child_layouts,
-                        std::back_inserter(result.child_layouts),
-                        &ChildLayout::visible);
+  std::ranges::copy_if(layout.child_layouts,
+                       std::back_inserter(result.child_layouts),
+                       &ChildLayout::visible);
   return result;
 }
 

@@ -187,7 +187,7 @@ std::optional<OffsetText> TrimSurroundingTextForExtension(
   // offsets.
   // Note: exo's implementation does not have 4000 bytes limit of the message.
   static constexpr size_t kMaxSurroundingTextBytes = 500;
-  const auto& [min_offset, max_offset] = base::ranges::minmax(offsets);
+  const auto& [min_offset, max_offset] = std::ranges::minmax(offsets);
 
   size_t start_index =
       min_offset - std::min(min_offset, kMaxSurroundingTextBytes);

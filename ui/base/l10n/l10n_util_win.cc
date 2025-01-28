@@ -4,11 +4,11 @@
 
 #include "ui/base/l10n/l10n_util_win.h"
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -86,8 +86,8 @@ void OverrideLocaleWithUILanguageList() {
   CHECK(base::win::i18n::GetThreadPreferredUILanguageList(&ui_languages));
   std::vector<std::string> ascii_languages;
   ascii_languages.reserve(ui_languages.size());
-  base::ranges::transform(ui_languages, std::back_inserter(ascii_languages),
-                          &base::WideToASCII);
+  std::ranges::transform(ui_languages, std::back_inserter(ascii_languages),
+                         &base::WideToASCII);
   override_locale_holder.Get().swap_value(&ascii_languages);
 }
 

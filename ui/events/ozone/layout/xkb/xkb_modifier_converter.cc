@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "ui/events/event_constants.h"
 
 namespace ui {
@@ -88,7 +87,7 @@ int XkbModifierConverter::UiFlagsFromMask(xkb_mod_mask_t mask) const {
 }
 
 xkb_mod_mask_t XkbModifierConverter::MaskFromName(std::string_view name) const {
-  auto it = base::ranges::find(names_, name);
+  auto it = std::ranges::find(names_, name);
   if (it == names_.end())
     return 0;
   return 1 << std::distance(names_.begin(), it);

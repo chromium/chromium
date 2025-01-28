@@ -4,6 +4,7 @@
 
 #include "ui/android/view_android.h"
 
+#include <algorithm>
 #include <cmath>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "cc/slim/layer.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -186,7 +186,7 @@ bool ViewAndroid::SubtreeHasEventForwarder(ViewAndroid* view) {
 
 void ViewAndroid::MoveToFront(ViewAndroid* child) {
   DCHECK(child);
-  auto it = base::ranges::find(children_, child);
+  auto it = std::ranges::find(children_, child);
   CHECK(it != children_.end(), base::NotFatalUntil::M130);
 
   // Top element is placed at the end of the list.
@@ -196,7 +196,7 @@ void ViewAndroid::MoveToFront(ViewAndroid* child) {
 
 void ViewAndroid::MoveToBack(ViewAndroid* child) {
   DCHECK(child);
-  auto it = base::ranges::find(children_, child);
+  auto it = std::ranges::find(children_, child);
   CHECK(it != children_.end(), base::NotFatalUntil::M130);
 
   // Bottom element is placed at the beginning of the list.
@@ -292,7 +292,7 @@ void ViewAndroid::RemoveChild(ViewAndroid* child) {
   if (GetWindowAndroid())
     child->OnDetachedFromWindow();
   std::list<raw_ptr<ViewAndroid, CtnExperimental>>::iterator it =
-      base::ranges::find(children_, child);
+      std::ranges::find(children_, child);
   CHECK(it != children_.end(), base::NotFatalUntil::M130);
   children_.erase(it);
   child->parent_ = nullptr;

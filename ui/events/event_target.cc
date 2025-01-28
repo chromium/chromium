@@ -4,9 +4,10 @@
 
 #include "ui/events/event_target.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
@@ -62,7 +63,7 @@ void EventTarget::AddPostTargetHandler(EventHandler* handler) {
 }
 
 void EventTarget::RemovePostTargetHandler(EventHandler* handler) {
-  auto find = base::ranges::find(post_target_list_, handler);
+  auto find = std::ranges::find(post_target_list_, handler);
   if (find != post_target_list_.end())
     post_target_list_.erase(find);
 }

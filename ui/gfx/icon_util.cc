@@ -9,6 +9,8 @@
 
 #include "ui/gfx/icon_util.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
@@ -17,7 +19,6 @@
 #include "base/files/important_file_writer.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_generic.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/resource_util.h"
@@ -216,7 +217,7 @@ base::win::ScopedHICON IconUtil::CreateHICONFromSkBitmap(
 
     mask_bits = base::HeapArray<uint8_t>::Uninit(mask_bits_size);
     // Make all pixels transparent:
-    base::ranges::fill(mask_bits.as_span(), 0xFF);
+    std::ranges::fill(mask_bits.as_span(), 0xFF);
   }
 
   base::win::ScopedBitmap mono_bitmap(

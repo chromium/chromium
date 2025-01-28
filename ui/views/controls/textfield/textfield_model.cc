@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -726,7 +725,7 @@ bool TextfieldModel::HasSelection(bool primary_only) const {
   if (primary_only) {
     return !render_text_->selection().is_empty();
   }
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       render_text_->GetAllSelections(),
       [](const auto& selection) { return !selection.is_empty(); });
 }

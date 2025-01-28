@@ -6,12 +6,12 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <iterator>
 #include <map>
 #include <set>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 
 namespace ui {
 
@@ -34,8 +34,8 @@ void PropertyHandler::AcquireAllPropertiesFrom(PropertyHandler&& other) {
 
 std::set<const void*> PropertyHandler::GetAllPropertyKeys() const {
   std::set<const void*> keys;
-  base::ranges::transform(prop_map_, std::inserter(keys, keys.end()),
-                          &PropMap::value_type::first);
+  std::ranges::transform(prop_map_, std::inserter(keys, keys.end()),
+                         &PropMap::value_type::first);
   return keys;
 }
 
@@ -53,7 +53,7 @@ void PropertyHandler::ClearProperties() {
       (*v.deallocator)(v.value);
     }
   };
-  base::ranges::for_each(prop_map_, dealloc, &PropMap::value_type::second);
+  std::ranges::for_each(prop_map_, dealloc, &PropMap::value_type::second);
   prop_map_.clear();
 }
 

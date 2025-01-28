@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -28,7 +29,6 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -204,7 +204,7 @@ void DecompressIfNeeded(std::string_view data, OutputBufferType output) {
     DCHECK(success);
   } else {
     base::span<uint8_t> dest = GetBufferForWriting(output, data.size());
-    base::ranges::copy(data, dest.data());
+    std::ranges::copy(data, dest.data());
   }
 }
 

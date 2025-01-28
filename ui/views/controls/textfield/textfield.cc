@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -984,7 +983,7 @@ bool Textfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
     const auto is_enabled = [this](const auto& command) {
       return IsTextEditCommandEnabled(command.command());
     };
-    if (base::ranges::any_of(commands, is_enabled)) {
+    if (std::ranges::any_of(commands, is_enabled)) {
       return true;
     }
   }
@@ -1685,8 +1684,8 @@ void Textfield::ClearCompositionText() {
 void Textfield::InsertText(const std::u16string& new_text,
                            InsertTextCursorBehavior cursor_behavior) {
   std::u16string filtered_new_text;
-  base::ranges::copy_if(new_text, std::back_inserter(filtered_new_text),
-                        IsValidCharToInsert);
+  std::ranges::copy_if(new_text, std::back_inserter(filtered_new_text),
+                       IsValidCharToInsert);
 
   if (GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE ||
       filtered_new_text.empty()) {

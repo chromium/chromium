@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/input_method.h"
@@ -49,9 +48,8 @@ constexpr int kDropIndicatorHeight = 2;
 template <typename MIV, typename V>
 std::vector<MIV*> GetMenuItemsFromChildren(const View::Views& children) {
   std::vector<MIV*> menu_items;
-  base::ranges::transform(
-      children, std::back_inserter(menu_items),
-      static_cast<MIV* (*)(V*)>(&AsViewClass<MenuItemView>));
+  std::ranges::transform(children, std::back_inserter(menu_items),
+                         static_cast<MIV* (*)(V*)>(&AsViewClass<MenuItemView>));
   std::erase_if(menu_items, [](MIV* item) {
     return !item || IsViewClass<EmptyMenuMenuItem>(item);
   });
@@ -112,7 +110,7 @@ void SubmenuView::UpdateMenuPartSizes() {
                       parent_menu_item_->GetItemHorizontalBorder();
   const auto& menu_items = GetMenuItems();
   if (config.reserve_dedicated_arrow_column &&
-      base::ranges::any_of(menu_items, &MenuItemView::HasSubmenu)) {
+      std::ranges::any_of(menu_items, &MenuItemView::HasSubmenu)) {
     trailing_padding_ +=
         config.arrow_size +
         (base::Contains(menu_items, MenuItemView::Type::kActionableSubMenu,
@@ -128,13 +126,13 @@ void SubmenuView::UpdateMenuPartSizes() {
   };
   icon_area_width_ = min_icon_height_ =
       (config.always_reserve_check_region ||
-       base::ranges::any_of(menu_items, is_check_or_radio))
+       std::ranges::any_of(menu_items, is_check_or_radio))
           ? kMenuCheckSize
           : 0;
   int max_icon_width = 0;
   if (!menu_items.empty()) {
     std::vector<int> widths(menu_items.size());
-    base::ranges::transform(
+    std::ranges::transform(
         menu_items, widths.begin(), [&](const MenuItemView* item) {
           const auto icon_size = item->GetIconPreferredSize();
           if (icon_size.IsEmpty()) {
@@ -147,7 +145,7 @@ void SubmenuView::UpdateMenuPartSizes() {
                      ? icon_size.width()
                      : 0;
         });
-    max_icon_width = base::ranges::max(widths);
+    max_icon_width = std::ranges::max(widths);
   }
   if (!config.icons_in_label) {
     icon_area_width_ = std::max(icon_area_width_, max_icon_width);
@@ -374,8 +372,8 @@ bool SubmenuView::OnMouseWheel(const ui::MouseWheelEvent& e) {
     return true;
   }
 
-  auto i = base::ranges::lower_bound(menu_items, vis_bounds.y(), {},
-                                     &MenuItemView::y);
+  auto i = std::ranges::lower_bound(menu_items, vis_bounds.y(), {},
+                                    &MenuItemView::y);
   if (i == menu_items.cend()) {
     return true;
   }
@@ -462,7 +460,7 @@ size_t SubmenuView::GetRowCount() {
 
 std::optional<size_t> SubmenuView::GetSelectedRow() {
   const auto menu_items = GetMenuItems();
-  const auto i = base::ranges::find_if(menu_items, &MenuItemView::IsSelected);
+  const auto i = std::ranges::find_if(menu_items, &MenuItemView::IsSelected);
   return (i == menu_items.cend()) ? std::nullopt
                                   : std::make_optional(static_cast<size_t>(
                                         std::distance(menu_items.cbegin(), i)));
