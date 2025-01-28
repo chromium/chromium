@@ -31,7 +31,7 @@ export default [
       // Bring directories into conformance to re-enable linting.
       'ash/webui/**/*',
       'chrome/browser/resources/chromeos/**/*',
-      'chrome/test/data/webui/chromeos/**/*',
+      'chrome/test/data/webui/chromeos/**/*.js',
 
       // TODO(https://crbug.com/41446521): Bring extension test files into
       // conformance.

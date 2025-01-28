@@ -5,7 +5,7 @@
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
 import type {Assignment, BocaValidPref, CaptionConfig, Config, Course, Identity, OnTaskConfig, RemoveStudentError, SessionResult, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {PageHandlerRemote, SubmitAccessCodeError} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
-import {Value} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
+import type {Value} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import type {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -63,7 +63,7 @@ class MockRemoteHandler extends PageHandlerRemote {
           materials: [
             {title: 'material-title-1', type: 0},
             {title: 'material-title-2', type: 1},
-          ]
+          ],
         },
         {
           title: 'assignment-title2',
@@ -72,8 +72,8 @@ class MockRemoteHandler extends PageHandlerRemote {
           materials: [
             {title: 'material-title-3', type: 2},
             {title: 'material-title-4', type: 3},
-          ]
-        }
+          ],
+        },
       ],
     });
   }
@@ -272,7 +272,7 @@ class MockRemoteHandler extends PageHandlerRemote {
   override authenticateWebview() {
     return Promise.resolve({success: true});
   }
-  override getUserPref(pref: BocaValidPref): Promise<{value: Value;}> {
+  override getUserPref(pref: BocaValidPref): Promise<{value: Value}> {
     pref;
     return Promise.resolve({value: {stringValue: 'value'}});
   }
@@ -361,7 +361,7 @@ suite('ClientDelegateTest', function() {
                 materials: [
                   {title: 'material-title-1', type: 0},
                   {title: 'material-title-2', type: 1},
-                ]
+                ],
               },
               {
                 title: 'assignment-title2',
@@ -370,8 +370,8 @@ suite('ClientDelegateTest', function() {
                 materials: [
                   {title: 'material-title-3', type: 2},
                   {title: 'material-title-4', type: 3},
-                ]
-              }
+                ],
+              },
             ],
             result);
       });
