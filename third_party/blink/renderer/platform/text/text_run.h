@@ -29,8 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_RUN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_RUN_H_
 
-#include <unicode/utf16.h>
-
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -39,6 +37,7 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -153,9 +152,7 @@ class PLATFORM_EXPORT TextRun final {
     SECURITY_DCHECK(i < len_);
     if (Is8Bit())
       return (*this)[i++];
-    UChar32 codepoint;
-    U16_NEXT(data_.characters16, i, len_, codepoint);
-    return codepoint;
+    return CodePointAtAndNext(Span16(), i);
   }
 
   bool Is8Bit() const { return is_8bit_; }

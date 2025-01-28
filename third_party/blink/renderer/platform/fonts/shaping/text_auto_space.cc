@@ -32,9 +32,7 @@ float TextAutoSpace::GetSpacingWidth(const Font* font) {
 TextAutoSpace::CharType TextAutoSpace::GetTypeAndNext(const String& text,
                                                       wtf_size_t& offset) {
   CHECK(!text.Is8Bit());
-  UChar32 ch;
-  U16_NEXT(text.Characters16(), offset, text.length(), ch);
-  return GetType(ch);
+  return GetType(CodePointAtAndNext(text.Span16(), offset));
 }
 
 // static
