@@ -9280,22 +9280,6 @@
             ]
         }
     ],
-    "EsbAiStringUpdate": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EsbAiStringUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "EsbAsASyncedSetting": [
         {
             "platforms": [
