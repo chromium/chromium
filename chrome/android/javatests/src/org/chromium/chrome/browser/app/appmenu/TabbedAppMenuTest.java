@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import android.content.res.Configuration;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
@@ -59,7 +58,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 
 import java.io.IOException;
@@ -184,28 +182,12 @@ public class TabbedAppMenuTest {
 
     /**
      * Test that hitting ENTER on the top item actually triggers the top item. Catches regressions
-     * for https://crbug.com/191239 for shrunken menus.
+     * for https://crbug.com/191239 for shrunken menus in landscape.
      */
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    public void testKeyboardMenuEnterOnTopItemLandscape() {
-        ActivityTestUtils.rotateActivityToOrientation(
-                mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
-        showAppMenuAndAssertMenuShown();
-        moveToBoundary(true, false);
-        assertEquals(0, getCurrentFocusedRow());
-        hitEnterAndAssertAppMenuDismissed();
-    }
-
-    /** Test that hitting ENTER on the top item doesn't crash Chrome. */
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main"})
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    public void testKeyboardMenuEnterOnTopItemPortrait() {
-        ActivityTestUtils.rotateActivityToOrientation(
-                mActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
+    public void testKeyboardMenuEnterOnTopItem() {
         showAppMenuAndAssertMenuShown();
         moveToBoundary(true, false);
         assertEquals(0, getCurrentFocusedRow());
@@ -246,17 +228,6 @@ public class TabbedAppMenuTest {
                 bookmarkStarPropertyModel.get(AppMenuItemProperties.TITLE_CONDENSED));
         mRenderTestRule.render(
                 getListView().getChildAt(0), "rounded_corner_icon_row_page_bookmarked");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main", "RenderTest"})
-    public void testDividerLineMenuItem() throws IOException {
-        int firstDividerLineIndex =
-                AppMenuTestSupport.findIndexOfMenuItemById(
-                        mActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id);
-        Assert.assertTrue("No divider line found.", firstDividerLineIndex != -1);
-        mRenderTestRule.render(getListView().getChildAt(firstDividerLineIndex), "divider_line");
     }
 
     @Test

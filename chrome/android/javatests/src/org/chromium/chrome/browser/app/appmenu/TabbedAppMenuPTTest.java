@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
 
-import android.view.View;
-
 import androidx.test.filters.LargeTest;
 
 import org.junit.ClassRule;
@@ -23,7 +21,6 @@ import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -110,29 +107,19 @@ public class TabbedAppMenuPTTest {
                         .build());
     }
 
-    /** Render test for the "Delete browsing data" item, including the icon. */
-    @Test
-    @LargeTest
-    @Feature({"QuickDelete", "RenderTest"})
-    public void testRenderQuickDeleteItem() throws IOException {
-        RegularWebPageAppMenuFacility menu =
-                mInitialStateRule.startOnBlankPage().openRegularTabAppMenu();
-        View quickDeleteItemView = menu.mQuickDelete.scrollTo().getView();
-        mRenderTestRule.render(quickDeleteItemView, "quick_delete_item");
-        menu.clickOutsideToClose();
-    }
-
     /**
      * Tests that all expected items declared in NewTabPageRegularAppMenuFacility are present in the
      * app menu opened from a regular NTP.
      */
     @Test
     @LargeTest
-    public void testNewTabPageRegularAppMenuItems() {
+    @Feature({"RenderTest"})
+    public void testNewTabPageRegularAppMenuItems() throws IOException {
         WebPageStation blankPage = mInitialStateRule.startOnBlankPage();
         RegularNewTabPageStation newTabPage = blankPage.openRegularTabAppMenu().openNewTab();
         RegularNewTabPageAppMenuFacility menu = newTabPage.openAppMenu();
 
+        mRenderTestRule.render(menu.getView(), "regular_ntp_app_menu");
         verifyPresentItems(menu);
         assertFinalDestination(newTabPage, menu);
 
@@ -146,11 +133,13 @@ public class TabbedAppMenuPTTest {
      */
     @Test
     @LargeTest
-    public void testNewTabPageIncognitoAppMenuItems() {
+    @Feature({"RenderTest"})
+    public void testNewTabPageIncognitoAppMenuItems() throws IOException {
         IncognitoNewTabPageStation incognitoNewTabPage =
                 mInitialStateRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
         IncognitoNewTabPageAppMenuFacility menu = incognitoNewTabPage.openAppMenu();
 
+        mRenderTestRule.render(menu.getView(), "incognito_ntp_app_menu");
         verifyPresentItems(menu);
         assertFinalDestination(incognitoNewTabPage, menu);
 
@@ -164,11 +153,12 @@ public class TabbedAppMenuPTTest {
      */
     @Test
     @LargeTest
-    @RequiresRestart
-    public void testWebPageRegularAppMenuItems() {
+    @Feature({"RenderTest"})
+    public void testWebPageRegularAppMenuItems() throws IOException {
         WebPageStation blankPage = mInitialStateRule.startOnBlankPage();
         RegularWebPageAppMenuFacility menu = blankPage.openRegularTabAppMenu();
 
+        mRenderTestRule.render(menu.getView(), "regular_webpage_app_menu");
         verifyPresentItems(menu);
         assertFinalDestination(blankPage, menu);
 
@@ -182,7 +172,8 @@ public class TabbedAppMenuPTTest {
      */
     @Test
     @LargeTest
-    public void testWebPageIncognitoAppMenuItems() {
+    @Feature({"RenderTest"})
+    public void testWebPageIncognitoAppMenuItems() throws IOException {
         IncognitoNewTabPageStation incognitoNtp =
                 mInitialStateRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
 
@@ -192,6 +183,7 @@ public class TabbedAppMenuPTTest {
                         NavigatePageStations.newNavigateOnePageBuilder());
         IncognitoWebPageAppMenuFacility menu = pageOne.openIncognitoTabAppMenu();
 
+        mRenderTestRule.render(menu.getView(), "incognito_webpage_app_menu");
         verifyPresentItems(menu);
         assertFinalDestination(pageOne, menu);
 

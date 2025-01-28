@@ -14,6 +14,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
+import android.widget.ListView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
@@ -29,6 +30,7 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.MainSettings;
@@ -50,6 +52,8 @@ import java.util.function.Function;
  */
 public abstract class AppMenuFacility<HostStationT extends Station<?>>
         extends ScrollableFacility<HostStationT> {
+
+    private ViewElement mMenuList;
 
     /** Create a new app menu item stub which throws UnsupportedOperationException if selected. */
     protected Item<Void> declareStubMenuItem(ItemsBuilder items, @IdRes int id) {
@@ -137,7 +141,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     @CallSuper
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareView(MENU_LIST);
+        mMenuList = elements.declareView(MENU_LIST);
 
         super.declareElements(elements);
     }
@@ -218,5 +222,11 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
                         Press.FINGER);
         mHostStation.exitFacilitySync(
                 this, () -> onView(MENU_LIST_MATCHER).perform(clickBetweenViewAndLeftEdge));
+    }
+
+    /** Get the menu list {@link ListView}. */
+    public ListView getView() {
+        assertSuppliersCanBeUsed();
+        return (ListView) mMenuList.get();
     }
 }
