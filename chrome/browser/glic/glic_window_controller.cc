@@ -400,23 +400,25 @@ void GlicWindowController::OpenAttached(Browser* browser) {
                                                ->GetGlicButton()
                                          : nullptr;
 
-  // When opening attached, we always go through the standard opening animation.
-  gfx::Size widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
-  gfx::Rect glic_window_widget_initial_rect;
-
   // If summoned from the tab strip button. This will always show up attached
   // because it is tied to a views::View object within the current browser
   // window.
   gfx::Point top_right_point =
       GetTopRightPositionForAttachedGlicWindow(glic_button_view);
-  glic_window_widget_initial_rect = glic_button_view->GetBoundsInScreen();
+  gfx::Rect glic_window_widget_initial_rect =
+      glic_button_view->GetBoundsInScreen();
 
   glic_widget_ = CreateGlicWidget(profile_, glic_window_widget_initial_rect);
   glic_widget_observation_.Observe(glic_widget_.get());
 
   glic_widget_->Show();
   AttachToBrowser(browser);
+
   // Set target bounds for animation and run the open attached animation.
+  gfx::Size widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
+  if (glic_size_) {
+    widget_size = *glic_size_;
+  }
   gfx::Rect target_bounds = glic_widget_->GetWindowBoundsInScreen();
   int final_x = top_right_point.x() - widget_size.width();
   target_bounds.set_x(final_x);
@@ -510,15 +512,6 @@ void GlicWindowController::ShowFinish() {
   GetGlicView()->SetDraggableAreas(
       {{0, 0, GetGlicView()->width(), kWidgetTopBarHeight}});
   NotifyIfPanelStateChanged();
-
-  // Animate to the requested size, if it exists.
-  if (glic_size_) {
-    gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
-    if (*glic_size_ != current_bounds.size()) {
-      AnimateSize(*glic_size_, base::Milliseconds(kAnimationDurationMs),
-                  base::DoNothing());
-    }
-  }
 }
 
 GlicView* GlicWindowController::GetGlicView() {
