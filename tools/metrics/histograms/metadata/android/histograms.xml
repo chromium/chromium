@@ -5372,6 +5372,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ToolbarPosition.PositionAtStartup"
+    enum="ToolbarPosition" expires_after="2026-01-27">
+  <owner>pnoland@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <summary>
+    Records the user-preferred position for the toolbar at the time
+    ToolbarPositionController is initialized. Initialization occurs once per
+    eligible ChromeTabbedActivity after initial layout inflation completes. A
+    ChromeTabbedActivity is eligible if it is non-CCT, the device is not a
+    tablet, and the bottom toolbar flag is enabled.
+
+    The value of the pref defaults to TOP until the user deliberately changes
+    it.
+  </summary>
+</histogram>
+
+<histogram name="Android.ToolbarPosition.PositionPrefChanged"
+    enum="ToolbarPosition" expires_after="2026-01-27">
+  <owner>pnoland@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <summary>
+    Records user-initiated positions change for the toolbar, indicating the
+    newly preferred position. Recorded when the value of the toolbar position
+    preference changes, either via long press or toggling it in the settings
+    page.
+  </summary>
+</histogram>
+
 <histogram name="Android.TopToolbar.AllowCaptureReason"
     enum="TopToolbarAllowCaptureReason" expires_after="2025-10-22">
   <owner>skym@chromium.org</owner>
