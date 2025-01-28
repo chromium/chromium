@@ -4971,9 +4971,6 @@ crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-border.html [ Fa
 crbug.com/994692 [ Linux ] compositing/reflections/nested-reflection-anchor-point.html [ Failure Pass ]
 crbug.com/994692 [ Win ] compositing/reflections/nested-reflection-anchor-point.html [ Failure Pass ]
 
-crbug.com/996219 [ Win ] virtual/text-antialias/emoji-vertical-origin-visual.html [ Failure ]
-
-
 crbug.com/1000051 media/controls/volume-slider.html [ Failure Pass Timeout ]
 
 # Test for LCP's mouseover heuristics. Tested only under virtual/lcp-mouseover-heuristics.
