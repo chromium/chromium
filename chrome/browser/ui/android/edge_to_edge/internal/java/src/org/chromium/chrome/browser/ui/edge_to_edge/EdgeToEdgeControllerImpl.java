@@ -456,7 +456,12 @@ public class EdgeToEdgeControllerImpl
             // insets.
             drawToEdge(mIsPageOptedIntoEdgeToEdge, /* changedWindowState= */ true);
         }
-        return windowInsets;
+
+        // Always consume the insets, as e2e controller applies the padding to the content view.
+        return new WindowInsetsCompat.Builder(windowInsets)
+                .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.NONE)
+                .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE)
+                .build();
     }
 
     private boolean updateVisibilityRects(View rootView) {
