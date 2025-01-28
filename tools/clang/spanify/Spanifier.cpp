@@ -1048,12 +1048,16 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
   // -       reference operator[](size_type pos);
   // - const_reference operator[](size_type pos) const;
   //
-  // Note: The `volatile` qualifier is not moved to the array type. It is kept
-  //       in the element type. This is correct.
-  //       Anyway, Chrome doesn't have any volatile arrays at the moment.
+  // Note 1: The `volatile` qualifier is not moved to the array type. It is kept
+  //         in the element type. This is correct. Anyway, Chrome doesn't have
+  //         any volatile arrays at the moment.
+  //
+  // Note 2: Since 'constexpr' implies 'const', we don't need to add 'const' to
+  //         the element type if the array is 'constexpr'.
   clang::QualType new_element_type = original_element_type;
   new_element_type.removeLocalConst();
-  if (original_element_type.isConstant(ast_context)) {
+  if (original_element_type.isConstant(ast_context) &&
+      !array_variable->isConstexpr()) {
     qualifier_string << "const ";
   }
 
