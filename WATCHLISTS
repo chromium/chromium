@@ -1872,7 +1872,8 @@
                   '|chrome/browser/predictors/autocomplete_action_predictor\.(cc|h)$' \
                   '|chrome/browser/preloading/' \
                   '|content/browser/mojo_binder_policy' \
-                  '|content/browser/preloading/'
+                  '|content/browser/preloading/' \
+                  '|content/browser/renderer_host/render_frame_host_impl_interface_binders.cc'
     },
     'presentation': {
       'filepath': 'content/browser/presentation/' \
