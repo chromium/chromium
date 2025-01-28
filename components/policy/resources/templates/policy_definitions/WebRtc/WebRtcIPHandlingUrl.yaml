@@ -44,8 +44,8 @@ schema:
         - default_public_and_private_interfaces
         - default_public_interface_only
         - disable_non_proxied_udp
-future_on:
-- chrome.*
-- chrome_os
+supported_on:
+- chrome.*:133-
+- chrome_os:133-
 tags: []
 type: dict
