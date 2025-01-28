@@ -597,8 +597,10 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
         static_cast<BubbleDialogModelHost::CustomView*>(model_field->field());
     std::unique_ptr<View> view = custom_view->TransferView();
     View* focusable_view = custom_view->TransferFocusableView();
-    DCHECK(view);
-    view->SetProperty(kElementIdentifierKey, model_field->id());
+    if (!focusable_view) {
+      CHECK(view);
+      view->SetProperty(kElementIdentifierKey, model_field->id());
+    }
     DialogModelHostField info{model_field, view.get(), focusable_view};
     AddDialogModelHostField(std::move(view), info);
   }

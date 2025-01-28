@@ -55,6 +55,8 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
   class VIEWS_EXPORT CustomView : public ui::DialogModelCustomField::Field {
    public:
+    // The ElementIdentifier, ui::DialogModelCustomField::id(), is assigned to
+    // `focusable_view` if it is non-null. Otherwiser, it is assigned to `view`.
     CustomView(std::unique_ptr<View> view,
                FieldType field_type,
                View* focusable_view = nullptr);
