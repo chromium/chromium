@@ -189,10 +189,17 @@ class MockPageActivationThrottle : public content::NavigationThrottle {
   PageActivationNotificationTiming activation_throttle_state_;
 };
 
+struct ThrottleManagerTestCase {
+  std::string test_name;
+
+  PageActivationNotificationTiming notification_timing;
+  bool is_incognito;
+};
+
 class ThrottleManagerTest
     : public content::RenderViewHostTestHarness,
       public content::WebContentsObserver,
-      public ::testing::WithParamInterface<PageActivationNotificationTiming> {
+      public ::testing::WithParamInterface<ThrottleManagerTestCase> {
  public:
   ThrottleManagerTest()
       // We need the task environment to use a separate IO thread so that the
@@ -236,7 +243,7 @@ class ThrottleManagerTest
     FingerprintingProtectionWebContentsHelper::CreateForWebContents(
         web_contents, test_support_->prefs(), test_support_->content_settings(),
         test_support_->tracking_protection_settings(), dealer_handle_.get(),
-        /*is_incognito=*/false);
+        GetParam().is_incognito);
 
     Observe(web_contents);
 
@@ -269,24 +276,33 @@ class ThrottleManagerTest
   // Helper methods:
 
   void SetFingerprintingProtectionFlags(bool is_enabled,
+                                        bool is_incognito,
                                         bool is_dry_run = false) {
-    if (is_enabled && !is_dry_run) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/
-          {{features::kEnableFingerprintingProtectionFilter,
-            {{"activation_level", "enabled"}}}},
-          /*disabled_features=*/{});
-    } else if (is_enabled && is_dry_run) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/
-          {{features::kEnableFingerprintingProtectionFilter,
-            {{"activation_level", "dry_run"}}}},
-          /*disabled_features=*/{});
+    if (is_incognito) {
+      if (is_enabled) {
+        scoped_feature_list_.InitAndEnableFeature(
+            features::kEnableFingerprintingProtectionFilterInIncognito);
+      } else {
+        scoped_feature_list_.InitAndDisableFeature(
+            features::kEnableFingerprintingProtectionFilterInIncognito);
+      }
     } else {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{
-              features::kEnableFingerprintingProtectionFilter});
+      if (is_enabled && !is_dry_run) {
+        scoped_feature_list_.InitWithFeaturesAndParameters(
+            /*enabled_features=*/
+            {{features::kEnableFingerprintingProtectionFilter,
+              {{"activation_level", "enabled"}}}},
+            /*disabled_features=*/{});
+      } else if (is_enabled && is_dry_run) {
+        scoped_feature_list_.InitWithFeaturesAndParameters(
+            /*enabled_features=*/
+            {{features::kEnableFingerprintingProtectionFilter,
+              {{"activation_level", "dry_run"}}}},
+            /*disabled_features=*/{});
+      } else {
+        scoped_feature_list_.InitAndDisableFeature(
+            features::kEnableFingerprintingProtectionFilter);
+      }
     }
   }
 
@@ -353,7 +369,7 @@ class ThrottleManagerTest
     std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
     PageActivationNotificationTiming state =
         ::testing::UnitTest::GetInstance()->current_test_info()->value_param()
-            ? GetParam()
+            ? GetParam().notification_timing
             : WILL_PROCESS_RESPONSE;
     throttles.push_back(
         std::make_unique<MockPageActivationThrottle>(navigation_handle, state));
@@ -420,10 +436,28 @@ class ThrottleManagerTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+const ThrottleManagerTestCase TestCases[] = {
+    {.test_name = "Incognito_WillStartRequest",
+     .notification_timing = WILL_START_REQUEST,
+     .is_incognito = true},
+    {.test_name = "Incognito_WillProcessResponse",
+     .notification_timing = WILL_PROCESS_RESPONSE,
+     .is_incognito = true},
+    {.test_name = "Nonincognito_WillStartRequest",
+     .notification_timing = WILL_START_REQUEST,
+     .is_incognito = false},
+    {.test_name = "Nonincognito_WillProcessResponse",
+     .notification_timing = WILL_PROCESS_RESPONSE,
+     .is_incognito = false},
+};
+
 // Class for tests with fingerprinting protection completely disabled.
 class ThrottleManagerDisabledTest : public ThrottleManagerTest {
  public:
-  ThrottleManagerDisabledTest() { SetFingerprintingProtectionFlags(false); }
+  ThrottleManagerDisabledTest() {
+    SetFingerprintingProtectionFlags(/*is_enabled=*/false,
+                                     GetParam().is_incognito);
+  }
 
   ThrottleManagerDisabledTest(const ThrottleManagerDisabledTest&) = delete;
   ThrottleManagerDisabledTest& operator=(const ThrottleManagerDisabledTest&) =
@@ -432,10 +466,13 @@ class ThrottleManagerDisabledTest : public ThrottleManagerTest {
   ~ThrottleManagerDisabledTest() override = default;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ThrottleManagerDisabledTest,
-                         ::testing::Values(WILL_START_REQUEST,
-                                           WILL_PROCESS_RESPONSE));
+INSTANTIATE_TEST_SUITE_P(
+    ThrottleManagerDisabledTestSuiteInstantiation,
+    ThrottleManagerDisabledTest,
+    testing::ValuesIn<ThrottleManagerTestCase>(TestCases),
+    [](const testing::TestParamInfo<ThrottleManagerTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 // No subresource loads should be filtered with the feature disabled.
 TEST_P(ThrottleManagerDisabledTest,
@@ -467,7 +504,10 @@ TEST_P(ThrottleManagerDisabledTest, DoNotCreateThrottleManager) {
 // Class for tests with fingerprinting protection completely enabled.
 class ThrottleManagerEnabledTest : public ThrottleManagerTest {
  public:
-  ThrottleManagerEnabledTest() { SetFingerprintingProtectionFlags(true); }
+  ThrottleManagerEnabledTest() {
+    SetFingerprintingProtectionFlags(/*is_enabled=*/true,
+                                     GetParam().is_incognito);
+  }
 
   ThrottleManagerEnabledTest(const ThrottleManagerEnabledTest&) = delete;
   ThrottleManagerEnabledTest& operator=(const ThrottleManagerEnabledTest&) =
@@ -476,10 +516,13 @@ class ThrottleManagerEnabledTest : public ThrottleManagerTest {
   ~ThrottleManagerEnabledTest() override = default;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ThrottleManagerEnabledTest,
-                         ::testing::Values(WILL_START_REQUEST,
-                                           WILL_PROCESS_RESPONSE));
+INSTANTIATE_TEST_SUITE_P(
+    ThrottleManagerEnabledTestSuiteInstantiation,
+    ThrottleManagerEnabledTest,
+    testing::ValuesIn<ThrottleManagerTestCase>(TestCases),
+    [](const testing::TestParamInfo<ThrottleManagerTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 TEST_P(ThrottleManagerEnabledTest,
        ActivateMainFrameAndFilterSubframeNavigation) {
