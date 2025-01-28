@@ -44,12 +44,12 @@ void AccessibilityMainHandler::RegisterMessages() {
 }
 
 void AccessibilityMainHandler::OnJavascriptAllowed() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   accessibility_subscription_ =
       ash::AccessibilityManager::Get()->RegisterCallback(base::BindRepeating(
           &AccessibilityMainHandler::OnAccessibilityStatusChanged,
           base::Unretained(this)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (features::IsMainNodeAnnotationsEnabled()) {
     CHECK(!component_ready_observer_.IsObserving());
@@ -59,9 +59,9 @@ void AccessibilityMainHandler::OnJavascriptAllowed() {
 }
 
 void AccessibilityMainHandler::OnJavascriptDisallowed() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   accessibility_subscription_ = {};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (features::IsMainNodeAnnotationsEnabled()) {
     component_ready_observer_.Reset();
@@ -127,7 +127,7 @@ void AccessibilityMainHandler::SendScreenReaderStateChanged() {
   FireWebUIListener("screen-reader-state-changed", result);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AccessibilityMainHandler::OnAccessibilityStatusChanged(
     const ash::AccessibilityStatusEventDetails& details) {
   if (details.notification_type ==
@@ -135,6 +135,6 @@ void AccessibilityMainHandler::OnAccessibilityStatusChanged(
     SendScreenReaderStateChanged();
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace settings

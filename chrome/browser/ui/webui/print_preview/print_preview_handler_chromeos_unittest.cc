@@ -15,6 +15,8 @@
 #include "base/run_loop.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
@@ -22,20 +24,15 @@
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/chromeos/printing/fake_local_printer_chromeos.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
-#endif
 
 namespace printing {
 
@@ -223,12 +220,10 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   ~PrintPreviewHandlerChromeOSTest() override = default;
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     crosapi::IdleServiceAsh::DisableForTesting();
     ash::LoginState::Initialize();
     manager_ = std::make_unique<crosapi::CrosapiManager>();
-#endif
     preview_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(&profile_));
     web_ui_ = std::make_unique<content::TestWebUI>();
@@ -256,10 +251,8 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     manager_.reset();
     ash::LoginState::Shutdown();
-#endif
   }
 
   void DisableAshChrome() {
@@ -300,11 +293,9 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<crosapi::CrosapiManager> manager_;
-#endif
   TestingProfile profile_;
   std::unique_ptr<TestLocalPrinter> local_printer_;
   std::unique_ptr<content::WebContents> preview_web_contents_;

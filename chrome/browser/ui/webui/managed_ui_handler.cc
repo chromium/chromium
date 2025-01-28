@@ -117,7 +117,7 @@ base::Value::Dict ManagedUIHandler::GetDataSourceUpdate() const {
   update.Set("managedByIcon", GetManagedUiWebUIIcon(profile_));
   update.Set("managementPageUrl", GetManagedUiUrl(profile_).spec());
   update.Set("browserManagedByOrg", GetManagedUiWebUILabel(profile_));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   update.Set("deviceManagedByOrg", GetDeviceManagedUiWebUILabel());
 #endif
   update.Set("isManaged", managed_);

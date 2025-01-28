@@ -34,10 +34,10 @@
 #include "net/dns/mock_host_resolver.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using performance_manager::user_tuning::prefs::BatterySaverModeState;
 using performance_manager::user_tuning::prefs::MemorySaverModeAggressiveness;
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
 
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 class PerformanceSettingsCrosInteractiveTest
     : public WebUiInteractiveTestMixin<InteractiveAshTest> {};
 
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsCrosInteractiveTest,
       WaitForShow(kOsFeedbackDialogElementId));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class MemorySettingsInteractiveTest
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest,
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
 
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 class MemorySettingsCrosInteractiveTest
     : public WebUiInteractiveTestMixin<InteractiveAshTest> {};
 
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(MemorySettingsCrosInteractiveTest,
       WaitForShow(kOsFeedbackDialogElementId));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class MemorySaverAggressivenessSettingsInteractiveTest
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 class BatterySettingsInteractiveTest
     : public WebUiInteractiveTestMixin<InteractiveAshTest> {
  public:
@@ -648,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
       WaitForShow(kOsFeedbackDialogElementId));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class TabDiscardExceptionsSettingsInteractiveTest
     : public MemorySaverInteractiveTestMixin<

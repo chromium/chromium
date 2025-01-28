@@ -25,9 +25,9 @@
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui_untrusted.h"
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/ash/config/chrome_untrusted_web_ui_configs_chromeos.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.h"
@@ -36,9 +36,9 @@
 void RegisterChromeUntrustedWebUIConfigs() {
   // Don't add calls to `AddUntrustedWebUIConfig()` for ash-specific UIs here.
   // Add them in chrome_untrusted_web_ui_configs_chromeos.cc.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::RegisterAshChromeUntrustedWebUIConfigs();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(TOOLKIT_VIEWS) || BUILDFLAG(ENABLE_PRINT_PREVIEW)
   auto& map = content::WebUIConfigMap::GetInstance();

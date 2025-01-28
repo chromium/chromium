@@ -62,17 +62,14 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/certificate_provider/certificate_provider.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/net/client_cert_store_kcer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chromeos/ash/components/kcer/kcer.h"
 #include "chromeos/ash/components/kcer/kcer_histograms.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -130,7 +127,7 @@ class ClientCertStoreLoader {
       active_requests_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class ClientCertStoreFactoryAsh : public ClientCertStoreFactory {
  public:
   explicit ClientCertStoreFactoryAsh(Profile* profile) : profile_(profile) {}
@@ -177,7 +174,7 @@ class ClientCertStoreFactoryMac : public ClientCertStoreFactory {
 };
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
 std::unique_ptr<ClientCertStoreLoader> CreatePlatformClientCertLoader(
     Profile* profile) {
 #if BUILDFLAG(IS_WIN)
@@ -350,7 +347,7 @@ class ClientCertSource : public CertificateManagerPageHandler::CertSource {
   std::optional<net::CertificateList> certs_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // ChromeOS currently can use either Kcer or NSS for listing client certs, and
 // Linux uses NSS only. This interface provides an abstraction to hide that
 // from WritableClientCertSource. Currently this class only handles reading
@@ -434,7 +431,7 @@ class WritableCertLoader : public CertificateManagerPageHandler::CertSource {
   base::WeakPtrFactory<WritableCertLoader> weak_ptr_factory_{this};
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class KcerLoader : public WritableCertLoader {
  public:
   explicit KcerLoader(Profile* profile)
@@ -502,14 +499,14 @@ class KcerLoader : public WritableCertLoader {
   base::WeakPtr<kcer::Kcer> kcer_;
   base::WeakPtrFactory<KcerLoader> weak_ptr_factory_{this};
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class NSSLoader : public WritableCertLoader {
  public:
   explicit NSSLoader(Profile* profile)
       : profile_(profile),
         loader_(std::make_unique<ClientCertStoreLoader>(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             std::make_unique<ClientCertStoreFactoryAsh>(profile)
 #else
             std::make_unique<ClientCertStoreFactoryNSS>()
@@ -567,7 +564,7 @@ class WritableClientCertSource
           remote_client,
       Profile* profile)
       : remote_client_(remote_client), profile_(profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (ash::features::ShouldUseKcerClientCertStore()) {
       cert_loader_ = std::make_unique<KcerLoader>(profile);
     } else {
@@ -785,7 +782,7 @@ class WritableClientCertSource
                          int nss_import_result) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (nss_import_result == net::OK) {
       kcer::RecordPkcs12MigrationUmaEvent(
           kcer::Pkcs12MigrationUmaEvent::kPkcs12ImportNssSuccess);
@@ -823,7 +820,7 @@ class WritableClientCertSource
     ReplyToImportCallback(nss_import_result);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void FinishedKcerImport(
       int nss_import_result,
       base::expected<void, kcer::Error> kcer_import_result) {
@@ -992,7 +989,7 @@ class WritableClientCertSource
   raw_ptr<Profile> profile_;
   base::WeakPtrFactory<WritableClientCertSource> weak_ptr_factory_{this};
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ExtensionsClientCertSource
@@ -1057,7 +1054,7 @@ CreatePlatformClientCertSource(
     mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>*
         remote_client,
     Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   return std::make_unique<WritableClientCertSource>(remote_client, profile);
 #else
   return std::make_unique<ClientCertSource>(
@@ -1082,9 +1079,7 @@ CreateExtensionsClientCertSource(Profile* profile) {
   return std::make_unique<ExtensionsClientCertSource>(
       certificate_provider_service->CreateCertificateProvider());
 }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 ClientCertManagementAccessControls::ClientCertManagementAccessControls(
     Profile* profile)
     : is_guest_(

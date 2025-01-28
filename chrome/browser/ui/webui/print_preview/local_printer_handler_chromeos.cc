@@ -33,7 +33,7 @@
 #include "printing/print_settings_conversion_chromeos.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
@@ -202,7 +202,7 @@ LocalPrinterHandlerChromeos::Create(
     content::WebContents* preview_web_contents) {
   auto handler =
       std::make_unique<LocalPrinterHandlerChromeos>(preview_web_contents);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DCHECK(crosapi::CrosapiManager::IsInitialized());
   handler->local_printer_ =
       crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();

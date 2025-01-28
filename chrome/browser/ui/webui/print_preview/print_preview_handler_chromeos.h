@@ -59,9 +59,7 @@ class PrintPreviewHandlerChromeOS
 
  private:
   friend class PrintPreviewHandlerChromeOSTest;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class TestPrintServersManager;
-#endif
 
   PrintPreviewHandler* GetPrintPreviewHandler();
 

@@ -203,7 +203,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   void HandleSetChromeSigninUserChoice(const base::Value::List& args);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void HandleAttemptUserExit(const base::Value::List& args);
   void HandleTurnOnSync(const base::Value::List& args);
   void HandleTurnOffSync(const base::Value::List& args);
@@ -219,7 +219,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   void HandleStartKeyRetrieval(const base::Value::List& args);
   void HandleGetSyncStatus(const base::Value::List& args);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   void HandleShowSyncPassphraseDialog(const base::Value::List& args);
 
   // Displays the GAIA login form.

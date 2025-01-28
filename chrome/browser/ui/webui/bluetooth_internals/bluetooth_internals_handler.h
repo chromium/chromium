@@ -18,11 +18,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace ash {
 namespace bluetooth {
 class DebugLogsManager;
@@ -34,10 +32,10 @@ class DebugLogsManager;
 // mojom::BluetoothInternalsHandler.
 class BluetoothInternalsHandler
     : public mojom::BluetoothInternalsHandler
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ,
       public ash::bluetooth_config::mojom::SystemPropertiesObserver
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 {
  public:
   explicit BluetoothInternalsHandler(
@@ -50,7 +48,7 @@ class BluetoothInternalsHandler
 
   ~BluetoothInternalsHandler() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void set_debug_logs_manager(
       ash::bluetooth::DebugLogsManager* debug_logs_manager) {
     debug_logs_manager_ = debug_logs_manager;
@@ -66,9 +64,9 @@ class BluetoothInternalsHandler
       RequestSystemPermissionsCallback callback) override;
   void RequestLocationServices(
       RequestLocationServicesCallback callback) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void RestartSystemBluetooth(RestartSystemBluetoothCallback callback) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void StartBtsnoop(StartBtsnoopCallback callback) override;
   void IsBtsnoopFeatureEnabled(
       IsBtsnoopFeatureEnabledCallback callback) override;
@@ -77,7 +75,7 @@ class BluetoothInternalsHandler
   void OnGetAdapter(GetAdapterCallback callback,
                     scoped_refptr<device::BluetoothAdapter> adapter);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // bluetooth_config::mojom::SystemPropertiesObserver
   void OnPropertiesUpdated(
       ash::bluetooth_config::mojom::BluetoothSystemPropertiesPtr properties)
@@ -88,12 +86,12 @@ class BluetoothInternalsHandler
   void OnStopBtsnoopResp(mojom::BluetoothBtsnoop::StopCallback callback,
                          bool success);
   std::optional<base::FilePath> GetDownloadsPath();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   raw_ref<content::RenderFrameHost> render_frame_host_;
   mojo::Receiver<mojom::BluetoothInternalsHandler> receiver_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   raw_ptr<ash::bluetooth::DebugLogsManager> debug_logs_manager_ = nullptr;
 
   bool turning_bluetooth_off_ = false;
@@ -112,7 +110,7 @@ class BluetoothInternalsHandler
       remote_cros_bluetooth_config_;
 
   std::unique_ptr<mojom::BluetoothBtsnoop> btsnoop_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::WeakPtrFactory<BluetoothInternalsHandler> weak_ptr_factory_{this};
 };

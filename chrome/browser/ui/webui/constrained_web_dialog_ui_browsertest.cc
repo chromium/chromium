@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWebDialogBrowserTest,
 // is enabled.
 // Flaky on CrOS: http://crbug.com/928924
 // Flaky on Mac: http://crbug.com/1498848
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ContentResizeInAutoResizingDialog \
   DISABLED_ContentResizeInAutoResizingDialog
 #else

@@ -11,7 +11,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #endif
 
@@ -19,7 +19,7 @@ namespace policy_indicator {
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   int controlled_setting_policy_id = IDS_CONTROLLED_SETTING_POLICY;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::DemoSession::IsDeviceInDemoMode()) {
     controlled_setting_policy_id = IDS_CONTROLLED_SETTING_DEMO_SESSION;
   }
@@ -37,7 +37,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_CONTROLLED_SETTING_CHILD_RESTRICTION},
       {"controlledSettingParent", IDS_CONTROLLED_SETTING_PARENT},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       {"controlledSettingShared", IDS_CONTROLLED_SETTING_SHARED},
       {"controlledSettingWithOwner", IDS_CONTROLLED_SETTING_WITH_OWNER},
       {"controlledSettingNoOwner", IDS_CONTROLLED_SETTING_NO_OWNER},

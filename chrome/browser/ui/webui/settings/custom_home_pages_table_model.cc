@@ -28,7 +28,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #endif
 
@@ -161,7 +161,7 @@ bool CustomHomePagesTableModel::ShouldIncludeBrowser(Browser* browser) {
   if (browser->profile() != profile_) {
     return false;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Do not include the Settings window.
   if (chrome::SettingsWindowManager::GetInstance()->IsSettingsBrowser(
           browser)) {

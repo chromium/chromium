@@ -14,7 +14,7 @@ void TestVersionUpdater::CheckForUpdate(StatusCallback callback,
                update_size_, message_);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool TestVersionUpdater::IsManagedAutoUpdateEnabled() {
   return true;
 }

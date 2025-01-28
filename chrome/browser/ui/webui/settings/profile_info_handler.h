@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/user_manager/user_manager.h"
 #else
 #include "chrome/browser/profiles/profile_statistics_common.h"
@@ -28,7 +28,7 @@ class Profile;
 namespace settings {
 
 class ProfileInfoHandler : public SettingsPageUIHandler,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                            public user_manager::UserManager::Observer,
 #endif
                            public ProfileAttributesStorage::Observer {
@@ -48,7 +48,7 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // user_manager::UserManager::Observer implementation.
   void OnUserImageChanged(const user_manager::User& user) override;
 #endif
@@ -66,7 +66,7 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   void HandleGetProfileInfo(const base::Value::List& args);
   void PushProfileInfo();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   void HandleGetProfileStats(const base::Value::List& args);
 
   // Returns the sum of the counts of individual profile states. Returns 0 if
@@ -79,7 +79,7 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   // Weak pointer.
   raw_ptr<Profile> profile_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
       user_manager_observation_{this};

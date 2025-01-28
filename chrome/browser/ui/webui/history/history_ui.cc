@@ -152,7 +152,7 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_CLEAR_DATA_MYACTIVITY_URL_IN_HISTORY)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   source->AddLocalizedString("turnOnSyncButton",
                              IDS_HISTORY_TURN_ON_SYNC_BUTTON);
 #else
@@ -174,7 +174,7 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
     source->AddLocalizedString("turnOnSyncButton",
                                IDS_HISTORY_TURN_ON_SYNC_BUTTON);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   PrefService* prefs = profile->GetPrefs();
   bool allow_deleting_history =

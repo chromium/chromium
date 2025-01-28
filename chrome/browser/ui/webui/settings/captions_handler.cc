@@ -25,9 +25,10 @@
 #include "content/public/browser/web_ui.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/accessibility/caption_settings_dialog.h"
@@ -59,10 +60,10 @@ base::Value::List SortByDisplayName(
 namespace settings {
 
 CaptionsHandler::CaptionsHandler(PrefService* prefs) : prefs_(prefs) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   soda_available_ =
       base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 CaptionsHandler::~CaptionsHandler() {

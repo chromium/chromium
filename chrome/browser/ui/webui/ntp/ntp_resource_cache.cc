@@ -60,7 +60,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -72,7 +72,7 @@ namespace {
 
 // The URL for the the Learn More page shown on incognito new tab.
 const char kLearnMoreIncognitoUrl[] =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     "https://support.google.com/chromebook/?p=incognito";
 #else
     "https://support.google.com/chrome/?p=incognito";
@@ -80,7 +80,7 @@ const char kLearnMoreIncognitoUrl[] =
 
 // The URL for the Learn More page shown on guest session new tab.
 const char kLearnMoreGuestSessionUrl[] =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     "https://support.google.com/chromebook/?p=chromebook_guest";
 #else
     "https://support.google.com/chrome/?p=ui_guest";
@@ -358,7 +358,7 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
   int guest_tab_heading_ids = IDS_NEW_TAB_GUEST_SESSION_HEADING;
   int guest_tab_link_ids = IDS_LEARN_MORE;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   guest_tab_idr = IDR_GUEST_SESSION_TAB_HTML;
 
   policy::BrowserPolicyConnectorAsh* connector =

@@ -79,7 +79,7 @@ class AppManagementPageHandlerTestBase
 
     mojo::PendingReceiver<app_management::mojom::Page> page;
     mojo::Remote<app_management::mojom::PageHandler> handler;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     handler_ = std::make_unique<AppManagementPageHandlerChromeOs>(
         handler.BindNewPipeAndPassReceiver(),
         page.InitWithNewPipeAndPassRemote(), profile(), *delegate_);
@@ -821,7 +821,7 @@ TEST_P(AppManagementPageHandlerTestBase, NavigationCapturingUserChoice) {
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class AppManagementPageHandlerArcTest
     : public AppManagementPageHandlerTestBase {
  public:
@@ -945,7 +945,7 @@ INSTANTIATE_TEST_SUITE_P(
     AppManagementPageHandlerArcTest,
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff),
     apps::test::LinkCapturingVersionToString);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(
     ,

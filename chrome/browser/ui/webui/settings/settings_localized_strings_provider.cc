@@ -120,8 +120,9 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
@@ -129,16 +130,12 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/chromeos/devicetype_utils.h"
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else  // !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/settings/system_handler.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -211,7 +208,7 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"columnHeadingWhenOn", IDS_SETTINGS_COLUMN_HEADING_WHEN_ON},
       {"columnHeadingConsider", IDS_SETTINGS_COLUMN_HEADING_CONSIDER},
       {"columnHeadingWhenUsed", IDS_SETTINGS_COLUMN_HEADING_WHEN_USED},
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
       {"relaunchConfirmationDialogTitle",
        IDS_RELAUNCH_CONFIRMATION_DIALOG_TITLE},
 #endif
@@ -249,7 +246,7 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
 
   html_source->AddBoolean(
       "isGuest",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
           user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession());
 #else
@@ -324,7 +321,7 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
                          GetDeviceManagedUiHelpLabel(profile));
   html_source->AddString(
       "aboutUpgradeUpToDate",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       ui::SubstituteChromeOSDeviceType(IDS_SETTINGS_UPGRADE_UP_TO_DATE));
 #else
       l10n_util::GetStringUTF16(IDS_SETTINGS_UPGRADE_UP_TO_DATE));
@@ -1035,7 +1032,7 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
                          Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"languagesPageTitle", IDS_SETTINGS_LANGUAGES_PAGE_TITLE},
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
       {"languagesCardTitle", IDS_SETTINGS_LANGUAGES_CARD_TITLE},
       {"searchLanguages", IDS_SETTINGS_LANGUAGE_SEARCH},
       {"languagesExpandA11yLabel",
@@ -1113,19 +1110,19 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
       {"languagesDictionaryDownloadErrorHelp",
        IDS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED_HELP},
 #endif
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       {"openChromeOSLanguagesSettingsLabel",
        IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL},
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   html_source->AddString(
       "osSettingsLanguagesPageUrl",
       chrome::GetOSSettingsUrl(chromeos::settings::mojom::kLanguagesSubpagePath)
           .spec());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AddOnStartupStrings(content::WebUIDataSource* html_source) {
@@ -1396,13 +1393,13 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          chrome::kSyncTrustedVaultLearnMoreURL);
 
   bool is_guest_mode = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   is_guest_mode =
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
       user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
-#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // !BUILDFLAG(IS_CHROMEOS)
   is_guest_mode = profile->IsOffTheRecord();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   autofill::PaymentsDataManager& payments_data =
       autofill::PersonalDataManagerFactory::GetForBrowserContext(profile)
           ->payments_data_manager();
@@ -1533,7 +1530,7 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
     html_source->AddLocalizedStrings(kSyncDisconnectStrings);
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   html_source->AddString(
       "syncDisconnectManagedProfileExplanation",
       l10n_util::GetStringFUTF8(
@@ -1640,8 +1637,6 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
       {"themeCheckboxLabel", IDS_SETTINGS_THEME_CHECKBOX_LABEL},
 #if BUILDFLAG(IS_CHROMEOS)
       {"browserSyncFeatureLabel", IDS_BROWSER_SETTINGS_SYNC_FEATURE_LABEL},
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
       {"cookiesCheckboxLabel", IDS_SETTINGS_COOKIES_CHECKBOX_LABEL},
 #endif
   };
@@ -1677,16 +1672,10 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
       "osSyncSetupSettingsUrl",
       chrome::GetOSSettingsUrl(chromeos::settings::mojom::kSyncSetupSubpagePath)
           .spec());
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddString("osSettingsPrivacyHubSubpageUrl",
                          chrome::GetOSSettingsUrl(
                              chromeos::settings::mojom::kPrivacyHubSubpagePath)
                              .spec());
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
   html_source->AddString(
       "osSyncSettingsUrl",
       chrome::GetOSSettingsUrl(
@@ -1732,7 +1721,7 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
       {"syncUnavailableForNonGoogleAccount",
        IDS_SYNC_UNAVAILABLE_FOR_NON_GOOGLE_ACCOUNT},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       {"accountManagerSubMenuLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_SUBMENU_LABEL},
 #else
@@ -1741,7 +1730,7 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #endif
 
   // Manage profile strings:
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
       {"showShortcutLabel", IDS_SETTINGS_PROFILE_SHORTCUT_TOGGLE_LABEL},
       {"nameInputLabel", IDS_SETTINGS_PROFILE_NAME_INPUT_LABEL},
       {"nameYourProfile", IDS_SETTING_NAME_YOUR_PROFILE},
@@ -1813,7 +1802,7 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
       AccountConsistencyModeManager::IsDiceSignInAllowed(profile_entry));
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Toggles the Chrome OS Account Manager submenu in the People section.
   html_source->AddBoolean("isAccountManagerEnabled",
                           ash::IsAccountManagerAvailable(profile));
@@ -3547,7 +3536,7 @@ void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
           : IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_RADIO_SUBLABEL);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void AddSystemStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"systemPageTitle", IDS_SETTINGS_SYSTEM},
@@ -3579,7 +3568,7 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
   // strings" to "load time data" as all primitive types are used now.
   SystemHandler::AddLoadTimeData(html_source);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void AddExtensionsStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedString("extensionsPageTitle",
@@ -3775,9 +3764,6 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
 #if !BUILDFLAG(IS_CHROMEOS)
   AddDefaultBrowserStrings(html_source);
   AddImportDataStrings(html_source);
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   AddSystemStrings(html_source);
 #endif
 

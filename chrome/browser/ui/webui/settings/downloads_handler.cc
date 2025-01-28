@@ -21,7 +21,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/file_manager/path_util.h"
 #endif
 
@@ -52,7 +52,7 @@ void DownloadsHandler::RegisterMessages() {
       "selectDownloadLocation",
       base::BindRepeating(&DownloadsHandler::HandleSelectDownloadLocation,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
       "getDownloadLocationText",
       base::BindRepeating(&DownloadsHandler::HandleGetDownloadLocationText,
@@ -127,7 +127,7 @@ void DownloadsHandler::FileSelectionCanceled() {
   select_folder_dialog_ = nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void DownloadsHandler::HandleGetDownloadLocationText(
     const base::Value::List& args) {
   AllowJavascript();

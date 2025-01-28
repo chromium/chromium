@@ -22,10 +22,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/policy/core/browser/browser_policy_connector_base.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
 class TestManagedUIHandler : public ManagedUIHandler {
  public:
   using ManagedUIHandler::InitializeInternal;
@@ -113,7 +109,7 @@ TEST_F(ManagedUIHandlerTest, ManagedUIBecomesEnabledByProfile) {
   EXPECT_TRUE(IsSourceManaged());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ManagedUIHandlerTest, ManagedUIDisabledForChildAccount) {
   profile_policy_connector()->OverrideIsManagedForTesting(true);
   profile()->SetIsSupervisedProfile();

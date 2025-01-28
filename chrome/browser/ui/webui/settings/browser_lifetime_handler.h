@@ -27,12 +27,12 @@ class BrowserLifetimeHandler : public SettingsPageUIHandler {
  private:
   void HandleRestart(const base::Value::List& args);
   void HandleRelaunch(const base::Value::List& args);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void HandleSignOutAndRestart(const base::Value::List& args);
   void HandleFactoryReset(const base::Value::List& args);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   void HandleGetRelaunchConfirmationDialogDescription(
       const base::Value::List& args);
   void HandleShouldShowRelaunchConfirmationDialog(

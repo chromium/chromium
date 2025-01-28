@@ -73,10 +73,10 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -426,7 +426,7 @@ class PeopleHandlerTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
   testing::StrictMock<MockSigninUiDelegate> mock_signin_ui_delegate;
   base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset =
@@ -458,7 +458,7 @@ TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
       LoginUIServiceFactory::GetForProfile(profile())->current_login_ui());
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PeopleHandlerTest, DisplayConfigureWithEngineDisabledAndCancel) {
   SigninUserAndTurnSyncFeatureOn();
@@ -536,7 +536,7 @@ TEST_F(PeopleHandlerTest,
 // Verifies the case where the user cancels after the sync engine has
 // initialized. This isn't reachable on Ash because
 // IsInitialSyncFeatureSetupComplete() always returns true.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PeopleHandlerTest,
        DisplayConfigureWithEngineDisabledAndCancelAfterSigninSuccess) {
   SigninUserAndTurnSyncFeatureOn();
@@ -559,7 +559,7 @@ TEST_F(PeopleHandlerTest,
 
   EXPECT_FALSE(sync_service_->IsSetupInProgress());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PeopleHandlerTest, RestartSyncAfterDashboardClear) {
   SigninUserAndTurnSyncFeatureOn();
@@ -574,17 +574,17 @@ TEST_F(PeopleHandlerTest, RestartSyncAfterDashboardClear) {
 
   ASSERT_EQ(sync_service_->GetTransportState(),
             syncer::SyncService::TransportState::INITIALIZING);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(sync_user_settings()->IsSyncFeatureDisabledViaDashboard());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(sync_user_settings()->IsInitialSyncFeatureSetupComplete());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   handler_->HandleShowSyncSetupUI(base::Value::List());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(sync_user_settings()->IsSyncFeatureDisabledViaDashboard());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Since the engine is not initialized yet, no prefs should be sent.
   EXPECT_EQ(0U, GetFiredSyncPrefsChanged().size());
@@ -918,7 +918,7 @@ TEST_F(PeopleHandlerTest, ShowSetupCustomPassphraseRequired) {
 // Verifies that the user is not prompted to enter the custom passphrase while
 // sync setup is ongoing. This isn't reachable on Ash because
 // IsInitialSyncFeatureSetupComplete() always returns true.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PeopleHandlerTest, OngoingSetupCustomPassphraseRequired) {
   SigninUserWithoutSyncFeature();
   CreatePeopleHandler();
@@ -936,7 +936,7 @@ TEST_F(PeopleHandlerTest, OngoingSetupCustomPassphraseRequired) {
   base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "passphraseRequired", false);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PeopleHandlerTest, ShowSetupTrustedVaultKeysRequired) {
   SigninUserAndTurnSyncFeatureOn();
@@ -1030,11 +1030,11 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmSoon) {
   sync_service_->MimicDashboardClear();
   sync_service_->FireStateChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(sync_user_settings()->IsSyncFeatureDisabledViaDashboard());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(sync_user_settings()->IsInitialSyncFeatureSetupComplete());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Now the user confirms sync again. This should set both the sync-requested
   // and the first-setup-complete bits.
@@ -1056,11 +1056,11 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
   sync_service_->MimicDashboardClear();
   sync_service_->FireStateChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(sync_user_settings()->IsSyncFeatureDisabledViaDashboard());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(sync_user_settings()->IsInitialSyncFeatureSetupComplete());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Sync starts up in transport mode.
   ASSERT_EQ(sync_service_->GetTransportState(),
@@ -1122,7 +1122,7 @@ TEST(PeopleHandlerDiceTest, StoredAccountsList) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Regression test for crash in guest mode. https://crbug.com/1040476
 TEST(PeopleHandlerGuestModeTest, GetStoredAccountsList) {
   content::BrowserTaskEnvironment task_environment;
@@ -1134,21 +1134,6 @@ TEST(PeopleHandlerGuestModeTest, GetStoredAccountsList) {
   base::Value::List accounts = handler.GetStoredAccountsList();
   EXPECT_TRUE(accounts.empty());
 }
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(PeopleHandlerTest, TurnOffSync) {
-  // Simulate a user who previously turned on sync.
-  identity_test_env()->MakePrimaryAccountAvailable("user@gmail.com",
-                                                   ConsentLevel::kSync);
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
-
-  CreatePeopleHandler();
-  handler_->HandleTurnOffSync(base::Value::List());
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
-  base::Value::Dict status = ExpectSyncStatusChanged();
-  ExpectHasBoolKey(status, "signedIn", false);
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PeopleHandlerTest, GetStoredAccountsList) {
   // Chrome OS sets an unconsented primary account on login.
@@ -1178,7 +1163,7 @@ TEST_F(PeopleHandlerTest, SyncCookiesDisabled) {
       sync_status_values.FindBool("syncCookiesSupported");
   EXPECT_FALSE(sync_cookies_supported.has_value());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class PeopleHandlerWithExplicitBrowserSigninTest : public PeopleHandlerTest {
@@ -2006,7 +1991,7 @@ TEST_F(ExplicitBrowserSigninPeopleHandlerSignoutTest, Signout) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class PeopleHandlerWithCookiesSyncTest : public PeopleHandlerTest {
  private:
   // Enable Floating SSO feature flag.
@@ -2051,5 +2036,5 @@ TEST_F(PeopleHandlerWithCookiesSyncTest, SyncCookiesSupported) {
     EXPECT_TRUE(sync_cookies_supported.value());
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace settings

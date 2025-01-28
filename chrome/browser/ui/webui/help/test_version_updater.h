@@ -30,7 +30,7 @@ class TestVersionUpdater : public VersionUpdater {
 #if BUILDFLAG(IS_MAC)
   void PromoteUpdater() override {}
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetChannel(const std::string& channel,
                   bool is_powerwash_allowed) override {}
   void GetChannel(bool get_current_channel, ChannelCallback callback) override {

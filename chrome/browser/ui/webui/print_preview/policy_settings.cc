@@ -19,7 +19,7 @@ void PolicySettings::RegisterProfilePrefs(
                                 0);
   registry->RegisterIntegerPref(prefs::kPrintingBackgroundGraphicsDefault, 0);
   registry->RegisterDictionaryPref(prefs::kPrintingPaperSizeDefault);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterIntegerPref(prefs::kPrintingAllowedColorModes, 0);
   registry->RegisterIntegerPref(prefs::kPrintingAllowedDuplexModes, 0);
   registry->RegisterIntegerPref(prefs::kPrintingAllowedPinModes, 0);
