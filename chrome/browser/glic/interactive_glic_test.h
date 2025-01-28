@@ -115,6 +115,9 @@ class InteractiveGlicTestT : public T {
   }
 
   // Waits for glic to be ready and instruments it as `kGlicContentsElementId`.
+  // This method does not wait for glic to show (only for it to be loaded), so
+  // this should not be used directly by interactive ui tests. Instead, use
+  // ToggleGlicWindowAndWaitForShow.
   auto WaitForAndInstrumentGlic() {
     // NOTE: The use of "Api::" here is required because this is a template
     // class with weakly-specified base class; it is not necessary in derived
