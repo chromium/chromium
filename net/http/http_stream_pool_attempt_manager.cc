@@ -392,7 +392,16 @@ void HttpStreamPool::AttemptManager::StartJob(
   // HttpStreamPool should check the existing QUIC/SPDY sessions before calling
   // this method.
   DCHECK(!CanUseExistingQuicSession());
-  CHECK(!spdy_session_);
+  // TODO(crbug.com/385563837): Change to use CHECK(!spdy_session_) once we
+  // identified the cause of the issue.
+  if (spdy_session_) {
+    std::string stream_key_string = stream_key().ToString();
+    std::string spdy_session_string =
+        spdy_session_->GetInfoAsValue().DebugString();
+    DEBUG_ALIAS_FOR_CSTR(stream_key_cstr, stream_key_string.c_str(), 128);
+    DEBUG_ALIAS_FOR_CSTR(spdy_session_cstr, spdy_session_string.c_str(), 512);
+    CHECK(false);
+  }
   DCHECK(!spdy_session_pool()->FindAvailableSession(
       spdy_session_key(), IsIpBasedPoolingEnabled(),
       /*is_websocket=*/false, request_net_log));
