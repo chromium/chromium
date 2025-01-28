@@ -155,13 +155,6 @@ ts_library("library") {
     visibility += [ "//chrome/browser/resources/conflicts:build_ts" ]
   }
 
-  if (is_chromeos) {
-    visibility += [
-      "//chrome/browser/resources/chromeos/kerberos:build_ts",
-      "//chrome/browser/resources/dlp_internals:build_ts",
-    ]
-  }
-
   if (is_chromeos_ash) {
     visibility += [
       "//ash/webui/*",
