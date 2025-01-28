@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BackgroundRefresh.InitStage"
-    enum="InitStageDuringBackgroundRefreshType" expires_after="2025-05-25">
+    enum="InitStageDuringBackgroundRefreshType" expires_after="2025-07-27">
   <owner>fedegermi@google.com</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -892,7 +892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.SyncedStore" enum="Boolean"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
@@ -1581,7 +1581,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Frame.FirstContentfulPaint.MainFrame" units="ms"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>danieltwhite@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -1685,7 +1685,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Fullscreen.State" enum="CrFullscreenState"
-    expires_after="2025-05-18">
+    expires_after="2025-07-27">
   <owner>joemerramos@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -2133,7 +2133,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.MostVisited" units="index"
-    expires_after="2025-04-27">
+    expires_after="2025-07-27">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2143,7 +2143,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.OnNTP"
-    enum="IOSMagicStackModuleType" expires_after="2025-05-15">
+    enum="IOSMagicStackModuleType" expires_after="2025-07-27">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -2152,7 +2152,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.OnStart"
-    enum="IOSMagicStackModuleType" expires_after="2025-05-15">
+    enum="IOSMagicStackModuleType" expires_after="2025-07-27">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -3356,7 +3356,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PageLoadedSnapshotResult" enum="PageLoadedSnapshotResult"
-    expires_after="2025-05-22">
+    expires_after="2025-07-27">
   <owner>edchin@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
@@ -3694,7 +3694,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Process.ActivePrewarm" enum="Boolean"
-    expires_after="2025-03-31">
+    expires_after="2025-07-27">
   <owner>justincohen@google.com</owner>
   <owner>olivierrobin@google.com</owner>
   <summary>
@@ -4150,7 +4150,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SafetyCheck.MagicStack.HiddenReason"
-    enum="IOSSafetyCheckHiddenReason" expires_after="2025-05-25">
+    enum="IOSSafetyCheckHiddenReason" expires_after="2025-07-27">
   <owner>bwwilliams@google.com</owner>
   <owner>thegreenfrog@google.com</owner>
   <summary>
@@ -4172,7 +4172,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.AverageColorSnapshotSize" units="KB"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -4674,7 +4674,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SetUpList.DefaultBrowserPromo.Action"
-    enum="IOSSegmentedDefaultBrowserPromoAction" expires_after="2025-05-26">
+    enum="IOSSegmentedDefaultBrowserPromoAction" expires_after="2025-07-27">
   <owner>bmcclure@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -4784,21 +4784,21 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Snapshots.RetrieveColorSnapshotTime" units="ms"
-    expires_after="2025-05-22">
+    expires_after="2025-07-27">
   <owner>asamidoi@chromium.org</owner>
   <owner>bling-kiwi-pod@google.com</owner>
   <summary>Records the time to retrieve a color snapshot.</summary>
 </histogram>
 
 <histogram name="IOS.Snapshots.RetrieveGreySnapshotTime" units="ms"
-    expires_after="2025-05-22">
+    expires_after="2025-07-27">
   <owner>asamidoi@chromium.org</owner>
   <owner>bling-kiwi-pod@google.com</owner>
   <summary>Records the time to retrieve a grey snapshot.</summary>
 </histogram>
 
 <histogram name="IOS.Snapshots.UpdateSnapshotTime" units="ms"
-    expires_after="2025-05-22">
+    expires_after="2025-07-27">
   <owner>asamidoi@chromium.org</owner>
   <owner>bling-kiwi-pod@google.com</owner>
   <summary>Records the time to update a snapshot.</summary>
@@ -5240,7 +5240,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabSwitcher.TimeSpentScrolling" units="ms"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>lpromero@chromium.org</owner>
   <owner>alionadangla@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
@@ -5519,7 +5519,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.WhatsNew.Shown" enum="WhatsNewType"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>

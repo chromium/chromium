@@ -525,7 +525,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.ClientCertificate.Profile.Provisioning.{ProvisioningScenario}.Outcome"
-    enum="BooleanSuccess" expires_after="2025-04-09">
+    enum="BooleanSuccess" expires_after="2025-07-27">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -866,7 +866,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.UpdatedStatus"
-    enum="DeviceSettingsStatus" expires_after="2025-05-25">
+    enum="DeviceSettingsStatus" expires_after="2025-07-27">
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -1002,7 +1002,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Attestation.Funnel"
-    enum="DTAttestationFunnelStep" expires_after="2025-05-25">
+    enum="DTAttestationFunnelStep" expires_after="2025-07-27">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -1030,7 +1030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Attestation.Result"
-    enum="DTAttestationResult" expires_after="2025-05-25">
+    enum="DTAttestationResult" expires_after="2025-07-27">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -1347,7 +1347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.SyncSigningKey.UploadCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-05-25">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-07-27">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -2576,7 +2576,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.OidcEnrollment.ProfileCreation.Funnel.{IdentityType}"
-    enum="OidcProfileCreationFunnelStep" expires_after="2025-03-20">
+    enum="OidcProfileCreationFunnelStep" expires_after="2025-07-27">
   <owner>xzonghan@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -2588,7 +2588,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.OidcEnrollment.ProfileCreation.Result.{IdentityType}"
-    enum="OidcProfileCreationResult" expires_after="2025-03-20">
+    enum="OidcProfileCreationResult" expires_after="2025-07-27">
   <owner>xzonghan@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -2617,7 +2617,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.OidcEnrollment.{IdentityType}.RegistrationLatency.{Result}"
-    units="ms" expires_after="2025-03-20">
+    units="ms" expires_after="2025-07-27">
   <owner>xzonghan@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>

@@ -252,7 +252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppDiscovery.MallUsageTime" units="ms"
-    expires_after="2025-05-25">
+    expires_after="2025-07-27">
   <owner>joelhockey@chromium.org</owner>
   <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
@@ -1788,7 +1788,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppListBubble.{AppListPage}.AppLaunchesByEntity{ExperimentalArm}"
-    enum="AppListEntity" expires_after="2025-05-18">
+    enum="AppListEntity" expires_after="2025-07-27">
   <owner>anasalazar@google.com</owner>
   <owner>anooshree@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
