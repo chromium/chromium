@@ -297,6 +297,7 @@ source_set("profiles_extra_parts_impl") {
     deps += [
       "//chrome/browser/apps/app_service",
       "//chrome/browser/autofill",
+      "//chrome/browser/contextual_cueing",
       "//chrome/browser/devtools",
       "//chrome/browser/feedback",
       "//chrome/browser/hid",

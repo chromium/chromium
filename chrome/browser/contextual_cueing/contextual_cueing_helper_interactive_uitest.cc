@@ -40,10 +40,17 @@ class FakeGlicNudgeObserver : public GlicNudgeObserver {
 class ContextualCueingHelperBrowserTest : public InProcessBrowserTest {
  public:
   ContextualCueingHelperBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton,
-         contextual_cueing::kContextualCueing},
-        {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        // Disable feature engagement logic.
+        {{contextual_cueing::kContextualCueing,
+          {{"BackoffTime", "0h"},
+           {"BackoffMultiplierBase", "0.0"},
+           {"NudgeCapTime", "0h"},
+           {"NudgeCapCount", "10"},
+           {"MinPageCountBetweenNudges", "0"}}},
+         {features::kGlic, {}},
+         {features::kTabstripComboButton, {}}},
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {

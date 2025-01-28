@@ -1,0 +1,57 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_SERVICE_H_
+#define CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_SERVICE_H_
+
+#include <vector>
+
+#include "base/containers/queue.h"
+#include "base/time/time.h"
+#include "components/keyed_service/core/keyed_service.h"
+
+namespace contextual_cueing {
+
+class ContextualCueingService : public KeyedService {
+ public:
+  ContextualCueingService();
+  ~ContextualCueingService() override;
+
+  // Should be called when the cueing UI is shown.
+  void CueingNudgeShown();
+
+  // Should be called when the cueing UI is dismissed by the user.
+  void CueingNudgeDismissed();
+
+  // Should be called when the nudge is clicked on by the user.
+  void CueingNudgeClicked();
+
+  // Returns true if a nudge should be shown and is not blocked by feature
+  // engagement constraints.
+  bool CanShowNudge();
+
+ private:
+  // Returns true if nudge should not be shown due to the backoff rule.
+  bool IsNudgeBlockedByBackoffRule() const;
+
+  // Returns true if nudge should not be shown due to hard nudge cap
+  // (i.e. x nudges per y hours).
+  bool IsNudgeBlockedByNudgeCap() const;
+
+  // Keeps track of timestamps of recent nudges for the sake of capping nudge
+  // count over a period of time. This queue is maintained such that it only has
+  // timestamps necessary to enforce the limits. Old timestamps will be trimmed.
+  base::queue<base::Time> recent_nudge_timestamps_;
+
+  // Number of times the cueing nudge has been dismissed (i.e. closed by the
+  // user). This count resets to 0 if nudge is clicked on by the user.
+  int dismiss_count_ = 0;
+
+  // The last time the cueing nudge was dismissed.
+  std::optional<base::Time> backoff_end_time_;
+};
+
+}  // namespace contextual_cueing
+
+#endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_SERVICE_H_
