@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 #include <string>
@@ -23,7 +24,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -191,7 +191,7 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
                       /*value=*/0,
                       /*filtering_id=*/0));
             } else {
-              base::ranges::transform(
+              std::ranges::transform(
                   aggregatable_data.contributions(),
                   std::back_inserter(contributions),
                   [](const auto& contribution) {

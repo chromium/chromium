@@ -4,6 +4,7 @@
 
 #include "content/renderer/service_worker/service_worker_context_client.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
@@ -16,7 +17,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -444,7 +444,7 @@ ServiceWorkerContextClient::CreateWorkerFetchContextOnInitiatorThread() {
 
   blink::WebVector<blink::WebString> web_cors_exempt_header_list(
       cors_exempt_header_list_.size());
-  base::ranges::transform(
+  std::ranges::transform(
       cors_exempt_header_list_, web_cors_exempt_header_list.begin(),
       [](const auto& header) { return blink::WebString::FromLatin1(header); });
 

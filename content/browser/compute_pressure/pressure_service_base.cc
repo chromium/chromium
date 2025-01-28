@@ -4,9 +4,9 @@
 
 #include "content/browser/compute_pressure/pressure_service_base.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -68,7 +68,7 @@ bool PressureServiceBase::HasImplicitFocus(RenderFrameHost* render_frame_host) {
 
   // 3. If associated document is same origin with initiators of active
   // Picture-in-Picture sessions, return true.
-  if (base::ranges::any_of(
+  if (std::ranges::any_of(
           WebContentsImpl::GetAllWebContents(), [&](WebContentsImpl* wc) {
             if (!wc->HasPictureInPictureVideo()) {
               return false;

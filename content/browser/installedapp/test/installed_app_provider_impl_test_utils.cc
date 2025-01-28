@@ -67,7 +67,7 @@ void FakeContentBrowserClientForQueryInstalledWebApps::
             void(std::optional<blink::mojom::RelatedApplication>)> callback) {
   std::optional<blink::mojom::RelatedApplication> result;
 
-  if (base::ranges::find(installed_web_app_ids_, id) !=
+  if (std::ranges::find(installed_web_app_ids_, id) !=
       installed_web_app_ids_.end()) {
     blink::mojom::RelatedApplication application;
     application.platform = "webapp";

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <queue>
 #include <set>
 #include <utility>
@@ -19,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/ranges/from_range.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -160,7 +160,7 @@ FrameTree::NodeIterator::NodeIterator(
 FrameTree::NodeIterator FrameTree::NodeRange::begin() {
   // We shouldn't be attempting a frame tree traversal while the tree is
   // being constructed or destructed.
-  DCHECK(base::ranges::all_of(starting_nodes_, [](FrameTreeNode* ftn) {
+  DCHECK(std::ranges::all_of(starting_nodes_, [](FrameTreeNode* ftn) {
     return ftn->current_frame_host();
   }));
 

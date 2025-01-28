@@ -36,7 +36,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -242,8 +241,8 @@ const blink::InterestGroup::Ad* FindMatchingAd(
                                  &ad_descriptor](const std::string& ad_size) {
       return interest_group.ad_sizes->at(ad_size) == *ad_descriptor.size;
     };
-    if (base::ranges::any_of(interest_group.size_groups->at(ad.size_group),
-                             has_matching_ad_size)) {
+    if (std::ranges::any_of(interest_group.size_groups->at(ad.size_group),
+                            has_matching_ad_size)) {
       // Each size group may also correspond to multiple ad sizes. If any of
       // those ad sizes matches with the ad size from `ad_descriptor`, they are
       // considered as matching ads.
@@ -1113,7 +1112,7 @@ ConstructGhostWinnerFromGroupAndCandidate(
   }
   std::string_view ad_hash =
       base::as_string_view(base::span(candidate.ad_render_url_hash));
-  auto ad_it = base::ranges::find_if(
+  auto ad_it = std::ranges::find_if(
       *group.ads, [&group, &ad_hash](const blink::InterestGroup::Ad& ad) {
         return blink::HashedKAnonKeyForAdBid(group, ad.render_url()) == ad_hash;
       });
@@ -1132,7 +1131,7 @@ ConstructGhostWinnerFromGroupAndCandidate(
     if (!ad_it->selectable_buyer_and_seller_reporting_ids) {
       return std::nullopt;
     }
-    auto match = base::ranges::find_if(
+    auto match = std::ranges::find_if(
         *ad_it->selectable_buyer_and_seller_reporting_ids,
         [&group, &ad_it,
          &reporting_hash](const std::string& selected_reporting_id) {
@@ -1155,7 +1154,7 @@ ConstructGhostWinnerFromGroupAndCandidate(
   for (const auto& component_hash : candidate.ad_component_render_urls_hash) {
     std::string_view component_ad_hash =
         base::as_string_view(base::span(component_hash));
-    auto component_ad_it = base::ranges::find_if(
+    auto component_ad_it = std::ranges::find_if(
         *group.ad_components,
         [&component_ad_hash](const blink::InterestGroup::Ad& ad) {
           return blink::HashedKAnonKeyForAdComponentBid(ad.render_url()) ==
@@ -1344,11 +1343,11 @@ void InterestGroupAuction::Bid::EndTracingForScoring() {
 std::vector<GURL> InterestGroupAuction::Bid::GetAdComponentUrls() const {
   std::vector<GURL> ad_component_urls;
   ad_component_urls.reserve(selected_ad_components.size());
-  base::ranges::transform(selected_ad_components,
-                          std::back_inserter(ad_component_urls),
-                          [](const ComponentAdInfo& component_info) {
-                            return component_info.ad_descriptor.url;
-                          });
+  std::ranges::transform(selected_ad_components,
+                         std::back_inserter(ad_component_urls),
+                         [](const ComponentAdInfo& component_info) {
+                           return component_info.ad_descriptor.url;
+                         });
   return ad_component_urls;
 }
 
@@ -2561,7 +2560,7 @@ class InterestGroupAuction::BuyerHelper
       // Note that the data received here has no effect on the result of the
       // auction, so just reject the data and continue with the auction to keep
       // the code simple.
-      if (base::ranges::any_of(
+      if (std::ranges::any_of(
               update_priority_signals_overrides, [](const auto& pair) {
                 return pair.second && !std::isfinite(pair.second->value);
               })) {
@@ -2604,14 +2603,14 @@ class InterestGroupAuction::BuyerHelper
 
     if (base::FeatureList::IsEnabled(
             blink::features::kFledgeRealTimeReporting)) {
-      if (!base::ranges::all_of(real_time_contributions,
-                                HasValidRealTimeBucket)) {
+      if (!std::ranges::all_of(real_time_contributions,
+                               HasValidRealTimeBucket)) {
         mojo_bids.clear();
         real_time_contributions.clear();
         generate_bid_client_receiver_set_.ReportBadMessage(
             "Invalid real time reporting bucket");
-      } else if (!base::ranges::all_of(real_time_contributions,
-                                       HasValidRealTimePriorityWeight)) {
+      } else if (!std::ranges::all_of(real_time_contributions,
+                                      HasValidRealTimePriorityWeight)) {
         mojo_bids.clear();
         real_time_contributions.clear();
         generate_bid_client_receiver_set_.ReportBadMessage(
@@ -5712,13 +5711,13 @@ bool InterestGroupAuction::ValidateScoreBidCompleteResult(
     return false;
   }
 
-  if (!base::ranges::all_of(real_time_contributions, HasValidRealTimeBucket)) {
+  if (!std::ranges::all_of(real_time_contributions, HasValidRealTimeBucket)) {
     score_ad_receivers_.ReportBadMessage("Invalid real time reporting bucket");
     return false;
   }
 
-  if (!base::ranges::all_of(real_time_contributions,
-                            HasValidRealTimePriorityWeight)) {
+  if (!std::ranges::all_of(real_time_contributions,
+                           HasValidRealTimePriorityWeight)) {
     score_ad_receivers_.ReportBadMessage(
         "Invalid real time reporting priority weight");
     return false;
@@ -5786,7 +5785,7 @@ void InterestGroupAuction::OnScoreAdComplete(
   // run that produces the result of runAdAuction().
   if (IsBidRoleUsedForWinner(kanon_mode_, bid->bid_role)) {
     // The mojom API declaration should ensure none of these are null.
-    CHECK(base::ranges::none_of(
+    CHECK(std::ranges::none_of(
         pa_requests,
         [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
                request_ptr) { return request_ptr.is_null(); }));
@@ -6694,7 +6693,7 @@ InterestGroupAuction::CreatePrimaryBidFromServerResponse(
   blink::InterestGroupKey winning_group(saved_response_->interest_group_owner,
                                         saved_response_->interest_group_name);
   std::vector<blink::AdDescriptor> ad_components;
-  base::ranges::transform(
+  std::ranges::transform(
       saved_response_->ad_components, std::back_inserter(ad_components),
       [](const GURL& url) { return blink::AdDescriptor(url); });
   return buyer_helpers_[0]->TryToCreateBidFromServerResponse(
@@ -6718,7 +6717,7 @@ InterestGroupAuction::CreatePrimaryBidFromServerResponse(
 std::unique_ptr<InterestGroupAuction::Bid>
 InterestGroupAuction::CreateGhostBidFromServerResponse() {
   DCHECK(saved_response_->k_anon_ghost_winner);
-  const auto& buyer_helper = base::ranges::find_if(
+  const auto& buyer_helper = std::ranges::find_if(
       buyer_helpers_, [this](std::unique_ptr<BuyerHelper>& helper) {
         return helper->owner() ==
                saved_response_->k_anon_ghost_winner->interest_group.owner;
@@ -6729,7 +6728,7 @@ InterestGroupAuction::CreateGhostBidFromServerResponse() {
   BuyerHelper* helper = buyer_helper->get();
   CHECK(saved_response_->k_anon_ghost_winner->ghost_winner);
   std::vector<blink::AdDescriptor> ghost_ad_components;
-  base::ranges::transform(
+  std::ranges::transform(
       saved_response_->k_anon_ghost_winner->ghost_winner->ad_components,
       std::back_inserter(ghost_ad_components),
       [](const GURL& url) { return blink::AdDescriptor(url); });

@@ -5,11 +5,12 @@
 #include "content/renderer/worker/embedded_shared_worker_stub.h"
 
 #include <stdint.h>
+
+#include <algorithm>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "content/renderer/content_security_policy_util.h"
 #include "content/renderer/policy_container_util.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
@@ -165,7 +166,7 @@ EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
 
   blink::WebVector<blink::WebString> web_cors_exempt_header_list(
       cors_exempt_header_list.size());
-  base::ranges::transform(
+  std::ranges::transform(
       cors_exempt_header_list, web_cors_exempt_header_list.begin(),
       [](const auto& header) { return blink::WebString::FromLatin1(header); });
 

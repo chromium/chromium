@@ -4,10 +4,11 @@
 
 #include "content/browser/web_contents/file_chooser_impl.h"
 
+#include <algorithm>
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"

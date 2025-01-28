@@ -4,10 +4,11 @@
 
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"

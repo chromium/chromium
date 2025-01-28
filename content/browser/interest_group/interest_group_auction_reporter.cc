@@ -370,8 +370,8 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
              std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
         private_aggregation_requests) {
   // Empty vectors should've been filtered out.
-  DCHECK(base::ranges::none_of(private_aggregation_requests,
-                               [](auto& it) { return it.second.empty(); }));
+  DCHECK(std::ranges::none_of(private_aggregation_requests,
+                              [](auto& it) { return it.second.empty(); }));
 
   if (private_aggregation_requests.empty() || !private_aggregation_manager) {
     return;

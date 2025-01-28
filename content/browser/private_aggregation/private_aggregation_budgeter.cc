@@ -509,7 +509,7 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     std::string reporting_origin_serialized = budget_key.origin().Serialize();
     proto::ReportingOrigin* reporting_origin_entry = nullptr;
 
-    auto reporting_origin_entry_it = base::ranges::find_if(
+    auto reporting_origin_entry_it = std::ranges::find_if(
         *reporting_origins_for_deletion,
         [&reporting_origin_serialized](const proto::ReportingOrigin& elem) {
           return elem.origin() == reporting_origin_serialized;

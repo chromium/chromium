@@ -4,6 +4,7 @@
 
 #include "content/browser/webid/federated_auth_request_impl.h"
 
+#include <algorithm>
 #include <random>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"

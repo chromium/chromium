@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -22,7 +23,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/named_trigger.h"
@@ -5518,7 +5518,7 @@ void RenderFrameHostManager::CollectOpenerFrameTrees(
 
       FrameTree& opener_tree = node->opener()->frame_tree();
       const auto& existing_tree_it =
-          base::ranges::find(*opener_frame_trees, &opener_tree);
+          std::ranges::find(*opener_frame_trees, &opener_tree);
 
       if (existing_tree_it == opener_frame_trees->end()) {
         // This is a new opener tree that we will need to process.

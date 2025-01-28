@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <optional>
@@ -38,7 +39,6 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -2846,10 +2846,10 @@ void WebContentsImpl::OnAudioStateChanged() {
       audio_stream_monitor_.IsCurrentlyAudible() ||
       (browser_plugin_embedder_ &&
        browser_plugin_embedder_->AreAnyGuestsCurrentlyAudible()) ||
-      base::ranges::any_of(GetInnerWebContents(),
-                           [](WebContents* inner_contents) {
-                             return inner_contents->IsCurrentlyAudible();
-                           });
+      std::ranges::any_of(GetInnerWebContents(),
+                          [](WebContents* inner_contents) {
+                            return inner_contents->IsCurrentlyAudible();
+                          });
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::OnAudioStateChanged",
                         "is_currently_audible", is_currently_audible,
                         "was_audible", is_currently_audible_);
@@ -4252,10 +4252,10 @@ bool WebContentsImpl::CanEnterFullscreenMode(
   // blocked. Therefore, disqualify it from fullscreen if it or any upstream
   // WebContents has an active blocker.
   return delegate_ &&
-         base::ranges::all_of(GetAllOpeningWebContents(this),
-                              [](auto* opener) {
-                                return opener->fullscreen_blocker_count_ == 0;
-                              }) &&
+         std::ranges::all_of(GetAllOpeningWebContents(this),
+                             [](auto* opener) {
+                               return opener->fullscreen_blocker_count_ == 0;
+                             }) &&
          delegate_->CanEnterFullscreenModeForTab(requesting_frame);
 }
 

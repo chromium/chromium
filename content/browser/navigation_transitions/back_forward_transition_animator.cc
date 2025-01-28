@@ -2166,8 +2166,8 @@ void BackForwardTransitionAnimator::InsertLayersInOrder() {
   const std::vector<scoped_refptr<cc::slim::Layer>> layers =
       parent_layer->children();
   auto itr =
-      base::ranges::find(layers, animation_manager_->web_contents_view_android()
-                                     ->parent_for_web_page_widgets());
+      std::ranges::find(layers, animation_manager_->web_contents_view_android()
+                                    ->parent_for_web_page_widgets());
   CHECK(itr != layers.end());
   std::ptrdiff_t web_page_widgets_index = std::distance(layers.begin(), itr);
 

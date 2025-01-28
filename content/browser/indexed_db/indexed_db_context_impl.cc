@@ -31,7 +31,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/clamped_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -369,8 +368,8 @@ void IndexedDBContextImpl::DidForceCloseForDeleteBucketData(
     return;
   }
 
-  bool success = base::ranges::all_of(GetStoragePaths(bucket_locator),
-                                      &base::DeletePathRecursively);
+  bool success = std::ranges::all_of(GetStoragePaths(bucket_locator),
+                                     &base::DeletePathRecursively);
   NotifyOfBucketModification(bucket_locator);
   if (success) {
     bucket_set_.erase(bucket_locator);
@@ -647,7 +646,7 @@ std::optional<BucketLocator> IndexedDBContextImpl::LookUpBucket(
     storage::BucketId bucket_id) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   auto bucket_locator =
-      base::ranges::find(bucket_set_, bucket_id, &BucketLocator::id);
+      std::ranges::find(bucket_set_, bucket_id, &BucketLocator::id);
   if (bucket_locator == bucket_set_.end()) {
     return std::nullopt;
   }
@@ -800,7 +799,7 @@ void IndexedDBContextImpl::ShutdownOnIDBSequence(base::TimeTicks start_time) {
                                         bucket_locator.storage_key.origin());
 
     if (!delete_bucket && bucket_locator.storage_key.IsThirdPartyContext()) {
-      delete_bucket = base::ranges::any_of(
+      delete_bucket = std::ranges::any_of(
           origins_to_purge_on_shutdown_, [&](const url::Origin& origin) {
             return net::SchemefulSite(origin) ==
                    bucket_locator.storage_key.top_level_site();
@@ -811,8 +810,8 @@ void IndexedDBContextImpl::ShutdownOnIDBSequence(base::TimeTicks start_time) {
       ForceClose(bucket_locator.id, {},
                  base::BindOnce(
                      [](std::vector<base::FilePath> paths) {
-                       base::ranges::for_each(paths,
-                                              &base::DeletePathRecursively);
+                       std::ranges::for_each(paths,
+                                             &base::DeletePathRecursively);
                      },
                      GetStoragePaths(bucket_locator)));
     }

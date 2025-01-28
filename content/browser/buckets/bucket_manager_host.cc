@@ -4,10 +4,11 @@
 
 #include "content/browser/buckets/bucket_manager_host.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -255,7 +256,7 @@ void BucketManagerHost::DidGetBuckets(
   std::vector<std::string> keys;
   for (const auto& bucket : buckets.value_or(std::set<storage::BucketInfo>())) {
     if (!bucket.is_default()) {
-      keys.insert(base::ranges::upper_bound(keys, bucket.name), bucket.name);
+      keys.insert(std::ranges::upper_bound(keys, bucket.name), bucket.name);
     }
   }
   std::move(callback).Run(keys, buckets.has_value());

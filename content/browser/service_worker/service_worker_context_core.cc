@@ -229,7 +229,7 @@ class ClearAllServiceWorkersHelper
 int GetWarmedUpServiceWorkerCount(
     const std::map<int64_t, raw_ptr<ServiceWorkerVersion, CtnExperimental>>&
         live_versions) {
-  return base::ranges::count_if(live_versions, [](const auto& iter) {
+  return std::ranges::count_if(live_versions, [](const auto& iter) {
     ServiceWorkerVersion& service_worker_version = *iter.second;
     return service_worker_version.IsWarmingUp() ||
            service_worker_version.IsWarmedUp();

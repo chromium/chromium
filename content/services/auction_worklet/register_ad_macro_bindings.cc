@@ -62,7 +62,7 @@ void RegisterAdMacroBindings::RegisterAdMacro(
   }
 
   auto ContainsDisallowedCharacters = [](const std::string& str) -> bool {
-    return base::ranges::any_of(
+    return std::ranges::any_of(
         str, [](char c) { return !url::IsURIComponentChar(c) && c != '%'; });
   };
 

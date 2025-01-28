@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+#include <functional>
 #include <limits>
 #include <map>
 #include <set>
@@ -23,8 +25,6 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/functional.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/attribution_reporting/destination_set.h"
@@ -439,15 +439,15 @@ std::vector<StoredSource::Id> SelectDestinations(
     selected.emplace_back(destination_datas.extract(destination_datas.begin()));
   }
 
-  base::ranges::make_heap(selected, cmp);
+  std::ranges::make_heap(selected, cmp);
 
   while (!destination_datas.empty()) {
     auto destination = destination_datas.extract(destination_datas.begin());
 
     if (cmp(destination, selected.front())) {
-      base::ranges::pop_heap(selected, cmp);
+      std::ranges::pop_heap(selected, cmp);
       std::swap(selected.back(), destination);
-      base::ranges::push_heap(selected, cmp);
+      std::ranges::push_heap(selected, cmp);
     }
   }
 

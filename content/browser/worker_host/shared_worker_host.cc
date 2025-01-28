@@ -4,13 +4,13 @@
 
 #include "content/browser/worker_host/shared_worker_host.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
@@ -619,7 +619,7 @@ void SharedWorkerHost::BindPressureService(
   }
 
   // https://www.w3.org/TR/compute-pressure/#policy-control
-  if (base::ranges::any_of(GetRenderFrameIDsForWorker(), [](const auto& id) {
+  if (std::ranges::any_of(GetRenderFrameIDsForWorker(), [](const auto& id) {
         auto* render_frame_host = RenderFrameHostImpl::FromID(id);
         return render_frame_host &&
                !render_frame_host->IsFeatureEnabled(

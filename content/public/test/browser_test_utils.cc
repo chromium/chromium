@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <set>
 #include <string_view>
@@ -27,7 +28,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/process/kill.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/pattern.h"
@@ -2007,8 +2007,8 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
 std::vector<WebContents*> GetAllWebContents() {
   std::vector<WebContentsImpl*> all_wci = WebContentsImpl::GetAllWebContents();
   std::vector<WebContents*> all_wc;
-  base::ranges::transform(all_wci, std::back_inserter(all_wc),
-                          [](WebContentsImpl* wc) { return wc; });
+  std::ranges::transform(all_wci, std::back_inserter(all_wc),
+                         [](WebContentsImpl* wc) { return wc; });
 
   return all_wc;
 }

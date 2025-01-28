@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cmath>
 #include <functional>
 #include <optional>
@@ -32,7 +33,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
@@ -510,9 +510,9 @@ void LogMetricsOnReportSent(const AttributionReport& report,
 }
 
 bool HasNonDefaultFilteringId(const AttributionTrigger& trigger) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       trigger.registration().aggregatable_values, [](const auto& value) {
-        return base::ranges::any_of(value.values(), [](const auto& val) {
+        return std::ranges::any_of(value.values(), [](const auto& val) {
           return val.second.filtering_id() !=
                  attribution_reporting::kDefaultFilteringId;
         });

@@ -18,7 +18,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
@@ -254,8 +253,8 @@ void GotManifest(std::optional<std::string> manifest_id,
       -> std::unique_ptr<Page::ImageResource> {
     auto icon = Page::ImageResource::Create();
     std::vector<std::string> size_strings;
-    base::ranges::transform(input_icon.sizes, std::back_inserter(size_strings),
-                            &gfx::Size::ToString);
+    std::ranges::transform(input_icon.sizes, std::back_inserter(size_strings),
+                           &gfx::Size::ToString);
     icon.SetSizes(base::JoinString(size_strings, " "));
     icon.SetType(base::UTF16ToUTF8(input_icon.type));
     return icon.SetUrl(input_icon.src.possibly_invalid_spec()).Build();

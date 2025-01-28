@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <set>
 
@@ -18,7 +19,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/token.h"
 #include "build/build_config.h"
@@ -390,7 +390,7 @@ void VideoCaptureController::ReturnBuffer(
   CHECK(client);
 
   auto buffers_in_use_entry_iter =
-      base::ranges::find(client->buffers_in_use, buffer_id);
+      std::ranges::find(client->buffers_in_use, buffer_id);
   CHECK(buffers_in_use_entry_iter != std::end(client->buffers_in_use));
   client->buffers_in_use.erase(buffers_in_use_entry_iter);
 
@@ -813,13 +813,13 @@ VideoCaptureController::ControllerClient* VideoCaptureController::FindClient(
 std::vector<VideoCaptureController::BufferContext>::iterator
 VideoCaptureController::FindBufferContextFromBufferContextId(
     int buffer_context_id) {
-  return base::ranges::find(buffer_contexts_, buffer_context_id,
-                            &BufferContext::buffer_context_id);
+  return std::ranges::find(buffer_contexts_, buffer_context_id,
+                           &BufferContext::buffer_context_id);
 }
 
 std::vector<VideoCaptureController::BufferContext>::iterator
 VideoCaptureController::FindUnretiredBufferContextFromBufferId(int buffer_id) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       buffer_contexts_, [buffer_id](const BufferContext& entry) {
         return (entry.buffer_id() == buffer_id) && !entry.is_retired();
       });
@@ -848,8 +848,8 @@ void VideoCaptureController::ReleaseBufferContext(
     if (client->session_closed)
       continue;
     auto entry_iter =
-        base::ranges::find(client->known_buffer_context_ids,
-                           buffer_context_iter->buffer_context_id());
+        std::ranges::find(client->known_buffer_context_ids,
+                          buffer_context_iter->buffer_context_id());
     if (entry_iter != std::end(client->known_buffer_context_ids)) {
       client->known_buffer_context_ids.erase(entry_iter);
       client->event_handler->OnBufferDestroyed(

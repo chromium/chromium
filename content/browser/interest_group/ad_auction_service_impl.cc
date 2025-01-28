@@ -9,6 +9,7 @@
 
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <map>
 #include <memory>
@@ -26,7 +27,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1059,7 +1059,7 @@ void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
   }
 
   if (!has_logged_private_aggregation_filtering_id_web_feature_ &&
-      base::ranges::any_of(
+      std::ranges::any_of(
           private_aggregation_requests, [](const auto& request) {
             auction_worklet::mojom::AggregatableReportContributionPtr&
                 contribution = request->contribution;
@@ -1078,10 +1078,10 @@ void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
   }
 
   if (!has_logged_private_aggregation_enable_debug_mode_web_feature_ &&
-      base::ranges::any_of(private_aggregation_requests,
-                           [](const auto& request) {
-                             return request->debug_mode_details->is_enabled;
-                           })) {
+      std::ranges::any_of(private_aggregation_requests,
+                          [](const auto& request) {
+                            return request->debug_mode_details->is_enabled;
+                          })) {
     has_logged_private_aggregation_enable_debug_mode_web_feature_ = true;
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         &render_frame_host(),
@@ -1089,7 +1089,7 @@ void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
   }
 
   if (!has_logged_extended_private_aggregation_web_feature_ &&
-      base::ranges::any_of(
+      std::ranges::any_of(
           private_aggregation_requests, [](const auto& request) {
             return request->contribution->is_for_event_contribution();
           })) {

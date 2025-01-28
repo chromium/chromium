@@ -4,13 +4,13 @@
 
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config_mojom_traits.h"
 
+#include <algorithm>
 #include <functional>
 #include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
@@ -427,7 +427,7 @@ TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
     // Returns a lambda that compares two ranges using the given `proj`.
     const auto cmp = [](const auto& proj) {
       return [&](const auto& a, const auto& b) {
-        return base::ranges::equal(a, b, {}, proj, proj);
+        return std::ranges::equal(a, b, {}, proj, proj);
       };
     };
 

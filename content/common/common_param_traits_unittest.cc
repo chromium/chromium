@@ -82,7 +82,7 @@ TEST(IPCMessageTest, Bitmap) {
   // Add some bogus pixel data.
   const size_t bogus_pixels_size = bitmap.computeByteSize() * 2;
   auto bogus_pixels = base::HeapArray<uint8_t>::Uninit(bogus_pixels_size);
-  base::ranges::fill(bogus_pixels, 'B');
+  std::ranges::fill(bogus_pixels, 'B');
   bad_msg.WriteData(bogus_pixels);
 
   // Make sure we don't read out the bitmap!

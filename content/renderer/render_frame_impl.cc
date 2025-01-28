@@ -4,6 +4,7 @@
 
 #include "content/renderer/render_frame_impl.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -39,7 +40,6 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -1307,7 +1307,7 @@ class MHTMLPartsGenerationDelegateImpl final
     DCHECK(std::is_sorted(params_->digests_of_uris_to_skip.begin(),
                           params_->digests_of_uris_to_skip.end()));
     // URLs are not duplicated.
-    DCHECK(base::ranges::adjacent_find(params_->digests_of_uris_to_skip) ==
+    DCHECK(std::ranges::adjacent_find(params_->digests_of_uris_to_skip) ==
            params_->digests_of_uris_to_skip.end());
   }
 
@@ -3583,7 +3583,7 @@ RenderFrameImpl::CreateWorkerFetchContext() {
       RenderThreadImpl::current()->cors_exempt_header_list();
   blink::WebVector<blink::WebString> web_cors_exempt_header_list(
       cors_exempt_header_list.size());
-  base::ranges::transform(
+  std::ranges::transform(
       cors_exempt_header_list, web_cors_exempt_header_list.begin(),
       [](const auto& header) { return blink::WebString::FromLatin1(header); });
 

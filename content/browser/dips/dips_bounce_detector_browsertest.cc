@@ -4,6 +4,7 @@
 
 #include "content/browser/dips/dips_bounce_detector.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -20,7 +21,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -158,8 +158,8 @@ void AppendSitesInReport(std::vector<std::string>* reports,
 
 std::vector<url::Origin> GetOrigins(const AttributionData& data) {
   std::vector<url::Origin> origins;
-  base::ranges::transform(data, std::back_inserter(origins),
-                          &AttributionDataModel::DataKey::reporting_origin);
+  std::ranges::transform(data, std::back_inserter(origins),
+                         &AttributionDataModel::DataKey::reporting_origin);
   return origins;
 }
 

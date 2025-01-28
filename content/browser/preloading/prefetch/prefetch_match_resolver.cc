@@ -4,11 +4,11 @@
 
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"

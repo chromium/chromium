@@ -214,7 +214,7 @@ TEST_F(InterestGroupRealTimeReportUtilTest,
     // A histogram is a vector of length total_buckets, and each element is
     // either 0 or 1.
     EXPECT_EQ(static_cast<unsigned>(total_buckets), it->second.size());
-    EXPECT_TRUE(base::ranges::all_of(
+    EXPECT_TRUE(std::ranges::all_of(
         it->second, [](uint8_t bit) { return bit == 0 || bit == 1; }));
   }
 }

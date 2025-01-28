@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <string>
@@ -22,7 +23,6 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-container.h"
@@ -351,8 +351,8 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToArrayBuffer(
          isolate->GetCurrentContext());
   v8::Local<v8::ArrayBuffer> buffer =
       v8::ArrayBuffer::New(isolate, value.size());
-  base::ranges::copy(value,
-                     static_cast<uint8_t*>(buffer->GetBackingStore()->Data()));
+  std::ranges::copy(value,
+                    static_cast<uint8_t*>(buffer->GetBackingStore()->Data()));
   return buffer;
 }
 

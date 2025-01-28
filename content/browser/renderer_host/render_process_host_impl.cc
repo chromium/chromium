@@ -55,7 +55,6 @@
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/system/sys_info.h"
@@ -4330,7 +4329,7 @@ void RenderProcessHostImpl::UnregisterCreationObserver(
       BrowserThread::CurrentlyOn(BrowserThread::UI) ||
       // Chrome OS and Android unit tests trigger the thread uninitialized case.
       !BrowserThread::IsThreadInitialized(BrowserThread::UI));
-  auto iter = base::ranges::find(GetAllCreationObservers(), observer);
+  auto iter = std::ranges::find(GetAllCreationObservers(), observer);
   CHECK(iter != GetAllCreationObservers().end(), base::NotFatalUntil::M130);
   GetAllCreationObservers().erase(iter);
 }

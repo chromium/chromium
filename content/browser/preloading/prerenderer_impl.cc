@@ -96,8 +96,8 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     }
   }
 
-  base::ranges::stable_sort(prerender_candidates, std::less<>(),
-                            [](const auto& p) { return p.second->url; });
+  std::ranges::stable_sort(prerender_candidates, std::less<>(),
+                           [](const auto& p) { return p.second->url; });
   std::vector<std::pair<size_t, blink::mojom::SpeculationCandidatePtr>>
       candidates_to_start;
 
@@ -129,12 +129,12 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
       url = std::min(candidate_it->second->url, started_it->url);
 
     // Select the ranges from both that match the URL in question.
-    auto equal_prerender_end = base::ranges::find_if(
+    auto equal_prerender_end = std::ranges::find_if(
         started_it, started_prerenders_.end(),
         [&](const auto& started) { return started.url != url; });
     base::span<PrerenderInfo> matching_prerenders(started_it,
                                                   equal_prerender_end);
-    auto equal_candidate_end = base::ranges::find_if(
+    auto equal_candidate_end = std::ranges::find_if(
         candidate_it, prerender_candidates.end(),
         [&](const auto& candidate) { return candidate.second->url != url; });
     base::span<std::pair<size_t, blink::mojom::SpeculationCandidatePtr>>
@@ -201,8 +201,8 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
   // Actually start the candidates in their original order once the diffing is
   // done.
-  base::ranges::sort(candidates_to_start, std::less<>(),
-                     [](const auto& p) { return p.first; });
+  std::ranges::sort(candidates_to_start, std::less<>(),
+                    [](const auto& p) { return p.first; });
   for (const auto& [_, candidate] : candidates_to_start) {
     PreloadingTriggerType trigger_type =
         PreloadingTriggerTypeFromSpeculationInjectionType(
@@ -257,7 +257,7 @@ bool PrerendererImpl::MaybePrerender(
 
   auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host_.get());
 
-  auto [begin, end] = base::ranges::equal_range(
+  auto [begin, end] = std::ranges::equal_range(
       started_prerenders_.begin(), started_prerenders_.end(), candidate->url,
       std::less<>(), &PrerenderInfo::url);
   // cannot currently start a second prerender with the same URL
@@ -366,9 +366,9 @@ bool PrerendererImpl::MaybePrerender(
   // `started_prerenders_` may be modified through this cancellation. Therefore,
   // it is needed to re-calculate the right place here on `started_prerenders_`
   // for new candidates.
-  end = base::ranges::upper_bound(started_prerenders_.begin(),
-                                  started_prerenders_.end(), candidate->url,
-                                  std::less<>(), &PrerenderInfo::url);
+  end = std::ranges::upper_bound(started_prerenders_.begin(),
+                                 started_prerenders_.end(), candidate->url,
+                                 std::less<>(), &PrerenderInfo::url);
 
   started_prerenders_.insert(end, {.injection_type = candidate->injection_type,
                                    .eagerness = candidate->eagerness,
@@ -379,7 +379,7 @@ bool PrerendererImpl::MaybePrerender(
 }
 
 bool PrerendererImpl::ShouldWaitForPrerenderResult(const GURL& url) {
-  auto [begin, end] = base::ranges::equal_range(
+  auto [begin, end] = std::ranges::equal_range(
       started_prerenders_.begin(), started_prerenders_.end(), url,
       std::less<>(), &PrerenderInfo::url);
   for (auto it = begin; it != end; ++it) {

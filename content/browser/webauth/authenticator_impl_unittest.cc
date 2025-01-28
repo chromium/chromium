@@ -37,7 +37,6 @@
 #include "base/memory/stack_allocated.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -1007,8 +1006,8 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
 // Verify behavior for various combinations of origins and RP IDs.
 TEST_F(AuthenticatorImplTest, MakeCredentialOriginAndRpIds) {
   std::vector<OriginClaimedAuthorityPair> tests;
-  base::ranges::copy(kValidRpTestCases, std::back_inserter(tests));
-  base::ranges::copy(kInvalidRpTestCases, std::back_inserter(tests));
+  std::ranges::copy(kValidRpTestCases, std::back_inserter(tests));
+  std::ranges::copy(kInvalidRpTestCases, std::back_inserter(tests));
 
   int test_case_count = 0;
   for (const auto& test_case : tests) {
@@ -1083,7 +1082,7 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities) {
   ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
 
   std::vector<std::string> capability_names;
-  base::ranges::transform(
+  std::ranges::transform(
       capabilities, std::back_inserter(capability_names),
       [](const auto& capability) { return capability->name; });
 
@@ -1101,7 +1100,7 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities) {
   // Check that each required capability is present exactly once.
   for (const auto& capability : kRequiredCapabilities) {
     EXPECT_EQ(1u, static_cast<size_t>(
-                      base::ranges::count(capability_names, capability)));
+                      std::ranges::count(capability_names, capability)));
   }
 }
 
@@ -4309,7 +4308,7 @@ TEST_F(AuthenticatorImplTest, AllowListWithOnlyOversizedCredentialIds) {
     const auto& allow_list_history =
         virtual_device_factory_->mutable_state()->allow_list_history;
     // No empty allow-list requests should have been made.
-    EXPECT_TRUE(base::ranges::none_of(
+    EXPECT_TRUE(std::ranges::none_of(
         allow_list_history,
         [](const std::vector<device::PublicKeyCredentialDescriptor>&
                allow_list) { return allow_list.empty(); }));
@@ -7174,7 +7173,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
               });
 
     std::vector<std::string> string_reps;
-    base::ranges::transform(
+    std::ranges::transform(
         responses, std::back_inserter(string_reps),
         [](const device::AuthenticatorGetAssertionResponse& response) {
           const device::PublicKeyCredentialUserEntity& user =
@@ -7185,7 +7184,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
 
     EXPECT_EQ(config_.expected_accounts, base::JoinString(string_reps, "/"));
 
-    const auto selected = base::ranges::find(
+    const auto selected = std::ranges::find(
         responses, config_.selected_user_id,
         [](const device::AuthenticatorGetAssertionResponse& response) {
           return response.user_entity->id;
@@ -9761,7 +9760,7 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
 
   void OnInvalidatedPairing(
       std::unique_ptr<device::cablev2::Pairing> disabled_pairing) {
-    pairings_.erase(base::ranges::find_if(
+    pairings_.erase(std::ranges::find_if(
         pairings_, [&disabled_pairing](const auto& pairing) {
           return device::cablev2::Pairing::EqualPublicKeys(pairing,
                                                            disabled_pairing);

@@ -4,13 +4,13 @@
 
 #include "content/browser/renderer_host/cookie_utils.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <ostream>
 #include <string>
 
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -302,7 +302,7 @@ void SplitCookiesIntoAllowedAndBlocked(
                                   cookie_details->is_ad_tagged,
                                   cookie_details->cookie_setting_overrides,
                                   cookie_details->site_for_cookies});
-  int allowed_count = base::ranges::count_if(
+  int allowed_count = std::ranges::count_if(
       cookie_details->cookie_list,
       [](const network::mojom::CookieOrLineWithAccessResultPtr&
              cookie_and_access_result) {
@@ -321,7 +321,7 @@ void SplitCookiesIntoAllowedAndBlocked(
                                   cookie_details->is_ad_tagged,
                                   cookie_details->cookie_setting_overrides,
                                   cookie_details->site_for_cookies});
-  int blocked_count = base::ranges::count_if(
+  int blocked_count = std::ranges::count_if(
       cookie_details->cookie_list,
       [](const network::mojom::CookieOrLineWithAccessResultPtr&
              cookie_and_access_result) {

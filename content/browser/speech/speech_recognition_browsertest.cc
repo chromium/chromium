@@ -295,7 +295,7 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
         audio_buffer[i] =
             static_cast<uint8_t>(127 * sin(i * 3.14F / (16 * buffer_size)));
     } else {
-      base::ranges::fill(audio_buffer, 0);
+      std::ranges::fill(audio_buffer, 0);
     }
 
     std::unique_ptr<media::AudioBus> audio_bus =

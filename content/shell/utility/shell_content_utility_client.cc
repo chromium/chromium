@@ -4,6 +4,7 @@
 
 #include "content/shell/utility/shell_content_utility_client.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/process/process.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/services/storage/test_api/test_api.h"
@@ -90,8 +90,8 @@ class TestUtilityServiceImpl : public mojom::TestService {
     base::MappedReadOnlyRegion map_and_region =
         base::ReadOnlySharedMemoryRegion::Create(message.size());
     CHECK(map_and_region.IsValid());
-    base::ranges::copy(message,
-                       map_and_region.mapping.GetMemoryAsSpan<char>().begin());
+    std::ranges::copy(message,
+                      map_and_region.mapping.GetMemoryAsSpan<char>().begin());
     std::move(callback).Run(std::move(map_and_region.region));
   }
 
@@ -102,7 +102,7 @@ class TestUtilityServiceImpl : public mojom::TestService {
     CHECK(region.IsValid());
     base::WritableSharedMemoryMapping mapping = region.Map();
     CHECK(mapping.IsValid());
-    base::ranges::copy(message, mapping.GetMemoryAsSpan<char>().begin());
+    std::ranges::copy(message, mapping.GetMemoryAsSpan<char>().begin());
     std::move(callback).Run(std::move(region));
   }
 
@@ -113,7 +113,7 @@ class TestUtilityServiceImpl : public mojom::TestService {
     CHECK(region.IsValid());
     base::WritableSharedMemoryMapping mapping = region.Map();
     CHECK(mapping.IsValid());
-    base::ranges::copy(message, mapping.GetMemoryAsSpan<char>().begin());
+    std::ranges::copy(message, mapping.GetMemoryAsSpan<char>().begin());
     std::move(callback).Run(std::move(region));
   }
 

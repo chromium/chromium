@@ -53,8 +53,8 @@ using AttributionData = std::set<AttributionDataModel::DataKey>;
 
 std::vector<url::Origin> GetOrigins(const AttributionData& data) {
   std::vector<url::Origin> origins;
-  base::ranges::transform(data, std::back_inserter(origins),
-                          &AttributionDataModel::DataKey::reporting_origin);
+  std::ranges::transform(data, std::back_inserter(origins),
+                         &AttributionDataModel::DataKey::reporting_origin);
   return origins;
 }
 

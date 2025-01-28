@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
@@ -18,7 +19,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
@@ -915,7 +915,7 @@ void VideoCaptureManager::DestroyControllerIfNoClients(
     // VideoCaptureController, and VideoCaptureDevice.
     DoStopDevice(controller);
     // TODO(mcasas): use a helper function https://crbug.com/624854.
-    auto controller_iter = base::ranges::find(
+    auto controller_iter = std::ranges::find(
         controllers_, controller, &scoped_refptr<VideoCaptureController>::get);
     controllers_.erase(controller_iter);
     // Check if there are any associated pending callbacks and delete them.

@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -18,7 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/timer/timer.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
@@ -1113,7 +1113,7 @@ PrefetchService::PopNextPrefetchContainer() {
   // managed by PrefetchDocumentManager, this depends on the state of the
   // initiating document, and the number of completed prefetches (this can also
   // result in previously completed prefetches being evicted).
-  auto prefetch_iter = base::ranges::find_if(
+  auto prefetch_iter = std::ranges::find_if(
       prefetch_queue_,
       [&](const base::WeakPtr<PrefetchContainer>& prefetch_container) {
         if (!prefetch_container->IsRendererInitiated()) {

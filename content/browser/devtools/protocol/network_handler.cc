@@ -1542,7 +1542,7 @@ void NetworkHandler::OnEndpointsUpdatedForOrigin(
   // Endpoint should have an origin.
   DCHECK(endpoints[0].group_key.origin.has_value());
   url::Origin origin = endpoints[0].group_key.origin.value();
-  DCHECK(base::ranges::all_of(endpoints, [&](auto const& endpoint) {
+  DCHECK(std::ranges::all_of(endpoints, [&](auto const& endpoint) {
     // Endpoint should have an origin.
     DCHECK(endpoint.group_key.origin.has_value());
     return endpoint.group_key.origin.value() == origin;
@@ -1551,7 +1551,7 @@ void NetworkHandler::OnEndpointsUpdatedForOrigin(
 
   // Only send protocol event if the origin of the updated endpoints matches
   // an origin in the local frame tree.
-  if (base::ranges::any_of(reporting_filter_urls, [&](auto const& url) {
+  if (std::ranges::any_of(reporting_filter_urls, [&](auto const& url) {
         return url::Origin::Create(url) == origin;
       })) {
     auto protocol_endpoints = std::make_unique<
