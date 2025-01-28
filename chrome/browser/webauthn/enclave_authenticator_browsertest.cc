@@ -3673,11 +3673,24 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForDelegateDestruction();
 }
 
+class EnclaveAuthenticatorIncognitoBrowserTest
+    : public EnclaveAuthenticatorWithPinBrowserTest,
+      public testing::WithParamInterface<bool> {};
+
 // Attempt a GetAssertion multiple times with GPM passkey bootstrapping
 // offered, and decline each time. The default should change away from GPM after
 // two times declined.
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorIncognitoBrowserTest,
                        MultipleDeclinedBootstrappings) {
+  content::WebContents* web_contents;
+  if (GetParam()) {
+    Browser* otr_browser = OpenURLOffTheRecord(
+        browser()->profile(),
+        https_server_.GetURL("www.example.com", "/title1.html"));
+    web_contents = otr_browser->tab_strip_model()->GetActiveWebContents();
+  } else {
+    web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  }
   EnableUVKeySupport();
   delegate_observer()->SetUseSyncedDeviceCablePairing(/*use_pairing=*/true);
 
@@ -3688,8 +3701,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
   AddTestPasskeyToModel();
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
   delegate_observer()->WaitForUI();
 
@@ -3728,7 +3739,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   }
   model_observer()->WaitForStep();
 
-  // Finally, cancel the request once more.
+  // Cancel the request once more.
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   dialog_model()->StartOver();
@@ -3752,7 +3763,37 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
       [](const auto& m) { return IsMechanismEnclaveCredential(m); }));
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+
+  // Finally, if the user manually chooses the enclave, it should be the default
+  // again. Attempting to bootstrap should be enough.
+  dialog_model()->OnGPMSelected();
+  if (GetParam()) {
+    EXPECT_EQ(
+        dialog_model()->step(),
+        AuthenticatorRequestDialogModel::Step::kGPMConfirmOffTheRecordCreate);
+    dialog_model()->OnGPMConfirmOffTheRecordCreate();
+  }
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+  dialog_model()->OnTrustThisComputer();
+
+  // Terminate the request and send a new one. The enclave should once again be
+  // the default.
+  dialog_model()->CancelAuthenticatorRequest();
+  delegate_observer()->WaitForDelegateDestruction();
+
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
+  delegate_observer()->WaitForUI();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
 }
+
+INSTANTIATE_TEST_SUITE_P(Incognito,
+                         EnclaveAuthenticatorIncognitoBrowserTest,
+                         testing::Values(false, true));
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                        ChangedPINDetectedWhenDoingUV) {
