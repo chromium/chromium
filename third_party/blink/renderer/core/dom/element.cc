@@ -309,6 +309,11 @@ class DisplayLockStyleScope {
     }
   }
 
+  bool IsLockedContentVisibilityAuto() const {
+    auto* context = element_->GetDisplayLockContext();
+    return context && context->IsLocked() && context->IsAuto();
+  }
+
  private:
   Element* element_;
   bool did_update_children_ = false;
@@ -3999,6 +4004,9 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   child_recalc_context.try_set = nullptr;
   child_recalc_context.try_tactics_set = nullptr;
 
+  child_recalc_context.has_content_visibility_auto_locked_ancestor |=
+      display_lock_style_scope.IsLockedContentVisibilityAuto();
+
   if (ContainerQueryData* cq_data = GetContainerQueryData()) {
     // If we skipped the subtree during style recalc, retrieve the
     // StyleRecalcChange which was the current change for the skipped subtree
@@ -4310,6 +4318,15 @@ StyleRecalcChange Element::RecalcOwnStyle(
   bool base_is_display_none =
       !new_style ||
       new_style->GetBaseComputedStyleOrThis()->Display() == EDisplay::kNone;
+
+  // Record a display: none subtree when it's under a content-visibility: auto
+  // locked subtree.
+  if (base_is_display_none &&
+      style_recalc_context.has_content_visibility_auto_locked_ancestor) {
+    UseCounter::Count(
+        GetDocument(),
+        WebFeature::kDisplayNoneComputedInContentVisibilityAutoLockedSubtree);
+  }
 
   if (new_style) {
     if (!ShouldStoreComputedStyle(*new_style)) {

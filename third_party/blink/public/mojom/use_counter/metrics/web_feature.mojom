@@ -4633,6 +4633,7 @@ enum WebFeature {
   kMixedFrameEmbeddedByLocalhost = 5247,
   kV8AILanguageModelCapabilities_MaxTemperature_AttributeGetter = 5248,
   kAboutSrcdocToBeControlledByServiceWorker = 5249,
+  kDisplayNoneComputedInContentVisibilityAutoLockedSubtree = 5250,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

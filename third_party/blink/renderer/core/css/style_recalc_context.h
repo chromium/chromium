@@ -112,6 +112,10 @@ class CORE_EXPORT StyleRecalcContext {
   // included when this flag is false (see OutOfFlowData, "speculative
   // @position-try styling").
   bool is_interleaved_oof = false;
+
+  // True if the ancestor of this element had a content-visibility: auto
+  // style and was locked, meaning that this is a forced update.
+  bool has_content_visibility_auto_locked_ancestor = false;
 };
 
 }  // namespace blink
