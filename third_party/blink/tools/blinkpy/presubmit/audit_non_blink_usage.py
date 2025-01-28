@@ -2137,6 +2137,8 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/renderer/core/html/canvas',
+            'third_party/blink/renderer/core/offscreencanvas',
+            'third_party/blink/renderer/modules/webgl',
         ],
         'allowed': [
             'viz::SharedImageFormat',

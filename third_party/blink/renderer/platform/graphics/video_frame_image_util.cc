@@ -352,8 +352,7 @@ std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
       CanvasResourceProvider::ShouldInitialize::kNo;
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
     return CanvasResourceProvider::CreateBitmapProvider(
-        size, viz::ToClosestSkColorType(format), alpha_type, color_space,
-        kShouldInitialize);
+        size, format, alpha_type, color_space, kShouldInitialize);
   }
   return CanvasResourceProvider::CreateSharedImageProvider(
       size, viz::ToClosestSkColorType(format), alpha_type, color_space,

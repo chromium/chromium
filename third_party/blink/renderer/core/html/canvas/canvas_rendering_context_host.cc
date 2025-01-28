@@ -162,6 +162,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   std::unique_ptr<CanvasResourceProvider> provider;
   const SkAlphaType alpha_type = GetRenderingContextAlphaType();
   const SkColorType sk_color_type = GetRenderingContextSkColorType();
+  const viz::SharedImageFormat format = GetRenderingContextFormat();
   const gfx::ColorSpace color_space = GetRenderingContextColorSpace();
   // Do not initialize the CRP using Skia. The CRP can have bottom left origin
   // in which case Skia Graphite won't be able to render into it, and WebGL is
@@ -235,8 +236,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        Size(), sk_color_type, alpha_type, color_space, kShouldInitialize,
-        this);
+        Size(), format, alpha_type, color_space, kShouldInitialize, this);
   }
 
   ReplaceResourceProvider(std::move(provider));
@@ -330,8 +330,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        Size(), sk_color_type, alpha_type, color_space, kShouldInitialize,
-        this);
+        Size(), format, alpha_type, color_space, kShouldInitialize, this);
   }
 
   ReplaceResourceProvider(std::move(provider));
