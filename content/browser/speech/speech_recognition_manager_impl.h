@@ -79,6 +79,10 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   void AbortAllSessionsForRenderFrame(int render_process_id,
                                       int render_frame_id) override;
   void StopAudioCaptureForSession(int session_id) override;
+  void UpdateRecognitionContextForSession(
+      int session_id,
+      const media::SpeechRecognitionRecognitionContext& recognition_context)
+      override;
   const SpeechRecognitionSessionConfig& GetSessionConfig(
       int session_id) override;
   SpeechRecognitionSessionContext GetSessionContext(int session_id) override;
@@ -130,6 +134,7 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   enum FSMEvent {
     EVENT_ABORT = 0,
     EVENT_START,
+    EVENT_UPDATE_RECOGNITION_CONTEXT,
     EVENT_STOP_CAPTURE,
     EVENT_AUDIO_ENDED,
     EVENT_RECOGNITION_ENDED,
@@ -147,6 +152,7 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
     scoped_refptr<SpeechRecognizer> recognizer;
     std::unique_ptr<MediaStreamUIProxy> ui;
     bool use_microphone;
+    media::SpeechRecognitionRecognitionContext recognition_context;
   };
 
   void AbortSessionImpl(int session_id);
@@ -179,6 +185,7 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
 
   // The methods below handle transitions of the session handling FSM.
   void SessionStart(const Session& session);
+  void SessionUpdateRecognitionContext(const Session& session);
   void SessionAbort(const Session& session);
   void SessionStopAudioCapture(const Session& session);
   void ResetCapturingSessionId(const Session& session);

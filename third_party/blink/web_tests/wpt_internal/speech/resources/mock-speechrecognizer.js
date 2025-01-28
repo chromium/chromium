@@ -108,4 +108,5 @@ class MockSpeechRecognitionSession {
 
   abort() {}
   stopCapture() {}
+  updateRecognitionContext(params) {}
 }

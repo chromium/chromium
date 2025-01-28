@@ -105,6 +105,14 @@ void SodaSpeechRecognitionEngineImpl::StartRecognition() {
   is_start_recognition_ = true;
 }
 
+void SodaSpeechRecognitionEngineImpl::UpdateRecognitionContext(
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  if (speech_recognition_recognizer_.is_bound()) {
+    speech_recognition_recognizer_->UpdateRecognitionContext(
+        recognition_context);
+  }
+}
+
 void SodaSpeechRecognitionEngineImpl::EndRecognition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   is_start_recognition_ = false;

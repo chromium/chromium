@@ -127,6 +127,11 @@ void NetworkSpeechRecognitionEngineImpl::StartRecognition() {
   DispatchEvent(event_args);
 }
 
+void NetworkSpeechRecognitionEngineImpl::UpdateRecognitionContext(
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  // TODO(crbug.com/383911744): Show a not-supported error to the client.
+}
+
 void NetworkSpeechRecognitionEngineImpl::EndRecognition() {
   base::UmaHistogramLongTimes100(kWebSpeechAudioDuration,
                                  upstream_audio_duration_);

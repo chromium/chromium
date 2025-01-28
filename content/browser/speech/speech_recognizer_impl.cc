@@ -249,6 +249,15 @@ void SpeechRecognizerImpl::StartRecognition(const std::string& device_id) {
                                 FSMEventArgs(EVENT_PREPARE)));
 }
 
+void SpeechRecognizerImpl::UpdateRecognitionContext(
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     FSMEventArgs(EVENT_UPDATE_RECOGNITION_CONTEXT)));
+}
+
 void SpeechRecognizerImpl::AbortRecognition() {
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
@@ -596,6 +605,13 @@ SpeechRecognizerImpl::DetectEndOfSpeech(const FSMEventArgs& event_args) {
   if (end_of_utterance_ || endpointer_.speech_input_complete())
     return StopCaptureAndWaitForResult(event_args);
   return STATE_RECOGNIZING;
+}
+
+SpeechRecognizerImpl::FSMState SpeechRecognizerImpl::UpdateRecognitionContext(
+    const FSMEventArgs& event_args) {
+  CHECK(recognition_engine_.get() != nullptr);
+  recognition_engine_->UpdateRecognitionContext(event_args.recognition_context);
+  return state_;
 }
 
 SpeechRecognizerImpl::FSMState
