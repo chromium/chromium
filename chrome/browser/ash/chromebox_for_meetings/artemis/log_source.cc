@@ -13,6 +13,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/specialized_log_sources.h"
 
+// Some files won't appear until after Chrome starts up. We'll try to open
+// the file at every `Fetch()` request up to `kMaxFileOpenAttempts` times.
+inline constexpr int kMaxFileOpenAttempts = 3;
+
 namespace ash::cfm {
 
 LogSource::LogSource(const std::string& filepath,
@@ -24,18 +28,24 @@ LogSource::LogSource(const std::string& filepath,
       log_file_(filepath),
       batch_size_(batch_size) {
   recovery_offset_ = GetLastKnownOffsetFromStorage();
+  InitializeFile();
+}
 
-  // No point in proceeding here if the file can't be opened
+LogSource::~LogSource() = default;
+
+bool LogSource::InitializeFile() {
   if (!log_file_.OpenAtOffset(recovery_offset_)) {
-    file_is_accessible_ = false;
-    return;
+    num_failed_open_attempts_ += 1;
+    LOG(ERROR) << "Unable to open file " << GetDisplayName() << ". Trying "
+               << kMaxFileOpenAttempts - num_failed_open_attempts_
+               << " more times.";
+    return false;
   }
 
   // Store this now so we can detect rotations later.
   last_known_inode_ = GetCurrentFileInode();
+  return true;
 }
-
-LogSource::~LogSource() = default;
 
 std::unique_ptr<LogSource> LogSource::Create(const std::string& filename,
                                              base::TimeDelta poll_rate,
@@ -54,6 +64,16 @@ std::unique_ptr<LogSource> LogSource::Create(const std::string& filename,
 }
 
 void LogSource::Fetch(FetchCallback callback) {
+  // If the log file is not open by this point, and we're under our
+  // max retry attempts, try to open it again.
+  if (!log_file_.IsOpen()) {
+    if (num_failed_open_attempts_ >= kMaxFileOpenAttempts ||
+        !InitializeFile()) {
+      std::move(callback).Run({});
+      return;
+    }
+  }
+
   // Cache the current offset to use as a recovery offset in the
   // event of a crash. Note that this will NOT be flushed to disk
   // until we get a call to Flush(), so if we crash before then,
@@ -67,7 +87,7 @@ void LogSource::Fetch(FetchCallback callback) {
 }
 
 void LogSource::Flush() {
-  if (!file_is_accessible_) {
+  if (!log_file_.IsOpen()) {
     return;
   }
   // The upload succeeded, so update our recovery offset.
@@ -80,7 +100,7 @@ const std::string& LogSource::GetDisplayName() {
 }
 
 std::vector<std::string> LogSource::GetNextData() {
-  if (!file_is_accessible_) {
+  if (!log_file_.IsOpen()) {
     return {};
   }
 

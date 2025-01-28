@@ -46,6 +46,7 @@ bool LogFile::OpenAtOffset(std::streampos offset) {
     return false;
   }
 
+  is_open_ = true;
   return true;
 }
 
@@ -53,6 +54,7 @@ void LogFile::CloseStream() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   file_stream_.close();
+  is_open_ = false;
 }
 
 bool LogFile::IsInFailState() const {
@@ -61,6 +63,10 @@ bool LogFile::IsInFailState() const {
 
 bool LogFile::IsAtEOF() const {
   return file_stream_.eof() && !IsInFailState();
+}
+
+bool LogFile::IsOpen() const {
+  return is_open_;
 }
 
 std::streampos LogFile::GetCurrentOffset() {
