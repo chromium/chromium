@@ -48,30 +48,28 @@ class PLATFORM_EXPORT TextRun final {
   DISALLOW_NEW();
 
  public:
-  TextRun(const LChar* c,
-          unsigned len,
-          TextDirection direction = TextDirection::kLtr,
-          bool directional_override = false,
-          bool normalize_space = false)
-      : len_(len),
+  explicit TextRun(base::span<const LChar> c,
+                   TextDirection direction = TextDirection::kLtr,
+                   bool directional_override = false,
+                   bool normalize_space = false)
+      : len_(base::checked_cast<wtf_size_t>(c.size())),
         is_8bit_(true),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
         normalize_space_(normalize_space) {
-    data_.characters8 = c;
+    data_.characters8 = c.data();
   }
 
-  TextRun(const UChar* c,
-          unsigned len,
-          TextDirection direction = TextDirection::kLtr,
-          bool directional_override = false,
-          bool normalize_space = false)
-      : len_(len),
+  explicit TextRun(base::span<const UChar> c,
+                   TextDirection direction = TextDirection::kLtr,
+                   bool directional_override = false,
+                   bool normalize_space = false)
+      : len_(base::checked_cast<wtf_size_t>(c.size())),
         is_8bit_(false),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
         normalize_space_(normalize_space) {
-    data_.characters16 = c;
+    data_.characters16 = c.data();
   }
 
   TextRun(const StringView& string)
@@ -114,15 +112,11 @@ class PLATFORM_EXPORT TextRun final {
 
     TextDirection new_direction = direction.value_or(Direction());
     if (Is8Bit()) {
-      TextRun result =
-          TextRun(data_.characters8 + start_offset, length, new_direction,
-                  directional_override_, normalize_space_);
-      return result;
+      return TextRun(Span8().subspan(start_offset, length), new_direction,
+                     directional_override_, normalize_space_);
     }
-    TextRun result =
-        TextRun(data_.characters16 + start_offset, length, new_direction,
-                directional_override_, normalize_space_);
-    return result;
+    return TextRun(Span16().subspan(start_offset, length), new_direction,
+                   directional_override_, normalize_space_);
   }
 
   // Returns the start index of a sub run if it was created by |SubRun|.

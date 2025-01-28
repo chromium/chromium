@@ -83,7 +83,8 @@ TSAN_TEST(FontObjectThreadedTest, TextIntercepts) {
     // are rectangles below the baseline.
     UChar ahem_above_below_baseline_string[] = {0xc9, 0x70, 0xc9, 0x70, 0xc9,
                                                 0x70, 0xc9, 0x70, 0xc9};
-    TextRun ahem_above_below_baseline(ahem_above_below_baseline_string, 9);
+    TextRun ahem_above_below_baseline{
+        base::span(ahem_above_below_baseline_string)};
     TextRunPaintInfo text_run_paint_info(ahem_above_below_baseline);
     cc::PaintFlags default_paint;
     std::tuple<float, float> below_baseline_bounds = std::make_tuple(2, 4);
@@ -120,7 +121,7 @@ TSAN_TEST(FontObjectThreadedTest, WordShaperTest) {
     ASSERT_TRUE(font.CanShapeWordByWord());
     ShapeCache* cache = MakeGarbageCollected<ShapeCache>();
 
-    TextRun text_run(reinterpret_cast<const LChar*>("ABC DEF."), 8);
+    TextRun text_run(base::byte_span_from_cstring("ABC DEF."));
 
     const ShapeResult* result = nullptr;
     CachingWordShapeIterator iter(cache, text_run, &font);

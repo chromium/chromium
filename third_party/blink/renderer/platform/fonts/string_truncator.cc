@@ -101,8 +101,7 @@ static base::span<const UChar> RightTruncateToBuffer(const String& string,
 
 static float StringWidth(const Font& renderer,
                          base::span<const UChar> characters) {
-  TextRun run(characters.data(), characters.size());
-  return renderer.Width(run);
+  return renderer.Width(TextRun(characters));
 }
 
 static String TruncateString(const String& string,
