@@ -49,7 +49,7 @@ export class PrintPreviewPinSettingsElement extends
       checkboxDisabled_: {
         type: Boolean,
         computed: 'computeCheckboxDisabled_(inputValid_, disabled, ' +
-            'settings.pin.setByPolicy)',
+            'settings.pin.setByGlobalPolicy)',
       },
 
       pinEnabled_: {

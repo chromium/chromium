@@ -107,13 +107,13 @@ suite('OtherOptionsSettingsTest', function() {
 
   // Tests that if settings are enforced by enterprise policy the checkbox
   // is disabled.
-  test('header footer disabled by policy', function() {
+  test('header footer disabled by global policy', function() {
     const checkbox =
         otherOptionsSection.shadowRoot!.querySelector<CrCheckboxElement>(
             '#headerFooter')!;
     // Set true and then false.
     [true, false].forEach((value: boolean) => {
-      model.set('settings.headerFooter.setByPolicy', value);
+      model.set('settings.headerFooter.setByGlobalPolicy', value);
       // Element expected to be disabled when policy is set.
       assertEquals(value, checkbox.disabled);
     });

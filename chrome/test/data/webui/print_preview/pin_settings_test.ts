@@ -166,7 +166,7 @@ suite('PinSettingsTest', function() {
 
   // Tests that if settings are enforced by enterprise policy the
   // appropriate UI is disabled.
-  test('disabled by policy', async () => {
+  test('disabled by global policy', async () => {
     const checkbox = pinSection.shadowRoot!.querySelector('cr-checkbox')!;
     assertFalse(checkbox.disabled);
 
@@ -174,7 +174,7 @@ suite('PinSettingsTest', function() {
     const input = pinSection.shadowRoot!.querySelector('cr-input')!;
     assertFalse(input.disabled);
 
-    model.set('settings.pin.setByPolicy', true);
+    model.set('settings.pin.setByGlobalPolicy', true);
     await input.updateComplete;
     assertTrue(checkbox.disabled);
     assertFalse(input.disabled);

@@ -133,7 +133,8 @@ suite('ModelSettingsPolicyTest', function() {
           subtestParams.expectedAvailable, model.settings.color.available);
       assertEquals(subtestParams.expectedManaged, model.settingsManaged);
       assertEquals(
-          subtestParams.expectedEnforced, model.settings.color.setByPolicy);
+          subtestParams.expectedEnforced,
+          model.settings.color.setByGlobalPolicy);
     });
   });
 
@@ -289,7 +290,8 @@ suite('ModelSettingsPolicyTest', function() {
           subtestParams.expectedAvailable, model.settings.duplex.available);
       assertEquals(subtestParams.expectedManaged, model.settingsManaged);
       assertEquals(
-          subtestParams.expectedEnforced, model.settings.duplex.setByPolicy);
+          subtestParams.expectedEnforced,
+          model.settings.duplex.setByGlobalPolicy);
       assertEquals(
           subtestParams.expectedShortEdge,
           model.getSettingValue('duplexShortEdge'));
@@ -298,7 +300,7 @@ suite('ModelSettingsPolicyTest', function() {
           model.settings.duplexShortEdge.available);
       assertEquals(
           subtestParams.expectedShortEdgeEnforced,
-          model.settings.duplexShortEdge.setByPolicy);
+          model.settings.duplexShortEdge.setByGlobalPolicy);
     });
   });
 
@@ -394,7 +396,7 @@ suite('ModelSettingsPolicyTest', function() {
           subtestParams.expectedAvailable, model.settings.pin.available);
       assertEquals(subtestParams.expectedManaged, model.settingsManaged);
       assertEquals(
-          subtestParams.expectedEnforced, model.settings.pin.setByPolicy);
+          subtestParams.expectedEnforced, model.settings.pin.setByGlobalPolicy);
     });
   });
   // </if>

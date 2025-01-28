@@ -60,7 +60,7 @@ suite('ColorSettingsTest', function() {
     const select = colorSection.shadowRoot!.querySelector('select')!;
     assertFalse(select.disabled);
 
-    model.set('settings.color.setByPolicy', true);
+    model.set('settings.color.setByGlobalPolicy', true);
     assertTrue(select.disabled);
   });
   // </if>
