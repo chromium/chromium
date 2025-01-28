@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill_ai {
@@ -99,6 +100,46 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion) {
                                                autofill::PASSPORT_NUMBER));
   // The third field is not of AutofillAi type.
   EXPECT_FALSE(AutofillAiPayloadContainsField(*payload, *form->fields()[2]));
+}
+
+TEST_F(AutofillAiSuggestionsTest,
+       GetFillingSuggestion_SkipFieldsThatDoNotMatchTheTriggeringFieldSection) {
+  autofill::EntityInstance passport_entity =
+      autofill::test::GetPassportEntityInstance();
+  std::vector<autofill::EntityInstance> entities = {passport_entity};
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  std::unique_ptr<autofill::FormStructure> form =
+      CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER});
+  // Assign different sections to the fields.
+  base::flat_map<autofill::LocalFrameToken, size_t> frame_token_ids;
+  for (const std::unique_ptr<autofill::AutofillField>& field : form->fields()) {
+    field->set_section(
+        autofill::Section::FromFieldIdentifier(*field, frame_token_ids));
+  }
+
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestionsV2(
+      *form, form->fields()[0]->global_id(), entities);
+
+  // There should be only one suggestion whose main text matches the entity
+  // value for the `triggering_field_type`.
+  EXPECT_EQ(suggestions.size(), 1u);
+  EXPECT_EQ(suggestions[0].main_text.value,
+            GetEntityInstanceValueForFieldType(passport_entity,
+                                               triggering_field_type));
+
+  const autofill::Suggestion::AutofillAiPayload* payload =
+      absl::get_if<autofill::Suggestion::AutofillAiPayload>(
+          &suggestions[0].payload);
+  ASSERT_TRUE(payload);
+  // The triggering/first field is of AutofillAi Type.
+  EXPECT_TRUE(AutofillAiPayloadContainsField(*payload, *form->fields()[0]));
+  EXPECT_EQ(AutofillAiPayloadValueForField(*payload, *form->fields()[0]),
+            GetEntityInstanceValueForFieldType(passport_entity,
+                                               triggering_field_type));
+  // The second field in the form is of a different section, which means only
+  // the first field generated a value to fill.
+  EXPECT_EQ((*payload).values_to_fill.size(), 1u);
 }
 
 TEST_F(AutofillAiSuggestionsTest, NonMatchingEntity_DoNoReturnSuggestions) {
