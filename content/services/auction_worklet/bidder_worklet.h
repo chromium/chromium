@@ -495,6 +495,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     };
 
     bool SetBrowserSignals(
+        ContextRecycler& context_recycler,
         bool is_for_additional_bid,
         const std::optional<std::string>& interest_group_name_reporting_id,
         const std::optional<std::string>& buyer_reporting_id,
@@ -526,6 +527,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     // returning true on success, false on failure.
     bool SetReportAggregateWinArgs(
         v8::Local<v8::Context>& context,
+        ContextRecycler& context_recycler,
         const std::optional<std::string>& auction_signals_json,
         const std::optional<std::string>& per_buyer_signals_json,
         const std::string seller_signals_json,

@@ -55,6 +55,7 @@
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/register_ad_macro_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
+#include "content/services/auction_worklet/report_win_browser_signals_lazy_filler.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/set_priority_bindings.h"
 #include "content/services/auction_worklet/set_priority_signals_override_bindings.h"
@@ -856,6 +857,7 @@ BidderWorklet::V8State::SingleGenerateBidResult::operator=(
     SingleGenerateBidResult&&) = default;
 
 bool BidderWorklet::V8State::SetBrowserSignals(
+    ContextRecycler& context_recycler,
     bool is_for_additional_bid,
     const std::optional<std::string>& interest_group_name_reporting_id,
     const std::optional<std::string>& buyer_reporting_id,
@@ -907,15 +909,6 @@ bool BidderWorklet::V8State::SetBrowserSignals(
           blink::PrintableAdCurrency(browser_signal_bid_currency)) ||
       (browser_signal_ad_cost.has_value() &&
        !browser_signals_dict.Set("adCost", *browser_signal_ad_cost)) ||
-      (browser_signal_modeling_signals.has_value() &&
-       !browser_signals_dict.Set(
-           "modelingSignals",
-           static_cast<double>(*browser_signal_modeling_signals))) ||
-      !browser_signals_dict.Set(
-          "joinCount", static_cast<double>(browser_signal_join_count)) ||
-      (!is_for_additional_bid &&
-       !browser_signals_dict.Set(
-           "recency", static_cast<double>(browser_signal_recency))) ||
       !browser_signals_dict.Set("highestScoringOtherBid",
                                 browser_signal_highest_scoring_other_bid) ||
       !browser_signals_dict.Set(
@@ -941,11 +934,21 @@ bool BidderWorklet::V8State::SetBrowserSignals(
                                  reporting_timeout.InMilliseconds()))) {
     return false;
   }
+
+  if (!context_recycler.report_win_lazy_filler()->FillInObject(
+          browser_signal_modeling_signals, browser_signal_join_count,
+          !is_for_additional_bid
+              ? std::optional<uint8_t>(browser_signal_recency)
+              : std::nullopt,
+          browser_signals)) {
+    return false;
+  }
   return true;
 }
 
 bool BidderWorklet::V8State::SetReportAggregateWinArgs(
     v8::Local<v8::Context>& context,
+    ContextRecycler& context_recycler,
     const std::optional<std::string>& auction_signals_json,
     const std::optional<std::string>& per_buyer_signals_json,
     const std::string seller_signals_json,
@@ -1021,9 +1024,10 @@ bool BidderWorklet::V8State::SetReportAggregateWinArgs(
   }
 
   if (!SetBrowserSignals(
-          is_for_additional_bid, interest_group_name_reporting_id,
-          buyer_reporting_id, buyer_and_seller_reporting_id,
-          selected_buyer_and_seller_reporting_id, browser_signal_render_url,
+          context_recycler, is_for_additional_bid,
+          interest_group_name_reporting_id, buyer_reporting_id,
+          buyer_and_seller_reporting_id, selected_buyer_and_seller_reporting_id,
+          browser_signal_render_url,
           /*deprecated_render_url=*/nullptr, browser_signal_bid,
           browser_signal_bid_currency, browser_signal_highest_scoring_other_bid,
           browser_signal_highest_scoring_other_bid_currency,
@@ -1157,6 +1161,8 @@ void BidderWorklet::V8State::ReportWin(
       break;
   }
 
+  context_recycler.AddReportWinBrowserSignalsLazyFiller();
+
   DeprecatedUrlLazyFiller deprecated_render_url(
       v8_helper_.get(), &v8_logger, &browser_signal_render_url,
       "browserSignals.renderUrl is deprecated."
@@ -1166,7 +1172,7 @@ void BidderWorklet::V8State::ReportWin(
           ? *browser_signal_reporting_timeout
           : AuctionV8Helper::kScriptTimeout;
   const bool browser_signals_set = SetBrowserSignals(
-      is_for_additional_bid, interest_group_name_reporting_id,
+      context_recycler, is_for_additional_bid, interest_group_name_reporting_id,
       buyer_reporting_id, buyer_and_seller_reporting_id,
       selected_buyer_and_seller_reporting_id, browser_signal_render_url,
       &deprecated_render_url, browser_signal_bid, browser_signal_bid_currency,
@@ -1290,7 +1296,7 @@ void BidderWorklet::V8State::ReportWin(
     v8::LocalVector<v8::Value> report_aggregate_win_args(isolate);
 
     const bool report_aggregate_win_signals_set = SetReportAggregateWinArgs(
-        context, auction_signals_json, per_buyer_signals_json,
+        context, context_recycler, auction_signals_json, per_buyer_signals_json,
         seller_signals_json, is_for_additional_bid,
         interest_group_name_reporting_id, buyer_reporting_id,
         buyer_and_seller_reporting_id, selected_buyer_and_seller_reporting_id,
