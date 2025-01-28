@@ -223,7 +223,7 @@ public class HistoryNavigationCoordinator
     }
 
     @Override
-    public void onInsetChanged(int left, int top, int right, int bottom) {
+    public void onInsetChanged() {
         onNavigationStateChanged();
     }
 

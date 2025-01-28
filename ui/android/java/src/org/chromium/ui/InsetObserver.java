@@ -57,14 +57,10 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     /** Allows observing changes to the window insets from Android system UI. */
     public interface WindowInsetObserver {
         /**
-         * Triggered when the window insets have changed.
-         *
-         * @param left The left inset.
-         * @param top The top inset.
-         * @param right The right inset (but it feels so wrong).
-         * @param bottom The bottom inset.
+         * Triggered when the window insets for the system bars have changed, after all consumers
+         * has consumed the corresponding insets during {@link #onApplyWindowInsets}.
          */
-        default void onInsetChanged(int left, int top, int right, int bottom) {}
+        default void onInsetChanged() {}
 
         /**
          * Called when the keyboard inset changes. Note that the keyboard inset passed to this
@@ -247,6 +243,19 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         }
     }
 
+    /**
+     * Call {@link #onApplyWindowInsets(View, WindowInsetsCompat)} with the last seen raw window
+     * insets, if {@link #getLastRawWindowInsets()} is not null.
+     *
+     * <p>WARNING: This is used when an inset consumer is added / removed after the initial insets
+     * are populated. The added / removed inset consumer may change the consumed inset for the
+     * following consumer and observers.
+     */
+    public void retriggerOnApplyWindowInsets() {
+        if (mLastSeenRawWindowInset == null || mRootViewReference.get() == null) return;
+        onApplyWindowInsets(mRootViewReference.get(), mLastSeenRawWindowInset);
+    }
+
     /** Add a listener for inset animations. */
     public void addWindowInsetsAnimationListener(WindowInsetsAnimationListener listener) {
         mWindowInsetsAnimationListeners.addObserver(listener);
@@ -325,7 +334,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         mWindowInsets.set(left, top, right, bottom);
 
         for (WindowInsetObserver observer : mObservers) {
-            observer.onInsetChanged(left, top, right, bottom);
+            observer.onInsetChanged();
         }
     }
 
