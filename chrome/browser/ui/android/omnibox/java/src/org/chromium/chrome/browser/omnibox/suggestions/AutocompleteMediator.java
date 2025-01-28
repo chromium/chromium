@@ -323,9 +323,8 @@ class AutocompleteMediator
         mOmniboxSuggestionsVisualStateObserver.ifPresent(
                 (observer) ->
                         observer.onOmniboxSuggestionsBackgroundColorChanged(
-                                OmniboxResourceProvider
-                                        .getSuggestionsDropdownBackgroundColorForColorScheme(
-                                                mContext, brandedColorScheme)));
+                                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
+                                        mContext, brandedColorScheme)));
     }
 
     /**

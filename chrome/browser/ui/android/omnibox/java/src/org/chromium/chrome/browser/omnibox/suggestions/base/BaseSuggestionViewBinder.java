@@ -24,7 +24,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -298,8 +297,14 @@ public final class BaseSuggestionViewBinder<T extends View>
 
         // Background color to be used for suggestions
         var ctx = view.getContext();
-        var background = new ColorDrawable(getSuggestionBackgroundColor(model, ctx));
-        var hover = new ColorDrawable(getSuggestionHoverColor(model, ctx));
+        boolean incognito = isIncognito(model);
+        var background =
+                new ColorDrawable(
+                        OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
+                                ctx, incognito));
+        var hover =
+                new ColorDrawable(
+                        OmniboxResourceProvider.getHoverSuggestionBackgroundColor(ctx, incognito));
 
         // Ripple effect to use when the user interacts with the suggestion.
         var ripple =
@@ -320,32 +325,6 @@ public final class BaseSuggestionViewBinder<T extends View>
         sFocusableDrawableState = layer.getConstantState();
         metadata.backgroundConstantState = sFocusableDrawableState;
         view.setBackground(layer);
-    }
-
-    /**
-     * Retrieve the background color to be applied to suggestion.
-     *
-     * @param model A property model to look up relevant properties.
-     * @param ctx Context used to retrieve appropriate color value.
-     * @return The @ColorInt value representing the color to be applied.
-     */
-    public static @ColorInt int getSuggestionBackgroundColor(PropertyModel model, Context ctx) {
-        return isIncognito(model)
-                ? ctx.getColor(R.color.omnibox_suggestion_bg_incognito)
-                : OmniboxResourceProvider.getStandardSuggestionBackgroundColor(ctx);
-    }
-
-    /**
-     * Retrieve the hover color to be applied to suggestion.
-     *
-     * @param model A property model to look up relevant properties.
-     * @param ctx Context used to retrieve appropriate color value.
-     * @return The @ColorInt value representing the color to be applied.
-     */
-    public static @ColorInt int getSuggestionHoverColor(PropertyModel model, Context ctx) {
-        return isIncognito(model)
-                ? ctx.getColor(R.color.default_bg_color_dark_elev_1_baseline)
-                : OmniboxResourceProvider.getHoverSuggestionBackgroundColor(ctx);
     }
 
     /**

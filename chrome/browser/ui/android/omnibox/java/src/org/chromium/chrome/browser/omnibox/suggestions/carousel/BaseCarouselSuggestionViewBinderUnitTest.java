@@ -158,7 +158,8 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
         verify(view)
                 .setBackgroundColor(
-                        OmniboxResourceProvider.getStandardSuggestionBackgroundColor(mContext));
+                        OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
+                                mContext, /* isIncognito= */ false));
         verify(view).setOutlineProvider(notNull());
         verify(view).setClipToOutline(true);
         verify(view).setLayoutParams(layoutParams);

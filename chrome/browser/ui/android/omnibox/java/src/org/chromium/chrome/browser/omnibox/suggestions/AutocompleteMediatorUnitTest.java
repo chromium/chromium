@@ -1559,16 +1559,15 @@ public class AutocompleteMediatorUnitTest {
         verify(mVisualStateObserver)
                 .onOmniboxSuggestionsBackgroundColorChanged(
                         eq(
-                                OmniboxResourceProvider
-                                        .getSuggestionsDropdownStandardBackgroundColor(mActivity)));
+                                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
+                                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME)));
 
         mMediator.updateVisualsForState(BrandedColorScheme.INCOGNITO);
         verify(mVisualStateObserver)
                 .onOmniboxSuggestionsBackgroundColorChanged(
                         eq(
-                                OmniboxResourceProvider
-                                        .getSuggestionsDropdownIncognitoBackgroundColor(
-                                                mActivity)));
+                                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
+                                        mActivity, BrandedColorScheme.INCOGNITO)));
     }
 
     @Test

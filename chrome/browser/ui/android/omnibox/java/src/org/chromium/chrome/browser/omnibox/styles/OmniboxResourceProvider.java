@@ -380,44 +380,35 @@ public class OmniboxResourceProvider {
      * Returns the background color for suggestions in a "standard" (non-incognito) TabModel with
      * the given context.
      */
-    public static @ColorInt int getStandardSuggestionBackgroundColor(Context context) {
-        return ChromeColors.getSurfaceColor(context, R.dimen.omnibox_suggestion_bg_elevation);
+    public static @ColorInt int getStandardSuggestionBackgroundColor(
+            Context context, boolean isIncognito) {
+        return isIncognito
+                ? context.getColor(R.color.omnibox_suggestion_bg_incognito)
+                : ChromeColors.getSurfaceColor(context, R.dimen.omnibox_suggestion_bg_elevation);
     }
 
     /**
      * Returns the background hover color for suggestions in a "standard" (non-incognito) model with
      * the given context.
      */
-    public static @ColorInt int getHoverSuggestionBackgroundColor(Context context) {
-        return ChromeColors.getSurfaceColor(context, R.dimen.omnibox_suggestion_bg_hover_elevation);
-    }
-
-    /**
-     * Returns the background color for the suggestions dropdown in a "standard" (non-incognito)
-     * TabModel with the given context.
-     */
-    public static @ColorInt int getSuggestionsDropdownStandardBackgroundColor(Context context) {
-        return ChromeColors.getSurfaceColor(
-                context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
-    }
-
-    /**
-     * Returns the background color for the suggestions dropdown in an incognito TabModel with the
-     * given context.
-     */
-    public static @ColorInt int getSuggestionsDropdownIncognitoBackgroundColor(Context context) {
-        return context.getColor(R.color.omnibox_dropdown_bg_incognito);
+    public static @ColorInt int getHoverSuggestionBackgroundColor(
+            Context context, boolean isIncognito) {
+        return isIncognito
+                ? context.getColor(R.color.default_bg_color_dark_elev_1_baseline)
+                : ChromeColors.getSurfaceColor(
+                        context, R.dimen.omnibox_suggestion_bg_hover_elevation);
     }
 
     /**
      * Returns the background color for the suggestions dropdown for the given {@link
      * BrandedColorScheme} with the given context.
      */
-    public static @ColorInt int getSuggestionsDropdownBackgroundColorForColorScheme(
+    public static @ColorInt int getSuggestionsDropdownBackgroundColor(
             Context context, @BrandedColorScheme int brandedColorScheme) {
         return brandedColorScheme == BrandedColorScheme.INCOGNITO
-                ? getSuggestionsDropdownIncognitoBackgroundColor(context)
-                : getSuggestionsDropdownStandardBackgroundColor(context);
+                ? context.getColor(R.color.omnibox_dropdown_bg_incognito)
+                : ChromeColors.getSurfaceColor(
+                        context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
     }
 
     /**

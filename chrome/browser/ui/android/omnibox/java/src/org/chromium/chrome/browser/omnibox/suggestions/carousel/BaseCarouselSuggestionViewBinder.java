@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewOutlineProvider;
@@ -59,7 +58,12 @@ public interface BaseCarouselSuggestionViewBinder {
             // Specific values to apply if background is enabled.
             if (useBackground) {
                 // Note: this assumes carousel is not showing in the incognito mode.
-                bgColor = getSuggestionBackgroundColor(model, view.getContext());
+                boolean isIncognito =
+                        model.get(SuggestionCommonProperties.COLOR_SCHEME)
+                                == BrandedColorScheme.INCOGNITO;
+                bgColor =
+                        OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
+                                view.getContext(), isIncognito);
                 horizontalMargin = OmniboxResourceProvider.getSideSpacing(view.getContext());
                 outline =
                         new RoundedCornerOutlineProvider(
@@ -81,18 +85,5 @@ public interface BaseCarouselSuggestionViewBinder {
             view.setOutlineProvider(outline);
             view.setClipToOutline(outline != null);
         }
-    }
-
-    /**
-     * Retrieve the background color to be applied to suggestion.
-     *
-     * @param model A property model to look up relevant properties.
-     * @param ctx Context used to retrieve appropriate color value. @ColorInt value representing the
-     *     color to be applied.
-     */
-    public static @ColorInt int getSuggestionBackgroundColor(PropertyModel model, Context ctx) {
-        return model.get(SuggestionCommonProperties.COLOR_SCHEME) == BrandedColorScheme.INCOGNITO
-                ? ctx.getColor(R.color.omnibox_suggestion_bg_incognito)
-                : OmniboxResourceProvider.getStandardSuggestionBackgroundColor(ctx);
     }
 }
