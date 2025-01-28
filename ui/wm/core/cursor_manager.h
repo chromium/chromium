@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
@@ -56,6 +57,8 @@ class COMPONENT_EXPORT(UI_WM) CursorManager
   bool IsCursorVisible() const override;
   void SetCursorSize(ui::CursorSize cursor_size) override;
   ui::CursorSize GetCursorSize() const override;
+  void SetCursorColor(SkColor color) override;
+  SkColor GetCursorColor() const override;
   void EnableMouseEvents() override;
   void DisableMouseEvents() override;
   bool IsMouseEventsEnabled() const override;
@@ -78,6 +81,7 @@ class COMPONENT_EXPORT(UI_WM) CursorManager
   void CommitCursor(gfx::NativeCursor cursor) override;
   void CommitVisibility(bool visible) override;
   void CommitCursorSize(ui::CursorSize cursor_size) override;
+  void CommitCursorColor(SkColor color) override;
   void CommitMouseEventsEnabled(bool enabled) override;
   void CommitSystemCursorSize(const gfx::Size& cursor_size) override;
   void CommitSystemCursorVisibility(bool visible) override;

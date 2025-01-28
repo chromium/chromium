@@ -1266,7 +1266,7 @@ void AccessibilityController::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kAccessibilityDisableTrackpadMode,
                                 static_cast<int>(DisableTouchpadMode::kNever));
   registry->RegisterIntegerPref(prefs::kAccessibilityCursorColor,
-                                kDefaultCursorColor);
+                                ui::kDefaultCursorColor);
 
   // Not syncable because it might change depending on application locale,
   // user settings, and because different languages can cause speech recognition
@@ -3031,7 +3031,7 @@ void AccessibilityController::UpdateCursorColor(SkColor cursor_color,
 void AccessibilityController::TrackCursorColorEnabledDuration(
     SkColor cursor_color) {
   // Check if a custom cursor color is currently enabled.
-  bool is_custom_color_enabled = cursor_color != kDefaultCursorColor;
+  const bool is_custom_color_enabled = cursor_color != ui::kDefaultCursorColor;
 
   if (last_cursor_color_enabled_time_ == base::Time()) {
     cursor_color_enabled_ = is_custom_color_enabled;

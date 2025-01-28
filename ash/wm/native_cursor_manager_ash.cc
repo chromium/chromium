@@ -8,6 +8,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
 #include "base/check.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -148,6 +149,23 @@ void NativeCursorManagerAsh::SetMouseEventsEnabled(
 
   SetVisibility(delegate->IsCursorVisible(), delegate);
   NotifyMouseEventsEnableStateChange(enabled);
+}
+
+void NativeCursorManagerAsh::SetCursorColor(
+    SkColor color,
+    ::wm::NativeCursorManagerDelegate* delegate) {
+  cursor_loader_.SetColor(color);
+  delegate->CommitCursorColor(color);
+
+  // Sets the cursor to reflect the color change immediately.
+  if (delegate->IsCursorVisible()) {
+    SetCursor(delegate->GetCursor(), delegate);
+  }
+
+  Shell::Get()
+      ->window_tree_host_manager()
+      ->cursor_window_controller()
+      ->SetCursorColor(color);
 }
 
 }  // namespace ash

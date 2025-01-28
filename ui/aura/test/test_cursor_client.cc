@@ -56,6 +56,12 @@ ui::CursorSize TestCursorClient::GetCursorSize() const {
   return ui::CursorSize::kNormal;
 }
 
+void TestCursorClient::SetCursorColor(SkColor color) {}
+
+SkColor TestCursorClient::GetCursorColor() const {
+  return ui::kDefaultCursorColor;
+}
+
 bool TestCursorClient::IsCursorVisible() const {
   return visible_;
 }

@@ -41,6 +41,11 @@ class TestingCursorManager : public wm::NativeCursorManager {
                      wm::NativeCursorManagerDelegate* delegate) override {
     delegate->CommitCursorSize(cursor_size);
   }
+
+  void SetCursorColor(SkColor color,
+                      wm::NativeCursorManagerDelegate* delegate) override {
+    NOTIMPLEMENTED();
+  }
 };
 
 }  // namespace

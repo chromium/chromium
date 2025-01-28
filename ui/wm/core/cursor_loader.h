@@ -49,6 +49,9 @@ class COMPONENT_EXPORT(UI_WM) CursorLoader
   // Sets the size of the mouse cursor icon.
   void SetSize(ui::CursorSize size);
 
+  // Sets the color of the cursor.
+  void SetColor(SkColor color);
+
   // Sets the platform cursor based on the type of |cursor|.
   void SetPlatformCursor(ui::Cursor* cursor);
 
@@ -84,6 +87,9 @@ class COMPONENT_EXPORT(UI_WM) CursorLoader
 
   // The preferred size of the mouse cursor icon.
   ui::CursorSize size_ = ui::CursorSize::kNormal;
+
+  // The current color set to the mouse cursor icon.
+  SkColor color_ = ui::kDefaultCursorColor;
 };
 
 }  // namespace wm

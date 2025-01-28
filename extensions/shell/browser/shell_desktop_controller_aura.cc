@@ -17,6 +17,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/shell/browser/shell_app_window_client.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/window.h"
@@ -117,6 +118,15 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
       wm::NativeCursorManagerDelegate* delegate) override {
     delegate->CommitMouseEventsEnabled(enabled);
     SetVisibility(delegate->IsCursorVisible(), delegate);
+  }
+
+  void SetCursorColor(SkColor color,
+                      wm::NativeCursorManagerDelegate* delegate) override {
+    cursor_loader_.SetColor(color);
+    delegate->CommitCursorColor(color);
+    if (delegate->IsCursorVisible()) {
+      SetCursor(delegate->GetCursor(), delegate);
+    }
   }
 
  private:

@@ -508,7 +508,8 @@ TEST_F(AccessibilityControllerTest, SetCursorColorEnabled) {
   EXPECT_EQ(1, observer.status_changed_count_);
   ExpectSessionDurationMetricCount("CrosCursorColor", 0);
 
-  prefs()->SetInteger(prefs::kAccessibilityCursorColor, kDefaultCursorColor);
+  prefs()->SetInteger(prefs::kAccessibilityCursorColor,
+                      ui::kDefaultCursorColor);
   EXPECT_EQ(2, observer.status_changed_count_);
   ExpectSessionDurationMetricCount("CrosCursorColor", 1);
 
@@ -518,7 +519,8 @@ TEST_F(AccessibilityControllerTest, SetCursorColorEnabled) {
   EXPECT_EQ(3, observer.status_changed_count_);
   ExpectSessionDurationMetricCount("CrosCursorColor", 1);
 
-  prefs()->SetInteger(prefs::kAccessibilityCursorColor, kDefaultCursorColor);
+  prefs()->SetInteger(prefs::kAccessibilityCursorColor,
+                      ui::kDefaultCursorColor);
   EXPECT_EQ(4, observer.status_changed_count_);
   ExpectSessionDurationMetricCount("CrosCursorColor", 2);
 
@@ -1399,9 +1401,10 @@ TEST_F(AccessibilityControllerTest, ChangingCursorColorPrefChangesCursorColor) {
 
   // Simulate using chrome settings webui to set cursor color to black, which
   // which also turns off the cursor color enabled pref.
-  prefs()->SetInteger(prefs::kAccessibilityCursorColor, kDefaultCursorColor);
+  prefs()->SetInteger(prefs::kAccessibilityCursorColor,
+                      ui::kDefaultCursorColor);
 
-  EXPECT_EQ(kDefaultCursorColor,
+  EXPECT_EQ(ui::kDefaultCursorColor,
             cursor_window_controller->GetCursorColorForTest());
 }
 

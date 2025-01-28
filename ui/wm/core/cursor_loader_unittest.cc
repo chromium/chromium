@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
@@ -63,30 +64,48 @@ TEST(CursorLoaderTest, GetCursorData) {
       for (const ui::Cursor cursor :
            {CursorType::kPointer, CursorType::kWait}) {
         SCOPED_TRACE(cursor.type());
-        cursor_loader_data = cursor_loader.GetCursorData(cursor);
-        ASSERT_TRUE(cursor_loader_data);
-        const auto cursor_data =
-            GetCursorData(cursor.type(), cursor_size, resource_scale,
-                          std::nullopt, display.panel_rotation());
-        ASSERT_TRUE(cursor_data);
-        ASSERT_EQ(cursor_loader_data->bitmaps.size(),
-                  cursor_data->bitmaps.size());
-        for (size_t i = 0; i < cursor_data->bitmaps.size(); i++) {
-          EXPECT_TRUE(gfx::BitmapsAreEqual(cursor_loader_data->bitmaps[i],
-                                           cursor_data->bitmaps[i]));
+        for (const SkColor cursor_color :
+             {ui::kDefaultCursorColor, SK_ColorRED, SK_ColorGREEN}) {
+          SCOPED_TRACE(testing::Message()
+                       << "color " << static_cast<int>(cursor_color));
+          cursor_loader.SetColor(cursor_color);
+
+          cursor_loader_data = cursor_loader.GetCursorData(cursor);
+          ASSERT_TRUE(cursor_loader_data);
+          const auto cursor_data = GetCursorData(
+              cursor.type(), cursor_size, resource_scale, std::nullopt,
+              display.panel_rotation(), cursor_color);
+          ASSERT_TRUE(cursor_data);
+          ASSERT_EQ(cursor_loader_data->bitmaps.size(),
+                    cursor_data->bitmaps.size());
+          for (size_t i = 0; i < cursor_data->bitmaps.size(); i++) {
+            EXPECT_TRUE(gfx::BitmapsAreEqual(cursor_loader_data->bitmaps[i],
+                                             cursor_data->bitmaps[i]));
+          }
+          EXPECT_EQ(cursor_loader_data->hotspot, cursor_data->hotspot);
         }
-        EXPECT_EQ(cursor_loader_data->hotspot, cursor_data->hotspot);
       }
     }
   }
 
+  // The bitmap pixels of a custom cursor will only update if the cursor color
+  // is changed to a non-default value.
   const SkBitmap kBitmap = gfx::test::CreateBitmap(20, 20);
   constexpr gfx::Point kHotspot = gfx::Point(10, 10);
   const ui::Cursor custom_cursor = ui::Cursor::NewCustom(kBitmap, kHotspot);
+
+  cursor_loader.SetColor(ui::kDefaultCursorColor);
   std::optional<ui::CursorData> cursor_data =
       cursor_loader.GetCursorData(custom_cursor);
   ASSERT_TRUE(cursor_data);
   EXPECT_EQ(cursor_data->bitmaps[0].getGenerationID(),
+            kBitmap.getGenerationID());
+  EXPECT_EQ(cursor_data->hotspot, kHotspot);
+
+  cursor_loader.SetColor(SK_ColorRED);
+  cursor_data = cursor_loader.GetCursorData(custom_cursor);
+  ASSERT_TRUE(cursor_data);
+  EXPECT_NE(cursor_data->bitmaps[0].getGenerationID(),
             kBitmap.getGenerationID());
   EXPECT_EQ(cursor_data->hotspot, kHotspot);
 }
