@@ -2087,6 +2087,7 @@ void NetworkContext::AddHSTS(const std::string& host,
 }
 
 void NetworkContext::IsHSTSActiveForHost(const std::string& host,
+                                         bool is_top_level_nav,
                                          IsHSTSActiveForHostCallback callback) {
   net::TransportSecurityState* security_state =
       url_request_context_->transport_security_state();
@@ -2096,8 +2097,8 @@ void NetworkContext::IsHSTSActiveForHost(const std::string& host,
     return;
   }
 
-  // TODO(crbug.com/40725781): propagate `is_top_level_nav`.
-  std::move(callback).Run(security_state->ShouldUpgradeToSSL(host, true));
+  std::move(callback).Run(
+      security_state->ShouldUpgradeToSSL(host, is_top_level_nav));
 }
 
 void NetworkContext::GetHSTSState(const std::string& domain,

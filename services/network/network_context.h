@@ -417,6 +417,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                bool include_subdomains,
                AddHSTSCallback callback) override;
   void IsHSTSActiveForHost(const std::string& host,
+                           bool is_top_level_nav,
                            IsHSTSActiveForHostCallback callback) override;
   void GetHSTSState(const std::string& domain,
                     GetHSTSStateCallback callback) override;
