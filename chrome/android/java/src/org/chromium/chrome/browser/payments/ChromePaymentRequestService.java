@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BrowserPaymentRequest;
+import org.chromium.components.payments.DialogController;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.MethodStrings;
@@ -73,8 +74,9 @@ public class ChromePaymentRequestService
     private final JourneyLogger mJourneyLogger;
 
     private final PaymentUiService mPaymentUiService;
-    private boolean mWasRetryCalled;
+    private final DialogController mDialogController;
 
+    private boolean mWasRetryCalled;
     private boolean mHasClosed;
 
     private PaymentRequestSpec mSpec;
@@ -210,6 +212,7 @@ public class ChromePaymentRequestService
                         paymentRequestService.isOffTheRecord(),
                         mJourneyLogger,
                         topLevelOrigin);
+        mDialogController = new DialogControllerImpl(mWebContents);
         if (PaymentRequestService.getNativeObserverForTest() != null) {
             PaymentRequestService.getNativeObserverForTest()
                     .onPaymentUiServiceCreated(mPaymentUiService);
@@ -664,6 +667,12 @@ public class ChromePaymentRequestService
     @Override
     public boolean isContactSectionVisible() {
         return mPaymentUiService.shouldShowContactSection();
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    public DialogController getDialogController() {
+        return mDialogController;
     }
 
     // Implement PaymentUiService.Delegate:

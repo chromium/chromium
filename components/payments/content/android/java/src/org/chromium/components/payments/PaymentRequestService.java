@@ -1181,6 +1181,12 @@ public class PaymentRequestService
         return this;
     }
 
+    // Implements PaymentAppFactoryDelegate:
+    @Override
+    public DialogController getDialogController() {
+        return mBrowserPaymentRequest.getDialogController();
+    }
+
     /**
      * @param methodDataList A list of PaymentMethodData.
      * @return The validated method data, a mapping of method names to its PaymentMethodData(s);

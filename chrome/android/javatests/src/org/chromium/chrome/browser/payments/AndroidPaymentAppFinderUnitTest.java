@@ -174,6 +174,8 @@ public class AndroidPaymentAppFinderUnitTest {
                 .thenReturn(new HashMap<String, PaymentDetailsModifier>());
         Mockito.when(mParams.getMayCrawl()).thenReturn(false);
         Mockito.when(mDelegate.getParams()).thenReturn(mParams);
+        Mockito.when(mDelegate.getDialogController())
+                .thenReturn(new DialogControllerImpl(mWebContents));
         AndroidPaymentAppFinder finder =
                 new AndroidPaymentAppFinder(
                         mPaymentManifestWebDataService,
