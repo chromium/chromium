@@ -1270,7 +1270,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             mSecurityButton,
                             securityButtonOffsetTarget,
                             this::adjustTitleUrlBarPadding,
-                            R.dimen.location_bar_icon_width);
+                            shouldNestSecurityIcon()
+                                    ? R.dimen.custom_tabs_security_icon_width
+                                    : R.dimen.location_bar_icon_width);
             addButtonsVisibilityUpdater();
         }
 
@@ -1791,6 +1793,27 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     mState = STATE_TITLE_ONLY;
                 } else {
                     mState = STATE_DOMAIN_AND_TITLE;
+                }
+                if (shouldNestSecurityIcon()) {
+                    int width =
+                            getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.custom_tabs_security_icon_width_nested);
+                    mSecurityButton.getLayoutParams().width = width;
+                    int paddingLeft =
+                            getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.custom_tabs_security_icon_padding_left_nested);
+                    int paddingRight =
+                            getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.custom_tabs_security_icon_padding_right_nested);
+                    mSecurityButton.setPadding(
+                            paddingLeft,
+                            mSecurityButton.getPaddingTop(),
+                            paddingRight,
+                            mSecurityButton.getPaddingBottom());
+                    mAnimDelegate.setSecurityButtonWidth(width);
                 }
                 mAnimDelegate.prepareTitleAnim(mUrlBar, mTitleBar);
                 setUrlBarVisuals(Gravity.BOTTOM, 0, R.dimen.custom_tabs_url_text_size);

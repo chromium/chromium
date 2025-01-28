@@ -89,13 +89,16 @@ found in the LICENSE file.
                 android:layoutDirection="ltr">
                 <org.chromium.ui.widget.ChromeImageButton
                     android:id="@+id/security_icon"
-                    android:layout_width="@dimen/location_bar_icon_width"
+                    android:layout_width="@dimen/custom_tabs_security_icon_width"
+                    android:paddingLeft="@dimen/custom_tabs_security_icon_padding_left"
+                    android:paddingRight="@dimen/custom_tabs_security_icon_padding_right"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
+                    android:foregroundGravity="left|center_vertical"
                     android:scaleType="fitCenter"
                     android:visibility="gone"
                     app:tint="@color/default_icon_color_tint_list"
-                    tools:ignore="ContentDescription"
+                    tools:ignore="ContentDescription,RtlHardcoded"
                     style="@style/LocationBarButton"/>
                 <org.chromium.chrome.browser.omnibox.UrlBarApi26
                     android:id="@+id/url_bar"

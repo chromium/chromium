@@ -585,7 +585,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/AutocompleteInput.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteMatch.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteResult.java",
-      "android/java/src/org/chromium/components/omnibox/SecurityButtonAnimationDelegate.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxActionDelegate.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxActionFactory.java",

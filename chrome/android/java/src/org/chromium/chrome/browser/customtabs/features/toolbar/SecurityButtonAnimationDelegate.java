@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.omnibox;
+package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -24,7 +24,8 @@ public class SecurityButtonAnimationDelegate {
     private final View mSecurityIconOffsetTarget;
     private final AnimatorSet mSecurityButtonShowAnimator;
     private final AnimatorSet mSecurityButtonHideAnimator;
-    private final int mSecurityButtonWidth;
+    private final ObjectAnimator mTranslateLeft;
+    private int mSecurityButtonWidth;
 
     public SecurityButtonAnimationDelegate(
             ImageButton securityButton,
@@ -67,12 +68,23 @@ public class SecurityButtonAnimationDelegate {
                     }
                 });
 
-        Animator translateLeft =
+        mTranslateLeft =
                 ObjectAnimator.ofFloat(
                         mSecurityIconOffsetTarget, View.TRANSLATION_X, -mSecurityButtonWidth);
-        translateLeft.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
-        translateLeft.setDuration(SLIDE_DURATION_MS);
-        mSecurityButtonHideAnimator.playSequentially(fadeOut, translateLeft);
+        mTranslateLeft.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
+        mTranslateLeft.setDuration(SLIDE_DURATION_MS);
+        mSecurityButtonHideAnimator.playSequentially(fadeOut, mTranslateLeft);
+    }
+
+    /**
+     * Sets the width of the security button to properly offset the url bar. This should be set once
+     * we know whether the security icon is nested or not.
+     *
+     * @param width The width of the security button in pixels.
+     */
+    public void setSecurityButtonWidth(int width) {
+        mSecurityButtonWidth = width;
+        mTranslateLeft.setFloatValues(-mSecurityButtonWidth);
     }
 
     /** {@see SecurityButtonAnimationDelegate#updateSecurityButton(int, boolean, boolean)} */
