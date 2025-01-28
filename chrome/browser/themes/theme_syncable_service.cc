@@ -257,13 +257,10 @@ ThemeSyncableService::ThemeSyncableService(Profile* profile,
     : profile_(profile),
       theme_service_(theme_service),
       use_system_theme_by_default_(false) {
+  CHECK(profile_);
+  CHECK(profile_->GetPrefs());
   DCHECK(theme_service_);
   theme_service_->AddObserver(this);
-
-  // `profile_` can be null in tests.
-  if (!profile_ || !profile_->GetPrefs()) {
-    return;
-  }
 
   sync_preferences::PrefServiceSyncable* prefs =
       static_cast<sync_preferences::PrefServiceSyncable*>(profile_->GetPrefs());
@@ -613,23 +610,21 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
   if (use_new_fields) {
     PrefService* prefs = profile_->GetPrefs();
     // NTP background can exist along with the other (non-extension) themes.
-    if (prefs) {
-      if (std::optional<base::Value::Dict> dict =
-              NtpBackgroundDictFromSpecifics(new_specs);
-          dict && !dict->empty()) {
-        DVLOG(1) << "Applying custom NTP background";
-        // TODO(crbug.com/356148174): Set via NtpCustomBackgroundService instead
-        // of setting the pref directly.
-        prefs->SetDict(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
-                       std::move(*dict));
-      } else if (has_all_theme_attributes) {
-        // Clear the current ntp background if none received from remote.
-        // NOTE: Ntp background is only cleared if the incoming ThemeSpecifics
-        // is the new one and is missing the ntp_background field because it was
-        // committed by an old client.
-        DVLOG(1) << "Removing custom NTP background";
-        prefs->ClearPref(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
-      }
+    if (std::optional<base::Value::Dict> dict =
+            NtpBackgroundDictFromSpecifics(new_specs);
+        dict && !dict->empty()) {
+      DVLOG(1) << "Applying custom NTP background";
+      // TODO(crbug.com/356148174): Set via NtpCustomBackgroundService instead
+      // of setting the pref directly.
+      prefs->SetDict(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+                     std::move(*dict));
+    } else if (has_all_theme_attributes) {
+      // Clear the current ntp background if none received from remote.
+      // NOTE: Ntp background is only cleared if the incoming ThemeSpecifics
+      // is the new one and is missing the ntp_background field because it was
+      // committed by an old client.
+      DVLOG(1) << "Removing custom NTP background";
+      prefs->ClearPref(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
     }
 
     // Browser color scheme can be set alongside other (non-extension) themes.
@@ -704,7 +699,7 @@ ThemeSyncableService::GetThemeSpecificsFromCurrentTheme() const {
     // Skip setting background in the specifics if the background is set using
     // local resource.
     PrefService* prefs = profile_->GetPrefs();
-    if (prefs && !prefs->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice)) {
+    if (!prefs->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice)) {
       // Fetch ntp background dict from pref.
       // TODO(crbug.com/356148174): Query NtpCustomBackgroundService instead.
       if (const base::Value* pref = prefs->GetUserPrefValue(
@@ -841,8 +836,7 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
   // As part of the theme migration strategy, update the old syncing prefs with
   // the new values.
   PrefService* prefs = profile_->GetPrefs();
-  if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
-      prefs) {
+  if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)) {
     for (const auto& [pref_in_migration, pref_names] : kThemePrefsInMigration) {
       // Skip setting ntp background pref if the background is currently set
       // using a local resource.
