@@ -302,7 +302,7 @@
       HandlerForProtocol(dispatcher, TabGridCommands);
   void (^openTabGroupPanelAction)() = ^{
     [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
-    [tabGridHandler showTabGroupsPanelAnimated:NO];
+    [tabGridHandler showPage:TabGridPageTabGroups animated:NO];
   };
 
   // Create and config the snackbar.

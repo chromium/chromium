@@ -20,13 +20,12 @@
 @class ProfileState;
 
 // The controller object for a scene. Reacts to scene state changes.
-@interface SceneController : NSObject <SceneStateObserver,
-                                       ApplicationCommands,
-                                       SettingsCommands,
+@interface SceneController : NSObject <ApplicationCommands,
                                        ConnectionInformation,
+                                       SceneStateObserver,
+                                       SettingsCommands,
                                        TabOpening,
                                        WebStateListObserving>
-
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithSceneState:(SceneState*)sceneState
     NS_DESIGNATED_INITIALIZER;

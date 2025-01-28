@@ -339,14 +339,14 @@ void OnListFamilyMembersResponse(
 
 }  // namespace
 
-@interface SceneController () <ProfileStateObserver,
-                               HistoryCoordinatorDelegate,
+@interface SceneController () <HistoryCoordinatorDelegate,
                                IncognitoInterstitialCoordinatorDelegate,
                                PasswordCheckupCoordinatorDelegate,
                                PolicyWatcherBrowserAgentObserving,
-                               SettingsNavigationControllerDelegate,
+                               ProfileStateObserver,
                                SceneUIProvider,
                                SceneURLLoadingServiceDelegate,
+                               SettingsNavigationControllerDelegate,
                                TabGridCoordinatorDelegate,
                                WebStateListObserving,
                                YoutubeIncognitoCoordinatorDelegate> {

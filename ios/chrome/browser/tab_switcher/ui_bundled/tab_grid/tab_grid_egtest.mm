@@ -3528,6 +3528,60 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                 @"Cannot release user action tester.");
 }
 
+// Ensures that when users tap on a tab from tab search result and this tab is
+// in another window currently displaying tab grid, the tab is opened.
+- (void)testOpenSearchedTabFromAnotherWindowWhenTabGrisIsVisible {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  // Loads regular tab 1 on the first window.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+  [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:0];
+
+  // Opens a incognito tab on the first window.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+
+  // Opens tabGrid in incognito mode on the first window.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Opens a second window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+
+  // Opens tabGrid on the second window.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Enters search mode in the second window.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  // Verifies that search mode is active.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
+
+  // Performs the search : tab 1 which is a regular tab present on the first
+  // window.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_replaceText(kTitle1)];
+
+  // Taps on it from the second window.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Closes the second window.
+  [ChromeEarlGrey closeWindowWithNumber:1];
+
+  // Checks the content of the first window.
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+}
+
 #pragma mark - Helper Methods
 
 - (void)loadTestURLs {

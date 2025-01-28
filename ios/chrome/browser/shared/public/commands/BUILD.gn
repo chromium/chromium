@@ -94,6 +94,7 @@ source_set("commands") {
     "//ios/chrome/browser/lens_overlay/model:entrypoint",
     "//ios/chrome/browser/parcel_tracking:parcel_tracking_step",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/tabs/model",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/web/public",

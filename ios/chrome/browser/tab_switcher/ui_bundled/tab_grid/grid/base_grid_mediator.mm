@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -861,6 +862,8 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 - (void)selectItemWithID:(web::WebStateID)itemID
                     pinned:(BOOL)pinned
     isFirstActionOnTabGrid:(BOOL)isFirstActionOnTabGrid {
+  Browser* itemBrowser = nil;
+
   WebStateSearchCriteria searchCriteria{
       .identifier = itemID,
       .pinned_state = pinned ? PinnedState::kPinned : PinnedState::kNonPinned,
@@ -912,6 +915,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
                                  error.localizedDescription);
                              NOTREACHED();
                            }];
+      itemBrowser = browser;
     }
   }
 
@@ -935,6 +939,12 @@ void LogPriceDropMetrics(web::WebState* web_state) {
     [self.consumer
         selectItemWithIdentifier:[GridItemIdentifier
                                      tabIdentifier:selectedWebState]];
+    // If the tab searched by the user is in another window and is the active
+    // tab in that window, we need to close the tab grid to display the current
+    // active tab, due to the early return.
+    if (itemBrowser != nil) {
+      [self exitTabGridOfBrowser:itemBrowser];
+    }
     return;
   } else {
     base::RecordAction(
@@ -961,6 +971,16 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 
   // It should be safe to activate here.
   itemWebStateList->ActivateWebStateAt(index);
+
+  // This can happend when the selected tab have the following conditions:
+  // * from search tab result
+  // * from another window
+  // * Tab's window currently display the tab grid.
+  // In that case, activating the web state is not enough to actually open it,
+  // so force quit tab grid.
+  if (itemBrowser != nil) {
+    [self exitTabGridOfBrowser:itemBrowser];
+  }
 }
 
 - (void)selectTabGroup:(const TabGroup*)tabGroup {
@@ -1752,6 +1772,29 @@ void LogPriceDropMetrics(web::WebState* web_state) {
       savedGroupId,
       std::make_unique<tab_groups::IOSTabGroupActionContext>(self.browser));
   // TODO(crbug.com/375587197): Show a snackbar here.
+}
+
+// Exits Tab grid of `itemBrowser`'s window.
+- (void)exitTabGridOfBrowser:(Browser*)itemBrowser {
+  if (!itemBrowser) {
+    return;
+  }
+  id<TabGridCommands> targetTabGridHandler =
+      HandlerForProtocol(itemBrowser->GetCommandDispatcher(), TabGridCommands);
+  TabGridPage pageToShow;
+  switch (itemBrowser->type()) {
+    case Browser::Type::kRegular:
+      pageToShow = TabGridPageRegularTabs;
+      break;
+    case Browser::Type::kIncognito:
+      pageToShow = TabGridPageIncognitoTabs;
+      break;
+    case Browser::Type::kInactive:
+    case Browser::Type::kTemporary:
+      NOTREACHED();
+  }
+  [targetTabGridHandler showPage:pageToShow animated:NO];
+  [targetTabGridHandler exitTabGrid];
 }
 
 #pragma mark - TabGridPageMutator
