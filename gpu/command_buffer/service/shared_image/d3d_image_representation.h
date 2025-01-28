@@ -128,5 +128,42 @@ class D3D11VideoImageRepresentation : public VideoImageRepresentation {
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
 };
 
+class D3D11VideoImageCopyRepresentation : public VideoImageRepresentation {
+ public:
+  // Creates a copy of a (D3D-backed) GL texture for use in video encode.
+  // This avoids expensive readback.
+  static std::unique_ptr<D3D11VideoImageCopyRepresentation> CreateFromGL(
+      GLuint gl_texture_id,
+      std::string_view debug_label,
+      ID3D11Device* d3d_device,
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker);
+  static std::unique_ptr<D3D11VideoImageCopyRepresentation> CreateFromD3D(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      ID3D11Device* d3d_device,
+      ID3D11Texture2D* texture,
+      std::string_view debug_label,
+      ID3D11Device* texture_device);
+
+  D3D11VideoImageCopyRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture);
+  ~D3D11VideoImageCopyRepresentation() override;
+
+ private:
+  bool BeginWriteAccess() override;
+  void EndWriteAccess() override;
+  bool BeginReadAccess() override;
+  void EndReadAccess() override;
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const override;
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
+};
+
 }  // namespace gpu
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_D3D_IMAGE_REPRESENTATION_H_
