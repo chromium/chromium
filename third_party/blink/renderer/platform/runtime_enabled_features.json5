@@ -788,10 +788,8 @@
       status: "stable",
     },
     {
-      // Correctly inherit after-change style without animations applied.
-      // https://crbug.com/40337057
       name: "CascadedAfterChangeStyle",
-      status: "stable",
+      status: "experimental",
     },
     {
       // Kill switch for changes to RenderFrameMetadataObserverImpl in connection with Engagement
