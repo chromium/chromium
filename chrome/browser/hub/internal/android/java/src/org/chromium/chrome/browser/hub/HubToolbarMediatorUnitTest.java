@@ -51,7 +51,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -541,12 +540,13 @@ public class HubToolbarMediatorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
-    @Config(qualifiers = "sw600dp")
     public void testSearchBoxSetup_FlagEnabled_Tablet() {
+        mConfiguration.screenWidthDp = WIDE_SCREEN_WIDTH_DP;
+
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         new HubToolbarMediator(
-                Robolectric.buildActivity(Activity.class).get(),
+                mActivity,
                 mModel,
                 mPaneManager,
                 mTracker,
@@ -606,12 +606,13 @@ public class HubToolbarMediatorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
-    @Config(qualifiers = "sw600dp")
     public void testSearchBox_TogglePanesSearchBoxVisibility_Tablet() {
+        mConfiguration.screenWidthDp = WIDE_SCREEN_WIDTH_DP;
+
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         new HubToolbarMediator(
-                Robolectric.buildActivity(Activity.class).get(),
+                mActivity,
                 mModel,
                 mPaneManager,
                 mTracker,
@@ -671,11 +672,11 @@ public class HubToolbarMediatorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
-    @Config(qualifiers = "sw600dp")
     public void testSearchBox_ClickListener_Tablet() {
+        mConfiguration.screenWidthDp = WIDE_SCREEN_WIDTH_DP;
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         new HubToolbarMediator(
-                Robolectric.buildActivity(Activity.class).get(),
+                mActivity,
                 mModel,
                 mPaneManager,
                 mTracker,

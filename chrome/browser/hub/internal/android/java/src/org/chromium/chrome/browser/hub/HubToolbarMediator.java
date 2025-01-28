@@ -89,10 +89,8 @@ public class HubToolbarMediator {
                         return;
                     }
 
-                    boolean showLoupe =
-                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                                    || configuration.orientation
-                                            == Configuration.ORIENTATION_LANDSCAPE;
+                    int screenWidthDp = mContext.getResources().getConfiguration().screenWidthDp;
+                    boolean showLoupe = isScreenWidthTablet(screenWidthDp);
                     mPropertyModel.set(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION, false);
                     mPropertyModel.set(SEARCH_BOX_VISIBLE, !showLoupe);
                     mPropertyModel.set(SEARCH_LOUPE_VISIBLE, showLoupe);
@@ -269,8 +267,7 @@ public class HubToolbarMediator {
 
     private static boolean shouldShowActionButtonText(int buttonCount, int screenWidthDp) {
         if (ChromeFeatureList.sTabSwitcherFullNewTabButton.isEnabled()) {
-            return buttonCount
-                    <= (screenWidthDp < DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP ? 2 : 3);
+            return buttonCount <= (isScreenWidthTablet(screenWidthDp) ? 3 : 2);
         } else {
             return buttonCount <= 1;
         }
@@ -348,6 +345,11 @@ public class HubToolbarMediator {
                         .build());
         recordHubSearchEntrypointHistogram(
                 mPropertyModel.get(SEARCH_BOX_VISIBLE), mPropertyModel.get(IS_INCOGNITO));
+    }
+
+    /** Utility to determine which UI variants to show based on device width. */
+    private static boolean isScreenWidthTablet(int screenWidthDp) {
+        return screenWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
     }
 
     private void recordHubSearchEntrypointHistogram(boolean isSearchBox, boolean isIncognito) {
