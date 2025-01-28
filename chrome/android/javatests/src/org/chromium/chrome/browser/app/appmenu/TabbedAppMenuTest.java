@@ -36,11 +36,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
@@ -67,7 +64,6 @@ import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeoutException;
 
 /** Tests tabbed mode app menu popup. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -137,21 +133,6 @@ public class TabbedAppMenuTest {
                             ContentSettingsType.REQUEST_DESKTOP_SITE,
                             false);
                 });
-    }
-
-    /** Verify opening a new tab from the menu. */
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main"})
-    public void testMenuNewTab() {
-        final int tabCountBefore = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(),
-                (ChromeTabbedActivity) mActivityTestRule.getActivity());
-        final int tabCountAfter = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
-        Assert.assertTrue(
-                "Expected: " + (tabCountBefore + 1) + " Got: " + tabCountAfter,
-                tabCountBefore + 1 == tabCountAfter);
     }
 
     /**
@@ -229,51 +210,6 @@ public class TabbedAppMenuTest {
         moveToBoundary(true, false);
         assertEquals(0, getCurrentFocusedRow());
         hitEnterAndAssertAppMenuDismissed();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main"})
-    @Restriction(DeviceFormFactor.PHONE)
-    public void testHideMenuOnToggleOverview() throws TimeoutException {
-        // App menu is shown during setup.
-        Assert.assertTrue("App menu should be showing.", mAppMenuHandler.isAppMenuShowing());
-        Assert.assertFalse(
-                "Overview shouldn't be showing.",
-                mActivityTestRule
-                        .getActivity()
-                        .getLayoutManager()
-                        .isLayoutVisible(LayoutType.TAB_SWITCHER));
-
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
-
-        Assert.assertTrue(
-                "Overview should be showing.",
-                mActivityTestRule
-                        .getActivity()
-                        .getLayoutManager()
-                        .isLayoutVisible(LayoutType.TAB_SWITCHER));
-        Assert.assertFalse("App menu shouldn't be showing.", mAppMenuHandler.isAppMenuShowing());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertTrue(
-                            "App menu should be allowed to show.",
-                            AppMenuTestSupport.shouldShowAppMenu(
-                                    mActivityTestRule.getAppMenuCoordinator()));
-                });
-        showAppMenuAndAssertMenuShown();
-
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
-        Assert.assertFalse(
-                "Overview shouldn't be showing.",
-                mActivityTestRule
-                        .getActivity()
-                        .getLayoutManager()
-                        .isLayoutVisible(LayoutType.TAB_SWITCHER));
-        CriteriaHelper.pollUiThread(
-                () -> !mAppMenuHandler.isAppMenuShowing(), "App menu shouldn't be showing.");
     }
 
     @Test

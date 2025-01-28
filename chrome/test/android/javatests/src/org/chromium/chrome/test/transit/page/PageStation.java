@@ -133,7 +133,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
                 mNumTabsBeingSelected = 0;
             }
             if (mTabAlreadySelected == null && mNumTabsBeingSelected == 0) {
-                mTabAlreadySelected = previousStation.getLoadedTab();
+                mTabAlreadySelected = previousStation.mPageLoadedSupplier.get();
             }
             // Cannot copy over facilities because we have no way to clone them. It's also not
             // obvious that we should...
@@ -176,11 +176,14 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         mIsEntryPoint = builder.mIsEntryPoint;
 
         // isOpeningTab is required
-        assert builder.mNumTabsBeingOpened != null;
+        assert builder.mNumTabsBeingOpened != null
+                : "PageStation.Builder needs withIsOpeningTabs() or initFrom()";
         mNumTabsBeingOpened = builder.mNumTabsBeingOpened;
 
         // mNumTabsBeingSelected is required
-        assert builder.mNumTabsBeingSelected != null;
+        assert builder.mNumTabsBeingSelected != null
+                : "PageStation.Builder needs withIsSelectingTabs(), withTabAlreadySelected() or"
+                        + " initFrom()";
         mNumTabsBeingSelected = builder.mNumTabsBeingSelected;
 
         // Pages must have an already selected tab, or be selecting a tab.
