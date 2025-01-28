@@ -59,7 +59,7 @@ class TabGroupHeader : public TabSlotView,
   TabSizeInfo GetTabSizeInfo() const override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
 
-  void UpdateTooltipText();
+  void OnGroupContentsChanged();
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
@@ -76,7 +76,6 @@ class TabGroupHeader : public TabSlotView,
   // TODO(crbug.com/372296676): Make TabGroupHeader observe the group for
   // changes to cut down on the number of times we recalculate the view.
   void VisualsChanged();
-  void UpdateAccessibleName();
 
   int GetCollapsedHeaderWidth() const;
 
@@ -89,12 +88,12 @@ class TabGroupHeader : public TabSlotView,
   // Returns whether the attention indicator should be shown.
   bool GetShowingAttentionIndicator();
 
+  // Returns the title text for testing.
+  std::u16string GetTitleTextForTesting() const;
+
  private:
   friend class TabGroupEditorBubbleViewDialogBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(TabStripSaveBrowsertest, AttentionIndicatorIsShown);
-  FRIEND_TEST_ALL_PREFIXES(TabContainerTest, TabGroupHeaderTooltipText);
-  FRIEND_TEST_ALL_PREFIXES(TabContainerTest,
-                           TabGroupHeaderTooltipTextAccessibility);
 
   // Calculate the width for this View.
   int GetDesiredWidth() const;
@@ -114,6 +113,10 @@ class TabGroupHeader : public TabSlotView,
   // Creates a round rect, similar to the shape of a tab when hovered but not
   // selected.
   void CreateHeaderWithTitle();
+
+  void UpdateTooltipText();
+
+  void UpdateAccessibleName();
 
   const raw_ref<TabSlotController> tab_slot_controller_;
 

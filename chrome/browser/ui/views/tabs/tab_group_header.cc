@@ -157,6 +157,7 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
   title_text_changed_subscription_ =
       title_->AddTextChangedCallback(base::BindRepeating(
           &TabGroupHeader::UpdateTooltipText, base::Unretained(this)));
+
   UpdateTooltipText();
 }
 
@@ -279,7 +280,21 @@ void TabGroupHeader::OnFocus() {
       nullptr, TabSlotController::HoverCardUpdateType::kFocus);
 }
 
+void TabGroupHeader::OnGroupContentsChanged() {
+  UpdateAccessibleName();
+  UpdateTooltipText();
+}
+
 void TabGroupHeader::UpdateTooltipText() {
+  if (!group().has_value()) {
+    return;
+  }
+
+  TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group().value());
+  if (!tab_group || tab_group->IsEmpty() || tab_group->ListTabs().is_empty()) {
+    return;
+  }
+
   if (!title_->GetText().empty()) {
     SetTooltipText(l10n_util::GetStringFUTF16(
         IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, title_->GetText(),
@@ -539,6 +554,11 @@ void TabGroupHeader::UpdateAttentionIndicatorView() {
         group_style_->GetAttentionIndicatorWidth(
             should_show_attention_indicator)));
   }
+}
+
+std::u16string TabGroupHeader::GetTitleTextForTesting() const {
+  CHECK(title_);
+  return title_->GetText();
 }
 
 void TabGroupHeader::CreateHeaderWithoutTitle() {

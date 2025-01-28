@@ -1182,6 +1182,79 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, tab_strip()->GetActiveIndex());
 }
 
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupHeaderTooltipText) {
+  browser()->set_update_ui_immediately_for_testing();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+
+  tab_groups::TabGroupId group = AddTabToNewGroup(1);
+  tab_strip()->tab_at(1)->SetGroup(group);
+  tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
+      tab_groups::TabGroupVisualData(u"Non empty title text",
+                                     tab_groups::TabGroupColorId::kBlue));
+
+  auto* group_header = tab_strip()->group_header(group);
+  std::u16string group_title = tab_strip_model()
+                                   ->group_model()
+                                   ->GetTabGroup(group)
+                                   ->visual_data()
+                                   ->title();
+
+  EXPECT_EQ(group_title, group_header->GetTitleTextForTesting());
+  EXPECT_EQ(group_header->GetRenderedTooltipText(gfx::Point()),
+            l10n_util::GetStringFUTF16(IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP,
+                                       group_header->GetTitleTextForTesting(),
+                                       tab_strip()->GetGroupContentString(
+                                           group_header->group().value())));
+
+  tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
+      tab_groups::TabGroupVisualData(std::u16string(),
+                                     tab_groups::TabGroupColorId::kBlue));
+
+  EXPECT_EQ(group_header->GetRenderedTooltipText(gfx::Point()),
+            l10n_util::GetStringFUTF16(IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP,
+                                       tab_strip()->GetGroupContentString(
+                                           group_header->group().value())));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
+                       TabGroupHeaderTooltipTextAccessibility) {
+  browser()->set_update_ui_immediately_for_testing();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+
+  tab_groups::TabGroupId group = AddTabToNewGroup(1);
+  tab_strip()->tab_at(1)->SetGroup(group);
+  tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
+      tab_groups::TabGroupVisualData(u"Non empty title text",
+                                     tab_groups::TabGroupColorId::kBlue));
+
+  auto* group_header = tab_strip()->group_header(group);
+  std::u16string group_title = tab_strip_model()
+                                   ->group_model()
+                                   ->GetTabGroup(group)
+                                   ->visual_data()
+                                   ->title();
+
+  EXPECT_EQ(group_title, group_header->GetTitleTextForTesting());
+
+  EXPECT_EQ(group_header->GetRenderedTooltipText(gfx::Point()),
+            l10n_util::GetStringFUTF16(IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP,
+                                       group_header->GetTitleTextForTesting(),
+                                       tab_strip()->GetGroupContentString(
+                                           group_header->group().value())));
+
+  ui::AXNodeData data;
+
+  group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            group_header->GetRenderedTooltipText(gfx::Point()));
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            group_header->GetRenderedTooltipText(gfx::Point()));
+}
+
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, CollapseGroup_CreatesNewTab) {
   ASSERT_EQ(1, tab_strip_model()->count());
   AppendTab();
