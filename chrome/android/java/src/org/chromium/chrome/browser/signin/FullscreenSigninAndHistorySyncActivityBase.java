@@ -99,7 +99,10 @@ public abstract class FullscreenSigninAndHistorySyncActivityBase extends AsyncIn
         // TODO(crbug.com/40939710): Find the underlying issue causing the status bar not to be set
         //  during re-FRE, this is just a temporary visual fix.
         if (BuildInfo.getInstance().isAutomotive) {
-            StatusBarColorController.setStatusBarColor(getWindow(), Color.BLACK);
+            StatusBarColorController.setStatusBarColor(
+                    getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper(),
+                    getWindow(),
+                    Color.BLACK);
         }
     }
 

@@ -538,7 +538,8 @@ public class RootUiCoordinator
                         mLayoutManagerSupplier,
                         mActivityLifecycleDispatcher,
                         mActivityTabProvider,
-                        mTopUiThemeColorProvider);
+                        mTopUiThemeColorProvider,
+                        edgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper());
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
 
         mPageZoomCoordinator =

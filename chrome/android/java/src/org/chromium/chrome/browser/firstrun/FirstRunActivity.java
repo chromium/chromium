@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
@@ -309,10 +310,14 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                         || DeviceFormFactor.isNonMultiDisplayContextOnTablet(this);
         if (isTabletOrAuto) {
             setTheme(R.style.Theme_Chromium_TabbedMode);
-        } else if (DialogWhenLargeContentLayout.shouldShowAsDialog(this)) {
+        } else if (!EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
+                && DialogWhenLargeContentLayout.shouldShowAsDialog(this)) {
             // For consistency with tablets, the status bar should be black on phones with large
             // screen, where the FRE is shown as dialog.
-            StatusBarColorController.setStatusBarColor(getWindow(), Color.BLACK);
+            StatusBarColorController.setStatusBarColor(
+                    getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper(),
+                    getWindow(),
+                    Color.BLACK);
         }
         super.onPreCreate();
     }
