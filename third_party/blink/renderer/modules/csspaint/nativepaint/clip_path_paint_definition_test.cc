@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
@@ -26,24 +27,19 @@ namespace blink {
 
 using CompositedPaintStatus = ElementAnimations::CompositedPaintStatus;
 
-class FakeClipPathPaintImageGenerator : public ClipPathPaintImageGenerator {
+class MockSchedulingChromeClient : public EmptyChromeClient {
  public:
-  FakeClipPathPaintImageGenerator() = default;
-
-  scoped_refptr<Image> Paint(float zoom,
-                             const gfx::RectF& reference_box,
-                             const gfx::SizeF& clip_area_size,
-                             const Node& node) override {
-    LayoutObject* layout_object = node.GetLayoutObject();
-    layout_object->GetMutableForPainting().FirstFragment().EnsureId();
-    return BitmapImage::Create();
+  void ScheduleAnimation(const LocalFrameView*,
+                         base::TimeDelta delay) override {
+    has_scheduled_animation_ = true;
   }
 
-  Animation* GetAnimationIfCompositable(const Element* element) override {
-    return ClipPathPaintDefinition::GetAnimationIfCompositable(element);
-  }
+  bool HasScheduledAnimation() { return has_scheduled_animation_; }
 
-  void Shutdown() override {}
+  void ResetMocks() { has_scheduled_animation_ = false; }
+
+ private:
+  bool has_scheduled_animation_ = false;
 };
 
 class ClipPathPaintDefinitionTest : public PageTestBase {
@@ -51,19 +47,114 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
   ClipPathPaintDefinitionTest() = default;
   ~ClipPathPaintDefinitionTest() override = default;
 
+  MockSchedulingChromeClient* Client() { return chrome_client_; }
+
+  Animation* GetFirstAnimation(Element* element) {
+    ElementAnimations* ea = element->GetElementAnimations();
+    EXPECT_TRUE(ea);
+    EXPECT_EQ(ea->Animations().size(), 1u);
+    return ea->Animations().begin()->key;
+  }
+
+  void EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      bool needs_repaint,
+      CompositedPaintStatus status,
+      Element* element) {
+    GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+        DocumentUpdateReason::kTest);
+
+    LayoutObject* lo = element->GetLayoutObject();
+
+    // Changes to a compositable animation should set
+    EXPECT_EQ(lo->NeedsPaintPropertyUpdate(), needs_repaint);
+    // Changes to a compositable animation should set kNeedsRepaint
+    EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+              (!needs_repaint || status == CompositedPaintStatus::kNoAnimation)
+                  ? status
+                  : CompositedPaintStatus::kNeedsRepaint);
+  }
+
+  void EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      bool needs_repaint,
+      CompositedPaintStatus status,
+      Element* element,
+      Animation* animation,
+      std::optional<bool> override_scheduled_animation = std::nullopt) {
+    LayoutObject* lo = element->GetLayoutObject();
+    EXPECT_EQ(GetDocument().Lifecycle().GetState(),
+              DocumentLifecycle::kCompositingInputsClean);
+
+    GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kTest);
+
+    // Composited paint status should be resolved by this point
+    EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+              status);
+
+    UpdateAllLifecyclePhasesForTest();
+
+    switch (status) {
+      case CompositedPaintStatus::kNoAnimation:
+      case CompositedPaintStatus::kNotComposited:
+        // GetAnimationIfCompositable should return nothing in this circumstance
+        EXPECT_EQ(ClipPathPaintDefinition::GetAnimationIfCompositable(element),
+                  nullptr);
+        // If a clip path is non-composited or non-existent, then the clip path
+        // mask should not be set. If it is, it can cause a crash.
+        EXPECT_TRUE(!lo->FirstFragment().PaintProperties() ||
+                    !lo->FirstFragment().PaintProperties()->ClipPathMask());
+        // Non-composited animations SHOULD still be causing animation updates.
+        // Additionally, style/layout code seems to trigger animation update for
+        // the first frame after an animation cancel.
+        EXPECT_EQ(
+            status == CompositedPaintStatus::kNotComposited || needs_repaint,
+            Client()->HasScheduledAnimation());
+        break;
+      case CompositedPaintStatus::kComposited:
+        // GetAnimationIfCompositable should return the given animation, if it
+        // is compositable
+        EXPECT_EQ(ClipPathPaintDefinition::GetAnimationIfCompositable(element),
+                  animation);
+        // Composited clip-path animations depend on ClipPathMask() being set
+        EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
+        // Composited clip-path animations shouldn't cause further animation
+        // updates after the first paint.
+        EXPECT_EQ(override_scheduled_animation.has_value()
+                      ? *override_scheduled_animation
+                      : needs_repaint,
+                  Client()->HasScheduledAnimation());
+        break;
+      case CompositedPaintStatus::kNeedsRepaint:
+        // kNeedsRepaint is only valid before pre-paint has been run
+        NOTREACHED();
+    }
+  }
+
+  void EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      bool needs_repaint,
+      CompositedPaintStatus status,
+      Element* element,
+      Animation* animation,
+      std::optional<bool> override_scheduled_animation = std::nullopt) {
+    Client()->ResetMocks();
+
+    EnsureCCClipPathInvariantsHoldStyleAndLayout(needs_repaint, status,
+                                                 element);
+    EnsureCCClipPathInvariantsHoldThroughoutPainting(
+        needs_repaint, status, element, animation,
+        override_scheduled_animation);
+  }
+
  protected:
   void SetUp() override {
     scoped_composite_clip_path_animation =
         std::make_unique<ScopedCompositeClipPathAnimationForTest>(true);
     scoped_composite_bgcolor_animation =
         std::make_unique<ScopedCompositeBGColorAnimationForTest>(false);
-    PageTestBase::SetUp();
+    chrome_client_ = MakeGarbageCollected<MockSchedulingChromeClient>();
+    PageTestBase::SetupPageWithClients(chrome_client_);
     GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
-
-    FakeClipPathPaintImageGenerator* generator =
-        MakeGarbageCollected<FakeClipPathPaintImageGenerator>();
-    GetDocument().GetFrame()->SetClipPathPaintImageGeneratorForTesting(
-        generator);
+    GetDocument().Timeline().ResetForTesting();
   }
 
  private:
@@ -71,117 +162,94 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
       scoped_composite_clip_path_animation;
   std::unique_ptr<ScopedCompositeBGColorAnimationForTest>
       scoped_composite_bgcolor_animation;
+
+  Persistent<MockSchedulingChromeClient> chrome_client_;
 };
 
 // Test the case where there is a clip-path animation with two simple
 // keyframes that will not fall back to main.
 TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationNotFallback) {
   SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+            }
+        }
+        .animation {
+            animation: clippath 30s;
+        }
+    </style>
     <div id ="target" style="width: 100px; height: 100px">
     </div>
   )HTML");
 
-  Timing timing;
-  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
-
-  CSSPropertyID property_id = CSSPropertyID::kClipPath;
-  Persistent<StringKeyframe> start_keyframe =
-      MakeGarbageCollected<StringKeyframe>();
-  start_keyframe->SetCSSPropertyValue(property_id, "circle(50% at 50% 50%)",
-                                      SecureContextMode::kInsecureContext,
-                                      nullptr);
-  Persistent<StringKeyframe> end_keyframe =
-      MakeGarbageCollected<StringKeyframe>();
-  end_keyframe->SetCSSPropertyValue(property_id, "circle(30% at 30% 30%)",
-                                    SecureContextMode::kInsecureContext,
-                                    nullptr);
-
-  StringKeyframeVector keyframes;
-  keyframes.push_back(start_keyframe);
-  keyframes.push_back(end_keyframe);
-
-  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
-  model->SetComposite(EffectModel::kCompositeReplace);
-
   Element* element = GetElementById("target");
-  LayoutObject* lo = element->GetLayoutObject();
-  NonThrowableExceptionState exception_state;
-  DocumentTimeline* timeline =
-      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
-  Animation* animation = Animation::Create(
-      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
-      exception_state);
-  animation->play();
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  UpdateAllLifecyclePhasesForTest();
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
 
-  // Ensure that the paint property was set correctly - composited animation
-  // uses a mask based clip.
-  EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
-  EXPECT_TRUE(element->GetElementAnimations());
-  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
-            CompositedPaintStatus::kComposited);
-  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
-  EXPECT_EQ(ClipPathPaintDefinition::GetAnimationIfCompositable(element),
-            animation);
+  Animation* animation = GetFirstAnimation(element);
+
+  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                               base::Milliseconds(0));
+  animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
+
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element,
+      animation);
+
+  // Run lifecycle once more to ensure invariants hold post initial paint.
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      /* needs_repaint= */ false, CompositedPaintStatus::kComposited, element,
+      animation);
 }
 
 TEST_F(ClipPathPaintDefinitionTest, ClipPathAnimationCancel) {
   SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+            }
+        }
+        .animation {
+            animation: clippath 30s;
+        }
+    </style>
     <div id ="target" style="width: 100px; height: 100px">
     </div>
   )HTML");
 
-  Timing timing;
-  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
-
-  CSSPropertyID property_id = CSSPropertyID::kClipPath;
-  Persistent<StringKeyframe> start_keyframe =
-      MakeGarbageCollected<StringKeyframe>();
-  start_keyframe->SetCSSPropertyValue(property_id, "circle(50% at 50% 50%)",
-                                      SecureContextMode::kInsecureContext,
-                                      nullptr);
-  Persistent<StringKeyframe> end_keyframe =
-      MakeGarbageCollected<StringKeyframe>();
-  end_keyframe->SetCSSPropertyValue(property_id, "circle(30% at 30% 30%)",
-                                    SecureContextMode::kInsecureContext,
-                                    nullptr);
-
-  StringKeyframeVector keyframes;
-  keyframes.push_back(start_keyframe);
-  keyframes.push_back(end_keyframe);
-
-  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
-  model->SetComposite(EffectModel::kCompositeReplace);
-
   Element* element = GetElementById("target");
-  LayoutObject* lo = element->GetLayoutObject();
-  NonThrowableExceptionState exception_state;
-  DocumentTimeline* timeline =
-      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
-  Animation* animation = Animation::Create(
-      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
-      exception_state);
-  animation->play();
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  UpdateAllLifecyclePhasesForTest();
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
+
+  Animation* animation = GetFirstAnimation(element);
+
+  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                               base::Milliseconds(0));
+  animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
+
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element,
+      animation);
 
   animation->cancel();
-  // Cancelling the animation should trigger a repaint to clear the composited
-  // paint image.
-  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
-      DocumentUpdateReason::kTest);
-  EXPECT_TRUE(lo->NeedsPaintPropertyUpdate());
-  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
-            CompositedPaintStatus::kNoAnimation);
-  UpdateAllLifecyclePhasesForTest();
 
-  // Further frames shouldn't cause more property updates.
-  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
-      DocumentUpdateReason::kTest);
-  EXPECT_FALSE(lo->NeedsPaintPropertyUpdate());
-  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
-            CompositedPaintStatus::kNoAnimation);
+  // Cancelling the animation should reset status and the clippath properties
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      /* needs_repaint= */ true, CompositedPaintStatus::kNoAnimation, element,
+      animation);
 }
 
 // Test the case where a 2nd composited clip path animation causes a fallback to
@@ -189,98 +257,81 @@ TEST_F(ClipPathPaintDefinitionTest, ClipPathAnimationCancel) {
 // any crashes or paint worklets existing beyond their validity.
 TEST_F(ClipPathPaintDefinitionTest, FallbackOnNonCompositableSecondAnimation) {
   SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+            }
+        }
+        .animation {
+            animation: clippath 30s;
+        }
+        .animation2 {
+            animation: clippath 30s, clippath 15s;
+        }
+    </style>
     <div id ="target" style="width: 100px; height: 100px">
     </div>
   )HTML");
 
-  Timing timing;
-  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
-
-  CSSPropertyID property_id = CSSPropertyID::kClipPath;
-  Persistent<StringKeyframe> start_keyframe =
-      MakeGarbageCollected<StringKeyframe>();
-  start_keyframe->SetCSSPropertyValue(property_id, "circle(50% at 50% 50%)",
-                                      SecureContextMode::kInsecureContext,
-                                      nullptr);
-  Persistent<StringKeyframe> end_keyframe =
-      MakeGarbageCollected<StringKeyframe>();
-  end_keyframe->SetCSSPropertyValue(property_id, "circle(30% at 30% 30%)",
-                                    SecureContextMode::kInsecureContext,
-                                    nullptr);
-
-  StringKeyframeVector keyframes;
-  keyframes.push_back(start_keyframe);
-  keyframes.push_back(end_keyframe);
-
-  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
-  model->SetComposite(EffectModel::kCompositeReplace);
-
   Element* element = GetElementById("target");
-  LayoutObject* lo = element->GetLayoutObject();
-  NonThrowableExceptionState exception_state;
-  DocumentTimeline* timeline =
-      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
-  Animation* animation = Animation::Create(
-      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
-      exception_state);
-  animation->play();
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
-      DocumentUpdateReason::kTest);
-  EXPECT_TRUE(lo->ShouldDoFullPaintInvalidation());
-  EXPECT_TRUE(lo->NeedsPaintPropertyUpdate());
-  UpdateAllLifecyclePhasesForTest();
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
 
-  // After adding a single animation, all should be well.
-  EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
-  EXPECT_TRUE(element->GetElementAnimations());
-  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
-            CompositedPaintStatus::kComposited);
-  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
-  EXPECT_EQ(ClipPathPaintDefinition::GetAnimationIfCompositable(element),
-            animation);
+  Animation* animation = GetFirstAnimation(element);
 
-  Timing timing2;
-  timing2.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
-  timing2.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(5));
+  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                               base::Milliseconds(0));
+  animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
 
-  Animation* animation2 = Animation::Create(
-      MakeGarbageCollected<KeyframeEffect>(element, model, timing2), timeline,
-      exception_state);
-  animation2->play();
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element,
+      animation);
 
-  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 2u);
-  // If support for delayed animations is added, this check will fail. This test
-  // should be updated to create a non compositible animation through other
-  // means in this case.
-  EXPECT_EQ(ClipPathPaintDefinition::GetAnimationIfCompositable(element),
-            nullptr);
+  // Adding a 2nd clip path animation is non-compositable.
 
-  // After adding a second animation with a delay, we gracefully fallback.
-  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
-      DocumentUpdateReason::kTest);
-  EXPECT_TRUE(lo->NeedsPaintPropertyUpdate());
-  EXPECT_TRUE(lo->ShouldDoFullPaintInvalidation());
-  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
-            CompositedPaintStatus::kNeedsRepaint);
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(lo->FirstFragment().PaintProperties()->ClipPathMask());
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation2"));
 
-  // Further frames shouldn't cause more property updates than necessary.
-  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
-      DocumentUpdateReason::kTest);
-  EXPECT_FALSE(lo->ShouldDoFullPaintInvalidation());
-  EXPECT_FALSE(lo->NeedsPaintPropertyUpdate());
-  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
-            CompositedPaintStatus::kNotComposited);
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(lo->FirstFragment().PaintProperties()->ClipPathMask());
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      /* needs_repaint= */ true, CompositedPaintStatus::kNotComposited, element,
+      animation);
+
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      /* needs_repaint= */ false, CompositedPaintStatus::kNotComposited,
+      element, animation);
 }
 
 TEST_F(ClipPathPaintDefinitionTest,
        NoInvalidationsOnPseudoWithTransformAnimation) {
   SetBodyInnerHTML(R"HTML(
     <style>
+      @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+            }
+        }
+        @keyframes transform {
+            0% {
+                transform: rotate(10deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+      .animation {
+        animation: transform 30s;
+      }
+      .animation:after {
+        animation: clippath 30s;
+      }
       #target:after{
         content:"";
       }
@@ -288,109 +339,31 @@ TEST_F(ClipPathPaintDefinitionTest,
     <span id="target"></span>
   )HTML");
 
-  Timing timing;
-  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
+  Element* element = GetElementById("target");
+  Element* element_pseudo = To<Element>(element->PseudoAwareFirstChild());
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  CSSPropertyID property_id_cp = CSSPropertyID::kClipPath;
-  Persistent<StringKeyframe> start_keyframe_cp =
-      MakeGarbageCollected<StringKeyframe>();
-  start_keyframe_cp->SetCSSPropertyValue(
-      property_id_cp, "circle(50% at 50% 50%)",
-      SecureContextMode::kInsecureContext, nullptr);
-  Persistent<StringKeyframe> mid_keyframe_cp =
-      MakeGarbageCollected<StringKeyframe>();
-  mid_keyframe_cp->SetCSSPropertyValue(property_id_cp, "circle(50% at 50% 50%)",
-                                       SecureContextMode::kInsecureContext,
-                                       nullptr);
-  Persistent<StringKeyframe> end_keyframe_cp =
-      MakeGarbageCollected<StringKeyframe>();
-  end_keyframe_cp->SetCSSPropertyValue(property_id_cp, "circle(30% at 30% 30%)",
-                                       SecureContextMode::kInsecureContext,
-                                       nullptr);
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited,
+      element_pseudo);
 
-  StringKeyframeVector keyframes_cp;
-  keyframes_cp.push_back(start_keyframe_cp);
-  keyframes_cp.push_back(mid_keyframe_cp);
-  keyframes_cp.push_back(end_keyframe_cp);
+  Animation* animation = GetFirstAnimation(element_pseudo);
 
-  auto* model_cp =
-      MakeGarbageCollected<StringKeyframeEffectModel>(keyframes_cp);
-  model_cp->SetComposite(EffectModel::kCompositeReplace);
-
-  CSSPropertyID property_id_tf = CSSPropertyID::kTransform;
-  Persistent<StringKeyframe> start_keyframe_tf =
-      MakeGarbageCollected<StringKeyframe>();
-  start_keyframe_tf->SetCSSPropertyValue(property_id_tf, "rotate(10deg)",
-                                         SecureContextMode::kInsecureContext,
-                                         nullptr);
-  Persistent<StringKeyframe> end_keyframe_tf =
-      MakeGarbageCollected<StringKeyframe>();
-  end_keyframe_tf->SetCSSPropertyValue(property_id_tf, "rotate(360deg)",
-                                       SecureContextMode::kInsecureContext,
-                                       nullptr);
-
-  StringKeyframeVector keyframes_tf;
-  keyframes_tf.push_back(start_keyframe_tf);
-  keyframes_tf.push_back(end_keyframe_tf);
-
-  auto* model_tf =
-      MakeGarbageCollected<StringKeyframeEffectModel>(keyframes_tf);
-  model_tf->SetComposite(EffectModel::kCompositeReplace);
-
-  Element* element_main = GetElementById("target");
-  Element* element_pseudo = To<Element>(element_main->PseudoAwareFirstChild());
-
-  NonThrowableExceptionState exception_state;
-  DocumentTimeline* timeline =
-      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
-
-  Animation* animation_tf = Animation::Create(
-      MakeGarbageCollected<KeyframeEffect>(element_main, model_tf, timing),
-      timeline, exception_state);
-  animation_tf->play();
-
-  Animation* animation_cp = Animation::Create(
-      MakeGarbageCollected<KeyframeEffect>(element_pseudo, model_cp, timing),
-      timeline, exception_state);
-  animation_cp->play();
-
-  UpdateAllLifecyclePhasesForTest();
-
-  // Set up animations for ticking.
-
-  GetDocument().Timeline().ResetForTesting();
   GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
                                                base::Milliseconds(0));
-  animation_tf->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
+  animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
 
-  // Check for correct state on the first frame. In all cases this should be
-  // correct (basic behavior for the feature)
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited,
+      element_pseudo, animation);
 
-  LayoutObject* lo = element_pseudo->GetLayoutObject();
-  EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
-  EXPECT_TRUE(element_pseudo->GetElementAnimations());
-  EXPECT_EQ(element_pseudo->GetElementAnimations()->CompositedClipPathStatus(),
-            CompositedPaintStatus::kComposited);
+  // Re-run to ensure composited clip path status is not being reset. Note that
+  // we allow for an animation update to be scheduled here, due to the transform
+  // animation.
 
-  // Run lifecycle again, and advance the animation time so that style
-  // invalidation occurs. In this case, the correct behavior is that the
-  // animation should be in steady-state. The transform animation on the root
-  // element should NOT cause invalidations for the pseudo.
-
-  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
-                                               base::Milliseconds(250));
-  animation_tf->Update(kTimingUpdateForAnimationFrame);
-  GetDocument().GetPendingAnimations().Update(
-      GetDocument().GetFrame()->View()->GetPaintArtifactCompositor(), false);
-
-  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
-      DocumentUpdateReason::kTest);
-  EXPECT_FALSE(lo->ShouldDoFullPaintInvalidation());
-  EXPECT_FALSE(lo->NeedsPaintPropertyUpdate());
-  EXPECT_EQ(element_pseudo->GetElementAnimations()->CompositedClipPathStatus(),
-            CompositedPaintStatus::kComposited);
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      /* needs_repaint= */ false, CompositedPaintStatus::kComposited,
+      element_pseudo, animation, /* override_scheduled_animation= */ true);
 }
 
 // Test the case where there is a clip-path animation with two shape()
