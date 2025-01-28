@@ -829,36 +829,51 @@ ci.builder(
                 args = [
                     "--enable-feature=OriginKeyedProcessesByDefault",
                 ],
+                swarming = targets.swarming(
+                    shards = 33,
+                ),
             ),
             "unit_tests": targets.mixin(
                 args = [
                     "--enable-feature=OriginKeyedProcessesByDefault",
                 ],
+                # Default shards = 1 should be ok here.
             ),
             "content_browsertests": targets.mixin(
                 args = [
                     "--enable-feature=OriginKeyedProcessesByDefault",
                 ],
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
             ),
             "content_unittests": targets.mixin(
                 args = [
                     "--enable-feature=OriginKeyedProcessesByDefault",
                 ],
+                # Default shards = 1 should be ok here.
             ),
             "blink_web_tests": targets.mixin(
                 args = [
                     "--additional-driver-flag=--enable-feature=OriginKeyedProcessesByDefault",
                 ],
+                swarming = targets.swarming(
+                    shards = 9,
+                ),
             ),
             "blink_wpt_tests": targets.mixin(
                 args = [
                     "--additional-driver-flag=--enable-feature=OriginKeyedProcessesByDefault",
                 ],
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
             ),
             "chrome_wpt_tests": targets.mixin(
                 args = [
                     "--additional-driver-flag=--enable-feature=OriginKeyedProcessesByDefault",
                 ],
+                # Default shards = 1 should be ok here.
             ),
         },
     ),
