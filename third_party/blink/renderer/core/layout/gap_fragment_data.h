@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
@@ -50,6 +51,12 @@ class GapFragmentData {
    public:
     GapBoundaries columns;
     GapBoundaries rows;
+
+    void AddGapBoundary(GridTrackSizingDirection track_direction,
+                        GapBoundary gap) {
+      (track_direction == kForColumns) ? columns.push_back(gap)
+                                       : rows.push_back(gap);
+    }
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(rows);

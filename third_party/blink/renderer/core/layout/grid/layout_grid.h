@@ -26,6 +26,16 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
     return "LayoutGrid";
   }
 
+  // Helper functions to help with getting expanded positions when needed.
+  // These helpers are currently used for DevTools, ComputedStyles and Gap
+  // Decorations.
+  static Vector<LayoutUnit> ComputeTrackSizeRepeaterForRange(
+      const GridLayoutTrackCollection& track_collection,
+      wtf_size_t range_index);
+  static Vector<LayoutUnit> ComputeExpandedPositions(
+      const GridLayoutData* grid_layout_data,
+      GridTrackSizingDirection track_direction);
+
   bool HasCachedPlacementData() const;
   const GridPlacementData& CachedPlacementData() const;
   void SetCachedPlacementData(GridPlacementData&& placement_data);
@@ -58,12 +68,6 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
     NOT_DESTROYED();
     return true;
   }
-
-  Vector<LayoutUnit> ComputeTrackSizeRepeaterForRange(
-      const GridLayoutTrackCollection& track_collection,
-      wtf_size_t range_index) const;
-  Vector<LayoutUnit> ComputeExpandedPositions(
-      GridTrackSizingDirection track_direction) const;
 
   void AddChild(LayoutObject* new_child, LayoutObject* before_child) override;
   void RemoveChild(LayoutObject* child) override;
