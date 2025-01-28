@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <optional>
 #include <set>
 #include <string>
@@ -17,7 +18,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -146,7 +146,7 @@ RemoteConsentResolutionData& RemoteConsentResolutionData::operator=(
 bool RemoteConsentResolutionData::operator==(
     const RemoteConsentResolutionData& rhs) const {
   return url == rhs.url &&
-         base::ranges::equal(cookies, rhs.cookies, &AreCookiesEqual);
+         std::ranges::equal(cookies, rhs.cookies, &AreCookiesEqual);
 }
 
 OAuth2MintTokenFlow::Parameters::Parameters() = default;
