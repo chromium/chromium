@@ -50,10 +50,6 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/smart_card/smart_card_permission_context.h"
-#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
-#endif
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
@@ -120,7 +116,9 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/smart_card/smart_card_permission_context.h"
+#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -1107,7 +1105,7 @@ void SiteSettingsHandler::HandleSetDefaultValueForContentType(
       site_settings::ContentSettingsTypeFromGroupName(content_type);
 
   Profile* profile = profile_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS special case: in Guest mode, settings are opened in Incognito
   // mode so we need the original profile to actually modify settings.
   if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
@@ -1631,8 +1629,8 @@ void SiteSettingsHandler::HandleRevokeSmartCardReaderGrant(
 
   CHECK_EQ(2U, args.size());
   AllowJavascript();
-#if BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
   auto reader_name = args[0].GetString();
   auto url = GURL(args[1].GetString());
   DCHECK(url.is_valid());

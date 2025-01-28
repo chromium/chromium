@@ -170,7 +170,7 @@ gfx::Rect WindowSizerTestUtil::GetWindowBounds() {
 
 #if !BUILDFLAG(IS_MAC)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Passing null for the browser parameter of GetWindowBounds makes the test skip
 // all Ash-specific logic, so there's no point running this on Chrome OS.
 TEST(WindowSizerTestCommon,
@@ -373,7 +373,7 @@ TEST(WindowSizerTestCommon,
     EXPECT_EQ("50,368 500x400", window_bounds.ToString());
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Test that the window is sized appropriately for the first run experience
 // where the default window bounds calculation is invoked.

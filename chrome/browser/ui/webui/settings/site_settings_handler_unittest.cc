@@ -142,12 +142,9 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 #include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
@@ -356,7 +353,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
         /*is_main_profile=*/true);
     EXPECT_TRUE(profile_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     SetUpUserManager(profile_.get());
 #endif
   }
@@ -400,7 +397,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetUpUserManager(TestingProfile* profile) {
     // On ChromeOS a user account is needed in order to check whether the user
     // account is affiliated with the device owner for the purposes of applying
@@ -417,7 +414,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
                                                   /*is_affiliated=*/true);
     fake_user_manager_ptr->LoginUser(account_id);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   TestingProfile* profile() { return profile_.get(); }
   Profile* incognito_profile() { return incognito_profile_; }
@@ -1180,7 +1177,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   raw_ptr<Profile, DanglingUntriaged> incognito_profile_ = nullptr;
   content::TestWebUI web_ui_;
   std::unique_ptr<SiteSettingsHandler> handler_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 #endif
   raw_ptr<browsing_topics::MockBrowsingTopicsService>
@@ -3176,7 +3173,7 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS a user account is needed in order to check whether the user
   // account is affiliated with the device owner for the purposes of applying
   // enterprise policy.
@@ -3185,7 +3182,7 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
     user_manager()->SetUserAffiliated(
         AccountId::FromUserEmailGaiaId(email, gaia_id), true);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   infobars::ContentInfoBarManager* GetInfoBarManagerForTab(Browser* browser,
                                                            int tab_index,

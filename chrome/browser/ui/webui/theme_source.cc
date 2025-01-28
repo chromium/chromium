@@ -50,10 +50,10 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/grit/cros_styles_resources.h"  // nogncheck crbug.com/1113869
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -117,7 +117,7 @@ void ThemeSource::StartDataRequest(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   constexpr char kTypographyCssPath[] = "typography.css";
   if (parsed_path == kTypographyCssPath) {
     SendTypographyCss(std::move(callback));
@@ -361,7 +361,7 @@ void ThemeSource::SendColorsCss(
                                        ui::kUiColorsEnd, ui::ColorIdName),
        generate_color_provider_mapping("chrome", kChromeColorsStart,
                                        kChromeColorsEnd, &ChromeColorIdName),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
        generate_color_mapping("ref", cros_tokens::kCrosRefColorsStart,
                               cros_tokens::kCrosRefColorsEnd,
                               base::BindRepeating(cros_tokens::ColorIdName)),
@@ -371,7 +371,7 @@ void ThemeSource::SendColorsCss(
        generate_color_mapping("legacy", cros_tokens::kLegacySemanticColorsStart,
                               cros_tokens::kLegacySemanticColorsEnd,
                               base::BindRepeating(cros_tokens::ColorIdName)),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
        "}"});
   if (!color_id_sets.empty()) {
     LOG(ERROR)
@@ -401,7 +401,7 @@ std::string ThemeSource::GetAccessControlAllowOriginForOrigin(
   return content::URLDataSource::GetAccessControlAllowOriginForOrigin(origin);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ThemeSource::SendTypographyCss(
     content::URLDataSource::GotDataCallback callback) {
   const ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();

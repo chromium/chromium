@@ -26,7 +26,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_updates_and_events.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/session/session_observer.h"
 #else
 #include "extensions/browser/extension_registry_observer.h"
@@ -85,7 +85,7 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
 //  lifetime as the Side Panel view.
 //
 class ReadAnythingUntrustedPageHandler :
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     public ash::SessionObserver,
 #else
     public content::UpdateLanguageStatusDelegate,
@@ -144,7 +144,7 @@ class ReadAnythingUntrustedPageHandler :
   void OnTranslateDriverDestroyed(translate::TranslateDriver* driver) override;
 
   // ash::SessionObserver
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void OnLockStateChanged(bool locked) override;
 #endif
 
@@ -158,7 +158,7 @@ class ReadAnythingUntrustedPageHandler :
                              const std::vector<gfx::Size>& sizes);
 
  private:
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // content::UpdateLanguageStatusDelegate:
   void OnUpdateLanguageStatus(const std::string& lang,
                               content::LanguageInstallStatus install_status,

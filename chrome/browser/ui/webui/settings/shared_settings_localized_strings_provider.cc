@@ -38,9 +38,9 @@
 #include "ui/webui/webui_util.h"
 
 namespace settings {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace {
 
+#if BUILDFLAG(IS_CHROMEOS)
+namespace {
 // Generates a Google Help URL which includes a "board type" parameter. Some
 // help pages need to be adjusted depending on the type of CrOS device that is
 // accessing the page.
@@ -49,7 +49,6 @@ std::u16string GetHelpUrlWithBoard(const std::u16string& original_url) {
       {original_url, u"&b=",
        base::ASCIIToUTF16(base::SysInfo::GetLsbReleaseBoard())});
 }
-
 }  // namespace
 #endif
 
@@ -196,7 +195,7 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
       {"sync", IDS_SETTINGS_SYNC},
       {"manageSyncedDataTitle",
        IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       {"manageSyncedDataSubtitle",
        IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_SUBTITLE_UNIFIED_CONSENT},
 #endif
@@ -241,12 +240,12 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
               plus_addresses::features::kPlusAddressesEnabled)
               ? IDS_SETTINGS_ENCRYPT_WITH_SYNC_PASSPHRASE_INCLUDING_PLUS_ADDRESS_LABEL
               : IDS_SETTINGS_ENCRYPT_WITH_SYNC_PASSPHRASE_LABEL,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
           GetHelpUrlWithBoard(chrome::kSyncEncryptionHelpURL)));
 #else
           chrome::kSyncEncryptionHelpURL));
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean(
       "showSyncSettingsRevamp",
       base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&

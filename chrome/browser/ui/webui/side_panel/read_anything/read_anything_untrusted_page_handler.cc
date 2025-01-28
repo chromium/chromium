@@ -67,7 +67,7 @@
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/session/session_controller.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 using ash::language_packs::LanguagePackManager;
@@ -103,7 +103,7 @@ int GetNormalizedFontScale(double font_scale) {
          (1 / kReadAnythingFontScaleIncrement);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 InstallationState GetInstallationStateFromStatusCode(
     const PackResult::StatusCode status_code) {
@@ -313,7 +313,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   ax_action_handler_observer_.Observe(
       ui::AXActionHandlerRegistry::GetInstance());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   content::TtsController::GetInstance()->AddUpdateLanguageStatusDelegate(this);
   extensions::ExtensionRegistry::Get(profile_)->AddObserver(this);
 #endif
@@ -392,7 +392,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   SetUpPdfObserver();
   OnActiveAXTreeIDChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto* session_controller = ash::SessionController::Get();
   if (session_controller) {
     session_controller->AddObserver(this);
@@ -401,7 +401,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 }
 
 ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   content::TtsController::GetInstance()->RemoveUpdateLanguageStatusDelegate(
       this);
   extensions::ExtensionRegistry::Get(profile_)->RemoveObserver(this);
@@ -420,7 +420,7 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
         weak_factory_.GetWeakPtr());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto* session_controller = ash::SessionController::Get();
   if (session_controller) {
     session_controller->RemoveObserver(this);
@@ -490,7 +490,7 @@ void ReadAnythingUntrustedPageHandler::GetDependencyParserModel(
   OnDependencyParserModelFileAvailabilityChanged(std::move(callback), true);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void ReadAnythingUntrustedPageHandler::OnUpdateLanguageStatus(
     const std::string& language,
     content::LanguageInstallStatus install_status,
@@ -519,7 +519,7 @@ void ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo(
 
 void ReadAnythingUntrustedPageHandler::GetVoicePackInfo(
     const std::string& language) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   LanguagePackManager::GetPackState(
       ash::language_packs::kTtsFeatureId, language,
       base::BindOnce(
@@ -535,7 +535,7 @@ void ReadAnythingUntrustedPageHandler::GetVoicePackInfo(
 
 void ReadAnythingUntrustedPageHandler::InstallVoicePack(
     const std::string& language) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   LanguagePackManager::InstallPack(
       ash::language_packs::kTtsFeatureId, language,
       base::BindOnce(
@@ -551,7 +551,7 @@ void ReadAnythingUntrustedPageHandler::InstallVoicePack(
 
 void ReadAnythingUntrustedPageHandler::UninstallVoice(
     const std::string& language) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   TtsController::GetInstance()->UninstallLanguageRequest(
       profile_, language, string_constants::kReadingModeName,
       static_cast<int>(tts_engine_events::TtsClientSource::CHROMEFEATURE),
@@ -947,7 +947,7 @@ void ReadAnythingUntrustedPageHandler::
 }
 
 // ash::SessionObserver
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ReadAnythingUntrustedPageHandler::OnLockStateChanged(bool locked) {
   if (locked) {
     page_->OnDeviceLocked();
