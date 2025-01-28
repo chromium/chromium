@@ -113,6 +113,7 @@
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
 #endif  //  BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
@@ -468,7 +469,6 @@
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router_factory.h"
@@ -839,9 +839,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   enterprise_connectors::BrowserCrashEventRouterFactory::GetInstance();
 #endif
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   enterprise_connectors::ConnectorsServiceFactory::GetInstance();
-#endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   enterprise_connectors::DeviceTrustConnectorServiceFactory::GetInstance();

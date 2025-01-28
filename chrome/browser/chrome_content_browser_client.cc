@@ -5847,7 +5847,6 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
     return nullptr;
   }
   bool has_valid_dm_token = false;
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   auto* connectors_service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           browser_context);
@@ -5866,7 +5865,6 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
           "SafeBrowsing.RT.EnterpriseRealTimePolicyEnabled.HasDmToken", false);
     }
   }
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   bool is_enterprise_lookup_enabled =
       safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
           profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord(),

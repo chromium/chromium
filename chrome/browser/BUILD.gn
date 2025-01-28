@@ -462,6 +462,12 @@ static_library("browser") {
     "enterprise/browser_management/browser_management_status_provider.h",
     "enterprise/browser_management/management_service_factory.cc",
     "enterprise/browser_management/management_service_factory.h",
+    "enterprise/connectors/analysis/analysis_service_settings.cc",
+    "enterprise/connectors/analysis/analysis_service_settings.h",
+    "enterprise/connectors/connectors_manager.cc",
+    "enterprise/connectors/connectors_manager.h",
+    "enterprise/connectors/connectors_service.cc",
+    "enterprise/connectors/connectors_service.h",
     "enterprise/connectors/interstitials/enterprise_block_controller_client.cc",
     "enterprise/connectors/interstitials/enterprise_block_controller_client.h",
     "enterprise/connectors/interstitials/enterprise_block_page.cc",
@@ -1850,6 +1856,7 @@ static_library("browser") {
     "//chrome/browser/data_saver",
     "//chrome/browser/devtools",
     "//chrome/browser/download",
+    "//chrome/browser/enterprise/connectors/analysis:features",
     "//chrome/browser/enterprise/platform_auth:features",
     "//chrome/browser/favicon",
     "//chrome/browser/feedback",
@@ -6518,21 +6525,6 @@ static_library("browser") {
       "enterprise/connectors/common.h",
     ]
     deps += [ "//components/enterprise/connectors/core" ]
-  }
-
-  if (enterprise_cloud_content_analysis || is_android) {
-    # Use this scope to migrate files/deps from
-    # `enterprise_cloud_content_analysis` conditions that now need to compile
-    # on Android.
-    sources += [
-      "enterprise/connectors/analysis/analysis_service_settings.cc",
-      "enterprise/connectors/analysis/analysis_service_settings.h",
-      "enterprise/connectors/connectors_manager.cc",
-      "enterprise/connectors/connectors_manager.h",
-      "enterprise/connectors/connectors_service.cc",
-      "enterprise/connectors/connectors_service.h",
-    ]
-    deps += [ "//chrome/browser/enterprise/connectors/analysis:features" ]
   }
 
   if (enterprise_cloud_content_analysis) {
