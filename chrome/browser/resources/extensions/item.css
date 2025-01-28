@@ -187,6 +187,10 @@ cr-tooltip {
   color: var(--error-color);
 }
 
+#account-upload-button {
+  color: var(--cr-fallback-color-on-surface-subtle);
+}
+
 #enableToggle {
   margin-inline-start: 12px;
 }
