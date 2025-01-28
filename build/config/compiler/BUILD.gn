@@ -333,9 +333,9 @@ config("compiler") {
   # When UBSan is enabled, we want to continue flagging overflows as a bug.
   if (!is_ubsan && (!is_win || is_clang)) {
     if (is_win) {
-      cflags += [ "/clang:-fwrapv" ]
+      cflags += [ "/clang:-fno-strict-overflow" ]
     } else {
-      cflags += [ "-fwrapv" ]
+      cflags += [ "-fno-strict-overflow" ]
     }
   }
 
