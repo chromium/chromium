@@ -2,33 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_MODEL_HANDLER_PROVIDER_H_
-#define COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_MODEL_HANDLER_PROVIDER_H_
+#ifndef CHROME_BROWSER_PERMISSIONS_PREDICTION_MODEL_HANDLER_PROVIDER_H_
+#define CHROME_BROWSER_PERMISSIONS_PREDICTION_MODEL_HANDLER_PROVIDER_H_
 
 #include <memory>
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
-#include "components/permissions/prediction_service/prediction_model_handler.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/permissions/request_type.h"
 
+class OptimizationGuideKeyedService;
+
 namespace permissions {
+
+class PredictionModelHandler;
+class GenAiModelHandler;
+
 class PredictionModelHandlerProvider : public KeyedService {
  public:
   explicit PredictionModelHandlerProvider(
-      optimization_guide::OptimizationGuideModelProvider* optimization_guide);
+      OptimizationGuideKeyedService* optimization_guide);
   ~PredictionModelHandlerProvider() override;
   PredictionModelHandlerProvider(const PredictionModelHandlerProvider&) =
       delete;
   PredictionModelHandlerProvider& operator=(
       const PredictionModelHandlerProvider&) = delete;
 
+  GenAiModelHandler* GetGenAiModelHandler();
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   PredictionModelHandler* GetPredictionModelHandler(RequestType request_type);
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
  private:
+  std::unique_ptr<GenAiModelHandler> genai_model_handler_;
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::unique_ptr<PredictionModelHandler>
       notification_prediction_model_handler_;
   std::unique_ptr<PredictionModelHandler> geolocation_prediction_model_handler_;
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 };
 }  // namespace permissions
-#endif  // COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_MODEL_HANDLER_PROVIDER_H_
+#endif  // CHROME_BROWSER_PERMISSIONS_PREDICTION_MODEL_HANDLER_PROVIDER_H_

@@ -79,6 +79,7 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
+#include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"
@@ -437,7 +438,6 @@
 #include "chrome/browser/autocomplete/on_device_tail_model_service_factory.h"
 #include "chrome/browser/autofill/autofill_field_classification_model_service_factory.h"
 #include "chrome/browser/password_manager/password_field_classification_model_handler_factory.h"
-#include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -1125,14 +1125,13 @@ void ChromeBrowserMainExtraPartsProfiles::
   policy::UserPolicySigninServiceFactory::GetInstance();
 #endif
   PolicyBlocklistFactory::GetInstance();
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (base::FeatureList::IsEnabled(
           permissions::features::kPermissionOnDeviceNotificationPredictions) ||
       base::FeatureList::IsEnabled(
-          permissions::features::kPermissionOnDeviceGeolocationPredictions)) {
+          permissions::features::kPermissionOnDeviceGeolocationPredictions) ||
+      base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
     PredictionModelHandlerProviderFactory::GetInstance();
   }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   PredictionServiceFactory::GetInstance();
   predictors::AutocompleteActionPredictorFactory::GetInstance();
   predictors::LoadingPredictorFactory::GetInstance();

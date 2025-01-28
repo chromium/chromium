@@ -12,6 +12,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
+#include "chrome/browser/permissions/prediction_model_handler_provider.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"
 #include "chrome/browser/permissions/prediction_service_request.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,7 +39,6 @@
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #include "components/permissions/prediction_service/prediction_model_handler.h"
-#include "components/permissions/prediction_service/prediction_model_handler_provider.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace {
