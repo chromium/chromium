@@ -37,8 +37,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 })
 public class BottomControlsStackerUnitTest {
     private static final @LayerType int ZERO_HEIGHT_TOP_LAYER = LayerType.PROGRESS_BAR;
-    private static final @LayerType int TOP_LAYER = LayerType.TABSTRIP_TOOLBAR;
-    private static final @LayerType int MID_LAYER = LayerType.READ_ALOUD_PLAYER;
+    private static final @LayerType int TOP_LAYER = LayerType.READ_ALOUD_PLAYER;
+    private static final @LayerType int MID_LAYER = LayerType.TABSTRIP_TOOLBAR_BELOW_READALOUD;
     private static final @LayerType int BOTTOM_LAYER = LayerType.TEST_BOTTOM_LAYER;
 
     @Mock BrowserControlsSizer mBrowserControlsSizer;
