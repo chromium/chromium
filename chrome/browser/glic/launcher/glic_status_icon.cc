@@ -87,22 +87,24 @@ void GlicStatusIcon::OnStatusIconClicked() {
 }
 
 void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
-  Profile* profile = GlicProfileManager::GetInstance()->GetProfileForLaunch();
   switch (command_id) {
     case IDC_GLIC_STATUS_ICON_MENU_SHOW: {
       controller_->Show();
       break;
     }
     case IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT: {
-      OpenGlicKeyboardShortcutSetting(profile);
+      OpenGlicKeyboardShortcutSetting(
+          GlicProfileManager::GetInstance()->GetProfileForLaunch());
       break;
     }
     case IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON: {
-      OpenGlicOsToggleSetting(profile);
+      OpenGlicOsToggleSetting(
+          GlicProfileManager::GetInstance()->GetProfileForLaunch());
       break;
     }
     case IDC_GLIC_STATUS_ICON_MENU_SETTINGS: {
-      OpenGlicSettingsPage(profile);
+      OpenGlicSettingsPage(
+          GlicProfileManager::GetInstance()->GetProfileForLaunch());
       break;
     }
     default: {

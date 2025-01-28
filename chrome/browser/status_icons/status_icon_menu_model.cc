@@ -129,6 +129,12 @@ ui::ImageModel StatusIconMenuModel::GetIconForCommandId(int command_id) const {
   return ui::ImageModel();
 }
 
+void StatusIconMenuModel::ExecuteCommand(int command_id, int event_flags) {
+  if (delegate_) {
+    delegate_->ExecuteCommand(command_id, event_flags);
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // StatusIconMenuModel, protected:
 
@@ -139,12 +145,4 @@ void StatusIconMenuModel::MenuItemsChanged() {
 void StatusIconMenuModel::NotifyMenuStateChanged() {
   for (Observer& observer : observer_list_)
     observer.OnMenuStateChanged();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// StatusIconMenuModel, private:
-
-void StatusIconMenuModel::ExecuteCommand(int command_id, int event_flags) {
-  if (delegate_)
-    delegate_->ExecuteCommand(command_id, event_flags);
 }
