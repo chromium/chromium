@@ -3000,7 +3000,7 @@ void FederatedAuthRequestImpl::SendSuccessfulTokenRequestMetrics(
 
     if (metrics_endpoint_kv.first == idp_config_url) {
       network_manager_->SendSuccessfulTokenRequestMetrics(
-          metrics_endpoint, did_show_ui_,
+          metrics_endpoint,
           ready_to_display_accounts_dialog_time_ - start_time_,
           select_account_time_ - accounts_dialog_display_time_,
           id_assertion_response_time_ - select_account_time_,

@@ -2051,7 +2051,7 @@ IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Success) {
   EXPECT_EQ(1ul, metrics_parameters_.count("time_to_receive_token"));
   EXPECT_EQ(1ul, metrics_parameters_.count("turnaround_time"));
   EXPECT_EQ(0ul, metrics_parameters_.count("error_code"));
-  EXPECT_EQ("true", metrics_parameters_["did_show_ui"]);
+  EXPECT_EQ(0ul, metrics_parameters_.count("did_show_ui"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, IdpLoginClosed) {

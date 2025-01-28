@@ -1109,7 +1109,6 @@ void IdpNetworkRequestManager::SendTokenRequest(
 
 void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
-    bool did_show_ui,
     base::TimeDelta api_call_to_show_dialog_time,
     base::TimeDelta show_dialog_to_continue_clicked_time,
     base::TimeDelta account_selected_to_token_response_time,
@@ -1118,14 +1117,12 @@ void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
       "time_to_show_ui=%d"
       "&time_to_continue=%d"
       "&time_to_receive_token=%d"
-      "&turnaround_time=%d"
-      "&did_show_ui=%s",
+      "&turnaround_time=%d",
       static_cast<int>(api_call_to_show_dialog_time.InMilliseconds()),
       static_cast<int>(show_dialog_to_continue_clicked_time.InMilliseconds()),
       static_cast<int>(
           account_selected_to_token_response_time.InMilliseconds()),
-      static_cast<int>(api_call_to_token_response_time.InMilliseconds()),
-      did_show_ui ? "true" : "false");
+      static_cast<int>(api_call_to_token_response_time.InMilliseconds()));
 
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateCredentialedResourceRequest(
