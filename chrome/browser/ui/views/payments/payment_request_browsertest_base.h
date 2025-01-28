@@ -31,8 +31,10 @@
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-forward.h"
 
 namespace autofill {
+class AddressDataManager;
 class AutofillProfile;
 class CreditCard;
+class PaymentsDataManager;
 }  // namespace autofill
 
 namespace content {
@@ -182,6 +184,8 @@ class PaymentRequestBrowserTestBase
   const std::vector<PaymentRequest*> GetPaymentRequests();
 
   autofill::PersonalDataManager* GetDataManager();
+  autofill::AddressDataManager* address_data_manager();
+  autofill::PaymentsDataManager* payments_data_manager();
   // Adds the various models to the database, waiting until the personal data
   // manager notifies that they are added.
   // NOTE: If no use_count is specified on the models and multiple items are

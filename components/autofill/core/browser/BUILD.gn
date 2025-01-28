@@ -905,6 +905,8 @@ static_library("test_support") {
     "crowdsourcing/votes_uploader_test_api.h",
     "data_manager/addresses/address_data_cleaner_test_api.h",
     "data_manager/addresses/address_data_manager_test_api.h",
+    "data_manager/addresses/address_data_manager_test_utils.cc",
+    "data_manager/addresses/address_data_manager_test_utils.h",
     "data_manager/addresses/test_address_data_manager.cc",
     "data_manager/addresses/test_address_data_manager.h",
     "data_manager/entities/test_entity_data_manager.cc",
