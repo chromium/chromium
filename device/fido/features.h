@@ -153,6 +153,11 @@ BASE_DECLARE_FEATURE(kWebAuthnNewBfCacheHandling);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNoAccountTimeout);
 
+// When enabled, a sync with the Security Domain Service is performed before a
+// GPM PIN renewal.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kSyncSecurityDomainBeforePINRenewal);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_
