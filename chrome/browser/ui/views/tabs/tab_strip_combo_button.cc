@@ -13,9 +13,11 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/theme_provider.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/fill_layout.h"
@@ -102,10 +104,6 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
 
   std::unique_ptr<views::Separator> separator =
       std::make_unique<views::Separator>();
-  const int color_id = features::HasTabstripComboButtonWithBackground()
-                           ? kColorTabStripComboButtonSeparator
-                           : kColorTabDividerFrameActive;
-  separator->SetColorId(color_id);
   separator->SetBorderRadius(kSeparatorBorderRadius);
   separator->SetPreferredSize(gfx::Size(kSeparatorWidth, kSeparatorHeight));
   subscriptions_.push_back(browser->RegisterDidBecomeActive(base::BindRepeating(
@@ -195,14 +193,27 @@ void TabStripComboButton::OnTabSearchButtonStateChanged() {
 
 void TabStripComboButton::DidBecomeActive(BrowserWindowInterface* browser) {
   if (features::HasTabstripComboButtonWithBackground()) {
-    separator_->SetColorId(kColorTabStripComboButtonSeparator);
+    if (using_custom_theme_) {
+      separator_->SetColorId(ui::kColorFrameActive);
+    } else {
+      separator_->SetColorId(kColorTabStripComboButtonSeparator);
+    }
   } else {
     separator_->SetColorId(kColorTabDividerFrameActive);
   }
 }
 
 void TabStripComboButton::DidBecomeInactive(BrowserWindowInterface* browser) {
-  separator_->SetColorId(kColorTabDividerFrameInactive);
+  if (using_custom_theme_) {
+    separator_->SetColorId(ui::kColorFrameInactive);
+  } else {
+    separator_->SetColorId(kColorTabDividerFrameInactive);
+  }
+}
+
+void TabStripComboButton::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  using_custom_theme_ = GetThemeProvider()->HasCustomImage(IDR_THEME_FRAME);
 }
 
 void TabStripComboButton::UpdateSeparatorVisibility() {
