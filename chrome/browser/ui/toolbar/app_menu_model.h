@@ -116,7 +116,7 @@ enum AppMenuAction {
   MENU_ACTION_DECLUTTER_TABS = 93,
   LIMIT_MENU_ACTION
 };
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml:WrenchMenuAction)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ui/enums.xml:WrenchMenuAction)
 
 enum class AlertMenuItem { kNone, kPasswordManager };
 

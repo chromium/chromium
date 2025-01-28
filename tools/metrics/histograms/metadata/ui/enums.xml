@@ -26,6 +26,365 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="ChromeLabsSelectedLab">
+  <int value="0" label="User selected an unspecified lab"/>
+  <int value="1" label="User selected the Read Later lab"/>
+  <int value="2" label="User selected the Tab Search lab"/>
+  <int value="3" label="User selected the Tab Scrolling lab"/>
+  <int value="4" label="User selected the Side Panel lab"/>
+  <int value="5" label="User selected the Lens Region Search lab"/>
+  <int value="6" label="User selected the WebUI Tab Strip lab"/>
+  <int value="7" label="User selected the Tab Search Media Tabs lab"/>
+  <int value="8" label="User selected the Chrome Refresh lab"/>
+  <int value="9" label="User selected the Tab Groups Save lab"/>
+  <int value="10" label="User selected the Chrome WebUI Refresh lab"/>
+  <int value="11" label="User selected the Customize Chrome Side Panel lab"/>
+</enum>
+
+<enum name="ContextMenuOptionDesktop">
+  <summary>The item selected from a context menu on Desktop.</summary>
+  <int value="0" label="Open in new tab"/>
+  <int value="1" label="Open in incognito tab"/>
+  <int value="2" label="Copy link address"/>
+  <int value="3" label="Copy link text"/>
+  <int value="4" label="Save link"/>
+  <int value="5" label="Save image"/>
+  <int value="6" label="Open image in new tab"/>
+  <int value="7" label="Copy image"/>
+  <int value="8" label="Copy image URL"/>
+  <int value="9" label="Search by image"/>
+  <int value="10" label="Open link in a new window"/>
+  <int value="11" label="Print"/>
+  <int value="12" label="Search web for..."/>
+  <int value="13" label="Save media as"/>
+  <int value="14" label="Spellcheck suggestion"/>
+  <int value="15" label="Add to dictionary"/>
+  <int value="16" label="Context spelling toggle (Use enhanced spell check)"/>
+  <int value="17" label="Cut text"/>
+  <int value="18" label="Paste text"/>
+  <int value="19" label="Go to URL"/>
+  <int value="20" label="Copy link to text"/>
+  <int value="21" label="Search Image with Google Lens"/>
+  <int value="22" label="Search Images with Google Lens"/>
+  <int value="23" label="Search Images with non-Google visual search provider"/>
+  <int value="24" label="Copy link to highlight"/>
+  <int value="25" label="Open link as Profile"/>
+  <int value="26" label="Add a note"/>
+  <int value="27"
+      label="Translate text in image with non-Google visual search provider"/>
+  <int value="28" label="Translate text in image with Google Lens"/>
+  <int value="29" label="Search web for... in new tab"/>
+  <int value="30" label="Open link in preview"/>
+</enum>
+
+<enum name="DefaultBrowserInfoBarUserInteraction">
+  <int value="0" label="Accept">
+    The user clicked the &quot;Set as default&quot; button.
+  </int>
+  <int value="1" label="Cancel">
+    The user clicked the &quot;Don't ask again&quot; button.
+  </int>
+  <int value="2" label="Ignore">
+    The user did not interact with the info bar.
+  </int>
+  <int value="3" label="Dismiss">The user explicitly closed the infobar.</int>
+</enum>
+
+<enum name="DefaultBrowserState">
+  <int value="0" label="Not Default"/>
+  <int value="1" label="Default"/>
+  <int value="2" label="Unknown"/>
+  <int value="3" label="Other Mode is Default"/>
+</enum>
+
+<enum name="DefaultWebClientState">
+  <int value="0" label="Not default">Chrome is not the default web client.</int>
+  <int value="1" label="Is default">Chrome is the default web client.</int>
+  <int value="2" label="Unknown default">
+    Chrome is in a unknown default state.
+  </int>
+  <int value="3" label="Other mode is default">
+    The current install of Chrome is not the default web client, yet another
+    side-by-side install of Chrome is.
+  </int>
+</enum>
+
+<enum name="OpenLinkAs">
+  <int value="0" label="Open Link as Profile displayed."/>
+  <int value="1" label="Open Link as Profile clicked."/>
+  <int value="2" label="Open Link in Incognito Window displayed."/>
+  <int value="3" label="Open Link in Incognito Window clicked."/>
+</enum>
+
+<enum name="RenderViewContextMenuItem">
+  <int value="0" label="IDC_CONTENT_CONTEXT_CUSTOM_FIRST"/>
+  <int value="1" label="IDC_EXTENSIONS_CONTEXT_CUSTOM_FIRST"/>
+  <int value="2" label="IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_FIRST"/>
+  <int value="3" label="IDC_CONTENT_CONTEXT_OPENLINKNEWTAB"/>
+  <int value="4" label="IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW"/>
+  <int value="5" label="IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD">
+    Open Link in Incognito Window is being counted as shown even when the menu
+    item is displayed but not enabled/clickable.
+  </int>
+  <int value="6" label="IDC_CONTENT_CONTEXT_SAVELINKAS"/>
+  <int value="7" label="IDC_CONTENT_CONTEXT_SAVEAVAS"/>
+  <int value="8" label="IDC_CONTENT_CONTEXT_SAVEIMAGEAS"/>
+  <int value="9" label="IDC_CONTENT_CONTEXT_COPYLINKLOCATION"/>
+  <int value="10" label="IDC_CONTENT_CONTEXT_COPYIMAGELOCATION"/>
+  <int value="11" label="IDC_CONTENT_CONTEXT_COPYAVLOCATION"/>
+  <int value="12" label="IDC_CONTENT_CONTEXT_COPYIMAGE"/>
+  <int value="13" label="IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB"/>
+  <int value="14" label="IDC_CONTENT_CONTEXT_OPENAVNEWTAB"/>
+  <int value="15" label="IDC_CONTENT_CONTEXT_PLAYPAUSE"/>
+  <int value="16" label="IDC_CONTENT_CONTEXT_MUTE"/>
+  <int value="17" label="IDC_CONTENT_CONTEXT_LOOP"/>
+  <int value="18" label="IDC_CONTENT_CONTEXT_CONTROLS"/>
+  <int value="19" label="IDC_CONTENT_CONTEXT_ROTATECW"/>
+  <int value="20" label="IDC_CONTENT_CONTEXT_ROTATECCW"/>
+  <int value="21" label="IDC_BACK"/>
+  <int value="22" label="IDC_FORWARD"/>
+  <int value="23" label="IDC_SAVE_PAGE"/>
+  <int value="24" label="IDC_RELOAD"/>
+  <int value="25" label="IDC_CONTENT_CONTEXT_RELOAD_PACKAGED_APP"/>
+  <int value="26" label="IDC_CONTENT_CONTEXT_RESTART_PACKAGED_APP"/>
+  <int value="27" label="IDC_PRINT"/>
+  <int value="28" label="IDC_VIEW_SOURCE"/>
+  <int value="29" label="IDC_CONTENT_CONTEXT_INSPECTELEMENT"/>
+  <int value="30" label="IDC_CONTENT_CONTEXT_INSPECTBACKGROUNDPAGE"/>
+  <int value="31" label="IDC_CONTENT_CONTEXT_VIEWPAGEINFO"/>
+  <int value="32" label="IDC_CONTENT_CONTEXT_TRANSLATE"/>
+  <int value="33" label="IDC_CONTENT_CONTEXT_RELOADFRAME"/>
+  <int value="34" label="IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE"/>
+  <int value="35" label="IDC_CONTENT_CONTEXT_VIEWFRAMEINFO"/>
+  <int value="36" label="IDC_CONTENT_CONTEXT_UNDO"/>
+  <int value="37" label="IDC_CONTENT_CONTEXT_REDO"/>
+  <int value="38" label="IDC_CONTENT_CONTEXT_CUT"/>
+  <int value="39" label="IDC_CONTENT_CONTEXT_COPY"/>
+  <int value="40" label="IDC_CONTENT_CONTEXT_PASTE"/>
+  <int value="41" label="IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE"/>
+  <int value="42" label="IDC_CONTENT_CONTEXT_DELETE"/>
+  <int value="43" label="IDC_CONTENT_CONTEXT_SELECTALL"/>
+  <int value="44" label="IDC_CONTENT_CONTEXT_SEARCHWEBFOR"/>
+  <int value="45" label="IDC_CONTENT_CONTEXT_GOTOURL"/>
+  <int value="46" label="IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS"/>
+  <int value="47" label="IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_SETTINGS"/>
+  <int value="48" label="IDC_CONTENT_CONTEXT_ADDSEARCHENGINE"/>
+  <int value="49" label="IDC_CONTENT_CONTEXT_SPEECH_INPUT_FILTER_PROFANITIES"/>
+  <int value="50" label="IDC_CONTENT_CONTEXT_SPEECH_INPUT_ABOUT"/>
+  <int value="51" label="IDC_SPEECH_INPUT_MENU"/>
+  <int value="52" label="IDC_CONTENT_CONTEXT_OPENLINKWITH"/>
+  <int value="53" label="IDC_CHECK_SPELLING_WHILE_TYPING"/>
+  <int value="54" label="IDC_SPELLCHECK_MENU"/>
+  <int value="55" label="IDC_CONTENT_CONTEXT_SPELLING_TOGGLE"/>
+  <int value="56" label="IDC_SPELLCHECK_LANGUAGES_FIRST"/>
+  <int value="57" label="IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE"/>
+  <int value="58" label="IDC_SPELLCHECK_SUGGESTION"/>
+  <int value="59" label="IDC_SPELLCHECK_ADD_TO_DICTIONARY"/>
+  <int value="60" label="IDC_SPELLPANEL_TOGGLE"/>
+  <int value="61" label="IDC_CONTENT_CONTEXT_OPENORIGINALIMAGENEWTAB"/>
+  <int value="62" label="IDC_WRITING_DIRECTION_MENU"/>
+  <int value="63" label="IDC_WRITING_DIRECTION_DEFAULT"/>
+  <int value="64" label="IDC_WRITING_DIRECTION_LTR"/>
+  <int value="65" label="IDC_WRITING_DIRECTION_RTL"/>
+  <int value="66" label="IDC_CONTENT_CONTEXT_LOAD_IMAGE"/>
+  <int value="67" label="IDC_CONTENT_CONTEXT_FORCESAVEPASSWORD"/>
+  <int value="68" label="IDC_ROUTE_MEDIA"/>
+  <int value="69" label="IDC_CONTENT_CONTEXT_COPYLINKTEXT"/>
+  <int value="70" label="IDC_CONTENT_CONTEXT_OPENLINKINPROFILE"/>
+  <int value="71" label="IDC_OPEN_LINK_IN_PROFILE_FIRST">
+    When Open Link as Profile is a submenu (more than one extra profile), it is
+    not counted as shown if the submenu is not open. When the submenu is opened,
+    it is counted as shown one time per profile displayed in the submenu.
+  </int>
+  <int value="72" label="IDC_CONTENT_CONTEXT_GENERATEPASSWORD"/>
+  <int value="73" label="IDC_SPELLCHECK_MULTI_LINGUAL"/>
+  <int value="74" label="IDC_CONTENT_CONTEXT_OPEN_WITH1"/>
+  <int value="75" label="IDC_CONTENT_CONTEXT_OPEN_WITH2"/>
+  <int value="76" label="IDC_CONTENT_CONTEXT_OPEN_WITH3"/>
+  <int value="77" label="IDC_CONTENT_CONTEXT_OPEN_WITH4"/>
+  <int value="78" label="IDC_CONTENT_CONTEXT_OPEN_WITH5"/>
+  <int value="79" label="IDC_CONTENT_CONTEXT_OPEN_WITH6"/>
+  <int value="80" label="IDC_CONTENT_CONTEXT_OPEN_WITH7"/>
+  <int value="81" label="IDC_CONTENT_CONTEXT_OPEN_WITH8"/>
+  <int value="82" label="IDC_CONTENT_CONTEXT_OPEN_WITH9"/>
+  <int value="83" label="IDC_CONTENT_CONTEXT_OPEN_WITH10"/>
+  <int value="84" label="IDC_CONTENT_CONTEXT_OPEN_WITH11"/>
+  <int value="85" label="IDC_CONTENT_CONTEXT_OPEN_WITH12"/>
+  <int value="86" label="IDC_CONTENT_CONTEXT_OPEN_WITH13"/>
+  <int value="87" label="IDC_CONTENT_CONTEXT_OPEN_WITH14"/>
+  <int value="88" label="IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN"/>
+  <int value="89" label="IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP"/>
+  <int value="90" label="IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS"/>
+  <int value="91" label="IDC_CONTENT_CONTENT_PICTUREINPICTURE"/>
+  <int value="92" label="IDC_CONTENT_CONTEXT_EMOJI"/>
+  <int value="93" label="IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION1"/>
+  <int value="94" label="IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION2"/>
+  <int value="95" label="IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION3"/>
+  <int value="96" label="IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION4"/>
+  <int value="97" label="IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION5"/>
+  <int value="98" label="IDC_CONTENT_CONTEXT_LOOK_UP"/>
+  <int value="99" label="IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE"/>
+  <int value="100"
+      label="IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE"/>
+  <int value="101" label="IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS"/>
+  <int value="102" label="IDC_SEND_TO_MY_DEVICES"/>
+  <int value="103" label="IDC_CONTENT_LINK_SEND_TAB_TO_SELF"/>
+  <int value="104" label="IDC_SEND_TAB_TO_SELF_SINGLE_TARGET"/>
+  <int value="105" label="IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET"/>
+  <int value="106"
+      label="IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE"/>
+  <int value="107"
+      label="IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES"/>
+  <int value="108"
+      label="IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_SINGLE_DEVICE"/>
+  <int value="109"
+      label="IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_MULTIPLE_DEVICES"/>
+  <int value="110" label="IDC_CONTENT_CONTEXT_GENERATE_QR_CODE"/>
+  <int value="111"
+      label="(Obsolete) IDC_CONTENT_CLIPBOARD_HISTORY_MENU. Removed in
+             2024/12."/>
+  <int value="112" label="IDC_CONTENT_CONTEXT_COPYLINKTOTEXT"/>
+  <int value="113" label="IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE"/>
+  <int value="114" label="IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT"/>
+  <int value="115" label="IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH"/>
+  <int value="116" label="IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH"/>
+  <int value="117" label="IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT"/>
+  <int value="118" label="IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING"/>
+  <int value="119" label="IDC_FOLLOW"/>
+  <int value="120" label="IDC_UNFOLLOW"/>
+  <int value="121"
+      label="(Obsolete) IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST. Removed in
+             2023/07."/>
+  <int value="123" label="IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE"/>
+  <int value="125" label="IDC_LIVE_CAPTION"/>
+  <int value="126" label="IDC_CONTENT_CONTEXT_PDF_OCR"/>
+  <int value="127" label="IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS"/>
+  <int value="128" label="IDC_CONTENT_CONTEXT_PDF_OCR_ONCE"/>
+  <int value="129" label="IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK"/>
+  <int value="130" label="IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB"/>
+  <int value="131" label="IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS"/>
+  <int value="132" label="IDC_CONTENT_CONTEXT_COPYVIDEOFRAME"/>
+  <int value="133" label="IDC_CONTENT_CONTEXT_SAVEPLUGINAS"/>
+  <int value="134"
+      label="(Obsolete) IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS"/>
+  <int value="135" label="IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB"/>
+  <int value="136" label="IDC_CONTENT_CONTEXT_ORCA"/>
+  <int value="137" label="IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION"/>
+  <int value="138" label="IDC_CONTENT_PASTE_FROM_CLIPBOARD"/>
+  <int value="139" label="IDC_CONTEXT_COMPOSE"/>
+  <int value="140"
+      label="(Obsolete) IDC_CONTEXT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS"/>
+  <int value="141" label="IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS"/>
+  <int value="142" label="IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME"/>
+  <int value="143" label="IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME"/>
+  <int value="144" label="IDC_CONTENT_CONTEXT_OPENLINKPREVIEW"/>
+  <int value="145" label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS"/>
+  <int value="146"
+      label="(Obsolete) IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS"/>
+  <int value="147"
+      label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD"/>
+  <int value="148"
+      label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS"/>
+  <int value="149"
+      label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD"/>
+  <int value="150"
+      label="(Obsolete)
+             IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS"/>
+  <int value="151"
+      label="IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS"/>
+  <int value="152"
+      label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE"/>
+  <int value="153" label="IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE"/>
+</enum>
+
+<enum name="ShapeRunFallback">
+  <int value="0" label="FAILED">Finding a fallback font failed.</int>
+  <int value="1" label="NO_FALLBACK">No fallback font was required.</int>
+  <int value="2" label="FALLBACK">
+    Call to GetFallbackFont(...) was required to find the appropriate font.
+  </int>
+  <int value="3" label="FALLBACKS">
+    Call to GetFallbackFonts(...) was required find the appropriate font.
+  </int>
+</enum>
+
+<enum name="SnackbarIdentifier">
+  <int value="-2" label="TEST_SNACKBAR"/>
+  <int value="-1" label="UNKNOWN"/>
+  <int value="0" label="BOOKMARK_ADDED"/>
+  <int value="1" label="BOOKMARK_DELETE_UNDO"/>
+  <int value="2" label="NTP_MOST_VISITED_DELETE_UNDO"/>
+  <int value="3" label="OFFLINE_PAGE_RELOAD"/>
+  <int value="4" label="AUTO_LOGIN"/>
+  <int value="5" label="OMNIBOX_GEOLOCATION"/>
+  <int value="6" label="LOFI"/>
+  <int value="7" label="DATA_USE_STARTED"/>
+  <int value="8" label="DATA_USE_ENDED"/>
+  <int value="9" label="DOWNLOAD_SUCCEEDED"/>
+  <int value="10" label="DOWNLOAD_FAILED"/>
+  <int value="11" label="TAB_CLOSE_UNDO"/>
+  <int value="12" label="TAB_CLOSE_ALL_UNDO"/>
+  <int value="13" label="DOWNLOAD_DELETE_UNDO"/>
+  <int value="14" label="SPECIAL_LOCALE"/>
+  <int value="15" label="BLIMP"/>
+  <int value="16" label="DATA_REDUCTION_PROMO"/>
+  <int value="17" label="HISTORY_LINK_COPIED"/>
+  <int value="18" label="TRANSLATE_ALWAYS"/>
+  <int value="19" label="TRANSLATE_NEVER"/>
+  <int value="20" label="TRANSLATE_NEVER_SITE"/>
+  <int value="21" label="SNIPPET_FETCH_FAILED"/>
+  <int value="22" label="CHROME_HOME_OPT_OUT_SURVEY"/>
+  <int value="23" label="SNIPPET_FETCH_NO_NEW_SUGGESTIONS"/>
+  <int value="24" label="MISSING_FILES_NO_SD_CARD"/>
+  <int value="25" label="OFFLINE_INDICATOR"/>
+  <int value="26" label="FEED_NTP_STREAM"/>
+  <int value="27" label="UMA_WEBAPK_PRIVACY_DISCLOSURE"/>
+  <int value="28" label="UMA_TWA_PRIVACY_DISCLOSURE"/>
+  <int value="29" label="UMA_AUTOFILL_ASSISTANT_STOP_UNDO"/>
+  <int value="30" label="UMA_TAB_CLOSE_MULTIPLE_UNDO"/>
+  <int value="31" label="UMA_SEARCH_ENGINE_CHOICE_NOTIFICATION"/>
+  <int value="32" label="UMA_TAB_GROUP_MANUAL_CREATION_UNDO"/>
+  <int value="33" label="UMA_TWA_PRIVACY_DISCLOSURE_V2"/>
+  <int value="34" label="UMA_HOMEPAGE_PROMO_CHANGED_UNDO"/>
+  <int value="35" label="UMA_CONDITIONAL_TAB_STRIP_DISMISS_UNDO"/>
+  <int value="37" label="UMA_READING_LIST_BOOKMARK_ADDED"/>
+  <int value="38" label="UMA_PRIVACY_SANDBOX_PAGE_OPEN"/>
+  <int value="39" label="UMA_WEB_FEED_FOLLOW_SUCCESS"/>
+  <int value="40" label="UMA_WEB_FEED_FOLLOW_FAILURE"/>
+  <int value="41" label="UMA_WEB_FEED_UNFOLLOW_SUCCESS"/>
+  <int value="42" label="UMA_WEB_FEED_UNFOLLOW_FAILURE"/>
+  <int value="43" label="UMA_LANGUAGE_SPLIT_RESTART"/>
+  <int value="44" label="UMA_AUTOFILL_VIRTUAL_CARD_FILLED"/>
+  <int value="45" label="UMA_WINDOW_ERROR"/>
+  <int value="46" label="UMA_MODULE_INSTALL_FAILURE"/>
+  <int value="47" label="UMA_PRICE_TRACKING_SUCCESS"/>
+  <int value="48" label="UMA_PRICE_TRACKING_FAILURE"/>
+  <int value="49" label="UMA_PRIVACY_SANDBOX_ADD_INTEREST"/>
+  <int value="50" label="UMA_PRIVACY_SANDBOX_REMOVE_INTEREST"/>
+  <int value="52" label="UMA_DOWNLOAD_INTERSTITIAL_DOWNLOAD_DELETED"/>
+  <int value="53" label="UMA_INCOGNITO_REAUTH_ENABLED_FROM_PROMO"/>
+  <int value="54" label="UMA_PRIVACY_SANDBOX_ADD_SITE"/>
+  <int value="55" label="UMA_PRIVACY_SANDBOX_REMOVE_SITE"/>
+  <int value="56" label="UMA_CREATOR_FOLLOW_SUCCESS"/>
+  <int value="57" label="UMA_CREATOR_FOLLOW_FAILURE"/>
+  <int value="58" label="UMA_CREATOR_UNFOLLOW_SUCCESS"/>
+  <int value="59" label="UMA_CREATOR_UNFOLLOW_FAILURE"/>
+  <int value="60" label="UMA_QUICK_DELETE"/>
+  <int value="61" label="UMA_AUTO_TRANSLATE"/>
+  <int value="63" label="UMA_CLEAR_BROWSING_DATA"/>
+  <int value="64" label="UMA_SIGN_OUT"/>
+  <int value="65" label="UMA_TAB_GROUP_DELETE_UNDO"/>
+  <int value="66" label="UMA_SINGLE_TAB_GROUP_DELETE_UNDO"/>
+  <int value="67" label="UMA_SAFETY_HUB_REGRANT_SINGLE_PERMISSION"/>
+  <int value="68" label="UMA_SAFETY_HUB_REGRANT_MULTIPLE_PERMISSIONS"/>
+  <int value="69" label="UMA_SAFETY_HUB_SINGLE_SITE_NOTIFICATIONS"/>
+  <int value="70" label="UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS"/>
+  <int value="71" label="UMA_SETTINGS_BATCH_UPLOAD"/>
+  <int value="72" label="UMA_REVOKE_FILE_EDIT_GRANT"/>
+  <int value="73" label="UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION"/>
+  <int value="74" label="UMA_BOOKMARK_BATCH_UPLOAD"/>
+</enum>
+
 <enum name="WebUIPreloadResult">
   <int value="0"
       label="No Preload: no preloaded WebUI is available when a WebUI is
@@ -575,6 +934,107 @@ chromium-metrics-reviews@google.com.
   <int value="2114840772" label="chrome://drive-internals/"/>
   <int value="2120829362" label="chrome://account-manager-welcome/"/>
 </enum>
+
+<!-- LINT.IfChange(WrenchMenuAction) -->
+
+<enum name="WrenchMenuAction">
+  <int value="0" label="New tab"/>
+  <int value="1" label="New window"/>
+  <int value="2" label="New incognito window"/>
+  <int value="3" label="Show bookmark bar"/>
+  <int value="4" label="Show bookmark manager"/>
+  <int value="5" label="Import settings"/>
+  <int value="6" label="Bookmark page"/>
+  <int value="7" label="Bookmark all tabs"/>
+  <int value="8" label="Pin to start screen"/>
+  <int value="9" label="Restore tab"/>
+  <int value="10" label="Win desktop restart"/>
+  <int value="11" label="Win8 metro restart"/>
+  <int value="12" label="Win chromeos restart"/>
+  <int value="13" label="Distill page"/>
+  <int value="14" label="Save page"/>
+  <int value="15" label="Find"/>
+  <int value="16" label="Print"/>
+  <int value="17" label="Cut"/>
+  <int value="18" label="Copy"/>
+  <int value="19" label="Paste"/>
+  <int value="20" label="Create hosted app"/>
+  <int value="21" label="Create shortcuts"/>
+  <int value="22" label="Manage extensions"/>
+  <int value="23" label="Task manager"/>
+  <int value="24" label="Clear browsing data"/>
+  <int value="25" label="View source"/>
+  <int value="26" label="Dev tools"/>
+  <int value="27" label="Dev tools console"/>
+  <int value="28" label="Dev tools devices"/>
+  <int value="29" label="Profiling enabled"/>
+  <int value="30" label="Zoom minus"/>
+  <int value="31" label="Zoom plus"/>
+  <int value="32" label="Fullscreen"/>
+  <int value="33" label="Show history"/>
+  <int value="34" label="Show downloads"/>
+  <int value="35" label="Show sync setup (Deprecated)"/>
+  <int value="36" label="Options"/>
+  <int value="37" label="About"/>
+  <int value="38" label="Help page via menu"/>
+  <int value="39" label="Feedback"/>
+  <int value="40" label="Toggle request tablet site"/>
+  <int value="41" label="Recent tab"/>
+  <int value="42" label="Open a bookmark"/>
+  <int value="43" label="Exit"/>
+  <int value="44" label="Upgrade browser"/>
+  <int value="45" label="Cast"/>
+  <int value="46" label="Beta Forum"/>
+  <int value="47" label="Copy URL"/>
+  <int value="48" label="Open in Chrome"/>
+  <int value="49" label="Site Settings"/>
+  <int value="50" label="App Info"/>
+  <int value="51" label="Uninstall app"/>
+  <int value="52" label="Show Kaleidoscope"/>
+  <int value="53" label="Show tips for Chrome"/>
+  <int value="54" label="Show Chrome What's New"/>
+  <int value="55" label="Trigger Lacros data migration"/>
+  <int value="56" label="Menu opened"/>
+  <int value="57" label="Visited Chrome Web Store via extensions sub menu."/>
+  <int value="58" label="Password Manager"/>
+  <int value="59" label="Show Translate bubble"/>
+  <int value="60" label="Show Chrome Labs"/>
+  <int value="61" label="Install PWA"/>
+  <int value="62" label="Open in PWA window"/>
+  <int value="63" label="Send to your devices"/>
+  <int value="64" label="Create QR Code"/>
+  <int value="65" label="Customize your Chrome"/>
+  <int value="66" label="Close this profile"/>
+  <int value="67" label="Manage your Google account"/>
+  <int value="68"
+      label="Show reauth sign in prompt to user who has sync paused"/>
+  <int value="69" label="Show sync settings page"/>
+  <int value="70" label="Show turn on sync prompt"/>
+  <int value="71" label="Open Guest profile"/>
+  <int value="72" label="Add new profile"/>
+  <int value="73" label="Manage Chrome profiles"/>
+  <int value="74" label="Open recent tabs login for device tabs"/>
+  <int value="75" label="Add tab to reading list"/>
+  <int value="76" label="Show reading list"/>
+  <int value="77" label="Password Manager (submenu)"/>
+  <int value="78" label="Payment methods"/>
+  <int value="79" label="Addresses and more"/>
+  <int value="80" label="Switch directly to other profile"/>
+  <int value="82" label="Show bookmark side panel"/>
+  <int value="83" label="Show performance settings"/>
+  <int value="84" label="Show history cluster side panel"/>
+  <int value="85" label="Show reading mode side panel"/>
+  <int value="86" label="Open Safety Hub settings UI"/>
+  <int value="87" label="Show password manager checkup (Safety Hub)"/>
+  <int value="88" label="Set browser as default"/>
+  <int value="89" label="Show saved tab groups"/>
+  <int value="90" label="Show Lens overlay"/>
+  <int value="91" label="Open extension settings (Safety Hub)"/>
+  <int value="92" label="Show customize chrome side panel"/>
+  <int value="93" label="Show tab search declutter page"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->
 
 </enums>
 
