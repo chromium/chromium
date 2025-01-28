@@ -334,11 +334,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // nested layers of shadow roots, returns the innermost target element.
   Element* GetShadowReferenceTarget(const QualifiedName& name) const;
 
-  // Same as GetShadowReferenceTarget, but returns this element instead of
-  // nullptr in the case where there is no shadow root reference target.
+  // If this element hosts a shadow root with a referenceTarget, returns the
+  // target element inside the shadow root (recursively). If at any layer of
+  // shadow root, referenceTarget is specified but the ID is invalid, returns
+  // nullptr. In other cases, return this element.
   Element* GetShadowReferenceTargetOrSelf(const QualifiedName& name);
-  const Element* GetShadowReferenceTargetOrSelf(
-      const QualifiedName& name) const;
 
   // Returns true if |this| element has attr-associated elements that were set
   // via the IDL, rather than computed from the content attribute.

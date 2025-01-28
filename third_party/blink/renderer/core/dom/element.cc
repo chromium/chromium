@@ -922,18 +922,24 @@ Element* Element::GetShadowReferenceTarget(const QualifiedName& name) const {
 }
 
 Element* Element::GetShadowReferenceTargetOrSelf(const QualifiedName& name) {
-  if (Element* target = GetShadowReferenceTarget(name)) {
-    return target;
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+          GetExecutionContext())) {
+    return this;
   }
-  return this;
-}
-
-const Element* Element::GetShadowReferenceTargetOrSelf(
-    const QualifiedName& name) const {
-  if (Element* target = GetShadowReferenceTarget(name)) {
-    return target;
+  ShadowRoot* shadow_root = GetShadowRoot();
+  if (!shadow_root) {
+    return this;
   }
-  return this;
+  if (shadow_root->referenceTarget() == g_null_atom) {
+    // If referenceTarget is not used, return this element.
+    return this;
+  }
+  Element* target = shadow_root->referenceTargetElement();
+  if (!target) {
+    // If referenceTarget is specified but the ID is invalid, return nullptr.
+    return nullptr;
+  }
+  return target->GetShadowReferenceTargetOrSelf(name);
 }
 
 Element* Element::getElementByIdIncludingDisconnected(
