@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {constants} from './constants.js';
-import {ParagraphUtils} from './paragraph_utils.js';
+import type {ParagraphUtils} from './paragraph_utils.js';
 
 const RoleType = chrome.automation.RoleType;
 

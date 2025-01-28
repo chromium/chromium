@@ -11,7 +11,7 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';

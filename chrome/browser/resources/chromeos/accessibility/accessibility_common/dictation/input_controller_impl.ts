@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EditableNodeData, InputController} from '/common/action_fulfillment/input_controller.js';
+import type {EditableNodeData} from '/common/action_fulfillment/input_controller.js';
+import {InputController} from '/common/action_fulfillment/input_controller.js';
 import {EventHandler} from '/common/event_handler.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EditingUtil} from './editing_util.js';
-import {FocusHandler} from './focus_handler.js';
+import type {FocusHandler} from './focus_handler.js';
 import {LocaleInfo} from './locale_info.js';
 
 type AutomationNode = chrome.automation.AutomationNode;

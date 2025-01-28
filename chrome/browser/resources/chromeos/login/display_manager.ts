@@ -12,7 +12,7 @@ import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.
 
 import {DisplayType, OobeUiState, SCREEN_DEVICE_DISABLED, SCREEN_WELCOME} from './components/display_manager_types.js';
 import {globalOobeKeyboard} from './components/keyboard_utils_oobe.js';
-import {OobeTypes} from './components/oobe_types.js';
+import type {OobeTypes} from './components/oobe_types.js';
 import {loadTimeData} from './i18n_setup.js';
 import {MultiTapDetector} from './multi_tap_detector.js';
 

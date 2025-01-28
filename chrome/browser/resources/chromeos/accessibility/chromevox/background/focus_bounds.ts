@@ -30,6 +30,6 @@ export class FocusBounds {
         chrome.accessibilityPrivate.AssistiveTechnologyType.CHROME_VOX,
     );
   }
-};
+}
 
 TestImportManager.exportForTesting(['FocusBounds', FocusBounds]);

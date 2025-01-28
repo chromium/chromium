@@ -6,11 +6,12 @@
  * @fileoverview A TTS engine that writes to globalThis.console.
  */
 import {SpeechLog} from '../common/log_types.js';
-import {QueueMode, TtsCategory, TtsSpeechProperties} from '../common/tts_types.js';
+import type {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
+import {TtsCategory} from '../common/tts_types.js';
 
 import {LogStore} from './logging/log_store.js';
 import {ChromeVoxPrefs} from './prefs.js';
-import {TtsCapturingEventListener, TtsInterface} from './tts_interface.js';
+import type {TtsCapturingEventListener, TtsInterface} from './tts_interface.js';
 
 
 export class ConsoleTts implements TtsInterface {

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {InputController} from '/common/action_fulfillment/input_controller.js';
+import type {InputController} from '/common/action_fulfillment/input_controller.js';
 import {InputTextViewMacro} from '/common/action_fulfillment/macros/input_text_view_macro.js';
-import {Macro} from '/common/action_fulfillment/macros/macro.js';
+import type {Macro} from '/common/action_fulfillment/macros/macro.js';
 
 import {ParseStrategy} from './parse_strategy.js';
 

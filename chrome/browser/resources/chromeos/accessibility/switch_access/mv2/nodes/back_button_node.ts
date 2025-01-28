@@ -13,7 +13,8 @@ import {Navigator} from '../navigator.js';
 import {SwitchAccess} from '../switch_access.js';
 import {ActionResponse} from '../switch_access_constants.js';
 
-import {SAChildNode, SARootNode} from './switch_access_node.js';
+import type {SARootNode} from './switch_access_node.js';
+import {SAChildNode} from './switch_access_node.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;

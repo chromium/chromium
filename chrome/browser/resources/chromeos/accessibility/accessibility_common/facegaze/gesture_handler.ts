@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import {CustomCallbackMacro} from '/common/action_fulfillment/macros/custom_callback_macro.js';
-import {KeyCombination, KeyPressMacro} from '/common/action_fulfillment/macros/key_press_macro.js';
-import {Macro, ToggleDirection} from '/common/action_fulfillment/macros/macro.js';
+import type {KeyCombination} from '/common/action_fulfillment/macros/key_press_macro.js';
+import {KeyPressMacro} from '/common/action_fulfillment/macros/key_press_macro.js';
+import type {Macro} from '/common/action_fulfillment/macros/macro.js';
+import {ToggleDirection} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 import {MouseClickLeftDoubleMacro, MouseClickLeftTripleMacro, MouseClickMacro} from '/common/action_fulfillment/macros/mouse_click_macro.js';
 import {ToggleDictationMacro} from '/common/action_fulfillment/macros/toggle_dictation_macro.js';
@@ -15,13 +17,13 @@ import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import {BubbleController} from './bubble_controller.js';
 import {SettingsPath} from './constants.js';
-import {FacialGesture} from './facial_gestures.js';
+import type {FacialGesture} from './facial_gestures.js';
 import {GestureDetector} from './gesture_detector.js';
 import {GestureTimer} from './gesture_timer.js';
 import {MouseLongClickMacro} from './macros/mouse_long_click_macro.js';
 import {MouseScrollMacro} from './macros/mouse_scroll_macro.js';
 import {ResetCursorMacro} from './macros/reset_cursor_macro.js';
-import {MouseController} from './mouse_controller.js';
+import type {MouseController} from './mouse_controller.js';
 
 import RoleType = chrome.automation.RoleType;
 import StateType = chrome.automation.StateType;

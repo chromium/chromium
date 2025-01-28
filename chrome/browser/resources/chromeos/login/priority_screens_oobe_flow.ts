@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import './screens/oobe/welcome.js';
-import {OobeTypes} from './components/oobe_types.js';
+
+import type {OobeTypes} from './components/oobe_types.js';
 
 export const priorityOobeScreenList: OobeTypes.ScreensList = [
   {tag: 'oobe-welcome-element', id: 'connect'},

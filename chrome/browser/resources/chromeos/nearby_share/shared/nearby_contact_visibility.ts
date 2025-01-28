@@ -233,7 +233,7 @@ export class NearbyContactVisibilityElement extends
     switch (visibilityString) {
       case 'contacts':
         if (this.isQuickShareV2Enabled_) {
-          return Visibility.kAllContacts
+          return Visibility.kAllContacts;
         }
 
         if (this.isAllContactsToggledOn_) {

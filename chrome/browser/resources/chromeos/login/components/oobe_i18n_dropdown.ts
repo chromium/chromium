@@ -6,12 +6,12 @@ import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import '//resources/ash/common/cr_elements/md_select.css.js';
 
 import {assert} from '//resources/js/assert.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './oobe_i18n_dropdown.html.js';
-import {OobeTypes} from './oobe_types.js';
 import {setupSelect} from './oobe_select.js';
+import type {OobeTypes} from './oobe_types.js';
 
 /**
  * Languages/keyboard descriptor to display

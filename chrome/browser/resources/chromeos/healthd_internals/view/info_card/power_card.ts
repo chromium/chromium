@@ -6,7 +6,7 @@ import './info_card.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HealthdApiTelemetryResult} from '../../utils/externs.js';
+import type {HealthdApiTelemetryResult} from '../../utils/externs.js';
 import {toFixedFloat} from '../../utils/number_utils.js';
 
 import type {HealthdInternalsInfoCardElement} from './info_card.js';

@@ -5,7 +5,7 @@
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {ItemScanManager} from './item_scan_manager.js';
-import {ItemNavigatorInterface, PointNavigatorInterface} from './navigator_interfaces.js';
+import type {ItemNavigatorInterface, PointNavigatorInterface} from './navigator_interfaces.js';
 import {PointScanManager} from './point_scan_manager.js';
 import {SwitchAccess} from './switch_access.js';
 import {ErrorType} from './switch_access_constants.js';

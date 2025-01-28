@@ -8,7 +8,7 @@
  */
 
 import {AutomationPredicate} from '/common/automation_predicate.js';
-import {BridgeCallbackId} from '/common/bridge_callback_manager.js';
+import type {BridgeCallbackId} from '/common/bridge_callback_manager.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 export enum PanelNodeMenuId {

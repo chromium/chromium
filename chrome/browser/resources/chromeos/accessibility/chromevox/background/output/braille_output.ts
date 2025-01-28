@@ -8,13 +8,14 @@
  * BrailleOutput over a series of small changes.
  */
 
-import {CursorRange} from '/common/cursors/range.js';
+import type {CursorRange} from '/common/cursors/range.js';
 
 import {LogType} from '../../common/log_types.js';
 import {Spannable} from '../../common/spannable.js';
 
 import {OutputFormatLogger} from './output_logger.js';
-import {AppendOptions, OutputNodeSpan, OutputSelectionSpan, SPACE} from './output_types.js';
+import type {AppendOptions} from './output_types.js';
+import {OutputNodeSpan, OutputSelectionSpan, SPACE} from './output_types.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
 import RoleType = chrome.automation.RoleType;

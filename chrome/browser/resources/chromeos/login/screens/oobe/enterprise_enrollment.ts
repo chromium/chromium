@@ -19,11 +19,12 @@ import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/buttons/oobe_text_button.js';
 
-import {Authenticator, AuthFlow, AuthMode, AuthParams} from '//oobe/gaia_auth_host/authenticator.js';
+import type {Authenticator, AuthParams} from '//oobe/gaia_auth_host/authenticator.js';
+import {AuthFlow, AuthMode} from '//oobe/gaia_auth_host/authenticator.js';
 import {assert} from '//resources/js/assert.js';
 import {sendWithPromise} from '//resources/js/cr.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';

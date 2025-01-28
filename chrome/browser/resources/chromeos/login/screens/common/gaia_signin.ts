@@ -17,10 +17,11 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/dialogs/oobe_modal_dialog.js';
 import '../../components/gaia_dialog.js';
 
-import {Authenticator, AuthFlow, AuthMode, SUPPORTED_PARAMS} from '//oobe/gaia_auth_host/authenticator.js';
+import type {Authenticator} from '//oobe/gaia_auth_host/authenticator.js';
+import {AuthFlow, AuthMode, SUPPORTED_PARAMS} from '//oobe/gaia_auth_host/authenticator.js';
 import {assert} from '//resources/js/assert.js';
 import {sendWithPromise} from '//resources/js/cr.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';

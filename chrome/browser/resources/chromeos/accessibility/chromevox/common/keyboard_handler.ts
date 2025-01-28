@@ -7,7 +7,7 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {Command} from './command.js';
+import type {Command} from './command.js';
 import {KeyMap} from './key_map.js';
 import {KeyUtil} from './key_util.js';
 

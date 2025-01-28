@@ -8,14 +8,14 @@
  */
 
 import {BridgeHelper} from '/common/bridge_helper.js';
-import {constants} from '/common/constants.js';
+import type {constants} from '/common/constants.js';
 
 import {BridgeConstants} from './bridge_constants.js';
-import {Command} from './command.js';
-import {EarconId} from './earcon_id.js';
-import {EventSourceType} from './event_source_type.js';
-import {SerializableLog} from './log_types.js';
-import {QueueMode, TtsSpeechProperties} from './tts_types.js';
+import type {Command} from './command.js';
+import type {EarconId} from './earcon_id.js';
+import type {EventSourceType} from './event_source_type.js';
+import type {SerializableLog} from './log_types.js';
+import type {QueueMode, TtsSpeechProperties} from './tts_types.js';
 
 type ActionType = chrome.automation.ActionType;
 type CustomAction = chrome.automation.CustomAction;

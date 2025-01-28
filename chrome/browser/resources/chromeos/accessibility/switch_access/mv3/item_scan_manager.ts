@@ -26,7 +26,7 @@ import {BasicNode, BasicRootNode} from './nodes/basic_node.js';
 import {DesktopNode} from './nodes/desktop_node.js';
 import {KeyboardRootNode} from './nodes/keyboard_node.js';
 import {ModalDialogRootNode} from './nodes/modal_dialog_node.js';
-import {SAChildNode, SANode, SARootNode} from './nodes/switch_access_node.js';
+import type {SAChildNode, SANode, SARootNode} from './nodes/switch_access_node.js';
 import {SwitchAccess} from './switch_access.js';
 import {Mode} from './switch_access_constants.js';
 import {SwitchAccessPredicate} from './switch_access_predicate.js';

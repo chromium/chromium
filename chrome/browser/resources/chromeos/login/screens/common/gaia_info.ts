@@ -13,7 +13,7 @@ import '../../components/common_styles/cr_card_radio_group_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/oobe_cr_lottie.js';
 
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';

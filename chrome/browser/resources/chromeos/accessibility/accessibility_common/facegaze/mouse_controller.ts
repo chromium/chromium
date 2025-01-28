@@ -8,7 +8,7 @@ import {EventHandler} from '/common/event_handler.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
-import {BubbleController} from './bubble_controller.js';
+import type {BubbleController} from './bubble_controller.js';
 import {ScrollModeController} from './scroll_mode_controller.js';
 
 import ScreenRect = chrome.accessibilityPrivate.ScreenRect;

@@ -7,7 +7,8 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {FocusRingManager} from '../focus_ring_manager.js';
 import {SwitchAccess} from '../switch_access.js';
-import {ActionResponse, ErrorType} from '../switch_access_constants.js';
+import type {ActionResponse} from '../switch_access_constants.js';
+import {ErrorType} from '../switch_access_constants.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
 import MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;

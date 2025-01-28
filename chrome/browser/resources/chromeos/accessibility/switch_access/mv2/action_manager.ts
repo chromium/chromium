@@ -8,7 +8,7 @@ import {FocusRingManager} from './focus_ring_manager.js';
 import {MenuManager} from './menu_manager.js';
 import {SwitchAccessMetrics} from './metrics.js';
 import {Navigator} from './navigator.js';
-import {SAChildNode} from './nodes/switch_access_node.js';
+import type {SAChildNode} from './nodes/switch_access_node.js';
 import {SwitchAccess} from './switch_access.js';
 import {ActionResponse, ErrorType, MenuType, Mode} from './switch_access_constants.js';
 

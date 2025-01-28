@@ -6,7 +6,7 @@ import {Msgs} from '../common/msgs.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import * as ttsTypes from '../common/tts_types.js';
 
-import {TtsCapturingEventListener, TtsInterface} from './tts_interface.js';
+import type {TtsCapturingEventListener, TtsInterface} from './tts_interface.js';
 
 interface PropertyValues {
   pitch: number;

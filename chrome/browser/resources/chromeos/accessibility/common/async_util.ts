@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {KeyCode} from './key_code.js';
+import type {KeyCode} from './key_code.js';
 import {TestImportManager} from './testing/test_import_manager.js';
 
 /**

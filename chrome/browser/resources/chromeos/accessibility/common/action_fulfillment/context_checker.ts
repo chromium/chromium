@@ -4,7 +4,7 @@
 
 import {TestImportManager} from '../testing/test_import_manager.js';
 
-import {InputController} from './input_controller.js';
+import type {InputController} from './input_controller.js';
 
 export enum Context {
   INACTIVE_INPUT_CONTROLLER = 1,

@@ -5,14 +5,14 @@
 /**
  * @fileoverview Handles speech parsing for dictation.
  */
-import {InputController} from '/common/action_fulfillment/input_controller.js';
-import {Macro} from '/common/action_fulfillment/macros/macro.js';
+import type {InputController} from '/common/action_fulfillment/input_controller.js';
+import type {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {MetricsUtils} from '../metrics_utils.js';
 
 import {InputTextStrategy} from './input_text_strategy.js';
-import {ParseStrategy} from './parse_strategy.js';
+import type {ParseStrategy} from './parse_strategy.js';
 import {PumpkinParseStrategy} from './pumpkin_parse_strategy.js';
 import {SimpleParseStrategy} from './simple_parse_strategy.js';
 

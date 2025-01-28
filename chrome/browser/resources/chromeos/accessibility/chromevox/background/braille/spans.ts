@@ -8,9 +8,10 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {SerializedAnnotation, Spannable} from '../../common/spannable.js';
+import type {SerializedAnnotation} from '../../common/spannable.js';
+import {Spannable} from '../../common/spannable.js';
 
-import {LibLouis} from './liblouis.js';
+import type {LibLouis} from './liblouis.js';
 
 /** Attached to the value region of a braille spannable. */
 export class ValueSpan {

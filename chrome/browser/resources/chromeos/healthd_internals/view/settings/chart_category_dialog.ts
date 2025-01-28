@@ -4,15 +4,16 @@
 
 import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import './data_series_checkbox.js'
+import './data_series_checkbox.js';
 
 import type {CrDialogElement} from '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CategoryTypeEnum, SystemTrendController} from '../../controller/system_trend_controller.js';
+import type {SystemTrendController} from '../../controller/system_trend_controller.js';
+import {CategoryTypeEnum} from '../../controller/system_trend_controller.js';
 
 import {getTemplate} from './chart_category_dialog.html.js';
-import type {HealthdInternalsDataSeriesCheckboxElement} from './data_series_checkbox.js'
+import type {HealthdInternalsDataSeriesCheckboxElement} from './data_series_checkbox.js';
 
 export interface HealthdInternalsChartCategoryDialogElement {
   $: {

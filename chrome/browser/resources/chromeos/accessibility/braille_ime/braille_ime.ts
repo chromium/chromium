@@ -214,7 +214,7 @@ export class BrailleIme {
   private onKeyEvent_(
       // @ts-ignore Unread value
       engineID: string, event: KeyboardEvent, requestId: string): undefined {
-    var result = this.processKey_(event);
+    const result = this.processKey_(event);
     if (result === undefined || event.requestId === undefined) {
       return;
     }
@@ -283,7 +283,7 @@ export class BrailleIme {
       this.sendToChromeVox_({type: 'backspace', requestId: event.requestId});
       return undefined;
     }
-    var dot = this.CODE_TO_DOT_[event.code];
+    const dot = this.CODE_TO_DOT_[event.code];
     if (!dot || event.altKey || event.ctrlKey || event.shiftKey ||
         event.capsLock) {
       this.pressed_ = 0;
@@ -297,7 +297,7 @@ export class BrailleIme {
     } else if (event.type === 'keyup') {
       this.pressed_ &= ~dot;
       if (this.pressed_ === 0 && this.accumulated_ !== 0) {
-        var dotsToSend = this.accumulated_;
+        let dotsToSend = this.accumulated_;
         this.accumulated_ = 0;
         if (dotsToSend & this.SPACE) {
           if (dotsToSend !== this.SPACE) {
@@ -405,10 +405,10 @@ export class BrailleIme {
    */
   private replaceText_(
       contextID: number, deleteBefore: number, toInsert: string): void {
-    var addText = chrome.input.ime.commitText.bind(
+    const addText = chrome.input.ime.commitText.bind(
         null, {contextID, text: toInsert}, function() {});
     if (deleteBefore > 0) {
-      var deleteText = chrome.input.ime.deleteSurroundingText.bind(
+      const deleteText = chrome.input.ime.deleteSurroundingText.bind(
           null, {
             engineID: this.engineID_,
             contextID,

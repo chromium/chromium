@@ -5,7 +5,7 @@
 import {AutomationPredicate} from '/common/automation_predicate.js';
 import {RectUtil} from '/common/rect_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
-import {AutomationTreeWalkerRestriction} from '/common/tree_walker.js';
+import type {AutomationTreeWalkerRestriction} from '/common/tree_walker.js';
 
 import {SACache} from './cache.js';
 import {SARootNode} from './nodes/switch_access_node.js';

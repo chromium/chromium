@@ -9,7 +9,7 @@ import {SwitchAccess} from '../switch_access.js';
 import {ErrorType} from '../switch_access_constants.js';
 
 import {BasicNode, BasicRootNode} from './basic_node.js';
-import {SAChildNode, SARootNode} from './switch_access_node.js';
+import type {SAChildNode, SARootNode} from './switch_access_node.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
 

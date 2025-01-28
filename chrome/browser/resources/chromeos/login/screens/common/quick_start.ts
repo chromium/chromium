@@ -7,7 +7,7 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/quick_start_pin.js';
 
 import {assert} from '//resources/js/assert.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {flush, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';

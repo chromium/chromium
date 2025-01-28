@@ -18,13 +18,13 @@ import './common_styles/oobe_dialog_host_styles.css.js';
 import './dialogs/oobe_adaptive_dialog.js';
 
 import {PinKeyboardElement} from '//resources/ash/common/quick_unlock/pin_keyboard.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {OobeDialogHostMixin} from './mixins/oobe_dialog_host_mixin.js';
 import {OobeI18nMixin} from './mixins/oobe_i18n_mixin.js';
-import {OobeTypes} from './oobe_types.js';
+import type {OobeTypes} from './oobe_types.js';
 import {getTemplate} from './security_token_pin.html.js';
 
 const SecurityTokenPinBase = OobeDialogHostMixin(OobeI18nMixin(PolymerElement));

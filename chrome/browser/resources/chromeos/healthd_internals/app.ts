@@ -23,7 +23,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {DataManager} from './model/data_manager.js';
 import type {HealthdInternalsFeatureFlagResult} from './utils/externs.js';
-import {HealthdInternalsPage} from './utils/page_interface.js';
+import type {HealthdInternalsPage} from './utils/page_interface.js';
 import type {HealthdInternalsInfoElement} from './view/pages/info.js';
 import type {HealthdInternalsProcessElement} from './view/pages/process.js';
 import type {HealthdInternalsSystemTrendElement} from './view/pages/system_trend.js';

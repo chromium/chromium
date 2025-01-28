@@ -8,7 +8,7 @@
 import {BridgeCallbackManager} from '/common/bridge_callback_manager.js';
 
 import {Msgs} from '../common/msgs.js';
-import {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
+import type {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 
 import {PanelMenuItem} from './panel_menu_item.js';
 

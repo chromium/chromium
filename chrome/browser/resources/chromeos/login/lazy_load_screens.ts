@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { assert } from '//resources/js/assert.js';
+import {assert} from '//resources/js/assert.js';
 
 import {loadTimeData} from './i18n_setup.js';
 import {addScreensToMainContainer} from './login_ui_tools.js';

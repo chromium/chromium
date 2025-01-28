@@ -263,8 +263,8 @@ export class InputHandler {
     }
 
     this.mouseEnd_ = {x: mouseX, y: mouseY};
-    var ctrX = Math.floor((this.mouseStart_.x + this.mouseEnd_.x) / 2);
-    var ctrY = Math.floor((this.mouseStart_.y + this.mouseEnd_.y) / 2);
+    const ctrX = Math.floor((this.mouseStart_.x + this.mouseEnd_.x) / 2);
+    const ctrY = Math.floor((this.mouseStart_.y + this.mouseEnd_.y) / 2);
 
     this.callbacks_.onSelectingStateChanged(
         false /* is no longer selecting */, ctrX, ctrY);

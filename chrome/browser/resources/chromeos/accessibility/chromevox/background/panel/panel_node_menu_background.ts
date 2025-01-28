@@ -17,7 +17,7 @@ import {AutomationTreeWalker} from '/common/tree_walker.js';
 import {BridgeContext} from '../../common/bridge_constants.js';
 import {Msgs} from '../../common/msgs.js';
 import {PanelBridge} from '../../common/panel_bridge.js';
-import {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../../common/panel_menu_data.js';
+import type {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../../common/panel_menu_data.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
 import {Output} from '../output/output.js';
 import {OutputCustomEvent} from '../output/output_types.js';

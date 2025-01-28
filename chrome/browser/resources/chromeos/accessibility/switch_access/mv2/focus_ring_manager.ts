@@ -6,7 +6,7 @@ import {RectUtil} from '/common/rect_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {MenuManager} from './menu_manager.js';
-import {SAChildNode, SANode} from './nodes/switch_access_node.js';
+import type {SAChildNode, SANode} from './nodes/switch_access_node.js';
 import {SwitchAccess} from './switch_access.js';
 import {ErrorType, Mode} from './switch_access_constants.js';
 

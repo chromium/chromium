@@ -17,16 +17,18 @@ import './network_logs_ui.js';
 import './network_metrics_ui.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {NetworkList} from 'chrome://resources/ash/common/network/network_list_types.js';
+import type {NetworkList} from 'chrome://resources/ash/common/network/network_list_types.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {NetworkDiagnosticsElement} from 'chrome://resources/ash/common/network_health/network_diagnostics.js';
+import type {NetworkDiagnosticsElement} from 'chrome://resources/ash/common/network_health/network_diagnostics.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrosNetworkConfig, CrosNetworkConfigRemote, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfig, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './network_ui.html.js';
-import {NetworkUiBrowserProxy, NetworkUiBrowserProxyImpl} from './network_ui_browser_proxy.js';
+import type {NetworkUiBrowserProxy} from './network_ui_browser_proxy.js';
+import {NetworkUiBrowserProxyImpl} from './network_ui_browser_proxy.js';
 
 function stringifyJson(result: any): string {
   return JSON.stringify(result, null, '\t');

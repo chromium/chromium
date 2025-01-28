@@ -7,7 +7,7 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {TreeDumper} from './tree_dumper.js';
+import type {TreeDumper} from './tree_dumper.js';
 import {QueueMode} from './tts_types.js';
 
 type AutomationEvent = chrome.automation.AutomationEvent;

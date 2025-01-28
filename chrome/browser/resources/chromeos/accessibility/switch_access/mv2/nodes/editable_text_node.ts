@@ -13,7 +13,7 @@ import {SwitchAccessPredicate} from '../switch_access_predicate.js';
 import {TextNavigationManager} from '../text_navigation_manager.js';
 
 import {BasicNode} from './basic_node.js';
-import {SARootNode} from './switch_access_node.js';
+import type {SARootNode} from './switch_access_node.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
 import EventType = chrome.automation.EventType;

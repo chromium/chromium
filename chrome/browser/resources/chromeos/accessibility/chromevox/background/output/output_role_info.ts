@@ -8,7 +8,8 @@
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EarconId} from '../../common/earcon_id.js';
-import {AbstractRole, ChromeVoxRole} from '../../common/role_type.js';
+import type {ChromeVoxRole} from '../../common/role_type.js';
+import {AbstractRole} from '../../common/role_type.js';
 
 import {OutputContextOrder} from './output_types.js';
 
