@@ -78,11 +78,36 @@ class SpanWriter {
 
   // For a SpanWriter over bytes, we can write integer values directly to those
   // bytes as a memcpy. Returns true if there was room remaining and the bytes
-  // were written.
+  // were written. The macros below implement the following methods:
   //
-  // This provides big, little, and native endian writing orders. Note that
-  // "native" order is almost never what you want; it only makes sense for byte
-  // buffers that stay in memory and are never written to the disk or network.
+  // bool WriteU8BigEndian(uint8_t)
+  // bool WriteU16BigEndian(uint16_t)
+  // bool WriteU32BigEndian(uint32_t)
+  // bool WriteU64BigEndian(uint64_t)
+  // bool WriteU8LittleEndian(uint8_t)
+  // bool WriteU16LittleEndian(uint16_t)
+  // bool WriteU32LittleEndian(uint32_t)
+  // bool WriteU64LittleEndian(uint64_t)
+  // bool WriteU8NativeEndian(uint8_t)
+  // bool WriteU16NativeEndian(uint16_t)
+  // bool WriteU32NativeEndian(uint32_t)
+  // bool WriteU64NativeEndian(uint64_t)
+  // bool WriteI8BigEndian(int8_t)
+  // bool WriteI16BigEndian(int16_t)
+  // bool WriteI32BigEndian(int32_t)
+  // bool WriteI64BigEndian(int64_t)
+  // bool WriteI8LittleEndian(int8_t)
+  // bool WriteI16LittleEndian(int16_t)
+  // bool WriteI32LittleEndian(int32_t)
+  // bool WriteI64LittleEndian(int64_t)
+  // bool WriteI8NativeEndian(int8_t)
+  // bool WriteI16NativeEndian(int16_t)
+  // bool WriteI32NativeEndian(int32_t)
+  // bool WriteI64NativeEndian(int64_t)
+  //
+  // Note that "native" order is almost never what you want; it only makes sense
+  // for byte buffers that stay in memory and are never written to the disk or
+  // network.
 #define BASE_SPANWRITER_WRITE(signchar, bitsize, endian, typeprefix) \
   constexpr bool Write##signchar##bitsize##endian##Endian(           \
       typeprefix##int##bitsize##_t value)                            \
