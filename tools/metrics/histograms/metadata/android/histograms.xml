@@ -2014,7 +2014,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.GridTabSwitcher.ThumbnailFetchingResult"
-    enum="GridTabSwitcherThumbnailFetchingResult" expires_after="2025-06-22">
+    enum="GridTabSwitcherThumbnailFetchingResult" expires_after="2025-12-22">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-isochron-team@google.com</owner>
   <summary>
@@ -4999,6 +4999,18 @@ chromium-metrics-reviews@google.com.
     <variant name="TypeUnknown"
         summary="tabs opened from a different case than one's listed"/>
   </token>
+</histogram>
+
+<histogram base="true"
+    name="Android.TabContentManager.CaptureThumbnail.Duration" units="ms"
+    expires_after="2025-12-20">
+  <owner>acondor@chromium.org</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    This histogram records the time taken to screenshot the contents of a tab to
+    use as a thumbnail. Recorded once per capture.
+  </summary>
 </histogram>
 
 <histogram name="Android.TabGroupParity.TabGroupColorChangeActionType"
