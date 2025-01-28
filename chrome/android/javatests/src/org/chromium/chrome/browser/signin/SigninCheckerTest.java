@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +28,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.AccountRenameChecker;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -50,13 +48,6 @@ public class SigninCheckerTest {
             new ChromeTabbedActivityTestRule();
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
-
-    @Mock private AccountRenameChecker.Delegate mAccountRenameCheckerDelegateMock;
-
-    @Before
-    public void setUp() {
-        AccountRenameChecker.overrideDelegateForTests(mAccountRenameCheckerDelegateMock);
-    }
 
     private void signinWhenChildAccountIsTheOnlyAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
