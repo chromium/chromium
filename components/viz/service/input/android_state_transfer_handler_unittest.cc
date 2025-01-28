@@ -33,6 +33,16 @@ MATCHER_P(EqPixToDip, pix_to_dip, "Matches pix_to_dip value of MotionEvent") {
   return pix_to_dip == (arg.GetX(0) / arg.GetXPix(0));
 }
 
+MATCHER_P2(EqXYInPixels, x, y, "Matches x,y values of MotionEvent") {
+  if (x == arg.GetXPix(0) && y == arg.GetYPix(0)) {
+    return true;
+  } else {
+    *result_listener << "GetXPix: " << arg.GetXPix(0)
+                     << ", GetYPix: " << arg.GetYPix(0);
+    return false;
+  }
+}
+
 base::android::ScopedInputEvent GetInputEvent(jlong down_time_ms,
                                               jlong event_time_ms,
                                               int action,
@@ -440,6 +450,41 @@ TEST_F(AndroidStateTransferHandlerTest, UsesDeviceScaleFactorFromState) {
   for (auto& event : event_stream.events) {
     handler_.OnMotionEvent(std::move(event), kRootCompositorFrameSinkId);
   }
+}
+
+TEST_F(AndroidStateTransferHandlerTest,
+       UsesWebContentsOffsetForMotionEventCreation) {
+  const int android_raw_offset = -9;
+  const int raw_y = 109;
+  const int delta_x = 0;
+  const int meta_state = 0;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> java_motion_event =
+      JNI_MotionEvent::Java_MotionEvent_obtain(env, 0, 0, kAndroidActionDown, 0,
+                                               raw_y, meta_state);
+  JNI_MotionEvent::Java_MotionEvent_offsetLocation(env, java_motion_event,
+                                                   delta_x, android_raw_offset);
+
+  const AInputEvent* native_event = nullptr;
+  if (__builtin_available(android 31, *)) {
+    native_event = AMotionEvent_fromJava(env, java_motion_event.obj());
+  }
+  CHECK(native_event);
+
+  const int web_contents_offset_pix = -8;
+  const int browser_y_offset_pix = android_raw_offset + web_contents_offset_pix;
+  const int expected_y = raw_y + browser_y_offset_pix;
+
+  auto state = input::mojom::TouchTransferState::New();
+  state->dip_scale = 1.f;
+  state->raw_y_offset = browser_y_offset_pix;
+
+  handler_.StateOnTouchTransfer(std::move(state),
+                                mock_rir_support_.GetWeakPtr());
+
+  EXPECT_CALL(mock_rir_support_, OnTouchEvent(EqXYInPixels(0, expected_y), _));
+  handler_.OnMotionEvent(base::android::ScopedInputEvent(native_event),
+                         kRootCompositorFrameSinkId);
 }
 
 }  // namespace viz
