@@ -59,6 +59,9 @@ bool TsSectionCat::ParsePsiSection(BitReader* bit_reader) {
   Descriptors descriptors;
   int ca_pid, pssh_pid;
   EncryptionScheme scheme;
+  if (section_length < 4) {
+    return false;
+  }
   RCHECK(descriptors.Read(bit_reader, section_length - 4));
   RCHECK(descriptors.HasCADescriptorCenc(&ca_pid, &pssh_pid, &scheme));
   int crc32;
