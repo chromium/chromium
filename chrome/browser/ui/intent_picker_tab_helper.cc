@@ -143,7 +143,7 @@ void IntentPickerTabHelper::MaybeShowIntentPickerIcon() {
   }
 
   intent_picker_delegate_->FindAllAppsForUrl(
-      web_contents()->GetLastCommittedURL(),
+      web_contents()->GetLastCommittedURL(), GetIntentPickerBubbleIconSize(),
       base::BindOnce(&IntentPickerTabHelper::MaybeShowIconForApps,
                      per_navigation_weak_factory_.GetWeakPtr()));
 }
@@ -156,7 +156,7 @@ void IntentPickerTabHelper::ShowIntentPickerBubbleOrLaunchApp(const GURL& url) {
   }
 
   intent_picker_delegate_->FindAllAppsForUrl(
-      url,
+      url, GetIntentPickerBubbleIconSize(),
       base::BindOnce(&IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl,
                      per_navigation_weak_factory_.GetWeakPtr(), url));
 }

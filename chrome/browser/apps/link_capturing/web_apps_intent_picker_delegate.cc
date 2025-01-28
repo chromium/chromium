@@ -73,6 +73,7 @@ bool WebAppsIntentPickerDelegate::ShouldShowIntentPickerWithApps() {
 
 void WebAppsIntentPickerDelegate::FindAllAppsForUrl(
     const GURL& url,
+    int icon_size_in_dep,
     IntentPickerAppsCallback apps_callback) {
   CHECK(ShouldShowIntentPickerWithApps());
   CHECK(provider_);
@@ -88,7 +89,7 @@ void WebAppsIntentPickerDelegate::FindAllAppsForUrl(
   // this.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      base::BindOnce(&FindMacAppForUrl, url),
+      base::BindOnce(&FindMacAppForUrl, url, icon_size_in_dep),
       base::BindOnce(
           &WebAppsIntentPickerDelegate::CacheMacAppInfoAndPostFinalCallback,
           weak_ptr_factory.GetWeakPtr(), std::move(apps_callback),

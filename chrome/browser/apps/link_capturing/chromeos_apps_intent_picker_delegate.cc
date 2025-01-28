@@ -84,6 +84,7 @@ bool ChromeOsAppsIntentPickerDelegate::ShouldShowIntentPickerWithApps() {
 
 void ChromeOsAppsIntentPickerDelegate::FindAllAppsForUrl(
     const GURL& url,
+    int icon_size_in_dep,
     IntentPickerAppsCallback apps_callback) {
   CHECK(&profile_.get());
   std::vector<apps::IntentPickerAppInfo> apps;
