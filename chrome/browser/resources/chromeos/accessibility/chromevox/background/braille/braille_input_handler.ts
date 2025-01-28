@@ -20,68 +20,61 @@ import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
 import {LibLouis} from './liblouis.js';
 import {ExtraCellsSpan, ValueSelectionSpan, ValueSpan} from './spans.js';
 
-export class BrailleInputHandler {
-  constructor() {
-    /**
-     * Port of the connected IME if any.
-     * @private {Port}
-     */
-    this.imePort_ = null;
-    /**
-     * {code true} when the Braille IME is connected and has signaled that it is
-     * active.
-     * @private {boolean}
-     */
-    this.imeActive_ = false;
-    /**
-     * The input context of the current input field, as reported by the IME.
-     * {@code null} if no input field has focus.
-     * @private {?{contextID: number, type: string}}
-     */
-    this.inputContext_ = null;
-    /**
-     * Text that currently precedes the first selection end-point.
-     * @private {string}
-     */
-    this.currentTextBefore_ = '';
-    /**
-     * Text that currently follows the last selection end-point.
-     * @private {string}
-     */
-    this.currentTextAfter_ = '';
-    /**
-     * Cells that were entered while the IME wasn't active.  These will be
-     * submitted once the IME becomes active and reports the current input
-     * field. This is necessary because the IME is activated on the first
-     * braille dots command, but we'll receive the command in parallel.  To work
-     * around the race, we store the cell entered until we can submit it to the
-     * IME.
-     * @private {!Array<number>}
-     */
-    this.pendingCells_ = [];
-    /** @private {BrailleInputHandler.EntryState_} */
-    this.entryState_ = null;
-    /** @private {ExtraCellsSpan} */
-    this.uncommittedCellsSpan_ = null;
-    /** @private {function()?} */
-    this.uncommittedCellsChangedListener_ = null;
+type Port = chrome.runtime.Port;
 
-    this.initListeners_();
-  }
+interface Context {
+  contextID: number;
+  type: string;
+}
+
+export class BrailleInputHandler {
+  /** Port of the connected IME if any. */
+  private imePort_: Port|null = null;
+  /**
+   * True when the Braille IME is connected and has signaled that it is
+   * active.
+   */
+  private imeActive_ = false;
+  /** Text that currently follows the last selection end-point. */
+  private currentTextAfter_ = '';
+  /**
+   * Cells that were entered while the IME wasn't active.  These will be
+   * submitted once the IME becomes active and reports the current input
+   * field. This is necessary because the IME is activated on the first
+   * braille dots command, but we'll receive the command in parallel.  To work
+   * around the race, we store the cell entered until we can submit it to the
+   * IME.
+   */
+  private pendingCells_: number[] = [];
+  private entryState_: EntryState|null = null;
+  private uncommittedCellsSpan_: ExtraCellsSpan|null = null;
+  private uncommittedCellsChangedListener_: VoidFunction|null = null;
 
   /**
-   * Starts to listen for connections from the Chrome OS braille IME.
-   * @private
+   * The input context of the current input field, as reported by the IME.
+   * null if no input field has focus.
    */
-  initListeners_() {
+  inputContext: Context|null = null;
+
+  /** Text that currently precedes the first selection end-point. */
+  currentTextBefore = '';
+
+  static instance: BrailleInputHandler;
+
+  /** The ID of the Braille IME extension built into Chrome OS. */
+  static IME_EXTENSION_ID_ = 'jddehjeebkoimngcbdkaahpobgicbffp';
+  /** Name of the port to use for communicating with the Braille IME. */
+  static IME_PORT_NAME_ = 'BrailleIme.Port';
+
+  constructor() {
     BrailleTranslatorManager.instance.addChangeListener(
-        () => this.commitAndClearEntryState_());
+        () => this.commitAndClearEntryState());
 
     chrome.runtime.onConnectExternal.addListener(
-        port => this.onImeConnect_(port));
+        (port: Port) => this.onImeConnect_(port));
   }
 
-  static init() {
+  static init(): void {
     if (BrailleInputHandler.instance) {
       throw new Error('Cannot create two BrailleInputHandler instances');
     }
@@ -91,11 +84,10 @@ export class BrailleInputHandler {
   /**
    * Called when the content on the braille display is updated.  Modifies the
    * input state according to the new content.
-   * @param {Spannable} text Text, optionally with value and selection spans.
-   * @param {function()} listener Called when the uncommitted cells
-   *     have changed.
+   * @param text Text, optionally with value and selection spans.
+   * @param listener Called when the uncommitted cells have changed.
    */
-  onDisplayContentChanged(text, listener) {
+  onDisplayContentChanged(text: Spannable, listener: VoidFunction): void {
     const valueSpan = text.getSpanInstanceOf(ValueSpan);
     const selectionSpan = text.getSpanInstanceOf(ValueSelectionSpan);
     if (!(valueSpan && selectionSpan)) {
@@ -111,20 +103,20 @@ export class BrailleInputHandler {
     const selectionEnd = text.getSpanEnd(selectionSpan);
     if (selectionStart < valueStart || selectionEnd > valueEnd) {
       console.error('Selection outside of value in braille content');
-      this.clearEntryState_();
+      this.clearEntryState();
       return;
     }
     const newTextBefore = text.toString().substring(valueStart, selectionStart);
-    if (this.currentTextBefore_ !== newTextBefore && this.entryState_) {
+    if (this.currentTextBefore !== newTextBefore && this.entryState_) {
       this.entryState_.onTextBeforeChanged(newTextBefore);
     }
-    this.currentTextBefore_ = newTextBefore;
+    this.currentTextBefore = newTextBefore;
     this.currentTextAfter_ = text.toString().substring(selectionEnd, valueEnd);
     this.uncommittedCellsSpan_ = new ExtraCellsSpan();
     text.setSpan(this.uncommittedCellsSpan_, selectionStart, selectionStart);
     if (this.entryState_ && this.entryState_.usesUncommittedCells) {
-      this.updateUncommittedCells_(
-          new Uint8Array(this.entryState_.cells_).buffer);
+      this.updateUncommittedCells(
+          new Uint8Array(this.entryState_.cells).buffer);
     }
     this.uncommittedCellsChangedListener_ = listener;
   }
@@ -132,13 +124,12 @@ export class BrailleInputHandler {
   /**
    * Handles braille key events used for input by editing the current input
    * field appropriately.
-   * @param {!BrailleKeyEvent} event The key event.
-   * @return {boolean} {@code true} if the event was handled, {@code false}
-   *     if it should propagate further.
+   * @return true if the event was handled, false if it should propagate
+   *     further.
    */
-  onBrailleKeyEvent(event) {
+  onBrailleKeyEvent(event: BrailleKeyEvent): boolean {
     if (event.command === BrailleKeyCommand.DOTS) {
-      return this.onBrailleDots_(/** @type {number} */ (event.brailleDots));
+      return this.onBrailleDots_(event.brailleDots as number);
     }
     // Any other braille command cancels the pending cells.
     this.pendingCells_.length = 0;
@@ -147,7 +138,7 @@ export class BrailleInputHandler {
           !event.ctrlKey && !event.shiftKey && this.onBackspace_()) {
         return true;
       } else {
-        this.commitAndClearEntryState_();
+        this.commitAndClearEntryState();
         this.sendKeyEventPair_(event);
         return true;
       }
@@ -158,10 +149,8 @@ export class BrailleInputHandler {
   /**
    * Returns how the value of the currently displayed content should be
    * expanded given the current input state.
-   * @return {ExpandingBrailleTranslator.ExpansionType}
-   *     The current expansion type.
    */
-  getExpansionType() {
+  getExpansionType(): ExpandingBrailleTranslator.ExpansionType {
     if (this.inAlwaysUncontractedContext_()) {
       return ExpandingBrailleTranslator.ExpansionType.ALL;
     }
@@ -174,28 +163,26 @@ export class BrailleInputHandler {
   }
 
   /**
-   * @return {boolean} {@code true} if we have an input context and
-   *     uncontracted braille should always be used for that context.
-   * @private
+   * @return true if we have an input context and uncontracted braille should
+   * always be used for that context.
    */
-  inAlwaysUncontractedContext_() {
-    const inputType = this.inputContext_ ? this.inputContext_.type : '';
+  private inAlwaysUncontractedContext_(): boolean {
+    const inputType = this.inputContext ? this.inputContext.type : '';
     return inputType === 'url' || inputType === 'email';
   }
 
   /**
    * Called when a user typed a braille cell.
-   * @param {number} dots The dot pattern of the cell.
-   * @return {boolean} Whether the event was handled or should be allowed to
+   * @param dots The dot pattern of the cell.
+   * @return Whether the event was handled or should be allowed to
    *    propagate further.
-   * @private
    */
-  onBrailleDots_(dots) {
+  private onBrailleDots_(dots: number): boolean {
     if (!this.imeActive_) {
       this.pendingCells_.push(dots);
       return true;
     }
-    if (!this.inputContext_) {
+    if (!this.inputContext) {
       return false;
     }
     if (!this.entryState_) {
@@ -209,11 +196,10 @@ export class BrailleInputHandler {
 
   /**
    * Handles the backspace key by deleting the last typed cell if possible.
-   * @return {boolean} {@code true} if the event was handled, {@code false}
-   *     if it wasn't and should propagate further.
-   * @private
+   * @return true if the event was handled, false if it wasn't and should
+   * propagate further.
    */
-  onBackspace_() {
+  private onBackspace_(): boolean {
     if (this.imeActive_ && this.entryState_) {
       this.entryState_.deleteLastCell();
       return true;
@@ -222,67 +208,54 @@ export class BrailleInputHandler {
   }
 
   /**
-   * Creates a new empty {@code EntryState_} based on the current input
+   * Creates a new empty EntryState based on the current input
    * context and surrounding text.
-   * @return {BrailleInputHandler.EntryState_} The newly created state
-   *     object, or null if it couldn't be created (e.g. if there's no braille
-   *     translator available yet).
-   * @private
+   * @return The newly created state object, or null if it couldn't be created
+   *     (e.g. if there's no braille translator available yet).
    */
-  createEntryState_() {
+  private createEntryState_(): EntryState|null {
     let translator = BrailleTranslatorManager.instance.getDefaultTranslator();
     if (!translator) {
       return null;
     }
     const uncontractedTranslator =
         BrailleTranslatorManager.instance.getUncontractedTranslator();
-    let constructor = BrailleInputHandler.EditsEntryState_;
+    let constructor: EntryStateConstructor = EditsEntryState;
     if (uncontractedTranslator) {
-      const textBefore = this.currentTextBefore_;
+      const textBefore = this.currentTextBefore;
       const textAfter = this.currentTextAfter_;
       if (this.inAlwaysUncontractedContext_() ||
-          (BrailleInputHandler.ENDS_WITH_NON_WHITESPACE_RE_.test(textBefore)) ||
-          (BrailleInputHandler.STARTS_WITH_NON_WHITESPACE_RE_.test(
-              textAfter))) {
+          (ENDS_WITH_NON_WHITESPACE_RE.test(textBefore)) ||
+          (STARTS_WITH_NON_WHITESPACE_RE.test(textAfter))) {
         translator = uncontractedTranslator;
       } else {
-        constructor = BrailleInputHandler.LateCommitEntryState_;
+        constructor = LateCommitEntryState;
       }
     }
 
     return new constructor(this, translator);
   }
 
-  /**
-   * Commits the current entry state and clears it, if any.
-   * @private
-   */
-  commitAndClearEntryState_() {
+  /** Commits the current entry state and clears it, if any. */
+  commitAndClearEntryState(): void {
     if (this.entryState_) {
       this.entryState_.commit();
-      this.clearEntryState_();
+      this.clearEntryState();
     }
   }
 
-  /**
-   * Clears the current entry state without committing it.
-   * @private
-   */
-  clearEntryState_() {
+  /** Clears the current entry state without committing it. */
+  clearEntryState(): void {
     if (this.entryState_) {
       if (this.entryState_.usesUncommittedCells) {
-        this.updateUncommittedCells_(new ArrayBuffer(0));
+        this.updateUncommittedCells(new ArrayBuffer(0));
       }
-      this.entryState_.inputHandler_ = null;
+      this.entryState_.inputHandler = null;
       this.entryState_ = null;
     }
   }
 
-  /**
-   * @param {ArrayBuffer} cells
-   * @private
-   */
-  updateUncommittedCells_(cells) {
+  updateUncommittedCells(cells: ArrayBuffer): void {
     if (this.uncommittedCellsSpan_) {
       this.uncommittedCellsSpan_.cells = cells;
     }
@@ -295,29 +268,24 @@ export class BrailleInputHandler {
    * Called when another extension connects to this extension.  Accepts
    * connections from the ChromeOS builtin Braille IME and ignores connections
    * from other extensions.
-   * @param {Port} port The port used to communicate with the other extension.
-   * @private
+   * @param port The port used to communicate with the other extension.
    */
-  onImeConnect_(port) {
+  private onImeConnect_(port: Port): void {
     if (port.name !== BrailleInputHandler.IME_PORT_NAME_ ||
-        port.sender.id !== BrailleInputHandler.IME_EXTENSION_ID_) {
+        port.sender!.id !== BrailleInputHandler.IME_EXTENSION_ID_) {
       return;
     }
     if (this.imePort_) {
       this.imePort_.disconnect();
     }
     port.onDisconnect.addListener(() => this.onImeDisconnect_(port));
-    port.onMessage.addListener(message => this.onImeMessage_(message));
+    port.onMessage.addListener((message: any) => this.onImeMessage_(message));
     this.imePort_ = port;
   }
 
-  /**
-   * Called when a message is received from the IME.
-   * @param {*} message The message.
-   * @private
-   */
-  onImeMessage_(message) {
-    if (!goog.isObject(message)) {
+  /** Called when a message is received from the IME. */
+  private onImeMessage_(message: any): void {
+    if (typeof message !== 'object') {
       console.error(
           'Unexpected message from Braille IME: ', JSON.stringify(message));
     }
@@ -326,9 +294,9 @@ export class BrailleInputHandler {
         this.imeActive_ = message.active;
         break;
       case 'inputContext':
-        this.inputContext_ = message.context;
-        this.clearEntryState_();
-        if (this.imeActive_ && this.inputContext_) {
+        this.inputContext = message.context;
+        this.clearEntryState();
+        if (this.imeActive_ && this.inputContext) {
           this.pendingCells_.forEach(this.onBrailleDots_, this);
         }
         this.pendingCells_.length = 0;
@@ -340,14 +308,14 @@ export class BrailleInputHandler {
         // Note that we can't send the backspace key through the
         // virtualKeyboardPrivate API in this case because it would then be
         // processed by the IME again, leading to an infinite loop.
-        this.postImeMessage_({
+        this.postImeMessage({
           type: 'keyEventHandled',
           requestId: message['requestId'],
           result: this.onBackspace_(),
         });
         break;
       case 'reset':
-        this.clearEntryState_();
+        this.clearEntryState();
         break;
       default:
         console.error(
@@ -358,24 +326,22 @@ export class BrailleInputHandler {
 
   /**
    * Called when the IME port is disconnected.
-   * @param {Port} port The port that was disconnected.
-   * @private
+   * @param port The port that was disconnected.
    */
-  onImeDisconnect_(port) {
+  private onImeDisconnect_(_port: Port): void {
     this.imePort_ = null;
-    this.clearEntryState_();
+    this.clearEntryState();
     this.imeActive_ = false;
-    this.inputContext_ = null;
+    this.inputContext = null;
   }
 
   /**
    * Posts a message to the IME.
-   * @param {Object} message The message.
-   * @return {boolean} {@code true} if the message was sent, {@code false} if
-   *     there was no connection open to the IME.
-   * @private
+   * @param message The message.
+   * @return true if the message was sent, false if there was no connection
+   * open to the IME.
    */
-  postImeMessage_(message) {
+  postImeMessage(message: Object): boolean {
     if (this.imePort_) {
       this.imePort_.postMessage(message);
       return true;
@@ -384,14 +350,13 @@ export class BrailleInputHandler {
   }
 
   /**
-   * Sends a {@code keydown} key event followed by a {@code keyup} event
-   * corresponding to an event generated by the braille display.
-   * @param {!BrailleKeyEvent} event The braille key event to base the
-   *     key events on.
-   * @private
+   * Sends a keydown key event followed by a keyup event corresponding to an
+   * event generated by the braille display.
+   * @param event The braille key event to base the key events on.
    */
-  sendKeyEventPair_(event) {
-    const keyName = /** @type {string} */ (event.standardKeyCode);
+  private sendKeyEventPair_(event: BrailleKeyEvent): void {
+    // TODO(crbug.com/314203187): Not null asserted, check that this is correct.
+    const keyName = event.standardKeyCode!;
     const numericCode = BrailleKeyEvent.keyCodeToLegacyCode(keyName);
     if (!numericCode) {
       throw Error('Unknown key code in event: ' + JSON.stringify(event));
@@ -404,91 +369,65 @@ export class BrailleInputHandler {
   }
 }
 
-/**
- * The ID of the Braille IME extension built into Chrome OS.
- * @const {string}
- * @private
- */
-BrailleInputHandler.IME_EXTENSION_ID_ = 'jddehjeebkoimngcbdkaahpobgicbffp';
-
-/**
- * Name of the port to use for communicating with the Braille IME.
- * @const {string}
- * @private
- */
-BrailleInputHandler.IME_PORT_NAME_ = 'BrailleIme.Port';
+// Local to module.
 
 /**
  * Regular expression that matches a string that starts with at least one
  * non-whitespace character.
- * @const {RegExp}
- * @private
  */
-BrailleInputHandler.STARTS_WITH_NON_WHITESPACE_RE_ = /^\S/;
+const STARTS_WITH_NON_WHITESPACE_RE = /^\S/;
 
 /**
  * Regular expression that matches a string that ends with at least one
  * non-whitespace character.
- * @const {RegExp}
- * @private
  */
-BrailleInputHandler.ENDS_WITH_NON_WHITESPACE_RE_ = /\S$/;
+const ENDS_WITH_NON_WHITESPACE_RE = /\S$/;
 
+
+type EntryStateConstructor =
+    new (handler: BrailleInputHandler, translator: LibLouis.Translator) =>
+        EntryState;
 
 /**
  * The entry state is the state related to entering a series of braille cells
  * without 'interruption', where interruption can be things like non braille
  * keyboard input or unexpected changes to the text surrounding the cursor.
- * @private
  */
-BrailleInputHandler.EntryState_ = class {
+class EntryState {
+  inputHandler: BrailleInputHandler|null;
+  /** Braille cells that have been typed by the user so far. */
+  cells: number[] = [];
+  /** Text resulting from translating this.cells. */
+  text = '';
+
   /**
-   * @param {!BrailleInputHandler} inputHandler
-   * @param {!LibLouis.Translator} translator
+   * List of strings that we expect to be set as preceding text of the
+   * selection. This is populated when we send text changes to the IME so
+   * that our own changes don't reset the pending cells.
    */
-  constructor(inputHandler, translator) {
-    /** @private {BrailleInputHandler} */
-    this.inputHandler_ = inputHandler;
-    /**
-     * The translator currently used for typing, if
-     * {@code this.cells_.length > 0}.
-     * @private {!LibLouis.Translator}
-     */
-    this.translator_ = translator;
-    /**
-     * Braille cells that have been typed by the user so far.
-     * @private {!Array<number>}
-     */
-    this.cells_ = [];
-    /**
-     * Text resulting from translating {@code this.cells_}.
-     * @private {string}
-     */
-    this.text_ = '';
-    /**
-     * List of strings that we expect to be set as preceding text of the
-     * selection. This is populated when we send text changes to the IME so
-     * that our own changes don't reset the pending cells.
-     * @private {!Array<string>}
-     */
-    this.pendingTextsBefore_ = [];
+  protected pendingTextsBefore_: string[] = [];
+
+  constructor(
+      inputHandler: BrailleInputHandler,
+      private translator_: LibLouis.Translator) {
+    this.inputHandler = inputHandler;
   }
 
   /**
-   * @return {!LibLouis.Translator} The translator used by this entry
-   *     state. This doesn't change for a given object.
+   * @return The translator used by this entry state. This doesn't change for a
+   * given object.
    */
-  get translator() {
+  get translator(): LibLouis.Translator {
     return this.translator_;
   }
 
   /**
    * Appends a braille cell to the current input and updates the text if
    * necessary.
-   * @param {number} cell The braille cell to append.
+   * @param cell The braille cell to append.
    */
-  appendCell(cell) {
-    this.cells_.push(cell);
+  appendCell(cell: number): void {
+    this.cells.push(cell);
     this.updateText_();
   }
 
@@ -497,10 +436,10 @@ BrailleInputHandler.EntryState_ = class {
    * If there's no more input in this object afterwards, clears the entry state
    * of the input handler.
    */
-  deleteLastCell() {
-    if (--this.cells_.length <= 0) {
+  deleteLastCell(): void {
+    if (--this.cells.length <= 0) {
       this.sendTextChange_('');
-      this.inputHandler_.clearEntryState_();
+      this.inputHandler?.clearEntryState();
       return;
     }
     this.updateText_();
@@ -510,9 +449,9 @@ BrailleInputHandler.EntryState_ = class {
    * Called when the text before the cursor changes giving this object a
    * chance to clear the entry state of the input handler if the change
    * wasn't expected.
-   * @param {string} newText New text before the cursor.
+   * @param newText New text before the cursor.
    */
-  onTextBeforeChanged(newText) {
+  onTextBeforeChanged(newText: string): void {
     // See if we are expecting this change as a result of one of our own
     // edits. Allow changes to be coalesced by the input system in an attempt
     // to not be too brittle.
@@ -525,85 +464,67 @@ BrailleInputHandler.EntryState_ = class {
     }
     // There was an actual text change (or cursor movement) that we hadn't
     // caused ourselves, reset any pending input.
-    this.inputHandler_.clearEntryState_();
+    this.inputHandler?.clearEntryState();
   }
 
   /**
    * Makes sure the current text is permanently added to the edit field.
    * After this call, this object should be abandoned.
    */
-  commit() {}
+  commit(): void {}
 
   /**
-   * @return {boolean} true if the entry state uses uncommitted cells.
+   * @return true if the entry state uses uncommitted cells.
    */
-  get usesUncommittedCells() {
+  get usesUncommittedCells(): boolean {
     return false;
   }
 
   /**
    * Updates the translated text based on the current cells and sends the
    * delta to the IME.
-   * @private
    */
-  updateText_() {
-    const cellsBuffer = new Uint8Array(this.cells_).buffer;
+  private updateText_(): void {
+    const cellsBuffer = new Uint8Array(this.cells).buffer;
     const commit = this.lastCellIsBlank_;
     if (!commit && this.usesUncommittedCells) {
-      this.inputHandler_.updateUncommittedCells_(cellsBuffer);
+      this.inputHandler?.updateUncommittedCells(cellsBuffer);
     }
     this.translator_.backTranslate(cellsBuffer, result => {
       if (result === null) {
         console.error('Error when backtranslating braille cells');
         return;
       }
-      if (!this.inputHandler_) {
+      if (!this.inputHandler) {
         return;
       }
       this.sendTextChange_(result);
-      this.text_ = result;
+      this.text = result;
       if (commit) {
-        this.inputHandler_.commitAndClearEntryState_();
+        this.inputHandler.commitAndClearEntryState();
       }
     });
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  get lastCellIsBlank_() {
-    return this.cells_[this.cells_.length - 1] === 0;
+  private get lastCellIsBlank_(): boolean {
+    return this.cells[this.cells.length - 1] === 0;
   }
 
   /**
-   * Sends new text to the IME.  This dhould be overriden by subclasses.
-   * The old text is still available in the {@code text_} property.
-   * @param {string} newText Text to send.
-   * @private
+   * Sends new text to the IME.  This should be overridden by subclasses.
+   * The old text is still available in the text property.
    */
-  sendTextChange_(newText) {}
-};
+  protected sendTextChange_(_newText: string): void {}
+}
 
 
 /**
- * Entry state that uses {@code deleteSurroundingText} and {@code commitText}
- * calls to the IME to update the currently enetered text.
- * @private
+ * Entry state that uses deleteSurroundingText and commitText calls to the IME
+ * to update the currently entered text.
  */
-BrailleInputHandler.EditsEntryState_ =
-    class extends BrailleInputHandler.EntryState_ {
-  /**
-   * @param {!BrailleInputHandler} inputHandler
-   * @param {!LibLouis.Translator} translator
-   */
-  constructor(inputHandler, translator) {
-    super(inputHandler, translator);
-  }
-
-  /** @override */
-  sendTextChange_(newText) {
-    const oldText = this.text_;
+class EditsEntryState extends EntryState {
+  protected override sendTextChange_(newText: string): void {
+    const oldText = this.text;
     // Find the common prefix of the old and new text.
     const commonPrefixLength =
         StringUtil.longestCommonPrefixLength(oldText, newText);
@@ -616,9 +537,9 @@ BrailleInputHandler.EditsEntryState_ =
     if (deleteLength > 0 || toInsert.length > 0) {
       // After deleting, we expect this text to be present before the cursor.
       const textBeforeAfterDelete =
-          this.inputHandler_.currentTextBefore_.substring(
-              0, this.inputHandler_.currentTextBefore_.length - deleteLength);
-      if (deleteLength > 0) {
+          this.inputHandler?.currentTextBefore.substring(
+              0, this.inputHandler.currentTextBefore.length - deleteLength);
+      if (deleteLength > 0 && textBeforeAfterDelete) {
         // Queue this text up to be ignored when the change comes in.
         this.pendingTextsBefore_.push(textBeforeAfterDelete);
       }
@@ -628,57 +549,41 @@ BrailleInputHandler.EditsEntryState_ =
         this.pendingTextsBefore_.push(textBeforeAfterDelete + toInsert);
       }
       // Send the replace operation to be performed asynchronously by the IME.
-      this.inputHandler_.postImeMessage_({
+      this.inputHandler?.postImeMessage({
         type: 'replaceText',
-        contextID: this.inputHandler_.inputContext_.contextID,
+        contextID: this.inputHandler.inputContext?.contextID,
         deleteBefore: deleteLength,
         newText: toInsert,
       });
     }
   }
-};
+}
 
 
 /**
  * Entry state that only updates the edit field when a blank cell is entered.
  * During the input of a single 'word', the uncommitted text is stored by the
  * IME.
- * @private
  */
-BrailleInputHandler.LateCommitEntryState_ =
-    class extends BrailleInputHandler.EntryState_ {
-  /**
-   * @param {!BrailleInputHandler} inputHandler
-   * @param {!LibLouis.Translator} translator
-   */
-  constructor(inputHandler, translator) {
-    super(inputHandler, translator);
-  }
-
-  /** @override */
-  commit() {
-    this.inputHandler_.postImeMessage_({
+class LateCommitEntryState extends EntryState {
+  override commit(): void {
+    this.inputHandler?.postImeMessage({
       type: 'commitUncommitted',
-      contextID: this.inputHandler_.inputContext_.contextID,
+      contextID: this.inputHandler.inputContext?.contextID,
     });
   }
 
-  /** @override */
-  get usesUncommittedCells() {
+  override get usesUncommittedCells(): boolean {
     return true;
   }
 
-  /** @override */
-  sendTextChange_(newText) {
-    this.inputHandler_.postImeMessage_({
+  protected override sendTextChange_(newText: string): void {
+    this.inputHandler?.postImeMessage({
       type: 'setUncommitted',
-      contextID: this.inputHandler_.inputContext_.contextID,
+      contextID: this.inputHandler.inputContext?.contextID,
       text: newText,
     });
   }
-};
-
-/** @type {BrailleInputHandler} */
-BrailleInputHandler.instance;
+}
 
 TestImportManager.exportForTesting(BrailleInputHandler);

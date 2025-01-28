@@ -49,6 +49,7 @@ ts_modules = [
   "background/braille/braille_captions_background.ts",
   "background/braille/braille_command_handler.ts",
   "background/braille/braille_display_manager.ts",
+  "background/braille/braille_input_handler.ts",
   "background/braille/braille_interface.ts",
   "background/braille/braille_key_event_rewriter.ts",
   "background/braille/cursor_dots.ts",
@@ -161,7 +162,6 @@ ts_modules = [
 # ES6 modules.
 js_modules = [
   "background/automation_object_constructor_installer.js",
-  "background/braille/braille_input_handler.js",
   "background/braille/braille_translator_manager.js",
   "background/composite_tts.js",
   "background/editing/typing_echo.js",
