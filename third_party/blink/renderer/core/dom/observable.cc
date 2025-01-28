@@ -1655,15 +1655,6 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         return;
       }
 
-      // This happens if `ScriptIterator::FromIterable()`, which runs script,
-      // aborts the subscription. In that case, we respect the abort and leave
-      // the iterator alone.
-      if (subscriber_->signal()->aborted()) {
-        return;
-      }
-
-      abort_algorithm_handle_ = subscriber->signal()->AddAlgorithm(this);
-
       // Note that it's possible for `iterator_.IsNull()` to be true here, and
       // we have to handle it appropriately. Here's why:
       //
@@ -1682,11 +1673,19 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         // The object failed to convert to an async or sync iterable.
         v8::Local<v8::Value> type_error = V8ThrowException::CreateTypeError(
             script_state->GetIsolate(), "Object must be iterable");
-        ClearAbortAlgorithm();
         subscriber->error(script_state,
                           ScriptValue(script_state->GetIsolate(), type_error));
         return;
       }
+
+      // This happens if `ScriptIterator::FromIterable()`, which runs script,
+      // aborts the subscription. In that case, we respect the abort and leave
+      // the iterator alone.
+      if (subscriber_->signal()->aborted()) {
+        return;
+      }
+
+      abort_algorithm_handle_ = subscriber->signal()->AddAlgorithm(this);
 
       // "Run |nextAlgorithm| given |subscriber| and |iteratorRecord|."
       GetNextValue(subscriber, script_state);
