@@ -179,7 +179,8 @@ class Node:
     if self._IsValidAttribute(attrib, value):
       self.attrs[attrib] = value
     else:
-      raise exception.UnexpectedAttribute(attrib)
+      raise exception.UnexpectedAttribute("'%s' in file '%s'" %
+                                          (attrib, self.source))
 
   def EndParsing(self):
     '''Called at the end of parsing.'''
