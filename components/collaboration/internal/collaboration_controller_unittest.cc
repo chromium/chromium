@@ -230,6 +230,9 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
 
   histogram_tester.ExpectBucketCount(
       "CollaborationService.JoinFlow",
+      metrics::CollaborationServiceJoinEvent::kFlowRequirementsMet, 1);
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.JoinFlow",
       metrics::CollaborationServiceJoinEvent::kAccepted, 1);
   histogram_tester.ExpectBucketCount(
       "CollaborationService.JoinFlow",
@@ -341,6 +344,9 @@ TEST_F(CollaborationControllerTest, AuthenticationCanceledBeforeSignIn) {
   histogram_tester.ExpectBucketCount(
       "CollaborationService.JoinFlow",
       metrics::CollaborationServiceJoinEvent::kCanceledNotSignedIn, 1);
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.JoinFlow",
+      metrics::CollaborationServiceJoinEvent::kFlowRequirementsMet, 0);
 }
 
 TEST_F(CollaborationControllerTest, AuthenticationCanceledAfterSignIn) {
@@ -463,12 +469,11 @@ TEST_F(CollaborationControllerTest, AuthenticationSuccessObserved) {
 }
 
 TEST_F(CollaborationControllerTest, FullShareFlowAllStates) {
+  base::HistogramTester histogram_tester;
+
   // Start Share flow.
   tab_groups::LocalTabGroupID local_id =
       tab_groups::test::GenerateRandomTabGroupID();
-  InitializeController(base::DoNothing(),
-                       Flow(FlowType::kShareOrManage, local_id));
-  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
 
   // Simulate that the tab group exist locally, but is not shared.
   tab_groups::EitherGroupID either_id = local_id;
@@ -477,6 +482,10 @@ TEST_F(CollaborationControllerTest, FullShareFlowAllStates) {
   tab_group.SetLocalGroupId(local_id);
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
       .WillOnce(Return(tab_group));
+
+  InitializeController(base::DoNothing(),
+                       Flow(FlowType::kShareOrManage, local_id));
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
   CollaborationControllerDelegate::ResultWithGroupTokenCallback
       share_dialog_callback;
   EXPECT_CALL(*delegate_, ShowShareDialog(either_id, IsNotNullCallback()))
@@ -516,29 +525,105 @@ TEST_F(CollaborationControllerTest, FullShareFlowAllStates) {
   std::move(tab_group_sharing_callback)
       .Run(tab_groups::TabGroupSyncService::TabGroupSharingResult::kSuccess);
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kSharingTabGroupUrl);
+
+  // Verify the manage flow metrics are recorded properly.
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.ShareOrManageFlow",
+      metrics::CollaborationServiceShareOrManageEvent::kFlowRequirementsMet, 1);
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.ShareOrManageFlow",
+      metrics::CollaborationServiceShareOrManageEvent::kShareDialogShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.ShareOrManageFlow",
+      metrics::CollaborationServiceShareOrManageEvent::kTabGroupShared, 1);
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.ShareOrManageFlow",
+      metrics::CollaborationServiceShareOrManageEvent::kUrlReadyToShare, 1);
 }
 
 TEST_F(CollaborationControllerTest, CheckingFlowRequirementsManageFlow) {
+  base::HistogramTester histogram_tester;
+
   // Start Share flow.
   tab_groups::LocalTabGroupID local_id =
       tab_groups::test::GenerateRandomTabGroupID();
-  InitializeController(base::DoNothing(),
-                       Flow(FlowType::kShareOrManage, local_id));
-  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
 
   // Simulate that the tab group exist locally and is a shared tab group.
   tab_groups::EitherGroupID either_id = local_id;
   SavedTabGroup tab_group(std::u16string(u"title"),
                           tab_groups::TabGroupColorId::kGrey, {});
   tab_group.SetLocalGroupId(local_id);
+  // Simulate that the tab group exists locally and is a shared tab group.
   tab_group.SetCollaborationId(
       tab_groups::CollaborationId(std::string(kGroupId)));
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
-      .WillOnce(Return(tab_group));
+      .WillRepeatedly(Return(tab_group));
+
+  InitializeController(base::DoNothing(),
+                       Flow(FlowType::kShareOrManage, local_id));
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
   EXPECT_CALL(*delegate_, ShowManageDialog(either_id, IsNotNullCallback()));
 
   controller_->SetStateForTesting(StateId::kCheckingFlowRequirements);
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kShowingManageScreen);
+
+  // Verify the manage flow metrics are recorded properly.
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.ShareOrManageFlow",
+      metrics::CollaborationServiceShareOrManageEvent::kFlowRequirementsMet, 1);
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.ShareOrManageFlow",
+      metrics::CollaborationServiceShareOrManageEvent::kManageDialogShown, 1);
+}
+
+TEST_F(CollaborationControllerTest, ShareFlowCanceledBeforeSignin) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate that the tab group exists locally, but is not shared.
+  tab_groups::LocalTabGroupID local_id =
+      tab_groups::test::GenerateRandomTabGroupID();
+  tab_groups::EitherGroupID either_id = local_id;
+  SavedTabGroup tab_group(std::u16string(u"title"),
+                          tab_groups::TabGroupColorId::kGrey, {});
+  tab_group.SetLocalGroupId(local_id);
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
+      .WillRepeatedly(Return(tab_group));
+
+  // Start Share flow at pending state.
+  InitializeController(base::DoNothing(),
+                       Flow(FlowType::kShareOrManage, local_id));
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
+
+  // Simulate user is not signed in or syncing.
+  ServiceStatus status;
+  status.signin_status = SigninStatus::kNotSignedIn;
+  status.sync_status = SyncStatus::kNotSyncing;
+  ASSERT_FALSE(status.IsAuthenticationValid());
+  EXPECT_CALL(*collaboration_service_, GetServiceStatus())
+      .WillRepeatedly(Return(status));
+
+  // The user should be shown authentication screens.
+  base::OnceCallback<void(Outcome)> authentication_ui_calback;
+  EXPECT_CALL(*delegate_, ShowAuthenticationUi(IsNotNullCallback()))
+      .WillOnce(MoveArg<0>(&authentication_ui_calback));
+
+  // Pending -> Authenticating.
+  std::move(prepare_ui_callback_).Run(Outcome::kSuccess);
+
+  // Authenticating -> Cancel state.
+  EXPECT_CALL(*delegate_, OnFlowFinished);
+  std::move(authentication_ui_calback).Run(Outcome::kCancel);
+
+  // Verify the not signed in metrics are recorded properly.
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.ShareOrManageFlow",
+      metrics::CollaborationServiceShareOrManageEvent::kNotSignedIn, 1);
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.ShareOrManageFlow",
+      metrics::CollaborationServiceShareOrManageEvent::kCanceledNotSignedIn, 1);
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.ShareOrManageFlow",
+      metrics::CollaborationServiceShareOrManageEvent::kFlowRequirementsMet, 0);
 }
 
 }  // namespace collaboration

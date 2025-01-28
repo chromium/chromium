@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/collaboration/internal/metrics.h"
+#include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -17,6 +18,7 @@
 namespace collaboration {
 
 using metrics::CollaborationServiceJoinEvent;
+using metrics::CollaborationServiceShareOrManageEvent;
 
 class ControllerState;
 
@@ -150,10 +152,6 @@ class PendingState : public ControllerState {
     ServiceStatus status =
         controller->collaboration_service()->GetServiceStatus();
     if (!status.IsAuthenticationValid()) {
-      if (FlowType::kJoin == controller->flow().type) {
-        RecordJoinEvent(CollaborationServiceJoinEvent::kNotSignedIn);
-      }
-
       controller->TransitionTo(StateId::kAuthenticating);
       return;
     }
@@ -173,6 +171,13 @@ class AuthenticatingState : public ControllerState,
       : ControllerState(id, controller) {}
 
   void OnEnter(const ErrorInfo& error) override {
+    if (FlowType::kJoin == controller->flow().type) {
+      RecordJoinEvent(CollaborationServiceJoinEvent::kNotSignedIn);
+    } else if (FlowType::kShareOrManage == controller->flow().type) {
+      RecordShareOrManageEvent(
+          CollaborationServiceShareOrManageEvent::kNotSignedIn);
+    }
+
     controller->delegate()->ShowAuthenticationUi(
         base::BindOnce(&AuthenticatingState::ProcessOutcome,
                        local_weak_ptr_factory_.GetWeakPtr()));
@@ -182,6 +187,9 @@ class AuthenticatingState : public ControllerState,
     if (Outcome::kCancel == outcome) {
       if (FlowType::kJoin == controller->flow().type) {
         RecordJoinEvent(CollaborationServiceJoinEvent::kCanceledNotSignedIn);
+      } else if (FlowType::kShareOrManage == controller->flow().type) {
+        RecordShareOrManageEvent(
+            CollaborationServiceShareOrManageEvent::kCanceledNotSignedIn);
       }
     }
 
@@ -231,6 +239,8 @@ class CheckingFlowRequirementsState : public ControllerState {
   void OnEnter(const ErrorInfo& error) override {
     switch (controller->flow().type) {
       case FlowType::kJoin: {
+        RecordJoinEvent(CollaborationServiceJoinEvent::kFlowRequirementsMet);
+
         const data_sharing::GroupId group_id =
             controller->flow().join_token().group_id;
         // Check if user is already part of the group.
@@ -257,6 +267,9 @@ class CheckingFlowRequirementsState : public ControllerState {
         break;
       }
       case FlowType::kShareOrManage:
+        RecordShareOrManageEvent(
+            CollaborationServiceShareOrManageEvent::kFlowRequirementsMet);
+
         std::optional<tab_groups::SavedTabGroup> sync_group =
             controller->tab_group_sync_service()->GetGroup(
                 controller->flow().either_id());
@@ -435,6 +448,8 @@ class ShowingShareScreen : public ControllerState {
 
   void OnEnter(const ErrorInfo& error) override {
     CHECK_EQ(controller->flow().type, FlowType::kShareOrManage);
+    RecordShareOrManageEvent(
+        CollaborationServiceShareOrManageEvent::kShareDialogShown);
 
     controller->delegate()->ShowShareDialog(
         controller->flow().either_id(),
@@ -492,6 +507,9 @@ class MakingTabGroupShared : public ControllerState {
 
     const data_sharing::GroupToken& group_token =
         controller->flow().share_token();
+
+    RecordShareOrManageEvent(
+        CollaborationServiceShareOrManageEvent::kTabGroupShared);
 
     controller->tab_group_sync_service()->MakeTabGroupShared(
         local_group_id.value(), group_token.group_id.value(),
@@ -563,6 +581,8 @@ class SharingTabGroupUrl : public ControllerState {
       return;
     }
 
+    RecordShareOrManageEvent(
+        CollaborationServiceShareOrManageEvent::kUrlReadyToShare);
     controller->delegate()->OnUrlReadyToShare(
         group_token.group_id, *url,
         base::BindOnce(&SharingTabGroupUrl::ProcessOutcome,
@@ -579,6 +599,8 @@ class ShowingManageScreen : public ControllerState {
 
   void OnEnter(const ErrorInfo& error) override {
     CHECK_EQ(controller->flow().type, FlowType::kShareOrManage);
+    RecordShareOrManageEvent(
+        CollaborationServiceShareOrManageEvent::kManageDialogShown);
 
     controller->delegate()->ShowManageDialog(
         controller->flow().either_id(),
