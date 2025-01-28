@@ -5586,11 +5586,15 @@ static_library("ui") {
       "webui/certificate_manager/client_cert_sources.h",
       "webui/certificate_manager/enterprise_cert_sources.cc",
       "webui/certificate_manager/enterprise_cert_sources.h",
-      "webui/certificate_manager/platform_cert_sources.cc",
-      "webui/certificate_manager/platform_cert_sources.h",
       "webui/certificate_manager/user_cert_sources.cc",
       "webui/certificate_manager/user_cert_sources.h",
     ]
+    if (!is_chromeos) {
+      sources += [
+        "webui/certificate_manager/platform_cert_sources.cc",
+        "webui/certificate_manager/platform_cert_sources.h",
+      ]
+    }
 
     deps += [
       "//components/server_certificate_database",

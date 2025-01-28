@@ -181,13 +181,12 @@ suite('CertificateManagerV2FocusTest', () => {
   });
   // </if>
 
-  test('Check Focus when going in and out of subpages', async () => {
+  // <if expr="not is_chromeos">
+  test('Check Focus when going in and out of platform subpage', async () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 5,
-      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
-      // </if>
       numPolicyCerts: 0,
       numUserCerts: 0,
       showUserCertsUi: false,
@@ -217,12 +216,13 @@ suite('CertificateManagerV2FocusTest', () => {
     const linkRow = (newElementInFocus.getRootNode() as ShadowRoot).host;
     assertEquals('viewOsImportedCerts', linkRow.id);
   });
+  // </if>
 
   test('Check Focus when going in and out of user certs subpage', async () => {
     const metadata: CertManagementMetadata = {
+      // <if expr="not is_chromeos">
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 5,
-      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 0,

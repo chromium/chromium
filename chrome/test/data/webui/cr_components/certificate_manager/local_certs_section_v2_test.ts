@@ -11,9 +11,14 @@ import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import type {CertManagementMetadata} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
 import type {LocalCertsSectionV2Element} from 'chrome://resources/cr_components/certificate_manager/local_certs_section_v2.js';
-import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNull} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+// <if expr="not is_chromeos">
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
+// </if>
 
 import {TestCertificateManagerProxy} from './certificate_manager_v2_test_support.js';
 
@@ -51,9 +56,7 @@ suite('LocalCertsSectionV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 5,
-      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
-      // </if>
       numPolicyCerts: 0,
       numUserCerts: 0,
       showUserCertsUi: false,
@@ -72,13 +75,12 @@ suite('LocalCertsSectionV2Test', () => {
   });
   // </if>
 
+  // <if expr="not is_chromeos">
   test('Policy - OS certs imported and managed', async () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 4,
-      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
-      // </if>
       numPolicyCerts: 0,
       numUserCerts: 0,
       showUserCertsUi: false,
@@ -89,13 +91,11 @@ suite('LocalCertsSectionV2Test', () => {
     await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
-    // <if expr="not is_chromeos">
     assertTrue(
         localCertsSection.$.importOsCerts.checked, 'os toggle state wrong');
     assertTrue(
         isVisible(localCertsSection.$.importOsCertsManagedIcon),
         'enterprise managed icon visibility wrong');
-    // </if>
     assertTrue(
         isVisible(localCertsSection.$.viewOsImportedCerts),
         'view imported os certs link visibility wrong');
@@ -110,9 +110,7 @@ suite('LocalCertsSectionV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 4,
-      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: false,
-      // </if>
       numPolicyCerts: 0,
       numUserCerts: 0,
       showUserCertsUi: false,
@@ -123,14 +121,12 @@ suite('LocalCertsSectionV2Test', () => {
     await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
-    // <if expr="not is_chromeos">
     assertTrue(
         localCertsSection.$.importOsCerts.checked,
         'os import toggle state wrong');
     assertFalse(
         isVisible(localCertsSection.$.importOsCertsManagedIcon),
         'enterprise managed icon visibility wrong');
-    // </if>
     assertTrue(
         isVisible(localCertsSection.$.viewOsImportedCerts),
         'view imported os certs link visibility wrong');
@@ -145,9 +141,7 @@ suite('LocalCertsSectionV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: false,
       numUserAddedSystemCerts: 4,
-      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
-      // </if>
       numPolicyCerts: 0,
       numUserCerts: 0,
       showUserCertsUi: false,
@@ -158,7 +152,6 @@ suite('LocalCertsSectionV2Test', () => {
     await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
-    // <if expr="not is_chromeos">
     assertFalse(
         localCertsSection.$.importOsCerts.checked,
         'os import toggle state wrong');
@@ -166,7 +159,6 @@ suite('LocalCertsSectionV2Test', () => {
     assertTrue(
         isVisible(localCertsSection.$.importOsCertsManagedIcon),
         'enterprise managed icon visibility wrong');
-    // </if>
     assertTrue(
         isVisible(localCertsSection.$.viewOsImportedCerts),
         'view imported os certs link visibility wrong');
@@ -181,9 +173,7 @@ suite('LocalCertsSectionV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: false,
       numUserAddedSystemCerts: 3,
-      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: false,
-      // </if>
       numPolicyCerts: 0,
       numUserCerts: 0,
       showUserCertsUi: false,
@@ -194,7 +184,6 @@ suite('LocalCertsSectionV2Test', () => {
     await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
-    // <if expr="not is_chromeos">
     assertFalse(
         localCertsSection.$.importOsCerts.checked,
         'os import toggle state wrong');
@@ -202,7 +191,6 @@ suite('LocalCertsSectionV2Test', () => {
     assertFalse(
         isVisible(localCertsSection.$.importOsCertsManagedIcon),
         'enterprise managed icon visibility wrong');
-    // </if>
     assertTrue(
         isVisible(localCertsSection.$.viewOsImportedCerts),
         'view imported os certs link visibility wrong');
@@ -217,9 +205,7 @@ suite('LocalCertsSectionV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: false,
       numUserAddedSystemCerts: 0,
-      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: false,
-      // </if>
       numPolicyCerts: 0,
       numUserCerts: 0,
       showUserCertsUi: false,
@@ -234,15 +220,14 @@ suite('LocalCertsSectionV2Test', () => {
         isVisible(localCertsSection.$.viewOsImportedCerts),
         'view imported os certs should not be visible w/ 0 certs');
   });
+  // </if>
 
   // <if expr="is_win or is_macosx">
   test('Open native certificate management', async () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 0,
-      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
-      // </if>
       numPolicyCerts: 0,
       numUserCerts: 0,
       showUserCertsUi: false,
@@ -262,9 +247,9 @@ suite('LocalCertsSectionV2Test', () => {
 
   test('no admin certs, hide admin certs section', async () => {
     const metadata: CertManagementMetadata = {
+      // <if expr="not is_chromeos">
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 0,
-      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 0,
@@ -284,10 +269,13 @@ suite('LocalCertsSectionV2Test', () => {
   });
 
   test('have admin certs, show admin certs section', async () => {
+    const pluralStringProxy = new CertManagerTestPluralStringProxy();
+    PluralStringProxyImpl.setInstance(pluralStringProxy);
+    pluralStringProxy.text = '5 certificates';
     const metadata: CertManagementMetadata = {
+      // <if expr="not is_chromeos">
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 0,
-      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 5,
@@ -298,6 +286,7 @@ suite('LocalCertsSectionV2Test', () => {
     initializeElement();
 
     await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await pluralStringProxy.whenCalled('getPluralString');
     await microtasksFinished();
     const customSection =
         localCertsSection.shadowRoot!.querySelector('#customCertsSection');
@@ -388,9 +377,9 @@ suite('LocalCertsSectionV2Test', () => {
     PluralStringProxyImpl.setInstance(pluralStringProxy);
     pluralStringProxy.text = '5 certificates';
     const metadata: CertManagementMetadata = {
+      // <if expr="not is_chromeos">
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 0,
-      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 5,
@@ -411,9 +400,9 @@ suite('LocalCertsSectionV2Test', () => {
 
   test('user certs write disabled, hide user certs section', async () => {
     const metadata: CertManagementMetadata = {
+      // <if expr="not is_chromeos">
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 0,
-      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 1,
@@ -436,9 +425,9 @@ suite('LocalCertsSectionV2Test', () => {
       'no admin certs, user certs write disabled, hide custom certs section',
       async () => {
         const metadata: CertManagementMetadata = {
+          // <if expr="not is_chromeos">
           includeSystemTrustStore: true,
           numUserAddedSystemCerts: 0,
-          // <if expr="not is_chromeos">
           isIncludeSystemTrustStoreManaged: true,
           // </if>
           numPolicyCerts: 0,

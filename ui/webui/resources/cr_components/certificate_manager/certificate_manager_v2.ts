@@ -90,7 +90,9 @@ export interface CertificateManagerV2Element {
     crsCertSection: CrsSectionV2Element,
     adminCertsSection: CertificateSubpageV2Element,
     userCertsSection: CertificateSubpageV2Element,
+    // <if expr="not is_chromeos">
     platformCertsSection: CertificateSubpageV2Element,
+    // </if>
     platformClientCertsSection: CertificateSubpageV2Element,
   };
 }
@@ -132,6 +134,7 @@ export class CertificateManagerV2Element extends
           ];
         },
       },
+      // <if expr="not is_chromeos">
       platformSubpageLists_: {
         type: Array<SubpageCertificateList>,
         value: (): SubpageCertificateList[] => {
@@ -156,6 +159,7 @@ export class CertificateManagerV2Element extends
           ];
         },
       },
+      // </if>
 
       clientPlatformSubpageLists_: {
         type: Array<SubpageCertificateList>,
@@ -250,7 +254,9 @@ export class CertificateManagerV2Element extends
   private confirmationDialogResolver_: PromiseResolver<ConfirmationResult>|
       null = null;
   private enterpriseSubpageLists_: SubpageCertificateList[];
+  // <if expr="not is_chromeos">
   private platformSubpageLists_: SubpageCertificateList[];
+  // </if>
   private clientPlatformSubpageLists_: SubpageCertificateList[];
   // <if expr="is_chromeos">
   private showClientCertImport_: boolean;
@@ -339,9 +345,11 @@ export class CertificateManagerV2Element extends
         case Page.ADMIN_CERTS:
           this.$.adminCertsSection.setInitialFocus();
           break;
+        // <if expr="not is_chromeos">
         case Page.PLATFORM_CERTS:
           this.$.platformCertsSection.setInitialFocus();
           break;
+        // </if>
         case Page.PLATFORM_CLIENT_CERTS:
           this.$.platformClientCertsSection.setInitialFocus();
           break;
@@ -361,12 +369,14 @@ export class CertificateManagerV2Element extends
             this.$.localCertSection.setFocusToLinkRow(oldRoute.page);
           }
           break;
+        // <if expr="not is_chromeos">
         case Page.PLATFORM_CERTS:
           if (route.page === Page.LOCAL_CERTS) {
             await this.$.main.updateComplete;
             this.$.localCertSection.setFocusToLinkRow(oldRoute.page);
           }
           break;
+        // </if>
         case Page.PLATFORM_CLIENT_CERTS:
           if (route.page === Page.CLIENT_CERTS) {
             await this.$.main.updateComplete;
@@ -394,8 +404,10 @@ export class CertificateManagerV2Element extends
   private getSelectedTopLevelHref_(): string {
     switch (this.selectedPage_) {
       case Page.ADMIN_CERTS:
+      // <if expr="not is_chromeos">
       case Page.PLATFORM_CERTS:
         return this.generateHrefForPage_(Page.LOCAL_CERTS);
+      // </if>
       case Page.PLATFORM_CLIENT_CERTS:
         return this.generateHrefForPage_(Page.CLIENT_CERTS);
       default:

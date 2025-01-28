@@ -146,6 +146,7 @@ bool IsAnchorTrustedOnThisChromeVersion(
   return false;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 mojom::PlatformRootStoreInfoPtr GetPlatformRootStoreInfoOnBackgroundThread() {
   mojom::PlatformRootStoreInfoPtr info_ptr =
       mojom::PlatformRootStoreInfo::New();
@@ -180,6 +181,7 @@ mojom::PlatformRootStoreInfoPtr GetPlatformRootStoreInfoOnBackgroundThread() {
 
   return info_ptr;
 }
+#endif
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 // Attempts to parse |crl_set|, returning nullptr on error or the parsed
@@ -399,6 +401,7 @@ void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
   std::move(callback).Run(std::move(info_ptr));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40928765): look into adding a test here. Possible ways to do
 // this:
 //  * add a SetSystemTrustStoreForTesting() call, have code use that if its set.
@@ -414,6 +417,7 @@ void CertVerifierServiceFactoryImpl::GetPlatformRootStoreInfo(
       base::BindOnce(&GetPlatformRootStoreInfoOnBackgroundThread),
       std::move(callback));
 }
+#endif
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 void CertVerifierServiceFactoryImpl::UpdateNetworkTime(
