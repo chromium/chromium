@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//ui/views/features.gni")
 
 assert(toolkit_views)
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 source_set("interactive_ui_tests") {
   testonly = true

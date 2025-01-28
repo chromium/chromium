@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 source_set("utils") {
   sources = [

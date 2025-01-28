@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("config") {
   sources = [

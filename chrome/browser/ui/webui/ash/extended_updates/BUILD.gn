@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash, "Extended Updates UI is ChromeOS only.")
+assert(is_chromeos, "Extended Updates UI is ChromeOS only.")
 
 mojom("mojo_bindings") {
   sources = [ "extended_updates.mojom" ]

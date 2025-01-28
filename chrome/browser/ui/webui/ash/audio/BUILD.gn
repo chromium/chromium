@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash, "Audio WebUI is Chrome OS only.")
+assert(is_chromeos, "Audio WebUI is ChromeOS only.")
 
 mojom("mojo_bindings") {
   sources = [ "audio.mojom" ]
