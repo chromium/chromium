@@ -8837,7 +8837,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kFedCmMetricsEndpoint)},
 
     {"fedcm-multi-idp", flag_descriptions::kFedCmMultiIdpName,
-     flag_descriptions::kFedCmMultiIdpDescription, kOsDesktop,
+     flag_descriptions::kFedCmMultiIdpDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmMultipleIdentityProviders)},
 
     {"fedcm-selective-disclosure",
