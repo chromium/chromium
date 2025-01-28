@@ -730,12 +730,6 @@ const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[] =
     "When enabled, Autofill will attempt to find standalone CVC fields for VCN "
     "card on file when parsing forms.";
 
-const char kAutofillSkipAndroidBottomSheetForIbanName[] =
-    "Skip Autofill IBAN as bottom sheet suggestions";
-const char kAutofillSkipAndroidBottomSheetForIbanDescription[] =
-    "When enabled, IBAN Autofill suggestions are shown via the keyboard "
-    "accessory instead of the bottom sheet.";
-
 const char kAutofillMoreProminentPopupName[] = "More prominent Autofill popup";
 const char kAutofillMoreProminentPopupDescription[] =
     "If enabled Autofill's popup becomes more prominent, i.e. its shadow "

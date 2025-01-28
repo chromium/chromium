@@ -10745,15 +10745,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnableCertManagementUIV2EditCerts)},
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"autofill-skip-android-bottom-sheet-for-iban",
-     flag_descriptions::kAutofillSkipAndroidBottomSheetForIbanName,
-     flag_descriptions::kAutofillSkipAndroidBottomSheetForIbanDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillSkipAndroidBottomSheetForIban)},
-#endif
-
     {"password-leak-toggle-move",
      flag_descriptions::kPasswordLeakToggleMoveName,
      flag_descriptions::kPasswordLeakToggleMoveDescription, kOsAll,
