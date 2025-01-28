@@ -4865,13 +4865,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="8" label="Keyboard click"/>
 </enum>
 
-<enum name="Experiment3pcBlockStatus">
-  <int value="0" label="kAllowedAndExperimentBlocked"/>
-  <int value="1" label="kAllowedAndExperimentAllowed"/>
-  <int value="2" label="kBlockedAndExperimentBlocked"/>
-  <int value="3" label="kBlockedAndExperimentAllowed"/>
-</enum>
-
 <enum name="ExploreSitesCategories">
 <!-- This must be kept current with
      //chrome/browser/android/explore_sites/catalog.proto's CategoryType. -->
