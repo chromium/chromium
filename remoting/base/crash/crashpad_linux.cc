@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/base/crash/crashpad.h"
+#include "remoting/base/crash/crashpad_linux.h"
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
@@ -20,8 +20,6 @@
 
 namespace remoting {
 
-namespace {
-
 using crashpad::CrashReportDatabase;
 
 constexpr char kChromotingCrashpadHandler[] = "crashpad-handler";
@@ -36,35 +34,6 @@ const size_t kMaxReportsToLog = 2;
 
 // Maximum number of days to keep reports around in the local database.
 const size_t kMaxReportAgeDays = 14;
-
-class CrashpadLinux {
- public:
-  CrashpadLinux();
-
-  CrashpadLinux(const CrashpadLinux&) = delete;
-  CrashpadLinux& operator=(const CrashpadLinux&) = delete;
-
-  ~CrashpadLinux() = delete;
-
-  bool Initialize();
-
-  static CrashpadLinux& GetInstance();
-
- private:
-  bool GetCrashpadHandlerPath(base::FilePath* handler_path);
-  base::FilePath GetCrashpadDatabasePath();
-  void LogCrashReportInfo(const CrashReportDatabase::Report& report);
-  void SortAndLogCrashReports(std::vector<CrashReportDatabase::Report>& reports,
-                              std::string report_type,
-                              size_t max_reports);
-  void CleanupOldCrashReports(
-      const std::vector<CrashReportDatabase::Report>& reports,
-      size_t max_age_days);
-
-  bool InitializeCrashpadDatabase(base::FilePath database_path);
-
-  std::unique_ptr<CrashReportDatabase> database_;
-};
 
 CrashpadLinux::CrashpadLinux() = default;
 
@@ -249,13 +218,6 @@ bool CrashpadLinux::Initialize() {
 CrashpadLinux& CrashpadLinux::GetInstance() {
   static base::NoDestructor<CrashpadLinux> instance;
   return *instance;
-}
-
-}  // namespace
-
-void InitializeCrashReporting() {
-  // Touch the object to make sure it is initialized.
-  CrashpadLinux::GetInstance().Initialize();
 }
 
 }  // namespace remoting
