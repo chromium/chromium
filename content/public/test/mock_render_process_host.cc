@@ -78,6 +78,7 @@ MockRenderProcessHost::MockRenderProcessHost(
       is_for_guests_only_(is_for_guests_only),
       priority_(base::Process::Priority::kUserBlocking),
       is_unused_(true),
+      pending_view_count_(0),
       worker_ref_count_(0),
       pending_reuse_ref_count_(0),
       foreground_service_worker_count_(0) {
@@ -320,7 +321,8 @@ void MockRenderProcessHost::Cleanup() {
   }
   delayed_cleanup_ = false;
 
-  if (listeners_.IsEmpty() && !deletion_callback_called_) {
+  if (listeners_.IsEmpty() && !deletion_callback_called_ &&
+      !pending_view_count_) {
     if (IsInitializedAndNotDead()) {
       ChildProcessTerminationInfo termination_info;
       termination_info.status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
@@ -340,9 +342,15 @@ void MockRenderProcessHost::Cleanup() {
   }
 }
 
-void MockRenderProcessHost::AddPendingView() {}
+void MockRenderProcessHost::AddPendingView() {
+  ++pending_view_count_;
+}
 
-void MockRenderProcessHost::RemovePendingView() {}
+void MockRenderProcessHost::RemovePendingView() {
+  CHECK(pending_view_count_);
+  --pending_view_count_;
+  Cleanup();
+}
 
 void MockRenderProcessHost::AddPriorityClient(
     RenderProcessHostPriorityClient* priority_client) {

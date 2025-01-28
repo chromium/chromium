@@ -347,6 +347,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool is_unused_;
   bool is_ready_ = false;
   base::Process process;
+  int pending_view_count_;
   int worker_ref_count_;
   int pending_reuse_ref_count_;
   int foreground_service_worker_count_;

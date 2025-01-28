@@ -16,7 +16,6 @@
 #include "components/performance_manager/embedder/binders.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
-#include "components/performance_manager/process_node_source.h"
 #include "components/performance_manager/public/browser_child_process_host_id.h"
 #include "components/performance_manager/render_process_user_data.h"
 #include "components/performance_manager/tab_helper_frame_node_source.h"
@@ -138,10 +137,7 @@ class PerformanceManagerRegistryImpl
   BrowserChildProcessWatcher browser_child_process_watcher_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Used by WorkerWatchers to access existing process nodes and frame
-  // nodes.
-  performance_manager::ProcessNodeSource process_node_source_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // Used by WorkerWatchers to access existing frame nodes.
   performance_manager::TabHelperFrameNodeSource frame_node_source_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

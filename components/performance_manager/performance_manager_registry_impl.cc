@@ -124,8 +124,7 @@ void PerformanceManagerRegistryImpl::NotifyBrowserContextAdded(
       browser_context->UniqueId(),
       storage_partition->GetDedicatedWorkerService(),
       storage_partition->GetSharedWorkerService(),
-      service_worker_context_adapter, &process_node_source_,
-      &frame_node_source_);
+      service_worker_context_adapter, &frame_node_source_);
   bool inserted =
       worker_watchers_.emplace(browser_context, std::move(worker_watcher))
           .second;

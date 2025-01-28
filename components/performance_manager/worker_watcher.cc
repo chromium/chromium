@@ -19,8 +19,9 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
-#include "components/performance_manager/process_node_source.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/render_process_user_data.h"
+#include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -30,6 +31,19 @@ namespace performance_manager {
 using WorkerNodeSet = base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>;
 
 namespace {
+
+// Retrieves the process node associated with the |render_process_id|.
+ProcessNodeImpl* GetProcessNode(int render_process_id) {
+  auto* render_process_host =
+      content::RenderProcessHost::FromID(render_process_id);
+  DCHECK(render_process_host);
+
+  auto* render_process_user_data =
+      RenderProcessUserData::GetForRenderProcessHost(render_process_host);
+  DCHECK(render_process_user_data);
+
+  return render_process_user_data->process_node();
+}
 
 // Helper function to add |client_frame_node| as a client of |worker_node| on
 // the PM sequence.
@@ -127,16 +141,13 @@ WorkerWatcher::WorkerWatcher(
     content::DedicatedWorkerService* dedicated_worker_service,
     content::SharedWorkerService* shared_worker_service,
     ServiceWorkerContextAdapter* service_worker_context_adapter,
-    ProcessNodeSource* process_node_source,
     FrameNodeSource* frame_node_source)
     : browser_context_id_(browser_context_id),
-      process_node_source_(process_node_source),
       frame_node_source_(frame_node_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(dedicated_worker_service);
   DCHECK(shared_worker_service);
   DCHECK(service_worker_context_adapter);
-  DCHECK(process_node_source_);
   DCHECK(frame_node_source_);
 
   dedicated_worker_service_observation_.Observe(dedicated_worker_service);
@@ -239,8 +250,8 @@ void WorkerWatcher::OnWorkerCreated(
 
   auto worker_node = PerformanceManagerImpl::CreateWorkerNode(
       browser_context_id_, WorkerNode::WorkerType::kDedicated,
-      process_node_source_->GetProcessNode(worker_process_id),
-      dedicated_worker_token, security_origin);
+      GetProcessNode(worker_process_id), dedicated_worker_token,
+      security_origin);
   auto insertion_result = dedicated_worker_nodes_.emplace(
       dedicated_worker_token, std::move(worker_node));
   DCHECK(insertion_result.second);
@@ -329,8 +340,7 @@ void WorkerWatcher::OnWorkerCreated(
 
   auto worker_node = PerformanceManagerImpl::CreateWorkerNode(
       browser_context_id_, WorkerNode::WorkerType::kShared,
-      process_node_source_->GetProcessNode(worker_process_id),
-      shared_worker_token, security_origin);
+      GetProcessNode(worker_process_id), shared_worker_token, security_origin);
 
   bool inserted =
       shared_worker_nodes_.emplace(shared_worker_token, std::move(worker_node))
@@ -407,11 +417,10 @@ void WorkerWatcher::OnVersionStartedRunning(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto& [it, node_inserted] = service_worker_nodes_.emplace(
-      version_id,
-      PerformanceManagerImpl::CreateWorkerNode(
-          browser_context_id_, WorkerNode::WorkerType::kService,
-          process_node_source_->GetProcessNode(running_info.render_process_id),
-          running_info.token, running_info.key.origin()));
+      version_id, PerformanceManagerImpl::CreateWorkerNode(
+                      browser_context_id_, WorkerNode::WorkerType::kService,
+                      GetProcessNode(running_info.render_process_id),
+                      running_info.token, running_info.key.origin()));
   DCHECK(node_inserted);
   WorkerNodeImpl* worker_node = it->second.get();
 
