@@ -124,9 +124,6 @@ void AddTraceOnDatabaseTaskRunner(
   std::string compressed_trace;
   bool success = compression::GzipCompress(serialized_trace, &compressed_trace);
   if (success) {
-    UMA_HISTOGRAM_COUNTS_100000("Tracing.Background.CompressedTraceSizeInKB",
-                                compressed_trace.size() / 1024);
-
     NewTraceReport trace_report = base_report;
     trace_report.trace_content = std::move(compressed_trace);
     trace_report.system_profile = std::move(serialized_system_profile);

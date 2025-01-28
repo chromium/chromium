@@ -9805,19 +9805,8 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
-<histogram name="Tracing.Background.CompressedTraceSizeInKB" units="KB"
-    expires_after="2024-07-28">
-  <owner>etiennep@chromium.org</owner>
-  <owner>tracing@chromium.org</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    The size, in kilobytes, of a compressed trace ready to be uploaded. Values
-    can range from 1KB to 100MB.
-  </summary>
-</histogram>
-
 <histogram name="Tracing.Background.FinalizationDisallowedReason"
-    enum="TracingFinalizationDisallowedReason" expires_after="2025-07-13">
+    enum="TracingFinalizationDisallowedReason" expires_after="2026-02-10">
   <owner>ssid@chromium.org</owner>
   <summary>
     Reason why background tracing finalization was not allowed. Also see
@@ -9827,7 +9816,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Tracing.Background.Perfetto.Trigger"
-    enum="BackgroundTracingTriggerNameHash" expires_after="2025-02-10">
+    enum="BackgroundTracingTriggerNameHash" expires_after="2026-02-10">
   <owner>etiennep@chromium.org</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
@@ -9839,7 +9828,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Tracing.Background.Scenario.Trigger.{Type}"
-    enum="BackgroundTracingTriggerNameHash" expires_after="2025-06-22">
+    enum="BackgroundTracingTriggerNameHash" expires_after="2026-02-10">
   <owner>etiennep@chromium.org</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
@@ -9856,7 +9845,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Tracing.Background.Scenario.{Event}"
-    enum="BackgroundTracingScenarioNameHash" expires_after="2025-06-22">
+    enum="BackgroundTracingScenarioNameHash" expires_after="2026-02-10">
   <owner>etiennep@chromium.org</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
@@ -9873,7 +9862,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Tracing.Background.ScenarioState"
-    enum="BackgroundTracingState" expires_after="2025-07-13">
+    enum="BackgroundTracingState" expires_after="2026-02-10">
   <owner>oysteine@chromium.org</owner>
   <summary>
     Records state of the Background Tracing system, from when scenarios are
@@ -9882,7 +9871,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Tracing.Background.UploadingTraceSizeInKB" units="KB"
-    expires_after="2025-06-29">
+    expires_after="2026-02-10">
   <owner>oksamyt@chromium.org</owner>
   <owner>tracing@chromium.org</owner>
   <owner>chrometto-team@google.com</owner>
