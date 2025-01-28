@@ -66,6 +66,16 @@ void HttpStreamPool::AttemptManager::QuicTask::MaybeAttempt() {
   }
 
   std::optional<QuicEndpoint> quic_endpoint = GetQuicEndpointToAttempt();
+  net_log_.AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_MAYBE_ATTEMPT,
+      [&] {
+        base::Value::Dict dict;
+        if (quic_endpoint.has_value()) {
+          dict.Set("endpoint", quic_endpoint->ToValue());
+        }
+        return dict;
+      });
+
   if (!quic_endpoint.has_value()) {
     if (manager_->is_service_endpoint_request_finished()) {
       if (!start_result_.has_value()) {

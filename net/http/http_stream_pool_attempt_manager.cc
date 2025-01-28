@@ -82,6 +82,18 @@ bool GetSupportsSpdy(HttpNetworkSession* session,
   return false;
 }
 
+base::Value::Dict GetServiceEndpointRequestAsValue(
+    HostResolver::ServiceEndpointRequest* request) {
+  base::Value::Dict dict;
+  base::Value::List endpoints;
+  for (const auto& endpoint : request->GetEndpointResults()) {
+    endpoints.Append(endpoint.ToValue());
+  }
+  dict.Set("endpoints", std::move(endpoints));
+  dict.Set("endpoints_crypto_ready", request->EndpointsCryptoReady());
+  return dict;
+}
+
 }  // namespace
 
 // Represents an in-flight stream attempt.
@@ -456,6 +468,13 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointsUpdated() {
   // For plain HTTP request, we need to wait for HTTPS RR because we could
   // trigger HTTP -> HTTPS upgrade when HTTPS RR is received during the endpoint
   // resolution.
+  net_log().AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_UPDATED,
+      [&] {
+        return GetServiceEndpointRequestAsValue(
+            service_endpoint_request_.get());
+      });
+
   if (UsingTls() || service_endpoint_request_->EndpointsCryptoReady()) {
     ProcessServiceEndpointChanges();
   }
@@ -472,7 +491,8 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {
   net_log().AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_FINISHED,
       [&] {
-        base::Value::Dict dict;
+        base::Value::Dict dict =
+            GetServiceEndpointRequestAsValue(service_endpoint_request_.get());
         dict.Set("result", ErrorToString(rv));
         dict.Set("resolve_error", resolve_error_info_.error);
         return dict;
@@ -1011,9 +1031,24 @@ bool HttpStreamPool::AttemptManager::
           quic_task_result_ = OK;
           quic_task_.reset();
         }
+
+        net_log_.AddEvent(
+            NetLogEventType::
+                HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_QUIC_SESSION_MATCHED,
+            [&] {
+              base::Value::Dict dict;
+              QuicChromiumClientSession* quic_session =
+                  quic_session_pool()->FindExistingSession(
+                      quic_session_alias_key().session_key(),
+                      quic_session_alias_key().destination());
+              CHECK(quic_session);
+              quic_session->net_log().source().AddToEventParameters(dict);
+              return dict;
+            });
         base::UmaHistogramTimes(
             "Net.HttpStreamPool.ExistingQuicSessionFoundTime",
             base::TimeTicks::Now() - dns_resolution_start_time_);
+
         HandleQuicSessionReady(
             StreamSocketCloseReason::kUsingExistingQuicSession);
         // Use PostTask() because we could reach here from RequestStream()
@@ -1041,9 +1076,18 @@ bool HttpStreamPool::AttemptManager::
             spdy_session_key(), endpoint,
             service_endpoint_request_->GetDnsAliasResults());
     if (spdy_session_) {
+      net_log_.AddEvent(
+          NetLogEventType::
+              HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_SPDY_SESSION_MATCHED,
+          [&] {
+            base::Value::Dict dict;
+            spdy_session_->net_log().source().AddToEventParameters(dict);
+            return dict;
+          });
       base::UmaHistogramTimes(
           "Net.HttpStreamPool.ExistingSpdySessionFoundTime",
           base::TimeTicks::Now() - dns_resolution_start_time_);
+
       HandleSpdySessionReady(
           StreamSocketCloseReason::kUsingExistingSpdySession);
       // Use PostTask() because we could reach here from RequestStream()

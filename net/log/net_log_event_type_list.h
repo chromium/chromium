@@ -1540,13 +1540,39 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_NOTIFY_FAILURE)
 
+// Emitted when DNS resolution on an HttpStreamPool::AttemptManager is updated.
+// The event parameters are:
+//   {
+//     "endpoints": <The current endpoints of the resolution>,
+//     "endpoints_crypto_ready": <True when the manager is ready for
+//                                cryptographic handshake>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_UPDATED)
+
 // Emitted when DNS resolution on an HttpStreamPool::AttemptManager finishes.
 // The event parameters are:
 //   {
+//     "endpoints": <The current endpoints of the resolution>,
+//     "endpoints_crypto_ready": <True when the manager is ready for
+//                                cryptographic handshake>,
 //     "result": <String representation of the result>,
 //     "resolve_error": <DNS resolution error code integer>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_FINISHED)
+
+// Emitted when an HttpStreamPool::AttemptManager finds a matching SPDY session
+// after DNS resolution.
+//   {
+//     "source_dependency": <The source identifier of the SPDY session>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_SPDY_SESSION_MATCHED)
+
+// Emitted when an HttpStreamPool::AttemptManager finds a matching QUIC session
+// after DNS resolution.
+//   {
+//     "source_dependency": <The source identifier of the QUIC session>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_QUIC_SESSION_MATCHED)
 
 // Emitted when the stream attempt delay has passed on an
 // HttpStreamPool::AttemptManager. The event parameter is:
@@ -1558,6 +1584,13 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_STREAM_ATTEMPT_DELAY_PASSED)
 // Records on an HttpStreamPool::AttemptManager's NetLog to indicate that an
 // HttpStreamPool::QuicTask is bound to the AttemptManager.
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_BOUND)
+
+// Emitted when an HttpStreamPool::QuicTask tries to attempt a session.
+// The event parameters are:
+//   {
+//     "endpoint": <The endpoint of the attempt, if any>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_MAYBE_ATTEMPT)
 
 // Emitted when an HttpStreamPool::QuicTask is completed.
 // This event has the common event parameters (see above).
