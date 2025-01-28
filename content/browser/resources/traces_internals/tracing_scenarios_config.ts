@@ -7,6 +7,9 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+// <if expr="is_win">
+import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+// </if>
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
@@ -46,6 +49,10 @@ export class TracingScenariosConfigElement extends CrLitElement {
       isLoading_: {type: Boolean},
       privacyFilterEnabled_: {type: Boolean},
       toastMessage_: {type: String},
+      // <if expr="is_win">
+      tracingServiceSupported_: {type: Boolean},
+      tracingServiceRegistered_: {type: Boolean},
+      // </if>
     };
   }
 
@@ -58,6 +65,10 @@ export class TracingScenariosConfigElement extends CrLitElement {
   protected isLoading_: boolean = false;
   protected privacyFilterEnabled_: boolean = false;
   protected toastMessage_: string = '';
+  // <if expr="is_win">
+  protected tracingServiceSupported_: boolean = false;
+  protected tracingServiceRegistered_: boolean = false;
+  // </if>
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -99,6 +110,15 @@ export class TracingScenariosConfigElement extends CrLitElement {
       });
     }
 
+    // <if expr="is_win">
+    const {
+      serviceSupported: serviceSupported,
+      serviceRegistered: serviceRegistered,
+    } = await this.traceReportProxy_.handler.getSystemTracingState();
+
+    this.tracingServiceSupported_ = serviceSupported;
+    this.tracingServiceRegistered_ = serviceRegistered;
+    // </if>
     this.isLoading_ = false;
   }
 
@@ -166,6 +186,26 @@ export class TracingScenariosConfigElement extends CrLitElement {
     }
     await this.initScenariosConfig_();
   }
+
+  // <if expr="is_win">
+  protected async onSystemTracingChange_(e: CustomEvent<boolean>) {
+    const enable = e.detail;
+    if (enable === this.tracingServiceRegistered_) {
+      return;
+    }
+    const target = (e.target as CrToggleElement);
+    const {success} = enable ?
+        await this.traceReportProxy_.handler.enableSystemTracing() :
+        await this.traceReportProxy_.handler.disableSystemTracing();
+    if (success) {
+      // On success, update the instance's registration state.
+      this.tracingServiceRegistered_ = enable;
+    } else if (target) {
+      // On failure, put the toggle back to its previous state.
+      target.checked = !enable;
+    }
+  }
+  // </if>
 }
 
 declare global {

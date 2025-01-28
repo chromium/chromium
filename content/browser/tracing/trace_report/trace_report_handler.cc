@@ -5,6 +5,7 @@
 #include "content/browser/tracing/trace_report/trace_report_handler.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/uuid.h"
 #include "components/tracing/common/background_tracing_state_manager.h"
@@ -12,6 +13,7 @@
 #include "content/browser/tracing/trace_report/trace_report_database.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
 #include "content/public/browser/background_tracing_manager.h"
+#include "content/public/browser/tracing_delegate.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -25,7 +27,9 @@ TraceReportHandler::TraceReportHandler(
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       trace_upload_list_(BackgroundTracingManagerImpl::GetInstance()),
-      background_tracing_manager_(BackgroundTracingManagerImpl::GetInstance()) {
+      background_tracing_manager_(BackgroundTracingManagerImpl::GetInstance()),
+      tracing_delegate_(
+          BackgroundTracingManagerImpl::GetInstance().tracing_delegate()) {
   trace_upload_list_->OpenDatabaseIfExists();
 }
 
@@ -33,11 +37,13 @@ TraceReportHandler::TraceReportHandler(
     mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver,
     mojo::PendingRemote<trace_report::mojom::Page> page,
     TraceUploadList& trace_upload_list,
-    BackgroundTracingManagerImpl& background_tracing_manager)
+    BackgroundTracingManagerImpl& background_tracing_manager,
+    TracingDelegate* tracing_delegate)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       trace_upload_list_(trace_upload_list),
-      background_tracing_manager_(background_tracing_manager) {
+      background_tracing_manager_(background_tracing_manager),
+      tracing_delegate_(tracing_delegate) {
   trace_upload_list_->OpenDatabaseIfExists();
 }
 
@@ -137,5 +143,35 @@ void TraceReportHandler::SetPrivacyFilterEnabled(bool enable) {
   tracing::BackgroundTracingStateManager::GetInstance().UpdatePrivacyFilter(
       enable);
 }
+
+#if BUILDFLAG(IS_WIN)
+void TraceReportHandler::GetSystemTracingState(
+    GetSystemTracingStateCallback callback) {
+  if (!tracing_delegate_) {
+    std::move(callback).Run(/*service_supported=*/false,
+                            /*service_enabled=*/false);
+    return;
+  }
+  tracing_delegate_->GetSystemTracingState(std::move(callback));
+}
+
+void TraceReportHandler::EnableSystemTracing(
+    EnableSystemTracingCallback callback) {
+  if (!tracing_delegate_) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  tracing_delegate_->EnableSystemTracing(std::move(callback));
+}
+
+void TraceReportHandler::DisableSystemTracing(
+    DisableSystemTracingCallback callback) {
+  if (!tracing_delegate_) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  tracing_delegate_->DisableSystemTracing(std::move(callback));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

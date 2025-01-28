@@ -216,6 +216,10 @@ class BackgroundTracingManagerImpl
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
       bool privacy_filtering_enabled);
 
+  // Returns the embedder's tracing delegate, or null if it does not provide
+  // one.
+  TracingDelegate* tracing_delegate() { return delegate_.get(); }
+
  private:
 #if BUILDFLAG(IS_ANDROID)
   // ~1MB compressed size.

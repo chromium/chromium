@@ -112,6 +112,22 @@ interface PageHandler {
   // Saves user-controlled pref to enable privacy filter on local
   // traces.
   SetPrivacyFilterEnabled(bool enable);
+
+  // Returns the current state of the Windows system tracing service for the
+  // running browser:
+  // - `service_supported`: true if the service is supported.
+  // - `service_enabled`: true if the service is enabled.
+  [EnableIf=is_win]
+  GetSystemTracingState() => (bool service_supported,
+                              bool service_registered);
+
+  // Enables the Windows system tracing service.
+  [EnableIf=is_win]
+  EnableSystemTracing() => (bool success);
+
+  // Disables the Windows system tracing service.
+  [EnableIf=is_win]
+  DisableSystemTracing() => (bool success);
 };
 
 // WebUI-side handler for requests from the browser.
