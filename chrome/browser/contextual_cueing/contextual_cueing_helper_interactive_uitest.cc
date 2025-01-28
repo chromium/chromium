@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
-                       TestCueLabelDisplayedForActiveTab) {
+                       TestCueLabelClearedOnTabChange) {
   EnableSignIn();
   SetUpEnabledHints();
 
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   EXPECT_TRUE(nudge_observer.last_nudge_label_.empty());
 
   browser()->tab_strip_model()->ActivateTabAt(1);
-  EXPECT_EQ("test label", nudge_observer.last_nudge_label_);
+  EXPECT_TRUE(nudge_observer.last_nudge_label_.empty());
 
   browser()->tab_strip_model()->ActivateTabAt(2);
   EXPECT_TRUE(nudge_observer.last_nudge_label_.empty());
