@@ -66,7 +66,6 @@ struct ClientTraceReport {
 };
 
 struct Scenario {
-  string hash;
   string scenario_name;
 };
 

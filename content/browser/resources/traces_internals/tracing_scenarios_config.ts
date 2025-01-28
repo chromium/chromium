@@ -19,7 +19,6 @@ import {getHtml} from './tracing_scenarios_config.html.js';
 interface Config {
   scenarioName: string;
   selected: boolean;
-  hash: string;
 }
 
 export interface TracingScenariosConfigElement {
@@ -95,19 +94,17 @@ export class TracingScenariosConfigElement extends CrLitElement {
         await this.traceReportProxy_.handler.getAllFieldScenarios();
 
     for (const scenario of presetScenarios) {
-      const isSelected = enabledSet.has(scenario.hash);
+      const isSelected = enabledSet.has(scenario.scenarioName);
       this.presetConfig_.push({
         scenarioName: scenario.scenarioName,
         selected: isSelected,
-        hash: scenario.hash,
       });
     }
     for (const scenario of fieldScenarios) {
-      const isSelected = enabledSet.has(scenario.hash);
+      const isSelected = enabledSet.has(scenario.scenarioName);
       this.fieldConfig_.push({
         scenarioName: scenario.scenarioName,
         selected: isSelected,
-        hash: scenario.hash,
       });
     }
 
@@ -162,7 +159,7 @@ export class TracingScenariosConfigElement extends CrLitElement {
     const enabledScenarios: string[] = [];
     for (const scenario of this.presetConfig_) {
       if (scenario.selected) {
-        enabledScenarios.push(scenario.hash);
+        enabledScenarios.push(scenario.scenarioName);
       }
     }
     const {success} = await this.traceReportProxy_.handler.setEnabledScenarios(
@@ -184,11 +181,11 @@ export class TracingScenariosConfigElement extends CrLitElement {
         this.fieldConfig_.some(scenario => scenario.selected);
   }
 
-  protected async clearAllClick_(): Promise<void> {
+  protected async resetAllClick_(): Promise<void> {
     const {success} =
         await this.traceReportProxy_.handler.setEnabledScenarios([]);
     if (!success) {
-      this.toastMessage_ = 'Failed to clear scenarios';
+      this.toastMessage_ = 'Failed to reset scenarios';
       this.$.toast.show();
       return;
     }

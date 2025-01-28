@@ -101,9 +101,9 @@ export function getHtml(this: TracingScenariosConfigElement) {
         @click="${this.onCancelClick_}">
       Cancel
     </cr-button>
-    <cr-button class="action-button" ?disabled="${!this.hasSelectedConfig_()}"
-        @click="${this.clearAllClick_}">
-      Clear
+    <cr-button class="action-button"}"
+        @click="${this.resetAllClick_}">
+      Reset
     </cr-button>
     <cr-button class="action-button" ?disabled="${!this.isEdited_}"
         @click="${this.onConfirmClick_}">

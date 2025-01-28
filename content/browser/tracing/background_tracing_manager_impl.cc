@@ -564,8 +564,8 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
     if (!scenario) {
       continue;
     }
-    added_scenarios.push_back(scenario->config_hash());
-    preset_scenarios_.emplace(scenario->config_hash(), std::move(scenario));
+    added_scenarios.push_back(scenario->scenario_name());
+    preset_scenarios_.emplace(scenario->scenario_name(), std::move(scenario));
   }
   return added_scenarios;
 }
@@ -575,7 +575,6 @@ BackgroundTracingManagerImpl::GetAllFieldScenarios() const {
   std::vector<trace_report::mojom::ScenarioPtr> result;
   for (const auto& scenario : field_scenarios_) {
     auto new_scenario = trace_report::mojom::Scenario::New();
-    new_scenario->hash = scenario->config_hash();
     new_scenario->scenario_name = scenario->scenario_name();
     result.push_back(std::move(new_scenario));
   }
@@ -587,7 +586,6 @@ BackgroundTracingManagerImpl::GetAllPresetScenarios() const {
   std::vector<trace_report::mojom::ScenarioPtr> result;
   for (const auto& scenario : preset_scenarios_) {
     auto new_scenario = trace_report::mojom::Scenario::New();
-    new_scenario->hash = scenario.first;
     new_scenario->scenario_name = scenario.second->scenario_name();
     result.push_back(std::move(new_scenario));
   }
@@ -628,7 +626,7 @@ std::vector<std::string> BackgroundTracingManagerImpl::GetEnabledScenarios()
     const {
   std::vector<std::string> scenario_hashes;
   for (auto scenario : enabled_scenarios_) {
-    scenario_hashes.push_back(scenario->config_hash());
+    scenario_hashes.push_back(scenario->scenario_name());
   }
   return scenario_hashes;
 }
