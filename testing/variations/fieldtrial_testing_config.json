@@ -11048,6 +11048,7 @@
                 {
                     "name": "Enabled_20250123",
                     "params": {
+                        "enabled_for_googlers": "true",
                         "histogram_name": "ChromeOS.HaTS.Audio",
                         "prob": "0.01",
                         "survey_cycle_length": "7",
