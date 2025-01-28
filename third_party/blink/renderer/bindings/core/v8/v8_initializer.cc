@@ -329,6 +329,10 @@ void V8Initializer::PromiseRejectHandlerInMainThread(
 void V8Initializer::ExceptionPropagationCallback(
     v8::ExceptionPropagationMessage v8_message) {
   v8::Isolate* isolate = v8_message.GetIsolate();
+  if (V8PerIsolateData::From(isolate)->OmitExceptionContextInformation()) {
+    return;
+  }
+
   v8::Local<v8::Object> exception = v8_message.GetException();
 
   v8::ExceptionContext context_type = v8_message.GetExceptionContext();

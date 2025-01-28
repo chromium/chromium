@@ -588,6 +588,21 @@ class CORE_EXPORT DictionaryConversionContext {
   DictionaryConversionContext* previous_;
 };
 
+class OmitExceptionContextInformation {
+ public:
+  explicit OmitExceptionContextInformation(v8::Isolate* isolate)
+      : per_isolate_data_(V8PerIsolateData::From(isolate)) {
+    per_isolate_data_->SetOmitExceptionContextInformation(true);
+  }
+
+  ~OmitExceptionContextInformation() {
+    per_isolate_data_->SetOmitExceptionContextInformation(false);
+  }
+
+ private:
+  V8PerIsolateData* const per_isolate_data_;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_BINDING_FOR_CORE_H_
