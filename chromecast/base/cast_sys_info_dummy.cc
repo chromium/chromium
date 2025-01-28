@@ -22,12 +22,10 @@ const char kDefaultSerialNumber[] = "dummy.serial.number";
 const char kDefaultDeviceModel[] = "dummy model";
 const char kDefaultManufacturer[] = "google";
 
-std::string GetStringValue(const base::Value& sys_info_file,
+std::string GetStringValue(const base::Value::Dict& sys_info_file,
                            const std::string& key,
                            const std::string& default_val) {
-  DCHECK(sys_info_file.is_dict());
-
-  const std::string* val = sys_info_file.GetDict().FindString(key);
+  const std::string* val = sys_info_file.FindString(key);
   if (!val) {
     LOG(WARNING) << "Json key not found: " << key;
     return default_val;
@@ -55,10 +53,10 @@ CastSysInfoDummy::CastSysInfoDummy(const std::string& sys_info_file)
     return;
   }
 
-  auto value = base::JSONReader::Read(content);
-  if (!value || !value->is_dict()) {
+  auto value = base::JSONReader::ReadDict(content);
+  if (!value) {
     LOG(ERROR)
-        << "Invaild sys info json file, using the default values instead.";
+        << "Invalid sys info json file, using the default values instead.";
     return;
   }
 
