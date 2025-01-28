@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/launcher/glic_background_mode_manager.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -29,14 +32,16 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 
-using glic::prefs::kGlicSettingsPolicy;
-using glic::prefs::SettingsPolicyState;
-
 namespace glic {
 class GlicButton;
 }
 
-namespace policy {
+using glic::prefs::kGlicSettingsPolicy;
+using glic::prefs::SettingsPolicyState;
+
+using policy::PolicyTest;
+
+namespace glic {
 
 namespace {
 
@@ -85,7 +90,7 @@ class GlicPolicyTest : public PolicyTest {
   }
 
   void TearDownOnMainThread() override {
-    if (glic::GlicBackgroundModeManager* background_mode_manager =
+    if (GlicBackgroundModeManager* background_mode_manager =
             g_browser_process->GetFeatures()->glic_background_mode_manager()) {
       background_mode_manager->ExitBackgroundMode();
     }
@@ -93,7 +98,7 @@ class GlicPolicyTest : public PolicyTest {
     profile_2_ = nullptr;
   }
 
-  glic::GlicButton* GetGlicButtonForBrowser(Browser* browser) {
+  GlicButton* GetGlicButtonForBrowser(Browser* browser) {
     TabStripActionContainer* container =
         BrowserView::GetBrowserViewForBrowser(browser)
             ->tab_strip_region_view()
@@ -105,8 +110,14 @@ class GlicPolicyTest : public PolicyTest {
   void SetGlicPolicy(
       testing::NiceMock<policy::MockConfigurationPolicyProvider>& provider,
       SettingsPolicyState value) {
+    using policy::POLICY_LEVEL_MANDATORY;
+    using policy::POLICY_SCOPE_USER;
+    using policy::POLICY_SOURCE_ENTERPRISE_DEFAULT;
+    using policy::PolicyMap;
+    using policy::key::kGlicSettings;
+
     PolicyMap policies;
-    policies.Set(key::kGlicSettings, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+    policies.Set(kGlicSettings, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                  POLICY_SOURCE_ENTERPRISE_DEFAULT,
                  base::Value(static_cast<int>(value)), nullptr);
     provider.UpdateChromePolicy(policies);
@@ -269,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesBackgroundMode) {
   Browser* new_window_profile_2 = CreateBrowser(profile_2_);
   ASSERT_TRUE(new_window_profile_2);
 
-  glic::GlicBackgroundModeManager* background_mode_manager =
+  GlicBackgroundModeManager* background_mode_manager =
       g_browser_process->GetFeatures()->glic_background_mode_manager();
   EXPECT_TRUE(background_mode_manager->IsInBackgroundModeForTesting());
 
@@ -406,6 +417,34 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyDisabledTest, WebUiDisabledAtLoad) {
   }
 }
 
+// Ensure that if the policy changes to disabled at runtime, and the user has an
+// an open Glic window, that window is closed.
+IN_PROC_BROWSER_TEST_F(GlicPolicyTest, CloseOpenGlicWindowWhenDisabled) {
+  // The pref defaults to enabled.
+  ASSERT_EQ(kEnabledValue,
+            profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_1_);
+  ASSERT_FALSE(service->window_controller().IsShowing());
+
+  BrowserWindowInterface* bwi = browser()
+                                    ->window()
+                                    ->AsBrowserView()
+                                    ->tabstrip()
+                                    ->controller()
+                                    ->GetBrowserWindowInterface();
+  GlicKeyedServiceFactory::GetGlicKeyedService(profile_1_)->ToggleUI(bwi);
+
+  ASSERT_TRUE(service->window_controller().IsShowing());
+
+  // Disable the policy.
+  SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kDisabled);
+  ASSERT_EQ(kDisabledValue,
+            profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+
+  EXPECT_FALSE(service->window_controller().IsShowing());
+}
 }  // namespace
 
-}  // namespace policy
+}  // namespace glic
