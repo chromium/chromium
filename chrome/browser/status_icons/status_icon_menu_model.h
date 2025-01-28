@@ -80,7 +80,6 @@ class StatusIconMenuModel : public ui::SimpleMenuModel,
   bool IsItemForCommandIdDynamic(int command_id) const override;
   std::u16string GetLabelForCommandId(int command_id) const override;
   ui::ImageModel GetIconForCommandId(int command_id) const override;
-  void ExecuteCommand(int command_id, int event_flags) override;
 
  protected:
   // Overriden from ui::SimpleMenuModel:
@@ -92,6 +91,9 @@ class StatusIconMenuModel : public ui::SimpleMenuModel,
   Delegate* delegate() { return delegate_; }
 
  private:
+  // Overridden from ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override;
+
   struct ItemState;
 
   // Map the properties to the command id (used as key).

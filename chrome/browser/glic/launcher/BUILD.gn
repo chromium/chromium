@@ -50,10 +50,7 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "glic_launcher_configuration_unittest.cc",
-    "glic_status_icon_unittest.cc",
-  ]
+  sources = [ "glic_launcher_configuration_unittest.cc" ]
   deps = [
     ":impl",
     ":launcher",

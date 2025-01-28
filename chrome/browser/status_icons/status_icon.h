@@ -89,8 +89,6 @@ class StatusIcon {
   virtual void SetImageTemplate(bool is_template);
 #endif
 
-  StatusIconMenuModel* GetContextMenuForTesting();
-
  protected:
   // Invoked after a call to SetContextMenu() to let the platform-specific
   // subclass update the native context menu based on the new model. If NULL is

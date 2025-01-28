@@ -52,10 +52,6 @@ void StatusIcon::SetOpenMenuWithSecondaryClick(
 void StatusIcon::SetImageTemplate(bool is_template) {}
 #endif
 
-StatusIconMenuModel* StatusIcon::GetContextMenuForTesting() {
-  return context_menu_contents_.get();
-}
-
 void StatusIcon::SetContextMenu(std::unique_ptr<StatusIconMenuModel> menu) {
   // The UI may been showing a menu for the current model, don't destroy it
   // until we've notified the UI of the change.

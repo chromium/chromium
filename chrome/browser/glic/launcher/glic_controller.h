@@ -13,12 +13,12 @@ namespace glic {
 class GlicController {
  public:
   GlicController();
-  virtual ~GlicController();
+  ~GlicController();
   GlicController(const GlicController&) = delete;
   GlicController& operator=(const GlicController&) = delete;
 
   // Shows the glic UI.
-  virtual void Show();
+  void Show();
 
   // Hides the glic UI.
   void Hide();
