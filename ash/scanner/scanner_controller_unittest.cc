@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_feedback_info.h"
@@ -461,6 +462,45 @@ TEST_F(ScannerControllerTest, ActionSuccessToastButtonOpensFeedbackDialog) {
       "html_text": "<b>Hello</b>",
     }
   })json"));
+}
+
+TEST_F(ScannerControllerTest, ActionSuccessToastDoesNotHaveButtonIfDisabled) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kScannerFeedbackEnabled, false);
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+  manta::proto::ScannerOutput output;
+  output.add_objects()
+      ->add_actions()
+      ->mutable_copy_to_clipboard()
+      ->set_html_text("<b>Hello</b>");
+  FakeScannerProfileScopedDelegate& fake_profile_scoped_delegate =
+      *GetFakeScannerProfileScopedDelegate(*scanner_controller);
+  // Mock a successful action.
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus()));
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionDetailsForImage)
+      .WillOnce(RunOnceCallback<2>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+
+  // Fetch an action and execute it.
+  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
+                                           actions_future.GetCallback());
+  std::vector<ScannerActionViewModel> actions = actions_future.Take();
+  ASSERT_THAT(actions, SizeIs(1));
+  scanner_controller->ExecuteAction(actions[0]);
+
+  EXPECT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionSuccessToastId));
+  ToastOverlay* overlay =
+      Shell::Get()->toast_manager()->GetCurrentOverlayForTesting();
+  ASSERT_TRUE(overlay);
+  views::Button* button = overlay->button_for_testing();
+  EXPECT_FALSE(button);
 }
 
 TEST_F(ScannerControllerTest, OpenFeedbackDialogCallsDelegate) {

@@ -17,6 +17,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 
+class PrefRegistrySimple;
+
 namespace manta::proto {
 class ScannerAction;
 }
@@ -38,6 +40,8 @@ class ASH_EXPORT ScannerController : public SessionObserver {
   ScannerController(const ScannerController&) = delete;
   ScannerController& operator=(const ScannerController&) = delete;
   ~ScannerController() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -79,6 +83,8 @@ class ASH_EXPORT ScannerController : public SessionObserver {
 
   // Opens a feedback dialog for an action that has been performed, and the
   // (resized) screenshot which initiated the action.
+  // WARNING: This function does not check whether the account has feedback
+  // enabled or not!
   void OpenFeedbackDialog(const AccountId& account_id,
                           manta::proto::ScannerAction action,
                           scoped_refptr<base::RefCountedMemory> screenshot);
