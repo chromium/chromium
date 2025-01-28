@@ -210,71 +210,58 @@ suite('FirmwareUpdateAppTest', () => {
     assertTrue(!!fwConfirmDialog.shadowRoot!.querySelector('#disclaimer'));
   });
 
+  test('DisclaimerTextForUpdatesWithoutReboot', async () => {
+    // Setup the app.
+    initializePage();
+    await flushTasks();
+    assert(page);
+
+    const whenFired = eventToPromise('cr-dialog-open', page);
+    const button = strictQuery(
+        `#updateButton`, getUpdateCards()[0]!.shadowRoot, CrButtonElement);
+    button.click();
+    await flushTasks();
+    await whenFired;
+    const fwConfirmDialog = strictQuery(
+        'firmware-confirmation-dialog', page.shadowRoot, HTMLElement);
+    const disclaimerText = strictQuery(
+        '#disclaimer-text', fwConfirmDialog.shadowRoot, HTMLElement);
+    const dialogBody = strictQuery(
+        '#updateDialogBody', fwConfirmDialog.shadowRoot, HTMLElement);
+
+    assertEquals(
+        disclaimerText.innerText.trim(),
+        loadTimeData.getString('confirmationDisclaimer'));
+    assertEquals(
+        dialogBody.innerText.trim(), loadTimeData.getString('updatingInfo'));
+  });
+
   test('DisclaimerModifiedIfUpdateNeedsReboot', async () => {
     // Setup the app.
     initializePage();
     await flushTasks();
     assert(page);
 
-    // Open dialog for a firmware update without reboot.
-    let whenFired = eventToPromise('cr-dialog-open', page);
-    let button = strictQuery(
-        `#updateButton`, getUpdateCards()[0]!.shadowRoot, CrButtonElement);
-    button.click();
-    await flushTasks();
-    await whenFired;
-    let fwConfirmDialog = strictQuery(
-        'firmware-confirmation-dialog', page.shadowRoot, HTMLElement);
-    let disclaimerText = strictQuery(
-        '#disclaimer-text', fwConfirmDialog.shadowRoot, HTMLElement);
-    let dialogBody = strictQuery(
-        '#updateDialogBody', fwConfirmDialog.shadowRoot, HTMLElement);
-
-    assertEquals(
-        disclaimerText.innerText.trim(),
-        'This update is provided by the external device manufacturer and ' +
-            'hasn\'t been verified by Google.');
-    assertEquals(
-        dialogBody.innerText.trim(),
-        'While the firmware is updating, do not unplug this external device ' +
-            'or shut down your computer. You can minimize this window. ' +
-            'This update may take a few minutes and your external ' +
-            'device may not work during this time.');
-
-    // Clear app element to reset the test.
-    page.remove();
-    await flushTasks();
-
-    initializePage();
-    await flushTasks();
-    assert(page);
-
-    // Open dialog for a firmware update with reboot.
-    whenFired = eventToPromise('cr-dialog-open', page);
-    button = strictQuery(
+    const whenFired = eventToPromise('cr-dialog-open', page);
+    const button = strictQuery(
         `#updateButton`, getUpdateCards()[5]!.shadowRoot, CrButtonElement);
     button.click();
     await flushTasks();
     await whenFired;
-    fwConfirmDialog = strictQuery(
+    const fwConfirmDialog = strictQuery(
         'firmware-confirmation-dialog', page.shadowRoot, HTMLElement);
-    disclaimerText = strictQuery(
+    const disclaimerText = strictQuery(
         '#disclaimer-text', fwConfirmDialog.shadowRoot, HTMLElement);
-    dialogBody = strictQuery(
+    const dialogBody = strictQuery(
         '#updateDialogBody', fwConfirmDialog.shadowRoot, HTMLElement);
 
     assertEquals(
         disclaimerText.innerText.trim(),
-        'This update is provided by the device manufacturer and ' +
-            'hasn\'t been verified by Google.');
+        loadTimeData.getString('confirmationDisclaimerForUEFI'));
     assertEquals(
         dialogBody.innerText.trim(),
-        'This update requires you to restart your computer to ' +
-            'complete installation. This update may take a few ' +
-            'minutes to complete. While the firmware is updating, ' +
-            'do not unplug or shut down your computer.');
+        loadTimeData.getString('updatingInfoForUEFI'));
   });
-
 
   test('OpenUpdateDialog', async () => {
     initializePage();
