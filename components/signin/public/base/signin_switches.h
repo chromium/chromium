@@ -119,6 +119,9 @@ BASE_DECLARE_FEATURE(kImprovedSettingsUIOnDesktop);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsImprovedSettingsUIOnDesktopEnabled();
 
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableSnackbarInSettings);
+
 #if BUILDFLAG(IS_IOS)
 
 // Features to enable identities in auth error (stale token).

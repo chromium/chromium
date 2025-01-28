@@ -3748,6 +3748,9 @@
   <message name="IDS_SETTINGS_SYNC_SETTINGS_SAVED_TOAST_LABEL" desc="The notification shown to user after they saved sync settings, and sync is now started.">
     Settings saved. Sync started.
   </message>
+  <message name="IDS_SETTINGS_CHROME_SIGNIN_OPTION_SAVED_TOAST_LABEL" desc="The notification shown to user after they save the setting that controls whether a user gets signed in to Chrome when signing in to Google Services.">
+    Choice saved. Your choice will apply when you sign in to other Google services.
+  </message>
 
   <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_PROFILE_NAME_INPUT_LABEL" desc="Aria label of the input field where the user can edit the name associated with the profile." meaning="Name of a person">

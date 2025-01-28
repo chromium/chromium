@@ -136,6 +136,62 @@ suite('AllBuilds', function() {
         ChromeSigninUserChoice.SIGNIN);
   });
 
+  test(
+      'chromeSigninUserChoiceAvailabilityUpdateWithSnackbarEnabled',
+      async function() {
+        loadTimeData.overrideValues({isSnackbarForSettingsEnabled: true});
+
+        const infoResponse = {
+          shouldShowSettings: true,
+          choice: ChromeSigninUserChoice.ALWAYS_ASK,
+          signedInEmail: 'test@gmail.com',
+        };
+        syncBrowserProxy.setGetUserChromeSigninUserChoiceInfoResponse(
+            infoResponse);
+
+        buildTestElement();  // Rebuild the element simulating a fresh start.
+        await syncBrowserProxy.whenCalled('getChromeSigninUserChoiceInfo');
+        assertTrue(isVisible(testElement.$.chromeSigninUserChoiceSelection));
+
+        // Update user selection
+        const menu = testElement.$.chromeSigninUserChoiceSelection;
+        menu.value = ChromeSigninUserChoice.SIGNIN.toString();
+        menu.dispatchEvent(new CustomEvent('change'));
+        flush();
+
+        assertTrue(isVisible(testElement.$.chromeSigninUserChoiceSelection));
+        assertTrue(testElement.$.chromeSigninUserChoiceToast.open);
+      });
+
+  test(
+      'chromeSigninUserChoiceAvailabilityUpdateWithSnackbarDisabled',
+      async function() {
+        loadTimeData.overrideValues({isSnackbarForSettingsEnabled: false});
+
+        const infoResponse = {
+          shouldShowSettings: true,
+          choice: ChromeSigninUserChoice.ALWAYS_ASK,
+          signedInEmail: 'test@gmail.com',
+        };
+        syncBrowserProxy.setGetUserChromeSigninUserChoiceInfoResponse(
+            infoResponse);
+
+        buildTestElement();  // Rebuild the element simulating a fresh start.
+        await syncBrowserProxy.whenCalled('getChromeSigninUserChoiceInfo');
+        assertTrue(isVisible(testElement.$.chromeSigninUserChoiceSelection));
+
+
+        // Update user selection
+        const menu = testElement.$.chromeSigninUserChoiceSelection;
+        menu.value = ChromeSigninUserChoice.SIGNIN.toString();
+        menu.dispatchEvent(new CustomEvent('change'));
+        flush();
+
+        assertTrue(isVisible(testElement.$.chromeSigninUserChoiceSelection));
+        assertFalse(testElement.$.chromeSigninUserChoiceToast.open);
+      });
+
+
   test('signinAllowedToggle', function() {
     const toggle = testElement.$.signinAllowedToggle;
     assertTrue(isVisible(toggle));
