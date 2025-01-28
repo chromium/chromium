@@ -63,7 +63,7 @@ class MediaRouterIntegrationOneUABrowserTest
   }
 };
 
-// TODO(crbug.com/40567200): Flaky in Chromium waterfall.
+// TODO(crbug.com/380369297): Flaky in Chromium waterfall.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Basic MANUAL_Basic
 #else
@@ -74,13 +74,13 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest, MAYBE_Basic) {
 }
 #undef MAYBE_Basic
 
-// TODO(crbug.com/40567200): Flaky in Chromium waterfall.
+// TODO(crbug.com/380369297): Flaky in Chromium waterfall.
 IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
                        MANUAL_SendAndOnMessage) {
   RunSendMessageTest("foo");
 }
 
-// TODO(crbug.com/40567200): Flaky in Chromium waterfall.
+// TODO(crbug.com/380369297): Flaky in Chromium waterfall.
 IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
                        MANUAL_ReceiverCloseConnection) {
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
   ExecuteJavaScriptAPI(web_contents, kInitiateCloseFromReceiverPageScript);
 }
 
-// TODO(crbug.com/40567200): Flaky in Chromium waterfall.
+// TODO(crbug.com/380369297): Flaky in Chromium waterfall.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_Fail_SendMessage MANUAL_Fail_SendMessage
 #else
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
       BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                         \
       BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)))
 // https://crbug.com/966827. Flaky on Linux CFI.
-// TODO(crbug.com/40567200): Flaky in Chromium OS waterfall.
+// TODO(crbug.com/380369297): Flaky in Chromium OS waterfall.
 #define MAYBE_ReconnectSession MANUAL_ReconnectSession
 #else
 #define MAYBE_ReconnectSession ReconnectSession
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
 }
 #undef MAYBE_ReconnectSession
 
-// TODO(crbug.com/40567200): Flaky in Chromium waterfall.
+// TODO(crbug.com/380369297): Flaky in Chromium waterfall.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ReconnectSessionSameTab MANUAL_ReconnectSessionSameTab
 #else
@@ -138,7 +138,7 @@ class MediaRouterIntegrationOneUANoReceiverBrowserTest
   }
 };  // namespace media_router
 
-// TODO(crbug.com/40567200): Flaky in Chromium waterfall.
+// TODO(crbug.com/380369297): Flaky in Chromium waterfall.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_Basic MANUAL_Basic
 #else
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
 }
 #undef MAYBE_Basic
 
-// TODO(crbug.com/40567200): Flaky in Chromium waterfall.
+// TODO(crbug.com/380369297): Flaky in Chromium waterfall.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_Fail_SendMessage MANUAL_Fail_SendMessage
 #else
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
 }
 #undef MAYBE_Fail_SendMessage
 
-// TODO(crbug.com/40567200): Flaky in Chromium waterfall.
+// TODO(crbug.com/380369297): Flaky in Chromium waterfall.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ReconnectSession MANUAL_ReconnectSession
 #else
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
   RunReconnectSessionTest();
 }
 
-// TODO(crbug.com/40567200): Flaky in Chromium waterfall.
+// TODO(crbug.com/380369297): Flaky in Chromium waterfall.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ReconnectSessionSameTab MANUAL_ReconnectSessionSameTab
 #else
