@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
@@ -689,6 +690,7 @@ std::unique_ptr<views::Widget> GlicWindowController::CreateGlicWidget(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 #endif
   params.bounds = initial_bounds;
+  params.sublevel = ChromeWidgetSublevel::kSublevelHoverable;
 
   std::unique_ptr<views::Widget> widget =
       std::make_unique<views::Widget>(std::move(params));
