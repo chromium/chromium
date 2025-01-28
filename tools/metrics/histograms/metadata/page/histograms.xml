@@ -1582,7 +1582,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.LCPP.PaintTiming.ActualLCPIndex"
+<histogram name="PageLoad.Clients.LCPP.PaintTiming.ActualLCPIndex2"
     units="Index(1 origin)" expires_after="2025-06-22">
   <owner>yoichio@chromium.org</owner>
   <owner>
@@ -1595,6 +1595,21 @@ chromium-metrics-reviews@google.com.
     &quot;max_lcpp_histogram_buckets&quot; + 1 value. The metric is emitted only
     for navigations that LCP Critical Path Predictor provided non-empty hint
     data and only once when the user navigates away from the page.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.LCPP.PaintTiming.ActualLCPIsImage"
+    enum="BooleanEnabled" expires_after="2025-06-22">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records if the actual LCP element is image or not.
+
+    This metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only once when the user navigates away from
+    the page.
   </summary>
 </histogram>
 
@@ -1626,7 +1641,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.LCPP.PaintTiming.PredictHitIndex"
+<histogram name="PageLoad.Clients.LCPP.PaintTiming.PredictHitIndex2"
     units="Index(1 origin)" expires_after="2025-06-22">
   <owner>yoichio@chromium.org</owner>
   <owner>
@@ -1641,7 +1656,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.LCPP.PaintTiming.PredictLCPResult"
+<histogram name="PageLoad.Clients.LCPP.PaintTiming.PredictLCPResult2"
     enum="LcppPredictResult" expires_after="2025-06-15">
   <owner>yoichio@chromium.org</owner>
   <owner>
@@ -1651,6 +1666,20 @@ chromium-metrics-reviews@google.com.
     Records the result of LCP timing predictor. The metric is emitted only for
     navigations that LCP Critical Path Predictor provided non-empty hint data
     and only once when the user navigates away from the page.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.LCPP.PaintTiming.PredictSuccess.NavigationToLargestContentfulPaint"
+    units="ms" expires_after="2025-06-15">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Measures the time from navigation start to the largest contentful paint. The
+    metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only when LCPP prediction succeeded.
   </summary>
 </histogram>
 

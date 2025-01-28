@@ -25,11 +25,15 @@ const char kHistogramLCPPFirstContentfulPaint[] =
 const char kHistogramLCPPLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToLargestContentfulPaint";
 const char kHistogramLCPPPredictResult[] =
-    HISTOGRAM_PREFIX "PaintTiming.PredictLCPResult";
+    HISTOGRAM_PREFIX "PaintTiming.PredictLCPResult2";
+const char kHistogramLCPPPredictSuccessLCPTiming[] = HISTOGRAM_PREFIX
+    "PaintTiming.PredictSuccess.NavigationToLargestContentfulPaint";
 const char kHistogramLCPPPredictHitIndex[] =
-    HISTOGRAM_PREFIX "PaintTiming.PredictHitIndex";
+    HISTOGRAM_PREFIX "PaintTiming.PredictHitIndex2";
 const char kHistogramLCPPActualLCPIndex[] =
-    HISTOGRAM_PREFIX "PaintTiming.ActualLCPIndex";
+    HISTOGRAM_PREFIX "PaintTiming.ActualLCPIndex2";
+const char kHistogramLCPPActualLCPIsImage[] =
+    HISTOGRAM_PREFIX "PaintTiming.ActualLCPIsImage";
 const char kHistogramLCPPSubresourceCountPrecision[] =
     HISTOGRAM_PREFIX "Subresource.Count.Precision";
 const char kHistogramLCPPSubresourceCountRecall[] =
@@ -299,7 +303,11 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
             GetDelegate(), largest_contentful_paint.Time().value());
     PAGE_LOAD_HISTOGRAM(internal::kHistogramLCPPLargestContentfulPaint,
                         corrected);
-    ReportUMAForTimingPredictor(std::move(lcpp_stat_prelearn));
+    ReportUMAForTimingPredictor(std::move(lcpp_stat_prelearn), corrected);
+    if (is_lcp_element_image_) {
+      base::UmaHistogramBoolean(internal::kHistogramLCPPActualLCPIsImage,
+                                *is_lcp_element_image_);
+    }
   }
 }
 
@@ -316,13 +324,17 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
   PAGE_LOAD_HISTOGRAM(internal::kHistogramLCPPFirstContentfulPaint, corrected);
 }
 
-void LcpCriticalPathPredictorPageLoadMetricsObserver::SetLcpElementLocator(
-    const std::string& lcp_element_locator,
+void LcpCriticalPathPredictorPageLoadMetricsObserver::OnLcpUpdated(
+    const std::optional<std::string>& lcp_element_locator,
+    bool is_image_element,
     std::optional<uint32_t> predicted_lcp_index) {
-  if (!lcpp_data_inputs_) {
-    lcpp_data_inputs_.emplace();
+  if (lcp_element_locator) {
+    if (!lcpp_data_inputs_) {
+      lcpp_data_inputs_.emplace();
+    }
+    lcpp_data_inputs_->lcp_element_locator = *lcp_element_locator;
   }
-  lcpp_data_inputs_->lcp_element_locator = lcp_element_locator;
+  is_lcp_element_image_ = is_image_element;
   predicted_lcp_indexes_.push_back(predicted_lcp_index);
 }
 
@@ -412,7 +424,8 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::SetUnusedPreloads(
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::
     ReportUMAForTimingPredictor(
-        std::optional<predictors::LcppStat> lcpp_stat_prelearn) {
+        std::optional<predictors::LcppStat> lcpp_stat_prelearn,
+        base::TimeDelta lcp_timing) {
   if (!lcpp_data_inputs_.has_value() || !commit_url_ || !lcpp_stat_prelearn ||
       !IsValidLcppStat(*lcpp_stat_prelearn)) {
     return;
@@ -467,6 +480,8 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
           internal::kHistogramLCPPPredictHitIndex,
           *last_lcp_index + internal::kLCPIndexHistogramOffset,
           max_lcpp_histogram_buckets);
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramLCPPPredictSuccessLCPTiming,
+                          lcp_timing);
     } else {
       // `predicted_lcp_indexes_` is like {null*}.
       result = internal::LCPPPredictResult::kFailureNoHit;
