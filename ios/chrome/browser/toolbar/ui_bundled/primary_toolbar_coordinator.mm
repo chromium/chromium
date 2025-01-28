@@ -57,14 +57,6 @@
 
   BOOL isOffTheRecord = self.browser->GetProfile()->IsOffTheRecord();
 
-  if (!isOffTheRecord) {
-    DefaultBrowserBannerPromoAppAgent* agent =
-        [DefaultBrowserBannerPromoAppAgent
-            agentFromApp:self.browser->GetSceneState().profileState.appState];
-    _mediator = [[PrimaryToolbarMediator alloc]
-        initWithDefaultBrowserBannerPromoAppAgent:agent];
-  }
-
   self.viewController = [[PrimaryToolbarViewController alloc] init];
   self.viewController.shouldHideOmniboxOnNTP = !isOffTheRecord;
   self.viewController.omniboxCommandsHandler =
@@ -82,7 +74,17 @@
   self.viewController.buttonFactory =
       [self buttonFactoryWithType:ToolbarType::kPrimary];
 
-  _mediator.consumer = self.viewController;
+  if (!isOffTheRecord) {
+    DefaultBrowserBannerPromoAppAgent* agent =
+        [DefaultBrowserBannerPromoAppAgent
+            agentFromApp:self.browser->GetSceneState().profileState.appState];
+    _mediator = [[PrimaryToolbarMediator alloc]
+        initWithDefaultBrowserBannerPromoAppAgent:agent];
+
+    agent.UICurrentlySupportsPromo = [self viewControllerSupportsBannerPromo];
+
+    _mediator.consumer = self.viewController;
+  }
 
   [super start];
   self.started = YES;
@@ -125,6 +127,31 @@
 - (id<ToolbarAnimatee>)toolbarAnimatee {
   CHECK(self.viewController);
   return self.viewController;
+}
+
+- (void)viewControllerTraitCollectionDidChange:
+    (UITraitCollection*)previousTraitCollection {
+  BOOL isOffTheRecord = self.browser->GetProfile()->IsOffTheRecord();
+
+  if (!isOffTheRecord) {
+    DefaultBrowserBannerPromoAppAgent* agent =
+        [DefaultBrowserBannerPromoAppAgent
+            agentFromApp:self.browser->GetSceneState().profileState.appState];
+    agent.UICurrentlySupportsPromo = [self viewControllerSupportsBannerPromo];
+  }
+}
+
+#pragma mark - Private
+
+// Returns whether the banner promo is supported given the current view
+// controller state.
+- (BOOL)viewControllerSupportsBannerPromo {
+  // iPad screen is always large enough to show the banner.
+  BOOL isIPad =
+      UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad;
+  // On smaller iPhone screens, the promo is only supported in split toolbar
+  // mode. Otherwise, it takes up too much space.
+  return isIPad || IsSplitToolbarMode(self.viewController);
 }
 
 #pragma mark - ToolbarCommands
