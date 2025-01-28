@@ -2226,24 +2226,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.TPCD.TopLevelTpcd.CrossSiteTrialChange"
-    enum="OriginTrialStatusChange" expires_after="2025-02-28">
-  <owner>jdh@chromium.org</owner>
-  <owner>src/chrome/browser/tpcd/OWNERS</owner>
-  <summary>
-    Record when a subresource (e.g. iframe) changes the status
-    (enables|disables) of the &quot;Trial for Third Party Cookie Deprecation for
-    Top Level Sites&quot; (TopLevelTpcd) for/in a cross-site context.
-
-    These trial status changes do not effect the cookie settings maintained for
-    the trial.
-
-    Note: in certain situations, such as when the trial token is provided in a
-    meta tag, this may be recorded multiple times for a given (cross-site) frame
-    load.
-  </summary>
-</histogram>
-
 <histogram
     name="PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd2"
     enum="Boolean" expires_after="2025-07-13">
