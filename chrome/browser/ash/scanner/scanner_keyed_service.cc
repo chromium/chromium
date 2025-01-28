@@ -79,6 +79,7 @@ constexpr auto kTrafficAnnotation =
 specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
   specialized_features::FeatureAccessConfig config;
   config.settings_toggle_pref = ash::prefs::kSunfishEnabled;
+  config.consent_accepted_pref = ash::prefs::kSunfishConsentDisclaimerAccepted;
   config.disabled_in_kiosk_mode = true;
 
   // Dogfood devices ignore all other checks.
