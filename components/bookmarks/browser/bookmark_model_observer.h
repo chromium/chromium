@@ -31,6 +31,12 @@ class BookmarkModelObserver : public base::CheckedObserver {
   // Invoked from the destructor of the BookmarkModel.
   virtual void BookmarkModelBeingDeleted() {}
 
+  // Invoked prior to moving a bookmark node.
+  virtual void OnWillMoveBookmarkNode(const BookmarkNode* old_parent,
+                                      size_t old_index,
+                                      const BookmarkNode* new_parent,
+                                      size_t new_index) {}
+
   // Invoked when a node has moved.
   virtual void BookmarkNodeMoved(const BookmarkNode* old_parent,
                                  size_t old_index,

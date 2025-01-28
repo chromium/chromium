@@ -446,11 +446,15 @@ void BookmarkModel::Move(const BookmarkNode* node,
     return;
   }
 
-  SetDateFolderModified(new_parent, Time::Now());
-
   if (old_parent == new_parent && index > old_index) {
     index--;
   }
+
+  for (BookmarkModelObserver& observer : observers_) {
+    observer.OnWillMoveBookmarkNode(old_parent, old_index, new_parent, index);
+  }
+
+  SetDateFolderModified(new_parent, Time::Now());
 
   const NodeTypeForUuidLookup old_type_for_uuid_lookup =
       DetermineTypeForUuidLookupForExistingNode(old_parent);
