@@ -69,6 +69,9 @@ PasswordChangeCredentialLeakBubbleView::PasswordChangeCredentialLeakBubbleView(
         // Cancel the flow if the dialog is explicitly closed.
         if (reason == ClosedReason::kCloseButtonClicked ||
             reason == ClosedReason::kEscKeyPressed) {
+          // `controller_.Cancel()` may trigger Save/Update password prompt, so
+          // we need to hide this bubble earlier.
+          view->GetWidget()->Hide();
           view->controller_.Cancel();
         }
       },

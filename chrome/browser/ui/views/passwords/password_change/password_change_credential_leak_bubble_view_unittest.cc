@@ -19,7 +19,9 @@
 #include "ui/events/test/test_event.h"
 #include "ui/views/test/button_test_api.h"
 
+using testing::Invoke;
 using testing::Return;
+using ClosedReason = views::Widget::ClosedReason;
 
 namespace {
 const std::u16string kTestEmail = u"account@example.com";
@@ -46,6 +48,8 @@ class PasswordChangeCredentialLeakBubbleViewTest
         .WillByDefault(Return(u"example.com"));
     ON_CALL(*model_delegate_mock(), GetPasswordChangeDelegate())
         .WillByDefault(Return(password_change_delegate_.get()));
+    ON_CALL(*model_delegate_mock(), GetPasswordsLeakDialogDelegate())
+        .WillByDefault(Return(&passwords_leak_dialog_delegate_));
     AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
         base::UTF16ToUTF8(kTestEmail), signin::ConsentLevel::kSignin);
     SyncServiceFactory::GetInstance()->SetTestingFactory(
@@ -74,9 +78,14 @@ class PasswordChangeCredentialLeakBubbleViewTest
     return password_change_delegate_.get();
   }
 
+  PasswordsLeakDialogDelegateMock* passwords_leak_dialog_delegate() {
+    return &passwords_leak_dialog_delegate_;
+  }
+
  private:
   raw_ptr<PasswordChangeCredentialLeakBubbleView> view_;
   std::unique_ptr<PasswordChangeDelegateMock> password_change_delegate_;
+  PasswordsLeakDialogDelegateMock passwords_leak_dialog_delegate_;
 };
 
 TEST_F(PasswordChangeCredentialLeakBubbleViewTest, ChangePasswordIsTriggered) {
@@ -99,4 +108,12 @@ TEST_F(PasswordChangeCredentialLeakBubbleViewTest,
                   password_manager::ManagePasswordsReferrer::
                       kPasswordChangeInfoBubble));
   controller->OnGooglePasswordManagerLinkClicked();
+}
+
+TEST_F(PasswordChangeCredentialLeakBubbleViewTest,
+       OnLeakDialogHiddenIsTriggeredOnClose) {
+  CreateAndShowView();
+
+  EXPECT_CALL(*passwords_leak_dialog_delegate(), OnLeakDialogHidden);
+  view()->GetWidget()->CloseWithReason(ClosedReason::kCloseButtonClicked);
 }
