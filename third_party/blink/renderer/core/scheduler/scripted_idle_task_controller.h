@@ -46,7 +46,6 @@ class CORE_EXPORT IdleTask : public GarbageCollected<IdleTask>,
 
  private:
   friend class ScriptedIdleTaskController;
-
   probe::AsyncTaskContext async_task_context_;
   // Handle to the associated "scheduler timeout task".
   base::DelayedTaskHandle delayed_task_handle_;
@@ -82,6 +81,9 @@ class CORE_EXPORT ScriptedIdleTaskController
   int RegisterCallback(IdleTask*, const IdleRequestOptions*);
   void CancelCallback(CallbackId);
 
+  // Returns true iff there is a registered callback with `id`.
+  bool HasCallback(CallbackId id) const;
+
   // ExecutionContextLifecycleStateObserver interface.
   void ContextDestroyed() override;
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
@@ -96,6 +98,7 @@ class CORE_EXPORT ScriptedIdleTaskController
 
   void SchedulerIdleTask(CallbackId id,
                          base::TimeTicks deadline);
+
   void SchedulerTimeoutTask(CallbackId id);
 
   void RunIdleTask(CallbackId id,
@@ -132,11 +135,11 @@ class CORE_EXPORT ScriptedIdleTaskController
   // Whether the execution context is paused.
   bool paused_ = false;
 
-  // Number of "scheduler idle tasks" posted to `scheduler_` which did not run
-  // yet. Not necessarily equal to the size of `idle_tasks_`
-  // (e.g. `ContextUnpaused` may cause multiple "scheduler idle tasks" for the
-  // same `idle_tasks_` entry).
-  size_t num_pending_scheduler_idle_tasks_ = 0;
+ public:
+  // Type of SchedulerIdleTask(), used to define callback cancellation traits in
+  // the implementation file.
+  using SchedulerIdleTaskDeclType =
+      decltype(&ScriptedIdleTaskController::SchedulerIdleTask);
 };
 
 }  // namespace blink
