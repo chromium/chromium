@@ -67,7 +67,7 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
       download->GetTargetFilePath().AsUTF8Unsafe(),
       base::HexEncode(download->GetHash()), download->GetDangerType(),
       download->GetMimeType(), /*scan_id*/ "", download->GetTotalBytes(),
-      EventResult::WARNED);
+      enterprise_connectors::EventResult::WARNED);
 }
 
 void ReportDangerousDownloadWarningBypassed(

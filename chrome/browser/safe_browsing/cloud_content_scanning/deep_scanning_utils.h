@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -53,26 +54,6 @@ enum class DeepScanAccessPoint {
 };
 std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point);
 
-// The resulting action that chrome performed in response to a scan request.
-// This maps to the event result in the real-time reporting.
-enum class EventResult {
-  UNKNOWN,
-
-  // The user was allowed to use the data without restriction.
-  ALLOWED,
-
-  // The user was allowed to use the data but was warned that it may violate
-  // enterprise rules.
-  WARNED,
-
-  // The user was not allowed to use the data.
-  BLOCKED,
-
-  // The user has chosen to use the data even though it violated enterprise
-  // rules.
-  BYPASSED,
-};
-
 // Helper function to examine a ContentAnalysisResponse and report the
 // appropriate events to the enterprise admin. |download_digest_sha256| must be
 // encoded using base::HexEncode.  |event_result| indicates whether the user was
@@ -92,7 +73,7 @@ void MaybeReportDeepScanningVerdict(
     const int64_t content_size,
     BinaryUploadService::Result result,
     const enterprise_connectors::ContentAnalysisResponse& response,
-    EventResult event_result);
+    enterprise_connectors::EventResult event_result);
 
 // Helper function to report the user bypassed a warning to the enterprise
 // admin. This is split from MaybeReportDeepScanningVerdict since it happens
@@ -135,10 +116,6 @@ enterprise_connectors::ContentAnalysisResponse
 SimpleContentAnalysisResponseForTesting(std::optional<bool> dlp_success,
                                         std::optional<bool> malware_success,
                                         bool has_custom_rule_message);
-
-// Helper function to convert a EventResult to a string that.  The format of
-// string returned is processed by the sever.
-std::string EventResultToString(EventResult result);
 
 // Helper function to convert a BinaryUploadService::Result to a CamelCase
 // string.

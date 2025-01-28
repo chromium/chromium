@@ -295,16 +295,14 @@ bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
   }
 }
 
-safe_browsing::EventResult CalculateEventResult(
-    const AnalysisSettings& settings,
-    bool allowed_by_scan_result,
-    bool should_warn) {
+EventResult CalculateEventResult(const AnalysisSettings& settings,
+                                 bool allowed_by_scan_result,
+                                 bool should_warn) {
   bool wait_for_verdict =
       settings.block_until_verdict == BlockUntilVerdict::kBlock;
   return (allowed_by_scan_result || !wait_for_verdict)
-             ? safe_browsing::EventResult::ALLOWED
-             : (should_warn ? safe_browsing::EventResult::WARNED
-                            : safe_browsing::EventResult::BLOCKED);
+             ? EventResult::ALLOWED
+             : (should_warn ? EventResult::WARNED : EventResult::BLOCKED);
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 

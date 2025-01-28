@@ -152,7 +152,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       safe_browsing::DeepScanAccessPoint access_point,
       const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size,
-      safe_browsing::EventResult event_result);
+      enterprise_connectors::EventResult event_result);
 
   // Notifies listeners that an analysis connector violation was bypassed.
   void OnAnalysisConnectorWarningBypassed(
@@ -184,31 +184,33 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
                             const std::string& reason,
                             const std::string& content_transfer_method,
                             const int64_t content_size,
-                            safe_browsing::EventResult event_result);
+                            enterprise_connectors::EventResult event_result);
 
   // Notifies listeners that the user saw a download warning.
   // - |url| is the download URL
   // - |file_name| is the path on disk
   // - |download_digest_sha256| is the hex-encoded SHA256
   // - |threat_type| is the danger type of the download.
-  void OnDangerousDownloadEvent(const GURL& url,
-                                const GURL& tab_url,
-                                const std::string& file_name,
-                                const std::string& download_digest_sha256,
-                                const std::string& threat_type,
-                                const std::string& mime_type,
-                                const std::string& scan_id,
-                                const int64_t content_size,
-                                safe_browsing::EventResult event_result);
-  void OnDangerousDownloadEvent(const GURL& url,
-                                const GURL& tab_url,
-                                const std::string& file_name,
-                                const std::string& download_digest_sha256,
-                                const download::DownloadDangerType danger_type,
-                                const std::string& mime_type,
-                                const std::string& scan_id,
-                                const int64_t content_size,
-                                safe_browsing::EventResult event_result);
+  void OnDangerousDownloadEvent(
+      const GURL& url,
+      const GURL& tab_url,
+      const std::string& file_name,
+      const std::string& download_digest_sha256,
+      const std::string& threat_type,
+      const std::string& mime_type,
+      const std::string& scan_id,
+      const int64_t content_size,
+      enterprise_connectors::EventResult event_result);
+  void OnDangerousDownloadEvent(
+      const GURL& url,
+      const GURL& tab_url,
+      const std::string& file_name,
+      const std::string& download_digest_sha256,
+      const download::DownloadDangerType danger_type,
+      const std::string& mime_type,
+      const std::string& scan_id,
+      const int64_t content_size,
+      enterprise_connectors::EventResult event_result);
 
   // Notifies listeners that the user bypassed a download warning.
   // - |url| is the download URL
@@ -263,7 +265,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& mime_type,
       const std::string& trigger,
       const data_controls::Verdict::TriggeredRules& triggered_rules,
-      safe_browsing::EventResult event_result,
+      enterprise_connectors::EventResult event_result,
       int64_t content_size);
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
@@ -289,7 +291,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& mime_type,
       const std::string& trigger,
       const int64_t content_size,
-      safe_browsing::EventResult event_result,
+      enterprise_connectors::EventResult event_result,
       const std::string& scan_id,
       const std::string& content_transfer_method);
 
@@ -307,7 +309,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& content_transfer_method,
       const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size,
-      safe_browsing::EventResult event_result);
+      enterprise_connectors::EventResult event_result);
 
   raw_ptr<content::BrowserContext> context_;
   raw_ptr<EventRouter> event_router_ = nullptr;

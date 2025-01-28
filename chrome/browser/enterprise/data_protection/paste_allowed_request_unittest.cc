@@ -588,7 +588,8 @@ TEST_F(PasteAllowedRequestScanningTest, DifferentDestinationSource) {
       }(),
       /*size*/ 4,
       /*result*/
-      safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
+      enterprise_connectors::EventResultToString(
+          enterprise_connectors::EventResult::BLOCKED),
       /*username*/ "test-user@chromium.org",
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ kScanId,

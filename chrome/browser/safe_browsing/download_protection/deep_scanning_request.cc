@@ -163,8 +163,9 @@ void ResponseToDownloadCheckResult(
   *download_result = DownloadCheckResult::DEEP_SCANNED_SAFE;
 }
 
-EventResult GetEventResult(download::DownloadDangerType danger_type,
-                           download::DownloadItem* item) {
+enterprise_connectors::EventResult GetEventResult(
+    download::DownloadDangerType danger_type,
+    download::DownloadItem* item) {
   DownloadCoreService* download_core_service =
       DownloadCoreServiceFactory::GetForBrowserContext(
           content::DownloadItemUtils::GetBrowserContext(item));
@@ -172,7 +173,7 @@ EventResult GetEventResult(download::DownloadDangerType danger_type,
     ChromeDownloadManagerDelegate* delegate =
         download_core_service->GetDownloadManagerDelegate();
     if (delegate && delegate->ShouldBlockFile(item, danger_type)) {
-      return EventResult::BLOCKED;
+      return enterprise_connectors::EventResult::BLOCKED;
     }
   }
 
@@ -186,15 +187,15 @@ EventResult GetEventResult(download::DownloadDangerType danger_type,
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
-      return EventResult::WARNED;
+      return enterprise_connectors::EventResult::WARNED;
 
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
-      return EventResult::ALLOWED;
+      return enterprise_connectors::EventResult::ALLOWED;
 
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
-      return EventResult::BYPASSED;
+      return enterprise_connectors::EventResult::BYPASSED;
 
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
@@ -211,8 +212,9 @@ EventResult GetEventResult(download::DownloadDangerType danger_type,
   }
 }
 
-EventResult GetEventResult(DownloadCheckResult download_result,
-                           Profile* profile) {
+enterprise_connectors::EventResult GetEventResult(
+    DownloadCheckResult download_result,
+    Profile* profile) {
   auto download_restriction =
       profile ? static_cast<policy::DownloadRestriction>(
                     profile->GetPrefs()->GetInteger(
@@ -223,7 +225,7 @@ EventResult GetEventResult(DownloadCheckResult download_result,
     case DownloadCheckResult::SAFE:
     case DownloadCheckResult::ALLOWLISTED_BY_POLICY:
     case DownloadCheckResult::DEEP_SCANNED_SAFE:
-      return EventResult::ALLOWED;
+      return enterprise_connectors::EventResult::ALLOWED;
 
     // The following results return WARNED or BLOCKED depending on
     // |download_restriction|.
@@ -235,21 +237,21 @@ EventResult GetEventResult(DownloadCheckResult download_result,
         case policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
         case policy::DownloadRestriction::DANGEROUS_FILES:
         case policy::DownloadRestriction::MALICIOUS_FILES:
-          return EventResult::BLOCKED;
+          return enterprise_connectors::EventResult::BLOCKED;
         case policy::DownloadRestriction::NONE:
-          return EventResult::WARNED;
+          return enterprise_connectors::EventResult::WARNED;
       }
 
     case DownloadCheckResult::UNCOMMON:
     case DownloadCheckResult::POTENTIALLY_UNWANTED:
     case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
-      return EventResult::WARNED;
+      return enterprise_connectors::EventResult::WARNED;
 
     case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
     case DownloadCheckResult::BLOCKED_TOO_LARGE:
     case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
     case DownloadCheckResult::BLOCKED_SCAN_FAILED:
-      return EventResult::BLOCKED;
+      return enterprise_connectors::EventResult::BLOCKED;
 
     default:
       NOTREACHED() << "Should never be final result";
@@ -272,19 +274,19 @@ std::string GetTriggerName(DeepScanTrigger trigger) {
 }
 
 enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
-GetFinalAction(EventResult event_result) {
+GetFinalAction(enterprise_connectors::EventResult event_result) {
   auto final_action =
       enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW;
   switch (event_result) {
-    case EventResult::UNKNOWN:
-    case EventResult::ALLOWED:
-    case EventResult::BYPASSED:
+    case enterprise_connectors::EventResult::UNKNOWN:
+    case enterprise_connectors::EventResult::ALLOWED:
+    case enterprise_connectors::EventResult::BYPASSED:
       break;
-    case EventResult::WARNED:
+    case enterprise_connectors::EventResult::WARNED:
       final_action =
           enterprise_connectors::ContentAnalysisAcknowledgement::WARN;
       break;
-    case EventResult::BLOCKED:
+    case enterprise_connectors::EventResult::BLOCKED:
       final_action =
           enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK;
       break;
@@ -828,7 +830,8 @@ void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {
 }
 
 void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
-  EventResult event_result = EventResult::UNKNOWN;
+  enterprise_connectors::EventResult event_result =
+      enterprise_connectors::EventResult::UNKNOWN;
 
   if (!report_callbacks_.empty()) {
     DCHECK(IsEnterpriseTriggered());
@@ -877,8 +880,8 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
 
   // Bypassed verdicts are given when a user continues a download after being
   // warned by WP, so it is considered safe here.
-  if ((event_result == EventResult::ALLOWED ||
-       event_result == EventResult::BYPASSED) &&
+  if ((event_result == enterprise_connectors::EventResult::ALLOWED ||
+       event_result == enterprise_connectors::EventResult::BYPASSED) &&
       obfuscation_data && obfuscation_data->is_obfuscated) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -922,7 +925,8 @@ bool DeepScanningRequest::ReportOnlyScan() {
          enterprise_connectors::BlockUntilVerdict::kNoBlock;
 }
 
-void DeepScanningRequest::AcknowledgeRequest(EventResult event_result) {
+void DeepScanningRequest::AcknowledgeRequest(
+    enterprise_connectors::EventResult event_result) {
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item_));
   BinaryUploadService* binary_upload_service =

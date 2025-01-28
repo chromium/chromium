@@ -108,19 +108,19 @@ std::string DangerTypeToThreatType(download::DownloadDangerType danger_type) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 const char16_t kMaskedUsername[] = u"*****";
 
-safe_browsing::EventResult GetEventResultFromThreatType(
+enterprise_connectors::EventResult GetEventResultFromThreatType(
     std::string threat_type) {
   if (threat_type == "ENTERPRISE_WARNED_SEEN") {
-    return safe_browsing::EventResult::WARNED;
+    return enterprise_connectors::EventResult::WARNED;
   }
   if (threat_type == "ENTERPRISE_WARNED_BYPASS") {
-    return safe_browsing::EventResult::BYPASSED;
+    return enterprise_connectors::EventResult::BYPASSED;
   }
   if (threat_type == "ENTERPRISE_BLOCKED_SEEN") {
-    return safe_browsing::EventResult::BLOCKED;
+    return enterprise_connectors::EventResult::BLOCKED;
   }
   if (threat_type.empty()) {
-    return safe_browsing::EventResult::ALLOWED;
+    return enterprise_connectors::EventResult::ALLOWED;
   }
   NOTREACHED();
 }
@@ -364,9 +364,9 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
   event.Set(kKeyUserName, params.user_name);
   event.Set(kKeyIsPhishingUrl, params.is_phishing_url);
   event.Set(kKeyEventResult,
-            safe_browsing::EventResultToString(
-                warning_shown ? safe_browsing::EventResult::WARNED
-                              : safe_browsing::EventResult::ALLOWED));
+            enterprise_connectors::EventResultToString(
+                warning_shown ? enterprise_connectors::EventResult::WARNED
+                              : enterprise_connectors::EventResult::ALLOWED));
 
   reporting_client_->ReportRealtimeEvent(
       enterprise_connectors::kKeyPasswordReuseEvent,
@@ -457,8 +457,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
     event.Set(kKeyContentSize, base::Int64ToValue(content_size));
   }
   event.Set(kKeyTrigger, kTriggerFileDownload);
-  event.Set(kKeyEventResult, safe_browsing::EventResultToString(
-                                 safe_browsing::EventResult::BYPASSED));
+  event.Set(kKeyEventResult, enterprise_connectors::EventResultToString(
+                                 enterprise_connectors::EventResult::BYPASSED));
   event.Set(kKeyClickedThrough, true);
   event.Set(kKeyThreatType, DangerTypeToThreatType(danger_type));
   // The scan ID can be empty when the reported dangerous download is from a
@@ -507,16 +507,17 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
   }
 
   PrefService* prefs = Profile::FromBrowserContext(context_)->GetPrefs();
-  safe_browsing::EventResult event_result =
+  enterprise_connectors::EventResult event_result =
       prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled)
-          ? safe_browsing::EventResult::BLOCKED
-          : safe_browsing::EventResult::WARNED;
+          ? enterprise_connectors::EventResult::BLOCKED
+          : enterprise_connectors::EventResult::WARNED;
   base::Value::Dict event;
   event.Set(kKeyUrl, params.url);
   event.Set(kKeyReason, params.reason);
   event.Set(kKeyNetErrorCode, net_error_code);
   event.Set(kKeyClickedThrough, false);
-  event.Set(kKeyEventResult, safe_browsing::EventResultToString(event_result));
+  event.Set(kKeyEventResult,
+            enterprise_connectors::EventResultToString(event_result));
 
   reporting_client_->ReportRealtimeEvent(
       enterprise_connectors::kKeyInterstitialEvent, std::move(settings.value()),
@@ -562,8 +563,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
   event.Set(kKeyReason, params.reason);
   event.Set(kKeyNetErrorCode, net_error_code);
   event.Set(kKeyClickedThrough, true);
-  event.Set(kKeyEventResult, safe_browsing::EventResultToString(
-                                 safe_browsing::EventResult::BYPASSED));
+  event.Set(kKeyEventResult, enterprise_connectors::EventResultToString(
+                                 enterprise_connectors::EventResult::BYPASSED));
 
   reporting_client_->ReportRealtimeEvent(
       enterprise_connectors::kKeyInterstitialEvent, std::move(settings.value()),
@@ -585,7 +586,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
     safe_browsing::DeepScanAccessPoint access_point,
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size,
-    safe_browsing::EventResult event_result) {
+    enterprise_connectors::EventResult event_result) {
   if (result.tag() == "malware") {
     DCHECK_EQ(1, result.triggered_rules().size());
     OnDangerousDeepScanningResult(
@@ -612,7 +613,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
     const std::string& mime_type,
     const std::string& trigger,
     const int64_t content_size,
-    safe_browsing::EventResult event_result,
+    enterprise_connectors::EventResult event_result,
     const std::string& scan_id,
     const std::string& content_transfer_method) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
@@ -642,9 +643,10 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
     event.Set(kKeyContentSize, base::Int64ToValue(content_size));
   }
   event.Set(kKeyTrigger, trigger);
-  event.Set(kKeyEventResult, safe_browsing::EventResultToString(event_result));
+  event.Set(kKeyEventResult,
+            enterprise_connectors::EventResultToString(event_result));
   event.Set(kKeyClickedThrough,
-            event_result == safe_browsing::EventResult::BYPASSED);
+            event_result == enterprise_connectors::EventResult::BYPASSED);
   // The scan ID can be empty when the reported dangerous download is from a
   // Safe Browsing verdict.
   if (!scan_id.empty()) {
@@ -673,7 +675,7 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
     const std::string& content_transfer_method,
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size,
-    safe_browsing::EventResult event_result) {
+    enterprise_connectors::EventResult event_result) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
@@ -700,9 +702,10 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
     event.Set(kKeyContentSize, base::Int64ToValue(content_size));
   }
   event.Set(kKeyTrigger, trigger);
-  event.Set(kKeyEventResult, safe_browsing::EventResultToString(event_result));
+  event.Set(kKeyEventResult,
+            enterprise_connectors::EventResultToString(event_result));
   event.Set(kKeyClickedThrough,
-            event_result == safe_browsing::EventResult::BYPASSED);
+            event_result == enterprise_connectors::EventResult::BYPASSED);
   event.Set(kKeyScanId, scan_id);
   if (!content_transfer_method.empty()) {
     event.Set(kKeyContentTransferMethod, content_transfer_method);
@@ -757,8 +760,8 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
     event.Set(kKeyContentSize, base::Int64ToValue(content_size));
   }
   event.Set(kKeyTrigger, trigger);
-  event.Set(kKeyEventResult, safe_browsing::EventResultToString(
-                                 safe_browsing::EventResult::BYPASSED));
+  event.Set(kKeyEventResult, enterprise_connectors::EventResultToString(
+                                 enterprise_connectors::EventResult::BYPASSED));
   event.Set(kKeyClickedThrough, true);
   event.Set(kKeyScanId, scan_id);
   if (user_justification) {
@@ -789,7 +792,7 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
     const std::string& reason,
     const std::string& content_transfer_method,
     const int64_t content_size,
-    safe_browsing::EventResult event_result) {
+    enterprise_connectors::EventResult event_result) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
@@ -817,9 +820,10 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
     event.Set(kKeyContentSize, base::Int64ToValue(content_size));
   }
   event.Set(kKeyTrigger, trigger);
-  event.Set(kKeyEventResult, safe_browsing::EventResultToString(event_result));
+  event.Set(kKeyEventResult,
+            enterprise_connectors::EventResultToString(event_result));
   event.Set(kKeyClickedThrough,
-            event_result == safe_browsing::EventResult::BYPASSED);
+            event_result == enterprise_connectors::EventResult::BYPASSED);
   if (!content_transfer_method.empty()) {
     event.Set(kKeyContentTransferMethod, content_transfer_method);
   }
@@ -839,7 +843,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const std::string& mime_type,
     const std::string& scan_id,
     const int64_t content_size,
-    safe_browsing::EventResult event_result) {
+    enterprise_connectors::EventResult event_result) {
   OnDangerousDownloadEvent(url, tab_url, file_name, download_digest_sha256,
                            DangerTypeToThreatType(danger_type), mime_type,
                            scan_id, content_size, event_result);
@@ -854,7 +858,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const std::string& mime_type,
     const std::string& scan_id,
     const int64_t content_size,
-    safe_browsing::EventResult event_result) {
+    enterprise_connectors::EventResult event_result) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
@@ -881,7 +885,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     event.Set(kKeyContentSize, base::Int64ToValue(content_size));
   }
   event.Set(kKeyTrigger, kTriggerFileDownload);
-  event.Set(kKeyEventResult, safe_browsing::EventResultToString(event_result));
+  event.Set(kKeyEventResult,
+            enterprise_connectors::EventResultToString(event_result));
 
   // The scan ID can be empty when the reported dangerous download is from a
   // Safe Browsing verdict.
@@ -944,8 +949,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     event.Set(kKeyContentSize, base::Int64ToValue(content_size));
   }
   event.Set(kKeyTrigger, kTriggerFileDownload);
-  event.Set(kKeyEventResult, safe_browsing::EventResultToString(
-                                 safe_browsing::EventResult::BYPASSED));
+  event.Set(kKeyEventResult, enterprise_connectors::EventResultToString(
+                                 enterprise_connectors::EventResult::BYPASSED));
   // The scan ID can be empty when the reported dangerous download is from a
   // Safe Browsing verdict.
   if (!scan_id.empty()) {
@@ -1050,15 +1055,16 @@ void SafeBrowsingPrivateEventRouter::OnUrlFilteringInterstitial(
   }
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
-  safe_browsing::EventResult event_result =
+  enterprise_connectors::EventResult event_result =
       GetEventResultFromThreatType(threat_type);
   event.Set(kKeyClickedThrough,
-            event_result == safe_browsing::EventResult::BYPASSED);
+            event_result == enterprise_connectors::EventResult::BYPASSED);
   if (!threat_type.empty()) {
     event.Set(kKeyThreatType, threat_type);
   }
   AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(response, event);
-  event.Set(kKeyEventResult, safe_browsing::EventResultToString(event_result));
+  event.Set(kKeyEventResult,
+            enterprise_connectors::EventResultToString(event_result));
 
   reporting_client_->ReportRealtimeEvent(
       enterprise_connectors::kKeyUrlFilteringInterstitialEvent,
@@ -1075,7 +1081,7 @@ void SafeBrowsingPrivateEventRouter::OnDataControlsSensitiveDataEvent(
     const std::string& mime_type,
     const std::string& trigger,
     const data_controls::Verdict::TriggeredRules& triggered_rules,
-    safe_browsing::EventResult event_result,
+    enterprise_connectors::EventResult event_result,
     int64_t content_size) {
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
@@ -1097,7 +1103,8 @@ void SafeBrowsingPrivateEventRouter::OnDataControlsSensitiveDataEvent(
     event.Set(kKeyContentSize, base::Int64ToValue(content_size));
   }
   event.Set(kKeyTrigger, trigger);
-  event.Set(kKeyEventResult, safe_browsing::EventResultToString(event_result));
+  event.Set(kKeyEventResult,
+            enterprise_connectors::EventResultToString(event_result));
 
   base::Value::List triggered_rule_info;
   triggered_rule_info.reserve(triggered_rules.size());

@@ -3005,10 +3005,10 @@ TEST_F(DownloadProtectionServiceTest,
           kTriggerFileDownload,  // expected_trigger
       &expected_mimetypes,
       0,  // expected_content_size
-      safe_browsing::EventResultToString(
-          safe_browsing::EventResult::BYPASSED),  // expected_result
-      "",                                         // expected_username
-      profile()->GetPath().AsUTF8Unsafe()         // expected_profile_identifier
+      enterprise_connectors::EventResultToString(
+          enterprise_connectors::EventResult::BYPASSED),  // expected_result
+      "",                                                 // expected_username
+      profile()->GetPath().AsUTF8Unsafe()  // expected_profile_identifier
   );
 
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
@@ -3075,10 +3075,10 @@ TEST_F(DownloadProtectionServiceTest,
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
       1234,  // expected_content_size
-      safe_browsing::EventResultToString(
-          safe_browsing::EventResult::BYPASSED),  // expected_result
-      "",                                         // expected_username
-      profile()->GetPath().AsUTF8Unsafe(),        // expected_profile_identifier
+      enterprise_connectors::EventResultToString(
+          enterprise_connectors::EventResult::BYPASSED),  // expected_result
+      "",                                                 // expected_username
+      profile()->GetPath().AsUTF8Unsafe(),  // expected_profile_identifier
       {} /* expected_scan_id */, std::nullopt /* content_transfer_reason */,
       /*user_justification*/ std::nullopt);
 
@@ -3130,10 +3130,10 @@ TEST_F(DownloadProtectionServiceTest,
           kTriggerFileDownload,  // expected_trigger
       &expected_mimetypes,
       0,  // expected_content_size
-      safe_browsing::EventResultToString(
-          safe_browsing::EventResult::BYPASSED),  // expected_result
-      "",                                         // expected_username
-      profile()->GetPath().AsUTF8Unsafe()         // expected_profile_identifier
+      enterprise_connectors::EventResultToString(
+          enterprise_connectors::EventResult::BYPASSED),  // expected_result
+      "",                                                 // expected_username
+      profile()->GetPath().AsUTF8Unsafe()  // expected_profile_identifier
   );
 
   download_service_->ReportDelayedBypassEvent(
@@ -3194,10 +3194,10 @@ TEST_F(DownloadProtectionServiceTest,
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
       1234,  // expected_content_size
-      safe_browsing::EventResultToString(
-          safe_browsing::EventResult::BYPASSED),  // expected_result
-      "",                                         // expected_username
-      profile()->GetPath().AsUTF8Unsafe(),        // expected_profile_identifier
+      enterprise_connectors::EventResultToString(
+          enterprise_connectors::EventResult::BYPASSED),  // expected_result
+      "",                                                 // expected_username
+      profile()->GetPath().AsUTF8Unsafe(),  // expected_profile_identifier
       {} /* expected_scan_id */, std::nullopt /* content_transfer_method */,
       /*user_justification*/ std::nullopt);
 
@@ -3259,10 +3259,10 @@ TEST_F(DownloadProtectionServiceTest,
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
       1234,  // expected_content_size
-      safe_browsing::EventResultToString(
-          safe_browsing::EventResult::BYPASSED),  // expected_result
-      "",                                         // expected_username
-      profile()->GetPath().AsUTF8Unsafe(),        // expected_profile_identifier
+      enterprise_connectors::EventResultToString(
+          enterprise_connectors::EventResult::BYPASSED),  // expected_result
+      "",                                                 // expected_username
+      profile()->GetPath().AsUTF8Unsafe(),  // expected_profile_identifier
       {} /* expected_scan_id */, std::nullopt /* content_transfer_method */,
       /*user_justification*/ std::nullopt);
 
