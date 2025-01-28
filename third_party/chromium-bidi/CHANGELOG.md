@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v1.1.0...chromium-bidi-v1.2.0) (2025-01-28)
+
+
+### Features
+
+* implement unsubscribe by id ([#3013](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3013)) ([5f8752d](https://github.com/GoogleChromeLabs/chromium-bidi/commit/5f8752d9032aca1d6766922113778701d0228fc0))
+
+
+### Bug Fixes
+
+* allow `bluetooth.requestDevicePromptUpdated` subscription ([#3044](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3044)) ([dd4751d](https://github.com/GoogleChromeLabs/chromium-bidi/commit/dd4751d8bd4b9949a34cf568f20a5185d195c524))
+* fix unsubscribe by id parser ([#3034](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3034)) ([a51a55d](https://github.com/GoogleChromeLabs/chromium-bidi/commit/a51a55d904a51a5c02480963846a0e8f77e569c6))
+* handle max depth property ([#3027](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3027)) ([1393215](https://github.com/GoogleChromeLabs/chromium-bidi/commit/139321570632cd9567c488bd96b24b2b332d1398))
+* rely on frameSubtreeWillBeDetached to emit contextDestroyed events ([#3029](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3029)) ([0d04e0b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0d04e0b72d6bab22b9f715740dd48af5e32d1b4e))
+* support correct to base64 for non-latin ([#3031](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3031)) ([6fe665f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/6fe665fead31d1a00a463d7c1ab5706abf416292)), closes [#3019](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3019)
+
 ## [1.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v1.0.0...chromium-bidi-v1.1.0) (2025-01-17)
 
 
