@@ -84,7 +84,8 @@ class LockManager final : public ScriptWrappable,
                    const LockOptions* options,
                    const String& name,
                    V8LockGrantedCallback* callback,
-                   mojom::blink::LockMode mode);
+                   mojom::blink::LockMode mode,
+                   int record_replay_dependency_graph_node_id);
 
   // Query the ContentSettingsClient to ensure access is allowed from
   // this context. This invokes an asynchronous IPC call.
