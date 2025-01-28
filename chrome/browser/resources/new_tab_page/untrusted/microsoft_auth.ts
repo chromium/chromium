@@ -43,6 +43,7 @@ msalApp.initialize().then(() => {
       MicrosoftAuthUntrustedDocumentProxy.getInstance().callbackRouter;
   callbackRouter.acquireTokenPopup.addListener(acquireTokenPopup);
   callbackRouter.acquireTokenSilent.addListener(acquireTokenSilent);
+  callbackRouter.signOut.addListener(signOut);
   handler = MicrosoftAuthUntrustedDocumentProxy.getInstance().handler;
 });
 
@@ -70,14 +71,21 @@ function handleAuthError(_: typeof AuthError) {
   handler.setAuthStateError();
 }
 
-async function acquireTokenPopup(): Promise<void> {
+function acquireTokenPopup() {
   msalApp.acquireTokenPopup(requestConfig)
       .then(handleAcquireTokenResponse)
       .catch(handleAuthError);
 }
 
-async function acquireTokenSilent(): Promise<void> {
+function acquireTokenSilent() {
   msalApp.acquireTokenSilent(requestConfig)
       .then(handleAcquireTokenResponse)
       .catch(handleAuthError);
+}
+
+function signOut() {
+  msalApp.logoutPopup({
+    account: msalApp.getActiveAccount(),
+    postLogoutRedirectUri: 'https://chromeenterprise.google/ntp-microsoft-auth',
+  });
 }

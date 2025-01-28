@@ -20,4 +20,6 @@ interface MicrosoftAuthUntrustedDocument {
   AcquireTokenPopup();
   // Tells the Microsoft Auth child document to acquire a token silently.
   AcquireTokenSilent();
+  // Tell the Microsoft Auth child page to sign out.
+  SignOut();
 };

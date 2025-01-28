@@ -4,9 +4,10 @@
 
 import type {File} from 'chrome://new-tab-page/file_suggestion.mojom-webui.js';
 import type {DisableModuleEvent, DismissModuleInstanceEvent, MicrosoftFilesModuleElement} from 'chrome://new-tab-page/lazy_load.js';
-import {microsoftFilesModuleDescriptor, MicrosoftFilesProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import {microsoftFilesModuleDescriptor, MicrosoftFilesProxyImpl, ParentTrustedDocumentProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {MicrosoftFilesPageHandlerRemote} from 'chrome://new-tab-page/microsoft_files.mojom-webui.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
+import {MicrosoftAuthUntrustedDocumentRemote} from 'chrome://new-tab-page/ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -15,6 +16,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
 import {installMock} from '../../../test_support.js';
 
 suite('MicrosoftFilesModule', () => {
+  let childDocument: TestMock<MicrosoftAuthUntrustedDocumentRemote>;
   let handler: TestMock<MicrosoftFilesPageHandlerRemote>;
   const modulesSharepointName = 'SharePoint';
 
@@ -25,6 +27,9 @@ suite('MicrosoftFilesModule', () => {
         MicrosoftFilesPageHandlerRemote,
         mock => MicrosoftFilesProxyImpl.setInstance(
             new MicrosoftFilesProxyImpl(mock)));
+    childDocument = installMock(
+        MicrosoftAuthUntrustedDocumentRemote,
+        mock => ParentTrustedDocumentProxy.setInstance(mock));
   });
 
   function createFiles(numFiles: number): File[] {
@@ -86,6 +91,27 @@ suite('MicrosoftFilesModule', () => {
     assertEquals(
         ('You won\'t see ' + modulesSharepointName + ' on this page again'),
         event.detail.message);
+  });
+
+  test('clicking the sign out button sends sign out request', async () => {
+    // Arrange.
+    handler.setResultFor('getFiles', Promise.resolve({files: createFiles(6)}));
+    const microsoftFilesModule =
+        await microsoftFilesModuleDescriptor.initialize(0) as
+        MicrosoftFilesModuleElement;
+    assertTrue(!!microsoftFilesModule);
+    document.body.append(microsoftFilesModule);
+    await microtasksFinished();
+
+    // Act.
+    const signoutButton =
+        microsoftFilesModule.$.moduleHeaderElementV2.shadowRoot!
+            .querySelector<HTMLElement>('#signout');
+    assertTrue(!!signoutButton);
+    signoutButton.click();
+
+    // Assert.
+    assertEquals(1, childDocument.getCallCount('signOut'));
   });
 
   test('creates module', async () => {

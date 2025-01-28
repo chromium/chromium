@@ -8521,6 +8521,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_GOOGLE_CALENDAR_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of a NTP Google Calendar card.">
         Don't show Google Calendar
       </message>
+      <message name="IDS_NTP_MODULES_MICROSOFT_SIGN_OUT_BUTTON_TEXT" desc="Button text for signing out of Microsoft for the Microsoft cards on the NTP." meaning="Sign out of account.">
+        Sign out of Microsoft
+      </message>
       <message name="IDS_NTP_MODULES_OUTLOOK_CALENDAR_TITLE" desc="Title of the Google Calendar module shown in various UIs for Customize Chrome and the NTP." meaning="Title of feature for showing a glimpse of a user's Google Calendar.">
         Outlook Calendar
       </message>

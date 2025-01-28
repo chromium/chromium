@@ -11,6 +11,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {File} from '../../../file_suggestion.mojom-webui.js';
 import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import type {MicrosoftFilesPageHandlerRemote} from '../../../microsoft_files.mojom-webui.js';
+import {ParentTrustedDocumentProxy} from '../../microsoft_auth_frame_connector.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
@@ -79,6 +80,11 @@ export class MicrosoftFilesModuleElement extends
           text: this.i18n('modulesDriveDisableButtonTextV2'),
         },
         {
+          action: 'signout',
+          icon: 'modules:logout',
+          text: this.i18n('modulesMicrosoftSignOutButtonText'),
+        },
+        {
           action: 'info',
           icon: 'modules:info',
           text: this.i18n('moduleInfoButtonTitle'),
@@ -125,6 +131,10 @@ export class MicrosoftFilesModuleElement extends
 
   protected onInfoDialogClose_() {
     this.showInfoDialog_ = false;
+  }
+
+  protected onSignOutButtonClick_() {
+    ParentTrustedDocumentProxy.getInstance()?.getChildDocument().signOut();
   }
 }
 
