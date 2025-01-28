@@ -29,7 +29,8 @@ class LogFile {
   bool IsInFailState() const;
   bool IsAtEOF() const;
   bool Refresh();
-  std::vector<std::string> RetrieveNextLogs(size_t count);
+  std::vector<std::string> RetrieveNextLogs(size_t line_count,
+                                            size_t max_byte_limit);
 
  private:
   const base::FilePath filepath_;
