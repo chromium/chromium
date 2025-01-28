@@ -33,7 +33,7 @@ GlicUIConfig::GlicUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme, chrome::kChromeUIGlicHost) {}
 
 bool GlicUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
-  return GlicEnabling::IsEnabledForProfile(
+  return GlicEnabling::IsProfileEligible(
       Profile::FromBrowserContext(browser_context));
 }
 

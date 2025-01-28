@@ -36,6 +36,10 @@ interface PageHandler {
   // Resize the widget hosting the WebUI to the given size.
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.
   ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
+
+  // Returns true if the profile associated with this Glic page is enabled by
+  // policy.
+  IsProfileEnabled() => (bool enabled);
 };
 
 // Reason why getting tab context failed.

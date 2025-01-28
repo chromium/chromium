@@ -10,6 +10,7 @@
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic.mojom.h"
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -330,6 +331,12 @@ void GlicPageHandler::ResizeWidget(const gfx::Size& size,
                                    base::TimeDelta duration,
                                    ResizeWidgetCallback callback) {
   GetGlicService()->ResizePanel(size, duration, std::move(callback));
+}
+
+void GlicPageHandler::IsProfileEnabled(IsProfileEnabledCallback callback) {
+  bool enabled = GlicEnabling::IsEnabledForProfile(
+      Profile::FromBrowserContext(browser_context_));
+  std::move(callback).Run(enabled);
 }
 
 }  // namespace glic

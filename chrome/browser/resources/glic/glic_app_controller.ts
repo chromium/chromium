@@ -26,6 +26,7 @@ interface PageElementTypes {
   loadingPanel: HTMLElement;
   offlinePanel: HTMLElement;
   errorPanel: HTMLElement;
+  unavailablePanel: HTMLElement;
   guestPanel: chrome.webviewTag.WebView;
 }
 
@@ -35,7 +36,8 @@ const $: PageElementTypes = new Proxy({}, {
   },
 });
 
-type PanelId = 'loadingPanel'|'guestPanel'|'offlinePanel'|'errorPanel';
+type PanelId =
+    'loadingPanel'|'guestPanel'|'offlinePanel'|'errorPanel'|'unavailablePanel';
 
 export class GlicAppController {
   preLoadingTimer: number|undefined;
@@ -168,9 +170,28 @@ export class GlicAppController {
   }
 
   beginLoadingSequence(maxWaitTimeMs?: number): void {
+    // Send this message but block on it only after webview cookies are synced
+    // to minimize latency. Enabling state is checked only when going online.
+    // This only applies when showing Glic in a tab (since the entry point
+    // button is removed when disabled) so the mild inconsistency doesn't
+    // matter.
+    const enabledCheck = this.browserProxy.handler.isProfileEnabled();
+
     // Blocking on cookie syncing here introduces latency, we should consider
     // ways to avoid it.
-    this.browserProxy.handler.syncWebviewCookies().then(() => {
+    this.browserProxy.handler.syncWebviewCookies().then(async () => {
+      const isEnabled = (await enabledCheck).enabled;
+      if (!isEnabled) {
+        clearTimeout(this.maxWaitTimer);
+        this.maxWaitTimer = undefined;
+        clearTimeout(this.minHoldTimer);
+        this.minHoldTimer = undefined;
+        clearTimeout(this.preLoadingTimer);
+        this.preLoadingTimer = undefined;
+        this.showPanel('unavailablePanel');
+        return;
+      }
+
       // Load the web client only after cookie sync is complete.
       this.webview!.src = loadTimeData.getString('glicGuestURL');
       this.showLoading(maxWaitTimeMs);
