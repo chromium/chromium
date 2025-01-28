@@ -176,6 +176,8 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Notifies the observers that an extensive set of changes is about to happen,
   // such as during import or sync, so they can delay any expensive UI updates
   // until it's finished.
+  //
+  // Undo tracking is suspended during extensive changes.
   void BeginExtensiveChanges();
   void EndExtensiveChanges();
 

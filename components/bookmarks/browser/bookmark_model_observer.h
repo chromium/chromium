@@ -107,7 +107,6 @@ class BookmarkModelObserver : public base::CheckedObserver {
   // Invoked before an extensive set of model changes is about to begin.
   // This tells UI intensive observers to wait until the updates finish to
   // update themselves.
-  // These methods should only be used for imports and sync.
   // Observers should still respond to BookmarkNodeRemoved immediately,
   // to avoid holding onto stale node pointers.
   virtual void ExtensiveBookmarkChangesBeginning() {}

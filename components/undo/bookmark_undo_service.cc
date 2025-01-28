@@ -394,6 +394,14 @@ void BookmarkUndoService::OnWillReorderBookmarkNode(const BookmarkNode* node) {
   undo_manager()->AddUndoOperation(std::move(op));
 }
 
+void BookmarkUndoService::ExtensiveBookmarkChangesBeginning() {
+  undo_manager()->SuspendUndoTracking();
+}
+
+void BookmarkUndoService::ExtensiveBookmarkChangesEnded() {
+  undo_manager()->ResumeUndoTracking();
+}
+
 void BookmarkUndoService::GroupedBookmarkChangesBeginning() {
   undo_manager()->StartGroupingActions();
 }

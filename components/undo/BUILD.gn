@@ -6,8 +6,6 @@ static_library("undo") {
   sources = [
     "bookmark_undo_service.cc",
     "bookmark_undo_service.h",
-    "bookmark_undo_utils.cc",
-    "bookmark_undo_utils.h",
     "undo_manager.cc",
     "undo_manager.h",
     "undo_manager_observer.h",
