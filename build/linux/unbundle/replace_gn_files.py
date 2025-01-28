@@ -53,7 +53,6 @@ REPLACEMENTS = {
     'icu': 'third_party/icu/BUILD.gn',
     'jsoncpp': 'third_party/jsoncpp/BUILD.gn',
     'libaom': 'third_party/libaom/BUILD.gn',
-    'libavif': 'third_party/libavif/BUILD.gn',
     'libdrm': 'third_party/libdrm/BUILD.gn',
     'libjpeg': 'third_party/libjpeg.gni',
     'libpng': 'third_party/libpng/BUILD.gn',
