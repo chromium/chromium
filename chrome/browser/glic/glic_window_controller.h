@@ -249,6 +249,12 @@ class GlicWindowController : public views::WidgetObserver {
                      base::TimeDelta duration,
                      base::OnceClosure callback);
 
+  // Convenience method for AnimateBounds that takes a gfx::Size and maintains
+  // the top-right corner.
+  void AnimateSize(const gfx::Size& target_size,
+                   base::TimeDelta duration,
+                   base::OnceClosure callback);
+
   // Creates the glic widget.
   std::unique_ptr<views::Widget> CreateGlicWidget(
       Profile* profile,
@@ -286,8 +292,8 @@ class GlicWindowController : public views::WidgetObserver {
   // True if we've hit a login page (and have not yet shown).
   bool login_page_committed_ = false;
 
-  // This member contains the last size that glic requested. This is reset
-  // every time glic is closed.
+  // This member contains the last size that glic requested. This should be
+  // reset every time glic is closed but is currently cached.
   std::optional<gfx::Size> glic_size_;
 
   // Used to monitor key and mouse events from native window.

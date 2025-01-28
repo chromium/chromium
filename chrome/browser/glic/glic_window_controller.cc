@@ -515,9 +515,8 @@ void GlicWindowController::ShowFinish() {
   if (glic_size_) {
     gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
     if (*glic_size_ != current_bounds.size()) {
-      current_bounds.set_size(*glic_size_);
-      AnimateBounds(current_bounds, base::Milliseconds(kEntryDurationMs),
-                    base::DoNothing());
+      AnimateSize(*glic_size_, base::Milliseconds(kEntryDurationMs),
+                  base::DoNothing());
     }
   }
 }
@@ -644,18 +643,15 @@ void GlicWindowController::Resize(const gfx::Size& size,
                                   base::OnceClosure callback) {
   glic_size_ = size;
 
-  if (!GetGlicWidget()) {
+  // If the glic window is not in the ready state, do nothing for now.
+  if (state_ == State::kOpen) {
+    AnimateSize(size, duration, std::move(callback));
+  } else {
+    // If the glic window is closed, or the widget isn't ready (e.g. because
+    // it's currently still animating open) immediately post the callback.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
-    return;
   }
-
-  gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
-  int original_top_right = current_bounds.x() + current_bounds.width();
-  current_bounds.set_size(size);
-  current_bounds.set_x(original_top_right - size.width());
-
-  AnimateBounds(current_bounds, duration, std::move(callback));
 }
 
 void GlicWindowController::AnimateBounds(const gfx::Rect& target_bounds,
@@ -674,6 +670,17 @@ void GlicWindowController::AnimateBounds(const gfx::Rect& target_bounds,
 
   window_resize_animation_ = std::make_unique<GlicWindowResizeAnimation>(
       this, target_bounds, duration, std::move(callback));
+}
+
+void GlicWindowController::AnimateSize(const gfx::Size& target_size,
+                                       base::TimeDelta duration,
+                                       base::OnceClosure callback) {
+  // Maintain the top-right corner.
+  gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
+  int original_top_right = current_bounds.x() + current_bounds.width();
+  current_bounds.set_size(target_size);
+  current_bounds.set_x(original_top_right - target_size.width());
+  AnimateBounds(current_bounds, duration, std::move(callback));
 }
 
 std::unique_ptr<views::Widget> GlicWindowController::CreateGlicWidget(
