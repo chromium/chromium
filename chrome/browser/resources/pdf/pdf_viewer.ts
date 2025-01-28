@@ -1343,10 +1343,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     // Create blob before callback to avoid race condition.
     const blob = new Blob([result.dataToSave], {type: 'application/pdf'});
-    // TODO(crbug.com/373852607): When  OOPIF PDF is enabled, cross origin
-    // checks block the request for `showSaveFilePicker`. Fix the issue by
-    // allow-listing the request from PDF Viewer.
-    if (!this.pdfOopifEnabled && this.pdfUseShowSaveFilePicker_) {
+    if (this.pdfUseShowSaveFilePicker_) {
       try {
         const fileHandle = await window.showSaveFilePicker({
           suggestedName: fileName,
