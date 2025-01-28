@@ -2437,10 +2437,6 @@
       status: "stable",
     },
     {
-      name: "InertElementNonSearchable",
-      status: "stable",
-    },
-    {
       // If a painting bug no longer reproduces with this feature enabled, then
       // the bug is caused by incorrect cull rects.
       name: "InfiniteCullRect",
