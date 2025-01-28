@@ -10,8 +10,15 @@
 
 namespace cc {
 
-void PropertyTreeLayerListDelegate::UpdatePropertyTreesIfNeeded(
-    LayerTreeHost* host) {
+void PropertyTreeLayerListDelegate::SetLayerTreeHost(LayerTreeHost* host) {
+  host_ = host;
+}
+
+LayerTreeHost* PropertyTreeLayerListDelegate::host() {
+  return host_;
+}
+
+void PropertyTreeLayerListDelegate::UpdatePropertyTreesIfNeeded() {
   // The property trees are already up-to-date, but the HUD layer is managed
   // outside the layer list sent to the LayerTreeHost and needs to have its
   // property tree state set.
@@ -19,28 +26,27 @@ void PropertyTreeLayerListDelegate::UpdatePropertyTreesIfNeeded(
                        "PropertyTreeLayerListDelegate::"
                        "UpdatePropertyTreesIfNeeded_ReceivedPropertyTrees",
                        TRACE_EVENT_SCOPE_THREAD, "property_trees",
-                       host->property_trees()->AsTracedValue());
+                       host()->property_trees()->AsTracedValue());
 
   // Note that we can't cache the root_layer object because it's not
   // threadsafe to do so.
-  if (HeadsUpDisplayLayer* hud_layer = host->hud_layer();
-      hud_layer && host->root_layer()) {
+  if (HeadsUpDisplayLayer* hud_layer = host()->hud_layer();
+      hud_layer && host()->root_layer()) {
     hud_layer->SetTransformTreeIndex(
-        host->root_layer()->transform_tree_index());
-    hud_layer->SetEffectTreeIndex(host->root_layer()->effect_tree_index());
-    hud_layer->SetClipTreeIndex(host->root_layer()->clip_tree_index());
-    hud_layer->SetScrollTreeIndex(host->root_layer()->scroll_tree_index());
+        host()->root_layer()->transform_tree_index());
+    hud_layer->SetEffectTreeIndex(host()->root_layer()->effect_tree_index());
+    hud_layer->SetClipTreeIndex(host()->root_layer()->clip_tree_index());
+    hud_layer->SetScrollTreeIndex(host()->root_layer()->scroll_tree_index());
     hud_layer->set_property_tree_sequence_number(
-        host->root_layer()->property_tree_sequence_number());
+        host()->root_layer()->property_tree_sequence_number());
   }
 }
 
 void PropertyTreeLayerListDelegate::UpdateScrollOffsetFromImpl(
-    LayerTreeHost* host,
     const ElementId& id,
     const gfx::Vector2dF& delta,
     const std::optional<TargetSnapAreaElementIds>& snap_target_ids) {
-  auto& scroll_tree = host->property_trees()->scroll_tree_mutable();
+  auto& scroll_tree = host()->property_trees()->scroll_tree_mutable();
   auto new_offset = scroll_tree.current_scroll_offset(id) + delta;
   TRACE_EVENT_INSTANT2("cc", "NotifyDidScroll", TRACE_EVENT_SCOPE_THREAD,
                        "cur_y", scroll_tree.current_scroll_offset(id).y(),
@@ -57,7 +63,7 @@ void PropertyTreeLayerListDelegate::UpdateScrollOffsetFromImpl(
 
     // Update the offset in the transform node.
     TransformTree& transform_tree =
-        host->property_trees()->transform_tree_mutable();
+        host()->property_trees()->transform_tree_mutable();
     auto* transform_node = transform_tree.Node(scroll_node->transform_id);
     if (transform_node && transform_node->scroll_offset != new_offset) {
       transform_node->scroll_offset = new_offset;
@@ -72,13 +78,13 @@ void PropertyTreeLayerListDelegate::UpdateScrollOffsetFromImpl(
       // But if the scroll should be realized on the main thread, we need a
       // commit to push the transform change.
       if (scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node)) {
-        host->SetNeedsCommit();
+        host()->SetNeedsCommit();
       }
     }
 
     // The transform tree has been modified which requires a call to
     // |LayerTreeHost::UpdateLayers| to update the property trees.
-    host->SetNeedsUpdateLayers();
+    host()->SetNeedsUpdateLayers();
   }
 
   scroll_tree.NotifyDidCompositorScroll(id, new_offset, snap_target_ids);
