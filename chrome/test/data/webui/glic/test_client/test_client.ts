@@ -7,8 +7,8 @@ import type {GlicBrowserHost, GlicWebClient, Observable, TabData} from 'chrome:/
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
 
 interface PageElementTypes {
-  status: HTMLDivElement;
-  pageHeader: HTMLDivElement;
+  status: HTMLElement;
+  pageHeader: HTMLElement;
   focusedFavicon: HTMLImageElement;
   focusedUrl: HTMLInputElement;
   contextAccessIndicator: HTMLInputElement;
@@ -32,7 +32,7 @@ interface PageElementTypes {
   screenshotImg: HTMLImageElement;
   faviconImg: HTMLImageElement;
   getlocation: HTMLButtonElement;
-  location: HTMLDivElement;
+  location: HTMLElement;
   permissionSelect: HTMLSelectElement;
   enabledSelect: HTMLSelectElement;
   closebn: HTMLButtonElement;
@@ -42,7 +42,7 @@ interface PageElementTypes {
   navigateWebviewUrl: HTMLInputElement;
   audioCapStop: HTMLButtonElement;
   audioCapStart: HTMLButtonElement;
-  audioStatus: HTMLDivElement;
+  audioStatus: HTMLElement;
   mic: HTMLAudioElement;
   audioDuckingOn: HTMLButtonElement;
   audioDuckingOff: HTMLButtonElement;

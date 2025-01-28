@@ -156,7 +156,7 @@ suite('<settings-customize-mouse-buttons-subpage>', () => {
             Router.getInstance().currentRoute, routes.CUSTOMIZE_MOUSE_BUTTONS);
         assertEquals(
             'Add or locate buttons on your mouse',
-            page.shadowRoot!.querySelector<HTMLDivElement>(
+            page.shadowRoot!.querySelector<HTMLElement>(
                                 '.help-title')!.textContent!.trim());
         // Go to the second mouse subpage with metadata.
         const url = new URLSearchParams({
@@ -170,7 +170,7 @@ suite('<settings-customize-mouse-buttons-subpage>', () => {
             Router.getInstance().currentRoute, routes.CUSTOMIZE_MOUSE_BUTTONS);
         assertEquals(
             'Locate buttons on your mouse',
-            page.shadowRoot!.querySelector<HTMLDivElement>(
+            page.shadowRoot!.querySelector<HTMLElement>(
                                 '.help-title')!.textContent!.trim());
       });
 });

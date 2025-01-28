@@ -118,7 +118,7 @@ suite('<settings-customize-tablet-buttons-subpage>', () => {
             Router.getInstance().currentRoute, routes.CUSTOMIZE_TABLET_BUTTONS);
         assertEquals(
             'Add or locate buttons on your tablet',
-            page.shadowRoot!.querySelector<HTMLDivElement>(
+            page.shadowRoot!.querySelector<HTMLElement>(
                                 '.help-title')!.textContent!.trim());
         // Go to the second tablet subpage with metadata.
         const url = new URLSearchParams({
@@ -130,7 +130,7 @@ suite('<settings-customize-tablet-buttons-subpage>', () => {
         await flushTasks();
         assertEquals(
             'Locate buttons on your tablet',
-            page.shadowRoot!.querySelector<HTMLDivElement>(
+            page.shadowRoot!.querySelector<HTMLElement>(
                                 '.help-title')!.textContent!.trim());
       });
 });

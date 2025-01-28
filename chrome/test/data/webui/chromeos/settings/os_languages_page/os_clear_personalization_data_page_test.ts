@@ -36,7 +36,7 @@ suite('<os-settings-japanese-clear-ime-data-dialog>', () => {
   test(
       'There exists page contents for the clear personalized data page', () => {
         const dialogBody =
-            clearPersonalizedDataPage.shadowRoot!.querySelector<HTMLDivElement>(
+            clearPersonalizedDataPage.shadowRoot!.querySelector<HTMLElement>(
                 '#dialogBody');
         assertTrue(!!dialogBody);
         assertFalse(dialogBody.hidden);

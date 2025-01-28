@@ -34,7 +34,7 @@ suite('CrComponentsBluetoothPairingConfirmCodePageTest', function() {
 
         const code = '876542';
         const codeInput =
-            deviceConfirmCodePage.shadowRoot!.querySelector<HTMLDivElement>(
+            deviceConfirmCodePage.shadowRoot!.querySelector<HTMLElement>(
                 '#code');
         assertTrue(!!codeInput);
 

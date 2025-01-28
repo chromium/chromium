@@ -84,7 +84,7 @@ suite('WallpaperImagesElementTest', function() {
         [wallpaperProvider.images![0]!.url, wallpaperProvider.images![2]!.url],
         `item has correct src`);
 
-    const notSelectedElements: HTMLDivElement[] =
+    const notSelectedElements: HTMLElement[] =
         Array.from(wallpaperImagesElement.shadowRoot!.querySelectorAll(
             `${WallpaperGridItemElement.is}[aria-selected='false']`));
 

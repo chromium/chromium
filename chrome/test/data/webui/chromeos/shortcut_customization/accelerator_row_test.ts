@@ -197,7 +197,7 @@ suite('acceleratorRowTest', function() {
         rowElement!.shadowRoot!.querySelector('text-accelerator');
     assertTrue(!!textAccelElement);
     const textWrapper =
-        textAccelElement!.shadowRoot!.querySelector<HTMLDivElement>(
+        textAccelElement!.shadowRoot!.querySelector<HTMLElement>(
             '#text-wrapper');
     assertTrue(!!textWrapper);
   });

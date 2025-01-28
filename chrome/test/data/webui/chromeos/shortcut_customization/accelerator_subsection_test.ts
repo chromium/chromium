@@ -141,7 +141,7 @@ suite('acceleratorSubsectionTest', function() {
         manager!.getAcceleratorSubcategory(/*source=*/ 0, /*action=*/ 5)!,
         AcceleratorSubcategory.kApps);
     let shortcutsAssignedElement =
-        rowListElement[1]!.shadowRoot!.querySelector<HTMLDivElement>(
+        rowListElement[1]!.shadowRoot!.querySelector<HTMLElement>(
             '#noShortcutAssignedContainer');
     assertTrue(!!shortcutsAssignedElement);
     assertTrue(shortcutsAssignedElement.hidden);
@@ -156,7 +156,7 @@ suite('acceleratorSubsectionTest', function() {
         AcceleratorSubcategory.kApps);
     // Expect the `noShortcutsAssigned` view to be available.
     shortcutsAssignedElement =
-        rowListElement[0]!.shadowRoot!.querySelector<HTMLDivElement>(
+        rowListElement[0]!.shadowRoot!.querySelector<HTMLElement>(
             '#noShortcutAssignedContainer');
     assertTrue(!!shortcutsAssignedElement);
     assertFalse(shortcutsAssignedElement.hidden);

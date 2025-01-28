@@ -12,7 +12,7 @@ interface Position {
 }
 
 suite('DragAndDropManager test', () => {
-  let listContainer: HTMLDivElement;
+  let listContainer: HTMLElement;
   let listElements: CustomizeButtonRowElement[];
   let dragAndDropManager: DragAndDropManager;
   let numOnDropCallbackCalls: number;

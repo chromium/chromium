@@ -182,7 +182,7 @@ suite('ZoneCustomizationElementTest', function() {
 
     // Zone 4 has zone color as yellow, expect yellow color button to be
     // highlighted.
-    (zoneTabs[3] as HTMLDivElement).click();
+    (zoneTabs[3] as HTMLElement).click();
     await waitAfterNextRender(zoneCustomizationElement!);
     verifyColorIconAriaChecked('yellowColor', colorContainers);
   });
@@ -201,7 +201,7 @@ suite('ZoneCustomizationElementTest', function() {
         4, zoneTabs!.length, '4 zones should display in customization dialog');
 
     // Click on zone 2, expect red color icon to be highlighted.
-    (zoneTabs[1] as HTMLDivElement).click();
+    (zoneTabs[1] as HTMLElement).click();
     const colorSelectorElement =
         zoneCustomizationElement!.shadowRoot!.querySelector<HTMLElement>(
             'color-selector');
@@ -252,7 +252,7 @@ suite('ZoneCustomizationElementTest', function() {
 
     // Click on zone 2, none of color icons to be highlighted as no rainbow
     // color available in color options.
-    (zoneTabs[1] as HTMLDivElement).click();
+    (zoneTabs[1] as HTMLElement).click();
     const colorSelectorElement =
         zoneCustomizationElement!.shadowRoot!.querySelector<HTMLElement>(
             'color-selector');

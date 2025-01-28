@@ -52,14 +52,14 @@ suite('<app-languages-page>', () => {
     flushTasks();
   }
 
-  function getAppItems(): NodeListOf<HTMLDivElement> {
-    return appLanguagesPage.shadowRoot!.querySelectorAll<HTMLDivElement>(
+  function getAppItems(): NodeListOf<HTMLElement> {
+    return appLanguagesPage.shadowRoot!.querySelectorAll<HTMLElement>(
         '#appItem');
   }
 
   function getAppLanguagesDescriptionText(): string {
     const descriptionText =
-        appLanguagesPage.shadowRoot!.querySelector<HTMLDivElement>(
+        appLanguagesPage.shadowRoot!.querySelector<HTMLElement>(
             '#appLanguagesDescription');
     assertTrue(!!descriptionText, 'descriptionText not found');
     assertTrue(
@@ -68,7 +68,7 @@ suite('<app-languages-page>', () => {
   }
 
   function assertAppItem(
-      list: NodeListOf<HTMLDivElement>, idx: number, title: string,
+      list: NodeListOf<HTMLElement>, idx: number, title: string,
       selectedLanguage: string): void {
     const tag = `[appItem#${idx}]`;
     assertTrue(

@@ -96,7 +96,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
         '#microphoneListSection'));
   }
 
-  function getNoMicrophoneTextElement(): HTMLDivElement|null {
+  function getNoMicrophoneTextElement(): HTMLElement|null {
     return privacyHubMicrophoneSubpage.shadowRoot!.querySelector(
         '#noMicrophoneText');
   }
@@ -159,7 +159,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
             privacyHubMicrophoneSubpage.i18n(
                 'privacyHubSensorNameWithBlockedSuffix', 'Fake Microphone'),
             privacyHubMicrophoneSubpage.shadowRoot!
-                .querySelector<HTMLDivElement>(
+                .querySelector<HTMLElement>(
                     '#microphoneNameWithBlockedSuffix')!.innerText.trim());
       });
 
@@ -345,7 +345,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
         }
       });
 
-  function getNoAppHasAccessTextSection(): HTMLDivElement|null {
+  function getNoAppHasAccessTextSection(): HTMLElement|null {
     return privacyHubMicrophoneSubpage.shadowRoot!.querySelector(
         '#noAppHasAccessText');
   }
@@ -438,9 +438,9 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
     return managePermissionsInChromeRow;
   }
 
-  function getNoWebsiteHasAccessTextRow(): HTMLDivElement {
+  function getNoWebsiteHasAccessTextRow(): HTMLElement {
     const noWebsiteHasAccessTextRow =
-        privacyHubMicrophoneSubpage.shadowRoot!.querySelector<HTMLDivElement>(
+        privacyHubMicrophoneSubpage.shadowRoot!.querySelector<HTMLElement>(
             '#noWebsiteHasAccessText');
     assertTrue(!!noWebsiteHasAccessTextRow);
     return noWebsiteHasAccessTextRow;

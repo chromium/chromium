@@ -22,7 +22,7 @@ import {CloudUploadTestBrowserProxy} from './cloud_upload_test_browser_proxy.js'
 
 suite('<cloud-upload>', () => {
   /* Holds the <cloud-upload> app. */
-  let container: HTMLDivElement;
+  let container: HTMLElement;
   /* The <cloud-upload> app. */
   let cloudUploadApp: CloudUploadElement;
   /* The BrowserProxy element to make assertions on when mojo methods are

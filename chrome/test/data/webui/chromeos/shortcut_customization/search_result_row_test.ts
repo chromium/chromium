@@ -108,7 +108,7 @@ suite('searchResultRowTest', function() {
         searchResultDescription.textContent?.trim());
 
     const acceleratorElements =
-        searchResultRowElement.shadowRoot!.querySelectorAll<HTMLDivElement>(
+        searchResultRowElement.shadowRoot!.querySelectorAll<HTMLElement>(
             '.accelerator-keys');
     // Two accelerators are expected.
     assertEquals(2, acceleratorElements.length);

@@ -34,13 +34,12 @@ suite('internet-config-dialog', () => {
     internetConfigDialog.setErrorForTesting('bad-passphrase');
     await flushAsync();
 
-    assertTrue(!!internetConfigDialog.shadowRoot!.querySelector<HTMLDivElement>(
+    assertTrue(!!internetConfigDialog.shadowRoot!.querySelector<HTMLElement>(
         '#errorDiv'));
 
     internetConfigDialog.setErrorForTesting('out-of-range');
     await flushAsync();
-    assertFalse(
-        !!internetConfigDialog.shadowRoot!.querySelector<HTMLDivElement>(
-            '#errorDiv'));
+    assertFalse(!!internetConfigDialog.shadowRoot!.querySelector<HTMLElement>(
+        '#errorDiv'));
   });
 });

@@ -103,13 +103,12 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
 
   function getGeolocationLabel(): string {
     return privacyHubGeolocationSubpage.shadowRoot!
-        .querySelector<HTMLDivElement>('#geolocationStatus')!.innerText;
+        .querySelector<HTMLElement>('#geolocationStatus')!.innerText;
   }
 
   function getGeolocationSubLabel(): string {
     return privacyHubGeolocationSubpage.shadowRoot!
-        .querySelector<HTMLDivElement>(
-            '#geolocationStatusDescription')!.innerText;
+        .querySelector<HTMLElement>('#geolocationStatusDescription')!.innerText;
   }
 
   async function setGeolocationAccessLevelPref(

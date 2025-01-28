@@ -58,25 +58,25 @@ suite('PasspointSubpage', () => {
 
   function getListItems(id: string) {
     const div =
-        passpointSubpage_.shadowRoot!.querySelector<HTMLDivElement>(`#${id}`);
+        passpointSubpage_.shadowRoot!.querySelector<HTMLElement>(`#${id}`);
     assertTrue(!!div);
     return div!.querySelectorAll('div.list-item');
   }
 
-  function getExpirationDateItem(): HTMLDivElement|null {
-    return passpointSubpage_.shadowRoot!.querySelector<HTMLDivElement>(
+  function getExpirationDateItem(): HTMLElement|null {
+    return passpointSubpage_.shadowRoot!.querySelector<HTMLElement>(
         '#passpointExpirationDate');
   }
 
   function getSourceText(): string {
-    const div = passpointSubpage_.shadowRoot!.querySelector<HTMLDivElement>(
+    const div = passpointSubpage_.shadowRoot!.querySelector<HTMLElement>(
         '#passpointSourceText');
     assertTrue(!!div);
     return div!.textContent!.trim();
   }
 
   function getCertificateName(): string {
-    const div = passpointSubpage_.shadowRoot!.querySelector<HTMLDivElement>(
+    const div = passpointSubpage_.shadowRoot!.querySelector<HTMLElement>(
         '#passpointCertificateName');
     assertTrue(!!div);
     return div!.textContent!.trim();
@@ -291,7 +291,7 @@ suite('PasspointSubpage', () => {
     networkConfigApi_.addNetworksForTest([wifi]);
     await init(sub);
 
-    const elem = passpointSubpage_.shadowRoot!.querySelector<HTMLDivElement>(
+    const elem = passpointSubpage_.shadowRoot!.querySelector<HTMLElement>(
         '#passpointNetworksList');
     assertNull(elem);
   });

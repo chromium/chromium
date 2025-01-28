@@ -83,7 +83,7 @@ suite('ShortcutInputKey', function() {
     await flushTasks();
 
     const iconWrapperElement =
-        shortcutInputKeyElement.shadowRoot!.querySelector<HTMLDivElement>(
+        shortcutInputKeyElement.shadowRoot!.querySelector<HTMLElement>(
             '#key > div');
     assertTrue(isVisible(iconWrapperElement));
 
@@ -105,7 +105,7 @@ suite('ShortcutInputKey', function() {
             '#key-icon');
     assertTrue(!!iconElement);
     const iconWrapperElement =
-        shortcutInputKeyElement.shadowRoot!.querySelector<HTMLDivElement>(
+        shortcutInputKeyElement.shadowRoot!.querySelector<HTMLElement>(
             '#key > div');
     assertTrue(isVisible(iconElement));
     assertTrue(isVisible(iconWrapperElement));
@@ -129,7 +129,7 @@ suite('ShortcutInputKey', function() {
             '#key-icon');
     assertTrue(!!iconElement);
     const iconWrapperElement =
-        shortcutInputKeyElement.shadowRoot!.querySelector<HTMLDivElement>(
+        shortcutInputKeyElement.shadowRoot!.querySelector<HTMLElement>(
             '#key > div');
     assertTrue(isVisible(iconElement));
     assertTrue(isVisible(iconWrapperElement));

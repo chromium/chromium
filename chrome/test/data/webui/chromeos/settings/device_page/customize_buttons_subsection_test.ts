@@ -121,7 +121,7 @@ suite('<customize-buttons-subsection>', () => {
     assertFalse(saveButton.disabled);
     assertTrue(customizeButtonsSubsection.get('buttonNameInvalid_'));
     assertEquals(buttonLabelInput.value.length, 32);
-    const inputCountText: HTMLDivElement|null =
+    const inputCountText: HTMLElement|null =
         customizeButtonsSubsection.shadowRoot!.querySelector('#inputCount');
     assertEquals(inputCountText!.textContent!.trim(), '32/32');
 

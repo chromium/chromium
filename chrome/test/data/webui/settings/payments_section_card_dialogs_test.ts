@@ -603,7 +603,7 @@ suite('PaymentsSectionCardDialogs', function() {
     assertTrue(isVisible(cvcInput));
 
     const cvcInputTitle =
-        cvcInput.shadowRoot!.querySelector<HTMLDivElement>(
+        cvcInput.shadowRoot!.querySelector<HTMLElement>(
                                 '#label')!.textContent!.trim();
     assertTrue(!!cvcInputTitle);
     assertEquals(

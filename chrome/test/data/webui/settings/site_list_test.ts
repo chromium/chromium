@@ -842,9 +842,8 @@ suite('SiteList', function() {
       const blockedPermissions = disabled ? [category] : [];
       webUIListenerCallback('osGlobalPermissionChanged', blockedPermissions);
 
-      const warningElement =
-          testElement.$.category.querySelector<HTMLDivElement>(
-              '#systemPermissionDeclinedWarning');
+      const warningElement = testElement.$.category.querySelector<HTMLElement>(
+          '#systemPermissionDeclinedWarning');
       assertTrue(!!warningElement);
       const linkElement =
           warningElement.querySelector('#openSystemSettingsLink');

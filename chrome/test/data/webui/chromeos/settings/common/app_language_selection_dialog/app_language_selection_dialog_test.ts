@@ -142,8 +142,8 @@ suite('<app-language-selection-dialog>', () => {
     flush();
   }
 
-  function getNoSearchResultField(): HTMLDivElement|null {
-    return appLanguageSelectionDialog.shadowRoot!.querySelector<HTMLDivElement>(
+  function getNoSearchResultField(): HTMLElement|null {
+    return appLanguageSelectionDialog.shadowRoot!.querySelector<HTMLElement>(
         '#noSearchResults');
   }
 
@@ -309,8 +309,8 @@ suite('<app-language-selection-dialog>', () => {
         assertLanguageItem(
             suggestedItems, /* idx= */ 0, deviceLanguageLabel,
             /* isSelected= */ false, ListType.SUGGESTED);
-        suggestedItems[0]!.shadowRoot!
-            .querySelector<HTMLDivElement>(listItemId)!.click();
+        suggestedItems[0]!.shadowRoot!.querySelector<HTMLElement>(
+                                          listItemId)!.click();
         // Device language should be selected.
         assertLanguageItem(
             suggestedItems, /* idx= */ 0, deviceLanguageLabel,
@@ -396,7 +396,7 @@ suite('<app-language-selection-dialog>', () => {
 
         const filteredItems = getFilteredItems();
         assertEquals(1, filteredItems.length);
-        filteredItems[0]!.shadowRoot!.querySelector<HTMLDivElement>(
+        filteredItems[0]!.shadowRoot!.querySelector<HTMLElement>(
                                          listItemId)!.click();
         // Test language should be selected.
         assertLanguageItem(

@@ -116,7 +116,7 @@ suite('FirmwareUpdateAppTest', () => {
     return getFirmwareUpdateDialog().update;
   }
 
-  function getUpdateDialogTitle(): HTMLDivElement {
+  function getUpdateDialogTitle(): HTMLElement {
     return strictQuery(
         '#updateDialogTitle', getFirmwareUpdateDialog().shadowRoot,
         HTMLDivElement);
