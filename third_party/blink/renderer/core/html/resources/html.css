@@ -1650,6 +1650,17 @@ dialog:modal {
 @supports blink-feature(CustomizableSelect) {
   select:not(:-internal-list-box):not([multiple]) {
     font: -internal-appearance-auto-base-select(-webkit-small-control, inherit);
+    text-shadow: -internal-appearance-auto-base-select(none, inherit);
+    text-transform: -internal-appearance-auto-base-select(none, inherit);
+    text-rendering: -internal-appearance-auto-base-select(auto, inherit);
+    letter-spacing: -internal-appearance-auto-base-select(normal, inherit);
+    word-spacing: -internal-appearance-auto-base-select(normal, inherit);
+    text-align: -internal-appearance-auto-base-select(start, inherit);
+    /* This text-autospace rule won't work because it is set with !important
+     * earlier in the UA stylesheet. After merging with the rest of the UA
+     * style rules when removing the CustomizableSelect flag, it should start
+     * to work. */
+    text-autospace: -internal-appearance-auto-base-select(no-autospace !important, inherit);
     color: -internal-appearance-auto-base-select(FieldText, inherit);
     background-color: -internal-appearance-auto-base-select(Field, transparent);
     border: 1px solid -internal-appearance-auto-base-select(light-dark(#767676, #858585), currentColor);
