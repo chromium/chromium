@@ -117,8 +117,6 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoDisabled) {
-  CreateAndStartUserSession(
-      AccountId::FromUserEmailGaiaId(kTestUserName1, GaiaId(kTestUser2GaiaId)));
   Profile* profile = ProfileManager::GetActiveUserProfile();
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 

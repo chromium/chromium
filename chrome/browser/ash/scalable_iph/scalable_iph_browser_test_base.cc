@@ -124,6 +124,18 @@ void ScalableIphBrowserTestBase::SetUp() {
   CustomizableTestEnvBrowserTestBase::SetUp();
 }
 
+void ScalableIphBrowserTestBase::SetUpInProcessBrowserTestFixture() {
+  CustomizableTestEnvBrowserTestBase::SetUpInProcessBrowserTestFixture();
+
+  if (enable_multi_user_) {
+    // Add a secondary user.
+    LoginManagerMixin* login_manager_mixin = GetLoginManagerMixin();
+    CHECK(login_manager_mixin);
+    login_manager_mixin->AppendRegularUsers(1);
+    CHECK_EQ(login_manager_mixin->users().size(), 2ul);
+  }
+}
+
 // `SetUpOnMainThread` is called just before a test body. Do the mock set up in
 // this function as `browser()` is not available in `SetUp` above.
 void ScalableIphBrowserTestBase::SetUpOnMainThread() {
@@ -150,12 +162,6 @@ void ScalableIphBrowserTestBase::SetUpOnMainThread() {
   }
 
   if (enable_multi_user_) {
-    // Add a secondary user.
-    LoginManagerMixin* login_manager_mixin = GetLoginManagerMixin();
-    CHECK(login_manager_mixin);
-    login_manager_mixin->AppendRegularUsers(1);
-    CHECK_EQ(login_manager_mixin->users().size(), 2ul);
-
     // By default, `MultiUserWindowManager` is created with multi profile off.
     // Re-create for multi profile tests. This has to be done after
     // `SetUpOnMainThread` of a base class as the original multi-profile-off

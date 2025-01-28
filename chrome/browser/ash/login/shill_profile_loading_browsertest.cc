@@ -35,6 +35,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_settings.pb.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -105,6 +106,18 @@ class ShillProfileLoadingTest : public LoginManagerTest {
   ~ShillProfileLoadingTest() override = default;
 
   // LoginManagerTest:
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    LoginManagerTest::SetUpLocalStatePrefService(local_state);
+
+    // Register a persisted user.
+    user_manager::TestHelper::RegisterPersistedUser(*local_state,
+                                                    unmanaged_user_.account_id);
+    user_manager::TestHelper::RegisterPersistedUser(
+        *local_state, secondary_unmanaged_user_.account_id);
+    user_manager::TestHelper::RegisterPersistedUser(*local_state,
+                                                    managed_user_.account_id);
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     LoginManagerTest::SetUpInProcessBrowserTestFixture();
 

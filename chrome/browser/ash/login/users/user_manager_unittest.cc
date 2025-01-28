@@ -48,6 +48,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager_impl.h"
 #include "components/user_manager/user_manager_pref_names.h"
@@ -514,8 +515,15 @@ TEST_F(UserManagerTest, RemoveUser) {
                               false /* browser_restart */,
                               false /* is_child */);
 
+  // Recreate the user manager to log out all accounts.
+  ResetUserManager();
+
   // Create non-owner account  and login in.
   user_manager_->UserLoggedIn(kAccountId0, kAccountId0.GetUserEmail(),
+                              false /* browser_restart */,
+                              false /* is_child */);
+  // Log-in owner account.
+  user_manager_->UserLoggedIn(kOwnerAccountId, kOwnerAccountId.GetUserEmail(),
                               false /* browser_restart */,
                               false /* is_child */);
 

@@ -56,6 +56,7 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
 
   // CustomizableTestEnvBrowserTestBase:
   void SetUp() override;
+  void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
