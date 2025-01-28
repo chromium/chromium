@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/accelerators/accelerator.h"

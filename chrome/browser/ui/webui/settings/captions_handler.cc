@@ -12,7 +12,6 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/grit/branded_strings.h"

@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/language/core/browser/pref_names.h"

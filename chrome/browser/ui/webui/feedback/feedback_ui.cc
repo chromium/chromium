@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"

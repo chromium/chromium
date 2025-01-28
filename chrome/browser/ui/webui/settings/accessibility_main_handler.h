@@ -7,7 +7,6 @@
 
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 

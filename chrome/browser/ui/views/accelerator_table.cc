@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"

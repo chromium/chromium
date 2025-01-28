@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/window_open_disposition.h"
 

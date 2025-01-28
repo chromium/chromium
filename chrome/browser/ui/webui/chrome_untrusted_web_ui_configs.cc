@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/chrome_untrusted_web_ui_configs.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/webui_config_map.h"
 #include "printing/buildflags/buildflags.h"
 

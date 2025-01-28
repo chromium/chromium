@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/print_preview/policy_settings.h"
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 

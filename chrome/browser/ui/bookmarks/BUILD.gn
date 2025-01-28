@@ -102,7 +102,6 @@ source_set("browser_tests") {
     ":bookmarks",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/app:command_ids",
     "//chrome/browser",
     "//chrome/browser:browser_process",

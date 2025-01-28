@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "device/bluetooth/bluetooth_adapter.h"

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "ui/views/layout/layout_provider.h"
 

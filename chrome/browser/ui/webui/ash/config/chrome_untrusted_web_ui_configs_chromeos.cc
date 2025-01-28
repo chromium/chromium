@@ -15,7 +15,6 @@
 #include "ash/webui/os_feedback_ui/os_feedback_untrusted_ui.h"
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_untrusted_ui.h"
 #include "base/functional/bind.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/annotator/untrusted_annotator_ui_config.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/apps/boca_web_app_config.h"

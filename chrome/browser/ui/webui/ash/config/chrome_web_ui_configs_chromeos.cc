@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_ui.h"
 #include "content/public/browser/webui_config_map.h"
 #include "url/gurl.h"

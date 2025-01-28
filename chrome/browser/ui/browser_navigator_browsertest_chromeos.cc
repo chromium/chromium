@@ -7,7 +7,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/wm/window_pin_util.h"
 #include "base/command_line.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"

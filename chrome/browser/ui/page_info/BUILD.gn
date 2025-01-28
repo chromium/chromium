@@ -64,7 +64,6 @@ source_set("impl") {
   deps += [
     ":page_info",
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/app:branded_strings",
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings",

@@ -45,7 +45,6 @@ static_library("privacy") {
     "//ash/webui/projector_app/public/cpp",
     "//base:i18n",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",

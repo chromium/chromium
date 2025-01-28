@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"

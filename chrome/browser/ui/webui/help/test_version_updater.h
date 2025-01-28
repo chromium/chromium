@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_HELP_TEST_VERSION_UPDATER_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
 
 // A very simple VersionUpdater implementation that immediately invokes the

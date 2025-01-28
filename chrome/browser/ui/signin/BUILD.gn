@@ -18,7 +18,6 @@ source_set("signin") {
 
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/ui/webui/signin",
     "//chrome/browser/ui/webui/signin:signin_utils",
     "//chrome/common",
@@ -55,7 +54,6 @@ source_set("impl") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
@@ -105,7 +103,6 @@ if (!is_android) {
         ":signin",
         "//base",
         "//base/test:test_support",
-        "//build:chromeos_buildflags",
         "//chrome/browser",
         "//chrome/browser/ui",
         "//chrome/browser/ui:browser_element_identifiers",

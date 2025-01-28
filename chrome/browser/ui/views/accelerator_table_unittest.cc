@@ -10,7 +10,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"

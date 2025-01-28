@@ -50,7 +50,6 @@ source_set("impl") {
     if (is_chromeos) {
       sources += [ "window_sizer_chromeos.cc" ]
       deps += [
-        "//build:chromeos_buildflags",
         "//chrome/common:constants",
         "//ui/aura",
       ]
@@ -73,7 +72,6 @@ source_set("unit_tests") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/ui",
     "//chrome/common:non_code_constants",
     "//testing/gtest",

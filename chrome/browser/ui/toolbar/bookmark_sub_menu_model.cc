@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"

@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"

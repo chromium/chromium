@@ -7,7 +7,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_tags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
