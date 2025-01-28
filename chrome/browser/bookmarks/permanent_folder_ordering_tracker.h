@@ -77,6 +77,13 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
       const std::vector<bookmarks::BookmarkNodeData::Element>& elements,
       size_t index);
 
+  // Helper function for optimization purposes, it returns the same value as
+  // `GetIndexOf()`.
+  // Returns `in_storage_index` if ordering is not tracked
+  // `ShouldTrackOrdering()` is false. Otherwise, returns `GetIndexOf()`
+  size_t GetIndexAcrossStorage(const bookmarks::BookmarkNode* node,
+                               size_t in_storage_index) const;
+
   // bookmarks::BookmarkModelObserver:
   void BookmarkModelLoaded(bool ids_reassigned) override;
   void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,

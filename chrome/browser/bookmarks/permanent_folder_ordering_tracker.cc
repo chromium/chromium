@@ -208,6 +208,20 @@ void PermanentFolderOrderingTracker::AddNodesAsCopiesOfNodeData(
   CHECK_EQ(ordering_.size(), GetExpectedOrderingSize());
 }
 
+size_t PermanentFolderOrderingTracker::GetIndexAcrossStorage(
+    const bookmarks::BookmarkNode* node,
+    size_t in_storage_index) const {
+  if (!ShouldTrackOrdering()) {
+    CHECK(node);
+    CHECK(node->parent());
+    CHECK_EQ(node->parent()->type(), tracked_type_);
+    CHECK(ordering_.empty());
+    DCHECK_EQ(GetIndexOf(node), in_storage_index);
+    return in_storage_index;
+  }
+  return GetIndexOf(node);
+}
+
 void PermanentFolderOrderingTracker::SetTrackedPermanentNodes() {
   switch (tracked_type_) {
     case bookmarks::BookmarkNode::URL:
