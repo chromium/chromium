@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/alias.h"
 #include "base/debug/asan_invalid_access.h"
 #include "base/debug/crash_logging.h"
@@ -204,7 +205,6 @@
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/public/platform/web_url_response.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
@@ -304,7 +304,6 @@ using blink::WebURL;
 using blink::WebURLError;
 using blink::WebURLRequest;
 using blink::WebURLResponse;
-using blink::WebVector;
 using blink::WebView;
 using blink::mojom::SelectionMenuBehavior;
 using network::mojom::ReferrerPolicy;
@@ -550,41 +549,29 @@ void FillNavigationParamsRequest(
   navigation_params->document_ukm_source_id =
       commit_params.document_ukm_source_id;
 
-  if (!commit_params.prefetched_signed_exchanges.empty()) {
-    navigation_params->prefetched_signed_exchanges = WebVector<std::unique_ptr<
-        blink::WebNavigationParams::PrefetchedSignedExchange>>();
-
-    for (const auto& exchange : commit_params.prefetched_signed_exchanges) {
-      blink::WebURLResponse web_response = blink::WebURLResponse::Create(
-          exchange->inner_url, *exchange->inner_response,
-          false /* report_security_info*/, -1 /* request_id */);
-      navigation_params->prefetched_signed_exchanges.emplace_back(
-          std::make_unique<
-              blink::WebNavigationParams::PrefetchedSignedExchange>(
-              exchange->outer_url,
-              WebString::FromLatin1(
-                  signed_exchange_utils::CreateHeaderIntegrityHashString(
-                      exchange->header_integrity)),
-              exchange->inner_url, web_response,
-              std::move(exchange->loader_factory_handle)));
-    }
-  }
+  navigation_params->prefetched_signed_exchanges = base::ToVector(
+      commit_params.prefetched_signed_exchanges, [](const auto& exchange) {
+        blink::WebURLResponse web_response = blink::WebURLResponse::Create(
+            exchange->inner_url, *exchange->inner_response,
+            false /* report_security_info*/, -1 /* request_id */);
+        return std::make_unique<
+            blink::WebNavigationParams::PrefetchedSignedExchange>(
+            exchange->outer_url,
+            WebString::FromLatin1(
+                signed_exchange_utils::CreateHeaderIntegrityHashString(
+                    exchange->header_integrity)),
+            exchange->inner_url, web_response,
+            std::move(exchange->loader_factory_handle));
+      });
 
   navigation_params->had_transient_user_activation =
       common_params.has_user_gesture;
 
-  WebVector<WebString> web_origin_trials;
-  web_origin_trials.reserve(commit_params.force_enabled_origin_trials.size());
-  for (const auto& trial : commit_params.force_enabled_origin_trials)
-    web_origin_trials.emplace_back(WebString::FromASCII(trial));
-  navigation_params->force_enabled_origin_trials = web_origin_trials;
+  navigation_params->force_enabled_origin_trials = base::ToVector(
+      commit_params.force_enabled_origin_trials, &WebString::FromASCII);
 
-  if (!commit_params.early_hints_preloaded_resources.empty()) {
-    navigation_params->early_hints_preloaded_resources = WebVector<WebURL>();
-    for (const auto& resource : commit_params.early_hints_preloaded_resources) {
-      navigation_params->early_hints_preloaded_resources.emplace_back(resource);
-    }
-  }
+  navigation_params->early_hints_preloaded_resources = base::ToVector(
+      commit_params.early_hints_preloaded_resources, blink::ToWebURL);
 
   // Pass on the `initiator_base_url` sent via the common_params for srcdoc and
   // about:blank documents. This will be picked up in DocumentLoader.
@@ -639,11 +626,6 @@ blink::mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
           info->url_request.GetURLRequestExtraData().get());
   DCHECK(url_request_extra_data);
 
-  // Convert from WebVector<int> to std::vector<int>.
-  std::vector<int> initiator_origin_trial_features(
-      info->initiator_origin_trial_features.begin(),
-      info->initiator_origin_trial_features.end());
-
   blink::NavigationDownloadPolicy download_policy;
   download_policy.ApplyDownloadFramePolicy(
       info->is_opener_navigation, info->url_request.HasUserGesture(),
@@ -671,7 +653,7 @@ blink::mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       info->url_request.HasUserGesture(),
       info->url_request.HasTextFragmentToken(),
       info->should_check_main_world_content_security_policy,
-      initiator_origin_trial_features, info->href_translate.Latin1(),
+      info->initiator_origin_trial_features, info->href_translate.Latin1(),
       is_history_navigation_in_new_child_frame, info->input_start,
       request_destination);
 }
@@ -724,7 +706,7 @@ class RenderFrameWebFrameSerializerClient
 
   // WebFrameSerializerClient implementation:
   void DidSerializeDataForFrame(
-      const WebVector<char>& data,
+      const std::vector<char>& data,
       WebFrameSerializerClient::FrameSerializationStatus status) override {
     DCHECK(handler_remote_.is_bound());
     handler_remote_->DidReceiveData(std::string(data.data(), data.size()));
@@ -3581,7 +3563,7 @@ RenderFrameImpl::CreateWorkerFetchContext() {
 
   std::vector<std::string> cors_exempt_header_list =
       RenderThreadImpl::current()->cors_exempt_header_list();
-  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
+  std::vector<blink::WebString> web_cors_exempt_header_list(
       cors_exempt_header_list.size());
   std::ranges::transform(
       cors_exempt_header_list, web_cors_exempt_header_list.begin(),
@@ -3939,8 +3921,8 @@ void RenderFrameImpl::DidChangeName(const blink::WebString& name) {
 }
 
 void RenderFrameImpl::DidMatchCSS(
-    const blink::WebVector<blink::WebString>& newly_matching_selectors,
-    const blink::WebVector<blink::WebString>& stopped_matching_selectors) {
+    const std::vector<blink::WebString>& newly_matching_selectors,
+    const std::vector<blink::WebString>& stopped_matching_selectors) {
   for (auto& observer : observers_)
     observer.DidMatchCSS(newly_matching_selectors, stopped_matching_selectors);
 }
@@ -5027,8 +5009,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   params->document_policy_header = document_policy_header;
 
   params->insecure_request_policy = frame_->GetInsecureRequestPolicy();
-  params->insecure_navigations_set =
-      frame_->GetInsecureRequestToUpgrade().ReleaseVector();
+  params->insecure_navigations_set = frame_->GetInsecureRequestToUpgrade();
 
   params->has_potentially_trustworthy_unique_origin =
       frame_origin.IsOpaque() && frame_origin.IsPotentiallyTrustworthy();
@@ -5633,7 +5614,7 @@ void RenderFrameImpl::BeginNavigation(
            blink::features::kHttpDiskCachePrewarming) ||
        base::FeatureList::IsEnabled(
            blink::features::kSpeculativeServiceWorkerWarmUp))) {
-    frame_->MaybeStartOutermostMainFrameNavigation(WebVector<WebURL>({url}));
+    frame_->MaybeStartOutermostMainFrameNavigation(std::vector<WebURL>({url}));
   }
 
   // Depending on navigation policy, send one of three IPCs to the browser

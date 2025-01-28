@@ -4,13 +4,14 @@
 
 #include "components/content_capture/renderer/content_capture_sender.h"
 
+#include <vector>
+
 #include "base/task/single_thread_task_runner.h"
 #include "components/content_capture/common/content_capture_data.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_content_holder.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -38,7 +39,7 @@ base::TimeDelta ContentCaptureSender::GetTaskInitialDelay() const {
 }
 
 void ContentCaptureSender::DidCaptureContent(
-    const blink::WebVector<blink::WebContentHolder>& data,
+    const std::vector<blink::WebContentHolder>& data,
     bool first_data) {
   ContentCaptureData frame_data;
   FillContentCaptureData(data, &frame_data, first_data /* set_url */);
@@ -46,14 +47,14 @@ void ContentCaptureSender::DidCaptureContent(
 }
 
 void ContentCaptureSender::DidUpdateContent(
-    const blink::WebVector<blink::WebContentHolder>& data) {
+    const std::vector<blink::WebContentHolder>& data) {
   ContentCaptureData frame_data;
   FillContentCaptureData(data, &frame_data, false /* set_url */);
   GetContentCaptureReceiver()->DidUpdateContent(frame_data);
 }
 
-void ContentCaptureSender::DidRemoveContent(blink::WebVector<int64_t> data) {
-  GetContentCaptureReceiver()->DidRemoveContent(data.ReleaseVector());
+void ContentCaptureSender::DidRemoveContent(std::vector<int64_t> data) {
+  GetContentCaptureReceiver()->DidRemoveContent(std::move(data));
 }
 
 void ContentCaptureSender::StartCapture() {
@@ -81,7 +82,7 @@ void ContentCaptureSender::OnDestruct() {
 }
 
 void ContentCaptureSender::FillContentCaptureData(
-    const blink::WebVector<blink::WebContentHolder>& node_holders,
+    const std::vector<blink::WebContentHolder>& node_holders,
     ContentCaptureData* data,
     bool set_url) {
   data->bounds = render_frame()->GetWebFrame()->VisibleContentRect();

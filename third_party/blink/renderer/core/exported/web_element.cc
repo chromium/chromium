@@ -262,7 +262,7 @@ WebVector<WebLabelElement> WebElement::Labels() const {
       const_cast<HTMLElement*>(html_element)->labels();
   if (!html_labels)
     return {};
-  Vector<WebLabelElement> labels;
+  std::vector<WebLabelElement> labels;
   for (unsigned i = 0; i < html_labels->length(); i++) {
     if (auto* label_element =
             blink::DynamicTo<HTMLLabelElement>(html_labels->item(i))) {

@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "components/attribution_reporting/data_host.mojom-blink-forward.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-blink-forward.h"
@@ -36,9 +37,6 @@ class LocalFrame;
 class ResourceRequest;
 class ResourceResponse;
 class WebString;
-
-template <typename T>
-class WebVector;
 
 struct Impression;
 
@@ -90,7 +88,7 @@ class CORE_EXPORT AttributionSrcLoader
   // with `window.open`.
   [[nodiscard]] std::optional<Impression> RegisterNavigation(
       const KURL& navigation_url,
-      const WebVector<WebString>& attribution_srcs,
+      const std::vector<WebString>& attribution_srcs,
       bool has_transient_user_activation,
       network::mojom::ReferrerPolicy);
 

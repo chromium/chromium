@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string_view>
+#include <vector>
 
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -23,8 +24,6 @@
 namespace blink {
 
 class WebString;
-template <typename T>
-class WebVector;
 class WebServiceWorkerProviderContext;
 
 // Worker fetch context for dedicated worker or shared worker.
@@ -60,7 +59,7 @@ class BLINK_PLATFORM_EXPORT WebDedicatedOrSharedWorkerFetchContext
           pending_fallback_factory,
       CrossVariantMojoReceiver<mojom::SubresourceLoaderUpdaterInterfaceBase>
           pending_subresource_loader_updater,
-      const WebVector<WebString>& cors_exempt_header_list,
+      const std::vector<WebString>& cors_exempt_header_list,
       mojo::PendingRemote<mojom::ResourceLoadInfoNotifier>
           pending_resource_load_info_notifier);
 

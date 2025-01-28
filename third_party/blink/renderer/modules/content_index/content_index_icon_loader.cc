@@ -63,7 +63,7 @@ WebVector<Manifest::ImageResource> ToImageResource(
 KURL FindBestIcon(WebVector<Manifest::ImageResource> image_resources,
                   const gfx::Size& icon_size) {
   return KURL(ManifestIconSelector::FindBestMatchingIcon(
-      image_resources.ReleaseVector(),
+      image_resources,
       /* ideal_icon_height_in_px= */ icon_size.height(),
       /* minimum_icon_size_in_px= */ 0,
       /* max_width_to_height_ratio= */ icon_size.width() * 1.0f /

@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "content/renderer/content_security_policy_util.h"
@@ -164,11 +165,8 @@ EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
   std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory =
       subresource_loader_factory_bundle_->Clone();
 
-  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
-      cors_exempt_header_list.size());
-  std::ranges::transform(
-      cors_exempt_header_list, web_cors_exempt_header_list.begin(),
-      [](const auto& header) { return blink::WebString::FromLatin1(header); });
+  std::vector<blink::WebString> web_cors_exempt_header_list =
+      base::ToVector(cors_exempt_header_list, &blink::WebString::FromLatin1);
 
   // |pending_subresource_loader_updater| and
   // |pending_resource_load_info_notifier| are not used for shared workers.

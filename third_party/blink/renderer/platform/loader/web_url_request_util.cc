@@ -150,7 +150,7 @@ scoped_refptr<network::ResourceRequestBody> GetRequestBodyForWebHTTPBody(
   while (httpBody.ElementAt(i++, element)) {
     switch (element.type) {
       case HTTPBodyElementType::kTypeData:
-        request_body->AppendBytes(element.data.Copy().ReleaseVector());
+        request_body->AppendBytes(element.data.Copy());
         break;
       case HTTPBodyElementType::kTypeFile:
         if (element.file_length == -1) {

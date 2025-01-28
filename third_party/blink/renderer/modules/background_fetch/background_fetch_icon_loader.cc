@@ -114,7 +114,7 @@ KURL BackgroundFetchIconLoader::PickBestIconForDisplay(
   }
 
   return KURL(ManifestIconSelector::FindBestMatchingSquareIcon(
-      icons.ReleaseVector(), ideal_size_pixels, kMinimumIconSizeInPx,
+      std::move(icons), ideal_size_pixels, kMinimumIconSizeInPx,
       mojom::ManifestImageResource_Purpose::ANY));
 }
 

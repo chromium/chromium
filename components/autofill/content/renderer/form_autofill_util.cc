@@ -1041,7 +1041,7 @@ std::optional<InferredLabel> InferLabelFromDefaultSelectText(
   }
   CHECK(IsSelectElement(element));
   std::vector<WebElement> options =
-      element.To<WebSelectElement>().GetListItems().ReleaseVector();
+      element.To<WebSelectElement>().GetListItems();
   // `options` can contain other elements like <optgroup>.
   std::erase_if(options, [](const WebElement& e) {
     return !e.DynamicTo<WebOptionElement>();
@@ -1849,11 +1849,9 @@ std::vector<WebFormControlElement> GetOwnedFormControls(
     const WebFormElement& form_element) {
   std::vector<WebFormControlElement> form_controls;
   if (form_element) {
-    form_controls =
-        form_element.GetFormControlElements().ReleaseVector();  // nocheck
+    form_controls = form_element.GetFormControlElements();  // nocheck
   } else {
-    form_controls =
-        document.UnassociatedFormControls().ReleaseVector();  // nocheck
+    form_controls = document.UnassociatedFormControls();  // nocheck
     // A form control element may be unassociated inside its Shadow DOM, but
     // owned (in the Autofill sense) by a <form> containing the shadow host.
     std::erase_if(form_controls, [](const WebFormControlElement& e) {

@@ -44,8 +44,6 @@
 #include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
-template <typename T>
-class WebVector;
 
 using FileSystemAccessDropData =
     base::RefCountedData<blink::CrossVariantMojoRemote<

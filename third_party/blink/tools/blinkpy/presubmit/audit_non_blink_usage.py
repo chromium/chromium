@@ -128,6 +128,7 @@ _CONFIG = [
             'base::PowerMonitor',
             'base::Process',
             'base::RadToDeg',
+            'base::RangeAsRvalues',
             'base::ranges::.+',
             'base::raw_span',
             'base::RefCountedData',
@@ -438,6 +439,13 @@ _CONFIG = [
         ],
         'allowed': [
             'net::SiteForCookies',
+        ],
+    },
+    {
+        'paths': ['third_party/blink/public/platform/web_url.h'],
+        'allowed': [
+            # Conversion functions from/to WebURL for non-blink code.
+            'GURL',
         ],
     },
     {
@@ -1101,7 +1109,13 @@ _CONFIG = [
         ],
     },
     {
-        'paths': ['third_party/blink/renderer/core/editing/ime'],
+        'paths': [
+            'third_party/blink/public/platform/web_text_input_info.h',
+            'third_party/blink/public/web/web_input_method_controller.h',
+            'third_party/blink/public/web/web_local_frame.h',
+            'third_party/blink/public/web/web_plugin.h',
+            'third_party/blink/renderer/core/editing/ime'
+        ],
         'allowed': [
             'ui::ImeTextSpan',
             'ui::TextInputAction',
@@ -1255,10 +1269,13 @@ _CONFIG = [
         ],
         'allowed': [
             'gfx::Insets',
+            'gfx::InsetsF',
             'gfx::Point',
             'gfx::PointF',
             'gfx::Rect',
             'gfx::RectF',
+            'gfx::Size',
+            'gfx::SizeF',
             'gfx::Vector2dF',
 
             # The Blink public API is shared between non-Blink and Blink code
@@ -1274,6 +1291,14 @@ _CONFIG = [
             # types are generally allowed for interop with non-Blink code, as
             # containers like WTF::Vector are not exposed outside Blink.
             'std::.+',
+        ],
+    },
+    {
+        'paths': [
+            'third_party/blink/public/web/web_navigation_params.h',
+        ],
+        'allowed': [
+            'network::mojom::WebClientHintsType',
         ],
     },
     {
@@ -1300,6 +1325,14 @@ _CONFIG = [
         ],
         'allowed': [
             'network::mojom::IntegrityAlgorithm',
+        ],
+    },
+    {
+        'paths': [
+            'third_party/blink/public/platform/web_media_key_system_configuration.h',
+        ],
+        'allowed': [
+            'media::EmeInitDataType',
         ],
     },
     {

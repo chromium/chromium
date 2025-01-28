@@ -30,6 +30,7 @@
 
 #include "third_party/blink/public/web/web_document.h"
 
+#include "base/containers/to_vector.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
@@ -198,8 +199,9 @@ WebElementCollection WebDocument::All() const {
       const_cast<Document*>(ConstUnwrap<Document>())->all());
 }
 
-WebVector<WebFormControlElement> WebDocument::UnassociatedFormControls() const {
-  Vector<WebFormControlElement> unassociated_form_controls;
+std::vector<WebFormControlElement> WebDocument::UnassociatedFormControls()
+    const {
+  std::vector<WebFormControlElement> unassociated_form_controls;
   for (const auto& element :
        ConstUnwrap<Document>()->UnassociatedListedElements()) {
     if (auto* form_control =
@@ -210,11 +212,11 @@ WebVector<WebFormControlElement> WebDocument::UnassociatedFormControls() const {
   return unassociated_form_controls;
 }
 
-WebVector<WebFormElement> WebDocument::Forms() const {
+std::vector<WebFormElement> WebDocument::Forms() const {
   HTMLCollection* forms =
       const_cast<Document*>(ConstUnwrap<Document>())->forms();
 
-  Vector<WebFormElement> form_elements;
+  std::vector<WebFormElement> form_elements;
   form_elements.reserve(forms->length());
   for (Element* element : *forms) {
     form_elements.emplace_back(blink::To<HTMLFormElement>(element));
@@ -222,15 +224,12 @@ WebVector<WebFormElement> WebDocument::Forms() const {
   return form_elements;
 }
 
-WebVector<WebFormElement> WebDocument::GetTopLevelForms() const {
+std::vector<WebFormElement> WebDocument::GetTopLevelForms() const {
   Vector<WebFormElement> web_forms;
   HeapVector<Member<HTMLFormElement>> forms =
       const_cast<Document*>(ConstUnwrap<Document>())->GetTopLevelForms();
-  web_forms.reserve(forms.size());
-  for (auto& form : forms) {
-    web_forms.push_back(form.Get());
-  }
-  return web_forms;
+  return base::ToVector(
+      forms, [](HTMLFormElement* element) { return WebFormElement(element); });
 }
 
 WebURL WebDocument::CompleteURL(const WebString& partial_url) const {
@@ -272,29 +271,25 @@ void WebDocument::RemoveInsertedStyleSheet(const WebStyleSheetKey& key,
   Unwrap<Document>()->GetStyleEngine().RemoveInjectedSheet(key, origin);
 }
 
-void WebDocument::WatchCSSSelectors(const WebVector<WebString>& web_selectors) {
+void WebDocument::WatchCSSSelectors(
+    const std::vector<WebString>& web_selectors) {
   Document* document = Unwrap<Document>();
   CSSSelectorWatch* watch = CSSSelectorWatch::FromIfExists(*document);
   if (!watch && web_selectors.empty())
     return;
-  Vector<String> selectors;
-  selectors.AppendSpan(base::span(web_selectors));
-  CSSSelectorWatch::From(*document).WatchCSSSelectors(selectors);
+  CSSSelectorWatch::From(*document).WatchCSSSelectors(
+      Vector<String>(web_selectors));
 }
 
-WebVector<WebDraggableRegion> WebDocument::DraggableRegions() const {
-  WebVector<WebDraggableRegion> draggable_regions;
+std::vector<WebDraggableRegion> WebDocument::DraggableRegions() const {
   const Document* document = ConstUnwrap<Document>();
   if (document->HasDraggableRegions()) {
-    const Vector<DraggableRegionValue>& regions = document->DraggableRegions();
-    draggable_regions = WebVector<WebDraggableRegion>(regions.size());
-    for (wtf_size_t i = 0; i < regions.size(); i++) {
-      const DraggableRegionValue& value = regions[i];
-      draggable_regions[i].draggable = value.draggable;
-      draggable_regions[i].bounds = ToPixelSnappedRect(value.bounds);
-    }
+    return base::ToVector(document->DraggableRegions(), [](const auto& value) {
+      return WebDraggableRegion(value.draggable,
+                                ToPixelSnappedRect(value.bounds));
+    });
   }
-  return draggable_regions;
+  return {};
 }
 
 WebDistillabilityFeatures WebDocument::DistillabilityFeatures() {
