@@ -15,7 +15,6 @@
 #include "components/autofill/core/browser/data_model/entity_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,8 +34,7 @@ class EntityTableTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
     ASSERT_EQ(sql::INIT_OK,
-              db_.Init(temp_dir_.GetPath().AppendASCII("TestWebDatabase"),
-                       &encryptor_));
+              db_.Init(temp_dir_.GetPath().AppendASCII("TestWebDatabase")));
   }
 
   EntityTable& table() { return table_; }
@@ -45,8 +43,6 @@ class EntityTableTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kAutofillAiWithDataSchema};
   base::ScopedTempDir temp_dir_;
-  const os_crypt_async::Encryptor encryptor_ =
-      os_crypt_async::GetTestEncryptorForTesting();
   EntityTable table_;
   WebDatabase db_;
 };
