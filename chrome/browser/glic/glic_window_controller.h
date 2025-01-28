@@ -210,6 +210,9 @@ class GlicWindowController : public views::WidgetObserver {
   // Finishes closing off the widget after running the closing animation.
   void CloseFinish(bool reopen_detached);
 
+  // Causes an immediate close (eg, for during shutdown).
+  void ForceClose();
+
   // Determines the correct position for the glic window when attached to a
   // browser window.
   gfx::Point GetTopRightPositionForAttachedGlicWindow(

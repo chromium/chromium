@@ -58,14 +58,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseAttachedWidget) {
                   CloseGlicWindow(), CheckControllerHasWidget(false));
 }
 
-// TODO(crbug.com/392884326): Enable test once failures have been addressed.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ShowAndCloseDetachedWidget DISABLED_ShowAndCloseDetachedWidget
-#else
-#define MAYBE_ShowAndCloseDetachedWidget ShowAndCloseDetachedWidget
-#endif
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       MAYBE_ShowAndCloseDetachedWidget) {
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseDetachedWidget) {
   RunTestSequence(ToggleGlicWindowAndWaitForShow(GlicWindowMode::kDetached),
                   CheckControllerHasWidget(true),
                   CheckControllerWidgetMode(GlicWindowMode::kDetached),

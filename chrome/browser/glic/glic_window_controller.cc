@@ -555,8 +555,7 @@ gfx::Point GlicWindowController::GetTopRightPositionForDetachedGlicWindow() {
 
 void GlicWindowController::AttachedBrowserDidClose(
     BrowserWindowInterface* browser) {
-  attached_browser_ = nullptr;
-  Close();
+  ForceClose();
 }
 
 void GlicWindowController::ResizeFinished() {
@@ -767,6 +766,10 @@ void GlicWindowController::CloseFinish(bool reopen_detached) {
   if (reopen_detached) {
     Show(nullptr);
   }
+}
+
+void GlicWindowController::ForceClose() {
+  CloseFinish(/*reopen_attached=*/false);
 }
 
 void GlicWindowController::CloseAndReopenDetached() {
@@ -1005,8 +1008,8 @@ base::WeakPtr<GlicWindowController> GlicWindowController::GetWeakPtr() {
 }
 
 void GlicWindowController::Shutdown() {
-  // Hide first, then clean up.
-  Close();
+  // Hide first, then clean up (but do not animate).
+  ForceClose();
   contents_.reset();
 }
 
