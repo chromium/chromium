@@ -146,10 +146,35 @@ TEST_F(BookmarksApiUnittest, Create_NonFolderParent) {
   ASSERT_TRUE(url_node->children().empty());
 }
 
+// Tests that moving from local to account storage is allowed.
+TEST_F(BookmarksApiUnittest, Move_LocalToAccount) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      syncer::kSyncEnableBookmarksInTransportMode};
+  model()->CreateAccountPermanentFolders();
+
+  ASSERT_TRUE(model()->IsLocalOnlyNode(*folder_node()));
+
+  auto move_function = base::MakeRefCounted<BookmarksMoveFunction>();
+  base::Value result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          move_function.get(),
+          absl::StrFormat(R"(["%lu", {"parentId": "%lu"}])",
+                          folder_node()->id(),
+                          model()->account_other_node()->id()),
+          profile()).value();
+  api::bookmarks::BookmarkTreeNode result_node =
+      extensions::api::bookmarks::BookmarkTreeNode::FromValue(result).value();
+
+  EXPECT_EQ(result_node.parent_id,
+            base::NumberToString(model()->account_other_node()->id()));
+  EXPECT_EQ(result_node.index, 0);
+  EXPECT_EQ(model()->account_other_node()->children()[0].get(), folder_node());
+}
+
 // Tests that attempting to move a bookmark to a non-folder parent does
 // not add the bookmark to that parent.
 // Regression test for https://crbug.com/1491227.
-TEST_F(BookmarksApiUnittest, Move) {
+TEST_F(BookmarksApiUnittest, Move_NonFolderParent) {
   auto move_function = base::MakeRefCounted<BookmarksMoveFunction>();
   std::string error = api_test_utils::RunFunctionAndReturnError(
       move_function.get(),
@@ -165,7 +190,7 @@ TEST_F(BookmarksApiUnittest, Move) {
 
 // Tests that attempting to move a bookmark to a non existent parent returns an
 // error.
-TEST_F(BookmarksApiUnittest, Move_NoParent) {
+TEST_F(BookmarksApiUnittest, Move_NonExistentParent) {
   auto move_function = base::MakeRefCounted<BookmarksMoveFunction>();
   std::string error = api_test_utils::RunFunctionAndReturnError(
       move_function.get(),
