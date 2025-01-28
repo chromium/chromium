@@ -368,12 +368,9 @@ void ScannerController::ExecuteAction(
 }
 
 void ScannerController::OpenFeedbackDialog(
+    const AccountId& account_id,
     manta::proto::ScannerAction action,
     scoped_refptr<base::RefCountedMemory> screenshot) {
-  // TODO: b/367882164 - Pass in the account ID to this method to ensure that
-  // the feedback form is shown for the same account that performed the action.
-  const AccountId& account_id = session_controller_->GetActiveAccountId();
-
   base::Value::Dict action_dict = ScannerActionToDict(std::move(action));
   std::optional<std::string> pretty_printed_action = base::WriteJsonWithOptions(
       action_dict, base::JsonOptions::OPTIONS_PRETTY_PRINT);
@@ -418,11 +415,16 @@ void ScannerController::OnActionFinished(
     toast_data.button_type = ToastData::ButtonType::kIconButton;
     toast_data.button_text = u"Send feedback";
     toast_data.button_icon = &kFeedbackIcon;
+    // TODO: b/367882164 - Pass in the account ID to this method to ensure that
+    // the feedback form is shown for the same account that performed the
+    // action.
+    const AccountId& account_id = session_controller_->GetActiveAccountId();
     // TODO: b/259100049 - Change this to be `BindOnce` once
     // `ToastData::button_callback` is migrated to be a `OnceClosure`.
     toast_data.button_callback = base::BindRepeating(
         &ScannerController::OpenFeedbackDialog, weak_ptr_factory_.GetWeakPtr(),
-        std::move(populated_action), std::move(downscaled_jpeg_bytes));
+        account_id, std::move(populated_action),
+        std::move(downscaled_jpeg_bytes));
     ToastManager::Get()->Show(std::move(toast_data));
   } else {
     // TODO: crbug.com/383926250 - The action failure text should depend on the

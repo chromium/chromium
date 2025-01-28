@@ -79,7 +79,8 @@ class ASH_EXPORT ScannerController : public SessionObserver {
 
   // Opens a feedback dialog for an action that has been performed, and the
   // (resized) screenshot which initiated the action.
-  void OpenFeedbackDialog(manta::proto::ScannerAction action,
+  void OpenFeedbackDialog(const AccountId& account_id,
+                          manta::proto::ScannerAction action,
                           scoped_refptr<base::RefCountedMemory> screenshot);
 
   bool HasActiveSessionForTesting() const;
