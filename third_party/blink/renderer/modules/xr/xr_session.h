@@ -629,6 +629,9 @@ class XRSession final : public EventTarget,
   // Viewer pose in mojo space.
   std::unique_ptr<gfx::Transform> mojo_from_viewer_;
 
+  // Location of the floor in mojo space.
+  std::optional<gfx::Transform> mojo_from_floor_;
+
   bool pending_frame_ = false;
   bool resolving_frame_ = false;
   bool frames_throttled_ = false;

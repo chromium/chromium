@@ -1764,8 +1764,17 @@ void XRSession::UpdatePresentationFrameState(
   // Update poses
   mojo_from_viewer_ =
       frame_data ? getPoseMatrix(frame_data->mojo_from_viewer) : nullptr;
-  DVLOG(2) << __func__ << " : mojo_from_viewer_ valid? "
-           << (mojo_from_viewer_ ? true : false);
+
+  if (frame_data && mojo_from_floor_ != frame_data->mojo_from_floor) {
+    DVLOG(2) << __func__ << "mojo_from_floor_ changed! Now="
+             << frame_data->mojo_from_floor->ToString()
+             << " Was=" << mojo_from_floor_->ToString();
+  }
+
+  mojo_from_floor_ = frame_data ? frame_data->mojo_from_floor : std::nullopt;
+
+  DVLOG(2) << __func__ << " : mojo_from_viewer_ valid? " << !!mojo_from_viewer_
+           << " mojo_from_floor_ valid? " << !!mojo_from_floor_;
   // TODO(https://crbug.com/1430868): We need to do this because inline sessions
   // don't have enough data to send up a mojo::XRView; but blink::XRViews rely
   // on having mojo_from_view set in a blink::XRViewData based upon the value
@@ -2104,9 +2113,14 @@ std::optional<gfx::Transform> XRSession::GetMojoFrom(
       // equivalent to mojo space! Remove the assumption once the bug is fixed.
       return gfx::Transform();
     case device::mojom::blink::XRReferenceSpaceType::kLocalFloor:
+      return mojo_from_floor_;
     case device::mojom::blink::XRReferenceSpaceType::kBoundedFloor:
-      // Information about -floor spaces is currently stored elsewhere (in
-      // stage_parameters_). It probably should eventually move here.
+      // If we have stage_parameters_ MojoFrom(BoundedFloor) is the value of
+      // mojo_from_stage.
+      if (stage_parameters_) {
+        return stage_parameters_->mojo_from_stage;
+      }
+
       return std::nullopt;
   }
 }

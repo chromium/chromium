@@ -654,13 +654,17 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
 
   UpdateStageParameters();
 
+  std::optional<gfx::Transform> local_from_floor = openxr_->GetLocalFromFloor();
+  if (local_from_floor) {
+    frame_data->mojo_from_floor = mojo_from_local() * *local_from_floor;
+  }
+
   if (openxr_->HasFrameState()) {
     OpenXrAnchorManager* anchor_manager = openxr_->GetAnchorManager();
 
     if (anchor_manager) {
       frame_data->anchors_data = anchor_manager->ProcessAnchorsForFrame(
-          openxr_.get(), current_stage_parameters_,
-          frame_data->input_state.value(), frame_time);
+          openxr_.get(), frame_data->input_state.value(), frame_time);
     }
 
     OpenXrLightEstimator* light_estimator = openxr_->GetLightEstimator();
@@ -863,9 +867,7 @@ void OpenXrRenderLoop::UpdateStageParameters() {
   if (openxr_->GetStageParameters(stage_bounds, local_from_stage)) {
     mojom::VRStageParametersPtr stage_parameters =
         mojom::VRStageParameters::New();
-    // mojo_from_local is currently identity.
-    gfx::Transform mojo_from_local;
-    stage_parameters->mojo_from_stage = mojo_from_local * local_from_stage;
+    stage_parameters->mojo_from_stage = mojo_from_local() * local_from_stage;
     stage_parameters->bounds = std::move(stage_bounds);
     SetStageParameters(std::move(stage_parameters));
   } else {

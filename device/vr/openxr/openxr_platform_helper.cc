@@ -164,6 +164,8 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
     EnableExtensionIfSupported(XR_MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME);
   }
 
+  EnableExtensionIfSupported(XR_EXT_LOCAL_FLOOR_EXTENSION_NAME);
+
   // Enable any other platform-specific extensions that we don't just enable or
   // try to enable across the board.
   for (const auto* extension : GetOptionalExtensions()) {
