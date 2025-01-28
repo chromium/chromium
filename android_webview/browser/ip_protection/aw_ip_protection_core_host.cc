@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/ip_protection/aw_ip_protection_core_host.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -19,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
