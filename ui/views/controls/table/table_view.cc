@@ -84,9 +84,9 @@ void GetModelIndexToRangeStart(
 
 // Returns the color id for the background of selected text. |has_focus|
 // indicates if the table has focus.
-ui::ColorId text_background_color_id(bool has_focus) {
-  return has_focus ? ui::kColorTableBackgroundSelectedFocused
-                   : ui::kColorTableBackgroundSelectedUnfocused;
+ui::ColorId text_background_color_id(const TableView& table, bool has_focus) {
+  return has_focus ? table.BackgroundSelectedFocusedColorId()
+                   : table.BackgroundSelectedUnfocusedColorId();
 }
 
 // Returns the color id for text. |has_focus| indicates if the table has focus.
@@ -1180,7 +1180,7 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
 
   ui::ColorProvider* color_provider = GetColorProvider();
   const SkColor default_bg_color =
-      color_provider->GetColor(ui::kColorTableBackground);
+      color_provider->GetColor(BackgroundColorId());
   canvas->DrawColor(default_bg_color);
 
   if (!GetRowCount() || visible_columns_.empty()) {
@@ -1193,12 +1193,12 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
   }
 
   const SkColor selected_bg_color =
-      color_provider->GetColor(text_background_color_id(HasFocus()));
+      color_provider->GetColor(text_background_color_id(*this, HasFocus()));
   const SkColor fg_color = color_provider->GetColor(ui::kColorTableForeground);
   const SkColor selected_fg_color =
       color_provider->GetColor(selected_text_color_id(HasFocus()));
   const SkColor alternate_bg_color =
-      color_provider->GetColor(ui::kColorTableBackgroundAlternate);
+      color_provider->GetColor(BackgroundAlternateColorId());
   const SkColor hovered_bg_color =
       color_provider->GetColor(ui::kColorTableRowHighlight);
   const int cell_margin = GetCellMargin();
@@ -2311,6 +2311,27 @@ void TableView::SetHeaderStyle(const TableHeaderStyle& style) {
     SchedulePaint();
     header_->SchedulePaint();
   }
+}
+
+void TableView::SetTableStyle(const TableStyle& style) {
+  table_style_ = style;
+  SchedulePaint();
+}
+
+ui::ColorId TableView::BackgroundColorId() const {
+  return table_style().background_tokens.background;
+}
+
+ui::ColorId TableView::BackgroundAlternateColorId() const {
+  return table_style().background_tokens.alternate;
+}
+
+ui::ColorId TableView::BackgroundSelectedFocusedColorId() const {
+  return table_style().background_tokens.selected_focused;
+}
+
+ui::ColorId TableView::BackgroundSelectedUnfocusedColorId() const {
+  return table_style().background_tokens.selected_unfocused;
 }
 
 AXVirtualView* TableView::GetVirtualAccessibilityCellImpl(

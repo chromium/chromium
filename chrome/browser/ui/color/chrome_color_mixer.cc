@@ -646,11 +646,21 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTaskManagerBackground] = {ui::kColorDialogBackground};
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
-    mixer[kColorTaskManagerBackground] = {ui::kColorSysSurface2};
-    mixer[kColorTaskManagerSearchBarBackground] = {
-        ui::kColorSysBaseContainerElevated};
-    mixer[kColorTaskManagerSearchBarHoverOn] = {
-        ui::kColorSysStateHoverOnSubtle};
+    mixer[kColorTaskManagerBackground] = {ui::kColorSysSurface};
+
+    mixer[kColorTaskManagerTableBackground] = {ui::kColorSysSurface3};
+    mixer[kColorTaskManagerTableHeaderBackground] = {
+        kColorTaskManagerTableBackground};
+    mixer[kColorTaskManagerTableBackgroundAlternate] = {
+        kColorTaskManagerTableBackground};
+    mixer[kColorTaskManagerTableBackgroundSelectedFocused] = {
+        ui::kColorSysTonalContainer};
+    mixer[kColorTaskManagerTableBackgroundSelectedUnfocused] = {
+        ui::kColorSysTonalContainer};
+
+    mixer[kColorTaskManagerSearchBarBackground] = {ui::kColorSysSurface3};
+    mixer[kColorTaskManagerSearchBarHoverOn] = {ui::GetResultingPaintColor(
+        ui::kColorSysStateHoverOnSubtle, kColorTaskManagerSearchBarBackground)};
     mixer[kColorTaskManagerSearchBarTransparent] = {SK_ColorTRANSPARENT};
     mixer[kColorTaskManagerSearchBarPlaceholderText] = {
         ui::kColorTextfieldForeground};
