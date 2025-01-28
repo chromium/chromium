@@ -58,6 +58,7 @@ def main():
     if not args.nobuild:
         try:
             build(args.outdir)
+            print("Test client build done.")
         except subprocess.CalledProcessError as e:
             print("Test client build error; check build output above.")
             sys.exit(1)

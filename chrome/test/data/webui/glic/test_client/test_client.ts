@@ -28,6 +28,7 @@ interface PageElementTypes {
   URL: HTMLInputElement;
   innerTextCheckbox: HTMLInputElement;
   viewportScreenshotCheckbox: HTMLInputElement;
+  pdfDataCheckbox: HTMLInputElement;
   annotatedPageContentCheckbox: HTMLInputElement;
   screenshotImg: HTMLImageElement;
   faviconImg: HTMLImageElement;
@@ -206,6 +207,14 @@ $.contextAccessIndicator.addEventListener('click', () => {
   getBrowser()!.setContextAccessIndicator!($.contextAccessIndicator.checked);
 });
 
+async function computeStreamDataSize(stream: ReadableStream): Promise<number> {
+  let totalSize = 0;
+  for await (const chunk of stream) {
+    totalSize += chunk.byteLength;
+  }
+  return totalSize;
+}
+
 $.getpagecontext.addEventListener('click', async () => {
   logMessage('Starting Get Page Context');
   const options: any = {};
@@ -214,6 +223,9 @@ $.getpagecontext.addEventListener('click', async () => {
   }
   if ($.viewportScreenshotCheckbox.checked) {
     options.viewportScreenshot = {};
+  }
+  if ($.pdfDataCheckbox.checked) {
+    options.pdfData = true;
   }
   if ($.annotatedPageContentCheckbox.checked) {
     options.annotatedPageContent = true;
@@ -232,18 +244,24 @@ $.getpagecontext.addEventListener('click', async () => {
         $.faviconImg.src = URL.createObjectURL(favicon);
       }
     }
-    if (pageContent.annotatedPageData && pageContent.annotatedPageData.annotatedPageContent) {
-      const reader = pageContent.annotatedPageData.annotatedPageContent.getReader();
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          const uint8View = new Uint8Array(value);
-          logMessage(`Annotated page content data chunk length: ${uint8View.length}`);
-        }
-      } finally {
-        reader.releaseLock();
+    if (pageContent.pdfDocumentData) {
+      const pdfOrigin = pageContent.pdfDocumentData.origin;
+      const pdfSizeLimitExceeded =
+          pageContent.pdfDocumentData.pdfSizeLimitExceeded;
+      let pdfDataSize = 0;
+      if (pageContent.pdfDocumentData.pdfData) {
+        pdfDataSize =
+            await computeStreamDataSize(pageContent.pdfDocumentData.pdfData!);
       }
+      logMessage(`Got ${pdfDataSize} bytes of PDF data (origin=${
+          pdfOrigin}, sizeLimitExceeded=${pdfSizeLimitExceeded})`);
+    }
+    if (pageContent.annotatedPageData &&
+        pageContent.annotatedPageData.annotatedPageContent) {
+      const annotatedPageDataSize = await computeStreamDataSize(
+          pageContent.annotatedPageData.annotatedPageContent);
+      logMessage(
+          `Annotated page content data length: ${annotatedPageDataSize}`);
     }
     logMessage(
         `Finished Get Page Context. Returned data: ${

@@ -300,7 +300,10 @@ export declare interface TabContextOptions {
   viewportScreenshot?: boolean;
   /** If true, returns the serialized annotatedPageContent proto. */
   annotatedPageContent?: boolean;
-  /** If true, and the tab contains a PDF, returns PdfDocumentData. */
+  /**
+   * If true, and the focused tab contains a PDF as the top level document,
+   * returns PdfDocumentData.
+   */
   pdfData?: boolean;
   /**
    * Maximum size in bytes for returned PDF data. If this size is exceeded,
@@ -327,7 +330,10 @@ export declare interface TabContextResult {
    * requested.
    */
   viewportScreenshot?: Screenshot;
-  /** PDF document data. Provided if requested, and the document is a PDF. */
+  /**
+   * PDF document data. Provided if requested, and the top level document in the
+   * focused tab is a PDF.
+   */
   pdfDocumentData?: PdfDocumentData;
   /** Page content data. Provided if requested. */
   annotatedPageData?: AnnotatedPageData;

@@ -89,6 +89,7 @@ source_set("impl") {
     "//components/feature_engagement/public:feature_constants",
     "//components/guest_view/browser",
     "//components/pdf/browser:browser",
+    "//components/pdf/common:constants",
     "//components/sessions",
     "//extensions/browser:browser",
     "//ui/webui",
