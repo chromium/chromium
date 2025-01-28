@@ -267,14 +267,8 @@ aggregate_vector_icons("chrome_vector_icons") {
 
   if (is_chromeos) {
     sources += [
-      "crostini_mascot.icon",
-      "terminal_ssh.icon",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
       "autocorrect_undo.icon",
+      "crostini_mascot.icon",
       "floating_workspace_notification.icon",
       "full_restore_notification.icon",
       "game_controls_add.icon",
@@ -309,6 +303,7 @@ aggregate_vector_icons("chrome_vector_icons") {
       "person_add.icon",
       "sharesheet_share_with_others.icon",
       "shutdown_guest_os.icon",
+      "terminal_ssh.icon",
       "tip.icon",
     ]
   }

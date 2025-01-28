@@ -320,7 +320,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Welcome to Chromium
         </message>
       </if>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_PRODUCT_OS_NAME" desc="The ChromeOS application name">
           ChromiumOS
         </message>
@@ -339,12 +339,12 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           New window
         </message>
       </if>
-      <if expr="is_macosx or chromeos_ash">
+      <if expr="is_macosx or is_chromeos">
         <message name="IDS_TASK_MANAGER_TITLE" desc="The title of the Task Manager window">
           Task Manager
         </message>
       </if>
-      <if expr="not is_macosx and not chromeos_ash">
+      <if expr="not is_macosx and not is_chromeos">
         <message name="IDS_TASK_MANAGER_TITLE" desc="The title of the Task Manager window">
           Task Manager - Chromium
         </message>
@@ -376,7 +376,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       <message name="IDS_SESSION_CRASHED_VIEW_UMA_OPTIN" desc="Text besides the checkbox to let users optin to UMA in the restore from previous crash bubble.">
         Help make Chromium better by sending crash reports and <ph name="UMA_LINK">$1<ex>usage statistics</ex></ph> to Google
       </message>
-      <if expr="not chromeos_ash">
+      <if expr="not is_chromeos">
         <!-- Browser Window Title Format -->
         <if expr="_is_chrome_for_testing_branded">
           <then>
@@ -391,7 +391,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           </else>
         </if>
       </if>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <!-- Browser Window Title Format -->
         <message name="IDS_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in tabbed browser windows">
           Chromium - <ph name="PAGE_TITLE">$1<ex>Google</ex></ph>
@@ -456,7 +456,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           </message>
         </else>
       </if>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS.">
           ChromiumOS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
         </message>
@@ -558,7 +558,7 @@ Chromium cannot read and write to its data directory:
 
 <ph name="USER_DATA_DIRECTORY">$1<ex>C:\Documents and Settings\devint\Local Settings\Application Data\Google\Chrome</ex></ph>
       </message>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_EULA_CHECKBOX_ENABLE_LOGGING" desc="The label of the checkbox to enable/disable crash and user metrics logging">
           Optional: Help improve ChromiumOS features and performance by automatically sending diagnostic and usage data to Google.
         </message>
@@ -911,7 +911,7 @@ Chromium is unable to recover your settings.
         &amp;Open in Chromium
       </message>
 
-      <if expr="use_titlecase and not chromeos_ash">
+      <if expr="use_titlecase and not is_chromeos">
         <if expr="_is_chrome_for_testing_branded">
           <then>
             <message name="IDS_ABOUT" desc="In Title Case: The text label of the About Chrome for Testing menu item">
@@ -928,7 +928,7 @@ Chromium is unable to recover your settings.
           Relaunch to Update &amp;Chromium
         </message>
       </if>
-      <if expr="not use_titlecase and not chromeos_ash">
+      <if expr="not use_titlecase and not is_chromeos">
         <if expr="_is_chrome_for_testing_branded">
           <then>
             <message name="IDS_ABOUT" desc="The text label of the About Chrome for Testing menu item">
@@ -945,7 +945,7 @@ Chromium is unable to recover your settings.
           Relaunch to update &amp;Chromium
         </message>
       </if>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
           About &amp;Chromium
         </message>
@@ -981,7 +981,7 @@ Chromium is unable to recover your settings.
       </message>
 
       <!-- One click sign-in infobar -->
-      <if expr="not chromeos_ash">
+      <if expr="not is_chromeos">
         <message name="IDS_SYNC_WRONG_EMAIL" desc="Message shown when sync setup failed due to the user entering the wrong email address for sign-in.">
           You were signed in to Chromium as <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph>. Please use the same account to sign in again.
         </message>
@@ -1061,7 +1061,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- about:browser-switch strings -->
-      <if expr="toolkit_views and not chromeos_ash">
+      <if expr="toolkit_views and not is_chromeos">
         <message name="IDS_ABOUT_BROWSER_SWITCH_DESCRIPTION_UNKNOWN_BROWSER" desc="Description shown while waiting for an alternative browser to open, when the browser name is not auto-detected">
           Your system administrator has configured Chromium to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME">$1<ex>example.com</ex></ph>.
         </message>
@@ -1085,7 +1085,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- Signin Email Confirmation tab modal dialog -->
-      <if expr="not chromeos_ash">
+      <if expr="not is_chromeos">
         <message name="IDS_SIGNIN_EMAIL_CONFIRMATION_TITLE" desc="Title of the signin email confirmation tab modal dialog.">
           <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph> was previously using Chromium
         </message>
@@ -1119,7 +1119,7 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
-      <if expr="not chromeos_ash and not is_android">
+      <if expr="not is_chromeos and not is_android">
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE" desc="Title of the web signin interception bubble">
           Continue in a new Chromium profile?
         </message>
@@ -1209,7 +1209,7 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
-      <if expr="not chromeos_ash and not is_android">
+      <if expr="not is_chromeos and not is_android">
         <!-- Profile Customization Web UI -->
         <message name="IDS_PROFILE_CUSTOMIZATION_TEXT" desc="Text of the profile customization bubble">
           Customize your new Chromium profile
@@ -1220,7 +1220,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- Sync/sign-in error messages -->
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for ChromiumOS Secondary Accounts.">
           ChromiumOS System
         </message>
@@ -1283,7 +1283,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- App list -->
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_APP_LIST_EXTENSIONS_UNINSTALL" desc="Title text for the context menu item of a non-platform-app app list item that removes the app.">
           Remove from Chromium...
         </message>
@@ -1308,7 +1308,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- ChromeOS OOBE Terms of Service screen-->
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
           <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the ChromiumOS Terms.
         </message>
@@ -1358,7 +1358,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- Material Design User Manager -->
-      <if expr="not is_android and not chromeos_ash">
+      <if expr="not is_android and not is_chromeos">
         <!-- User pod remove sync warning text -->
         <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_SYNC" desc="Main text shown as a warning when attempting to remove an user.">
           This person's browsing data will be deleted from this device. To recover the data, sign in to Chromium as <ph name="USER_EMAIL">$2<ex>foo@example.com</ex></ph>.
@@ -1481,7 +1481,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- Update Recommended dialog -->
-      <if expr="not chromeos_ash">
+      <if expr="not is_chromeos">
         <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE" desc="The window title for the Update Recommended dialog.">
           Relaunch Chromium
         </message>
@@ -1495,7 +1495,7 @@ Chromium is unable to recover your settings.
           Relaunch
         </message>
       </if>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE" desc="The window title for the Update Recommended dialog.">
           Restart ChromiumOS
         </message>
@@ -1916,7 +1916,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- OOBE -->
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_INSTALLING_UPDATE" desc="Label shown on the updates installation screen during OOBE">
           Please wait while Chromium installs the latest system updates.
         </message>
@@ -1926,7 +1926,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- Welcome page (chrome://welcome) strings -->
-      <if expr="not chromeos_ash and not is_android">
+      <if expr="not is_chromeos and not is_android">
         <message name="IDS_WELCOME_HEADER" desc="A message which will appear as the header on the Welcome UI if the user has never run Chromium before.">
           Welcome to Chromium
         </message>
@@ -1940,7 +1940,7 @@ Chromium is unable to recover your settings.
       </if>
       <!-- Relaunch notification bubble and dialog. -->
       <if expr="not is_android">
-        <if expr="not chromeos_ash">
+        <if expr="not is_chromeos">
           <message name="IDS_RELAUNCH_RECOMMENDED_TITLE" desc="The title of a dialog that tells users that a browser relaunch is recommended for an update available for some number of days.">
             {0, plural,
               =0 {A Chromium update is available}
@@ -1983,7 +1983,7 @@ Chromium is unable to recover your settings.
         </if>
       </if>
       <!-- Chromium launch blocking dialog. -->
-      <if expr="not is_android and not chromeos_ash">
+      <if expr="not is_android and not is_chromeos">
          <message name="IDS_ENTERPRISE_STARTUP_CLOUD_POLICY_ENROLLMENT_TOOLTIP" desc="The information message of Chromium launch blocking dialog for machine level user cloud policy enrollment.">
           Launching Chromium...
         </message>
@@ -2056,7 +2056,7 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
-      <if expr="not chromeos_ash and not is_android">
+      <if expr="not is_chromeos and not is_android">
         <!-- Enterprise profile welcome screen -->
         <message name="IDS_ENTERPRISE_WELCOME_PROFILE_INFORMATION_DETAILS" desc="Paragraph disclaiming to the user what their organization can do with their profile information.">
           Your organization can see and manage browsing data, such as your bookmarks, history, and passwords. It can't see browsing data in personal Chromium profiles.
@@ -2154,7 +2154,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- Strings for full restore notifications -->
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
           ChromiumOS system
         </message>

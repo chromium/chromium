@@ -531,7 +531,7 @@
         Sign out
       </message>
     </if>
-    <if expr="chromeos_ash">
+    <if expr="is_chromeos">
       <message name="IDS_LAUNCH_APP_BUTTON" desc="Text shown on the button that launches kiosk app from ChromeOS login UI">
         Launch app
       </message>
@@ -550,7 +550,7 @@
     </if>
   </if>
 
-  <if expr="not chromeos_ash and not is_android">
+  <if expr="not is_chromeos and not is_android">
     <!-- Profile Customization Web UI -->
     <message name="IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL" desc="Text for the Done button on the profile customization bubble">
       Done

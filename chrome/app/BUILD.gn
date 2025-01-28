@@ -197,10 +197,6 @@ static_library("test_support") {
   }
 
   if (is_chromeos) {
-    deps += [ "//chromeos/dbus/constants" ]
-  }
-
-  if (is_chromeos_ash) {
     deps += [
       "//ash/components/arc:arc_base_utils",
       "//ash/constants",
@@ -210,6 +206,7 @@ static_library("test_support") {
       "//chrome/browser/ash/schedqos",
       "//chromeos",
       "//chromeos/ash/components/memory:memory",
+      "//chromeos/dbus/constants",
     ]
     public_deps += [ "//ui/lottie" ]
   }

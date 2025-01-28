@@ -2,7 +2,7 @@
 <!-- Settings-specific Google Chrome strings (included from google_chrome_strings.grd). -->
 <grit-part>
   <!-- Shared across multiple pages -->
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
   <message name="IDS_RELAUNCH_CONFIRMATION_DIALOG_TITLE" desc="The title of the modal dialog that we show when users click on relaunch and they have open Incognito windows. The dialog serves to warn the users about losing their Incognito windows if they proceed with the relaunch.">
     Relaunch Chrome?
   </message>
@@ -14,7 +14,7 @@
   <message name="IDS_SETTINGS_GET_HELP_USING_CHROME" desc="Text of the button which takes the user to the Chrome help page.">
     Get help with Chrome
   </message>
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_UPGRADE_UPDATING" desc="Status label: Updating Chrome">
       Updating Chrome
     </message>
@@ -28,7 +28,7 @@
       Chrome is up to date
     </message>
   </if>
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <if expr="reven">
       <message name="IDS_SETTINGS_ABOUT_OS" desc="Menu title for the About ChromeOS Flex page.">
         About ChromeOS Flex
@@ -97,7 +97,7 @@
   </message>
 
   <!-- Default Browser Page -->
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_DEFAULT_BROWSER_DEFAULT" desc="The text displayed when Chrome is not the default browser">
       Google Chrome is your default browser
     </message>
@@ -282,7 +282,7 @@
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITHOUT_COUNTS" desc="Warning message displayed in the Sign out of Chrome dialog that indicates profile browsing data will be removed from the device.">
     This will delete your browsing data from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL">$1<ex>foo@example.com</ex></ph>.
   </message>
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
   <message name="IDS_SETTINGS_CUSTOMIZE_YOUR_CHROME_PROFILE" desc="Label of the link that takes you to the page to customize your chrome profile.">
     Customize your Chrome profile
   </message>
@@ -299,7 +299,7 @@
   <message name="IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_TITLE" desc="The title of the avatar row shown to users who are signed in only to the web">
     Your Chrome
   </message>
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2" desc="Description of the Account Manager Settings page. Shown just below the title of the page.">
     You can manage your signed-in Google Accounts. Your Google Accounts are used for Chrome browser, Play Store, Gmail, and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> instead. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
@@ -380,7 +380,7 @@
   </if>
 
   <!-- System Page -->
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_SYSTEM_BACKGROUND_APPS_LABEL" desc="Label for the checkbox to allow apps to run in the background, when Chrome is closed.">
       Continue running background apps when Google Chrome is closed
     </message>
@@ -433,7 +433,7 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_USER_EDU_SAFE_BROWSING_SUBHEADER" desc="The header of the second item in the 'User Education Module' in the Safety Hub page. This item explains Safe Browsing.">
     <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Chrome warns you<ph name="END_LINK">&lt;/a&gt;</ph> about unsafe sites and downloads
   </message>
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_RESTART" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This title of the card is shown when Chrome is not up to date but there is an update available and the user needs to restart their browser to finish the update. Shown above the subtitle 'Relaunch to finish update. Your tabs will reopen'.">
       Chrome is out of date
     </message>
