@@ -1268,6 +1268,15 @@
       <message name="IDS_NTP_CUSTOMIZATION_FEED_SECTION_ON" desc="This texts show the feed section is visible at the new tab page">
         On
       </message>
+
+      <!-- What's New page strings -->
+      <!-- TODO(crbug.com/390190615): Make the strings translateable. -->
+      <message name="IDS_WHATS_NEW_PAGE_TITLE" translateable="false" desc="Title of the what's new page.">
+        What&apos;s New
+      </message>
+      <message name="IDS_WHATS_NEW_PAGE_DESCRIPTION" translateable="false" desc="Description of the what's new page.">
+        What&apos;s New in Chrome
+      </message>
     </messages>
   </release>
 </grit>
