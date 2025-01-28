@@ -870,7 +870,9 @@ SellerWorklet::V8State::V8State(
       top_window_origin_(top_window_origin),
       permissions_policy_state_(std::move(permissions_policy_state)),
       experiment_group_id_(experiment_group_id),
-      send_creative_scanning_metadata_(send_creative_scanning_metadata) {
+      send_creative_scanning_metadata_(send_creative_scanning_metadata),
+      creative_scanning_enabled_(base::FeatureList::IsEnabled(
+          blink::features::kFledgeTrustedSignalsKVv1CreativeScanning)) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
   v8_helper_->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce(&V8State::FinishInit, base::Unretained(this),
@@ -1132,7 +1134,7 @@ void SellerWorklet::V8State::ScoreAd(
     context_recycler->AddSellerBrowserSignalsLazyFiller();
   }
   context_recycler->seller_browser_signals_lazy_filler()->FillInObject(
-      browser_signal_render_url, browser_signals);
+      browser_signal_render_url, &ad_components, browser_signals);
   // TODO(crbug.com/336164429): Construct the fields of browser signals lazily.
   if (!browser_signals_dict.Set("topWindowHostname",
                                 top_window_origin_.host()) ||
@@ -1168,7 +1170,11 @@ void SellerWorklet::V8State::ScoreAd(
            blink::features::kFledgeSampleDebugReports) &&
        !browser_signals_dict.Set(
            "forDebuggingOnlyInCooldownOrLockout",
-           browser_signal_for_debugging_only_in_cooldown_or_lockout))) {
+           browser_signal_for_debugging_only_in_cooldown_or_lockout)) ||
+      (ad->creative_scanning_metadata.has_value() &&
+       creative_scanning_enabled_ &&
+       !browser_signals_dict.Set("creativeScanningMetadata",
+                                 *ad->creative_scanning_metadata))) {
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
@@ -1684,8 +1690,10 @@ void SellerWorklet::V8State::ReportResult(
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
 
   context_recycler.AddSellerBrowserSignalsLazyFiller();
+  // Passing null for ad_components here since we do not want creative scanning
+  // info here.
   context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
-      browser_signal_render_url, browser_signals);
+      browser_signal_render_url, /*ad_components=*/nullptr, browser_signals);
 
   if (!browser_signals_dict.Set("topWindowHostname",
                                 top_window_origin_.host()) ||

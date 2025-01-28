@@ -1676,6 +1676,19 @@ TEST_F(SellerWorkletTest, ScoreAdMedata) {
   RunScoreAdWithReturnValueExpectingResult("1", 0);
 }
 
+TEST_F(SellerWorkletTest, ScoreAdCreativeScanningMetadata) {
+  // Passed in even when send_creative_scanning_metadata_ is false
+  send_creative_scanning_metadata_ = false;
+
+  creative_scanning_metadata_ = std::nullopt;
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('creativeScanningMetadata' in browserSignals ? 4 : 3)", 3);
+
+  creative_scanning_metadata_ = "hello";
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.creativeScanningMetadata === 'hello' ? 4 : 3)", 4);
+}
+
 TEST_F(SellerWorkletTest, ScoreAdSelectedBuyerAndSellerReportingId) {
   browser_signal_selected_buyer_and_seller_reporting_id_ = "foo";
 
@@ -1872,6 +1885,55 @@ TEST_F(SellerWorkletTest, ScoreAdAdComponents) {
       R"(browserSignals.adComponents[1] === "https://1.test/" ? 3 : 0)", 3);
   RunScoreAdWithReturnValueExpectingResult(
       R"(browserSignals.adComponents[2] === "https://3.test/" ? 3 : 0)", 3);
+}
+
+TEST_F(SellerWorkletTest, ScoreAdAdComponentsCreativeScanningMetadata) {
+  // Passed in even when send_creative_scanning_metadata_ is false
+  send_creative_scanning_metadata_ = false;
+
+  component_ads_.clear();
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('adComponentsCreativeScanningMetadata' in browserSignals? 3 : 2)", 2);
+
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://bar.test/path")),
+          /*creative_scanning_metadata=*/std::nullopt));
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponentsCreativeScanningMetadata.length)", 1);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponentsCreativeScanningMetadata[0] === null ?
+         3 : 0)",
+      3);
+
+  // These are not in lexical order to make sure ordering is preserved.
+  component_ads_.clear();
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://2.test/")),
+          /*creative_scanning_metadata=*/"2nd"));
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://1.test/")),
+          /*creative_scanning_metadata=*/std::nullopt));
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://3.test/")),
+          /*creative_scanning_metadata=*/"3rd"));
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponentsCreativeScanningMetadata.length)", 3);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponentsCreativeScanningMetadata[0] ===
+         "2nd" ? 3 : 0)",
+      3);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponentsCreativeScanningMetadata[1] ===
+         null ? 3 : 0)",
+      3);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponentsCreativeScanningMetadata[2] ===
+         "3rd" ? 3 : 0)",
+      3);
 }
 
 TEST_F(SellerWorkletTest, ScoreAdBid) {
@@ -3335,6 +3397,25 @@ TEST_F(SellerWorkletTest, ReportResultDateNotAvailable) {
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught ReferenceError: Date is not defined."});
+}
+
+TEST_F(SellerWorkletTest, ReportResultNoAdComponentsCreativeScanningMetadata) {
+  send_creative_scanning_metadata_ = true;
+
+  component_ads_.clear();
+  component_ads_.push_back(
+      auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+          blink::AdDescriptor(GURL("https://bar.test/path")),
+          /*creative_scanning_metadata=*/"stuff"));
+
+  const char kScript[] = R"(
+    sendReportTo("https://foo.test?" +
+        ('adComponentsCreativeScanningMetadata' in browserSignals? 3 : 2));
+  )";
+
+  RunReportResultCreatedScriptExpectingResult(
+      "1", kScript,
+      /*expected_signals_for_winner=*/"1", GURL("https://foo.test/?2"));
 }
 
 TEST_F(SellerWorkletTest, ReportResultTopWindowOrigin) {
@@ -8854,6 +8935,30 @@ realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5})
       /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
+}
+
+class SellerWorkletCreativeScanningDisabledTest : public SellerWorkletTest {
+ public:
+  SellerWorkletCreativeScanningDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kFledgeTrustedSignalsKVv1CreativeScanning);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SellerWorkletCreativeScanningDisabledTest,
+       ScoreAdCreativeScanningMetadata) {
+  send_creative_scanning_metadata_ = true;
+
+  creative_scanning_metadata_ = std::nullopt;
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('creativeScanningMetadata' in browserSignals ? 4 : 3)", 3);
+
+  creative_scanning_metadata_ = "hello";
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('creativeScanningMetadata' in browserSignals ? 4 : 3)", 3);
 }
 
 }  // namespace

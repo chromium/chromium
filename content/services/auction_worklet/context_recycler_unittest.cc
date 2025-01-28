@@ -2931,7 +2931,7 @@ TEST_F(ContextRecyclerTest, SellerBrowserSignalsLazyFiller) {
     context_recycler.AddSellerBrowserSignalsLazyFiller();
     EXPECT_TRUE(
         context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
-            browser_signal_render_url_1, o1));
+            browser_signal_render_url_1, /*ad_components=*/nullptr, o1));
 
     EXPECT_EQ("\"https://a.org/render_url1\"",
               RunExpectString(scope, script, "test", o1));
@@ -2944,7 +2944,7 @@ TEST_F(ContextRecyclerTest, SellerBrowserSignalsLazyFiller) {
 
     EXPECT_TRUE(
         context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
-            browser_signal_render_url_2, o2));
+            browser_signal_render_url_2, /*ad_components=*/nullptr, o2));
 
     EXPECT_EQ("\"https://a.org/render_url2\"",
               RunExpectString(scope, script, "test", o2));
@@ -2963,7 +2963,7 @@ TEST_F(ContextRecyclerTest, SellerBrowserSignalsLazyFiller) {
     // Now fill it in for later but don't access it.
     EXPECT_TRUE(
         context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
-            browser_signal_render_url_1, o1));
+            browser_signal_render_url_1, /*ad_components=*/nullptr, o1));
   }
 
   {
@@ -2973,12 +2973,176 @@ TEST_F(ContextRecyclerTest, SellerBrowserSignalsLazyFiller) {
     o2 = v8::Object::New(isolate);
     EXPECT_TRUE(
         context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
-            browser_signal_render_url_2, o2));
+            browser_signal_render_url_2, /*ad_components=*/nullptr, o2));
 
     EXPECT_EQ("\"https://a.org/render_url2\"",
               RunExpectString(scope, script, "test", o2));
     EXPECT_EQ("\"https://a.org/render_url2\"",
               RunExpectString(scope, script, "test", o1));
+  }
+}
+
+TEST_F(ContextRecyclerTest,
+       SellerBrowserSignalsLazyFillerAdComponentsCreativeScanningMetadata) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeTrustedSignalsKVv1CreativeScanning);
+
+  const char kScript[] = R"(
+    function test(browserSignals) {
+      if (!('adComponentsCreativeScanningMetadata' in browserSignals))
+        return 'missing';
+      if (!browserSignals.adComponentsCreativeScanningMetadata)
+        return typeof(browserSignals.adComponentsCreativeScanningMetadata);
+      return JSON.stringify(
+          browserSignals.adComponentsCreativeScanningMetadata);
+    }
+  )";
+
+  GURL browser_signal_render_url("https://a.org/render_url1");
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  v8::Isolate* isolate = helper_->isolate();
+  ContextRecycler context_recycler(helper_.get());
+  context_recycler.AddSellerBrowserSignalsLazyFiller();
+
+  v8::Local<v8::Object> o1;
+  v8::Local<v8::Object> o2;
+
+  std::vector<mojom::CreativeInfoWithoutOwnerPtr> ad_components;
+
+  {
+    // Null components vector.
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url, /*ad_components=*/nullptr, o1));
+
+    EXPECT_EQ("missing", RunExpectString(scope, script, "test", o1));
+  }
+
+  {
+    // Empty components vector.
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url, &ad_components, o1));
+
+    EXPECT_EQ("missing", RunExpectString(scope, script, "test", o1));
+  }
+
+  {
+    // Non-trivial value.
+    ad_components.push_back(
+        auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+            blink::AdDescriptor(GURL("https://bar.test/1")),
+            /*creative_scanning_metadata=*/std::nullopt));
+
+    ad_components.push_back(
+        auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+            blink::AdDescriptor(GURL("https://bar.test/2")),
+            /*creative_scanning_metadata=*/"a"));
+
+    ad_components.push_back(
+        auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+            blink::AdDescriptor(GURL("https://bar.test/2")),
+            /*creative_scanning_metadata=*/"b"));
+
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url, &ad_components, o1));
+
+    EXPECT_EQ(R"([null,"a","b"])", RunExpectString(scope, script, "test", o1));
+  }
+
+  {
+    // Fill in an object with a non-empty vector, and don't access it.
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url, &ad_components, o1));
+  }
+
+  {
+    // Fill in a new object with a null vector, access the old object.
+    // Should not crash.
+    ContextRecyclerScope scope(context_recycler);
+    o2 = v8::Object::New(isolate);
+
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url, nullptr, o2));
+
+    EXPECT_EQ("undefined", RunExpectString(scope, script, "test", o1));
+    EXPECT_EQ("missing", RunExpectString(scope, script, "test", o2));
+  }
+}
+
+TEST_F(ContextRecyclerTest,
+       SellerBrowserSignalsLazyFillerDisabledCreativeScanningMetadata) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kFledgeTrustedSignalsKVv1CreativeScanning);
+
+  const char kScript[] = R"(
+    function test(browserSignals) {
+      if (!('adComponentsCreativeScanningMetadata' in browserSignals))
+        return 'missing';
+      if (!browserSignals.adComponentsCreativeScanningMetadata)
+        return typeof(browserSignals.adComponentsCreativeScanningMetadata);
+      return JSON.stringify(
+          browserSignals.adComponentsCreativeScanningMetadata);
+    }
+  )";
+
+  GURL browser_signal_render_url("https://a.org/render_url1");
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  v8::Isolate* isolate = helper_->isolate();
+  ContextRecycler context_recycler(helper_.get());
+  context_recycler.AddSellerBrowserSignalsLazyFiller();
+
+  v8::Local<v8::Object> o1;
+
+  std::vector<mojom::CreativeInfoWithoutOwnerPtr> ad_components;
+
+  {
+    // Non-trivial value, but missing since feature disabled.
+    ad_components.push_back(
+        auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+            blink::AdDescriptor(GURL("https://bar.test/1")),
+            /*creative_scanning_metadata=*/std::nullopt));
+
+    ad_components.push_back(
+        auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+            blink::AdDescriptor(GURL("https://bar.test/2")),
+            /*creative_scanning_metadata=*/"a"));
+
+    ad_components.push_back(
+        auction_worklet::mojom::CreativeInfoWithoutOwner::New(
+            blink::AdDescriptor(GURL("https://bar.test/2")),
+            /*creative_scanning_metadata=*/"b"));
+
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url, &ad_components, o1));
+
+    EXPECT_EQ("missing", RunExpectString(scope, script, "test", o1));
   }
 }
 

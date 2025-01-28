@@ -1352,15 +1352,12 @@ std::vector<GURL> InterestGroupAuction::Bid::GetAdComponentUrls() const {
 }
 
 std::vector<auction_worklet::mojom::CreativeInfoWithoutOwnerPtr>
-InterestGroupAuction::Bid::GetAdComponentCreativeInfo(
-    bool send_creative_scanning_metadata) const {
+InterestGroupAuction::Bid::GetAdComponentCreativeInfo() const {
   std::vector<auction_worklet::mojom::CreativeInfoWithoutOwnerPtr> out;
   out.reserve(selected_ad_components.size());
   for (const auto& in : selected_ad_components) {
     out.push_back(auction_worklet::mojom::CreativeInfoWithoutOwner::New(
-        in.ad_descriptor, send_creative_scanning_metadata
-                              ? in.ad->creative_scanning_metadata
-                              : std::nullopt));
+        in.ad_descriptor, in.ad->creative_scanning_metadata));
   }
   return out;
 }
@@ -5602,18 +5599,12 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
         cache_handle->compression_group_token(), partition_id);
   }
 
-  bool send_creative_scanning_metadata =
-      config_->send_creative_scanning_metadata && !cache_key &&
-      !seller_worklet_handle_->GetTrustedSignalsPublicKey();
-
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
       bid->ad_metadata, bid->bid, bid->bid_currency, config_->non_shared_params,
       std::move(cache_key),
       auction_worklet::mojom::CreativeInfoWithoutOwner::New(
-          bid->ad_descriptor, send_creative_scanning_metadata
-                                  ? bid->bid_ad->creative_scanning_metadata
-                                  : std::nullopt),
-      bid->GetAdComponentCreativeInfo(send_creative_scanning_metadata),
+          bid->ad_descriptor, bid->bid_ad->creative_scanning_metadata),
+      bid->GetAdComponentCreativeInfo(),
       GetDirectFromSellerSellerSignals(url_builder),
       GetDirectFromSellerSellerSignalsHeaderAdSlot(
           *direct_from_seller_signals_header_ad_slot_),

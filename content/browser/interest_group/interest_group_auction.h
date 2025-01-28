@@ -402,7 +402,7 @@ class CONTENT_EXPORT InterestGroupAuction
     // for sending over mojo; this has all the info needed for worklet process
     // to both pass in things to JS and request trusted scoring signals.
     std::vector<auction_worklet::mojom::CreativeInfoWithoutOwnerPtr>
-    GetAdComponentCreativeInfo(bool send_creative_scanning_metadata) const;
+    GetAdComponentCreativeInfo() const;
 
     // These getters are necessary for handling the replacements within the
     // interest group auction.
