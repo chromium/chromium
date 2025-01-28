@@ -904,6 +904,10 @@
       status: "stable",
     },
     {
+      name: "ConsiderFullChildNodeContentForListify",
+      status: "stable",
+    },
+    {
       name: "ContactsManager",
       status:  {"Android": "stable", "default": "test"},
     },
