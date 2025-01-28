@@ -890,6 +890,12 @@ void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
   gfx::Rect new_bounds = current_bounds;
   new_bounds.set_x(top_right.x() - current_bounds.width() - tab_strip_padding);
   new_bounds.set_y(top_right.y() + tab_strip_padding);
+  gfx::Size cur_widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
+  if (glic_size_) {
+    cur_widget_size = *glic_size_;
+  }
+  new_bounds.set_width(cur_widget_size.width());
+  new_bounds.set_height(cur_widget_size.height());
   // Avoid conversions between pixels and DIP on non 1.0 scale factor displays
   // changing widget width and height.
   if (animate) {
