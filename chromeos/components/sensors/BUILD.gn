@@ -13,7 +13,6 @@ component("sensors") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chromeos/components/sensors/mojom",
     "//mojo/public/cpp/bindings",
   ]

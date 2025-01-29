@@ -20,7 +20,6 @@ component("constants") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chromeos/components/libsegmentation:buildflags",
   ]
   if (is_chromeos_lacros) {
@@ -37,7 +36,6 @@ source_set("unit_tests") {
   deps = [
     ":constants",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chromeos/crosapi/mojom",
     "//testing/gtest",
   ]

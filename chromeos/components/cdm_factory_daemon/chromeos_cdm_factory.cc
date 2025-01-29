@@ -83,7 +83,6 @@ void GetOutputProtectionOnTaskRunner(
       std::move(output_protection));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class SingletonCdmContextRef : public media::CdmContextRef {
  public:
   explicit SingletonCdmContextRef(media::CdmContext* cdm_context)
@@ -157,7 +156,6 @@ class ArcCdmContext : public ChromeOsCdmContext, public media::CdmContext {
   // media::CdmContext implementation.
   ChromeOsCdmContext* GetChromeOsCdmContext() override { return this; }
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void OnCdmCreated(media::CdmCreatedCB callback,
                   scoped_refptr<ContentDecryptionModuleAdapter> cdm,
@@ -278,7 +276,6 @@ void ChromeOsCdmFactory::ParseEncryptedSliceHeader(
       secure_handle, offset, stream_data, std::move(callback));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 void ChromeOsCdmFactory::SetBrowserCdmFactoryRemote(
     mojo::Remote<cdm::mojom::BrowserCdmFactory> remote) {
@@ -292,7 +289,6 @@ media::CdmContext* ChromeOsCdmFactory::GetArcCdmContext() {
   static base::NoDestructor<ArcCdmContext> arc_cdm_context;
   return arc_cdm_context.get();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
     const media::CdmConfig& cdm_config,

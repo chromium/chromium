@@ -21,12 +21,9 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_CHROMEOS)
-#error "ARC files should only be included for ChromeOS/ASH"
-#endif
+static_assert(BUILDFLAG(IS_CHROMEOS), "ARC can be built only for ChromeOS.");
 
 namespace arc {
-
 class AdaptiveIconDelegate;
 
 namespace internal {
@@ -63,8 +60,8 @@ class ActivityIconLoader {
     SUCCEEDED_ASYNC,
     // Succeeded. The callback has already been called synchronously.
     SUCCEEDED_SYNC,
-    // Failed. The intent_helper instance is not yet ready. This is a temporary
-    // error.
+    // Failed. The intent_helper instance is not yet ready. This is a
+    // temporary error.
     FAILED_ARC_NOT_READY,
     // Failed. Either ARC is not supported at all or intent_helper instance
     // version is too old.

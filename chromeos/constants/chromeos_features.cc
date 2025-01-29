@@ -8,10 +8,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "chromeos_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace chromeos::features {
 
 // Adds Managed APN Policies support.
@@ -130,7 +126,6 @@ BASE_FEATURE(kGeminiAppPreinstall,
              "GeminiAppPreinstall",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables Kiosk Heartbeats to be sent via Encrypted Reporting Pipeline
 BASE_FEATURE(kKioskHeartbeatsViaERP,
              "KioskHeartbeatsViaERP",
@@ -163,7 +158,6 @@ BASE_FEATURE(kMahiSendingUrl,
 
 // Controls whether to enable Mahi for managed users.
 BASE_FEATURE(kMahiManaged, "MahiManaged", base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Controls enabling / disabling the mahi debugging.
 BASE_FEATURE(kMahiDebugging,
@@ -373,11 +367,7 @@ bool IsBluetoothWifiQSPodRefreshEnabled() {
 }
 
 bool IsCloudGamingDeviceEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsCloudGamingDevice();
-#else
   return base::FeatureList::IsEnabled(kCloudGamingDevice);
-#endif
 }
 
 bool IsAlmanacLauncherPayloadEnabled() {
@@ -410,11 +400,7 @@ bool IsDataMigrationEnabled() {
 }
 
 bool IsDeskProfilesEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsDeskProfilesEnabled();
-#else
   return base::FeatureList::IsEnabled(kDeskProfiles);
-#endif
 }
 
 bool IsEssentialSearchEnabled() {
@@ -422,12 +408,7 @@ bool IsEssentialSearchEnabled() {
 }
 
 bool IsFileSystemProviderCloudFileSystemEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()
-      ->IsFileSystemProviderCloudFileSystemEnabled();
-#else
   return base::FeatureList::IsEnabled(kFileSystemProviderCloudFileSystem);
-#endif
 }
 
 bool IsFileSystemProviderContentCacheEnabled() {
@@ -436,12 +417,7 @@ bool IsFileSystemProviderContentCacheEnabled() {
   if (!IsFileSystemProviderCloudFileSystemEnabled()) {
     return false;
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()
-      ->IsFileSystemProviderContentCacheEnabled();
-#else
   return base::FeatureList::IsEnabled(kFileSystemProviderContentCache);
-#endif
 }
 
 bool IsGeminiAppPreinstallFeatureManagementEnabled() {
@@ -453,37 +429,21 @@ bool IsGeminiAppPreinstallEnabled() {
 }
 
 bool IsMagicBoostRevampEnabled() {
-#if BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(kMagicBoostRevamp);
-#else
-  return false;
-#endif
 }
 
 bool IsMahiEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsMahiEnabled();
-#else
   return base::FeatureList::IsEnabled(kMahi) &&
          base::FeatureList::IsEnabled(kFeatureManagementMahi);
-#endif
 }
 
 // Mahi requests are composed & sent from ash.
 bool IsMahiSendingUrl() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(kMahiSendingUrl);
-#else
-  return false;
-#endif
 }
 
 bool IsMahiManagedEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(kMahiManaged);
-#else
-  return false;
-#endif
 }
 
 bool IsMahiDebuggingEnabled() {
@@ -511,40 +471,23 @@ bool IsOfficeNavigationCapturingReimplEnabled() {
 }
 
 bool IsOrcaEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsOrcaEnabled();
-#else
   return base::FeatureList::IsEnabled(chromeos::features::kOrcaDogfood) ||
          (base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
           base::FeatureList::IsEnabled(kFeatureManagementOrca));
-#endif
 }
 
 bool IsOrcaUseL10nStringsEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsOrcaUseL10nStringsEnabled();
-#else
   return base::FeatureList::IsEnabled(chromeos::features::kOrcaUseL10nStrings);
-#endif
 }
 
 bool IsOrcaInternationalizeEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsOrcaInternationalizeEnabled();
-#else
   return base::FeatureList::IsEnabled(
       chromeos::features::kOrcaInternationalize);
-#endif
 }
 
 bool ShouldDisableChromeComposeOnChromeOS() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()
-      ->ShouldDisableChromeComposeOnChromeOS();
-#else
   return base::FeatureList::IsEnabled(kFeatureManagementDisableChromeCompose) ||
          IsOrcaEnabled();
-#endif
 }
 
 bool IsQuickAnswersMaterialNextUIEnabled() {
@@ -564,21 +507,12 @@ bool IsQuickAnswersV2SettingsSubToggleEnabled() {
 }
 
 bool IsUploadOfficeToCloudEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsUploadOfficeToCloudEnabled();
-#else
   return base::FeatureList::IsEnabled(kUploadOfficeToCloud);
-#endif
 }
 
 bool IsUploadOfficeToCloudForEnterpriseEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/296282654): Implement propagation if necessary.
-  return false;
-#else
   return base::FeatureList::IsEnabled(kUploadOfficeToCloud) &&
          base::FeatureList::IsEnabled(kUploadOfficeToCloudForEnterprise);
-#endif
 }
 
 bool IsUploadOfficeToCloudSyncEnabled() {

@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "build/chromeos_buildflags.h"
 
 namespace ash::libassistant {
 

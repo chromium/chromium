@@ -16,8 +16,5 @@ component("metrics") {
 
   output_name = "ash_metrics"
 
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//base" ]
 }

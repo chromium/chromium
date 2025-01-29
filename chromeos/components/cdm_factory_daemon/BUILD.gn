@@ -13,7 +13,6 @@ component("cdm_factory_daemon_browser") {
   public_deps = [ "//chromeos/components/cdm_factory_daemon/mojom" ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
   ]

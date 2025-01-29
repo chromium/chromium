@@ -11,10 +11,7 @@ static_library("mgs") {
     "managed_guest_session_utils.cc",
     "managed_guest_session_utils.h",
   ]
-  deps = [
-    "//build:chromeos_buildflags",
-    "//chromeos/crosapi/mojom",
-  ]
+  deps = [ "//chromeos/crosapi/mojom" ]
 
   if (is_chromeos_ash) {
     deps += [ "//chromeos/ash/components/login/login_state:login_state" ]
@@ -30,10 +27,7 @@ static_library("test_support") {
     "managed_guest_session_test_utils.cc",
     "managed_guest_session_test_utils.h",
   ]
-  deps = [
-    "//build:chromeos_buildflags",
-    "//chromeos/crosapi/mojom",
-  ]
+  deps = [ "//chromeos/crosapi/mojom" ]
   if (is_chromeos_ash) {
     deps += [ "//chromeos/ash/components/login/login_state:login_state" ]
   }

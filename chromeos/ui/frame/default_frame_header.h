@@ -68,9 +68,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) DefaultFrameHeader
 
   int width_in_pixels_ = -1;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<FrameColorMetricsHelper> frame_color_metrics_helper_;
-#endif
 };
 
 }  // namespace chromeos

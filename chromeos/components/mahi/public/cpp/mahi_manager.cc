@@ -4,23 +4,14 @@
 
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
 
 namespace chromeos {
 

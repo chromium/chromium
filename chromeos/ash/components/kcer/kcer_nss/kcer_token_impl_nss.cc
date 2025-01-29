@@ -28,7 +28,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/ash/components/chaps_util/chaps_util.h"
 #include "chromeos/ash/components/kcer/cert_cache.h"
 #include "chromeos/ash/components/kcer/chaps/high_level_chaps_client.h"
@@ -142,13 +141,9 @@ void GenerateRsaKeyOnWorkerThread(Token token,
         slot.get(), modulus_length_bits_uint, /*permanent=*/true, &public_key,
         &private_key);
   } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     auto chaps_util = chromeos::ChapsUtil::Create();
     key_gen_success = chaps_util->GenerateSoftwareBackedRSAKey(
         slot.get(), modulus_length_bits_uint, &public_key, &private_key);
-#else
-    return std::move(callback).Run(base::unexpected(Error::kNotImplemented));
-#endif
   }
 
   if (!key_gen_success) {
