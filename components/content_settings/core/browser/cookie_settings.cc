@@ -118,9 +118,6 @@ bool CookieSettings::IsAllowedByTpcdMetadataGrant(const GURL& url,
     return false;
   }
 
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-      "ContentSettings.IsAllowedByTpcdMetadataGrant.Duration");
-
   return tpcd_metadata_manager_->IsAllowed(url, first_party_url, out_info);
 }
 
