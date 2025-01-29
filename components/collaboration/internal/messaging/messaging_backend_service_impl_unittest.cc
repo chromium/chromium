@@ -1836,36 +1836,6 @@ TEST_F(MessagingBackendServiceImplTest, TestMemberAddedCreatesInstantMessage) {
             message.attribution.tab_group_metadata->sync_tab_group_id);
 }
 
-TEST_F(MessagingBackendServiceImplTest, TestMemberAddedOrRemovedIsOwner) {
-  CreateAndInitializeService();
-  SetupInstantMessageDelegate();
-
-  data_sharing::GroupData group_data;
-  group_data.group_token.group_id = data_sharing::GroupId("my group id");
-  data_sharing::GroupMember member1;
-  member1.gaia_id = GaiaId("abc");
-  member1.display_name = "Provided Diplay Name 1";
-  member1.given_name = "Provided Given Name 1";
-  member1.role = data_sharing::MemberRole::kOwner;
-  group_data.members.emplace_back(member1);
-
-  base::Time time = base::Time::Now();
-
-  // Owner added event shouldn't get stored in DB or have an instant message.
-  EXPECT_CALL(*unowned_messaging_backend_store_, AddMessage(_)).Times(0);
-  EXPECT_CALL(*mock_instant_message_delegate_,
-              DisplayInstantaneousMessage(_, _))
-      .Times(0);
-
-  // Owner is added.
-  ds_notifier_observer_->OnGroupMemberAdded(group_data, member1.gaia_id, time);
-
-  // Owner is removed.
-  time += base::Seconds(1);
-  ds_notifier_observer_->OnGroupMemberRemoved(group_data, member1.gaia_id,
-                                              time);
-}
-
 TEST_F(MessagingBackendServiceImplTest, TestTabSelectionClearsChipByDefault) {
   CreateAndInitializeService();
   AddPersistentMessageObserver();

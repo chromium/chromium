@@ -322,17 +322,6 @@ std::vector<PersistentMessage> CreatePersistentMessagesForTypes(
   return messages;
 }
 
-bool IsMemberOwner(const data_sharing::GroupData& group_data,
-                   const GaiaId& member_gaia_id) {
-  for (const data_sharing::GroupMember& member : group_data.members) {
-    if (member.gaia_id == member_gaia_id) {
-      return member.role == data_sharing::MemberRole::kOwner;
-    }
-  }
-
-  return false;
-}
-
 bool IsMemberCurrentUser(const signin::IdentityManager* identity_manager,
                          const GaiaId& gaia_id) {
   CoreAccountInfo account =
@@ -342,13 +331,6 @@ bool IsMemberCurrentUser(const signin::IdentityManager* identity_manager,
   }
 
   return account.gaia == gaia_id;
-}
-
-bool IsMemberSelfOrOwner(const signin::IdentityManager* identity_manager,
-                         const data_sharing::GroupData& group_data,
-                         const GaiaId& member_gaia_id) {
-  return IsMemberCurrentUser(identity_manager, member_gaia_id) ||
-         IsMemberOwner(group_data, member_gaia_id);
 }
 
 }  // namespace
@@ -946,10 +928,6 @@ void MessagingBackendServiceImpl::OnGroupMemberAdded(
     const data_sharing::GroupData& group_data,
     const GaiaId& member_gaia_id,
     const base::Time& event_time) {
-  if (IsMemberSelfOrOwner(identity_manager_, group_data, member_gaia_id)) {
-    return;
-  }
-
   std::optional<tab_groups::SavedTabGroup> tab_group;
   for (const auto& group : tab_group_sync_service_->GetAllGroups()) {
     if (group.collaboration_id() &&
@@ -975,7 +953,6 @@ void MessagingBackendServiceImpl::OnGroupMemberAdded(
   std::optional<std::string> user_display_name =
       GetDisplayNameForUserInGroup(group_data.group_token.group_id,
                                    member_gaia_id, group_data, std::nullopt);
-
   if (user_display_name) {
     message.mutable_collaboration_data()->set_affected_user_name(
         *user_display_name);
@@ -995,10 +972,6 @@ void MessagingBackendServiceImpl::OnGroupMemberRemoved(
     const data_sharing::GroupData& group_data,
     const GaiaId& member_gaia_id,
     const base::Time& event_time) {
-  if (IsMemberSelfOrOwner(identity_manager_, group_data, member_gaia_id)) {
-    return;
-  }
-
   collaboration_pb::Message message =
       CreateMessage(group_data.group_token.group_id,
                     collaboration_pb::COLLABORATION_MEMBER_REMOVED,
