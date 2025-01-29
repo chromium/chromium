@@ -272,6 +272,10 @@ BASE_FEATURE(kWebGPUUseTintIR,
 #endif
 );
 
+BASE_FEATURE(kWebGPUUseVulkanMemoryModel,
+             "WebGPUUseVulkanMemoryModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 
 const base::FeatureParam<std::string> kVulkanBlockListByHardware{
