@@ -132,6 +132,20 @@ message ChromeUserPopulation {
   reserved 19;
 }
 
+// Identifies a web app (e.g. a WebAPK) on the basis of its origin and id, as
+// defined in https://www.w3.org/TR/appmanifest/#id-member.
+message SafeBrowsingWebAppKey {
+  // Serialized origin without the scheme portion. In most cases, this is just
+  // the host part. May include a colon character followed by a port number, if
+  // the port number is non-default.
+  optional string start_url_origin = 1;
+  // Manifest id or (if there is no id) the path and query portions of
+  // start_url, without leading slash character, e.g. will be empty string if
+  // the path is "/". This should not include URL fragments, but should include
+  // query params.
+  optional string id_or_start_path = 2;
+}
+
 message ImageFeatureEmbedding {
   // Tracking embedding-model's version from iteration to iteration
   optional int32 embedding_model_version = 1;
