@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 
@@ -22,7 +23,8 @@ namespace base::android {
 // Each component should have its own FeatureMap.
 class BASE_EXPORT FeatureMap {
  public:
-  explicit FeatureMap(std::vector<const Feature*> featuresExposedToJava);
+  explicit FeatureMap(
+      base::span<const Feature* const> features_exposed_to_java);
   ~FeatureMap();
 
   // Map a |feature_name| to a Feature*.

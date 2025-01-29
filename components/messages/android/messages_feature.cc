@@ -16,15 +16,15 @@ namespace messages {
 
 namespace {
 
-const base::Feature* kFeaturesExposedToJava[] = {
+const base::Feature* const kFeaturesExposedToJava[] = {
     &kMessagesForAndroidFullyVisibleCallback,
     &kMessagesAndroidExtraHistograms,
 };
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
-  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(std::vector(
-      std::begin(kFeaturesExposedToJava), std::end(kFeaturesExposedToJava)));
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava);
   return kFeatureMap.get();
 }
 
