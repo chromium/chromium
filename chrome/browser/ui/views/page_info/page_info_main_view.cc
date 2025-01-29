@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -46,6 +47,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -706,6 +708,11 @@ std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton(
   auto* star_rating_view =
       merchant_trust_button->SetCustomView(std::make_unique<StarRatingView>());
   star_rating_view->SetRating(value.star_rating);
+  merchant_trust_button->GetViewAccessibility().SetName(
+      base::i18n::MessageFormatter::FormatWithNumberedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_PAGE_INFO_MERCHANT_TRUST_STAR_RATING_A11Y_DESCRIPTION),
+          value.star_rating));
   return merchant_trust_button;
 }
 

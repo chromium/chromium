@@ -37,8 +37,7 @@ class PageInfoMerchantTrustContentView : public views::FlexLayoutView,
       base::RepeatingClosureList::CallbackType callback);
 
   void SetReviewsSummary(std::u16string summary);
-  void SetRating(double rating);
-  void SetReviewCount(int count);
+  void SetRatingAndReviewCount(double rating, int count);
   void SetHatsButtonVisibility(bool visible);
 
   // views::View:

@@ -59,8 +59,8 @@ void PageInfoMerchantTrustController::OnMerchantTrustDataFetched(
   merchant_data_ = merchant_data.value();
   content_view_->SetReviewsSummary(
       base::ASCIIToUTF16(merchant_data->reviews_summary));
-  content_view_->SetRating(merchant_data->star_rating);
-  content_view_->SetReviewCount(merchant_data->count_rating);
+  content_view_->SetRatingAndReviewCount(merchant_data->star_rating,
+                                         merchant_data->count_rating);
 }
 
 void PageInfoMerchantTrustController::LearnMoreLinkPressed(
