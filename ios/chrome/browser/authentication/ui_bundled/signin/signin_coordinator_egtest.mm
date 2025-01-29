@@ -80,8 +80,8 @@ NSString* const kLearnMoreLabel = @"Learn More";
 
 NSString* const kPassphrase = @"hello";
 
-// Timeout in seconds to wait for asynchronous sync operations.
-constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(5);
+// Timeout in seconds to wait for sync to become active.
+constexpr base::TimeDelta kSyncActiveTimeout = base::Seconds(5);
 
 // Sets parental control capability for the given identity.
 void SetParentalControlsCapabilityForIdentity(
@@ -197,9 +197,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Sign in with fake identity.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
-  // Add a bookmark after sync is initialized.
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
+  // Add a bookmark after sync is active.
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
@@ -233,9 +233,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   SetParentalControlsCapabilityForIdentity(fakeSupervisedIdentity);
   [SigninEarlGreyUI signinWithFakeIdentity:fakeSupervisedIdentity];
 
-  // Add a bookmark after sync is initialized.
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
+  // Add a bookmark after sync is active.
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
@@ -257,9 +257,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   SetParentalControlsCapabilityForIdentity(fakeSupervisedIdentity);
   [SigninEarlGreyUI signinWithFakeIdentity:fakeSupervisedIdentity];
 
-  // Add a bookmark after sync is initialized.
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
+  // Add a bookmark after sync is active.
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kAccount];

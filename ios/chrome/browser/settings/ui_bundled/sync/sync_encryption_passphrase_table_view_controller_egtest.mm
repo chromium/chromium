@@ -44,9 +44,6 @@ NSString* const kPassphrase = @"hello";
 
 - (void)tearDownHelper {
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:NO
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
 
   [super tearDownHelper];
@@ -54,10 +51,6 @@ NSString* const kPassphrase = @"hello";
 
 - (void)setUp {
   [super setUp];
-
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:NO
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
 }
 
 // Tests to open the sync passphrase view, and to close it.

@@ -669,10 +669,9 @@ void CompleteSigninFlow() {
   // Sign-in from the regular prompt.
   CompleteSigninFlow();
 
-  // Sync utilities require sync to be initialized in order to perform
-  // operations on the Sync server.
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:base::Seconds(10)];
+  // Sync utilities require sync to be active in order to perform operations on
+  // the Sync server.
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   // Make sure the forced sign-in screen isn't shown because sign-in was
   // already done.
@@ -802,10 +801,9 @@ void CompleteSigninFlow() {
   // Sign-in from the regular prompt.
   CompleteSigninFlow();
 
-  // Sync utilities require sync to be initialized in order to perform
-  // operations on the Sync server.
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:base::Seconds(10)];
+  // Sync utilities require sync to be active in order to perform operations on
+  // the Sync server.
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   // Make sure the forced sign-in screen isn't shown because the browser is
   // already signed in.

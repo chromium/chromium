@@ -124,9 +124,8 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   // enables UKM.
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                          enableHistorySync:YES];
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:YES
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:
+                      syncher::kSyncUKMOperationsTimeout];
 }
 
 // Adds a dummy UKM source to the UKM service's recordings. The presence of this

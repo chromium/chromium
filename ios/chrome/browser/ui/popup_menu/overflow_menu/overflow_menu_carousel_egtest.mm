@@ -109,18 +109,11 @@ void ResolvePassphraseErrorFromOverflowMenu() {
   [super setUp];
 
   CleanupDestinationsHighlightFeaturesData();
-
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:NO
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
 }
 
 - (void)tearDownHelper {
   // Clean up sign-in and Sync data.
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:NO
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
 
   CleanupDestinationsHighlightFeaturesData();

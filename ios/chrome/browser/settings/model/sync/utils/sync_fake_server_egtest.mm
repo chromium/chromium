@@ -230,9 +230,9 @@ void ClearRelevantData() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
-  // Add a bookmark after sync is initialized.
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
+  // Add a bookmark after sync is active.
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey addBookmarkWithTitle:@"goo"
                                      URL:@"https://www.goo.com"
                                inStorage:BookmarkStorageType::kAccount];
@@ -272,8 +272,6 @@ void ClearRelevantData() {
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
 
   // Sign the user back in, and verify the guid has *not* changed.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
@@ -295,8 +293,6 @@ void ClearRelevantData() {
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
 
   // Sign a different user in, and verify the guid has changed.
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
@@ -331,8 +327,8 @@ void ClearRelevantData() {
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:YES];
 
   // Verify the sessions on the sync server.
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
   WaitForEntitiesOnFakeServer(3, syncer::SESSIONS);
 
   NSArray<NSString*>* specs = @[
@@ -458,8 +454,8 @@ void ClearRelevantData() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
   WaitForEntitiesOnFakeServer(1, syncer::DEVICE_INFO);
   [ChromeEarlGrey waitForSyncInvalidationFields];
 }
@@ -1008,9 +1004,6 @@ void ClearRelevantData() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
   [SigninEarlGrey verifySignedOut];
-
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
 
   // Both the bookmark and the password should be gone.
   GREYAssertEqual(

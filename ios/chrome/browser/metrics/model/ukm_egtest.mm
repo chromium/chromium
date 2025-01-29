@@ -47,9 +47,6 @@ using chrome_test_util::SettingsDoneButton;
     [ChromeEarlGrey clearBrowsingHistory];
   }
 
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:NO
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
              @"Failed to assert that UKM was not enabled.");
   // Sign in to Chrome and enable history sync.
@@ -59,9 +56,8 @@ using chrome_test_util::SettingsDoneButton;
   // user flow that enables UKM.
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                          enableHistorySync:YES];
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:YES
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:
+                      syncher::kSyncUKMOperationsTimeout];
 
   // Grant metrics consent and update MetricsServicesManager.
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
@@ -73,9 +69,8 @@ using chrome_test_util::SettingsDoneButton;
 }
 
 - (void)tearDownHelper {
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:YES
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:
+                      syncher::kSyncUKMOperationsTimeout];
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
              @"Failed to assert that UKM was enabled.");
 
@@ -93,9 +88,6 @@ using chrome_test_util::SettingsDoneButton;
   // UKM.
   [SigninEarlGrey signOut];
 
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:NO
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
 
   [super tearDownHelper];

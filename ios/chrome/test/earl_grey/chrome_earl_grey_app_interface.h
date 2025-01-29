@@ -358,13 +358,6 @@ enum class TipsNotificationType;
 
 #pragma mark - Sync Utilities (EG2)
 
-// Waits for sync engine to be initialized or not. It doesn't necessarily mean
-// that data types are configured and ready to use. See
-// SyncService::IsEngineInitialized() for details. If not succeeded a GREYAssert
-// is induced.
-+ (NSError*)waitForSyncEngineInitialized:(BOOL)isInitialized
-                             syncTimeout:(base::TimeDelta)timeout;
-
 // Waits for the sync feature to be enabled/disabled. See SyncService::
 // IsSyncFeatureEnabled() for details. If not succeeded a GREYAssert is induced.
 + (NSError*)waitForSyncFeatureEnabled:(BOOL)isEnabled

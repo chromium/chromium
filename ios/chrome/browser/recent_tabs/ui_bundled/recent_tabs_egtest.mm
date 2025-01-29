@@ -74,8 +74,6 @@ void SignInAndEnableHistorySync() {
 // Sign out and clear sync data.
 void SignOut() {
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
 }
 
