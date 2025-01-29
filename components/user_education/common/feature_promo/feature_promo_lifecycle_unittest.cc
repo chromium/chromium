@@ -69,8 +69,6 @@ class FeaturePromoLifecycleTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    feature_list_.InitAndEnableFeature(
-        features::kUserEducationExperienceVersion2);
     element_.Show();
   }
 
@@ -240,8 +238,6 @@ class FeaturePromoLifecycleTest : public testing::Test {
   std::vector<base::CallbackListSubscription> help_bubble_subscriptions_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
-
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   base::SimpleTestClock clock_;

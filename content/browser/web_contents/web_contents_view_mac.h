@@ -149,6 +149,9 @@ class WebContentsViewMac : public WebContentsView,
   CONTENT_EXPORT static void InstallCreateHookForTests(
       RenderWidgetHostViewCreateFunction create_render_widget_host_view);
 
+  CONTENT_EXPORT static void SetReadWritePermissionsForFileForTests(
+      base::File& file);
+
  private:
   WebContentsViewCocoa* GetInProcessNSView() const;
 

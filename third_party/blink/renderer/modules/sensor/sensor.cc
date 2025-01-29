@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/modules/sensor/sensor.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 #include "services/device/public/mojom/sensor.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -29,7 +29,7 @@ const double kWaitingIntervalThreshold = 0.01;
 bool AreFeaturesEnabled(
     ExecutionContext* context,
     const Vector<mojom::blink::PermissionsPolicyFeature>& features) {
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       features, [context](mojom::blink::PermissionsPolicyFeature feature) {
         return context->IsFeatureEnabled(feature,
                                          ReportOptions::kReportOnFailure);

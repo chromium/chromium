@@ -11986,17 +11986,17 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             </message>
 
           <!-- Delete Last Tab Dialog -->
-            <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_TITLE" desc="Title for the delete last tab dialog.">
-              Keep Tab Group?
+            <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_TITLE" desc="Title for the delete last tab dialog. [ICU Syntax]">
+              {NUM_GROUPS, plural, =1 {Keep Tab Group?} other {Keep Tab Groups?}}
             </message>
-            <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_CANCEL" desc="Cancel button text for the delete last tab dialog.">
-              Keep Group
+            <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_CONFIRM" desc="Confirm button text for the delete last tab dialog. [ICU Syntax]">
+              {NUM_GROUPS, plural, =1 {Keep Group} other {Keep Groups}}
             </message>
-            <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_CONFIRM" desc="Confirm button text for the delete last tab dialog if the user is the owner of the group.">
-              Delete Group
+            <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_CANCEL" desc="Cancel button text for the delete last tab dialog if the user is the owner of the groups. [ICU Syntax]">
+              {NUM_GROUPS, plural, =1 {Delete Group} other {Delete Groups}}
             </message>
-            <message name="IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CONFIRM" desc="Confirm button text for the delete last tab dialog if the user is the member of the group.">
-              Leave Group
+            <message name="IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CANCEL" desc="Cancel button text for the delete last tab dialog if the user is a member of the groups. [ICU Syntax]">
+              {NUM_GROUPS, plural, =1 {Leave Group} other {Leave Groups}}
             </message>
           <!-- /Delete Last Tab Dialog -->
 
@@ -12138,17 +12138,17 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             </message>
 
           <!-- Delete Last Tab Dialog -->
-            <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_TITLE" desc="Title for the delete last tab dialog.">
-              Keep tab group?
+            <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_TITLE" desc="Title for the delete last tab dialog. [ICU Syntax]">
+              {NUM_GROUPS, plural, =1 {Keep tab group?} other {Keep tab groups?}}
             </message>
-            <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_CANCEL" desc="cancel button text for the delete last tab dialog.">
-              Keep group
+            <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_CONFIRM" desc="Confirm button text for the delete last tab dialog. [ICU Syntax]">
+              {NUM_GROUPS, plural, =1 {Keep group} other {Keep groups}}
             </message>
-            <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_CONFIRM" desc="confirm button text for the delete last tab dialog if the user is the owner of the group.">
-              Delete group
+            <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_CANCEL" desc="Cancel button text for the delete last tab dialog if the user is the owner of the groups. [ICU Syntax]">
+              {NUM_GROUPS, plural, =1 {Delete group} other {Delete groups}}
             </message>
-            <message name="IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CONFIRM" desc="confirm button text for the delete last tab dialog if the user is the member of the group.">
-              Leave group
+            <message name="IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CANCEL" desc="Cancel button text for the delete last tab dialog if the user is a member of the groups. [ICU Syntax]">
+              {NUM_GROUPS, plural, =1 {Leave group} other {Leave groups}}
             </message>
           <!-- /Delete Last Tab Dialog -->
 
@@ -12293,14 +12293,14 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <!-- /errors and warnings -->
 
       <!-- Delete Last Tab Dialog -->
-        <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_BODY" desc="Description for the confirming the owner deleting the last tab of the shared group.">
-          Keep this group to add tabs later, or delete it if you no longer need it.
+        <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_BODY" desc="Description for the confirming the owner deleting the last tab of the shared group. [ICU_Syntax]">
+          {NUM_GROUPS, plural, =1 {Keep this group to add tabs later, or delete it if you no longer need it.} other {Keep these groups to add tabs later, or delete them if you no longer need them.}}
         </message>
         <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_BODY_2" desc="More description for the confirming the owner deleting the last tab of the shared group.">
           If you delete it, everyone will immediately lose access to the "<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and it will be deleted from all devices.
         </message>
-        <message name="IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_BODY" desc="Description for the confirming the member deleting the last tab of the shared group.">
-          Keep this group to add tabs later, or leave it if you no longer want access to it
+        <message name="IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_BODY" desc="Description for the confirming the member deleting the last tab of one or more shared groups. [ICU_Syntax]">
+          {NUM_GROUPS, plural, =1 {Keep this group to add tabs later, or leave it if you no longer want access to it} other {Keep these groups to add tabs later, or leave them if you no longer want access to them}}
         </message>
       <!-- /Delete Last Tab Dialog -->
 

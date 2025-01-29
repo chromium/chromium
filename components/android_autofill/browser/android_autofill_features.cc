@@ -20,7 +20,7 @@ namespace autofill::features {
 
 namespace {
 
-const base::Feature* kFeaturesExposedToJava[] = {
+const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAutofillBottomSheetWorkaround,
     &kAndroidAutofillDeprecateAccessibilityApi};
 

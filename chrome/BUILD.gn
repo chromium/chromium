@@ -695,7 +695,7 @@ if (is_win) {
       "--stamp",
       rebase_path(_stamp_file, root_build_dir),
       "--keep",
-      chrome_version_full,
+      chrome_framework_version,
       "--keep",
       "Current",
     ]
@@ -1224,7 +1224,7 @@ if (is_win) {
     if (!is_component_build) {
       # Specify a sensible install_name for static builds. The library is
       # dlopen()ed so this is not used to resolve the module.
-      ldflags += [ "-Wl,-install_name,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/$chrome_framework_name" ]
+      ldflags += [ "-Wl,-install_name,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_framework_version/$chrome_framework_name" ]
     } else {
       # In the component build, both the :chrome_app and various
       # :chrome_helper* targets directly link to the Framework target. Use

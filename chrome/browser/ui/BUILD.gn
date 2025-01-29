@@ -1951,7 +1951,10 @@ static_library("ui") {
     }
 
     if (enable_dice_support) {
-      deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl" ]
+      deps += [
+        "//chrome/browser/ui/webui/signin/signout_confirmation",
+        "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl",
+      ]
       allow_circular_includes_from += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl" ]
     }
 

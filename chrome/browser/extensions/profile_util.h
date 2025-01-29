@@ -5,13 +5,28 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_PROFILE_UTIL_H_
 #define CHROME_BROWSER_EXTENSIONS_PROFILE_UTIL_H_
 
-#include "build/chromeos_buildflags.h"
+#include <stddef.h>
+
+#include "build/build_config.h"
 
 class Profile;
+class ProfileManager;
 
 namespace extensions::profile_util {
 
 bool ProfileCanUseNonComponentExtensions(const Profile* profile);
+
+Profile* GetLastUsedProfile();
+
+size_t GetNumberOfProfiles();
+
+ProfileManager* GetProfileManager();
+
+#if BUILDFLAG(IS_CHROMEOS)
+Profile* GetPrimaryUserProfile();
+
+Profile* GetActiveUserProfile();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions::profile_util
 

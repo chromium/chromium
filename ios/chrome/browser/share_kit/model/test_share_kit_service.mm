@@ -14,7 +14,9 @@
 #import "ios/chrome/browser/data_sharing/model/data_sharing_sdk_delegate_ios.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_ui_delegate_ios.h"
 #import "ios/chrome/browser/share_kit/model/fake_share_kit_flow_view_controller.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_delete_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_leave_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_read_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
@@ -89,8 +91,9 @@ GroupData CreateGroupData(MemberRole member_role, NSString* collaboration_id) {
 TestShareKitService::TestShareKitService(
     data_sharing::DataSharingService* data_sharing_service,
     collaboration::CollaborationService* collaboration_service,
-    tab_groups::TabGroupSyncService* sync_service)
-    : data_sharing_service_(data_sharing_service), sync_service_(sync_service) {
+    tab_groups::TabGroupSyncService* tab_group_sync_service)
+    : data_sharing_service_(data_sharing_service),
+      tab_group_sync_service_(tab_group_sync_service) {
   if (data_sharing_service_) {
     std::unique_ptr<data_sharing::DataSharingUIDelegateIOS> ui_delegate =
         std::make_unique<data_sharing::DataSharingUIDelegateIOS>(
@@ -200,11 +203,36 @@ void TestShareKitService::ReadGroups(ShareKitReadConfiguration* config) {
 }
 
 void TestShareKitService::LeaveGroup(ShareKitLeaveConfiguration* config) {
-  // TODO(crbug.com/358373145): add fake implementation.
+  ShareKitDeleteConfiguration* deleteConfig =
+      [[ShareKitDeleteConfiguration alloc] init];
+  deleteConfig.collabID = config.collabID;
+  deleteConfig.callback = config.callback;
+  DeleteGroup(deleteConfig);
 }
 
 void TestShareKitService::DeleteGroup(ShareKitDeleteConfiguration* config) {
-  // TODO(crbug.com/358373145): add fake implementation.
+  auto callback = config.callback;
+  std::optional<tab_groups::SavedTabGroup> tab_group;
+  tab_groups::CollaborationId collaboration_id =
+      tab_groups::CollaborationId(base::SysNSStringToUTF8(config.collabID));
+
+  for (const auto& group : tab_group_sync_service_->GetAllGroups()) {
+    if (group.collaboration_id().has_value() &&
+        group.collaboration_id().value() == collaboration_id) {
+      tab_group = group;
+      break;
+    }
+  }
+  if (!tab_group) {
+    callback(absl::Status(absl::StatusCode::kUnknown,
+                          "Deleting shared group failed."));
+    return;
+  }
+
+  chrome_test_util::DeleteSharedGroupFromFakeServer(tab_group->saved_guid());
+  chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
+
+  callback(absl::Status(absl::StatusCode::kOk, std::string()));
 }
 
 void TestShareKitService::LookupGaiaIdByEmail(
@@ -225,21 +253,21 @@ void TestShareKitService::Shutdown() {
 void TestShareKitService::SetTabGroupCollabIdFromGroupId(
     tab_groups::LocalTabGroupID tab_group_id,
     NSString* collab_id) {
-  if (sync_service_ && collab_id) {
+  if (tab_group_sync_service_ && collab_id) {
     std::string collaboration_id = base::SysNSStringToUTF8(collab_id);
     // It is necessary to make the collab available on both the sync server and
     // the finder.
     chrome_test_util::AddCollaboration(collaboration_id);
-    sync_service_->GetCollaborationFinderForTesting()
+    tab_group_sync_service_->GetCollaborationFinderForTesting()
         ->SetCollaborationAvailableForTesting(collaboration_id);
 
     std::optional<tab_groups::SavedTabGroup> saved_group =
-        sync_service_->GetGroup(tab_group_id);
+        tab_group_sync_service_->GetGroup(tab_group_id);
     if (saved_group && !saved_group->is_shared_tab_group()) {
       chrome_test_util::AddColloaborationGroupToFakeServer(collaboration_id);
       chrome_test_util::TriggerSyncCycle(syncer::COLLABORATION_GROUP);
       // TODO(crbug.com/382557489): implement the callback.
-      sync_service_->MakeTabGroupShared(
+      tab_group_sync_service_->MakeTabGroupShared(
           tab_group_id, collaboration_id,
           tab_groups::TabGroupSyncService::TabGroupSharingCallback());
     }
@@ -250,7 +278,7 @@ void TestShareKitService::SetTabGroupCollabIdFromGroupGuid(
     base::Uuid group_guid,
     NSString* collab_id) {
   std::optional<tab_groups::SavedTabGroup> saved_group =
-      sync_service_->GetGroup(group_guid);
+      tab_group_sync_service_->GetGroup(group_guid);
   if (saved_group && !saved_group->is_shared_tab_group()) {
     // Make the group shared.
     SetTabGroupCollabIdFromGroupId(saved_group->local_group_id().value(),
@@ -259,7 +287,7 @@ void TestShareKitService::SetTabGroupCollabIdFromGroupGuid(
 }
 
 void TestShareKitService::OnTabGroupJoined(NSString* collab_id) {
-  if (!sync_service_) {
+  if (!tab_group_sync_service_) {
     return;
   }
 

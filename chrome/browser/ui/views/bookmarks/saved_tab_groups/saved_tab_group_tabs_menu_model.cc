@@ -125,7 +125,7 @@ void STGTabsMenuModel::Build(
   } else {
     // Add item: leave group.
     AddItemWithStringIdAndIcon(
-        latest_command_id, IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CONFIRM,
+        latest_command_id, IDS_DATA_SHARING_LEAVE_GROUP,
         ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon,
                                        ui::kColorMenuIcon, kUIUpdateIconSize));
     SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),

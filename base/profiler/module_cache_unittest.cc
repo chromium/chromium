@@ -4,6 +4,7 @@
 
 #include "base/profiler/module_cache.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <map>
 #include <memory>
@@ -14,7 +15,6 @@
 #include "base/containers/adapters.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -355,7 +355,7 @@ TEST(ModuleCacheTest, CheckAgainstProcMaps) {
   }
 
   const auto find_last_executable_region = [](const RegionVector& regions) {
-    const auto rloc = base::ranges::find_if(
+    const auto rloc = std::ranges::find_if(
         base::Reversed(regions), [](const debug::MappedMemoryRegion* region) {
           return static_cast<bool>(region->permissions &
                                    debug::MappedMemoryRegion::EXECUTE);

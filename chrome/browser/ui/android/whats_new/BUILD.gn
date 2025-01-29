@@ -4,18 +4,38 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
+android_library("feature_list_java") {
+  resources_package =
+      "org.chromium.chrome.browser.ui.android.whats_new.features"
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/android/whats_new/features/WhatsNewFeature.java",
+    "java/src/org/chromium/chrome/browser/ui/android/whats_new/features/WhatsNewFeatureProvider.java",
+    "java/src/org/chromium/chrome/browser/ui/android/whats_new/features/WhatsNewFeatureUtils.java",
+  ]
+  deps = [
+    "//base:resetters_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
 android_library("java") {
   resources_package = "org.chromium.chrome.browser.ui.android.whats_new"
 
   sources = [
     "java/src/org/chromium/chrome/browser/ui/android/whats_new/WhatsNewBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/ui/android/whats_new/WhatsNewCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/android/whats_new/WhatsNewListItemProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/android/whats_new/WhatsNewListItemView.java",
+    "java/src/org/chromium/chrome/browser/ui/android/whats_new/WhatsNewListItemViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/android/whats_new/WhatsNewMediator.java",
     "java/src/org/chromium/chrome/browser/ui/android/whats_new/WhatsNewProperties.java",
     "java/src/org/chromium/chrome/browser/ui/android/whats_new/WhatsNewViewBinder.java",
   ]
 
   deps = [
+    ":feature_list_java",
     ":java_resources",
     "//base:base_java",
     "//chrome/browser/flags:java",
@@ -30,8 +50,10 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/layout/whats_new_item_detail.xml",
+    "java/res/layout/whats_new_list_item.xml",
     "java/res/layout/whats_new_overview_page.xml",
     "java/res/layout/whats_new_page.xml",
+    "java/res/values/dimens.xml",
   ]
 
   deps = [
@@ -50,11 +72,13 @@ robolectric_library("junit") {
   ]
 
   deps = [
+    ":feature_list_java",
     ":java",
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/flags:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",

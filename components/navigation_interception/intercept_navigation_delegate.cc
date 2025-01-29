@@ -167,7 +167,7 @@ InterceptNavigationDelegate::MaybeCreateThrottleFor(
                           base::Unretained(intercept_navigation_delegate)),
       mode,
       base::BindRepeating(
-          &InterceptNavigationDelegate::FinishPendingShouldIgnoreCheck,
+          &InterceptNavigationDelegate::RequestFinishPendingShouldIgnoreCheck,
           base::Unretained(intercept_navigation_delegate)));
 }
 
@@ -187,7 +187,7 @@ void InterceptNavigationDelegate::ShouldIgnoreNavigation(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Avoid having two outstanding checks at once for simplicity.
   if (should_ignore_result_callback_) {
-    FinishPendingShouldIgnoreCheck();
+    RequestFinishPendingShouldIgnoreCheck();
   }
   GURL escaped_url = escape_external_handler_value_
                          ? GURL(base::EscapeExternalHandlerValue(
@@ -246,7 +246,7 @@ void InterceptNavigationDelegate::OnShouldIgnoreNavigationResult(
   std::move(should_ignore_result_callback_).Run(should_ignore);
 }
 
-void InterceptNavigationDelegate::FinishPendingShouldIgnoreCheck() {
+void InterceptNavigationDelegate::RequestFinishPendingShouldIgnoreCheck() {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jdelegate = weak_jdelegate_.get(env);
 
@@ -254,8 +254,8 @@ void InterceptNavigationDelegate::FinishPendingShouldIgnoreCheck() {
     OnShouldIgnoreNavigationResult(false);
     return;
   }
-  Java_InterceptNavigationDelegate_finishPendingShouldIgnoreCheck(env,
-                                                                  jdelegate);
+  Java_InterceptNavigationDelegate_requestFinishPendingShouldIgnoreCheck(
+      env, jdelegate);
 }
 
 void InterceptNavigationDelegate::HandleSubframeExternalProtocol(

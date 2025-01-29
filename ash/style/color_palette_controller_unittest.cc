@@ -41,7 +41,7 @@ namespace {
 
 const char kUser[] = "user@gmail.com";
 const AccountId kAccountId =
-    AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUser));
+    AccountId::FromUserEmailGaiaId(kUser, GaiaId("1111"));
 const style::mojom::ColorScheme kLocalColorScheme =
     style::mojom::ColorScheme::kVibrant;
 const style::mojom::ColorScheme kDefaultColorScheme =

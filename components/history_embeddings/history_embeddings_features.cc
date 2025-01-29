@@ -239,6 +239,10 @@ const base::FeatureParam<bool> kInsertTitlePassage(&kHistoryEmbeddings,
                                                    "InsertTitlePassage",
                                                    false);
 
+const base::FeatureParam<bool> kUsePerformanceScenario(&kHistoryEmbeddings,
+                                                       "UsePerformanceScenario",
+                                                       false);
+
 FeatureParameters::FeatureParameters(bool load_finch) {
   if (!load_finch) {
     return;
@@ -289,6 +293,7 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   erase_non_ascii_characters = kEraseNonAsciiCharacters.Get();
   word_match_search_non_ascii_passages = kWordMatchSearchNonAsciiPassages.Get();
   insert_title_passage = kInsertTitlePassage.Get();
+  use_performance_scenario = kUsePerformanceScenario.Get();
 }
 
 FeatureParameters::FeatureParameters(const FeatureParameters&) = default;

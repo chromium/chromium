@@ -60,6 +60,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
   bool IsInitialized() const override;
   bool IsPresent() const override;
   bool IsPowered() const override;
+  PermissionStatus GetOsPermissionStatus() const override;
   bool IsDiscoverable() const override;
   void SetDiscoverable(bool discoverable,
                        base::OnceClosure callback,

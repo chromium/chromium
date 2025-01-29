@@ -12,7 +12,6 @@ import android.view.ViewTreeObserver;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 /** A class that helps with tracking impressions. */
@@ -111,9 +110,9 @@ public class ImpressionTracker
         mView.getViewTreeObserver().removeOnPreDrawListener(this);
     }
 
-    @NullUnmarked
     @Override
     public boolean onPreDraw() {
+        assert mListener != null; // We unregister when there is no listener.
         ViewParent parent = mView.getParent();
         if (parent != null) {
             Rect rect = new Rect(0, 0, mView.getWidth(), mView.getHeight());

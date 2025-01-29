@@ -11994,6 +11994,9 @@ void RenderFrameHostImpl::CommitNavigation(
   DCHECK(is_same_document || !is_first_navigation || is_srcdoc ||
          subresource_loader_factories);
 
+  commit_params->should_skip_screenshot =
+      NavigationTransitionUtils::ShouldSkipScreenshot(*navigation_request);
+
   if (is_same_document) {
     DCHECK_EQ(navigation_request->frame_tree_node()->current_frame_host(),
               this);

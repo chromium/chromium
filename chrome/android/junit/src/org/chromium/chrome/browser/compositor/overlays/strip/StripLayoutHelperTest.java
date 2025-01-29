@@ -3480,6 +3480,7 @@ public class StripLayoutHelperTest {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_ID1});
         when(mTabGroupSyncService.getGroup(SYNC_ID1)).thenReturn(savedTabGroup);
         when(mTabGroupSyncService.getGroup(savedTabGroup.localId)).thenReturn(savedTabGroup);
+        when(mTabGroupSyncService.isRemoteDevice(any())).thenReturn(true);
         return savedTabGroup;
     }
 
@@ -3504,8 +3505,6 @@ public class StripLayoutHelperTest {
             groupTabs(0, 1);
             savedTabGroup = setupTabGroupSync(mModel.getTabAt(0).getTabGroupId());
         }
-
-        if (!duringStripBuild) {}
 
         // Verify group title is present.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -4194,8 +4193,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
         mStripLayoutHelper.setTabStripIphControllerForTesting(mController);
         when(mController.wouldTriggerIph(anyInt())).thenReturn(true);
-        mStripLayoutHelper.setTabGroupModelFilter(mTabGroupModelFilter);
         mStripLayoutHelper.setLayerTitleCache(mLayerTitleCache);
+        mStripLayoutHelper.setTabGroupModelFilter(mTabGroupModelFilter);
         mStripLayoutHelper.tabSelected(0, tabIndex, 0);
         // Flush UI updated
     }
@@ -5013,31 +5012,42 @@ public class StripLayoutHelperTest {
         ChromeFeatureList.DATA_SHARING
     })
     public void testTabGroupSyncIph_GroupTitleBubbleIph_ShowSequentially() {
-        // Setup tab group.
-        setupTabGroup(3, 5);
+        // Setup tab strip and group the first tab group.
+        setupTabGroup(1, 2);
+
+        // group the second tab group.
+        groupTabs(3, 5);
+
+        // Get the group titles of both groups.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) views[3];
-        // Set last synced tab group.
-        mStripLayoutHelper.setLastSyncedGroupIdForTesting(mModel.getTabAt(3).getId());
-        // Show notification bubble on collapsed tab group.
-        groupTitle.setCollapsed(true);
-        int tabId = mModel.getTabAt(3).getId();
+        StripLayoutGroupTitle groupTitle1 = (StripLayoutGroupTitle) views[1];
+        StripLayoutGroupTitle groupTitle2 = (StripLayoutGroupTitle) views[4];
+
+        // Show notification on collapsed group title of the first group.
+        groupTitle1.setCollapsed(true);
+        int tabId = mModel.getTabAt(1).getId();
         Set<Integer> tabIds = new HashSet<>(Arrays.asList(tabId));
         mStripLayoutHelper.updateTabStripNotificationBubble(tabIds, /* hasUpdate= */ true);
+
+        // Sync both group and share the first group.
+        SavedTabGroup savedTabGroup = setupTabGroupSync(mModel.getTabAt(1).getTabGroupId());
+        savedTabGroup.collaborationId = COLLABORATION_ID1;
+        setupTabGroupSync(mModel.getTabAt(4).getTabGroupId());
+        mStripLayoutHelper.rebuildStripViews();
 
         // Trigger show iph the first time.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         // Verify tab group sync iph is first displayed.
         verify(mController)
                 .showIphOnTabStrip(
-                        eq(groupTitle), eq(null), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
+                        eq(groupTitle2), eq(null), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
 
         // Trigger show iph the second time.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
-        // Verify iph on group title bubble is displayed.
+        // Verify iph on tab bubble is displayed.
         verify(mController)
                 .showIphOnTabStrip(
-                        eq(groupTitle),
+                        eq(groupTitle1),
                         eq(null),
                         any(),
                         eq(IphType.GROUP_TITLE_NOTIFICATION_BUBBLE),
@@ -5051,36 +5061,73 @@ public class StripLayoutHelperTest {
         ChromeFeatureList.DATA_SHARING
     })
     public void testTabGroupSyncIph_TabBubbleIph_ShowSequentially() {
-        // Setup tab group.
-        setupTabGroup(3, 5);
+        // Setup tab strip and group the first tab group.
+        setupTabGroup(0, 2);
+
+        // group the second tab group.
+        groupTabs(3, 5);
+
+        // Get the group titles of both groups.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) views[3];
-        StripLayoutTab tab = (StripLayoutTab) views[4];
-        // Set last synced tab group.
-        mStripLayoutHelper.setLastSyncedGroupIdForTesting(mModel.getTabAt(3).getId());
-        // Show notification bubble on the updated tab.
-        groupTitle.setCollapsed(false);
-        int tabId = mModel.getTabAt(3).getId();
+        StripLayoutGroupTitle groupTitle1 = (StripLayoutGroupTitle) views[0];
+        StripLayoutGroupTitle groupTitle2 = (StripLayoutGroupTitle) views[4];
+
+        // Show notification bubble on the second tab of the first group.
+        groupTitle1.setCollapsed(false);
+        int tabId = mModel.getTabAt(1).getId();
+        StripLayoutTab tab = (StripLayoutTab) views[2];
         Set<Integer> tabIds = new HashSet<>(Arrays.asList(tabId));
         mStripLayoutHelper.updateTabStripNotificationBubble(tabIds, /* hasUpdate= */ true);
+
+        // Sync both group and share the first group.
+        SavedTabGroup savedTabGroup = setupTabGroupSync(mModel.getTabAt(0).getTabGroupId());
+        savedTabGroup.collaborationId = COLLABORATION_ID1;
+        setupTabGroupSync(mModel.getTabAt(4).getTabGroupId());
+        mStripLayoutHelper.rebuildStripViews();
 
         // Trigger show iph the first time.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         // Verify tab group sync iph is first displayed.
         verify(mController)
                 .showIphOnTabStrip(
-                        eq(groupTitle), eq(null), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
+                        eq(groupTitle2), eq(null), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
 
         // Trigger show iph the second time.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         // Verify iph on tab bubble is displayed.
         verify(mController)
                 .showIphOnTabStrip(
-                        eq(groupTitle),
+                        eq(groupTitle1),
                         eq(tab),
                         any(),
                         eq(IphType.TAB_NOTIFICATION_BUBBLE),
                         anyFloat());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE,
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+        ChromeFeatureList.DATA_SHARING
+    })
+    public void testTabGroupSyncIph_NotShowForCollaboration() {
+        // Setup tab strip and group the first tab group.
+        setupTabGroup(3, 5);
+
+        // Get the group title.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) views[3];
+
+        // Share the tab group and rebuild strip.
+        SavedTabGroup savedTabGroup = setupTabGroupSync(mModel.getTabAt(4).getTabGroupId());
+        savedTabGroup.collaborationId = COLLABORATION_ID1;
+        mStripLayoutHelper.rebuildStripViews();
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify tab group sync iph is not shown due to collaboration.
+        verify(mController, never())
+                .showIphOnTabStrip(
+                        eq(groupTitle), eq(null), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
     }
 
     @Test

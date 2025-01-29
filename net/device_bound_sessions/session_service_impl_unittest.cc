@@ -197,7 +197,7 @@ class SessionServiceImplTest : public TestWithTaskEnvironment {
       service_.RegisterBoundSession(
           base::DoNothing(), std::move(fetch_param),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-          NetLogWithSource());
+          NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
     }
   }
 
@@ -248,7 +248,7 @@ TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
   service().RegisterBoundSession(
       base::DoNothing(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-      NetLogWithSource());
+      NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -320,7 +320,7 @@ TEST_F(SessionServiceImplTest, NullAccessObserver) {
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-      NetLogWithSource());
+      NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   // The access observer was null, so no call is expected
 }
@@ -336,7 +336,7 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnRegistration) {
       future.GetRepeatingCallback<const SessionAccess&>(),
       std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-      NetLogWithSource());
+      NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   SessionAccess access = future.Take();
   EXPECT_EQ(access.access_type, SessionAccess::AccessType::kCreation);
@@ -673,7 +673,7 @@ TEST_F(SessionServiceImplTest, SessionTerminationFromContinueFalse) {
     service().RegisterBoundSession(
         base::DoNothing(), std::move(fetch_param),
         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-        NetLogWithSource());
+        NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
   }
 
   EXPECT_FALSE(
@@ -690,7 +690,8 @@ TEST_F(SessionServiceImplTest, NetLogRegistration) {
   service().RegisterBoundSession(
       base::DoNothing(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-      NetLogWithSource::Make(NetLogSourceType::URL_REQUEST));
+      NetLogWithSource::Make(NetLogSourceType::URL_REQUEST),
+      /*original_request_initiator=*/std::nullopt);
   EXPECT_EQ(
       observer.GetEntriesWithType(NetLogEventType::DBSC_REGISTRATION_REQUEST)
           .size(),
@@ -779,7 +780,7 @@ TEST_F(SessionServiceImplWithStoreTest, UsesSessionStore) {
   service().RegisterBoundSession(
       base::DoNothing(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-      NetLogWithSource());
+      NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   auto site = SchemefulSite(kTestUrl);
   Session* session = service().GetSession(site, Session::Id(kSessionId));

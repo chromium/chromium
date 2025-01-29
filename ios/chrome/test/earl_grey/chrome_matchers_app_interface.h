@@ -851,6 +851,31 @@
 // group.
 + (id<GREYMatcher>)manageGroupButton;
 
+// Returns the matcher for `Leave Group` button in the context menu of a shared
+// tab group.
++ (id<GREYMatcher>)leaveSharedGroupButton;
+
+// Returns the matcher for `Leave Group` button in the confirmation dialog of a
+// shared tab group.
++ (id<GREYMatcher>)leaveSharedGroupConfirmationButton;
+
+// Returns the matcher for `Delete Group` button in the context menu of a shared
+// tab group.
++ (id<GREYMatcher>)deleteSharedGroupButton;
+
+// Returns the matcher for `Delete Group` button in the confirmation dialog of a
+// shared tab group.
++ (id<GREYMatcher>)deleteSharedConfirmationButton;
+
+// Returns the matcher for the shared tab group Share flow view.
++ (id<GREYMatcher>)fakeShareFlowView;
+
+// Returns the matcher for the shared tab group Manage flow view.
++ (id<GREYMatcher>)fakeManageFlowView;
+
+// Returns the matcher for the shared tab group Join flow view.
++ (id<GREYMatcher>)fakeJoinFlowView;
+
 #pragma mark - Tab Groups Panel
 
 // Returns the matcher for the tab groups panel view.

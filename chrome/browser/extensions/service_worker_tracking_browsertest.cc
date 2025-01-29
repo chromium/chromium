@@ -168,7 +168,7 @@ class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
       return nullptr;
     }
     ServiceWorkerTaskQueue::SequencedContextId context_id{
-        extension_->id(), profile(), activation_token.value()};
+        extension_->id(), profile()->UniqueId(), activation_token.value()};
     return task_queue->GetWorkerStateForTesting(context_id);
   }
 

@@ -47,6 +47,10 @@ product-specifications-header {
   width: 100%;
 }
 
+#comparisonTableList {
+  flex-shrink: 0;
+}
+
 #summaryContainer {
   box-sizing: border-box;
   background-color: var(--color-product-specifications-summary-background);

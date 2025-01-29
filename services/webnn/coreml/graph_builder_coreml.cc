@@ -3330,7 +3330,7 @@ GraphBuilderCoreml::AddOperationForLayerNormalization(
   // for all device targets with macOS 15 on Intel devices and kCpu for other
   // macOS versions, needs emulation.
   bool is_consecutive =
-      base::ranges::adjacent_find(operation.axes, [](auto a, auto b) {
+      std::ranges::adjacent_find(operation.axes, [](auto a, auto b) {
         return (a + 1) != b;
       }) == operation.axes.end();
   if (!is_consecutive) {

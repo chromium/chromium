@@ -351,9 +351,11 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
     return;
   }
 
+  // Adding a history entry might require a screenshot.
+  constexpr bool should_skip_screenshot = false;
   window->document()->Loader()->RunURLAndHistoryUpdateSteps(
       full_url, nullptr, mojom::blink::SameDocumentNavigationType::kHistoryApi,
-      std::move(data), type, FirePopstate::kNo);
+      std::move(data), type, FirePopstate::kNo, should_skip_screenshot);
 }
 
 }  // namespace blink

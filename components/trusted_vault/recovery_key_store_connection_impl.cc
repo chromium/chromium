@@ -79,8 +79,9 @@ RecoveryKeyStoreConnectionImpl::UpdateRecoveryKeyStore(
           &RecordRecoveryKeyStoreURLFetchResponse,
           RecoveryKeyStoreURLFetchReasonForUMA::kUpdateRecoveryKeyStore);
   auto request = std::make_unique<TrustedVaultRequest>(
-      account_info.account_id, TrustedVaultRequest::HttpMethod::kPatch,
-      GURL(kUpdateVaultUrl), vault.SerializeAsString(),
+      SecurityDomainId::kPasskeys, account_info.account_id,
+      TrustedVaultRequest::HttpMethod::kPatch, GURL(kUpdateVaultUrl),
+      vault.SerializeAsString(),
       /*max_retry_duration=*/base::Seconds(0), URLLoaderFactory(),
       access_token_fetcher_->Clone(), std::move(record_fetch_status_to_uma));
   request->FetchAccessTokenAndSendRequest(

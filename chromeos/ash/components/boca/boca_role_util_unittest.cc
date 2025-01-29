@@ -27,7 +27,9 @@ class BocaRoleUtilTest : public testing::Test {
     user_manager_->Initialize();
     affiliated_user_ = user_manager_->AddGaiaUser(
         affiliated_user_account_, user_manager::UserType::kRegular);
-    user_manager_->SetUserAffiliated(affiliated_user_account_, true);
+    user_manager_->SetUserPolicyStatus(affiliated_user_account_,
+                                       /*is_managed=*/true,
+                                       /*is_affiliated=*/true);
     unaffiliated_user_ = user_manager_->AddGaiaUser(
         unaffiliated_user_account_, user_manager::UserType::kRegular);
   }

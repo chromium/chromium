@@ -379,14 +379,20 @@ BASE_FEATURE(kPostDelayedTaskFocusTab, "PostDelayedTaskFocusTab", ENABLED);
 
 namespace android {
 static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
+  static const base::Feature* const kFeaturesExposedToJava[] = {
+      &kOmniboxAnswerActions,
+      &kAnimateSuggestionsListAppearance,
+      &kOmniboxTouchDownTriggerForPrefetch,
+      &kOmniboxAsyncViewInflation,
+      &kRichAutocompletion,
+      &kUseFusedLocationProvider,
+      &kOmniboxElegantTextHeight,
+      &kRetainOmniboxOnFocus,
+      &kJumpStartOmnibox,
+      &kAndroidHubSearch,
+      &kPostDelayedTaskFocusTab};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
-      std::vector<const base::Feature*>{
-          {&kOmniboxAnswerActions, &kAnimateSuggestionsListAppearance,
-           &kOmniboxTouchDownTriggerForPrefetch, &kOmniboxAsyncViewInflation,
-           &kRichAutocompletion, &kUseFusedLocationProvider,
-           &kOmniboxElegantTextHeight, &kRetainOmniboxOnFocus,
-           &kJumpStartOmnibox, &kAndroidHubSearch, &kPostDelayedTaskFocusTab}});
-
+      kFeaturesExposedToJava);
   return reinterpret_cast<jlong>(kFeatureMap.get());
 }
 }  // namespace android

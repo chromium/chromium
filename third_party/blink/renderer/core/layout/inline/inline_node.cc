@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 
@@ -16,7 +17,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/text_diff_range.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -171,7 +171,7 @@ class ReusingTextShaper final {
     };
     if (allow_shape_cache_) {
       DCHECK(RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled());
-      return font.GetNGShapeCache().GetOrCreate(
+      return font.PrimaryFont()->GetShapeCache().GetOrCreate(
           shaper_.GetText(), start_item.Direction(), ShapeFunc);
     }
     return ShapeFunc();
@@ -1166,7 +1166,7 @@ void InlineNode::SegmentScriptRuns(InlineNodeData* data,
 
   if (previous_data && text_content == previous_data->text_content) {
     if (!previous_data->segments) {
-      const auto it = base::ranges::find_if(
+      const auto it = std::ranges::find_if(
           previous_data->items,
           [](const auto& item) { return item.Type() == InlineItem::kText; });
       if (it != previous_data->items.end()) {
@@ -1338,7 +1338,16 @@ bool InlineNode::IsNGShapeCacheAllowed(
   }
   const Font& font =
       override_font ? *override_font : single_item.FontWithSvgScaling();
-  return !spacing.SetSpacing(font.GetFontDescription());
+  if (font.HasNonInitialFontFeatures()) [[unlikely]] {
+    // Non-initial font features can't be cached because the cache is in
+    // `SimpleFontData`.
+    return false;
+  }
+  const FontDescription& font_description = font.GetFontDescription();
+  if (spacing.SetSpacing(font_description)) [[unlikely]] {
+    return false;
+  }
+  return true;
 }
 
 void InlineNode::ShapeText(InlineItemsData* data,

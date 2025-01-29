@@ -53,7 +53,9 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.FakePasswordManagerHandler;
+import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -109,6 +111,10 @@ public class PasswordAccessLossExportDialogCoordinatorTest {
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         setUpAccessLossWarningType(type);
+        FakePasswordManagerBackendSupportHelper helper =
+                new FakePasswordManagerBackendSupportHelper();
+        helper.setBackendPresent(true);
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(helper);
 
         mActivity =
                 Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class)

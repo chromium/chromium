@@ -76,6 +76,10 @@ public class PasswordManagerUtilBridge {
 
     public static @PasswordAccessLossWarningType int getPasswordAccessLossWarningType(
             PrefService prefService) {
+        // The warning should not be shown on builds without UPM.
+        if (!isInternalBackendPresent()) {
+            return PasswordAccessLossWarningType.NONE;
+        }
         return PasswordManagerUtilBridgeJni.get().getPasswordAccessLossWarningType(prefService);
     }
 

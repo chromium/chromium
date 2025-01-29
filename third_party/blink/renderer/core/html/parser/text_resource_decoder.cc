@@ -235,7 +235,7 @@ bool TextResourceDecoder::CheckForCSSCharset(base::span<const char> data) {
   if (BytesEqual(data, '@', 'c', 'h', 'a', 'r', 's', 'e', 't', ' ', '"')) {
     data = data.subspan(10u);
 
-    auto it = base::ranges::find(data, '"');
+    auto it = std::ranges::find(data, '"');
     if (it == data.end()) {
       return false;
     }
@@ -273,7 +273,7 @@ bool TextResourceDecoder::CheckForXMLCharset(base::span<const char> data) {
   // to be at the start of an XML document, and it is ignored in HTML documents
   // in such case.
   if (BytesEqual(data, '<', '?', 'x', 'm', 'l')) {
-    auto it = base::ranges::find(data, '>');
+    auto it = std::ranges::find(data, '>');
     if (it == data.end()) {
       return false;
     }

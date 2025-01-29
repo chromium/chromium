@@ -660,6 +660,78 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
   EXPECT_EQ(new_web_contents->GetLastCommittedURL(), "");
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    OpenImageInNewTabDisabledInFencedFrameAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB},
+      .relative_url = "/test_visual.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = false};
+
+  RunTest(test_case);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    OpenImageInNewTabDisabledInNestedIframeAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB},
+      .relative_url = "/test_visual.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = true};
+
+  RunTest(test_case);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    OpenAudioInNewTabDisabledInFencedFrameAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENAVNEWTAB},
+      .relative_url = "/accessibility/html/audio.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = false};
+
+  RunTest(test_case);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    OpenAudioInNewTabDisabledInNestedIframeAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENAVNEWTAB},
+      .relative_url = "/accessibility/html/audio.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = true};
+
+  RunTest(test_case);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    OpenVideoInNewTabDisabledInFencedFrameAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENAVNEWTAB},
+      .relative_url = "/media/video-player-autoplay.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = false};
+
+  RunTest(test_case);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    OpenVideoInNewTabDisabledInNestedIframeAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENAVNEWTAB},
+      .relative_url = "/media/video-player-autoplay.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = true};
+
+  RunTest(test_case);
+}
+
 // "Open Link in Profile" functionality is not available on ChromeOS where there
 // is only one profile.
 #if !BUILDFLAG(IS_CHROMEOS)

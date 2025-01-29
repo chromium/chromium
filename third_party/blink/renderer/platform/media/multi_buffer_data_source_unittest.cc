@@ -1096,7 +1096,7 @@ TEST_F(MultiBufferDataSourceTest, Http_ShareData_AtLeastOneProgress) {
       .Times(testing::AtLeast(1));
 
   auto data = base::HeapArray<char>::Uninit(total_bytes);
-  base::ranges::fill(data, 0xA5);  // Arbitrary non-zero value.
+  std::ranges::fill(data, 0xA5);  // Arbitrary non-zero value.
   provider1->DidReceiveData(data);
   provider1->DidFinishLoading();
   task_environment_.RunUntilIdle();

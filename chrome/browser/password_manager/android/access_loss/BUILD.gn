@@ -198,6 +198,7 @@ source_set("unit_tests") {
   deps = [
     ":public",
     "//base/test:test_support",
+    "//chrome/browser/password_manager/android:unit_tests",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:common",

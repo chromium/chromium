@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <functional>
 
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -601,7 +600,7 @@ unsigned OffsetMapping::LayoutObjectConverter::TextContentOffset(
     unsigned offset) const {
   auto iter = offset >= last_offset_ ? last_unit_ : units_.begin();
   if (offset >= iter->DOMEnd()) {
-    iter = base::ranges::find_if(
+    iter = std::ranges::find_if(
         iter, units_.end(), [offset](const OffsetMappingUnit& unit) {
           return unit.DOMStart() <= offset && offset < unit.DOMEnd();
         });

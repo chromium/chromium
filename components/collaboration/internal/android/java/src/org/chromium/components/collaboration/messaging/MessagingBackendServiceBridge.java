@@ -9,8 +9,9 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
-import org.chromium.components.collaboration.messaging.EitherId.EitherGroupId;
-import org.chromium.components.collaboration.messaging.EitherId.EitherTabId;
+import org.chromium.components.tab_group_sync.EitherId;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
+import org.chromium.components.tab_group_sync.EitherId.EitherTabId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 
 import java.util.ArrayList;

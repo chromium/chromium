@@ -28,7 +28,7 @@ bool CounterRulesEqual(const CounterDirectiveMap* a_map,
     return false;
   }
 
-  return base::ranges::equal(*a_map, *b_map, [](const auto& a, const auto& b) {
+  return std::ranges::equal(*a_map, *b_map, [](const auto& a, const auto& b) {
     switch (property) {
       case CSSPropertyID::kCounterIncrement:
         if (a.value.IsIncrement() != b.value.IsIncrement()) {

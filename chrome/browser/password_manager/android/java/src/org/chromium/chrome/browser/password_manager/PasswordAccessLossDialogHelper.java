@@ -115,6 +115,7 @@ public class PasswordAccessLossDialogHelper {
             // If the login db deprecation has started, the warning is no longer relevant.
             return PasswordAccessLossWarningType.NONE;
         }
+
         return PasswordManagerUtilBridge.getPasswordAccessLossWarningType(prefService);
     }
 }

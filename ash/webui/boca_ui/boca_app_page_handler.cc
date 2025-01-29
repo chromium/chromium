@@ -500,6 +500,25 @@ void BocaAppHandler::ViewStudentScreen(const std::string& id,
           std::move(callback)));
 }
 
+void BocaAppHandler::EndViewScreenSession(
+    const std::string& id,
+    EndViewScreenSessionCallback callback) {
+  CHECK(spotlight_service_);
+
+  spotlight_service_->UpdateViewScreenState(
+      id, ::boca::ViewScreenConfig::INACTIVE, kSchoolToolsApiBaseUrl,
+      base::BindOnce(
+          [](EndViewScreenSessionCallback cb,
+             base::expected<bool, google_apis::ApiErrorCode> result) {
+            if (!result.has_value()) {
+              std::move(cb).Run(mojom::EndViewScreenSessionError::kHTTPError);
+              return;
+            }
+            std::move(cb).Run(std::nullopt);
+          },
+          std::move(callback)));
+}
+
 void BocaAppHandler::GetUserPref(mojom::BocaValidPref pref,
                                  GetUserPrefCallback callback) {
   const auto& value = pref_service_->GetValue(GetPrefName(pref));

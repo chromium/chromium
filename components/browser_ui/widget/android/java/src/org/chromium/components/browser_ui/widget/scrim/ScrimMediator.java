@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget.scrim;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.view.GestureDetector;
@@ -17,7 +19,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
@@ -257,9 +258,10 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         }
     }
 
-    /*package */ @NullUnmarked
+    /*package */
     void setScrimColor(@ColorInt int scrimColor, PropertyModel propertyModel) {
         if (!Objects.equals(mModel, propertyModel)) return;
+        assumeNonNull(mModel); // https://github.com/uber/NullAway/issues/1136
         mModel.set(ScrimProperties.BACKGROUND_COLOR, scrimColor);
         mFullScrimColorSupplier.set(scrimColor);
     }
@@ -306,10 +308,10 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         return mOverlayAnimator != null && mOverlayAnimator.isRunning();
     }
 
-    @NullUnmarked
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         if (mIsHidingOrHidden) return false;
+        assumeNonNull(mModel);
         GestureDetector gestureDetector = mModel.get(ScrimProperties.GESTURE_DETECTOR);
         if (gestureDetector == null) return false;
 

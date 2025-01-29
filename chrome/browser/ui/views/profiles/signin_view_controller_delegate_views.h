@@ -18,6 +18,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Browser;
@@ -41,7 +42,8 @@ class SigninViewControllerDelegateViews
     : public views::DialogDelegateView,
       public SigninViewControllerDelegate,
       public content::WebContentsDelegate,
-      public ChromeWebModalDialogManagerDelegate {
+      public ChromeWebModalDialogManagerDelegate,
+      public views::ViewObserver {
   METADATA_HEADER(SigninViewControllerDelegateViews, views::DialogDelegateView)
 
  public:
@@ -64,6 +66,11 @@ class SigninViewControllerDelegateViews
       bool is_local_profile_creation,
       bool show_profile_switch_iph = false,
       bool show_supervised_user_iph = false);
+
+  static std::unique_ptr<views::WebView> CreateSignoutConfirmationWebView(
+      Browser* browser,
+      ChromeSignoutConfirmationPromptVariant variant,
+      base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -100,6 +107,10 @@ class SigninViewControllerDelegateViews
   // ChromeWebModalDialogManagerDelegate:
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
+
+  // views::ViewObserver:
+  void OnViewAddedToWidget(views::View* observed_view) override;
+  void OnViewIsDeleting(View* observed_view) override;
 
  private:
   friend SigninViewControllerDelegate;
@@ -149,6 +160,8 @@ class SigninViewControllerDelegateViews
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   bool should_show_close_button_;
   base::ScopedClosureRunner on_closed_callback_;
+  base::ScopedObservation<views::View, views::ViewObserver>
+      content_view_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_SIGNIN_VIEW_CONTROLLER_DELEGATE_VIEWS_H_

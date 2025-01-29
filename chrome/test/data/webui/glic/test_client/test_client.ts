@@ -14,6 +14,7 @@ interface PageElementTypes {
   focusedUrl: HTMLInputElement;
   contextAccessIndicator: HTMLInputElement;
   syncCookiesBn: HTMLButtonElement;
+  testLogsBn: HTMLButtonElement;
   syncCookieStatus: HTMLSpanElement;
   getUserProfileInfoBn: HTMLButtonElement;
   getUserProfileInfoStatus: HTMLSpanElement;
@@ -74,7 +75,6 @@ class WebClient implements GlicWebClient {
     logMessage(`Chrome version: ${JSON.stringify(ver)}`);
 
     const focusedTabState = await this.browser.getFocusedTabState!();
-    focusedTabChanged(focusedTabState.getValue());
     focusedTabState.subscribe(focusedTabChanged);
 
     // Initialize permission switches and subscribe for updates.
@@ -87,7 +87,6 @@ class WebClient implements GlicWebClient {
     for (const permission of Object.keys(permissionStates) as
          PermissionSwitchName[]) {
       const state = permissionStates[permission]!;
-      updatePermissionSwitch(permission, state.getValue());
       state.subscribe((enabled) => {
         updatePermissionSwitch(permission, enabled);
       });
@@ -180,6 +179,18 @@ $.syncCookiesBn.addEventListener('click', async () => {
   } catch (e) {
     $.syncCookieStatus!.innerText = `Caught error: ${e}`;
   }
+});
+
+$.testLogsBn.addEventListener('click', () => {
+  getBrowser()?.getMetrics?.().onUserInputSubmitted?.(WebClientMode.TEXT);
+  getBrowser()?.getMetrics?.().onResponseStarted?.();
+  getBrowser()?.getMetrics?.().onResponseStopped?.();
+  getBrowser()?.getMetrics?.().onResponseRated?.(true);
+  getBrowser()?.getMetrics?.().onUserInputSubmitted?.(WebClientMode.AUDIO);
+  getBrowser()?.getMetrics?.().onResponseStarted?.();
+  getBrowser()?.getMetrics?.().onResponseStopped?.();
+  getBrowser()?.getMetrics?.().onResponseRated?.(false);
+  getBrowser()?.getMetrics?.().onSessionTerminated?.();
 });
 
 $.getUserProfileInfoBn.addEventListener('click', async () => {

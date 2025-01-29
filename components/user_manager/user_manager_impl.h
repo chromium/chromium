@@ -250,8 +250,9 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
       const AccountId& account_id) const override;
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;
-  void SetUserAffiliated(const AccountId& account_id,
-                         bool is_affiliated) override;
+  void SetUserPolicyStatus(const AccountId& account_id,
+                           bool is_managed,
+                           bool is_affiliated) override;
   bool HasBrowserRestarted() const final;
 
   void Initialize() override;

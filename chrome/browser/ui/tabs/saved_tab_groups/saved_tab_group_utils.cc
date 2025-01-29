@@ -8,6 +8,7 @@
 #include <unordered_set>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/not_fatal_until.h"
@@ -56,6 +57,16 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+
+namespace {
+void KeepGroups(TabStripModel* model,
+                std::vector<tab_groups::TabGroupId> groups_to_keep) {
+  for (tab_groups::TabGroupId id : groups_to_keep) {
+    // Add a tab to the group so it's kept when the other tabs are closed.
+    model->delegate()->AddTabAt(GURL(), -1, false, id);
+  }
+}
+}  // namespace
 
 namespace tab_groups {
 
@@ -277,8 +288,8 @@ void SavedTabGroupUtils::LeaveSharedGroup(const Browser* browser,
 
 // static
 void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
-    Browser* browser,
-    DeletionDialogController::DialogType type,
+    const Browser* browser,
+    GroupDeletionReason reason,
     const std::vector<TabGroupId>& group_ids,
     base::OnceCallback<void()> callback) {
   tab_groups::TabGroupSyncService* tab_group_service =
@@ -316,13 +327,42 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
     ++closing_group_count;
   }
 
-  if (closing_group_count > 0) {
-    DeletionDialogController::DialogMetadata dialog_metadata(
-        type, closing_group_count,
-        /*closing_multiple_tabs=*/num_saved_tabs > 1);
-    dialog_controller->MaybeShowDialog(dialog_metadata, std::move(callback));
+  if (closing_group_count == 0) {
+    std::move(callback).Run();
     return;
   }
+
+  // TODO(tbergquist): If multiple types of groups are being closed, queue
+  // multiple dialogs. For now, just act as if they are all the kind of the
+  // first group.
+  const tab_groups::SavedTabGroup saved_group =
+      tab_group_service->GetGroup(group_ids[0]).value();
+
+  DeletionDialogController::DialogType dialog_type =
+      reason == GroupDeletionReason::ClosedLastTab
+          ? DeletionDialogController::DialogType::CloseTabAndDelete
+          : DeletionDialogController::DialogType::RemoveTabAndDelete;
+  std::optional<base::OnceCallback<void()>> keep_callback = std::nullopt;
+
+  if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
+      saved_group.collaboration_id()) {
+    if (tab_groups::SavedTabGroupUtils::IsOwnerOfSharedTabGroup(
+            browser->profile(), saved_group.saved_guid())) {
+      dialog_type =
+          DeletionDialogController::DialogType::CloseTabAndKeepOrDeleteGroup;
+    } else {
+      dialog_type =
+          DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup;
+    }
+    keep_callback =
+        base::BindOnce(&KeepGroups, browser->tab_strip_model(), group_ids);
+  }
+
+  DeletionDialogController::DialogMetadata dialog_metadata(
+      dialog_type, closing_group_count,
+      /*closing_multiple_tabs=*/num_saved_tabs > 1);
+  dialog_controller->MaybeShowDialog(dialog_metadata, std::move(callback),
+                                     std::move(keep_callback));
 }
 
 void SavedTabGroupUtils::OpenUrlInNewUngroupedTab(Browser* browser,

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.language;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.IntDef;
 
 import com.google.android.play.core.splitinstall.SplitInstallManager;
@@ -17,7 +19,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ResourceBundle;
 
@@ -145,10 +146,11 @@ public class LanguageSplitInstaller {
 
     /**
      * Run cleanup and call install listener when the install has finished.
+     *
      * @param success True if the install was successful.
      */
-    @NullUnmarked
     private void installFinished(boolean success) {
+        assumeNonNull(mInstallListener);
         mInstallListener.onComplete(success);
         mSplitInstallManager.unregisterListener(mStateUpdateListener);
         mInstallListener = null;

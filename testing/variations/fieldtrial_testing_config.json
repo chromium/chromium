@@ -5342,7 +5342,6 @@
                     "params": {
                         "disable_blend": "true",
                         "enable_v2": "true",
-                        "max_tiles_number": "1",
                         "show_see_more": "true",
                         "show_tabs_in_one_module": "true",
                         "use_default_app_filter": "true",
@@ -8787,6 +8786,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "EnableCertManagementUIV2EditCerts",
                         "EnableCertManagementUIV2Write"
                     ]
                 }
@@ -11613,6 +11613,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IPH_iOSPromoDefaultBrowserReminder"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSDeleteAllSavedCredentials": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSEnableDeleteAllSavedCredentials"
                     ]
                 }
             ]
@@ -16532,7 +16547,7 @@
                         "version": "1"
                     },
                     "enable_features": [
-                        "EnablePasswordsSyncErrorMessageAlternative"
+                        "SyncEnablePasswordsSyncErrorMessageAlternative"
                     ]
                 }
             ]
@@ -22171,6 +22186,35 @@
             ]
         }
     ],
+    "ShowWarningsForSuspiciousNotifications": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithDefaultButtonPlacement",
+                    "params": {
+                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "100",
+                        "ShowWarningsForSuspiciousNotificationsShouldSwapButtons": "false"
+                    },
+                    "enable_features": [
+                        "ShowWarningsForSuspiciousNotifications"
+                    ]
+                },
+                {
+                    "name": "EnabledWithButtonSwap",
+                    "params": {
+                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "100",
+                        "ShowWarningsForSuspiciousNotificationsShouldSwapButtons": "true"
+                    },
+                    "enable_features": [
+                        "ShowWarningsForSuspiciousNotifications"
+                    ]
+                }
+            ]
+        }
+    ],
     "SidePanelCompanionDesktopM116Plus": [
         {
             "platforms": [
@@ -25389,6 +25433,22 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebGPUUseTintIR"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebGPUUseVulkanMemoryModel": [
+        {
+            "platforms": [
+                "android",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebGPUUseVulkanMemoryModel"
                     ]
                 }
             ]

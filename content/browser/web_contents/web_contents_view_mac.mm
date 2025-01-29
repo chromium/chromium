@@ -5,6 +5,8 @@
 #import "content/browser/web_contents/web_contents_view_mac.h"
 
 #import <Carbon/Carbon.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 #include <memory>
 #include <string>
@@ -68,6 +70,21 @@ void PromiseWriterHelper(const DropData& drop_data, base::File file) {
 WebContentsViewMac::RenderWidgetHostViewCreateFunction
     g_create_render_widget_host_view = nullptr;
 
+// Sets read/write permissions on `file` based on the users umask.
+void SetReadWritePermissionsForFile(base::File& file) {
+  // Get the umask. There's no way to get the mask without changing it, so
+  // immediately set it back to its original value.
+  mode_t current_umask = umask(0);
+  umask(current_umask);
+
+  mode_t default_permissions = 0666;
+  mode_t effective_permissions = default_permissions & ~current_umask;
+
+  if (fchmod(file.GetPlatformFile(), effective_permissions) == -1) {
+    PLOG(ERROR) << "Failed to set drag file permissions using fchmod";
+  }
+}
+
 }  // namespace
 
 // static
@@ -75,6 +92,11 @@ void WebContentsViewMac::InstallCreateHookForTests(
     RenderWidgetHostViewCreateFunction create_render_widget_host_view) {
   CHECK_EQ(nullptr, g_create_render_widget_host_view);
   g_create_render_widget_host_view = create_render_widget_host_view;
+}
+
+void WebContentsViewMac::SetReadWritePermissionsForFileForTests(
+    base::File& file) {
+  SetReadWritePermissionsForFile(file);
 }
 
 std::unique_ptr<WebContentsView> CreateWebContentsView(
@@ -536,6 +558,8 @@ bool WebContentsViewMac::DragPromisedFileTo(const base::FilePath& file_path,
     *out_file_path = base::FilePath();
     return true;
   }
+
+  SetReadWritePermissionsForFile(file);
 
   if (download_url.is_valid() && web_contents_) {
     auto drag_file_downloader = std::make_unique<DragDownloadFile>(

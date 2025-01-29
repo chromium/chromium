@@ -79,6 +79,9 @@ class BnplManager {
     // flow on the partner website.
     GURL redirect_url;
 
+    // The ID of the BNPL partner the user is trying to retrieve the VCN from.
+    std::string issuer_id;
+
     // The final checkout amount on the page (in micros), used for the ongoing
     // BNPL flow.
     uint64_t final_checkout_amount;

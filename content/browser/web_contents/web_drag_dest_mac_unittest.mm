@@ -7,10 +7,14 @@
 #include <AppKit/AppKit.h>
 
 #include "base/apple/scoped_nsautorelease_pool.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/stack_allocated.h"
 #include "base/strings/sys_string_conversions.h"
+#import "content/browser/web_contents/web_contents_view_mac.h"
 #include "content/public/common/drop_data.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -50,4 +54,38 @@ TEST_F(WebDragDestTest, Data) {
   EXPECT_EQ(data.url.spec(), "http://www.google.com/");
   EXPECT_EQ(base::SysNSStringToUTF16(text_string), data.text);
   EXPECT_EQ(base::SysNSStringToUTF16(html_string), data.html);
+}
+
+TEST_F(WebDragDestTest, FilePermissions) {
+  // Set up a temporary directory
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Define the path for the new temporary file
+  base::FilePath temp_file_path = temp_dir.GetPath().AppendASCII("test_file");
+
+  // Set a custom umask (disables write permission for group and others) and
+  // store the original umask
+  const mode_t kCustomUmask = 0022;
+  mode_t original_umask = umask(kCustomUmask);
+
+  // Create the temporary file
+  base::File file(temp_file_path,
+                  base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  ASSERT_TRUE(file.IsValid());
+
+  // Invoke the function to set file permissions
+  content::WebContentsViewMac::SetReadWritePermissionsForFileForTests(file);
+
+  // Restore the original umask
+  umask(original_umask);
+
+  // Retrieve and verify the file permissions
+  int mode = 0;
+  ASSERT_TRUE(base::GetPosixFilePermissions(temp_file_path, &mode));
+
+  // Calculate the expected permissions considering the umask
+  int expected_permissions = 0666 & ~kCustomUmask;
+
+  EXPECT_EQ(mode, expected_permissions);
 }

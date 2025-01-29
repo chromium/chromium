@@ -12,7 +12,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
@@ -91,9 +90,8 @@ public class GCMDriver {
     @CalledByNative
     private void register(final String appId, final String senderId) {
         new AsyncTask<String>() {
-            @NullUnmarked
             @Override
-            protected @Nullable String doInBackground() {
+            protected String doInBackground() {
                 try {
                     String subtype = appId;
                     String registrationId = mSubscriber.subscribe(senderId, subtype, null);

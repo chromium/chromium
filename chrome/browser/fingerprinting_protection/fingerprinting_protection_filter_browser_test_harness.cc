@@ -41,13 +41,8 @@ FingerprintingProtectionFilterBrowserTest::
 
 void FingerprintingProtectionFilterBrowserTest::SetUpOnMainThread() {
   SubresourceFilterSharedBrowserTest::SetUpOnMainThread();
-#if !BUILDFLAG(IS_ANDROID)
-  embedded_test_server()->ServeFilesFromSourceDirectory(
-      "components/test/data/subresource_filter");
-#else
   embedded_test_server()->ServeFilesFromSourceDirectory(
       "chrome/test/data/fingerprinting_protection");
-#endif  // !BUILDFLAG(IS_ANDROID)
   // Allow derived classes to start the server on their own.
 }
 

@@ -1443,7 +1443,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*cookie_deprecation_label=*/std::nullopt,
           /*visited_link_salt=*/std::nullopt,
           /*local_surface_id=*/std::nullopt,
-          frame_tree_node->current_frame_host()->GetCachedPermissionStatuses());
+          frame_tree_node->current_frame_host()->GetCachedPermissionStatuses(),
+          /*should_skip_screenshot=*/false);
 
   commit_params->navigation_timing->system_entropy_at_navigation_start =
       SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
@@ -1594,7 +1595,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*cookie_deprecation_label=*/std::nullopt,
           /*visited_link_salt=*/std::nullopt,
           /*local_surface_id=*/std::nullopt,
-          render_frame_host->GetCachedPermissionStatuses());
+          render_frame_host->GetCachedPermissionStatuses(),
+          /*should_skip_screenshot=*/false);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(

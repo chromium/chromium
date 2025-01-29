@@ -61,7 +61,8 @@ class WebNavigationControl : public WebLocalFrame {
       bool is_browser_initiated,
       bool has_ua_visual_transition,
       std::optional<scheduler::TaskAttributionId>
-          soft_navigation_heuristics_task_id) = 0;
+          soft_navigation_heuristics_task_id,
+      bool should_skip_screenshot) = 0;
 
   // Override the normal rules that determine whether the frame is on the
   // initial empty document or not. Used to propagate state when this frame has

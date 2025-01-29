@@ -12,6 +12,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
@@ -241,6 +242,17 @@ CORE_EXPORT void PerformAttributeSetCEReactionsReflectTypeStringOrNull(
     const QualifiedName& content_attribute);
 
 CORE_EXPORT void CountWebDXFeature(v8::Isolate* isolate, WebDXFeature feature);
+
+// Allows for checking whether for any named properties using
+// `receiver.HasAnyNamedProperties()` if it exists. Defaults to `true` if the
+// method doesn't exist.
+template <typename T>
+static bool HasAnyNamedProperties(T& receiver) {
+  if constexpr (TypeHasAnyNamedPropertiesMethod<T>) {
+    return !receiver.HasAnyNamedProperties();
+  }
+  return true;
+}
 
 }  // namespace bindings
 

@@ -61,15 +61,43 @@ class TabGroupUiViewBinder {
             viewHolder.toolbarView.setImageTilesContainerVisible(
                     model.get(IMAGE_TILES_CONTAINER_VISIBLE));
         } else if (INITIAL_SCROLL_INDEX == propertyKey) {
-            int index = (Integer) model.get(INITIAL_SCROLL_INDEX);
-            LinearLayoutManager manager =
-                    (LinearLayoutManager) viewHolder.contentView.getLayoutManager();
-            int showingItemsCount =
-                    manager.findLastVisibleItemPosition() - manager.findFirstVisibleItemPosition();
-            // Try to scroll to a state where the selected tab is in the middle of the strip.
-            manager.scrollToPositionWithOffset(index - showingItemsCount / 2, 0);
+            scrollToIndex(viewHolder, model);
         } else if (TINT == propertyKey) {
             viewHolder.toolbarView.setTint(model.get(TINT));
         }
+    }
+
+    private static void scrollToIndex(ViewHolder viewHolder, PropertyModel model) {
+        // This is a speculative fix for https://crbug.com/40948489. A crash is happening due to a
+        // temporarily detached view to TabListRecyclerView not being removed from the RecyclerView
+        // before it is recycled. This typically happens when an animating view gets recycled. While
+        // this is arguably a bug with the recycler view itself, a common cause of this issue is a
+        // programmatic scroll happening when the the RecyclerView is animating. The structure of
+        // the runnable below should avoid this happening by skipping the scroll logic until after
+        // the the view is done animating and is laid out.
+        RecyclerView contentView = viewHolder.contentView;
+        Runnable scrollRunnable =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // Retry if animating or layout is incomplete.
+                        if (contentView.isAnimating()
+                                || contentView.getWidth() == 0
+                                || contentView.getHeight() == 0) {
+                            contentView.post(this);
+                            return;
+                        }
+                        int index = model.get(INITIAL_SCROLL_INDEX);
+                        LinearLayoutManager manager =
+                                (LinearLayoutManager) contentView.getLayoutManager();
+                        int showingItemsCount =
+                                manager.findLastVisibleItemPosition()
+                                        - manager.findFirstVisibleItemPosition();
+                        // Try to scroll to a state where the selected tab is in the middle of the
+                        // strip.
+                        manager.scrollToPositionWithOffset(index - showingItemsCount / 2, 0);
+                    }
+                };
+        scrollRunnable.run();
     }
 }

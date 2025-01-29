@@ -46,11 +46,13 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
     }
 
     @CalledByNative
-    private void withTitleAndButtons(String title, String positiveButton, String negativeButton) {
+    private void withTitleAndButtons(
+            String title, String positiveButton, String negativeButton, int buttonStyles) {
         mPropertyModelBuilder
                 .with(ModalDialogProperties.TITLE, title)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButton)
-                .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, negativeButton);
+                .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, negativeButton)
+                .with(ModalDialogProperties.BUTTON_STYLES, buttonStyles);
     }
 
     @CalledByNative

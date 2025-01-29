@@ -32,6 +32,11 @@ constexpr LazyRE2 kFullLogLineRegex = {
 // Number of characters to ingest per log line to create unique hash.
 constexpr size_t kLogMsgHashSize = 50;
 
+// Dangerous internal buffer size in bytes. In practice, we should never hit
+// this limit due to previous memory-related mitigations, but let's add safety
+// tracking just in case.
+constexpr size_t kDangerousBufferSize = 2 * 1000 * 1000;  // 2Mb
+
 }  // namespace
 
 LocalDataSource::LocalDataSource(base::TimeDelta poll_rate,
@@ -91,7 +96,7 @@ void LocalDataSource::AddWatchDog(
     watchdog_name = pattern;
   }
 
-  VLOG(4) << "Watchdog added to '" << GetDisplayName() << "'; will match on "
+  VLOG(1) << "Watchdog added to '" << GetDisplayName() << "'; will match on "
           << watchdog_name;
   std::move(callback).Run(true /* success */);
 }
@@ -118,6 +123,10 @@ void LocalDataSource::FillDataBuffer() {
   // so there must be some kind of mojom hang-up. We'll resume when
   // the problem is corrected.
   if (IsDataBufferOverMaxLimit()) {
+    if (data_buffer_size_ >= kDangerousBufferSize) {
+      LOG(WARNING) << GetDisplayName() << " has reached a dangerously high "
+                   << "buffer allocation of " << data_buffer_size_ << " bytes.";
+    }
     return;
   }
 
@@ -171,6 +180,8 @@ void LocalDataSource::FillDataBuffer() {
             std::back_inserter(data_buffer_));
 
   data_buffer_size_ += next_data_size;
+  VLOG(3) << GetDisplayName() << " has a current buffer allocation of "
+          << data_buffer_size_ << " bytes.";
 }
 
 bool LocalDataSource::IsDataBufferOverMaxLimit() {
@@ -364,7 +375,7 @@ bool LocalDataSource::IsWatchDogFilterValid(mojom::DataFilterPtr& filter) {
 }
 
 void LocalDataSource::FireChangeWatchdogCallbacks(const std::string& data) {
-  VLOG(4) << "'" << GetDisplayName()
+  VLOG(2) << "'" << GetDisplayName()
           << "' matched on 'CHANGE' watchdog. Notifying observers.";
   for (const auto& remote : change_based_watchdogs_) {
     remote->OnNotify(data);
@@ -381,7 +392,7 @@ void LocalDataSource::CheckRegexWatchdogsAndFireCallbacks(
       continue;
     }
 
-    VLOG(4) << "'" << GetDisplayName() << "' matched on '" << pattern
+    VLOG(2) << "'" << GetDisplayName() << "' matched on '" << pattern
             << "' watchdog. Notifying observers.";
 
     for (auto& remote : remotes) {

@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source_factory.h"
 
+#include <algorithm>
+
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/types/pass_key.h"
 #include "media/formats/hls/types.h"

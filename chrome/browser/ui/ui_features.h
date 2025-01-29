@@ -49,9 +49,6 @@ extern const base::FeatureParam<base::TimeDelta> kRepromptDuration;
 // value, the user will be prompted indefinitely.
 extern const base::FeatureParam<int> kMaxPromptCount;
 
-// Exponential backoff multiplier for the reprompt duration.
-extern const base::FeatureParam<int> kRepromptDurationMultiplier;
-
 BASE_DECLARE_FEATURE(kExtensionsMenuInAppMenu);
 bool IsExtensionMenuInRootAppMenu();
 

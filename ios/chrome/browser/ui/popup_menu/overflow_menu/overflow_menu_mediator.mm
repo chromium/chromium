@@ -240,6 +240,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 @property(nonatomic, strong) OverflowMenuAction* editActionsAction;
 @property(nonatomic, strong) OverflowMenuAction* lensOverlayAction;
 
+@property(nonatomic, strong) OverflowMenuAction* AIPrototypeAction;
+
 @end
 
 @implementation OverflowMenuMediator
@@ -684,6 +686,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   if (IsLensOverlayAvailable()) {
     self.lensOverlayAction = [self openLensOverlayAction];
   }
+
+  if (experimental_flags::EnableAIPrototypingMenu()) {
+    self.AIPrototypeAction = [self openAIPrototypeAction];
+  }
+
   self.editActionsAction.automaticallyUnhighlight = NO;
   self.editActionsAction.useButtonStyling = YES;
 
@@ -764,6 +771,21 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             hideItemText:nil
                                  handler:^{
                                    [weakSelf startLensOverlay];
+                                 }];
+}
+
+- (OverflowMenuAction*)openAIPrototypeAction {
+  __weak __typeof(self) weakSelf = self;
+  return [self
+      createOverflowMenuActionWithNameID:IDS_IOS_CONTENT_CONTEXT_OPENAIPROTOTYPE
+                              actionType:overflow_menu::ActionType::AIPrototype
+                              symbolName:kMagicStackSymbol
+                            systemSymbol:YES
+                        monochromeSymbol:NO
+                         accessibilityID:kToolsMenuOpenAIPrototype
+                            hideItemText:nil
+                                 handler:^{
+                                   [weakSelf startAIPrototype];
                                  }];
 }
 
@@ -1885,6 +1907,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     actions.push_back(overflow_menu::ActionType::LensOverlay);
   }
 
+  if (experimental_flags::EnableAIPrototypingMenu()) {
+    actions.push_back(overflow_menu::ActionType::AIPrototype);
+  }
+
   return actions;
 }
 
@@ -1950,6 +1976,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return self.editActionsAction;
     case overflow_menu::ActionType::LensOverlay:
       return self.lensOverlayAction;
+    case overflow_menu::ActionType::AIPrototype:
+      return self.AIPrototypeAction;
   }
 }
 
@@ -1988,6 +2016,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return [self newTextZoomAction];
     case overflow_menu::ActionType::LensOverlay:
       return [self openLensOverlayAction];
+    case overflow_menu::ActionType::AIPrototype:
+      return [self openAIPrototypeAction];
   }
 }
 
@@ -2200,6 +2230,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       createAndShowLensUI:YES
                entrypoint:LensOverlayEntrypoint::kOverflowMenu
                completion:nil];
+}
+
+// Creates and opens the AIPrototype UI.
+- (void)startAIPrototype {
+  [self dismissMenu];
+  [self.applicationHandler openAIMenu];
 }
 
 #pragma mark - Destinations Handlers

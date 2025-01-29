@@ -4,13 +4,13 @@
 
 #include "third_party/blink/renderer/platform/media/url_index.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/media_switches.h"
@@ -266,7 +266,7 @@ UrlIndex::~UrlIndex() {
   auto dcheck_has_one_ref = [](const UrlDataMap::value_type& entry) {
     DCHECK(entry.value->HasOneRef());
   };
-  base::ranges::for_each(indexed_data_, dcheck_has_one_ref);
+  std::ranges::for_each(indexed_data_, dcheck_has_one_ref);
 #endif
 }
 

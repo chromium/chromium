@@ -29,6 +29,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/device_service.h"
 #include "extensions/buildflags/buildflags.h"
+#include "services/device/public/cpp/device_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
@@ -466,11 +467,17 @@ bool HidChooserContext::HasDevicePermission(
     const device::mojom::HidDeviceInfo& device,
     const std::optional<url::Origin>& embedding_origin_of_web_view) {
   if (device.is_excluded_by_blocklist) {
-    const bool has_fido_collection =
+    bool is_device_protected_due_to_fido =
         base::Contains(device.collections, device::mojom::kPageFido,
                        [](const auto& c) { return c->usage->usage_page; });
-    if (!has_fido_collection || !IsFidoAllowedForOrigin(origin))
+    if (base::FeatureList::IsEnabled(
+            features::kSecurityKeyHidInterfacesAreFido) &&
+        IsKnownSecurityKey(device)) {
+      is_device_protected_due_to_fido = true;
+    }
+    if (!is_device_protected_due_to_fido || !IsFidoAllowedForOrigin(origin)) {
       return false;
+    }
   }
 
   if (CanApplyPolicy() &&

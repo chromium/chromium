@@ -9,8 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/synchronization/condition_variable.h"
-#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
@@ -37,32 +35,20 @@ PerformanceManagerBrowserTestHarness::~PerformanceManagerBrowserTestHarness() {
 }
 
 void PerformanceManagerBrowserTestHarness::SetUp() {
-  // We use a ConditionVariable instead of RunLoop because the task environment
-  // isn't initialized until *after* calling Super::SetUp, but we need to setup
-  // the callback before that point.
-  base::Lock lock;
-  base::ConditionVariable cv(&lock);
-  bool graph_initialization_complete = false;
   PerformanceManagerLifetime::SetGraphFeaturesOverrideForTesting(
       GraphFeatures::WithNone());
+  bool graph_initialization_complete = false;
   PerformanceManagerLifetime::SetAdditionalGraphCreatedCallbackForTesting(
       base::BindLambdaForTesting([&](Graph* graph) {
         OnGraphCreatedImpl(graph);
-        base::AutoLock auto_lock(lock);
         graph_initialization_complete = true;
-        cv.Signal();
       }));
 
   // The PM gets initialized in the following, so this must occur after setting
   // up the callback.
   Super::SetUp();
 
-  // Wait until the PM is initialized and callbacks have been invoked on the
-  // PM sequence.
-  base::AutoLock auto_lock(lock);
-  while (!graph_initialization_complete) {
-    cv.Wait();
-  }
+  ASSERT_TRUE(graph_initialization_complete);
 }
 
 void PerformanceManagerBrowserTestHarness::PreRunTestOnMainThread() {

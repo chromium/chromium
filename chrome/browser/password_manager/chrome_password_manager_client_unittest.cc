@@ -335,7 +335,6 @@ class MockPasswordAccessoryControllerImpl
             password_client,
             driver_supplier,
             /*grouped_credential_sheet_controller=*/nullptr,
-            base::DoNothing(),
             nullptr) {}
 
   MOCK_METHOD(void,

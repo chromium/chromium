@@ -31,7 +31,6 @@
 
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
@@ -931,7 +930,7 @@ bool CSSGradientValue::ShouldSerializeColorSpace() const {
   }
 
   bool has_only_legacy_colors =
-      base::ranges::all_of(stops_, [](const CSSGradientColorStop& stop) {
+      std::ranges::all_of(stops_, [](const CSSGradientColorStop& stop) {
         const auto* color_value =
             DynamicTo<cssvalue::CSSColor>(stop.color_.Get());
         return !color_value ||

@@ -466,12 +466,12 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     return S_OK;
   }
 
-  HRESULT FetchPolicies(
-      base::OnceCallback<
-          void(base::RepeatingCallback<void(const UpdateService::UpdateState&)>,
-               base::OnceCallback<void(UpdateService::Result)>,
-               scoped_refptr<UpdateService> update_service)>
-          fetch_complete_callback) {
+  // Common functionality for `CheckForUpdate`, `Install`, and `Update`.
+  HRESULT DoOperation(
+      base::OnceCallback<void(
+          base::RepeatingCallback<void(const UpdateService::UpdateState&)>,
+          base::OnceCallback<void(UpdateService::Result)>,
+          scoped_refptr<UpdateService> update_service)> do_operation_callback) {
     AppWebImplPtr obj(this);
     base::RepeatingCallback<void(const UpdateService::UpdateState&)>
         state_change_callback = base::BindRepeating(
@@ -496,7 +496,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
                base::RepeatingCallback<void(const UpdateService::UpdateState&)>,
                base::OnceCallback<void(UpdateService::Result)>,
                scoped_refptr<UpdateService> update_service)>
-               fetch_complete_callback,
+               do_operation_callback,
            base::RepeatingCallback<void(const UpdateService::UpdateState&)>
                state_change_callback,
            base::OnceCallback<void(UpdateService::Result)> complete_callback,
@@ -509,34 +509,11 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
             return;
           }
 
-          update_service->FetchPolicies(base::BindOnce(
-              [](base::OnceCallback<void(
-                     base::RepeatingCallback<void(
-                         const UpdateService::UpdateState&)>,
-                     base::OnceCallback<void(UpdateService::Result)>,
-                     scoped_refptr<UpdateService> update_service)>
-                     fetch_complete_callback,
-                 base::RepeatingCallback<void(
-                     const UpdateService::UpdateState&)> state_change_callback,
-                 base::OnceCallback<void(UpdateService::Result)>
-                     complete_callback,
-                 AppWebImplPtr obj, scoped_refptr<UpdateService> update_service,
-                 int result) {
-                if (result != kErrorOk) {
-                  LOG(ERROR) << "FetchPolicies failed: " << result;
-                  std::move(complete_callback)
-                      .Run(UpdateService::Result::kFetchPoliciesFailed);
-                  return;
-                }
-
-                AppServerWin::PostRpcTask(base::BindOnce(
-                    std::move(fetch_complete_callback), state_change_callback,
-                    std::move(complete_callback), update_service));
-              },
-              std::move(fetch_complete_callback), state_change_callback,
-              std::move(complete_callback), obj, update_service));
+          std::move(do_operation_callback)
+              .Run(state_change_callback, std::move(complete_callback),
+                   update_service);
         },
-        std::move(fetch_complete_callback), state_change_callback,
+        std::move(do_operation_callback), state_change_callback,
         std::move(complete_callback), obj));
     return S_OK;
   }
@@ -545,7 +522,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   // foreground priority and disallows same version updates.
   HRESULT CheckForUpdate() {
     current_operation_ = CurrentOperation::kCheckingForUpdates;
-    return FetchPolicies(
+    return DoOperation(
         base::BindOnce(&AppWebImpl::CheckForUpdateImpl, AppWebImplPtr(this)));
   }
 
@@ -564,7 +541,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
   HRESULT UpdateOrInstall() {
     current_operation_ = CurrentOperation::kUpdatingOrInstalling;
-    return FetchPolicies(base::BindOnce(
+    return DoOperation(base::BindOnce(
         is_install_ ? &AppWebImpl::InstallImpl : &AppWebImpl::UpdateImpl,
         AppWebImplPtr(this)));
   }

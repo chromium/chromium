@@ -1366,10 +1366,10 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
       state_.StyleBuilder().SetHasAttrFunction();
       success &= ResolveAttrInto(stream, resolver, context, out);
     } else if (token.FunctionId() ==
-               CSSValueID::kInternalAppearanceAutoBaseSelect) {
+               CSSValueID::kInternalAutoBase) {
       CSSParserTokenStream::BlockGuard guard(stream);
       success &=
-          ResolveAppearanceAutoBaseSelectInto(stream, resolver, context, out);
+          ResolveAutoBaseInto(stream, resolver, context, out);
     } else if (token.GetType() == kFunctionToken &&
                CSSVariableParser::IsValidVariableName(token.Value()) &&
                RuntimeEnabledFeatures::CSSFunctionsEnabled()) {
@@ -1820,7 +1820,7 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
   return false;
 }
 
-bool StyleCascade::ResolveAppearanceAutoBaseSelectInto(
+bool StyleCascade::ResolveAutoBaseInto(
     CSSParserTokenStream& stream,
     CascadeResolver& resolver,
     const CSSParserContext& context,

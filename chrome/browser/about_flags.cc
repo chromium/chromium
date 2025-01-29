@@ -3612,22 +3612,6 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam
-    kUserEducationVersion2ShortIdleSessionCooldownDuration[] = {
-        {"idle_time_between_sessions", "10m"},
-        {"session_start_grace_period", "1m"},
-        {"low_priority_cooldown", "5m"}};
-
-const FeatureEntry::FeatureVariation
-    kUserEducationExperienceVersion2Variants[] = {
-        {"with 10 minutes Idle Session and 5 minutes Cooldown Period",
-         kUserEducationVersion2ShortIdleSessionCooldownDuration,
-         std::size(kUserEducationVersion2ShortIdleSessionCooldownDuration),
-         nullptr},
-};
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kLinkPreviewTriggerTypeAltClick[] = {
     {"trigger_type", "alt_click"}};
 const FeatureEntry::FeatureParam kLinkPreviewTriggerTypeAltHover[] = {
@@ -5124,15 +5108,6 @@ const FeatureEntry kFeatureEntries[] = {
          feature_engagement::kIPHDemoMode,
          feature_engagement::kIPHDemoModeChoiceVariations,
          "IPH_DemoMode")},
-#if !BUILDFLAG(IS_ANDROID)
-    {"user-education-experience-v2",
-     flag_descriptions::kUserEducationExperienceVersion2Name,
-     flag_descriptions::kUserEducationExperienceVersion2Description, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         user_education::features::kUserEducationExperienceVersion2,
-         kUserEducationExperienceVersion2Variants,
-         "UserEducationExperienceVersion2")},
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-lock-screen-notification",
      flag_descriptions::kLockScreenNotificationName,
@@ -8578,10 +8553,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPwaUpdateDialogForIcon)},
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"keyboard-and-pointer-lock-prompt",
-     flag_descriptions::kKeyboardAndPointerLockPromptName,
-     flag_descriptions::kKeyboardAndPointerLockPromptDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(permissions::features::kKeyboardAndPointerLockPrompt)},
+    {"keyboard-lock-prompt", flag_descriptions::kKeyboardLockPromptName,
+     flag_descriptions::kKeyboardLockPromptDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(permissions::features::kKeyboardLockPrompt)},
 
     {"press-and-hold-esc-to-exit-browser-fullscreen",
      flag_descriptions::kPressAndHoldEscToExitBrowserFullscreenName,
@@ -10229,10 +10203,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFlexFirmwareUpdateDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFlexFirmwareUpdate)},
 
-    {"enable-android-vpn-apps-on-flex",
-     flag_descriptions::kAndroidVpnAppsOnFlexName,
-     flag_descriptions::kAndroidVpnAppsOnFlexDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kAndroidVpnAppsOnFlex)},
+    {"enable-vpn-apps-on-flex", flag_descriptions::kVpnAppsOnFlexName,
+     flag_descriptions::kVpnAppsOnFlexDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kVpnAppsOnFlex)},
 
     {"ipp-first-setup-for-usb-printers",
      flag_descriptions::kIppFirstSetupForUsbPrintersName,

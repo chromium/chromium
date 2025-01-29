@@ -240,6 +240,8 @@ inline constexpr char kChromeUISignInInternalsHost[] = "signin-internals";
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 inline constexpr char kChromeUISignoutConfirmationHost[] =
     "signout-confirmation";
+inline constexpr char kChromeUISignoutConfirmationURL[] =
+    "chrome://signout-confirmation";
 #endif
 inline constexpr char kChromeUISiteEngagementHost[] = "site-engagement";
 inline constexpr char kChromeUISuggestInternalsHost[] = "suggest-internals";

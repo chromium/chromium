@@ -55,27 +55,6 @@ base::FilePath GetTestFilePath(const std::string& file_name) {
       .AppendASCII(file_name);
 }
 
-class MockEmbedderWithDelay : public MockEmbedder {
- public:
-  static constexpr base::TimeDelta kTimeout = base::Seconds(1);
-
-  MockEmbedderWithDelay() = default;
-  ~MockEmbedderWithDelay() override = default;
-
-  // Embedder:
-  void ComputePassagesEmbeddings(
-      passage_embeddings::PassagePriority priority,
-      std::vector<std::string> passages,
-      ComputePassagesEmbeddingsCallback callback) override {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(passages),
-                       ComputeEmbeddingsForPassages(passages),
-                       passage_embeddings::ComputeEmbeddingsStatus::kSuccess),
-        kTimeout);
-  }
-};
-
 }  // namespace
 
 class HistoryEmbeddingsServicePublic : public HistoryEmbeddingsService {
@@ -141,8 +120,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
         os_crypt_.get(), history_service_.get(),
         page_content_annotations_service_.get(),
         /*optimization_guide_decider=*/nullptr,
-        std::make_unique<MockEmbedderWithDelay>(),
-        std::make_unique<MockAnswerer>(),
+        std::make_unique<MockEmbedder>(), std::make_unique<MockAnswerer>(),
         std::make_unique<MockIntentClassifier>());
 
     ASSERT_TRUE(listener()->filter_words_hashes().empty());
@@ -215,7 +193,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     service_->embedder_metadata_->search_score_threshold = threshold;
   }
 
-  SchedulingEmbedder* GetEmbeder() { return service_->embedder_.get(); }
+  SchedulingEmbedder* GetEmbedder() { return service_->embedder_.get(); }
   Answerer* GetAnswerer() { return service_->answerer_.get(); }
   IntentClassifier* GetIntentClassifier() {
     return service_->intent_classifier_.get();
@@ -1107,45 +1085,6 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchGetsIfUrlIsKnownToSync) {
   EXPECT_EQ(result.scored_url_rows[0].is_url_known_to_sync, false);
   EXPECT_EQ(result.scored_url_rows[1].scored_url.url_id, 2);
   EXPECT_EQ(result.scored_url_rows[1].is_url_known_to_sync, true);
-}
-
-TEST_F(HistoryEmbeddingsServiceTest, SchedulingEmbedder) {
-  using ComputePassagesEmbeddingsFuture =
-      base::test::TestFuture<std::vector<std::string>, std::vector<Embedding>,
-                             SchedulingEmbedder::TaskId,
-                             passage_embeddings::ComputeEmbeddingsStatus>;
-
-  // Submit a passive priority task.
-  ComputePassagesEmbeddingsFuture future_1;
-  auto expected_task_id_1 = GetEmbeder()->ComputePassagesEmbeddings(
-      passage_embeddings::PassagePriority::kPassive,
-      {"test passage 1", "test passage 2"}, future_1.GetCallback());
-
-  // Submit a user-initiated priority task. This will suspend the partially
-  // completed passive priority task.
-  ComputePassagesEmbeddingsFuture future_2;
-  auto expected_task_id_2 = GetEmbeder()->ComputePassagesEmbeddings(
-      passage_embeddings::PassagePriority::kUserInitiated, {"query"},
-      future_2.GetCallback());
-
-  // The user-initiated priority task finishes first.
-  EXPECT_FALSE(future_2.IsReady());
-  auto [passages_2, embeddings_2, task_id_2, status_2] = future_2.Get();
-  EXPECT_EQ(passages_2.size(), 1u);
-  EXPECT_EQ(passages_2[0], "query");
-  EXPECT_EQ(embeddings_2.size(), 1u);
-  EXPECT_EQ(expected_task_id_2, task_id_2);
-  EXPECT_EQ(status_2, passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
-
-  // The passive priority task finishes last.
-  EXPECT_FALSE(future_1.IsReady());
-  auto [passages_1, embeddings_1, task_id_1, status_1] = future_1.Get();
-  EXPECT_EQ(passages_1.size(), 2u);
-  EXPECT_EQ(passages_1[0], "test passage 1");
-  EXPECT_EQ(passages_1[1], "test passage 2");
-  EXPECT_EQ(embeddings_1.size(), 2u);
-  EXPECT_EQ(task_id_1, expected_task_id_1);
-  EXPECT_EQ(status_1, passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, CancelPreviousSearches) {

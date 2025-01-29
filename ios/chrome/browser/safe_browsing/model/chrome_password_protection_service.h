@@ -150,10 +150,6 @@ class ChromePasswordProtectionService
   AccountInfo GetAccountInfoForUsername(
       const std::string& username) const override;
 
-  safe_browsing::LoginReputationClientRequest::PasswordReuseEvent::
-      SyncAccountType
-      GetSyncAccountType() const override;
-
   bool CanShowInterstitial(
       safe_browsing::ReusedPasswordAccountType password_type,
       const GURL& main_frame_url) override;

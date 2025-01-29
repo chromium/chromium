@@ -280,6 +280,8 @@ void FreezingPolicy::UpdateFrozenState(
   bool eligible_for_freezing_on_battery_saver = false;
   bool all_pages_have_freeze_vote = true;
 
+  const double high_cpu_proportion = features::kFreezingHighCPUProportion.Get();
+
   for (const PageNode* visited_page : connected_pages) {
     auto& page_freezing_state = PageFreezingState::FromPage(visited_page);
 
@@ -292,7 +294,9 @@ void FreezingPolicy::UpdateFrozenState(
       CHECK(it != browsing_instances_.end());
       const BrowsingInstanceState& browsing_instance_state = it->second;
 
-      if (browsing_instance_state.cpu_intensive_in_background &&
+      if (browsing_instance_state
+                  .highest_cpu_any_interval_without_cannot_freeze_reason >=
+              high_cpu_proportion &&
           is_battery_saver_active_ &&
           // Note: Feature state is checked last so that only clients that
           // have a browsing instance that is CPU intensive in background
@@ -347,7 +351,7 @@ void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
       for (auto browsing_instance_id : GetBrowsingInstances(page_node)) {
         auto it = browsing_instances_.find(browsing_instance_id);
         CHECK(it != browsing_instances_.end());
-        it->second.had_cannot_freeze_reason_since_last_cpu_measurement = true;
+        it->second.cannot_freeze_reasons_since_last_cpu_measurement.Put(reason);
       }
 
       UpdateFrozenState(page_node);
@@ -362,15 +366,14 @@ void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
 }
 
 //  static
-bool FreezingPolicy::HasCannotFreezeReason(
+CannotFreezeReasonSet FreezingPolicy::GetCannotFreezeReasons(
     const BrowsingInstanceState& browsing_instance_state) {
+  CannotFreezeReasonSet reasons;
   for (const PageNode* page : browsing_instance_state.pages) {
     const auto& page_freezing_state = PageFreezingState::FromPage(page);
-    if (!page_freezing_state.cannot_freeze_reasons.empty()) {
-      return true;
-    }
+    reasons.PutAll(page_freezing_state.cannot_freeze_reasons);
   }
-  return false;
+  return reasons;
 }
 
 void FreezingPolicy::OnPassedToGraph(Graph* graph) {
@@ -881,10 +884,6 @@ void FreezingPolicy::UpdateFrozenStateOnCPUMeasurement(
       cpu_proportion_map = cpu_proportion_tracker_.StartNextInterval(
           base::TimeTicks::Now(), results);
   for (const auto& [context, cpu_proportion] : cpu_proportion_map) {
-    if (cpu_proportion < high_cpu_proportion) {
-      continue;
-    }
-
     // This cast is valid because the query only targets contexts of type
     // `OriginInBrowsingInstanceContext` (verified by CHECK inside `AsContext`).
     const auto& origin_in_browsing_instance_context =
@@ -896,29 +895,38 @@ void FreezingPolicy::UpdateFrozenStateOnCPUMeasurement(
       continue;
     }
 
-    if (browsing_instance_it->second.cpu_intensive_in_background) {
-      // Already known to be CPU-intensive in background.
+    BrowsingInstanceState& state = browsing_instance_it->second;
+
+    if (!state.cannot_freeze_reasons_since_last_cpu_measurement.empty()) {
+      // Ignore CPU measurement while having a `CannotFreezeReason` (it's
+      // acceptable to use a lot of CPU while playing audio, running a
+      // videoconference call...).
       continue;
     }
 
-    if (browsing_instance_it->second
-            .had_cannot_freeze_reason_since_last_cpu_measurement) {
-      // CPU-intensive in background while having a `CannotFreezeReason` isn't
-      // recorded (it's acceptable to use a lot of CPU while playing audio,
-      // running a videoconference call...).
+    if (state.highest_cpu_any_interval_without_cannot_freeze_reason >
+        cpu_proportion) {
+      // Ignore CPU measurement without a `CannotFreezeReason` if it's not the
+      // highest one.
       continue;
     }
 
-    browsing_instance_it->second.cpu_intensive_in_background = true;
-    UpdateFrozenState(*browsing_instance_it->second.pages.begin());
+    // Store the new highest CPU measurement without a `CannotFreezeReason`.
+    state.highest_cpu_any_interval_without_cannot_freeze_reason =
+        cpu_proportion;
+
+    // If the CPU measurement is above the threshold for high CPU usage, update
+    // the frozen state.
+    if (cpu_proportion >= high_cpu_proportion) {
+      UpdateFrozenState(*state.pages.begin());
+    }
   }
 
-  // Update `had_cannot_freeze_reason_since_last_cpu_measurement` for all
-  // browsing instances.
+  // Update `cannot_freeze_reasons_since_last_cpu_measurement` for all browsing
+  // instances.
   for (auto& [_, browsing_instance_state] : browsing_instances_) {
-    browsing_instance_state
-        .had_cannot_freeze_reason_since_last_cpu_measurement =
-        HasCannotFreezeReason(browsing_instance_state);
+    browsing_instance_state.cannot_freeze_reasons_since_last_cpu_measurement =
+        GetCannotFreezeReasons(browsing_instance_state);
   }
 }
 

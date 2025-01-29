@@ -66,8 +66,8 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
 
 }  // namespace
 
-const char* TestAmbientClient::kTestGaiaId = "test_gaia_id";
-const char* TestAmbientClient::kTestAccessToken = "test_access_token";
+const GaiaId::Literal TestAmbientClient::kTestGaiaId("test_gaia_id");
+const char TestAmbientClient::kTestAccessToken[] = "test_access_token";
 
 TestAmbientClient::TestAmbientClient(
     device::TestWakeLockProvider* wake_lock_provider)
@@ -120,7 +120,7 @@ void TestAmbientClient::IssueAccessToken(bool is_empty) {
              /*expiration_time=*/base::Time::Now());
   } else {
     std::move(pending_callback_)
-        .Run(GaiaId(kTestGaiaId), kTestAccessToken,
+        .Run(kTestGaiaId, kTestAccessToken,
              base::Time::Now() + kDefaultTokenExpirationDelay);
   }
 }

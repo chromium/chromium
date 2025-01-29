@@ -87,8 +87,7 @@ bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
                                        const ComputedStyle& style) const {
   const auto* select = DynamicTo<HTMLSelectElement>(GetNode());
   if (select && select->UsesMenuList()) [[unlikely]] {
-    if (select->IsAppearanceBaseButton(
-            HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle)) {
+    if (select->IsAppearanceBaseButton()) {
       CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
       if (IsA<HTMLOptionElement>(object->GetNode()) ||
           IsA<HTMLOptGroupElement>(object->GetNode()) ||

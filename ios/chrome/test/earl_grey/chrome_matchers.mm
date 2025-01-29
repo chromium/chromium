@@ -1067,6 +1067,34 @@ id<GREYMatcher> ManageGroupButton() {
   return [ChromeMatchersAppInterface manageGroupButton];
 }
 
+id<GREYMatcher> LeaveSharedGroupButton() {
+  return [ChromeMatchersAppInterface leaveSharedGroupButton];
+}
+
+id<GREYMatcher> LeaveSharedGroupConfirmationButton() {
+  return [ChromeMatchersAppInterface leaveSharedGroupConfirmationButton];
+}
+
+id<GREYMatcher> DeleteSharedGroupButton() {
+  return [ChromeMatchersAppInterface deleteSharedGroupButton];
+}
+
+id<GREYMatcher> DeleteSharedConfirmationButton() {
+  return [ChromeMatchersAppInterface deleteSharedConfirmationButton];
+}
+
+id<GREYMatcher> FakeShareFlowView() {
+  return [ChromeMatchersAppInterface fakeShareFlowView];
+}
+
+id<GREYMatcher> FakeManageFlowView() {
+  return [ChromeMatchersAppInterface fakeManageFlowView];
+}
+
+id<GREYMatcher> FakeJoinFlowView() {
+  return [ChromeMatchersAppInterface fakeJoinFlowView];
+}
+
 #pragma mark - Tab Groups Panel
 
 id<GREYMatcher> TabGroupsPanel() {

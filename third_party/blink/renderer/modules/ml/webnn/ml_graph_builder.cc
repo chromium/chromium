@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
@@ -1538,7 +1537,7 @@ void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
     // For each constant operand, keep walking down the dependencies until no
     // reshape is found.
     while (true) {
-      auto reshape_operation_it = base::ranges::find_if(
+      auto reshape_operation_it = std::ranges::find_if(
           graph_info.operations,
           [&constant_operand_id](const blink_mojom::OperationPtr& operation) {
             return operation->is_reshape() &&
@@ -1556,7 +1555,7 @@ void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
       //
       // TODO(crbug.com/364348897): Consider handling the case where a constant
       // operand is reshaped by multiple identical reshape operators.
-      if (base::ranges::count_if(
+      if (std::ranges::count_if(
               graph_info.operations,
               [&constant_operand_id](
                   const blink_mojom::OperationPtr& operation) {
@@ -1799,9 +1798,8 @@ MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
 
   std::vector<webnn::OperandDescriptor> input_component_operands;
   input_component_operands.reserve(inputs.size());
-  base::ranges::transform(
-      inputs, std::back_inserter(input_component_operands),
-      [](const auto& input) { return input->Descriptor(); });
+  std::ranges::transform(inputs, std::back_inserter(input_component_operands),
+                         [](const auto& input) { return input->Descriptor(); });
 
   const std::string label = options->label().Utf8();
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
@@ -2140,7 +2138,7 @@ MLOperand* MLGraphBuilder::expand(MLOperand* input,
         "The input shape is not broadcastable to the new shape.");
     return nullptr;
   }
-  CHECK(base::ranges::equal(*output_shape, new_shape));
+  CHECK(std::ranges::equal(*output_shape, new_shape));
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
@@ -3274,7 +3272,7 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
   }
 
   HeapVector<Member<MLOperand>> outputs(named_outputs.size());
-  base::ranges::transform(
+  std::ranges::transform(
       named_outputs, outputs.begin(),
       [](const auto& named_output) { return named_output.second; });
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(outputs),

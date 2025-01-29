@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <cstdlib>
 #include <memory>
@@ -28,7 +29,6 @@
 #include "base/profiler/stack_sampler.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/profiler/unwinder.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/utf_string_conversions.h"
@@ -277,10 +277,10 @@ size_t WaitForSamplingComplete(
     const std::vector<std::unique_ptr<TestProfilerInfo>>& infos) {
   // Map unique_ptrs to something that WaitMany can accept.
   std::vector<WaitableEvent*> sampling_completed_rawptrs(infos.size());
-  ranges::transform(infos, sampling_completed_rawptrs.begin(),
-                    [](const std::unique_ptr<TestProfilerInfo>& info) {
-                      return &info.get()->completed;
-                    });
+  std::ranges::transform(infos, sampling_completed_rawptrs.begin(),
+                         [](const std::unique_ptr<TestProfilerInfo>& info) {
+                           return &info.get()->completed;
+                         });
   // Wait for one profiler to finish.
   return WaitableEvent::WaitMany(sampling_completed_rawptrs.data(),
                                  sampling_completed_rawptrs.size());

@@ -35,7 +35,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/url_constants.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -57,7 +56,6 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
@@ -66,8 +64,6 @@
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
 #endif
 
-using base::JSONWriter;
-using content::kUnreachableWebDataURL;
 using content::RenderFrame;
 using content::RenderFrameObserver;
 using content::RenderThread;
@@ -88,15 +84,13 @@ bool IsExtensionExtendedErrorCode(int extended_error_code) {
          static_cast<int>(ChromeResourceRequestBlockedReason::kExtension);
 }
 
+bool IsAutoFetchFeatureEnabled() {
 #if BUILDFLAG(IS_ANDROID)
-bool IsAutoFetchFeatureEnabled() {
-  return  base::FeatureList::IsEnabled(features::kOfflineAutoFetch);
-}
+  return base::FeatureList::IsEnabled(features::kOfflineAutoFetch);
 #else   // BUILDFLAG(IS_ANDROID)
-bool IsAutoFetchFeatureEnabled() {
   return false;
-}
 #endif  // BUILDFLAG(IS_ANDROID)
+}
 
 bool IsRunningInForcedAppMode() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -231,11 +225,9 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
         IsExtensionExtendedErrorCode(error.extended_reason()),
         &error_page_params_);
   }
-  std::string extracted_string =
+  std::string template_html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           resource_id);
-  std::string_view template_html(extracted_string.data(),
-                                 extracted_string.size());
   DCHECK(!template_html.empty()) << "unable to load template.";
   *error_html = webui::GetLocalizedHtml(template_html, page_state.strings);
   return page_state;
@@ -260,7 +252,7 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
       &error_page_params_);
 
   std::string json;
-  JSONWriter::Write(page_state.strings, &json);
+  base::JSONWriter::Write(page_state.strings, &json);
 
   std::string js = "if (window.updateForDnsProbe) "
                    "updateForDnsProbe(" + json + ");";

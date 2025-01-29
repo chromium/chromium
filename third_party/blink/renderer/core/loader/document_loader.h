@@ -128,8 +128,6 @@ namespace mojom {
 enum class CommitResult : int32_t;
 }  // namespace mojom
 
-struct SameSizeAsDocumentLoader;
-
 enum class FirePopstate { kYes, kNo };
 
 // The DocumentLoader fetches a main resource and handles the result.
@@ -251,6 +249,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                                    scoped_refptr<SerializedScriptValue>,
                                    WebFrameLoadType,
                                    FirePopstate,
+                                   bool should_skip_screenshot,
                                    bool is_browser_initiated = false,
                                    bool is_synchronously_committed = true,
                                    std::optional<scheduler::TaskAttributionId>
@@ -272,7 +271,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       std::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id,
       bool has_transient_user_activation,
-      bool has_ua_visual_transition);
+      bool has_ua_visual_transition,
+      bool should_skip_screenshot);
 
   const ResourceResponse& GetResponse() const { return response_; }
 
@@ -324,7 +324,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       bool is_browser_initiated,
       bool has_ua_visual_transition,
       std::optional<scheduler::TaskAttributionId>
-          soft_navigation_heuristics_task_id);
+          soft_navigation_heuristics_task_id,
+      bool should_skip_screenshot);
 
   void SetDefersLoading(LoaderFreezeMode);
 
@@ -518,7 +519,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   Member<MHTMLArchive> archive_;
 
  private:
-  friend struct SameSizeAsDocumentLoader;
   class BodyData;
   class EncodedBodyData;
 
@@ -555,7 +555,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       mojom::blink::TriggeringEventInfo,
       std::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id,
-      bool has_ua_visual_transition);
+      bool has_ua_visual_transition,
+      bool should_skip_screenshot);
 
   // Use these method only where it's guaranteed that |m_frame| hasn't been
   // cleared.

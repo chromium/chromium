@@ -17,7 +17,6 @@
 #include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -451,7 +450,7 @@ void PoissonAllocationSampler::AddSamplesObserver(SamplesObserver* observer) {
 
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
-  DCHECK(ranges::find(observers_, observer) == observers_.end());
+  DCHECK(std::ranges::find(observers_, observer) == observers_.end());
   bool profiler_was_stopped = observers_.empty();
   observers_.push_back(observer);
 
@@ -478,7 +477,7 @@ void PoissonAllocationSampler::RemoveSamplesObserver(
 
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
-  auto it = ranges::find(observers_, observer);
+  auto it = std::ranges::find(observers_, observer);
   CHECK(it != observers_.end(), base::NotFatalUntil::M125);
   observers_.erase(it);
 

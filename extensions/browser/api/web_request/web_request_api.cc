@@ -128,10 +128,9 @@ bool DoesExtensionHasAnyOfPermission(
     const Extension& extension,
     const base::fixed_flat_set<APIPermissionID, N>& permissions) {
   const PermissionsData* permissions_data = extension.permissions_data();
-  return base::ranges::any_of(
-      permissions, [&permissions_data](auto permission) {
-        return permissions_data->HasAPIPermission(permission);
-      });
+  return std::ranges::any_of(permissions, [&permissions_data](auto permission) {
+    return permissions_data->HasAPIPermission(permission);
+  });
 }
 
 // Checks whether the extension has WebRequest* permissions.

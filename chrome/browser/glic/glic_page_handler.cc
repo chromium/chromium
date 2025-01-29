@@ -222,6 +222,36 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->SyncWebviewCookies(std::move(callback));
   }
 
+  void OnUserInputSubmitted(mojom::WebClientMode) override {
+    // TODO(crbug.com/391417447): implement
+    LOG(ERROR) << __func__;
+    NOTIMPLEMENTED();
+  }
+
+  void OnResponseStarted() override {
+    // TODO(crbug.com/391417447): implement
+    LOG(ERROR) << __func__;
+    NOTIMPLEMENTED();
+  }
+
+  void OnResponseStopped() override {
+    // TODO(crbug.com/391417447): implement
+    LOG(ERROR) << __func__;
+    NOTIMPLEMENTED();
+  }
+
+  void OnSessionTerminated() override {
+    // TODO(crbug.com/391417447): implement
+    LOG(ERROR) << __func__;
+    NOTIMPLEMENTED();
+  }
+
+  void OnResponseRated(bool positive) override {
+    // TODO(crbug.com/391417447): implement
+    LOG(ERROR) << __func__;
+    NOTIMPLEMENTED();
+  }
+
   // GlicWindowController::StateObserver implementation.
   void PanelStateChanged(const mojom::PanelState& panel_state) override {
     web_client_->NotifyPanelStateChange(panel_state.Clone());

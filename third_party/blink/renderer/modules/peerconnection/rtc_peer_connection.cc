@@ -2099,14 +2099,14 @@ RTCRtpSender* RTCPeerConnection::FindSenderForTrackAndStream(
 
 HeapVector<Member<RTCRtpSender>>::iterator RTCPeerConnection::FindSender(
     const RTCRtpSenderPlatform& web_sender) {
-  return base::ranges::find_if(rtp_senders_, [&](const auto& sender) {
+  return std::ranges::find_if(rtp_senders_, [&](const auto& sender) {
     return sender->web_sender()->Id() == web_sender.Id();
   });
 }
 
 HeapVector<Member<RTCRtpReceiver>>::iterator RTCPeerConnection::FindReceiver(
     const RTCRtpReceiverPlatform& platform_receiver) {
-  return base::ranges::find_if(rtp_receivers_, [&](const auto& receiver) {
+  return std::ranges::find_if(rtp_receivers_, [&](const auto& receiver) {
     return receiver->platform_receiver()->Id() == platform_receiver.Id();
   });
 }
@@ -2114,7 +2114,7 @@ HeapVector<Member<RTCRtpReceiver>>::iterator RTCPeerConnection::FindReceiver(
 HeapVector<Member<RTCRtpTransceiver>>::iterator
 RTCPeerConnection::FindTransceiver(
     const RTCRtpTransceiverPlatform& platform_transceiver) {
-  return base::ranges::find_if(transceivers_, [&](const auto& transceiver) {
+  return std::ranges::find_if(transceivers_, [&](const auto& transceiver) {
     return transceiver->platform_transceiver()->Id() ==
            platform_transceiver.Id();
   });

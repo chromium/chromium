@@ -74,14 +74,98 @@ AST_MATCHER(clang::ParmVarDecl, isArrayParm) {
   return Node.getOriginalType()->isArrayType();
 }
 
-struct Node {
-  // A replacement follows the following format:
-  // `r:::<file path>:::<offset>:::<length>:::<replacement text>`
-  std::string replacement;
+// Returns the size of the array/string literal. It is stored in the
+// `output_size` parameter.
+// Returns true if the size is known, false otherwise.
+bool ArraySize(const clang::Expr* expr, uint64_t* output_size) {
+  // C-style arrays with a known size.
+  //
+  // Note that some arrays in templates have a known size at instantiating
+  // time, but it is not determined at this point.
+  if (const auto* constant_array = clang::dyn_cast<clang::ConstantArrayType>(
+          expr->getType()->getUnqualifiedDesugaredType())) {
+    *output_size = constant_array->getSize().getLimitedValue();
+    return true;
+  }
 
-  // An include directive follows the following format:
-  // `include-user-header:::<file path>:::-1:::-1:::<include text>`
-  std::string include_directive;
+  // String literals.
+  if (const auto* string_literal =
+          clang::dyn_cast<clang::StringLiteral>(expr)) {
+    *output_size = string_literal->getLength() + 1;
+    return true;
+  }
+
+  return false;
+}
+
+// Return whether the subscript access is guaranteed to be safe, false
+// otherwise.
+//
+// This is based on `llvm-project/clang/lib/Analysis/UnsafeBufferUsage.cpp`.
+AST_MATCHER(clang::ArraySubscriptExpr, isSafeArraySubscript) {
+  // No guarantees if the array's size is not known.
+  uint64_t size = 0;
+  if (!ArraySize(Node.getBase()->IgnoreParenImpCasts(), &size)) {
+    return false;
+  }
+
+  // If the index depends on a template parameter, it could be out of bounds, we
+  // don't know yet at this point.
+  clang::Expr::EvalResult eval_index;
+  const clang::Expr* index_expr = Node.getIdx();
+  if (index_expr->isValueDependent()) {
+    return false;
+  }
+
+  // Try to evaluate the index expression. If we can't evaluate it, we can't
+  // provide any guarantees.
+  if (!index_expr->EvaluateAsInt(eval_index, Finder->getASTContext())) {
+    return false;
+  }
+  // `APInt` stands for Arbitrary Precision Integer.
+  llvm::APInt index_value = eval_index.Val.getInt();
+
+  // Negative indices are out of bounds. Hopefully, this never happens in
+  // Chromium. Print a warning for Chromium developers to know about them.
+  if (index_value.isNegative()) {
+    clang::SourceManager& source_manager =
+        Finder->getASTContext().getSourceManager();
+    llvm::errs() << llvm::formatv(
+        "{0}:{1}: Warning: array subscript out of bounds: {0} < 0\n",
+        source_manager.getFilename(Node.getExprLoc()),
+        source_manager.getSpellingLineNumber(Node.getExprLoc()),
+        index_value.getSExtValue());
+    return false;
+  }
+
+  // If the index is greater than or equal to the size of the array, it's out of
+  // bounds. Hopefully, this never happens in Chromium. Print a warning for
+  // Chromium developers to know about them.
+  if (index_value.uge(size)) {
+    clang::SourceManager& source_manager =
+        Finder->getASTContext().getSourceManager();
+    llvm::errs() << llvm::formatv(
+        "{0}:{1}: Warning: array subscript out of bounds: {2} >= {3}\n",
+        source_manager.getFilename(Node.getExprLoc()),
+        source_manager.getSpellingLineNumber(Node.getExprLoc()),
+        index_value.getSExtValue(), size);
+    return false;
+  }
+
+  // The subscript is guaranteed to be safe!
+  return true;
+}
+
+struct Node {
+  // A replacement has one of following format:
+  // - r:::<file path>:::<offset>:::<length>:::<replacement text>
+  // - include-user-header:::<file path>:::-1:::-1:::<include text>
+  // - include-system-header:::<file path>:::-1:::-1:::<include text>
+  //
+  // The first replacement must uniquely identify this node. The rest of the
+  // replacements are additional information that is needed to apply the
+  // replacement.
+  std::vector<std::string> replacements;
 
   // This is true for nodes representing the following:
   //  - nullptr => size is zero
@@ -104,43 +188,23 @@ struct Node {
   //     field description for more details.
   bool is_dependent = false;
 
-  // This field is NOT serialized.
-  // This is used to split this nodes into two. The second node, who's
-  // replacement is `additional_replacement`, is dependent (is_dependent=true)
-  // on this node.
-  // Examples of where this is needed:
-  // 1. Dereference expressions: (*expr => expr[0])
-  //    For deref expressions, we need to delete the `*` operator and to append
-  //    [0]. This leads to conflicting rewrites for expressions that use
-  //    multiple operators. Example: `*++a;` which needs to be rewritten to
-  //    base::preIncrementSpan(a)[0]. If the deref expression replacement is not
-  //    split in two, we would end up with two conflicting replacement ranges.
-  //        a. The preIncrement replacement that removes the `++` and rewrites
-  //           the expression to base::preIncrementSpan(a).
-  //        b. The deref statement which tries to replace *++a with ++a[0] which
-  //           simply wouldn't compile.
-  // 2. Adding trailing braces to Array rewrites. This leads to us needing to
-  //    escape the special characters that are included in the array
-  //    initializers.
-  std::string additional_replacement;
+  // Nodes are uniquely identified by their first replacement.
+  const std::string Key() const { return replacements[0]; }
 
-  bool operator==(const Node& other) const {
-    return replacement == other.replacement;
-  }
-
-  bool operator<(const Node& other) const {
-    return replacement < other.replacement;
-  }
+  bool operator==(const Node& other) const { return Key() == other.Key(); }
+  bool operator<(const Node& other) const { return Key() < other.Key(); }
 
   // The resulting string follows the following format:
-  // {r:::<filepath>:::<offset>:::<length>:::<replacement_text>\,
-  // include-user-header:::<file path>:::-1:::-1:::<include text>\,
-  // size_info_available\,
-  // is_dependent\}
+  // {size_info_available\,is_dependent,(\,replacement)+}
   // where the booleans are represented as 0 or 1.
   std::string ToString() const {
-    return llvm::formatv("{{{0}\\,{1}\\,{2:d}\\,{3:d}}", replacement,
-                         include_directive, size_info_available, is_dependent);
+    std::string replacements_str;
+    for (const auto& replacement : replacements) {
+      replacements_str += llvm::formatv("\\,{}", replacement);
+    }
+
+    return llvm::formatv("{0:d}\\,{1:d}{2}", size_info_available, is_dependent,
+                         replacements_str);
   }
 };
 
@@ -175,44 +239,27 @@ static std::string GetReplacementDirective(
       source_manager, clang::CharSourceRange::getCharRange(replacement_range),
       replacement_text);
   llvm::StringRef file_path = replacement.getFilePath();
-  if (file_path.empty()) {
-    return {"", ""};
-  }
+  assert(!file_path.empty() && "Replacement file path is empty.");
   // For replacements that span multiple lines, make sure to remove the newline
   // character.
+  // `./apply-edits.py` expects `\n` to be escaped as '\0'.
   std::replace(replacement_text.begin(), replacement_text.end(), '\n', '\0');
+
   return llvm::formatv("r:::{0}:::{1}:::{2}:::{3}", file_path,
                        replacement.getOffset(), replacement.getLength(),
                        replacement_text);
 }
 
-static std::pair<std::string, std::string> GetReplacementAndIncludeDirectives(
-    const clang::SourceRange replacement_range,
-    std::string replacement_text,
-    const clang::SourceManager& source_manager,
-    const char* include_path = nullptr,
-    bool is_system_include_path = false) {
-  std::string replacement_directive = GetReplacementDirective(
-      replacement_range, replacement_text, source_manager);
-
-  std::string file_path =
+std::string GetIncludeDirective(const clang::SourceRange replacement_range,
+                                const clang::SourceManager& source_manager,
+                                const char* include_path = kBaseSpanIncludePath,
+                                bool is_system_include_path = false) {
+  return llvm::formatv(
+      "{0}:::{1}:::-1:::-1:::{2}",
+      is_system_include_path ? "include-system-header" : "include-user-header",
       GetFilename(source_manager, replacement_range.getBegin(),
-                  raw_ptr_plugin::FilenameLocationType::kSpellingLoc);
-
-  if (!include_path) {
-    include_path = kBaseSpanIncludePath;
-    is_system_include_path = false;
-  }
-  std::string include_directive;
-  if (is_system_include_path) {
-    include_directive = llvm::formatv(
-        "include-system-header:::{0}:::-1:::-1:::{1}", file_path, include_path);
-  } else {
-    include_directive = llvm::formatv(
-        "include-user-header:::{0}:::-1:::-1:::{1}", file_path, include_path);
-  }
-
-  return {replacement_directive, include_directive};
+                  raw_ptr_plugin::FilenameLocationType::kSpellingLoc),
+      include_path);
 }
 
 // Clang doesn't seem to be providing correct begin/end locations for
@@ -348,11 +395,12 @@ static Node getNodeFromPointerTypeLoc(const clang::PointerTypeLoc* type_loc,
           .str();
   initial_text.pop_back();
   std::string replacement_text = "base::span<" + initial_text + ">";
-  auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
-      replacement_range, replacement_text, source_manager);
   Node n;
-  n.replacement = replacement_and_include_pair.first;
-  n.include_directive = replacement_and_include_pair.second;
+  n.replacements = {
+      GetReplacementDirective(replacement_range, replacement_text,
+                              source_manager),
+      GetIncludeDirective(replacement_range, source_manager),
+  };
   return n;
 }
 
@@ -365,8 +413,9 @@ static Node getProxyVarNodeFromArrayVariable(
   auto replacement_range =
       clang::SourceRange(var_decl->getBeginLoc(), var_decl->getBeginLoc());
   Node n;
-  n.replacement =
-      GetReplacementDirective(replacement_range, "", source_manager);
+  n.replacements = {
+      GetReplacementDirective(replacement_range, "", source_manager),
+  };
   return n;
 }
 
@@ -377,12 +426,13 @@ static Node getNodeFromRawPtrTypeLoc(
   auto replacement_range = clang::SourceRange(raw_ptr_type_loc->getBeginLoc(),
                                               raw_ptr_type_loc->getLAngleLoc());
 
-  auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
-      replacement_range, "base::raw_span", source_manager,
-      kBaseRawSpanIncludePath);
   Node n;
-  n.replacement = replacement_and_include_pair.first;
-  n.include_directive = replacement_and_include_pair.second;
+  n.replacements = {
+      GetReplacementDirective(replacement_range, "base::raw_span",
+                              source_manager),
+      GetIncludeDirective(replacement_range, source_manager,
+                          kBaseRawSpanIncludePath),
+  };
   return n;
 }
 
@@ -450,11 +500,12 @@ static Node getNodeFromDecl(const clang::DeclaratorDecl* decl,
     }
   }
 
-  auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
-      replacement_range, replacement_text, source_manager);
   Node n;
-  n.replacement = replacement_and_include_pair.first;
-  n.include_directive = replacement_and_include_pair.second;
+  n.replacements = {
+      GetReplacementDirective(replacement_range, replacement_text,
+                              source_manager),
+      GetIncludeDirective(replacement_range, source_manager),
+  };
   return n;
 }
 
@@ -477,11 +528,10 @@ static Node getNodeFromDerefExpr(const clang::Expr* deref_expr,
     replacement_text = "(" + initial_text.substr(1) + ")[0]";
   }
 
-  auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
-      source_range, replacement_text, source_manager);
   Node n;
-  n.replacement = replacement_and_include_pair.first;
-  n.include_directive = "<empty>";
+  n.replacements = {
+      GetReplacementDirective(source_range, replacement_text, source_manager),
+  };
   n.is_dependent = true;
   return n;
 }
@@ -504,11 +554,11 @@ static Node getNodeFromMemberCallExpr(const clang::CXXMemberCallExpr* get_call,
   // char* ptr = member_.get(); which is then rewritten to
   // span<char> ptr = member_;
   // member_ here is a raw_ptr
-  auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
-      replacement_range, " ", source_manager);
   Node n;
-  n.replacement = replacement_and_include_pair.first;
-  n.include_directive = replacement_and_include_pair.second;
+  n.replacements = {
+      GetReplacementDirective(replacement_range, "", source_manager),
+      GetIncludeDirective(replacement_range, source_manager),
+  };
   return n;
 }
 
@@ -525,11 +575,10 @@ static Node getNodeFromCallToExternalFunction(
           .str();
   std::string replacement_text =
       initial_text.empty() ? ".data()" : "(" + initial_text + ").data()";
-  auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
-      rep_range, replacement_text, source_manager);
   Node n;
-  n.replacement = replacement_and_include_pair.first;
-  n.include_directive = kEmptyKeyword;
+  n.replacements = {
+      GetReplacementDirective(rep_range, replacement_text, source_manager),
+  };
   n.is_dependent = true;
   return n;
 }
@@ -553,12 +602,12 @@ static Node getNodeFromSizeExpr(const clang::Expr* size_expr,
                            size_expr->getSourceRange().getBegin());
   }
 
-  auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
-      replacement_range, replacement, source_manager);
   Node n;
   n.size_info_available = true;
-  n.replacement = replacement_and_include_pair.first;
-  n.include_directive = replacement_and_include_pair.second;
+  n.replacements = {
+      GetReplacementDirective(replacement_range, replacement, source_manager),
+      GetIncludeDirective(replacement_range, source_manager),
+  };
   return n;
 }
 
@@ -599,7 +648,7 @@ static Node getNodeFromSizeOfArrayExpr(
       replacement_range, std::move(replacement_text), source_manager);
 
   Node n;
-  n.replacement = replacement_directive;
+  n.replacements = {replacement_directive};
   n.is_dependent = true;
   return n;
 }
@@ -1142,18 +1191,22 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
         llvm::formatv("std::array<{0}, {1}> {2}", element_type_as_string,
                       array_size_as_string, array_variable_as_string);
   }
-  auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
-      replacement_range,
-      class_definition + qualifier_string.str() + replacement_text,
-      source_manager, include_path,
-      /* is_system_include_header =*/true);
-  Node n;
-  n.replacement = replacement_and_include_pair.first;
-  n.include_directive = replacement_and_include_pair.second;
-  n.size_info_available = true;
-  n.additional_replacement = additional_replacement;
+  replacement_text =
+      class_definition + qualifier_string.str() + replacement_text;
 
-  EmitSource(n.replacement);
+  Node n;
+  n.replacements = {
+      GetReplacementDirective(replacement_range, replacement_text,
+                              source_manager),
+      GetIncludeDirective(replacement_range, source_manager, include_path,
+                          /*is_system_include_header=*/true),
+  };
+  if (!additional_replacement.empty()) {
+    n.replacements.push_back(additional_replacement);
+  }
+  n.size_info_available = true;
+
+  EmitSource(n.Key());
   return n;
 }
 
@@ -1197,7 +1250,6 @@ class PotentialNodes : public MatchFinder::MatchCallback {
     if (auto* get_call = result.Nodes.getNodeAs<clang::CXXMemberCallExpr>(
             "raw_ptr_get_call")) {
       Node n = getNodeFromMemberCallExpr(get_call, "get_member_expr", result);
-      n.include_directive = kEmptyKeyword;
       n.is_dependent = true;
       return n;
     }
@@ -1274,22 +1326,14 @@ class PotentialNodes : public MatchFinder::MatchCallback {
     // Buffer usage expressions are added as sources of the graph. This is what
     // triggers the rewrite.
     if (result.Nodes.getNodeAs<clang::Expr>("buffer_expr")) {
-      EmitSource(lhs.replacement);
+      EmitSource(lhs.Key());
       return;
     }
 
     Node rhs = getRHSNodeFromMatchResult(result);
     auto* expr = result.Nodes.getNodeAs<clang::Expr>("span_frontier");
     if (expr && !lhs.is_dependent && !rhs.size_info_available) {
-      AddSpanFrontierChange(lhs.replacement, rhs.replacement, result);
-    }
-
-    if (!lhs.additional_replacement.empty()) {
-      Node n;
-      n.replacement = lhs.additional_replacement;
-      n.include_directive = kEmptyKeyword;
-      n.is_dependent = true;
-      EmitEdge(n, rhs);
+      AddSpanFrontierChange(lhs.Key(), rhs.Key(), result);
     }
 
     EmitEdge(lhs, rhs);
@@ -1440,8 +1484,7 @@ class Spanifier {
       MatchFinder& finder,
       std::map<std::string, std::set<Node>>& sig_nodes,
       std::vector<std::pair<std::string, std::string>>& sig_pairs)
-      : match_finder_(finder),
-        fct_sig_nodes_(sig_nodes, sig_pairs) {
+      : match_finder_(finder), fct_sig_nodes_(sig_nodes, sig_pairs) {
     std::vector<std::string> paths_to_exclude_lines;
     paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
                                   kSpanifyManualPathsToIgnore.begin(),
@@ -1626,13 +1669,16 @@ class Spanifier {
     auto buffer_expr1 = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         expr(ignoringParenCasts(anyOf(
-                 arraySubscriptExpr(hasLHS(lhs_expr_variations)),
+                 // Unsafe pointer subscript:
+                 arraySubscriptExpr(hasLHS(lhs_expr_variations),
+                                    unless(isSafeArraySubscript())),
+                 // Unsafe pointer arithmetic:
                  binaryOperation(
                      anyOf(hasOperatorName("+="), hasOperatorName("+")),
                      hasLHS(lhs_expr_variations)),
                  unaryOperator(hasOperatorName("++"),
                                hasUnaryOperand(lhs_expr_variations)),
-                 // for raw_ptr ops
+                 // Unsafe std::raw_ptr arithmetic:
                  cxxOperatorCallExpr(anyOf(hasOverloadedOperatorName("[]"),
                                            hasOperatorName("++")),
                                      hasArgument(0, lhs_expr_variations)))))
@@ -1645,10 +1691,12 @@ class Spanifier {
                 unless(exclusions), unless(hasExternalFormalLinkage()))
             .bind("array_variable");
 
-    auto buffer_expr2 = traverse(
-        clang::TK_IgnoreUnlessSpelledInSource,
-        expr(ignoringParenCasts(
-            arraySubscriptExpr(hasLHS(declRefExpr(to(array_variable)))))));
+    auto buffer_expr2 =
+        traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                 expr(ignoringParenCasts(
+                     // Unsafe C-style array subscript:
+                     arraySubscriptExpr(hasLHS(declRefExpr(to(array_variable))),
+                                        unless(isSafeArraySubscript())))));
     match_finder_.addMatcher(buffer_expr2, &potential_nodes_);
 
     auto c_style_array_var = varDecl(hasType(arrayType()), unless(exclusions),

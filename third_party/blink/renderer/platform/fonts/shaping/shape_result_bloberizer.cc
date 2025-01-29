@@ -11,8 +11,9 @@
 
 #include <hb.h>
 
+#include <algorithm>
+
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
@@ -184,15 +185,15 @@ void ShapeResultBloberizer::CommitPendingRun() {
     DVLOG(4) << "  CommitPendingRun indexes: "
              << base::span(pending_utf8_character_indexes_);
     DCHECK_EQ(pending_utf8_character_indexes_.size(), run_size);
-    base::ranges::copy(pending_utf8_character_indexes_, buffer.clusters);
-    base::ranges::copy(pending_utf8_, buffer.utf8text);
+    std::ranges::copy(pending_utf8_character_indexes_, buffer.clusters);
+    std::ranges::copy(pending_utf8_, buffer.utf8text);
 
     pending_utf8_.Shrink(0);
     pending_utf8_character_indexes_.Shrink(0);
   }
 
-  base::ranges::copy(pending_glyphs_, buffer.glyphs);
-  base::ranges::copy(pending_offsets_, buffer.pos);
+  std::ranges::copy(pending_glyphs_, buffer.glyphs);
+  std::ranges::copy(pending_offsets_, buffer.pos);
   pending_glyphs_.Shrink(0);
   pending_offsets_.Shrink(0);
 }
@@ -400,7 +401,7 @@ class ClusterStarts {
 
   void Finish(unsigned from, unsigned to) {
     std::sort(cluster_starts_.begin(), cluster_starts_.end());
-    DCHECK_EQ(base::ranges::adjacent_find(cluster_starts_),
+    DCHECK_EQ(std::ranges::adjacent_find(cluster_starts_),
               cluster_starts_.end());
     DVLOG(4) << "  Cluster starts: " << base::span(cluster_starts_);
     if (!cluster_starts_.empty()) {

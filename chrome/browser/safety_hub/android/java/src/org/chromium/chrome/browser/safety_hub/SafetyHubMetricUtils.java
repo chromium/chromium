@@ -9,8 +9,8 @@ import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleOption;
-import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleState;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.components.content_settings.ContentSettingsType;
 
 import java.lang.annotation.Retention;

@@ -144,8 +144,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/from_range.h"
+#include "base/types/cxx23_from_range.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace base {
@@ -479,7 +478,7 @@ class IntrusiveHeap {
     }
 
     // Repair the heap and ensure handles are pointing to the right index.
-    ranges::make_heap(impl_.heap_, value_comp());
+    std::ranges::make_heap(impl_.heap_, value_comp());
     for (size_t i = 0; i < size(); ++i) {
       SetHeapHandle(i);
     }

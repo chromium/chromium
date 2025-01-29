@@ -15,7 +15,10 @@
 
 namespace content {
 
-BtmNavigationInfo::BtmNavigationInfo() = default;
+BtmNavigationInfo::BtmNavigationInfo(NavigationHandle& navigation_handle)
+    : was_user_initiated(!navigation_handle.IsRendererInitiated() ||
+                         navigation_handle.HasUserGesture()),
+      was_renderer_initiated(navigation_handle.IsRendererInitiated()) {}
 BtmNavigationInfo::BtmNavigationInfo(const BtmNavigationInfo&) = default;
 BtmNavigationInfo::BtmNavigationInfo(BtmNavigationInfo&&) = default;
 BtmNavigationInfo::~BtmNavigationInfo() = default;
@@ -54,7 +57,7 @@ class NavigationState
   // (i.e. committed) URL of the navigation.
   std::pair<BtmNavigationInfo, BtmDataAccessType> CreateNavigationInfo(
       NavigationHandle& navigation_handle) {
-    BtmNavigationInfo navigation;
+    BtmNavigationInfo navigation(navigation_handle);
 
     // Populate navigation.server_redirects.
     std::vector<BtmDataAccessType> accesses;
@@ -105,6 +108,10 @@ void BtmPageVisitObserver::DidFinishNavigation(
     return;
   }
 
+  base::Time now = clock_->Now();
+  current_page_.visit_duration = last_page_change_time_.has_value()
+                                     ? (now - last_page_change_time_.value())
+                                     : base::TimeDelta();
   auto [navigation, final_url_cookie_access] =
       state->CreateNavigationInfo(*navigation_handle);
   // Don't report the visit right away; put it in the pending queue and wait a
@@ -119,6 +126,7 @@ void BtmPageVisitObserver::DidFinishNavigation(
 
   current_page_ = BtmPageVisitInfo{navigation_handle->GetURL(),
                                    IsWrite(final_url_cookie_access)};
+  last_page_change_time_ = now;
 }
 
 void BtmPageVisitObserver::ReportVisit() {

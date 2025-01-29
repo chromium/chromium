@@ -549,10 +549,9 @@ source_set("ip_protection_crypter") {
     "ip_protection_crypter.cc",
     "ip_protection_crypter.h",
   ]
-  deps = [
-    "//base",
-    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
-  ]
+  public_deps =
+      [ "//third_party/private-join-and-compute/src:ec_commutative_cipher" ]
+  deps = [ "//base" ]
 }
 
 source_set("ip_protection_crypter_unittest") {
@@ -580,8 +579,10 @@ source_set("ip_protection_issuer_token_direct_fetcher") {
     "//services/network/public/mojom",
   ]
   deps = [
+    ":ip_protection_crypter",
     "//components/ip_protection:get_issuer_token_proto",
     "//net",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -589,6 +590,7 @@ source_set("ip_protection_issuer_token_direct_fetcher_unittest") {
   testonly = true
   sources = [ "ip_protection_issuer_token_direct_fetcher_unittest.cc" ]
   deps = [
+    ":ip_protection_crypter",
     ":ip_protection_issuer_token_direct_fetcher",
     "//base",
     "//base/test:test_support",

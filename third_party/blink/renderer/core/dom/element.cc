@@ -8935,14 +8935,11 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   }
   if (pseudo_id == kPseudoIdCheckMark) {
     // We want to avoid the performance cost of generating the checkmark for
-    // old-style selects.  While it is technically needed only when we have an
-    // appearance:base picker, we condition it on an appearance:base button
-    // instead, since we can do that without re-entering style recalc.
+    // old-style selects.
     auto is_option_in_appearance_base_select = [](const Element* e) {
       if (const auto* option = DynamicTo<HTMLOptionElement>(e)) {
         if (const HTMLSelectElement* select = option->OwnerSelectElement()) {
-          return select->IsAppearanceBaseButton(
-              HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle);
+          return select->IsAppearanceBasePicker();
         }
       }
       return false;

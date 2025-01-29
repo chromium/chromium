@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/loader/resource/multipart_image_resource_parser.h"
 
+#include <algorithm>
+
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

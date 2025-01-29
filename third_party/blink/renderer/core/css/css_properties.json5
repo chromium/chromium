@@ -6171,7 +6171,7 @@
       default_value: "AppearanceValue::kNone",
       type_name: "AppearanceValue",
       // appearance needs to be computed before
-      // -internal-appearance-auto-base-select() can be resolved.
+      // -internal-auto-base() can be resolved.
       priority: 1,
       invalidate: ["layout", "paint"],
     },

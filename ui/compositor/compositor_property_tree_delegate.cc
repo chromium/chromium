@@ -54,6 +54,13 @@ void CompositorPropertyTreeDelegate::OnAnimateLayers() {
   cc::PropertyTreeLayerTreeDelegate::OnAnimateLayers();
 }
 
+void CompositorPropertyTreeDelegate::RegisterViewportPropertyIds(
+    const cc::ViewportPropertyIds& ids) {
+  // TODO(crbug.com/389771428): Implement this w/ layer lists. For now, just
+  // call the base class implementation to ensure that we don't get out of date.
+  cc::PropertyTreeLayerTreeDelegate::RegisterViewportPropertyIds(ids);
+}
+
 void CompositorPropertyTreeDelegate::SetObserverForTesting(Observer* observer) {
   observer_ = observer;
 }

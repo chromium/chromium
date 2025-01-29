@@ -651,7 +651,7 @@ void LogicalLineBuilder::BidiReorder(
       //
       // min_element() below doesn't return the end iterator because we
       // ensure there is at least one item in the range.
-      column->start_index = *base::ranges::min_element(
+      column->start_index = *std::ranges::min_element(
           base::span(logical_to_visual)
               .subspan(column->start_index, column->size));
     }

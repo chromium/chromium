@@ -1714,6 +1714,32 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
+    @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @EnableFeatures({ChromeFeatureList.CCT_EARLY_NAV})
+    public void testRedirectFromCctEarlyNav() throws Exception {
+        final String url = mTestServer.getURL(NAVIGATION_FROM_JAVA_REDIRECTION_PAGE);
+        final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
+        Context context = ContextUtils.getApplicationContext();
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
+
+        final var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
+        Assert.assertTrue(connection.newSession(sessionHolder.getSessionAsCustomTab()));
+
+        AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
+        // Can't wait for Activity startup as we close so fast the polling is flaky.
+        mCustomTabActivityRule.launchActivity(intent);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
+                },
+                10000L,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
+    }
+
+    @Test
+    @LargeTest
     @EnableFeatures({ExternalIntentsFeatures.TRUSTED_CLIENT_GESTURE_BYPASS_NAME})
     public void testRedirectToTrustedCaller() throws Exception {
         final String url = mTestServer.getURL(HELLO_PAGE);

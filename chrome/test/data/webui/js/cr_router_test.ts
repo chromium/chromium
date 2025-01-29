@@ -9,11 +9,16 @@ suite('CrRouterTest', function() {
   setup(function() {
     // Clear out the URL state, for a clean start.
     window.history.replaceState({}, '', '/');
-    window.dispatchEvent(new CustomEvent('popstate'));
+    CrRouter.resetForTesting();
+  });
+
+  test('getInstance', function() {
+    const router = CrRouter.getInstance();
+    assertEquals(router, CrRouter.getInstance());
   });
 
   test('sets url from setters', function() {
-    const router = CrRouter.getInstance();
+    const router = new CrRouter();
 
     assertEquals('/', window.location.pathname);
     router.setPath('foo/nested');
@@ -44,7 +49,7 @@ suite('CrRouterTest', function() {
     const hashListener = (e: Event) =>
         hashHistory.push((e as CustomEvent<string>).detail);
 
-    const router = CrRouter.getInstance();
+    const router = new CrRouter();
     assertEquals('/', router.getPath());
     assertEquals('', router.getQueryParams().toString());
     assertEquals('', router.getHash());
@@ -71,5 +76,32 @@ suite('CrRouterTest', function() {
     router.removeEventListener('cr-router-path-changed', pathListener);
     router.removeEventListener('cr-router-query-params-changed', queryListener);
     router.removeEventListener('cr-router-hash-changed', hashListener);
+  });
+
+  test('HashParsingSetting', function() {
+    function assertHash(rawValue: string, value: string) {
+      window.history.replaceState({}, '', `/#${rawValue}`);
+
+      // Check initialization.
+      const router = new CrRouter();
+      assertEquals(value, router.getHash());
+
+      // Check setting rawValue.
+      router.setHash(rawValue);
+      assertEquals(value, router.getHash());
+
+      // Check setting decoded value.
+      router.setHash(value);
+      assertEquals(value, router.getHash());
+    }
+
+    // Case 1: Hash that changes when passed to decodeURIComponent().
+    assertHash('%CE%9D%CE%B1%CE%B9', 'Ναι');
+
+    // Case 2: Hash that doesn't change when passed to decodeURIComponent().
+    assertHash('Yes', 'Yes');
+
+    // Case 3: Hash that can't be parsed with decodeURIComponent().
+    assertHash('%E0%A4%A', '%E0%A4%A');
   });
 });

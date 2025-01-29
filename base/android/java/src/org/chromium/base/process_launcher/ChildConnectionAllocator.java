@@ -4,6 +4,8 @@
 
 package org.chromium.base.process_launcher;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -566,7 +568,7 @@ public abstract class ChildConnectionAllocator {
 
                 int fallbackSlot = -1;
                 if (mFallbackSlots != null) {
-                    fallbackSlot = mFallbackSlots.remove(connection);
+                    fallbackSlot = assumeNonNull(mFallbackSlots.remove(connection));
                     assert !mFreeConnectionIndices.contains(fallbackSlot);
                     mFreeConnectionIndices.add(fallbackSlot);
                 }

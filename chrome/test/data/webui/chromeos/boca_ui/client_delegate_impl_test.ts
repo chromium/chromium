@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import type {Assignment, BocaValidPref, CaptionConfig, Config, Course, Identity, OnTaskConfig, RemoveStudentError, SessionResult, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import type {Assignment, BocaValidPref, CaptionConfig, Config, Course, EndViewScreenSessionError, Identity, OnTaskConfig, RemoveStudentError, SessionResult, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {PageHandlerRemote, SubmitAccessCodeError} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import type {Value} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import type {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -266,6 +266,11 @@ class MockRemoteHandler extends PageHandlerRemote {
   }
   override viewStudentScreen(id: string):
       Promise<{error: ViewStudentScreenError | null}> {
+    id;
+    return Promise.resolve({error: null});
+  }
+  override endViewScreenSession(id: string):
+      Promise<{error: EndViewScreenSessionError | null}> {
     id;
     return Promise.resolve({error: null});
   }
@@ -682,6 +687,14 @@ suite('ClientDelegateTest', function() {
       async () => {
         const result =
             await clientDelegateImpl.getInstance().viewStudentScreen('1');
+        assertTrue(result);
+      });
+
+  test(
+      'client delegate should translate data for ending a view screen session',
+      async () => {
+        const result =
+            await clientDelegateImpl.getInstance().endViewScreenSession('1');
         assertTrue(result);
       });
 

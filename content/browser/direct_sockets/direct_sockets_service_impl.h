@@ -7,7 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -28,7 +27,7 @@ class DirectSocketsDelegate;
 
 // Implementation of the DirectSocketsService Mojo service.
 class CONTENT_EXPORT DirectSocketsServiceImpl
-    : public DocumentService<blink::mojom::DirectSocketsService> {
+    : public blink::mojom::DirectSocketsService {
  public:
   ~DirectSocketsServiceImpl() override;
 
@@ -65,9 +64,7 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
-  DirectSocketsServiceImpl(
-      RenderFrameHost*,
-      mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
+  explicit DirectSocketsServiceImpl(RenderFrameHost*);
 
   network::mojom::NetworkContext* GetNetworkContext() const;
 
@@ -107,6 +104,11 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       base::OnceCallback<void(int32_t, const std::optional<net::IPEndPoint>&)>
           callback);
 
+  RenderFrameHost& render_frame_host() const { return *context_; }
+
+  // Always outlives `this`. Not a `raw_ref` to allow integrating service worker
+  // support at a later stage (in this case there will be no render frame host).
+  const raw_ptr<RenderFrameHost> context_;
   std::unique_ptr<network::SimpleHostResolver> resolver_;
 
 #if BUILDFLAG(IS_CHROMEOS)

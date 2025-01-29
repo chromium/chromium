@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -2205,7 +2204,7 @@ bool BoxFragmentPainter::UpdateHitTestResultForView(
   if (!element)
     return false;
   const auto children = GetPhysicalFragment().Children();
-  auto it = base::ranges::find(children, element, &PhysicalFragment::GetNode);
+  auto it = std::ranges::find(children, element, &PhysicalFragment::GetNode);
   if (it == children.end())
     return false;
   return hit_test.AddNodeToResultWithContentOffset(

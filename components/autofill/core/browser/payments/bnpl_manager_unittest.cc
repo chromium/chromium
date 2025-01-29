@@ -41,6 +41,7 @@ class BnplManagerTest : public Test {
   const std::string kInstrumentId = "INSTRUMENT_ID";
   const std::string kContextToken = "CONTEXT_TOKEN";
   const GURL kRedirectUrl = GURL("REDIRECT_URL");
+  const std::string kIssuerId = "ISSUER_ID";
 
   void SetUp() override {
     autofill_client_ = std::make_unique<TestAutofillClient>();
@@ -192,15 +193,15 @@ TEST_F(BnplManagerTest, InitBnplFlow_SetsInitialState) {
 TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
   bnpl_manager_->InitBnplFlow(1000000, base::DoNothing());
   test_api(*bnpl_manager_)
-      .PopulateManagerWithUserAndBnplIssuerDetails(kBillingCustomerNumber,
-                                                   kInstrumentId, kRiskData,
-                                                   kContextToken, kRedirectUrl);
+      .PopulateManagerWithUserAndBnplIssuerDetails(
+          kBillingCustomerNumber, kInstrumentId, kRiskData, kContextToken,
+          kRedirectUrl, kIssuerId);
 
   EXPECT_CALL(*payments_network_interface_,
               GetBnplPaymentInstrumentForFetchingVcn(
                   /*request_details=*/
                   FieldsAre(kBillingCustomerNumber, kInstrumentId, kRiskData,
-                            kContextToken, kRedirectUrl),
+                            kContextToken, kRedirectUrl, kIssuerId),
                   /*callback=*/_));
 
   EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);

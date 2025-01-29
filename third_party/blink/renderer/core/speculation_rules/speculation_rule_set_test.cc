@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -217,7 +218,7 @@ auto HasURLs(Matchers&&... urls) {
       "urls",
       [](const auto& candidates) {
         Vector<KURL> urls;
-        base::ranges::transform(
+        std::ranges::transform(
             candidates.begin(), candidates.end(), std::back_inserter(urls),
             [](const auto& candidate) { return candidate->url; });
         return urls;
@@ -986,7 +987,7 @@ TEST_F(SpeculationRuleSetTest, PrerenderIgnorePrefetchRules) {
 
   const auto& candidates = speculation_host.candidates();
   EXPECT_EQ(candidates.size(), 1u);
-  EXPECT_FALSE(base::ranges::any_of(candidates, [](const auto& candidate) {
+  EXPECT_FALSE(std::ranges::any_of(candidates, [](const auto& candidate) {
     return candidate->action ==
            mojom::blink::SpeculationAction::kPrefetchWithSubresources;
   }));
@@ -1014,7 +1015,7 @@ TEST_F(SpeculationRuleSetTest, PrefetchIgnorePrerenderRules) {
 
   const auto& candidates = speculation_host.candidates();
   EXPECT_EQ(candidates.size(), 2u);
-  EXPECT_FALSE(base::ranges::any_of(candidates, [](const auto& candidate) {
+  EXPECT_FALSE(std::ranges::any_of(candidates, [](const auto& candidate) {
     return candidate->action == mojom::blink::SpeculationAction::kPrerender;
   }));
 }
@@ -1254,7 +1255,7 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarning) {
   script->setText("[invalid]");
   document.head()->appendChild(script);
 
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       chrome_client->ConsoleMessages(),
       [](const String& message) { return message.Contains("Syntax error"); }));
 }
@@ -1279,7 +1280,7 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForInvalidRule) {
       })");
   document.head()->appendChild(script);
 
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       chrome_client->ConsoleMessages(), [](const String& message) {
         return message.Contains("URLs must be given as strings");
       }));
@@ -1295,7 +1296,7 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForSetInnerHTML) {
   Document& document = page_holder.GetDocument();
   document.head()->setInnerHTML("<script type=speculationrules>{}</script>");
 
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       chrome_client->ConsoleMessages(), [](const String& message) {
         return message.Contains("speculation rule") &&
                message.Contains("will be ignored");
@@ -1318,7 +1319,7 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForChildModification) {
 
   script->setText(R"({"prefetch": [{"urls": "/2"}]})");
 
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       chrome_client->ConsoleMessages(), [](const String& message) {
         return message.Contains("speculation rule") &&
                message.Contains("modified");
@@ -1342,7 +1343,7 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForDuplicateKey) {
       })");
   document.head()->appendChild(script);
 
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       chrome_client->ConsoleMessages(), [](const String& message) {
         return message.Contains("speculation rule") &&
                message.Contains("more than one") &&
@@ -1904,7 +1905,7 @@ TEST_F(DocumentRulesTest, ConsoleWarningForInvalidRule) {
       })");
   document.head()->appendChild(script);
 
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       chrome_client->ConsoleMessages(), [](const String& message) {
         return message.Contains("Document rule predicate type is ambiguous");
       }));
@@ -4190,7 +4191,7 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForNoVarySearchHintNotAString) {
     })");
   document.head()->appendChild(script);
 
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       chrome_client->ConsoleMessages(), [](const String& message) {
         return message.Contains(
             "expects_no_vary_search's value must be a string");

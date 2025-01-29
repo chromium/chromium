@@ -2591,7 +2591,8 @@ TEST_F(WebViewTest, BackForwardRestoreScroll) {
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       /*is_browser_initiated=*/true, /*has_ua_visual_transition,=*/false,
-      /*soft_navigation_heuristics_task_id=*/std::nullopt);
+      /*soft_navigation_heuristics_task_id=*/std::nullopt,
+      /*should_skip_screenshot=*/false);
   main_frame_local->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
       item2->Url(), WebFrameLoadType::kBackForward, item2.Get(),
       ClientRedirectPolicy::kNotClientRedirect,
@@ -2599,7 +2600,8 @@ TEST_F(WebViewTest, BackForwardRestoreScroll) {
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       /*is_browser_initiated=*/true, /*has_ua_visual_transition,=*/false,
-      /*soft_navigation_heuristics_task_id=*/std::nullopt);
+      /*soft_navigation_heuristics_task_id=*/std::nullopt,
+      /*should_skip_screenshot=*/false);
   main_frame_local->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
       item1->Url(), WebFrameLoadType::kBackForward, item1.Get(),
       ClientRedirectPolicy::kNotClientRedirect,
@@ -2607,7 +2609,8 @@ TEST_F(WebViewTest, BackForwardRestoreScroll) {
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       /*is_browser_initiated=*/true, /*has_ua_visual_transition,=*/false,
-      /*soft_navigation_heuristics_task_id=*/std::nullopt);
+      /*soft_navigation_heuristics_task_id=*/std::nullopt,
+      /*should_skip_screenshot=*/false);
   web_view_impl->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
@@ -2630,7 +2633,8 @@ TEST_F(WebViewTest, BackForwardRestoreScroll) {
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       /*is_browser_initiated=*/true, /*has_ua_visual_transition,=*/false,
-      /*soft_navigation_heuristics_task_id=*/std::nullopt);
+      /*soft_navigation_heuristics_task_id=*/std::nullopt,
+      /*should_skip_screenshot=*/false);
 
   main_frame_local->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
       item3->Url(), WebFrameLoadType::kBackForward, item3.Get(),
@@ -2639,7 +2643,8 @@ TEST_F(WebViewTest, BackForwardRestoreScroll) {
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       /*is_browser_initiated=*/true, /*has_ua_visual_transition,=*/false,
-      /*soft_navigation_heuristics_task_id=*/std::nullopt);
+      /*soft_navigation_heuristics_task_id=*/std::nullopt,
+      /*should_skip_screenshot=*/false);
   // The scroll offset is only applied via invoking the anchor via the main
   // lifecycle, or a forced layout.
   // TODO(chrishtr): At the moment, WebLocalFrameImpl::GetScrollOffset() does

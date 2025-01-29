@@ -109,6 +109,9 @@ public class AddressBarSettingsFragmentUnitTest {
         assertTrue(mTopButton.isChecked());
         assertFalse(mBottomButton.isChecked());
         assertTrue(mToolbarPositionImage.isSelected());
+        assertEquals(
+                mActivity.getString(R.string.address_bar_settings_currently_on_top),
+                mToolbarPositionImage.getContentDescription());
 
         mBottomButton.performClick();
 
@@ -118,6 +121,9 @@ public class AddressBarSettingsFragmentUnitTest {
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true));
         assertFalse(mToolbarPositionImage.isSelected());
+        assertEquals(
+                mActivity.getString(R.string.address_bar_settings_currently_on_bottom),
+                mToolbarPositionImage.getContentDescription());
     }
 
     @Test

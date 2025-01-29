@@ -4894,17 +4894,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordProtection.PasswordReuseSyncAccountType"
-    enum="PasswordProtectionSyncAccountType" expires_after="2024-02-25">
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    When password protection service detects a reuse of Chrome sync password,
-    record the type of Chrome sync account on which the reuse happens (e.g.
-    @gmail.com, @googlemail.com, or other dasher account).
-  </summary>
-</histogram>
-
 <histogram name="PasswordProtection.RequestNetworkDuration" units="ms"
     expires_after="2025-12-08">
   <owner>nwokedi@chromium.org</owner>

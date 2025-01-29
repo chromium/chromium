@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
@@ -136,7 +136,7 @@ Vector<device::mojom::XRDepthUsage> ParseDepthUsages(
     const Vector<V8XRDepthUsage>& usages) {
   Vector<device::mojom::XRDepthUsage> result;
 
-  base::ranges::transform(usages, std::back_inserter(result), ParseDepthUsage);
+  std::ranges::transform(usages, std::back_inserter(result), ParseDepthUsage);
 
   return result;
 }
@@ -157,8 +157,7 @@ Vector<device::mojom::XRDepthDataFormat> ParseDepthFormats(
     const Vector<V8XRDepthDataFormat>& formats) {
   Vector<device::mojom::XRDepthDataFormat> result;
 
-  base::ranges::transform(formats, std::back_inserter(result),
-                          ParseDepthFormat);
+  std::ranges::transform(formats, std::back_inserter(result), ParseDepthFormat);
 
   return result;
 }

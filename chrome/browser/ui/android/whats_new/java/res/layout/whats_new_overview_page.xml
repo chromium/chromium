@@ -11,6 +11,25 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="@dimen/whats_new_bottom_sheet_margin"
     android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/whats_new_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="start|top"
+        android:maxLines="1"
+        android:text="@string/whats_new_page_title"
+        android:textAppearance="@style/TextAppearance.Headline2Thick.Primary"
+        tools:ignore="NestedWeights" />
+
+    <ListView
+        android:id="@+id/whats_new_items_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </ListView>
+
 
 </LinearLayout>

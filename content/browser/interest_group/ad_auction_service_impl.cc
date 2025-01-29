@@ -228,6 +228,10 @@ void AdAuctionServiceImpl::JoinInterestGroup(
     const blink::InterestGroup& group,
     JoinInterestGroupCallback callback) {
   if (!JoinOrLeaveApiAllowedFromRenderer(group.owner, "joinAdInterestGroup")) {
+    // TODO(https://crbug.com/382786767): Remove this call once the issue has
+    // been fixed, since JoinOrLeaveApiAllowedFromRenderer() will then always
+    // delete `this` and closed the Mojo pipe when it returns false.
+    std::move(callback).Run(/*failed_well_known_check=*/true);
     return;
   }
 
@@ -291,6 +295,10 @@ void AdAuctionServiceImpl::LeaveInterestGroup(
     const std::string& name,
     LeaveInterestGroupCallback callback) {
   if (!JoinOrLeaveApiAllowedFromRenderer(owner, "leaveAdInterestGroup")) {
+    // TODO(https://crbug.com/382786767): Remove this call once the issue has
+    // been fixed, since JoinOrLeaveApiAllowedFromRenderer() will then always
+    // delete `this` and closed the Mojo pipe when it returns false.
+    std::move(callback).Run(/*failed_well_known_check=*/true);
     return;
   }
 
@@ -368,6 +376,10 @@ void AdAuctionServiceImpl::ClearOriginJoinedInterestGroups(
     ClearOriginJoinedInterestGroupsCallback callback) {
   if (!JoinOrLeaveApiAllowedFromRenderer(owner,
                                          "clearOriginJoinedAdInterestGroups")) {
+    // TODO(https://crbug.com/382786767): Remove this call once the issue has
+    // been fixed, since JoinOrLeaveApiAllowedFromRenderer() will then always
+    // delete `this` and closed the Mojo pipe when it returns false.
+    std::move(callback).Run(/*failed_well_known_check=*/true);
     return;
   }
 
@@ -391,7 +403,9 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
   if (!IsPermissionPolicyEnabledAndWarnIfNeeded(
           blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
           "updateAdInterestGroups")) {
-    ReportBadMessageAndDeleteThis("Unexpected request");
+    // TODO(https://crbug.com/382786767): Figure out why permission policy can
+    // be inconsistent between the browser and renderer policy, fix it, and then
+    // call ReportBadMessageAndDeleteThis() here.
     return;
   }
   // If the interest group API is not allowed for this origin do nothing.
@@ -426,7 +440,11 @@ void AdAuctionServiceImpl::RunAdAuction(
   if (!IsPermissionPolicyEnabledAndWarnIfNeeded(
           blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
           "runAdAuction")) {
-    ReportBadMessageAndDeleteThis("Unexpected request");
+    // TODO(https://crbug.com/382786767): Figure out why permission policy can
+    // be inconsistent between the browser and renderer policy, fix it, and then
+    // call ReportBadMessageAndDeleteThis() here.
+    std::move(callback).Run(/*aborted_by_script=*/false,
+                            /*config=*/std::nullopt);
     return;
   }
 
@@ -615,11 +633,14 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     }
   }
 
+  bool api_blocked = false;
   if (!IsPermissionPolicyEnabledAndWarnIfNeeded(
           blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
           "getInterestGroupAdAuctionData")) {
-    ReportBadMessageAndDeleteThis("Unexpected request");
-    return;
+    // TODO(https://crbug.com/382786767): Figure out why permission policy can
+    // be inconsistent between the browser and renderer policy, fix it, and then
+    // call ReportBadMessageAndDeleteThis() here, removing `api_blocked`.
+    api_blocked = true;
   }
 
   base::flat_map<url::Origin, std::optional<url::Origin>>
@@ -642,7 +663,7 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
         ContentBrowserClient::InterestGroupApiOperation::kSell, seller);
     base::UmaHistogramBoolean(
         "Ads.InterestGroup.ServerAuction.Request.APIAllowed", api_allowed);
-    if (api_allowed) {
+    if (!api_blocked && api_allowed) {
       sellers_valid_and_allowed.emplace(std::move(seller),
                                         std::move(coordinator));
     } else {
@@ -863,9 +884,9 @@ bool AdAuctionServiceImpl::JoinOrLeaveApiAllowedFromRenderer(
   if (!IsPermissionPolicyEnabledAndWarnIfNeeded(
           blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
           invoked_method)) {
-    ReportBadMessageAndDeleteThis(
-        "Unexpected request: Interest groups may only be joined or left when "
-        "feature join-ad-interest-group is enabled by Permissions Policy");
+    // TODO(https://crbug.com/382786767): Figure out why permission policy can
+    // be inconsistent between the browser and renderer policy, fix it, and then
+    // call ReportBadMessageAndDeleteThis() here.
     return false;
   }
 

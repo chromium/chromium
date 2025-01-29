@@ -485,6 +485,30 @@
       <message name="IDS_IOS_AUTOFILL_ZIP" desc="Title of the field of a profile address representing the postal code of the address. [Length: 15em] [iOS only]">
         Zip code
       </message>
+      <message name="IDS_IOS_AUTO_DELETION_ACTION_SHEET_CANCEL_ACTION" desc="The title of the cancel action button which the user clicks in order to not schedule the downloaded file for automatic deletion.">
+          Cancel
+      </message>
+      <message name="IDS_IOS_AUTO_DELETION_ACTION_SHEET_DESCRIPTION" desc="The description contained in the action sheet that describes how scheduling a file for auto-deletion cannot be undone.">
+          Once a file has been scheduled for deletion, it cannot be recovered.
+      </message>
+      <message name="IDS_IOS_AUTO_DELETION_ACTION_SHEET_PRIMARY_ACTION" desc="The title of the primary action button which the user clicks in order to schedule the downloaded file for automatic deletion.">
+          Delete in 1 month
+      </message>
+      <message name="IDS_IOS_AUTO_DELETION_ACTION_SHEET_TITLE" desc="The title for the action sheet that appears when a user downloads a file onto the device.">
+          Confirm deletion
+      </message>
+      <message name="IDS_IOS_AUTO_DELETION_IPH_DESCRIPTION" desc="The description contained in the half-sheet IPH that explains the auto-deletion feature's purpose and benefits.">
+          Schedule all your downloads for deletion after one month to save space on your phone and protect your privacy.
+      </message>
+      <message name="IDS_IOS_AUTO_DELETION_IPH_PRIMARY_ACTION" desc="The primary action button's label that, when tapped, enables the auto-deletion feature.">
+          Enable auto delete
+      </message>
+      <message name="IDS_IOS_AUTO_DELETION_IPH_REJECTION" desc="The text label that, when tapped, does not enroll the user in auto-deletion.">
+          No thanks
+      </message>
+      <message name="IDS_IOS_AUTO_DELETION_IPH_TITLE" desc="The title of the half-sheet IPH that appears to prompt the user if they would like to enable the auto-deletion feature.">
+        Auto delete your downlaods
+      </message>
       <message name="IDS_IOS_BACK_FORWARD_SWIPE_IPH" desc="The text for the full screen in-product help for side swipe on the current tab to navigate.">
         You can swipe the edge to go back or forward.
       </message>
@@ -1072,6 +1096,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_OPEN" desc="The iOS menu item for opening a link. Shorter than the desktop version [Length: 25em] [iOS only]">
         Open
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_OPENAIPROTOTYPE" desc="The iOS menu item for opening ai prototype menu.">
+        Open AI Prototype Menu
+      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENIMAGE" desc="The name of the Open Image command in the content area context menu">
         Open image
       </message>
@@ -1081,7 +1108,7 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW" desc="The iOS menu item for opening a link in a new window. [iOS only]">
         Open in New Window
       </message>
-      <message name="IDS_IOS_CONTENT_CONTEXT_OPENLENSOVERLAY" desc="The iOS menu item for openning lens overlay.">
+      <message name="IDS_IOS_CONTENT_CONTEXT_OPENLENSOVERLAY" desc="The iOS menu item for opening lens overlay.">
         Search screen with Google Lens
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENLINKINNEWTABGROUP" desc="The iOS context menu item for opening a link in new tab group. [iOS only]">

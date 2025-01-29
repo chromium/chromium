@@ -4,6 +4,7 @@
 
 #include "base/threading/hang_watcher.h"
 
+#include <algorithm>
 #include <atomic>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -858,10 +858,10 @@ void HangWatcher::WatchStateSnapShot::Init(
 
   // Sort |hung_watch_state_copies_| by order of decreasing hang severity so the
   // most severe hang is first in the list.
-  ranges::sort(hung_watch_state_copies_,
-               [](const WatchStateCopy& lhs, const WatchStateCopy& rhs) {
-                 return lhs.deadline < rhs.deadline;
-               });
+  std::ranges::sort(hung_watch_state_copies_,
+                    [](const WatchStateCopy& lhs, const WatchStateCopy& rhs) {
+                      return lhs.deadline < rhs.deadline;
+                    });
 }
 
 void HangWatcher::WatchStateSnapShot::Clear() {
@@ -1041,7 +1041,7 @@ void HangWatcher::BlockIfCaptureInProgress() {
 void HangWatcher::UnregisterThread() {
   AutoLock auto_lock(watch_state_lock_);
 
-  auto it = ranges::find(
+  auto it = std::ranges::find(
       watch_states_,
       internal::HangWatchState::GetHangWatchStateForCurrentThread(),
       &std::unique_ptr<internal::HangWatchState>::get);

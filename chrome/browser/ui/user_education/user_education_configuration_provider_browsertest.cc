@@ -23,48 +23,27 @@ constexpr char kExtendedParamValue[] = "x_param_value";
 }  // namespace
 
 class UserEducationConfigurationProviderBrowsertest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public InProcessBrowserTest {
  public:
   UserEducationConfigurationProviderBrowsertest() = default;
   ~UserEducationConfigurationProviderBrowsertest() override = default;
 
   void SetUp() override {
-    if (UseV2()) {
-      feature_list_.InitAndEnableFeaturesWithParameters(
-          // Enable features:
-          {base::test::FeatureRefAndParams(
-               feature_engagement::kIPHWebUiHelpBubbleTestFeature,
-               {{kExtendedParamName, kExtendedParamValue}}),
-           base::test::FeatureRefAndParams(
-               user_education::features::kUserEducationExperienceVersion2,
-               {})});
-    } else {
-      feature_list_.InitAndEnableFeaturesWithParameters(
-          // Enable features:
-          {base::test::FeatureRefAndParams(
-              feature_engagement::kIPHWebUiHelpBubbleTestFeature,
-              {{kExtendedParamName, kExtendedParamValue}})},
-          // Disable features:
-          {user_education::features::kUserEducationExperienceVersion2});
-    }
+    feature_list_.InitAndEnableFeaturesWithParameters(
+        // Enable features:
+        {base::test::FeatureRefAndParams(
+            feature_engagement::kIPHWebUiHelpBubbleTestFeature,
+            {{kExtendedParamName, kExtendedParamValue}})});
     InProcessBrowserTest::SetUp();
   }
-
- protected:
-  bool UseV2() const { return GetParam(); }
 
  private:
   feature_engagement::test::ScopedIphFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         UserEducationConfigurationProviderBrowsertest,
-                         testing::Bool());
-
 // Ensure that a feature which has field trial params that are not part of the
 // FE config still gets proper automatic configuration.
-IN_PROC_BROWSER_TEST_P(UserEducationConfigurationProviderBrowsertest,
+IN_PROC_BROWSER_TEST_F(UserEducationConfigurationProviderBrowsertest,
                        AutoConfigureWithExtendedParam) {
   auto* const tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(
@@ -75,14 +54,8 @@ IN_PROC_BROWSER_TEST_P(UserEducationConfigurationProviderBrowsertest,
           feature_engagement::kIPHWebUiHelpBubbleTestFeature);
   ASSERT_TRUE(feature_config.valid);
   EXPECT_FALSE(feature_config.trigger.name.empty());
-  if (UseV2()) {
-    EXPECT_EQ(feature_engagement::ANY, feature_config.trigger.comparator.type);
-    EXPECT_EQ(0U, feature_config.trigger.comparator.value);
-  } else {
-    EXPECT_EQ(feature_engagement::LESS_THAN,
-              feature_config.trigger.comparator.type);
-    EXPECT_GT(feature_config.trigger.comparator.value, 0U);
-  }
+  EXPECT_EQ(feature_engagement::ANY, feature_config.trigger.comparator.type);
+  EXPECT_EQ(0U, feature_config.trigger.comparator.value);
   EXPECT_FALSE(feature_config.used.name.empty());
   EXPECT_EQ(feature_engagement::EQUAL, feature_config.used.comparator.type);
   EXPECT_EQ(0U, feature_config.used.comparator.value);

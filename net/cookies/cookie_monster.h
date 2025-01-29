@@ -330,11 +330,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
     // collection.
     DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN = 13,
 
-    // When legacy scope behavior is active any cookies which alias an expired
-    // "most recently created" cookie must also be deleted.
-    DELETE_ALIASED_COOKIE_EXPIRED = 14,
-
-    DELETE_COOKIE_LAST_ENTRY = 15,
+    DELETE_COOKIE_LAST_ENTRY = 14,
   };
 
   // Used to populate a histogram containing information about the

@@ -24,7 +24,6 @@
 #include "base/debug/alias.h"
 #include "base/memory/raw_span.h"
 #include "base/numerics/byte_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/test/gtest_util.h"
@@ -1654,7 +1653,7 @@ TEST(SpanTest, ConstexprIterator) {
   static constexpr int kArray[] = {1, 6, 1, 8, 0};
   constexpr span<const int> span(kArray);
 
-  static_assert(ranges::equal(kArray, span));
+  static_assert(std::ranges::equal(kArray, span));
   static_assert(1 == span.begin()[0]);
   static_assert(1 == *(span.begin() += 0));
   static_assert(6 == *(span.begin() += 1));
@@ -1670,7 +1669,7 @@ TEST(SpanTest, ReverseIterator) {
   static constexpr int kArray[] = {1, 6, 1, 8, 0};
   constexpr span<const int> span(kArray);
 
-  EXPECT_TRUE(ranges::equal(Reversed(kArray), Reversed(span)));
+  EXPECT_TRUE(std::ranges::equal(Reversed(kArray), Reversed(span)));
 }
 
 TEST(SpanTest, AsBytes) {
@@ -2114,7 +2113,7 @@ TEST(SpanTest, Sort) {
   int array[] = {5, 4, 3, 2, 1};
 
   span<int> dynamic_span = array;
-  ranges::sort(dynamic_span);
+  std::ranges::sort(dynamic_span);
   EXPECT_THAT(array, ElementsAre(1, 2, 3, 4, 5));
   std::sort(dynamic_span.rbegin(), dynamic_span.rend());
   EXPECT_THAT(array, ElementsAre(5, 4, 3, 2, 1));
@@ -2122,7 +2121,7 @@ TEST(SpanTest, Sort) {
   span<int, 5> static_span = array;
   std::sort(static_span.rbegin(), static_span.rend(), std::greater<>());
   EXPECT_THAT(array, ElementsAre(1, 2, 3, 4, 5));
-  ranges::sort(static_span, std::greater<>());
+  std::ranges::sort(static_span, std::greater<>());
   EXPECT_THAT(array, ElementsAre(5, 4, 3, 2, 1));
 }
 

@@ -129,6 +129,9 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
       case overflow_menu::ActionType::LensOverlay:
         finalExpectedActionType = overflow_menu::ActionType::LensOverlay;
         break;
+      case overflow_menu::ActionType::AIPrototype:
+        finalExpectedActionType = overflow_menu::ActionType::AIPrototype;
+        break;
     }
 
     // If there's no finalExpectedActionType, then the loop has looped through

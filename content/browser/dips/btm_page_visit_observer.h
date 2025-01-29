@@ -8,8 +8,12 @@
 #include <deque>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
@@ -21,6 +25,10 @@ struct CONTENT_EXPORT BtmPageVisitInfo {
   bool had_qualifying_storage_access = false;
   bool received_user_activation = false;
   bool had_successful_web_authn_assertion = false;
+  // Computed based on wall-clock times, so the usual caveat for working with
+  // wall-clock times applies: the system clock may have been changed during the
+  // page visit and so the duration may not be positive.
+  base::TimeDelta visit_duration;
 };
 
 struct CONTENT_EXPORT BtmServerRedirectInfo {
@@ -29,12 +37,14 @@ struct CONTENT_EXPORT BtmServerRedirectInfo {
 };
 
 struct CONTENT_EXPORT BtmNavigationInfo {
-  BtmNavigationInfo();
+  explicit BtmNavigationInfo(NavigationHandle& navigation_handle);
   BtmNavigationInfo(const BtmNavigationInfo&);
   BtmNavigationInfo(BtmNavigationInfo&&);
   ~BtmNavigationInfo();
 
   std::vector<BtmServerRedirectInfo> server_redirects;
+  bool was_user_initiated;
+  bool was_renderer_initiated;
 };
 
 class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
@@ -63,6 +73,8 @@ class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
   void WebAuthnAssertionRequestSucceeded(
       RenderFrameHost* render_frame_host) override;
 
+  void SetClockForTesting(base::Clock* clock) { clock_ = CHECK_DEREF(clock); }
+
  private:
   // Execute the visit callback with a tuple from the pending queue.
   void ReportVisit();
@@ -71,9 +83,11 @@ class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
   VisitCallback callback_;
   // Metadata on the currently committed page.
   BtmPageVisitInfo current_page_;
+  std::optional<base::Time> last_page_change_time_;
   // Past page visits that we are still waiting to see if late cookie accesses
   // are reported for them.
   std::deque<VisitTuple> pending_visits_;
+  raw_ref<base::Clock> clock_{*base::DefaultClock::GetInstance()};
   base::WeakPtrFactory<BtmPageVisitObserver> weak_factory_{this};
 };
 

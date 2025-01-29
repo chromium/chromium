@@ -3228,7 +3228,6 @@ def make_named_property_getter_callback(cg_context, function_name):
         not_found_expr = "!${return_value}"
     else:
         assert False
-
     if cg_context.class_like.identifier == "WindowProperties":
         body.append(
             TextNode("""\
@@ -3242,6 +3241,14 @@ def make_named_property_getter_callback(cg_context, function_name):
 // https://webidl.spec.whatwg.org/#LegacyPlatformObjectGetOwnProperty\
 """))
 
+    body.append(
+        TextNode("""
+// Fast path for when the receiver doesn't have any named properties, possibly
+// avoiding any parameter conversions.
+if (!bindings::HasAnyNamedProperties(${blink_receiver})) {\
+    return v8::Intercepted::kNo;\
+}\
+"""))
     body.extend([
         TextNode("""\
 // "If the result of running the named property visibility

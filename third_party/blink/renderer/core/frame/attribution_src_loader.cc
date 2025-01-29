@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "components/attribution_reporting/attribution_src_request_status.h"
@@ -572,9 +572,9 @@ void AttributionSrcLoader::RegisterFromContextMenuNavigation(
 
   // This vector should almost always have size at most 1, so linear search is
   // acceptable.
-  auto entry = base::ranges::find(context_menu_data_hosts_,
-                                  impression->attribution_src_token,
-                                  &ContextMenuDataHostEntry::first);
+  auto entry = std::ranges::find(context_menu_data_hosts_,
+                                 impression->attribution_src_token,
+                                 &ContextMenuDataHostEntry::first);
   if (entry == context_menu_data_hosts_.end()) {
     return;
   }

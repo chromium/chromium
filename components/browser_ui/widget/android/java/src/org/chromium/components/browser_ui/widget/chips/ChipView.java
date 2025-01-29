@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.components.browser_ui.widget.chips;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -26,7 +28,6 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.ChromeImageView;
@@ -403,8 +404,8 @@ public class ChipView extends LinearLayout {
      *
      * @param listener The listener to be invoked on click events.
      */
-    @NullUnmarked
     public void setRemoveIconClickListener(OnClickListener listener) {
+        assumeNonNull(mEndIconWrapper);
         mEndIconWrapper.setOnClickListener(listener);
         String chipText = mPrimaryText.getText().toString();
         assert !TextUtils.isEmpty(chipText);
@@ -482,7 +483,6 @@ public class ChipView extends LinearLayout {
         mRippleBackgroundHelper.setBackgroundColor(color);
     }
 
-    @NullUnmarked
     @Override
     public void setBackgroundTintList(@Nullable ColorStateList color) {
         mRippleBackgroundHelper.setBackgroundColor(color);

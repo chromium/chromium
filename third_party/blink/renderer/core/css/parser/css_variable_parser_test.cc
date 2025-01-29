@@ -85,23 +85,23 @@ const char* invalid_attr_values[] = {
     // clang-format on
 };
 
-const char* valid_appearance_auto_base_select_values[] = {
+const char* valid_auto_base_values[] = {
     // clang-format off
-    "-internal-appearance-auto-base-select(foo, bar)",
-    "-internal-appearance-auto-base-select(inherit, auto)",
-    "-internal-appearance-auto-base-select( 100px ,  200px)",
-    "-internal-appearance-auto-base-select(100px,)",
-    "-internal-appearance-auto-base-select(,100px)",
+    "-internal-auto-base(foo, bar)",
+    "-internal-auto-base(inherit, auto)",
+    "-internal-auto-base( 100px ,  200px)",
+    "-internal-auto-base(100px,)",
+    "-internal-auto-base(,100px)",
     // clang-format on
 };
 
-const char* invalid_appearance_auto_base_select_values[] = {
+const char* invalid_auto_base_values[] = {
     // clang-format off
-    "-internal-appearance-auto-base-select()",
-    "-internal-appearance-auto-base-select(100px)",
-    "-internal-appearance-auto-base-select(100px;200px)",
-    "-internal-appearance-auto-base-select(foo, bar,)",
-    "-internal-appearance-auto-base-select(foo, bar, baz)",
+    "-internal-auto-base()",
+    "-internal-auto-base(100px)",
+    "-internal-auto-base(100px;200px)",
+    "-internal-auto-base(foo, bar,)",
+    "-internal-auto-base(foo, bar, baz)",
     // clang-format on
 };
 
@@ -291,16 +291,16 @@ TEST_P(InvalidAttrTest, ContainsValidAttr) {
       *context));
 }
 
-class ValidAppearanceAutoBaseSelectTest
+class ValidAutoBaseTest
     : public testing::Test,
       public testing::WithParamInterface<const char*> {};
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ValidAppearanceAutoBaseSelectTest,
-    testing::ValuesIn(valid_appearance_auto_base_select_values));
+    ValidAutoBaseTest,
+    testing::ValuesIn(valid_auto_base_values));
 
-TEST_P(ValidAppearanceAutoBaseSelectTest, ContainsValidFunction) {
+TEST_P(ValidAutoBaseTest, ContainsValidFunction) {
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -313,16 +313,16 @@ TEST_P(ValidAppearanceAutoBaseSelectTest, ContainsValidFunction) {
       *context));
 }
 
-class InvalidAppearanceAutoBaseSelectTest
+class InvalidAutoBaseTest
     : public testing::Test,
       public testing::WithParamInterface<const char*> {};
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    InvalidAppearanceAutoBaseSelectTest,
-    testing::ValuesIn(invalid_appearance_auto_base_select_values));
+    InvalidAutoBaseTest,
+    testing::ValuesIn(invalid_auto_base_values));
 
-TEST_P(InvalidAppearanceAutoBaseSelectTest, ContainsInvalidFunction) {
+TEST_P(InvalidAutoBaseTest, ContainsInvalidFunction) {
   ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
 
   SCOPED_TRACE(GetParam());

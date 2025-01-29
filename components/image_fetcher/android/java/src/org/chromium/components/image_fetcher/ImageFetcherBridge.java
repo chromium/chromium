@@ -16,7 +16,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 
 /** Provides access to native implementations of ImageFetcher for the given browser context. */
@@ -66,13 +66,12 @@ public class ImageFetcherBridge {
      * @param config The configuration of the image fetcher.
      * @param params The parameters to specify image fetching details.
      * @param callback The callback to call when the gif is ready. The callback will be invoked on
-     *      the same thread it was called on.
+     *     the same thread it was called on.
      */
-    @NullUnmarked
     public void fetchGif(
             @ImageFetcherConfig int config,
             final ImageFetcher.Params params,
-            Callback<BaseGifImage> callback) {
+            Callback<@Nullable BaseGifImage> callback) {
         ImageFetcherBridgeJni.get()
                 .fetchImageData(
                         mSimpleFactoryKeyHandle,
@@ -96,12 +95,12 @@ public class ImageFetcherBridge {
      * @param config The configuration of the image fetcher.
      * @param params The parameters to specify image fetching details.
      * @param callback The callback to call when the image is ready. The callback will be invoked on
-     *      the same thread that it was called on.
+     *     the same thread that it was called on.
      */
     public void fetchImage(
             @ImageFetcherConfig int config,
             final ImageFetcher.Params params,
-            Callback<Bitmap> callback) {
+            Callback<@Nullable Bitmap> callback) {
         ImageFetcherBridgeJni.get()
                 .fetchImage(
                         mSimpleFactoryKeyHandle,

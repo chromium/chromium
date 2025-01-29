@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.date.CalendarFactory;
 import org.chromium.components.browser_ui.util.date.StringUtils;
@@ -176,9 +177,11 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
             if (view instanceof TextView) mTextView = (TextView) view;
         }
 
-        /** @param date The date that this DateViewHolder should display. */
-        @NullUnmarked
+        /**
+         * @param date The date that this DateViewHolder should display.
+         */
         public void setDate(Date date) {
+            assumeNonNull(mTextView);
             mTextView.setText(StringUtils.dateToHeaderString(date));
         }
     }
@@ -400,7 +403,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
 
     private int mSize;
 
-    private SortedSet<ItemGroup> mGroups =
+    private final SortedSet<ItemGroup> mGroups =
             new TreeSet<>(
                     new Comparator<ItemGroup>() {
                         @Override
@@ -435,11 +438,12 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
     }
 
     /**
-     * Creates a {@link BasicViewHolder} in the given view parent for the footer.
-     * See {@link #onCreateViewHolder(ViewGroup, int)}.
+     * Creates a {@link BasicViewHolder} in the given view parent for the footer. See {@link
+     * #onCreateViewHolder(ViewGroup, int)}.
      */
-    protected @Nullable BasicViewHolder createFooter(ViewGroup parent) {
-        return null;
+    protected BasicViewHolder createFooter(ViewGroup parent) {
+        assert false;
+        return assumeNonNull(null);
     }
 
     /**
@@ -454,10 +458,12 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
 
     /**
      * Creates a {@link ViewHolder} for a subsection in the given view parent.
+     *
      * @see #onCreateViewHolder(ViewGroup, int)
      */
-    protected @Nullable SubsectionHeaderViewHolder createSubsectionHeader(ViewGroup parent) {
-        return null;
+    protected SubsectionHeaderViewHolder createSubsectionHeader(ViewGroup parent) {
+        assert false;
+        return assumeNonNull(null);
     }
 
     /**
@@ -663,9 +669,8 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
         return group.getItemViewType(pair.second);
     }
 
-    @NullUnmarked
     @Override
-    public final RecyclerView.@Nullable ViewHolder onCreateViewHolder(
+    public final RecyclerView.ViewHolder onCreateViewHolder(
             ViewGroup parent, @ItemViewType int viewType) {
         switch (viewType) {
             case ItemViewType.DATE:
@@ -680,7 +685,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
                 return createSubsectionHeader(parent);
             default:
                 assert false;
-                return null;
+                return assumeNonNull(null);
         }
     }
 
@@ -715,8 +720,9 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
         return mSize;
     }
 
-    /** Utility method to traverse all groups and find the {@link ItemGroup} for the given position. */
-    @NullUnmarked
+    /**
+     * Utility method to traverse all groups and find the {@link ItemGroup} for the given position.
+     */
     protected Pair<ItemGroup, Integer> getGroupAt(int position) {
         // TODO(ianwen): Optimize the performance if the number of groups becomes too large.
         int i = position;
@@ -728,7 +734,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
             }
         }
         assert false;
-        return null;
+        return assumeNonNull(null);
     }
 
     /** @param item The item to remove from the adapter. */

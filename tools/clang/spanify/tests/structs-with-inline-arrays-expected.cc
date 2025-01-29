@@ -24,6 +24,8 @@ struct GlobalHasName {
 // TODO(364338808) Handle this case.
 GlobalHasName globalNamedBufferButNotInline[4];
 
+int UnsafeIndex();  // This function might return an out-of-bound index.
+
 void fct() {
   // Expected rewrite
   // struct FuncBuffer {
@@ -44,7 +46,7 @@ void fct() {
     int val;
   };
   const std::array<TestCases, 4> kTestCases = {{{1}, {2}, {3}, {4}}};
-  std::ignore = kTestCases[2].val;  // Unsafe access to trigger spanification.
+  std::ignore = kTestCases[UnsafeIndex()].val;  // Trigger spanification.
 
   // Expected rewrite:
   // struct GTestCases {
@@ -55,7 +57,7 @@ void fct() {
     int val;
   };
   const std::array<GTestCases, 4> gTestCases = {{{1}, {2}, {3}, {4}}};
-  std::ignore = gTestCases[2].val;  // Unsafe access to trigger spanification.
+  std::ignore = gTestCases[UnsafeIndex()].val;  // Trigger spanification.
 
   // Expected rewrite:
   // struct Knights {
@@ -66,7 +68,7 @@ void fct() {
     int val;
   };
   const std::array<Knights, 4> knights = {{{1}, {2}, {3}, {4}}};
-  std::ignore = knights[2].val;  // Unsafe access to trigger spanification.
+  std::ignore = knights[UnsafeIndex()].val;  // Trigger spanification.
 
   // Expected rewrite:
   // struct funcHasName {
@@ -145,15 +147,15 @@ void fct() {
   std::array<NestedStructBuffer, 4> nestedStructBuffer;
 
   // Buffer accesses to trigger spanification.
-  func_buffer[2].val = 3;
-  globalBuffer[2].val = 3;
-  funcNamedBuffer[2].val = 3;
-  globalNamedBuffer[2].val = 3;
-  globalNamedBufferButNotInline[2].val = 3;
-  funcNamedBufferButNotInline[3].val = 3;
-  (void)func_buffer2[2].val;
-  funcBufferWithComment[2].val = 3;
-  unnamedClassBuffer[2].val = 3;
-  unnamedUnionBuffer[2].val = 3;
-  nestedStructBuffer[2].inner.val = 3;
+  func_buffer[UnsafeIndex()].val = 3;
+  globalBuffer[UnsafeIndex()].val = 3;
+  funcNamedBuffer[UnsafeIndex()].val = 3;
+  globalNamedBuffer[UnsafeIndex()].val = 3;
+  globalNamedBufferButNotInline[UnsafeIndex()].val = 3;
+  funcNamedBufferButNotInline[UnsafeIndex()].val = 3;
+  (void)func_buffer2[UnsafeIndex()].val;
+  funcBufferWithComment[UnsafeIndex()].val = 3;
+  unnamedClassBuffer[UnsafeIndex()].val = 3;
+  unnamedUnionBuffer[UnsafeIndex()].val = 3;
+  nestedStructBuffer[UnsafeIndex()].inner.val = 3;
 }

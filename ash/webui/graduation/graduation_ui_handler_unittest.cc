@@ -32,7 +32,7 @@
 namespace ash::graduation {
 
 namespace {
-constexpr char kUserGaiaId[] = "111";
+constexpr GaiaId::Literal kUserGaiaId("111");
 constexpr char kUserEmail[] = "user1test@gmail.com";
 constexpr char kWebviewHostName[] = "graduation";
 
@@ -60,8 +60,7 @@ class GraduationUiHandlerTest : public testing::Test {
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(&local_state_));
 
-    auto account_id =
-        AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kUserGaiaId));
+    auto account_id = AccountId::FromUserEmailGaiaId(kUserEmail, kUserGaiaId);
     auto* user = fake_user_manager_->AddGaiaUser(
         account_id, user_manager::UserType::kRegular);
 

@@ -115,6 +115,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     private static final String MAIN_FRAME_INTENT_LAUNCH_NAME =
             "Android.Intent.MainFrameIntentLaunch";
 
+    private static final long DEFER_NAVIGATION_TIMEOUT_MILLIS = 5000;
+
     private InterceptNavigationDelegateClient mClient;
     private static Callback<Pair<GURL, OverrideUrlLoadingResult>> sResultCallbackForTesting;
     private WebContents mWebContents;
@@ -128,11 +130,13 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     private CancelableRunnable mPendingShouldIgnore;
     private RequiredCallback<Boolean> mShouldIgnoreResultCallback;
+    private boolean mHasAttachedToActivity;
 
     /** Default constructor of {@link InterceptNavigationDelegateImpl}. */
     public InterceptNavigationDelegateImpl(InterceptNavigationDelegateClient client) {
         mClient = client;
         associateWithWebContents(mClient.getWebContents());
+        mHasAttachedToActivity = mClient.getActivity() != null;
     }
 
     // Invoked by the client when a navigation has finished in the context in which this object is
@@ -144,6 +148,18 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     public void setExternalNavigationHandler(ExternalNavigationHandler handler) {
         mExternalNavHandler = handler;
+    }
+
+    public void onActivityAttachmentChanged(boolean attached) {
+        // Defensively cancel any pending checks if we change Activities during a check.
+        if (mHasAttachedToActivity) {
+            cancelPendingShouldIgnoreCheck();
+            return;
+        }
+        // Wait until first attached.
+        if (!attached) return;
+        mHasAttachedToActivity = true;
+        requestFinishPendingShouldIgnoreCheck();
     }
 
     public void associateWithWebContents(WebContents webContents) {
@@ -193,6 +209,28 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         if (!navigationHandle.isInPrimaryMainFrame()) throw new RuntimeException();
 
         RedirectHandler redirectHandler = mClient.getOrCreateRedirectHandler();
+        redirectHandler.updateNewUrlLoading(
+                navigationHandle.pageTransition(),
+                navigationHandle.isRedirect(),
+                navigationHandle.hasUserGesture(),
+                getLastCommittedEntryIndex(),
+                isInitialNavigation(),
+                navigationHandle.isRendererInitiated());
+
+        // Initial navigation never leaves Chrome anyways and we don't want to block background
+        // navigation on waiting for a tab (or CCT pre-warming wouldn't work). Subsequent
+        // navigations and redirects can leave Chrome so they'll have to wait to be attached to an
+        // Activity.
+        if (!mHasAttachedToActivity && isInitialNavigation() && !navigationHandle.isRedirect()) {
+            resultCallback.onResult(false);
+            return;
+        }
+
+        // If not attached to an Activity, we cannot check synchronously and need to defer.
+        if (!mHasAttachedToActivity) {
+            shouldRunAsync = true;
+            startTimeoutForDeferredNavigation();
+        }
 
         mShouldIgnoreResultCallback = resultCallback;
         OverrideUrlLoadingResult result =
@@ -249,11 +287,11 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     @Override
-    public void finishPendingShouldIgnoreCheck() {
+    public void requestFinishPendingShouldIgnoreCheck() {
         if (mPendingShouldIgnore == null) return;
         CancelableRunnable runnable = mPendingShouldIgnore;
         runnable.run();
-        assert mPendingShouldIgnore == null;
+        if (mPendingShouldIgnore != null) startTimeoutForDeferredNavigation();
         // Cancel, ensuring any pending posted tasks do not execute by converting this runnable
         // to a no-op.
         runnable.cancel();
@@ -289,14 +327,24 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         // better to error on the side of caution and require direct user gestures for iframes.
         RedirectHandler redirectHandler = RedirectHandler.create();
 
+        boolean isRedirect = false;
+        boolean isRendererInitiated = true;
+        redirectHandler.updateNewUrlLoading(
+                transition,
+                isRedirect,
+                hasUserGesture,
+                getLastCommittedEntryIndex(),
+                isInitialNavigation(),
+                isRendererInitiated);
+
         OverrideUrlLoadingResult result =
                 shouldOverrideUrlLoading(
                         redirectHandler,
                         escapedUrl,
                         transition,
-                        /* isRedirect= */ false,
+                        isRedirect,
                         hasUserGesture,
-                        /* isRendererInitiated= */ true,
+                        isRendererInitiated,
                         GURL.emptyGURL()
                         /* referrerUrl= */ ,
                         /* isInPrimaryMainFrame= */ false,
@@ -341,14 +389,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             long navigationId,
             boolean shouldRunAsync) {
         assert mPendingShouldIgnore == null;
-        boolean initialNavigation = isInitialNavigation();
-        redirectHandler.updateNewUrlLoading(
-                pageTransition,
-                isRedirect,
-                hasUserGesture,
-                getLastCommittedEntryIndex(),
-                initialNavigation,
-                isRendererInitiated);
 
         // http://crbug.com/448977: If this is on the initial navigation chain we set the parameter
         // to open any outgoing intents that come back to Chrome in a new tab as the existing one
@@ -372,30 +412,54 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .setIsRendererInitiated(isRendererInitiated)
                         .setInitiatorOrigin(initiatorOrigin)
                         .setAsyncActionTakenCallback(asyncActionTakenCallback)
-                        .setIsInitialNavigationInFrame(initialNavigation)
+                        .setIsInitialNavigationInFrame(isInitialNavigation())
                         .setIsHiddenCrossFrameNavigation(hiddenCrossFrame)
                         .setIsSandboxedMainFrame(isSandboxedMainFrame)
                         .setNavigationId(navigationId)
                         .build();
         if (!shouldRunAsync) return doShouldOverrideUrlLoading(params, isExternalProtocol);
-        mPendingShouldIgnore =
-                new CancelableRunnable(
-                        () -> {
-                            // Navigation may have been externally canceled, or something caused
-                            // the Navigation Chain to be reset, so we should avoid leaving Chrome.
-                            if (mWebContents.isDestroyed()
-                                    || !params.getRedirectHandler().isOnNavigation()) {
-                                cancelPendingShouldIgnoreCheck();
-                                return;
-                            }
+        Runnable shouldIgnoreCheck =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // Navigation may have been externally canceled, or something caused
+                        // the Navigation Chain to be reset, so we should avoid leaving Chrome.
+                        if (mWebContents.isDestroyed()
+                                || !params.getRedirectHandler().isOnNavigation()) {
+                            cancelPendingShouldIgnoreCheck();
+                            return;
+                        }
 
-                            onMainFrameShouldIgnoreNavigationResult(
-                                    doShouldOverrideUrlLoading(params, isExternalProtocol),
-                                    params.getUrl(),
-                                    isExternalProtocol);
-                        });
+                        // This may be a pre-warmed tab being navigated during startup, wait for
+                        // the tab to be associated with an Activity before continuing.
+                        if (!mHasAttachedToActivity) {
+                            // No need to re-post this, it will be run when we attach to an
+                            // Activity.
+                            mPendingShouldIgnore = new CancelableRunnable(this);
+                            return;
+                        }
+                        onMainFrameShouldIgnoreNavigationResult(
+                                doShouldOverrideUrlLoading(params, isExternalProtocol),
+                                params.getUrl(),
+                                isExternalProtocol);
+                    }
+                };
+        mPendingShouldIgnore = new CancelableRunnable(shouldIgnoreCheck);
         PostTask.postTask(TaskTraits.UI_DEFAULT, mPendingShouldIgnore);
         return null;
+    }
+
+    private void startTimeoutForDeferredNavigation() {
+        if (mPendingShouldIgnore == null) return;
+        final CancelableRunnable pendingShouldIgnore = mPendingShouldIgnore;
+        PostTask.postDelayedTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    // Don't accidentally cancel subsequent navigations.
+                    if (pendingShouldIgnore != mPendingShouldIgnore) return;
+                    cancelPendingShouldIgnoreCheck();
+                },
+                DEFER_NAVIGATION_TIMEOUT_MILLIS);
     }
 
     private OverrideUrlLoadingResult doShouldOverrideUrlLoading(

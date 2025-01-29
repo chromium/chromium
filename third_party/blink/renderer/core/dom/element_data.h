@@ -154,6 +154,11 @@ class ElementData : public GarbageCollected<ElementData> {
   UniqueElementData* MakeUniqueCopy() const;
 };
 
+template <typename T>
+struct ThreadingTrait<T, std::enable_if_t<std::is_base_of_v<ElementData, T>>> {
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
+};
+
 #if defined(COMPILER_MSVC)
 #pragma warning(push)
 // Disable "zero-sized array in struct/union" warning

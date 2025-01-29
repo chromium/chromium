@@ -1290,11 +1290,11 @@ void HTMLPermissionElement::RefreshDisableReasonsAndUpdateTimer() {
 }
 
 void HTMLPermissionElement::UpdatePermissionStatusAndAppearance() {
-  if (base::ranges::any_of(permission_status_map_, [](const auto& status) {
+  if (std::ranges::any_of(permission_status_map_, [](const auto& status) {
         return status.value == MojoPermissionStatus::DENIED;
       })) {
     aggregated_permission_status_ = MojoPermissionStatus::DENIED;
-  } else if (base::ranges::any_of(
+  } else if (std::ranges::any_of(
                  permission_status_map_, [](const auto& status) {
                    return status.value == MojoPermissionStatus::ASK;
                  })) {

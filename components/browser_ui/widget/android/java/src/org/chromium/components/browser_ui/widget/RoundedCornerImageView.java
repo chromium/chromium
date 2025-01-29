@@ -26,8 +26,8 @@ import androidx.annotation.ColorInt;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
@@ -56,7 +56,7 @@ public class RoundedCornerImageView extends AppCompatImageView {
     // if certain attributes (eg. Drawable) are supplied via layout attributes.
     private final boolean mIsInitialized;
 
-    private @Nullable Shape mRoundedRectangle;
+    private Shape mRoundedRectangle;
     private @ColorInt int mFillColor = Color.TRANSPARENT;
 
     public RoundedCornerImageView(Context context) {
@@ -147,6 +147,7 @@ public class RoundedCornerImageView extends AppCompatImageView {
                         + " corners, use setRoundedFillColor instead.";
     }
 
+    @EnsuresNonNull("mRoundedRectangle")
     public void setRoundedCorners(
             int cornerRadiusTopStart,
             int cornerRadiusTopEnd,
@@ -209,7 +210,6 @@ public class RoundedCornerImageView extends AppCompatImageView {
         }
     }
 
-    @NullUnmarked
     @Override
     protected void onDraw(Canvas canvas) {
         final int width = getWidth() - getPaddingLeft() - getPaddingRight();

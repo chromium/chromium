@@ -211,6 +211,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                         "test@one.test",
                         "Test",
                         "Test",
+                        /* secondaryDescription= */ null,
                         TEST_PROFILE_PIC,
                         null,
                         /* isSignIn= */ true,

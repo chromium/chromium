@@ -43,6 +43,8 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.ai.AiAssistantService;
+import org.chromium.chrome.browser.ai.PageSummaryButtonController;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.automotivetoolbar.AutomotiveBackButtonToolbarCoordinator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -126,8 +128,6 @@ import org.chromium.chrome.browser.share.ShareButtonController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareUtils;
-import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingControllerImpl;
-import org.chromium.chrome.browser.share.page_info_sheet.PageSummaryButtonController;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialog;
 import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureManager;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
@@ -1535,10 +1535,9 @@ public class RootUiCoordinator
             PageSummaryButtonController pageSummaryButtonController =
                     new PageSummaryButtonController(
                             mActivity,
-                            mBottomSheetController,
                             mModalDialogManagerSupplier.get(),
                             mActivityTabProvider,
-                            PageInfoSharingControllerImpl.getInstance());
+                            new AiAssistantService());
 
             if (ChromeFeatureList.sEnableDiscountInfoApi.isEnabled()) {
                 DiscountsButtonController discountsButtonController =

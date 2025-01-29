@@ -18,7 +18,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 
@@ -112,7 +111,6 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
         return builder.build();
     }
 
-    @NullUnmarked
     @VisibleForTesting
     static JobInfo createJobInfoFromTaskInfo(Context context, TaskInfo taskInfo) {
         PersistableBundle jobExtras = new PersistableBundle();

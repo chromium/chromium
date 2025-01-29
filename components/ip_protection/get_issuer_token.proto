@@ -48,6 +48,6 @@ message GetIssuerTokenResponse {
   // tokens with a later expiration time.
   optional uint64 next_epoch_start_time_seconds = 4;
 
-  // The token reveal probability is defined as (p_reveal / 10000).
-  optional int32 p_reveal = 5;
+  // The number of tokens with the signal.
+  optional int32 num_tokens_with_signal = 5;
 }

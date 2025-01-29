@@ -245,7 +245,6 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
  public:
   ImageDecodeCacheHolder(bool enable_shared_image_cache_for_gpu,
                          const RasterCapabilities& raster_caps,
-                         bool gpu_compositing,
                          scoped_refptr<RasterContextProviderWrapper>
                              worker_context_provider_wrapper,
                          size_t decoded_image_working_set_budget_bytes,
@@ -265,8 +264,7 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
       }
     } else {
       image_decode_cache_ = std::make_unique<SoftwareImageDecodeCache>(
-          viz::ToClosestSkColorTypeDeprecated(gpu_compositing,
-                                              raster_caps.tile_format),
+          viz::ToClosestSkColorType(raster_caps.tile_format),
           decoded_image_working_set_budget_bytes);
     }
 
@@ -3292,11 +3290,8 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
     // No context provider means software raster + compositing.
     raster_caps_.max_texture_size = settings_.max_render_buffer_bounds_for_sw;
 
-    // Software compositing always uses the native skia RGBA N32 format, but we
-    // just call it RGBA_8888 everywhere even though it can be BGRA ordering,
-    // because we don't need to communicate the actual ordering as the code all
-    // assumes the native skia format.
-    raster_caps_.tile_format = viz::SinglePlaneFormat::kRGBA_8888;
+    // Software compositor always uses BGRA 8888 format for tiles.
+    raster_caps_.tile_format = viz::SinglePlaneFormat::kBGRA_8888;
     raster_caps_.ui_rgba_format =
         layer_tree_frame_sink_->shared_image_interface()
             ? viz::SinglePlaneFormat::kBGRA_8888
@@ -4098,10 +4093,8 @@ void LayerTreeHostImpl::RecreateTileResources() {
 
 void LayerTreeHostImpl::CreateTileManagerResources() {
   DCHECK(!settings_.is_display_tree);
-  const bool gpu_compositing = !!layer_tree_frame_sink_->context_provider();
   image_decode_cache_holder_ = std::make_unique<ImageDecodeCacheHolder>(
       settings_.enable_shared_image_cache_for_gpu, raster_caps(),
-      gpu_compositing,
       layer_tree_frame_sink_->worker_context_provider_wrapper(),
       settings_.decoded_image_working_set_budget_bytes, dark_mode_filter_);
 

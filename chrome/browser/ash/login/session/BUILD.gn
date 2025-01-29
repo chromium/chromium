@@ -112,6 +112,7 @@ static_library("session") {
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/quirks",
+    "//components/server_certificate_database",
     "//components/session_manager:base",
     "//components/signin/public/base",
     "//components/signin/public/base:signin_switches",

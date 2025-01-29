@@ -32,7 +32,7 @@ struct AudioCallbackMetric {
   double variance_callback_interval = 0.0;
 };
 
-class AudioCallbackMetricReporter {
+class AudioCallbackMetricReporter final {
  public:
   AudioCallbackMetricReporter() = default;
 

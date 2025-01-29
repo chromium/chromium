@@ -529,8 +529,7 @@ std::unique_ptr<views::LabelButton>
 TabGroupEditorBubbleView::BuildLeaveGroupButton() {
   std::unique_ptr<views::LabelButton> leave_group_menu_item = CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_LEAVE_GROUP,
-      l10n_util::GetStringUTF16(
-          IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CONFIRM),
+      l10n_util::GetStringUTF16(IDS_DATA_SHARING_LEAVE_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::LeaveGroupPressed,
                           base::Unretained(this)),
       ui::ImageModel::FromVectorIcon(kTrashCanRefreshIcon, ui::kColorMenuIcon,

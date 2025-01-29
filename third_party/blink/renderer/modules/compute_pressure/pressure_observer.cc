@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"

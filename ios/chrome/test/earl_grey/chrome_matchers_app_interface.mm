@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/tabs/tabs_settings_constants.h"
+#import "ios/chrome/browser/share_kit/model/test_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
@@ -1739,6 +1740,44 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return [ChromeMatchersAppInterface
       contextMenuItemWithAccessibilityLabelID:
           IDS_IOS_CONTENT_CONTEXT_MANAGESHAREDGROUP];
+}
+
++ (id<GREYMatcher>)leaveSharedGroupButton {
+  return
+      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
+                                      IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP];
+}
+
++ (id<GREYMatcher>)leaveSharedGroupConfirmationButton {
+  return grey_allOf(grey_accessibilityID([l10n_util::GetNSString(
+                        IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP)
+                        stringByAppendingString:@"AlertAction"]),
+                    grey_interactable(), nil);
+}
+
++ (id<GREYMatcher>)deleteSharedGroupButton {
+  return [ChromeMatchersAppInterface
+      contextMenuItemWithAccessibilityLabelID:
+          IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP];
+}
+
++ (id<GREYMatcher>)deleteSharedConfirmationButton {
+  return grey_allOf(grey_accessibilityID([l10n_util::GetNSString(
+                        IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP)
+                        stringByAppendingString:@"AlertAction"]),
+                    grey_interactable(), nil);
+}
+
++ (id<GREYMatcher>)fakeShareFlowView {
+  return grey_accessibilityID(kFakeShareFlowIdentifier);
+}
+
++ (id<GREYMatcher>)fakeManageFlowView {
+  return grey_accessibilityID(kFakeManageFlowIdentifier);
+}
+
++ (id<GREYMatcher>)fakeJoinFlowView {
+  return grey_accessibilityID(kFakeJoinFlowIdentifier);
 }
 
 #pragma mark - Tab Groups Panel

@@ -235,8 +235,7 @@ bool VerifyNestedDeclarations(Document* document, const String& rule_text) {
   auto is_valid = [](const CSSPropertySourceData& data) {
     return data.parsed_ok && !data.disabled;
   };
-  if (!base::ranges::any_of(rule_data.child_rules[1]->property_data,
-                            is_valid)) {
+  if (!std::ranges::any_of(rule_data.child_rules[1]->property_data, is_valid)) {
     return false;
   }
   return true;

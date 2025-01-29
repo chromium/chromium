@@ -541,11 +541,26 @@ Element& ListedElement::ValidationAnchor() const {
   return const_cast<HTMLElement&>(ToHTMLElement());
 }
 
+Element& ListedElement::GetHostOrFocusDelegate() const {
+  const HTMLElement& host = ToHTMLElement();
+  // If host is a shadow host with delegatesFocus, then the element to get
+  // focus should be its focusable area.
+  if (RuntimeEnabledFeatures::
+          FormValidationCustomElementsDelegatesFocusFixEnabled() &&
+      host.IsShadowHostWithDelegatesFocus()) {
+    if (Element* focusable_area =
+            host.GetFocusableArea(/*in_descendant_traversal=*/true)) {
+      return *focusable_area;
+    }
+  }
+  return const_cast<HTMLElement&>(host);
+}
+
 bool ListedElement::ValidationAnchorOrHostIsFocusable() const {
   const Element& anchor = ValidationAnchor();
-  const HTMLElement& host = ToHTMLElement();
   if (anchor.IsFocusable())
     return true;
+  const Element& host = GetHostOrFocusDelegate();
   if (&anchor == &host)
     return false;
   return host.IsFocusable();
@@ -568,10 +583,12 @@ bool ListedElement::checkValidity(List* unhandled_invalid_controls) {
 void ListedElement::ShowValidationMessage() {
   Element& element = ValidationAnchor();
   element.scrollIntoViewIfNeeded(false);
-  if (element.IsFocusable())
+  if (element.IsFocusable()) {
     element.Focus();
-  else
-    ToHTMLElement().Focus();
+  } else {
+    Element& host = GetHostOrFocusDelegate();
+    host.Focus();
+  }
   UpdateVisibleValidationMessage();
 }
 

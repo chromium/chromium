@@ -29,7 +29,7 @@ class TestShareKitService : public ShareKitService {
   TestShareKitService(
       data_sharing::DataSharingService* data_sharing_service,
       collaboration::CollaborationService* collaboration_service,
-      tab_groups::TabGroupSyncService* sync_service);
+      tab_groups::TabGroupSyncService* tab_group_sync_service);
   TestShareKitService(const TestShareKitService&) = delete;
   TestShareKitService& operator=(const TestShareKitService&) = delete;
   ~TestShareKitService() override;
@@ -70,7 +70,7 @@ class TestShareKitService : public ShareKitService {
   bool is_owner_ = false;
 
   raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
-  raw_ptr<tab_groups::TabGroupSyncService> sync_service_;
+  raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
   base::WeakPtrFactory<TestShareKitService> weak_pointer_factory_{this};
 };
 

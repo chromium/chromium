@@ -493,10 +493,9 @@ def ValidateWhatsNewData(feature_dict: dict[str, str],
         An empty string if the data is valid
     """
     icon_name = feature_dict['Icon name']
-
-    if (feature_dict['Icon Type'] == 'Custom'
-            and icon_name not in valid_icons.valid_custom):
-        return f'Invalid Custom icon name: {icon_name}'
+    if feature_dict['Icon Type'] == 'Custom':
+        if icon_name not in valid_icons.valid_custom:
+            return f'Invalid Custom icon name: {icon_name}'
     elif icon_name not in valid_icons.valid_default:
         if icon_name not in valid_icons.full_default:
             return f'Invalid Default icon name: {icon_name}'

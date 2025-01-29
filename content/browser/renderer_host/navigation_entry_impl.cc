@@ -1004,7 +1004,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           /*cookie_deprecation_label=*/std::nullopt,
           /*visited_link_salt=*/std::nullopt,
           /*local_surface_id=*/std::nullopt,
-          /*initial_permission_statuses=*/std::nullopt);
+          /*initial_permission_statuses=*/std::nullopt,
+          /*should_skip_screenshot*/ false);
 #if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main

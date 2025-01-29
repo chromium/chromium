@@ -16,8 +16,11 @@ import org.chromium.base.Log;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.AnalyzeAttachment;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.AvailabilityRequest;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.AvailabilityResponse;
+import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.Capability;
+import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.File;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.LaunchRequest;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.SummarizeUrl;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.UrlContext;
@@ -35,6 +38,8 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 public class AiAssistantService {
 
     private static final String TAG = "AiAssistantService";
+    static final String EXTRA_LAUNCH_REQUEST =
+            "org.chromium.chrome.browser.ai.proto.SystemAiProviderService.LaunchRequest";
 
     private final SystemAiProvider mSystemAiProvider;
 
@@ -53,7 +58,11 @@ public class AiAssistantService {
     public void showAi(Context context, Tab tab) {
         if (!isTabElegible(tab)) return;
 
-        var availabilityRequest = AvailabilityRequest.getDefaultInstance();
+        var availabilityRequest =
+                AvailabilityRequest.newBuilder()
+                        .addRequestedCapabilities(Capability.ANALYZE_ATTACHMENT_CAPABILITY)
+                        .addRequestedCapabilities(Capability.SUMMARIZE_URL_CAPABILITY)
+                        .build();
         var availabilityFuture = mSystemAiProvider.isAvailable(context, availabilityRequest);
 
         Futures.addCallback(
@@ -66,7 +75,8 @@ public class AiAssistantService {
 
                     @Override
                     public void onFailure(Throwable t) {
-                        showAssistant(context);
+                        Log.w(TAG, "Error getting system AI provider availability: ", t);
+                        onAvailabilityResponse(context, tab, null);
                     }
                 },
                 MoreExecutors.directExecutor());
@@ -84,20 +94,83 @@ public class AiAssistantService {
             Context context, Tab tab, @Nullable AvailabilityResponse result) {
         if (!isTabElegible(tab)) return;
 
-        if (result != null && result.hasAvailable()) {
-            var urlContext = UrlContext.newBuilder().setUrl(tab.getUrl().getSpec()).build();
-            var summarizeUrl = SummarizeUrl.newBuilder().setUrlContext(urlContext).build();
-            var launchRequest = LaunchRequest.newBuilder().setSummarizeUrl(summarizeUrl).build();
+        boolean isSystemAiProviderAvailable = result != null && result.hasAvailable();
+        boolean isSummarizeUrlAvailable = true;
+        boolean isAnalyzeAttachmentAvailable = true;
+        if (isSystemAiProviderAvailable && result != null) {
+            isSummarizeUrlAvailable =
+                    result.getAvailable()
+                            .getSupportedCapabilitiesList()
+                            .contains(Capability.SUMMARIZE_URL_CAPABILITY);
+            isAnalyzeAttachmentAvailable =
+                    result.getAvailable()
+                            .getSupportedCapabilitiesList()
+                            .contains(Capability.ANALYZE_ATTACHMENT_CAPABILITY);
+        }
 
-            mSystemAiProvider.launch(context, launchRequest);
-        } else {
-            showAssistant(context);
+        if (isTabPdf(tab)
+                && tab.getNativePage() instanceof PdfPage pdfPage
+                && isAnalyzeAttachmentAvailable) {
+            sendLaunchRequest(
+                    context,
+                    getLaunchRequestForAnalyzeAttachment(pdfPage),
+                    isSystemAiProviderAvailable);
+        } else if (isTabWebPage(tab) && isSummarizeUrlAvailable) {
+            sendLaunchRequest(
+                    context, getLaunchRequestForSummarizeUrl(tab), isSystemAiProviderAvailable);
         }
     }
 
-    private void showAssistant(Context context) {
+    private boolean isTabPdf(Tab tab) {
+        if (tab.getNativePage() instanceof PdfPage pdfPage) {
+            return pdfPage.getUri() != null;
+        }
+        return false;
+    }
+
+    private boolean isTabWebPage(Tab tab) {
+        return !isTabPdf(tab) && UrlUtilities.isHttpOrHttps(tab.getUrl());
+    }
+
+    private LaunchRequest getLaunchRequestForAnalyzeAttachment(PdfPage pdfPage) {
+        assert pdfPage.getUri() != null;
+        var file =
+                File.newBuilder()
+                        .setUri(pdfPage.getUri().toString())
+                        .setDisplayName(pdfPage.getTitle())
+                        .setMimeType("application/pdf");
+        var analyzeAttachment = AnalyzeAttachment.newBuilder().addFiles(file);
+        var launchRequest =
+                LaunchRequest.newBuilder().setAnalyzeAttachment(analyzeAttachment).build();
+
+        return launchRequest;
+    }
+
+    private LaunchRequest getLaunchRequestForSummarizeUrl(Tab tab) {
+        var urlContext = UrlContext.newBuilder().setUrl(tab.getUrl().getSpec());
+        var summarizeUrl = SummarizeUrl.newBuilder().setUrlContext(urlContext);
+        var launchRequest = LaunchRequest.newBuilder().setSummarizeUrl(summarizeUrl).build();
+
+        return launchRequest;
+    }
+
+    private void sendLaunchRequest(
+            Context context, LaunchRequest launchRequest, boolean isSystemAiProviderAvailable) {
+        if (isSystemAiProviderAvailable) {
+            sendLaunchRequestToSystemProvider(context, launchRequest);
+        } else {
+            sendLaunchRequestWithIntent(context, launchRequest);
+        }
+    }
+
+    private void sendLaunchRequestToSystemProvider(Context context, LaunchRequest launchRequest) {
+        mSystemAiProvider.launch(context, launchRequest);
+    }
+
+    private void sendLaunchRequestWithIntent(Context context, LaunchRequest launchRequest) {
         Log.w(TAG, "Unable to use to system AI provider, sending intent instead");
         Intent assistantIntent = new Intent(Intent.ACTION_VOICE_COMMAND);
+        assistantIntent.putExtra(EXTRA_LAUNCH_REQUEST, launchRequest.toByteArray());
         try {
             context.startActivity(assistantIntent);
         } catch (ActivityNotFoundException ex) {

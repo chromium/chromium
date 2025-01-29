@@ -24,6 +24,10 @@
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/view_utils.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 // Observes a widget to track when a drag is complete.
 class DragWaiter : public views::WidgetObserver {
  public:
@@ -171,17 +175,25 @@ class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
 // completion because the native widget's state is not properly updated.
 // TODO(crbug.com/388531778): DND tests are flaky on Windows. This should be
 // re-enabled once de-flaked.
-// TODO(crbug.com/391735476): Tests are flaky on Mac. They should be re-enabled
-// once de-flaked.
-#if BUILDFLAG(IS_OZONE_X11) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_OZONE_X11) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE_WAYLAND)
 #define MAYBE_DISABLED(test_name) DISABLED_##test_name
 #else
 #define MAYBE_DISABLED(test_name) test_name
 #endif
 
+void SkipIfMac11() {
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSMajorVersion() == 11) {
+    // TODO(crbug.com/391735476) Deflake on Mac11.
+    GTEST_SKIP() << "Test is flaky on Mac11 (crbug.com/391735476)";
+  }
+#endif
+}
+
 IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
                        MAYBE_DISABLED(BookmarksDragAndDrop)) {
+  SkipIfMac11();
+
   // Add two bookmarks nodes to the bookmarks bar.
   bookmarks::BookmarkModel* const model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
@@ -214,6 +226,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
                        MAYBE_DISABLED(BookmarksDragAndDropToNestedFolder)) {
+  SkipIfMac11();
+
   // Add two bookmarks nodes to the bookmarks bar.
   bookmarks::BookmarkModel* const model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
@@ -247,6 +261,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
                        MAYBE_DISABLED(BookmarksDragAndDropFromNestedFolder)) {
+  SkipIfMac11();
+
   // Add one bookmark folder to the bookmarks bar, and add a bookmark node to
   // the new folder.
   bookmarks::BookmarkModel* const model =

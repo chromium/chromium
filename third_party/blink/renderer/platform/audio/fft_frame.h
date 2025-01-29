@@ -51,7 +51,7 @@ namespace blink {
 // a forward and reverse FFT, internally storing the resultant frequency-domain
 // data.
 
-class PLATFORM_EXPORT FFTFrame {
+class PLATFORM_EXPORT FFTFrame final {
   USING_FAST_MALLOC(FFTFrame);
 
  public:

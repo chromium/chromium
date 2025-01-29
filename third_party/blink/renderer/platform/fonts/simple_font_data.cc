@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_baseline_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_vertical_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/ng_shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -87,6 +88,9 @@ SimpleFontData::SimpleFontData(const FontPlatformData* platform_data,
                                bool subpixel_ascent_descent,
                                const FontMetricsOverride& metrics_override)
     : platform_data_(platform_data),
+      shape_cache_(RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled()
+                       ? MakeGarbageCollected<NGShapeCache>(this)
+                       : nullptr),
       font_(platform_data->size() ? platform_data->CreateSkFont()
                                   : skia::DefaultFont()),
       custom_font_data_(custom_data) {
@@ -115,6 +119,7 @@ SimpleFontData::~SimpleFontData() {
 
 void SimpleFontData::Trace(Visitor* visitor) const {
   visitor->Trace(platform_data_);
+  visitor->Trace(shape_cache_);
   visitor->Trace(small_caps_);
   visitor->Trace(emphasis_mark_);
   visitor->Trace(custom_font_data_);

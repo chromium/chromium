@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
@@ -68,6 +69,14 @@ class SigninViewControllerDelegate {
       bool is_local_profile_creation,
       bool show_profile_switch_iph = false,
       bool show_supervised_user_iph = false);
+
+  // Returns a platform-specific SigninViewControllerDelegate instance that
+  // displays the signout confirmation dialog. The returned object should delete
+  // itself when the window it's managing is closed.
+  static SigninViewControllerDelegate* CreateSignoutConfirmationDelegate(
+      Browser* browser,
+      ChromeSignoutConfirmationPromptVariant variant,
+      base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

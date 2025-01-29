@@ -286,6 +286,7 @@ void NavigateEvent::CommitNow() {
       dispatch_params_->event_type == NavigateEventType::kHistoryApi
           ? FirePopstate::kNo
           : FirePopstate::kYes,
+      dispatch_params_->should_skip_screenshot,
       dispatch_params_->is_browser_initiated,
       dispatch_params_->is_synchronously_committed_same_document,
       dispatch_params_->soft_navigation_heuristics_task_id);

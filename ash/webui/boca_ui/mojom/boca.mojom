@@ -75,7 +75,7 @@ struct Assignment {
 struct Window {
   // User-customized window name.
   string? name;
-  // Tabs within browser window. Tabs are ordererd using non-increasing order
+  // Tabs within browser window. Tabs are ordered using non-increasing order
   // for tab's last access timestamp.
   array<TabInfo> tab_list;
 };
@@ -214,7 +214,10 @@ enum SubmitAccessCodeError {
 };
 
 enum ViewStudentScreenError {
-  kInvalid,
+  kHTTPError,
+};
+
+enum EndViewScreenSessionError {
   kHTTPError,
 };
 
@@ -253,6 +256,8 @@ interface PageHandler {
   SubmitAccessCode(string access_code) => (SubmitAccessCodeError? error);
   // Requests to view screen of a given student.
   ViewStudentScreen(string id) => (ViewStudentScreenError? error);
+  // Sets the state of the view screen session as inactive for a given student.
+  EndViewScreenSession(string id) => (EndViewScreenSessionError? error);
   // Get the value of a boca specific user pref.
   GetUserPref(BocaValidPref pref)
     => (mojo_base.mojom.Value value);

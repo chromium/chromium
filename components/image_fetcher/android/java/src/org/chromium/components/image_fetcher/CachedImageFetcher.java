@@ -134,7 +134,7 @@ public class CachedImageFetcher extends ImageFetcher {
     }
 
     @Override
-    public void fetchImage(final Params params, Callback<Bitmap> callback) {
+    public void fetchImage(final Params params, Callback<@Nullable Bitmap> callback) {
         long startTimeMillis = System.currentTimeMillis();
         PostTask.postTask(
                 TaskTraits.USER_VISIBLE,
@@ -154,7 +154,7 @@ public class CachedImageFetcher extends ImageFetcher {
     @VisibleForTesting
     void continueFetchImageAfterDisk(
             final ImageFetcher.Params params,
-            Callback<Bitmap> callback,
+            Callback<@Nullable Bitmap> callback,
             @Nullable Bitmap cachedBitmap,
             long startTimeMillis) {
         if (cachedBitmap != null) {

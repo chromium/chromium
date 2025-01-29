@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -35,6 +36,11 @@ public interface BaseCarouselSuggestionViewBinder {
                 adapter.getModelList().clear();
             }
             view.resetSelection();
+            propagateCommonProperties(adapter.getModelList(), model);
+        } else if (key == SuggestionCommonProperties.COLOR_SCHEME) {
+            // Propagate color scheme to all tiles.
+            var adapter = (SimpleRecyclerViewAdapter) view.getAdapter();
+            propagateCommonProperties(adapter.getModelList(), model);
         } else if (key == BaseCarouselSuggestionViewProperties.ITEM_DECORATION) {
             view.setItemDecoration(model.get(BaseCarouselSuggestionViewProperties.ITEM_DECORATION));
         } else if (key == BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION) {
@@ -81,6 +87,16 @@ public interface BaseCarouselSuggestionViewBinder {
 
             view.setOutlineProvider(outline);
             view.setClipToOutline(outline != null);
+        }
+    }
+
+    private static void propagateCommonProperties(ModelList list, PropertyModel model) {
+        for (int i = 0; i < list.size(); i++) {
+            PropertyModel tileModel = list.get(i).model;
+
+            tileModel.set(
+                    SuggestionCommonProperties.COLOR_SCHEME,
+                    model.get(SuggestionCommonProperties.COLOR_SCHEME));
         }
     }
 }

@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.ui.android.webid.data;
 import android.graphics.Bitmap;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /**
@@ -20,6 +22,10 @@ public class Account {
     private final String mEmail;
     private final String mName;
     private final String mGivenName;
+    // The secondary description. This value is not null if and only if the UI being displayed is
+    // multi IDP. The text contains the IDP origin and possibly the last used timestamp if this is
+    // an account that has been used in the device before.
+    private final @Nullable String mSecondaryDescription;
     private final GURL mPictureUrl;
     private final Bitmap mPictureBitmap;
     private final boolean mIsSignIn;
@@ -48,6 +54,7 @@ public class Account {
             String email,
             String name,
             String givenName,
+            @JniType("std::optional<std::string>") @Nullable String secondaryDescription,
             GURL pictureUrl,
             Bitmap pictureBitmap,
             boolean isSignIn,
@@ -57,6 +64,7 @@ public class Account {
         mEmail = email;
         mName = name;
         mGivenName = givenName;
+        mSecondaryDescription = secondaryDescription;
         mPictureUrl = pictureUrl;
         mPictureBitmap = pictureBitmap;
         mIsSignIn = isSignIn;
@@ -74,6 +82,10 @@ public class Account {
 
     public String getGivenName() {
         return mGivenName;
+    }
+
+    public @Nullable String getSecondaryDescription() {
+        return mSecondaryDescription;
     }
 
     public GURL getPictureUrl() {

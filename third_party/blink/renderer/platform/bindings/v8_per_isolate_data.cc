@@ -30,13 +30,13 @@
 
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -362,7 +362,7 @@ V8PerIsolateData::FindOrCreateEternalNameCache(
     v8::Isolate* isolate = GetIsolate();
     Vector<v8::Eternal<v8::Name>> new_vector(
         base::checked_cast<wtf_size_t>(names.size()));
-    base::ranges::transform(
+    std::ranges::transform(
         names, new_vector.begin(), [isolate](std::string_view name) {
           return v8::Eternal<v8::Name>(
               isolate,

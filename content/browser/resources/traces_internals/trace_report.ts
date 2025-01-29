@@ -62,6 +62,7 @@ export class TraceReportElement extends CrLitElement {
     creationTime: {internalValue: 0n},
     scenarioName: '',
     uploadRuleName: '',
+    uploadRuleValue: null,
     totalSize: 0n,
     uploadState: ReportUploadState.kNotUploaded,
     uploadTime: {internalValue: 0n},

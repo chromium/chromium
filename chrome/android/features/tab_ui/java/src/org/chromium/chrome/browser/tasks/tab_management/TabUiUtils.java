@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
@@ -240,6 +241,30 @@ public class TabUiUtils {
         } else {
             showGenericErrorDialog(context, modalDialogManager);
         }
+    }
+
+    /**
+     * Returns whether an IPH should be shown for Tab Group Sync for the given tab group ID.
+     *
+     * @param tabGroupSyncService The sync service to get tab group data form.
+     * @param tabGroupId The local tab group ID.
+     * @return Whether to show Tab Group Sync IPH.
+     */
+    public static boolean shouldShowIphForSync(
+            TabGroupSyncService tabGroupSyncService, Token tabGroupId) {
+        if (tabGroupSyncService == null || tabGroupId == null) return false;
+        @Nullable
+        SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
+        // Don't try to show the IPH if the group is:
+        // 1) Not in TabGroupSyncService for some reason.
+        // 2) A shared tab group.
+        // 3) Created locally.
+        if (savedTabGroup == null
+                || TabShareUtils.isCollaborationIdValid(savedTabGroup.collaborationId)
+                || !tabGroupSyncService.isRemoteDevice(savedTabGroup.creatorCacheGuid)) {
+            return false;
+        }
+        return true;
     }
 
     /**

@@ -2544,7 +2544,7 @@ int32_t RTCVideoEncoder::InitEncode(
     const auto vea_supported_profiles =
         gpu_factories_->GetVideoEncodeAcceleratorSupportedProfiles().value_or(
             media::VideoEncodeAccelerator::SupportedProfiles());
-    auto support_profile = base::ranges::find_if(
+    auto support_profile = std::ranges::find_if(
         vea_supported_profiles,
         [this](const media::VideoEncodeAccelerator::SupportedProfile&
                    support_profile) {
@@ -2555,7 +2555,7 @@ int32_t RTCVideoEncoder::InitEncode(
       media::SVCScalabilityMode scalability_mode =
           ToSVCScalabilityMode(spatial_layers, inter_layer_pred);
       if (support_profile->scalability_modes.end() ==
-          base::ranges::find_if(
+          std::ranges::find_if(
               support_profile->scalability_modes,
               [&support_profile,
                scalability_mode](const media::SVCScalabilityMode& value) {

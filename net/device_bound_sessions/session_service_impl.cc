@@ -83,7 +83,8 @@ void SessionServiceImpl::RegisterBoundSession(
     OnAccessCallback on_access_callback,
     RegistrationFetcherParam registration_params,
     const IsolationInfo& isolation_info,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& net_log,
+    const std::optional<url::Origin>& original_request_initiator) {
   net::NetLogSource net_log_source_for_registration = net::NetLogSource(
       net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID());
   net_log.AddEventReferencingSource(
@@ -93,6 +94,7 @@ void SessionServiceImpl::RegisterBoundSession(
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(registration_params), key_service_.get(), context_.get(),
       isolation_info, net_log_source_for_registration,
+      original_request_initiator,
       base::BindOnce(&SessionServiceImpl::OnRegistrationComplete,
                      weak_factory_.GetWeakPtr(),
                      std::move(on_access_callback)));
@@ -228,7 +230,7 @@ void SessionServiceImpl::DeferRequestForRefresh(
     RegistrationFetcher::StartFetchWithExistingKey(
         RegistrationRequestParam::Create(*session), key_service_.get(),
         context_.get(), request->isolation_info(), net_log_source_for_refresh,
-        std::move(callback), *key_id);
+        request->initiator(), std::move(callback), *key_id);
   }
 }
 

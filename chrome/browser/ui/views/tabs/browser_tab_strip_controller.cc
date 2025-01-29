@@ -412,17 +412,17 @@ void BrowserTabStripController::OnCloseTab(
   std::vector<tab_groups::TabGroupId> groups_to_delete =
       model_->GetGroupsDestroyedFromRemovingIndices({model_index});
 
-  if (tab_groups::IsTabGroupsSaveV2Enabled() && !groups_to_delete.empty()) {
-    // If the user is destroying the last tab in the group via the tabstrip, a
-    // dialog is shown that will decide whether to destroy the tab or not. It
-    // will first ungroup the tab, then close the tab.
-    tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
-        browser_view_->browser(),
-        tab_groups::DeletionDialogController::DialogType::CloseTabAndDelete,
-        groups_to_delete, std::move(callback));
-  } else {
+  if (!tab_groups::IsTabGroupsSaveV2Enabled() || groups_to_delete.empty()) {
     std::move(callback).Run();
+    return;
   }
+
+  // If the user is destroying the last tab in a saved or shared group via the
+  // tabstrip, a dialog is shown that will decide whether to destroy the tab or
+  // not. It will first ungroup the tab, then close the tab.
+  tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
+      browser_view_->browser(), tab_groups::GroupDeletionReason::ClosedLastTab,
+      groups_to_delete, std::move(callback));
 }
 
 void BrowserTabStripController::CloseTab(int model_index) {

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
@@ -71,11 +72,14 @@
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  data_sharing::DataSharingService* dataSharingService =
+      data_sharing::DataSharingServiceFactory::GetForProfile(profile);
 
   _mediator = [[TabGroupIndicatorMediator alloc]
       initWithTabGroupSyncService:tabGroupSyncService
                   shareKitService:ShareKitServiceFactory::GetForProfile(profile)
              collaborationService:collaborationService
+               dataSharingService:dataSharingService
                          consumer:_view
                      webStateList:browser->GetWebStateList()
                         URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)
@@ -142,8 +146,10 @@
         [weakMediator deleteGroupWithConfirmation:NO];
         break;
       case TabGroupActionType::kLeaveSharedTabGroup:
+        [weakMediator leaveSharedGroupWithConfirmation:NO];
+        break;
       case TabGroupActionType::kDeleteSharedTabGroup:
-        // TODO(crbug.com/375587197): Implement this.
+        [weakMediator deleteSharedGroupWithConfirmation:NO];
         break;
       case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
       case TabGroupActionType::kDeleteOrKeepSharedTabGroup:

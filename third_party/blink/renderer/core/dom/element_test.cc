@@ -1285,7 +1285,7 @@ TEST_F(ElementTest, TheCheckMarkPseudoElement) {
   // elements in an appearance:base-select.
   EXPECT_EQ(nullptr, checkmark_pseudo_for("a-div"));
   EXPECT_EQ(nullptr, checkmark_pseudo_for("not-base-option"));
-  EXPECT_NE(nullptr, checkmark_pseudo_for("base-button-option"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("base-button-option"));
   EXPECT_EQ(nullptr, checkmark_pseudo_for("base-picker-option"));
   EXPECT_EQ(nullptr, checkmark_pseudo_for("target"));
   EXPECT_NE(nullptr, checkmark_pseudo_for("target-option"));

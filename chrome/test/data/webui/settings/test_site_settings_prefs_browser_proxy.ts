@@ -134,7 +134,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     if (loadTimeData.getBoolean('enableHandTrackingContentSetting')) {
       this.categoryList_.push(ContentSettingsTypes.HAND_TRACKING);
     }
-    if (loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt')) {
+    if (loadTimeData.getBoolean('enableKeyboardLockPrompt')) {
       this.categoryList_.push(ContentSettingsTypes.KEYBOARD_LOCK);
       this.categoryList_.push(ContentSettingsTypes.POINTER_LOCK);
     }

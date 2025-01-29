@@ -7,12 +7,52 @@ package org.chromium.chrome.browser.safety_hub;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleOption;
-import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleState;
+import androidx.annotation.IntDef;
+
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** Interface for the Safety Hub modules' mediators. */
 interface SafetyHubModuleMediator {
+    /**
+     * Order reflects state severity. Lowest being the most severe state and highest being the
+     * safest state. Must be kept in sync with SafetyHubModuleState in settings/enums.xml.
+     */
+    @IntDef({ModuleState.WARNING, ModuleState.UNAVAILABLE, ModuleState.INFO, ModuleState.SAFE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ModuleState {
+        int WARNING = 0;
+        int UNAVAILABLE = 1;
+        int INFO = 2;
+        int SAFE = 3;
+        int MAX_VALUE = SAFE;
+    }
+
+    /**
+     * Values used in "for" loop below - should start from 0 and can't have gaps, lowest value is
+     * additionally used for starting loop. Order reflects the way modules should be ordered if they
+     * have the same state.
+     */
+    @IntDef({
+        ModuleOption.UPDATE_CHECK,
+        ModuleOption.ACCOUNT_PASSWORDS,
+        ModuleOption.SAFE_BROWSING,
+        ModuleOption.UNUSED_PERMISSIONS,
+        ModuleOption.NOTIFICATION_REVIEW,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ModuleOption {
+        int UPDATE_CHECK = 0;
+        int ACCOUNT_PASSWORDS = 1;
+        int SAFE_BROWSING = 2;
+        int UNUSED_PERMISSIONS = 3;
+        int NOTIFICATION_REVIEW = 4;
+        int OPTION_FIRST = UPDATE_CHECK;
+        int NUM_ENTRIES = 5;
+    }
+
     public void setUpModule();
 
     public void updateModule();

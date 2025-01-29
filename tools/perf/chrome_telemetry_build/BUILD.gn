@@ -9,7 +9,8 @@ if (is_android) {
   import("//build/config/android/config.gni")
   import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
 }
-if (is_android || is_fuchsia) {
+is_remote_platform = is_android || is_fuchsia || is_chromeos
+if (is_remote_platform) {
   import("//build/symlink.gni")
 }
 
@@ -27,7 +28,7 @@ if (is_chromeos_device) {
   }
 }
 
-if (is_android || is_fuchsia) {
+if (is_remote_platform) {
   # Create a symlink from root_build_dir -> clang_x64/trace_processor_shell so
   # the stripped binary is actually included in the isolate.
   binary_symlink("host_trace_processor_shell") {
@@ -43,14 +44,11 @@ group("telemetry_chrome_test") {
   data = []
 
   # Compile the host's version of trace_processor_shell for remote platforms.
-  if (is_android || is_fuchsia || is_chromeos) {
-    data_deps += [ "//third_party/perfetto/src/trace_processor:trace_processor_shell($host_toolchain)" ]
-
-    # Android and Fuchsia require a symlink for the host version to be included
-    # in the isolate.
-    if (is_android || is_fuchsia) {
-      data_deps += [ ":host_trace_processor_shell" ]
-    }
+  if (is_remote_platform) {
+    data_deps += [
+      ":host_trace_processor_shell",
+      "//third_party/perfetto/src/trace_processor:trace_processor_shell($host_toolchain)",
+    ]
   } else {
     data_deps += [ "//third_party/perfetto/src/trace_processor:trace_processor_shell($default_toolchain)" ]
   }

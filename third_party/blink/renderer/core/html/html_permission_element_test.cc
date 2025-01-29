@@ -203,13 +203,13 @@ TEST_F(HTMLPemissionElementTestBase, ParsePermissionDescriptorsFromType) {
   for (const auto& data : test_data) {
     Vector<PermissionDescriptorPtr> expected_permission_descriptors;
     expected_permission_descriptors.reserve(data.expected_permissions.size());
-    base::ranges::transform(data.expected_permissions,
-                            std::back_inserter(expected_permission_descriptors),
-                            [&](const auto& name) {
-                              auto descriptor = PermissionDescriptor::New();
-                              descriptor->name = name;
-                              return descriptor;
-                            });
+    std::ranges::transform(data.expected_permissions,
+                           std::back_inserter(expected_permission_descriptors),
+                           [&](const auto& name) {
+                             auto descriptor = PermissionDescriptor::New();
+                             descriptor->name = name;
+                             return descriptor;
+                           });
     auto* permission_element =
         MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
     permission_element->setAttribute(html_names::kTypeAttr,

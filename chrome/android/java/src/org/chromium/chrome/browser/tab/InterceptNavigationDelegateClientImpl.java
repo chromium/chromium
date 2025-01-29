@@ -47,6 +47,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
                             mInterceptNavigationDelegate.setExternalNavigationHandler(
                                     createExternalNavigationHandler());
                         }
+                        mInterceptNavigationDelegate.onActivityAttachmentChanged(window != null);
                     }
 
                     @Override

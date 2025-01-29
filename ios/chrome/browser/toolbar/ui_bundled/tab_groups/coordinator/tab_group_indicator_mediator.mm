@@ -9,6 +9,7 @@
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/collaboration_service.h"
+#import "components/data_sharing/public/data_sharing_service.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -33,6 +34,8 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/web_state.h"
 
+using PeopleGroupActionOutcome =
+    data_sharing::DataSharingService::PeopleGroupActionOutcome;
 using ScopedTabGroupSyncObservation =
     base::ScopedObservation<tab_groups::TabGroupSyncService,
                             tab_groups::TabGroupSyncService::Observer>;
@@ -50,6 +53,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   raw_ptr<collaboration::CollaborationService> _collaborationService;
   raw_ptr<ShareKitService> _shareKitService;
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
+  raw_ptr<data_sharing::DataSharingService> _dataSharingService;
   raw_ptr<feature_engagement::Tracker> _tracker;
   // The bridge between the service C++ observer and this Objective-C class.
   std::unique_ptr<TabGroupSyncServiceObserverBridge> _syncServiceObserver;
@@ -68,6 +72,8 @@ constexpr CGFloat kFacePileAvatarSize = 20;
                 shareKitService:(ShareKitService*)shareKitService
            collaborationService:
                (collaboration::CollaborationService*)collaborationService
+             dataSharingService:
+                 (data_sharing::DataSharingService*)dataSharingService
                        consumer:(id<TabGroupIndicatorConsumer>)consumer
                    webStateList:(WebStateList*)webStateList
                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader
@@ -82,6 +88,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
     _shareKitService = shareKitService;
     _collaborationService = collaborationService;
     _tabGroupSyncService = tabGroupSyncService;
+    _dataSharingService = dataSharingService;
     if (tabGroupSyncService) {
       _syncServiceObserver =
           std::make_unique<TabGroupSyncServiceObserverBridge>(self);
@@ -114,6 +121,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   _tabGroupSyncService = nullptr;
   _collaborationService = nullptr;
   _shareKitService = nullptr;
+  _dataSharingService = nullptr;
 }
 
 #pragma mark - WebStateListObserving
@@ -138,12 +146,10 @@ constexpr CGFloat kFacePileAvatarSize = 20;
         HasTabGroupIndicatorVisible()) {
       [_consumer setTabGroupTitle:tabGroup->GetTitle()
                        groupColor:tabGroup->GetColor()];
-      BOOL shared =
-          tab_groups::utils::IsTabGroupShared(tabGroup, _tabGroupSyncService);
-      [_consumer setShared:shared];
+      [self updateTabGroupSharedState:tabGroup];
     } else {
       [_consumer setTabGroupTitle:nil groupColor:nil];
-      [_consumer setShared:NO];
+      [_consumer setShared:NO owner:NO];
     }
     [self updateFacePileUI];
   }
@@ -227,6 +233,46 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   [self closeTabGroup:tabGroup andDeleteGroup:YES];
 }
 
+- (void)deleteSharedGroupWithConfirmation:(BOOL)confirmation {
+  DCHECK(IsTabGroupSyncEnabled());
+  const TabGroup* tabGroup = [self currentTabGroup];
+  if (!tabGroup) {
+    return;
+  }
+
+  if (confirmation) {
+    [_delegate
+        showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
+                                                       kDeleteSharedTabGroup
+                                             group:tabGroup->GetWeakPtr()];
+    return;
+  }
+  [self takeActionForActionType:TabGroupActionType::kDeleteSharedTabGroup
+                 sharedTabGroup:tabGroup];
+}
+
+- (void)leaveSharedGroupWithConfirmation:(BOOL)confirmation {
+  DCHECK(IsTabGroupSyncEnabled());
+  const TabGroup* tabGroup = [self currentTabGroup];
+  if (!tabGroup) {
+    return;
+  }
+  if (confirmation) {
+    [_delegate
+        showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
+                                                       kLeaveSharedTabGroup
+                                             group:tabGroup->GetWeakPtr()];
+    return;
+  }
+  [self takeActionForActionType:TabGroupActionType::kLeaveSharedTabGroup
+                 sharedTabGroup:tabGroup];
+}
+
+- (void)updateSharedState {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  [self updateTabGroupSharedState:tabGroup];
+}
+
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
@@ -255,10 +301,55 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   if (!tabGroup || newGroup.local_group_id() != tabGroup->tab_group_id()) {
     return;
   }
+  [self updateTabGroupSharedState:tabGroup];
   [self updateFacePileUI];
 }
 
 #pragma mark - Private
+
+// Takes the corresponded action to `actionType` for the shared `group`.
+// Not handled TabGroupActionType: kUngroupTabGroup, kDeleteTabGroup.
+- (void)takeActionForActionType:(TabGroupActionType)actionType
+                 sharedTabGroup:(const TabGroup*)group {
+  CHECK(_dataSharingService);
+
+  const base::Uuid savedGroupId =
+      _tabGroupSyncService->GetGroup(group->tab_group_id())->saved_guid();
+  const tab_groups::CollaborationId collabId =
+      tab_groups::utils::GetTabGroupCollabID(group, _tabGroupSyncService);
+  CHECK(!collabId->empty());
+  const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
+
+  __weak TabGroupIndicatorMediator* weakSelf = self;
+  auto callback = base::BindOnce(^(PeopleGroupActionOutcome outcome) {
+    BOOL success = outcome == PeopleGroupActionOutcome::kSuccess;
+    [weakSelf handTakeActionForActionTypeOutcome:success];
+  });
+
+  // TODO(crbug.com/393073658): Block the screen.
+
+  // Asynchronously call on the server.
+  switch (actionType) {
+    case TabGroupActionType::kLeaveSharedTabGroup:
+      _dataSharingService->LeaveGroup(groupId, std::move(callback));
+      break;
+    case TabGroupActionType::kDeleteSharedTabGroup:
+      _dataSharingService->DeleteGroup(groupId, std::move(callback));
+      break;
+    case TabGroupActionType::kUngroupTabGroup:
+    case TabGroupActionType::kDeleteTabGroup:
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+      NOTREACHED();
+  }
+}
+
+// Called when `performAction:forSharedTabGroup:` server's call returned.
+- (void)handTakeActionForActionTypeOutcome:(BOOL)success {
+  // TODO(crbug.com/393073658):
+  // - Unblock the screen.
+  // - Show an error if needed.
+}
 
 // Tries to present the IPH to be presented when the app is foregrounded with a
 // shared tab group visible.
@@ -286,7 +377,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   tab_groups::CollaborationId savedCollabID =
       tab_groups::utils::GetTabGroupCollabID(tabGroup, _tabGroupSyncService);
   BOOL isShared = !savedCollabID.value().empty();
-  [_consumer setShared:isShared];
+  [self updateTabGroupSharedState:tabGroup];
 
   // Prevent the face pile from being set up for tab groups that are not shared.
   if (!isShared) {
@@ -326,6 +417,16 @@ constexpr CGFloat kFacePileAvatarSize = 20;
     return nullptr;
   }
   return _webStateList->GetGroupOfWebStateAt(_webStateList->active_index());
+}
+
+// Updates the shared state of for the given `tabGroup`.
+- (void)updateTabGroupSharedState:(const TabGroup*)tabGroup {
+  BOOL shared =
+      tab_groups::utils::IsTabGroupShared(tabGroup, _tabGroupSyncService);
+  data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(
+      tabGroup, _tabGroupSyncService, _collaborationService);
+  [_consumer setShared:shared
+                 owner:userRole == data_sharing::MemberRole::kOwner];
 }
 
 @end

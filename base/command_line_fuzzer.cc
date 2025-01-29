@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -52,7 +51,8 @@ bool IsForbiddenSwitchCharacter(char c) {
 bool IsValidSwitchName(const std::string& text) {
   // This duplicates the logic in command_line.cc, but it's not exposed in form
   // of public interface.
-  return !text.empty() && !ranges::any_of(text, IsForbiddenSwitchCharacter) &&
+  return !text.empty() &&
+         !std::ranges::any_of(text, IsForbiddenSwitchCharacter) &&
          !StartsWith(text, "-") && !StartsWith(text, "/");
 }
 

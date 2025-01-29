@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text_path.h"
@@ -126,7 +125,7 @@ void SvgTextLayoutAlgorithm::SetFlags(
     }
   }
   if (inline_node_.IsBidiEnabled()) {
-    base::ranges::sort(sorted_item_indexes, [&](wtf_size_t a, wtf_size_t b) {
+    std::ranges::sort(sorted_item_indexes, [&](wtf_size_t a, wtf_size_t b) {
       return items[a]->StartOffset() < items[b]->StartOffset();
     });
   }
@@ -338,16 +337,16 @@ void SvgTextLayoutAlgorithm::ResolveTextLength(
     // 2.4.2. Find n, the total number of typographic characters in this node
     // including any descendant nodes that are not resolved descendant nodes or
     // within a resolved descendant node.
-    auto n = base::ranges::count_if(
+    auto n = std::ranges::count_if(
         base::span(result_).subspan(i, j_plus_1 - i), [](const auto& info) {
           return !info.middle && !info.text_length_resolved;
         });
     // 2.4.3. Let n = n + number of resolved descendant nodes − 1.
-    n += base::ranges::count_if(resolved_descendant_node_starts,
-                                [i, j_plus_1](const auto& start_index) {
-                                  return i <= start_index &&
-                                         start_index < j_plus_1;
-                                }) -
+    n += std::ranges::count_if(resolved_descendant_node_starts,
+                               [i, j_plus_1](const auto& start_index) {
+                                 return i <= start_index &&
+                                        start_index < j_plus_1;
+                               }) -
          1;
     // 2.4.4. Find the per-character adjustment small-delta = delta/n.
     // character_delta should be 0 if n==0 because it means we have no
@@ -508,7 +507,7 @@ void SvgTextLayoutAlgorithm::ApplyAnchoring(
   while (i < result_.size()) {
     const wtf_size_t start_index = i + 1;
     auto result_range = base::span(result_).subspan(start_index);
-    auto next_anchor = base::ranges::find_if(
+    auto next_anchor = std::ranges::find_if(
         result_range, [](const auto& info) { return info.anchored_chunk; });
     wtf_size_t j =
         start_index + static_cast<wtf_size_t>(
@@ -516,7 +515,7 @@ void SvgTextLayoutAlgorithm::ApplyAnchoring(
 
     const auto& text_path_ranges = inline_node_.SvgTextPathRangeList();
     const auto text_path_iter =
-        base::ranges::find_if(text_path_ranges, [i](const auto& range) {
+        std::ranges::find_if(text_path_ranges, [i](const auto& range) {
           return range.start_index <= i && i <= range.end_index;
         });
     if (text_path_iter != text_path_ranges.end()) {
@@ -774,7 +773,7 @@ void SvgTextLayoutAlgorithm::PositionOnPath(
           // drawn character.
           auto result_range = base::span(result_).subspan(index);
           auto reverse_result_range = base::Reversed(result_range);
-          const auto iter = base::ranges::find_if(
+          const auto iter = std::ranges::find_if(
               reverse_result_range,
               [](const auto& info) { return !info.hidden && !info.middle; });
           if (iter != reverse_result_range.end()) {

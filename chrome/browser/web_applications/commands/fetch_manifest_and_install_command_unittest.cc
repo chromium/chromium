@@ -65,6 +65,7 @@
 #include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/test/sk_gmock_support.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -763,7 +764,7 @@ class FetchManifestAndInstallCommandUniversalInstallTest
   static constexpr SkColor kIconColor = SK_ColorCYAN;
   const std::u16string kPageTitle = u"Page Title";
   const base::FilePath kUnmaskableFavicon{
-      FILE_PATH_LITERAL("chrome/test/data/web_apps/slack_favicon.png")};
+      FILE_PATH_LITERAL("chrome/test/data/web_apps/pattern3-256.png")};
 
   ~FetchManifestAndInstallCommandUniversalInstallTest() override = default;
 
@@ -811,9 +812,9 @@ TEST_F(FetchManifestAndInstallCommandUniversalInstallTest, NoManifest) {
       webapps::InstallResultCode::kSuccessNewInstall);
 }
 
-gfx::Image LoadTestPNG(const base::FilePath::CharType* path) {
-  base::FilePath data_root;
-  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_root);
+gfx::Image LoadTestPNG(const base::FilePath& path) {
+  base::FilePath data_root =
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT);
   base::FilePath image_path = data_root.Append(path);
   std::string png_data;
   ReadFileToString(image_path, &png_data);
@@ -923,8 +924,7 @@ class UniversalInstallComboTest
       if (GetFaviconColor()) {
         return CreateSquareIcon(icon_size::k256, GetFaviconColor().value());
       } else if (GetFaviconFilePath()) {
-        gfx::Image favicon_icon =
-            LoadTestPNG(kUnmaskableFavicon.value().c_str());
+        gfx::Image favicon_icon = LoadTestPNG(kUnmaskableFavicon);
         return favicon_icon.AsBitmap();
       }
     }
@@ -943,7 +943,7 @@ class UniversalInstallComboTest
                             CreateSquareIcon(256, GetFaviconColor().value())};
     } else if (GetFaviconFilePath()) {
       page_state.favicon_url = kFaviconUrl;
-      gfx::Image test_icon = LoadTestPNG(kUnmaskableFavicon.value().c_str());
+      gfx::Image test_icon = LoadTestPNG(kUnmaskableFavicon);
       page_state.favicon = {test_icon.AsBitmap()};
     }
     page_state.manifest_before_default_processing =
@@ -1006,32 +1006,32 @@ class UniversalInstallComboTest
       if (GetIcon().has_value() &&
           !base::Contains(GetIcon()->src.spec(), "not_found") &&
           !base::Contains(GetIcon()->src.spec(), "Absent")) {
-        gfx::Image test_icon = LoadTestPNG(FILE_PATH_LITERAL(
-            "chrome/test/data/web_apps/diyapp_icon_image.png"));
+        gfx::Image test_icon = LoadTestPNG(base::FilePath(FILE_PATH_LITERAL(
+            "chrome/test/data/web_apps/diyapp_icon_image.png")));
         SkBitmap test_bitmap = test_icon.AsBitmap();
         return test_bitmap;
       }
       auto favicon_path = GetFaviconFilePath();
-      if (favicon_path && base::Contains(*favicon_path, "slack")) {
-        gfx::Image test_icon = LoadTestPNG(FILE_PATH_LITERAL(
-            "chrome/test/data/web_apps/masked_slack_favicon.png"));
+      if (favicon_path && base::Contains(*favicon_path, "pattern3")) {
+        gfx::Image test_icon = LoadTestPNG(base::FilePath(FILE_PATH_LITERAL(
+            "chrome/test/data/web_apps/masked_pattern3-256.png")));
         SkBitmap test_bitmap = test_icon.AsBitmap();
         return test_bitmap;
       }
       if (GetFaviconColor() == SK_ColorBLUE) {
-        gfx::Image test_icon = LoadTestPNG(FILE_PATH_LITERAL(
-            "chrome/test/data/web_apps/diyapp_blue_image.png"));
+        gfx::Image test_icon = LoadTestPNG(base::FilePath(FILE_PATH_LITERAL(
+            "chrome/test/data/web_apps/diyapp_blue_image.png")));
         SkBitmap test_bitmap = test_icon.AsBitmap();
         return test_bitmap;
       }
       if (GetAppName() == u"AppName") {
-        gfx::Image test_icon = LoadTestPNG(FILE_PATH_LITERAL(
-            "chrome/test/data/web_apps/diyapp_textA_image.png"));
+        gfx::Image test_icon = LoadTestPNG(base::FilePath(FILE_PATH_LITERAL(
+            "chrome/test/data/web_apps/diyapp_textA_image.png")));
         SkBitmap test_bitmap = test_icon.AsBitmap();
         return test_bitmap;
       }
-      gfx::Image test_icon = LoadTestPNG(FILE_PATH_LITERAL(
-          "chrome/test/data/web_apps/diyapp_textP_image.png"));
+      gfx::Image test_icon = LoadTestPNG(base::FilePath(FILE_PATH_LITERAL(
+          "chrome/test/data/web_apps/diyapp_textP_image.png")));
       SkBitmap test_bitmap = test_icon.AsBitmap();
       return test_bitmap;
     }
@@ -1116,12 +1116,9 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
       << ui::SkColorName(
              bitmap->getColor(bitmap->width() / 2, bitmap->height() / 2));
 #elif BUILDFLAG(IS_MAC)
-  // Use the bitmap's size instead of a static one, as the os integration
-  // reading code above is not consistent.
-  // TODO(https://crbug.com/372688523): Implement icon checks for masked DIY app
-  // icons.
-  EXPECT_THAT(*bitmap, gfx::test::EqualsBitmap(
-                           GetExpectedPlatformIconAtSize(bitmap->width())))
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      *bitmap, GetExpectedPlatformIconAtSize(bitmap->width()),
+      /*max_deviation=*/3))
       << bitmap->width() << "x" << bitmap->height() << ", with center color "
       << ui::SkColorName(
              bitmap->getColor(bitmap->width() / 2, bitmap->height() / 2));
@@ -1156,7 +1153,7 @@ INSTANTIATE_TEST_SUITE_P(
                         absl::monostate(),
 #if BUILDFLAG(IS_MAC)
                         FaviconOptions(base::FilePath(FILE_PATH_LITERAL(
-                            "chrome/test/data/web_apps/slack_favicon.png")))
+                            "chrome/test/data/web_apps/pattern3-256.png")))
 #endif
                             ),
         // Note: the name just specified if the start_url exists or not - to add

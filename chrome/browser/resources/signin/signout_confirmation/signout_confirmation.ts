@@ -4,5 +4,6 @@
 
 import './signout_confirmation_app.js';
 
-export {PageCallbackRouter, PageHandlerInterface, PageRemote} from './signout_confirmation.mojom-webui.js';
+export {SignoutConfirmationBrowserProxy, SignoutConfirmationBrowserProxyImpl} from './browser_proxy.js';
+export {PageCallbackRouter, PageHandlerInterface, PageRemote, SignoutConfirmationData} from './signout_confirmation.mojom-webui.js';
 export {SignoutConfirmationAppElement} from './signout_confirmation_app.js';

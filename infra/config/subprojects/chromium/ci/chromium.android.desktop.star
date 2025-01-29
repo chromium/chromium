@@ -330,6 +330,11 @@ ci.thin_tester(
                     "--gtest_filter=-org.chromium.chrome.browser.ui.appmenu.AppMenuTest.testShowAppMenu_AnchorTop",
                 ],
             ),
+            "unit_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.unit_tests.filter",
+                ],
+            ),
         },
     ),
     targets_settings = targets.settings(

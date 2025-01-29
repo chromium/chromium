@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 
+#include <algorithm>
 #include <array>
 #include <optional>
 
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
@@ -519,7 +519,7 @@ std::optional<std::vector<uint32_t>> GetResample2DPermutation(
           : kResample2dChannelLastAxes;
 
   CHECK_EQ(from_axes.size(), 2u);
-  CHECK(base::ranges::is_sorted(from_axes));
+  CHECK(std::ranges::is_sorted(from_axes));
   if (from_axes == to_axes) {
     return std::nullopt;
   }
@@ -532,7 +532,7 @@ std::optional<std::vector<uint32_t>> GetResample2DPermutation(
     uint32_t to_axis = to_axes[i];
     // Find the current index of the from_axis as it could have been moved from
     // previous iteration.
-    auto it = base::ranges::find(permutation, from_axis);
+    auto it = std::ranges::find(permutation, from_axis);
     CHECK(it != permutation.end());
     size_t from_axis_index = std::distance(permutation.begin(), it);
     std::swap(permutation[to_axis], permutation[from_axis_index]);
@@ -603,10 +603,10 @@ OperationPtr CreateConcatOperation(const OperandToIdMap& operand_to_id_map,
 
   Vector<uint64_t> input_operand_ids;
   input_operand_ids.reserve(inputs.size());
-  base::ranges::transform(inputs, std::back_inserter(input_operand_ids),
-                          [operand_to_id_map](const auto& input) {
-                            return operand_to_id_map.at(input);
-                          });
+  std::ranges::transform(inputs, std::back_inserter(input_operand_ids),
+                         [operand_to_id_map](const auto& input) {
+                           return operand_to_id_map.at(input);
+                         });
 
   auto concat_mojo = blink_mojom::Concat::New();
   concat_mojo->input_operand_ids = std::move(input_operand_ids);
@@ -1439,7 +1439,7 @@ void SerializeResample2dOperation(
   uint64_t input_operand_id = operand_to_id_map.at(input_operand);
   uint64_t output_operand_id = operand_to_id_map.at(output_operand);
 
-  base::ranges::sort(axes);
+  std::ranges::sort(axes);
   const std::optional<std::vector<uint32_t>> input_permutation =
       GetResample2DPermutation(axes, context_properties);
   if (input_permutation.has_value()) {

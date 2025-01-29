@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/fenced_frame_test_utils.h"
@@ -30,11 +31,6 @@ namespace {
 
 // Validates the mapping contained in `pending_ad_components`.
 //
-// If `add_to_new_map` is false, `pending_ad_components` will be added to
-// `fenced_frame_url_mapping` to mimic ShadowDOM behavior. Otherwise, they'll
-// be added to a new FencedFrameURLMapping to mimic MPArch behavior, and
-// `fenced_frame_url_mapping` is ignored.
-//
 // `expected_mapped_ad_descriptors` contains the URLs the first URNs are
 // expected to map to, and will be padded with "about:blank" URLs until it's
 // blink::MaxAdAuctionAdComponents() in length.
@@ -42,7 +38,6 @@ namespace {
 // these tests should be cleaned up to only reflect MPArch behavior.
 void ValidatePendingAdComponentsMap(
     FencedFrameURLMapping* fenced_frame_url_mapping,
-    bool add_to_new_map,
     const std::vector<std::pair<GURL, FencedFrameConfig>>&
         nested_urn_config_pairs,
     std::vector<blink::AdDescriptor> expected_mapped_ad_descriptors) {
@@ -73,12 +68,9 @@ void ValidatePendingAdComponentsMap(
     EXPECT_FALSE(observer.nested_urn_config_pairs());
   }
 
-  // Add the `nested_urn_config_pairs` to a mapping. If `add_to_new_map` is
-  // true, use a new URL mapping.
+  // Add the `nested_urn_config_pairs` to a mapping.
   FencedFrameURLMapping new_frame_url_mapping;
-  if (add_to_new_map) {
-    fenced_frame_url_mapping = &new_frame_url_mapping;
-  }
+  fenced_frame_url_mapping = &new_frame_url_mapping;
   fenced_frame_url_mapping->ImportPendingAdComponents(nested_urn_config_pairs);
 
   // Now validate the changes made to `fenced_frame_url_mapping`.
@@ -111,7 +103,7 @@ void ValidatePendingAdComponentsMap(
       // that top-level and nested component ads can't tell which one they
       // are, to prevent smuggling data based on whether an ad is loaded in a
       // top-level ad URL or a component ad URL.
-      ValidatePendingAdComponentsMap(fenced_frame_url_mapping, add_to_new_map,
+      ValidatePendingAdComponentsMap(fenced_frame_url_mapping,
                                      *observer.nested_urn_config_pairs(),
                                      /*expected_mapped_ad_descriptors=*/
                                      {});
@@ -147,6 +139,13 @@ class FencedFrameURLMappingTest : public RenderViewHostTestHarness {
         /*winner_origin=*/url::Origin(),
         /*winner_aggregation_coordinator_origin=*/std::nullopt);
   }
+
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
+ private:
+  base::HistogramTester histogram_tester_;
 };
 
 }  // namespace
@@ -319,16 +318,16 @@ TEST_F(FencedFrameURLMappingTest,
   observer.on_navigate_callback().Run();
   EXPECT_TRUE(on_navigate_callback_invoked);
 
-  // Call with `add_to_new_map` set to false and true, to simulate ShadowDOM
-  // and MPArch behavior, respectively.
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
-                                 /*add_to_new_map=*/true,
                                  *observer.nested_urn_config_pairs(),
                                  /*expected_mapped_ad_descriptors=*/{});
-  ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
-                                 /*add_to_new_map=*/false,
-                                 *observer.nested_urn_config_pairs(),
-                                 /*expected_mapped_ad_descriptors=*/{});
+
+  histogram_tester().ExpectTotalCount(
+      blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram, 0);
+  histogram_tester().ExpectTotalCount(
+      blink::kAdComponentsCountForWinningBidHistogram, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kAdComponentsCountForWinningBidHistogram, 0, 1);
 }
 
 // Test the case `ad_component_descriptors` has a single URL.
@@ -361,16 +360,18 @@ TEST_F(FencedFrameURLMappingTest,
   EXPECT_TRUE(observer.nested_urn_config_pairs());
   EXPECT_FALSE(observer.on_navigate_callback());
 
-  // Call with `add_to_new_map` set to false and true, to simulate ShadowDOM
-  // and MPArch behavior, respectively.
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
-                                 /*add_to_new_map=*/true,
                                  *observer.nested_urn_config_pairs(),
                                  ad_component_descriptors);
-  ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
-                                 /*add_to_new_map=*/false,
-                                 *observer.nested_urn_config_pairs(),
-                                 ad_component_descriptors);
+
+  histogram_tester().ExpectTotalCount(
+      blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram, 1, 1);
+  histogram_tester().ExpectTotalCount(
+      blink::kAdComponentsCountForWinningBidHistogram, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kAdComponentsCountForWinningBidHistogram, 1, 1);
 }
 
 // Test the case `ad_component_descriptors` has the maximum number of allowed
@@ -408,16 +409,116 @@ TEST_F(FencedFrameURLMappingTest,
   EXPECT_TRUE(observer.nested_urn_config_pairs());
   EXPECT_FALSE(observer.on_navigate_callback());
 
-  // Call with `add_to_new_map` set to false and true, to simulate ShadowDOM
-  // and MPArch behavior, respectively.
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
-                                 /*add_to_new_map=*/true,
                                  *observer.nested_urn_config_pairs(),
                                  ad_component_descriptors);
+
+  histogram_tester().ExpectTotalCount(
+      blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram, 1);
+  // All of the ad component descriptors are cross-site to one another.
+  histogram_tester().ExpectBucketCount(
+      blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram, 1, 1);
+  histogram_tester().ExpectTotalCount(
+      blink::kAdComponentsCountForWinningBidHistogram, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kAdComponentsCountForWinningBidHistogram,
+      kMaxAdAuctionAdComponents, 1);
+}
+
+// Test the case `ad_component_descriptors` has multiple ad component URLs from
+// different sites.
+TEST_F(FencedFrameURLMappingTest,
+       AssignFencedFrameURLAndInterestGroupInfoCrossSiteAdComponentUrl) {
+  FencedFrameURLMapping fenced_frame_url_mapping;
+  GURL top_level_url("https://foo.test");
+  url::Origin interest_group_owner = url::Origin::Create(top_level_url);
+  std::string interest_group_name = "bars";
+  std::vector<blink::AdDescriptor> ad_component_descriptors;
+  ad_component_descriptors.emplace_back(GURL("https://a.test/"));
+  ad_component_descriptors.emplace_back(GURL("https://a.test/"));
+  ad_component_descriptors.emplace_back(GURL("https://b.test/"));
+
+  auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
+
+  fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
+      urn_uuid, /*container_size=*/std::nullopt,
+      blink::AdDescriptor(top_level_url),
+      {interest_group_owner, interest_group_name},
+      /*on_navigate_callback=*/base::RepeatingClosure(),
+      ad_component_descriptors);
+
+  TestFencedFrameURLMappingResultObserver observer;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
+  EXPECT_TRUE(observer.mapping_complete_observed());
+  EXPECT_EQ(top_level_url, observer.mapped_url());
+  EXPECT_EQ(interest_group_owner,
+            observer.ad_auction_data()->interest_group_owner);
+  EXPECT_EQ(interest_group_name,
+            observer.ad_auction_data()->interest_group_name);
+  EXPECT_TRUE(observer.nested_urn_config_pairs());
+  EXPECT_FALSE(observer.on_navigate_callback());
+
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
-                                 /*add_to_new_map=*/false,
                                  *observer.nested_urn_config_pairs(),
                                  ad_component_descriptors);
+
+  histogram_tester().ExpectTotalCount(
+      blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram, 2, 1);
+  histogram_tester().ExpectTotalCount(
+      blink::kAdComponentsCountForWinningBidHistogram, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kAdComponentsCountForWinningBidHistogram, 3, 1);
+}
+
+// Test the case `ad_component_descriptors` has multiple ad component URLs from
+// different sites.
+TEST_F(FencedFrameURLMappingTest,
+       AssignFencedFrameURLAndInterestGroupInfoParentAndComponentSameSiteUrl) {
+  FencedFrameURLMapping fenced_frame_url_mapping;
+  GURL top_level_url("https://a.test");
+  url::Origin interest_group_owner = url::Origin::Create(top_level_url);
+  std::string interest_group_name = "bars";
+  std::vector<blink::AdDescriptor> ad_component_descriptors;
+  ad_component_descriptors.emplace_back(GURL("https://a.test/"));
+  ad_component_descriptors.emplace_back(GURL("https://a.test/"));
+  ad_component_descriptors.emplace_back(GURL("https://b.test/"));
+
+  auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
+
+  fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
+      urn_uuid, /*container_size=*/std::nullopt,
+      blink::AdDescriptor(top_level_url),
+      {interest_group_owner, interest_group_name},
+      /*on_navigate_callback=*/base::RepeatingClosure(),
+      ad_component_descriptors);
+
+  TestFencedFrameURLMappingResultObserver observer;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
+  EXPECT_TRUE(observer.mapping_complete_observed());
+  EXPECT_EQ(top_level_url, observer.mapped_url());
+  EXPECT_EQ(interest_group_owner,
+            observer.ad_auction_data()->interest_group_owner);
+  EXPECT_EQ(interest_group_name,
+            observer.ad_auction_data()->interest_group_name);
+  EXPECT_TRUE(observer.nested_urn_config_pairs());
+  EXPECT_FALSE(observer.on_navigate_callback());
+
+  ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
+                                 *observer.nested_urn_config_pairs(),
+                                 ad_component_descriptors);
+
+  histogram_tester().ExpectTotalCount(
+      blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram, 1);
+  // In this case, the parent/top-level ad is same-site to some of the ad
+  // components, so it should contribute to the same-site max count.
+  histogram_tester().ExpectBucketCount(
+      blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram, 3, 1);
+  histogram_tester().ExpectTotalCount(
+      blink::kAdComponentsCountForWinningBidHistogram, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kAdComponentsCountForWinningBidHistogram, 3, 1);
 }
 
 // Test the case `ad_component_descriptors` has the maximum number of allowed
@@ -453,16 +554,20 @@ TEST_F(FencedFrameURLMappingTest,
   EXPECT_TRUE(observer.nested_urn_config_pairs());
   EXPECT_FALSE(observer.on_navigate_callback());
 
-  // Call with `add_to_new_map` set to false and true, to simulate ShadowDOM
-  // and MPArch behavior, respectively.
   ValidatePendingAdComponentsMap(
-      &fenced_frame_url_mapping,
-      /*add_to_new_map=*/true, *observer.nested_urn_config_pairs(),
+      &fenced_frame_url_mapping, *observer.nested_urn_config_pairs(),
       /*expected_mapped_ad_descriptors=*/ad_component_descriptors);
-  ValidatePendingAdComponentsMap(
-      &fenced_frame_url_mapping,
-      /*add_to_new_map=*/false, *observer.nested_urn_config_pairs(),
-      /*expected_mapped_ad_descriptors=*/ad_component_descriptors);
+
+  histogram_tester().ExpectTotalCount(
+      blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram,
+      blink::MaxAdAuctionAdComponents(), 1);
+  histogram_tester().ExpectTotalCount(
+      blink::kAdComponentsCountForWinningBidHistogram, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kAdComponentsCountForWinningBidHistogram,
+      blink::MaxAdAuctionAdComponents(), 1);
 }
 
 // Test the case `ad_component_descriptors` has a single URL.
@@ -510,18 +615,20 @@ TEST_F(FencedFrameURLMappingTest, SubstituteFencedFrameURLs) {
   EXPECT_TRUE(observer.nested_urn_config_pairs());
   EXPECT_FALSE(observer.on_navigate_callback());
 
-  // Call with `add_to_new_map` set to false and true, to simulate
-  // ShadowDOM and MPArch behavior, respectively.
   std::vector<blink::AdDescriptor> expected_ad_component_descriptors{
       blink::AdDescriptor(GURL("https://bar.test/page?component"))};
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
-                                 /*add_to_new_map=*/true,
                                  *observer.nested_urn_config_pairs(),
                                  expected_ad_component_descriptors);
-  ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
-                                 /*add_to_new_map=*/false,
-                                 *observer.nested_urn_config_pairs(),
-                                 expected_ad_component_descriptors);
+
+  histogram_tester().ExpectTotalCount(
+      blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram, 1, 1);
+  histogram_tester().ExpectTotalCount(
+      blink::kAdComponentsCountForWinningBidHistogram, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kAdComponentsCountForWinningBidHistogram, 1, 1);
 }
 
 // Test the correctness of the URN format. The URN is expected to be in the
@@ -584,6 +691,13 @@ TEST_F(FencedFrameURLMappingTest, ReporterSuccessWithInterestGroupInfo) {
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
   EXPECT_TRUE(observer.mapping_complete_observed());
   EXPECT_EQ(fenced_frame_reporter.get(), observer.fenced_frame_reporter());
+
+  histogram_tester().ExpectTotalCount(
+      blink::kSameSiteAdComponentsMaxCountForWinningBidHistogram, 0);
+  histogram_tester().ExpectTotalCount(
+      blink::kAdComponentsCountForWinningBidHistogram, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kAdComponentsCountForWinningBidHistogram, 0, 1);
 }
 
 // Test that number of urn mappings limit is enforced for pending mapped urn

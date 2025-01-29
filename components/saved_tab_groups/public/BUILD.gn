@@ -150,6 +150,7 @@ source_set("unit_tests") {
 if (is_android) {
   android_library("java") {
     sources = [
+      "android/java/src/org/chromium/components/tab_group_sync/EitherId.java",
       "android/java/src/org/chromium/components/tab_group_sync/EventDetails.java",
       "android/java/src/org/chromium/components/tab_group_sync/LocalTabGroupId.java",
       "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroup.java",
@@ -189,6 +190,21 @@ if (is_android) {
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java_test_support",
       "//url:gurl_java",
+    ]
+  }
+
+  robolectric_library("junit") {
+    include_android_sdk = false
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/EitherIdTest.java" ]
+
+    deps = [
+      ":java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//components/saved_tab_groups/public:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/junit",
     ]
   }
 }

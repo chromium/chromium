@@ -20,6 +20,8 @@ SignoutConfirmationUI::SignoutConfirmationUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUISignoutConfirmationHost);
 
+  // Currently, strings are added by the handler since they all depend on the
+  // ChromeSignoutConfirmationPromptVariant.
   webui::SetupWebUIDataSource(
       source, kSigninSignoutConfirmationResources,
       IDR_SIGNIN_SIGNOUT_CONFIRMATION_SIGNOUT_CONFIRMATION_HTML);

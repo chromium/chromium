@@ -35,7 +35,7 @@ class Conjunction : public DocumentRulePredicate {
   ~Conjunction() override = default;
 
   bool Matches(const HTMLAnchorElementBase& el) const override {
-    return base::ranges::all_of(clauses_, [&](DocumentRulePredicate* clause) {
+    return std::ranges::all_of(clauses_, [&](DocumentRulePredicate* clause) {
       return clause->Matches(el);
     });
   }
@@ -85,7 +85,7 @@ class Disjunction : public DocumentRulePredicate {
   ~Disjunction() override = default;
 
   bool Matches(const HTMLAnchorElementBase& el) const override {
-    return base::ranges::any_of(clauses_, [&](DocumentRulePredicate* clause) {
+    return std::ranges::any_of(clauses_, [&](DocumentRulePredicate* clause) {
       return clause->Matches(el);
     });
   }

@@ -12,7 +12,8 @@ found in the LICENSE file.
   android:id="@+id/whats_new_page_view_flipper"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:measureAllChildren="false">
+  android:measureAllChildren="false"
+  android:orientation="vertical">
 
     <include
         android:id="@+id/whats_new_overview_page"

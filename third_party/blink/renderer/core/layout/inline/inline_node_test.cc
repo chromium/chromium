@@ -1748,16 +1748,28 @@ TEST_F(InlineNodeTest, ShapeCacheDisabled) {
 TEST_F(InlineNodeTest, ShapeCacheLongString) {
   ScopedLayoutNGShapeCacheForTest scoped_feature(true);
 
-  SetupHtml("t", "<div id=t>abcdefghijklmnopqrstuvwxyz</div>");
-  InlineNodeForTest node = CreateInlineNode();
-  node.CollectInlines();
+  for (const unsigned text_length :
+       {NGShapeCache::kMaxTextLengthOfEntries - 1,
+        NGShapeCache::kMaxTextLengthOfEntries,
+        NGShapeCache::kMaxTextLengthOfEntries + 1}) {
+    StringBuilder builder;
+    builder.Append("<div id=t>");
+    for (unsigned i = 0; i < text_length; ++i) {
+      builder.Append(static_cast<LChar>((i % 10) + '0'));
+    }
+    builder.Append("</div>");
 
-  const String& text_content(node.Text().c_str());
-  HeapVector<InlineItem>& items = node.Items();
-  ShapeResultSpacing<String> spacing(text_content, node.IsSvgText());
+    SetupHtml("t", builder.ToString());
+    InlineNodeForTest node = CreateInlineNode();
+    node.CollectInlines();
 
-  EXPECT_FALSE(
-      node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing));
+    const String& text_content(node.Text().c_str());
+    HeapVector<InlineItem>& items = node.Items();
+    ShapeResultSpacing<String> spacing(text_content, node.IsSvgText());
+
+    EXPECT_EQ(node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing),
+              text_length <= NGShapeCache::kMaxTextLengthOfEntries);
+  }
 }
 
 TEST_F(InlineNodeTest, ShapeCacheMultiItems) {

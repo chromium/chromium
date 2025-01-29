@@ -722,15 +722,11 @@ void BackgroundTracingManagerImpl::SaveTrace(
     base::Token trace_uuid,
     const BackgroundTracingRule* triggered_rule,
     std::string&& trace_data) {
-  std::string rule_name = triggered_rule->rule_name();
-  if (triggered_rule->triggered_value()) {
-    rule_name.append(
-        base::StringPrintf(" value: %d", *triggered_rule->triggered_value()));
-  }
-  OnProtoDataComplete(std::move(trace_data), scenario->scenario_name(),
-                      rule_name, scenario->privacy_filter_enabled(),
-                      scenario->is_local_scenario(),
-                      /*force_upload=*/force_uploads_, trace_uuid);
+  OnProtoDataComplete(
+      std::move(trace_data), scenario->scenario_name(),
+      triggered_rule->rule_name(), triggered_rule->triggered_value(),
+      scenario->privacy_filter_enabled(), scenario->is_local_scenario(),
+      /*force_upload=*/force_uploads_, trace_uuid);
 }
 
 bool BackgroundTracingManagerImpl::HasActiveScenario() {
@@ -863,6 +859,7 @@ void BackgroundTracingManagerImpl::SaveTraceForTesting(
     const base::Token& uuid) {
   InitializeTraceReportDatabase(true);
   OnProtoDataComplete(std::move(serialized_trace), scenario_name, rule_name,
+                      /*rule_value=*/std::nullopt,
                       /*privacy_filter_enabled*/ true,
                       /*is_local_scenario=*/false,
                       /*force_upload=*/force_uploads_, uuid);
@@ -893,6 +890,7 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     std::string&& serialized_trace,
     const std::string& scenario_name,
     const std::string& rule_name,
+    std::optional<int32_t> rule_value,
     bool privacy_filter_enabled,
     bool is_local_scenario,
     bool force_upload,
@@ -928,6 +926,7 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     base_report.creation_time = base::Time::Now();
     base_report.scenario_name = scenario_name;
     base_report.upload_rule_name = rule_name;
+    base_report.upload_rule_value = rule_value;
     base_report.total_size = serialized_trace.size();
     base_report.skip_reason = skip_reason;
 

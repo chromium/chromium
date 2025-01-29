@@ -918,6 +918,7 @@ source_set("extensions") {
       "//extensions/browser/api/content_settings:content_settings",
       "//extensions/browser/api/storage:settings_namespace",
       "//extensions/browser/api/storage:settings_observer",
+      "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
       "//extensions/browser/updater",
       "//extensions/browser/updater:keepalive",
       "//extensions/common:mojom",
@@ -1009,6 +1010,7 @@ source_set("extensions") {
         "//chrome/browser/chromeos/platform_keys",
         "//chrome/browser/chromeos/policy/dlp",
         "//chrome/browser/chromeos/upload_office_to_cloud",
+        "//chromeos/ash/components/browser_context_helper",
         "//chromeos/components/kiosk",
         "//chromeos/components/mgs",
         "//chromeos/components/quick_answers/public/cpp:prefs",
@@ -1019,6 +1021,7 @@ source_set("extensions") {
         "//chromeos/dbus/power",
         "//chromeos/services/chromebox_for_meetings/public/cpp",
         "//chromeos/services/chromebox_for_meetings/public/mojom",
+        "//components/user_manager",
         "//remoting/host/it2me:chrome_os_host",
       ]
 

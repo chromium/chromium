@@ -404,9 +404,8 @@ public class OmniboxResourceProvider {
 
     /** Returns a stateful suggestion background with the select default state. */
     public static Drawable getStatefulSuggestionBackground(
-            Context context, @BrandedColorScheme int colorScheme) {
-        var background =
-                new ColorDrawable(getStandardSuggestionBackgroundColor(context, colorScheme));
+            Context context, @ColorInt int defaultColor, @BrandedColorScheme int colorScheme) {
+        var background = new ColorDrawable(defaultColor);
         var hover = new ColorDrawable(getHoverSuggestionBackgroundColor(context, colorScheme));
 
         // Ripple effect to use when the user interacts with the suggestion.
@@ -416,6 +415,8 @@ public class OmniboxResourceProvider {
         var statefulBackground = new StateListDrawable();
         statefulBackground.addState(new int[] {android.R.attr.state_selected}, hover);
         statefulBackground.addState(new int[] {android.R.attr.state_hovered}, hover);
+        statefulBackground.addState(
+                new int[] {android.R.attr.state_selected, android.R.attr.state_hovered}, hover);
         statefulBackground.addState(new int[] {}, background);
 
         return new LayerDrawable(new Drawable[] {statefulBackground, ripple});

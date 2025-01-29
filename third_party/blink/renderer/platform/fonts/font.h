@@ -54,7 +54,6 @@ class PaintFlags;
 namespace blink {
 
 class FontSelector;
-class NGShapeCache;
 class ShapeCache;
 class TextRun;
 struct TextFragmentPaintInfo;
@@ -192,6 +191,10 @@ class PLATFORM_EXPORT Font {
   // Returns a list of font features for this `FontDescription`. The returned
   // list is common for all `SimpleFontData` for `this`.
   const FontFeatures& GetFontFeatures() const;
+
+  // True if `this` has any non-initial font features. This includes not only
+  // `GetFontFeatures()` but also features computed in later stages.
+  bool HasNonInitialFontFeatures() const;
 
   // Access the NG shape cache associated with this particular font object.
   // Should *not* be retained across layout calls as it may become invalid.

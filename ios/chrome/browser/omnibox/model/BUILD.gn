@@ -10,8 +10,12 @@ source_set("model") {
     "omnibox_controller.mm",
     "omnibox_popup_controller.h",
     "omnibox_popup_controller.mm",
+    "omnibox_popup_controller_delegate.h",
     "omnibox_text_controller.h",
     "omnibox_text_controller.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/omnibox/browser",
+  ]
 }

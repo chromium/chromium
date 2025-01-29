@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -41,7 +42,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -3267,7 +3267,7 @@ void Document::AXContextModeChanged() {
 }
 
 void Document::RemoveAXContext(AXContext* context) {
-  auto iter = base::ranges::find(ax_contexts_, context);
+  auto iter = std::ranges::find(ax_contexts_, context);
   if (iter != ax_contexts_.end())
     ax_contexts_.erase(iter);
   if (ax_contexts_.size() == 0) {

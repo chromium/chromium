@@ -228,17 +228,15 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
           blink::LocalFrameToken(render_frame_host->GetFrameToken()),
           site_instance->GetBrowsingInstanceId(),
           site_instance->GetSiteInstanceGroupId(),
-          render_frame_host->IsActive(),
-          base::BindOnce(
-              [](GURL url, url::Origin origin, FrameNodeImpl* frame_node) {
-                if (!url.is_empty())
-                  frame_node->OnNavigationCommitted(
-                      std::move(url), std::move(origin),
-                      /*same_document=*/false,
-                      /*is_served_from_back_forward_cache=*/false);
-              },
-              render_frame_host->GetLastCommittedURL(),
-              render_frame_host->GetLastCommittedOrigin()));
+          render_frame_host->IsActive());
+
+  GURL url = render_frame_host->GetLastCommittedURL();
+  if (!url.is_empty()) {
+    frame->OnNavigationCommitted(std::move(url),
+                                 render_frame_host->GetLastCommittedOrigin(),
+                                 /*same_document=*/false,
+                                 /*is_served_from_back_forward_cache=*/false);
+  }
 
   frames_[render_frame_host] = std::move(frame);
 }

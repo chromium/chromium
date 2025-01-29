@@ -41,11 +41,14 @@ public abstract class InterceptNavigationDelegate {
             RequiredCallback<Boolean> resultCallback);
 
     /**
-     * If an async shouldIgnoreNavigation request is in progress, finish it by calling the
+     * If an async shouldIgnoreNavigation request is in progress, it should be finished calling the
      * |resultCallback| before returning from this method.
+     *
+     * <p>If the request cannot be finished synchronously, this call can be ignored and the
+     * navigation will be deferred until the
      */
     @CalledByNative
-    protected void finishPendingShouldIgnoreCheck() {}
+    protected void requestFinishPendingShouldIgnoreCheck() {}
 
     /**
      * This method is called for navigations to external protocols in subframes, which on Android

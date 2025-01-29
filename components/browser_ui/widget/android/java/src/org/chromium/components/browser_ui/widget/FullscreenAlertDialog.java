@@ -18,7 +18,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
 
@@ -99,7 +98,6 @@ public class FullscreenAlertDialog extends AlertDialog {
 
     public static class Builder extends AlertDialog.Builder {
         private Context mContext;
-        private @Nullable AlertDialog mAlertDialog;
         private @Nullable Toolbar mAutomotiveToolbar;
 
         public Builder(Context context) {
@@ -148,17 +146,16 @@ public class FullscreenAlertDialog extends AlertDialog {
             return this;
         }
 
-        @NullUnmarked
         @Override
         public AlertDialog create() {
-            mAlertDialog = super.create();
+            AlertDialog dialog = super.create();
             if (mAutomotiveToolbar != null) {
                 mAutomotiveToolbar.setNavigationOnClickListener(
                         backButtonClick -> {
-                            mAlertDialog.getOnBackPressedDispatcher().onBackPressed();
+                            dialog.getOnBackPressedDispatcher().onBackPressed();
                         });
             }
-            return mAlertDialog;
+            return dialog;
         }
     }
 }

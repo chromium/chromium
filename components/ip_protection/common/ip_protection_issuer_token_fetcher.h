@@ -19,7 +19,15 @@ enum class TryGetIssuerTokensStatus {
   kNetOkNullResponse = 2,
   kNullResponse = 3,
   kResponseParsingFailed = 4,
-  kMaxValue = kResponseParsingFailed,
+  kInvalidTokenVersion = 5,
+  kInvalidTokenSize = 6,
+  kTooFewTokens = 7,
+  kTooManyTokens = 8,
+  kExpirationTooSoon = 9,
+  kExpirationTooLate = 10,
+  kInvalidPublicKey = 11,
+  kInvalidNumTokensWithSignal = 12,
+  kMaxValue = kInvalidNumTokensWithSignal,
 };
 
 // Stores return status of TryGetIssuerTokens() together with
@@ -51,7 +59,7 @@ struct TryGetIssuerTokensOutcome {
   std::string public_key;
   std::uint64_t expiration_time_seconds;
   std::uint64_t next_epoch_start_time_seconds;
-  std::int32_t p_reveal;
+  std::int32_t num_tokens_with_signal;
 };
 
 // IpProtectionIssuerTokenFetcher is an abstract base class for issuer
@@ -70,8 +78,8 @@ class IpProtectionIssuerTokenFetcher {
 
   // Get issuer tokens. On success, the response callback contains
   // a vector of tokens, public key, expiration and next start timestamps and
-  // p_reveal. On failure all callback values are null and error is stored in
-  // function return value.
+  // the number of tokens with the signal. On failure all callback values are
+  // null and error is stored in function return value.
   virtual void TryGetIssuerTokens(TryGetIssuerTokensCallback callback) = 0;
 
  protected:

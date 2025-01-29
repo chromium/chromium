@@ -157,8 +157,7 @@ TEST_F(DefaultBrowserPromptManagerTest, InfoBarMaxPromptCount) {
   // prompt is shown.
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
       {{features::kRepromptDuration.name, "1d"},
-       {features::kMaxPromptCount.name, "-1"},
-       {features::kRepromptDurationMultiplier.name, "1"}});
+       {features::kMaxPromptCount.name, "-1"}});
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/base::Days(1) + base::Microseconds(1),
       /*declined_count=*/12345,
@@ -167,8 +166,7 @@ TEST_F(DefaultBrowserPromptManagerTest, InfoBarMaxPromptCount) {
   // Never show the prompt if max prompt count is zero.
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
       {{features::kRepromptDuration.name, "1d"},
-       {features::kMaxPromptCount.name, "0"},
-       {features::kRepromptDurationMultiplier.name, "2"}});
+       {features::kMaxPromptCount.name, "0"}});
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/std::nullopt,
       /*declined_count=*/std::nullopt,
@@ -177,8 +175,7 @@ TEST_F(DefaultBrowserPromptManagerTest, InfoBarMaxPromptCount) {
   // If max prompt count is 1, only show the prompt if declined count is unset.
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
       {{features::kRepromptDuration.name, "1d"},
-       {features::kMaxPromptCount.name, "1"},
-       {features::kRepromptDurationMultiplier.name, "1"}});
+       {features::kMaxPromptCount.name, "1"}});
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/std::nullopt,
       /*declined_count=*/std::nullopt,
@@ -191,8 +188,7 @@ TEST_F(DefaultBrowserPromptManagerTest, InfoBarMaxPromptCount) {
   // Show if the declined count is less than the max prompt count.
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
       {{features::kRepromptDuration.name, "1d"},
-       {features::kMaxPromptCount.name, "5"},
-       {features::kRepromptDurationMultiplier.name, "1"}});
+       {features::kMaxPromptCount.name, "5"}});
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/base::Days(1) + base::Microseconds(1),
       /*declined_count=*/4,
@@ -206,8 +202,7 @@ TEST_F(DefaultBrowserPromptManagerTest, InfoBarMaxPromptCount) {
 TEST_F(DefaultBrowserPromptManagerTest, InfoBarRepromptDuration) {
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
       {{features::kRepromptDuration.name, "1d"},
-       {features::kMaxPromptCount.name, "-1"},
-       {features::kRepromptDurationMultiplier.name, "2"}});
+       {features::kMaxPromptCount.name, "-1"}});
 
   // After the prompt is declined once, show the prompt again if the time since
   // the last time the prompt was declined is strictly longer than the base
@@ -222,31 +217,23 @@ TEST_F(DefaultBrowserPromptManagerTest, InfoBarRepromptDuration) {
       /*expect_infobar_exists=*/true);
 
   // If the user has declined the prompt multiple times, the next reprompt
-  // duration should be multiplied by the reprompt multiplier for each
-  // additional time the prompt has been declined.
-  // So the prompt should be shown if the last declined time is older than:
-  // base reprompt duration *
-  //     (reprompt duration multiplier ^ (declined count - 1))
+  // duration should be equal to the reprompt duration.
 
-  // For example, after the prompt has been declined a second time, only show
-  // the prompt (1 day) * (2^1) = 2 days after it was last declined.
   TestShouldShowInfoBarPrompt(
-      /*last_declined_time_delta=*/base::Days(2),
+      /*last_declined_time_delta=*/base::Days(1),
       /*declined_count=*/2,
       /*expect_infobar_exists=*/false);
   TestShouldShowInfoBarPrompt(
-      /*last_declined_time_delta=*/base::Days(2) + base::Microseconds(1),
+      /*last_declined_time_delta=*/base::Days(1) + base::Microseconds(1),
       /*declined_count=*/2,
       /*expect_infobar_exists=*/true);
 
-  // After the prompt has been declined a third time, only show the prompt
-  // (1 day) * (2^2) = 4 days after it was last declined.
   TestShouldShowInfoBarPrompt(
-      /*last_declined_time_delta=*/base::Days(4),
+      /*last_declined_time_delta=*/base::Days(1),
       /*declined_count=*/3,
       /*expect_infobar_exists=*/false);
   TestShouldShowInfoBarPrompt(
-      /*last_declined_time_delta=*/base::Days(4) + base::Microseconds(1),
+      /*last_declined_time_delta=*/base::Days(1) + base::Microseconds(1),
       /*declined_count=*/3,
       /*expect_infobar_exists=*/true);
 }
@@ -255,7 +242,6 @@ TEST_F(DefaultBrowserPromptManagerTest, PromptHiddenWhenFeatureParamDisabled) {
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
       {{features::kRepromptDuration.name, "1d"},
        {features::kMaxPromptCount.name, "-1"},
-       {features::kRepromptDurationMultiplier.name, "1"},
        {features::kShowDefaultBrowserInfoBar.name, "false"}});
 
   TestShouldShowInfoBarPrompt(

@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -54,6 +55,11 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
+#include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace {
 
@@ -161,6 +167,26 @@ SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
   web_ui->Initialize(
       base::BindOnce(&CloseModalSigninInBrowser, browser->AsWeakPtr(),
                      show_profile_switch_iph, show_supervised_user_iph));
+  return web_view;
+}
+
+// static
+std::unique_ptr<views::WebView>
+SigninViewControllerDelegateViews::CreateSignoutConfirmationWebView(
+    Browser* browser,
+    ChromeSignoutConfirmationPromptVariant variant,
+    base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback) {
+  std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
+      browser, GURL(chrome::kChromeUISignoutConfirmationURL),
+      kSignoutConfirmationPromptMinHeight, kModalDialogWidth,
+      InitializeSigninWebDialogUI(false));
+
+  SignoutConfirmationUI* web_ui = web_view->GetWebContents()
+                                      ->GetWebUI()
+                                      ->GetController()
+                                      ->GetAs<SignoutConfirmationUI>();
+  DCHECK(web_ui);
+  web_ui->Initialize(browser, variant, std::move(callback));
   return web_view;
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -283,6 +309,25 @@ SigninViewControllerDelegateViews::GetWebContentsModalDialogHost() {
   return browser_->window()->GetWebContentsModalDialogHost();
 }
 
+void SigninViewControllerDelegateViews::OnViewAddedToWidget(
+    View* observed_view) {
+  DCHECK_EQ(observed_view, content_view_);
+
+  // If the web view contains a WebUI, explicitly set the corner radii to clip
+  // the WebUI contents within the corner radii.
+  // Workaround for crbug.com/358379367.
+  if (content_view_->GetWebContents() &&
+      content_view_->GetWebContents()->GetWebUI()) {
+    content_view_->holder()->SetCornerRadii(
+        gfx::RoundedCornersF(GetCornerRadius()));
+  }
+}
+
+void SigninViewControllerDelegateViews::OnViewIsDeleting(View* observed_view) {
+  DCHECK_EQ(observed_view, content_view_);
+  content_view_observation_.Reset();
+}
+
 SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
     std::unique_ptr<views::WebView> content_view,
     Browser* browser,
@@ -301,6 +346,7 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
   DCHECK(browser_->tab_strip_model()->GetActiveWebContents())
       << "A tab must be active to present the sign-in modal dialog.";
   DCHECK(content_view_);
+  content_view_observation_.Observe(content_view_);
 
   // Use the layout manager of `this` to automatically translate its preferred
   // size to the owning Widget.
@@ -475,6 +521,18 @@ SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
           show_supervised_user_iph),
       browser, ui::mojom::ModalType::kWindow, false, false,
       is_local_profile_creation);
+}
+
+// static
+SigninViewControllerDelegate*
+SigninViewControllerDelegate::CreateSignoutConfirmationDelegate(
+    Browser* browser,
+    ChromeSignoutConfirmationPromptVariant variant,
+    base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback) {
+  return new SigninViewControllerDelegateViews(
+      SigninViewControllerDelegateViews::CreateSignoutConfirmationWebView(
+          browser, variant, std::move(callback)),
+      browser, ui::mojom::ModalType::kWindow, true, false);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

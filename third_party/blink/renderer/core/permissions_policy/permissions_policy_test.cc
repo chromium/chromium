@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <map>
 #include <string>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1304,7 +1304,7 @@ class FeaturePolicyMutationTest : public testing::Test {
   bool IsFeatureAllowedEverywhere(
       mojom::blink::PermissionsPolicyFeature feature,
       const ParsedPermissionsPolicy& policy) {
-    const auto& result = base::ranges::find(
+    const auto& result = std::ranges::find(
         policy, feature, &ParsedPermissionsPolicyDeclaration::feature);
     if (result == policy.end())
       return false;
@@ -1318,7 +1318,7 @@ class FeaturePolicyMutationTest : public testing::Test {
   bool IsFeatureDisallowedEverywhere(
       mojom::blink::PermissionsPolicyFeature feature,
       const ParsedPermissionsPolicy& policy) {
-    const auto& result = base::ranges::find(
+    const auto& result = std::ranges::find(
         policy, feature, &ParsedPermissionsPolicyDeclaration::feature);
     if (result == policy.end())
       return false;

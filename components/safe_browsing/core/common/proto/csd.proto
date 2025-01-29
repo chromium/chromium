@@ -132,6 +132,20 @@ message ChromeUserPopulation {
   reserved 19;
 }
 
+// Identifies a web app (e.g. a WebAPK) on the basis of its origin and id, as
+// defined in https://www.w3.org/TR/appmanifest/#id-member.
+message SafeBrowsingWebAppKey {
+  // Serialized origin without the scheme portion. In most cases, this is just
+  // the host part. May include a colon character followed by a port number, if
+  // the port number is non-default.
+  optional string start_url_origin = 1;
+  // Manifest id or (if there is no id) the path and query portions of
+  // start_url, without leading slash character, e.g. will be empty string if
+  // the path is "/". This should not include URL fragments, but should include
+  // query params.
+  optional string id_or_start_path = 2;
+}
+
 message ImageFeatureEmbedding {
   // Tracking embedding-model's version from iteration to iteration
   optional int32 embedding_model_version = 1;
@@ -158,6 +172,15 @@ message LlamaForcedTriggerInfo {
 message IntelligentScanInfo {
   optional string brand = 1;
   optional string intent = 2;
+
+  // Reason why the brand and intent are empty.
+  enum NoInfoReason {
+    NO_INFO_REASON_UNSPECIFIED = 0;
+    // Client cannot infer the brand and intent because there is no text on the
+    // page.
+    EMPTY_TEXT = 1;
+  }
+  optional NoInfoReason no_info_reason = 3;
 }
 
 message ClientPhishingRequest {
@@ -454,7 +477,7 @@ message LoginReputationClientRequest {
   repeated Frame frames = 3;
 
   // The message contains fields needed for a password reuse event.
-  // Next tag: 4
+  // Next tag: 7
   message PasswordReuseEvent {
     // Domains from the Chrome password manager DB that are associated with
     // the same password as the one triggering this event. The field is filled
@@ -465,22 +488,8 @@ message LoginReputationClientRequest {
     // The frame that the password reuse is detected.
     optional int32 frame_id = 2;
 
-    // Deprecated field.
-    reserved 3;
-
-    // TODO(crbug.com/41431428): Remove once ReusedPasswordAccountType is
-    // implemented. Sync account type.
-    enum SyncAccountType {
-      // Not a sign-in user.
-      NOT_SIGNED_IN = 0;
-
-      // User signed in with @gmail.com, or @googlemail.com account.
-      GMAIL = 1;
-
-      // User signed in with a G Suite account.
-      GSUITE = 2;
-    }
-    optional SyncAccountType sync_account_type = 4;
+    // Deprecated fields.
+    reserved 3, 4;
 
     // TODO(crbug.com/41431428): Remove once ReusedPasswordAccountType is
     // implemented. Type of password being reused.

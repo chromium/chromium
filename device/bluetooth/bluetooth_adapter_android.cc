@@ -102,6 +102,13 @@ bool BluetoothAdapterAndroid::IsPresent() const {
                                                j_adapter_);
 }
 
+BluetoothAdapter::PermissionStatus
+BluetoothAdapterAndroid::GetOsPermissionStatus() const {
+  return static_cast<BluetoothAdapter::PermissionStatus>(
+      Java_ChromeBluetoothAdapter_getOsPermissionStatus(AttachCurrentThread(),
+                                                        j_adapter_));
+}
+
 bool BluetoothAdapterAndroid::IsPowered() const {
   return Java_ChromeBluetoothAdapter_isPowered(AttachCurrentThread(),
                                                j_adapter_);

@@ -413,7 +413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AnnotationStorage.IcaStatus"
-    enum="ImageAnnotationWorkerIcaStatus" expires_after="2025-01-31">
+    enum="ImageAnnotationWorkerIcaStatus" expires_after="2026-01-31">
   <owner>chenjih@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -498,7 +498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.Timeout"
-    units="count" expires_after="2025-01-31">
+    units="count" expires_after="2026-01-31">
   <owner>chenjih@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -689,7 +689,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.DriveZeroStateProvider.Latency" units="ms"
-    expires_after="2025-02-10">
+    expires_after="2026-02-10">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -733,7 +733,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.FileSearchProvider.Relevance" units="score"
-    expires_after="2025-02-02">
+    expires_after="2026-02-02">
   <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
@@ -763,17 +763,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.GameProvider.UpdateStatus" enum="DiscoveryError"
-    expires_after="2024-11-12">
+    expires_after="2025-11-12">
   <owner>chenjih@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The outcome of an index update from the Discovery service. Logged once per
-    update.
+    update. Warning: this histogram was expired from 2024-11-12 to 2025-01-29;
+    data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.GameResult.IconLoadStatus" enum="DiscoveryError"
-    expires_after="2025-02-28">
+    expires_after="2026-02-28">
   <owner>chenjih@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -818,7 +819,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ItemSuggestCache.Status"
-    enum="ItemSuggestCacheStatus" expires_after="2025-03-09">
+    enum="ItemSuggestCacheStatus" expires_after="2026-03-09">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -828,14 +829,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ItemSuggestCache.UpdateCacheLatency" units="ms"
-    expires_after="2024-11-03">
+    expires_after="2025-11-03">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
     Records the latency from the start of a call to UpdateCache to the time when
     results are finalised. Reported once each time results are successfully
     obtained, which corresponds to a kOk status being recorded in
-    Apps.AppList.ItemSuggestCache.Status.
+    Apps.AppList.ItemSuggestCache.Status. Warning: this histogram was expired
+    from 2024-11-03 to 2025-01-29; data may be missing.
   </summary>
 </histogram>
 
@@ -944,7 +946,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
-    enum="OsSettingsProviderStatus" expires_after="2025-01-14">
+    enum="OsSettingsProviderStatus" expires_after="2026-01-14">
   <owner>chenjih@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -953,11 +955,13 @@ chromium-metrics-reviews@google.com.
     query search. The bucket proportion is not meaningful as overlaps can occur
     among errors. Instead, the ratio between each error bucket and the
     successful query search can be used to calculate the accurate error rate.
+    Warning: this histogram was expired from 2025-01-14 to 2025-01-29; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.IconLoadStatus"
-    enum="OsSettingsProviderIconLoadStatus" expires_after="2025-01-14">
+    enum="OsSettingsProviderIconLoadStatus" expires_after="2026-01-14">
   <owner>chenjih@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -965,18 +969,20 @@ chromium-metrics-reviews@google.com.
     launcher. Emitted at each branch to help investigate the cause of icon load
     failures. The bucket proportion is not meaningful as overlaps can occur
     among status. Instead, the ratio between states can be used to calculate how
-    the flow is divided into sub-branches.
+    the flow is divided into sub-branches. Warning: this histogram was expired
+    from 2025-01-14 to 2025-01-29; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.QueryTime" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2026-01-05">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
     The latency of a search in the OsSettingsProvider. Recorded each time a
     search is completed, even if it returns no results. Not recorded if the
-    query is too short to perform a search at all. Chrome OS only.
+    query is too short to perform a search at all. Chrome OS only. Warning: this
+    histogram was expired from 2025-01-05 to 2025-01-29; data may be missing.
   </summary>
 </histogram>
 
@@ -1391,7 +1397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SearchFileScan.ExecutionTime" units="ms"
-    expires_after="2025-02-23">
+    expires_after="2026-02-23">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1399,7 +1405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SearchFileScan.{SearchFileExtension}"
-    units="units" expires_after="2025-03-02">
+    units="units" expires_after="2026-03-02">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>

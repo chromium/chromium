@@ -34,6 +34,19 @@
 // If `confirmation` is true, shows a confirmation dialog.
 - (void)deleteGroupWithConfirmation:(BOOL)confirmation;
 
+// Deletes the current shared group.
+// If `confirmation` is true, shows a confirmation dialog.
+- (void)deleteSharedGroupWithConfirmation:(BOOL)confirmation;
+
+// Leaves the current shared group.
+// If `confirmation` is true, shows a confirmation dialog.
+- (void)leaveSharedGroupWithConfirmation:(BOOL)confirmation;
+
+// Updates shared state before displaying context menus.
+// TODO(crbug.com/393075208): Remove this workaround once DataSharingService
+// observer bridge is implemented.
+- (void)updateSharedState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TAB_GROUPS_UI_TAB_GROUP_INDICATOR_MUTATOR_H_

@@ -50,6 +50,15 @@ class BorderView : public views::View,
 
   float emphasis_for_testing() const { return emphasis_; }
 
+  // Allows tests to alternate some animation APIs, for the deterministic
+  // testing.
+  class Tester {
+   public:
+    virtual ~Tester() = default;
+    virtual base::TimeTicks GetTestTimestamp() = 0;
+  };
+  void set_tester(Tester* tester) { tester_ = tester; }
+
  private:
   // A value from 0 to 1 indicating how much the border is to be emphasized.
   float GetEmphasis(base::TimeDelta delta) const;
@@ -76,6 +85,8 @@ class BorderView : public views::View,
 
   base::TimeTicks first_frame_time_;
   base::TimeTicks first_emphasis_frame_;
+
+  raw_ptr<Tester> tester_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(, BorderView, views::View)

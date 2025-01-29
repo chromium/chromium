@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_manager.h"
 
+#include <algorithm>
 #include <limits>
 #include <string>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
@@ -203,7 +203,7 @@ AudioRendererMixer* AudioRendererMixerManager::GetMixer(
 
 void AudioRendererMixerManager::ReturnMixer(AudioRendererMixer* mixer) {
   base::AutoLock auto_lock(mixers_lock_);
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       mixers_, mixer,
       [](const std::pair<MixerKey, AudioRendererMixerReference>& val) {
         return val.second.mixer.get();
@@ -212,7 +212,7 @@ void AudioRendererMixerManager::ReturnMixer(AudioRendererMixer* mixer) {
   // If a mixer isn't in the normal map, check the map for mixers w/ errors.
   auto dead_it = dead_mixers_.end();
   if (it == mixers_.end()) {
-    dead_it = base::ranges::find(
+    dead_it = std::ranges::find(
         dead_mixers_, mixer,
         [](const AudioRendererMixerReference& val) { return val.mixer.get(); });
     CHECK(dead_it != dead_mixers_.end(), base::NotFatalUntil::M130);

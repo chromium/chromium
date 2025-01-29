@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_provider.h"
 
+@class OmniboxAutocompleteController;
 @class OmniboxPopupMediator;
 class OmniboxController;
 class OmniboxPopupViewSuggestionsDelegate;
@@ -24,8 +25,10 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
                             public OmniboxPopupMediatorDelegate,
                             public OmniboxPopupProvider {
  public:
-  OmniboxPopupViewIOS(OmniboxController* controller,
-                      OmniboxPopupViewSuggestionsDelegate* delegate);
+  OmniboxPopupViewIOS(
+      OmniboxController* controller,
+      OmniboxPopupViewSuggestionsDelegate* delegate,
+      OmniboxAutocompleteController* omniboxAutocompleteController);
   ~OmniboxPopupViewIOS() override;
 
   // OmniboxPopupView implementation.
@@ -62,6 +65,7 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
  private:
   raw_ptr<OmniboxPopupViewSuggestionsDelegate> delegate_;  // weak
   OmniboxPopupMediator* mediator_;
+  __weak OmniboxAutocompleteController* omnibox_autocomplete_controller_;
 };
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_OMNIBOX_POPUP_VIEW_IOS_H_

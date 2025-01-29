@@ -30,11 +30,11 @@
 
 #include "third_party/blink/renderer/controller/blink_initializer.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -229,9 +229,9 @@ void SetCorsExemptHeaderList(
     const std::vector<WebString>& web_cors_exempt_header_list) {
   Vector<String> cors_exempt_header_list(
       base::checked_cast<wtf_size_t>(web_cors_exempt_header_list.size()));
-  base::ranges::transform(web_cors_exempt_header_list,
-                          cors_exempt_header_list.begin(),
-                          &WebString::operator WTF::String);
+  std::ranges::transform(web_cors_exempt_header_list,
+                         cors_exempt_header_list.begin(),
+                         &WebString::operator WTF::String);
   LoaderFactoryForFrame::SetCorsExemptHeaderList(
       std::move(cors_exempt_header_list));
 }

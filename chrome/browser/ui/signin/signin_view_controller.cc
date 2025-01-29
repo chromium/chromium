@@ -677,6 +677,8 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
   }
 
   // Show confirmation prompt where the user can reauth or sign out.
+  // TODO(crbug.com/390219535): Show the WebUI version of the prompt instead and
+  // migrate all browser tests.
   ShowChromeSignoutConfirmationPrompt(*browser_, prompt_variant,
                                       std::move(callback));
 }
@@ -741,6 +743,17 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
 
   chrome::ShowTabModal(dialog_builder.Build(), contents);
 }
+
+void SigninViewController::ShowSignoutConfirmationPromptForTesting(
+    ChromeSignoutConfirmationPromptVariant prompt_variant) {
+  CloseModalSignin();
+  dialog_ = std::make_unique<SigninModalDialogImpl>(
+      SigninViewControllerDelegate::CreateSignoutConfirmationDelegate(
+          browser_, prompt_variant,
+          base::BindOnce([](ChromeSignoutConfirmationChoice choice) {})),
+      GetOnModalDialogClosedCallback());
+}
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 content::WebContents*

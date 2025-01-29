@@ -4,13 +4,13 @@
 
 #include "third_party/blink/renderer/modules/credentialmanagement/digital_identity_credential.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"

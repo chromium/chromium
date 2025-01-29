@@ -12,6 +12,7 @@
 
 #include <optional>
 
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -58,9 +59,14 @@ bool CanSetThreadTypeToRealtimeAudio() {
 
 bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
                                      MessagePumpType pump_type_hint) {
-  // On Android, we set the Audio priority through JNI as Audio priority
-  // will also allow the process to run while it is backgrounded.
-  if (thread_type == ThreadType::kRealtimeAudio) {
+  // We set the Audio priority through JNI as the Java setThreadPriority will
+  // put it into a preferable cgroup, whereas the "normal" C++ call wouldn't.
+  // However, with
+  // https://android-review.googlesource.com/c/platform/system/core/+/1975808
+  // this becomes obsolete and we can avoid this starting in API level 33.
+  if (thread_type == ThreadType::kRealtimeAudio &&
+      base::android::BuildInfo::GetInstance()->sdk_int() <
+          base::android::SDK_VERSION_T) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_ThreadUtils_setThreadPriorityAudio(env, PlatformThread::CurrentId());
     return true;

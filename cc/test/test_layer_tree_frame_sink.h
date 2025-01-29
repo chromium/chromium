@@ -175,6 +175,10 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   std::unique_ptr<viz::TestSharedImageInterfaceProvider>
       shared_image_interface_provider_;
 
+  class TestCompositorFrameSinkImpl;
+  std::unique_ptr<TestCompositorFrameSinkImpl> compositor_frame_sink_impl_;
+  mojo::Remote<viz::mojom::CompositorFrameSink> compositor_frame_sink_remote_;
+
   base::WeakPtrFactory<TestLayerTreeFrameSink> weak_ptr_factory_{this};
 };
 

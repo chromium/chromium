@@ -139,8 +139,8 @@ bool SupportedLanguages(const std::vector<std::string>& input,
   auto supported = [](const std::string& l) {
     return l.empty() || language::ExtractBaseLanguage(l) == "en";
   };
-  return base::ranges::all_of(input, supported) &&
-         base::ranges::all_of(context, supported) && supported(output);
+  return std::ranges::all_of(input, supported) &&
+         std::ranges::all_of(context, supported) && supported(output);
 }
 
 template <typename ContextBoundObjectType,

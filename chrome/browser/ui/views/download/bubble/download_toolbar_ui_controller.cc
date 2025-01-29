@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_started_animation_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -506,6 +507,13 @@ void DownloadToolbarUIController::UpdateDownloadIcon(
   // Whether to update the icon after processing any changes.
   bool update_icon = false;
 
+  if (updates.show_animation) {
+    has_pending_download_started_animation_ = true;
+    auto* container = GetPinnedToolbarActionsContainer(browser_view_);
+    container->GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
+        &DownloadToolbarUIController::ShowPendingDownloadStartedAnimation,
+        base::Unretained(this)));
+  }
   if (updates.new_state && *updates.new_state != state_) {
     update_icon = true;
     state_ = *updates.new_state;
@@ -791,6 +799,32 @@ void DownloadToolbarUIController::InvokeUI() {
     chrome::ShowDownloads(browser_view_->browser());
   }
   controller_->OnButtonPressed();
+}
+
+void DownloadToolbarUIController::ShowPendingDownloadStartedAnimation() {
+  if (!has_pending_download_started_animation_) {
+    return;
+  }
+  has_pending_download_started_animation_ = false;
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
+    return;
+  }
+  content::WebContents* const web_contents =
+      browser_view_->browser()->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents ||
+      !platform_util::IsVisible(web_contents->GetNativeView())) {
+    return;
+  }
+  // Animation cleans itself up after it's done.
+  if (auto* button = GetDownloadsButton(browser_view_)) {
+    const ui::ColorProvider* color_provider = button->GetColorProvider();
+    new DownloadBubbleStartedAnimationViews(
+        web_contents, button->GetBoundsInScreen(),
+        color_provider->GetColor(
+            kColorDownloadToolbarButtonAnimationForeground),
+        color_provider->GetColor(
+            kColorDownloadToolbarButtonAnimationBackground));
+  }
 }
 
 bool DownloadToolbarUIController::IsProgressRingInDownloadingStateForTesting() {

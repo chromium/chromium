@@ -49,10 +49,8 @@ bool ShouldShowPrompts() {
   }
 
   // Show if it has been long enough since the last declined time
-  base::TimeDelta reprompt_duration =
-      features::kRepromptDuration.Get() *
-      std::pow(features::kRepromptDurationMultiplier.Get(), declined_count - 1);
-  return (base::Time::Now() - last_declined_time) > reprompt_duration;
+  return (base::Time::Now() - last_declined_time) >
+         features::kRepromptDuration.Get();
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 }  // namespace

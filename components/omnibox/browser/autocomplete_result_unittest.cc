@@ -2382,6 +2382,60 @@ TEST_F(AutocompleteResultTest, CalculateNumMatchesPerUrlCountTest) {
   test("2", "1", "4", {search, url, search, url, search}, 3);
 }
 
+TEST_F(AutocompleteResultTest,
+       CalculateNumMatchesPerUrlCountWithUnscopedExtensions) {
+  CompareWithDemoteByType<AutocompleteMatch> comparison_object(
+      metrics::OmniboxEventProto::OTHER);
+  enum SuggestionType { search, url };
+
+  auto test = [this, comparison_object](
+                  std::string base_limit, std::string url_cutoff,
+                  std::string increased_limit,
+                  std::vector<std::pair<SuggestionType, int>>
+                      suggestion_and_provider_type,
+                  size_t expected_num_matches) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{omnibox::kDynamicMaxAutocomplete,
+          {{OmniboxFieldTrial::kDynamicMaxAutocompleteUrlCutoffParam,
+            url_cutoff},
+           {OmniboxFieldTrial::kDynamicMaxAutocompleteIncreasedLimitParam,
+            increased_limit}}},
+         {omnibox::kUIExperimentMaxAutocompleteMatches,
+          {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, base_limit}}}},
+        {});
+
+    ACMatches matches;
+    for (auto pair : suggestion_and_provider_type) {
+      AutocompleteMatch m;
+      m.relevance = 100;
+      if (pair.first) {
+        m.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+      }
+      m.provider = GetProvider(pair.second);
+      matches.push_back(m);
+    }
+    const size_t num_matches = AutocompleteResult::CalculateNumMatches(
+        false, AutocompleteInput::FeaturedKeywordMode::kFalse, matches,
+        comparison_object);
+    EXPECT_EQ(num_matches, expected_num_matches);
+  };
+
+  test("2", "0", "4", {{search, 2}, {search, 2}, {search, 5}}, 3);
+  test("2", "0", "4",
+       {{search, 2}, {search, 5}, {search, 2}, {search, 2}, {search, 2}}, 5);
+  test("2", "1", "4",
+       {{search, 2}, {url, 2}, {search, 5}, {search, 2}, {url, 2}}, 4);
+  test("2", "1", "3",
+       {{search, 2}, {search, 5}, {search, 5}, {search, 2}, {url, 2}}, 5);
+  test("2", "2", "4",
+       {{search, 5}, {url, 5}, {search, 5}, {url, 2}, {search, 2}, {search, 2}},
+       6);
+  test("2", "1", "4",
+       {{search, 5}, {search, 5}, {search, 2}, {url, 2}, {url, 2}, {url, 2}},
+       4);
+}
+
 TEST_F(AutocompleteResultTest, ClipboardSuggestionOnTopOfSearchSuggestionTest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);

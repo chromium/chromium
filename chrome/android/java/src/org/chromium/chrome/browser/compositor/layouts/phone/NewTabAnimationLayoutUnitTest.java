@@ -234,6 +234,9 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originX= */ 0f,
                 /* originY= */ 0f);
         assertTrue(mNewTabAnimationLayout.isStartingToHide());
+
+        mNewTabAnimationLayout.doneHiding();
+        verify(mTabModel, never()).setIndex(anyInt(), anyInt());
     }
 
     // TODO(crbug.com/40282469): Tests for forceAnimationToFinish, updateLayout, and

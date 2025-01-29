@@ -38,9 +38,9 @@ class FakeEnterpriseSearchAggregatorProvider
   ~FakeEnterpriseSearchAggregatorProvider() override = default;
 };
 
-class EnterpriseSearchAggregatorProviderTest : public testing::Test {
+class EnterpriseSearchAggregatorProviderTestBase {
  protected:
-  EnterpriseSearchAggregatorProviderTest() {
+  EnterpriseSearchAggregatorProviderTestBase() {
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
     provider_ = new FakeEnterpriseSearchAggregatorProvider(client_.get());
   }
@@ -76,6 +76,10 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<FakeEnterpriseSearchAggregatorProvider> provider_;
 };
+
+class EnterpriseSearchAggregatorProviderTest
+    : public EnterpriseSearchAggregatorProviderTestBase,
+      public testing::Test {};
 
 TEST_F(EnterpriseSearchAggregatorProviderTest, CreateMatch) {
   AutocompleteInput input{u"input text", metrics::OmniboxEventProto::OTHER,
@@ -139,7 +143,15 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, StartCallsStop) {
   EXPECT_TRUE(provider_->done());
 }
 
-TEST_F(EnterpriseSearchAggregatorProviderTest, CacheMatches) {
+class EnterpriseSearchAggregatorProviderFeaturedByPolicyTest
+    : public EnterpriseSearchAggregatorProviderTestBase,
+      public testing::TestWithParam<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         EnterpriseSearchAggregatorProviderFeaturedByPolicyTest,
+                         testing::Bool());
+
+TEST_P(EnterpriseSearchAggregatorProviderFeaturedByPolicyTest, CacheMatches) {
   // Setup.
   InitClient();
   TemplateURLData turl_data;
@@ -147,7 +159,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CacheMatches) {
   turl_data.SetKeyword(u"keyword");
   turl_data.SetURL("http://www.keyword.com/{searchTerms}");
   turl_data.is_active = TemplateURLData::ActiveStatus::kTrue;
-  turl_data.featured_by_policy = true;
+  turl_data.featured_by_policy = GetParam();
   turl_data.policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator;
   client_->GetTemplateURLService()->Add(
       std::make_unique<TemplateURL>(turl_data));

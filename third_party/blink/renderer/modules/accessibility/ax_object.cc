@@ -33,7 +33,6 @@
 
 #include "base/auto_reset.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1082,17 +1081,9 @@ bool AXObject::CanHaveChildren(Element& element) {
   // For consistency with the past, options with a single text child are leaves.
   // However, options can now sometimes have interesting children, for
   // a <select> menulist that uses appearance:base-select.
-  // This code looks at IsAppearanceBaseButton instead of IsAppearanceBasePicker
-  // in order to have the same result whether the picker is open or closed.
-  // Ideally we would check to see if the picker is opted in to base appearance,
-  // but without a style update that would change based on whether the picker is
-  // open or not. When the button is opted in then the user will likely be able
-  // to see the child node structure of the option element in the button, so we
-  // can use that as a signal to allow options to have children.
   if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
     return option->OwnerSelectElement() &&
-           option->OwnerSelectElement()->IsAppearanceBaseButton(
-               HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle) &&
+           option->OwnerSelectElement()->IsAppearanceBasePicker() &&
            !option->HasOneTextChild();
   }
 
@@ -3054,9 +3045,9 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
   }
 
   if (role_ == ax::mojom::blink::Role::kCell) {
-    AncestorsIterator ancestor = base::ranges::find_if(
-        UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
-        &AXObject::IsTableLikeRole);
+    AncestorsIterator ancestor =
+        std::ranges::find_if(UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
+                             &AXObject::IsTableLikeRole);
     if (ancestor.current_ &&
         (ancestor.current_->RoleValue() == ax::mojom::blink::Role::kGrid ||
          ancestor.current_->RoleValue() == ax::mojom::blink::Role::kTreeGrid)) {
@@ -3087,6 +3078,21 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
     if (role_ == ax::mojom::blink::Role::kGenericContainer && IsIgnored() &&
         GetElement() && GetElement()->IsCustomElement()) {
       return ax::mojom::blink::Role::kNone;
+    }
+  }
+
+  // Customizable select elements which have interactive content in their popup
+  // get their role changed to dialog. This is computed before serialization
+  // because there is a lot of other code which looks at kMenuListPopup which we
+  // don't want to adjust for the popup being changed to a dialog.
+  if (role_ == ax::mojom::blink::Role::kMenuListPopup &&
+      RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    if (auto* parent = ParentObject()) {
+      if (auto* select = DynamicTo<HTMLSelectElement>(parent->GetNode())) {
+        if (select->IsAppearanceBasePicker() && select->IsInDialogMode()) {
+          return ax::mojom::blink::Role::kDialog;
+        }
+      }
     }
   }
 
@@ -4591,7 +4597,7 @@ bool AXObject::IsSubWidget() const {
     case ax::mojom::blink::Role::kColumn:
     case ax::mojom::blink::Role::kRow: {
       // It's only a subwidget if it's in a grid or treegrid, not in a table.
-      AncestorsIterator ancestor = base::ranges::find_if(
+      AncestorsIterator ancestor = std::ranges::find_if(
           UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
           &AXObject::IsTableLikeRole);
       return ancestor.current_ &&
@@ -4612,9 +4618,9 @@ bool AXObject::IsSubWidget() const {
 
 bool AXObject::SupportsARIASetSizeAndPosInSet() const {
   if (RoleValue() == ax::mojom::blink::Role::kRow) {
-    AncestorsIterator ancestor = base::ranges::find_if(
-        UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
-        &AXObject::IsTableLikeRole);
+    AncestorsIterator ancestor =
+        std::ranges::find_if(UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
+                             &AXObject::IsTableLikeRole);
     return ancestor.current_ &&
            ancestor.current_->RoleValue() == ax::mojom::blink::Role::kTreeGrid;
   }
@@ -7386,16 +7392,6 @@ bool AXObject::OnNativeClickAction() {
 
   Element* element = GetClosestElement();
 
-  // Forward default action on custom select to its button.
-  if (auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
-    if (select->IsAppearanceBaseButton(
-            HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle)) {
-      if (auto* button = select->SlottedButton()) {
-        element = button;
-      }
-    }
-  }
-
   if (element) {
     // Always set the sequential focus navigation starting point.
     // Even if this element isn't focusable, if you press "Tab" it will
@@ -8127,9 +8123,9 @@ bool AXObject::SupportsARIAReadOnly() const {
 
   if (ui::IsCellOrTableHeader(RoleValue())) {
     // For cells and row/column headers, readonly is supported within a grid.
-    AncestorsIterator ancestor = base::ranges::find_if(
-        UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
-        &AXObject::IsTableLikeRole);
+    AncestorsIterator ancestor =
+        std::ranges::find_if(UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
+                             &AXObject::IsTableLikeRole);
     return ancestor.current_ &&
            (ancestor.current_->RoleValue() == ax::mojom::blink::Role::kGrid ||
             ancestor.current_->RoleValue() ==

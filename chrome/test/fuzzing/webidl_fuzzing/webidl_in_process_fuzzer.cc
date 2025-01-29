@@ -20,8 +20,7 @@ struct Environment {
   const bool kDumpNativeInput = getenv("LPM_DUMP_NATIVE_INPUT");
 };
 
-constexpr std::optional<base::TimeDelta> kJsExecutionTimeout =
-    base::Seconds(10);
+constexpr std::optional<base::TimeDelta> kJsExecutionTimeout = base::Seconds(3);
 constexpr RunLoopTimeoutBehavior kJsRunLoopTimeoutBehavior =
     RunLoopTimeoutBehavior::kContinue;
 
@@ -46,9 +45,17 @@ class WebIDLInProcessFuzzer
 
 REGISTER_BINARY_PROTO_IN_PROCESS_FUZZER(WebIDLInProcessFuzzer)
 
+static std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+    const net::test_server::HttpRequest& request) {
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_content_type("text/html");
+  http_response->set_content("Echo");
+  return http_response;
+}
+
 void WebIDLInProcessFuzzer::SetUpOnMainThread() {
-  // host_resolver()->AddRule("*", "127.0.0.1");
-  net::test_server::RegisterDefaultHandlers(&embedded_https_test_server());
+  embedded_https_test_server().RegisterRequestHandler(
+      base::BindRepeating(&HandleRequest));
   ASSERT_TRUE(embedded_https_test_server().Start());
   CHECK(ui_test_utils::NavigateToURL(
       browser(), embedded_https_test_server().GetURL("/echo")));

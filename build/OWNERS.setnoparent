@@ -94,4 +94,4 @@ file://ui/views/VIEWS_OWNERS
 file://chrome/browser/ash/REFACTORING_OWNERS
 
 # Crashpad
-file://third_party/crashpad/crashpad/CRASHPAD_OWNERS
+file://third_party/crashpad/crashpad/OWNERS

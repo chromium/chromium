@@ -280,8 +280,7 @@ class MenuListSelectType final : public SelectType {
   void ManuallyAssignSlots() override;
   HTMLButtonElement* SlottedButton() const override;
   HTMLElement* PopoverForAppearanceBase() const override;
-  bool IsAppearanceBaseButton(
-      HTMLSelectElement::StyleUpdateBehavior) const override;
+  bool IsAppearanceBaseButton() const override;
   bool IsAppearanceBasePicker() const override;
   HTMLSelectElement::SelectAutofillPreviewElement* GetAutofillPreviewElement()
       const override;
@@ -405,8 +404,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
 
     // Customizable-<select> keydown handling is done in
     // HTMLOptionElement::DefaultEventHandlerInternal().
-    if (IsAppearanceBaseButton(
-            HTMLSelectElement::StyleUpdateBehavior::kUpdateStyle)) {
+    if (IsAppearanceBaseButton()) {
       return false;
     }
 
@@ -459,9 +457,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
     // TODO(crbug.com/1511354): Reconsider making appearance:base-select affect
     // keyboard behavior after a resolution here:
     // https://github.com/openui/open-ui/issues/1087
-    if (IsAppearanceBaseButton(
-            HTMLSelectElement::StyleUpdateBehavior::kUpdateStyle) &&
-        key_code == '\r') {
+    if (IsAppearanceBaseButton() && key_code == '\r') {
       // TODO(crbug.com/1511354): Consider making form->SubmitImplicitly work
       // here instead of PrepareForSubmission and combine with the subsequent
       // code.
@@ -548,8 +544,7 @@ bool MenuListSelectType::ShouldOpenPopupForKeyDownEvent(
   // TODO(crbug.com/1511354): Reconsider making appearance:base-select affect
   // keyboard behavior after a resolution here:
   // https://github.com/openui/open-ui/issues/1087
-  if (IsAppearanceBaseButton(
-          HTMLSelectElement::StyleUpdateBehavior::kUpdateStyle) &&
+  if (IsAppearanceBaseButton() &&
       (key == keywords::kArrowDown || key == keywords::kArrowUp ||
        key == keywords::kArrowLeft || key == keywords::kArrowRight)) {
     return true;
@@ -570,9 +565,7 @@ bool MenuListSelectType::ShouldOpenPopupForKeyPressEvent(
   // TODO(crbug.com/1511354): Reconsider making appearance:base-select affect
   // keyboard behavior after a resolution here:
   // https://github.com/openui/open-ui/issues/1087
-  if (IsAppearanceBaseButton(
-          HTMLSelectElement::StyleUpdateBehavior::kUpdateStyle) &&
-      key_code == '\r') {
+  if (IsAppearanceBaseButton() && key_code == '\r') {
     return false;
   }
 
@@ -702,16 +695,11 @@ HTMLElement* MenuListSelectType::PopoverForAppearanceBase() const {
   return popover_;
 }
 
-bool MenuListSelectType::IsAppearanceBaseButton(
-    HTMLSelectElement::StyleUpdateBehavior update_behavior) const {
+bool MenuListSelectType::IsAppearanceBaseButton() const {
   if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     return false;
   }
   DCHECK(select_);
-  if (update_behavior == HTMLSelectElement::StyleUpdateBehavior::kUpdateStyle) {
-    select_->GetDocument().UpdateStyleAndLayoutForNode(
-        select_, DocumentUpdateReason::kBaseSelect);
-  }
   if (auto* style = select_->GetComputedStyle()) {
     return style->EffectiveAppearance() == AppearanceValue::kBaseSelect;
   }
@@ -719,15 +707,14 @@ bool MenuListSelectType::IsAppearanceBaseButton(
 }
 
 bool MenuListSelectType::IsAppearanceBasePicker() const {
-  if (!IsAppearanceBaseButton(
-          HTMLSelectElement::StyleUpdateBehavior::kUpdateStyle)) {
+  if (!IsAppearanceBaseButton()) {
     // The author is required to put appearance:base-select on the <select>
     // before the ::picker is allowed to have appearance:base-select.
     return false;
   }
   CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
   DCHECK(popover_);
-  if (auto* style = popover_->EnsureComputedStyle()) {
+  if (auto* style = popover_->GetComputedStyle()) {
     return style->EffectiveAppearance() == AppearanceValue::kBaseSelect;
   }
   return false;
@@ -943,8 +930,7 @@ void MenuListSelectType::DidSetSuggestedOption(HTMLOptionElement* option) {
   if (native_popup_is_visible_) {
     popup_->UpdateFromElement(PopupMenu::kBySelectionChange);
   }
-  if (IsAppearanceBaseButton(
-          HTMLSelectElement::StyleUpdateBehavior::kUpdateStyle)) {
+  if (IsAppearanceBaseButton()) {
     if (option) {
       autofill_popover_->ShowPopoverInternal(select_, &ASSERT_NO_EXCEPTION);
       autofill_popover_text_->setInnerText(option->label());
@@ -1046,8 +1032,7 @@ String MenuListSelectType::UpdateTextStyleInternal() {
   // TODO(crbug.com/1511354): Ensure that this runs after switching appearance
   // modes or consider splitting InnerElement into two elements, one for
   // appearance:base-select and one for appearance:auto.
-  if (!IsAppearanceBaseButton(
-          HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle)) {
+  if (!IsAppearanceBaseButton()) {
     Element& inner_element = select_->InnerElement();
     const ComputedStyle* inner_style = inner_element.GetComputedStyle();
     if (inner_style && option_style &&
@@ -1114,9 +1099,7 @@ HTMLOptionElement* MenuListSelectType::OptionToBeShown() const {
     return option;
   // In appearance:base-select mode, we don't want to reveal the suggested
   // option anywhere except in autofill_popover_.
-  if (select_->suggested_option_ &&
-      !IsAppearanceBaseButton(
-          HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle)) {
+  if (select_->suggested_option_ && !IsAppearanceBaseButton()) {
     return select_->suggested_option_.Get();
   }
   // TODO(tkent): We should not call OptionToBeShown() in IsMultiple() case.
@@ -1240,8 +1223,7 @@ class ListBoxSelectType final : public SelectType {
   void ManuallyAssignSlots() override;
   HTMLButtonElement* SlottedButton() const override;
   HTMLElement* PopoverForAppearanceBase() const override;
-  bool IsAppearanceBaseButton(
-      HTMLSelectElement::StyleUpdateBehavior) const override;
+  bool IsAppearanceBaseButton() const override;
   bool IsAppearanceBasePicker() const override;
   HTMLSelectElement::SelectAutofillPreviewElement* GetAutofillPreviewElement()
       const override;
@@ -1915,8 +1897,7 @@ HTMLElement* ListBoxSelectType::PopoverForAppearanceBase() const {
   return nullptr;
 }
 
-bool ListBoxSelectType::IsAppearanceBaseButton(
-    HTMLSelectElement::StyleUpdateBehavior) const {
+bool ListBoxSelectType::IsAppearanceBaseButton() const {
   return false;
 }
 

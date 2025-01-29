@@ -316,6 +316,9 @@ void BorderView::OnPaint(gfx::Canvas* canvas) {
 }
 
 void BorderView::OnAnimationStep(base::TimeTicks timestamp) {
+  if (tester_) [[unlikely]] {
+    timestamp = tester_->GetTestTimestamp();
+  }
   if (first_frame_time_.is_null()) {
     first_frame_time_ = timestamp;
   }

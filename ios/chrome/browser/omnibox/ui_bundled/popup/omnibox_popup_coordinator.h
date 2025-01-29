@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 class AutocompleteController;
+@class OmniboxPopupController;
 @protocol OmniboxKeyboardDelegate;
 @protocol OmniboxPopupPresenterDelegate;
 class OmniboxPopupViewIOS;
@@ -25,6 +26,7 @@ class OmniboxPopupViewIOS;
                        browser:(Browser*)browser
         autocompleteController:(AutocompleteController*)autocompleteController
                      popupView:(std::unique_ptr<OmniboxPopupViewIOS>)popupView
+               popupController:(OmniboxPopupController*)popupController
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

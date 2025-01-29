@@ -82,7 +82,8 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
     Profile* profile) {
   user_manager::User* user =
       user_manager::User::CreateRegularUser(account_id, user_type);
-  user->SetAffiliated(is_affiliated);
+  // Use `is_affiliated` value for managed, too, for now.
+  user->SetUserPolicyStatus(/*is_managed=*/is_affiliated, is_affiliated);
   user->set_username_hash(
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
   user->SetStubImage(

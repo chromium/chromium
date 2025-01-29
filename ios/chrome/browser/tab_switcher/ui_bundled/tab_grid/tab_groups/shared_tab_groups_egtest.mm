@@ -35,6 +35,13 @@
 using chrome_test_util::CreateTabGroupAtIndex;
 using chrome_test_util::DeleteGroupButton;
 using chrome_test_util::DeleteGroupConfirmationButton;
+using chrome_test_util::DeleteSharedConfirmationButton;
+using chrome_test_util::DeleteSharedGroupButton;
+using chrome_test_util::FakeJoinFlowView;
+using chrome_test_util::FakeManageFlowView;
+using chrome_test_util::FakeShareFlowView;
+using chrome_test_util::LeaveSharedGroupButton;
+using chrome_test_util::LeaveSharedGroupConfirmationButton;
 using chrome_test_util::ManageGroupButton;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarSaveButton;
@@ -54,52 +61,9 @@ NSString* const kTab2Title = @"Tab2";
 // keyboard default can differ iPhone vs iPad, simulator vs device.
 NSString* const kGroup1Name = @"1group";
 
-// Matcher for the Share flow view.
-id<GREYMatcher> FakeShareFlowView() {
-  return grey_accessibilityID(kFakeShareFlowIdentifier);
-}
-
-// Matcher for the Manage flow view.
-id<GREYMatcher> FakeManageFlowView() {
-  return grey_accessibilityID(kFakeManageFlowIdentifier);
-}
-
-// Matcher for the Join flow view.
-id<GREYMatcher> FakeJoinFlowView() {
-  return grey_accessibilityID(kFakeJoinFlowIdentifier);
-}
-
 // Matcher for the face pile button.
 id<GREYMatcher> FacePileButton() {
   return grey_accessibilityID(kTabGroupFacePileButtonIdentifier);
-}
-
-// Matcher for the leave shared group button.
-id<GREYMatcher> LeaveSharedGroupButton() {
-  return chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-      IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP);
-}
-
-// Matcher for the leave shared group button confirmation.
-id<GREYMatcher> LeaveSharedGroupConfirmationButton() {
-  return grey_allOf(grey_accessibilityID([l10n_util::GetNSString(
-                        IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP)
-                        stringByAppendingString:@"AlertAction"]),
-                    grey_interactable(), nil);
-}
-
-// Matcher for the delete shared group button.
-id<GREYMatcher> DeleteSharedGroupButton() {
-  return chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-      IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP);
-}
-
-// Matcher for the delete shared group button confirmation.
-id<GREYMatcher> DeleteSharedConfirmationButton() {
-  return grey_allOf(grey_accessibilityID([l10n_util::GetNSString(
-                        IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP)
-                        stringByAppendingString:@"AlertAction"]),
-                    grey_interactable(), nil);
 }
 
 // Returns the completely configured AppLaunchConfiguration (i.e. setting all

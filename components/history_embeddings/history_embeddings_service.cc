@@ -237,7 +237,8 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
       optimization_guide_decider_(optimization_guide_decider),
       embedder_(std::make_unique<SchedulingEmbedder>(
           std::move(embedder),
-          GetFeatureParameters().scheduled_embeddings_max)),
+          GetFeatureParameters().scheduled_embeddings_max,
+          GetFeatureParameters().use_performance_scenario)),
       answerer_(std::move(answerer)),
       intent_classifier_(std::move(intent_classifier)),
       query_id_weak_ptr_factory_(&query_id_),

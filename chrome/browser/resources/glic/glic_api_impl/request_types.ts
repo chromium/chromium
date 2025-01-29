@@ -149,6 +149,30 @@ export declare interface HostRequestTypes {
     },
     response: void,
   };
+  glicBrowserOnUserInputSubmitted: {
+    request: {
+      mode: number,
+    },
+    response: void,
+  };
+  glicBrowserOnResponseStarted: {
+    request: {},
+    response: void,
+  };
+  glicBrowserOnResponseStopped: {
+    request: {},
+    response: void,
+  };
+  glicBrowserOnSessionTerminated: {
+    request: {},
+    response: void,
+  };
+  glicBrowserOnResponseRated: {
+    request: {
+      positive: boolean,
+    },
+    response: void,
+  };
 }
 
 // Types of requests to the GlicWebClient.

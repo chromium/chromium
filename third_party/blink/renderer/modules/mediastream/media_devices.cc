@@ -4,13 +4,13 @@
 
 #include "third_party/blink/renderer/modules/mediastream/media_devices.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -1130,8 +1130,8 @@ void MediaDevices::OnDevicesChanged(
     const Vector<WebMediaDeviceInfo>& device_infos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(GetExecutionContext());
-  if (base::ranges::equal(current_device_infos_[static_cast<wtf_size_t>(type)],
-                          device_infos, EqualDeviceForDeviceChange)) {
+  if (std::ranges::equal(current_device_infos_[static_cast<wtf_size_t>(type)],
+                         device_infos, EqualDeviceForDeviceChange)) {
     return;
   }
 

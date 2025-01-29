@@ -53,6 +53,9 @@ enum ChromeDistanceMetric {
   DISTANCE_EXTENSIONS_MENU_ICON_SPACING,
   // Vertical and horizontal margin for menu buttons.
   DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN,
+  // Horizontal spacing between a label and an icon in the extension's menu
+  // entry.
+  DISTANCE_EXTENSIONS_MENU_LABEL_ICON_SPACING,
   // Smaller horizontal spacing between other controls that are logically
   // related.
   DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL,

@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 
+#include <algorithm>
 #include <cfloat>
 #include <numeric>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/math_functions.h"
@@ -574,7 +574,7 @@ bool CalculationExpressionOperationNode::Equals(
     return false;
   }
   using ValueType = Children::value_type;
-  return base::ranges::equal(
+  return std::ranges::equal(
       children_, other_operation->GetChildren(),
       [](const ValueType& a, const ValueType& b) { return *a == *b; });
 }

@@ -138,7 +138,7 @@ void PressureObserverManager::OnConnectionError() {
 }
 
 void PressureObserverManager::ResetPressureManagerIfNeeded() {
-  if (base::ranges::all_of(
+  if (std::ranges::all_of(
           source_to_client_.Values(), [](const PressureClientImpl* client) {
             return client->state() == PressureClientImpl::State::kUninitialized;
           })) {

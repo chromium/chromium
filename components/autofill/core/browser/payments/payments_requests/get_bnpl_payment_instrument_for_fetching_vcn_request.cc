@@ -58,7 +58,8 @@ std::string GetBnplPaymentInstrumentForFetchingVcnRequest::GetRequestContent() {
                               .Set("get_payment_instrument_context_token",
                                    request_details_.context_token)
                               .Set("redirect_response_url",
-                                   request_details_.redirect_url.spec())));
+                                   request_details_.redirect_url.spec())
+                              .Set("issuer_id", request_details_.issuer_id)));
 
   return base::WriteJson(request_dict).value();
 }

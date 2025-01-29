@@ -330,10 +330,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       },
       // </if>
 
-      enableKeyboardAndPointerLockPrompt_: {
+      enableKeyboardLockPrompt_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
+        value: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
       },
 
       enableWebAppInstallation_: {
@@ -393,7 +392,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   // <if expr="chrome_root_store_cert_management_ui">
   private enableCertManagementUIV2_: boolean;
   // </if>
-  private enableKeyboardAndPointerLockPrompt_: boolean;
+  private enableKeyboardLockPrompt_: boolean;
 
   override ready() {
     super.ready();

@@ -4,18 +4,31 @@
 
 #include "components/ip_protection/common/ip_protection_issuer_token_direct_fetcher.h"
 
+#include <cstdint>
+
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
+#include "base/types/expected.h"
+// The ASSIGN_OR_RETURN macro is defined in the both the base::expected code and
+// the private-join-and-compute code. We need to undefine the macro here to
+// avoid compiler errors.
+#undef ASSIGN_OR_RETURN
+#include "components/ip_protection/common/ip_protection_crypter.h"
 #include "components/ip_protection/get_issuer_token.pb.h"
 #include "net/base/features.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/status/statusor.h"
+#include "third_party/private-join-and-compute/src/crypto/elgamal.h"
 
 namespace ip_protection {
 
 namespace {
+
+using ::private_join_and_compute::elgamal::PublicKey;
 
 // TODO(crbug.com/391358219): Add more details.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -68,7 +81,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // - public_key takes (29 + 8) 37 bytes.
 // - expiration_time_seconds take 8 bytes.
 // - next_epoch_start_time_seconds take 8 bytes.
-// - p_reveal takes 4 bytes.
+// - num_tokens_with_signal takes 4 bytes.
 //
 // This means response can be as much as (31208 + 37 + 8 + 8 + 4) 31265.
 // Limit is set to 32 * 1024 (32768) which gives more than our rough estimate.
@@ -77,6 +90,13 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // TryGetIssuerTokensLargeResponse.
 constexpr size_t kGetIssuerTokenResponseMaxBodySize = 32 * 1024;
 constexpr char kProtobufContentType[] = "application/x-protobuf";
+constexpr int32_t kMinNumberOfTokens = 10;
+constexpr int32_t kMaxNumberOfTokens = 400;
+constexpr int32_t kTokenVersion = 1;
+constexpr int32_t kTokenSize = 29;
+constexpr int32_t kMinNumTokensWithSignal = 0;
+constexpr base::TimeDelta kMinExpirationTimeDelta = base::Hours(3);
+constexpr base::TimeDelta kMaxExpirationTimeDelta = base::Days(3);
 
 network::ResourceRequest CreateFetchRequest() {
   const std::string& get_issuer_token_path =
@@ -211,6 +231,14 @@ void IpProtectionIssuerTokenDirectFetcher::OnGetIssuerTokenCompleted(
     return;
   }
 
+  if (TryGetIssuerTokensStatus status =
+          ValidateIssuerTokenResponse(response_proto);
+      status != TryGetIssuerTokensStatus::kSuccess) {
+    std::move(callback).Run(std::nullopt,
+                            TryGetIssuerTokensResult{status, net::OK});
+    return;
+  }
+
   // TODO(crbug.com/391358904): add success metrics before returning.
   TryGetIssuerTokensOutcome outcome;
   for (const auto& t : response_proto.tokens()) {
@@ -220,10 +248,50 @@ void IpProtectionIssuerTokenDirectFetcher::OnGetIssuerTokenCompleted(
   outcome.expiration_time_seconds = response_proto.expiration_time_seconds();
   outcome.next_epoch_start_time_seconds =
       response_proto.next_epoch_start_time_seconds();
-  outcome.p_reveal = response_proto.p_reveal();
+  outcome.num_tokens_with_signal = response_proto.num_tokens_with_signal();
   std::move(callback).Run(
       std::optional<TryGetIssuerTokensOutcome>{std::move(outcome)},
       TryGetIssuerTokensResult{TryGetIssuerTokensStatus::kSuccess, net::OK});
+}
+
+TryGetIssuerTokensStatus
+IpProtectionIssuerTokenDirectFetcher::ValidateIssuerTokenResponse(
+    const GetIssuerTokenResponse& response) {
+  if (response.tokens_size() < kMinNumberOfTokens) {
+    return TryGetIssuerTokensStatus::kTooFewTokens;
+  }
+  if (response.tokens_size() > kMaxNumberOfTokens) {
+    return TryGetIssuerTokensStatus::kTooManyTokens;
+  }
+  base::TimeDelta expiration_time_delta =
+      base::Time::FromSecondsSinceUnixEpoch(
+          response.expiration_time_seconds()) -
+      base::Time::Now();
+  if (expiration_time_delta < kMinExpirationTimeDelta) {
+    return TryGetIssuerTokensStatus::kExpirationTooSoon;
+  }
+  if (expiration_time_delta > kMaxExpirationTimeDelta) {
+    return TryGetIssuerTokensStatus::kExpirationTooLate;
+  }
+  if (response.num_tokens_with_signal() < kMinNumTokensWithSignal ||
+      response.num_tokens_with_signal() > response.tokens_size()) {
+    return TryGetIssuerTokensStatus::kInvalidNumTokensWithSignal;
+  }
+  if (absl::StatusOr<PublicKey> public_key =
+          DeserializePublicKey(response.public_key().y());
+      !public_key.ok()) {
+    return TryGetIssuerTokensStatus::kInvalidPublicKey;
+  }
+
+  for (const auto& t : response.tokens()) {
+    if (t.version() != kTokenVersion) {
+      return TryGetIssuerTokensStatus::kInvalidTokenVersion;
+    }
+    if (t.u().size() != kTokenSize || t.e().size() != kTokenSize) {
+      return TryGetIssuerTokensStatus::kInvalidTokenSize;
+    }
+  }
+  return TryGetIssuerTokensStatus::kSuccess;
 }
 
 }  // namespace ip_protection

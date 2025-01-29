@@ -1020,9 +1020,9 @@ BASE_FEATURE(kFlexFirmwareUpdate,
              "FlexFirmwareUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Android Vpn Apps for ChromeOS Flex.
-BASE_FEATURE(kAndroidVpnAppsOnFlex,
-             "AndroidVpnAppsOnFlex",
+// Enables Vpn Apps for ChromeOS Flex.
+BASE_FEATURE(kVpnAppsOnFlex,
+             "VpnAppsOnFlex",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls Floating SSO feature which can move cookies between ChromeOS
@@ -1206,7 +1206,7 @@ BASE_FEATURE(kGrowthCampaignsCrOSEvents,
 // Enables demo mode sign in with growth campaigns.
 BASE_FEATURE(kGrowthCampaignsDemoModeSignIn,
              "GrowthCampaignsDemoModeSignIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether growth campaigns experiment tag targeting is enabled. The
 // flag also used by finch to tag the session with finch params.
@@ -3591,9 +3591,9 @@ bool IsFlexFirmwareUpdateEnabled() {
          base::FeatureList::IsEnabled(kFlexFirmwareUpdate);
 }
 
-bool IsAndroidVpnAppsOnFlexEnabled() {
+bool IsVpnAppsOnFlexEnabled() {
   return switches::IsRevenBranding() &&
-         base::FeatureList::IsEnabled(kAndroidVpnAppsOnFlex);
+         base::FeatureList::IsEnabled(kVpnAppsOnFlex);
 }
 
 bool IsFloatingSsoAllowed() {

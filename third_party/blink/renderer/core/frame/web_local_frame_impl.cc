@@ -2776,7 +2776,8 @@ blink::mojom::CommitResult WebLocalFrameImpl::CommitSameDocumentNavigation(
     bool is_browser_initiated,
     bool has_ua_visual_transition,
     std::optional<scheduler::TaskAttributionId>
-        soft_navigation_heuristics_task_id) {
+        soft_navigation_heuristics_task_id,
+    bool should_skip_screenshot) {
   DCHECK(GetFrame());
   DCHECK(!url.ProtocolIs("javascript"));
 
@@ -2788,7 +2789,8 @@ blink::mojom::CommitResult WebLocalFrameImpl::CommitSameDocumentNavigation(
       has_transient_user_activation, initiator_origin.Get(),
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent, is_browser_initiated,
-      has_ua_visual_transition, soft_navigation_heuristics_task_id);
+      has_ua_visual_transition, soft_navigation_heuristics_task_id,
+      should_skip_screenshot);
 }
 
 bool WebLocalFrameImpl::IsLoading() const {

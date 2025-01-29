@@ -2375,6 +2375,13 @@ ExtensionsContainer* BrowserView::GetExtensionsContainer() {
 }
 
 void BrowserView::ToolbarSizeChanged(bool is_animating) {
+  // No need to re-layout if the browser is closing. This is unnecessary and
+  // dangerous. For tab modal, its modal dialog manager have already gone.
+  // Layout will cause CHECK failure due to missing modal dialog manager.
+  if (browser()->IsBrowserClosing()) {
+    return;
+  }
+
   if (is_animating) {
     contents_web_view_->SetFastResize(true);
   }

@@ -2023,22 +2023,22 @@ void RTCPeerConnectionHandler::ReportFirstSessionDescriptions(
 
 Vector<std::unique_ptr<blink::RTCRtpSenderImpl>>::iterator
 RTCPeerConnectionHandler::FindSender(uintptr_t id) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       rtp_senders_, [id](const auto& sender) { return sender->Id() == id; });
 }
 
 Vector<std::unique_ptr<blink::RTCRtpReceiverImpl>>::iterator
 RTCPeerConnectionHandler::FindReceiver(uintptr_t id) {
-  return base::ranges::find_if(rtp_receivers_, [id](const auto& receiver) {
+  return std::ranges::find_if(rtp_receivers_, [id](const auto& receiver) {
     return receiver->Id() == id;
   });
 }
 
 Vector<std::unique_ptr<blink::RTCRtpTransceiverImpl>>::iterator
 RTCPeerConnectionHandler::FindTransceiver(uintptr_t id) {
-  return base::ranges::find_if(
-      rtp_transceivers_,
-      [id](const auto& transceiver) { return transceiver->Id() == id; });
+  return std::ranges::find_if(rtp_transceivers_, [id](const auto& transceiver) {
+    return transceiver->Id() == id;
+  });
 }
 
 wtf_size_t RTCPeerConnectionHandler::GetTransceiverIndex(

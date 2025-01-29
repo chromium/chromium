@@ -4,6 +4,8 @@
 
 package org.chromium.components.image_fetcher;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -13,7 +15,7 @@ import org.chromium.components.embedder_support.simple_factory_key.SimpleFactory
 @NullMarked
 public class ImageFetcherFactory {
     /** Alias for createImageFetcher below. */
-    public static @Nullable ImageFetcher createImageFetcher(
+    public static ImageFetcher createImageFetcher(
             @ImageFetcherConfig int config, SimpleFactoryKeyHandle simpleFactoryKeyHandle) {
         ImageFetcherBridge bridge =
                 ImageFetcherBridge.getForSimpleFactoryKeyHandle(simpleFactoryKeyHandle);
@@ -22,7 +24,7 @@ public class ImageFetcherFactory {
     }
 
     /** Alias for createImageFetcher below. */
-    public static @Nullable ImageFetcher createImageFetcher(
+    public static ImageFetcher createImageFetcher(
             @ImageFetcherConfig int config,
             SimpleFactoryKeyHandle simpleFactoryKeyHandle,
             DiscardableReferencePool discardableReferencePool) {
@@ -36,7 +38,7 @@ public class ImageFetcherFactory {
     }
 
     /** Alias for createImageFetcher below. */
-    public static @Nullable ImageFetcher createImageFetcher(
+    public static ImageFetcher createImageFetcher(
             @ImageFetcherConfig int config,
             SimpleFactoryKeyHandle simpleFactoryKeyHandle,
             DiscardableReferencePool discardableReferencePool,
@@ -57,7 +59,7 @@ public class ImageFetcherFactory {
      * @param inMemoryCacheSize The size of the in memory cache (in bytes).
      * @return The correct ImageFetcher according to the provided config.
      */
-    static @Nullable ImageFetcher createImageFetcher(
+    static ImageFetcher createImageFetcher(
             @ImageFetcherConfig int config,
             ImageFetcherBridge imageFetcherBridge,
             @Nullable DiscardableReferencePool discardableReferencePool,
@@ -90,7 +92,8 @@ public class ImageFetcherFactory {
                         discardableReferencePool,
                         inMemoryCacheSize);
             default:
-                return null;
+                assert false : "Was " + config;
+                return assumeNonNull(null);
         }
     }
 }

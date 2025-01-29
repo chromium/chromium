@@ -10,7 +10,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
@@ -31,7 +30,6 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
         mSchedulerDelegate = schedulerDelegate;
     }
 
-    @NullUnmarked
     @Override
     public boolean schedule(Context context, TaskInfo taskInfo) {
         if (CommandLine.getInstance().hasSwitch(SWITCH_IGNORE_BACKGROUND_TASKS)) {

@@ -19,7 +19,8 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_filter.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
@@ -256,7 +257,7 @@ bool ContainsResource(const ContainerType* container, SVGResource* resource) {
 
 bool ContainsResource(const FilterOperations& operations,
                       SVGResource* resource) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       operations.Operations(), [resource](const FilterOperation* operation) {
         return ContainsResource(DynamicTo<ReferenceFilterOperation>(operation),
                                 resource);

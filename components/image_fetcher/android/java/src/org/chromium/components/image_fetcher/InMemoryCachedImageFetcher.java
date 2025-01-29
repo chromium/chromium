@@ -13,7 +13,6 @@ import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.BitmapCache;
 import org.chromium.components.browser_ui.util.ConversionUtils;
@@ -34,13 +33,10 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
      *
      * @param referencePool Pool used to discard references when under memory pressure.
      * @param cacheSize The cache size to use (in bytes), may be smaller depending on the device's
-     *         memory.
+     *     memory.
      */
-    @NullUnmarked
     InMemoryCachedImageFetcher(
-            @Nullable ImageFetcher imageFetcher,
-            DiscardableReferencePool referencePool,
-            int cacheSize) {
+            ImageFetcher imageFetcher, DiscardableReferencePool referencePool, int cacheSize) {
         this(
                 imageFetcher,
                 new BitmapCache(
@@ -89,14 +85,13 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
     }
 
     @Override
-    public void fetchGif(final Params params, Callback<BaseGifImage> callback) {
+    public void fetchGif(final Params params, Callback<@Nullable BaseGifImage> callback) {
         assert mBitmapCache != null && mImageFetcher != null : "fetchGif called after destroy";
         mImageFetcher.fetchGif(params, callback);
     }
 
-    @NullUnmarked
     @Override
-    public void fetchImage(final Params params, Callback<Bitmap> callback) {
+    public void fetchImage(final Params params, Callback<@Nullable Bitmap> callback) {
         assert mBitmapCache != null && mImageFetcher != null : "fetchImage called after destroy";
         Bitmap cachedBitmap =
                 tryToGetBitmap(params.url, params.shouldResize, params.width, params.height);

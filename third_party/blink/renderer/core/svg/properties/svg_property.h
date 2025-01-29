@@ -88,6 +88,12 @@ class SVGPropertyBase : public GarbageCollected<SVGPropertyBase> {
   SVGPropertyBase() = default;
 };
 
+template <typename T>
+struct ThreadingTrait<T,
+                      std::enable_if_t<std::is_base_of_v<SVGPropertyBase, T>>> {
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_PROPERTY_H_

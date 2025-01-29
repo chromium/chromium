@@ -95,6 +95,8 @@ message AutofillQueryResponse {
           // The autofill prediction came from the experiment which considers
           // combined types of addresses.
           SOURCE_AUTOFILL_COMBINED_TYPES = 7 [deprecated = true];
+          // The prediction is a (cached) Autofill AI model prediction.
+          SOURCE_AUTOFILL_AI = 8;
         }
 
         // The predicted field type.

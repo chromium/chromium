@@ -71,6 +71,11 @@ public class AddressBarHeaderPreference extends Preference
                         ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
 
         mToolbarPositionImage.setSelected(showOnTop);
+        int stringRes =
+                showOnTop
+                        ? R.string.address_bar_settings_currently_on_top
+                        : R.string.address_bar_settings_currently_on_bottom;
+        mToolbarPositionImage.setContentDescription(getContext().getString(stringRes));
     }
 
     @NonNull

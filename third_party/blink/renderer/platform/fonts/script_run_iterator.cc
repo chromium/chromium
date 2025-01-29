@@ -14,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -48,7 +47,7 @@ inline bool IsHanScript(UScriptCode script) {
 
 inline UScriptCode FirstHanScript(
     const ScriptRunIterator::UScriptCodeList& list) {
-  const auto result = base::ranges::find_if(list, IsHanScript);
+  const auto result = std::ranges::find_if(list, IsHanScript);
   if (result != list.end())
     return *result;
   return USCRIPT_INVALID_CODE;

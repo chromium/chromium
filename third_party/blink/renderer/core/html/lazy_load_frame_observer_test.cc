@@ -9,11 +9,11 @@
 
 #include "third_party/blink/renderer/core/html/lazy_load_frame_observer.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <tuple>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -326,7 +326,7 @@ TEST_P(LazyLoadFramesParamsTest, AboutBlankChildFrameNavigation) {
   test::RunPendingTasks();
 
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
-  EXPECT_EQ(1, static_cast<int>(base::ranges::count(
+  EXPECT_EQ(1, static_cast<int>(std::ranges::count(
                    ConsoleMessages(), "child frame element onload")));
 
   // Scroll down near the child frame to cause the child frame to start loading.
@@ -341,7 +341,7 @@ TEST_P(LazyLoadFramesParamsTest, AboutBlankChildFrameNavigation) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_EQ(2, static_cast<int>(base::ranges::count(
+  EXPECT_EQ(2, static_cast<int>(std::ranges::count(
                    ConsoleMessages(), "child frame element onload")));
 }
 

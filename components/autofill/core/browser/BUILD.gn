@@ -1037,6 +1037,7 @@ static_library("test_support") {
     "test_utils/autofill_test_utils.h",
     "test_utils/autofill_testing_pref_service.cc",
     "test_utils/autofill_testing_pref_service.h",
+    "test_utils/field_prediction_test_matchers.h",
     "test_utils/test_autofill_clock.cc",
     "test_utils/test_autofill_clock.h",
     "test_utils/test_event_waiter.h",

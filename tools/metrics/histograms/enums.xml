@@ -5159,6 +5159,16 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="2" label="kEnabled"/>
 </enum>
 
+<!-- LINT.IfChange(FingerprintingProtectionComponentInstallationResult) -->
+
+<enum name="FingerprintingProtectionComponentInstallationResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kMissingBlocklistFileError"/>
+  <int value="2" label="kRulesetFormatError"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/component_updater/afp_blocked_domain_list_component_installer:InstallationResult) -->
+
 <!-- LINT.IfChange(FingerprintingProtectionExceptionSource) -->
 
 <enum name="FingerprintingProtectionExceptionSource">
@@ -9885,6 +9895,7 @@ from previous Chrome versions.
   <int value="-1661282561" label="SharingHubDesktopOmnibox:enabled"/>
   <int value="-1660972490" label="gpu-rasterization-msaa-sample-count"/>
   <int value="-1660884825" label="ReadLaterNewBadgePromo:enabled"/>
+  <int value="-1659659261" label="VpnAppsOnFlex:disabled"/>
   <int value="-1659445938" label="RealboxSecondaryZeroSuggest:enabled"/>
   <int value="-1658461830" label="SharedHighlightingRefinedBlocklist:enabled"/>
   <int value="-1658154886"
@@ -11712,7 +11723,6 @@ from previous Chrome versions.
   <int value="-950411190"
       label="WebViewCpuAffinityRestrictToLittleCores:enabled"/>
   <int value="-950384924" label="OmniboxDisableInstantExtendedLimit:enabled"/>
-  <int value="-950125294" label="KeyboardAndPointerLockPrompt:enabled"/>
   <int value="-949956361" label="ControlledFrame:disabled"/>
   <int value="-949289795" label="PdfInk2:disabled"/>
   <int value="-949178861" label="enable-new-avatar-menu"/>
@@ -12147,6 +12157,7 @@ from previous Chrome versions.
   <int value="-766805224" label="MirroringService:enabled"/>
   <int value="-766199617" label="ReadAloudInOverflowMenuInCCT:enabled"/>
   <int value="-765669184" label="LauncherNudgeShortInterval:disabled"/>
+  <int value="-765417607" label="KeyboardLockPrompt:disabled"/>
   <int value="-764463072" label="WebViewMixedContentAutoupgrades:disabled"/>
   <int value="-764363697" label="OmniboxForceAllowedToBeDefault:disabled"/>
   <int value="-763900417" label="CCTModuleUseIntentExtras:enabled"/>
@@ -15395,7 +15406,6 @@ from previous Chrome versions.
   <int value="525286392" label="PageInfoAboutThisSiteNonMsbb:disabled"/>
   <int value="527010182"
       label="ComputePressureBreakCalibrationMitigation:disabled"/>
-  <int value="527081090" label="KeyboardAndPointerLockPrompt:disabled"/>
   <int value="527140412"
       label="AndroidAutofillViewStructureWithFormHierarchyLayer:disabled"/>
   <int value="529235584" label="PhoneHub:enabled"/>
@@ -15433,6 +15443,7 @@ from previous Chrome versions.
   <int value="544334545" label="AlwaysAbandonScheduledTask:enabled"/>
   <int value="544443920" label="QuickAnswers:disabled"/>
   <int value="545280747" label="ArchiveTabService:enabled"/>
+  <int value="545479177" label="VpnAppsOnFlex:enabled"/>
   <int value="546043947" label="ImplicitRootScroller:enabled"/>
   <int value="546464390" label="LiveCaption:enabled"/>
   <int value="546520086" label="enable-data-reduction-proxy-savings-promo"/>
@@ -17378,7 +17389,6 @@ from previous Chrome versions.
       label="AutofillParseVcnCardOnFileStandaloneCvcFields:disabled"/>
   <int value="1302421166" label="NativeNotifications:disabled"/>
   <int value="1304523073" label="RetryGetVideoCaptureDeviceInfos:enabled"/>
-  <int value="1304524016" label="AndroidVpnAppsOnFlex:disabled"/>
   <int value="1304557739" label="WebAppDontAddExistingAppsToSync:enabled"/>
   <int value="1304609573" label="TabGroupSyncForceOff:enabled"/>
   <int value="1304636193" label="ArcEnableUnifiedAudioFocus:enabled"/>
@@ -18456,6 +18466,7 @@ from previous Chrome versions.
   <int value="1719019077" label="FileSystemProviderCloudFileSystem:disabled"/>
   <int value="1719189460" label="EnablePasswordSelection:disabled"/>
   <int value="1719958026" label="QueryTiles:enabled"/>
+  <int value="1719998906" label="KeyboardLockPrompt:enabled"/>
   <int value="1720399117" label="SkiaGraphite:enabled"/>
   <int value="1720657677" label="SensitiveContent:enabled"/>
   <int value="1721854955" label="EnableEdidBasedDisplayIds:disabled"/>
@@ -19033,7 +19044,6 @@ from previous Chrome versions.
   <int value="1935968341" label="(Obsolete) LacrosExtensionPrinting:enabled"/>
   <int value="1936099143" label="RemotePlaybackBackend:enabled"/>
   <int value="1936308950" label="ExoConsumedByImeByFlag:disabled"/>
-  <int value="1936583530" label="AndroidVpnAppsOnFlex:enabled"/>
   <int value="1936774335" label="EcheSWASendStartSignaling:enabled"/>
   <int value="1936810062" label="WebVrVsyncAlign:enabled"/>
   <int value="1937435913"

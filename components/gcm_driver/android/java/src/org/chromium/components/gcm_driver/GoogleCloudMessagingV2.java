@@ -4,8 +4,6 @@
 
 package org.chromium.components.gcm_driver;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
@@ -52,14 +50,13 @@ public class GoogleCloudMessagingV2 implements GoogleCloudMessagingSubscriber {
     public GoogleCloudMessagingV2() {}
 
     @Override
-    public @Nullable String subscribe(String source, String subtype, @Nullable Bundle data)
+    public String subscribe(String source, String subtype, @Nullable Bundle data)
             throws IOException {
         if (data == null) {
             data = new Bundle();
         }
         data.putString(EXTRA_SUBTYPE, subtype);
-        Bundle result = subscribe(source, data);
-        return assumeNonNull(result).getString(EXTRA_REGISTRATION_ID);
+        return subscribe(source, data);
     }
 
     @Override
@@ -74,26 +71,26 @@ public class GoogleCloudMessagingV2 implements GoogleCloudMessagingSubscriber {
 
     /**
      * Subscribe to receive GCM messages from a specific source.
-     * <p>
-     * Source Types:
+     *
+     * <p>Source Types:
+     *
      * <ul>
-     * <li>Sender ID - if you have multiple senders you can call this method
-     * for each additional sender. Each sender can use the corresponding
-     * {@link #REGISTRATION_ID} returned in the bundle to send messages
-     * from the server.</li>
-     * <li>Cloud Pub/Sub topic - You can subscribe to a topic and receive
-     * notifications from the owner of that topic, when something changes.
-     * For more information see
-     * <a href="https://cloud.google.com/pubsub">Cloud Pub/Sub</a>.</li>
+     *   <li>Sender ID - if you have multiple senders you can call this method for each additional
+     *       sender. Each sender can use the corresponding {@link #REGISTRATION_ID} returned in the
+     *       bundle to send messages from the server.
+     *   <li>Cloud Pub/Sub topic - You can subscribe to a topic and receive notifications from the
+     *       owner of that topic, when something changes. For more information see <a
+     *       href="https://cloud.google.com/pubsub">Cloud Pub/Sub</a>.
      * </ul>
+     *
      * This function is blocking and should not be called on the main thread.
      *
      * @param source of the desired notifications.
      * @param data (optional) additional information.
-     * @return Bundle containing subscription information including {@link #REGISTRATION_ID}
+     * @return The registration ID.
      * @throws IOException if the request fails.
      */
-    public @Nullable Bundle subscribe(String source, Bundle data) throws IOException {
+    public String subscribe(String source, Bundle data) throws IOException {
         if (data == null) {
             data = new Bundle();
         }
@@ -107,8 +104,16 @@ public class GoogleCloudMessagingV2 implements GoogleCloudMessagingSubscriber {
         }
 
         Intent resultIntent = registerRpc(data);
-        getExtraOrThrow(resultIntent, EXTRA_REGISTRATION_ID);
-        return resultIntent.getExtras();
+
+        if (resultIntent == null) {
+            throw new IOException(ERROR_SERVICE_NOT_AVAILABLE);
+        }
+        String ret = resultIntent.getStringExtra(EXTRA_REGISTRATION_ID);
+        if (ret == null) {
+            String err = resultIntent.getStringExtra(C2DM_EXTRA_ERROR);
+            throw new IOException(err != null ? err : ERROR_SERVICE_NOT_AVAILABLE);
+        }
+        return ret;
     }
 
     /**
@@ -162,24 +167,6 @@ public class GoogleCloudMessagingV2 implements GoogleCloudMessagingSubscriber {
             return responseResult.poll(REGISTER_TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             throw new IOException(e.getMessage());
-        }
-    }
-
-    private String getExtraOrThrow(Intent intent, String extraKey) throws IOException {
-        if (intent == null) {
-            throw new IOException(ERROR_SERVICE_NOT_AVAILABLE);
-        }
-
-        String extraValue = intent.getStringExtra(extraKey);
-        if (extraValue != null) {
-            return extraValue;
-        }
-
-        String err = intent.getStringExtra(C2DM_EXTRA_ERROR);
-        if (err != null) {
-            throw new IOException(err);
-        } else {
-            throw new IOException(ERROR_SERVICE_NOT_AVAILABLE);
         }
     }
 

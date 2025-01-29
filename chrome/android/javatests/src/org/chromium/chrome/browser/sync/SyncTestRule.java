@@ -371,9 +371,10 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                     mFakeServerHelper = null;
                     FakeServerHelper.destroyInstance();
 
-                    // Clear selected types for all accounts to reset the state
-                    // across different tests, to allow test batching.
+                    // Reset the state of sync-related prefs to allow test batching.
                     getPrefService().clearPref(SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT);
+                    getPrefService().clearPref(SyncPrefNames.SYNC_KEEP_EVERYTHING_SYNCED);
+                    getPrefService().clearPref(SyncPrefNames.SYNC_TRANSPORT_DATA_PER_ACCOUNT);
                 });
     }
 

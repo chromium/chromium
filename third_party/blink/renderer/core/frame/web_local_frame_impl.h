@@ -387,7 +387,8 @@ class CORE_EXPORT WebLocalFrameImpl final
       bool is_browser_initiated,
       bool has_ua_visual_transition,
       std::optional<scheduler::TaskAttributionId>
-          soft_navigation_heuristics_task_id) override;
+          soft_navigation_heuristics_task_id,
+      bool should_skip_screenshot) override;
   void SetIsNotOnInitialEmptyDocument() override;
   bool IsOnInitialEmptyDocument() override;
   void MaybeStartOutermostMainFrameNavigation(

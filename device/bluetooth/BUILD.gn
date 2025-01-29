@@ -722,7 +722,10 @@ if (is_android) {
   }
 
   android_library("java") {
-    srcjar_deps = [ ":jni_headers" ]
+    srcjar_deps = [
+      ":bluetooth_java_enum",
+      ":jni_headers",
+    ]
     sources = java_sources
     deps = [
       "//base:base_java",
@@ -731,5 +734,10 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
+  }
+
+  java_cpp_enum("bluetooth_java_enum") {
+    visibility = [ ":*" ]
+    sources = [ "bluetooth_adapter.h" ]
   }
 }

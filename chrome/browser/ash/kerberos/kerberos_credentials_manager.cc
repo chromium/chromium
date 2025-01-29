@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

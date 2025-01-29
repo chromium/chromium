@@ -150,6 +150,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.DevToolsDebuggingUserDataDirStatus"
+    enum="DevToolsDebuggingUserDataDirStatus" expires_after="2025-06-30">
+  <owner>wfh@chromium.org</owner>
+  <owner>src/chrome/browser/devtools/OWNERS</owner>
+  <summary>
+    Records the status of remote debugging (either via port or pipe) and whether
+    or not a default user data dir is in use if debugging has been enabled. This
+    is recorded once during browser startup for non-Android devices.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.ExperimentDisabled" enum="DevtoolsExperiments"
     expires_after="2025-07-13">
   <owner>yangguo@google.com</owner>

@@ -117,6 +117,7 @@ TEST_F(AidaClientTest, FailsIfNotAuthorized) {
 }
 
 TEST_F(AidaClientTest, NotAvailableWithEnterprise) {
+  scoped_country_override_ = AidaClient::OverrideCountryForTesting("us");
   profile_->GetPrefs()->SetInteger(prefs::kDevToolsGenAiSettings, 2);
 
   auto availability = AidaClient::CanUseAida(profile_.get());
@@ -140,6 +141,7 @@ TEST_F(AidaClientTest, NotAvailableWithEnterprise) {
 }
 
 TEST_F(AidaClientTest, NoLoggingWithEnterprise) {
+  scoped_country_override_ = AidaClient::OverrideCountryForTesting("us");
   profile_->GetPrefs()->SetInteger(prefs::kDevToolsGenAiSettings, 1);
 
   auto availability = AidaClient::CanUseAida(profile_.get());

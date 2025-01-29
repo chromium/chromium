@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
+#include "third_party/blink/renderer/core/html/collection_type.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
@@ -781,7 +782,7 @@ void HTMLFormElement::CollectListedElements(
   // that element may be outside of `root`'s subtree and we need to start at the
   // root node.
   const bool nested_forms_have_form_associated_elements =
-      base::ranges::any_of(nested_forms, [](const auto& form) {
+      std::ranges::any_of(nested_forms, [](const auto& form) {
         return form->has_elements_associated_by_form_attribute_ ||
                (form->has_elements_associated_by_parser_ &&
                 base::FeatureList::IsEnabled(
@@ -979,6 +980,10 @@ Element* HTMLFormElement::ElementFromPastNamesMap(
   return element;
 }
 
+bool HTMLFormElement::PastNamesEmpty() const {
+  return !past_names_map_;
+}
+
 void HTMLFormElement::AddToPastNamesMap(Element* element,
                                         const AtomicString& past_name) {
   if (past_name.empty())
@@ -1040,6 +1045,12 @@ void HTMLFormElement::FinishParsingChildren() {
   HTMLElement::FinishParsingChildren();
   GetDocument().GetFormController().RestoreControlStateIn(*this);
   did_finish_parsing_children_ = true;
+}
+
+bool HTMLFormElement::HasAnyNamedProperties() const {
+  const auto* elements =
+      CachedCollection<HTMLFormControlsCollection>(kFormControls);
+  return (elements && !elements->NamedItemsEmpty()) || !PastNamesEmpty();
 }
 
 V8UnionElementOrRadioNodeList* HTMLFormElement::AnonymousNamedGetter(

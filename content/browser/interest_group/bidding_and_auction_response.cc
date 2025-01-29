@@ -462,32 +462,41 @@ BiddingAndAuctionResponse::TryParseKAnonGhostWinner(
   base::Value* ghost_winner_private_aggregation_signals_value =
       k_anon_ghost_winner->Find("ghostWinnerPrivateAggregationSignals");
   if (ghost_winner_private_aggregation_signals_value) {
-    base::Value::Dict* ghost_winner_private_aggregation_signals =
-        ghost_winner_private_aggregation_signals_value->GetIfDict();
-    if (!ghost_winner_private_aggregation_signals) {
+    base::Value::List* ghost_winner_private_aggregation_signals_list =
+        ghost_winner_private_aggregation_signals_value->GetIfList();
+    if (!ghost_winner_private_aggregation_signals_list) {
       return std::nullopt;
     }
-    // `ghostWinnerPrivateAggregationSignals` will only have reject reason
-    // contributions, which the server will guarantee.
-    const std::vector<uint8_t>* bucket =
-        ghost_winner_private_aggregation_signals->FindBlob("bucket");
-    std::optional<int> value =
-        ghost_winner_private_aggregation_signals->FindInt("value");
-    if (!bucket || bucket->size() > 16 || !value.has_value()) {
-      return std::nullopt;
+    for (const auto& ghost_winner_private_aggregation_signals :
+         *ghost_winner_private_aggregation_signals_list) {
+      const base::Value::Dict* ghost_winner_private_aggregation_signals_dict =
+          ghost_winner_private_aggregation_signals.GetIfDict();
+      if (!ghost_winner_private_aggregation_signals_dict) {
+        return std::nullopt;
+      }
+      // `ghostWinnerPrivateAggregationSignals` will only have reject reason
+      // contributions, which the server will guarantee.
+      const std::vector<uint8_t>* bucket =
+          ghost_winner_private_aggregation_signals_dict->FindBlob("bucket");
+      std::optional<int> value =
+          ghost_winner_private_aggregation_signals_dict->FindInt("value");
+      if (!bucket || bucket->size() > 16 || !value.has_value()) {
+        return std::nullopt;
+      }
+      // Server already filtered out not needed contributions based on final
+      // auction result.
+      result.non_kanon_private_aggregation_requests.emplace_back(
+          auction_worklet::mojom::PrivateAggregationRequest::New(
+              auction_worklet::mojom::AggregatableReportContribution::
+                  NewHistogramContribution(
+                      blink::mojom::AggregatableReportHistogramContribution::
+                          New(
+                              /*bucket=*/U128FromBigEndian(*bucket),
+                              /*value=*/*value,
+                              /*filtering_id=*/std::nullopt)),
+              blink::mojom::AggregationServiceMode::kDefault,
+              blink::mojom::DebugModeDetails::New()));
     }
-    // Server already filtered out not needed contributions based on final
-    // auction result.
-    result.non_kanon_private_aggregation_request =
-        auction_worklet::mojom::PrivateAggregationRequest::New(
-            auction_worklet::mojom::AggregatableReportContribution::
-                NewHistogramContribution(
-                    blink::mojom::AggregatableReportHistogramContribution::New(
-                        /*bucket=*/U128FromBigEndian(*bucket),
-                        /*value=*/*value,
-                        /*filtering_id=*/std::nullopt)),
-            blink::mojom::AggregationServiceMode::kDefault,
-            blink::mojom::DebugModeDetails::New());
   }
 
   base::Value* ghost_winner_for_top_level_auction_value =

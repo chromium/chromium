@@ -23,7 +23,8 @@ class BnplManagerTestApi {
       std::string instrument_id,
       std::string risk_data,
       std::string context_token,
-      GURL redirect_url) {
+      GURL redirect_url,
+      std::string issuer_id) {
     bnpl_manager_->ongoing_flow_state_ =
         std::make_unique<BnplManager::OngoingFlowState>();
     bnpl_manager_->ongoing_flow_state_->billing_customer_number =
@@ -34,6 +35,7 @@ class BnplManagerTestApi {
     bnpl_manager_->ongoing_flow_state_->context_token =
         std::move(context_token);
     bnpl_manager_->ongoing_flow_state_->redirect_url = std::move(redirect_url);
+    bnpl_manager_->ongoing_flow_state_->issuer_id = std::move(issuer_id);
   }
 
   void FetchVcnDetails() { bnpl_manager_->FetchVcnDetails(); }

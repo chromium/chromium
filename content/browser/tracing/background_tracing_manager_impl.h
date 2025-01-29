@@ -193,6 +193,7 @@ class BackgroundTracingManagerImpl
   void OnProtoDataComplete(std::string&& serialized_trace,
                            const std::string& scenario_name,
                            const std::string& rule_name,
+                           std::optional<int32_t> rule_value,
                            bool privacy_filter_enabled,
                            bool is_local_scenario,
                            bool force_upload,

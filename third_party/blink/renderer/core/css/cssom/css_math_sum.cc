@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_math_sum.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_negate.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -30,7 +31,7 @@ bool CanCreateNumericTypeFromSumValue(const CSSNumericSumValue& sum) {
   DCHECK(!sum.terms.empty());
 
   const auto first_type = NumericTypeFromUnitMap(sum.terms[0].units);
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       sum.terms, [&first_type](const CSSNumericSumValue::Term& term) {
         bool error = false;
         CSSNumericValueType::Add(first_type, NumericTypeFromUnitMap(term.units),

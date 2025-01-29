@@ -1118,10 +1118,18 @@ size_t AutocompleteResult::CalculateNumMatchesPerUrlCount(
 
   size_t num_matches = 0;
   size_t num_url_matches = 0;
+  size_t num_unscoped_extension_matches = 0;
   for (const auto& match : matches) {
     // Matches scored less than 0 won't be shown anyways, so we can break early.
     if (comparing_object.GetDemotedRelevance(matches[num_matches]) <= 0)
       break;
+    // Skip unscoped extension provider matches. This match limit will be
+    // adjusted to include these matches.
+    if (match.provider && match.provider->type() ==
+                              AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) {
+      num_unscoped_extension_matches++;
+      continue;
+    }
     if (!AutocompleteMatch::IsSearchType(match.type))
       num_url_matches++;
     size_t limit = num_url_matches <= url_cutoff ? increased_limit : base_limit;
@@ -1129,7 +1137,8 @@ size_t AutocompleteResult::CalculateNumMatchesPerUrlCount(
       break;
     num_matches++;
   }
-  return num_matches;
+
+  return num_matches + num_unscoped_extension_matches;
 }
 
 void AutocompleteResult::Reset() {

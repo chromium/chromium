@@ -12,8 +12,8 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "cc/mojo_embedder/viz_layer_context.h"
 #include "cc/test/test_client_shared_image_interface.h"
-#include "cc/test/test_layer_context.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/task_runner_provider.h"
@@ -28,8 +28,52 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
+#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
 namespace cc {
+
+class TestLayerTreeFrameSink::TestCompositorFrameSinkImpl
+    : public viz::mojom::CompositorFrameSink {
+ public:
+  explicit TestCompositorFrameSinkImpl(
+      viz::CompositorFrameSinkSupport* support,
+      mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver)
+      : support_(support), receiver_(this, std::move(receiver)) {}
+  ~TestCompositorFrameSinkImpl() override = default;
+
+ private:
+  // viz::mojom::CompositorFrameSink:
+  void SetNeedsBeginFrame(bool needs_begin_frame) override {}
+  void SetWantsAnimateOnlyBeginFrames() override {}
+  void SetWantsBeginFrameAcks() override {}
+  void SetAutoNeedsBeginFrame() override {}
+  void SubmitCompositorFrame(
+      const viz::LocalSurfaceId& local_surface_id,
+      viz::CompositorFrame frame,
+      std::optional<viz::HitTestRegionList> hit_test_region_list,
+      uint64_t submit_time) override {}
+  void DidNotProduceFrame(const viz::BeginFrameAck& begin_frame_ack) override {}
+  void SubmitCompositorFrameSync(
+      const viz::LocalSurfaceId& local_surface_id,
+      viz::CompositorFrame frame,
+      std::optional<viz::HitTestRegionList> hit_test_region_list,
+      uint64_t submit_time,
+      SubmitCompositorFrameSyncCallback callback) override {}
+  void InitializeCompositorFrameSinkType(
+      viz::mojom::CompositorFrameSinkType type) override {}
+  void BindLayerContext(viz::mojom::PendingLayerContextPtr context) override;
+#if BUILDFLAG(IS_ANDROID)
+  void SetThreads(const std::vector<viz::Thread>& threads) override {}
+#endif
+
+  raw_ptr<viz::CompositorFrameSinkSupport> support_;
+  mojo::Receiver<viz::mojom::CompositorFrameSink> receiver_;
+};
+
+void TestLayerTreeFrameSink::TestCompositorFrameSinkImpl::BindLayerContext(
+    viz::mojom::PendingLayerContextPtr context) {
+  support_->BindLayerContext(*context);
+}
 
 static constexpr viz::FrameSinkId kLayerTreeFrameSinkId(1, 1);
 
@@ -194,6 +238,8 @@ void TestLayerTreeFrameSink::DetachFromClient() {
     display_begin_frame_source_ = nullptr;
   }
   client_->SetBeginFrameSource(nullptr);
+  compositor_frame_sink_impl_.reset();
+  compositor_frame_sink_remote_.reset();
   support_ = nullptr;
   display_ = nullptr;
   begin_frame_source_ = nullptr;
@@ -211,7 +257,11 @@ void TestLayerTreeFrameSink::SetLocalSurfaceId(
 
 std::unique_ptr<LayerContext> TestLayerTreeFrameSink::CreateLayerContext(
     LayerTreeHostImpl& host_impl) {
-  return std::make_unique<TestLayerContext>();
+  compositor_frame_sink_impl_ = std::make_unique<TestCompositorFrameSinkImpl>(
+      support_.get(),
+      compositor_frame_sink_remote_.BindNewPipeAndPassReceiver());
+  return std::make_unique<mojo_embedder::VizLayerContext>(
+      *compositor_frame_sink_remote_.get(), host_impl);
 }
 
 void TestLayerTreeFrameSink::SubmitCompositorFrame(viz::CompositorFrame frame,

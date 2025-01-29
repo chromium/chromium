@@ -366,7 +366,7 @@ public class TaskInfo {
     private final boolean mUpdateCurrent;
 
     /** Task information regarding a type of task. */
-    private final @Nullable TimingInfo mTimingInfo;
+    private final TimingInfo mTimingInfo;
 
     private TaskInfo(Builder builder) {
         mTaskId = builder.mTaskId;
@@ -449,8 +449,10 @@ public class TaskInfo {
         return null;
     }
 
-    /** @return the specific data based on the type of task. */
-    public @Nullable TimingInfo getTimingInfo() {
+    /**
+     * @return the specific data based on the type of task.
+     */
+    public TimingInfo getTimingInfo() {
         return mTimingInfo;
     }
 
@@ -479,29 +481,28 @@ public class TaskInfo {
      * @see TaskIds
      */
     public static Builder createTask(int taskId, TimingInfo timingInfo) {
-        return new Builder(taskId).setTimingInfo(timingInfo);
+        return new Builder(taskId, timingInfo);
     }
 
     /**
      * Schedule a one-off task to execute within a deadline. If windowEndTimeMs is 0, the task will
-     * run as soon as possible. For executing a task within a time window, see
-     * {@link #createOneOffTask(int, long, long)}.
+     * run as soon as possible. For executing a task within a time window, see {@link
+     * #createOneOffTask(int, long, long)}.
      *
      * @param taskId the unique task ID for this task. Should be listed in {@link TaskIds}.
      * @param windowEndTimeMs the end of the window that the task can begin executing as a delta in
-     * milliseconds from now. Note that the task begins executing at this point even if the
-     * prerequisite conditions are not met.
+     *     milliseconds from now. Note that the task begins executing at this point even if the
+     *     prerequisite conditions are not met.
      * @return the builder which can be used to continue configuration and {@link Builder#build()}.
      * @see TaskIds
-     *
      * @deprecated the {@see #createTask(int, Class, TimingInfo)} method should be used instead.
-     * This method requires an additional step for the caller: the creation of the specific
-     * {@link TimingInfo} object with the wanted properties.
+     *     This method requires an additional step for the caller: the creation of the specific
+     *     {@link TimingInfo} object with the wanted properties.
      */
     @Deprecated
     public static Builder createOneOffTask(int taskId, long windowEndTimeMs) {
         TimingInfo oneOffInfo = OneOffInfo.create().setWindowEndTimeMs(windowEndTimeMs).build();
-        return new Builder(taskId).setTimingInfo(oneOffInfo);
+        return new Builder(taskId, oneOffInfo);
     }
 
     /**
@@ -529,7 +530,7 @@ public class TaskInfo {
                         .setWindowStartTimeMs(windowStartTimeMs)
                         .setWindowEndTimeMs(windowEndTimeMs)
                         .build();
-        return new Builder(taskId).setTimingInfo(oneOffInfo);
+        return new Builder(taskId, oneOffInfo);
     }
 
     /**
@@ -557,7 +558,7 @@ public class TaskInfo {
     public static Builder createPeriodicTask(int taskId, long intervalMs, long flexMs) {
         TimingInfo periodicInfo =
                 PeriodicInfo.create().setIntervalMs(intervalMs).setFlexMs(flexMs).build();
-        return new Builder(taskId).setTimingInfo(periodicInfo);
+        return new Builder(taskId, periodicInfo);
     }
 
     /**
@@ -575,15 +576,11 @@ public class TaskInfo {
         private boolean mUserInitiated;
         private boolean mIsPersisted;
         private boolean mUpdateCurrent;
-        private @Nullable TimingInfo mTimingInfo;
+        private TimingInfo mTimingInfo;
 
-        Builder(int taskId) {
+        Builder(int taskId, TimingInfo timingInfo) {
             mTaskId = taskId;
-        }
-
-        Builder setTimingInfo(TimingInfo timingInfo) {
             mTimingInfo = timingInfo;
-            return this;
         }
 
         /**

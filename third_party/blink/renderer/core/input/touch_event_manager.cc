@@ -9,9 +9,9 @@
 
 #include "third_party/blink/renderer/core/input/touch_event_manager.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -313,9 +313,9 @@ WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
           return a.id < b.id;
         }
       } id_based_event_comparison;
-      base::ranges::sort(base::span(last_coalesced_touch_event_.touches)
-                             .first(last_coalesced_touch_event_.touches_length),
-                         id_based_event_comparison);
+      std::ranges::sort(base::span(last_coalesced_touch_event_.touches)
+                            .first(last_coalesced_touch_event_.touches_length),
+                        id_based_event_comparison);
       result.AddCoalescedEvent(last_coalesced_touch_event_);
     } else {
       for (unsigned i = 0; i < last_coalesced_touch_event_.touches_length;

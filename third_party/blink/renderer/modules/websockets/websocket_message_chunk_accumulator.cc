@@ -10,9 +10,9 @@
 #include "third_party/blink/renderer/modules/websockets/websocket_message_chunk_accumulator.h"
 
 #include <string.h>
+
 #include <algorithm>
 
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 
@@ -36,8 +36,8 @@ void WebSocketMessageChunkAccumulator::Append(base::span<const char> data) {
   if (!segments_.empty()) {
     const size_t to_be_written =
         std::min(data.size(), kSegmentSize - GetLastSegmentSize());
-    base::ranges::copy(data.first(to_be_written),
-                       segments_.back().get() + GetLastSegmentSize());
+    std::ranges::copy(data.first(to_be_written),
+                      segments_.back().get() + GetLastSegmentSize());
     data = data.subspan(to_be_written);
     size_ += to_be_written;
   }

@@ -536,8 +536,8 @@ const FontFeatures& Font::GetFontFeatures() const {
   return EnsureFontFallbackList()->GetFontFeatures(font_description_);
 }
 
-NGShapeCache& Font::GetNGShapeCache() const {
-  return EnsureFontFallbackList()->GetNGShapeCache(font_description_);
+bool Font::HasNonInitialFontFeatures() const {
+  return EnsureFontFallbackList()->HasNonInitialFontFeatures(font_description_);
 }
 
 ShapeCache* Font::GetShapeCache() const {

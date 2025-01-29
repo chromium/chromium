@@ -2,13 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+function decodeHash(hash: string): string {
+  try {
+    return window.decodeURIComponent(hash);
+  } catch (_e) {
+    // If the hash can't be decoded, return it verbatim.
+    return hash;
+  }
+}
+
+function getCurrentHash(): string {
+  return decodeHash(window.location.hash.slice(1));
+}
+
 let instance: CrRouter|null = null;
 
 export class CrRouter extends EventTarget {
   private path_: string = window.decodeURIComponent(window.location.pathname);
   private query_: string = window.location.search.slice(1);
-  private hash_: string =
-      window.decodeURIComponent(window.location.hash.slice(1));
+  private hash_: string = getCurrentHash();
 
   /**
    * If the user was on a URL for less than `dwellTime_` milliseconds, it
@@ -47,9 +59,8 @@ export class CrRouter extends EventTarget {
   }
 
   setHash(hash: string) {
-    this.hash_ = hash;
-    if (this.hash_ !==
-        window.decodeURIComponent(window.location.hash.substring(1))) {
+    this.hash_ = decodeHash(hash);
+    if (this.hash_ !== getCurrentHash()) {
       this.updateState_();
     }
   }
@@ -70,7 +81,7 @@ export class CrRouter extends EventTarget {
 
   private hashChanged_() {
     const oldHash = this.hash_;
-    this.hash_ = window.decodeURIComponent(window.location.hash.substring(1));
+    this.hash_ = getCurrentHash();
     if (this.hash_ !== oldHash) {
       this.dispatchEvent(new CustomEvent(
           'cr-router-hash-changed',

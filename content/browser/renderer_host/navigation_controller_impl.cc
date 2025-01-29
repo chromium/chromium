@@ -3536,6 +3536,19 @@ NavigationControllerImpl::DetermineActionForHistoryNavigation(
       new_item->site_instance() != old_item->site_instance())
     return HistoryNavigationAction::kDifferentDocument;
 
+  // If the origins of the new and old items are both present but don't match,
+  // schedule a different document load even if the document sequence numbers
+  // somehow match.
+  // TODO(crbug.com/40051596): Also handle session restore cases that lack a
+  // committed origin on `new_item`, and update the Blink DSN computation to
+  // avoid a cross-origin DSN match when possible.
+  if (new_item->committed_origin().has_value() &&
+      old_item->committed_origin().has_value() &&
+      !new_item->committed_origin()->IsSameOriginWith(
+          old_item->committed_origin().value())) {
+    return HistoryNavigationAction::kDifferentDocument;
+  }
+
   // Schedule a different-document load if the current RenderFrameHost is not
   // live. This case can happen for Ctrl+Back or after a renderer crash. Note
   // that we do this even if the history navigation would not be modifying this
@@ -4111,7 +4124,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*cookie_deprecation_label=*/std::nullopt,
           /*visited_link_salt=*/std::nullopt,
           /*local_surface_id=*/std::nullopt,
-          node->current_frame_host()->GetCachedPermissionStatuses());
+          node->current_frame_host()->GetCachedPermissionStatuses(),
+          /*should_skip_screentshot=*/false);
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->as_string();

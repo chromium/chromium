@@ -102,18 +102,12 @@ void TraceReportHandler::OnGetAllReportsTaskComplete(
     GetAllTraceReportsCallback callback,
     std::vector<ClientTraceReport> results) {
   std::vector<trace_report::mojom::ClientTraceReportPtr> reports;
-  for (const auto& single_report : results) {
-    auto new_trace = trace_report::mojom::ClientTraceReport::New();
-    new_trace->uuid = single_report.uuid;
-    new_trace->creation_time = single_report.creation_time;
-    new_trace->scenario_name = single_report.scenario_name;
-    new_trace->upload_rule_name = single_report.upload_rule_name;
-    new_trace->total_size = single_report.total_size;
-    new_trace->upload_state = single_report.upload_state;
-    new_trace->upload_time = single_report.upload_time;
-    new_trace->skip_reason = single_report.skip_reason;
-    new_trace->has_trace_content = single_report.has_trace_content;
-    reports.push_back(std::move(new_trace));
+  for (const auto& report : results) {
+    reports.push_back(trace_report::mojom::ClientTraceReport::New(
+        report.uuid, report.creation_time, report.scenario_name,
+        report.upload_rule_name, report.upload_rule_value, report.total_size,
+        report.upload_state, report.upload_time, report.skip_reason,
+        report.has_trace_content));
   }
   std::move(callback).Run(std::move(reports));
 }

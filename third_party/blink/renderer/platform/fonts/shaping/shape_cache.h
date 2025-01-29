@@ -27,9 +27,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_CACHE_H_
 
+#include <algorithm>
+
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/weak_cell.h"
@@ -64,7 +65,7 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
           direction_(static_cast<unsigned>(direction)) {
       DCHECK(characters.size() <= kCapacity);
       // Up-convert from LChar to UChar.
-      base::ranges::copy(characters, characters_);
+      std::ranges::copy(characters, characters_);
       hash_ = static_cast<unsigned>(base::FastHash(base::as_byte_span(*this)));
     }
 

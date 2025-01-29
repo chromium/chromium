@@ -729,7 +729,7 @@ bool LayoutText::IsAllCollapsibleWhitespace() const {
   NOT_DESTROYED();
   const ComputedStyle& style = StyleRef();
   return WTF::VisitCharacters(text_, [&style](auto chars) {
-    return base::ranges::all_of(
+    return std::ranges::all_of(
         chars, [&style](auto ch) { return style.IsCollapsibleWhiteSpace(ch); });
   });
 }

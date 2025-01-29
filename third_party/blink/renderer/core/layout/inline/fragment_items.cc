@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
@@ -473,7 +474,7 @@ void FragmentItems::DirtyFirstItem(const LayoutBlockFlow& container) {
 // static
 void FragmentItems::DirtyLinesFromNeedsLayout(
     const LayoutBlockFlow& container) {
-  DCHECK(base::ranges::any_of(
+  DCHECK(std::ranges::any_of(
       container.PhysicalFragments(),
       [](const PhysicalBoxFragment& fragment) { return fragment.HasItems(); }));
 

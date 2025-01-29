@@ -35,6 +35,31 @@ namespace glic {
 namespace {
 
 static constexpr float kFloatComparisonTolerance = 0.001f;
+static constexpr base::TimeTicks kDummyTimeStamp;
+
+// Note: make sure to install this on the border before the animation starts.
+class TesterImpl : public BorderView::Tester {
+ public:
+  TesterImpl(BorderView* border, base::TimeTicks next_time_tick)
+      : border_(border) {
+    next_time_tick_ = next_time_tick;
+    border_->set_tester(this);
+  }
+  TesterImpl(const TesterImpl&) = delete;
+  TesterImpl& operator=(const TesterImpl&) = delete;
+  ~TesterImpl() override { border_->set_tester(nullptr); }
+
+  // `BorderView::Tester`:
+  base::TimeTicks GetTestTimestamp() override { return next_time_tick_; }
+
+  void set_next_time_tick(base::TimeTicks next_time_tick) {
+    next_time_tick_ = next_time_tick;
+  }
+
+ private:
+  const raw_ptr<BorderView> border_;
+  base::TimeTicks next_time_tick_;
+};
 
 class GlicBorderViewUiTest : public InteractiveBrowserTest {
  public:
@@ -151,6 +176,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, Visibility) {
 IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  TesterImpl tester(border, timestamp);
 
   StartBorderAnimation(browser());
   EXPECT_TRUE(border->compositor_for_testing());
@@ -160,16 +187,15 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
   // screenshot from the browser window was explored however, was failed due to
   // test falkiness (crbug.com/387386303).
 
-  base::TimeTicks timestamp = base::TimeTicks::Now();
-
   // T=0s.
-  border->OnAnimationStep(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 
   // T=0.333s.
   timestamp += base::Seconds(0.333);
-  border->OnAnimationStep(timestamp);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
   // 0.333/0.5.
   EXPECT_NEAR(border->opacity_for_testing(), 0.666, kFloatComparisonTolerance);
   // 0.333/(0.5+1.5)=0.167, 1-(1-0.167)**2=0.306
@@ -177,7 +203,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
 
   // T=1.333s
   timestamp += base::Seconds(1);
-  border->OnAnimationStep(timestamp);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
   // Opacity ramp up is 0.5s.
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   // 1.333/(0.5+1.5)=0.667, 1-(1-0.667)**2=0.889
@@ -185,7 +212,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
 
   // T=2.433s
   timestamp += base::Seconds(1.1);
-  border->OnAnimationStep(timestamp);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   // (2.433-2)/0.5=0.866, 1-(1-(1-0.866)**2)=0.018
   EXPECT_NEAR(border->emphasis_for_testing(), 0.018, kFloatComparisonTolerance);
@@ -212,18 +240,19 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateReset) {
 IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  TesterImpl tester(border, timestamp);
 
   StartBorderAnimation(browser());
   EXPECT_TRUE(border->compositor_for_testing());
 
-  base::TimeTicks timestamp = base::TimeTicks::Now();
-
   // T=0s.
-  border->OnAnimationStep(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
 
   // T=1.333s.
   timestamp += base::Seconds(1.333);
-  border->OnAnimationStep(timestamp);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.889, kFloatComparisonTolerance);
 
@@ -235,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   // Since the active tab has changed, only the emphasis animation should
   // restart. This `OnAnimationStep()` resets the timeline of the emphasis
   // animation.
-  border->OnAnimationStep(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
   // Opacity isn't reset.
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   // Emphasis is reset.
@@ -243,14 +272,16 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
 
   // T=1.456s. For emphasis, T=0.123s.
   timestamp += base::Seconds(0.123);
-  border->OnAnimationStep(timestamp);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   // 0.123/(0.5+1.5)=0.062, 1-(1-0.062)**2=0.120
   EXPECT_NEAR(border->emphasis_for_testing(), 0.12, kFloatComparisonTolerance);
 
   // T=3.567. For emphasis, T=2.234.
   timestamp += base::Seconds(2.111);
-  border->OnAnimationStep(timestamp);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   // (2.234-2)/0.5=0.468, 1-(1-(1-0.468)**2)=0.283
   EXPECT_NEAR(border->emphasis_for_testing(), 0.283, kFloatComparisonTolerance);
@@ -262,18 +293,19 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
 IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  auto tester = std::make_unique<TesterImpl>(border, timestamp);
 
   StartBorderAnimation(browser());
   EXPECT_TRUE(border->compositor_for_testing());
 
-  base::TimeTicks timestamp = base::TimeTicks::Now();
-
   // T=0s.
-  border->OnAnimationStep(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
 
   // T=1.333s.
   timestamp += base::Seconds(1.333);
-  border->OnAnimationStep(timestamp);
+  tester->set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.889, kFloatComparisonTolerance);
 
@@ -281,29 +313,36 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
   {
     SCOPED_TRACE("Wait for new window to become active");
     auto* new_browser = CreateBrowser(browser()->GetProfile());
+    new_border = new_browser->window()->AsBrowserView()->glic_border();
+    auto new_tester = std::make_unique<TesterImpl>(new_border, timestamp);
+    tester.swap(new_tester);
     views::test::WaitForWidgetActive(new_browser->GetBrowserView().GetWidget(),
                                      /*active=*/true);
-    new_border = new_browser->window()->AsBrowserView()->glic_border();
     ASSERT_TRUE(new_border);
     EXPECT_TRUE(new_border->compositor_for_testing());
     EXPECT_FALSE(border->compositor_for_testing());
   }
 
   // T=0 in the new window.
-  border->OnAnimationStep(timestamp);
-  EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+  new_border->OnAnimationStep(kDummyTimeStamp);
+  EXPECT_NEAR(new_border->opacity_for_testing(), 0.f,
+              kFloatComparisonTolerance);
+  EXPECT_NEAR(new_border->emphasis_for_testing(), 0.f,
+              kFloatComparisonTolerance);
 
   // T=0.123s in the new window.
   timestamp += base::Seconds(0.123);
-  border->OnAnimationStep(timestamp);
+  tester->set_next_time_tick(timestamp);
+  new_border->OnAnimationStep(kDummyTimeStamp);
   // 0.123/0.5=0.246
-  EXPECT_NEAR(border->opacity_for_testing(), 0.246, kFloatComparisonTolerance);
+  EXPECT_NEAR(new_border->opacity_for_testing(), 0.246,
+              kFloatComparisonTolerance);
   // 0.123/(0.5+1.5)=0.062, 1-(1-0.062)**2=0.120
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.12, kFloatComparisonTolerance);
+  EXPECT_NEAR(new_border->emphasis_for_testing(), 0.12,
+              kFloatComparisonTolerance);
 
-  border->CancelAnimation();
-  EXPECT_FALSE(border->compositor_for_testing());
+  new_border->CancelAnimation();
+  EXPECT_FALSE(new_border->compositor_for_testing());
 }
 
 namespace {
@@ -344,17 +383,19 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
   ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  TesterImpl tester(border, timestamp);
 
   StartBorderAnimation(browser());
   EXPECT_TRUE(border->compositor_for_testing());
 
-  base::TimeTicks timestamp = base::TimeTicks::Now();
-  border->OnAnimationStep(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 
   timestamp += base::Seconds(2.2);
-  border->OnAnimationStep(timestamp);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 

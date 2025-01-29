@@ -12,9 +12,17 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "build/blink_buildflags.h"
+#include "build/build_config.h"
 #include "components/history_embeddings/embedder.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
+
+#if BUILDFLAG(USE_BLINK)
+#include "third_party/blink/public/common/performance/performance_scenario_observer.h"
+#include "third_party/blink/public/common/performance/performance_scenarios.h"
+#endif
 
 namespace history_embeddings {
 
@@ -24,14 +32,23 @@ namespace history_embeddings {
 // slow remote embedder. Even single pages can take a while, and when the model
 // changes, all existing passages need their embeddings recomputed, which can
 // take a very long time and should be done at lower priority.
-class SchedulingEmbedder {
+class SchedulingEmbedder
+#if BUILDFLAG(USE_BLINK)
+    : public blink::performance_scenarios::PerformanceScenarioObserver
+#endif
+{
  public:
   using TaskId = uint64_t;
   static constexpr TaskId kInvalidTaskId = 0;
 
   SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
-                     size_t scheduled_max);
+                     size_t scheduled_max,
+                     bool use_performance_scenario);
+#if BUILDFLAG(USE_BLINK)
+  ~SchedulingEmbedder() override;
+#else
   ~SchedulingEmbedder();
+#endif
 
   // Computes embeddings for each entry in `passages`. Will invoke callback on
   // done. If successful, it is guaranteed that the number of passages in
@@ -59,6 +76,18 @@ class SchedulingEmbedder {
   // If successful, the callback for the canceled task will be invoked with
   // `ComputeEmbeddingsStatus::kCanceled` status.
   bool TryCancel(TaskId task_id);
+
+#if BUILDFLAG(USE_BLINK)
+  // PerformanceScenarioObserver:
+  void OnLoadingScenarioChanged(
+      blink::performance_scenarios::ScenarioScope scope,
+      blink::performance_scenarios::LoadingScenario old_scenario,
+      blink::performance_scenarios::LoadingScenario new_scenario) override;
+  void OnInputScenarioChanged(
+      blink::performance_scenarios::ScenarioScope scope,
+      blink::performance_scenarios::InputScenario old_scenario,
+      blink::performance_scenarios::InputScenario new_scenario) override;
+#endif
 
  private:
   // A job consists of multiple passages, and each passage must have its
@@ -101,8 +130,11 @@ class SchedulingEmbedder {
                             passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Stable-sort jobs by priority and submit a batch of work to embedder.
-  // This should only be called when the embedder is not already working.
+  // This will only submit new work if the embedder is not already working.
   void SubmitWorkToEmbedder();
+
+  // Returns true if currently in a work ready performance scenario state.
+  bool IsPerformanceScenarioReady();
 
   // When this is non-empty, the embedder is working and its results will be
   // applied from front to back when `OnEmbeddingsComputed` is called. Not all
@@ -118,6 +150,11 @@ class SchedulingEmbedder {
   // ID to assign to the next Job.
   TaskId next_task_id_ = 1;
 
+  // Whether the embedder is currently working on some passages. Note, this
+  // is not the same concept as having a job in progress since multiple
+  // embedder work submissions may be required to complete a job.
+  bool work_submitted_ = false;
+
   // The primary embedder that does the actual embedding computations.
   // This may be slow, and we await results before sending the next request.
   std::unique_ptr<Embedder> embedder_;
@@ -127,6 +164,21 @@ class SchedulingEmbedder {
 
   // The maximum number of embeddings to submit to the primary embedder.
   size_t scheduled_max_;
+
+  // Whether to block embedding work submission on performance scenario.
+  bool use_performance_scenario_;
+
+#if BUILDFLAG(USE_BLINK)
+  blink::performance_scenarios::LoadingScenario loading_scenario_ =
+      blink::performance_scenarios::LoadingScenario::kNoPageLoading;
+  blink::performance_scenarios::InputScenario input_scenario_ =
+      blink::performance_scenarios::InputScenario::kNoInput;
+
+  base::ScopedObservation<
+      blink::performance_scenarios::PerformanceScenarioObserverList,
+      SchedulingEmbedder>
+      performance_scenario_observation_{this};
+#endif
 
   base::WeakPtrFactory<SchedulingEmbedder> weak_ptr_factory_{this};
 };

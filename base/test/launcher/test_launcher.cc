@@ -44,7 +44,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
@@ -1935,7 +1934,7 @@ bool TestLauncher::ShuffleTests(CommandLine* command_line) {
 
     std::mt19937 randomizer;
     randomizer.seed(shuffle_seed);
-    ranges::shuffle(tests_, randomizer);
+    std::ranges::shuffle(tests_, randomizer);
 
     fprintf(stdout, "Randomizing with seed %u\n", shuffle_seed);
     fflush(stdout);

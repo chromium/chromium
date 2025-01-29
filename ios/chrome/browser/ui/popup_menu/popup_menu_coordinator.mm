@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -286,6 +287,10 @@ using base::UserMetricsAction;
     if (IsLensOverlayAvailable()) {
       mediator.lensOverlayHandler =
           HandlerForProtocol(dispatcher, LensOverlayCommands);
+    }
+    if (experimental_flags::EnableAIPrototypingMenu()) {
+      mediator.applicationHandler =
+          HandlerForProtocol(dispatcher, ApplicationCommands);
     }
     mediator.browserCoordinatorHandler =
         HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);

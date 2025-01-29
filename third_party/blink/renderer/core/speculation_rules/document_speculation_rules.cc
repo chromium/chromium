@@ -4,11 +4,12 @@
 
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/state_transitions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
@@ -337,8 +338,8 @@ void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
     }
   }
   if (wants_pointer_events_ && rule_set->requires_unfiltered_input() &&
-      base::ranges::none_of(rule_sets_,
-                            &SpeculationRuleSet::requires_unfiltered_input)) {
+      std::ranges::none_of(rule_sets_,
+                           &SpeculationRuleSet::requires_unfiltered_input)) {
     wants_pointer_events_ = false;
     Document& document = *GetSupplementable();
     if (auto* frame = document.GetFrame()) {

@@ -98,6 +98,12 @@ class GlicWindowController : public views::WidgetObserver {
   // This is probably Windows only.
   void ShowTitleBarContextMenuAt(gfx::Point event_loc);
 
+  // Returns true if the mouse has been dragged more than a minimum distance
+  // from `initial_press_loc`, so a mouse down followed by a move of less than
+  // the minimum number of pixels doesn't start a window drag.
+  bool ShouldStartDrag(const gfx::Point& initial_press_loc,
+                       const gfx::Point& mouse_location);
+
   // Drags the glic window following the current mouse location with the given
   // `mouse_offset` and checks if the glic window is at a position where it
   // could attach to a browser window when a drag ends.

@@ -118,6 +118,11 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
 
   void Trace(Visitor*) const override;
 
+  bool NamedItemsEmpty() const {
+    UpdateIdNameCache();
+    return !GetNamedItemCache().empty();
+  }
+
  protected:
   class NamedItemCache final : public GarbageCollected<NamedItemCache> {
    public:
@@ -149,6 +154,8 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
       visitor->Trace(name_cache_);
     }
 
+    bool empty() const { return id_cache_.empty() && name_cache_.empty(); }
+
    private:
     typedef HeapHashMap<AtomicString, Member<HeapVector<Member<Element>>>>
         StringToElementsMap;
@@ -173,7 +180,7 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
   virtual void SupportedPropertyNames(Vector<String>& names);
 
   virtual void UpdateIdNameCache() const;
-  bool HasValidIdNameCache() const { return named_item_cache_ != nullptr; }
+  bool HasValidIdNameCache() const { return named_item_cache_; }
 
   void SetNamedItemCache(NamedItemCache* cache) const {
     DCHECK(!named_item_cache_);

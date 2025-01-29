@@ -168,6 +168,9 @@ void DeleteTabOrGroupFromFakeServer(const base::Uuid& uuid);
 // Adds the `collaboration_id` on the server.
 void AddColloaborationGroupToFakeServer(const std::string& collaboration_id);
 
+// Deletes the shared group with `uuid` on the server.
+void DeleteSharedGroupFromFakeServer(const base::Uuid& uuid);
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_TEST_APP_SYNC_TEST_UTIL_H_

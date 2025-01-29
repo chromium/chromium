@@ -22,7 +22,7 @@ ContentSetting KeyboardLockPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  if (base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt)) {
+  if (base::FeatureList::IsEnabled(features::kKeyboardLockPrompt)) {
     return PermissionsClient::Get()
         ->GetSettingsMap(browser_context())
         ->GetContentSetting(requesting_origin, embedding_origin,

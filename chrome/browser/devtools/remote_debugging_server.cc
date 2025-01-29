@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_socket_factory.h"
@@ -25,6 +27,7 @@
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/tcp_server_socket.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -35,6 +38,18 @@ base::LazyInstance<bool>::Leaky g_tethering_enabled = LAZY_INSTANCE_INITIALIZER;
 const uint16_t kMinTetheringPort = 9333;
 const uint16_t kMaxTetheringPort = 9444;
 const int kBackLog = 10;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DevToolsDebuggingUserDataDirStatus {
+  kNotBeingDebugged = 0,
+  kBeingDebuggedWithNonDefaultUserDataDir = 1,
+  kBeingDebuggedWithDefaultUserDataDir = 2,
+  kBeingDebuggedErrorObtainingUserDataDir = 3,
+
+  // New values go above here.
+  kMaxValue = kBeingDebuggedErrorObtainingUserDataDir,
+};
 
 class TCPServerSocketFactory
     : public content::DevToolsSocketFactory {
@@ -88,7 +103,31 @@ void RemoteDebuggingServer::EnableTetheringForDebug() {
 RemoteDebuggingServer::RemoteDebuggingServer() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
+  bool being_debugged = false;
+  absl::Cleanup record_histogram = [&being_debugged] {
+    DevToolsDebuggingUserDataDirStatus status =
+        DevToolsDebuggingUserDataDirStatus::kNotBeingDebugged;
+    if (being_debugged) {
+      status = DevToolsDebuggingUserDataDirStatus::
+          kBeingDebuggedErrorObtainingUserDataDir;
+      base::FilePath user_data_dir;
+      if (base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+        base::FilePath default_user_data_dir;
+        if (chrome::GetDefaultUserDataDirectory(&default_user_data_dir)) {
+          status = default_user_data_dir == user_data_dir
+                       ? DevToolsDebuggingUserDataDirStatus::
+                             kBeingDebuggedWithDefaultUserDataDir
+                       : DevToolsDebuggingUserDataDirStatus::
+                             kBeingDebuggedWithNonDefaultUserDataDir;
+        }
+      }
+    }
+    base::UmaHistogramEnumeration("DevTools.DevToolsDebuggingUserDataDirStatus",
+                                  status);
+  };
+
   if (command_line.HasSwitch(switches::kRemoteDebuggingPipe)) {
+    being_debugged = true;
     content::DevToolsAgentHost::StartRemoteDebuggingPipeHandler(
         base::BindOnce(&ChromeDevToolsManagerDelegate::CloseBrowserSoon));
   }
@@ -98,6 +137,8 @@ RemoteDebuggingServer::RemoteDebuggingServer() {
   int port;
   if (!base::StringToInt(port_str, &port) || port < 0 || port >= 65535)
     return;
+
+  being_debugged = true;
 
   base::FilePath output_dir;
   if (!port) {

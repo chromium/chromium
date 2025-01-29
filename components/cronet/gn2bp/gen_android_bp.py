@@ -627,6 +627,7 @@ class Module(object):
     self.tools = set()
     self.cmd = None
     self.host_supported = False
+    self.host_cross_supported = True
     self.device_supported = True
     self.init_rc = set()
     self.out = set()
@@ -719,6 +720,8 @@ class Module(object):
     self._output_field(output, 'cmd', sort=False)
     if self.host_supported:
       self._output_field(output, 'host_supported')
+    if not self.host_cross_supported:
+      self._output_field(output, 'host_cross_supported')
     if not self.device_supported:
       self._output_field(output, 'device_supported')
     self._output_field(output, 'init_rc')
@@ -2317,6 +2320,14 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
       module.apex_available = [tethering_apex]
       for arch_name, arch in target.get_archs().items():
         _set_rust_flags(module.target[arch_name], arch.rust_flags, arch_name)
+
+    if module.type in ("rust_ffi_static", "cc_genrule", "cc_library_static", "cc_binary"):
+      # If we don't add this, then some types of AOSP builds fail due to an
+      # issue with proc_macro2 - see https://crbug.com/392704960.
+      # Note: technically we only need this on modules that ultimately depend
+      # on proc_macro2, but there doesn't seem to be any downside to just set
+      # it everywhere, so for simplicity we do just that.
+      module.host_cross_supported = False
 
     if module.is_genrule():
       module.apex_available.add(tethering_apex)

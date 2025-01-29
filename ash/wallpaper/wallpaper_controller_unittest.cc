@@ -154,13 +154,13 @@ std::string GetDummyFileName(const AccountId& account_id) {
 
 constexpr char kUser1[] = "user1@test.com";
 const AccountId kAccountId1 =
-    AccountId::FromUserEmailGaiaId(kUser1, GaiaId(kUser1));
+    AccountId::FromUserEmailGaiaId(kUser1, GaiaId("1111"));
 const std::string kWallpaperFilesId1 = GetDummyFileId(kAccountId1);
 const std::string kFileName1 = GetDummyFileName(kAccountId1);
 
 constexpr char kUser2[] = "user2@test.com";
 const AccountId kAccountId2 =
-    AccountId::FromUserEmailGaiaId(kUser2, GaiaId(kUser2));
+    AccountId::FromUserEmailGaiaId(kUser2, GaiaId("2222"));
 const std::string kWallpaperFilesId2 = GetDummyFileId(kAccountId2);
 const std::string kFileName2 = GetDummyFileName(kAccountId2);
 
@@ -932,7 +932,7 @@ class WallpaperControllerTestBase : public AshTestBase {
   raw_ptr<TestWallpaperDriveFsDelegate, DanglingUntriaged> drivefs_delegate_;
 
   const AccountId kChildAccountId =
-      AccountId::FromUserEmailGaiaId(kChildEmail, GaiaId(kChildEmail));
+      AccountId::FromUserEmailGaiaId(kChildEmail, GaiaId("child_gaia_id"));
 
  private:
   InProcessDataDecoder decoder_;

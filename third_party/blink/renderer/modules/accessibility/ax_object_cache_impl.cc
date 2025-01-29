@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 
+#include <algorithm>
 #include <iterator>
 #include <numeric>
 
@@ -37,7 +38,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -152,33 +152,6 @@ namespace blink {
 using mojom::blink::FormControlType;
 
 namespace {
-
-Node* RetargetInput(Node* node) {
-  // Any click/focus that occurs on a <button> inside of a custom <select>
-  // should be treated as if it occurred on the <select>. The custom button is
-  // not actually present in the accessibility tree, but the select is present
-  // as a Role::kMenuList object.
-  if (IsA<HTMLButtonElement>(node)) {
-    // Fallback button case.
-    Node* possible_select = node->OwnerShadowHost();
-    if (!possible_select) {
-      // Custom button case.
-      possible_select = NodeTraversal::Parent(*node);
-    }
-    if (auto* select = DynamicTo<HTMLSelectElement>(possible_select)) {
-      if (select->IsAppearanceBaseButton(
-              HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle) &&
-          node == select->SlottedButton()) {
-        return select;
-      }
-    }
-  }
-  return node;
-}
-
-Element* RetargetInput(Element* element) {
-  return DynamicTo<Element>(RetargetInput(static_cast<Node*>(element)));
-}
 
 bool IsInitialEmptyDocument(const Document& document) {
   // Do not fire for initial empty top document. This helps avoid thrashing the
@@ -951,10 +924,6 @@ Node* AXObjectCacheImpl::FocusedNode() const {
   Node* focused_node = document_->FocusedElement();
   if (!focused_node)
     focused_node = document_;
-
-  // The custom select's button is not included in the a11y hierarchy. Treat
-  // focus on the button as if it's on the <select>.
-  focused_node = RetargetInput(focused_node);
 
   // A popup is showing: return the focus within instead of the focus in the
   // main document. Do not do this for HTML <select>, which has special
@@ -3955,7 +3924,7 @@ void AXObjectCacheImpl::ImageLoaded(const LayoutObject* layout_object) {
 }
 
 void AXObjectCacheImpl::HandleClicked(Node* node) {
-  if (AXObject* obj = Get(RetargetInput(node))) {
+  if (AXObject* obj = Get(node)) {
     PostNotification(obj, ax::mojom::Event::kClicked);
   }
 }
@@ -4978,7 +4947,7 @@ void AXObjectCacheImpl::PostPlatformNotification(
   event.event_from_action = event_from_action;
   event.event_intents.resize(event_intents.size());
   // We need to filter out the counts from every intent.
-  base::ranges::transform(
+  std::ranges::transform(
       event_intents, event.event_intents.begin(),
       [](const auto& intent) { return intent.key.intent(); });
   for (auto agent : agents_)
@@ -5266,9 +5235,6 @@ void AXObjectCacheImpl::HandleFocusedUIElementChanged(
   Page* page = new_focused_element->GetDocument().GetPage();
   if (!page)
     return;
-
-  new_focused_element = RetargetInput(new_focused_element);
-  old_focused_element = RetargetInput(old_focused_element);
 
   if (old_focused_element) {
     DeferTreeUpdate(TreeUpdateReason::kNodeLostFocus, old_focused_element);
@@ -6221,8 +6187,7 @@ void AXObjectCacheImpl::AddPluginTreeToUpdate(ui::AXTreeUpdate* update) {
       plugin_serializer_->SerializeChanges(root, &plugin_update);
 
       update->nodes.reserve(update->nodes.size() + plugin_update.nodes.size());
-      base::ranges::move(plugin_update.nodes,
-                         std::back_inserter(update->nodes));
+      std::ranges::move(plugin_update.nodes, std::back_inserter(update->nodes));
 
       if (plugin_tree_source_->GetTreeData(&update->tree_data)) {
         update->has_tree_data = true;

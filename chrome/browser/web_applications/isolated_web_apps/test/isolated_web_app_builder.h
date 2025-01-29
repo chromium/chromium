@@ -155,11 +155,12 @@ class IsolatedWebAppBuilder {
   using Headers = std::vector<Header>;
 
   // Initializes the builder with the specified manifest and some common
-  // resources such as a default text/html file at '/'.
+  // resources such as a default text/html file at '/'. The provided manifest
+  // cannot be overridden.
   //
   // The following resources will be present in the app:
   //   * /
-  //   * /manifest.webmanifest
+  //   * /.well-known/manifest.webmanifest
   //   * /icon.png
   explicit IsolatedWebAppBuilder(const ManifestBuilder& manifest_builder);
   IsolatedWebAppBuilder(const IsolatedWebAppBuilder&);
@@ -216,11 +217,19 @@ class IsolatedWebAppBuilder {
   //
   // .mock-http-headers sibling files are supported as described in
   // `AddFileFromDisk`.
+  //
+  // Files added from this method will replace any previously added files with
+  // the same path, except for /.well-known/manifest.webmanifest, which will
+  // always be set through ManifestBuilder.
   IsolatedWebAppBuilder& AddFolderFromDisk(std::string_view resource_path,
                                            const base::FilePath& folder_path);
 
   // Recursively adds the contents of a folder specified by a path relative to
   // //chrome/test/data to the app.
+  //
+  // Files added from this method will replace any previously added files with
+  // the same path, except for /.well-known/manifest.webmanifest, which will
+  // always be set through ManifestBuilder.
   IsolatedWebAppBuilder& AddFolderFromDisk(
       std::string_view resource_path,
       std::string_view chrome_test_data_relative_path);

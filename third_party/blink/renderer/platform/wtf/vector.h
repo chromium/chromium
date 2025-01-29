@@ -43,8 +43,6 @@
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/ranges.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -1219,7 +1217,7 @@ template <typename T,
           typename Proj>
 concept VectorCanAssignFromRange =
     std::ranges::input_range<Range> && std::ranges::sized_range<Range> &&
-    std::indirectly_unary_invocable<Proj, base::ranges::iterator_t<Range>> &&
+    std::indirectly_unary_invocable<Proj, std::ranges::iterator_t<Range>> &&
     // This prevents accidental fallback from the more efficient code paths.
     (!std::is_base_of_v<Vector<T, InlineCapacity, Allocator>,
                         std::decay_t<Range>> ||
@@ -2576,11 +2574,10 @@ wtf_size_t EraseIf(Vector<T, inline_capacity, Allocator>& v, Pred pred) {
 // See Vector::Vector(range, proj) and Vector::assign() about copying vs moving.
 template <typename Range, typename Proj = std::identity>
   requires std::ranges::sized_range<Range> && std::ranges::input_range<Range> &&
-           std::indirectly_unary_invocable<Proj,
-                                           base::ranges::iterator_t<Range>>
+           std::indirectly_unary_invocable<Proj, std::ranges::iterator_t<Range>>
 auto ToVector(Range&& range, Proj proj = {}) {
   using ProjectedType =
-      std::projected<base::ranges::iterator_t<Range>, Proj>::value_type;
+      std::projected<std::ranges::iterator_t<Range>, Proj>::value_type;
   return Vector<ProjectedType>(std::forward<Range>(range), std::move(proj));
 }
 

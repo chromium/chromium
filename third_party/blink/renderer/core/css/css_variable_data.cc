@@ -9,7 +9,8 @@
 
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -155,11 +156,11 @@ CSSVariableData::CSSVariableData(PassKey,
       has_root_font_units_(has_root_font_units),
       has_line_height_units_(has_line_height_units) {
   if (is_8bit_) {
-    base::ranges::copy(original_text.Span8(),
-                       reinterpret_cast<LChar*>(this + 1));
+    std::ranges::copy(original_text.Span8(),
+                      reinterpret_cast<LChar*>(this + 1));
   } else {
-    base::ranges::copy(original_text.Span16(),
-                       reinterpret_cast<UChar*>(this + 1));
+    std::ranges::copy(original_text.Span16(),
+                      reinterpret_cast<UChar*>(this + 1));
   }
 }
 

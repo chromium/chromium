@@ -339,6 +339,14 @@ class CORE_EXPORT DisplayLockUtilities {
   static LockCheckMemoizationScope* memoizer_;
 };
 
+template <typename T>
+struct ThreadingTrait<
+    T,
+    std::enable_if_t<
+        std::is_base_of_v<DisplayLockUtilities::ScopedForcedUpdate::Impl, T>>> {
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_UTILITIES_H_

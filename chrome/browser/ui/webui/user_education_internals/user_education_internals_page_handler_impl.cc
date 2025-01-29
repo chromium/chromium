@@ -542,11 +542,6 @@ void UserEducationInternalsPageHandlerImpl::GetSessionData(
                                            heavyweight_promo_cooldown_end));
     }
   }
-  if (!base::FeatureList::IsEnabled(
-          user_education::features::kUserEducationExperienceVersion2)) {
-    data.emplace_back(FormatDemoPageData(
-        "(Feature Engagement session data not available.)", ""));
-  }
   return std::move(callback).Run(std::move(data));
 }
 

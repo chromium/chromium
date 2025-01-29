@@ -11,17 +11,20 @@ import androidx.test.filters.LargeTest;
 import org.hamcrest.Matchers;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -36,8 +39,10 @@ import java.util.List;
 /** Test suite for the autofill profile sync data type. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class AutofillTest {
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
+    private AutofillTestHelper mAutofillTestHelper;
 
     private static final String AUTOFILL_TYPE = "Autofill Profiles";
 
@@ -77,9 +82,15 @@ public class AutofillTest {
     @Before
     public void setUp() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mAutofillTestHelper = new AutofillTestHelper();
         // Make sure the initial state is clean.
         assertClientAutofillProfileCount(0);
         assertServerAutofillProfileCountWithName(0, STREET);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        mAutofillTestHelper.clearAllDataForTesting();
     }
 
     // Test syncing an autofill profile from server to client.

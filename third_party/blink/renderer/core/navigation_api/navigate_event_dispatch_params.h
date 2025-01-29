@@ -51,6 +51,7 @@ struct CORE_EXPORT NavigateEventDispatchParams
   String download_filename;
   std::optional<scheduler::TaskAttributionId>
       soft_navigation_heuristics_task_id;
+  bool should_skip_screenshot;
 
   void Trace(Visitor*) const;
 };

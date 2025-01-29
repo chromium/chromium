@@ -406,20 +406,6 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
   return identity_manager->FindExtendedAccountInfo(*account_iterator);
 }
 
-LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType
-ChromePasswordProtectionService::GetSyncAccountType() const {
-  const AccountInfo account_info = GetAccountInfo();
-  if (!IsPrimaryAccountSignedIn()) {
-    return PasswordReuseEvent::NOT_SIGNED_IN;
-  }
-
-  // For gmail or googlemail account, the hosted_domain will always be
-  // kNoHostedDomainFound.
-  return account_info.hosted_domain == kNoHostedDomainFound
-             ? PasswordReuseEvent::GMAIL
-             : PasswordReuseEvent::GSUITE;
-}
-
 bool ChromePasswordProtectionService::CanShowInterstitial(
     ReusedPasswordAccountType password_type,
     const GURL& main_frame_url) {

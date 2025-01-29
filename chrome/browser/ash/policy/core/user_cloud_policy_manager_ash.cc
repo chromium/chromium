@@ -508,6 +508,8 @@ void UserCloudPolicyManagerAsh::OnStoreLoaded(
 
   em::PolicyData const* const policy_data = cloud_policy_store->policy();
 
+  bool is_managed = cloud_policy_store->is_managed();
+  bool is_affiliated = false;
   if (policy_data) {
     // We have cached policy in the store, so update the various flags to
     // reflect that we have policy.
@@ -521,14 +523,14 @@ void UserCloudPolicyManagerAsh::OnStoreLoaded(
 
     policy::BrowserPolicyConnectorAsh const* const connector =
         g_browser_process->platform_part()->browser_policy_connector_ash();
-    const bool is_affiliated = policy::IsUserAffiliated(
+    is_affiliated = policy::IsUserAffiliated(
         base::flat_set<std::string>(policy_data->user_affiliation_ids().begin(),
                                     policy_data->user_affiliation_ids().end()),
         connector->device_affiliation_ids(), account_id_.GetUserEmail());
-
-    user_manager::UserManager::Get()->SetUserAffiliated(account_id_,
-                                                        is_affiliated);
   }
+
+  user_manager::UserManager::Get()->SetUserPolicyStatus(account_id_, is_managed,
+                                                        is_affiliated);
 }
 
 void UserCloudPolicyManagerAsh::SetPolicyRequired(bool policy_required) {

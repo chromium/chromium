@@ -826,6 +826,8 @@ base::Value::Dict SerializeIntelligentScanInfo(
   base::Value::Dict dict;
   dict.Set("brand", intelligent_scan_info.brand());
   dict.Set("intent", intelligent_scan_info.intent());
+  dict.Set("no_info_reason", IntelligentScanInfo_NoInfoReason_Name(
+                                 intelligent_scan_info.no_info_reason()));
   return dict;
 }
 
@@ -1682,11 +1684,6 @@ base::Value::Dict SerializePasswordReuseEvent(
   event_dict.Set("domains_matching_password", std::move(domains_list));
 
   event_dict.Set("frame_id", event.frame_id());
-
-  event_dict.Set(
-      "sync_account_type",
-      LoginReputationClientRequest_PasswordReuseEvent_SyncAccountType_Name(
-          event.sync_account_type()));
 
   event_dict.Set(
       "reused_password_type",

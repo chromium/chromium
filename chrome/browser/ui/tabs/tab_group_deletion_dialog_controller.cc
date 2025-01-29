@@ -66,6 +66,7 @@ struct DialogText {
   const std::u16string title;
   const std::u16string body;
   const std::u16string ok_text;
+  const std::optional<std::u16string> cancel_text = std::nullopt;
 };
 
 // Returns the list of strings that are needed for a given dialog type.
@@ -108,23 +109,6 @@ DialogText GetDialogText(
           base::i18n::MessageFormatter::FormatWithNumberedArgs(
               l10n_util::GetStringUTF16(kDeleteOkTextId), closing_group_count)};
     }
-    case DeletionDialogController::DialogType::DeleteSingleShared: {
-      const bool title_is_empty =
-          !dialog_metadata.title_of_closing_group.has_value() ||
-          dialog_metadata.title_of_closing_group->empty();
-      const std::u16string body_text =
-          title_is_empty
-              ? l10n_util::GetStringUTF16(
-                    IDS_DATA_SHARING_OWNER_DELETE_DIALOG_BODY_NO_GROUP_TITLE)
-              : l10n_util::GetStringFUTF16(
-                    IDS_DATA_SHARING_OWNER_DELETE_DIALOG_BODY,
-                    dialog_metadata.title_of_closing_group.value());
-      return DialogText{
-          l10n_util::GetStringUTF16(IDS_DATA_SHARING_OWNER_DELETE_DIALOG_TITLE),
-          body_text,
-          l10n_util::GetStringUTF16(
-              IDS_DATA_SHARING_OWNER_DELETE_DIALOG_CONFIRM)};
-    }
     case DeletionDialogController::DialogType::UngroupSingle: {
       return DialogText{
           base::i18n::MessageFormatter::FormatWithNumberedArgs(
@@ -162,7 +146,55 @@ DialogText GetDialogText(
           base::i18n::MessageFormatter::FormatWithNumberedArgs(
               l10n_util::GetStringUTF16(kDeleteOkTextId), closing_group_count)};
     }
-
+    case DeletionDialogController::DialogType::DeleteSingleShared: {
+      const bool title_is_empty =
+          !dialog_metadata.title_of_closing_group.has_value() ||
+          dialog_metadata.title_of_closing_group->empty();
+      const std::u16string body_text =
+          title_is_empty
+              ? l10n_util::GetStringUTF16(
+                    IDS_DATA_SHARING_OWNER_DELETE_DIALOG_BODY_NO_GROUP_TITLE)
+              : l10n_util::GetStringFUTF16(
+                    IDS_DATA_SHARING_OWNER_DELETE_DIALOG_BODY,
+                    dialog_metadata.title_of_closing_group.value());
+      return DialogText{
+          l10n_util::GetStringUTF16(IDS_DATA_SHARING_OWNER_DELETE_DIALOG_TITLE),
+          body_text,
+          l10n_util::GetStringUTF16(
+              IDS_DATA_SHARING_OWNER_DELETE_DIALOG_CONFIRM)};
+    }
+    case DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup: {
+      return DialogText{
+          l10n_util::GetPluralStringFUTF16(
+              IDS_DATA_SHARING_DELETE_LAST_TAB_TITLE,
+              dialog_metadata.closing_group_count),
+          l10n_util::GetPluralStringFUTF16(
+              IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_BODY,
+              dialog_metadata.closing_group_count),
+          l10n_util::GetPluralStringFUTF16(
+              IDS_DATA_SHARING_DELETE_LAST_TAB_CONFIRM,
+              dialog_metadata.closing_group_count),
+          l10n_util::GetPluralStringFUTF16(
+              IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CANCEL,
+              dialog_metadata.closing_group_count),
+      };
+    }
+    case DeletionDialogController::DialogType::CloseTabAndKeepOrDeleteGroup: {
+      return DialogText{
+          l10n_util::GetPluralStringFUTF16(
+              IDS_DATA_SHARING_DELETE_LAST_TAB_TITLE,
+              dialog_metadata.closing_group_count),
+          l10n_util::GetPluralStringFUTF16(
+              IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_BODY,
+              dialog_metadata.closing_group_count),
+          l10n_util::GetPluralStringFUTF16(
+              IDS_DATA_SHARING_DELETE_LAST_TAB_CONFIRM,
+              dialog_metadata.closing_group_count),
+          l10n_util::GetPluralStringFUTF16(
+              IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_CANCEL,
+              dialog_metadata.closing_group_count),
+      };
+    }
     case DeletionDialogController::DialogType::LeaveGroup: {
       const bool title_is_empty =
           !dialog_metadata.title_of_closing_group.has_value() ||
@@ -183,6 +215,25 @@ DialogText GetDialogText(
   }
 }
 
+bool IsDialogSkippable(DeletionDialogController::DialogType type) {
+  switch (type) {
+    // Saved tab group dialogs are skippable.
+    case DeletionDialogController::DialogType::DeleteSingle:
+    case DeletionDialogController::DialogType::UngroupSingle:
+    case DeletionDialogController::DialogType::RemoveTabAndDelete:
+    case DeletionDialogController::DialogType::CloseTabAndDelete: {
+      return true;
+    }
+    // Shared tab group dialogs aren't skippable.
+    case DeletionDialogController::DialogType::DeleteSingleShared:
+    case DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup:
+    case DeletionDialogController::DialogType::CloseTabAndKeepOrDeleteGroup:
+    case DeletionDialogController::DialogType::LeaveGroup: {
+      return false;
+    }
+  }
+}
+
 // Returns the the value from the settings pref for a given dialog type.
 bool IsDialogSkippedByUserSettings(Profile* profile,
                                    DeletionDialogController::DialogType type) {
@@ -194,10 +245,6 @@ bool IsDialogSkippedByUserSettings(Profile* profile,
     case DeletionDialogController::DialogType::DeleteSingle: {
       return pref_service->GetBoolean(
           saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnDelete);
-    }
-    case DeletionDialogController::DialogType::DeleteSingleShared: {
-      return pref_service->GetBoolean(
-          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnDeleteShared);
     }
     case DeletionDialogController::DialogType::UngroupSingle: {
       return pref_service->GetBoolean(
@@ -211,9 +258,12 @@ bool IsDialogSkippedByUserSettings(Profile* profile,
       return pref_service->GetBoolean(
           saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnCloseTab);
     }
+    // Shared tab groups dialogs aren't skippable.
+    case DeletionDialogController::DialogType::DeleteSingleShared:
+    case DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup:
+    case DeletionDialogController::DialogType::CloseTabAndKeepOrDeleteGroup:
     case DeletionDialogController::DialogType::LeaveGroup: {
-      return pref_service->GetBoolean(
-          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnLeaveGroup);
+      return false;
     }
   }
 }
@@ -232,11 +282,6 @@ void SetSkipDialogForType(Profile* profile,
           saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnDelete,
           new_value);
     }
-    case DeletionDialogController::DialogType::DeleteSingleShared: {
-      return pref_service->SetBoolean(
-          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnDeleteShared,
-          new_value);
-    }
     case DeletionDialogController::DialogType::UngroupSingle: {
       return pref_service->SetBoolean(
           saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnUngroup,
@@ -252,12 +297,24 @@ void SetSkipDialogForType(Profile* profile,
           saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnCloseTab,
           new_value);
     }
+    // Shared tab group dialogs aren't skippable.
+    case DeletionDialogController::DialogType::DeleteSingleShared:
+    case DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup:
+    case DeletionDialogController::DialogType::CloseTabAndKeepOrDeleteGroup:
     case DeletionDialogController::DialogType::LeaveGroup: {
-      return pref_service->SetBoolean(
-          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnLeaveGroup,
-          new_value);
+      // We should never try to set the skip pref for these dialog types.
+      NOTREACHED();
     }
   }
+}
+
+// Keep type dialogs don't let the user cancel their action; instead, they
+// choose whether the group should stick around or go away.
+bool IsDialogKeepType(DeletionDialogController::DialogType type) {
+  return type == DeletionDialogController::DialogType::
+                     CloseTabAndKeepOrDeleteGroup ||
+         type ==
+             DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup;
 }
 
 }  // anonymous namespace
@@ -280,12 +337,12 @@ DeletionDialogController::DialogMetadata::~DialogMetadata() = default;
 DeletionDialogController::DialogState::DialogState(
     DialogType type_,
     ui::DialogModel* dialog_model_,
-    base::OnceCallback<void()> on_ok_button_pressed_,
-    base::OnceCallback<void()> on_cancel_button_pressed_)
+    base::OnceCallback<void()> callback_,
+    std::optional<base::OnceCallback<void()>> keep_groups_)
     : type(type_),
       dialog_model(dialog_model_),
-      on_ok_button_pressed(std::move(on_ok_button_pressed_)),
-      on_cancel_button_pressed(std::move(on_cancel_button_pressed_)) {}
+      callback(std::move(callback_)),
+      keep_groups(std::move(keep_groups_)) {}
 
 DeletionDialogController::DialogState::~DialogState() = default;
 
@@ -312,21 +369,28 @@ bool DeletionDialogController::IsShowingDialog() {
 
 bool DeletionDialogController::MaybeShowDialog(
     const DialogMetadata& metadata,
-    base::OnceCallback<void()> on_ok_callback) {
+    base::OnceCallback<void()> callback,
+    std::optional<base::OnceCallback<void()>> keep_groups) {
+  if (IsDialogKeepType(metadata.type)) {
+    CHECK(keep_groups.has_value());
+  } else {
+    CHECK(!keep_groups.has_value());
+  }
+
   if (!CanShowDialog()) {
     return false;
   }
 
   if (IsDialogSkippedByUserSettings(profile_, metadata.type)) {
-    std::move(on_ok_callback).Run();
+    std::move(callback).Run();
     return false;
   }
 
   std::unique_ptr<ui::DialogModel> dialog_model = BuildDialogModel(metadata);
 
   state_ = std::make_unique<DeletionDialogController::DialogState>(
-      metadata.type, dialog_model.get(), std::move(on_ok_callback),
-      base::DoNothing());
+      metadata.type, dialog_model.get(), std::move(callback),
+      std::move(keep_groups));
 
   show_dialog_model_fn_.Run(std::move(dialog_model));
   return true;
@@ -351,17 +415,23 @@ void DeletionDialogController::SetPrefsPreventShowingDialogForTesting(
 
 void DeletionDialogController::OnDialogOk() {
   if (state_->dialog_model &&
+      state_->dialog_model->HasField(kDeletionDialogDontAskCheckboxId) &&
       state_->dialog_model
           ->GetCheckboxByUniqueId(kDeletionDialogDontAskCheckboxId)
           ->is_checked()) {
     SetSkipDialogForType(profile_, state_->type, true);
   }
-  std::move(state_->on_ok_button_pressed).Run();
+  if (IsDialogKeepType(state_->type)) {
+    std::move(state_->keep_groups.value()).Run();
+  }
+  std::move(state_->callback).Run();
   state_.reset();
 }
 
 void DeletionDialogController::OnDialogCancel() {
-  std::move(state_->on_cancel_button_pressed).Run();
+  if (IsDialogKeepType(state_->type)) {
+    std::move(state_->callback).Run();
+  }
   state_.reset();
 }
 
@@ -369,15 +439,18 @@ std::unique_ptr<ui::DialogModel> DeletionDialogController::BuildDialogModel(
     const DialogMetadata& metadata) {
   DialogText strings = GetDialogText(profile_, metadata);
 
-  return ui::DialogModel::Builder()
-      .SetTitle(strings.title)
+  ui::DialogModel::Button::Params cancel_button_params;
+  cancel_button_params.SetEnabled(true).SetId(kDeletionDialogCancelButtonId);
+  if (strings.cancel_text.has_value()) {
+    cancel_button_params.SetLabel(strings.cancel_text.value());
+  }
+
+  ui::DialogModel::Builder dialog_builder = ui::DialogModel::Builder();
+  dialog_builder.SetTitle(strings.title)
       .AddParagraph(ui::DialogModelLabel(strings.body))
-      .AddCheckbox(kDeletionDialogDontAskCheckboxId,
-                   ui::DialogModelLabel(l10n_util::GetStringUTF16(kDontAskId)))
       .AddCancelButton(base::BindOnce(&DeletionDialogController::OnDialogCancel,
                                       base::Unretained(this)),
-                       ui::DialogModel::Button::Params().SetEnabled(true).SetId(
-                           kDeletionDialogCancelButtonId))
+                       cancel_button_params)
       .AddOkButton(base::BindOnce(&DeletionDialogController::OnDialogOk,
                                   base::Unretained(this)),
                    ui::DialogModel::Button::Params()
@@ -393,8 +466,13 @@ std::unique_ptr<ui::DialogModel> DeletionDialogController::BuildDialogModel(
           [](DeletionDialogController* dialog_controller) {
             dialog_controller->state_.reset();
           },
-          base::Unretained(this)))
-      .Build();
+          base::Unretained(this)));
+  if (IsDialogSkippable(metadata.type)) {
+    dialog_builder.AddCheckbox(
+        kDeletionDialogDontAskCheckboxId,
+        ui::DialogModelLabel(l10n_util::GetStringUTF16(kDontAskId)));
+  }
+  return dialog_builder.Build();
 }
 
 void DeletionDialogController::CreateDialogFromBrowser(

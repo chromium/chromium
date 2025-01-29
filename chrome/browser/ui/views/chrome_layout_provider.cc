@@ -119,6 +119,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
              2;
     case DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN:
       return GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
+    case DISTANCE_EXTENSIONS_MENU_LABEL_ICON_SPACING:
+      return 4;
     case DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL:
       return 16;
     case DISTANCE_RELATED_CONTROL_VERTICAL_SMALL:

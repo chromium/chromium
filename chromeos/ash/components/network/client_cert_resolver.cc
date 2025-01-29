@@ -266,6 +266,10 @@ struct MatchCertWithCertConfig {
 // Lookup the issuer certificate of |cert|. If it is available, return the PEM
 // encoding of that certificate. Otherwise return the empty string.
 std::string GetPEMEncodedIssuer(CERTCertificate* cert) {
+  // TODO(https://crbug.com/40554868): remove dependency on NSS and lookup the
+  // issuer directly from NetworkCertLoader's authority_certs(). (Currently
+  // this magically works because NetworkCertLoader stores the certs as NSS
+  // CERTCertificate objects so CERT_FindCertIssuer will find them implicitly.)
   net::ScopedCERTCertificate issuer_handle(
       CERT_FindCertIssuer(cert, PR_Now(), certUsageAnyCA));
   if (!issuer_handle) {

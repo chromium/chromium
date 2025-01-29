@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_state.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
 
 namespace blink {
@@ -194,8 +195,8 @@ void PresentationAvailabilityState::MaybeStopListeningToURL(const KURL& url) {
     }
   }
 
-  auto status_it = base::ranges::find(availability_listening_status_, url,
-                                      &ListeningStatus::url);
+  auto status_it = std::ranges::find(availability_listening_status_, url,
+                                     &ListeningStatus::url);
   if (status_it == availability_listening_status_.end()) {
     LOG(WARNING) << "Stop listening to unknown url: " << url.GetString();
   } else {
@@ -209,8 +210,8 @@ void PresentationAvailabilityState::MaybeStopListeningToURL(const KURL& url) {
 PresentationAvailabilityState::AvailabilityListener*
 PresentationAvailabilityState::GetAvailabilityListener(
     const Vector<KURL>& urls) {
-  auto listener_it = base::ranges::find(availability_listeners_, urls,
-                                        &AvailabilityListener::urls);
+  auto listener_it = std::ranges::find(availability_listeners_, urls,
+                                       &AvailabilityListener::urls);
   return listener_it == availability_listeners_.end() ? nullptr : *listener_it;
 }
 
@@ -230,8 +231,8 @@ void PresentationAvailabilityState::TryRemoveAvailabilityListener(
 
 PresentationAvailabilityState::ListeningStatus*
 PresentationAvailabilityState::GetListeningStatus(const KURL& url) const {
-  auto status_it = base::ranges::find(availability_listening_status_, url,
-                                      &ListeningStatus::url);
+  auto status_it = std::ranges::find(availability_listening_status_, url,
+                                     &ListeningStatus::url);
   return status_it == availability_listening_status_.end() ? nullptr
                                                            : status_it->get();
 }

@@ -69,13 +69,6 @@ class PLATFORM_EXPORT FontFallbackList
   FontSelector* GetFontSelector() const { return font_selector_.Get(); }
   uint16_t Generation() const { return generation_; }
 
-  NGShapeCache& GetNGShapeCache(const FontDescription& font_description) {
-    if (!ng_shape_cache_) {
-      ng_shape_cache_ = MakeGarbageCollected<NGShapeCache>();
-    }
-    return *ng_shape_cache_;
-  }
-
   ShapeCache* GetShapeCache(const FontDescription& font_description) {
     if (!shape_cache_) {
       FallbackListCompositeKey key(font_description);
@@ -102,6 +95,7 @@ class PLATFORM_EXPORT FontFallbackList
   const FontData* FontDataAt(const FontDescription&, unsigned index);
 
   const FontFeatures& GetFontFeatures(const FontDescription&);
+  bool HasNonInitialFontFeatures(const FontDescription&);
 
   bool CanShapeWordByWord(const FontDescription&);
 
@@ -125,6 +119,7 @@ class PLATFORM_EXPORT FontFallbackList
   const SimpleFontData* DeterminePrimarySimpleFontDataCore(
       const FontDescription&);
 
+  void ComputeFontFeatures(const FontDescription&);
   bool ComputeCanShapeWordByWord(const FontDescription&);
 
   HeapVector<Member<const FontData>, 1> font_list_;
@@ -141,8 +136,8 @@ class PLATFORM_EXPORT FontFallbackList
   bool is_invalid_ : 1 = false;
   bool nullify_primary_font_data_for_test_ : 1 = false;
   bool is_font_features_computed_ : 1 = false;
+  bool has_non_initial_font_features_ : 1 = false;
 
-  Member<NGShapeCache> ng_shape_cache_;
   Member<ShapeCache> shape_cache_;
 };
 

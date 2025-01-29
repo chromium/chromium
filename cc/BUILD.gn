@@ -679,6 +679,7 @@ cc_test_static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//cc/mojo_embedder",
     "//cc/paint",
     "//components/ukm",
     "//components/ukm:test_support",

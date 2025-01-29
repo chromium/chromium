@@ -9,12 +9,12 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "cc/base/features.h"
 #include "cc/layers/solid_color_scrollbar_layer.h"
 #include "cc/paint/display_item_list.h"
@@ -869,8 +869,8 @@ SynthesizedClip& PaintArtifactCompositor::CreateOrReuseSynthesizedClipLayer(
     bool needs_layer,
     CompositorElementId& mask_isolation_id,
     CompositorElementId& mask_effect_id) {
-  auto entry = base::ranges::find_if(
-      synthesized_clip_cache_, [&clip](const auto& entry) {
+  auto entry =
+      std::ranges::find_if(synthesized_clip_cache_, [&clip](const auto& entry) {
         return entry.key == &clip && !entry.in_use;
       });
   if (entry == synthesized_clip_cache_.end()) {

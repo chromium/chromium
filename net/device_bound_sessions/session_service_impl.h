@@ -61,10 +61,12 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // during construction. Otherwise, it is a no-op.
   void LoadSessionsAsync();
 
-  void RegisterBoundSession(OnAccessCallback on_access_callback,
-                            RegistrationFetcherParam registration_params,
-                            const IsolationInfo& isolation_info,
-                            const NetLogWithSource& net_log) override;
+  void RegisterBoundSession(
+      OnAccessCallback on_access_callback,
+      RegistrationFetcherParam registration_params,
+      const IsolationInfo& isolation_info,
+      const NetLogWithSource& net_log,
+      const std::optional<url::Origin>& original_request_initiator) override;
 
   std::optional<Session::Id> GetAnySessionRequiringDeferral(
       URLRequest* request) override;

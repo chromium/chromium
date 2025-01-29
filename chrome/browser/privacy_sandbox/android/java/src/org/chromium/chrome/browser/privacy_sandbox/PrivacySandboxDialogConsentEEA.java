@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.WebContents;
@@ -31,7 +30,6 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -294,10 +292,6 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                                             getContext(), this::onPrivacyPolicyClicked))));
             mLearnMoreText.setMovementMethod(LinkMovementMethod.getInstance());
             if (mThinWebView == null || mWebContents == null || mWebContents.isDestroyed()) {
-                String privacyPolicyUrl =
-                        ColorUtils.inNightMode(mActivityWindowAndroid.getContext().get())
-                                ? UrlConstants.GOOGLE_EMBEDDED_PRIVACY_POLICY_DARK_MODE
-                                : UrlConstants.GOOGLE_EMBEDDED_PRIVACY_POLICY;
                 mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
                 mWebContentsObserver =
                         new WebContentsObserver(mWebContents) {
@@ -324,8 +318,8 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                             }
                         };
                 mThinWebView =
-                        PrivacySandboxDialogController.createThinWebView(
-                                mWebContents, mProfile, mActivityWindowAndroid, privacyPolicyUrl);
+                        PrivacySandboxDialogController.createPrivacyPolicyThinWebView(
+                                mWebContents, mProfile, mActivityWindowAndroid);
             }
         }
     }

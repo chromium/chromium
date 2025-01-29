@@ -886,6 +886,7 @@ class CORE_EXPORT Node : public EventTarget {
 #endif
 
   NodeListsNodeData* NodeLists();
+  const NodeListsNodeData* NodeLists() const;
   void ClearNodeLists();
 
   FlatTreeNodeData* GetFlatTreeNodeData() const;

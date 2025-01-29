@@ -317,7 +317,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
                 default:
                     // This should never happen, as there are only two versions.
                     assert false
-                            : "Invalid version for EnablePasswordsSyncErrorMessageAlternative: "
+                            : "Invalid version for SyncEnablePasswordsSyncErrorMessageAlternative: "
                                     + getTrustedVaultErrorMessageVersion();
                     break;
             }
@@ -370,7 +370,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
                 default:
                     // This should never happen, as there are only two versions.
                     assert false
-                            : "Invalid version for EnablePasswordsSyncErrorMessageAlternative: "
+                            : "Invalid version for SyncEnablePasswordsSyncErrorMessageAlternative: "
                                     + getTrustedVaultErrorMessageVersion();
                     break;
             }

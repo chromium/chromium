@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 
+#include <algorithm>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/trees/layer_tree_host.h"
@@ -669,7 +669,7 @@ bool ViewTransition::MatchForActiveViewTransitionType(
   }
 
   // At least one pseudo type has to match at least one of the transition types.
-  return base::ranges::any_of(pseudo_types, [&](const String& pseudo_type) {
+  return std::ranges::any_of(pseudo_types, [&](const String& pseudo_type) {
     return ViewTransitionTypeSet::IsValidType(pseudo_type) &&
            types_->Contains(pseudo_type);
   });

@@ -178,7 +178,7 @@ public final class CommandLineFlags {
         Log.i(
                 TAG,
                 "Java %scommand line set to: %s",
-                CommandLine.isNativeImplementationForTesting() ? "(and native) " : "",
+                CommandLine.getInstance().hasSwitchedToNative() ? "(and native) " : "",
                 serializeCommandLine());
         return anyChanges;
     }

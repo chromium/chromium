@@ -230,10 +230,9 @@ std::unique_ptr<FrameNodeImpl> PerformanceManagerImpl::CreateFrameNode(
     const blink::LocalFrameToken& frame_token,
     content::BrowsingInstanceId browsing_instance_id,
     content::SiteInstanceGroupId site_instance_group_id,
-    bool is_current,
-    FrameNodeCreationCallback creation_callback) {
+    bool is_current) {
   return CreateNodeImpl<FrameNodeImpl>(
-      std::move(creation_callback), process_node, page_node, parent_frame_node,
+      process_node, page_node, parent_frame_node,
       outer_document_for_fenced_frame, render_frame_id, frame_token,
       browsing_instance_id, site_instance_group_id, is_current);
 }
@@ -246,25 +245,22 @@ std::unique_ptr<PageNodeImpl> PerformanceManagerImpl::CreatePageNode(
     PagePropertyFlags initial_property_flags,
     base::TimeTicks visibility_change_time) {
   return CreateNodeImpl<PageNodeImpl>(
-      base::OnceCallback<void(PageNodeImpl*)>(), std::move(web_contents),
-      browser_context_id, visible_url, initial_property_flags,
-      visibility_change_time);
+      std::move(web_contents), browser_context_id, visible_url,
+      initial_property_flags, visibility_change_time);
 }
 
 // static
 std::unique_ptr<ProcessNodeImpl> PerformanceManagerImpl::CreateProcessNode(
     BrowserProcessNodeTag tag) {
-  return CreateNodeImpl<ProcessNodeImpl>(
-      base::OnceCallback<void(ProcessNodeImpl*)>(), tag);
+  return CreateNodeImpl<ProcessNodeImpl>(tag);
 }
 
 // static
 std::unique_ptr<ProcessNodeImpl> PerformanceManagerImpl::CreateProcessNode(
     RenderProcessHostProxy render_process_host_proxy,
     base::TaskPriority priority) {
-  return CreateNodeImpl<ProcessNodeImpl>(
-      base::OnceCallback<void(ProcessNodeImpl*)>(),
-      std::move(render_process_host_proxy), priority);
+  return CreateNodeImpl<ProcessNodeImpl>(std::move(render_process_host_proxy),
+                                         priority);
 }
 
 // static
@@ -272,8 +268,7 @@ std::unique_ptr<ProcessNodeImpl> PerformanceManagerImpl::CreateProcessNode(
     content::ProcessType process_type,
     BrowserChildProcessHostProxy browser_child_process_host_proxy) {
   return CreateNodeImpl<ProcessNodeImpl>(
-      base::OnceCallback<void(ProcessNodeImpl*)>(), process_type,
-      std::move(browser_child_process_host_proxy));
+      process_type, std::move(browser_child_process_host_proxy));
 }
 
 // static
@@ -283,9 +278,8 @@ std::unique_ptr<WorkerNodeImpl> PerformanceManagerImpl::CreateWorkerNode(
     ProcessNodeImpl* process_node,
     const blink::WorkerToken& worker_token,
     const url::Origin& origin) {
-  return CreateNodeImpl<WorkerNodeImpl>(
-      base::OnceCallback<void(WorkerNodeImpl*)>(), browser_context_id,
-      worker_type, process_node, worker_token, origin);
+  return CreateNodeImpl<WorkerNodeImpl>(browser_context_id, worker_type,
+                                        process_node, worker_token, origin);
 }
 
 // static
@@ -347,33 +341,13 @@ PerformanceManagerImpl* PerformanceManagerImpl::GetInstance() {
   return g_performance_manager;
 }
 
-namespace {
-
-// Helper function for adding a node to a graph, and invoking a post-creation
-// callback immediately afterwards.
-template <typename NodeType>
-void AddNodeAndInvokeCreationCallback(
-    base::OnceCallback<void(NodeType*)> callback,
-    NodeType* node,
-    GraphImpl* graph) {
-  graph->AddNewNode(node);
-  if (callback)
-    std::move(callback).Run(node);
-}
-
-}  // namespace
-
 // static
 template <typename NodeType, typename... Args>
 std::unique_ptr<NodeType> PerformanceManagerImpl::CreateNodeImpl(
-    base::OnceCallback<void(NodeType*)> creation_callback,
     Args&&... constructor_args) {
   std::unique_ptr<NodeType> new_node =
       std::make_unique<NodeType>(std::forward<Args>(constructor_args)...);
-  CallOnGraphImpl(FROM_HERE,
-                  base::BindOnce(&AddNodeAndInvokeCreationCallback<NodeType>,
-                                 std::move(creation_callback),
-                                 base::Unretained(new_node.get())));
+  PerformanceManagerImpl::GetGraphImpl()->AddNewNode(new_node.get());
   return new_node;
 }
 

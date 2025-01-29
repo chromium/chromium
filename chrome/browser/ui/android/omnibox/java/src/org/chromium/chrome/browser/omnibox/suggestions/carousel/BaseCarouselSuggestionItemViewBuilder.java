@@ -14,9 +14,8 @@ import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.MostVisitedTileViewBinder;
 import org.chromium.components.browser_ui.widget.tile.TileView;
-import org.chromium.components.browser_ui.widget.tile.TileViewBinder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -50,7 +49,7 @@ public class BaseCarouselSuggestionItemViewBuilder {
         adapter.registerType(
                 ViewType.TILE_VIEW,
                 BaseCarouselSuggestionItemViewBuilder::createTileView,
-                TileViewBinder::bind);
+                MostVisitedTileViewBinder::bind);
         return new BaseCarouselSuggestionView(parent.getContext(), adapter);
     }
 
@@ -67,7 +66,7 @@ public class BaseCarouselSuggestionItemViewBuilder {
                         LayoutInflater.from(context)
                                 .inflate(R.layout.suggestions_tile_view, parent, false);
         tile.setClickable(true);
-        applyViewBackground(tile);
+        tile.setFocusable(true);
 
         // Update the background color of the solid circle around the icon (typically a favicon).
         Drawable modernizedBackground =
@@ -77,15 +76,5 @@ public class BaseCarouselSuggestionItemViewBuilder {
         iconBackground.setBackground(modernizedBackground);
 
         return tile;
-    }
-
-    private static void applyViewBackground(View view) {
-        view.setFocusable(true);
-        Drawable background =
-                OmniboxResourceProvider.resolveAttributeToDrawable(
-                        view.getContext(),
-                        BrandedColorScheme.APP_DEFAULT,
-                        R.attr.selectableItemBackground);
-        view.setBackground(background);
     }
 }

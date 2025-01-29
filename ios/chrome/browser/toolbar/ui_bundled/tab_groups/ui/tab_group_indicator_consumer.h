@@ -16,8 +16,10 @@
 // Sets whether the group can be shared or not.
 - (void)setShareAvailable:(BOOL)shareAvailable;
 
-// Sets the group shared state. YES when this group is shared with other users.
-- (void)setShared:(BOOL)shared;
+// Sets the group shared state.
+// - `shared` is true when this group is shared with other users.
+// - `owner` is true when the user owns the shared group.
+- (void)setShared:(BOOL)shared owner:(BOOL)owner;
 
 // Sets the face pile view controller to display the share button or the face
 // pile.

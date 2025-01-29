@@ -36,7 +36,7 @@ BUILD_DIR = os.path.join(CHROME_DIR, "out", "sysroot-build", RELEASE)
 # gpg keyring file generated using generate_keyring.sh
 KEYRING_FILE = os.path.join(SCRIPT_DIR, "keyring.gpg")
 
-ARCHIVE_TIMESTAMP = "20250122T204604Z"
+ARCHIVE_TIMESTAMP = "20250129T203412Z"
 
 ARCHIVE_URL = f"https://snapshot.debian.org/archive/debian/{ARCHIVE_TIMESTAMP}/"
 APT_SOURCES_LIST = [
@@ -705,7 +705,6 @@ def upload_sysroot(arch: str) -> str:
                                 f"{DISTRO}_{RELEASE}_{arch}_sysroot.tar.xz")
     command = [
         "upload_to_google_storage_first_class.py",
-        "--force",
         "--bucket",
         "chrome-linux-sysroot",
         tarball_path,

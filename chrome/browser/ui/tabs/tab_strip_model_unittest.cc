@@ -443,6 +443,10 @@ class TabStripModelTest : public testing::Test {
 
   TestingProfile* profile() { return profile_.get(); }
 
+  base::test::ScopedFeatureList* scoped_feature_list() {
+    return &scoped_feature_list_;
+  }
+
   std::unique_ptr<WebContents> CreateWebContents() {
     return content::WebContentsTester::CreateTestWebContents(profile(),
                                                              nullptr);
@@ -480,9 +484,10 @@ class TabStripModelTest : public testing::Test {
   }
 
   // Returns the state of the given tab strip as a string. The state consists
-  // of the ID of each web contents followed by a 'p' if pinned. For example,
-  // if the model consists of two tabs with ids 2 and 1, with the first
-  // tab pinned, this returns "2p 1".
+  // of the ID of each web contents followed by a 'p' if pinned, or an 's' if
+  // split. For example, if the model consists of four tabs with ids 0, 1, 2,
+  // and 3, with the first tab pinned and the last two split, this returns
+  // "0p 1 2s 3s".
   std::string GetTabStripStateString(const TabStripModel& model) {
     std::string actual;
     for (int i = 0; i < model.count(); ++i) {
@@ -494,6 +499,10 @@ class TabStripModelTest : public testing::Test {
 
       if (model.IsTabPinned(i)) {
         actual += "p";
+      }
+
+      if (model.IsTabSplit(i)) {
+        actual += "s";
       }
     }
     return actual;
@@ -531,6 +540,7 @@ class TabStripModelTest : public testing::Test {
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   const std::unique_ptr<TestingProfile> profile_;
   tabs::PreventTabFeatureInitialization prevent_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TabStripModelTest, TestBasicAPI) {
@@ -1653,6 +1663,32 @@ TEST_F(TabStripModelTest, CommandTogglePinned) {
   // Pin the last.
   tabstrip.ExecuteContextMenuCommand(2, TabStripModel::CommandTogglePinned);
   EXPECT_EQ("2p 0 1", GetTabStripStateString(tabstrip));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+// Tests IsContextMenuCommandEnabled and ExecuteContextMenuCommand with
+// CommandTogglePinned.
+TEST_F(TabStripModelTest, CommandAddToSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create three tabs with two pinned, select the last.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 3, 2, "2"));
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToSplit));
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      1, TabStripModel::CommandAddToSplit));
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      2, TabStripModel::CommandAddToSplit));
+  tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandAddToSplit);
+
+  // The first tab should become unpinned and adjacent to the last tab.
+  EXPECT_EQ("1p 0s 2s", GetTabStripStateString(tabstrip));
 
   tabstrip.CloseAllTabs();
   EXPECT_TRUE(tabstrip.empty());

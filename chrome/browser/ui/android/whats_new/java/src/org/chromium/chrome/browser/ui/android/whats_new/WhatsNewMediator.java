@@ -4,18 +4,46 @@
 
 package org.chromium.chrome.browser.ui.android.whats_new;
 
+import android.content.Context;
+
 import org.chromium.chrome.browser.ui.android.whats_new.WhatsNewProperties.ViewState;
+import org.chromium.chrome.browser.ui.android.whats_new.features.WhatsNewFeature;
+import org.chromium.chrome.browser.ui.android.whats_new.features.WhatsNewFeatureProvider;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
 public class WhatsNewMediator {
+    private final Context mContext;
     private final PropertyModel mModel;
 
-    WhatsNewMediator(PropertyModel model) {
+    private final ModelList mItemList;
+
+    WhatsNewMediator(Context context, PropertyModel model, ModelList itemList) {
+        mContext = context;
         mModel = model;
+
+        mItemList = itemList;
+        populateFeatureList();
     }
 
     void showBottomSheet() {
         setState(ViewState.OVERVIEW);
+    }
+
+    private void populateFeatureList() {
+        for (WhatsNewFeature feature : WhatsNewFeatureProvider.getFeatureEntries()) {
+            PropertyModel model =
+                    WhatsNewListItemProperties.buildModelForFeature(
+                            mContext, feature, this::onFeatureItemClicked);
+            mItemList.add(
+                    new ModelListAdapter.ListItem(
+                            WhatsNewListItemProperties.DEFAULT_ITEM_TYPE, model));
+        }
+    }
+
+    private void onFeatureItemClicked(WhatsNewFeature feature) {
+        setState(ViewState.DETAIL);
     }
 
     void onBackButtonPressed() {
@@ -26,7 +54,7 @@ public class WhatsNewMediator {
         }
     }
 
-    void setState(@ViewState int state) {
+    private void setState(@ViewState int state) {
         mModel.set(WhatsNewProperties.VIEW_STATE, state);
     }
 }

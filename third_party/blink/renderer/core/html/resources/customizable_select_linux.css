@@ -21,11 +21,11 @@
  * another stylesheet. TODO(crbug.com/378869807): Replace this with at-rules to
  * ensure correct specificity. */
 select:not(:-internal-list-box):not([multiple]):not(:-internal-list-box):not([multiple]) {
-    background-color: -internal-appearance-auto-base-select(ButtonFace, transparent);
+    background-color: -internal-auto-base(ButtonFace, transparent);
 }
 select:not(:-internal-list-box):not([multiple]):enabled:hover {
-    background-color: -internal-appearance-auto-base-select(ButtonFace, color-mix(in lab, currentColor 10%, transparent));
+    background-color: -internal-auto-base(ButtonFace, color-mix(in lab, currentColor 10%, transparent));
 }
 select:not(:-internal-list-box):not([multiple]):enabled:active {
-    background-color: -internal-appearance-auto-base-select(ButtonFace, color-mix(in lab, currentColor 20%, transparent));
+    background-color: -internal-auto-base(ButtonFace, color-mix(in lab, currentColor 20%, transparent));
 }

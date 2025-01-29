@@ -873,7 +873,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             # migrated to the //base equivalent.
             r'ash/ambient/model/ambient_topic_queue\.cc',
             r'base/allocator/partition_allocator/src/partition_alloc/partition_alloc_unittest\.cc',
-            r'base/ranges/algorithm_unittest\.cc',
             r'base/test/launcher/test_launcher\.cc',
             r'cc/metrics/video_playback_roughness_reporter_unittest\.cc',
             r'chrome/browser/apps/app_service/metrics/website_metrics\.cc',
@@ -917,8 +916,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
     BanRule(
         r'/\babsl::c_',
         (
-            'Abseil container utilities are banned. Use base/ranges/algorithm.h ',
-            'instead.',
+            'Abseil container utilities are banned. Use std::ranges:: instead.',
         ),
         True,
         [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.

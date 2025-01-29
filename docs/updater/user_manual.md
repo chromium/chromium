@@ -179,6 +179,36 @@ however, the application is then only installed for the current user. The
 application installer needs to be able to support the installation as system, or
 per-user, or both modes.
 
+### `lang`
+
+`lang` is one of the install parameters that can be specified for
+installs via the
+[metainstaller tag](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/tools/tag.py).
+`lang` is used to indicate the language that the updater installation UI is
+displayed in.
+
+For example, here is a command line for the Updater on Windows that includes
+`lang` Arabic:
+```
+UpdaterSetup.exe --install="appguid=YourAppID&lang=ar"
+```
+
+The full list of supported languages for Chromium and Google Chrome respectively are listed in
+[chromium_strings.grd](https://source.chromium.org/chromium/chromium/src/+/main:chrome/app/chromium_strings.grd)
+and
+[google_chrome_strings.grd](https://source.chromium.org/chromium/chromium/src/+/main:chrome/app/google_chrome_strings.grd)
+under `<translations>`.
+
+For example:
+
+```
+<translations>
+    <file path="resources/chromium_strings_af.xtb" lang="af" />
+    ...
+```
+
+indicates that `lang=af` is a valid tag fragment.
+
 ### `installdataindex`
 
 `installdataindex` is one of the install parameters that can be specified for

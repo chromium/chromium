@@ -32,7 +32,7 @@ namespace device_signals {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 namespace {
-constexpr char kGaiaId[] = "gaia-id";
+constexpr GaiaId::Literal kGaiaId("gaia-id");
 }  // namespace
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -88,7 +88,7 @@ class SignalsAggregatorImplTest : public testing::Test {
   raw_ptr<MockSignalsCollector> hotfix_signal_collector_;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  UserContext user_context_{GaiaId(kGaiaId)};
+  UserContext user_context_{kGaiaId};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   base::HistogramTester histogram_tester_;

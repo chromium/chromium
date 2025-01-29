@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/modules/mediastream/capture_controller.h"
 
+#include <algorithm>
 #include <cmath>
 #include <optional>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -58,7 +58,7 @@ bool IsCaptureType(const MediaStreamTrack* track,
   MediaStreamTrackPlatform::Settings settings;
   video_track->GetSettings(settings);
   const std::optional<SurfaceType> display_surface = settings.display_surface;
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       types, [display_surface](SurfaceType t) { return t == display_surface; });
 }
 

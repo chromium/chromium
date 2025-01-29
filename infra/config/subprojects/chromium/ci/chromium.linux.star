@@ -805,6 +805,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
+            "chrome_with_codecs",
             "remoteexec",
             "linux",
             "x64",

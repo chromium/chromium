@@ -212,7 +212,7 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
 
   void RecordUseCounters(
       const std::vector<mojom::WebFeature>& features) override {
-    base::ranges::for_each(features, [&](mojom::WebFeature feature) {
+    std::ranges::for_each(features, [&](mojom::WebFeature feature) {
       observed_use_counters_.push_back(feature);
     });
   }

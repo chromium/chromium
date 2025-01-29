@@ -3364,6 +3364,9 @@ data/accessibility/html/custom-select-expected-blink.txt
 data/accessibility/html/custom-select-expected-mac.txt
 data/accessibility/html/custom-select-expected-uia-win.txt
 data/accessibility/html/custom-select-expected-win.txt
+data/accessibility/html/custom-select-forbidden-interactive-content-expected-auralinux.txt
+data/accessibility/html/custom-select-forbidden-interactive-content-expected-blink.txt
+data/accessibility/html/custom-select-forbidden-interactive-content.html
 data/accessibility/html/custom-select-label-element-expected-blink.txt
 data/accessibility/html/custom-select-label-element.html
 data/accessibility/html/custom-select-mixed-options-expected-auralinux.txt
@@ -6349,6 +6352,7 @@ data/cacheable2.js.mock-http-headers
 data/cacheable_long.html
 data/cacheable_long.html.mock-http-headers
 data/changing_color.html
+data/changing_color_navigate.html
 data/click-nocontent-link.html
 data/click-noreferrer-links.html
 data/client_redirect.html

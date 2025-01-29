@@ -470,6 +470,12 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // main-frame's compositor, i.e., will be unset in OOPIF and UI compositors.
   void RegisterViewportPropertyIds(const ViewportPropertyIds&);
 
+  // TODO(crbug.com/389771428): This method exists only so that a
+  // PropertyTreeDelegate can intercede in RegisterViewportPropertyIds.
+  // Inline this back into RegisterViewportPropertyIds() once the code has
+  // been fully migrated to layer lists.
+  void SetViewportPropertyIds(const ViewportPropertyIds& ids);
+
   ViewportPropertyIds ViewportPropertyIdsForTesting() const {
     return pending_commit_state()->viewport_property_ids;
   }

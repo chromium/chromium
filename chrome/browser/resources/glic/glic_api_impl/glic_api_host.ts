@@ -368,6 +368,26 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   glicBrowserSetAudioDucking(request: {enabled: boolean}) {
     this.handler.setAudioDucking(request.enabled);
   }
+
+  glicBrowserOnUserInputSubmitted(request: {mode: number}) {
+    this.handler.onUserInputSubmitted(request.mode);
+  }
+
+  glicBrowserOnResponseStarted() {
+    this.handler.onResponseStarted();
+  }
+
+  glicBrowserOnResponseStopped() {
+    this.handler.onResponseStopped();
+  }
+
+  glicBrowserOnSessionTerminated() {
+    this.handler.onSessionTerminated();
+  }
+
+  glicBrowserOnResponseRated(request: {positive: boolean}) {
+    this.handler.onResponseRated(request.positive);
+  }
 }
 
 export class GlicApiHost implements PostMessageRequestHandler {
