@@ -71,17 +71,12 @@ std::unique_ptr<views::View> CreateThingsToConsiderList() {
       .AddPaddingRow(TableLayout::kFixedSize, related_control_padding)
       .AddRows(1, TableLayout::kFixedSize)
       .AddPaddingRow(TableLayout::kFixedSize, related_control_padding)
-      .AddRows(1, TableLayout::kFixedSize)
-      .AddPaddingRow(TableLayout::kFixedSize, related_control_padding)
       .AddRows(1, TableLayout::kFixedSize);
 
   // TODO (crbug.com/381053884): Add correct icons here.
   CreateRow(
       *table_root_view, views::kPsychiatryIcon,
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_PRIVACY_NOTICE_ITEM_EXPERIMENTAL);
-  CreateRow(
-      *table_root_view, vector_icons::kGoogleColorIcon,
-      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_PRIVACY_NOTICE_ITEM_SENT_TO_GOOGLE);
   CreateRow(
       *table_root_view, views::kAccountBoxIcon,
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_PRIVACY_NOTICE_ITEM_HUMAN_REVIEW);
