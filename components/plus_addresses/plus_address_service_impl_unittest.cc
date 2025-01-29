@@ -882,11 +882,17 @@ TEST_F(PlusAddressServiceRequestsTest, GetPlusAddressHatsData_PrefsNotSet) {
       service().GetPlusAddressHatsData();
   EXPECT_THAT(hats_data,
               UnorderedElementsAre(
+                  Pair(hats::kPlusAddressesCount, std::string("0")),
                   Pair(hats::kFirstPlusAddressCreationTime, std::string("-1")),
                   Pair(hats::kLastPlusAddressFillingTime, std::string("-1"))));
 }
 
 TEST_F(PlusAddressServiceRequestsTest, GetPlusAddressHatsData_PrefsSet) {
+  const PlusProfile profile1 = test::CreatePlusProfile();
+  const PlusProfile profile2 = test::CreatePlusProfile2();
+  service().SavePlusProfile(profile1);
+  service().SavePlusProfile(profile2);
+
   pref_service().SetTime(prefs::kFirstPlusAddressCreationTime,
                          base::Time::Now());
   pref_service().SetTime(prefs::kLastPlusAddressFillingTime, base::Time::Now());
@@ -897,6 +903,7 @@ TEST_F(PlusAddressServiceRequestsTest, GetPlusAddressHatsData_PrefsSet) {
       service().GetPlusAddressHatsData();
   EXPECT_THAT(hats_data,
               UnorderedElementsAre(
+                  Pair(hats::kPlusAddressesCount, std::string("2")),
                   Pair(hats::kFirstPlusAddressCreationTime, std::string("100")),
                   Pair(hats::kLastPlusAddressFillingTime, std::string("100"))));
 }

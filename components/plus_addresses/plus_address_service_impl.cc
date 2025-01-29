@@ -18,6 +18,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
@@ -736,7 +737,8 @@ PlusAddressServiceImpl::GetPlusAddressHatsData() const {
                                : std::string("-1");
   };
 
-  return {{hats::kFirstPlusAddressCreationTime,
+  return {{hats::kPlusAddressesCount, base::ToString(GetPlusProfiles().size())},
+          {hats::kFirstPlusAddressCreationTime,
            time_pref_to_string(prefs::kFirstPlusAddressCreationTime)},
           {hats::kLastPlusAddressFillingTime,
            time_pref_to_string(prefs::kLastPlusAddressFillingTime)}};

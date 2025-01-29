@@ -647,6 +647,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{
+          plus_addresses::hats::kPlusAddressesCount,
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.back().SetCooldownPeriodOverride(base::Days(
@@ -658,6 +659,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{
+          plus_addresses::hats::kPlusAddressesCount,
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.back().SetCooldownPeriodOverride(base::Days(
@@ -669,6 +671,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{
+          plus_addresses::hats::kPlusAddressesCount,
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.back().SetCooldownPeriodOverride(base::Days(
@@ -682,6 +685,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerPlusAddressCreatedPlusAddressViaManualFallback,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{
+          plus_addresses::hats::kPlusAddressesCount,
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.back().SetCooldownPeriodOverride(base::Days(
@@ -694,6 +698,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{
+          plus_addresses::hats::kPlusAddressesCount,
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.back().SetCooldownPeriodOverride(base::Days(
@@ -706,6 +711,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerPlusAddressDidChooseEmailOverPlusAddressSurvey,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{
+          plus_addresses::hats::kPlusAddressesCount,
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.back().SetCooldownPeriodOverride(base::Days(
@@ -718,6 +724,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{
+          plus_addresses::hats::kPlusAddressesCount,
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.back().SetCooldownPeriodOverride(base::Days(

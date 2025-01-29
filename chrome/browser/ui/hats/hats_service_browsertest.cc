@@ -379,6 +379,7 @@ IN_PROC_BROWSER_TEST_F(
       /*failure_callback=*/base::DoNothing(), /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/
       std::map<std::string, std::string>{
+          {plus_addresses::hats::kPlusAddressesCount, "0"},
           {plus_addresses::hats::kFirstPlusAddressCreationTime, "0"},
           {plus_addresses::hats::kLastPlusAddressFillingTime, "0"}});
   EXPECT_FALSE(GetHatsService()->hats_next_dialog_exists_for_testing());
@@ -428,6 +429,7 @@ IN_PROC_BROWSER_TEST_F(
       /*failure_callback=*/base::DoNothing(), /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/
       std::map<std::string, std::string>{
+          {plus_addresses::hats::kPlusAddressesCount, "0"},
           {plus_addresses::hats::kFirstPlusAddressCreationTime, "0"},
           {plus_addresses::hats::kLastPlusAddressFillingTime, "0"}});
   EXPECT_FALSE(GetHatsService()->hats_next_dialog_exists_for_testing());
@@ -476,6 +478,7 @@ IN_PROC_BROWSER_TEST_F(
       /*failure_callback=*/base::DoNothing(), /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/
       std::map<std::string, std::string>{
+          {plus_addresses::hats::kPlusAddressesCount, "0"},
           {plus_addresses::hats::kFirstPlusAddressCreationTime, "0"},
           {plus_addresses::hats::kLastPlusAddressFillingTime, "0"}});
   EXPECT_TRUE(GetHatsService()->hats_next_dialog_exists_for_testing());
