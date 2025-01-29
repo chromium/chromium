@@ -52,6 +52,9 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     if (!column_pseudo_elements_) {
       return;
     }
+    for (wtf_size_t i = to_keep; i < column_pseudo_elements_->size(); ++i) {
+      column_pseudo_elements_->at(i)->Dispose();
+    }
     if (to_keep) {
       column_pseudo_elements_->Shrink(to_keep);
     } else {
@@ -135,6 +138,9 @@ inline void PseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdScrollButtonBlockEnd, nullptr);
   SetPseudoElement(kPseudoIdScrollButtonInlineEnd, nullptr);
   if (column_pseudo_elements_) {
+    for (ColumnPseudoElement* column_pseudo_element : *column_pseudo_elements_) {
+      column_pseudo_element->Dispose();
+    }
     column_pseudo_elements_->clear();
   }
   if (transition_data_) {
