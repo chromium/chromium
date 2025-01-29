@@ -62,6 +62,15 @@ CreateFacetUriToChangePasswordUrlMap(
   return uri_to_url;
 }
 
+FacetURI ConvertGURLToFacet(const GURL& url) {
+  if (url.SchemeIs(url::kAndroidScheme)) {
+    return FacetURI::FromPotentiallyInvalidSpec(url.possibly_invalid_spec());
+  } else {
+    // Path should be stripped before converting into FacetURI.
+    return FacetURI::FromPotentiallyInvalidSpec(url.GetWithEmptyPath().spec());
+  }
+}
+
 }  // namespace
 
 const char kGetChangePasswordURLMetricName[] =
@@ -129,8 +138,8 @@ void AffiliationServiceImpl::PrefetchChangePasswordURLs(
     base::OnceClosure callback) {
   std::vector<FacetURI> facets;
   for (const auto& url : urls) {
-    FacetURI facet_uri =
-        FacetURI::FromPotentiallyInvalidSpec(url.possibly_invalid_spec());
+    FacetURI facet_uri = ConvertGURLToFacet(url);
+
     if (!facet_uri.is_valid()) {
       continue;
     }
@@ -155,8 +164,8 @@ void AffiliationServiceImpl::PrefetchChangePasswordURLs(
 }
 
 GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
-  FacetURI uri =
-      FacetURI::FromPotentiallyInvalidSpec(url.possibly_invalid_spec());
+  FacetURI uri = ConvertGURLToFacet(url);
+
   auto it = change_password_urls_.find(uri);
   if (it != change_password_urls_.end()) {
     if (it->second.group_url_override) {
