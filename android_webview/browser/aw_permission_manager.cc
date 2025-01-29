@@ -608,6 +608,12 @@ PermissionStatus AwPermissionManager::GetGeolocationPermission(
   }
 
   AwSettings* settings = AwSettings::FromWebContents(web_contents);
+  if (!settings) {
+    // If we don't have a settings, we can't determine if we have
+    // permission.
+    return PermissionStatus::ASK;
+  }
+
   if (!settings->geolocation_enabled()) {
     return PermissionStatus::DENIED;
   }
