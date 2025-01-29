@@ -91,6 +91,7 @@ class GlicWindowController::WindowEventObserver : public ui::EventObserver {
     if (event.type() == ui::EventType::kMousePressed) {
       mouse_down_in_draggable_area_ =
           glic_view_->IsPointWithinDraggableArea(mouse_location);
+      initial_press_loc_ = mouse_location;
     }
     if (event.type() == ui::EventType::kMouseReleased &&
         event.AsMouseEvent()->IsRightMouseButton() &&
@@ -100,17 +101,21 @@ class GlicWindowController::WindowEventObserver : public ui::EventObserver {
     if (event.type() == ui::EventType::kMouseReleased ||
         event.type() == ui::EventType::kMouseExited) {
       mouse_down_in_draggable_area_ = false;
+      initial_press_loc_ = gfx::Point();
     }
 
     // Window should only be dragged if a corresponding mouse drag event was
     // initiated in the draggable area.
     if (mouse_down_in_draggable_area_ &&
-        event.type() == ui::EventType::kMouseDragged) {
+        event.type() == ui::EventType::kMouseDragged &&
+        glic_window_controller_->ShouldStartDrag(initial_press_loc_,
+                                                 mouse_location)) {
       glic_window_controller_->HandleWindowDragWithOffset(
           mouse_location.OffsetFromOrigin());
     }
   }
 
+ private:
   raw_ptr<glic::GlicWindowController> glic_window_controller_;
   raw_ptr<glic::GlicView> glic_view_;
   std::unique_ptr<views::EventMonitor> event_monitor_;
@@ -118,6 +123,9 @@ class GlicWindowController::WindowEventObserver : public ui::EventObserver {
   // Tracks whether the mouse is pressed and was initially within a draggable
   // area of the window.
   bool mouse_down_in_draggable_area_;
+
+  // Tracks the initial kMousePressed location of a potential drag.
+  gfx::Point initial_press_loc_;
 };
 
 GlicWindowController::GlicWindowController(Profile* profile)
@@ -747,6 +755,17 @@ void GlicWindowController::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
   views::ShowSystemMenuAtScreenPixelLocation(views::HWNDForView(GetGlicView()),
                                              event_loc);
 #endif  // BUILDFLAG(IS_WIN)
+}
+
+bool GlicWindowController::ShouldStartDrag(const gfx::Point& initial_press_loc,
+                                           const gfx::Point& mouse_location) {
+  // Determine if the mouse has moved beyond a minimum elasticity distance
+  // in any direction from the starting point.
+  static const int kMinimumDragDistance = 10;
+  int x_offset = abs(mouse_location.x() - initial_press_loc.x());
+  int y_offset = abs(mouse_location.y() - initial_press_loc.y());
+  return sqrt(pow(static_cast<float>(x_offset), 2) +
+              pow(static_cast<float>(y_offset), 2)) > kMinimumDragDistance;
 }
 
 void GlicWindowController::HandleWindowDragWithOffset(
