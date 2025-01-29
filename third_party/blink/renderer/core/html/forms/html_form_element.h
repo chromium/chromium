@@ -140,6 +140,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   V8UnionElementOrRadioNodeList* AnonymousNamedGetter(const AtomicString& name);
   bool NamedPropertyQuery(const AtomicString& name, ExceptionState&);
+  bool HasAnyNamedProperties() const;
 
   void InvalidateDefaultButtonStyle() const;
 
@@ -203,6 +204,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   Element* ElementFromPastNamesMap(const AtomicString&);
   void AddToPastNamesMap(Element*, const AtomicString& past_name);
   void RemoveFromPastNamesMap(HTMLElement&);
+  bool PastNamesEmpty() const;
 
   typedef HeapHashMap<AtomicString, Member<Element>> PastNamesMap;
 

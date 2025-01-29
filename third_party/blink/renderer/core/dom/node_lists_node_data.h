@@ -116,6 +116,14 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
                                                            : nullptr);
   }
 
+  template <typename T>
+  const T* Cached(CollectionType collection_type) const {
+    auto it = atomic_name_caches_.find(NamedNodeListKey(
+        collection_type, CSSSelector::UniversalSelectorAtom()));
+    return static_cast<T*>(it != atomic_name_caches_.end() ? &*it->value
+                                                           : nullptr);
+  }
+
   TagCollectionNS* AddCache(ContainerNode& node,
                             const AtomicString& namespace_uri,
                             const AtomicString& local_name) {
@@ -200,6 +208,13 @@ inline Collection* ContainerNode::EnsureCachedCollection(
 template <typename Collection>
 inline Collection* ContainerNode::CachedCollection(CollectionType type) {
   NodeListsNodeData* node_lists = NodeLists();
+  return node_lists ? node_lists->Cached<Collection>(type) : nullptr;
+}
+
+template <typename Collection>
+inline const Collection* ContainerNode::CachedCollection(
+    CollectionType type) const {
+  const NodeListsNodeData* node_lists = NodeLists();
   return node_lists ? node_lists->Cached<Collection>(type) : nullptr;
 }
 

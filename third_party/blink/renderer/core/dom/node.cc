@@ -1647,6 +1647,10 @@ NodeListsNodeData* Node::NodeLists() {
   return data_ ? data_->NodeLists() : nullptr;
 }
 
+const NodeListsNodeData* Node::NodeLists() const {
+  return data_ ? data_->NodeLists() : nullptr;
+}
+
 void Node::ClearNodeLists() {
   RareData()->ClearNodeLists();
 }
