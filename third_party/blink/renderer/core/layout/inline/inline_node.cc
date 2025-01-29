@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 
@@ -16,7 +17,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/text_diff_range.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -1166,7 +1166,7 @@ void InlineNode::SegmentScriptRuns(InlineNodeData* data,
 
   if (previous_data && text_content == previous_data->text_content) {
     if (!previous_data->segments) {
-      const auto it = base::ranges::find_if(
+      const auto it = std::ranges::find_if(
           previous_data->items,
           [](const auto& item) { return item.Type() == InlineItem::kText; });
       if (it != previous_data->items.end()) {

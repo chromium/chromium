@@ -782,7 +782,7 @@ void HTMLFormElement::CollectListedElements(
   // that element may be outside of `root`'s subtree and we need to start at the
   // root node.
   const bool nested_forms_have_form_associated_elements =
-      base::ranges::any_of(nested_forms, [](const auto& form) {
+      std::ranges::any_of(nested_forms, [](const auto& form) {
         return form->has_elements_associated_by_form_attribute_ ||
                (form->has_elements_associated_by_parser_ &&
                 base::FeatureList::IsEnabled(

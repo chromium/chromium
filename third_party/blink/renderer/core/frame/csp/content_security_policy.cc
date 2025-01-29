@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <set>
@@ -32,7 +33,6 @@
 
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/ranges/algorithm.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
@@ -414,17 +414,17 @@ void ContentSecurityPolicy::AddPolicies(
   // isn't already "strict".
   if (!enforces_strict_policy_) {
     const bool is_object_restriction_reasonable =
-        base::ranges::any_of(policies_, [](const auto& policy) {
+        std::ranges::any_of(policies_, [](const auto& policy) {
           return !CSPDirectiveListIsReportOnly(*policy) &&
                  CSPDirectiveListIsObjectRestrictionReasonable(*policy);
         });
     const bool is_base_restriction_reasonable =
-        base::ranges::any_of(policies_, [](const auto& policy) {
+        std::ranges::any_of(policies_, [](const auto& policy) {
           return !CSPDirectiveListIsReportOnly(*policy) &&
                  CSPDirectiveListIsBaseRestrictionReasonable(*policy);
         });
     const bool is_script_restriction_reasonable =
-        base::ranges::any_of(policies_, [](const auto& policy) {
+        std::ranges::any_of(policies_, [](const auto& policy) {
           return !CSPDirectiveListIsReportOnly(*policy) &&
                  CSPDirectiveListIsScriptRestrictionReasonable(*policy);
         });
@@ -860,7 +860,7 @@ bool ContentSecurityPolicy::AllowRequest(
   // executing "Does resource hint request violate policy?" on request and
   // policy.
   if (context == mojom::blink::RequestContextType::PREFETCH) {
-    return base::ranges::all_of(policies_, [&](const auto& policy) {
+    return std::ranges::all_of(policies_, [&](const auto& policy) {
       return !CheckHeaderTypeMatches(check_header_type, reporting_disposition,
                                      policy->header->type) ||
              AllowResourceHintRequestForPolicy(
@@ -1648,7 +1648,7 @@ bool ContentSecurityPolicy::AllowFencedFrameOpaqueURL() const {
 }
 
 bool ContentSecurityPolicy::HasEnforceFrameAncestorsDirectives() {
-  return base::ranges::any_of(policies_, [](const auto& csp) {
+  return std::ranges::any_of(policies_, [](const auto& csp) {
     return csp->header->type ==
                network::mojom::ContentSecurityPolicyType::kEnforce &&
            csp->directives.Contains(

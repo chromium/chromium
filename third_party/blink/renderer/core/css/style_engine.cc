@@ -29,10 +29,11 @@
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
 
+#include <algorithm>
+
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/hash/hash.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
@@ -335,7 +336,7 @@ void StyleEngine::RemoveInjectedSheet(const StyleSheetKey& key,
           origin == WebCssOrigin::kUser ? injected_user_style_sheets_
                                         : injected_author_style_sheets_;
   // Remove the last sheet that matches.
-  const auto& it = base::ranges::find(
+  const auto& it = std::ranges::find(
       base::Reversed(injected_style_sheets), key,
       &std::pair<StyleSheetKey, Member<CSSStyleSheet>>::first);
   if (it != injected_style_sheets.rend()) {

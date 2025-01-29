@@ -30,7 +30,6 @@
 #include "base/memory/values_equivalent.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/paint/paint_flags.h"
@@ -1329,18 +1328,18 @@ static bool IsWillChangeCompositingHintProperty(CSSPropertyID property) {
 }
 
 bool ComputedStyle::HasWillChangeCompositingHint() const {
-  return base::ranges::any_of(WillChangeProperties(),
-                              IsWillChangeCompositingHintProperty);
+  return std::ranges::any_of(WillChangeProperties(),
+                             IsWillChangeCompositingHintProperty);
 }
 
 bool ComputedStyle::HasWillChangeTransformHint() const {
-  return base::ranges::any_of(WillChangeProperties(),
-                              IsWillChangeTransformHintProperty);
+  return std::ranges::any_of(WillChangeProperties(),
+                             IsWillChangeTransformHintProperty);
 }
 
 bool ComputedStyle::HasWillChangeHintForAnyTransformProperty() const {
-  return base::ranges::any_of(WillChangeProperties(),
-                              IsWillChangeHintForAnyTransformProperty);
+  return std::ranges::any_of(WillChangeProperties(),
+                             IsWillChangeHintForAnyTransformProperty);
 }
 
 bool ComputedStyle::RequireTransformOrigin(
@@ -2642,10 +2641,10 @@ blink::Color ComputedStyle::GetInternalForcedVisitedCurrentColor(
 
 bool ComputedStyle::ShadowListHasCurrentColor(const ShadowList* shadow_list) {
   return shadow_list &&
-         base::ranges::any_of(shadow_list->Shadows(),
-                              [](const ShadowData& shadow) {
-                                return shadow.GetColor().IsCurrentColor();
-                              });
+         std::ranges::any_of(shadow_list->Shadows(),
+                             [](const ShadowData& shadow) {
+                               return shadow.GetColor().IsCurrentColor();
+                             });
 }
 
 const AtomicString& ComputedStyle::ListStyleStringValue() const {

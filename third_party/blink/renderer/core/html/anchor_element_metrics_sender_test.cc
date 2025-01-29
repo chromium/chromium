@@ -1082,7 +1082,7 @@ TEST_F(AnchorElementMetricsSenderTest, MaxIntersectionObservations) {
 
   auto observations = [&]() -> HeapVector<Member<HTMLAnchorElement>> {
     HeapVector<Member<HTMLAnchorElement>> observed_anchors;
-    base::ranges::transform(
+    std::ranges::transform(
         intersection_observer->Observations(),
         std::back_inserter(observed_anchors),
         [](IntersectionObservation* observation) {

@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 
+#include <algorithm>
+
 #include "base/containers/adapters.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
@@ -425,7 +426,7 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
     }
     const TextOffsetRange offset = TextOffset();
     auto* const item =
-        base::ranges::find_if(*items, [offset](const InlineItem& item) {
+        std::ranges::find_if(*items, [offset](const InlineItem& item) {
           return item.StartOffset() <= offset.start &&
                  item.EndOffset() >= offset.end;
         });
@@ -439,8 +440,8 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
         *GetLayoutObject()->FragmentItemsContainer();
     const auto& items =
         block_flow.GetInlineNodeData()->ItemsData(UsesFirstLineStyle()).items;
-    const auto item = base::ranges::find(items, GetLayoutObject(),
-                                         &InlineItem::GetLayoutObject);
+    const auto item = std::ranges::find(items, GetLayoutObject(),
+                                        &InlineItem::GetLayoutObject);
     CHECK(item != items.end(), base::NotFatalUntil::M130) << this;
     return item->BidiLevel();
   }
@@ -1028,7 +1029,7 @@ void InlineCursor::MoveToFirstChild() {
 void InlineCursor::MoveToFirstLine() {
   if (HasRoot()) {
     auto iter =
-        base::ranges::find(items_, FragmentItem::kLine, &FragmentItem::Type);
+        std::ranges::find(items_, FragmentItem::kLine, &FragmentItem::Type);
     if (iter != items_.end()) {
       MoveToItem(iter);
       return;
@@ -1101,8 +1102,8 @@ void InlineCursor::MoveToLastChild() {
 
 void InlineCursor::MoveToLastLine() {
   DCHECK(HasRoot());
-  auto iter = base::ranges::find(base::Reversed(items_), FragmentItem::kLine,
-                                 &FragmentItem::Type);
+  auto iter = std::ranges::find(base::Reversed(items_), FragmentItem::kLine,
+                                &FragmentItem::Type);
   if (iter != items_.rend())
     MoveToItem(std::next(iter).base());
   else

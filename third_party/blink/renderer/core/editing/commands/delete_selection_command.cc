@@ -25,7 +25,8 @@
 
 #include "third_party/blink/renderer/core/editing/commands/delete_selection_command.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -604,7 +605,7 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
   // this requires document.NeedsLayoutTreeUpdate() returning false.
   if (!need_placeholder_) {
     need_placeholder_ =
-        base::ranges::any_of(nodes_to_be_removed, [&](Node* node) {
+        std::ranges::any_of(nodes_to_be_removed, [&](Node* node) {
           if (node == start_block_) {
             VisiblePosition previous = PreviousPositionOf(
                 VisiblePosition::FirstPositionInNode(*start_block_.Get()));

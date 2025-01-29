@@ -611,8 +611,8 @@ RubyBlockPositionCalculator::RubyLine&
 RubyBlockPositionCalculator::EnsureRubyLine(const RubyLevel& level) {
   // We do linear search because ruby_lines_ typically has only two items.
   auto it =
-      base::ranges::find_if(ruby_lines_, [&](const Member<RubyLine>& line) {
-        return base::ranges::equal(line->Level(), level);
+      std::ranges::find_if(ruby_lines_, [&](const Member<RubyLine>& line) {
+        return std::ranges::equal(line->Level(), level);
       });
   if (it != ruby_lines_.end()) {
     return **it;
@@ -628,19 +628,19 @@ RubyBlockPositionCalculator& RubyBlockPositionCalculator::PlaceLines(
   annotation_metrics_ = FontHeight();
 
   // Sort `ruby_lines` from the lowest to the highest.
-  base::ranges::sort(ruby_lines_, [](const Member<RubyLine>& line1,
-                                     const Member<RubyLine>& line2) {
+  std::ranges::sort(ruby_lines_, [](const Member<RubyLine>& line1,
+                                    const Member<RubyLine>& line2) {
     return *line1 < *line2;
   });
 
-  auto base_iterator = base::ranges::find_if(
+  auto base_iterator = std::ranges::find_if(
       ruby_lines_,
       [](const Member<RubyLine>& line) { return line->Level().empty(); });
   CHECK_NE(base_iterator, ruby_lines_.end());
 
   // Place "under" annotations from the base level to the lowest one.
   if (base_iterator != ruby_lines_.begin()) {
-    auto first_under_iterator = base::ranges::find_if(
+    auto first_under_iterator = std::ranges::find_if(
         ruby_lines_.begin(), base_iterator,
         [](const Member<RubyLine>& line) { return line->IsFirstUnderLevel(); });
     FontHeight em_height = ComputeLogicalLineEmHeight(
@@ -664,7 +664,7 @@ RubyBlockPositionCalculator& RubyBlockPositionCalculator::PlaceLines(
 
   // Place "over" annotations from the base level to the highest one.
   if (std::next(base_iterator) != ruby_lines_.end()) {
-    auto first_over_iterator = base::ranges::find_if(
+    auto first_over_iterator = std::ranges::find_if(
         base_iterator, ruby_lines_.end(),
         [](const Member<RubyLine>& line) { return line->IsFirstOverLevel(); });
     FontHeight em_height = ComputeLogicalLineEmHeight(

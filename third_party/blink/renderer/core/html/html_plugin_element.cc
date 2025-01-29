@@ -22,8 +22,9 @@
 
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
@@ -110,13 +111,13 @@ void PluginParameters::AppendNameWithValue(const String& name,
 }
 
 void PluginParameters::MapDataParamToSrc() {
-  if (base::ranges::any_of(names_, [](auto name) {
+  if (std::ranges::any_of(names_, [](auto name) {
         return EqualIgnoringASCIICase(name, "src");
       })) {
     return;
   }
 
-  auto data = base::ranges::find_if(
+  auto data = std::ranges::find_if(
       names_, [](auto name) { return EqualIgnoringASCIICase(name, "data"); });
 
   if (data != names_.end()) {

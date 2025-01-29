@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_text_layout_attributes_builder.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/containers/adapters.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
@@ -140,23 +140,23 @@ class LayoutAttributesStack final {
   // or EmptyValue().
 
   float X() const {
-    auto it = base::ranges::find_if(base::Reversed(stack_),
-                                    &LayoutAttributesIterator::HasX);
+    auto it = std::ranges::find_if(base::Reversed(stack_),
+                                   &LayoutAttributesIterator::HasX);
     return it != stack_.rend() ? (*it)->X() : SvgCharacterData::EmptyValue();
   }
   float Y() const {
-    auto it = base::ranges::find_if(base::Reversed(stack_),
-                                    &LayoutAttributesIterator::HasY);
+    auto it = std::ranges::find_if(base::Reversed(stack_),
+                                   &LayoutAttributesIterator::HasY);
     return it != stack_.rend() ? (*it)->Y() : SvgCharacterData::EmptyValue();
   }
   float Dx() const {
-    auto it = base::ranges::find_if(base::Reversed(stack_),
-                                    &LayoutAttributesIterator::HasDx);
+    auto it = std::ranges::find_if(base::Reversed(stack_),
+                                   &LayoutAttributesIterator::HasDx);
     return it != stack_.rend() ? (*it)->Dx() : SvgCharacterData::EmptyValue();
   }
   float Dy() const {
-    auto it = base::ranges::find_if(base::Reversed(stack_),
-                                    &LayoutAttributesIterator::HasDy);
+    auto it = std::ranges::find_if(base::Reversed(stack_),
+                                   &LayoutAttributesIterator::HasDy);
     return it != stack_.rend() ? (*it)->Dy() : SvgCharacterData::EmptyValue();
   }
 

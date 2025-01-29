@@ -35,6 +35,7 @@
 
 #include "third_party/blink/public/web/web_frame.h"
 
+#include <algorithm>
 #include <array>
 #include <initializer_list>
 #include <limits>
@@ -44,7 +45,6 @@
 
 #include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
@@ -479,7 +479,7 @@ class WebFrameTest : public PageTestBase {
     for (Node& node : range.Nodes()) {
       const DocumentMarkerVector& markers_in_node =
           document->Markers().MarkersFor(To<Text>(node), marker_types);
-      node_count += base::ranges::count_if(
+      node_count += std::ranges::count_if(
           markers_in_node, [start_offset, end_offset, &node, &start_container,
                             &end_container](const DocumentMarker* marker) {
             if (node == start_container && marker->EndOffset() <= start_offset)

@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 
+#include <algorithm>
 #include <numeric>
 
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_numeric_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
@@ -458,7 +458,7 @@ CSSMathSum* CSSNumericValue::toSum(const Vector<String>& unit_strings,
     result.push_back(CSSUnitValue::Create(total_value, target_unit));
   }
 
-  if (base::ranges::any_of(values, [](const auto& v) { return v; })) {
+  if (std::ranges::any_of(values, [](const auto& v) { return v; })) {
     exception_state.ThrowTypeError(
         "There were leftover terms that were not converted");
     return nullptr;
@@ -516,7 +516,7 @@ CSSNumericValue* CSSNumericValue::sub(
     const HeapVector<Member<V8CSSNumberish>>& numberishes,
     ExceptionState& exception_state) {
   auto values = CSSNumberishesToNumericValues(numberishes);
-  base::ranges::transform(values, values.begin(), &CSSNumericValue::Negate);
+  std::ranges::transform(values, values.begin(), &CSSNumericValue::Negate);
   PrependValueForArithmetic<kSumType>(values, this);
 
   if (CSSUnitValue* unit_value =
@@ -588,7 +588,7 @@ CSSNumericValue* CSSNumericValue::max(
 bool CSSNumericValue::equals(
     const HeapVector<Member<V8CSSNumberish>>& numberishes) {
   CSSNumericValueVector values = CSSNumberishesToNumericValues(numberishes);
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       values, [this](const auto& v) { return this->Equals(*v); });
 }
 

@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -234,7 +234,7 @@ void EditContext::updateCharacterBounds(
                    std::to_string(character_bounds.size()));
 
   character_bounds_.clear();
-  base::ranges::for_each(character_bounds, [this](const auto& bounds) {
+  std::ranges::for_each(character_bounds, [this](const auto& bounds) {
     auto result_bounds = gfx::ToEnclosingRect(
         gfx::RectF(ClampToWithNaNTo0<float>(bounds->x()),
                    ClampToWithNaNTo0<float>(bounds->y()),
@@ -303,7 +303,7 @@ const HeapVector<Member<HTMLElement>>& EditContext::attachedElements() {
 
 const HeapVector<Member<DOMRect>> EditContext::characterBounds() {
   HeapVector<Member<DOMRect>> dom_rects;
-  base::ranges::transform(
+  std::ranges::transform(
       character_bounds_, std::back_inserter(dom_rects), [](const auto& bound) {
         return DOMRect::Create(bound.x(), bound.y(), bound.width(),
                                bound.height());
@@ -699,8 +699,8 @@ void EditContext::AttachElement(HTMLElement* element_to_attach) {
 }
 
 void EditContext::DetachElement(HTMLElement* element_to_detach) {
-  auto it = base::ranges::find(attached_elements_, element_to_detach,
-                               &Member<HTMLElement>::Get);
+  auto it = std::ranges::find(attached_elements_, element_to_detach,
+                              &Member<HTMLElement>::Get);
 
   if (it != attached_elements_.end())
     attached_elements_.erase(it);
@@ -741,7 +741,7 @@ bool EditContext::GetCompositionCharacterBounds(
                std::to_string(character_bounds_.size()));
 
   bounds.clear();
-  base::ranges::for_each(
+  std::ranges::for_each(
       character_bounds_, [&bounds, this](auto& bound_in_css_pixels) {
         // EditContext's coordinates are in CSS pixels, which need to be
         // converted to physical pixels before return.

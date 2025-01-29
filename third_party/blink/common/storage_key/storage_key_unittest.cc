@@ -1070,7 +1070,7 @@ TEST_F(StorageKeyTest, ToCookiePartitionKeyAncestorChainBitDisabled) {
     };
 
     std::vector<std::optional<net::CookiePartitionKey>> got;
-    base::ranges::transform(
+    std::ranges::transform(
         storage_keys, std::back_inserter(got),
         [](const StorageKey& key) -> std::optional<net::CookiePartitionKey> {
           return key.ToCookiePartitionKey();
@@ -1115,7 +1115,7 @@ TEST_F(StorageKeyTest, ToCookiePartitionKeyAncestorChainEnabled) {
             net::CookiePartitionKey::AncestorChainBit::kCrossSite, nonce)},
     };
     std::vector<std::optional<net::CookiePartitionKey>> got;
-    base::ranges::transform(
+    std::ranges::transform(
         storage_keys, std::back_inserter(got),
         [](const StorageKey& key) -> std::optional<net::CookiePartitionKey> {
           return key.ToCookiePartitionKey();

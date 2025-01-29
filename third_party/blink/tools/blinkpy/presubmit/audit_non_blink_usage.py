@@ -129,7 +129,6 @@ _CONFIG = [
             'base::Process',
             'base::RadToDeg',
             'base::RangeAsRvalues',
-            'base::ranges::.+',
             'base::raw_span',
             'base::RefCountedData',
             'base::RemoveChars',

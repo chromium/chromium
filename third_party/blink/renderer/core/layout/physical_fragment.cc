@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include <algorithm>
 
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
@@ -838,7 +837,7 @@ void PhysicalFragment::AddOutlineRectsForNormalChildren(
       // Don't add |Children()|. If |this| has |FragmentItems|, children are
       // either line box, which we already handled in items, or OOF, which we
       // should ignore.
-      DCHECK(base::ranges::all_of(
+      DCHECK(std::ranges::all_of(
           PostLayoutChildren(), [](const PhysicalFragmentLink& child) {
             return child->IsLineBox() || child->IsOutOfFlowPositioned();
           }));

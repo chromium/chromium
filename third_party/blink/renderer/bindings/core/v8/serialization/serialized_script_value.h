@@ -31,13 +31,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_SERIALIZED_SCRIPT_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_SERIALIZED_SCRIPT_VALUE_H_
 
+#include <algorithm>
 #include <memory>
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"

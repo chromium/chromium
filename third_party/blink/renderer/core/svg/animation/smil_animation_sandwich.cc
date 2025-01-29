@@ -30,8 +30,9 @@
 
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_sandwich.h"
 
+#include <algorithm>
+
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_value.h"
 #include "third_party/blink/renderer/core/svg/svg_animation_element.h"
 
@@ -58,7 +59,7 @@ void SMILAnimationSandwich::Add(SVGAnimationElement* animation) {
 }
 
 void SMILAnimationSandwich::Remove(SVGAnimationElement* animation) {
-  auto position = base::ranges::find(sandwich_, animation);
+  auto position = std::ranges::find(sandwich_, animation);
   CHECK(sandwich_.end() != position, base::NotFatalUntil::M130);
   sandwich_.erase(position);
   // Clear the animated value when there are active animation elements but the

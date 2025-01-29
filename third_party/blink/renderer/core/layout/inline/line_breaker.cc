@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/inline/line_breaker.h"
 
+#include <algorithm>
+
 #include "base/containers/adapters.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
@@ -4128,10 +4129,10 @@ void LineBreaker::HandleOverflow(LineInfo* line_info) {
   }
 
   // No break opportunities. Break at the earliest break opportunity.
-  DCHECK(base::ranges::all_of(*item_results,
-                              [](const InlineItemResult& item_result) {
-                                return !item_result.can_break_after;
-                              }));
+  DCHECK(std::ranges::all_of(*item_results,
+                             [](const InlineItemResult& item_result) {
+                               return !item_result.can_break_after;
+                             }));
   state_ = LineBreakState::kOverflow;
 }
 

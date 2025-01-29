@@ -5,12 +5,12 @@
 
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 
+#include <algorithm>
 #include <array>
 #include <iterator>
 #include <string_view>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
@@ -98,7 +98,7 @@ OriginTrialType origin_trials::GetTrialType(mojom::OriginTrialFeature feature) {
 
 base::span<const mojom::OriginTrialFeature> origin_trials::FeaturesForTrial(
     std::string_view trial_name) {
-  auto it = base::ranges::find(kTrialToFeaturesMap, trial_name,
+  auto it = std::ranges::find(kTrialToFeaturesMap, trial_name,
                                &TrialToFeature::trial_name);
   DCHECK(it != std::end(kTrialToFeaturesMap));
   return {it->features.begin(), it->feature_count};

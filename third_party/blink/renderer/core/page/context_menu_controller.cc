@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -33,7 +34,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"

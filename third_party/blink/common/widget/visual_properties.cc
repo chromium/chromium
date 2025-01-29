@@ -4,7 +4,7 @@
 
 #include "third_party/blink/public/common/widget/visual_properties.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
 
 namespace blink {
 
