@@ -61,9 +61,10 @@ FieldPrediction::Source ToSafeFieldPredictionSource(
     case FieldPrediction::SOURCE_PASSWORDS_DEFAULT:
     case FieldPrediction::SOURCE_ALL_APPROVED_EXPERIMENTS:
     case FieldPrediction::SOURCE_FIELD_RANKS:
-    case FieldPrediction::SOURCE_AUTOFILL_COMBINED_TYPES:
     case FieldPrediction::SOURCE_OVERRIDE:
     case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
+    case FieldPrediction::SOURCE_AUTOFILL_COMBINED_TYPES:
+    case FieldPrediction::SOURCE_AUTOFILL_AI:
       result = source;
       break;
   }
@@ -500,6 +501,11 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
         }
         switch (ToSafeFieldPredictionSource(
             suggestion->predictions().begin()->source())) {
+          case FieldPrediction::SOURCE_AUTOFILL_AI:
+            return base::FeatureList::IsEnabled(
+                       features::kAutofillAiWithDataSchema)
+                       ? 2
+                       : 0;
           case FieldPrediction::SOURCE_UNSPECIFIED:
           case FieldPrediction::SOURCE_AUTOFILL_DEFAULT:
           case FieldPrediction::SOURCE_PASSWORDS_DEFAULT:
