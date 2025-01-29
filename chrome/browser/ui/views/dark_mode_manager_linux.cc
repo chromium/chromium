@@ -20,7 +20,7 @@ namespace ui {
 
 DarkModeManagerLinux::DarkModeManagerLinux()
     : DarkModeManagerLinux(
-          dbus_thread_linux::GetSharedSystemBus(),
+          dbus_thread_linux::GetSharedSessionBus(),
           ui::GetDefaultLinuxUiTheme(),
           &ui::GetLinuxUiThemes(),
           std::vector<raw_ptr<ui::NativeTheme, VectorExperimental>>{
