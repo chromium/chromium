@@ -57,6 +57,12 @@ inline constexpr char kFencedFrameBeaconReportingCountUMA[] =
 inline constexpr char kFencedFrameBeaconReportingCountCrossOriginUMA[] =
     "Navigation.FencedFrameBeaconReportingCountCrossOrigin";
 
+inline constexpr char kSameSiteAdComponentsMaxCountForWinningBidHistogram[] =
+    "Ads.InterestGroup.Auction.SameSiteAdComponentsMaxCountForWinningBid";
+
+inline constexpr char kAdComponentsCountForWinningBidHistogram[] =
+    "Ads.InterestGroup.Auction.AdComponentsCountForWinningBid";
+
 // Corresponds to the "FencedFrameCreationOutcome" histogram enumeration type in
 // tools/metrics/histograms/enums.xml.
 //

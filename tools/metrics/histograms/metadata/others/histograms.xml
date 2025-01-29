@@ -467,6 +467,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.AdComponentsCountForWinningBid"
+    units="NumComponents" expires_after="2025-07-13">
+  <owner>averge@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The total number of ad components provided for the winning ad in a Protected
+    Audience auction. This is distinct from the number of components provided
+    when the interest group is registered, as this count reflects the subset of
+    those components that were chosen for a single auction.
+
+    This number does NOT include the top-level ad which contains the components.
+
+    Recorded at the end of the auction, when the FencedFrameConfig for the
+    winning ad is being populated.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.AdditionalBids.DecodeLatency"
     units="ms" expires_after="2025-07-13">
   <owner>orrb@google.com</owner>
@@ -1205,6 +1225,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     The length of time it took to initialize the context and arguments, run
     top-level script, and evaluate reportWin() once.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.Auction.SameSiteAdComponentsMaxCountForWinningBid"
+    units="NumComponents" expires_after="2025-07-13">
+  <owner>averge@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The largest number of same-site ad components provided for the winning ad in
+    a Protected Audience auction. This number DOES take into account the site of
+    the top-level container ad. If the winning ad does not include any ad
+    components, this metric is not logged at all.
+
+    Note that this metric is computed before any component ad navigates, so it
+    does not account for redirects.
+
+    Recorded at the end of the auction, when the FencedFrameConfig for the
+    winning ad is being populated.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
