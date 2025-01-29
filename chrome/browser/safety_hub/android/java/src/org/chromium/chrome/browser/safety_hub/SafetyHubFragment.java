@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
-import static org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleViewBinder.isBrowserStateSafe;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.getDashboardModuleTypeForModuleOption;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordDashboardInteractions;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordModuleState;
@@ -32,14 +31,15 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardModu
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.LifecycleEvent;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.settings.CardPreference;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /** Fragment containing Safety hub. */
 public class SafetyHubFragment extends SafetyHubBaseFragment
@@ -70,18 +70,12 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     private static final int ORGANIC_HATS_SURVEY_DELAY_MS = 10000;
 
-    private SafetyHubModuleDelegate mDelegate;
-    private PropertyModel mBrowserStateModule;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
-    private CallbackController mCallbackController;
 
-    // TODO(https://crbug.com/388788381): When this fragment no longer updates the
-    // `mBrowserStateModule` directly, then use a List of the SafetyHubModuleMediators instead.
-    private SafetyHubPermissionsRevocationModuleMediator mPermissionsRevocationModuleMediator;
-    private SafetyHubSafeBrowsingModuleMediator mSafeBrowsingModuleMediator;
-    private SafetyHubUpdateCheckModuleMediator mUpdateCheckModuleMediator;
-    private SafetyHubNotificationsModuleMediator mNotificationsModuleMediator;
-    private SafetyHubAccountPasswordsModuleMediator mAccountPasswordsModuleMediator;
+    private SafetyHubModuleDelegate mDelegate;
+    private CallbackController mCallbackController;
+    private List<SafetyHubModuleMediator> mModuleMediators;
+    private SafetyHubBrowserStateModuleMediator mBrowserStateModuleMediator;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -95,27 +89,41 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_preferences);
         mPageTitle.set(getString(R.string.prefs_safety_check));
+        setHasOptionsMenu(true);
 
+        setUpModuleMediators();
+        setUpSafetyTipsModule();
+        updateAllModules();
+
+        recordAllModulesState(LifecycleEvent.ON_IMPRESSION);
+
+        // Notify the magic stack to dismiss the active module.
+        if (ChromeFeatureList.sSafetyHubMagicStack.isEnabled()) {
+            MagicStackBridge.getForProfile(getProfile()).dismissActiveModule();
+        }
+    }
+
+    private void setUpModuleMediators() {
         SafetyHubFetchService safetyHubFetchService =
                 SafetyHubFetchServiceFactory.getForProfile(getProfile());
 
-        mUpdateCheckModuleMediator =
+        SafetyHubModuleMediator updateCheckModuleMediator =
                 new SafetyHubUpdateCheckModuleMediator(
                         findPreference(PREF_UPDATE), this, mDelegate, safetyHubFetchService);
-        mPermissionsRevocationModuleMediator =
+        SafetyHubModuleMediator permissionsRevocationModuleMediator =
                 new SafetyHubPermissionsRevocationModuleMediator(
                         findPreference(PREF_UNUSED_PERMISSIONS),
                         this,
                         UnusedSitePermissionsBridge.getForProfile(getProfile()));
-        mSafeBrowsingModuleMediator =
+        SafetyHubModuleMediator safeBrowsingModuleMediator =
                 new SafetyHubSafeBrowsingModuleMediator(
                         findPreference(PREF_SAFE_BROWSING), this, getProfile());
-        mNotificationsModuleMediator =
+        SafetyHubModuleMediator notificationsModuleMediator =
                 new SafetyHubNotificationsModuleMediator(
                         findPreference(PREF_NOTIFICATIONS_REVIEW),
                         this,
                         NotificationPermissionReviewBridge.getForProfile(getProfile()));
-        mAccountPasswordsModuleMediator =
+        SafetyHubAccountPasswordsModuleMediator accountPasswordsModuleMediator =
                 new SafetyHubAccountPasswordsModuleMediator(
                         findPreference(PREF_PASSWORDS),
                         this,
@@ -125,97 +133,26 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         IdentityServicesProvider.get().getSigninManager(getProfile()),
                         getProfile());
 
-        mAccountPasswordsModuleMediator.setUpModule();
-        mUpdateCheckModuleMediator.setUpModule();
-        mPermissionsRevocationModuleMediator.setUpModule();
-        mSafeBrowsingModuleMediator.setUpModule();
-        mNotificationsModuleMediator.setUpModule();
-        setUpSafetyTipsModule();
-        setUpBrowserStateModule();
-        updateAllModules();
-        recordAllModulesState(LifecycleEvent.ON_IMPRESSION);
-        setHasOptionsMenu(true);
+        mModuleMediators =
+                new ArrayList<SafetyHubModuleMediator>(
+                        Arrays.asList(
+                                updateCheckModuleMediator,
+                                permissionsRevocationModuleMediator,
+                                safeBrowsingModuleMediator,
+                                notificationsModuleMediator,
+                                accountPasswordsModuleMediator));
 
-        // Notify the magic stack to dismiss the active module.
-        if (ChromeFeatureList.sSafetyHubMagicStack.isEnabled()) {
-            MagicStackBridge.getForProfile(getProfile()).dismissActiveModule();
+        for (SafetyHubModuleMediator moduleMediator : mModuleMediators) {
+            moduleMediator.setUpModule();
         }
-    }
 
-    @Override
-    public ObservableSupplier<String> getPageTitle() {
-        return mPageTitle;
-    }
+        mBrowserStateModuleMediator =
+                new SafetyHubBrowserStateModuleMediator(
+                        findPreference(PREF_BROWSER_STATE_INDICATOR), mModuleMediators);
 
-    @Override
-    public void showSnackbarForModule(
-            String text,
-            int identifier,
-            SnackbarManager.SnackbarController controller,
-            Object actionData) {
-        showSnackbar(text, identifier, controller, actionData);
-    }
-
-    @Override
-    public void startSettingsForModule(Class<? extends Fragment> fragment) {
-        startSettings(fragment);
-    }
-
-    @Override
-    public void launchSiteSettingsActivityForModule(@SiteSettingsCategory.Type int category) {
-        launchSiteSettingsActivity(category);
-    }
-
-    private void setUpBrowserStateModule() {
-        CardPreference browserStatePreference = findPreference(PREF_BROWSER_STATE_INDICATOR);
-        int compromisedPasswordsCount =
-                mAccountPasswordsModuleMediator.getCompromisedPasswordsCount();
-        int weakPasswordsCount = mAccountPasswordsModuleMediator.getWeakPasswordsCount();
-        int reusedPasswordsCount = mAccountPasswordsModuleMediator.getReusedPasswordsCount();
-        int totalPasswordsCount = mAccountPasswordsModuleMediator.getTotalPasswordsCount();
-        int sitesWithUnusedPermissionsCount =
-                mPermissionsRevocationModuleMediator.getRevokedPermissionsCount();
-        int notificationPermissionsForReviewCount =
-                mNotificationsModuleMediator.getNotificationsPermissionsCount();
-
-        mBrowserStateModule =
-                new PropertyModel.Builder(
-                                DeprecatedSafetyHubModuleProperties.BROWSER_STATE_MODULE_KEYS)
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS,
-                                mUpdateCheckModuleMediator.getUpdateStatus())
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN,
-                                SafetyHubUtils.isSignedIn(getProfile()))
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
-                                compromisedPasswordsCount)
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT,
-                                weakPasswordsCount)
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.REUSED_PASSWORDS_COUNT,
-                                reusedPasswordsCount)
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT,
-                                totalPasswordsCount)
-                        .with(
-                                DeprecatedSafetyHubModuleProperties
-                                        .NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
-                                notificationPermissionsForReviewCount)
-                        .with(
-                                DeprecatedSafetyHubModuleProperties
-                                        .SITES_WITH_UNUSED_PERMISSIONS_COUNT,
-                                sitesWithUnusedPermissionsCount)
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE,
-                                mSafeBrowsingModuleMediator.getSafeBrowsingState())
-                        .build();
-
-        PropertyModelChangeProcessor.create(
-                mBrowserStateModule,
-                browserStatePreference,
-                DeprecatedSafetyHubModuleViewBinder::bindBrowserStateProperties);
+        // `mBrowserStateModuleMediator` needs to be set up after all the other modules, as it
+        // depends on them.
+        mBrowserStateModuleMediator.setUpModule();
     }
 
     private void setUpSafetyTipsModule() {
@@ -253,6 +190,30 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
+    }
+
+    @Override
+    public void showSnackbarForModule(
+            String text,
+            int identifier,
+            SnackbarManager.SnackbarController controller,
+            Object actionData) {
+        showSnackbar(text, identifier, controller, actionData);
+    }
+
+    @Override
+    public void startSettingsForModule(Class<? extends Fragment> fragment) {
+        startSettings(fragment);
+    }
+
+    @Override
+    public void launchSiteSettingsActivityForModule(@SiteSettingsCategory.Type int category) {
+        launchSiteSettingsActivity(category);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         MenuItem help =
@@ -277,8 +238,14 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         super.onResume();
         updateAllModules();
 
-        // Fetch the passwords again to get the latest result.
-        mAccountPasswordsModuleMediator.triggerNewCredentialFetch();
+        for (SafetyHubModuleMediator moduleMediator : mModuleMediators) {
+            if (moduleMediator.getOption() == ModuleOption.ACCOUNT_PASSWORDS) {
+                // Fetch the passwords again to get the latest result.
+                ((SafetyHubAccountPasswordsModuleMediator) moduleMediator)
+                        .triggerNewCredentialFetch();
+                break;
+            }
+        }
     }
 
     @Override
@@ -290,51 +257,44 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             mCallbackController.destroy();
             mCallbackController = null;
         }
-        if (mPermissionsRevocationModuleMediator != null) {
-            mPermissionsRevocationModuleMediator.destroy();
-            mPermissionsRevocationModuleMediator = null;
+
+        for (SafetyHubModuleMediator moduleMediator : mModuleMediators) {
+            moduleMediator.destroy();
         }
-        if (mSafeBrowsingModuleMediator != null) {
-            mSafeBrowsingModuleMediator.destroy();
-            mSafeBrowsingModuleMediator = null;
-        }
-        if (mNotificationsModuleMediator != null) {
-            mNotificationsModuleMediator.destroy();
-            mNotificationsModuleMediator = null;
-        }
-        if (mAccountPasswordsModuleMediator != null) {
-            mAccountPasswordsModuleMediator.destroy();
-            mAccountPasswordsModuleMediator = null;
+        mModuleMediators.clear();
+        if (mBrowserStateModuleMediator != null) {
+            mBrowserStateModuleMediator.destroy();
+            mBrowserStateModuleMediator = null;
         }
     }
 
     private void updateAllModules() {
-        mUpdateCheckModuleMediator.updateModule();
-        mAccountPasswordsModuleMediator.updateModule();
-        mSafeBrowsingModuleMediator.updateModule();
-        mPermissionsRevocationModuleMediator.updateModule();
-        mNotificationsModuleMediator.updateModule();
+        for (SafetyHubModuleMediator moduleMediator : mModuleMediators) {
+            moduleMediator.updateModule();
+        }
+
+        // `mBrowserStateModuleMediator` needs to be updated after all the other modules, as it
+        // depends on them.
+        mBrowserStateModuleMediator.updateModule();
 
         onUpdateNeeded();
     }
 
     @Override
     public void onUpdateNeeded() {
-        updateBrowserStatePreference();
+        mBrowserStateModuleMediator.updateModule();
         updateAllModulesExpandState();
     }
 
     private void updateAllModulesExpandState() {
         boolean hasNonManagedWarningState = hasNonManagedWarningState();
-
-        for (@ModuleOption int i = ModuleOption.OPTION_FIRST; i < ModuleOption.NUM_ENTRIES; i++) {
-            getModuleMediator(i).setModuleExpandState(hasNonManagedWarningState);
+        for (SafetyHubModuleMediator moduleMediator : mModuleMediators) {
+            moduleMediator.setModuleExpandState(hasNonManagedWarningState);
         }
     }
 
     private boolean hasNonManagedWarningState() {
-        for (@ModuleOption int i = ModuleOption.OPTION_FIRST; i < ModuleOption.NUM_ENTRIES; i++) {
-            SafetyHubModuleMediator moduleMediator = getModuleMediator(i);
+        for (SafetyHubModuleMediator moduleMediator : mModuleMediators) {
             if (moduleMediator.getModuleState() == ModuleState.WARNING
                     && !moduleMediator.isManaged()) {
                 return true;
@@ -343,68 +303,23 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         return false;
     }
 
-    private void updateBrowserStatePreference() {
-        mBrowserStateModule.set(
-                DeprecatedSafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
-                mPermissionsRevocationModuleMediator.getRevokedPermissionsCount());
-        mBrowserStateModule.set(
-                DeprecatedSafetyHubModuleProperties.SAFE_BROWSING_STATE,
-                mSafeBrowsingModuleMediator.getSafeBrowsingState());
-        mBrowserStateModule.set(
-                DeprecatedSafetyHubModuleProperties.UPDATE_STATUS,
-                mUpdateCheckModuleMediator.getUpdateStatus());
-        mBrowserStateModule.set(
-                DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
-                mNotificationsModuleMediator.getNotificationsPermissionsCount());
-        mBrowserStateModule.set(
-                DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN,
-                SafetyHubUtils.isSignedIn(getProfile()));
-        mBrowserStateModule.set(
-                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
-                mAccountPasswordsModuleMediator.getCompromisedPasswordsCount());
-        mBrowserStateModule.set(
-                DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT,
-                mAccountPasswordsModuleMediator.getWeakPasswordsCount());
-        mBrowserStateModule.set(
-                DeprecatedSafetyHubModuleProperties.REUSED_PASSWORDS_COUNT,
-                mAccountPasswordsModuleMediator.getReusedPasswordsCount());
-        mBrowserStateModule.set(
-                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT,
-                mAccountPasswordsModuleMediator.getTotalPasswordsCount());
-    }
-
     public void setDelegate(SafetyHubModuleDelegate safetyHubModuleDelegate) {
         mDelegate = safetyHubModuleDelegate;
     }
 
-    private SafetyHubModuleMediator getModuleMediator(@ModuleOption int option) {
-        switch (option) {
-            case ModuleOption.UNUSED_PERMISSIONS:
-                return mPermissionsRevocationModuleMediator;
-            case ModuleOption.SAFE_BROWSING:
-                return mSafeBrowsingModuleMediator;
-            case ModuleOption.UPDATE_CHECK:
-                return mUpdateCheckModuleMediator;
-            case ModuleOption.NOTIFICATION_REVIEW:
-                return mNotificationsModuleMediator;
-            case ModuleOption.ACCOUNT_PASSWORDS:
-                return mAccountPasswordsModuleMediator;
-            default:
-                throw new IllegalArgumentException();
-        }
-    }
-
     private void recordAllModulesState(@LifecycleEvent String event) {
-        for (@ModuleOption int i = ModuleOption.OPTION_FIRST; i < ModuleOption.NUM_ENTRIES; i++) {
+
+        for (SafetyHubModuleMediator moduleMediator : mModuleMediators) {
             recordModuleState(
-                    getModuleMediator(i).getModuleState(),
-                    getDashboardModuleTypeForModuleOption(i),
+                    moduleMediator.getModuleState(),
+                    getDashboardModuleTypeForModuleOption(moduleMediator.getOption()),
                     event);
         }
-
         @ModuleState
         int browserState =
-                isBrowserStateSafe(mBrowserStateModule) ? ModuleState.SAFE : ModuleState.WARNING;
+                mBrowserStateModuleMediator.isBrowserStateSafe()
+                        ? ModuleState.SAFE
+                        : ModuleState.WARNING;
         recordModuleState(browserState, DashboardModuleType.BROWSER_STATE, event);
     }
 
