@@ -41,7 +41,7 @@ struct GroupMember {
   GaiaId gaia_id;
   std::string display_name;
   std::string email;
-  MemberRole role;
+  MemberRole role = MemberRole::kUnknown;
   GURL avatar_url;
   std::string given_name;
 };
