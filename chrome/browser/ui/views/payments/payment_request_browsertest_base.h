@@ -193,7 +193,6 @@ class PaymentRequestBrowserTestBase
   // are added close to each other.
   void AddAutofillProfile(const autofill::AutofillProfile& profile);
   void AddCreditCard(const autofill::CreditCard& card);
-  void WaitForOnPersonalDataChanged();
 
   void CreatePaymentRequestForTest(
       mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
