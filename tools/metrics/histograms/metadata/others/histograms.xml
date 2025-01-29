@@ -1336,6 +1336,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ads.InterestGroup.Auction.TrustedScoringSendCreativeScanningMetadata"
+    enum="Boolean" expires_after="2026-01-28">
+  <owner>morlovich@google.com</owner>
+  <owner>orrb@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Whether request to V1 trusted scoring signals has been configured to include
+    creative scanning metadata. Recorded on each TrustedScoringSignals request
+    made using V1 protocol.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.TrustedSellerBatchCompute"
     units="microseconds" expires_after="2025-03-02">
   <owner>morlovich@google.com</owner>

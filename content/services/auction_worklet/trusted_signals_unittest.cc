@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
@@ -254,6 +255,7 @@ class TrustedSignalsTest : public testing::Test {
       const std::string& hostname,
       std::optional<uint16_t> experiment_group_id,
       bool send_creative_scanning_metadata = false) {
+    base::HistogramTester histogram_tester;
     CHECK(!load_signals_run_loop_);
     DCHECK(!load_signals_result_);
     auto scoring_signals = TrustedSignals::LoadScoringSignals(
@@ -263,6 +265,9 @@ class TrustedSignalsTest : public testing::Test {
         base::BindOnce(&TrustedSignalsTest::LoadSignalsCallback,
                        base::Unretained(this)));
     WaitForLoadComplete();
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.TrustedScoringSendCreativeScanningMetadata",
+        send_creative_scanning_metadata, /*expected_bucket_count=*/1);
     return std::move(load_signals_result_);
   }
 

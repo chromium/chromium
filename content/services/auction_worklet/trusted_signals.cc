@@ -573,6 +573,9 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
           std::move(auction_network_events_handler), std::move(v8_helper),
           std::move(load_signals_callback)));
 
+  base::UmaHistogramBoolean(
+      "Ads.InterestGroup.Auction.TrustedScoringSendCreativeScanningMetadata",
+      send_creative_scanning_metadata);
   base::UmaHistogramCounts100000(
       "Ads.InterestGroup.Net.RequestUrlSizeBytes.TrustedScoring",
       full_signals_url.spec().size());
