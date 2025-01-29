@@ -206,6 +206,7 @@ base::Value::Dict ProfileCustomizationHandler::GetProfileInfoValue() {
                                    avatar_icon_size, avatar_icon_size);
   dict.Set("pictureUrl", webui::GetBitmapDataUrl(icon.AsBitmap()));
   dict.Set("isManaged", AccountInfo::IsManaged(entry->GetHostedDomain()));
+  dict.Set("hasEnterpriseLabel", !entry->GetEnterpriseProfileLabel().empty());
   std::u16string gaia_name = entry->GetGAIANameToDisplay();
   if (gaia_name.empty()) {
     gaia_name = entry->GetLocalProfileName();

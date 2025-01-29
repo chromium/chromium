@@ -82,6 +82,7 @@ export class ProfileCustomizationAppElement extends
   }
 
   protected isManaged_: boolean = false;
+  protected hasEnterpriseLabel: boolean = false;
   protected profileName_: string = '';
   protected pictureUrl_: string = '';
   protected welcomeTitle_: string = '';
@@ -130,6 +131,7 @@ export class ProfileCustomizationAppElement extends
         '--header-background-color', profileInfo.backgroundColor);
     this.pictureUrl_ = profileInfo.pictureUrl;
     this.isManaged_ = profileInfo.isManaged;
+    this.hasEnterpriseLabel = profileInfo.hasEnterpriseLabel;
     this.welcomeTitle_ = this.isLocalProfileCreation_ ?
         this.i18n('localProfileCreationTitle') :
         this.i18n('profileCustomizationTitle');

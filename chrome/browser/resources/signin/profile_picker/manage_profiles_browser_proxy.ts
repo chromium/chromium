@@ -20,6 +20,7 @@ export interface ProfileState {
   profileCardButtonLabel: string;
   // Empty if no badge should be set.
   avatarBadge: string;
+  hasEnterpriseLabel: boolean;
 }
 
 /**

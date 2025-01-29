@@ -39,6 +39,7 @@ suite('ProfileCardMenuTest', function() {
       avatarIcon: `AvatarUrl`,
       avatarBadge: ``,
       profileCardButtonLabel: ``,
+      hasEnterpriseLabel: false,
     };
     profileCardMenuElement.profileState = testProfileState;
     document.body.appendChild(profileCardMenuElement);

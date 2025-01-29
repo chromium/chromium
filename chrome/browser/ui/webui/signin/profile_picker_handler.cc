@@ -148,6 +148,8 @@ base::Value::Dict CreateProfileEntry(const ProfileAttributesEntry* entry,
   base::Value::Dict profile_entry;
   profile_entry.Set("profilePath", base::FilePathToValue(entry->GetPath()));
   profile_entry.Set("localProfileName", entry->GetLocalProfileName());
+  profile_entry.Set("hasEnterpriseLabel",
+                    !entry->GetEnterpriseProfileLabel().empty());
   profile_entry.Set("isSyncing",
                     entry->GetSigninState() ==
                         SigninState::kSignedInWithConsentedPrimaryAccount);

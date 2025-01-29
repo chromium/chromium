@@ -39,9 +39,11 @@ export function getHtml(this: ProfileCardElement) {
         auto-validate spellcheck="false"
         @pointerenter="${this.onNameInputPointerEnter_}"
         @pointerleave="${this.onNameInputPointerLeave_}"
-        ?disabled="${isGlicVersion()}" required>
+        ?disabled="${
+      isGlicVersion() || this.profileState.hasEnterpriseLabel}" required>
     </cr-input>
-    <div id="hoverUnderline" ?hidden="${isGlicVersion()}"></div>
+    <div id="hoverUnderline" ?hidden="${
+      isGlicVersion() || this.profileState.hasEnterpriseLabel}">></div>
   </div>
   <profile-card-menu .profileState="${this.profileState}"
       ?hidden="${isGlicVersion()}">

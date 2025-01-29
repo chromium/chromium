@@ -317,6 +317,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("isDasherlessProfile",
                           entry && entry->IsDasherlessManagement());
 
+  html_source->AddBoolean("hasEnterpriseLabel",
+                          entry && !entry->GetEnterpriseProfileLabel().empty());
+
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
   html_source->AddBoolean("changePriceEmailNotificationsEnabled",
