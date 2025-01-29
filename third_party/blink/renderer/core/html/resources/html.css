@@ -1649,23 +1649,29 @@ dialog:modal {
 
 @supports blink-feature(CustomizableSelect) {
   select:not(:-internal-list-box):not([multiple]) {
-    font: -internal-appearance-auto-base-select(-webkit-small-control, inherit);
-    text-shadow: -internal-appearance-auto-base-select(none, inherit);
-    text-transform: -internal-appearance-auto-base-select(none, inherit);
-    text-rendering: -internal-appearance-auto-base-select(auto, inherit);
-    letter-spacing: -internal-appearance-auto-base-select(normal, inherit);
-    word-spacing: -internal-appearance-auto-base-select(normal, inherit);
-    text-align: -internal-appearance-auto-base-select(start, inherit);
+    font: -internal-auto-base(-webkit-small-control, inherit);
+    text-shadow: -internal-auto-base(none, inherit);
+    text-transform: -internal-auto-base(none, inherit);
+    text-rendering: -internal-auto-base(auto, inherit);
+    letter-spacing: -internal-auto-base(normal, inherit);
+    word-spacing: -internal-auto-base(normal, inherit);
+    text-align: -internal-auto-base(start, inherit);
     /* This text-autospace rule won't work because it is set with !important
      * earlier in the UA stylesheet. After merging with the rest of the UA
      * style rules when removing the CustomizableSelect flag, it should start
      * to work. */
-    text-autospace: -internal-appearance-auto-base-select(no-autospace !important, inherit);
-    color: -internal-appearance-auto-base-select(FieldText, inherit);
-    background-color: -internal-appearance-auto-base-select(Field, transparent);
-    border: 1px solid -internal-appearance-auto-base-select(light-dark(#767676, #858585), currentColor);
-    padding-block: -internal-appearance-auto-base-select(0, 0.25em);
-    padding-inline: -internal-appearance-auto-base-select(0, 0.5em);
+    text-autospace: -internal-auto-base(no-autospace !important, inherit);
+    color: -internal-auto-base(FieldText, inherit);
+    background-color: -internal-auto-base(Field, transparent);
+    border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);
+    padding-block: -internal-auto-base(0, 0.25em);
+    padding-inline: -internal-auto-base(0, 0.5em);
+    font: -internal-auto-base(-webkit-small-control, inherit);
+    color: -internal-auto-base(FieldText, inherit);
+    background-color: -internal-auto-base(Field, transparent);
+    border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);
+    padding-block: -internal-auto-base(0, 0.25em);
+    padding-inline: -internal-auto-base(0, 0.5em);
 
     /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
      * https://github.com/openui/open-ui/issues/1026
@@ -1673,17 +1679,17 @@ dialog:modal {
     /* TODO(crbug.com/1511354): This might be able to be combined with the
      * default select option rules at some point. This should be re-evaluated
      * before StylableSelect is shipped. */
-    min-inline-size: -internal-appearance-auto-base-select(auto, 24px);
+    min-inline-size: -internal-auto-base(auto, 24px);
     /* The 1lh here makes sure that options with no text still make the button
      * have the same height as options with text. */
-    min-block-size: -internal-appearance-auto-base-select(auto, max(24px, 1lh));
+    min-block-size: -internal-auto-base(auto, max(24px, 1lh));
 
-    display: -internal-appearance-auto-base-select(inline-block, inline-flex);
-    gap: -internal-appearance-auto-base-select(initial, 0.5em);
-    border-radius: -internal-appearance-auto-base-select(0, 0.5em);
-    align-items: -internal-appearance-auto-base-select(center, unset);
+    display: -internal-auto-base(inline-block, inline-flex);
+    gap: -internal-auto-base(initial, 0.5em);
+    border-radius: -internal-auto-base(0, 0.5em);
+    align-items: -internal-auto-base(center, unset);
     /* https://github.com/whatwg/html/issues/10876 */
-    user-select: -internal-appearance-auto-base-select(auto, none);
+    user-select: -internal-auto-base(auto, none);
   }
 
   select:not(:-internal-list-box):not([multiple]) > button:first-child {
@@ -1692,17 +1698,17 @@ dialog:modal {
   }
 
   select:not(:-internal-list-box):not([multiple]):enabled:hover {
-    background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 10%, transparent));
+    background-color: -internal-auto-base(Field, color-mix(in lab, currentColor 10%, transparent));
   }
   select:not(:-internal-list-box):not([multiple]):enabled:active {
-    background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 20%, transparent));
+    background-color: -internal-auto-base(Field, color-mix(in lab, currentColor 20%, transparent));
   }
 
   /* Without this rule, we would be changing the styles for disabled
    * appearance:auto selects. */
   select:not(:-internal-list-box):not([multiple]):disabled {
-    color: -internal-appearance-auto-base-select(light-dark(GrayText, #aaa), inherit);
-    border-color: -internal-appearance-auto-base-select(rgba(118, 118, 118, 0.3), inherit);
+    color: -internal-auto-base(light-dark(GrayText, #aaa), inherit);
+    border-color: -internal-auto-base(rgba(118, 118, 118, 0.3), inherit);
   }
 
   /* Undo unwanted styles from select rules */
@@ -1746,10 +1752,10 @@ dialog:modal {
      * before CustomizableSelect is shipped. */
     min-inline-size: 24px;
     min-block-size: max(24px, 1lh);
-    font-weight: -internal-appearance-auto-base-select(normal, inherit);
-    padding-inline: -internal-appearance-auto-base-select(2px, 0.5em);
-    padding-block-end: -internal-appearance-auto-base-select(1px, 0);
-    display: -internal-appearance-auto-base-select(block, flex);
+    font-weight: -internal-auto-base(normal, inherit);
+    padding-inline: -internal-auto-base(2px, 0.5em);
+    padding-block-end: -internal-auto-base(1px, 0);
+    display: -internal-auto-base(block, flex);
     align-items: center;
     gap: 0.5em;
   }
@@ -1761,7 +1767,7 @@ dialog:modal {
     background-color: color-mix(in lab, currentColor 20%, transparent);
   }
   select:not(:-internal-list-box):not([multiple]) option:disabled {
-    color: -internal-appearance-auto-base-select(inherit, color-mix(in lab, currentColor 50%, transparent));
+    color: -internal-auto-base(inherit, color-mix(in lab, currentColor 50%, transparent));
   }
 
 
@@ -1796,8 +1802,8 @@ dialog:modal {
   }
 
   select:not(:-internal-list-box):not([multiple])::picker-icon {
-    content: -internal-appearance-auto-base-select(none, counter(fake-counter-name, disclosure-open));
-    /* We don't have to use -internal-appearance-auto-base-select() here because
+    content: -internal-auto-base(none, counter(fake-counter-name, disclosure-open));
+    /* We don't have to use -internal-auto-base() here because
      * the pseudo-element won't get generated unless the content property is set. */
     display: block;
     margin-inline-start: auto;
@@ -1805,18 +1811,18 @@ dialog:modal {
 
   /* This can be merged with the :-internal-list-box rule in html.css */
   select:not(:-internal-list-box):not([multiple]) optgroup option {
-    padding-inline-start: -internal-appearance-auto-base-select(20px, 0.5em);
+    padding-inline-start: -internal-auto-base(20px, 0.5em);
     font-weight: normal;
   }
 
   select:not(:-internal-list-box):not([multiple]) optgroup::-internal-optgroup-label {
-    padding-inline: -internal-appearance-auto-base-select(2px, 0.5em);
-    padding-block: -internal-appearance-auto-base-select(0 1px, 0);
-    min-height: -internal-appearance-auto-base-select(1.2em, 0);
+    padding-inline: -internal-auto-base(2px, 0.5em);
+    padding-block: -internal-auto-base(0 1px, 0);
+    min-height: -internal-auto-base(1.2em, 0);
   }
 
   select:not(:-internal-list-box):not([multiple]) optgroup legend {
-    padding-inline: -internal-appearance-auto-base-select(2px, 0.5em);
-    min-block-size: -internal-appearance-auto-base-select(initial, 1lh);
+    padding-inline: -internal-auto-base(2px, 0.5em);
+    min-block-size: -internal-auto-base(initial, 1lh);
   }
 }

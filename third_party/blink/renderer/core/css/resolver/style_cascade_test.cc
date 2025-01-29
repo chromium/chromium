@@ -4297,14 +4297,14 @@ TEST_F(StyleCascadeTest, FlipToAnchorInvalid) {
   EXPECT_EQ("auto", cascade.ComputedValue("bottom"));
 }
 
-TEST_F(StyleCascadeTest, AppearanceAutoBaseSelectValueShorthand) {
+TEST_F(StyleCascadeTest, AutoBaseValueShorthand) {
   SetBodyInnerHTML("<select id=select></select>");
   Element* select = GetDocument().getElementById(AtomicString("select"));
   ASSERT_TRUE(select);
 
   const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
       R"CSS(
-      border:-internal-appearance-auto-base-select(1px solid green, 1px solid red);
+      border:-internal-auto-base(1px solid green, 1px solid red);
     )CSS",
       kUASheetMode);
 
@@ -4316,14 +4316,14 @@ TEST_F(StyleCascadeTest, AppearanceAutoBaseSelectValueShorthand) {
   EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("border-left-color"));
 }
 
-TEST_F(StyleCascadeTest, RevertInAppearanceAutoBaseSelectValue) {
+TEST_F(StyleCascadeTest, RevertInAutoBaseValue) {
   SetBodyInnerHTML("<select id=select></select>");
   Element* select = GetDocument().getElementById(AtomicString("select"));
   ASSERT_TRUE(select);
 
   const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
       R"CSS(
-      left:-internal-appearance-auto-base-select(revert, 2px);
+      left:-internal-auto-base(revert, 2px);
     )CSS",
       kUASheetMode);
 
@@ -4334,7 +4334,7 @@ TEST_F(StyleCascadeTest, RevertInAppearanceAutoBaseSelectValue) {
   EXPECT_EQ("300px", cascade.ComputedValue("left"));
 }
 
-TEST_F(StyleCascadeTest, EnvInAppearanceAutoBaseSelectValue) {
+TEST_F(StyleCascadeTest, EnvInAutoBaseValue) {
   SetBodyInnerHTML("<select id=select></select>");
   Element* select = GetDocument().getElementById(AtomicString("select"));
   ASSERT_TRUE(select);
@@ -4343,7 +4343,7 @@ TEST_F(StyleCascadeTest, EnvInAppearanceAutoBaseSelectValue) {
   const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
       R"CSS(
       border-left-style: solid;
-      border-left-width: -internal-appearance-auto-base-select(env(unknown, 7px), 42px);
+      border-left-width: -internal-auto-base(env(unknown, 7px), 42px);
     )CSS",
       kUASheetMode);
 
@@ -4353,14 +4353,14 @@ TEST_F(StyleCascadeTest, EnvInAppearanceAutoBaseSelectValue) {
   EXPECT_EQ("7px", cascade.ComputedValue("border-left-width"));
 }
 
-TEST_F(StyleCascadeTest, AppearanceAutoBaseSelectCycle) {
+TEST_F(StyleCascadeTest, AutoBaseCycle) {
   SetBodyInnerHTML("<select id=select></select>");
   Element* select = GetDocument().getElementById(AtomicString("select"));
   ASSERT_TRUE(select);
 
   const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
       R"CSS(
-      appearance:-internal-appearance-auto-base-select(auto, auto);
+      appearance:-internal-auto-base(auto, auto);
     )CSS",
       kUASheetMode);
 

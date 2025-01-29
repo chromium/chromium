@@ -286,7 +286,7 @@ static bool ConsumeIfReference(CSSParserTokenStream& stream,
   return false;
 }
 
-static bool ConsumeInternalAppearanceAutoBaseSelect(
+static bool ConsumeInternalAutoBase(
     CSSParserTokenStream& stream,
     bool& has_references,
     bool& has_font_units,
@@ -419,11 +419,11 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           }
           has_references = true;
           continue;
-        case CSSValueID::kInternalAppearanceAutoBaseSelect:
+        case CSSValueID::kInternalAutoBase:
           if (context.GetMode() != kUASheetMode) {
             break;
           }
-          if (!ConsumeInternalAppearanceAutoBaseSelect(
+          if (!ConsumeInternalAutoBase(
                   stream, has_references, has_font_units, has_root_font_units,
                   has_line_height_units, context)) {
             error = true;
