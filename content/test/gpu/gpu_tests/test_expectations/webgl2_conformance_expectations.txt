@@ -550,6 +550,8 @@ crbug.com/483282 [ angle-d3d11 win amd ] conformance2/rendering/blitframebuffer-
 
 ## Win / Intel ##
 
+crbug.com/384257970 [ angle-d3d11 win intel ] conformance/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
+crbug.com/384257970 [ angle-d3d11 win intel ] conformance2/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
 
 ## Win / Adreno 690 / D3D11
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
