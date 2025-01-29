@@ -684,7 +684,7 @@ TEST_F(CanvasResourceProviderTest,
       SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
 
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
-      kSize, kInfo.colorType(), kInfo.alphaType(),
+      kSize, GetN32FormatForCanvas(), kInfo.alphaType(),
       gfx::ColorSpace::CreateSRGB(), context_provider_wrapper_);
 
   EXPECT_EQ(provider->Size(), kSize);
@@ -787,17 +787,17 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SwapChain) {
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_PassThrough) {
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
-      gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), kN32_SkColorType,
+      gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), GetN32FormatForCanvas(),
       kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
       context_provider_wrapper_);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreatePassThroughProvider(
-      gfx::Size(kMaxTextureSize, kMaxTextureSize), kN32_SkColorType,
+      gfx::Size(kMaxTextureSize, kMaxTextureSize), GetN32FormatForCanvas(),
       kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
       context_provider_wrapper_);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreatePassThroughProvider(
-      gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), kN32_SkColorType,
+      gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), GetN32FormatForCanvas(),
       kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
       context_provider_wrapper_);
   // The CanvasResourceProvider for PassThrough should not be created or valid
