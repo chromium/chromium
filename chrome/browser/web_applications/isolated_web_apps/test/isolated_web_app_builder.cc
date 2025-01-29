@@ -557,6 +557,8 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddFileFromDisk(
     const Headers& headers) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   CHECK(base::PathExists(file_path)) << file_path << " does not exist";
+  CHECK(resource_path != kManifestPath)
+      << "The manifest must be specified through the ManifestBuilder";
   resources_.insert_or_assign(std::string(resource_path),
                               Resource(net::HTTP_OK, headers, file_path));
   return *this;
@@ -581,7 +583,13 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddFolderFromDisk(
   for (base::FilePath path = files.Next(); !path.empty(); path = files.Next()) {
     base::FilePath relative(FILE_PATH_LITERAL("/"));
     CHECK(folder_path.AppendRelativePath(path, &relative));
-    AddFileFromDisk(relative.AsUTF8Unsafe(), path);
+    std::string relative_resource_path = relative.AsUTF8Unsafe();
+    if (relative_resource_path == kManifestPath) {
+      LOG(WARNING) << "Ignoring /.well-known/manifest.webmanifest, the "
+                      "serialized ManifestBuilder value will be used instead.";
+      continue;
+    }
+    AddFileFromDisk(relative_resource_path, path);
   }
   return *this;
 }
@@ -658,12 +666,11 @@ std::vector<uint8_t> IsolatedWebAppBuilder::BuildInMemoryBundle(
   base::ScopedAllowBlockingForTesting allow_blocking;
   Validate();
   web_package::WebBundleBuilder builder;
-  for (const auto& resource : resources_) {
-    scoped_refptr<net::HttpResponseHeaders> headers =
-        resource.second.headers(resource.first);
+  for (const auto& [url, resource] : resources_) {
+    scoped_refptr<net::HttpResponseHeaders> headers = resource.headers(url);
 
     web_package::WebBundleBuilder::Headers bundle_headers = {
-        {":status", base::ToString(resource.second.status())}};
+        {":status", base::ToString(resource.status())}};
     size_t iterator = 0;
     std::string name;
     std::string value;
@@ -673,7 +680,7 @@ std::vector<uint8_t> IsolatedWebAppBuilder::BuildInMemoryBundle(
       bundle_headers.push_back({base::ToLowerASCII(name), value});
     }
 
-    builder.AddExchange(resource.first, bundle_headers, resource.second.body());
+    builder.AddExchange(url, bundle_headers, resource.body());
   }
 
   builder.AddExchange(

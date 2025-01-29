@@ -68,7 +68,10 @@ class SubAppsAdminPolicyTest : public IsolatedWebAppBrowserTestHarness {
 
   IsolatedWebAppUrlInfo InstallIwaParentApp() {
     std::unique_ptr<ScopedBundledIsolatedWebApp> app =
-        IsolatedWebAppBuilder(ManifestBuilder())
+        IsolatedWebAppBuilder(
+            ManifestBuilder().AddPermissionsPolicy(
+                blink::mojom::PermissionsPolicyFeature::kSubApps, /*self=*/true,
+                /*origins=*/{}))
             .AddFolderFromDisk("/", "web_apps/subapps_isolated_app")
             .BuildBundle();
     app->TrustSigningKey();
