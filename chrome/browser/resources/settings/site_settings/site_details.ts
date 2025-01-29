@@ -174,10 +174,9 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         value: ChooserType,
       },
 
-      enableKeyboardAndPointerLockPrompt_: {
+      enableKeyboardLockPrompt_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
+        value: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
       },
 
       enableWebAppInstallation_: {
@@ -206,7 +205,7 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   private enableWebAppInstallation_: boolean;
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =
       WebsiteUsageBrowserProxyImpl.getInstance();
-  private enableKeyboardAndPointerLockPrompt_: boolean;
+  private enableKeyboardLockPrompt_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

@@ -5041,11 +5041,10 @@ const char kFreezingOnEnergySaverTestingDescription[] =
     "1) pretend that Energy Saver is active even when it's not and 2) pretend "
     "that all tabs use a lot of CPU.";
 
-const char kKeyboardAndPointerLockPromptName[] =
-    "Keyboard and Pointer Lock prompt";
-const char kKeyboardAndPointerLockPromptDescription[] =
-    "Requesting to use the keyboard or pointer lock API causes a permission"
-    "prompt to be shown.";
+const char kKeyboardLockPromptName[] = "Keyboard Lock prompt";
+const char kKeyboardLockPromptDescription[] =
+    "Requesting to use the keyboard lock API causes a permission prompt to be "
+    "shown.";
 
 const char kPressAndHoldEscToExitBrowserFullscreenName[] =
     "Holding Esc to exit browser fullscreen";

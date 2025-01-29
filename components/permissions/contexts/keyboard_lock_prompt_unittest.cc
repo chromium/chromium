@@ -15,7 +15,7 @@ namespace permissions {
 
 using blink::mojom::PermissionStatus;
 
-class KeyboardAndPointerLockPromptTests : public testing::Test {
+class KeyboardLockPromptTests : public testing::Test {
  public:
   content::TestBrowserContext* browser_context() { return &browser_context_; }
 
@@ -29,45 +29,30 @@ class KeyboardAndPointerLockPromptTests : public testing::Test {
 };
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(KeyboardAndPointerLockPromptTests,
-       KeyboardAndPointerLockPromptDisabled) {
+TEST_F(KeyboardLockPromptTests, KeyboardLockPromptDisabled) {
   GURL url("https://www.example.com");
 
   feature_list_.Reset();
-  feature_list_.InitWithFeatureState(features::kKeyboardAndPointerLockPrompt,
-                                     false);
+  feature_list_.InitWithFeatureState(features::kKeyboardLockPrompt, false);
 
   KeyboardLockPermissionContext keyboard_permission_context(browser_context());
-  PointerLockPermissionContext pointer_permission_context(browser_context());
 
   EXPECT_EQ(PermissionStatus::GRANTED,
             keyboard_permission_context
-                .GetPermissionStatus(/*render_frame_host=*/nullptr, url, url)
-                .status);
-
-  EXPECT_EQ(PermissionStatus::GRANTED,
-            pointer_permission_context
                 .GetPermissionStatus(/*render_frame_host=*/nullptr, url, url)
                 .status);
 }
 
-TEST_F(KeyboardAndPointerLockPromptTests, KeyboardAndPointerLockPromptEnabled) {
+TEST_F(KeyboardLockPromptTests, KeyboardLockPromptEnabled) {
   GURL url("https://www.example.com");
 
   feature_list_.Reset();
-  feature_list_.InitWithFeatureState(features::kKeyboardAndPointerLockPrompt,
-                                     true);
+  feature_list_.InitWithFeatureState(features::kKeyboardLockPrompt, true);
 
   KeyboardLockPermissionContext keyboard_permission_context(browser_context());
-  PointerLockPermissionContext pointer_permission_context(browser_context());
 
   EXPECT_EQ(PermissionStatus::ASK,
             keyboard_permission_context
-                .GetPermissionStatus(/*render_frame_host=*/nullptr, url, url)
-                .status);
-
-  EXPECT_EQ(PermissionStatus::ASK,
-            pointer_permission_context
                 .GetPermissionStatus(/*render_frame_host=*/nullptr, url, url)
                 .status);
 }

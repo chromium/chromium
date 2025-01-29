@@ -2951,8 +2951,8 @@ extern const char kFreezingOnEnergySaverDescription[];
 extern const char kFreezingOnEnergySaverTestingName[];
 extern const char kFreezingOnEnergySaverTestingDescription[];
 
-extern const char kKeyboardAndPointerLockPromptName[];
-extern const char kKeyboardAndPointerLockPromptDescription[];
+extern const char kKeyboardLockPromptName[];
+extern const char kKeyboardLockPromptDescription[];
 
 extern const char kPressAndHoldEscToExitBrowserFullscreenName[];
 extern const char kPressAndHoldEscToExitBrowserFullscreenDescription[];

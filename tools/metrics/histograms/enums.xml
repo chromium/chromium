@@ -11713,7 +11713,6 @@ from previous Chrome versions.
   <int value="-950411190"
       label="WebViewCpuAffinityRestrictToLittleCores:enabled"/>
   <int value="-950384924" label="OmniboxDisableInstantExtendedLimit:enabled"/>
-  <int value="-950125294" label="KeyboardAndPointerLockPrompt:enabled"/>
   <int value="-949956361" label="ControlledFrame:disabled"/>
   <int value="-949289795" label="PdfInk2:disabled"/>
   <int value="-949178861" label="enable-new-avatar-menu"/>
@@ -12148,6 +12147,7 @@ from previous Chrome versions.
   <int value="-766805224" label="MirroringService:enabled"/>
   <int value="-766199617" label="ReadAloudInOverflowMenuInCCT:enabled"/>
   <int value="-765669184" label="LauncherNudgeShortInterval:disabled"/>
+  <int value="-765417607" label="KeyboardLockPrompt:disabled"/>
   <int value="-764463072" label="WebViewMixedContentAutoupgrades:disabled"/>
   <int value="-764363697" label="OmniboxForceAllowedToBeDefault:disabled"/>
   <int value="-763900417" label="CCTModuleUseIntentExtras:enabled"/>
@@ -15396,7 +15396,6 @@ from previous Chrome versions.
   <int value="525286392" label="PageInfoAboutThisSiteNonMsbb:disabled"/>
   <int value="527010182"
       label="ComputePressureBreakCalibrationMitigation:disabled"/>
-  <int value="527081090" label="KeyboardAndPointerLockPrompt:disabled"/>
   <int value="527140412"
       label="AndroidAutofillViewStructureWithFormHierarchyLayer:disabled"/>
   <int value="529235584" label="PhoneHub:enabled"/>
@@ -18457,6 +18456,7 @@ from previous Chrome versions.
   <int value="1719019077" label="FileSystemProviderCloudFileSystem:disabled"/>
   <int value="1719189460" label="EnablePasswordSelection:disabled"/>
   <int value="1719958026" label="QueryTiles:enabled"/>
+  <int value="1719998906" label="KeyboardLockPrompt:enabled"/>
   <int value="1720399117" label="SkiaGraphite:enabled"/>
   <int value="1720657677" label="SensitiveContent:enabled"/>
   <int value="1721854955" label="EnableEdidBasedDisplayIds:disabled"/>

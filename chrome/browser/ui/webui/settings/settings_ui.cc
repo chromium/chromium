@@ -373,9 +373,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           IsBalancedModeAvailable());
 
   html_source->AddBoolean(
-      "enableKeyboardAndPointerLockPrompt",
-      base::FeatureList::IsEnabled(
-          permissions::features::kKeyboardAndPointerLockPrompt));
+      "enableKeyboardLockPrompt",
+      base::FeatureList::IsEnabled(permissions::features::kKeyboardLockPrompt));
 
   html_source->AddBoolean(
       "enableLinkedServicesSetting",

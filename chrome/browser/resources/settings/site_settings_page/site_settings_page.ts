@@ -236,8 +236,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings20:keyboard-lock',
       enabledLabel: 'siteSettingsKeyboardLockAllowed',
       disabledLabel: 'siteSettingsKeyboardLockBlocked',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
+      shouldShow: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
     },
     {
       route: routes.SITE_SETTINGS_LOCAL_FONTS,
@@ -316,8 +315,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings20:pointer-lock',
       enabledLabel: 'siteSettingsPointerLockAllowed',
       disabledLabel: 'siteSettingsPointerLockBlocked',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
+      shouldShow: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
     },
     {
       route: routes.SITE_SETTINGS_POPUPS,

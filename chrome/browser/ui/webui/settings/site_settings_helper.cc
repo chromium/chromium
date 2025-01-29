@@ -629,7 +629,7 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
     }
 
     if (base::FeatureList::IsEnabled(
-            permissions::features::kKeyboardAndPointerLockPrompt)) {
+            permissions::features::kKeyboardLockPrompt)) {
       base_types->push_back(ContentSettingsType::KEYBOARD_LOCK);
       base_types->push_back(ContentSettingsType::POINTER_LOCK);
     }

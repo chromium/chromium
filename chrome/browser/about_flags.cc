@@ -8578,10 +8578,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPwaUpdateDialogForIcon)},
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"keyboard-and-pointer-lock-prompt",
-     flag_descriptions::kKeyboardAndPointerLockPromptName,
-     flag_descriptions::kKeyboardAndPointerLockPromptDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(permissions::features::kKeyboardAndPointerLockPrompt)},
+    {"keyboard-lock-prompt", flag_descriptions::kKeyboardLockPromptName,
+     flag_descriptions::kKeyboardLockPromptDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(permissions::features::kKeyboardLockPrompt)},
 
     {"press-and-hold-esc-to-exit-browser-fullscreen",
      flag_descriptions::kPressAndHoldEscToExitBrowserFullscreenName,

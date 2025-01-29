@@ -291,7 +291,7 @@ source_set("unit_tests") {
   sources = [
     "contexts/camera_pan_tilt_zoom_permission_context_unittest.cc",
     "contexts/geolocation_permission_context_unittest.cc",
-    "contexts/keyboard_and_pointer_lock_prompt_unittest.cc",
+    "contexts/keyboard_lock_prompt_unittest.cc",
     "contexts/midi_permission_context_unittest.cc",
     "contexts/midi_sysex_permission_context_unittest.cc",
     "contexts/nfc_permission_context_unittest.cc",

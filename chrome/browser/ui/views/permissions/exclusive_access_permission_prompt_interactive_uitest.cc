@@ -35,7 +35,7 @@ class ExclusiveAccessPermissionPromptInteractiveTest
  public:
   ExclusiveAccessPermissionPromptInteractiveTest() {
     feature_list_.InitAndEnableFeature(
-        permissions::features::kKeyboardAndPointerLockPrompt);
+        permissions::features::kKeyboardLockPrompt);
   }
 
   void SetUp() override {
