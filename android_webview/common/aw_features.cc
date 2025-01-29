@@ -60,7 +60,7 @@ const base::FeatureParam<int> kWebViewIpProtectionExclusionCriteria{
 // Fetch Hand Writing icon lazily.
 BASE_FEATURE(kWebViewLazyFetchHandWritingIcon,
              "WebViewLazyFetchHandWritingIcon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable the WebView Media Integrity API as a Blink extension.
 // This feature requires `kWebViewMediaIntegrityApi` to be disabled.
