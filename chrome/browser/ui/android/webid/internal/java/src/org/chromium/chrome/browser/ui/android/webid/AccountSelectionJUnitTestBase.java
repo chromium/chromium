@@ -151,6 +151,7 @@ public class AccountSelectionJUnitTestBase {
     Account mNewUserAccount;
     Account mNoOneAccount;
     Account mFilteredOutAccount;
+    Account mNicolasAccount;
 
     IdentityCredentialTokenError mTokenError;
     IdentityCredentialTokenError mTokenErrorEmptyUrl;
@@ -195,6 +196,7 @@ public class AccountSelectionJUnitTestBase {
                         "ana@email.example",
                         "Ana Doe",
                         "Ana",
+                        /* secondaryDescription= */ null,
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
@@ -206,6 +208,7 @@ public class AccountSelectionJUnitTestBase {
                         "",
                         "Bob",
                         "",
+                        /* secondaryDescription= */ null,
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
@@ -217,6 +220,7 @@ public class AccountSelectionJUnitTestBase {
                         "carl@three.test",
                         "Carl Test",
                         ":)",
+                        /* secondaryDescription= */ null,
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
@@ -228,6 +232,7 @@ public class AccountSelectionJUnitTestBase {
                         "goto@email.example",
                         "Sam E. Goto",
                         "Sam",
+                        /* secondaryDescription= */ null,
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ false,
@@ -239,6 +244,7 @@ public class AccountSelectionJUnitTestBase {
                         "",
                         "No Subject",
                         "",
+                        /* secondaryDescription= */ null,
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
@@ -250,11 +256,24 @@ public class AccountSelectionJUnitTestBase {
                         "nicolas@example.com",
                         "Nicolas Pena",
                         "Nicolas",
+                        /* secondaryDescription= */ null,
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
                         /* isFilteredOut= */ true);
+        mNicolasAccount =
+                new Account(
+                        "NicoId",
+                        "nicolas@email.com",
+                        "Nico P",
+                        "Nicolas",
+                        "email.com",
+                        mTestProfilePicUrl,
+                        /* pictureBitmap= */ null,
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false);
 
         mTokenError = new IdentityCredentialTokenError(TEST_ERROR_CODE, mTestErrorUrl);
         mTokenErrorEmptyUrl = new IdentityCredentialTokenError(TEST_ERROR_CODE, mTestEmptyErrorUrl);

@@ -39,7 +39,8 @@ namespace {
 
 ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
     JNIEnv* env,
-    content::IdentityRequestAccount* account) {
+    content::IdentityRequestAccount* account,
+    bool is_multi_idp) {
   ScopedJavaLocalRef<jobject> decoded_picture = nullptr;
   if (!account->decoded_picture.IsEmpty()) {
     decoded_picture =
@@ -50,6 +51,9 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
       ConvertUTF8ToJavaString(env, account->email),
       ConvertUTF8ToJavaString(env, account->name),
       ConvertUTF8ToJavaString(env, account->given_name),
+      is_multi_idp ? std::make_optional<std::string>(
+                         account->identity_provider->idp_for_display)
+                   : std::nullopt,
       url::GURLAndroid::FromNativeGURL(env, account->picture), decoded_picture,
       account->login_state == Account::LoginState::kSignIn,
       account->browser_trusted_login_state == Account::LoginState::kSignIn,
@@ -96,7 +100,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaClientIdMetadata(
 
 ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
     JNIEnv* env,
-    const std::vector<IdentityRequestAccountPtr>& accounts) {
+    const std::vector<IdentityRequestAccountPtr>& accounts,
+    bool is_multi_idp) {
   ScopedJavaLocalRef<jclass> account_clazz = base::android::GetClass(
       env, "org/chromium/chrome/browser/ui/android/webid/data/Account");
   ScopedJavaLocalRef<jobjectArray> array(
@@ -106,7 +111,7 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
 
   for (size_t i = 0; i < accounts.size(); ++i) {
     ScopedJavaLocalRef<jobject> item =
-        ConvertToJavaAccount(env, accounts[i].get());
+        ConvertToJavaAccount(env, accounts[i].get(), is_multi_idp);
     env->SetObjectArrayElement(array.obj(), i, item.obj());
   }
   return array;
@@ -216,16 +221,17 @@ bool AccountSelectionViewAndroid::Show(
     return false;
   }
 
+  bool is_multi_idp = idp_list.size() > 1u;
   // Serialize the `idp_list` and `accounts` into a Java array and
   // instruct the bridge to show it together with |url| to the user.
   // TODO(crbug.com/40945672): render filtered out accounts differently on
   // Android.
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> accounts_obj =
-      ConvertToJavaAccounts(env, accounts);
+      ConvertToJavaAccounts(env, accounts, is_multi_idp);
 
   ScopedJavaLocalRef<jobjectArray> new_accounts_obj =
-      ConvertToJavaAccounts(env, new_accounts);
+      ConvertToJavaAccounts(env, new_accounts, is_multi_idp);
 
   // Multi IDP support does not currently work on mobile. Hence, we use the
   // first index from the `idp_list` for the IDP-specific
