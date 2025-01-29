@@ -4508,7 +4508,7 @@ deps = {
 
   'src/components/site_isolation/internal': {
       'url': Var('chrome_git') + '/chrome/components/site_isolation.git' + '@' +
-        'e0d8a7769c1daabb974bf0d229970534a0aede77',
+        'c0820b79078dbee4b737614f83f5942ea4c0b916',
       'condition': 'checkout_src_internal',
   },
 
