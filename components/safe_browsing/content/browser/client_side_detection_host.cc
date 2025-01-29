@@ -1124,6 +1124,10 @@ void ClientSideDetectionHost::OnInnerTextComplete(
   base::UmaHistogramCounts100000("SBClientPhishing.OnDeviceModelInnerTextSize",
                                  inner_text.size());
   if (inner_text.empty()) {
+    IntelligentScanInfo intelligent_scan_info;
+    intelligent_scan_info.set_no_info_reason(IntelligentScanInfo::EMPTY_TEXT);
+    *verdict->mutable_intelligent_scan_info() =
+        std::move(intelligent_scan_info);
     MaybeGetAccessToken(std::move(verdict),
                         did_match_high_confidence_allowlist);
     return;

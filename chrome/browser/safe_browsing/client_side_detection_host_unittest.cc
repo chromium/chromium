@@ -2254,9 +2254,11 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   // We can expect the token fetcher to occur as usual because ESB preference is
   // enabled.
+  std::unique_ptr<ClientPhishingRequest> verdict_sent;
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
                                  PartiallyEqualVerdict(verdict), _,
-                                 "fake_access_token_keyboard_lock"));
+                                 "fake_access_token_keyboard_lock"))
+      .WillOnce(MoveArg<0>(&verdict_sent));
 
   SafeBrowsingTokenFetcher::Callback cb;
   EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
@@ -2271,6 +2273,11 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  IntelligentScanInfo intelligent_scan_info =
+      verdict_sent->intelligent_scan_info();
+  EXPECT_EQ(intelligent_scan_info.no_info_reason(),
+            IntelligentScanInfo::EMPTY_TEXT);
 }
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,

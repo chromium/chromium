@@ -158,6 +158,15 @@ message LlamaForcedTriggerInfo {
 message IntelligentScanInfo {
   optional string brand = 1;
   optional string intent = 2;
+
+  // Reason why the brand and intent are empty.
+  enum NoInfoReason {
+    NO_INFO_REASON_UNSPECIFIED = 0;
+    // Client cannot infer the brand and intent because there is no text on the
+    // page.
+    EMPTY_TEXT = 1;
+  }
+  optional NoInfoReason no_info_reason = 3;
 }
 
 message ClientPhishingRequest {

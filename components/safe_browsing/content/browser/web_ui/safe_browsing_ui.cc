@@ -826,6 +826,8 @@ base::Value::Dict SerializeIntelligentScanInfo(
   base::Value::Dict dict;
   dict.Set("brand", intelligent_scan_info.brand());
   dict.Set("intent", intelligent_scan_info.intent());
+  dict.Set("no_info_reason", IntelligentScanInfo_NoInfoReason_Name(
+                                 intelligent_scan_info.no_info_reason()));
   return dict;
 }
 
