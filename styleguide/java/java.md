@@ -233,8 +233,8 @@ to ensure in debug builds and tests that `destroy()` is called.
 ## Nullability Annotations
 
 A migration to add `@NullMarked` to all Java files is currently underway
-([crbug.com/389129271]). See [nullaway.md] for how to `@Nullable` and related
-annotations.
+([crbug.com/389129271]). See [nullaway.md] for how to use `@Nullable` and
+related annotations.
 
 [crbug.com/389129271]: https://crbug.com/389129271
 [nullaway.md]: nullaway.md
@@ -302,9 +302,9 @@ private static List<String> readLines(BufferedReader bufferedReader) {
 * Use them liberally. They are [documented here](https://developer.android.com/studio/write/annotations).
   * They generally improve readability.
   * Many make lint more useful.
-* `javax.annotation.Nullable` vs `androidx.annotation.Nullable`
-  * Always prefer `androidx.annotation.Nullable`.
-  * It uses `@Retention(SOURCE)` rather than `@Retention(RUNTIME)`.
+* What about `androidx.annotation.Nullable`?
+  * We are migrating away from it (see [nullaway.md]).
+  * Keep using it in files that have not yet been migrated.
 
 #### IntDefs {#intdefs}
 
