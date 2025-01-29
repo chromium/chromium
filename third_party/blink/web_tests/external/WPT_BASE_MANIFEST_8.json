@@ -76872,7 +76872,7 @@
       ]
      ],
      "background-image-table-cells-straddling-no-repeat.html": [
-      "67f7937a3fcc93d1f4d0ce1806eea1e12e6078ee",
+      "022e64620896a2aea6ad224a18bc4bee58774a2a",
       [
        null,
        [
@@ -76881,7 +76881,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            4500
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-image-table-cells-zoomed.html": [
@@ -520419,7 +520435,7 @@
       ]
      ],
      "event.any.js": [
-      "afc003b94e6c19acd443f9c850e0b06d84fb74ea",
+      "eda769e8d8f39dd16e19a8d24c038e86baf1c459",
       [
        "dom/abort/event.any.html",
        {
@@ -629603,7 +629619,7 @@
          ]
         ],
         "switch-picker-appearance.tentative.html": [
-         "09bea44a3409b1ada1e11c331486302e20d3c581",
+         "da546658f892175e0770ec7ec94d4a6e5ed5b942",
          [
           null,
           {
