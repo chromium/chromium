@@ -14,7 +14,8 @@
 namespace tabs {
 
 TabGroupTabCollection::TabGroupTabCollection(tab_groups::TabGroupId group_id)
-    : group_id_(group_id),
+    : TabCollection(TabCollection::Type::GROUP),
+      group_id_(group_id),
       impl_(std::make_unique<TabCollectionStorage>(*this)) {}
 
 TabGroupTabCollection::~TabGroupTabCollection() = default;

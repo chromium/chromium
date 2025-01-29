@@ -17,9 +17,9 @@
 
 namespace tabs {
 
-UnpinnedTabCollection::UnpinnedTabCollection() {
-  impl_ = std::make_unique<TabCollectionStorage>(*this);
-}
+UnpinnedTabCollection::UnpinnedTabCollection()
+    : TabCollection(TabCollection::Type::UNPINNED),
+      impl_(std::make_unique<TabCollectionStorage>(*this)) {}
 
 UnpinnedTabCollection::~UnpinnedTabCollection() = default;
 

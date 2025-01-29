@@ -18,7 +18,9 @@
 
 namespace tabs {
 
-TabStripCollection::TabStripCollection() {
+TabStripCollection::TabStripCollection()
+    : TabCollection(TabCollection::Type::TABSTRIP),
+      impl_(std::make_unique<TabCollectionStorage>(*this)) {
   impl_ = std::make_unique<TabCollectionStorage>(*this);
   pinned_collection_ = static_cast<PinnedTabCollection*>(
       impl_->AddCollection(std::make_unique<PinnedTabCollection>(), 0));

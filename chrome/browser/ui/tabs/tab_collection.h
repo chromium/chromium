@@ -24,7 +24,13 @@ class TabModel;
 // collection that does not store any collection.
 class TabCollection {
  public:
-  TabCollection() = default;
+  // Type describes the various kinds of tab collections:
+  // - TABSTRIP:  The main container for tabs in a browser window.
+  // - PINNED:    A container for pinned tabs.
+  // - UNPINNED:  A container for unpinned tabs.
+  // - GROUP:     A container to grouped tabs.
+  enum class Type { TABSTRIP, PINNED, UNPINNED, GROUP };
+
   virtual ~TabCollection() = default;
   TabCollection(const TabCollection&) = delete;
   TabCollection& operator=(const TabCollection&) = delete;
@@ -50,6 +56,8 @@ class TabCollection {
   // Total number of children that directly have this collection as their
   // parent.
   virtual size_t ChildCount() const = 0;
+
+  Type type() { return type_; }
 
   // Total number of tabs the collection contains.
   size_t TabCountRecursive() const { return recursive_tab_count_; }
@@ -79,6 +87,8 @@ class TabCollection {
   void OnReparented(TabCollection* new_parent) { parent_ = new_parent; }
 
  protected:
+  explicit TabCollection(Type type);
+
   // Returns the pass key to be used by derived classes as operations such as
   // setting the parent of a tab can only be performed by a `TabCollection`.
   base::PassKey<TabCollection> GetPassKey() const {
@@ -90,6 +100,7 @@ class TabCollection {
 
  private:
   raw_ptr<TabCollection> parent_ = nullptr;
+  Type type_;
 };
 
 }  // namespace tabs

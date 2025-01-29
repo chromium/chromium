@@ -12,9 +12,9 @@
 
 namespace tabs {
 
-PinnedTabCollection::PinnedTabCollection() {
-  impl_ = std::make_unique<TabCollectionStorage>(*this);
-}
+PinnedTabCollection::PinnedTabCollection()
+    : TabCollection(TabCollection::Type::PINNED),
+      impl_(std::make_unique<TabCollectionStorage>(*this)) {}
 
 PinnedTabCollection::~PinnedTabCollection() = default;
 
