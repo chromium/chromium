@@ -115,6 +115,18 @@ class MockBookmarkMergedSurfaceServiceObserver
                size_t,
                const BookmarkParentFolder&,
                size_t));
+
+  MOCK_METHOD(void, BookmarkNodeChanged, (const bookmarks::BookmarkNode*));
+
+  MOCK_METHOD(void,
+              BookmarkNodeFaviconChanged,
+              (const bookmarks::BookmarkNode*));
+
+  MOCK_METHOD(void,
+              BookmarkParentFolderChildrenReordered,
+              (const BookmarkParentFolder&));
+
+  MOCK_METHOD(void, BookmarkAllUserNodesRemoved, ());
 };
 
 class BookmarkMergedSurfaceServiceTest : public testing::Test {
@@ -977,6 +989,75 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
   model().Move(node, model().account_bookmark_bar_node(), expected_new_index);
   EXPECT_EQ(service().GetChildrenCount(bb_folder), bb_folder_size + 1);
   EXPECT_EQ(service().GetIndexOf(node), expected_new_index);
+}
+
+TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeChanged) {
+  LoadBookmarkModel();
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(),
+                          "1 2 3 f1:[ 4 5 ] ");
+  const std::u16string kOriginalTitle(u"foo");
+  const GURL kUrl("http://url.com");
+  const BookmarkNode* node = model().bookmark_bar_node()->children()[0].get();
+
+  const std::u16string kNewTitle(u"goo");
+  EXPECT_CALL(mock_service_observer(), BookmarkNodeChanged(node));
+  model().SetTitle(node, kNewTitle,
+                   bookmarks::metrics::BookmarkEditSource::kOther);
+  EXPECT_EQ(node->GetTitle(), kNewTitle);
+}
+
+TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeFaviconChanged) {
+  LoadBookmarkModel();
+  const BookmarkNode* bookmark_bar_node = model().bookmark_bar_node();
+  const std::u16string kTitle(u"foo");
+  const GURL kPageURL("http://www.google.com");
+
+  const BookmarkNode* node =
+      model().AddURL(bookmark_bar_node, 0, kTitle, kPageURL);
+
+  std::set<GURL> changed_page_urls;
+  changed_page_urls.insert(kPageURL);
+  EXPECT_CALL(mock_service_observer(), BookmarkNodeFaviconChanged(node));
+  model().OnFaviconsChanged(changed_page_urls, GURL());
+}
+
+TEST_F(BookmarkMergedSurfaceServiceTest,
+       BookmarkParentFolderChildrenReordered) {
+  LoadBookmarkModel();
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "A B C D ");
+  const BookmarkNode* parent = model().bookmark_bar_node();
+
+  // Reorder bar node's bookmarks in reverse order.
+  std::vector<const BookmarkNode*> new_order = {
+      parent->children()[3].get(),
+      parent->children()[2].get(),
+      parent->children()[1].get(),
+      parent->children()[0].get(),
+  };
+
+  EXPECT_CALL(mock_service_observer(),
+              BookmarkParentFolderChildrenReordered(
+                  BookmarkParentFolder::BookmarkBarFolder()));
+  model().ReorderChildren(parent, new_order);
+}
+
+TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkAllUserNodesRemoved) {
+  LoadBookmarkModel();
+  model().CreateAccountPermanentFolders();
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(),
+                          "1 2 3 f1:[ 4 5 ] ");
+  AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
+                          "7 8 9 f3:[ 10 11 ] ");
+  ASSERT_EQ(
+      service().GetChildrenCount(BookmarkParentFolder::BookmarkBarFolder()),
+      8u);
+
+  EXPECT_CALL(mock_service_observer(), BookmarkAllUserNodesRemoved);
+  model().RemoveAllUserBookmarks(FROM_HERE);
+
+  EXPECT_EQ(
+      service().GetChildrenCount(BookmarkParentFolder::BookmarkBarFolder()),
+      0u);
 }
 
 // Tests for `BookmarkParentFolder`

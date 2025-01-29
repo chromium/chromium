@@ -206,8 +206,6 @@ class BookmarkMergedSurfaceService : public KeyedService,
                            const std::set<GURL>& no_longer_bookmarked,
                            const base::Location& location) override;
   void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
-  void OnWillChangeBookmarkMetaInfo(
-      const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeChildrenReordered(
       const bookmarks::BookmarkNode* node) override;

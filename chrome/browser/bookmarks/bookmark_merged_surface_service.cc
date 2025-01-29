@@ -498,26 +498,32 @@ void BookmarkMergedSurfaceService::BookmarkNodeRemoved(
 
 void BookmarkMergedSurfaceService::BookmarkNodeChanged(
     const bookmarks::BookmarkNode* node) {
-  // TODO(crbug.com/391785358): Notify observers.
-}
-
-void BookmarkMergedSurfaceService::OnWillChangeBookmarkMetaInfo(
-    const bookmarks::BookmarkNode* node) {
-  // TODO(crbug.com/391785358): Notify observers.
+  for (auto& observer : observers_) {
+    observer.BookmarkNodeChanged(node);
+  }
 }
 
 void BookmarkMergedSurfaceService::BookmarkNodeFaviconChanged(
     const bookmarks::BookmarkNode* node) {
-  // TODO(crbug.com/391785358): Notify observers.
+  for (auto& observer : observers_) {
+    observer.BookmarkNodeFaviconChanged(node);
+  }
 }
 
 void BookmarkMergedSurfaceService::BookmarkNodeChildrenReordered(
     const bookmarks::BookmarkNode* node) {
-  // TODO(crbug.com/391785358): Notify observers.
+  CHECK(node);
+  CHECK(node->is_folder());
+  const BookmarkParentFolder folder(BookmarkParentFolder::FromFolderNode(node));
+  for (auto& observer : observers_) {
+    observer.BookmarkParentFolderChildrenReordered(folder);
+  }
 }
 
 void BookmarkMergedSurfaceService::BookmarkAllUserNodesRemoved(
     const std::set<GURL>& removed_urls,
     const base::Location& location) {
-  // TODO(crbug.com/391785358): Notify observers.
+  for (auto& observer : observers_) {
+    observer.BookmarkAllUserNodesRemoved();
+  }
 }
