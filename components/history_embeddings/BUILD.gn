@@ -81,6 +81,7 @@ source_set("unit_tests") {
     "ml_embedder_unittest.cc",
     "ml_intent_classifier_unittest.cc",
     "passages_util_unittest.cc",
+    "scheduling_embedder_unittest.cc",
     "search_strings_update_listener_unittest.cc",
     "sql_database_unittest.cc",
     "vector_database_unittest.cc",
