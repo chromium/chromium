@@ -32,6 +32,11 @@ constexpr LazyRE2 kFullLogLineRegex = {
 // Number of characters to ingest per log line to create unique hash.
 constexpr size_t kLogMsgHashSize = 50;
 
+// Dangerous internal buffer size in bytes. In practice, we should never hit
+// this limit due to previous memory-related mitigations, but let's add safety
+// tracking just in case.
+constexpr size_t kDangerousBufferSize = 2 * 1000 * 1000;  // 2Mb
+
 }  // namespace
 
 LocalDataSource::LocalDataSource(base::TimeDelta poll_rate,
@@ -118,6 +123,10 @@ void LocalDataSource::FillDataBuffer() {
   // so there must be some kind of mojom hang-up. We'll resume when
   // the problem is corrected.
   if (IsDataBufferOverMaxLimit()) {
+    if (data_buffer_size_ >= kDangerousBufferSize) {
+      LOG(WARNING) << GetDisplayName() << " has reached a dangerously high "
+                   << "buffer allocation of " << data_buffer_size_ << " bytes.";
+    }
     return;
   }
 
@@ -171,6 +180,8 @@ void LocalDataSource::FillDataBuffer() {
             std::back_inserter(data_buffer_));
 
   data_buffer_size_ += next_data_size;
+  VLOG(3) << GetDisplayName() << " has a current buffer allocation of "
+          << data_buffer_size_ << " bytes.";
 }
 
 bool LocalDataSource::IsDataBufferOverMaxLimit() {
