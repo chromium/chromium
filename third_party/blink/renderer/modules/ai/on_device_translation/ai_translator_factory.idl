@@ -5,10 +5,12 @@
 ]
 interface AITranslatorFactory {
   [
+    Measure,
     CallWith=ScriptState,
     RaisesException
   ]
   Promise<AITranslator> create(optional AITranslatorCreateOptions options = {});
+  // TODO(crbug.com/390459310): Replace with availability.
   [
     CallWith=ScriptState,
     RaisesException

@@ -18,6 +18,7 @@ interface AILanguageDetector {
     optional AILanguageDetectorDetectOptions options = {});
 
   [
+    Measure,
     CallWith=ScriptState
   ]
   undefined destroy();
