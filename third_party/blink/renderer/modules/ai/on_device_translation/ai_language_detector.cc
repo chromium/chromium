@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector.h"
 
+#include "third_party/blink/renderer/modules/ai/exception_helpers.h"
+
 namespace blink {
 
 AILanguageDetector::AILanguageDetector(
@@ -20,11 +22,15 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> AILanguageDetector::detect(
     const WTF::String& input,
     AILanguageDetectorDetectOptions* options,
     ExceptionState& exception_state) {
-  // TODO(crbug.com/349927087): Take `options` into account.
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
     return ScriptPromise<IDLSequence<LanguageDetectionResult>>();
+  }
+
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<
