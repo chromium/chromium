@@ -316,18 +316,23 @@ template <typename T>
 bool PerfettoTracedProcess::DataSourceProxy<T>::CanAdoptStartupSession(
     const perfetto::DataSourceConfig& startup_config,
     const perfetto::DataSourceConfig& service_config) {
-  if (!startup_config.has_chrome_config() ||
-      !service_config.has_chrome_config()) {
-    return perfetto::DataSourceBase::CanAdoptStartupSession(startup_config,
-                                                            service_config);
+  perfetto::DataSourceConfig startup_config_stripped = startup_config;
+  perfetto::DataSourceConfig service_config_stripped = service_config;
+  if (startup_config.has_chrome_config() &&
+      service_config.has_chrome_config()) {
+    base::trace_event::TraceConfig startup_trace_config(
+        startup_config.chrome_config().trace_config());
+    base::trace_event::TraceConfig service_trace_config(
+        service_config.chrome_config().trace_config());
+    if (!startup_trace_config.IsEquivalentTo(service_trace_config)) {
+      return false;
+    }
+    *startup_config_stripped.mutable_chrome_config() = {};
+    *service_config_stripped.mutable_chrome_config() = {};
   }
 
-  base::trace_event::TraceConfig startup_trace_config(
-      startup_config.chrome_config().trace_config());
-  base::trace_event::TraceConfig service_trace_config(
-      service_config.chrome_config().trace_config());
-
-  return startup_trace_config.IsEquivalentTo(service_trace_config);
+  return perfetto::DataSourceBase::CanAdoptStartupSession(
+      startup_config_stripped, service_config_stripped);
 }
 
 }  // namespace tracing
