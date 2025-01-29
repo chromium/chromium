@@ -628,8 +628,9 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // by |navigation_request|.
   // Note: the SiteInstance returned by this function may not have an
   // initialized RenderProcessHost. It will only be initialized when
-  // GetProcess() is called on the SiteInstance. In particular, calling this
-  // function will never lead to a process being created for the navigation.
+  // GetOrCreateProcess() is called on the SiteInstance. In particular, calling
+  // this function will never lead to a process being created for the
+  // navigation.
   //
   // |is_same_site| is a struct to cache the output of `IsNavigationSameSite()`
   // if/when it gets called. See `IsSameSiteGetter` for more details.

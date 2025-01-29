@@ -176,7 +176,7 @@ class TestTab {
       BrowserContext* browser_context) {
     scoped_refptr<SiteInstance> instance =
         SiteInstance::Create(browser_context);
-    instance->GetProcess()->Init();
+    instance->GetOrCreateProcess()->Init();
     return TestWebContents::Create(browser_context, std::move(instance));
   }
 
