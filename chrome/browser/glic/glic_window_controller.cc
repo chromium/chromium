@@ -43,7 +43,8 @@ constexpr static int kAttachmentBuffer = 20;
 
 constexpr static int kWidgetDefaultWidth = 400;
 constexpr static int kWidgetTopBarHeight = 80;
-static constexpr int kAnimationDurationMs = 300;
+constexpr static int kAnimationDurationMs = 300;
+constexpr static int kInitialDetachedYPosition = 48;
 
 constexpr char kHistogramGlicPanelPresentationTimeAllModes[] =
     "Glic.PanelPresentationTime.All";
@@ -333,7 +334,7 @@ gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
   gfx::Point top_right_point = GetTopRightPositionForDetachedGlicWindow();
   int padding = 50;
   initial_rect.set_x(top_right_point.x() - widget_size.width() - padding);
-  initial_rect.set_y(top_right_point.y() + padding);
+  initial_rect.set_y(top_right_point.y());
   initial_rect.set_size(widget_size);
   return initial_rect;
 }
@@ -388,10 +389,25 @@ void GlicWindowController::OpenDetached() {
   glic_widget_ = CreateGlicWidget(profile_, initial_bounds);
   glic_widget_observation_.Observe(glic_widget_.get());
 
-  // We skip the showing animation and jump straight to waiting for glic to
-  // load.
-  GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
-  state_ = State::kWaitingForGlicToLoad;
+  // Be sure to reparent the widget and set its state first before showing it.
+  MaybeCreateHolderWindowAndReparent();
+#if BUILDFLAG(IS_MAC)
+  // Be careful to not activate, so that in case Chromium isn't the front-most
+  // app it's not brought to the front.
+  GetGlicWidget()->ShowInactive();
+#else
+  GetGlicWidget()->Show();
+#endif
+
+  gfx::Rect target_bounds = glic_widget_->GetWindowBoundsInScreen();
+  target_bounds.set_y(initial_bounds.y() + kInitialDetachedYPosition);
+  // TODO(crbug.com/389982576): Match the background color of the widget with
+  // the web client background.
+  GetGlicView()->SetBackground(
+      views::CreateRoundedRectBackground(SK_ColorBLACK, 12));
+  AnimateBounds(target_bounds, base::Milliseconds(kAnimationDurationMs),
+                base::BindOnce(&GlicWindowController::OpenAnimationFinished,
+                               GetWeakPtr()));
 }
 
 // This happens after the web client is initialized. It signals the web client
@@ -430,18 +446,6 @@ void GlicWindowController::ShowFinish() {
     return;
   }
   state_ = State::kOpen;
-
-  if (!attached_browser_) {
-    // Be sure to reparent the widget and set its state first before showing it.
-    MaybeCreateHolderWindowAndReparent();
-#if BUILDFLAG(IS_MAC)
-    // Be careful to not activate, so that in case Chromium isn't the front-most
-    // app it's not brought to the front.
-    GetGlicWidget()->ShowInactive();
-#else
-    GetGlicWidget()->Show();
-#endif
-  }
 
   if (web_client_ && !show_start_time_.is_null()) {
     base::UmaHistogramCustomTimes(kHistogramGlicPanelPresentationTimeAllModes,
