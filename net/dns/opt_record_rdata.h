@@ -22,7 +22,7 @@ namespace net {
 // OPT record format (https://tools.ietf.org/html/rfc6891):
 class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
  public:
-  static std::unique_ptr<OptRecordRdata> Create(std::string_view data);
+  static std::unique_ptr<OptRecordRdata> Create(base::span<const uint8_t> data);
 
   class NET_EXPORT_PRIVATE Opt {
    public:
@@ -152,18 +152,19 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
     // This method must purely be used for testing.
     // Only the parser can instantiate an UnknownOpt object (via friend
     // classes).
-    static std::unique_ptr<UnknownOpt> CreateForTesting(uint16_t code,
-                                                        std::string data);
+    static std::unique_ptr<UnknownOpt> CreateForTesting(
+        uint16_t code,
+        base::span<const uint8_t> data);
 
     uint16_t GetCode() const override;
 
    private:
-    UnknownOpt(uint16_t code, std::string data);
+    UnknownOpt(uint16_t code, base::span<const uint8_t> data);
 
     uint16_t code_;
 
     friend std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(
-        std::string_view data);
+        base::span<const uint8_t> data);
   };
 
   static constexpr uint16_t kOptsWithDedicatedClasses[] = {

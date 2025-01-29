@@ -1019,11 +1019,11 @@ TEST_F(DnsTransactionTest, LookupWithLog) {
 
 TEST_F(DnsTransactionTest, LookupWithEDNSOption) {
   OptRecordRdata expected_opt_rdata;
-
+  const auto data = std::to_array<uint8_t>({0xbe, 0xef});
   transaction_factory_->AddEDNSOption(
-      OptRecordRdata::UnknownOpt::CreateForTesting(123, "\xbe\xef"));
+      OptRecordRdata::UnknownOpt::CreateForTesting(123, data));
   expected_opt_rdata.AddOpt(
-      OptRecordRdata::UnknownOpt::CreateForTesting(123, "\xbe\xef"));
+      OptRecordRdata::UnknownOpt::CreateForTesting(123, data));
 
   AddAsyncQueryAndResponse(0 /* id */, kT0HostName, kT0Qtype,
                            kT0ResponseDatagram, &expected_opt_rdata);
@@ -1036,13 +1036,15 @@ TEST_F(DnsTransactionTest, LookupWithEDNSOption) {
 
 TEST_F(DnsTransactionTest, LookupWithMultipleEDNSOptions) {
   OptRecordRdata expected_opt_rdata;
-
-  std::vector<std::pair<uint16_t, std::string>> params = {
+  const auto data0 = std::to_array<uint8_t>({0xde, 0xad});
+  const auto data1 = std::to_array<uint8_t>({0xbe, 0xef});
+  const auto data2 = std::to_array<uint8_t>({0xff});
+  std::vector<std::pair<uint16_t, base::span<const uint8_t>>> params = {
       // Two options with the same code, to check that both are included.
-      std::pair<uint16_t, std::string>(1, "\xde\xad"),
-      std::pair<uint16_t, std::string>(1, "\xbe\xef"),
+      std::pair<uint16_t, base::span<const uint8_t>>(1, data0),
+      std::pair<uint16_t, base::span<const uint8_t>>(1, data1),
       // Try a different code and different length of data.
-      std::pair<uint16_t, std::string>(2, "\xff")};
+      std::pair<uint16_t, base::span<const uint8_t>>(2, data2)};
 
   for (auto& param : params) {
     transaction_factory_->AddEDNSOption(

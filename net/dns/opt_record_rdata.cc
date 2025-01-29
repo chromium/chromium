@@ -168,14 +168,16 @@ uint16_t OptRecordRdata::PaddingOpt::GetCode() const {
 OptRecordRdata::UnknownOpt::~UnknownOpt() = default;
 
 std::unique_ptr<OptRecordRdata::UnknownOpt>
-OptRecordRdata::UnknownOpt::CreateForTesting(uint16_t code, std::string data) {
+OptRecordRdata::UnknownOpt::CreateForTesting(uint16_t code,
+                                             base::span<const uint8_t> data) {
   CHECK_IS_TEST();
   return base::WrapUnique(
       new OptRecordRdata::UnknownOpt(code, std::move(data)));
 }
 
-OptRecordRdata::UnknownOpt::UnknownOpt(uint16_t code, std::string data)
-    : Opt(std::move(data)), code_(code) {
+OptRecordRdata::UnknownOpt::UnknownOpt(uint16_t code,
+                                       base::span<const uint8_t> data)
+    : Opt(std::string(base::as_string_view(data))), code_(code) {
   CHECK(!base::Contains(kOptsWithDedicatedClasses, code));
 }
 
@@ -196,7 +198,8 @@ bool OptRecordRdata::operator!=(const OptRecordRdata& other) const {
 }
 
 // static
-std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(std::string_view data) {
+std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(
+    base::span<const uint8_t> data) {
   auto rdata = std::make_unique<OptRecordRdata>();
   rdata->buf_.assign(data.begin(), data.end());
 
@@ -204,7 +207,6 @@ std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(std::string_view data) {
   while (reader.remaining() > 0u) {
     uint16_t opt_code, opt_data_size;
     base::span<const uint8_t> opt_data;
-
     if (!reader.ReadU16BigEndian(opt_code) ||
         !reader.ReadU16BigEndian(opt_data_size) ||
         !base::OptionalUnwrapTo(reader.Read(opt_data_size), opt_data)) {
@@ -228,8 +230,10 @@ std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(std::string_view data) {
             std::string(base::as_string_view(opt_data)));
         break;
       default:
-        opt = base::WrapUnique(new OptRecordRdata::UnknownOpt(
-            opt_code, std::string(base::as_string_view(opt_data))));
+        // base::span<const uint8_t> opt_data_span =
+        // base::as_byte_span(opt_data);
+        opt = base::WrapUnique(
+            new OptRecordRdata::UnknownOpt(opt_code, opt_data));
         break;
     }
 
