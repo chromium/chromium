@@ -4167,6 +4167,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 #endif
 };
 
+template <typename T>
+struct ThreadingTrait<T, std::enable_if_t<std::is_base_of_v<LayoutObject, T>>> {
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
+};
+
 // Allow equality comparisons of LayoutObjects by reference or pointer,
 // interchangeably.
 DEFINE_COMPARISON_OPERATORS_WITH_REFERENCES(LayoutObject)

@@ -140,6 +140,13 @@ class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
   const QualifiedName& attribute_name_;
 };
 
+template <typename T>
+struct ThreadingTrait<
+    T,
+    std::enable_if_t<std::is_base_of_v<SVGAnimatedPropertyBase, T>>> {
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
+};
+
 template <typename Property>
 class SVGAnimatedPropertyCommon : public SVGAnimatedPropertyBase {
  public:

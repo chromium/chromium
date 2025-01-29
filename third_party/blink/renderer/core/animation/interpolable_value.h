@@ -84,6 +84,13 @@ class CORE_EXPORT InterpolableValue
   virtual InterpolableValue* RawCloneAndZero() const = 0;
 };
 
+template <typename T>
+struct ThreadingTrait<
+    T,
+    std::enable_if_t<std::is_base_of_v<InterpolableValue, T>>> {
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
+};
+
 class CORE_EXPORT InlinedInterpolableDouble final {
   DISALLOW_NEW();
 
