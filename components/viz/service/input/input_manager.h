@@ -144,6 +144,8 @@ class VIZ_SERVICE_EXPORT InputManager
   input::RenderInputRouter* GetRenderInputRouterFromFrameSinkId(
       const FrameSinkId& id);
 
+  bool ReturnInputBackToBrowser();
+
  private:
   std::unique_ptr<RenderInputRouterSupportBase> MakeRenderInputRouterSupport(
       input::RenderInputRouter* rir,

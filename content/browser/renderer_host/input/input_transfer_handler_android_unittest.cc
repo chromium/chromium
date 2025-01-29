@@ -14,12 +14,13 @@
 #include "components/input/utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/velocity_tracker/motion_event_generic.h"
+#include "ui/events/test/motion_event_test_utils.h"
 
 namespace content {
 
 using ::testing::_;
 using ::testing::Return;
+using ui::test::MockMotionEvent;
 
 namespace {
 
@@ -86,21 +87,21 @@ class InputTransferHandlerTest : public testing::Test {
 TEST_F(InputTransferHandlerTest, ConsumeEventsIfSequenceTransferred) {
   base::TimeTicks event_time = base::TimeTicks::Now();
 
-  ui::MotionEventGeneric down_event(ui::MotionEvent::Action::DOWN, event_time,
-                                    finger_pointer_);
+  MockMotionEvent down_event(ui::MotionEvent::Action::DOWN, event_time,
+                             finger_pointer_, /* down_time= */ event_time);
 
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).WillOnce(Return(true));
   EXPECT_CALL(*input_transfer_handler_client_, SendStateOnTouchTransfer(_))
       .Times(1);
   EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event));
 
-  ui::MotionEventGeneric move_event(ui::MotionEvent::Action::MOVE, event_time,
-                                    finger_pointer_);
+  MockMotionEvent move_event(ui::MotionEvent::Action::MOVE, event_time,
+                             finger_pointer_, down_event.GetEventTime());
   EXPECT_TRUE(transfer_handler_->OnTouchEvent(move_event));
   EXPECT_TRUE(transfer_handler_->OnTouchEvent(move_event));
 
-  ui::MotionEventGeneric cancel_event(ui::MotionEvent::Action::CANCEL,
-                                      event_time, finger_pointer_);
+  MockMotionEvent cancel_event(ui::MotionEvent::Action::CANCEL, event_time,
+                               finger_pointer_, down_event.GetEventTime());
   EXPECT_TRUE(transfer_handler_->OnTouchEvent(cancel_event));
 
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).WillOnce(Return(false));
@@ -111,12 +112,12 @@ TEST_F(InputTransferHandlerTest, ConsumeEventsIfSequenceTransferred) {
 
 TEST_F(InputTransferHandlerTest, EmitsTouchMovesSeenAfterTransferHistogram) {
   base::TimeTicks event_time = base::TimeTicks::Now();
-  ui::MotionEventGeneric down_event(ui::MotionEvent::Action::DOWN, event_time,
-                                    finger_pointer_);
-  ui::MotionEventGeneric move_event(ui::MotionEvent::Action::MOVE, event_time,
-                                    finger_pointer_);
-  ui::MotionEventGeneric cancel_event(ui::MotionEvent::Action::CANCEL,
-                                      event_time, finger_pointer_);
+  MockMotionEvent down_event(ui::MotionEvent::Action::DOWN, event_time,
+                             finger_pointer_, /* down_time= */ event_time);
+  MockMotionEvent move_event(ui::MotionEvent::Action::MOVE, event_time,
+                             finger_pointer_, down_event.GetEventTime());
+  MockMotionEvent cancel_event(ui::MotionEvent::Action::CANCEL, event_time,
+                               finger_pointer_, down_event.GetEventTime());
 
   for (int touch_moves_seen = 0; touch_moves_seen <= 2; touch_moves_seen++) {
     base::HistogramTester histogram_tester;
@@ -134,12 +135,12 @@ TEST_F(InputTransferHandlerTest, EmitsTouchMovesSeenAfterTransferHistogram) {
 
 TEST_F(InputTransferHandlerTest, EmitsEventsAfterTransferHistogram) {
   base::TimeTicks event_time = base::TimeTicks::Now();
-  ui::MotionEventGeneric down_event(ui::MotionEvent::Action::DOWN, event_time,
-                                    finger_pointer_);
-  ui::MotionEventGeneric move_event(ui::MotionEvent::Action::MOVE, event_time,
-                                    finger_pointer_);
-  ui::MotionEventGeneric cancel_event(ui::MotionEvent::Action::CANCEL,
-                                      event_time, finger_pointer_);
+  MockMotionEvent down_event(ui::MotionEvent::Action::DOWN, event_time,
+                             finger_pointer_, /* down_time= */ event_time);
+  MockMotionEvent move_event(ui::MotionEvent::Action::MOVE, event_time,
+                             finger_pointer_, down_event.GetEventTime());
+  MockMotionEvent cancel_event(ui::MotionEvent::Action::CANCEL, event_time,
+                               finger_pointer_, down_event.GetEventTime());
 
   const std::vector<std::pair<ui::MotionEvent::Action, int>>
       event_expected_histogram_pairs = {
@@ -157,7 +158,8 @@ TEST_F(InputTransferHandlerTest, EmitsEventsAfterTransferHistogram) {
     EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).WillOnce(Return(true));
     EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event));
 
-    ui::MotionEventGeneric event(event_action, event_time, finger_pointer_);
+    MockMotionEvent event(event_action, event_time, finger_pointer_,
+                          down_event.GetEventTime());
     EXPECT_TRUE(transfer_handler_->OnTouchEvent(event));
     histogram_tester.ExpectUniqueSample(
         InputTransferHandlerAndroid::kEventsAfterTransferHistogram,
@@ -169,19 +171,19 @@ TEST_F(InputTransferHandlerTest, EmitsEventsAfterTransferHistogram) {
 
 TEST_F(InputTransferHandlerTest, DoNotConsumeEventsIfSequenceNotTransferred) {
   base::TimeTicks event_time = base::TimeTicks::Now();
-  ui::MotionEventGeneric down_event(ui::MotionEvent::Action::DOWN, event_time,
-                                    finger_pointer_);
+  MockMotionEvent down_event(ui::MotionEvent::Action::DOWN, event_time,
+                             finger_pointer_, /* down_time= */ event_time);
 
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).WillOnce(Return(false));
   EXPECT_FALSE(transfer_handler_->OnTouchEvent(down_event));
 
-  ui::MotionEventGeneric move_event(ui::MotionEvent::Action::MOVE, event_time,
-                                    finger_pointer_);
+  MockMotionEvent move_event(ui::MotionEvent::Action::MOVE, event_time,
+                             finger_pointer_, down_event.GetEventTime());
   EXPECT_FALSE(transfer_handler_->OnTouchEvent(move_event));
   EXPECT_FALSE(transfer_handler_->OnTouchEvent(move_event));
 
-  ui::MotionEventGeneric cancel_event(ui::MotionEvent::Action::CANCEL,
-                                      event_time, finger_pointer_);
+  MockMotionEvent cancel_event(ui::MotionEvent::Action::CANCEL, event_time,
+                               finger_pointer_, down_event.GetEventTime());
   EXPECT_FALSE(transfer_handler_->OnTouchEvent(cancel_event));
 }
 
@@ -197,10 +199,10 @@ TEST_F(InputTransferHandlerTest, DoNotConsumeNonFingerEvents) {
     ui::PointerProperties non_finger_pointer;
     non_finger_pointer.tool_type =
         static_cast<ui::MotionEvent::ToolType>(tool_type);
-    ui::MotionEventGeneric down_event(ui::MotionEvent::Action::DOWN, event_time,
-                                      non_finger_pointer);
-    ui::MotionEventGeneric up_event(ui::MotionEvent::Action::UP, event_time,
-                                    non_finger_pointer);
+    MockMotionEvent down_event(ui::MotionEvent::Action::DOWN, event_time,
+                               non_finger_pointer, /* down_time= */ event_time);
+    MockMotionEvent up_event(ui::MotionEvent::Action::UP, event_time,
+                             non_finger_pointer, down_event.GetEventTime());
     EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).Times(0);
     EXPECT_FALSE(transfer_handler_->OnTouchEvent(down_event));
     EXPECT_FALSE(transfer_handler_->OnTouchEvent(up_event));

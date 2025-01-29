@@ -1412,9 +1412,18 @@ bool RenderWidgetHostViewAndroid::OnGestureEvent(
 
 bool RenderWidgetHostViewAndroid::OnTouchEvent(
     const ui::MotionEventAndroid& event) {
-  input_helper_->RecordToolTypeForActionDown(event);
-
+  // WARNING: Adding any code above `FilterRedundantDownEvent` check will likely
+  // lead to unexpected behavior in touch sequence handling. Do not modify the
+  // position of this check without careful consideration.
   if (event.GetAction() == ui::MotionEventAndroid::Action::DOWN) {
+    // If this event has been generated due to input handling being transferred
+    // back to browser from the VizCompositorThread mid-sequence, we drop the
+    // event.
+    if (input_transfer_handler_ &&
+        input_transfer_handler_->FilterRedundantDownEvent(event)) {
+      return true;
+    }
+
     if (base::FeatureList::IsEnabled(
             features::kFocusRenderWidgetHostViewAndroidOnActionDown) &&
         !HasFocus()) {
@@ -1427,6 +1436,8 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
     if (ime_adapter_android_)
       ime_adapter_android_->UpdateOnTouchDown();
   }
+
+  input_helper_->RecordToolTypeForActionDown(event);
 
   if (event.for_touch_handle())
     return OnTouchHandleEvent(event);
@@ -1494,6 +1505,14 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
 
 bool RenderWidgetHostViewAndroid::OnTouchHandleEvent(
     const ui::MotionEvent& event) {
+  // Do not send the ACTION::CANCEL event for handling to
+  // `touch_selection_controller` if the input sequence has been transferred to
+  // the VizCompositorThread for handling.
+  if (event.GetAction() == ui::MotionEvent::Action::CANCEL &&
+      input_transfer_handler_ && input_transfer_handler_->touch_transferred()) {
+    return false;
+  }
+
   return touch_selection_controller_ &&
          touch_selection_controller_->WillHandleTouchEvent(event);
 }
@@ -1849,9 +1868,19 @@ void RenderWidgetHostViewAndroid::OnSelectionEvent(
   // If a selection drag has started, it has taken over the active touch
   // sequence. Immediately cancel gesture detection and any downstream touch
   // listeners (e.g., web content) to communicate this transfer.
-  if (event == ui::SELECTION_HANDLES_SHOWN &&
-      gesture_provider_.GetCurrentDownEvent()) {
-    ResetGestureDetection();
+  if (event == ui::SELECTION_HANDLES_SHOWN) {
+    // Selection drag has started, request input handling back from the
+    // VizCompositorThread to BrowserMain, since the former is not able to
+    // handle touch selections with InputVizard currently. This allows the
+    // |touch_selection_controller_| to handle drag selection. Visual feedback
+    // latency of the selection to the user hides any latency from this input
+    // transfer request.
+    if (input_transfer_handler_) {
+      input_transfer_handler_->RequestInputBack();
+    }
+    if (gesture_provider_.GetCurrentDownEvent()) {
+      ResetGestureDetection();
+    }
   }
   selection_popup_controller_->OnSelectionEvent(
       event, GetSelectionRect(*touch_selection_controller_));

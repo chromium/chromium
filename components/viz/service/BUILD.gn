@@ -762,6 +762,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
@@ -770,6 +771,7 @@ if (is_android) {
     sources = [
       "java/src/org/chromium/components/viz/service/frame_sinks/ExternalBeginFrameSourceAndroid.java",
       "java/src/org/chromium/components/viz/service/gl/ThrowUncaughtException.java",
+      "java/src/org/chromium/components/viz/service/input/InputTransferHandlerViz.java",
     ]
   }
 
@@ -777,6 +779,7 @@ if (is_android) {
     sources = [
       "java/src/org/chromium/components/viz/service/frame_sinks/ExternalBeginFrameSourceAndroid.java",
       "java/src/org/chromium/components/viz/service/gl/ThrowUncaughtException.java",
+      "java/src/org/chromium/components/viz/service/input/InputTransferHandlerViz.java",
     ]
   }
 }

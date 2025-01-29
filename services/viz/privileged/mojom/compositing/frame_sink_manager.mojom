@@ -230,6 +230,11 @@ interface FrameSinkManager {
   NotifyRendererBlockStateChanged(
     bool blocked,
     array<FrameSinkId> render_input_routers);
+
+  // Requests input handling to be transferred back to the CrBrowserMain thread
+  // from the VizCompositorThread. Safe to call even if the VizCompositorThread
+  // is not currently handling input, the request is a no-op in that case.
+  RequestInputBack();
 };
 
 // The FrameSinkManagerClient interface is implemented by the Display
