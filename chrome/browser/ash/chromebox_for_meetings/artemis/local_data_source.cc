@@ -96,7 +96,7 @@ void LocalDataSource::AddWatchDog(
     watchdog_name = pattern;
   }
 
-  VLOG(4) << "Watchdog added to '" << GetDisplayName() << "'; will match on "
+  VLOG(1) << "Watchdog added to '" << GetDisplayName() << "'; will match on "
           << watchdog_name;
   std::move(callback).Run(true /* success */);
 }
@@ -375,7 +375,7 @@ bool LocalDataSource::IsWatchDogFilterValid(mojom::DataFilterPtr& filter) {
 }
 
 void LocalDataSource::FireChangeWatchdogCallbacks(const std::string& data) {
-  VLOG(4) << "'" << GetDisplayName()
+  VLOG(2) << "'" << GetDisplayName()
           << "' matched on 'CHANGE' watchdog. Notifying observers.";
   for (const auto& remote : change_based_watchdogs_) {
     remote->OnNotify(data);
@@ -392,7 +392,7 @@ void LocalDataSource::CheckRegexWatchdogsAndFireCallbacks(
       continue;
     }
 
-    VLOG(4) << "'" << GetDisplayName() << "' matched on '" << pattern
+    VLOG(2) << "'" << GetDisplayName() << "' matched on '" << pattern
             << "' watchdog. Notifying observers.";
 
     for (auto& remote : remotes) {
