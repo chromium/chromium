@@ -1209,7 +1209,8 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     InitializeNetworkPortalDetector();
 
     // Initialize an observer to update NetworkHandler's pref based services.
-    network_pref_state_observer_ = std::make_unique<NetworkPrefStateObserver>();
+    network_pref_state_observer_ = std::make_unique<NetworkPrefStateObserver>(
+        *g_browser_process->local_state());
 
     // Initialize an observer to update CrosBluetoothConfig's pref based
     // services.
