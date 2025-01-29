@@ -559,7 +559,7 @@ class RenderViewContextMenu
 
   // Note: Add `NO_IFTTT=<reason>` in the CL description if the linter is not
   // applicable. For example, if a new command that is not gated on fenced frame
-  // network status is added, the following look up table does not requrie any
+  // network status is added, the following look up table does not require any
   // change.
   //
   // LINT.IfChange(CommandsGatedOnFencedFrameUntrustedNetworkStatus)
@@ -574,7 +574,8 @@ class RenderViewContextMenu
            // Open link commands that appear in certain scenarios.
            IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP,
            IDC_CONTENT_CONTEXT_OPENLINKINPROFILE, IDC_CONTENT_CONTEXT_GOTOURL,
-           IDC_CONTENT_CONTEXT_OPENLINKWITH,
+           IDC_CONTENT_CONTEXT_OPENLINKWITH, IDC_CONTENT_CONTEXT_OPENAVNEWTAB,
+           IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB,
 
            // Link preview feature.
            IDC_CONTENT_CONTEXT_OPENLINKPREVIEW,
@@ -582,7 +583,11 @@ class RenderViewContextMenu
            // Download commands.
            IDC_CONTENT_CONTEXT_SAVELINKAS, IDC_CONTENT_CONTEXT_SAVEIMAGEAS,
            IDC_CONTENT_CONTEXT_SAVEAVAS, IDC_CONTENT_CONTEXT_SAVEPLUGINAS,
-           IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS});
+           IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS,
+
+           // Image loading commands.
+           IDC_CONTENT_CONTEXT_LOAD_IMAGE,
+           IDC_CONTENT_CONTEXT_OPEN_ORIGINAL_IMAGE_NEW_TAB});
   // LINT.ThenChange(//chrome/app/chrome_command_ids.h:ChromeCommandIds)
 
   base::WeakPtrFactory<RenderViewContextMenu> weak_pointer_factory_{this};
