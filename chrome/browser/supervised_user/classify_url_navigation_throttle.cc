@@ -17,11 +17,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_manager.h"
+#include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
-#include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_verification_page.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
@@ -65,6 +67,17 @@ std::ostream& operator<<(std::ostream& stream,
       NOTREACHED();
   }
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+bool ShouldShowReAuthInterstitial(
+    content::NavigationHandle& navigation_handle) {
+  Profile* profile = Profile::FromBrowserContext(
+      navigation_handle.GetWebContents()->GetBrowserContext());
+  supervised_user::ChildAccountService* child_account_service =
+      ChildAccountServiceFactory::GetForProfile(profile);
+  return SupervisedUserVerificationPage::ShouldShowPage(*child_account_service);
+}
+#endif
 
 }  // namespace
 
@@ -207,17 +220,16 @@ void ClassifyUrlNavigationThrottle::ShowInterstitial(
 
 void ClassifyUrlNavigationThrottle::OnInterstitialResult(
     SupervisedUserURLFilter::Result result,
-    SupervisedUserNavigationThrottle::CallbackActions action,
+    InterstitialResultCallbackActions action,
     bool already_sent_request,
     bool is_main_frame) {
   switch (action) {
-    case SupervisedUserNavigationThrottle::kCancelNavigation: {
+    case InterstitialResultCallbackActions::kCancelNavigation: {
       CancelDeferredNavigation(CANCEL);
       break;
     }
-    case SupervisedUserNavigationThrottle::kCancelWithInterstitial: {
+    case InterstitialResultCallbackActions::kCancelWithInterstitial: {
       CHECK(navigation_handle());
-// LINT.IfChange(cancel_with_interstitial)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       if (ShouldShowReAuthInterstitial(*navigation_handle())) {
         // Show the re-authentication interstitial if the user signed out of
@@ -232,7 +244,6 @@ void ClassifyUrlNavigationThrottle::OnInterstitialResult(
         return;
       }
 #endif
-      // LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_navigation_throttle.cc:cancel_with_interstitial)
       Profile* profile = Profile::FromBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext());
       std::string interstitial_html =

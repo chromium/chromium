@@ -70,31 +70,6 @@ static constexpr std::string_view kUmaSkippedSignInTabsHistogramName =
     "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialSigninTab."
     "SkippedClosingCount";
 
-class ThrottleTestParam {
- public:
-  enum class FeatureStatus : bool {
-    // ClassifyUrlOnProcessResponseEvent feature disabled: uses
-    // SupervisedUserNavigationThrottle
-    kDisabled = false,
-    // ClassifyUrlOnProcessResponseEvent feature enabled: uses
-    // supervised_user::ClassifyUrlNavigationThrottle
-    kEnabled = true,
-  };
-  static auto Values() {
-    return ::testing::Values(FeatureStatus::kDisabled, FeatureStatus::kEnabled);
-  }
-  static std::string ToString(FeatureStatus status) {
-    switch (status) {
-      case FeatureStatus::kDisabled:
-        return "SupervisedUserNavigationThrottle";
-      case FeatureStatus::kEnabled:
-        return "ClassifyUrlNavigationThrottle";
-      default:
-        NOTREACHED();
-    }
-  }
-};
-
 bool IsReauthenticationInterstitialBeingShown(content::WebContents* content) {
   CHECK(content);
   std::string command =
@@ -110,24 +85,14 @@ bool IsBlockedUrlInterstitialBeingShown(content::WebContents* content) {
 }
 
 class SupervisedUserPendingStateNavigationTest
-    : public MixinBasedInProcessBrowserTest,
-      public ::testing::WithParamInterface<ThrottleTestParam::FeatureStatus> {
+    : public MixinBasedInProcessBrowserTest {
  public:
   SupervisedUserPendingStateNavigationTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers,
-        supervised_user::kForceSupervisedUserReauthenticationForYouTube};
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (GetParam() == ThrottleTestParam::FeatureStatus::kEnabled) {
-      enabled_features.push_back(
-          supervised_user::kClassifyUrlOnProcessResponseEvent);
-    } else {
-      disabled_features.push_back(
-          supervised_user::kClassifyUrlOnProcessResponseEvent);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers,
+         supervised_user::kForceSupervisedUserReauthenticationForYouTube},
+        /*disabled_features=*/{});
   }
 
  protected:
@@ -293,17 +258,8 @@ class SupervisedUserPendingStateNavigationTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SupervisedUserPendingStateNavigationTest,
-    ThrottleTestParam::Values(),
-    [](const testing::TestParamInfo<ThrottleTestParam::FeatureStatus>& info) {
-      return base::StrCat(
-          {"WithThrottle", ThrottleTestParam::ToString(info.param)});
-    });
-
 // Tests the blocked site main frame re-authentication interstitial.
-IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
                        TestBlockedSiteMainFrameReauthInterstitial) {
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
   supervision_mixin_.SetPendingStateForPrimaryAccount();
@@ -329,7 +285,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
 
 // Tests that the sign-in tabs opened through the re-auth interstitial
 // are closed on re-authentication.
-IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
                        TestReauthInterstitialClosesSignInTabsAndReloads) {
   base::HistogramTester histogram_tester;
 
@@ -408,7 +364,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
   EXPECT_EQ(2, GetTabCount());
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
                        TestManualBlockedSiteMainFrameReauthInterstitial) {
   supervision_mixin_.SetPendingStateForPrimaryAccount();
 
@@ -424,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
 }
 
 // Tests the YouTube main frame re-authentication interstitial.
-IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
                        TestYouTubeMainFrameReauthInterstitial) {
   supervision_mixin_.SetPendingStateForPrimaryAccount();
   kids_management_api_mock().AllowSubsequentClassifyUrl();
@@ -464,7 +420,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
 }
 
 // Tests the blocked site subframe re-authentication interstitial.
-IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
                        TestBlockedSiteSubFrameReauthInterstitial) {
   supervision_mixin_.SetPendingStateForPrimaryAccount();
 
@@ -513,7 +469,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
 }
 
 // Tests the YouTube subframe re-authentication interstitial.
-IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
                        TestYouTubeSubFrameReauthInterstitial) {
   base::HistogramTester histogram_tester;
   supervision_mixin_.SetPendingStateForPrimaryAccount();
@@ -587,7 +543,7 @@ MATCHER(ContainsGoogleApiKey, "") {
 #define MAYBE_TestPendingStateRequestHasGoogleApiInHeader \
   TestPendingStateRequestHasGoogleApiInHeader
 #endif
-IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
                        MAYBE_TestPendingStateRequestHasGoogleApiInHeader) {
   // TODO(crbug.com/365529863): Move the methods SetAutomaticIssueOfAccessTokens
   // and WaitForAccessTokenRequestIfNecessaryAndRespondWithError to

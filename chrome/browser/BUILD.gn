@@ -1539,8 +1539,6 @@ static_library("browser") {
     "supervised_user/supervised_user_metrics_service_factory.h",
     "supervised_user/supervised_user_navigation_observer.cc",
     "supervised_user/supervised_user_navigation_observer.h",
-    "supervised_user/supervised_user_navigation_throttle.cc",
-    "supervised_user/supervised_user_navigation_throttle.h",
     "supervised_user/supervised_user_service_factory.cc",
     "supervised_user/supervised_user_service_factory.h",
     "supervised_user/supervised_user_settings_service_factory.cc",
