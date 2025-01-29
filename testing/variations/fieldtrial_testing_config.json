@@ -25438,6 +25438,22 @@
             ]
         }
     ],
+    "WebGPUUseVulkanMemoryModel": [
+        {
+            "platforms": [
+                "android",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebGPUUseVulkanMemoryModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebOtpBackendAuto": [
         {
             "platforms": [
