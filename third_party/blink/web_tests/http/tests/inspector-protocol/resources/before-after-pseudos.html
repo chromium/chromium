@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script>
+    function performActions() {
+      const d = document.querySelector("div");
+      d.classList.toggle("changed");
+      const unused = d.offsetHeight;
+      performance.mark("performActions complete");
+    }
+</script>
+<style>
+  .changed * {
+    color: blue;
+  }
+  span::before {
+    content: ">";
+  }
+  span::after {
+    content: "<";
+  }
+</style>
+<div>Some <span>Content</span></div>
