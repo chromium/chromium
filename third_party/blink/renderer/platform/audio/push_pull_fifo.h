@@ -37,7 +37,7 @@ struct PushPullFIFOStateForTest {
 // and fifo_Bus_) so the thread safety must be handled with care.
 //
 // TODO(hongchan): add a unit test for multi-thread access.
-class PLATFORM_EXPORT PushPullFIFO {
+class PLATFORM_EXPORT PushPullFIFO final {
   USING_FAST_MALLOC(PushPullFIFO);
 
  public:

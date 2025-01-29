@@ -35,7 +35,7 @@
 
 namespace blink {
 
-class DirectConvolver {
+class DirectConvolver final {
   USING_FAST_MALLOC(DirectConvolver);
 
  public:
