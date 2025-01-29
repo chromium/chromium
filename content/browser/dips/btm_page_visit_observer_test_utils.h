@@ -93,6 +93,24 @@ MATCHER_P(ServerRedirects,
                                      result_listener);
 }
 
+// Matches `BtmNavigationInfo::was_user_initiated`.
+MATCHER_P(WasUserInitiated,
+          matcher,
+          "has was_user_initiated that " +
+              testing::DescribeMatcher<bool>(matcher, negation)) {
+  return testing::ExplainMatchResult(matcher, arg.was_user_initiated,
+                                     result_listener);
+}
+
+// Matches `BtmNavigationInfo::was_renderer_initiated`.
+MATCHER_P(WasRendererInitiated,
+          matcher,
+          "has was_renderer_initiated that " +
+              testing::DescribeMatcher<bool>(matcher, negation)) {
+  return testing::ExplainMatchResult(matcher, arg.was_renderer_initiated,
+                                     result_listener);
+}
+
 // Matches `BtmPageVisitInfo::had_qualifying_storage_access`.
 MATCHER_P(HadQualifyingStorageAccess,
           matcher,

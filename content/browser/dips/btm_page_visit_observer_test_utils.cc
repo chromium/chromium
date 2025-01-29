@@ -32,7 +32,9 @@ std::ostream& operator<<(std::ostream& out, const BtmNavigationInfo& nav) {
     }
     out << nav.server_redirects[i];
   }
-  return out << "]}";
+  out << "], was_user_initiated=" << nav.was_user_initiated
+      << ", was_renderer_initiated=" << nav.was_renderer_initiated << "}";
+  return out;
 }
 
 std::ostream& operator<<(std::ostream& out,

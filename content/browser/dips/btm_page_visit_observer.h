@@ -29,12 +29,14 @@ struct CONTENT_EXPORT BtmServerRedirectInfo {
 };
 
 struct CONTENT_EXPORT BtmNavigationInfo {
-  BtmNavigationInfo();
+  explicit BtmNavigationInfo(NavigationHandle& navigation_handle);
   BtmNavigationInfo(const BtmNavigationInfo&);
   BtmNavigationInfo(BtmNavigationInfo&&);
   ~BtmNavigationInfo();
 
   std::vector<BtmServerRedirectInfo> server_redirects;
+  bool was_user_initiated;
+  bool was_renderer_initiated;
 };
 
 class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {

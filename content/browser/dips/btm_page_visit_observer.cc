@@ -15,7 +15,10 @@
 
 namespace content {
 
-BtmNavigationInfo::BtmNavigationInfo() = default;
+BtmNavigationInfo::BtmNavigationInfo(NavigationHandle& navigation_handle)
+    : was_user_initiated(!navigation_handle.IsRendererInitiated() ||
+                         navigation_handle.HasUserGesture()),
+      was_renderer_initiated(navigation_handle.IsRendererInitiated()) {}
 BtmNavigationInfo::BtmNavigationInfo(const BtmNavigationInfo&) = default;
 BtmNavigationInfo::BtmNavigationInfo(BtmNavigationInfo&&) = default;
 BtmNavigationInfo::~BtmNavigationInfo() = default;
@@ -54,7 +57,7 @@ class NavigationState
   // (i.e. committed) URL of the navigation.
   std::pair<BtmNavigationInfo, BtmDataAccessType> CreateNavigationInfo(
       NavigationHandle& navigation_handle) {
-    BtmNavigationInfo navigation;
+    BtmNavigationInfo navigation(navigation_handle);
 
     // Populate navigation.server_redirects.
     std::vector<BtmDataAccessType> accesses;

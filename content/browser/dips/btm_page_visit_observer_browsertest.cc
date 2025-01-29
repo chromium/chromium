@@ -147,6 +147,36 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, UserActivation) {
                 HasUrl(url2))));
 }
 
+IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, NavigationInitiation) {
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+  WebContents* web_contents = shell()->web_contents();
+  BtmPageVisitRecorder recorder(web_contents);
+
+  // Perform a browser-initiated navigation.
+  ASSERT_TRUE(NavigateToURL(web_contents, url1));
+  // Perform a renderer-initiated navigation with user gesture.
+  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents, url2));
+  // Perform a renderer-initiated navigation without user gesture.
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents, url3));
+  ASSERT_TRUE(recorder.WaitForSize(3));
+
+  EXPECT_THAT(recorder.visits(),
+              ElementsAre(AllOf(Navigation(AllOf(WasRendererInitiated(false),
+                                                 WasUserInitiated(true))),
+                                HasUrl(url1)),
+                          AllOf(Navigation(AllOf(WasRendererInitiated(true),
+                                                 WasUserInitiated(true))),
+                                HasUrl(url2)),
+                          AllOf(Navigation(AllOf(WasRendererInitiated(true),
+                                                 WasUserInitiated(false))),
+                                HasUrl(url3))));
+}
+
 // WebAuthn tests do not work on Android because there is currently no way to
 // install a virtual authenticator.
 // TODO(crbug.com/40269763): Implement automated testing once the infrastructure
