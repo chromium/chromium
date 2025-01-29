@@ -9,13 +9,13 @@
 
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <numeric>
 #include <random>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -82,7 +82,7 @@ class TestVector {
     STACK_ALLOCATED();
 
    public:
-    // These types are used by std::iterator_traits used by base::ranges::equal
+    // These types are used by std::iterator_traits used by std::ranges::equal
     // used by TestVector::operator==.
     using difference_type = ptrdiff_t;
     using iterator_category = std::bidirectional_iterator_tag;
@@ -148,7 +148,7 @@ class TestVector {
   int stride() const { return static_cast<int>(memory_layout()->stride); }
 
   bool operator==(const TestVector& other) const {
-    return base::ranges::equal(*this, other, Equal);
+    return std::ranges::equal(*this, other, Equal);
   }
   T& operator[](size_t i) const { return p_[i * stride()]; }
 
@@ -409,7 +409,7 @@ TEST_F(VectorMathTest, Vsma) {
       expected_dest[i] = dest_source[i] + scale * source[i];
     }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
-      base::ranges::copy(dest_source, dest.begin());
+      std::ranges::copy(dest_source, dest.begin());
       Vsma(source.p(), source.stride(), &scale, dest.p(), dest.stride(),
            source.size());
       // Different optimizations may use different precisions for intermediate

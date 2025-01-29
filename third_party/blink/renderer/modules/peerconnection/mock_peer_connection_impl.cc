@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_data_channel_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
@@ -414,7 +414,7 @@ webrtc::RTCError MockPeerConnectionImpl::RemoveTrackOrError(
   sender->SetTrack(nullptr);
 
   for (const auto& stream_id : sender->stream_ids()) {
-    auto local_stream_it = base::ranges::find(local_stream_ids_, stream_id);
+    auto local_stream_it = std::ranges::find(local_stream_ids_, stream_id);
     if (local_stream_it != local_stream_ids_.end())
       local_stream_ids_.erase(local_stream_it);
   }

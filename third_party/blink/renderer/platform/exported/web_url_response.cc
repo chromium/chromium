@@ -30,6 +30,7 @@
 
 #include "third_party/blink/public/platform/web_url_response.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -37,7 +38,6 @@
 #include "base/containers/to_vector.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
@@ -517,7 +517,7 @@ void WebURLResponse::SetUrlListViaServiceWorker(
     const std::vector<WebURL>& url_list_via_service_worker) {
   Vector<KURL> url_list(
       base::checked_cast<wtf_size_t>(url_list_via_service_worker.size()));
-  base::ranges::copy(url_list_via_service_worker, url_list.begin());
+  std::ranges::copy(url_list_via_service_worker, url_list.begin());
   resource_response_->SetUrlListViaServiceWorker(url_list);
 }
 
@@ -692,8 +692,8 @@ bool WebURLResponse::FromArchive() const {
 
 void WebURLResponse::SetDnsAliases(const std::vector<WebString>& aliases) {
   Vector<String> dns_aliases(base::checked_cast<wtf_size_t>(aliases.size()));
-  base::ranges::transform(aliases, dns_aliases.begin(),
-                          &WebString::operator WTF::String);
+  std::ranges::transform(aliases, dns_aliases.begin(),
+                         &WebString::operator WTF::String);
   resource_response_->SetDnsAliases(std::move(dns_aliases));
 }
 

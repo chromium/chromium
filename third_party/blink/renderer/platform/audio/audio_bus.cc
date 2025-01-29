@@ -41,7 +41,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
@@ -697,7 +696,7 @@ scoped_refptr<AudioBus> AudioBus::CreateByMixingToMono(
 }
 
 bool AudioBus::IsSilent() const {
-  return base::ranges::all_of(channels_, &AudioChannel::IsSilent);
+  return std::ranges::all_of(channels_, &AudioChannel::IsSilent);
 }
 
 void AudioBus::ClearSilentFlag() {

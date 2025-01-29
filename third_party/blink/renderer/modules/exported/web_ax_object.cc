@@ -30,8 +30,9 @@
 
 #include "third_party/blink/public/web/web_ax_object.h"
 
+#include <algorithm>
+
 #include "base/containers/to_vector.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -645,7 +646,7 @@ WebString WebAXObject::GetName(
 
   out_name_objects.reserve(name_objects.size());
   out_name_objects.resize(name_objects.size());
-  base::ranges::copy(name_objects, out_name_objects.begin());
+  std::ranges::copy(name_objects, out_name_objects.begin());
 
   return result;
 }
@@ -676,7 +677,7 @@ WebString WebAXObject::Description(
 
   out_description_objects.reserve(description_objects.size());
   out_description_objects.resize(description_objects.size());
-  base::ranges::copy(description_objects, out_description_objects.begin());
+  std::ranges::copy(description_objects, out_description_objects.begin());
 
   return result;
 }
@@ -805,7 +806,7 @@ void WebAXObject::RowHeaders(
   private_->RowHeaders(headers);
   row_header_elements.reserve(headers.size());
   row_header_elements.resize(headers.size());
-  base::ranges::copy(headers, row_header_elements.begin());
+  std::ranges::copy(headers, row_header_elements.begin());
 }
 
 void WebAXObject::ColumnHeaders(
@@ -820,7 +821,7 @@ void WebAXObject::ColumnHeaders(
   private_->ColumnHeaders(headers);
   column_header_elements.reserve(headers.size());
   column_header_elements.resize(headers.size());
-  base::ranges::copy(headers, column_header_elements.begin());
+  std::ranges::copy(headers, column_header_elements.begin());
 }
 
 unsigned WebAXObject::CellColumnIndex() const {

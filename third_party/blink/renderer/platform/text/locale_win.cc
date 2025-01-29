@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/platform/text/locale_win.h"
 
+#include <algorithm>
 #include <array>
 #include <iterator>
 #include <limits>
@@ -37,7 +38,6 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/win/web_sandbox_support.h"
@@ -397,8 +397,7 @@ const Vector<String>& LocaleWin::MonthLabels() {
   if (month_labels_.empty()) {
     month_labels_ = GetMonthLabels(lcid_, defaults_for_locale_);
     if (month_labels_.empty()) {
-      base::ranges::copy(kFallbackMonthNames,
-                         std::back_inserter(month_labels_));
+      std::ranges::copy(kFallbackMonthNames, std::back_inserter(month_labels_));
     }
   }
   return month_labels_;
@@ -408,8 +407,8 @@ const Vector<String>& LocaleWin::WeekDayShortLabels() {
   if (week_day_short_labels_.empty()) {
     week_day_short_labels_ = GetWeekDayShortLabels(lcid_, defaults_for_locale_);
     if (week_day_short_labels_.empty()) {
-      base::ranges::copy(kFallbackWeekdayShortNames,
-                         std::back_inserter(week_day_short_labels_));
+      std::ranges::copy(kFallbackWeekdayShortNames,
+                        std::back_inserter(week_day_short_labels_));
     }
   }
   return week_day_short_labels_;
@@ -499,8 +498,8 @@ const Vector<String>& LocaleWin::ShortMonthLabels() {
   if (short_month_labels_.empty()) {
     short_month_labels_ = GetShortMonthLabels(lcid_, defaults_for_locale_);
     if (short_month_labels_.empty()) {
-      base::ranges::copy(kFallbackMonthShortNames,
-                         std::back_inserter(short_month_labels_));
+      std::ranges::copy(kFallbackMonthShortNames,
+                        std::back_inserter(short_month_labels_));
     }
   }
   return short_month_labels_;

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_audio_sink.h"
 
+#include <algorithm>
 #include <limits>
 
 #include "base/check_op.h"
@@ -11,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
@@ -275,7 +275,7 @@ void WebRtcAudioSink::Adapter::RemoveSink(
   SendLogMessage(
       base::StringPrintf("Adapter::RemoveSink([label=%s])", label_.c_str()));
   base::AutoLock auto_lock(lock_);
-  auto it = base::ranges::find(sinks_, sink);
+  auto it = std::ranges::find(sinks_, sink);
   if (it != sinks_.end())
     sinks_.erase(it);
 }

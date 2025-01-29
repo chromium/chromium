@@ -511,8 +511,8 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
       operation_definition->GetRunFunctionForSharedStorageSelectURLOperation();
 
   Vector<String> urls_param;
-  base::ranges::transform(urls, std::back_inserter(urls_param),
-                          [](const KURL& url) { return url.GetString(); });
+  std::ranges::transform(urls, std::back_inserter(urls_param),
+                         [](const KURL& url) { return url.GetString(); });
 
   base::ElapsedTimer deserialization_timer;
 

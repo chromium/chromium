@@ -37,7 +37,6 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -1232,7 +1231,7 @@ const Vector<double>& BaseRenderingContext2D::getLineDash() const {
 }
 
 static bool LineDashSequenceIsValid(const Vector<double>& dash) {
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       dash, [](double d) { return std::isfinite(d) && d >= 0; });
 }
 
@@ -1933,7 +1932,7 @@ bool BaseRenderingContext2D::IsPointInStrokeInternal(const Path& path,
   stroke_data.SetLineJoin(state.GetLineJoin());
   stroke_data.SetMiterLimit(state.MiterLimit());
   Vector<float> line_dash(state.LineDash().size());
-  base::ranges::copy(state.LineDash(), line_dash.begin());
+  std::ranges::copy(state.LineDash(), line_dash.begin());
   stroke_data.SetLineDash(line_dash, state.LineDashOffset());
   return path.StrokeContains(transformed_point, stroke_data, ctm);
 }

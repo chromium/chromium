@@ -457,12 +457,12 @@ scoped_refptr<StringImpl> StringImpl::Fill(UChar character) {
   if (!(character & ~0x7F)) {
     base::span<LChar> data;
     scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data);
-    base::ranges::fill(data, static_cast<LChar>(character));
+    std::ranges::fill(data, static_cast<LChar>(character));
     return new_impl;
   }
   base::span<UChar> data;
   scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data);
-  base::ranges::fill(data, character);
+  std::ranges::fill(data, character);
   return new_impl;
 }
 
