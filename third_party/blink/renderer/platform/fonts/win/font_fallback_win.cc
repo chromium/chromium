@@ -328,6 +328,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
       {USCRIPT_TIBETAN, kTibetanFonts},
       {USCRIPT_TIFINAGH, kTifinaghFonts},
       {USCRIPT_TRADITIONAL_HAN, kTraditionalHanFonts},
+      {USCRIPT_BOPOMOFO, kTraditionalHanFonts},
       {USCRIPT_VAI, kVaiFonts},
       {USCRIPT_YI, kYiFonts}};
   script_font_map.Set(kScriptToFontFamilies);
