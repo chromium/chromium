@@ -378,13 +378,13 @@ DbusDictionary SelectFileDialogLinuxPortal::BuildOptionsDictionary(
   DbusDictionary dict;
 
   switch (type_) {
-    case SelectFileDialog::SELECT_FOLDER:
-      dict.PutAs(kFileChooserOptionDirectory, DbusBoolean(true));
-      break;
     case SelectFileDialog::SELECT_UPLOAD_FOLDER:
       dict.PutAs(kFileChooserOptionAcceptLabel,
                  DbusString(l10n_util::GetStringUTF8(
                      IDS_SELECT_UPLOAD_FOLDER_DIALOG_UPLOAD_BUTTON)));
+      [[fallthrough]];
+    case SelectFileDialog::SELECT_FOLDER:
+    case SelectFileDialog::Type::SELECT_EXISTING_FOLDER:
       dict.PutAs(kFileChooserOptionDirectory, DbusBoolean(true));
       break;
     case SelectFileDialog::SELECT_OPEN_MULTI_FILE:
