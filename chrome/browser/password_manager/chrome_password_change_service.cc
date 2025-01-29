@@ -33,9 +33,7 @@ ChromePasswordChangeService::ChromePasswordChangeService(
       new_tab_callback_(base::BindRepeating(&OpenNewTab)) {}
 
 ChromePasswordChangeService::~ChromePasswordChangeService() {
-  for (const auto& delegate : password_change_delegates_) {
-    delegate->RemoveObserver(this);
-  }
+  CHECK(password_change_delegates_.empty());
 }
 
 bool ChromePasswordChangeService::IsPasswordChangeSupported(const GURL& url) {
@@ -91,4 +89,11 @@ void ChromePasswordChangeService::OnPasswordChangeStopped(
   password_change_delegates_.erase(iter);
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(deleted_delegate));
+}
+
+void ChromePasswordChangeService::Shutdown() {
+  for (const auto& delegate : password_change_delegates_) {
+    delegate->RemoveObserver(this);
+  }
+  password_change_delegates_.clear();
 }
