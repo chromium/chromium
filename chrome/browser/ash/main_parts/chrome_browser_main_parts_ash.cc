@@ -911,8 +911,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   lock_to_single_user_manager_ =
       std::make_unique<policy::LockToSingleUserManager>();
 
-  shortcut_mapping_pref_service_ =
-      std::make_unique<ShortcutMappingPrefService>();
+  shortcut_mapping_pref_service_ = std::make_unique<ShortcutMappingPrefService>(
+      *g_browser_process->local_state());
 
   // AccessibilityManager and SystemKeyEventListener use InputMethodManager.
   input_method::Initialize();
