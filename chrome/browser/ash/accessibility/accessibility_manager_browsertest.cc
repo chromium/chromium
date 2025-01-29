@@ -66,7 +66,6 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/message_center/message_center.h"
-#include "ui/native_theme/native_theme_features.h"
 #include "ui/views/widget/widget_utils.h"
 
 namespace ash {
@@ -501,8 +500,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
         {features::kOnDeviceSpeechRecognition,
          ::features::kAccessibilityReducedAnimations,
          ::features::kAccessibilityMouseKeys,
-         ::features::kAccessibilityFaceGaze,
-         ::features::kOverlayScrollbarsOSSetting},
+         ::features::kAccessibilityFaceGaze},
         {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
@@ -1795,8 +1793,7 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_feature_list_.InitWithFeatures(
         {::features::kAccessibilityReducedAnimations,
-         ::features::kAccessibilityMouseKeys,
-         ::features::kOverlayScrollbarsOSSetting},
+         ::features::kAccessibilityMouseKeys},
         {});
   }
 
@@ -1867,74 +1864,74 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, BrailleOnLoginScreen) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, Login) {
   WaitForSigninScreen();
-  EXPECT_FALSE(IsLargeCursorEnabled());
-  EXPECT_FALSE(IsSpokenFeedbackEnabled());
-  EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
-  EXPECT_FALSE(IsReducedAnimationsEnabled());
-  EXPECT_FALSE(IsOverlayScrollbarEnabled());
-  EXPECT_FALSE(IsMouseKeysEnabled());
-  EXPECT_FALSE(IsVirtualKeyboardEnabled());
+  EXPECT_FALSE(IsHighContrastEnabled());
+  EXPECT_FALSE(IsLargeCursorEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
+  EXPECT_FALSE(IsMouseKeysEnabled());
+  EXPECT_FALSE(IsOverlayScrollbarEnabled());
+  EXPECT_FALSE(IsReducedAnimationsEnabled());
+  EXPECT_FALSE(IsSpokenFeedbackEnabled());
+  EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_EQ(default_autoclick_delay_, GetAutoclickDelay());
 
   CreateSession(test_account_id_);
 
   // Confirms that the features are still disabled just after login.
-  EXPECT_FALSE(IsLargeCursorEnabled());
-  EXPECT_FALSE(IsSpokenFeedbackEnabled());
-  EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
-  EXPECT_FALSE(IsReducedAnimationsEnabled());
-  EXPECT_FALSE(IsOverlayScrollbarEnabled());
-  EXPECT_FALSE(IsMouseKeysEnabled());
-  EXPECT_FALSE(IsVirtualKeyboardEnabled());
+  EXPECT_FALSE(IsHighContrastEnabled());
+  EXPECT_FALSE(IsLargeCursorEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
+  EXPECT_FALSE(IsMouseKeysEnabled());
+  EXPECT_FALSE(IsOverlayScrollbarEnabled());
+  EXPECT_FALSE(IsReducedAnimationsEnabled());
+  EXPECT_FALSE(IsSpokenFeedbackEnabled());
+  EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_EQ(default_autoclick_delay_, GetAutoclickDelay());
 
   StartUserSession(test_account_id_);
 
   // Confirms that the features are still disabled after session starts.
-  EXPECT_FALSE(IsLargeCursorEnabled());
-  EXPECT_FALSE(IsSpokenFeedbackEnabled());
-  EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
-  EXPECT_FALSE(IsReducedAnimationsEnabled());
-  EXPECT_FALSE(IsOverlayScrollbarEnabled());
-  EXPECT_FALSE(IsMouseKeysEnabled());
-  EXPECT_FALSE(IsVirtualKeyboardEnabled());
+  EXPECT_FALSE(IsHighContrastEnabled());
+  EXPECT_FALSE(IsLargeCursorEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
+  EXPECT_FALSE(IsMouseKeysEnabled());
+  EXPECT_FALSE(IsOverlayScrollbarEnabled());
+  EXPECT_FALSE(IsReducedAnimationsEnabled());
+  EXPECT_FALSE(IsSpokenFeedbackEnabled());
+  EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_EQ(default_autoclick_delay_, GetAutoclickDelay());
-
-  SetLargeCursorEnabled(true);
-  EXPECT_TRUE(IsLargeCursorEnabled());
-
-  SetSpokenFeedbackEnabled(true);
-  EXPECT_TRUE(IsSpokenFeedbackEnabled());
-
-  SetHighContrastEnabled(true);
-  EXPECT_TRUE(IsHighContrastEnabled());
-
-  SetAutoclickEnabled(true);
-  EXPECT_TRUE(IsAutoclickEnabled());
-
-  SetReducedAnimationsEnabled(true);
-  EXPECT_TRUE(IsReducedAnimationsEnabled());
-
-  SetOverlayScrollbarEnabled(true);
-  EXPECT_TRUE(IsOverlayScrollbarEnabled());
-
-  SetMouseKeysEnabled(true);
-  EXPECT_TRUE(IsMouseKeysEnabled());
 
   SetAutoclickDelay(kTestAutoclickDelayMs);
   EXPECT_EQ(kTestAutoclickDelayMs, GetAutoclickDelay());
 
-  SetVirtualKeyboardEnabled(true);
-  EXPECT_TRUE(IsVirtualKeyboardEnabled());
+  SetAutoclickEnabled(true);
+  EXPECT_TRUE(IsAutoclickEnabled());
+
+  SetHighContrastEnabled(true);
+  EXPECT_TRUE(IsHighContrastEnabled());
+
+  SetLargeCursorEnabled(true);
+  EXPECT_TRUE(IsLargeCursorEnabled());
 
   SetMonoAudioEnabled(true);
   EXPECT_TRUE(IsMonoAudioEnabled());
+
+  SetMouseKeysEnabled(true);
+  EXPECT_TRUE(IsMouseKeysEnabled());
+
+  SetOverlayScrollbarEnabled(true);
+  EXPECT_TRUE(IsOverlayScrollbarEnabled());
+
+  SetReducedAnimationsEnabled(true);
+  EXPECT_TRUE(IsReducedAnimationsEnabled());
+
+  SetSpokenFeedbackEnabled(true);
+  EXPECT_TRUE(IsSpokenFeedbackEnabled());
+
+  SetVirtualKeyboardEnabled(true);
+  EXPECT_TRUE(IsVirtualKeyboardEnabled());
 }
 
 // Tests that ash and browser process has the same states after sign-in.

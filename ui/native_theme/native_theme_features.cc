@@ -33,10 +33,12 @@ BASE_FEATURE(kScrollbarAnimations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the os settings of overlay scrollbars for ChromeOS.
+// TODO(crbug.com/392961914): Deprecate the overlay scrollbar related feature
+// flags in M135: `kOverlayScrollbarsOSSetting` and `kOverlayScrollbar`.
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kOverlayScrollbarsOSSetting,
              "OverlayScrollbarsOSSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsOverlayScrollbarOSSettingEnabled() {
   return base::FeatureList::IsEnabled(features::kOverlayScrollbarsOSSetting);
