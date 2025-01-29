@@ -6,7 +6,6 @@
 #define CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if !BUILDFLAG(IS_WIN)
 
@@ -23,18 +22,11 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
   ChromeCrashReporterClient& operator=(const ChromeCrashReporterClient&) =
       delete;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // If true, processes of this type should pass crash-loop-before down to the
   // crash reporter and to their children (if the children's type is a process
   // type that wants crash-loop-before).
   static bool ShouldPassCrashLoopBefore(const std::string& process_type);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns whether the user has given consent to collect UMA data and send
-  // crash dumps to Google. This method reads the information from Ash's
-  // user data directory, typically `/home/chronos` in ChromeOS.
-  static bool GetCollectStatsConsentFromAshDir();
 #endif
 
   // crash_reporter::CrashReporterClient implementation.
