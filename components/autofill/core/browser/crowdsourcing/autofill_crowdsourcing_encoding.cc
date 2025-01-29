@@ -50,6 +50,26 @@ std::ostream& operator<<(std::ostream& out,
   return out;
 }
 
+// Returns a `FieldPrediction::Source` that is guaranteed to be in the bounds
+// of the enum.
+FieldPrediction::Source ToSafeFieldPredictionSource(
+    FieldPrediction::Source source) {
+  FieldPrediction::Source result = FieldPrediction::SOURCE_UNSPECIFIED;
+  switch (source) {
+    case FieldPrediction::SOURCE_UNSPECIFIED:
+    case FieldPrediction::SOURCE_AUTOFILL_DEFAULT:
+    case FieldPrediction::SOURCE_PASSWORDS_DEFAULT:
+    case FieldPrediction::SOURCE_ALL_APPROVED_EXPERIMENTS:
+    case FieldPrediction::SOURCE_FIELD_RANKS:
+    case FieldPrediction::SOURCE_AUTOFILL_COMBINED_TYPES:
+    case FieldPrediction::SOURCE_OVERRIDE:
+    case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
+      result = source;
+      break;
+  }
+  return result;
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Merges manual and server type predictions.
 //
@@ -478,12 +498,14 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
         if (!suggestion.has_value() || suggestion->predictions().empty()) {
           return 0;  // Lowest priority
         }
-        switch (suggestion->predictions().begin()->source()) {
+        switch (ToSafeFieldPredictionSource(
+            suggestion->predictions().begin()->source())) {
           case FieldPrediction::SOURCE_UNSPECIFIED:
           case FieldPrediction::SOURCE_AUTOFILL_DEFAULT:
           case FieldPrediction::SOURCE_PASSWORDS_DEFAULT:
           case FieldPrediction::SOURCE_ALL_APPROVED_EXPERIMENTS:
           case FieldPrediction::SOURCE_FIELD_RANKS:
+          case FieldPrediction::SOURCE_AUTOFILL_COMBINED_TYPES:
             return std::ranges::all_of(suggestion->predictions(),
                                        [](const auto& prediction) {
                                          return prediction.type() ==
@@ -496,6 +518,7 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
           case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
             return 4;
         }
+        NOTREACHED();
       };
   // Fetch suggestions from form signature, host form signature and alternative
   // form signature.

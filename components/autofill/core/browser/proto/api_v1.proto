@@ -92,6 +92,9 @@ message AutofillQueryResponse {
           // The prediction was specified as a command line override (used for
           // testing purposes only).
           SOURCE_MANUAL_OVERRIDE = 6;
+          // The autofill prediction came from the experiment which considers
+          // combined types of addresses.
+          SOURCE_AUTOFILL_COMBINED_TYPES = 7 [deprecated = true];
         }
 
         // The predicted field type.
