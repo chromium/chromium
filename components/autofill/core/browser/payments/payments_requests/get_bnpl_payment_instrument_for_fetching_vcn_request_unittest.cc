@@ -25,6 +25,7 @@ class GetBnplPaymentInstrumentForFetchingVcnRequestTest : public testing::Test {
     request_details_.instrument_id = "INSTRUMENT_ID";
     request_details_.context_token = "CONTEXT_TOKEN";
     request_details_.redirect_url = GURL("http://redirect-url.test/");
+    request_details_.issuer_id = "ISSUER_ID";
 
     request_ = std::make_unique<GetBnplPaymentInstrumentForFetchingVcnRequest>(
         request_details_, /*full_sync_enabled=*/true, mock_callback_.Get());
@@ -69,7 +70,8 @@ TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest, GetRequestContent) {
                               .Set("get_payment_instrument_context_token",
                                    request_details_.context_token)
                               .Set("redirect_response_url",
-                                   request_details_.redirect_url.spec())));
+                                   request_details_.redirect_url.spec())
+                              .Set("issuer_id", request_details_.issuer_id)));
 
   EXPECT_THAT(request_->GetRequestContent(), IsJson(request_dict));
 }

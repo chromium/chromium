@@ -79,6 +79,7 @@ void BnplManager::FetchVcnDetails() {
   request_details.risk_data = ongoing_flow_state_->risk_data;
   request_details.context_token = ongoing_flow_state_->context_token;
   request_details.redirect_url = ongoing_flow_state_->redirect_url;
+  request_details.issuer_id = ongoing_flow_state_->issuer_id;
 
   payments_autofill_client_->GetPaymentsNetworkInterface()
       ->GetBnplPaymentInstrumentForFetchingVcn(

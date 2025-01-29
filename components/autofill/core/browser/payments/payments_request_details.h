@@ -465,6 +465,8 @@ struct GetBnplPaymentInstrumentForFetchingVcnRequestDetails {
   // The URL the partner redirected the user to after finishing the BNPL flow on
   // the partner website.
   GURL redirect_url;
+  // The ID of the BNPL partner the user is trying to retrieve the VCN from.
+  std::string issuer_id;
 };
 
 // Information retrieved from a BNPL FetchVcnRequest.

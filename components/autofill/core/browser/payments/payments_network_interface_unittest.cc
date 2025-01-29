@@ -1996,6 +1996,7 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
   request_details.risk_data = "RISK_DATA";
   request_details.context_token = "CONTEXT_TOKEN";
   request_details.redirect_url = GURL("http://redirect-url.test/");
+  request_details.issuer_id = "ISSUER_ID";
 
   payments_network_interface_->GetBnplPaymentInstrumentForFetchingVcn(
       request_details,
@@ -2045,6 +2046,7 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
       "\"get_payment_instrument_context_token\":\"CONTEXT_TOKEN\"");
   AssertIncludedInRequest(
       "\"redirect_response_url\":\"http://redirect-url.test/\"");
+  AssertIncludedInRequest("\"issuer_id\":\"ISSUER_ID\"");
 
   EXPECT_EQ(result, result_);
   if (result == PaymentsRpcResult::kSuccess) {
