@@ -318,6 +318,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void DecrementWorkerRefCount() override;
   void IncrementPendingReuseRefCount() override;
   void DecrementPendingReuseRefCount() override;
+  int GetPendingReuseRefCountForTesting() const override;
   void DisableRefCounts() override;
   bool AreRefCountsDisabled() override;
   mojom::Renderer* GetRendererInterface() override;

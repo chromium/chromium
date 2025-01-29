@@ -2657,6 +2657,13 @@ void RenderProcessHostImpl::DecrementPendingReuseRefCount() {
   }
 }
 
+int RenderProcessHostImpl::GetPendingReuseRefCountForTesting() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(!are_ref_counts_disabled_);
+  CHECK(!deleting_soon_);
+  return pending_reuse_ref_count_;
+}
+
 std::string RenderProcessHostImpl::GetKeepAliveDurations() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::stringstream result;
