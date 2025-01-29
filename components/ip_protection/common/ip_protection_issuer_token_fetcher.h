@@ -19,7 +19,15 @@ enum class TryGetIssuerTokensStatus {
   kNetOkNullResponse = 2,
   kNullResponse = 3,
   kResponseParsingFailed = 4,
-  kMaxValue = kResponseParsingFailed,
+  kInvalidTokenVersion = 5,
+  kInvalidTokenSize = 6,
+  kTooFewTokens = 7,
+  kTooManyTokens = 8,
+  kExpirationTooSoon = 9,
+  kExpirationTooLate = 10,
+  kInvalidPublicKey = 11,
+  kInvalidPReveal = 12,
+  kMaxValue = kInvalidPReveal,
 };
 
 // Stores return status of TryGetIssuerTokens() together with

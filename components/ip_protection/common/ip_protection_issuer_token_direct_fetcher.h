@@ -20,7 +20,6 @@
 
 namespace ip_protection {
 
-// TODO(crbug.com/391357836): implement verifying token response.
 // TODO(crbug.com/391357128): implement backoff for failed retrieve.
 // TODO(crbug.com/391358904): add metrics
 
@@ -66,6 +65,9 @@ class IpProtectionIssuerTokenDirectFetcher
   void OnGetIssuerTokenCompleted(
       TryGetIssuerTokensCallback callback,
       base::expected<std::optional<std::string>, int> response);
+
+  TryGetIssuerTokensStatus ValidateIssuerTokenResponse(
+      const GetIssuerTokenResponse& response);
 
   Retriever retriever_;
 
