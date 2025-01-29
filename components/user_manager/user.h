@@ -259,8 +259,8 @@ class USER_MANAGER_EXPORT User {
     force_online_signin_ = force_online_signin;
   }
 
-  void set_username_hash(const std::string& username_hash) {
-    username_hash_ = username_hash;
+  void set_username_hash(std::string_view username_hash) {
+    username_hash_ = std::string(username_hash);
   }
 
   void set_is_logged_in(bool is_logged_in) { is_logged_in_ = is_logged_in; }

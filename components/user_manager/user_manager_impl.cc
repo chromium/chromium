@@ -133,7 +133,7 @@ UserManagerImpl::UserManagerImpl(std::unique_ptr<Delegate> delegate,
   if (!local_state) {
     CHECK_IS_TEST();
   }
-  UpdateCrashKey(0, std::nullopt);
+  UpdateNumLoggedInUsersCrashKey(0);
 }
 
 UserManagerImpl::~UserManagerImpl() = default;
@@ -282,14 +282,10 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
     CHECK(active_user_);
     CHECK(user);
 
-    user->set_is_logged_in(true);
-    user->set_username_hash(username_hash);
-    logged_in_users_.push_back(user);
-    lru_logged_in_users_.push_back(user);
+    OnUserLoggedIn(*user, username_hash);
 
     // Reset the new user flag if the user already exists.
     SetIsCurrentUserNew(false);
-    UpdateCrashKey(logged_in_users_.size(), std::nullopt);
     SendMultiUserSignInMetrics();
 
     // Special case for user session restoration after browser crash.
@@ -359,12 +355,30 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
   }
 
   CHECK(user);
-  active_user_ = user;
-  active_user_->set_is_logged_in(true);
-  active_user_->set_is_active(true);
-  active_user_->set_username_hash(username_hash);
+  OnUserLoggedIn(*user, username_hash);
+  OnPrimaryUserLoggedIn(*user);
+  OnActiveUserSwitched(*user);
 
-  if (active_user_->HasGaiaAccount()) {
+  local_state_->CommitPendingWrite();
+  NotifyOnLogin();
+}
+
+void UserManagerImpl::OnUserLoggedIn(User& user,
+                                     std::string_view username_hash) {
+  user.set_is_logged_in(true);
+  user.set_username_hash(username_hash);
+  logged_in_users_.push_back(&user);
+  UpdateNumLoggedInUsersCrashKey(logged_in_users_.size());
+  lru_logged_in_users_.push_back(&user);
+}
+
+void UserManagerImpl::OnPrimaryUserLoggedIn(User& user) {
+  CHECK(!primary_user_);
+  primary_user_ = &user;
+
+  const auto& account_id = user.GetAccountId();
+  delegate_->OverrideDirHome(user);
+  if (user.HasGaiaAccount()) {
     // Move the user to the front of the list.
     auto it = std::ranges::find(users_, account_id,
                                 [](auto& ptr) { return ptr->GetAccountId(); });
@@ -379,29 +393,17 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
         }
       }
     }
-  }
-  logged_in_users_.push_back(active_user_.get());
-  SetLRUUser(active_user_);
-
-  CHECK(!primary_user_);
-  primary_user_ = active_user_;
-  delegate_->OverrideDirHome(*primary_user_);
-  if (primary_user_->HasGaiaAccount()) {
     SendGaiaUserLoginMetrics(account_id);
   }
 
-  base::UmaHistogramEnumeration("UserManager.LoginUserType",
-                                active_user_->GetType());
-
-  UpdateCrashKey(logged_in_users_.size(), active_user_->GetType());
+  base::UmaHistogramEnumeration("UserManager.LoginUserType", user.GetType());
+  UpdateSessionTypeCrashKey(user.GetType());
 
   local_state_->SetString(
       prefs::kLastLoggedInGaiaUser,
-      active_user_->HasGaiaAccount() ? account_id.GetUserEmail() : "");
-  local_state_->CommitPendingWrite();
+      user.HasGaiaAccount() ? account_id.GetUserEmail() : "");
 
-  delegate_->CheckProfileOnLogin(*active_user_);
-  NotifyOnLogin();
+  delegate_->CheckProfileOnLogin(user);
 }
 
 void UserManagerImpl::SwitchActiveUser(const AccountId& account_id) {
@@ -430,12 +432,7 @@ void UserManagerImpl::SwitchActiveUser(const AccountId& account_id) {
   }
 
   DCHECK(active_user_);
-  active_user_->set_is_active(false);
-  user->set_is_active(true);
-  active_user_ = user;
-
-  // Move the user to the front.
-  SetLRUUser(active_user_);
+  OnActiveUserSwitched(*user);
 
   NotifyActiveUserChanged(active_user_);
   NotifyLoginStateUpdated();
@@ -1560,6 +1557,8 @@ void UserManagerImpl::NotifyOnLogin() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(active_user_);
 
+  // TODO(crbug.com/278643115): Migrate into ActiveUserChanged
+  // and UserAddedToSession calls.
   for (auto& observer : observer_list_) {
     observer.OnUserLoggedIn(*active_user_);
   }
@@ -1699,27 +1698,34 @@ const User* UserManagerImpl::AddKioskAppUserForTesting(
   return user;
 }
 
-void UserManagerImpl::SetLRUUser(User* user) {
+void UserManagerImpl::OnActiveUserSwitched(User& new_active_user) {
+  if (active_user_) {
+    active_user_->set_is_active(false);
+  }
+  active_user_ = &new_active_user;
+  active_user_->set_is_active(true);
+
   local_state_->SetString(prefs::kLastActiveUser,
-                          user->GetAccountId().GetUserEmail());
+                          active_user_->GetAccountId().GetUserEmail());
   local_state_->CommitPendingWrite();
 
-  UserList::iterator it = std::ranges::find(lru_logged_in_users_, user);
-  if (it != lru_logged_in_users_.end()) {
-    lru_logged_in_users_.erase(it);
-  }
-  lru_logged_in_users_.insert(lru_logged_in_users_.begin(), user);
+  // Move the user to the front of the list.
+  UserList::iterator it =
+      base::ranges::find(lru_logged_in_users_, active_user_);
+  CHECK(it != lru_logged_in_users_.end());
+  std::rotate(lru_logged_in_users_.begin(), it, it + 1);
 }
 
-void UserManagerImpl::UpdateCrashKey(int num_users,
-                                     std::optional<UserType> active_user_type) {
+// static
+void UserManagerImpl::UpdateNumLoggedInUsersCrashKey(size_t num_users) {
   static crash_reporter::CrashKeyString<64> crash_key("num-users");
-  crash_key.Set(base::NumberToString(GetLoggedInUsers().size()));
+  crash_key.Set(base::NumberToString(num_users));
+}
 
+// static
+void UserManagerImpl::UpdateSessionTypeCrashKey(UserType active_user_type) {
   static crash_reporter::CrashKeyString<32> session_type("session-type");
-  if (active_user_type.has_value()) {
-    session_type.Set(UserTypeToString(active_user_type.value()));
-  }
+  session_type.Set(UserTypeToString(active_user_type));
 }
 
 void UserManagerImpl::SendGaiaUserLoginMetrics(const AccountId& account_id) {
