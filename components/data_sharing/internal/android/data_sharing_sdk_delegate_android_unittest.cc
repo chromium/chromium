@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/data_sharing/internal/test_jni_headers/DataSharingSDKDelegateAndroidTestSupport_jni.h"
 #include "components/data_sharing/public/features.h"
+#include "components/data_sharing/test_support/mock_data_sharing_network_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace data_sharing {
@@ -29,9 +30,12 @@ class DataSharingSDKDelegateAndroidTest : public testing::Test {
 
   void SetUp() override {
     JNIEnv* env = base::android::AttachCurrentThread();
-    delegate_ = new DataSharingSDKDelegateAndroid(
-        Java_DataSharingSDKDelegateAndroidTestSupport_createDelegateTestImpl(
-            env));
+    auto callback = base::BindOnce(
+        &Java_DataSharingSDKDelegateAndroidTestSupport_createDelegateTestImpl,
+        env);
+    delegate_ =
+        std::make_unique<DataSharingSDKDelegateAndroid>(std::move(callback));
+    delegate_->Initialize(&mock_network_loader_);
   }
 
   data_sharing_pb::CreateGroupResult TestCreateGroup() {
@@ -176,7 +180,8 @@ class DataSharingSDKDelegateAndroidTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<DataSharingSDKDelegateAndroid> delegate_;
+  MockDataSharingNetworkLoader mock_network_loader_;
+  std::unique_ptr<DataSharingSDKDelegateAndroid> delegate_;
 };
 
 TEST_F(DataSharingSDKDelegateAndroidTest, TestCreateGroup) {
