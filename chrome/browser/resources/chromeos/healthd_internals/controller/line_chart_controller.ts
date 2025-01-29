@@ -4,7 +4,7 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import type {DataPoint, DataSeries} from '../model/data_series.js';
+import type {DataSeries} from '../model/data_series.js';
 import {LINE_CHART_COLOR_SET, MIN_TIME_SCALE, SAMPLE_RATE} from '../utils/line_chart_configs.js';
 import type {DisplayedLineInfo} from '../view/line_chart/chart_summary_table.js';
 import type {HealthdInternalsLineChartElement} from '../view/line_chart/line_chart.js';

@@ -15,7 +15,6 @@ import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './edu_coexistence_app.html.js';
-import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 
 export enum Screens {
   ONLINE_FLOW = 'edu-coexistence-ui',

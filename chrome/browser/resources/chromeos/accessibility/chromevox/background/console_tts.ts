@@ -48,36 +48,36 @@ export class ConsoleTts implements TtsInterface {
   }
 
   // @ts-ignore Unread value.
-  override addCapturingEventListener(listener: TtsCapturingEventListener):
+  override addCapturingEventListener(_listener: TtsCapturingEventListener):
       void {}
 
   // @ts-ignore Unread value.
-  override removeCapturingEventListener(listener: TtsCapturingEventListener):
+  override removeCapturingEventListener(_listener: TtsCapturingEventListener):
       void {}
 
   // @ts-ignore Unread value.
-  override increaseOrDecreaseProperty(propertyName: string, increase: boolean):
-      void {}
+  override increaseOrDecreaseProperty(
+      _propertyName: string, _increase: boolean): void {}
 
   // @ts-ignore Unread value.
-  override setProperty(propertyName: string, value: number): void {}
+  override setProperty(_propertyName: string, _value: number): void {}
 
 
   // @ts-ignore Unread value.
-  override propertyToPercentage(property: string): number|null {
+  override propertyToPercentage(_property: string): number|null {
     return null;
   }
 
   /**
    * Sets the enabled bit.
-   * @param {boolean} enabled The new enabled bit.
+   * @param enabled The new enabled bit.
    */
   setEnabled(enabled: boolean) {
     this.enabled_ = enabled;
   }
 
   // @ts-ignore Unread value.
-  override getDefaultProperty(property: string): number {
+  override getDefaultProperty(_property: string): number {
     return 0;
   }
 
