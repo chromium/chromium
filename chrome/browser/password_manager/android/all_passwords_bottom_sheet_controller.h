@@ -45,10 +45,7 @@ class AllPasswordsBottomSheetController
  public:
   using RequestsToFillPassword =
       base::StrongAlias<struct RequestsToFillPasswordTag, bool>;
-  using ShowMigrationWarningCallback = base::RepeatingCallback<void(
-      gfx::NativeWindow,
-      Profile*,
-      password_manager::metrics_util::PasswordMigrationWarningTriggers)>;
+
   // No-op constructor for tests.
   AllPasswordsBottomSheetController(
       base::PassKey<class AllPasswordsBottomSheetControllerTest>,
@@ -62,7 +59,6 @@ class AllPasswordsBottomSheetController
       password_manager::PasswordManagerClient* client,
       safe_browsing::PasswordReuseDetectionManagerClient*
           password_reuse_detection_manager_client,
-      ShowMigrationWarningCallback show_migration_warning_callback,
       std::unique_ptr<PasswordAccessLossWarningBridge>
           access_loss_warning_bridge);
 
@@ -163,10 +159,6 @@ class AllPasswordsBottomSheetController
   // password has been reused.
   raw_ptr<safe_browsing::PasswordReuseDetectionManagerClient>
       password_reuse_detection_manager_client_ = nullptr;
-
-  // Callback invoked to try to show the password migration warning. Used
-  // to facilitate testing.
-  ShowMigrationWarningCallback show_migration_warning_callback_;
 
   // Bridge that is used to show the password access loss warning if it's needed
   // after filling a credential.
