@@ -1798,13 +1798,6 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
                         InitializationPolicy::kObservePreexistingManagers);
 
 #if BUILDFLAG(IS_ANDROID)
-  // This prevents the post migration sheet from trying to show on opening new
-  // tabs after the initial attempt to show the sheet on startup.
-  static bool tried_launching_post_migration_sheet_on_startup = false;
-  if (!tried_launching_post_migration_sheet_on_startup) {
-    tried_launching_post_migration_sheet_on_startup = true;
-    TryToShowPostPasswordMigrationSheet();
-  }
   // This prevents the access loss warning from trying to show on opening new
   // tabs after the initial attempt to show the sheet on startup.
   static bool tried_launching_access_loss_warning_on_startup = false;
