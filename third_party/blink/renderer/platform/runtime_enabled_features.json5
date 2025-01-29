@@ -3974,6 +3974,8 @@
     },
     {
       name: "SharedStorageWebLocks",
+      depends_on: ["SharedStorageAPI"],
+      status: "stable",
     },
     {
       name: "SharedWorker",

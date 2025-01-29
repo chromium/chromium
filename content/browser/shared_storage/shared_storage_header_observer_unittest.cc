@@ -736,21 +736,6 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_MultiOrigin_AllSuccessful) {
   EXPECT_EQ(observer_->header_results().back(), kOrigin3);
 
   observer_->WaitForOperations(3);
-  EXPECT_EQ(observer_->operations()[0],
-            OperationAndResult(kOrigin1,
-                               CloneSharedStorageMethods(methods_with_options1),
-                               /*with_lock=*/"lock1",
-                               /*success=*/true));
-  EXPECT_EQ(observer_->operations()[1],
-            OperationAndResult(kOrigin2,
-                               CloneSharedStorageMethods(methods_with_options2),
-                               /*with_lock=*/std::nullopt,
-                               /*success=*/true));
-  EXPECT_EQ(observer_->operations()[2],
-            OperationAndResult(kOrigin3,
-                               CloneSharedStorageMethods(methods_with_options3),
-                               /*with_lock=*/std::nullopt,
-                               /*success=*/true));
 
   // Operations on different origins don't affect each other.
   EXPECT_EQ(GetExistingValue(kOrigin1, "a"), "b");

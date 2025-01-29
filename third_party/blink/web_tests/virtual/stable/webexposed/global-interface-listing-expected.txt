@@ -8790,6 +8790,7 @@ interface SharedStorage
     attribute @@toStringTag
     getter worklet
     method append
+    method batchUpdate
     method clear
     method constructor
     method createWorklet
@@ -8798,6 +8799,21 @@ interface SharedStorage
     method run
     method selectURL
     method set
+interface SharedStorageAppendMethod : SharedStorageModifierMethod
+    attribute @@toStringTag
+    method constructor
+interface SharedStorageClearMethod : SharedStorageModifierMethod
+    attribute @@toStringTag
+    method constructor
+interface SharedStorageDeleteMethod : SharedStorageModifierMethod
+    attribute @@toStringTag
+    method constructor
+interface SharedStorageModifierMethod
+    attribute @@toStringTag
+    method constructor
+interface SharedStorageSetMethod : SharedStorageModifierMethod
+    attribute @@toStringTag
+    method constructor
 interface SharedStorageWorklet
     attribute @@toStringTag
     method addModule
