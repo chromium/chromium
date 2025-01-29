@@ -1682,20 +1682,6 @@ bool ChromePasswordProtectionService::IsInExcludedCountry() {
                         variations_service->GetLatestCountry());
 }
 
-PasswordReuseEvent::SyncAccountType
-ChromePasswordProtectionService::GetSyncAccountType() const {
-  const AccountInfo account_info = GetAccountInfo();
-  if (!IsPrimaryAccountSignedIn()) {
-    return PasswordReuseEvent::NOT_SIGNED_IN;
-  }
-
-  // For gmail or googlemail account, the hosted_domain will always be
-  // kNoHostedDomainFound.
-  return account_info.hosted_domain == kNoHostedDomainFound
-             ? PasswordReuseEvent::GMAIL
-             : PasswordReuseEvent::GSUITE;
-}
-
 void ChromePasswordProtectionService::
     RemoveUnhandledSyncPasswordReuseOnURLsDeleted(
         bool all_history,

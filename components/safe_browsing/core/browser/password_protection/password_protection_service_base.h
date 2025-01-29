@@ -343,11 +343,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
 
   void CheckCsdAllowlistOnIOThread(const GURL& url, bool* check_result);
 
-  // Gets the type of sync account associated with current profile or
-  // |NOT_SIGNED_IN|.
-  virtual LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType
-  GetSyncAccountType() const = 0;
-
   // Get information about Delayed Warnings and Omnibox URL display experiments.
   // This information is sent in PhishGuard pings.
   virtual LoginReputationClientRequest::UrlDisplayExperiment

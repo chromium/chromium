@@ -463,7 +463,7 @@ message LoginReputationClientRequest {
   repeated Frame frames = 3;
 
   // The message contains fields needed for a password reuse event.
-  // Next tag: 4
+  // Next tag: 7
   message PasswordReuseEvent {
     // Domains from the Chrome password manager DB that are associated with
     // the same password as the one triggering this event. The field is filled
@@ -474,22 +474,8 @@ message LoginReputationClientRequest {
     // The frame that the password reuse is detected.
     optional int32 frame_id = 2;
 
-    // Deprecated field.
-    reserved 3;
-
-    // TODO(crbug.com/41431428): Remove once ReusedPasswordAccountType is
-    // implemented. Sync account type.
-    enum SyncAccountType {
-      // Not a sign-in user.
-      NOT_SIGNED_IN = 0;
-
-      // User signed in with @gmail.com, or @googlemail.com account.
-      GMAIL = 1;
-
-      // User signed in with a G Suite account.
-      GSUITE = 2;
-    }
-    optional SyncAccountType sync_account_type = 4;
+    // Deprecated fields.
+    reserved 3, 4;
 
     // TODO(crbug.com/41431428): Remove once ReusedPasswordAccountType is
     // implemented. Type of password being reused.

@@ -1686,11 +1686,6 @@ base::Value::Dict SerializePasswordReuseEvent(
   event_dict.Set("frame_id", event.frame_id());
 
   event_dict.Set(
-      "sync_account_type",
-      LoginReputationClientRequest_PasswordReuseEvent_SyncAccountType_Name(
-          event.sync_account_type()));
-
-  event_dict.Set(
       "reused_password_type",
       LoginReputationClientRequest_PasswordReuseEvent_ReusedPasswordType_Name(
           event.reused_password_type()));

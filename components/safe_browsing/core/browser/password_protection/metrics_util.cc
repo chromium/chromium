@@ -276,13 +276,6 @@ void LogPasswordProtectionVerdict(
   }
 }
 
-void LogSyncAccountType(SyncAccountType sync_account_type) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordProtection.PasswordReuseSyncAccountType", sync_account_type,
-      LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType_MAX +
-          1);
-}
-
 void LogPasswordProtectionNetworkResponseAndDuration(
     int response_code,
     int net_error,
