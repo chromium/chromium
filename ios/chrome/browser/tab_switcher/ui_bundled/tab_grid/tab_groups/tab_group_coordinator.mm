@@ -410,11 +410,11 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 - (void)tabGroupMediatorCloseLastTabAsOwner:(TabGroupMediator*)mediator {
   CHECK_EQ(_mediator, mediator);
+  __weak TabGroupCoordinator* weakSelf = self;
   [self lastTabClosingAlertFromActionType:TabGroupActionType::
                                               kDeleteOrKeepSharedTabGroup
                             primaryAction:^{
-                                // TODO(crbug.com/378880296): Add
-                                // delete action.
+                              [weakSelf deleteGroup];
                             }];
 }
 
@@ -485,6 +485,11 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
   // Record the presentation.
   [defaults setBool:YES forKey:kSharedTabGroupUserEducationShownOnceKey];
+}
+
+// Removes the shared tab group.
+- (void)deleteGroup {
+  [_mediator deleteSharedTabGroup:_tabGroup];
 }
 
 @end
