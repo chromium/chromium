@@ -2201,6 +2201,19 @@ class IntegrationTestDeviceManagementBase : public IntegrationTest {
     }
   }
 
+  void ExpectDeviceManagementPolicyValidationRequestFromDefaultPolicyAgent(
+      ScopedServer* test_server,
+      const std::string& dm_token,
+      const ::wireless_android_enterprise_devicemanagement::
+          OmahaSettingsClientProto& omaha_settings) {
+    if (ceca_experiment_enabled_) {
+      ExpectDeviceManagementPolicyFetchRequest(
+          test_server, dm_token, omaha_settings, /*first_request=*/true,
+          /*rotate_public_key=*/false, /*target_url=*/{});
+    }
+    ExpectDeviceManagementPolicyValidationRequest(test_server, dm_token);
+  }
+
   // It is difficult to create a valid app registration when installing the
   // broken enterprise companion app, especially before the updater is
   // installed. Instead, provide the 'do nothing' CRX for the OTA installation.
@@ -2251,19 +2264,8 @@ INSTANTIATE_TEST_SUITE_P(CecaExperimentFlag,
 TEST_P(IntegrationTestDeviceManagement, Nothing) {}
 
 TEST_P(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
-  OmahaSettingsClientProto omaha_settings;
-  omaha_settings.set_install_default(
-      enterprise_management::INSTALL_DEFAULT_DISABLED);
-  omaha_settings.set_download_preference("not-cacheable");
-  omaha_settings.set_proxy_mode("system");
-  omaha_settings.set_proxy_server("test.proxy.server");
-  ApplicationSettings app;
-  app.set_app_guid(kApp1.appid);
-  app.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
-  app.set_target_version_prefix("0.1");
-  app.set_rollback_to_target_version(
-      enterprise_management::ROLLBACK_TO_TARGET_VERSION_ENABLED);
-  omaha_settings.mutable_application_settings()->Add(std::move(app));
+  ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
   DMPushEnrollmentToken(kEnrollmentToken);
 
@@ -2274,9 +2276,24 @@ TEST_P(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
   ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent(
       test_server_.get(), kEnrollmentToken, kDMToken);
   ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
-      test_server_.get(), kDMToken, omaha_settings);
-  ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
-  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+      test_server_.get(), kDMToken, [&]() {
+        OmahaSettingsClientProto omaha_settings;
+        omaha_settings.set_install_default(
+            enterprise_management::INSTALL_DEFAULT_DISABLED);
+        omaha_settings.set_download_preference("not-cacheable");
+        omaha_settings.set_proxy_mode("system");
+        omaha_settings.set_proxy_server("test.proxy.server");
+        ApplicationSettings app;
+        app.set_app_guid(kApp1.appid);
+        app.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
+        app.set_target_version_prefix("0.1");
+        app.set_rollback_to_target_version(
+            enterprise_management::ROLLBACK_TO_TARGET_VERSION_ENABLED);
+        omaha_settings.mutable_application_settings()->Add(std::move(app));
+        return omaha_settings;
+      }());
+  ExpectUpdateCheckRequest(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
 
   scoped_refptr<device_management_storage::DMStorage> dm_storage =
       device_management_storage::GetDefaultDMStorage();
@@ -2303,14 +2320,8 @@ TEST_P(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
 TEST_F(IntegrationTestDeviceManagementBase,
        FallbackToOutOfProcessNetworkFetcher) {
   ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
-  OmahaSettingsClientProto omaha_settings;
-  omaha_settings.set_install_default(
-      enterprise_management::INSTALL_DEFAULT_DISABLED);
-  omaha_settings.set_download_preference("not-cacheable");
-  ApplicationSettings app;
-  app.set_app_guid(kApp1.appid);
-  app.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
-  omaha_settings.mutable_application_settings()->Add(std::move(app));
+  ASSERT_NO_FATAL_FAILURE(Install(/*switches=*/{}));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
   DMPushEnrollmentToken(kEnrollmentToken);
 
@@ -2320,10 +2331,19 @@ TEST_F(IntegrationTestDeviceManagementBase,
   ExpectDeviceManagementRegistrationRequest(test_server_.get(),
                                             kEnrollmentToken, kDMToken);
   test_server_->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
-  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
-                                           omaha_settings);
-  ASSERT_NO_FATAL_FAILURE(Install(/*switches=*/{}));
-  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken, [&]() {
+    OmahaSettingsClientProto omaha_settings;
+    omaha_settings.set_install_default(
+        enterprise_management::INSTALL_DEFAULT_DISABLED);
+    omaha_settings.set_download_preference("not-cacheable");
+    ApplicationSettings app;
+    app.set_app_guid(kApp1.appid);
+    app.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
+    omaha_settings.mutable_application_settings()->Add(std::move(app));
+    return omaha_settings;
+  }());
+  ExpectUpdateCheckRequest(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
 
   scoped_refptr<device_management_storage::DMStorage> dm_storage =
       device_management_storage::GetDefaultDMStorage();
@@ -2416,7 +2436,9 @@ TEST_F(IntegrationTestDeviceManagementBase, PolicyFetchFailedNoAppUpdate) {
 }
 
 TEST_P(IntegrationTestDeviceManagement, AppInstall) {
-  const base::Version kApp1Version = base::Version("1.0.0.0");
+  ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+
   OmahaSettingsClientProto omaha_settings;
   omaha_settings.set_install_default(
       enterprise_management::INSTALL_DEFAULT_DISABLED);
@@ -2434,9 +2456,6 @@ TEST_P(IntegrationTestDeviceManagement, AppInstall) {
       test_server_.get(), kEnrollmentToken, kDMToken);
   ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
       test_server_.get(), kDMToken, omaha_settings);
-  ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
-  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
-
   ASSERT_NO_FATAL_FAILURE(ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
       /*request_attributes=*/{},
@@ -2450,7 +2469,13 @@ TEST_P(IntegrationTestDeviceManagement, AppInstall) {
       }));
 
   ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kApp1.appid));
+
+  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
+      test_server_.get(), kDMToken, omaha_settings);
+  ExpectDeviceManagementPolicyValidationRequestFromDefaultPolicyAgent(
+      test_server_.get(), kDMToken, omaha_settings);
   ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kApp2.appid));
+
   ExpectAppInstalled(kApp1.appid, kApp1.v1);
   ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered(kApp2.appid));
 
@@ -2459,33 +2484,32 @@ TEST_P(IntegrationTestDeviceManagement, AppInstall) {
 }
 
 TEST_P(IntegrationTestDeviceManagement, ForceInstall) {
-  const base::Version kApp1Version = base::Version("1.0.0.0");
+  ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
+  DMPushEnrollmentToken(kEnrollmentToken);
   if (ceca_experiment_enabled_) {
     ASSERT_NO_FATAL_FAILURE(
         ExpectEnterpriseCompanionAppOTAInstallSequence(test_server_.get()));
   }
-  ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
-  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
-
-  // Force-install app1, enable install app2.
-  OmahaSettingsClientProto omaha_settings;
-  omaha_settings.set_install_default(
-      enterprise_management::INSTALL_DEFAULT_DISABLED);
-  ApplicationSettings app1;
-  app1.set_app_guid(kApp1.appid);
-  app1.set_install(enterprise_management::INSTALL_FORCED);
-  omaha_settings.mutable_application_settings()->Add(std::move(app1));
-  ApplicationSettings app2;
-  app2.set_app_guid(kApp2.appid);
-  app2.set_install(enterprise_management::INSTALL_ENABLED);
-  omaha_settings.mutable_application_settings()->Add(std::move(app2));
-
-  DMPushEnrollmentToken(kEnrollmentToken);
   ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent(
       test_server_.get(), kEnrollmentToken, kDMToken);
   ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
-      test_server_.get(), kDMToken, omaha_settings);
+      test_server_.get(), kDMToken, [&]() {
+        // Force-install app1, enable install app2.
+        OmahaSettingsClientProto omaha_settings;
+        omaha_settings.set_install_default(
+            enterprise_management::INSTALL_DEFAULT_DISABLED);
+        ApplicationSettings app1;
+        app1.set_app_guid(kApp1.appid);
+        app1.set_install(enterprise_management::INSTALL_FORCED);
+        omaha_settings.mutable_application_settings()->Add(std::move(app1));
+        ApplicationSettings app2;
+        app2.set_app_guid(kApp2.appid);
+        app2.set_install(enterprise_management::INSTALL_ENABLED);
+        omaha_settings.mutable_application_settings()->Add(std::move(app2));
+        return omaha_settings;
+      }());
   ExpectUpdateCheckRequest(test_server_.get());
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
@@ -2509,31 +2533,34 @@ TEST_P(IntegrationTestDeviceManagement, ForceInstall) {
 }
 
 TEST_P(IntegrationTestDeviceManagement, QualifyUpdaterWhenUpdateDisabled) {
-  // Disable global update via CBCM.
-  DMPushEnrollmentToken(kEnrollmentToken);
-  OmahaSettingsClientProto omaha_settings;
-  omaha_settings.set_update_default(enterprise_management::UPDATES_DISABLED);
-  omaha_settings.set_cloud_policy_overrides_platform_policy(true);
-  if (ceca_experiment_enabled_) {
-    ASSERT_NO_FATAL_FAILURE(
-        ExpectEnterpriseCompanionAppOTAInstallSequence(test_server_.get()));
-  }
-  ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent(
-      test_server_.get(), kEnrollmentToken, kDMToken);
-  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
-      test_server_.get(), kDMToken, omaha_settings);
   ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(SetupFakeUpdaterLowerVersion());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
 
+  OmahaSettingsClientProto omaha_settings;
+  omaha_settings.set_update_default(enterprise_management::UPDATES_DISABLED);
+  omaha_settings.set_cloud_policy_overrides_platform_policy(true);
+
+  // Disable global update via CBCM.
+  DMPushEnrollmentToken(kEnrollmentToken);
+
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings);
   ASSERT_NO_FATAL_FAILURE(
       ExpectUpdateSequence(test_server_.get(), kQualificationAppId, "",
                            UpdateService::Priority::kBackground,
                            base::Version("0.1"), base::Version("0.2")));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
+
+  if (ceca_experiment_enabled_) {
+    ASSERT_NO_FATAL_FAILURE(
+        ExpectEnterpriseCompanionAppOTAInstallSequence(test_server_.get()));
+  }
 
   // Verify the new instance is qualified and activated itself.
   ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
@@ -2551,27 +2578,35 @@ TEST_P(IntegrationTestDeviceManagement, QualifyUpdaterWhenUpdateDisabled) {
 
 TEST_P(IntegrationTestDeviceManagement,
        QualifyUpdaterWhenNextCheckDelayIsZero) {
-  // Set update check period to zero via CBCM.
-  DMPushEnrollmentToken(kEnrollmentToken);
-  OmahaSettingsClientProto omaha_settings;
-  omaha_settings.set_auto_update_check_period_minutes(0);
-  omaha_settings.set_cloud_policy_overrides_platform_policy(true);
-  if (ceca_experiment_enabled_) {
-    ASSERT_NO_FATAL_FAILURE(
-        ExpectEnterpriseCompanionAppOTAInstallSequence(test_server_.get()));
-  }
-  ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent(
-      test_server_.get(), kEnrollmentToken, kDMToken);
-  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
-      test_server_.get(), kDMToken, omaha_settings);
   ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(SetupFakeUpdaterLowerVersion());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
 
+  OmahaSettingsClientProto omaha_settings;
+  omaha_settings.set_auto_update_check_period_minutes(0);
+  omaha_settings.set_cloud_policy_overrides_platform_policy(true);
+
+  // Set update check period to zero via CBCM.
+  DMPushEnrollmentToken(kEnrollmentToken);
+
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings);
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectUpdateSequence(test_server_.get(), kQualificationAppId, "",
+                           UpdateService::Priority::kBackground,
+                           base::Version("0.1"), base::Version("0.2")));
+
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
+
+  if (ceca_experiment_enabled_) {
+    ASSERT_NO_FATAL_FAILURE(
+        ExpectEnterpriseCompanionAppOTAInstallSequence(test_server_.get()));
+  }
 
   // Verify the new instance is qualified and activated itself.
   ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
@@ -2613,19 +2648,23 @@ TEST_F(IntegrationTestDeviceManagementBase,
   ASSERT_NO_FATAL_FAILURE(
       ExpectBrokenEnterpriseCompanionAppOTAInstallSequence());
 
-  DMPushEnrollmentToken(kEnrollmentToken);
-  ApplicationSettings app;
-  app.set_app_guid(kApp1.appid);
-  app.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
-  OmahaSettingsClientProto omaha_settings;
-  omaha_settings.mutable_application_settings()->Add(std::move(app));
-  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
-                                            kEnrollmentToken, kDMToken);
-  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
-                                           omaha_settings);
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_TRUE(WaitForUpdaterExit());
+
+  DMPushEnrollmentToken(kEnrollmentToken);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken, [&]() {
+    ApplicationSettings app;
+    app.set_app_guid(kApp1.appid);
+    app.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
+    OmahaSettingsClientProto omaha_settings;
+    omaha_settings.mutable_application_settings()->Add(std::move(app));
+    return omaha_settings;
+  }());
+  ExpectUpdateCheckRequest(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
@@ -2640,22 +2679,26 @@ TEST_F(IntegrationTestDeviceManagementBase,
   ASSERT_NO_FATAL_FAILURE(
       ExpectBrokenEnterpriseCompanionAppOTAInstallSequence());
 
-  DMPushEnrollmentToken(kEnrollmentToken);
-  OmahaSettingsClientProto omaha_settings;
-  omaha_settings.set_install_default(
-      enterprise_management::INSTALL_DEFAULT_DISABLED);
-  omaha_settings.set_download_preference("not-cacheable");
-  ApplicationSettings app;
-  app.set_app_guid(kApp1.appid);
-  app.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
-  omaha_settings.mutable_application_settings()->Add(std::move(app));
-  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
-                                            kEnrollmentToken, kDMToken);
-  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
-                                           omaha_settings);
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_TRUE(WaitForUpdaterExit());
+
+  DMPushEnrollmentToken(kEnrollmentToken);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken, [&]() {
+    OmahaSettingsClientProto omaha_settings;
+    omaha_settings.set_install_default(
+        enterprise_management::INSTALL_DEFAULT_DISABLED);
+    omaha_settings.set_download_preference("not-cacheable");
+    ApplicationSettings app;
+    app.set_app_guid(kApp1.appid);
+    app.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
+    omaha_settings.mutable_application_settings()->Add(std::move(app));
+    return omaha_settings;
+  }());
+  ExpectUpdateCheckRequest(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
 
   // Verify the policies downloaded by the updater.
   scoped_refptr<device_management_storage::DMStorage> dm_storage =

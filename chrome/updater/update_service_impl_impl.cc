@@ -631,6 +631,20 @@ bool IsPathOnReadOnlyMount(const base::FilePath& path) {
 #endif  // BUILDFLAG(IS_MAC)
 }
 
+void FetchPoliciesDone(
+    base::OnceCallback<void(base::OnceCallback<void(UpdateService::Result)>)>
+        fetch_policies_done,
+    base::OnceCallback<void(UpdateService::Result)> callback,
+    int result) {
+  if (result != kErrorOk) {
+    LOG(ERROR) << "FetchPolicies failed: " << result;
+    std::move(callback).Run(UpdateService::Result::kFetchPoliciesFailed);
+    return;
+  }
+
+  std::move(fetch_policies_done).Run(std::move(callback));
+}
+
 }  // namespace
 
 UpdateServiceImplImpl::UpdateServiceImplImpl(scoped_refptr<Configurator> config)
@@ -929,9 +943,14 @@ void UpdateServiceImplImpl::CheckForUpdate(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::MakeRefCounted<FindUnregisteredAppsTask>(config_, GetUpdaterScope())
-      ->Run(base::BindOnce(&UpdateServiceImplImpl::CheckForUpdateImpl, this,
-                           app_id, priority, policy_same_version_update,
-                           language, state_update, std::move(callback)));
+      ->Run(base::BindOnce(
+          &UpdateServiceImplImpl::FetchPolicies, this,
+          base::BindOnce(
+              &FetchPoliciesDone,
+              base::BindOnce(&UpdateServiceImplImpl::CheckForUpdateImpl, this,
+                             app_id, priority, policy_same_version_update,
+                             language, state_update),
+              std::move(callback))));
 }
 
 void UpdateServiceImplImpl::CheckForUpdateImpl(
@@ -983,10 +1002,14 @@ void UpdateServiceImplImpl::Update(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::MakeRefCounted<FindUnregisteredAppsTask>(config_, GetUpdaterScope())
-      ->Run(base::BindOnce(&UpdateServiceImplImpl::UpdateImpl, this, app_id,
-                           install_data_index, priority,
-                           policy_same_version_update, language, state_update,
-                           std::move(callback)));
+      ->Run(base::BindOnce(
+          &UpdateServiceImplImpl::FetchPolicies, this,
+          base::BindOnce(&FetchPoliciesDone,
+                         base::BindOnce(&UpdateServiceImplImpl::UpdateImpl,
+                                        this, app_id, install_data_index,
+                                        priority, policy_same_version_update,
+                                        language, state_update),
+                         std::move(callback))));
 }
 
 void UpdateServiceImplImpl::UpdateImpl(
@@ -1078,10 +1101,14 @@ void UpdateServiceImplImpl::Install(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::MakeRefCounted<FindUnregisteredAppsTask>(config_, GetUpdaterScope())
-      ->Run(base::BindOnce(&UpdateServiceImplImpl::InstallImpl, this,
-                           registration, client_install_data,
-                           install_data_index, priority, language, state_update,
-                           std::move(callback)));
+      ->Run(base::BindOnce(
+          &UpdateServiceImplImpl::FetchPolicies, this,
+          base::BindOnce(&FetchPoliciesDone,
+                         base::BindOnce(&UpdateServiceImplImpl::InstallImpl,
+                                        this, registration, client_install_data,
+                                        install_data_index, priority, language,
+                                        state_update),
+                         std::move(callback))));
 }
 
 void UpdateServiceImplImpl::InstallImpl(
@@ -1173,10 +1200,14 @@ void UpdateServiceImplImpl::RunInstaller(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::MakeRefCounted<FindUnregisteredAppsTask>(config_, GetUpdaterScope())
-      ->Run(base::BindOnce(&UpdateServiceImplImpl::RunInstallerImpl, this,
-                           app_id, installer_path, install_args, install_data,
-                           install_settings, language, state_update,
-                           std::move(callback)));
+      ->Run(base::BindOnce(
+          &UpdateServiceImplImpl::FetchPolicies, this,
+          base::BindOnce(
+              &FetchPoliciesDone,
+              base::BindOnce(&UpdateServiceImplImpl::RunInstallerImpl, this,
+                             app_id, installer_path, install_args, install_data,
+                             install_settings, language, state_update),
+              std::move(callback))));
 }
 
 void UpdateServiceImplImpl::RunInstallerImpl(

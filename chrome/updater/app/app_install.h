@@ -81,8 +81,6 @@ class AppInstall : public App {
 
   void WakeCandidate();
 
-  void FetchPolicies();
-
   void RegisterUpdater();
 
   // Installs an application if the `app_id_` is valid.
