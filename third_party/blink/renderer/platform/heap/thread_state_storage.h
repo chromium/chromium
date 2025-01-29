@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_local.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/stack_util.h"
 
 namespace cppgc {
 class AllocationHandle;
@@ -115,6 +116,13 @@ class ThreadStateStorageFor<kAnyThread> {
 
  public:
   ALWAYS_INLINE static ThreadStateStorage* GetState() {
+#if BUILDFLAG(IS_MAC)
+    // TODO(391129944): Consider enabling it on Android as well, where we have
+    // emulated TLS.
+    if (!WTF::MayNotBeMainThread()) {
+      return ThreadStateStorage::MainThreadStateStorage();
+    }
+#endif  // BUILDFLAG(IS_MAC)
     return ThreadStateStorage::Current();
   }
 };
