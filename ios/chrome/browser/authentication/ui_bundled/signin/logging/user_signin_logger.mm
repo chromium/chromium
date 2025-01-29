@@ -11,6 +11,7 @@ using base::UserMetricsAction;
 using signin_metrics::AccessPoint;
 using signin_metrics::LogSigninAccessPointCompleted;
 using signin_metrics::LogSigninAccessPointStarted;
+using signin_metrics::LogSignInStarted;
 using signin_metrics::PromoAction;
 
 @implementation UserSigninLogger
@@ -30,6 +31,7 @@ using signin_metrics::PromoAction;
 #pragma mark - SigninLogger
 
 - (void)logSigninStarted {
+  LogSignInStarted(self.accessPoint);
   LogSigninAccessPointStarted(self.accessPoint, self.promoAction);
 }
 

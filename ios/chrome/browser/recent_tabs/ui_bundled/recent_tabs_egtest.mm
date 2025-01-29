@@ -304,9 +304,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_sufficientlyVisible()];
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
       initWithAccessPoint:signin_metrics::AccessPoint::kRecentTabs];
-  // TODO(crbug.com/41493423) Should log Signin.SignIn.Offered, and
-  // Signin.SigninStartedAccessPoint
+  // TODO(crbug.com/41493423) Should log Signin.SignIn.Offered.
   expecteds.signinSignInStarted = 1;
+  expecteds.signinSigninStartedAccessPoint = 1;
+  expecteds.signinSignStartedAccessPointNewAccountNoExistingAccount = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 

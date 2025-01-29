@@ -173,6 +173,11 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
   EXPECT_EQ(signin_completion_identity, nil);
   [coordinator_ stop];
   ExpectNoUpgradePromoHistogram(&histogram_tester);
+  histogram_tester.ExpectUniqueSample<signin_metrics::AccessPoint>(
+      "Signin.SignIn.Started", signin_metrics::AccessPoint::kSettings, 1);
+  histogram_tester.ExpectUniqueSample<signin_metrics::AccessPoint>(
+      "Signin.SigninStartedAccessPoint", signin_metrics::AccessPoint::kSettings,
+      1);
 }
 
 // Tests that stopping the coordinator before it is done will interrupt it.

@@ -546,8 +546,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
       initWithAccessPoint:signin_metrics::AccessPoint::kSettings];
-  // TODO(crbug.com/41493423): We should log Signin offered and
-  // Signin.SigninStartedAccessPoint.
+  // TODO(crbug.com/41493423): We should log Signin offered.
+  expecteds.signinSigninStartedAccessPoint = 1;
   expecteds.signinSignInStarted = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
@@ -905,6 +905,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
       initWithAccessPoint:signin_metrics::AccessPoint::kNtpSignedOutIcon];
   expecteds.signinSignInStarted = 1;
+  expecteds.signinSigninStartedAccessPoint = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
