@@ -41,8 +41,8 @@ namespace {
 // Default value for adding a buffer to the attachment zone.
 constexpr static int kAttachmentBuffer = 20;
 
-constexpr static int kWidgetDefaultWidth = 400;
-constexpr static int kWidgetTopBarHeight = 80;
+constexpr static int kWidgetDefaultWidth = 300;
+constexpr static int kWidgetTopBarHeight = 48;
 constexpr static int kAnimationDurationMs = 300;
 constexpr static int kInitialDetachedYPosition = 48;
 
