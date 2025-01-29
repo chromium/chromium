@@ -28,6 +28,7 @@ import "services/network/public/mojom/referrer_policy.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 import "services/network/public/mojom/shared_dictionary_access_observer.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
+import "services/network/public/mojom/source_type.mojom";
 import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/trust_token_access_observer.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
@@ -36,16 +37,6 @@ import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_bundle_handle.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
-
-// This enums corresponds to net::SourceStream::SourceType.
-enum SourceType {
-  kBrotli,
-  kDeflate,
-  kGzip,
-  kZstd,
-  kNone,
-  kUnknown,
-};
 
 // See documentation at `URLRequest.trusted_params`.
 struct TrustedUrlRequestParams {
