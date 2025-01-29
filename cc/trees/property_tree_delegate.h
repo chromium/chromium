@@ -46,6 +46,8 @@ class PropertyTreeDelegate {
   virtual void OnAnimateLayers() = 0;
 
   virtual void RegisterViewportPropertyIds(const ViewportPropertyIds& ids) = 0;
+
+  virtual void OnUnregisterElement(ElementId id) = 0;
 };
 
 }  // namespace cc

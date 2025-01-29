@@ -61,6 +61,14 @@ void CompositorPropertyTreeDelegate::RegisterViewportPropertyIds(
   cc::PropertyTreeLayerTreeDelegate::RegisterViewportPropertyIds(ids);
 }
 
+void CompositorPropertyTreeDelegate::OnUnregisterElement(
+    cc::ElementId element_id) {
+  // TODO(crbug.com/389771428): Implement this w/ layer lists. For now,
+  // just call the base class implementation to ensure that we don't get
+  // out of date.
+  cc::PropertyTreeLayerTreeDelegate::OnUnregisterElement(element_id);
+}
+
 void CompositorPropertyTreeDelegate::SetObserverForTesting(Observer* observer) {
   observer_ = observer;
 }

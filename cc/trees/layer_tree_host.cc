@@ -1784,9 +1784,7 @@ void LayerTreeHost::RegisterElement(ElementId element_id,
 
 void LayerTreeHost::UnregisterElement(ElementId element_id) {
   DCHECK(IsMainThread());
-  if (!IsUsingLayerLists()) {
-    mutator_host()->RemoveElementId(element_id);
-  }
+  property_tree_delegate_->OnUnregisterElement(element_id);
   element_layers_map_.erase(element_id);
 }
 

@@ -58,6 +58,7 @@ class COMPOSITOR_EXPORT CompositorPropertyTreeDelegate
       override;
   void OnAnimateLayers() override;
   void RegisterViewportPropertyIds(const cc::ViewportPropertyIds& ids) override;
+  void OnUnregisterElement(cc::ElementId id) override;
 
  private:
   raw_ptr<Observer> observer_ = nullptr;
