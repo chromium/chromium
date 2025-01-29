@@ -3178,8 +3178,10 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   // enterprise policy.
   void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     BrowserWithTestWindowTest::LogIn(email, gaia_id);
-    user_manager()->SetUserAffiliated(
-        AccountId::FromUserEmailGaiaId(email, gaia_id), true);
+    user_manager()->SetUserPolicyStatus(
+        AccountId::FromUserEmailGaiaId(email, gaia_id),
+        /*is_managed=*/true,
+        /*is_affiliated=*/true);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

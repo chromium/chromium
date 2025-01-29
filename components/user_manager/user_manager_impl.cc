@@ -1658,13 +1658,14 @@ bool UserManagerImpl::IsFirstExecAfterBoot() const {
       ash::switches::kFirstExecAfterBoot);
 }
 
-void UserManagerImpl::SetUserAffiliated(const AccountId& account_id,
-                                        bool is_affiliated) {
+void UserManagerImpl::SetUserPolicyStatus(const AccountId& account_id,
+                                          bool is_managed,
+                                          bool is_affiliated) {
   User* user = FindUserAndModify(account_id);
   if (!user) {
     return;
   }
-  user->SetAffiliated(is_affiliated);
+  user->SetUserPolicyStatus(is_managed, is_affiliated);
   NotifyUserAffiliationUpdated(*user);
 }
 

@@ -208,6 +208,10 @@ void User::SetProfileIsCreated() {
   on_profile_created_observers_.clear();
 }
 
+const std::optional<bool>& User::is_managed() const {
+  return is_managed_;
+}
+
 bool User::IsAffiliated() const {
   // Device local accounts are always affiliated.
   if (IsDeviceLocalAccount()) {
@@ -228,18 +232,6 @@ void User::IsAffiliatedAsync(
   } else {
     on_affiliation_set_callbacks_.push_back(std::move(is_affiliated_callback));
   }
-}
-
-void User::SetAffiliated(bool is_affiliated) {
-  // Device local accounts are always affiliated. No affiliation
-  // modification must happen.
-  CHECK(!IsDeviceLocalAccount());
-
-  is_affiliated_ = is_affiliated;
-  for (auto& callback : on_affiliation_set_callbacks_) {
-    std::move(callback).Run(is_affiliated_.value());
-  }
-  on_affiliation_set_callbacks_.clear();
 }
 
 bool User::IsDeviceLocalAccount() const {
@@ -339,6 +331,19 @@ void User::SetStubImage(std::unique_ptr<UserImage> stub_user_image,
   image_index_ = image_index;
   image_is_stub_ = true;
   image_is_loading_ = is_loading;
+}
+
+void User::SetUserPolicyStatus(bool is_managed, bool is_affiliated) {
+  // Device local accounts are always affiliated. No affiliation
+  // modification must happen.
+  CHECK(!IsDeviceLocalAccount());
+
+  is_managed_ = is_managed;
+  is_affiliated_ = is_affiliated;
+
+  for (auto& callback : std::exchange(on_affiliation_set_callbacks_, {})) {
+    std::move(callback).Run(is_affiliated_.value());
+  }
 }
 
 }  // namespace user_manager

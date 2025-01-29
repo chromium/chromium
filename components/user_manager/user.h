@@ -92,6 +92,9 @@ class USER_MANAGER_EXPORT User {
   // The displayed (non-canonical) user email.
   std::string display_email() const;
 
+  // Returns whether the User is managed by policy.
+  const std::optional<bool>& is_managed() const;
+
   // True if the user is affiliated to the device. Returns false if the
   // affiliation is not known. Use IsAffiliatedAsync if it's possible the call
   // is done before affiliation is established.
@@ -271,7 +274,7 @@ class USER_MANAGER_EXPORT User {
 
   void SetProfilePrefs(PrefService* prefs) { profile_prefs_ = prefs; }
 
-  void SetAffiliated(bool is_affiliated);
+  void SetUserPolicyStatus(bool is_managed, bool is_affiliated);
 
   AccountId account_id_;
   UserType type_;
@@ -320,6 +323,9 @@ class USER_MANAGER_EXPORT User {
 
   // True if the user is affiliated to the device.
   std::optional<bool> is_affiliated_;
+
+  // True if the user is managed by policy.
+  std::optional<bool> is_managed_;
 
   std::vector<base::OnceClosure> on_profile_created_observers_;
   std::vector<base::OnceCallback<void(bool is_affiliated)>>

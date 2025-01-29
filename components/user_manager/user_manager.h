@@ -525,10 +525,10 @@ class USER_MANAGER_EXPORT UserManager {
   virtual bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const = 0;
 
-  // Sets affiliation status for the user identified with `account_id`
-  // to `is_affiliated`.
-  virtual void SetUserAffiliated(const AccountId& account_id,
-                                 bool is_affiliated) = 0;
+  // Sets policy status for the user identified with `account_id`.
+  virtual void SetUserPolicyStatus(const AccountId& account_id,
+                                   bool is_managed,
+                                   bool is_affiliated) = 0;
 
   // Returns true when the browser has crashed and restarted during the current
   // user's session.

@@ -282,7 +282,8 @@ class TemplatesUriResolverImplTest : public testing::Test {
         "test-user@testdomain.com", GaiaId("1234567890")));
     auto* user = fake_user_manager_->AddGaiaUser(
         account_id, user_manager::UserType::kRegular);
-    fake_user_manager_->SetUserAffiliated(account_id, true);
+    fake_user_manager_->SetUserPolicyStatus(account_id, /*is_managed=*/true,
+                                            /*is_affiliated=*/true);
     return user;
   }
 
