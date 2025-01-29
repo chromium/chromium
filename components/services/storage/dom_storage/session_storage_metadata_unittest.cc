@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -37,7 +38,8 @@ std::vector<uint8_t> StdStringToUint8Vector(const std::string& s) {
 }
 
 std::vector<uint8_t> SliceToVector(const leveldb::Slice& s) {
-  base::span span(s);
+  // TODO(crbug.com/392729138): Avoid UNSAFE_ here.
+  auto span = UNSAFE_TODO(base::span(s.data(), s.size()));
   return std::vector<uint8_t>(span.begin(), span.end());
 }
 
