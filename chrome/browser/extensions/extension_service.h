@@ -323,7 +323,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // nothing.
   void DisableExtension(const std::string& extension_id, int disable_reasons);
 
-  // The method above will start accepting a `flat_set` of `DisableReason` soon
+  // The method above will start accepting a flat_set of DisableReason soon
   // (see crbug.com/372186532). When that happens, writing unknown reasons to
   // prefs will be disallowed. This is because casting unknown reasons (integer)
   // to `DisableReason` enum is undefined behavior. This isn't a problem in the
