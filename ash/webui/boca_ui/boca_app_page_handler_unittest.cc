@@ -232,6 +232,13 @@ class MockSpotlightService : public SpotlightService {
               ViewScreen,
               (std::string, std::string, ViewScreenRequestCallback),
               (override));
+  MOCK_METHOD(void,
+              UpdateViewScreenState,
+              (std::string,
+               ::boca::ViewScreenConfig::ViewScreenState,
+               std::string,
+               ViewScreenRequestCallback),
+              (override));
 };
 
 class MockWebviewAuthHandler : public WebviewAuthHandler {
@@ -1753,6 +1760,41 @@ TEST_F(BocaAppPageHandlerTest, TestPrefGetterAndSetter) {
   nav_map.Set("google.com", std::move(nav_occurrence));
   TestUserPref(mojom::BocaValidPref::kNavigationSetting,
                /*value=*/base::Value(nav_map.Clone()));
+}
+
+TEST_F(BocaAppPageHandlerTest, EndViewScreenSessionSucceeded) {
+  const std::string student_id = "123";
+  EXPECT_CALL(
+      *spotlight_service(),
+      UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::INACTIVE,
+                            kSchoolToolsApiBaseUrl, _))
+      .WillOnce(WithArg<3>(Invoke(
+          [&](auto request) { std::move(request).Run(base::ok(true)); })));
+
+  base::test::TestFuture<std::optional<mojom::EndViewScreenSessionError>>
+      future;
+
+  boca_app_handler()->EndViewScreenSession(student_id, future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest, EndViewScreenSessionFailed) {
+  const std::string student_id = "123";
+
+  EXPECT_CALL(
+      *spotlight_service(),
+      UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::INACTIVE,
+                            kSchoolToolsApiBaseUrl, _))
+      .WillOnce(WithArg<3>(Invoke([&](auto request) {
+        std::move(request).Run(
+            base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
+      })));
+
+  base::test::TestFuture<std::optional<mojom::EndViewScreenSessionError>>
+      future;
+
+  boca_app_handler()->EndViewScreenSession(student_id, future.GetCallback());
+  EXPECT_EQ(mojom::EndViewScreenSessionError::kHTTPError, future.Get().value());
 }
 
 class BocaAppPageHandlerFloatModeTest : public AshTestBase {
