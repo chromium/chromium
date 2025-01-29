@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -22,8 +24,8 @@ import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -127,11 +129,10 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mRect = rect;
     }
 
-    @NullUnmarked
     @Override
     public void onStart() {
         super.onStart();
-        Window dialogWindow = getWindow();
+        Window dialogWindow = assumeNonNull(getWindow());
         dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialogWindow.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         if (mShouldRemoveScrim) {
@@ -139,21 +140,22 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
         }
         if (mShouldRemoveScrim || mShouldSysUiMatchActivity) {
+            Window activityWindow = mActivity.getWindow();
             dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             // Set the navigation bar when API level >= 27 to match android:navigationBarColor
             // reference in styles.xml.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                dialogWindow.setNavigationBarColor(mActivity.getWindow().getNavigationBarColor());
+                dialogWindow.setNavigationBarColor(activityWindow.getNavigationBarColor());
                 UiUtils.setNavigationBarIconColor(
                         dialogWindow.getDecorView(),
                         mActivity.getResources().getBoolean(R.bool.window_light_navigation_bar));
             }
             // Apply the status bar color in case the website had override them.
-            UiUtils.setStatusBarColor(dialogWindow, mActivity.getWindow().getStatusBarColor());
+            int statusBarColor = activityWindow.getStatusBarColor();
+            UiUtils.setStatusBarColor(dialogWindow, statusBarColor);
             UiUtils.setStatusBarIconColor(
                     dialogWindow.getDecorView().getRootView(),
-                    !ColorUtils.shouldUseLightForegroundOnBackground(
-                            mActivity.getWindow().getStatusBarColor()));
+                    !ColorUtils.shouldUseLightForegroundOnBackground(statusBarColor));
         }
 
         // Both bottom margin and top margin must be set together to ensure default
@@ -323,7 +325,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mContentView.startAnimation(exitAnimation);
     }
 
-    @NullUnmarked
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -374,6 +375,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         return animation;
     }
 
+    @EnsuresNonNullIf("mTouchEventDelegateView")
     private boolean isDialogNonModal() {
         return mIsPopup && mShouldRemoveScrim && mTouchEventDelegateView != null;
     }

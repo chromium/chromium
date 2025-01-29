@@ -6,6 +6,8 @@ package org.chromium.components.browser_ui.widget;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +23,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
 
@@ -86,12 +87,11 @@ public class ChromeDialog extends ComponentDialog {
         }
     }
 
-    @NullUnmarked
     @Override
     public void addContentView(View view, ViewGroup.@Nullable LayoutParams params) {
         if (BuildInfo.getInstance().isAutomotive
                 && mIsFullScreen
-                && params.width == MATCH_PARENT
+                && assumeNonNull(params).width == MATCH_PARENT
                 && params.height == MATCH_PARENT) {
             ViewGroup automotiveLayout =
                     (ViewGroup)

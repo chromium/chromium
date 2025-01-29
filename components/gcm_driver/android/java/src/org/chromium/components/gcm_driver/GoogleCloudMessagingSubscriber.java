@@ -16,8 +16,8 @@ import java.io.IOException;
 public interface GoogleCloudMessagingSubscriber {
     /**
      * Subscribes to a source to start receiving messages from it.
-     * <p>
-     * This method may perform blocking I/O and should not be called on the main thread.
+     *
+     * <p>This method may perform blocking I/O and should not be called on the main thread.
      *
      * @param source The source of the notifications to subscribe to.
      * @param subtype The sub-source of the notifications.
@@ -25,7 +25,6 @@ public interface GoogleCloudMessagingSubscriber {
      * @return The registration id.
      * @throws IOException if the request fails.
      */
-    @Nullable
     String subscribe(String source, String subtype, @Nullable Bundle data) throws IOException;
 
     /**

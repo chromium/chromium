@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -17,7 +19,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 /** Generic builder for promo dialogs. */
@@ -119,7 +120,6 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
         mDialogLayout.addControl(control);
     }
 
-    @NullUnmarked
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,7 +128,7 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
         mDialogLayout.initialize(getDialogParams());
 
         // Force the window to allow the dialog contents be as wide as necessary.
-        getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        assumeNonNull(getWindow()).setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
         // Connect all the buttons to this class.
         for (int interactiveViewId : CLICKABLE_BUTTON_IDS) {
