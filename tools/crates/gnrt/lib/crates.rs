@@ -12,6 +12,7 @@ use std::fmt::{self, Display};
 use std::fs;
 use std::hash::Hash;
 use std::io;
+use std::num::NonZero;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
@@ -49,12 +50,10 @@ impl std::default::Default for Visibility {
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(from = "EpochString", into = "EpochString")]
 pub enum Epoch {
-    /// Epoch with major version == 0. The field is the minor version. It is an
-    /// error to use 0: methods may panic in this case.
+    /// Epoch with major version == 0. The field is the minor version.
     Minor(u64),
-    /// Epoch with major version >= 1. It is an error to use 0: methods may
-    /// panic in this case.
-    Major(u64),
+    /// Epoch with major version >= 1.
+    Major(NonZero<u64>),
 }
 
 impl Epoch {
@@ -63,16 +62,8 @@ impl Epoch {
     /// component. Note this differs from Epoch's `fmt::Display` impl.
     pub fn to_version_string(&self) -> String {
         match *self {
-            // These should never return Err since formatting an integer is
-            // infallible.
-            Epoch::Minor(minor) => {
-                assert_ne!(minor, 0);
-                format!("0.{minor}")
-            }
-            Epoch::Major(major) => {
-                assert_ne!(major, 0);
-                format!("{major}")
-            }
+            Epoch::Minor(minor) => format!("0.{minor}"),
+            Epoch::Major(major) => format!("{major}"),
         }
     }
 
@@ -80,7 +71,7 @@ impl Epoch {
     pub fn to_version_req(&self) -> semver::VersionReq {
         let (major, minor) = match self {
             Self::Minor(x) => (0, Some(*x)),
-            Self::Major(x) => (*x, None),
+            Self::Major(x) => (x.get(), None),
         };
         semver::VersionReq {
             comparators: vec![semver::Comparator {
@@ -98,9 +89,10 @@ impl Epoch {
     /// parse versions from `cargo_metadata` and in Cargo.toml files using the
     /// `semver` library.
     pub fn from_version(version: &Version) -> Self {
-        match version.major {
-            0 => Self::Minor(version.minor),
-            x => Self::Major(x),
+        if let Ok(nonzero_major) = version.major.try_into() {
+            Self::Major(nonzero_major)
+        } else {
+            Self::Minor(version.minor)
         }
     }
 
@@ -120,10 +112,10 @@ impl Epoch {
         let comp: &semver::Comparator = &req.comparators[0];
         // Caret is semver's name for the default strategy.
         assert_eq!(comp.op, semver::Op::Caret);
-        match (comp.major, comp.minor) {
-            (0, Some(0) | None) => panic!("invalid version req {req}"),
-            (0, Some(x)) => Epoch::Minor(x),
-            (x, _) => Epoch::Major(x),
+        match (comp.major.try_into(), comp.minor) {
+            (Ok(nonzero_major), _) => Epoch::Major(nonzero_major),
+            (Err(_zero_major), Some(minor)) => Epoch::Minor(minor),
+            (Err(_zero_major), None) => panic!("invalid version req {req}"),
         }
     }
 }
@@ -134,14 +126,8 @@ impl Display for Epoch {
         match *self {
             // These should never return Err since formatting an integer is
             // infallible.
-            Epoch::Minor(minor) => {
-                assert_ne!(minor, 0);
-                f.write_fmt(format_args!("v0_{minor}")).unwrap()
-            }
-            Epoch::Major(major) => {
-                assert_ne!(major, 0);
-                f.write_fmt(format_args!("v{major}")).unwrap()
-            }
+            Epoch::Minor(minor) => f.write_fmt(format_args!("v0_{minor}")).unwrap(),
+            Epoch::Major(major) => f.write_fmt(format_args!("v{major}")).unwrap(),
         }
 
         Ok(())
@@ -177,17 +163,19 @@ impl FromStr for Epoch {
             parts.next().map(|s| s.parse().map_err(EpochParseError::InvalidInt)).transpose()?;
 
         // Get the final epoch, checking that the (major, minor) pair is valid.
-        let result = match (major, minor) {
-            (Some(0), Some(0)) => Err(EpochParseError::BadVersion),
-            (Some(0), Some(minor)) => Ok(Epoch::Minor(minor)),
-            (Some(major), None) => Ok(Epoch::Major(major)),
-            (Some(_), Some(_)) => Err(EpochParseError::BadVersion),
-            (None, None) => Err(EpochParseError::BadFormat),
-            _ => unreachable!(),
-        }?;
+        let result = match (major.map(|x| x.try_into()), minor) {
+            (Some(Ok(nonzero_major)), None) => Epoch::Major(nonzero_major),
+            (Some(Ok(_nonzero_major)), Some(_)) => return Err(EpochParseError::BadVersion),
+            (Some(Err(_zero_major)), Some(minor)) => Epoch::Minor(minor),
+            _ => return Err(EpochParseError::BadFormat),
+        };
 
         // Ensure there's no remaining parts.
-        if parts.next().is_none() { Ok(result) } else { Err(EpochParseError::BadFormat) }
+        if parts.next().is_none() {
+            Ok(result)
+        } else {
+            Err(EpochParseError::BadFormat)
+        }
     }
 }
 
@@ -224,7 +212,11 @@ impl NormalizedName {
     /// Wrap a normalized name, checking that it is valid.
     pub fn new(normalized_name: &str) -> Option<NormalizedName> {
         let converted_name = Self::from_crate_name(normalized_name);
-        if converted_name.0 == normalized_name { Some(converted_name) } else { None }
+        if converted_name.0 == normalized_name {
+            Some(converted_name)
+        } else {
+            None
+        }
     }
 
     /// Normalize a crate name. `crate_name` is the name Cargo uses to refer to
@@ -587,16 +579,21 @@ mod tests {
     use super::Epoch::*;
     use super::*;
 
+    fn new_major(major: u64) -> Epoch {
+        Major(NonZero::new(major).unwrap())
+    }
+
     #[test]
     fn epoch_from_str() {
         use EpochParseError::*;
-        assert_eq!(Epoch::from_str("v1"), Ok(Major(1)));
-        assert_eq!(Epoch::from_str("v2"), Ok(Major(2)));
+        assert_eq!(Epoch::from_str("v1"), Ok(new_major(1)));
+        assert_eq!(Epoch::from_str("v2"), Ok(new_major(2)));
         assert_eq!(Epoch::from_str("v0_3"), Ok(Minor(3)));
         assert_eq!(Epoch::from_str("0_1"), Err(BadFormat));
         assert_eq!(Epoch::from_str("v1_9"), Err(BadVersion));
-        assert_eq!(Epoch::from_str("v0_0"), Err(BadVersion));
+        assert_eq!(Epoch::from_str("v0_0"), Ok(Minor(0)));
         assert_eq!(Epoch::from_str("v0_1_2"), Err(BadFormat));
+        assert_eq!(Epoch::from_str("v0_0_0"), Err(BadFormat));
         assert_eq!(Epoch::from_str("v1_0"), Err(BadVersion));
         assert!(matches!(Epoch::from_str("v1_0foo"), Err(InvalidInt(_))));
         assert!(matches!(Epoch::from_str("vx_1"), Err(InvalidInt(_))));
@@ -604,23 +601,26 @@ mod tests {
 
     #[test]
     fn epoch_to_string() {
-        assert_eq!(Major(1).to_string(), "v1");
-        assert_eq!(Major(2).to_string(), "v2");
+        assert_eq!(new_major(1).to_string(), "v1");
+        assert_eq!(new_major(2).to_string(), "v2");
         assert_eq!(Minor(3).to_string(), "v0_3");
+        assert_eq!(Minor(0).to_string(), "v0_0");
     }
 
     #[test]
     fn epoch_from_version() {
         use semver::Version;
 
+        assert_eq!(Epoch::from_version(&Version::new(0, 0, 0)), Minor(0));
         assert_eq!(Epoch::from_version(&Version::new(0, 1, 0)), Minor(1));
-        assert_eq!(Epoch::from_version(&Version::new(1, 2, 0)), Major(1));
+        assert_eq!(Epoch::from_version(&Version::new(1, 2, 0)), new_major(1));
     }
 
     #[test]
     fn epoch_from_version_req_string() {
+        assert_eq!(Epoch::from_version_req_str("0.0.0"), Minor(0));
         assert_eq!(Epoch::from_version_req_str("0.1.0"), Minor(1));
-        assert_eq!(Epoch::from_version_req_str("1.0.0"), Major(1));
-        assert_eq!(Epoch::from_version_req_str("2.3.0"), Major(2));
+        assert_eq!(Epoch::from_version_req_str("1.0.0"), new_major(1));
+        assert_eq!(Epoch::from_version_req_str("2.3.0"), new_major(2));
     }
 }
