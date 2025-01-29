@@ -398,6 +398,9 @@ class TabStripModel : public TabGroupController {
 
   bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const;
 
+  // Returns true if the tab at |index| is part of a split view.
+  bool IsTabSplit(int index) const;
+
   // Returns true if the tab at |index| is blocked by a tab modal dialog.
   bool IsTabBlocked(int index) const;
 
@@ -497,6 +500,11 @@ class TabStripModel : public TabGroupController {
   std::pair<std::optional<int>, std::optional<int>>
   GetAdjacentTabsAfterSelectedMove(base::PassKey<TabDragController>,
                                    int destination_index);
+
+  // Create a new split view and add the set of tabs pointed to by |indices| to
+  // it. Reorders the tabs so they are contiguous. |indices| must be sorted in
+  // ascending order.
+  void AddToNewSplit(const std::vector<int> indices);
 
   // Create a new tab group and add the set of tabs pointed to be |indices| to
   // it. Pins all of the tabs if any of them were pinned, and reorders the tabs

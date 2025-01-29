@@ -321,6 +321,7 @@ void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("web_contents", GetContents());
   dict.Add("pinned", IsPinned());
+  dict.Add("split", split());
   dict.Add("blocked", blocked());
 }
 

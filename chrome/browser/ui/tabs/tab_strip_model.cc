@@ -69,6 +69,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -845,6 +846,11 @@ bool TabStripModel::IsGroupCollapsed(
          group_model()->GetTabGroup(group)->visual_data()->is_collapsed();
 }
 
+bool TabStripModel::IsTabSplit(int index) const {
+  CHECK(ContainsIndex(index)) << index;
+  return GetTabModelAtIndex(index)->split();
+}
+
 bool TabStripModel::IsTabBlocked(int index) const {
   CHECK(ContainsIndex(index)) << index;
   return GetTabModelAtIndex(index)->blocked();
@@ -1107,6 +1113,50 @@ void TabStripModel::MoveTabNext() {
 
 void TabStripModel::MoveTabPrevious() {
   MoveTabRelative(TabRelativeDirection::kPrevious);
+}
+
+void TabStripModel::AddToNewSplit(const std::vector<int> indices) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+
+  // Ensure that there are exactly 2 indices, and that they are sorted and
+  // unique.
+  CHECK_EQ(indices.size(), 2u);
+  CHECK(std::ranges::is_sorted(indices));
+  CHECK(std::ranges::adjacent_find(indices) == indices.end());
+
+  for (int i : indices) {
+    tabs::TabModel* tab_model = GetTabModelAtIndex(i);
+    CHECK(!tab_model->split());
+    tab_model->set_split(true);
+  }
+
+  // Find a destination for the first tab that's not pinned or grouped. We will
+  // stack the rest of the tabs up to its right.
+  int destination_index = -1;
+  for (int i = indices[0]; i < count(); i++) {
+    const int destination_candidate = i + 1;
+
+    // Splitting at the end of the tabstrip is always valid.
+    if (!ContainsIndex(destination_candidate)) {
+      destination_index = destination_candidate;
+      break;
+    }
+
+    // Splitting in the middle of pinned tabs is never valid.
+    if (IsTabPinned(destination_candidate)) {
+      continue;
+    }
+
+    // Otherwise, splitting is valid if the destination is not in a group
+    std::optional<tab_groups::TabGroupId> destination_group =
+        GetTabGroupForTab(destination_candidate);
+    if (!destination_group.has_value()) {
+      destination_index = destination_candidate;
+      break;
+    }
+  }
+
+  MoveTabsAndSetGroupImpl(indices, destination_index, std::nullopt);
 }
 
 tab_groups::TabGroupId TabStripModel::AddToNewGroup(
@@ -1636,7 +1686,15 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     }
 
     case CommandAddToSplit: {
-      // TODO(crbug.com/390426676): Implement this.
+      if (!base::FeatureList::IsEnabled(features::kSideBySide)) {
+        break;
+      }
+
+      std::vector<int> indices = GetIndicesForCommand(context_index);
+      CHECK(indices.size() == 1 && indices[0] != active_index());
+      indices.push_back(active_index());
+      std::ranges::sort(indices);
+      AddToNewSplit(indices);
       break;
     }
 
