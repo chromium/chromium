@@ -379,6 +379,13 @@ TEST_F(StyleAdjusterTest, OverflowClipUseCount) {
       GetDocument().IsUseCounted(WebFeature::kOverflowClipAlongEitherAxis));
 }
 
+// crbug.com/392643253
+TEST_F(StyleAdjusterTest, AdjustForDisplayInlinify) {
+  SetBodyInnerHTML(R"HTML(<ruby><video></video><audio></audio></ruby>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no crashes.
+}
+
 // crbug.com/1216721
 TEST_F(StyleAdjusterTest, AdjustForSVGCrash) {
   SetBodyInnerHTML(R"HTML(
