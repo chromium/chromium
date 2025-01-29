@@ -773,7 +773,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
 // TODO(crbug.com/1258605): Fix test on Windows and re-enable.
 // TODO(crbug.com/392441189): Re-enable test with new V8 string hash.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+#if true || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_StrokeStyle \
   DISABLED_IdentifiabilityStudyDigest_StrokeStyle
 #else
@@ -825,7 +825,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
 // TODO(crbug.com/1258605): Fix test on Windows and re-enable.
 // TODO(crbug.com/392441189): Re-enable test with new V8 string hash.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+#if true || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_Combo \
   DISABLED_IdentifiabilityStudyDigest_Combo
 #else
