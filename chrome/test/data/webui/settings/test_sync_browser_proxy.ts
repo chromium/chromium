@@ -45,13 +45,13 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'sendTrustedVaultBannerStateChanged',
       'startSyncingWithEmail',
 
-      // <if expr="not chromeos_ash">
+      // <if expr="not is_chromeos">
       'pauseSync',
       'signOut',
       'startSignIn',
       // </if>
 
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       'turnOnSync',
       'turnOffSync',
       // </if>
@@ -94,7 +94,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
     return Promise.resolve(this.profileAvatarURL);
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   signOut(deleteProfile: boolean) {
     this.methodCalled('signOut', deleteProfile);
   }
@@ -149,7 +149,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
 
   showSyncPassphraseDialog() {}
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   attemptUserExit() {}
 
   turnOnSync() {

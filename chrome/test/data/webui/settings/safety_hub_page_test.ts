@@ -19,7 +19,7 @@ import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
 // clang-format on
@@ -348,7 +348,7 @@ suite('SafetyHubPage', function() {
         testElement.$.version.getAttribute('aria-description'),
         testElement.i18n('safetyHubVersionRelaunchAriaLabel'));
 
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     lifetimeBrowserProxy.setShouldShowRelaunchConfirmationDialog(true);
     lifetimeBrowserProxy.setRelaunchConfirmationDialogDescription(
         'Test description.');
@@ -356,7 +356,7 @@ suite('SafetyHubPage', function() {
 
     testElement.$.version.click();
 
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     // Ensure the confirmation dialog is always shown.
     await eventToPromise('cr-dialog-open', testElement);
     const relaunchConfirmationDialogElement =

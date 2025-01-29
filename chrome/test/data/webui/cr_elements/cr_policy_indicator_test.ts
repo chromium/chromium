@@ -108,7 +108,7 @@ suite('CrPolicyIndicator', function() {
     assertEquals('extension', getIconTooltipText());
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('primary-user controlled indicator', async () => {
     indicator.indicatorType = CrPolicyIndicatorType.PRIMARY_USER;
     indicator.indicatorSourceName = 'user@example.com';
@@ -129,7 +129,7 @@ suite('CrPolicyIndicator', function() {
     assertEquals('cr20:domain', icon.iconClass);
     assertEquals('policy', icon.tooltipText);
 
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     indicator.indicatorType = CrPolicyIndicatorType.OWNER;
     indicator.indicatorSourceName = 'foo@example.com';
     await microtasksFinished();

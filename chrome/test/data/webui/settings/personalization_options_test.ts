@@ -15,7 +15,6 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {ChromeSigninUserChoice} from 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-
 // </if>
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
@@ -391,11 +390,11 @@ suite('OfficialBuild', function() {
     testElement.remove();
   });
 
-  // On ChromeOS Ash, the spellcheck toggle is in OS Settings, not browser
+  // On ChromeOS, the spellcheck toggle is in OS Settings, not browser
   // settings. TODO (https://www.crbug.com/1396704): Add this test in the OS
   // settings test for the OS version of personalization options, once OS
   // Settings supports TypeScript tests.
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   test('Spellcheck toggle', function() {
     testElement.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
@@ -438,7 +437,7 @@ suite('OfficialBuild', function() {
   // </if>
 
   // Only the spellcheck link is shown on Chrome OS in Browser settings.
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('Spellcheck link', function() {
     testElement.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
@@ -465,7 +464,7 @@ suite('OfficialBuild', function() {
   });
   // </if>
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('Metrics row links to OS Settings Privacy Hub subpage', function() {
     let targetUrl: string = '';
     testElement['navigateTo_'] = (url: string) => {

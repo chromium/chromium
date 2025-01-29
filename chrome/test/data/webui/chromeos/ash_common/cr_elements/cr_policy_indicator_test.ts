@@ -35,7 +35,7 @@ suite('CrPolicyIndicator', function() {
     assertEquals('cr20:domain', icon.iconClass);
     assertEquals('policy', icon.tooltipText);
 
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     indicator.indicatorType = CrPolicyIndicatorType.OWNER;
     indicator.indicatorSourceName = 'foo@example.com';
 

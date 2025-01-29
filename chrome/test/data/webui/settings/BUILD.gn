@@ -170,20 +170,30 @@ build_webui_tests("build") {
     ]
   }
 
-  if (is_chromeos_ash) {
-    files += [ "people_page_test_cros.ts" ]
+  if (is_chromeos) {
+    files += [
+      "people_page_test_cros.ts",
+      "smart_card_reader_origin_entry_test.ts",
+      "smart_card_readers_page_test.ts",
+    ]
   } else {
     files += [
+      "default_browser_test.ts",
       "fake_language_settings_private.ts",
+      "import_data_dialog_test.ts",
       "languages_page_metrics_test_browser.ts",
       "languages_page_test.ts",
       "languages_test.ts",
+      "live_caption_section_test.ts",
+      "live_translate_section_test.ts",
       "metrics_reporting_test.ts",
       "people_page_manage_profile_test.ts",
       "relaunch_confirmation_dialog_test.ts",
       "spell_check_page_metrics_test_browser.ts",
       "spell_check_page_test.ts",
       "sync_account_control_test.ts",
+      "system_page_test.ts",
+      "test_captions_browser_proxy.ts",
       "test_languages_browser_proxy.ts",
       "test_languages_settings_metrics_proxy.ts",
       "translate_page_metrics_test_browser.ts",
@@ -191,27 +201,11 @@ build_webui_tests("build") {
     ]
   }
 
-  if (!is_chromeos) {
-    files += [
-      "default_browser_test.ts",
-      "import_data_dialog_test.ts",
-      "live_caption_section_test.ts",
-      "live_translate_section_test.ts",
-      "system_page_test.ts",
-      "test_captions_browser_proxy.ts",
-    ]
-  } else {
-    files += [
-      "smart_card_reader_origin_entry_test.ts",
-      "smart_card_readers_page_test.ts",
-    ]
-  }
-
   if (is_mac) {
     files += [ "passkey_edit_dialog_test.ts" ]
   }
 
-  if (!is_mac && !is_chromeos_ash) {
+  if (!is_mac && !is_chromeos) {
     files += [ "edit_dictionary_page_test.ts" ]
   }
 

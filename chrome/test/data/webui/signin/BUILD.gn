@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//components/signin/features.gni")
 import("../build_webui_tests.gni")
 
-assert(!is_chromeos_ash)
+assert(!is_chromeos)
 
 build_webui_tests("build") {
   files = [

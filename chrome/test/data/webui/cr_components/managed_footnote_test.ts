@@ -74,7 +74,7 @@ suite('ManagedFootnoteTest', function() {
     assertNotEquals('none', getComputedStyle(footnote).display);
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('Reads Attributes From loadTimeData device message', async function() {
     const browserMessage = 'the quick brown fox jumps over the lazy dog';
     const deviceMessage = 'the lazy dog jumps over the quick brown fox';

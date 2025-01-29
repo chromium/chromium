@@ -290,7 +290,7 @@ suite('LanguageMenu', () => {
         assertFalse(getToast().$.toast.open);
       });
 
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       test('it shows downloaded toast', async () => {
         enabledLangs = ['Italian', 'English (United States)'];
         languageMenu.enabledLangs = enabledLangs;

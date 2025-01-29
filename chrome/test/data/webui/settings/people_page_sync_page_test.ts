@@ -9,7 +9,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrExpandButtonElement, CrInputElement, SettingsSyncEncryptionOptionsElement, SettingsSyncPageElement} from 'chrome://settings/lazy_load.js';
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import type {CrDialogElement} from 'chrome://settings/lazy_load.js';
 // </if>
 import type {CrCollapseElement} from 'chrome://settings/lazy_load.js';
@@ -21,7 +21,7 @@ import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isChildVisible, microtasksFinished, eventToPromise} from 'chrome://webui-test/test_util.js';
 
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import {simulateStoredAccounts} from './sync_test_util.js';
 // </if>
 
@@ -735,12 +735,12 @@ suite('SyncSettings', function() {
     assertTrue(dashboardLink.hidden);
   });
 
-  // ######################################
-  // TESTS THAT ARE SKIPPED ON CHROMEOS ASH
-  // ######################################
+  // ##################################
+  // TESTS THAT ARE SKIPPED ON CHROMEOS
+  // ##################################
 
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   test('SyncSetupCancel', async function() {
     syncPage.syncStatus = {
       syncSystemEnabled: true,

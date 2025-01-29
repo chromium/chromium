@@ -24,7 +24,6 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {assertLT} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
-
 // </if>
 
 import {simulateSyncStatus} from './sync_test_util.js';
@@ -43,7 +42,7 @@ let syncBrowserProxy: TestSyncBrowserProxy;
 
 suite('ProfileInfoTests', function() {
   suiteSetup(function() {
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     loadTimeData.overrideValues({
       // Account Manager is tested in people_page_test_cros.js
       isAccountManagerEnabled: false,

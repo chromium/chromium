@@ -734,7 +734,7 @@ suite('CertificateManagerTests', function() {
     });
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
 
   async function renderTabContents() {
     const crTabs = page.shadowRoot!.querySelector('cr-tabs');
@@ -906,7 +906,7 @@ suite('CertificateListTests', function() {
         CertificateType.PERSONAL, 'importPersonalCertificate', true, false);
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('ImportAndBindButton_Personal', async function() {
     await testImportForCertificateType(
         CertificateType.PERSONAL, 'importPersonalCertificate', true, true);

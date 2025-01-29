@@ -22,14 +22,14 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {PromoteUpdaterStatus} from 'chrome://settings/settings.js';
 // </if>
 
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import {UpdateStatus} from 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertFalse, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
 
-// <if expr="_google_chrome or not chromeos_ash">
+// <if expr="_google_chrome or not is_chromeos">
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
 
@@ -45,7 +45,7 @@ function setupRouter(): SettingsRoutes {
   return routes;
 }
 
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 function fireStatusChanged(
     status: UpdateStatus, options: {progress?: number, message?: string} = {}) {
   webUIListenerCallback('update-status-changed', {
@@ -89,16 +89,16 @@ suite('AllBuilds', function() {
     page = document.createElement('settings-about-page');
     Router.getInstance().navigateTo(testRoutes.ABOUT);
     document.body.appendChild(page);
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     return Promise.resolve();
     // </if>
 
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     return aboutBrowserProxy.whenCalled('refreshUpdateStatus');
     // </if>
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   const SPINNER_ICON: string = 'chrome://resources/images/throbber_small.svg';
 
   async function assertSpinnerVisible(visible: boolean) {

@@ -27,7 +27,7 @@ suite('LanguageToast', () => {
     return microtasksFinished();
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('shows downloaded message on ChromeOS', async () => {
     const lang = 'pt-br';
     toast.notify(lang, NotificationType.DOWNLOADING);
