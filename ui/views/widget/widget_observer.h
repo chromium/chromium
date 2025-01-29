@@ -44,6 +44,13 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
 
   // Invoked after notification is received from the event loop that the native
   // widget has been destroyed.
+  // This method is guaranteed to be called exactly once before widget
+  // destruction for every Widget, regardless of InitParams::Ownership. This is
+  // called before ~Widget() for NATIVE_WIDGET_OWNS_WIDGET and
+  // WIDGET_OWNS_NATIVE_WIDGET and early in ~Widget() for CLIENT_OWNS_WIDGET.
+  // Don't subclass views::Widget, that will cause problems for many reasons,
+  // one of which is that subclass constructors run before parent class
+  // constructors.
   virtual void OnWidgetDestroyed(Widget* widget) {}
 
   // Called before RunShellDrag() is called and after it returns.

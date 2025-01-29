@@ -205,7 +205,8 @@ std::unique_ptr<views::Widget> TabDialogManager::CreateTabScopedDialog(
 
 void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
   CHECK(tab_interface_->CanShowModalUI());
-  widget_ = widget->GetWeakPtr();
+  CHECK(!widget_);
+  widget_ = widget;
   ConfigureDesiredBoundsDelegate(widget_.get(),
                                  tab_interface_->GetBrowserWindowInterface());
   UpdateModalDialogPosition(widget_.get(),
@@ -221,6 +222,7 @@ void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
       tab_interface_->GetContents(), /*blocked=*/true);
   tab_dialog_widget_observer_ =
       std::make_unique<TabDialogWidgetObserver>(this, widget_.get());
+  // TODO(crbug.com/377820808): Call tab_interface_->ShowModalUI().
   if (tab_interface_->IsActivated()) {
     widget_->Show();
   }
@@ -236,13 +238,21 @@ TabDialogManager::CreateShowDialogAndBlockTabInteraction(
 
 void TabDialogManager::CloseDialog() {
   if (widget_) {
-    widget_->Close();
-    widget_.reset();
+    views::Widget* widget = widget_;
+
+    // First reset all state tracked by this class.
+    WidgetDestroyed(widget_);
+
+    // Now destroy the Widget. We don't know whether destruction will be
+    // synchronous or asynchronous, but we no longer hold any state at this
+    // point so it doesn't matter.
+    widget->Close();
   }
 }
 
 void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
   CHECK_EQ(widget, widget_.get());
+  widget_ = nullptr;
   tab_dialog_widget_observer_.reset();
   scoped_ignore_input_events_.reset();
   tab_interface_->GetBrowserWindowInterface()->SetWebContentsBlocked(

@@ -804,6 +804,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // DEPRECATED: Please use CLIENT_OWNS_WIDGET and reset the unique_ptr<Widget>
   // instead. Use MakeCloseSynchronous() to intercept unexpected calls
   // to Close().
+  // Aside, note that depending on platform, platform settings, and widget
+  // InitParams::Ownership, closing is sometimes synchronous and sometimes
+  // asynchronous. Yet another reason to prefer CLIENT_OWNS_WIDGET and
+  // MakeCloseSynchronous(), as that guarantees that Close() is always
+  // synchronous.
   void CloseWithReason(ClosedReason closed_reason);
 
   // This method is used by clients to intercept calls to Close() from other
