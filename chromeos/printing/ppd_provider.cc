@@ -4,6 +4,7 @@
 
 #include "chromeos/printing/ppd_provider.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -16,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -66,8 +66,8 @@ bool PpdReferenceIsWellFormed(const Printer::PpdReference& reference) {
   // All effective-make-and-model strings should be lowercased, since v2.
   // Since make-and-model strings could include non-Latin chars, only checking
   // that it excludes all upper-case chars A-Z.
-  if (!base::ranges::all_of(reference.effective_make_and_model,
-                            [](char c) { return !base::IsAsciiUpper(c); })) {
+  if (!std::ranges::all_of(reference.effective_make_and_model,
+                           [](char c) { return !base::IsAsciiUpper(c); })) {
     return false;
   }
   // Should have exactly one non-empty field.

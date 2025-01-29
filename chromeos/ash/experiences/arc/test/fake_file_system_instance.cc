@@ -7,6 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <limits>
 #include <optional>
 #include <sstream>
@@ -22,7 +23,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
@@ -197,7 +197,7 @@ void FakeFileSystemInstance::RemoveRecentDocument(const Document& document) {
   // Unfortunately we don't know the root_id when deleting a document, so
   // here we need to loop through all available roots to find the document.
   for (auto const& doc : recent_documents_) {
-    const auto iter = base::ranges::find_if(
+    const auto iter = std::ranges::find_if(
         doc.second, [&document](const Document& recent_document) {
           return document.authority == recent_document.authority &&
                  document.document_id == recent_document.document_id;

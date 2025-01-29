@@ -708,7 +708,7 @@ bool ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
   const size_t window_size = std::min<size_t>(history.size(), max_window_size);
   base::span<const base::Value> history_window(history.end() - window_size,
                                                history.end());
-  return base::ranges::count(history_window, base::Value(true)) < threshold;
+  return std::ranges::count(history_window, base::Value(true)) < threshold;
 }
 
 void RecordFirstActivationDuringUserSessionStartUp(PrefService* prefs,

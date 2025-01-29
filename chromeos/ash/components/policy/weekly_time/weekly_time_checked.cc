@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_checked.h"
 
+#include <algorithm>
 #include <array>
 #include <optional>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
@@ -48,7 +48,7 @@ std::optional<WeeklyTimeChecked> WeeklyTimeChecked::FromDict(
   }
 
   int day_of_week_value =
-      base::ranges::find(kWeekDays, *day_of_week_str) - kWeekDays.begin() + 1;
+      std::ranges::find(kWeekDays, *day_of_week_str) - kWeekDays.begin() + 1;
   if (day_of_week_value < 1 || day_of_week_value > 7) {
     LOG(ERROR) << "Invalid day_of_week: " << *day_of_week_str;
     return std::nullopt;

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/network/cellular_esim_profile_handler_impl.h"
 
+#include <algorithm>
 #include <sstream>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
@@ -263,8 +263,8 @@ void CellularESimProfileHandlerImpl::UpdateProfilesFromHermes() {
   // yet. This is required because property updates to eSIM profile objects
   // occur after the profile list has been updated. This state is temporary.
   // This method will be triggered again when ICCID properties are updated.
-  if (base::ranges::any_of(profiles_from_hermes, &std::string::empty,
-                           &CellularESimProfile::iccid)) {
+  if (std::ranges::any_of(profiles_from_hermes, &std::string::empty,
+                          &CellularESimProfile::iccid)) {
     return;
   }
 
@@ -323,8 +323,8 @@ void CellularESimProfileHandlerImpl::ResetESimProfileCache() {
 void CellularESimProfileHandlerImpl::DisableActiveESimProfile() {
   std::vector<CellularESimProfile> esim_profiles = GetESimProfiles();
   const auto iter =
-      base::ranges::find(esim_profiles, CellularESimProfile::State::kActive,
-                         &CellularESimProfile::state);
+      std::ranges::find(esim_profiles, CellularESimProfile::State::kActive,
+                        &CellularESimProfile::state);
   if (iter == esim_profiles.end()) {
     NET_LOG(EVENT) << "No active eSIM profile is found.";
     return;

@@ -4,9 +4,10 @@
 
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/kerberos/fake_kerberos_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
@@ -135,7 +136,7 @@ void FakeUpstartClient::StartRecordingUpstartOperations() {
 std::vector<FakeUpstartClient::UpstartOperation>
 FakeUpstartClient::GetRecordedUpstartOperationsForJob(const std::string& name) {
   std::vector<FakeUpstartClient::UpstartOperation> filtered_ops;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       upstart_operations_, std::back_inserter(filtered_ops),
       [&name](const UpstartOperation& op) { return op.name == name; });
   return filtered_ops;

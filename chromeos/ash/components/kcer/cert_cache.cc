@@ -33,7 +33,7 @@ class CmpAdapter {
   explicit CmpAdapter(const base::span<const uint8_t>& cert) : data_(cert) {}
 
   bool operator<(const CmpAdapter& other) {
-    return base::ranges::lexicographical_compare(data_, other.data_);
+    return std::ranges::lexicographical_compare(data_, other.data_);
   }
 
  private:

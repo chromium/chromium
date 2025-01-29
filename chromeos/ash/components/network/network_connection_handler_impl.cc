@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/network/network_connection_handler_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <ostream>
 
@@ -15,7 +16,6 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -605,7 +605,7 @@ NetworkConnectionHandlerImpl::GetPendingRequest(
 }
 
 bool NetworkConnectionHandlerImpl::HasPendingCellularRequest() const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       pending_requests_,
       [&](const std::pair<const std::string, std::unique_ptr<ConnectRequest>>&
               pair) {

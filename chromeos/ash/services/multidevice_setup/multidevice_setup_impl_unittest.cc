@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
@@ -61,10 +61,10 @@ const char kValidAuthToken[] = "validAuthToken";
 multidevice::RemoteDeviceList RefListToRawList(
     const multidevice::RemoteDeviceRefList& ref_list) {
   multidevice::RemoteDeviceList raw_list;
-  base::ranges::transform(ref_list, std::back_inserter(raw_list),
-                          [](const multidevice::RemoteDeviceRef ref) {
-                            return *GetMutableRemoteDevice(ref);
-                          });
+  std::ranges::transform(ref_list, std::back_inserter(raw_list),
+                         [](const multidevice::RemoteDeviceRef ref) {
+                           return *GetMutableRemoteDevice(ref);
+                         });
   return raw_list;
 }
 

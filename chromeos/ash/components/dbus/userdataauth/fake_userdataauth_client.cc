@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <limits>
 #include <memory>
@@ -23,7 +24,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -349,7 +349,7 @@ template <class FakeFactorType>
 bool ContainsFakeFactor(
     const base::flat_map<std::string, FakeAuthFactor>& factors) {
   const auto it =
-      base::ranges::find_if(factors, [](const auto label_factor_pair) {
+      std::ranges::find_if(factors, [](const auto label_factor_pair) {
         const FakeAuthFactor& fake_factor = label_factor_pair.second;
         return absl::get_if<FakeFactorType>(&fake_factor) != nullptr;
       });

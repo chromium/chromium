@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/check_op.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -45,7 +44,7 @@ bool AuthFactorsConfiguration::HasConfiguredFactor(
 
 const cryptohome::AuthFactor* AuthFactorsConfiguration::FindFactorByType(
     cryptohome::AuthFactorType type) const {
-  const auto& result = base::ranges::find_if(
+  const auto& result = std::ranges::find_if(
       configured_factors_, [type](auto& f) { return f.ref().type() == type; });
   if (result == configured_factors_.end())
     return nullptr;

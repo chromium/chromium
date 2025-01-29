@@ -14,6 +14,7 @@
 #include <sys/un.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <string>
@@ -31,7 +32,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/posix/safe_strerror.h"
 #include "base/process/process_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1638,7 +1638,7 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_LvmSupported) {
                          std::string(kUserIdHash).substr(0, 8).c_str());
   const auto& disks = req.disks();
   auto it =
-      base::ranges::find_if(disks, [&expected_lvm_disk_path](const auto& disk) {
+      std::ranges::find_if(disks, [&expected_lvm_disk_path](const auto& disk) {
         return disk.path() == expected_lvm_disk_path;
       });
   EXPECT_NE(it, disks.end());
