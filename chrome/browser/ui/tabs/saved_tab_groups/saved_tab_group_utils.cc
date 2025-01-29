@@ -348,14 +348,14 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
       saved_group.collaboration_id()) {
     if (tab_groups::SavedTabGroupUtils::IsOwnerOfSharedTabGroup(
             browser->profile(), saved_group.saved_guid())) {
-      // TODO(tbergquist): Handle 'keep or delete group' case. Fall back to
-      // saved group behavior for now.
+      dialog_type =
+          DeletionDialogController::DialogType::CloseTabAndKeepOrDeleteGroup;
     } else {
       dialog_type =
           DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup;
-      keep_callback =
-          base::BindOnce(&KeepGroups, browser->tab_strip_model(), group_ids);
     }
+    keep_callback =
+        base::BindOnce(&KeepGroups, browser->tab_strip_model(), group_ids);
   }
 
   DeletionDialogController::DialogMetadata dialog_metadata(

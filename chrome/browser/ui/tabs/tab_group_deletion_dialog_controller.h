@@ -39,6 +39,7 @@ class DeletionDialogController {
     // Shared tab group dialogs.
     DeleteSingleShared,
     CloseTabAndKeepOrLeaveGroup,
+    CloseTabAndKeepOrDeleteGroup,
     LeaveGroup,
   };
 

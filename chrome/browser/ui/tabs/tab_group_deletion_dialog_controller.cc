@@ -163,8 +163,7 @@ DialogText GetDialogText(
           l10n_util::GetStringUTF16(
               IDS_DATA_SHARING_OWNER_DELETE_DIALOG_CONFIRM)};
     }
-    case tab_groups::DeletionDialogController::DialogType::
-        CloseTabAndKeepOrLeaveGroup: {
+    case DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup: {
       return DialogText{
           l10n_util::GetPluralStringFUTF16(
               IDS_DATA_SHARING_DELETE_LAST_TAB_TITLE,
@@ -177,6 +176,22 @@ DialogText GetDialogText(
               dialog_metadata.closing_group_count),
           l10n_util::GetPluralStringFUTF16(
               IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CANCEL,
+              dialog_metadata.closing_group_count),
+      };
+    }
+    case DeletionDialogController::DialogType::CloseTabAndKeepOrDeleteGroup: {
+      return DialogText{
+          l10n_util::GetPluralStringFUTF16(
+              IDS_DATA_SHARING_DELETE_LAST_TAB_TITLE,
+              dialog_metadata.closing_group_count),
+          l10n_util::GetPluralStringFUTF16(
+              IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_BODY,
+              dialog_metadata.closing_group_count),
+          l10n_util::GetPluralStringFUTF16(
+              IDS_DATA_SHARING_DELETE_LAST_TAB_CONFIRM,
+              dialog_metadata.closing_group_count),
+          l10n_util::GetPluralStringFUTF16(
+              IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_CANCEL,
               dialog_metadata.closing_group_count),
       };
     }
@@ -212,6 +227,7 @@ bool IsDialogSkippable(DeletionDialogController::DialogType type) {
     // Shared tab group dialogs aren't skippable.
     case DeletionDialogController::DialogType::DeleteSingleShared:
     case DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup:
+    case DeletionDialogController::DialogType::CloseTabAndKeepOrDeleteGroup:
     case DeletionDialogController::DialogType::LeaveGroup: {
       return false;
     }
@@ -245,6 +261,7 @@ bool IsDialogSkippedByUserSettings(Profile* profile,
     // Shared tab groups dialogs aren't skippable.
     case DeletionDialogController::DialogType::DeleteSingleShared:
     case DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup:
+    case DeletionDialogController::DialogType::CloseTabAndKeepOrDeleteGroup:
     case DeletionDialogController::DialogType::LeaveGroup: {
       return false;
     }
@@ -283,11 +300,21 @@ void SetSkipDialogForType(Profile* profile,
     // Shared tab group dialogs aren't skippable.
     case DeletionDialogController::DialogType::DeleteSingleShared:
     case DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup:
+    case DeletionDialogController::DialogType::CloseTabAndKeepOrDeleteGroup:
     case DeletionDialogController::DialogType::LeaveGroup: {
       // We should never try to set the skip pref for these dialog types.
       NOTREACHED();
     }
   }
+}
+
+// Keep type dialogs don't let the user cancel their action; instead, they
+// choose whether the group should stick around or go away.
+bool IsDialogKeepType(DeletionDialogController::DialogType type) {
+  return type == DeletionDialogController::DialogType::
+                     CloseTabAndKeepOrDeleteGroup ||
+         type ==
+             DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup;
 }
 
 }  // anonymous namespace
@@ -344,7 +371,7 @@ bool DeletionDialogController::MaybeShowDialog(
     const DialogMetadata& metadata,
     base::OnceCallback<void()> callback,
     std::optional<base::OnceCallback<void()>> keep_groups) {
-  if (metadata.type == DialogType::CloseTabAndKeepOrLeaveGroup) {
+  if (IsDialogKeepType(metadata.type)) {
     CHECK(keep_groups.has_value());
   } else {
     CHECK(!keep_groups.has_value());
@@ -394,8 +421,7 @@ void DeletionDialogController::OnDialogOk() {
           ->is_checked()) {
     SetSkipDialogForType(profile_, state_->type, true);
   }
-  if (state_->type ==
-      DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup) {
+  if (IsDialogKeepType(state_->type)) {
     std::move(state_->keep_groups.value()).Run();
   }
   std::move(state_->callback).Run();
@@ -403,8 +429,7 @@ void DeletionDialogController::OnDialogOk() {
 }
 
 void DeletionDialogController::OnDialogCancel() {
-  if (state_->type ==
-      DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup) {
+  if (IsDialogKeepType(state_->type)) {
     std::move(state_->callback).Run();
   }
   state_.reset();
