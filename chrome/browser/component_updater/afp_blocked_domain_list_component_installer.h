@@ -32,6 +32,20 @@ class ComponentUpdateService;
 constexpr char kExperimentalVersionAttributeName[] =
     "_experimental_list_version";
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(InstallationResult)
+enum class InstallationResult {
+  // The blocklist component was successfully installed.
+  kSuccess = 0,
+  // The component file wasn't present.
+  kMissingBlocklistFileError = 1,
+  // The ruleset format in the component doesn't match expected format.
+  kRulesetFormatError = 2,
+  kMaxValue = kRulesetFormatError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FingerprintingProtectionComponentInstallationResult)
+
 class AntiFingerprintingBlockedDomainListComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:

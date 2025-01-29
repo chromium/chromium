@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
 #include "chrome/common/chrome_features.h"
@@ -33,6 +34,7 @@ namespace {
 using ::testing::_;
 
 constexpr char kTestRulesetVersion[] = "1.2.3.4";
+const int kInvalidRulesetFormat = 0;
 
 class TestRulesetService : public subresource_filter::RulesetService {
  public:
@@ -155,6 +157,15 @@ class AntiFingerprintingBlockedDomainListComponentInstallerTest
     task_env().RunUntilIdle();
   }
 
+  void ErrorLoadTestRuleset(int ruleset_format,
+                            const base::FilePath& install_dir) {
+    base::Value::Dict manifest;
+    manifest.Set(AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
+                     kManifestRulesetFormatKey,
+                 ruleset_format);
+    ASSERT_FALSE(policy_->VerifyInstallation(manifest, install_dir));
+  }
+
  private:
   base::ScopedTempDir component_install_dir_;
   base::ScopedTempDir ruleset_install_dir_;
@@ -203,11 +214,16 @@ TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
 
 TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
        LoadRuleset_Empty) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(service());
   ASSERT_NO_FATAL_FAILURE(CreateTestRuleset(std::string()));
   ASSERT_NO_FATAL_FAILURE(LoadTestRuleset(
       AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
           kCurrentRulesetFormat));
+  histogram_tester.ExpectBucketCount(
+      "FingerprintingProtection.BlockedDomainListComponent."
+      "InstallationResult",
+      static_cast<int>(InstallationResult::kSuccess), 1);
   EXPECT_EQ(kTestRulesetVersion, service()->content_version());
   std::string actual_ruleset_contents;
   ASSERT_TRUE(base::ReadFileToString(service()->ruleset_path(),
@@ -217,17 +233,59 @@ TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
 
 TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
        LoadRuleset_WithData) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(service());
   const std::string expected_ruleset_contents = "foobar";
   ASSERT_NO_FATAL_FAILURE(CreateTestRuleset(expected_ruleset_contents));
   ASSERT_NO_FATAL_FAILURE(LoadTestRuleset(
       AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
           kCurrentRulesetFormat));
+  histogram_tester.ExpectBucketCount(
+      "FingerprintingProtection.BlockedDomainListComponent."
+      "InstallationResult",
+      static_cast<int>(InstallationResult::kSuccess), 1);
   EXPECT_EQ(kTestRulesetVersion, service()->content_version());
   std::string actual_ruleset_contents;
   ASSERT_TRUE(base::ReadFileToString(service()->ruleset_path(),
                                      &actual_ruleset_contents));
   EXPECT_EQ(expected_ruleset_contents, actual_ruleset_contents);
+}
+TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
+       LoadRuleset_WrongFormat) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(service());
+  const std::string expected_ruleset_contents = "foobar";
+  ASSERT_NO_FATAL_FAILURE(CreateTestRuleset(expected_ruleset_contents));
+  ASSERT_NO_FATAL_FAILURE(
+      ErrorLoadTestRuleset(kInvalidRulesetFormat, base::FilePath()));
+
+  histogram_tester.ExpectBucketCount(
+      "FingerprintingProtection.BlockedDomainListComponent."
+      "InstallationResult",
+      static_cast<int>(InstallationResult::kRulesetFormatError), 1);
+  EXPECT_EQ(policy()->GetInstallerAttributes(),
+            update_client::InstallerAttributes(
+                {{kExperimentalVersionAttributeName, ""}}));
+}
+
+TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
+       LoadRuleset_NoRulesetFile) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(service());
+  const std::string expected_ruleset_contents = "foobar";
+  // skip creating file
+  ASSERT_NO_FATAL_FAILURE(ErrorLoadTestRuleset(
+      AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
+          kCurrentRulesetFormat,
+      base::FilePath()));
+
+  histogram_tester.ExpectBucketCount(
+      "FingerprintingProtection.BlockedDomainListComponent."
+      "InstallationResult",
+      static_cast<int>(InstallationResult::kMissingBlocklistFileError), 1);
+  EXPECT_EQ(policy()->GetInstallerAttributes(),
+            update_client::InstallerAttributes(
+                {{kExperimentalVersionAttributeName, ""}}));
 }
 
 TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,

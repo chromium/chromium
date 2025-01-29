@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram
+    name="FingerprintingProtection.BlockedDomainListComponent.InstallationResult"
+    enum="FingerprintingProtectionComponentInstallationResult"
+    expires_after="2025-10-10">
+  <owner>trishalfonso@google.com</owner>
+  <owner>src/components/fingerprinting_protection_filter/OWNERS</owner>
+  <summary>
+    Whenever a new blocked domain list component is installed, log the result of
+    the installation, i.e. success or failure reason.
+  </summary>
+</histogram>
+
 <histogram name="FingerprintingProtection.DocumentLoad.RulesetIsAvailable"
     enum="BooleanAvailable" expires_after="2025-10-10">
   <owner>rizvis@google.com</owner>
