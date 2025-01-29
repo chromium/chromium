@@ -201,6 +201,7 @@ class SigninViewController {
                            CreateLocalProfile);
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
                            CancelLocalProfileCreation);
+  friend class ChromeSignoutConfirmationWebUIPromptPixelTest;
   friend class login_ui_test_utils::SigninViewControllerTestUtil;
   friend class SigninInterceptFirstRunExperienceDialogBrowserTest;
   friend class SyncConfirmationUIDialogPixelTest;
@@ -231,6 +232,10 @@ class SigninViewController {
       const AccountInfo& account_info_for_promos,
       content::WebContents* contents);
 
+  // Shows the WebUI version of the signout confirmation prompt for testing with
+  // the given `prompt_variant`. Should only be used for pixel tests.
+  void ShowSignoutConfirmationPromptForTesting(
+      ChromeSignoutConfirmationPromptVariant prompt_variant);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Returns the web contents of the modal dialog.

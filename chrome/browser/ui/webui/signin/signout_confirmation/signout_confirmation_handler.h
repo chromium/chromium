@@ -32,16 +32,21 @@ class SignoutConfirmationHandler
       delete;
 
   // signout_confirmation::mojom::PageHandler:
-  // TODO(crbug.com/390219535): Implement mojom handlers as they're added.
+  void Accept() override;
+  void Cancel() override;
+  void Close() override;
 
  private:
+  // Run `completion_callback_` with the given `choice` and close the dialog if
+  // there is one open.
+  void FinishAndCloseDialog(ChromeSignoutConfirmationChoice choice);
+
   base::WeakPtr<Browser> browser_;
 
   // The variant of the signout confirmation prompt. This affects which actions
   // are taken when the user accepts or cancels the prompt, and the strings that
   // are displayed inside the prompt itself.
-  // TODO(crbug.com/390219535): Uncomment this when implementing the actual UI.
-  // ChromeSignoutConfirmationPromptVariant variant_;
+  ChromeSignoutConfirmationPromptVariant variant_;
 
   // Called when the user accepts, cancels or closes the prompt.
   base::OnceCallback<void(ChromeSignoutConfirmationChoice)>

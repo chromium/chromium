@@ -14,8 +14,28 @@ interface PageHandlerFactory {
                            pending_receiver<PageHandler> handler);
 };
 
+struct SignoutConfirmationData {
+  string dialog_title;
+  string dialog_subtitle;
+  string accept_button_label;
+  string cancel_button_label;
+};
+
 // Called from TS side of chrome://signout-confirmation (Renderer -> Browser)
-interface PageHandler {};
+interface PageHandler {
+  // The user has accepted the prompt through clicking a button.
+  Accept();
+
+  // The user has cancelled the prompt through clicking a button.
+  Cancel();
+
+  // The user has explicitly dismissed the prompt, e.g. via the escape key.
+  Close();
+};
 
 // Called from C++ side of chrome://signout-confirmation. (Browser -> Renderer)
-interface Page {};
+interface Page {
+  // When the handler is initialized, sends the signout confirmation data to the
+  // UI.
+  SendSignoutConfirmationData(SignoutConfirmationData data);
+};
