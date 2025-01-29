@@ -128,8 +128,6 @@ namespace mojom {
 enum class CommitResult : int32_t;
 }  // namespace mojom
 
-struct SameSizeAsDocumentLoader;
-
 enum class FirePopstate { kYes, kNo };
 
 // The DocumentLoader fetches a main resource and handles the result.
@@ -518,7 +516,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   Member<MHTMLArchive> archive_;
 
  private:
-  friend struct SameSizeAsDocumentLoader;
   class BodyData;
   class EncodedBodyData;
 
