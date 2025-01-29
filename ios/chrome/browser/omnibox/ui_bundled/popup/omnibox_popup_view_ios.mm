@@ -21,6 +21,7 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_util.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_view_suggestions_delegate.h"
@@ -35,8 +36,11 @@ using base::UserMetricsAction;
 
 OmniboxPopupViewIOS::OmniboxPopupViewIOS(
     OmniboxController* controller,
-    OmniboxPopupViewSuggestionsDelegate* delegate)
-    : OmniboxPopupView(controller), delegate_(delegate) {
+    OmniboxPopupViewSuggestionsDelegate* delegate,
+    OmniboxAutocompleteController* omnibox_autocomplete_controller)
+    : OmniboxPopupView(controller),
+      delegate_(delegate),
+      omnibox_autocomplete_controller_(omnibox_autocomplete_controller) {
   DCHECK(delegate);
   DCHECK(controller);
   model()->set_popup_view(this);
@@ -47,7 +51,7 @@ OmniboxPopupViewIOS::~OmniboxPopupViewIOS() {
 }
 
 void OmniboxPopupViewIOS::UpdatePopupAppearance() {
-  [mediator_
+  [omnibox_autocomplete_controller_
       updateWithResults:controller()->autocomplete_controller()->result()];
 }
 

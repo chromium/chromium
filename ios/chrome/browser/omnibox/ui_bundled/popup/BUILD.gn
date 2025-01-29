@@ -83,6 +83,7 @@ source_set("popup") {
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
+    "//ios/chrome/browser/omnibox/model",
     "//ios/chrome/browser/omnibox/ui_bundled",
     "//ios/chrome/browser/omnibox/ui_bundled:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",

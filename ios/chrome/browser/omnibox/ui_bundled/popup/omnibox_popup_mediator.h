@@ -11,6 +11,7 @@
 
 #import "components/history/core/browser/top_sites.h"
 #import "components/omnibox/browser/autocomplete_result.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
@@ -77,6 +78,7 @@ class OmniboxPopupMediatorDelegate {
 
 @interface OmniboxPopupMediator : NSObject <AutocompleteResultConsumerDelegate,
                                             AutocompleteResultDataSource,
+                                            OmniboxPopupControllerDelegate,
                                             CarouselItemMenuProvider,
                                             ImageRetriever,
                                             FaviconRetriever>

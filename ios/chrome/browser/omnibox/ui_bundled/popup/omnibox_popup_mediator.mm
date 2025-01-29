@@ -239,6 +239,13 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   _open = open;
 }
 
+#pragma mark - OmniboxPopupControllerDelegate
+
+- (void)popupController:(OmniboxPopupController*)popupController
+       didUpdateResults:(const AutocompleteResult&)result {
+  [self updateWithResults:result];
+}
+
 #pragma mark - AutocompleteResultDataSource
 
 - (void)requestResultsWithVisibleSuggestionCount:
