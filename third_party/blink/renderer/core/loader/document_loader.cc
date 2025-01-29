@@ -1263,6 +1263,8 @@ void DocumentLoader::SetHistoryItemStateForCommit(
   // navigation, unless the before and after pages are logically related. This
   // means they have the same url (ignoring fragment) and the new item was
   // loaded via reload or client redirect.
+  // TODO(crbug.com/40051596): Also return early if the origin changes as a
+  // result of this commit.
   if (navigation_type == HistoryNavigationType::kDifferentDocument &&
       (history_commit_type != kWebHistoryInertCommit ||
        !EqualIgnoringFragmentIdentifier(old_item->Url(), history_item_->Url())))
