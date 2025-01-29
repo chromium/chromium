@@ -96,15 +96,17 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
         // TODO(crbug.com/346377124): Partially cut off in android_30_google_apis_x86.textpb
         elements.declareView(COLOR_PICKER_CONTAINER, ViewElement.displayingAtLeastOption(50));
         @TabGroupColorId List<Integer> colors = TabGroupColorUtils.getTabGroupColorIdList();
-        for (@TabGroupColorId Integer color : colors) {
+        // Only the first 5 colors are displayed reliably when the soft keyboard opens.
+        for (int i = 0; i < 5; i++) {
+            @TabGroupColorId Integer color = colors.get(i);
             if (mSelectedColor != null) {
                 elements.declareView(
                         colorPickerIconSpec(color, color.equals(mSelectedColor)),
-                        ViewElement.newOptions().unscoped().displayingAtLeast(10).build());
+                        ViewElement.newOptions().unscoped().displayingAtLeast(60).build());
             } else {
                 elements.declareView(
                         colorPickerIconSpec(color, /* selected= */ null),
-                        ViewElement.newOptions().unscoped().displayingAtLeast(10).build());
+                        ViewElement.newOptions().unscoped().displayingAtLeast(60).build());
             }
         }
 
