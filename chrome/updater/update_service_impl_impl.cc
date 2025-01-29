@@ -731,6 +731,16 @@ void UpdateServiceImplImpl::GetAppStates(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  base::MakeRefCounted<FindUnregisteredAppsTask>(config_, GetUpdaterScope())
+      ->Run(base::BindOnce(&UpdateServiceImplImpl::GetAppStatesImpl, this,
+                           std::move(callback)));
+}
+
+void UpdateServiceImplImpl::GetAppStatesImpl(
+    base::OnceCallback<void(const std::vector<AppState>&)> callback) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   scoped_refptr<PersistedData> persisted_data =
       config_->GetUpdaterPersistedData();
   std::vector<std::string> app_ids = persisted_data->GetAppIds();
@@ -1067,6 +1077,24 @@ void UpdateServiceImplImpl::Install(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  base::MakeRefCounted<FindUnregisteredAppsTask>(config_, GetUpdaterScope())
+      ->Run(base::BindOnce(&UpdateServiceImplImpl::InstallImpl, this,
+                           registration, client_install_data,
+                           install_data_index, priority, language, state_update,
+                           std::move(callback)));
+}
+
+void UpdateServiceImplImpl::InstallImpl(
+    const RegistrationRequest& registration,
+    const std::string& client_install_data,
+    const std::string& install_data_index,
+    Priority priority,
+    const std::string& language,
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
+    base::OnceCallback<void(Result)> callback) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!IsAppPolicyLoadedOK(registration.app_id)) {
     HandlePolicyLoadError(registration.app_id, state_update,
                           std::move(callback));
@@ -1132,6 +1160,26 @@ void UpdateServiceImplImpl::CancelInstalls(const std::string& app_id) {
 }
 
 void UpdateServiceImplImpl::RunInstaller(
+    const std::string& app_id,
+    const base::FilePath& installer_path,
+    const std::string& install_args,
+    const std::string& install_data,
+    const std::string& install_settings,
+    const std::string& language,
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
+    base::OnceCallback<void(Result)> callback) {
+  VLOG(1) << __func__ << ": " << app_id << ": " << installer_path << ": "
+          << install_args << ": " << install_data << ": " << install_settings;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::MakeRefCounted<FindUnregisteredAppsTask>(config_, GetUpdaterScope())
+      ->Run(base::BindOnce(&UpdateServiceImplImpl::RunInstallerImpl, this,
+                           app_id, installer_path, install_args, install_data,
+                           install_settings, language, state_update,
+                           std::move(callback)));
+}
+
+void UpdateServiceImplImpl::RunInstallerImpl(
     const std::string& app_id,
     const base::FilePath& installer_path,
     const std::string& install_args,
