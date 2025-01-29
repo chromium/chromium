@@ -963,6 +963,8 @@ static_library("browser") {
     "password_manager/credentials_cleaner_runner_factory.h",
     "password_manager/field_info_manager_factory.cc",
     "password_manager/field_info_manager_factory.h",
+    "password_manager/password_change/change_form_submission_verifier.cc",
+    "password_manager/password_change/change_form_submission_verifier.h",
     "password_manager/password_change_delegate.h",
     "password_manager/password_change_delegate_impl.cc",
     "password_manager/password_change_delegate_impl.h",
