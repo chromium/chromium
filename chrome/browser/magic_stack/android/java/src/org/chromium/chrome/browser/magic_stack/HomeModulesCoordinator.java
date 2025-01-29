@@ -403,11 +403,21 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                         .getDimensionPixelSize(
                                 org.chromium.chrome.browser.magic_stack.R.dimen.home_module_height);
         group.setLayoutParams(layoutParams);
+        // Handle long clicks.
         group.setOnLongClickListener(
                 view -> {
                     mHomeModulesContextMenuManager.displayMenu(view, moduleProvider);
                     return true;
                 });
+
+        // Handle long clicks on descendants views (e.g., TabResumptionTileView) that got
+        // setOnClicksListener(). These views require setOnLongClickListener(v -> false) to ensure
+        // the event is captured here.
+        group.setOnCreateContextMenuListener(
+                (contextMenu, view, contextMenuInfo) -> {
+                    mHomeModulesContextMenuManager.displayMenu(view, moduleProvider);
+                });
+
         moduleProvider.onViewCreated();
         int position = mMediator.findModuleIndexInRecyclerView(moduleType, mAdapter.getItemCount());
         HomeModulesMetricsUtils.recordModuleShown(
