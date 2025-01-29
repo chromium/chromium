@@ -129,8 +129,9 @@ class FakeKerberosCredentialsManagerObserver
 
 class MockKerberosFilesHandler : public KerberosFilesHandler {
  public:
-  explicit MockKerberosFilesHandler(base::RepeatingClosure get_kerberos_files)
-      : KerberosFilesHandler(get_kerberos_files) {}
+  MockKerberosFilesHandler(PrefService& local_state,
+                           base::RepeatingClosure get_kerberos_files)
+      : KerberosFilesHandler(local_state, get_kerberos_files) {}
 
   ~MockKerberosFilesHandler() override = default;
 
@@ -694,7 +695,7 @@ TEST_F(KerberosCredentialsManagerTest,
 TEST_F(KerberosCredentialsManagerTest,
        RemoveAccountRemoveLastAccountDeletesKerberosFiles) {
   auto files_handler = std::make_unique<MockKerberosFilesHandler>(
-      mgr_->GetGetKerberosFilesCallbackForTesting());
+      *local_state_.Get(), mgr_->GetGetKerberosFilesCallbackForTesting());
   EXPECT_CALL(*files_handler, DeleteFiles());
   mgr_->SetKerberosFilesHandlerForTesting(std::move(files_handler));
   AddAccountAndAuthenticate(kPrincipal, kUnmanaged, kerberos::ERROR_NONE,
