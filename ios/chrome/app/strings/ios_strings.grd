@@ -497,6 +497,18 @@
       <message name="IDS_IOS_AUTO_DELETION_ACTION_SHEET_TITLE" desc="The title for the action sheet that appears when a user downloads a file onto the device.">
           Confirm deletion
       </message>
+      <message name="IDS_IOS_AUTO_DELETION_IPH_DESCRIPTION" desc="The description contained in the half-sheet IPH that explains the auto-deletion feature's purpose and benefits.">
+          Schedule all your downloads for deletion after one month to save space on your phone and protect your privacy.
+      </message>
+      <message name="IDS_IOS_AUTO_DELETION_IPH_PRIMARY_ACTION" desc="The primary action button's label that, when tapped, enables the auto-deletion feature.">
+          Enable auto delete
+      </message>
+      <message name="IDS_IOS_AUTO_DELETION_IPH_REJECTION" desc="The text label that, when tapped, does not enroll the user in auto-deletion.">
+          No thanks
+      </message>
+      <message name="IDS_IOS_AUTO_DELETION_IPH_TITLE" desc="The title of the half-sheet IPH that appears to prompt the user if they would like to enable the auto-deletion feature.">
+        Auto delete your downlaods
+      </message>
       <message name="IDS_IOS_BACK_FORWARD_SWIPE_IPH" desc="The text for the full screen in-product help for side swipe on the current tab to navigate.">
         You can swipe the edge to go back or forward.
       </message>
