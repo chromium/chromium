@@ -6474,6 +6474,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxStarterPackIPHDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kStarterPackIPH)},
 
+    {"omnibox-focus-triggers-web-and-srp-zero-suggest",
+     flag_descriptions::kOmniboxFocusTriggersWebAndSRPZeroSuggestName,
+     flag_descriptions::kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kFocusTriggersWebAndSRPZeroSuggest)},
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 

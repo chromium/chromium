@@ -2750,6 +2750,13 @@ const char kOmniboxStarterPackIPHDescription[] =
     "Enables an informational IPH message for the  Site search starter pack "
     "feature";
 
+const char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[] =
+    "Omnibox on-focus suggestions on web and SRP";
+const char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[] =
+    "Enables zero-prefix suggestions on web and SRP when the omnibox is "
+    "focused, subject to the same conditions and restrictions as on-clobber "
+    "suggestions.";
+
 const char kWebUIOmniboxPopupName[] = "WebUI Omnibox Popup";
 const char kWebUIOmniboxPopupDescription[] =
     "If enabled, shows the omnibox suggestions popup in WebUI.";

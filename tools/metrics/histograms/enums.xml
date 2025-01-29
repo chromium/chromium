@@ -15934,6 +15934,8 @@ from previous Chrome versions.
   <int value="735180038"
       label="AccessibilitySelectToSpeakHoverTextImprovements:disabled"/>
   <int value="735393448" label="InsertKeyToggleMode:disabled"/>
+  <int value="736740751"
+      label="OmniboxFocusTriggersWebAndSRPZeroSuggest:disabled"/>
   <int value="736911267" label="ExperimentalCrostiniUI:disabled"/>
   <int value="737058890"
       label="AccessibilityOverscrollSettingFeature:disabled"/>
@@ -17627,6 +17629,8 @@ from previous Chrome versions.
   <int value="1405459667" label="enable-fast-text-autosizing"/>
   <int value="1406046556" label="enable-slimming-paint-v175"/>
   <int value="1406354320" label="MacViewsWebUIDialogs:enabled"/>
+  <int value="1406806825"
+      label="OmniboxFocusTriggersWebAndSRPZeroSuggest:enabled"/>
   <int value="1407248208" label="LocationProviderManager:enabled"/>
   <int value="1407616323" label="OfflineIndicatorAlwaysHttpProbe:disabled"/>
   <int value="1407625309"

@@ -6373,6 +6373,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-focus-triggers-web-and-srp-zero-suggest",
+    "owners": ["jdonnelly@chromium.org", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "omnibox-force-allowed-to-be-default",
     "owners": ["manukh@chromium.org", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 130
