@@ -367,6 +367,7 @@ VIEW_BUILDER_PROPERTY(bool, IsDefault)
 VIEW_BUILDER_PROPERTY(int, ImageLabelSpacing)
 VIEW_BUILDER_PROPERTY(bool, ImageCentered)
 VIEW_BUILDER_METHOD(SetImageModel, Button::ButtonState, const ui::ImageModel&)
+VIEW_BUILDER_METHOD(SetTextColorId, Button::ButtonState, ui::ColorId)
 END_VIEW_BUILDER
 
 }  // namespace views
