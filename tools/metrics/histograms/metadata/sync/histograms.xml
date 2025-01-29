@@ -1472,6 +1472,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.PostedClientToServerMessagePartialErrorDataType"
+    enum="SyncDataTypes" expires_after="2025-11-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    The data type(s) which encountered a partial (i.e. data-type-specific) error
+    as a result of a client-initiated request. Recorded when a request resulted
+    in a PARTIAL_FAILURE (and the server provided the list of affected data
+    types).
+
+    This histogram can help explain changes in
+    Sync.PostedClientToServerMessageError2::PARTIAL_FAILURE.
+  </summary>
+</histogram>
+
 <histogram name="Sync.PostedDataTypeCommitRequest" enum="SyncDataTypes"
     expires_after="2025-11-30">
   <owner>mastiz@chromium.org</owner>
