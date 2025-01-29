@@ -147,6 +147,15 @@ void InProcessFuzzer::SetUpOnMainThread() {
 #endif  // BUILDFLAG(IS_POSIX)
 }
 
+bool InProcessFuzzer::InMergeMode() const {
+  for (const auto& arg : libfuzzer_command_line_) {
+    if (arg.starts_with("-merge")) {
+      return true;
+    }
+  }
+  return false;
+}
+
 InProcessFuzzer* g_test;
 
 // The following three classes are only meant to inject `internals` into JS.
