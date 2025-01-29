@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.settings;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -24,6 +25,9 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
 
     /** The View for this preference. */
     private View mView;
+
+    /** The initial background resource for this preference. */
+    @Nullable private Drawable mInitialBackgroundDrawable;
 
     /** The color for tinting of the view's background. */
     @ColorInt @Nullable private Integer mBackgroundColorInt;
@@ -128,6 +132,17 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
         updateBackground();
     }
 
+    /**
+     * Resets the background to its initial resource after a color change. Does nothing if the color
+     * was never changed.
+     */
+    public void clearBackgroundColor() {
+        if (mView == null || mBackgroundColorInt == null || mInitialBackgroundDrawable == null)
+            return;
+        mView.setBackground(mInitialBackgroundDrawable);
+        mBackgroundColorInt = null;
+    }
+
     /** Returns the background color of the preference. */
     public @Nullable @ColorInt Integer getBackgroundColor() {
         return mBackgroundColorInt;
@@ -150,6 +165,7 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
 
     private void updateBackground() {
         if (mView == null || mBackgroundColorInt == null) return;
+        mInitialBackgroundDrawable = mView.getBackground();
         mView.setBackgroundColor(mBackgroundColorInt);
     }
 }
