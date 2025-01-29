@@ -286,7 +286,7 @@ public class DownloadFileProvider extends FileProvider {
 
         // Path traverse to parent is not allowed.
         String query = uri.getQueryParameter(URI_QUERY_FILE);
-        if (assumeNonNull(query).contains(".." + File.separator)) return null;
+        if (query == null || query.contains(".." + File.separator)) return null;
 
         // Parse download on primary storage.
         if (path.equals(URI_PATH)) {
@@ -296,7 +296,9 @@ public class DownloadFileProvider extends FileProvider {
 
         // Parse download on external SD card on new Android R directory.
         SecondaryStorageInfo info = delegate.getSecondaryStorageDownloadDirectories();
-        if (path.equals(URI_EXTERNAL_PATH) && !assumeNonNull(info.directories).isEmpty()) {
+        if (path.equals(URI_EXTERNAL_PATH)
+                && info.directories != null
+                && !info.directories.isEmpty()) {
             // Only supports one directory.
             return info.directories.get(0).getAbsolutePath() + File.separator + query;
         }

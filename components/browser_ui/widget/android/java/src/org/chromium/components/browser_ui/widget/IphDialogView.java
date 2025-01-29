@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.Animatable;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -44,22 +47,14 @@ public class IphDialogView extends LinearLayout {
     private final int mDialogTextTopMarginLandscape;
     private final Context mContext;
 
-    @SuppressWarnings("NullAway.Init")
-    private View mRootView;
+    private @Nullable View mRootView;
 
     private long mIntervalMs = 1500; // Delay before repeating the animation.
-    private @Nullable ImageView mIphImageView;
-    private @Nullable Drawable mIphDrawable;
-
-    @SuppressWarnings("NullAway.Init")
+    private ImageView mIphImageView;
+    private Drawable mIphDrawable;
     private Animatable mIphAnimation;
-
     private Animatable2Compat.AnimationCallback mAnimationCallback;
-
-    @SuppressWarnings("NullAway.Init")
     private ViewGroup.MarginLayoutParams mTitleTextMarginParams;
-
-    @SuppressWarnings("NullAway.Init")
     private ViewGroup.MarginLayoutParams mDescriptionTextMarginParams;
 
     private int mParentViewHeight;
@@ -97,29 +92,21 @@ public class IphDialogView extends LinearLayout {
 
     /**
      * @param drawable The promo drawable.
-     * @param contentDescription The content description of the drawable.
+     * @param title The title shown in the dialog.
+     * @param description The description shown below the title.
      */
-    public void setDrawable(Drawable drawable, String contentDescription) {
-        mIphImageView = ((ImageView) findViewById(R.id.animation_drawable));
+    @Initializer
+    public void initialize(Drawable drawable, String title, String description) {
+        mIphImageView = findViewById(R.id.animation_drawable);
         mIphImageView.setImageDrawable(drawable);
         mIphDrawable = drawable;
-        mIphAnimation = (Animatable) mIphDrawable;
-    }
+        mIphAnimation = (Animatable) drawable;
 
-    /**
-     * @param title The title shown in the dialog.
-     */
-    public void setTitle(String title) {
         TextView iphDialogTitleText = findViewById(R.id.title);
         iphDialogTitleText.setText(title);
         mTitleTextMarginParams =
                 (ViewGroup.MarginLayoutParams) iphDialogTitleText.getLayoutParams();
-    }
 
-    /**
-     * @param description The description shown below the title.
-     */
-    public void setDescription(String description) {
         TextView iphDialogDescriptionText = findViewById(R.id.description);
         iphDialogDescriptionText.setText(description);
         mDescriptionTextMarginParams =
@@ -153,8 +140,10 @@ public class IphDialogView extends LinearLayout {
 
     /** Update the IPH view layout based on the current size of the root view. */
     public void updateLayout() {
-        if (mParentViewHeight == mRootView.getHeight()) return;
-        mParentViewHeight = mRootView.getHeight();
+        assumeNonNull(mRootView);
+        int rootViewHeight = mRootView.getHeight();
+        if (mParentViewHeight == rootViewHeight) return;
+        mParentViewHeight = rootViewHeight;
         int orientation = mContext.getResources().getConfiguration().orientation;
         int textTopMargin;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -162,13 +151,12 @@ public class IphDialogView extends LinearLayout {
         } else {
             textTopMargin = mDialogTextTopMarginLandscape;
         }
-        mTitleTextMarginParams.setMargins(
-                mDialogTextSideMargin, textTopMargin, mDialogTextSideMargin, textTopMargin);
-        mDescriptionTextMarginParams.setMargins(
-                mDialogTextSideMargin, 0, mDialogTextSideMargin, textTopMargin);
+        int sideMargin = mDialogTextSideMargin;
+        mTitleTextMarginParams.setMargins(sideMargin, textTopMargin, sideMargin, textTopMargin);
+        mDescriptionTextMarginParams.setMargins(sideMargin, 0, sideMargin, textTopMargin);
 
         // The IPH view height should be at most (root view height - 2 * top margin).
-        int dialogHeight = Math.min(mDialogHeight, mParentViewHeight - 2 * mDialogTopMargin);
+        int dialogHeight = Math.min(mDialogHeight, rootViewHeight - 2 * mDialogTopMargin);
         setMinimumHeight(dialogHeight);
     }
 

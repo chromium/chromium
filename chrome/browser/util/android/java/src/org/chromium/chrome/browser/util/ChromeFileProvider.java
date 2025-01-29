@@ -14,7 +14,6 @@ import androidx.core.content.FileProvider;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
@@ -108,14 +107,14 @@ public class ChromeFileProvider extends FileProvider {
         return fileUri != null ? super.openFile(fileUri, mode) : null;
     }
 
-    @NullUnmarked
     @Override
+    @SuppressWarnings("NullAway") // FileProvider returns NonNull but ContentProvider allows null.
     public @Nullable Cursor query(
             Uri uri,
             String @Nullable [] projection,
-            String selection,
-            String[] selectionArgs,
-            String sortOrder) {
+            @Nullable String selection,
+            String @Nullable [] selectionArgs,
+            @Nullable String sortOrder) {
         Uri fileUri = getFileUriWhenReady(uri);
         if (fileUri == null) return null;
 
@@ -165,10 +164,9 @@ public class ChromeFileProvider extends FileProvider {
         return fileUri != null ? super.getType(fileUri) : null;
     }
 
-    @NullUnmarked
     @Override
     public int delete(Uri uri, @Nullable String selection, String @Nullable [] selectionArgs) {
-        if (uri != null && uri.getPath().contains(BLOCKED_FILE_PREFIX)) {
+        if (uri.getPath() != null && uri.getPath().contains(BLOCKED_FILE_PREFIX)) {
             synchronized (sLock) {
                 if (!doesMatchCurrentBlockingUri(uri)) return 0;
                 sFileUri = null;
@@ -183,10 +181,11 @@ public class ChromeFileProvider extends FileProvider {
      * Waits and returns file uri iff the file is ready to be accessed, or returns null if file is
      * replaced.
      */
-    @NullUnmarked
     protected static @Nullable Uri getFileUriWhenReady(Uri uri) {
         // If the uri passed is not a blocked file, then the given uri can be directly used.
-        if (uri == null || !uri.getPath().contains(BLOCKED_FILE_PREFIX)) return uri;
+        if (uri.getPath() == null || !uri.getPath().contains(BLOCKED_FILE_PREFIX)) {
+            return uri;
+        }
 
         synchronized (sLock) {
             // Wait only if the file is not ready and the current file has not changed.
