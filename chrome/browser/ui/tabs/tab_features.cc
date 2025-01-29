@@ -181,8 +181,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   page_action_controller_ =
       std::make_unique<page_actions::PageActionController>(
           pinned_actions_model);
-  page_action_controller_->Initialize(std::vector<actions::ActionId>(
-      page_actions::kActionIds.begin(), page_actions::kActionIds.end()));
+  page_action_controller_->Initialize(
+      tab, std::vector<actions::ActionId>(page_actions::kActionIds.begin(),
+                                          page_actions::kActionIds.end()));
   translate_page_action_controller_ =
       std::make_unique<TranslatePageActionController>(tab);
 

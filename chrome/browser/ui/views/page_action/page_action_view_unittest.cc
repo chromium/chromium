@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/mock_page_action_model.h"
@@ -43,6 +44,12 @@ class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
               GetIconLabelBubbleBackgroundColor,
               (),
               (const, override));
+};
+
+class AlwaysActiveTabInterface : public tabs::MockTabInterface {
+ public:
+  ~AlwaysActiveTabInterface() override = default;
+  bool IsActivated() const override { return true; }
 };
 
 // Some methods in IconLabelBubbleView, from which PageActionView inherits,
@@ -105,10 +112,11 @@ class PageActionViewTest : public ChromeViewsTestBase {
     profile_.reset();
   }
 
-  std::unique_ptr<PageActionController> NewPageActionController() const {
+  std::unique_ptr<PageActionController> NewPageActionController(
+      tabs::TabInterface& tab) const {
     auto controller =
         std::make_unique<PageActionController>(pinned_actions_model_.get());
-    controller->Initialize({action_item_->GetActionId().value()});
+    controller->Initialize(tab, {action_item_->GetActionId().value()});
     return controller;
   }
 
@@ -177,8 +185,10 @@ class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
 // Tests that calling Show/Hide on an inactive controller will not affect the
 // view.
 TEST_F(PageActionViewTest, ViewIgnoresInactiveController) {
-  auto controller_a = NewPageActionController();
-  auto controller_b = NewPageActionController();
+  // Use an always-active tab to ensure consistent visibility updates.
+  AlwaysActiveTabInterface tab;
+  auto controller_a = NewPageActionController(tab);
+  auto controller_b = NewPageActionController(tab);
   actions::ActionItem* item = action_item();
   item->SetEnabled(true);
   item->SetVisible(true);
@@ -211,7 +221,9 @@ TEST_F(PageActionViewTest, NoActiveController) {
   PageActionView* view = page_action_view();
   EXPECT_FALSE(view->GetVisible());
 
-  auto controller = NewPageActionController();
+  // Use an always-active tab to ensure consistent visibility updates.
+  AlwaysActiveTabInterface tab;
+  auto controller = NewPageActionController(tab);
   view->OnNewActiveController(controller.get());
   controller->Show(0);
   EXPECT_TRUE(view->GetVisible());

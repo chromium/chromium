@@ -30,6 +30,15 @@ void PageActionModel::SetShowRequested(base::PassKey<PageActionController>,
   NotifyChange();
 }
 
+void PageActionModel::SetTabActive(base::PassKey<PageActionController>,
+                                   bool is_active) {
+  if (is_tab_active_ == is_active) {
+    return;
+  }
+  is_tab_active_ = is_active;
+  NotifyChange();
+}
+
 void PageActionModel::SetHasPinnedIcon(base::PassKey<PageActionController>,
                                        bool has_pinned_icon) {
   if (has_pinned_icon_ == has_pinned_icon) {
@@ -71,8 +80,8 @@ void PageActionModel::SetActionItemProperties(
 }
 
 bool PageActionModel::GetVisible() const {
-  return action_item_enabled_ && action_item_visible_ && show_requested_ &&
-         !has_pinned_icon_;
+  return is_tab_active_ && action_item_enabled_ && action_item_visible_ &&
+         show_requested_ && !has_pinned_icon_;
 }
 
 bool PageActionModel::GetShowSuggestionChip() const {

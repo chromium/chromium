@@ -8,7 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/views/page_action/mock_page_action_model.h"
@@ -37,6 +40,38 @@ using ::actions::ActionItem;
 using TestPageActionModelObservation =
     ::base::ScopedObservation<PageActionModelInterface,
                               PageActionModelObserver>;
+
+class FakeTabInterface : public tabs::MockTabInterface {
+ public:
+  ~FakeTabInterface() override = default;
+
+  base::CallbackListSubscription RegisterDidActivate(
+      base::RepeatingCallback<void(TabInterface*)> cb) override {
+    return activation_callbacks_.Add(cb);
+  }
+
+  base::CallbackListSubscription RegisterWillDeactivate(
+      base::RepeatingCallback<void(TabInterface*)> cb) override {
+    return deactivation_callbacks_.Add(cb);
+  }
+
+  void Activate() {
+    is_activated_ = true;
+    activation_callbacks_.Notify(this);
+  }
+
+  void Deactivate() {
+    is_activated_ = false;
+    deactivation_callbacks_.Notify(this);
+  }
+
+  bool IsActivated() const override { return is_activated_; }
+
+ private:
+  bool is_activated_ = false;
+  base::RepeatingCallbackList<void(TabInterface*)> activation_callbacks_;
+  base::RepeatingCallbackList<void(TabInterface*)> deactivation_callbacks_;
+};
 
 class PageActionTestObserver : public PageActionModelObserver {
  public:
@@ -80,6 +115,8 @@ class PageActionControllerTest : public ::testing::Test {
         std::make_unique<PinnedToolbarActionsModel>(profile_.get());
     controller_ =
         std::make_unique<PageActionController>(pinned_actions_model_.get());
+    tab_interface_ = std::make_unique<FakeTabInterface>();
+    tab_interface_->Activate();
   }
 
   void TearDown() override {
@@ -87,6 +124,7 @@ class PageActionControllerTest : public ::testing::Test {
     controller_.reset();
     pinned_actions_model_.reset();
     profile_.reset();
+    tab_interface_.reset();
   }
 
   PageActionController* controller() { return controller_.get(); }
@@ -94,6 +132,8 @@ class PageActionControllerTest : public ::testing::Test {
     return pinned_actions_model_.get();
   }
   TestingProfile* profile() { return profile_.get(); }
+
+  FakeTabInterface* tab_interface() { return tab_interface_.get(); }
 
   std::unique_ptr<ActionItem> BuildActionItem(int action_id) {
     return ActionItem::Builder()
@@ -109,13 +149,14 @@ class PageActionControllerTest : public ::testing::Test {
   std::unique_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ActionItem> action_item_;
+  std::unique_ptr<FakeTabInterface> tab_interface_;
 };
 
 // Tests adding/removing observers.
 TEST_F(PageActionControllerTest, AddAndRemoveObserver) {
   auto observer = PageActionTestObserver();
   TestPageActionModelObservation observation(&observer);
-  controller()->Register(0);
+  controller()->Initialize(*tab_interface(), {0});
   controller()->AddObserver(0, observation);
   auto action_item = BuildActionItem(0);
   base::CallbackListSubscription subscription =
@@ -133,7 +174,7 @@ TEST_F(PageActionControllerTest, AddAndRemoveObserver) {
 TEST_F(PageActionControllerTest, ShowAndHidePageAction) {
   auto observer = PageActionTestObserver();
   TestPageActionModelObservation observation(&observer);
-  controller()->Register(0);
+  controller()->Initialize(*tab_interface(), {0});
   auto action_item = BuildActionItem(0);
   base::CallbackListSubscription subscription =
       controller()->CreateActionItemSubscription(action_item.get());
@@ -161,7 +202,7 @@ TEST_F(PageActionControllerTest, ShowAndHidePageActionUpdatesCorrectModel) {
   TestPageActionModelObservation observation_a(&observer_a);
   TestPageActionModelObservation observation_b(&observer_b);
 
-  controller()->Initialize({0, 1});
+  controller()->Initialize(*tab_interface(), {0, 1});
 
   auto action_item_a = BuildActionItem(0);
   base::CallbackListSubscription subscription_a =
@@ -189,7 +230,7 @@ TEST_F(PageActionControllerTest, ShowAndHidePageActionUpdatesCorrectModel) {
 TEST_F(PageActionControllerTest, ActionItemPropertiesUpdateModel) {
   auto observer = PageActionTestObserver();
   TestPageActionModelObservation observation(&observer);
-  controller()->Register(0);
+  controller()->Initialize(*tab_interface(), {0});
   auto action_item = BuildActionItem(0);
   base::CallbackListSubscription subscription =
       controller()->CreateActionItemSubscription(action_item.get());
@@ -206,7 +247,7 @@ TEST_F(PageActionControllerTest, ShowIfNotPinned) {
   auto observer = PageActionTestObserver();
   TestPageActionModelObservation observation(&observer);
   auto action_item = BuildActionItem(0);
-  controller()->Register(0);
+  controller()->Initialize(*tab_interface(), {0});
   controller()->AddObserver(0, observation);
   base::CallbackListSubscription subscription =
       controller()->CreateActionItemSubscription(action_item.get());
@@ -240,7 +281,7 @@ TEST_F(PageActionControllerTest, ActionPinnedAtInitialization) {
   PinnedToolbarActionsModel* pinned_actions = pinned_actions_model();
   pinned_actions->UpdatePinnedState(0, true);
 
-  controller()->Initialize({0});
+  controller()->Initialize(*tab_interface(), {0});
   controller()->AddObserver(0, observation);
   base::CallbackListSubscription subscription =
       controller()->CreateActionItemSubscription(action_item.get());
@@ -257,7 +298,7 @@ TEST_F(PageActionControllerTest, PinnedActionPrefChanged) {
   auto observer = PageActionTestObserver();
   TestPageActionModelObservation observation(&observer);
   auto action_item = BuildActionItem(0);
-  controller()->Initialize({0});
+  controller()->Initialize(*tab_interface(), {0});
   controller()->AddObserver(0, observation);
   base::CallbackListSubscription subscription =
       controller()->CreateActionItemSubscription(action_item.get());
@@ -283,7 +324,7 @@ TEST_F(PageActionControllerTest, PinnedActionPrefChanged) {
 TEST_F(PageActionControllerTest, OverrideText) {
   auto observer = PageActionTestObserver();
   TestPageActionModelObservation observation(&observer);
-  controller()->Register(0);
+  controller()->Initialize(*tab_interface(), {0});
   auto action_item = BuildActionItem(0);
   base::CallbackListSubscription subscription =
       controller()->CreateActionItemSubscription(action_item.get());
@@ -298,7 +339,7 @@ TEST_F(PageActionControllerTest, OverrideText) {
 TEST_F(PageActionControllerTest, UpdateActionItemTextWithOverrideText) {
   auto observer = PageActionTestObserver();
   TestPageActionModelObservation observation(&observer);
-  controller()->Register(0);
+  controller()->Initialize(*tab_interface(), {0});
   auto action_item = BuildActionItem(0);
   base::CallbackListSubscription subscription =
       controller()->CreateActionItemSubscription(action_item.get());
@@ -317,7 +358,7 @@ TEST_F(PageActionControllerTest, UpdateActionItemTextWithOverrideText) {
 TEST_F(PageActionControllerTest, ClearOverrideText) {
   auto observer = PageActionTestObserver();
   TestPageActionModelObservation observation(&observer);
-  controller()->Register(0);
+  controller()->Initialize(*tab_interface(), {0});
   auto action_item = BuildActionItem(0);
   base::CallbackListSubscription subscription =
       controller()->CreateActionItemSubscription(action_item.get());
@@ -359,16 +400,18 @@ class PageActionControllerMockModelTest : public ::testing::Test {
 
   PageActionController& controller() { return controller_; }
   MockPageActionModelFactory& models() { return model_factory_; }
+  FakeTabInterface& tab_interface() { return tab_interface_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   MockPageActionModelFactory model_factory_;
   PageActionController controller_;
+  FakeTabInterface tab_interface_;
 };
 
 TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideText) {
   constexpr int kActionItemId = 0;
-  controller().Register(kActionItemId);
+  controller().Initialize(tab_interface(), {kActionItemId});
 
   // Set the text override.
   EXPECT_CALL(models().Get(kActionItemId),
@@ -383,6 +426,26 @@ TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideText) {
       SetOverrideText(testing::_, std::optional<std::u16string>(std::nullopt)))
       .Times(1);
   controller().ClearOverrideText(0);
+}
+
+TEST_F(PageActionControllerMockModelTest, TabActivation) {
+  constexpr int kActionItemId = 0;
+  tab_interface().Deactivate();
+  controller().Initialize(tab_interface(), {kActionItemId});
+
+  EXPECT_CALL(models().Get(kActionItemId), SetTabActive(testing::_, true))
+      .Times(1);
+  tab_interface().Activate();
+}
+
+TEST_F(PageActionControllerMockModelTest, TabDeactivation) {
+  constexpr int kActionItemId = 0;
+  tab_interface().Activate();
+  controller().Initialize(tab_interface(), {kActionItemId});
+
+  EXPECT_CALL(models().Get(kActionItemId), SetTabActive(testing::_, false))
+      .Times(1);
+  tab_interface().Deactivate();
 }
 
 }  // namespace

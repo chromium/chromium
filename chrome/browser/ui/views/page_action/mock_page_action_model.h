@@ -44,6 +44,10 @@ class MockPageActionModel : public PageActionModelInterface {
               (base::PassKey<PageActionController>, bool has_pinned_icon),
               (override));
   MOCK_METHOD(void,
+              SetTabActive,
+              (base::PassKey<PageActionController>, bool is_active),
+              (override));
+  MOCK_METHOD(void,
               SetOverrideText,
               (base::PassKey<PageActionController>,
                const std::optional<std::u16string>& text),
