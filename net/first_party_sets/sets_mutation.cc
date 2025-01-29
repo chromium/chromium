@@ -4,10 +4,10 @@
 
 #include "net/first_party_sets/sets_mutation.h"
 
+#include <algorithm>
 #include <map>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 
@@ -32,10 +32,10 @@ SetsMutation::SetsMutation(
       site_counts[site]++;
     }
   }
-  CHECK(base::ranges::all_of(site_counts,
-                             [](const std::pair<const SchemefulSite, int>& p) {
-                               return p.second == 1;
-                             }));
+  CHECK(std::ranges::all_of(site_counts,
+                            [](const std::pair<const SchemefulSite, int>& p) {
+                              return p.second == 1;
+                            }));
 }
 
 SetsMutation::SetsMutation() = default;

@@ -319,7 +319,7 @@ HostCache::Entry::Entry(
 
     // Any errors should be an ignorable ERR_NAME_NOT_RESOLVED from a single
     // transaction.
-    CHECK(base::ranges::all_of(
+    CHECK(std::ranges::all_of(
         error_results, [](const HostResolverInternalResult* error_result) {
           return error_result->query_type() != DnsQueryType::UNSPECIFIED &&
                  error_result->AsError().error() == ERR_NAME_NOT_RESOLVED;

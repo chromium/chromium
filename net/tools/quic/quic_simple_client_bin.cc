@@ -33,8 +33,9 @@
 // Try to connect to a host which does not speak QUIC:
 //   quic_client http://www.example.com
 
+#include <algorithm>
+
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "net/base/address_family.h"
 #include "net/base/net_errors.h"
 #include "net/quic/address_utils.h"
@@ -80,7 +81,7 @@ class QuicSimpleClientFactory : public quic::QuicToyClient::ClientFactory {
                    << "' : " << net::ErrorToShortString(rv);
         return nullptr;
       }
-      const auto endpoint = base::ranges::find_if(
+      const auto endpoint = std::ranges::find_if(
           addresses,
           [address_family_for_lookup](net::AddressFamily family) {
             if (address_family_for_lookup == AF_INET)

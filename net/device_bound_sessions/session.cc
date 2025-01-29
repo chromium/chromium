@@ -303,7 +303,7 @@ bool Session::ShouldDeferRequest(URLRequest* request) const {
 }
 
 bool Session::IsEqualForTesting(const Session& other) const {
-  if (!base::ranges::equal(
+  if (!std::ranges::equal(
           cookie_cravings_, other.cookie_cravings_,
           [](const CookieCraving& lhs, const CookieCraving& rhs) {
             return lhs.IsEqualForTesting(rhs);  // IN-TEST

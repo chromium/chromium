@@ -4,6 +4,7 @@
 
 #include "net/cert/cert_verify_proc.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -816,8 +816,8 @@ TEST_P(CertVerifyProcInternalTest, UnnecessaryInvalidIntermediate) {
   auto events = net_log_observer.GetEntriesForSource(net_log.source());
   EXPECT_FALSE(events.empty());
 
-  auto event = base::ranges::find(events, NetLogEventType::CERT_VERIFY_PROC,
-                                  &NetLogEntry::type);
+  auto event = std::ranges::find(events, NetLogEventType::CERT_VERIFY_PROC,
+                                 &NetLogEntry::type);
   ASSERT_NE(event, events.end());
   EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
   const std::string* host = event->params.FindString("host");
@@ -826,8 +826,8 @@ TEST_P(CertVerifyProcInternalTest, UnnecessaryInvalidIntermediate) {
 
   if (VerifyProcTypeIsBuiltin()) {
     event =
-        base::ranges::find(events, NetLogEventType::CERT_VERIFY_PROC_INPUT_CERT,
-                           &NetLogEntry::type);
+        std::ranges::find(events, NetLogEventType::CERT_VERIFY_PROC_INPUT_CERT,
+                          &NetLogEntry::type);
     ASSERT_NE(event, events.end());
     EXPECT_EQ(net::NetLogEventPhase::NONE, event->phase);
     const std::string* errors = event->params.FindString("errors");

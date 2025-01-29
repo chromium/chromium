@@ -4,6 +4,7 @@
 
 #include "net/first_party_sets/global_first_party_sets.h"
 
+#include <algorithm>
 #include <iterator>
 #include <map>
 #include <optional>
@@ -16,7 +17,6 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/optional_ref.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/addition_overlaps_union_find.h"
@@ -88,7 +88,7 @@ GlobalFirstPartySets::GlobalFirstPartySets(
     CHECK(aliases_.empty());
   }
 
-  CHECK(base::ranges::all_of(aliases_, [&](const auto& pair) {
+  CHECK(std::ranges::all_of(aliases_, [&](const auto& pair) {
     return entries_.contains(pair.second);
   }));
   CHECK(IsValid(), base::NotFatalUntil::M130) << "Sets must be valid";
@@ -299,8 +299,8 @@ GlobalFirstPartySets::FindPrimariesAffectedByReplacements(
 
 FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
     const SetsMutation& mutation) const {
-  if (base::ranges::all_of(mutation.replacements(), &SingleSet::empty) &&
-      base::ranges::all_of(mutation.additions(), &SingleSet::empty)) {
+  if (std::ranges::all_of(mutation.replacements(), &SingleSet::empty) &&
+      std::ranges::all_of(mutation.additions(), &SingleSet::empty)) {
     // Nothing to do.
     return FirstPartySetsContextConfig();
   }
@@ -312,10 +312,10 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
   // Maps a site to its override.
   std::vector<std::pair<SchemefulSite, FirstPartySetEntryOverride>>
       site_to_override;
-  base::ranges::transform(replacements, std::back_inserter(site_to_override),
-                          SiteAndEntryToSiteAndOverride);
-  base::ranges::transform(additions, std::back_inserter(site_to_override),
-                          SiteAndEntryToSiteAndOverride);
+  std::ranges::transform(replacements, std::back_inserter(site_to_override),
+                         SiteAndEntryToSiteAndOverride);
+  std::ranges::transform(additions, std::back_inserter(site_to_override),
+                         SiteAndEntryToSiteAndOverride);
 
   // Maps old primary site to new entry.
   const base::flat_map<SchemefulSite, FirstPartySetEntry>
@@ -399,7 +399,7 @@ std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
 GlobalFirstPartySets::NormalizeAdditionSets(
     const std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>&
         addition_sets) const {
-  if (base::ranges::all_of(addition_sets, &SingleSet::empty)) {
+  if (std::ranges::all_of(addition_sets, &SingleSet::empty)) {
     // Nothing to do.
     return {};
   }

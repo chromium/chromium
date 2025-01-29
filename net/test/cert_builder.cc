@@ -9,6 +9,7 @@
 
 #include "net/test/cert_builder.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -21,7 +22,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -248,7 +248,7 @@ std::vector<std::unique_ptr<CertBuilder>> CertBuilder::CreateSimpleChain(
     parent_builder = builder.get();
     chain.push_back(std::move(builder));
   }
-  base::ranges::reverse(chain);
+  std::ranges::reverse(chain);
   return chain;
 }
 

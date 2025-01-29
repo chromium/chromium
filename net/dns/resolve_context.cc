@@ -4,6 +4,7 @@
 
 #include "net/dns/resolve_context.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <limits>
 #include <utility>
@@ -19,7 +20,6 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -206,8 +206,8 @@ size_t ResolveContext::NumAvailableDohServers(const DnsSession* session) const {
   if (!IsCurrentSession(session))
     return 0;
 
-  return base::ranges::count_if(doh_server_stats_,
-                                &ServerStatsToDohAvailability);
+  return std::ranges::count_if(doh_server_stats_,
+                               &ServerStatsToDohAvailability);
 }
 
 void ResolveContext::RecordServerFailure(size_t server_index,

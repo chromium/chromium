@@ -4,6 +4,7 @@
 
 #include "net/cookies/cookie_inclusion_status.h"
 
+#include <algorithm>
 #include <initializer_list>
 #include <string_view>
 #include <tuple>
@@ -11,7 +12,6 @@
 
 #include "base/containers/enum_set.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "url/gurl.h"
 
@@ -267,7 +267,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
       std::size(exclusion_reasons) == ExclusionReasonBitset::kValueCount,
       "Please ensure all ExclusionReason variants are enumerated in "
       "GetDebugString");
-  static_assert(base::ranges::is_sorted(exclusion_reasons),
+  static_assert(std::ranges::is_sorted(exclusion_reasons),
                 "Please keep the ExclusionReason variants sorted in numerical "
                 "order in GetDebugString");
 
@@ -315,7 +315,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
   static_assert(std::size(warning_reasons) == WarningReasonBitset::kValueCount,
                 "Please ensure all WarningReason variants are enumerated in "
                 "GetDebugString");
-  static_assert(base::ranges::is_sorted(warning_reasons),
+  static_assert(std::ranges::is_sorted(warning_reasons),
                 "Please keep the WarningReason variants sorted in numerical "
                 "order in GetDebugString");
 

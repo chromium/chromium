@@ -56,7 +56,7 @@ std::vector<uint8_t> GetWrappedKey(
 
 bool SessionMapsAreEqual(const SessionStore::SessionsMap& lhs,
                          const SessionStore::SessionsMap& rhs) {
-  return base::ranges::is_permutation(
+  return std::ranges::is_permutation(
       lhs, rhs, [&](const auto& pair1, const auto& pair2) {
         return pair1.first == pair2.first &&
                pair1.second->IsEqualForTesting(*pair2.second);

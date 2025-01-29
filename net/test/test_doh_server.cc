@@ -11,6 +11,7 @@
 
 #include <string.h>
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 
@@ -19,7 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
@@ -148,7 +148,7 @@ int TestDohServer::QueriesServedForSubdomains(std::string_view domain) {
     return net::IsSubdomainOf(candidate, domain);
   };
   base::AutoLock lock(lock_);
-  return base::ranges::count_if(query_qnames_, is_subdomain);
+  return std::ranges::count_if(query_qnames_, is_subdomain);
 }
 
 std::unique_ptr<test_server::HttpResponse> TestDohServer::HandleRequest(

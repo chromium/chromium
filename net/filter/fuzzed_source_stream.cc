@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -54,7 +53,7 @@ int FuzzedSourceStream::Read(IOBuffer* buf,
 
   if (sync) {
     if (result > 0) {
-      base::ranges::copy(data, buf->data());
+      std::ranges::copy(data, buf->data());
     } else {
       end_returned_ = true;
     }

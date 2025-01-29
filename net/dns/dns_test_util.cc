@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -23,7 +24,6 @@
 #include "base/location.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
@@ -212,7 +212,7 @@ std::pair<uint16_t, std::string> BuildTestHttpsServiceEchConfigParam(
 
 std::pair<uint16_t, std::string> BuildTestHttpsServiceMandatoryParam(
     std::vector<uint16_t> param_key_list) {
-  base::ranges::sort(param_key_list);
+  std::ranges::sort(param_key_list);
 
   std::string value;
   for (uint16_t param_key : param_key_list) {

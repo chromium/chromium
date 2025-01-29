@@ -203,7 +203,7 @@ ComputeSameSiteContextResult ComputeSameSiteContext(
   // already checked it previously.)
   bool same_site_redirect_chain =
       url_chain.size() == 1u ||
-      base::ranges::all_of(url_chain, is_same_site_with_site_for_cookies);
+      std::ranges::all_of(url_chain, is_same_site_with_site_for_cookies);
 
   // Record what type of redirect was experienced.
 
@@ -938,7 +938,7 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForResponse(
 
       bool same_site_redirect_chain =
           url_chain.size() == 1u ||
-          base::ranges::all_of(url_chain, is_same_site_with_site_for_cookies);
+          std::ranges::all_of(url_chain, is_same_site_with_site_for_cookies);
 
       CookieOptions::SameSiteCookieContext::ContextMetadata& result_metadata =
           compute_schemefully ? result.schemeful_metadata() : result.metadata();
@@ -1104,18 +1104,18 @@ NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
     const CookieAccessResultList& excluded_cookies) {
   // Check that all elements of `included_cookies` really should be included,
   // and that all elements of `excluded_cookies` really should be excluded.
-  DCHECK(base::ranges::all_of(included_cookies,
+  DCHECK(std::ranges::all_of(included_cookies,
+                             [](const net::CookieWithAccessResult& cookie) {
+                               return cookie.access_result.status.IsInclude();
+                             }));
+  DCHECK(std::ranges::none_of(excluded_cookies,
                               [](const net::CookieWithAccessResult& cookie) {
                                 return cookie.access_result.status.IsInclude();
                               }));
-  DCHECK(base::ranges::none_of(excluded_cookies,
-                               [](const net::CookieWithAccessResult& cookie) {
-                                 return cookie.access_result.status.IsInclude();
-                               }));
 
   // Check that the included cookies are still in the correct order.
   DCHECK(
-      base::ranges::is_sorted(included_cookies, CookieWithAccessResultSorter));
+      std::ranges::is_sorted(included_cookies, CookieWithAccessResultSorter));
 }
 
 NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled() {

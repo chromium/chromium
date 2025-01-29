@@ -101,8 +101,8 @@ std::optional<DnsQueryType> QueryTypeFromValue(const base::Value& value) {
   if (!query_type_string)
     return std::nullopt;
   const auto query_type_it =
-      base::ranges::find(kDnsQueryTypes, *query_type_string,
-                         &decltype(kDnsQueryTypes)::value_type::second);
+      std::ranges::find(kDnsQueryTypes, *query_type_string,
+                        &decltype(kDnsQueryTypes)::value_type::second);
   if (query_type_it == kDnsQueryTypes.end())
     return std::nullopt;
 
@@ -282,8 +282,8 @@ bool HostResolverInternalResult::ValidateValueBaseDict(
   if (!query_type_string)
     return false;
   const auto query_type_it =
-      base::ranges::find(kDnsQueryTypes, *query_type_string,
-                         &decltype(kDnsQueryTypes)::value_type::second);
+      std::ranges::find(kDnsQueryTypes, *query_type_string,
+                        &decltype(kDnsQueryTypes)::value_type::second);
   if (query_type_it == kDnsQueryTypes.end())
     return false;
 

@@ -29,7 +29,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -797,7 +796,7 @@ std::vector<char> AsVector(std::string_view s) {
 // WebSocketEventInterface requires the IOBuffer type.
 scoped_refptr<IOBuffer> AsIOBuffer(std::string_view s) {
   auto buffer = base::MakeRefCounted<IOBufferWithSize>(s.size());
-  base::ranges::copy(s, buffer->data());
+  std::ranges::copy(s, buffer->data());
   return buffer;
 }
 

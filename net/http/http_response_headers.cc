@@ -25,7 +25,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -306,7 +305,7 @@ HttpResponseHeaders::HttpResponseHeaders(
     // It's okay if we over-estimate the size of `parsed_`, so treat all ','
     // characters as if they might split the value to avoid parsing the value
     // carefully here.
-    const size_t comma_count = base::ranges::count(value, ',') + 1;
+    const size_t comma_count = std::ranges::count(value, ',') + 1;
     expected_parsed_size += comma_count;
     header_contains_comma.push_back(comma_count);
   }
@@ -647,7 +646,7 @@ void HttpResponseHeaders::Parse(const std::string& raw_input) {
 
   // ParseStatusLine adds a normalized status line to raw_headers_
   std::string::const_iterator line_begin = raw_input.begin();
-  std::string::const_iterator line_end = base::ranges::find(raw_input, '\0');
+  std::string::const_iterator line_end = std::ranges::find(raw_input, '\0');
   // has_headers = true, if there is any data following the status line.
   // Used by ParseStatusLine() to decide if a HTTP/0.9 is really a HTTP/1.0.
   bool has_headers =
@@ -730,7 +729,7 @@ std::string HttpResponseHeaders::GetStatusText() const {
   // '<http_version> SP <response_code> SP <status_text>'.
   std::string status_text = GetStatusLine();
   // Seek to beginning of <response_code>.
-  std::string::const_iterator begin = base::ranges::find(status_text, ' ');
+  std::string::const_iterator begin = std::ranges::find(status_text, ' ');
   std::string::const_iterator end = status_text.end();
   CHECK(begin != end);
   ++begin;
@@ -1151,7 +1150,7 @@ bool HttpResponseHeaders::HasStorageAccessRetryHeader(
   if (!item || !item->item.is_token() || item->item.GetString() != "retry") {
     return false;
   }
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       item->params, [&](const auto& key_and_value) -> bool {
         const auto [key, value] = key_and_value;
         if (key != "allowed-origin") {

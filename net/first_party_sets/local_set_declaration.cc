@@ -4,7 +4,8 @@
 
 #include "net/first_party_sets/local_set_declaration.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 
@@ -17,7 +18,7 @@ LocalSetDeclaration::LocalSetDeclaration(
     base::flat_map<SchemefulSite, SchemefulSite> aliases)
     : entries_(std::move(set_entries)), aliases_(std::move(aliases)) {
   // Every alias must map to some canonical site in `entries_`.
-  CHECK(base::ranges::all_of(
+  CHECK(std::ranges::all_of(
       aliases_, [&](const auto& p) { return entries_.contains(p.second); }));
 
   if (!entries_.empty()) {
@@ -27,7 +28,7 @@ LocalSetDeclaration::LocalSetDeclaration(
     // All provided entries must have the same primary site. I.e., there must
     // only be one set.
     const SchemefulSite& primary = entries_.begin()->second.primary();
-    CHECK(base::ranges::all_of(
+    CHECK(std::ranges::all_of(
         entries_,
         [&](const std::pair<SchemefulSite, FirstPartySetEntry>& pair) {
           return pair.second.primary() == primary;

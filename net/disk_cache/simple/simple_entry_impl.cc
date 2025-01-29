@@ -1715,7 +1715,7 @@ void SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
     // zero-filled.
     const int fill_size = offset <= data_size ? 0 : offset - data_size;
     if (fill_size > 0) {
-      base::ranges::fill(
+      std::ranges::fill(
           stream_0_data_->span().subspan(base::checked_cast<size_t>(data_size),
                                          base::checked_cast<size_t>(fill_size)),
           0);

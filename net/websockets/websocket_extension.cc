@@ -4,12 +4,12 @@
 
 #include "net/websockets/websocket_extension.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "net/http/http_util.h"
 
 namespace net {
@@ -52,8 +52,8 @@ bool WebSocketExtension::Equivalent(const WebSocketExtension& other) const {
   };
 
   // Sort by key, preserving order of values.
-  base::ranges::stable_sort(mine_sorted, comparator, extract_name);
-  base::ranges::stable_sort(other_sorted, comparator, extract_name);
+  std::ranges::stable_sort(mine_sorted, comparator, extract_name);
+  std::ranges::stable_sort(other_sorted, comparator, extract_name);
 
   return mine_sorted == other_sorted;
 }

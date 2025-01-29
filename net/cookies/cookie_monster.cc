@@ -44,6 +44,7 @@
 
 #include "net/cookies/cookie_monster.h"
 
+#include <algorithm>
 #include <functional>
 #include <list>
 #include <map>
@@ -67,7 +68,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -240,7 +240,7 @@ const int CookieMonster::kSafeFromGlobalPurgeDays = 30;
 namespace {
 
 bool ContainsControlCharacter(const std::string& s) {
-  return base::ranges::any_of(s, &HttpUtil::IsControlChar);
+  return std::ranges::any_of(s, &HttpUtil::IsControlChar);
 }
 
 typedef std::vector<CanonicalCookie*> CanonicalCookieVector;
@@ -2624,7 +2624,7 @@ bool CookieMonster::HasCookieableScheme(const GURL& url) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Make sure the request is on a cookie-able url scheme.
-  bool is_cookieable = base::ranges::any_of(
+  bool is_cookieable = std::ranges::any_of(
       cookieable_schemes_, [&url](const std::string& cookieable_scheme) {
         return url.SchemeIs(cookieable_scheme.c_str());
       });
