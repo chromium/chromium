@@ -133,7 +133,7 @@
                       actionType:actionType
                       sourceView:_view];
   __weak TabGroupIndicatorMediator* weakMediator = _mediator;
-  _tabGroupConfirmationCoordinator.action = ^{
+  _tabGroupConfirmationCoordinator.primaryAction = ^{
     switch (actionType) {
       case TabGroupActionType::kUngroupTabGroup:
         [weakMediator unGroupWithConfirmation:NO];
@@ -145,6 +145,9 @@
       case TabGroupActionType::kDeleteSharedTabGroup:
         // TODO(crbug.com/375587197): Implement this.
         break;
+      case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+      case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+        NOTREACHED();
     }
   };
   _tabGroupConfirmationCoordinator.tabGroupName = tabGroup->GetTitle();

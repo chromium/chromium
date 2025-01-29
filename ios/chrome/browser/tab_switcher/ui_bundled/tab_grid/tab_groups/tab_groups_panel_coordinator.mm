@@ -154,7 +154,7 @@ using collaboration::messaging::MessagingBackendServiceFactory;
                       actionType:TabGroupActionType::kDeleteTabGroup
                       sourceView:sourceView];
   __weak TabGroupsPanelCoordinator* weakSelf = self;
-  _tabGroupConfirmationCoordinator.action = ^{
+  _tabGroupConfirmationCoordinator.primaryAction = ^{
     [weakSelf deleteSyncedTabGroup:syncID];
   };
 

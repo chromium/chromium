@@ -301,7 +301,7 @@
                       actionType:actionType
                       sourceView:sourceView];
   __weak BaseGridCoordinator* weakSelf = self;
-  _tabGroupConfirmationCoordinator.action = ^{
+  _tabGroupConfirmationCoordinator.primaryAction = ^{
     [weakSelf takeActionForActionType:actionType weakGroup:tabGroup];
   };
   _tabGroupConfirmationCoordinator.tabGroupName = tabGroup->GetTitle();
@@ -323,7 +323,7 @@
                       actionType:actionType
                 sourceButtonItem:sourceButtonItem];
   __weak BaseGridCoordinator* weakSelf = self;
-  _tabGroupConfirmationCoordinator.action = ^{
+  _tabGroupConfirmationCoordinator.primaryAction = ^{
     [weakSelf takeActionForActionType:actionType weakGroup:tabGroup];
   };
   _tabGroupConfirmationCoordinator.tabGroupName = tabGroup->GetTitle();
@@ -463,6 +463,10 @@
         [self.mediator deleteSharedTabGroup:weakGroup.get()];
       }
       break;
+
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+      NOTREACHED();
   }
 
   if (_tabGroupCoordinator) {
