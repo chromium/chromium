@@ -55,7 +55,6 @@ namespace blink {
 class DOMDataStore;
 class ScriptWrappable;
 class SecurityOrigin;
-class V8ObjectDataStore;
 
 enum IsolatedWorldId {
   // Embedder isolated worlds can use IDs in [1, 1<<29).
@@ -200,9 +199,6 @@ class PLATFORM_EXPORT DOMWrapperWorld final
   WorldType GetWorldType() const { return world_type_; }
   int GetWorldId() const { return world_id_; }
   DOMDataStore& DomDataStore() const { return *dom_data_store_; }
-  V8ObjectDataStore& GetV8ObjectDataStore() const {
-    return *v8_object_data_store_;
-  }
 
   void Trace(Visitor*) const;
 
@@ -227,7 +223,6 @@ class PLATFORM_EXPORT DOMWrapperWorld final
   const WorldType world_type_;
   const int32_t world_id_;
   const Member<DOMDataStore> dom_data_store_;
-  Member<V8ObjectDataStore> v8_object_data_store_;
 };
 
 }  // namespace blink
