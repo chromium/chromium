@@ -604,10 +604,6 @@
 	path = third_party/weston/src
 	url = https://chromium.googlesource.com/external/anongit.freedesktop.org/git/wayland/weston
 	gclient-condition = checkout_linux
-[submodule "third_party/wlcs/src"]
-	path = third_party/wlcs/src
-	url = https://chromium.googlesource.com/external/github.com/MirServer/wlcs
-	gclient-condition = checkout_chromeos
 [submodule "third_party/xdg-utils"]
 	path = third_party/xdg-utils
 	url = https://chromium.googlesource.com/chromium/deps/xdg-utils
