@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "components/history_embeddings/vector_database.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 
 namespace history_embeddings {
 
@@ -40,9 +41,23 @@ SchedulingEmbedder::Job& SchedulingEmbedder::Job::operator=(Job&&) = default;
 ////////////////////////////////////////////////////////////////////////////////
 
 SchedulingEmbedder::SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
-                                       size_t scheduled_max)
+                                       size_t scheduled_max,
+                                       bool use_performance_scenario)
     : embedder_(std::move(embedder)),
-      scheduled_max_(scheduled_max) {}
+      scheduled_max_(scheduled_max),
+      use_performance_scenario_(use_performance_scenario) {
+#if BUILDFLAG(USE_BLINK)
+  if (use_performance_scenario_) {
+    performance_scenario_observation_.Observe(
+        blink::performance_scenarios::PerformanceScenarioObserverList::
+            GetForScope(blink::performance_scenarios::ScenarioScope::kGlobal)
+                .get());
+  }
+#else
+  // Performance scenario is not supported on some builds (e.g. iOS by default).
+  use_performance_scenario_ = false;
+#endif
+}
 
 SchedulingEmbedder::~SchedulingEmbedder() = default;
 
@@ -62,16 +77,10 @@ SchedulingEmbedder::TaskId SchedulingEmbedder::ComputePassagesEmbeddings(
     return task_id;
   }
 
-  // Only start work if none is in progress. If work is already begun
-  // then it will continue later when embeddings are returned.
-  bool submit = jobs_.empty();
-
   jobs_.emplace_back(priority, task_id, std::move(passages),
                      std::move(callback));
 
-  if (submit) {
-    SubmitWorkToEmbedder();
-  }
+  SubmitWorkToEmbedder();
 
   return task_id;
 }
@@ -79,11 +88,25 @@ SchedulingEmbedder::TaskId SchedulingEmbedder::ComputePassagesEmbeddings(
 void SchedulingEmbedder::SubmitWorkToEmbedder() {
   if (!embedder_ready_) {
     // Underlying embedder not ready yet. Wait for it.
+    VLOG(5) << "SubmitWorkToEmbedder: embedder not ready";
+    return;
+  }
+
+  if (work_submitted_) {
+    // Waiting for work in progress to complete.
+    VLOG(5) << "SubmitWorkToEmbedder: work already in progress";
     return;
   }
 
   if (jobs_.empty()) {
     // No jobs to start.
+    VLOG(5) << "SubmitWorkToEmbedder: no jobs";
+    return;
+  }
+
+  if (use_performance_scenario_ && !IsPerformanceScenarioReady()) {
+    // Waiting for a suitable performance scenario.
+    VLOG(5) << "SubmitWorkToEmbedder: unsuitable scenario";
     return;
   }
 
@@ -114,10 +137,30 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
     job_index++;
   }
 
+  work_submitted_ = true;
   embedder_->ComputePassagesEmbeddings(
       priority, std::move(passages),
       base::BindOnce(&SchedulingEmbedder::OnEmbeddingsComputed,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+bool SchedulingEmbedder::IsPerformanceScenarioReady() {
+#if BUILDFLAG(USE_BLINK)
+  if (!jobs_.empty() &&
+      jobs_.front().priority ==
+          passage_embeddings::PassagePriority::kUserInitiated) {
+    // Do not block on performance scenario if user initiated a query.
+    return true;
+  }
+  return (loading_scenario_ ==
+              blink::performance_scenarios::LoadingScenario::kNoPageLoading ||
+          loading_scenario_ == blink::performance_scenarios::LoadingScenario::
+                                   kBackgroundPageLoading) &&
+         input_scenario_ ==
+             blink::performance_scenarios::InputScenario::kNoInput;
+#else
+  return true;
+#endif
 }
 
 void SchedulingEmbedder::SetOnEmbedderReady(OnEmbedderReadyCallback callback) {
@@ -146,14 +189,33 @@ bool SchedulingEmbedder::TryCancel(TaskId task_id) {
   return false;
 }
 
+#if BUILDFLAG(USE_BLINK)
+void SchedulingEmbedder::OnLoadingScenarioChanged(
+    blink::performance_scenarios::ScenarioScope scope,
+    blink::performance_scenarios::LoadingScenario old_scenario,
+    blink::performance_scenarios::LoadingScenario new_scenario) {
+  VLOG(5) << "SchedulingEmbedder using new loading scenario: "
+          << static_cast<int>(new_scenario);
+  loading_scenario_ = new_scenario;
+  SubmitWorkToEmbedder();
+}
+
+void SchedulingEmbedder::OnInputScenarioChanged(
+    blink::performance_scenarios::ScenarioScope scope,
+    blink::performance_scenarios::InputScenario old_scenario,
+    blink::performance_scenarios::InputScenario new_scenario) {
+  VLOG(5) << "SchedulingEmbedder using new input scenario: "
+          << static_cast<int>(new_scenario);
+  input_scenario_ = new_scenario;
+  SubmitWorkToEmbedder();
+}
+#endif
+
 void SchedulingEmbedder::OnEmbedderReady(
     OnEmbedderReadyCallback callback,
     passage_embeddings::EmbedderMetadata metadata) {
   embedder_ready_ = metadata.model_version != 0;
   std::move(callback).Run(metadata);
-
-  // Work doesn't start until after the embedder is ready. There may or may not
-  // be jobs waiting, but no work is in progress yet, so it can be started now.
   SubmitWorkToEmbedder();
 }
 
@@ -207,6 +269,7 @@ void SchedulingEmbedder::OnEmbeddingsComputed(
 
   // Note, this could call back later/asynchronously or
   // immediately/synchronously, depending on the embedder.
+  work_submitted_ = false;
   SubmitWorkToEmbedder();
 }
 

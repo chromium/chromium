@@ -190,6 +190,10 @@ struct FeatureParameters {
   // recall for URLs that have a title after the tab loads, for example PDF
   // documents where there is no DOM and hence no <title> tag text to extract.
   bool insert_title_passage = false;
+
+  // Whether to make use of the performance scenario instead of custom
+  // tab loading non-contention logic for the feature.
+  bool use_performance_scenario = false;
 };
 
 // Use this to apply changes for testing only while an instance lives.
