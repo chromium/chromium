@@ -20,18 +20,16 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.util.ColorUtils;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 /** Controller for the dialog shown for the Privacy Sandbox. */
 public class PrivacySandboxDialogController {
     private static WeakReference<Dialog> sDialog;
     private static boolean sDisableAnimations;
     private static boolean sDisableEEANoticeForTesting;
-    private static LoadUrlParams sThinWebViewLoadUrlParams;
     private static Runnable sOnDialogDismissedRunnable;
 
     public static boolean shouldShowPrivacySandboxDialog(Profile profile, int surfaceType) {
@@ -50,11 +48,8 @@ public class PrivacySandboxDialogController {
         return true;
     }
 
-    public static ThinWebView createThinWebView(
-            WebContents webContents,
-            Profile profile,
-            ActivityWindowAndroid activityWindowAndroid,
-            String url) {
+    public static ThinWebView createPrivacyPolicyThinWebView(
+            WebContents webContents, Profile profile, ActivityWindowAndroid activityWindowAndroid) {
         ContentView contentView =
                 ContentView.createContentView(
                         activityWindowAndroid.getContext().get(), webContents);
@@ -64,11 +59,17 @@ public class PrivacySandboxDialogController {
                 contentView,
                 activityWindowAndroid,
                 WebContents.createDefaultInternalsHolder());
-        sThinWebViewLoadUrlParams = new LoadUrlParams(url);
-        Map<String, String> extraHeaders = new HashMap<>();
-        extraHeaders.put("Accept-Language", Locale.getDefault().toLanguageTag());
-        sThinWebViewLoadUrlParams.setExtraHeaders(extraHeaders);
-        webContents.getNavigationController().loadUrl(sThinWebViewLoadUrlParams);
+        PrivacySandboxBridge privacySandboxBridge = new PrivacySandboxBridge(profile);
+        String privacyPolicyUrl =
+                privacySandboxBridge.getEmbeddedPrivacyPolicyURL(
+                        privacySandboxBridge.shouldUsePrivacyPolicyChinaDomain()
+                                ? PrivacyPolicyDomainType.CHINA
+                                : PrivacyPolicyDomainType.NON_CHINA,
+                        ColorUtils.inNightMode(activityWindowAndroid.getContext().get())
+                                ? PrivacyPolicyColorScheme.DARK_MODE
+                                : PrivacyPolicyColorScheme.LIGHT_MODE,
+                        Locale.getDefault().toLanguageTag());
+        webContents.getNavigationController().loadUrl(new LoadUrlParams(privacyPolicyUrl));
         ThinWebView thinWebView =
                 ThinWebViewFactory.create(
                         activityWindowAndroid.getContext().get(),
@@ -189,9 +190,5 @@ public class PrivacySandboxDialogController {
 
     static void disableEEANoticeForTesting(boolean disable) {
         sDisableEEANoticeForTesting = disable;
-    }
-
-    static LoadUrlParams getThinWebViewLoadUrlParamsForTesting() {
-        return sThinWebViewLoadUrlParams;
     }
 }

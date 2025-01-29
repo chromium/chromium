@@ -10,8 +10,11 @@
 namespace privacy_sandbox {
 
 // Used to determine the theme of the embedded privacy policy page.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
 enum class PrivacyPolicyColorScheme { kLightMode = 0, kDarkMode = 1 };
+
 // Used to determine the domain type of the embedded privacy policy page.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
 enum class PrivacyPolicyDomainType { kNonChina = 0, kChina = 1 };
 
 // Returns the URL for the embedded Privacy Policy page, tailored to the
