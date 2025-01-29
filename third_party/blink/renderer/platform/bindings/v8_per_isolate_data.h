@@ -259,14 +259,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
     return top_of_dictionary_stack_;
   }
 
-  void SetOmitExceptionContextInformation(bool omit) {
-    CHECK_NE(omit_exception_context_information_, omit);
-    omit_exception_context_information_ = omit;
-  }
-  bool OmitExceptionContextInformation() const {
-    return omit_exception_context_information_;
-  }
-
  private:
   V8PerIsolateData(scoped_refptr<base::SingleThreadTaskRunner>,
                    scoped_refptr<base::SingleThreadTaskRunner>,
@@ -346,7 +338,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   std::unique_ptr<scheduler::TaskAttributionTracker> task_attribution_tracker_;
 
   raw_ptr<DictionaryConversionContext> top_of_dictionary_stack_ = nullptr;
-  bool omit_exception_context_information_ = false;
 };
 
 // Creates a histogram for V8. The returned value is a base::Histogram, but

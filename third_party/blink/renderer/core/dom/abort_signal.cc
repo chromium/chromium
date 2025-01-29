@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/abort_signal_composition_manager.h"
 #include "third_party/blink/renderer/core/dom/abort_signal_composition_type.h"
@@ -185,7 +184,6 @@ ScriptValue AbortSignal::reason(ScriptState* script_state) const {
 void AbortSignal::throwIfAborted(v8::Isolate* isolate) const {
   if (!aborted())
     return;
-  OmitExceptionContextInformation omit(isolate);
   V8ThrowException::ThrowException(isolate, abort_reason_.V8Value());
 }
 
