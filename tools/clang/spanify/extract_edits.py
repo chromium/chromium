@@ -20,13 +20,11 @@ The edits have the following format:
 Where lhs_node, rhs_node, and node_n represent a node's text representation
 generated using the spanification tool's Node::ToString() function.
 
-The string representation has the following format:
-`{r:::<file path>:::<offset>:::<length>
-:::<replacement text>\,include-user-header:::<file path>:::-1:::-1
-:::<include text>\,size_info_available\,is_dependent}`
+A node has the following format:
+size_info_available\,is_dependent,(\,replacement)+
 
-where `size_info_available`, and `is_dependent`
-are booleans represented as  0 or 1.
+size_info_available: 0 or 1
+is_dependent: 0 or 1
 
 extract_edits.py takes input that is concatenated from multiple tool
 invocations and extract just the edits with the following steps:
@@ -81,10 +79,12 @@ class Node:
     # Mapping in between the node's key and the node.
     key_to_node = dict()
 
-    def __init__(self, replacement, include_directive, size_info_available,
-                 is_dependent) -> None:
-        self.replacement = replacement
-        self.include_directive = include_directive
+    def __init__(self, size_info_available, is_dependent,
+                 *replacements) -> None:
+        self.replacements = replacements
+        for replacement in replacements:
+            assert_valid_replacement(replacement)
+
         self.is_dependent = is_dependent
 
         # Neighbors of the node in the graph. The graph is directed,
@@ -104,13 +104,17 @@ class Node:
         # the main function.
         self.component = None
 
+    # The key of the node is the first replacement.
+    def key(self) -> str:
+        return self.replacements[0]
+
     def __eq__(self, other):
         if isinstance(other, Node):
-            return self.replacement == other.replacement
+            return self.key() == other.key()
         return False
 
     def __hash__(self) -> int:
-        return hash((self.replacement, self.include_directive))
+        return hash(self.key())
 
     # Static method to get a node from a replacement key.
     @classmethod
@@ -121,17 +125,14 @@ class Node:
     # deduplicate nodes by storing them in a dictionary.
     @classmethod
     def get_or_create(cls: type, txt: str):
-        # Skipping the first and last character that correspond to the curly
-        # braces denoting the start and end of a serialized node.
-        x = txt[1:-1].split('\\,')
+        x = txt.split('\\,')
 
         # Expect exactly 6 elements that correspond to the following node
         # attributes:
-        # - replacement
-        # - include_directive
         # - size_info_available
         # - is_dependent
-        assert len(x) == 4, txt
+        # - replacements+
+        assert len(x) >= 3, txt
 
         # Value are escaped to avoid conflicts with the separator. Unescape
         # them.
@@ -143,16 +144,15 @@ class Node:
         node = Node(*x)
 
         # Deduplicate nodes, as they might appear multiple times in the input.
-        if (Node.key_to_node.get(node.replacement) is None):
-            Node.key_to_node[node.replacement] = node
+        if (Node.key_to_node.get(node.key()) is None):
+            Node.key_to_node[node.key()] = node
 
-        return Node.key_to_node[node.replacement]
+        return Node.key_to_node[node.key()]
 
     def __repr__(self) -> str:
         result = [
             f"Node {hash(self)} {{",
-            f"  replacement: {self.replacement}",
-            f"  include_directive: {self.include_directive}",
+            f"  key: {self.key()}",
             f"  size_info_available: {self.size_info_available}",
             f"  neighbors_directed: {pprint.pformat([hash(n) for n in self.neighbors_directed], indent=4)}",
             "}",
@@ -183,10 +183,9 @@ def DFS(node: Node):
         return
     node.visited = True
 
-    if not node.replacement.endswith('<empty>'):
-        node.component.changes.add(node.replacement)
-        if node.include_directive:
-            node.component.changes.add(node.include_directive)
+    if not node.key().endswith('<empty>'):
+        for replacement in node.replacements:
+            node.component.changes.add(replacement)
 
     for neighbour in node.neighbors_directed:
         DFS(neighbour)
@@ -237,6 +236,24 @@ def SizeInfoAvailable(node: Node):
     return size_info_available
 
 
+# Assert a replacement follows the expected format:
+# - r:::<file path>:::<offset>:::<length>:::<replacement text>
+# - include-user-header:::<file path>:::-1:::-1:::<include text>
+# - include-system-header:::<file path>:::-1:::-1:::<include text>
+def assert_valid_replacement(replacement: str):
+    try:
+        parts = replacement.split(':::')
+        assert len(parts) == 5
+        assert parts[0] in [
+            'r', 'include-user-header', 'include-system-header'
+        ]
+        assert parts[1] != ''  # File path
+        int(parts[2].isdigit())  # Offset
+        int(parts[3].isdigit())  # Length
+    except:
+        # Augment the error with the replacement text for better debugging.
+        assert False, f"Invalid replacement: \"{replacement}\""
+
 def main():
     # Since the tool is invoked from multiple compile units, we are using sets
     # to deduplicate what was visible from multiple compile units.
@@ -260,13 +277,14 @@ def main():
 
         # Source node:
         if line[0] == 's':
+            assert_valid_replacement(line[1:])
             sources.add(line[1:])
             continue
 
         # Edge in between two nodes:
         if line[0] == 'e':
             nodes = line[1:].split('@')
-            assert len(nodes) == 2
+            assert len(nodes) == 2, "Invalid edge: " + line
             lhs = Node.get_or_create(nodes[0])
             rhs = Node.get_or_create(nodes[1])
 
@@ -330,7 +348,8 @@ def main():
         if node.is_dependent == '1':
             neighbor = list(node.neighbors_directed)[0]
             if neighbor.visited:
-                neighbor.component.changes.add(node.replacement)
+                for replacement in node.replacements:
+                    neighbor.component.changes.add(replacement)
 
     # At the edge in between rewritten and non-rewritten nodes, we need
     # to add a call to `.data()` to access the pointer from the span:
