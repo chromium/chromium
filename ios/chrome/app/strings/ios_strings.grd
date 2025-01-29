@@ -1072,6 +1072,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_OPEN" desc="The iOS menu item for opening a link. Shorter than the desktop version [Length: 25em] [iOS only]">
         Open
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_OPENAIPROTOTYPE" desc="The iOS menu item for opening ai prototype menu.">
+        Open AI Prototype Menu
+      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENIMAGE" desc="The name of the Open Image command in the content area context menu">
         Open image
       </message>
@@ -1081,7 +1084,7 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW" desc="The iOS menu item for opening a link in a new window. [iOS only]">
         Open in New Window
       </message>
-      <message name="IDS_IOS_CONTENT_CONTEXT_OPENLENSOVERLAY" desc="The iOS menu item for openning lens overlay.">
+      <message name="IDS_IOS_CONTENT_CONTEXT_OPENLENSOVERLAY" desc="The iOS menu item for opening lens overlay.">
         Search screen with Google Lens
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENLINKINNEWTABGROUP" desc="The iOS context menu item for opening a link in new tab group. [iOS only]">

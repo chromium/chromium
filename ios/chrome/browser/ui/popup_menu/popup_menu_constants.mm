@@ -32,6 +32,7 @@ NSString* const kToolsMenuRequestMobileId = @"kToolsMenuRequestMobileId";
 NSString* const kToolsMenuReadLater = @"kToolsMenuReadLater";
 NSString* const kToolsMenuAddToBookmarks = @"kToolsMenuAddToBookmarks";
 NSString* const kToolsMenuOpenLensOverlay = @"kToolsMenuOpenLensOverlay";
+NSString* const kToolsMenuOpenAIPrototype = @"kToolsMenuOpenAIPrototype";
 NSString* const kToolsMenuEditBookmark = @"kToolsMenuEditBookmark";
 NSString* const kToolsMenuSiteInformation = @"kToolsMenuSiteInformation";
 NSString* const kToolsMenuIncognitoSearch = @"kToolsMenuIncognitoSearch";
