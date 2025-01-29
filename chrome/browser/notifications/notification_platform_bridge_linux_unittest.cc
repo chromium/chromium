@@ -423,15 +423,27 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
   }
 
   void SendActivationToken(uint32_t dbus_id, const std::string& token) {
-    DoSendActivationToken(dbus_id, token);
+    dbus::Signal signal(kFreedesktopNotificationsName, "ActivationToken");
+    dbus::MessageWriter writer(&signal);
+    writer.AppendUint32(dbus_id);
+    writer.AppendString(token);
+    std::move(activation_token_callback_).Run(&signal);
   }
 
   void InvokeAction(uint32_t dbus_id, const std::string& action) {
-    DoInvokeAction(dbus_id, action);
+    dbus::Signal signal(kFreedesktopNotificationsName, "ActionInvoked");
+    dbus::MessageWriter writer(&signal);
+    writer.AppendUint32(dbus_id);
+    writer.AppendString(action);
+    std::move(action_invoked_callback_).Run(&signal);
   }
 
   void ReplyToNotification(uint32_t dbus_id, const std::string& message) {
-    DoReplyToNotification(dbus_id, message);
+    dbus::Signal signal(kFreedesktopNotificationsName, "NotificationReplied");
+    dbus::MessageWriter writer(&signal);
+    writer.AppendUint32(dbus_id);
+    writer.AppendString(message);
+    std::move(notification_replied_callback_).Run(&signal);
   }
 
   MOCK_METHOD1(MockableNotificationBridgeReadyCallback, void(bool));
@@ -451,31 +463,6 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
   std::optional<NotificationOperation> last_operation_;
   std::optional<int> last_action_index_;
   std::optional<std::u16string> last_reply_;
-
- private:
-  void DoSendActivationToken(uint32_t dbus_id, const std::string& token) {
-    dbus::Signal signal(kFreedesktopNotificationsName, "ActivationToken");
-    dbus::MessageWriter writer(&signal);
-    writer.AppendUint32(dbus_id);
-    writer.AppendString(token);
-    std::move(activation_token_callback_).Run(&signal);
-  }
-
-  void DoInvokeAction(uint32_t dbus_id, const std::string& action) {
-    dbus::Signal signal(kFreedesktopNotificationsName, "ActionInvoked");
-    dbus::MessageWriter writer(&signal);
-    writer.AppendUint32(dbus_id);
-    writer.AppendString(action);
-    std::move(action_invoked_callback_).Run(&signal);
-  }
-
-  void DoReplyToNotification(uint32_t dbus_id, const std::string& message) {
-    dbus::Signal signal(kFreedesktopNotificationsName, "NotificationReplied");
-    dbus::MessageWriter writer(&signal);
-    writer.AppendUint32(dbus_id);
-    writer.AppendString(message);
-    std::move(notification_replied_callback_).Run(&signal);
-  }
 };
 
 TEST_F(NotificationPlatformBridgeLinuxTest, SetUpAndTearDown) {

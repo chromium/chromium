@@ -314,20 +314,63 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     CleanUp();
   }
 
+  // Sets up the D-Bus connection.
   void Init() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    InitImpl();
+    dbus_utils::CheckForServiceAndStart(
+        bus_, kFreedesktopNotificationsName,
+        base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnServiceStarted,
+                       weak_factory_.GetWeakPtr()));
   }
 
+  // Makes the "Notify" call to D-Bus.
   void Display(
       NotificationHandler::Type notification_type,
       Profile* profile,
       const message_center::Notification& notification,
       std::unique_ptr<NotificationCommon::Metadata> metadata) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    DisplayImpl(notification_type, GetProfileId(profile),
-                profile->IsOffTheRecord(),
-                std::make_unique<message_center::Notification>(notification));
+    std::string profile_id = GetProfileId(profile);
+    bool is_incognito = profile->IsOffTheRecord();
+    auto copy_notification =
+        std::make_unique<message_center::Notification>(notification);
+    NotificationData* data =
+        FindNotificationData(copy_notification->id(), profile_id, is_incognito);
+    if (data) {
+      // Update an existing notification.
+      data->notification_type = notification_type;
+    } else {
+      // Send the notification for the first time.
+      data = new NotificationData(notification_type, copy_notification->id(),
+                                  profile_id, is_incognito,
+                                  copy_notification->origin_url());
+      notifications_.emplace(data, base::WrapUnique(data));
+    }
+
+    // Prepare resource files.
+    gfx::Image product_logo(
+        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_PRODUCT_LOGO_64));
+
+    gfx::Image notification_icon = ResizeImageToFdoMaxSize(
+        gfx::Image(copy_notification->icon().Rasterize(nullptr)));
+
+    gfx::Image notification_image;
+    if (copy_notification->type() == message_center::NOTIFICATION_TYPE_IMAGE &&
+        base::Contains(capabilities_, kCapabilityBodyImages)) {
+      notification_image = ResizeImageToFdoMaxSize(copy_notification->image());
+    }
+
+    file_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&WriteNotificationResourceFiles,
+                       product_logo.As1xPNGBytes(),
+                       notification_icon.As1xPNGBytes(),
+                       notification_image.As1xPNGBytes()),
+        base::BindOnce(
+            &NotificationPlatformBridgeLinuxImpl::OnFilesWrittenForDisplay,
+            weak_factory_.GetWeakPtr(), notification_type, profile_id,
+            is_incognito, std::move(copy_notification), data->dbus_id));
   }
 
   void Close(Profile* profile, const std::string& notification_id) override {
@@ -338,8 +381,15 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
   void GetDisplayed(Profile* profile,
                     GetDisplayedNotificationsCallback callback) const override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    GetDisplayedImpl(GetProfileId(profile), profile->IsOffTheRecord(),
-                     std::move(callback));
+    std::set<std::string> displayed;
+    for (const auto& pair : notifications_) {
+      NotificationData* data = pair.first;
+      if (data->profile_id == GetProfileId(profile) &&
+          data->is_incognito == profile->IsOffTheRecord()) {
+        displayed.insert(data->notification_id);
+      }
+    }
+    std::move(callback).Run(std::move(displayed), true);
   }
 
   void GetDisplayedForOrigin(
@@ -347,8 +397,16 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
       const GURL& origin,
       GetDisplayedNotificationsCallback callback) const override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    GetDisplayedForOriginImpl(GetProfileId(profile), profile->IsOffTheRecord(),
-                              origin, std::move(callback));
+    std::set<std::string> displayed;
+    for (const auto& pair : notifications_) {
+      NotificationData* data = pair.first;
+      if (data->profile_id == GetProfileId(profile) &&
+          data->is_incognito == profile->IsOffTheRecord() &&
+          url::IsSameOriginWith(data->origin_url, origin)) {
+        displayed.insert(data->notification_id);
+      }
+    }
+    std::move(callback).Run(std::move(displayed), true);
   }
 
   void SetReadyCallback(NotificationBridgeReadyCallback callback) override {
@@ -364,7 +422,9 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
 
   void CleanUp() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    CleanUpImpl();
+    notification_proxy_ = nullptr;
+    bus_.reset();
+    notifications_.clear();
   }
 
  private:
@@ -411,16 +471,6 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     // The browser process is about to exit.  Run CleanUp() while we still can.
     CleanUp();
-  }
-
-  // Sets up the D-Bus connection.
-  void InitImpl() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-    dbus_utils::CheckForServiceAndStart(
-        bus_, kFreedesktopNotificationsName,
-        base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnServiceStarted,
-                       weak_factory_.GetWeakPtr()));
   }
 
   void OnServiceStarted(std::optional<bool> service_started) {
@@ -517,58 +567,6 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
             weak_factory_.GetWeakPtr()),
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        weak_factory_.GetWeakPtr()));
-  }
-
-  void CleanUpImpl() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    notification_proxy_ = nullptr;
-    bus_.reset();
-    notifications_.clear();
-  }
-
-  // Makes the "Notify" call to D-Bus.
-  void DisplayImpl(NotificationHandler::Type notification_type,
-                   const std::string& profile_id,
-                   bool is_incognito,
-                   std::unique_ptr<message_center::Notification> notification) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    NotificationData* data =
-        FindNotificationData(notification->id(), profile_id, is_incognito);
-    if (data) {
-      // Update an existing notification.
-      data->notification_type = notification_type;
-    } else {
-      // Send the notification for the first time.
-      data = new NotificationData(notification_type, notification->id(),
-                                  profile_id, is_incognito,
-                                  notification->origin_url());
-      notifications_.emplace(data, base::WrapUnique(data));
-    }
-
-    // Prepare resource files.
-    gfx::Image product_logo(
-        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_PRODUCT_LOGO_64));
-
-    gfx::Image notification_icon = ResizeImageToFdoMaxSize(
-        gfx::Image(notification->icon().Rasterize(nullptr)));
-
-    gfx::Image notification_image;
-    if (notification->type() == message_center::NOTIFICATION_TYPE_IMAGE &&
-        base::Contains(capabilities_, kCapabilityBodyImages)) {
-      notification_image = ResizeImageToFdoMaxSize(notification->image());
-    }
-
-    file_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&WriteNotificationResourceFiles,
-                       product_logo.As1xPNGBytes(),
-                       notification_icon.As1xPNGBytes(),
-                       notification_image.As1xPNGBytes()),
-        base::BindOnce(
-            &NotificationPlatformBridgeLinuxImpl::OnFilesWrittenForDisplay,
-            weak_factory_.GetWeakPtr(), notification_type, profile_id,
-            is_incognito, std::move(notification), data->dbus_id));
   }
 
   void OnFilesWrittenForDisplay(
@@ -858,37 +856,6 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     }
   }
 
-  void GetDisplayedImpl(const std::string& profile_id,
-                        bool incognito,
-                        GetDisplayedNotificationsCallback callback) const {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    std::set<std::string> displayed;
-    for (const auto& pair : notifications_) {
-      NotificationData* data = pair.first;
-      if (data->profile_id == profile_id && data->is_incognito == incognito) {
-        displayed.insert(data->notification_id);
-      }
-    }
-    std::move(callback).Run(std::move(displayed), true);
-  }
-
-  void GetDisplayedForOriginImpl(
-      const std::string& profile_id,
-      bool incognito,
-      const GURL& origin,
-      GetDisplayedNotificationsCallback callback) const {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    std::set<std::string> displayed;
-    for (const auto& pair : notifications_) {
-      NotificationData* data = pair.first;
-      if (data->profile_id == profile_id && data->is_incognito == incognito &&
-          url::IsSameOriginWith(data->origin_url, origin)) {
-        displayed.insert(data->notification_id);
-      }
-    }
-    std::move(callback).Run(std::move(displayed), true);
-  }
-
   NotificationData* FindNotificationData(const std::string& notification_id,
                                          const std::string& profile_id,
                                          bool is_incognito) {
@@ -1033,10 +1000,11 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     notifications_.erase(data);
   }
 
-  // Called once the connection has been set up (or not).  `success`
-  // indicates the connection is ready to use.
-  void OnConnectionInitializationFinishedImpl(bool success) {
+  // Called once the connection has been set up (or not).
+  void OnConnectionInitializationFinished(
+      ConnectionInitializationStatusCode status) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    bool success = (status == ConnectionInitializationStatusCode::SUCCESS);
     connected_ = success;
     for (auto& callback : on_connected_callbacks_) {
       std::move(callback).Run(success);
@@ -1045,13 +1013,6 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     if (!success) {
       CleanUp();
     }
-  }
-
-  void OnConnectionInitializationFinished(
-      ConnectionInitializationStatusCode status) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    bool success = (status == ConnectionInitializationStatusCode::SUCCESS);
-    OnConnectionInitializationFinishedImpl(success);
   }
 
   void OnSignalConnected(const std::string& interface_name,
