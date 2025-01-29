@@ -453,10 +453,7 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
             return attrs;
           }));
     } else {
-      // TODO(crbug.com/335630301): Mark the data for removal and prevent the
-      // creation of a profile with the same name until the data has been
-      // deleted.
-      profile_attributes_storage_.RemoveProfile(name);
+      MarkProfileForDeletion(name);
     }
   }
 
