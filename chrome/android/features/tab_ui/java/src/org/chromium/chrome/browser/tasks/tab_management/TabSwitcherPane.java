@@ -57,8 +57,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
-import org.chromium.components.tab_group_sync.LocalTabGroupId;
-import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.function.DoubleConsumer;
@@ -377,19 +375,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             if (tab == null || !filter.isTabInTabGroup(tab)) continue;
 
             @Nullable Token tabGroupId = tab.getTabGroupId();
-            if (tabGroupId == null) continue;
-            @Nullable
-            SavedTabGroup savedTabGroup =
-                    mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
-            // Don't try to show the IPH for this group if the group is:
-            // 1) Not in TabGroupSyncService for some reason.
-            // 2) A shared tab group.
-            // 3) Created locally.
-            if (savedTabGroup == null
-                    || TabShareUtils.isCollaborationIdValid(savedTabGroup.collaborationId)
-                    || !mTabGroupSyncService.isRemoteDevice(savedTabGroup.creatorCacheGuid)) {
-                continue;
-            }
+            if (!TabUiUtils.shouldShowIphForSync(mTabGroupSyncService, tabGroupId)) continue;
 
             @Nullable View anchorView = coordinator.getViewByIndex(viewIndex);
             if (anchorView == null) continue;

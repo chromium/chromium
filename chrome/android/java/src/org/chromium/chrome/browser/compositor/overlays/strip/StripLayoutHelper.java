@@ -84,7 +84,6 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -102,6 +101,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListNotificationHandl
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -313,8 +313,8 @@ public class StripLayoutHelper
 
                     // Update LastSyncedGroupId to prevent the IPH from being dismissed when the
                     // synced rootId changes.
-                    if (oldRootId == mLastSyncedGroupId) {
-                        mLastSyncedGroupId = newRootId;
+                    if (oldRootId == mLastSyncedGroupRootIdForIph) {
+                        mLastSyncedGroupRootIdForIph = newRootId;
                     }
 
                     // Update sourceRootId for moving tabs out of a group. This handles the tab
@@ -336,7 +336,7 @@ public class StripLayoutHelper
                     }
 
                     // dismiss the iph text bubble when the synced tab group is unsynced.
-                    if (oldRootId == mLastSyncedGroupId) {
+                    if (oldRootId == mLastSyncedGroupRootIdForIph) {
                         dismissTabStripSyncIph();
                     }
                 }
@@ -477,7 +477,7 @@ public class StripLayoutHelper
     private long mLastHoverCardExitTime;
 
     // Tab Group Sync.
-    private int mLastSyncedGroupId = Tab.INVALID_TAB_ID;
+    private int mLastSyncedGroupRootIdForIph = Tab.INVALID_TAB_ID;
     private final Supplier<Boolean> mTabStripVisibleSupplier;
 
     // Tab group delete dialog.
@@ -1061,12 +1061,16 @@ public class StripLayoutHelper
                 mGroupIdToHideSupplier,
                 mToolbarContainerView);
 
-        // Setup tab group share services. Profile could be null for incognito if there are no
-        // incognito tabs. The observer is setup before tabs and groups are created on tab strip.
+        if (profile != null && !profile.isOffTheRecord()) {
+            mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        }
+
+        // Note that profile could be null for incognito if there are no incognito tabs. The
+        // DataSharingObserver is added before tabs and groups are created on tab strip, so we can
+        // listen to collaboration change as soon as the tab strip is initialized.
         // TODO(crbug.com/380511640) Use SharedGroupObserver instead of DataSharingObserver.
         if (shouldEnableGroupSharing(profile)) {
             mDataSharingService = DataSharingServiceFactory.getForProfile(profile);
-            mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
             mTabGroupSyncObserver =
                     new TabGroupSyncService.Observer() {
                         @Override
@@ -1187,15 +1191,15 @@ public class StripLayoutHelper
         }
 
         // Show IPH on the last synced tab group, so place it at the front of the queue.
-        if (mLastSyncedGroupId != Tab.INVALID_TAB_ID
+        if (mLastSyncedGroupRootIdForIph != Tab.INVALID_TAB_ID
                 && mTabStripIphController.wouldTriggerIph(IphType.TAB_GROUP_SYNC)) {
-            final StripLayoutGroupTitle groupTitle = findGroupTitle(mLastSyncedGroupId);
+            final StripLayoutGroupTitle groupTitle = findGroupTitle(mLastSyncedGroupRootIdForIph);
             mQueuedIphList.add(
                     0,
                     () ->
                             attemptToShowTabStripIph(
                                     groupTitle, /* tab= */ null, IphType.TAB_GROUP_SYNC));
-            mLastSyncedGroupId = Tab.INVALID_TAB_ID;
+            mLastSyncedGroupRootIdForIph = Tab.INVALID_TAB_ID;
         }
 
         // 4. Attempt to show one iph text bubble at a time on tab strip.
@@ -1251,7 +1255,7 @@ public class StripLayoutHelper
     }
 
     void setLastSyncedGroupIdForTesting(int id) {
-        mLastSyncedGroupId = id;
+        mLastSyncedGroupRootIdForIph = id;
     }
 
     void setTabStripIphControllerForTesting(TabStripIphController tabStripIphController) {
@@ -3202,8 +3206,8 @@ public class StripLayoutHelper
             Token tabGroupId = firstTab.getTabGroupId();
             StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(rootId, tabGroupId);
             if (rootId != mGroupIdToHideSupplier.get()) {
-                if (firstTab.getLaunchType() == TabLaunchType.FROM_SYNC_BACKGROUND) {
-                    mLastSyncedGroupId = rootId;
+                if (TabUiUtils.shouldShowIphForSync(mTabGroupSyncService, tabGroupId)) {
+                    mLastSyncedGroupRootIdForIph = rootId;
                 }
                 groupTitles[groupTitleIndex++] = groupTitle;
                 mStripViews[viewIndex++] = groupTitle;
@@ -3224,8 +3228,8 @@ public class StripLayoutHelper
                 StripLayoutGroupTitle groupTitle =
                         findOrCreateGroupTitle(nextRootId, nextTabGroupId);
                 if (nextRootId != mGroupIdToHideSupplier.get()) {
-                    if (nextTab.getLaunchType() == TabLaunchType.FROM_SYNC_BACKGROUND) {
-                        mLastSyncedGroupId = nextRootId;
+                    if (TabUiUtils.shouldShowIphForSync(mTabGroupSyncService, nextTabGroupId)) {
+                        mLastSyncedGroupRootIdForIph = nextRootId;
                     }
                     groupTitles[groupTitleIndex++] = groupTitle;
                     mStripViews[viewIndex++] = groupTitle;
