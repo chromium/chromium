@@ -157,6 +157,7 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
       NOTREACHED() << "NOTIFICATION_CONTAINER does not have an icon, and it is "
                       "added to the model by NotificationMenuController.";
     case ash::SHUTDOWN_GUEST_OS:
+    case ash::SHUTDOWN_BRUSCHETTA_OS:
       return kShutdownGuestOsIcon;
     default:
       NOTREACHED() << "No icon for command_id: " << command_id;
