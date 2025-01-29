@@ -5,16 +5,26 @@
 #include "chrome/browser/ash/net/bluetooth_pref_state_observer.h"
 
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
-BluetoothPrefStateObserver::BluetoothPrefStateObserver() {
+namespace {
+
+void SetPrefs(Profile* profile, PrefService* local_state) {
+  bluetooth_config::SetPrefs(profile ? profile->GetPrefs() : nullptr,
+                             local_state);
+}
+
+}  // namespace
+
+BluetoothPrefStateObserver::BluetoothPrefStateObserver(PrefService& local_state)
+    : local_state_(local_state) {
   // Set CrosBluetoothConfig with device prefs only.
-  SetPrefs(/*profile=*/nullptr);
+  SetPrefs(/*profile=*/nullptr, &local_state);
   session_observation_.Observe(session_manager::SessionManager::Get());
 }
 
@@ -30,7 +40,7 @@ BluetoothPrefStateObserver::~BluetoothPrefStateObserver() {
 void BluetoothPrefStateObserver::OnUserProfileLoaded(
     const AccountId& account_id) {
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  DCHECK(profile);
+  CHECK(profile);
 
   // Only set the prefs for primary users.
   if (!ProfileHelper::IsPrimaryProfile(profile)) {
@@ -42,14 +52,8 @@ void BluetoothPrefStateObserver::OnUserProfileLoaded(
 
   BLUETOOTH_LOG(EVENT) << "Primary profile loaded, setting CrosBluetoothConfig "
                        << "with profile prefs service";
-  SetPrefs(profile);
+  SetPrefs(profile, &local_state_.get());
   session_observation_.Reset();
-}
-
-void BluetoothPrefStateObserver::SetPrefs(Profile* profile) {
-  DCHECK(g_browser_process);
-  bluetooth_config::SetPrefs(profile ? profile->GetPrefs() : nullptr,
-                             g_browser_process->local_state());
 }
 
 }  // namespace ash

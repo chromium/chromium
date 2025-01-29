@@ -1215,7 +1215,8 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     // Initialize an observer to update CrosBluetoothConfig's pref based
     // services.
     bluetooth_pref_state_observer_ =
-        std::make_unique<BluetoothPrefStateObserver>();
+        std::make_unique<BluetoothPrefStateObserver>(
+            *g_browser_process->local_state());
 
     if (base::FeatureList::IsEnabled(
             ::features::kHappinessTrackingSystemBluetoothRevamp)) {
