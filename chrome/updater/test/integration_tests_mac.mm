@@ -456,10 +456,10 @@ void SetPlatformPolicies(const base::Value::Dict& values) {
   if (!process.IsValid()) {
     VLOG(2) << "Failed to launch the process to refresh preferences.";
   }
-  int exit_code = -1;
-  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
-                                             &exit_code));
-  EXPECT_EQ(0, exit_code);
+  // Exit code is not checked because it is not 0 when `cfprefsd` is not
+  // found.
+  EXPECT_TRUE(
+      process.WaitForExitWithTimeout(TestTimeouts::action_timeout(), nullptr));
 }
 
 void PrivilegedHelperInstall(UpdaterScope scope) {
