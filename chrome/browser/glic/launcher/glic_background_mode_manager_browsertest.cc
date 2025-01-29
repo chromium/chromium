@@ -43,7 +43,8 @@ class GlicBackgroundModeManagerBrowserTest : public InProcessBrowserTest {
   bool IsHotkeySupported() {
     auto* const global_shortcut_listener =
         ui::GlobalAcceleratorListener::GetInstance();
-    return global_shortcut_listener != nullptr;
+    return global_shortcut_listener != nullptr &&
+           !global_shortcut_listener->IsRegistrationHandledExternally();
   }
 
   void RegisterHotkey(ui::Accelerator updated_hotkey) {
