@@ -6429,15 +6429,6 @@ bool AXNodeObject::OnNativeFocusAction() {
     return true;
   }
 
-  // Forward the focus in an appearance:base-select <select> to the button,
-  // which actually handles the focus.
-  // TODO(accessibility) Try to remove after crrev.com/c/5800883 lands.
-  if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
-    if (auto* button = select->SlottedButton()) {
-      element = button;
-    }
-  }
-
 #if BUILDFLAG(IS_ANDROID)
   // If this node is already the currently focused node, then calling
   // focus() won't do anything.  That is a problem when focus is removed

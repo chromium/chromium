@@ -7392,15 +7392,6 @@ bool AXObject::OnNativeClickAction() {
 
   Element* element = GetClosestElement();
 
-  // Forward default action on custom select to its button.
-  if (auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
-    if (select->IsAppearanceBaseButton()) {
-      if (auto* button = select->SlottedButton()) {
-        element = button;
-      }
-    }
-  }
-
   if (element) {
     // Always set the sequential focus navigation starting point.
     // Even if this element isn't focusable, if you press "Tab" it will

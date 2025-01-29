@@ -153,31 +153,6 @@ using mojom::blink::FormControlType;
 
 namespace {
 
-Node* RetargetInput(Node* node) {
-  // Any click/focus that occurs on a <button> inside of a custom <select>
-  // should be treated as if it occurred on the <select>. The custom button is
-  // not actually present in the accessibility tree, but the select is present
-  // as a Role::kMenuList object.
-  if (IsA<HTMLButtonElement>(node)) {
-    // Fallback button case.
-    Node* possible_select = node->OwnerShadowHost();
-    if (!possible_select) {
-      // Custom button case.
-      possible_select = NodeTraversal::Parent(*node);
-    }
-    if (auto* select = DynamicTo<HTMLSelectElement>(possible_select)) {
-      if (select->IsAppearanceBaseButton() && node == select->SlottedButton()) {
-        return select;
-      }
-    }
-  }
-  return node;
-}
-
-Element* RetargetInput(Element* element) {
-  return DynamicTo<Element>(RetargetInput(static_cast<Node*>(element)));
-}
-
 bool IsInitialEmptyDocument(const Document& document) {
   // Do not fire for initial empty top document. This helps avoid thrashing the
   // a11y tree, causing an extra serialization.
@@ -949,10 +924,6 @@ Node* AXObjectCacheImpl::FocusedNode() const {
   Node* focused_node = document_->FocusedElement();
   if (!focused_node)
     focused_node = document_;
-
-  // The custom select's button is not included in the a11y hierarchy. Treat
-  // focus on the button as if it's on the <select>.
-  focused_node = RetargetInput(focused_node);
 
   // A popup is showing: return the focus within instead of the focus in the
   // main document. Do not do this for HTML <select>, which has special
@@ -3953,7 +3924,7 @@ void AXObjectCacheImpl::ImageLoaded(const LayoutObject* layout_object) {
 }
 
 void AXObjectCacheImpl::HandleClicked(Node* node) {
-  if (AXObject* obj = Get(RetargetInput(node))) {
+  if (AXObject* obj = Get(node)) {
     PostNotification(obj, ax::mojom::Event::kClicked);
   }
 }
@@ -5264,9 +5235,6 @@ void AXObjectCacheImpl::HandleFocusedUIElementChanged(
   Page* page = new_focused_element->GetDocument().GetPage();
   if (!page)
     return;
-
-  new_focused_element = RetargetInput(new_focused_element);
-  old_focused_element = RetargetInput(old_focused_element);
 
   if (old_focused_element) {
     DeferTreeUpdate(TreeUpdateReason::kNodeLostFocus, old_focused_element);
