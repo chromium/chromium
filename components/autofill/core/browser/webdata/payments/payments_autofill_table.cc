@@ -661,11 +661,7 @@ bool PaymentsAutofillTable::AddLocalIban(const Iban& iban) {
   InsertBuilder(db(), s, kLocalIbansTable,
                 {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname});
   BindIbanToStatement(iban, &s, *encryptor());
-  if (!s.Run())
-    return false;
-
-  DCHECK_GT(db()->GetLastChangeCount(), 0);
-  return true;
+  return s.Run();
 }
 
 bool PaymentsAutofillTable::UpdateLocalIban(const Iban& iban) {
@@ -686,9 +682,7 @@ bool PaymentsAutofillTable::UpdateLocalIban(const Iban& iban) {
                 "guid=?1");
   BindIbanToStatement(iban, &s, *encryptor());
 
-  bool result = s.Run();
-  DCHECK_GT(db()->GetLastChangeCount(), 0);
-  return result;
+  return s.Run();
 }
 
 bool PaymentsAutofillTable::RemoveLocalIban(const std::string& guid) {
@@ -748,8 +742,6 @@ bool PaymentsAutofillTable::AddCreditCard(const CreditCard& credit_card) {
     return false;
   }
 
-  DCHECK_GT(db()->GetLastChangeCount(), 0);
-
   // If credit card contains cvc, will store cvc in local_stored_cvc table.
   if (!credit_card.cvc().empty() &&
       base::FeatureList::IsEnabled(
@@ -797,8 +789,6 @@ bool PaymentsAutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
                    : old_credit_card->usage_history().modification_date(),
       &card_statement, *encryptor());
   bool card_result = card_statement.Run();
-  CHECK(db()->GetLastChangeCount() > 0);
-
   return cvc_result || card_result;
 }
 
@@ -823,9 +813,7 @@ bool PaymentsAutofillTable::UpdateLocalCvc(const std::string& guid,
                 /*or_replace=*/true);
   BindLocalStoredCvcToStatement(guid, cvc, AutofillClock::Now(), &cvc_statement,
                                 *encryptor());
-  bool cvc_result = cvc_statement.Run();
-  CHECK(db()->GetLastChangeCount() > 0);
-  return cvc_result;
+  return cvc_statement.Run();
 }
 
 bool PaymentsAutofillTable::RemoveCreditCard(const std::string& guid) {

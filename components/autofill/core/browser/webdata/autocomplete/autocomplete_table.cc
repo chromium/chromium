@@ -350,7 +350,6 @@ std::optional<AutocompleteEntry> AutocompleteTable::GetAutocompleteEntry(
   AutocompleteEntry entry({name, value},
                           base::Time::FromTimeT(s.ColumnInt64(0)),
                           base::Time::FromTimeT(s.ColumnInt64(1)));
-  DCHECK(!s.Step());
   return entry;
 }
 
