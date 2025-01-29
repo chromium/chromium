@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.collaboration.messaging;
+package org.chromium.components.tab_group_sync;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import org.chromium.components.tab_group_sync.LocalTabGroupId;
 
 /** Contains an object of either local ID or sync GUID, never both. */
 public class EitherId {
@@ -16,7 +14,7 @@ public class EitherId {
     public static class EitherTabId extends EitherId {
         // Must match kInvalidTabId definition in
         // components/collaboration/internal/messaging/messaging_backend_service_bridge.cc.
-        /* package */ static final int INVALID_TAB_ID = -1;
+        public static final int INVALID_TAB_ID = -1;
 
         private final int mLocalId;
 

@@ -7,8 +7,8 @@ package org.chromium.components.collaboration.messaging;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
-import org.chromium.components.collaboration.messaging.EitherId.EitherGroupId;
-import org.chromium.components.collaboration.messaging.EitherId.EitherTabId;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
+import org.chromium.components.tab_group_sync.EitherId.EitherTabId;
 
 import java.util.List;
 import java.util.Optional;
