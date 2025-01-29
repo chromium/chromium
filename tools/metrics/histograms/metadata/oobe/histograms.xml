@@ -1021,7 +1021,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.OobeConfig.DeleteFlexOobeConfig.DBusResult"
-    enum="DeleteFlexOobeConfigDBusResult" expires_after="2025-02-07">
+    enum="DeleteFlexOobeConfigDBusResult" expires_after="2026-02-07">
   <owner>jacksontadie@google.com</owner>
   <owner>cros-onboarding-team@google.com</owner>
   <summary>
