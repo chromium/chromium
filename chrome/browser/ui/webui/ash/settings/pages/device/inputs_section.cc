@@ -189,8 +189,6 @@ void AddInputMethodOptionsLoadTimeData(
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_NUMBER_OF_SUGGESTIONS},
       {"inputMethodOptionsJapaneseDisablePersonalizedSuggestions",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS},
-      {"inputMethodOptionsJapaneseAutomaticallySendStatisticsToGoogle",
-       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SEND_STATISTICS_TO_GOOGLE},
       {"inputMethodOptionsEnableDoubleSpacePeriod",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_ENABLE_DOUBLE_SPACE_PERIOD},
       {"inputMethodOptionsEnableGestureTyping",
