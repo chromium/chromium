@@ -41,6 +41,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_utils.h"
@@ -344,6 +345,14 @@ IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
 #endif
 IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
                        MAYBE_ReturnsBlockedAfterMouseHoverOverTabstrip) {
+#if BUILDFLAG(IS_LINUX)
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP()
+        << "TODO(https://crbug.com/390834763): figure out why this is failing "
+           "on Linux Wayland testbot.";
+  }
+#endif
+
   RunTestSequence(
       WaitForShow(kBrowserViewElementId),
       // Hovering the tabstrip does cause a delay.

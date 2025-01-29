@@ -44,6 +44,10 @@
 #include "ui/views/test/widget_activation_waiter.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 constexpr char kDocumentWithTitle[] = "/title3.html";
@@ -73,6 +77,15 @@ class InteractiveBrowserTestUiTest : public InteractiveBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                        TestEventTypesAndMouseMoveClick) {
+#if BUILDFLAG(IS_WIN)
+  if (base::win::OSInfo::GetInstance()->version() < base::win::Version::WIN11) {
+    GTEST_SKIP()
+        << "TODO(https://crbug.com/392854216): Test is flaky on Win 10 "
+           "builder, so temporarily disable until a fix can be found. More "
+           "info available at the bug link above.";
+  }
+#endif
+
   RunTestSequence(
       // Ensure the mouse isn't over the app menu button.
       MoveMouseTo(kTabStripElementId),
