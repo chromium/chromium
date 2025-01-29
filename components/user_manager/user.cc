@@ -94,6 +94,12 @@ User::User(const AccountId& account_id, UserType type)
       image_is_loading_ = false;
       break;
   }
+
+  // Device local accounts are always managed and affiliated.
+  if (IsDeviceLocalAccount()) {
+    is_managed_ = true;
+    is_affiliated_ = true;
+  }
 }
 
 User::~User() = default;
@@ -213,20 +219,11 @@ const std::optional<bool>& User::is_managed() const {
 }
 
 bool User::IsAffiliated() const {
-  // Device local accounts are always affiliated.
-  if (IsDeviceLocalAccount()) {
-    return true;
-  }
-
   return is_affiliated_.value_or(false);
 }
 
 void User::IsAffiliatedAsync(
     base::OnceCallback<void(bool)> is_affiliated_callback) {
-  // TODO(b/278643115): Conceptually, we should call
-  //   std::move(is_affiliated_callback).Run(true)
-  // here immediately if this is for device local account.
-
   if (is_affiliated_.has_value()) {
     std::move(is_affiliated_callback).Run(is_affiliated_.value());
   } else {
