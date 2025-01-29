@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_sync_service_factory.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
+#include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
@@ -27,6 +28,10 @@
 #include "chrome/browser/extensions/plugin_manager.h"
 #include "chrome/browser/extensions/warning_badge_service_factory.h"
 #include "ppapi/buildflags/buildflags.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/extensions/forced_extensions/assessment_assistant_tracker.h"
 #endif
 
 namespace chrome_extensions {
@@ -56,6 +61,9 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
 #endif
   extensions::WarningBadgeServiceFactory::GetInstance();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
+  extensions::AssessmentAssistantTrackerFactory::GetInstance();
+#endif
 }
 
 }  // namespace chrome_extensions
