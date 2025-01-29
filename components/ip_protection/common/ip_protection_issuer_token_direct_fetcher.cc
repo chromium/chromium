@@ -81,7 +81,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // - public_key takes (29 + 8) 37 bytes.
 // - expiration_time_seconds take 8 bytes.
 // - next_epoch_start_time_seconds take 8 bytes.
-// - p_reveal takes 4 bytes.
+// - num_tokens_with_signal takes 4 bytes.
 //
 // This means response can be as much as (31208 + 37 + 8 + 8 + 4) 31265.
 // Limit is set to 32 * 1024 (32768) which gives more than our rough estimate.
@@ -94,8 +94,7 @@ constexpr int32_t kMinNumberOfTokens = 10;
 constexpr int32_t kMaxNumberOfTokens = 400;
 constexpr int32_t kTokenVersion = 1;
 constexpr int32_t kTokenSize = 29;
-constexpr int32_t kMinPReveal = 0;
-constexpr int32_t kMaxPReveal = 10000;
+constexpr int32_t kMinNumTokensWithSignal = 0;
 constexpr base::TimeDelta kMinExpirationTimeDelta = base::Hours(3);
 constexpr base::TimeDelta kMaxExpirationTimeDelta = base::Days(3);
 
@@ -249,7 +248,7 @@ void IpProtectionIssuerTokenDirectFetcher::OnGetIssuerTokenCompleted(
   outcome.expiration_time_seconds = response_proto.expiration_time_seconds();
   outcome.next_epoch_start_time_seconds =
       response_proto.next_epoch_start_time_seconds();
-  outcome.p_reveal = response_proto.p_reveal();
+  outcome.num_tokens_with_signal = response_proto.num_tokens_with_signal();
   std::move(callback).Run(
       std::optional<TryGetIssuerTokensOutcome>{std::move(outcome)},
       TryGetIssuerTokensResult{TryGetIssuerTokensStatus::kSuccess, net::OK});
@@ -274,8 +273,9 @@ IpProtectionIssuerTokenDirectFetcher::ValidateIssuerTokenResponse(
   if (expiration_time_delta > kMaxExpirationTimeDelta) {
     return TryGetIssuerTokensStatus::kExpirationTooLate;
   }
-  if (response.p_reveal() < kMinPReveal || response.p_reveal() > kMaxPReveal) {
-    return TryGetIssuerTokensStatus::kInvalidPReveal;
+  if (response.num_tokens_with_signal() < kMinNumTokensWithSignal ||
+      response.num_tokens_with_signal() > response.tokens_size()) {
+    return TryGetIssuerTokensStatus::kInvalidNumTokensWithSignal;
   }
   if (absl::StatusOr<PublicKey> public_key =
           DeserializePublicKey(response.public_key().y());

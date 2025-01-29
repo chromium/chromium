@@ -296,7 +296,7 @@ class IpProtectionIssuerTokenDirectFetcherTest : public FetcherTestBase {
       response_proto.mutable_public_key()->set_y(public_key_bytes_);
       response_proto.set_expiration_time_seconds(expiration_time_);
       response_proto.set_next_epoch_start_time_seconds(next_epoch_start_time_);
-      response_proto.set_p_reveal(p_reveal_);
+      response_proto.set_num_tokens_with_signal(num_tokens);
     }
     return response_proto;
   }
@@ -307,7 +307,6 @@ class IpProtectionIssuerTokenDirectFetcherTest : public FetcherTestBase {
       (base::Time::Now() + base::Hours(10)).InSecondsFSinceUnixEpoch();
   const uint64_t next_epoch_start_time_ =
       (base::Time::Now() + base::Hours(12)).InSecondsFSinceUnixEpoch();
-  const int p_reveal_ = 100;
 };
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest, TryGetIssuerTokensSuccess) {
@@ -337,7 +336,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest, TryGetIssuerTokensSuccess) {
   EXPECT_EQ(outcome.public_key, public_key_bytes_);
   EXPECT_EQ(outcome.expiration_time_seconds, expiration_time_);
   EXPECT_EQ(outcome.next_epoch_start_time_seconds, next_epoch_start_time_);
-  EXPECT_EQ(outcome.p_reveal, 100);
+  EXPECT_EQ(outcome.num_tokens_with_signal, 10);
 
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kSuccess);
@@ -431,10 +430,10 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
-       TryGetIssuerTokensPRevealTooSmall) {
+       TryGetIssuerTokensNumTokensWithSignalTooSmall) {
   GetIssuerTokenResponse response_proto = BuildIssuerTokenResponse(
       /*num_tokens=*/10);
-  response_proto.set_p_reveal(-1);
+  response_proto.set_num_tokens_with_signal(-1);
   const std::string response_str = response_proto.SerializeAsString();
   SetResponse(response_str);
 
@@ -447,15 +446,16 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
 
   EXPECT_FALSE(future.Get<0>());
   const auto& result = future.Get<1>();
-  EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kInvalidPReveal);
+  EXPECT_EQ(result.status,
+            TryGetIssuerTokensStatus::kInvalidNumTokensWithSignal);
   EXPECT_EQ(result.network_error_code, net::OK);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
-       TryGetIssuerTokensPRevealTooLarge) {
+       TryGetIssuerTokensNumTokensWithSignalTooLarge) {
   GetIssuerTokenResponse response_proto = BuildIssuerTokenResponse(
       /*num_tokens=*/10);
-  response_proto.set_p_reveal(10001);
+  response_proto.set_num_tokens_with_signal(11);
   const std::string response_str = response_proto.SerializeAsString();
   SetResponse(response_str);
 
@@ -468,7 +468,8 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
 
   EXPECT_FALSE(future.Get<0>());
   const auto& result = future.Get<1>();
-  EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kInvalidPReveal);
+  EXPECT_EQ(result.status,
+            TryGetIssuerTokensStatus::kInvalidNumTokensWithSignal);
   EXPECT_EQ(result.network_error_code, net::OK);
 }
 
@@ -598,7 +599,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
        TryGetIssuerTokensMultipleTokens) {
   GetIssuerTokenResponse response_proto = BuildIssuerTokenResponse(
       /*num_tokens=*/400);
-  response_proto.set_p_reveal(1234);
+  response_proto.set_num_tokens_with_signal(123);
   const std::string response_str = response_proto.SerializeAsString();
   // When last checked (01/24/2025) response_str.size() is 26447.
   ASSERT_LT(response_str.size(), std::size_t(32 * 1024));
@@ -624,7 +625,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   EXPECT_EQ(outcome.public_key, public_key_bytes_);
   EXPECT_EQ(outcome.expiration_time_seconds, expiration_time_);
   EXPECT_EQ(outcome.next_epoch_start_time_seconds, next_epoch_start_time_);
-  EXPECT_EQ(outcome.p_reveal, 1234);
+  EXPECT_EQ(outcome.num_tokens_with_signal, 123);
 
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kSuccess);
