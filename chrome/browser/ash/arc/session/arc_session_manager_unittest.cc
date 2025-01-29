@@ -1684,8 +1684,7 @@ TEST_F(ArcSessionManagerTest, EnableHardwareCheck) {
       ash::switches::kEnableArcVmDlc);
   // Enable enable-android-vpn-apps-on-flex chrome flag.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      ash::features::kAndroidVpnAppsOnFlex);
+  scoped_feature_list.InitAndEnableFeature(ash::features::kVpnAppsOnFlex);
   auto mock_hardware_checker_ = std::make_unique<MockArcRevenHardwareChecker>();
   EXPECT_CALL(*mock_hardware_checker_,
               IsRevenDeviceCompatibleForArc(::testing::_))
@@ -1765,8 +1764,7 @@ TEST_F(ArcSessionManagerTest, NoArcVmInstallWithFlagOff) {
       ash::switches::kEnableArcVmDlc);
   // Disable enable-android-vpn-apps-on-flex chrome flag.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ash::features::kAndroidVpnAppsOnFlex);
+  scoped_feature_list.InitAndDisableFeature(ash::features::kVpnAppsOnFlex);
   auto mock_hardware_checker_ = std::make_unique<MockArcRevenHardwareChecker>();
   EXPECT_CALL(*mock_hardware_checker_,
               IsRevenDeviceCompatibleForArc(::testing::_))

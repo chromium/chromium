@@ -141,9 +141,9 @@ const char kAndroidBrowserControlsInVizDescription[] =
     "to top controls.";
 
 #if BUILDFLAG(IS_CHROMEOS)
-const char kAndroidVpnAppsOnFlexName[] = "Enable Android VPN Apps on Flex";
-const char kAndroidVpnAppsOnFlexDescription[] =
-    "Enables support for Android VPN Apps on Flex devices.";
+const char kVpnAppsOnFlexName[] = "Enable VPN Apps on Flex";
+const char kVpnAppsOnFlexDescription[] =
+    "Enables support for VPN Apps on Flex devices.";
 
 const char kAnnotatorModeName[] = "Enable annotator tool";
 const char kAnnotatorModeDescription[] =

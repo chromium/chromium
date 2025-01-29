@@ -2394,11 +2394,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-android-vpn-apps-on-flex",
-    "owners": [ "jiaozhou@google.com", "chromeos-flex-eng@google.com" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "enable-annotator-mode",
     "owners": [ "sanjaperisic@chromium.com", "cros-edu-eng@google.com" ],
     "expiry_milestone": 140
@@ -4038,6 +4033,11 @@
     "owners": [ "//ash/keyboard/OWNERS" ],
     // Useful for debugging the virtual keyboard on non-tablet devices.
     "expiry_milestone": -1
+  },
+  {
+    "name": "enable-vpn-apps-on-flex",
+    "owners": [ "jiaozhou@google.com", "chromeos-flex-eng@google.com" ],
+    "expiry_milestone": 136
   },
   {
     "name": "enable-vulkan",

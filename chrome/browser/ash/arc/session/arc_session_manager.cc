@@ -462,8 +462,8 @@ bool NeedRevenDLC() {
     return false;
   }
 
-  if (!ash::features::IsAndroidVpnAppsOnFlexEnabled()) {
-    VLOG(1) << "enable-android-vpn-apps-on-flex flag is off and cannot "
+  if (!ash::features::IsVpnAppsOnFlexEnabled()) {
+    VLOG(1) << "enable-vpn-apps-on-flex flag is off and cannot "
                "install arcvm images.";
     return false;
   }
