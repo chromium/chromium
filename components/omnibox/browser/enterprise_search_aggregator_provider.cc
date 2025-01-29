@@ -80,7 +80,6 @@ void EnterpriseSearchAggregatorProvider::Run() {
       AutocompleteInput::GetSubstitutingTemplateURLForInput(
           client_->GetTemplateURLService(), &adjusted_input);
   CHECK(template_url);
-  CHECK(template_url->featured_by_policy());
   CHECK(template_url->policy_origin() ==
         TemplateURLData::PolicyOrigin::kSearchAggregator);
 
