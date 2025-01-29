@@ -61,7 +61,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/multidevice:test_support",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
-    "//chromeos/ash/components/scheduler_config:unit_tests",
     "//chromeos/ash/components/system",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
     "//chromeos/ash/services/cros_healthd/public/mojom",
