@@ -83,7 +83,7 @@ std::vector<arc::IntentFilter> CreateFilterList(
     filter_authorities.emplace_back(authority, 0);
   }
   std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back("/", arc::mojom::PatternType::PATTERN_PREFIX);
+  patterns.emplace_back("/", arc::PatternType::kPrefix);
 
   auto filter = arc::IntentFilter(package_name, {arc::kIntentActionView},
                                   std::move(filter_authorities),
@@ -1085,8 +1085,7 @@ TEST_F(ArcAppsPublisherTest, OnlyValidFilterIsPublished) {
   std::vector<arc::IntentFilter::AuthorityEntry> filter_authorities1;
   filter_authorities1.emplace_back(kTestUrl.host(), 0);
   std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back(kTestUrl.path(),
-                        arc::mojom::PatternType::PATTERN_PREFIX);
+  patterns.emplace_back(kTestUrl.path(), arc::PatternType::kPrefix);
 
   auto filter = arc::IntentFilter(package_name, {arc::kIntentActionView},
                                   std::move(filter_authorities1),
@@ -1096,12 +1095,11 @@ TEST_F(ArcAppsPublisherTest, OnlyValidFilterIsPublished) {
 
   std::vector<arc::IntentFilter::AuthorityEntry> filter_authorities2;
   filter_authorities2.emplace_back(kTestUrl.host(), 0);
-  int invalid_pattern_type =
-      static_cast<int>(arc::mojom::PatternType::kMaxValue) + 1;
+  constexpr arc::PatternType kInvalidPatternType =
+      static_cast<arc::PatternType>(5);
+  ASSERT_FALSE(arc::IsKnownPatternType(kInvalidPatternType));
   std::vector<arc::IntentFilter::PatternMatcher> invalid_pattern;
-  invalid_pattern.emplace_back(
-      kTestUrl.path(),
-      static_cast<arc::mojom::PatternType>(invalid_pattern_type));
+  invalid_pattern.emplace_back(kTestUrl.path(), kInvalidPatternType);
 
   auto invalid_filter = arc::IntentFilter(
       package_name, {arc::kIntentActionView}, std::move(filter_authorities2),

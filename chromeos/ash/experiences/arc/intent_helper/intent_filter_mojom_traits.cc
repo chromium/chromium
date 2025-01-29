@@ -78,6 +78,54 @@ bool StructTraits<arc::mojom::AuthorityEntryDataView,
   return true;
 }
 
+arc::mojom::PatternType
+EnumTraits<arc::mojom::PatternType, arc::PatternType>::ToMojom(
+    arc::PatternType input) {
+  switch (input) {
+    case arc::PatternType::kUnknown:
+      return arc::mojom::PatternType::kUnknown;
+    case arc::PatternType::kLiteral:
+      return arc::mojom::PatternType::PATTERN_LITERAL;
+    case arc::PatternType::kPrefix:
+      return arc::mojom::PatternType::PATTERN_PREFIX;
+    case arc::PatternType::kSimpleGlob:
+      return arc::mojom::PatternType::PATTERN_SIMPLE_GLOB;
+    case arc::PatternType::kAdvancedGlob:
+      return arc::mojom::PatternType::PATTERN_ADVANCED_GLOB;
+    case arc::PatternType::kSuffix:
+      return arc::mojom::PatternType::PATTERN_SUFFIX;
+  }
+
+  NOTREACHED();
+}
+
+bool EnumTraits<arc::mojom::PatternType, arc::PatternType>::FromMojom(
+    arc::mojom::PatternType input,
+    arc::PatternType* output) {
+  switch (input) {
+    case arc::mojom::PatternType::kUnknown:
+      *output = arc::PatternType::kUnknown;
+      return true;
+    case arc::mojom::PatternType::PATTERN_LITERAL:
+      *output = arc::PatternType::kLiteral;
+      return true;
+    case arc::mojom::PatternType::PATTERN_PREFIX:
+      *output = arc::PatternType::kPrefix;
+      return true;
+    case arc::mojom::PatternType::PATTERN_SIMPLE_GLOB:
+      *output = arc::PatternType::kSimpleGlob;
+      return true;
+    case arc::mojom::PatternType::PATTERN_ADVANCED_GLOB:
+      *output = arc::PatternType::kAdvancedGlob;
+      return true;
+    case arc::mojom::PatternType::PATTERN_SUFFIX:
+      *output = arc::PatternType::kSuffix;
+      return true;
+  }
+
+  return false;
+}
+
 bool StructTraits<arc::mojom::PatternMatcherDataView,
                   arc::IntentFilter::PatternMatcher>::
     Read(arc::mojom::PatternMatcherDataView data,
@@ -87,7 +135,7 @@ bool StructTraits<arc::mojom::PatternMatcherDataView,
     return false;
   }
 
-  arc::mojom::PatternType type;
+  arc::PatternType type;
   if (!data.ReadType(&type)) {
     return false;
   }

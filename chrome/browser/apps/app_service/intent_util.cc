@@ -163,8 +163,7 @@ bool IsPrefixOnlyGlob(std::string_view pattern) {
 apps::ConditionValuePtr ConvertArcPatternMatcherToConditionValue(
     const arc::IntentFilter::PatternMatcher& path) {
   apps::PatternMatchType match_type;
-  if (path.match_type() < arc::mojom::PatternType::kMinValue ||
-      path.match_type() > arc::mojom::PatternType::kMaxValue) {
+  if (!arc::IsKnownPatternType(path.match_type())) {
     LOG(ERROR)
         << " Received an ARC intent filter with unsupported PatternType: "
         << path.match_type()
@@ -174,13 +173,13 @@ apps::ConditionValuePtr ConvertArcPatternMatcherToConditionValue(
     return nullptr;
   }
   switch (path.match_type()) {
-    case arc::mojom::PatternType::PATTERN_LITERAL:
+    case arc::PatternType::kLiteral:
       match_type = apps::PatternMatchType::kLiteral;
       break;
-    case arc::mojom::PatternType::PATTERN_PREFIX:
+    case arc::PatternType::kPrefix:
       match_type = apps::PatternMatchType::kPrefix;
       break;
-    case arc::mojom::PatternType::PATTERN_SIMPLE_GLOB:
+    case arc::PatternType::kSimpleGlob:
       match_type = apps::PatternMatchType::kGlob;
 
       // It's common for Globs to be used to encode patterns which are actually
@@ -194,9 +193,9 @@ apps::ConditionValuePtr ConvertArcPatternMatcherToConditionValue(
       }
       break;
     // TODO(crbug.com/40275407): support the new pattern types.
-    case arc::mojom::PatternType::PATTERN_ADVANCED_GLOB:
-    case arc::mojom::PatternType::PATTERN_SUFFIX:
-    case arc::mojom::PatternType::kUnknown:
+    case arc::PatternType::kAdvancedGlob:
+    case arc::PatternType::kSuffix:
+    case arc::PatternType::kUnknown:
       LOG(ERROR)
           << " Received an ARC intent filter with unsupported PatternType: "
           << path.match_type()
@@ -649,16 +648,16 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
         break;
       case apps::ConditionType::kPath:
         for (auto& condition_value : condition->condition_values) {
-          arc::mojom::PatternType match_type;
+          arc::PatternType match_type;
           switch (condition_value->match_type) {
             case apps::PatternMatchType::kLiteral:
-              match_type = arc::mojom::PatternType::PATTERN_LITERAL;
+              match_type = arc::PatternType::kLiteral;
               break;
             case apps::PatternMatchType::kPrefix:
-              match_type = arc::mojom::PatternType::PATTERN_PREFIX;
+              match_type = arc::PatternType::kPrefix;
               break;
             case apps::PatternMatchType::kGlob:
-              match_type = arc::mojom::PatternType::PATTERN_SIMPLE_GLOB;
+              match_type = arc::PatternType::kSimpleGlob;
               break;
             case apps::PatternMatchType::kMimeType:
             case apps::PatternMatchType::kFileExtension:

@@ -496,7 +496,7 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_AddsMissingPath) {
   std::vector<arc::IntentFilter::AuthorityEntry> authorities1;
   authorities1.emplace_back(kHost, 0);
   std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+  patterns.emplace_back(kPath, arc::PatternType::kPrefix);
 
   arc::IntentFilter filter_with_path(kPackageName, {arc::kIntentActionView},
                                      std::move(authorities1),
@@ -528,10 +528,10 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_InvalidPath) {
   std::vector<arc::IntentFilter::AuthorityEntry> authorities1;
   authorities1.emplace_back(kHost, 0);
   std::vector<arc::IntentFilter::PatternMatcher> patterns1;
-  int invalid_pattern_type =
-      static_cast<int>(arc::mojom::PatternType::kMaxValue) + 1;
-  patterns1.emplace_back(
-      kPath, static_cast<arc::mojom::PatternType>(invalid_pattern_type));
+  constexpr arc::PatternType kInvalidPatternType =
+      static_cast<arc::PatternType>(5);
+  ASSERT_FALSE(arc::IsKnownPatternType(kInvalidPatternType));
+  patterns1.emplace_back(kPath, kInvalidPatternType);
 
   arc::IntentFilter filter_with_only_invalid_path(
       kPackageName, {arc::kIntentActionView}, std::move(authorities1),
@@ -546,9 +546,8 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_InvalidPath) {
   std::vector<arc::IntentFilter::AuthorityEntry> authorities2;
   authorities2.emplace_back(kHost, 0);
   std::vector<arc::IntentFilter::PatternMatcher> patterns2;
-  patterns2.emplace_back(
-      kPath, static_cast<arc::mojom::PatternType>(invalid_pattern_type));
-  patterns2.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+  patterns2.emplace_back(kPath, kInvalidPatternType);
+  patterns2.emplace_back(kPath, arc::PatternType::kPrefix);
   arc::IntentFilter filter_with_some_valid_path(
       kPackageName, {arc::kIntentActionView}, std::move(authorities2),
       std::move(patterns2), {kScheme}, {});
@@ -559,7 +558,7 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_InvalidPath) {
   std::vector<arc::IntentFilter::AuthorityEntry> authorities3;
   authorities3.emplace_back(kHost, 0);
   std::vector<arc::IntentFilter::PatternMatcher> patterns3;
-  patterns3.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+  patterns3.emplace_back(kPath, arc::PatternType::kPrefix);
   arc::IntentFilter filter_with_valid_path(
       kPackageName, {arc::kIntentActionView}, std::move(authorities3),
       std::move(patterns3), {kScheme}, {});
@@ -580,11 +579,10 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_ConvertsSimpleGlobToPrefix) {
 
   std::vector<arc::IntentFilter::PatternMatcher> patterns;
 
-  patterns.emplace_back("/foo.*", arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
-  patterns.emplace_back(".*", arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
-  patterns.emplace_back("/foo/.*/bar",
-                        arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
-  patterns.emplace_back("/..*", arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
+  patterns.emplace_back("/foo.*", arc::PatternType::kSimpleGlob);
+  patterns.emplace_back(".*", arc::PatternType::kSimpleGlob);
+  patterns.emplace_back("/foo/.*/bar", arc::PatternType::kSimpleGlob);
+  patterns.emplace_back("/..*", arc::PatternType::kSimpleGlob);
 
   arc::IntentFilter filter_with_path(kPackageName, {arc::kIntentActionView},
                                      std::move(authorities),
@@ -624,7 +622,7 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_DeduplicatesHosts) {
   authorities.emplace_back(kHost1, 0);
 
   std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+  patterns.emplace_back(kPath, arc::PatternType::kPrefix);
 
   arc::IntentFilter arc_filter(kPackageName, {arc::kIntentActionView},
                                std::move(authorities), std::move(patterns),
@@ -653,7 +651,7 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_WildcardHostPatternMatchType) {
   authorities.emplace_back(kHostWildcard, 0);
   authorities.emplace_back(kHostNoWildcard, 0);
   std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+  patterns.emplace_back(kPath, arc::PatternType::kPrefix);
 
   arc::IntentFilter arc_filter(kPackageName, {arc::kIntentActionView},
                                std::move(authorities), std::move(patterns),
@@ -711,7 +709,7 @@ TEST_F(IntentUtilsTest,
   authorities.emplace_back("*", 0);
 
   std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back(kPath, arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
+  patterns.emplace_back(kPath, arc::PatternType::kSimpleGlob);
   arc::IntentFilter arc_filter(kPackageName, {arc::kIntentActionView},
                                std::move(authorities), std::move(patterns),
                                {kScheme}, {kMimeType});
@@ -743,7 +741,7 @@ TEST_F(IntentUtilsTest,
   authorities.emplace_back("*", 0);
 
   std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back(kPath, arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
+  patterns.emplace_back(kPath, arc::PatternType::kSimpleGlob);
   arc::IntentFilter arc_filter(kPackageName, {arc::kIntentActionView},
                                std::move(authorities), std::move(patterns),
                                {kScheme}, {kMimeType});
@@ -760,25 +758,19 @@ TEST_F(IntentUtilsTest, ConvertValidFilePathsToFileExtensions) {
 
   // Invalid paths.
   patterns.emplace_back("something/something.mp4",
-                        arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
-  patterns.emplace_back(".*\\.\\\a.mp3",
-                        arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
-  patterns.emplace_back(".*\\.none",
-                        arc::mojom::PatternType::PATTERN_ADVANCED_GLOB);
-  patterns.emplace_back(".*\\.xyz", arc::mojom::PatternType::PATTERN_LITERAL);
-  patterns.emplace_back("hello.txt",
-                        arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
-  patterns.emplace_back(".*\\.abc", arc::mojom::PatternType::PATTERN_SUFFIX);
+                        arc::PatternType::kSimpleGlob);
+  patterns.emplace_back(".*\\.\\\a.mp3", arc::PatternType::kSimpleGlob);
+  patterns.emplace_back(".*\\.none", arc::PatternType::kAdvancedGlob);
+  patterns.emplace_back(".*\\.xyz", arc::PatternType::kLiteral);
+  patterns.emplace_back("hello.txt", arc::PatternType::kSimpleGlob);
+  patterns.emplace_back(".*\\.abc", arc::PatternType::kSuffix);
 
   // Valid paths.
-  patterns.emplace_back(".*\\..*\\.jpg",
-                        arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
-  patterns.emplace_back(".*\\..*\\..*\\.png",
-                        arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
+  patterns.emplace_back(".*\\..*\\.jpg", arc::PatternType::kSimpleGlob);
+  patterns.emplace_back(".*\\..*\\..*\\.png", arc::PatternType::kSimpleGlob);
   patterns.emplace_back(".*\\..*\\..*\\..*\\..*\\.tar.gz",
-                        arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
-  patterns.emplace_back(".*\\..*\\.my-file",
-                        arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
+                        arc::PatternType::kSimpleGlob);
+  patterns.emplace_back(".*\\..*\\.my-file", arc::PatternType::kSimpleGlob);
 
   apps::IntentFilterPtr app_service_filter =
       apps_util::CreateIntentFilterForArc(arc::IntentFilter(

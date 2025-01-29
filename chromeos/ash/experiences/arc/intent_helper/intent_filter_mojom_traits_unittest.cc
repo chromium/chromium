@@ -19,7 +19,7 @@ TEST(IntentFilterMojomTraitsTest, RoundTrip) {
   authorities.emplace_back("www.a.com", 0);
 
   std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back("/", arc::mojom::PatternType::PATTERN_PREFIX);
+  patterns.emplace_back("/", arc::PatternType::kPrefix);
 
   auto input =
       arc::IntentFilter("package_name", "activity_name", "activity_label",
@@ -46,30 +46,4 @@ TEST(IntentFilterMojomTraitsTest, RoundTrip) {
   }
   EXPECT_EQ(input.schemes(), output.schemes());
   EXPECT_EQ(input.mime_types(), output.mime_types());
-}
-
-TEST(IntentFilterMojomTraitsTest, OutOfRangeEnum) {
-  std::vector<arc::IntentFilter::AuthorityEntry> authorities;
-  authorities.emplace_back("www.a.com", 0);
-
-  std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  int invalid_pattern_type =
-      static_cast<int>(arc::mojom::PatternType::kMaxValue) + 1;
-  patterns.emplace_back(
-      "/", static_cast<arc::mojom::PatternType>(invalid_pattern_type));
-
-  auto input =
-      arc::IntentFilter("package_name", "activity_name", "activity_label",
-                        {arc::kIntentActionView}, std::move(authorities),
-                        std::move(patterns), {"https"}, {"text/plain"});
-
-  arc::IntentFilter output;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<arc::mojom::IntentFilter>(
-      input, output));
-
-  ASSERT_EQ(input.paths().size(), output.paths().size());
-  for (size_t i = 0; i < input.paths().size(); i++) {
-    EXPECT_EQ(arc::mojom::PatternType::kUnknown,
-              output.paths()[i].match_type());
-  }
 }

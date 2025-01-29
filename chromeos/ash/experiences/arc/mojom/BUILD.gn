@@ -193,6 +193,8 @@ mojom("mojom") {
       ]
       traits_headers = [ "//chromeos/ash/experiences/arc/intent_helper/intent_filter_mojom_traits.h" ]
       traits_sources = [ "//chromeos/ash/experiences/arc/intent_helper/intent_filter_mojom_traits.cc" ]
+      traits_public_deps =
+          [ "//chromeos/ash/experiences/arc/intent_helper:intent_filter" ]
     },
     {
       types = [
