@@ -19,6 +19,17 @@ inline constexpr int kMaxFileOpenAttempts = 3;
 
 namespace ash::cfm {
 
+namespace {
+
+// Byte cap for each call to log source's `RetrieveNextLogs()`.
+// Ensures that we are not sending back a large amount of data
+// when calling `GetNextData()`. Example: we have a log file
+// that has unexpectedly large lines consecutively, which leads
+// to a larger-than-usual batch.
+constexpr size_t kLogBatchByteLimit = 100 * 1000;  // 100Kb
+
+}  // namespace
+
 LogSource::LogSource(const std::string& filepath,
                      base::TimeDelta poll_rate,
                      size_t batch_size)
@@ -130,7 +141,7 @@ std::vector<std::string> LogSource::GetNextData() {
     log_file_.Refresh();
   }
 
-  return log_file_.RetrieveNextLogs(batch_size_);
+  return log_file_.RetrieveNextLogs(batch_size_, kLogBatchByteLimit);
 }
 
 int LogSource::GetCurrentFileInode() {

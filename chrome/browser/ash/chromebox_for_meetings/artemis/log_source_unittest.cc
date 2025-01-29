@@ -27,6 +27,9 @@ constexpr base::TimeDelta kDefaultPollFrequency = base::Seconds(0);
 // Default to reading all lines in test file.
 constexpr size_t kDefaultBatchSize = kTestFileNumLines;
 
+// Byte cap for each batch read.
+constexpr size_t kBatchByteLimit = 1000;  // 1Kb
+
 // Define a barebones db here that uses a std::map as the backing.
 class PersistentDbForTesting : public PersistentDb {
  public:
@@ -174,12 +177,12 @@ TEST_F(ArtemisLogSourceTest, CheckEOFStateAfterVariousOpens) {
 
   // File opened at the end yields EOF
   logfile.OpenAtOffset(file_size);
-  logfile.RetrieveNextLogs(1);
+  logfile.RetrieveNextLogs(1, kBatchByteLimit);
   EXPECT_TRUE(logfile.IsAtEOF());
 
   // File opened at high offset yields EOF
   logfile.OpenAtOffset(kLargeOffset);
-  logfile.RetrieveNextLogs(1);
+  logfile.RetrieveNextLogs(1, kBatchByteLimit);
   EXPECT_TRUE(logfile.IsAtEOF());
 
   // File opened just near end yields no EOF
@@ -193,7 +196,7 @@ TEST_F(ArtemisLogSourceTest, RequestVaryingAmountOfLogLines) {
 
   // Read all logs. Note EOF is expected to be false until
   // we try another read, so expect false.
-  auto lines = logfile.RetrieveNextLogs(kTestFileNumLines);
+  auto lines = logfile.RetrieveNextLogs(kTestFileNumLines, kBatchByteLimit);
   EXPECT_EQ(lines.size(), kTestFileNumLines);
   EXPECT_FALSE(logfile.IsAtEOF());
   logfile.CloseStream();
@@ -201,7 +204,7 @@ TEST_F(ArtemisLogSourceTest, RequestVaryingAmountOfLogLines) {
   // Try to read more than all logs. Verify result is the same,
   // but this time with EOF == true.
   logfile.OpenAtOffset(0);
-  lines = logfile.RetrieveNextLogs(kTestFileNumLines + 1);
+  lines = logfile.RetrieveNextLogs(kTestFileNumLines + 1, kBatchByteLimit);
   EXPECT_EQ(lines.size(), kTestFileNumLines);
   EXPECT_TRUE(logfile.IsAtEOF());
   logfile.CloseStream();
@@ -209,10 +212,56 @@ TEST_F(ArtemisLogSourceTest, RequestVaryingAmountOfLogLines) {
   // Verify partial reads
   size_t num_to_read = 3;
   logfile.OpenAtOffset(0);
-  lines = logfile.RetrieveNextLogs(num_to_read);
+  lines = logfile.RetrieveNextLogs(num_to_read, kBatchByteLimit);
   EXPECT_EQ(lines.size(), num_to_read);
-  lines = logfile.RetrieveNextLogs(kTestFileNumLines - num_to_read);
+  lines = logfile.RetrieveNextLogs(kTestFileNumLines - num_to_read,
+                                   kBatchByteLimit);
   EXPECT_EQ(lines.size(), kTestFileNumLines - num_to_read);
+  logfile.CloseStream();
+}
+
+TEST_F(ArtemisLogSourceTest, CheckByteCapLimitsDataOutput) {
+  // This test fixture normally creates a very basic file where
+  // each line is an incrementing integer starting at 1. This is
+  // insufficient for this particular test, so let's recreate it
+  // and add larger data.
+  std::filesystem::remove(test_file_);
+
+  size_t new_file_num_lines = 3;
+  size_t line_size = 100;
+
+  std::ofstream stream;
+  std::string large_line = std::string(line_size, '!');
+
+  stream.open(test_file_, std::ios_base::app);
+  for (unsigned int i = 0; i < new_file_num_lines; i++) {
+    stream << large_line << std::endl;
+  }
+  stream.close();
+
+  LogFile logfile(test_file_);
+  logfile.OpenAtOffset(0);
+  size_t byte_cap = line_size;
+
+  // Try to read all logs and verify that we only get one back.
+  auto lines = logfile.RetrieveNextLogs(new_file_num_lines, byte_cap);
+  EXPECT_EQ(lines.size(), 1u);
+  EXPECT_FALSE(logfile.IsAtEOF());
+  logfile.CloseStream();
+
+  // Be even more egregious with our byte cap and confirm that
+  // we drop logs in the worst case.
+  logfile.OpenAtOffset(0);
+  byte_cap = line_size - 1;
+
+  lines = logfile.RetrieveNextLogs(new_file_num_lines, byte_cap);
+  EXPECT_EQ(lines.size(), 0u);
+  EXPECT_FALSE(logfile.IsAtEOF());
+
+  // Now try to read the rest (with a normal byte cap) and confirm
+  // that the first log was abandoned entirely.
+  lines = logfile.RetrieveNextLogs(new_file_num_lines, kBatchByteLimit);
+  EXPECT_EQ(lines.size(), new_file_num_lines - 1);
   logfile.CloseStream();
 }
 
@@ -235,19 +284,19 @@ TEST_F(ArtemisLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
 
   // Exhaust all the lines in the file, then add more. This is
   // case #1 above.
-  logfile.RetrieveNextLogs(kTestFileNumLines + 1);
+  logfile.RetrieveNextLogs(kTestFileNumLines + 1, kBatchByteLimit);
   EXPECT_TRUE(logfile.IsAtEOF());
   AppendNewLines(test_file_, kTestFileNumLines, "NEW: ");
 
   // Verify no new lines are reported before Refresh()
-  auto new_lines = logfile.RetrieveNextLogs(kTestFileNumLines);
+  auto new_lines = logfile.RetrieveNextLogs(kTestFileNumLines, kBatchByteLimit);
   EXPECT_EQ(new_lines.size(), 0u);
   EXPECT_TRUE(logfile.IsAtEOF());
 
   // Verify Refresh() triggers new lines to appear
   logfile.Refresh();
   EXPECT_FALSE(logfile.IsAtEOF());
-  new_lines = logfile.RetrieveNextLogs(kTestFileNumLines);
+  new_lines = logfile.RetrieveNextLogs(kTestFileNumLines, kBatchByteLimit);
   EXPECT_EQ(new_lines.size(), kTestFileNumLines);
 
   // Verify that the lines are the new lines
@@ -262,7 +311,7 @@ TEST_F(ArtemisLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
   AppendNewLines(test_file_, kTestFileNumLines, "NEW2: ");
 
   // Verify lines are immediately observable.
-  new_lines = logfile.RetrieveNextLogs(kTestFileNumLines);
+  new_lines = logfile.RetrieveNextLogs(kTestFileNumLines, kBatchByteLimit);
   EXPECT_EQ(new_lines.size(), kTestFileNumLines);
   EXPECT_FALSE(logfile.IsAtEOF());
 
