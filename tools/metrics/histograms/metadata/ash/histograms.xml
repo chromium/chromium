@@ -8155,8 +8155,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ScannerFeature.Timer.{Type}" units="ms"
-    expires_after="2025-05-04">
+    expires_after="2026-02-01">
   <owner>jhtin@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
   <summary>
     Measures the time between the start of a request for {Type} and when a
     response is recieved.
@@ -8192,8 +8193,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ScannerFeature.UserState" enum="ScannerFeatureUserState"
-    expires_after="2025-03-01">
+    expires_after="2026-02-01">
   <owner>jhtin@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
   <summary>
     This histogram captures user interaction and states as a user uses the
     Scanner feature.
