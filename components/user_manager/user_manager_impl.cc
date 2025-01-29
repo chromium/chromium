@@ -1711,8 +1711,7 @@ void UserManagerImpl::OnActiveUserSwitched(User& new_active_user) {
   local_state_->CommitPendingWrite();
 
   // Move the user to the front of the list.
-  UserList::iterator it =
-      base::ranges::find(lru_logged_in_users_, active_user_);
+  UserList::iterator it = std::ranges::find(lru_logged_in_users_, active_user_);
   CHECK(it != lru_logged_in_users_.end());
   std::rotate(lru_logged_in_users_.begin(), it, it + 1);
 }
