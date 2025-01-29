@@ -157,21 +157,9 @@
 }
 
 .date-creation-value,
-.trace-skip-value,
+.trace-trigger-value,
 .trace-size-value {
   color: var(--cr-primary-text-color)
-}
-
-.trace-spinner {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  left: 0;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0.4);
-  border-radius: 4px;
 }
 
 .spinner {

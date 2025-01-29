@@ -53,9 +53,11 @@ struct CONTENT_EXPORT BaseTraceReport {
   // report to be created.
   std::string scenario_name;
 
-  // The upload rule name this report needs to respect for this report to be
-  // uploaded.
+  // The upload rule name that triggered this report.
   std::string upload_rule_name;
+
+  // The upload rule value that triggered this report.
+  std::optional<int32_t> upload_rule_value;
 
   // The total size in bytes taken by the report.
   uint64_t total_size = 0;

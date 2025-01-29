@@ -23,7 +23,7 @@ namespace {
 const base::FilePath::CharType kLocalTracesDatabasePath[] =
     FILE_PATH_LITERAL("LocalTraces.db");
 const char kLocalTracesTableName[] = "local_traces";
-constexpr int kCurrentVersionNumber = 4;
+constexpr int kCurrentVersionNumber = 5;
 
 ClientTraceReport GetReportFromStatement(sql::Statement& statement) {
   auto trace_id = base::Token::FromString(statement.ColumnString(0));
@@ -34,14 +34,17 @@ ClientTraceReport GetReportFromStatement(sql::Statement& statement) {
   client_report.creation_time = statement.ColumnTime(1);
   client_report.scenario_name = statement.ColumnString(2);
   client_report.upload_rule_name = statement.ColumnString(3);
+  if (statement.GetColumnType(4) != sql::ColumnType::kNull) {
+    client_report.upload_rule_value = statement.ColumnInt(4);
+  }
 
   client_report.upload_state =
-      static_cast<ReportUploadState>(statement.ColumnInt(4));
-  client_report.upload_time = statement.ColumnTime(5);
+      static_cast<ReportUploadState>(statement.ColumnInt(5));
+  client_report.upload_time = statement.ColumnTime(6);
   client_report.skip_reason =
-      static_cast<SkipUploadReason>(statement.ColumnInt(6));
-  client_report.has_trace_content = statement.ColumnBool(7);
-  client_report.total_size = static_cast<uint64_t>(statement.ColumnInt64(8));
+      static_cast<SkipUploadReason>(statement.ColumnInt(7));
+  client_report.has_trace_content = statement.ColumnBool(8);
+  client_report.total_size = static_cast<uint64_t>(statement.ColumnInt64(9));
 
   return client_report;
 }
@@ -51,6 +54,7 @@ ClientTraceReport GetReportFromStatement(sql::Statement& statement) {
 // `creation_time` The date and time in seconds when the row was created.
 // `scenario_name` The trace scenario name.
 // `upload_rule_name` The name of the rule that triggered the upload.
+// `upload_rule_value` The value of the rule that triggered the upload.
 // `state` The current upload state of the trace.
 // `upload_time` Time at which the trace was uploaded. NULL if not uploaded.
 // `skip_reason` Reason why a trace was not uploaded.
@@ -63,6 +67,7 @@ constexpr char kLocalTracesTableSql[] = R"sql(
     creation_time DATETIME NOT NULL,
     scenario_name TEXT NOT NULL,
     upload_rule_name TEXT NOT NULL,
+    upload_rule_value INT NULL,
     state INT NOT NULL,
     upload_time DATETIME NULL,
     skip_reason INT NOT NULL,
@@ -150,14 +155,12 @@ bool TraceReportDatabase::AddTrace(const NewTraceReport& new_report) {
     return false;
   }
 
-  sql::Statement create_local_trace(database_.GetCachedStatement(
-      SQL_FROM_HERE, R"sql(INSERT INTO local_traces(
-                                   uuid, creation_time, scenario_name,
-                                   upload_rule_name, state, upload_time,
-                                   skip_reason, trace_content, file_size,
-                                   system_profile)
-                                   VALUES(?,?,?,?,?,?,?,?,?,?)
-                                  )sql"));
+  sql::Statement create_local_trace(
+      database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
+        INSERT INTO local_traces(
+          uuid, creation_time, scenario_name, upload_rule_name,
+          upload_rule_value, state, upload_time, skip_reason, trace_content,
+          file_size, system_profile) VALUES(?,?,?,?,?,?,?,?,?,?,?))sql"));
 
   CHECK(create_local_trace.is_valid());
 
@@ -165,19 +168,24 @@ bool TraceReportDatabase::AddTrace(const NewTraceReport& new_report) {
   create_local_trace.BindTime(1, new_report.creation_time);
   create_local_trace.BindString(2, new_report.scenario_name);
   create_local_trace.BindString(3, new_report.upload_rule_name);
+  if (new_report.upload_rule_value) {
+    create_local_trace.BindInt(4, *new_report.upload_rule_value);
+  } else {
+    create_local_trace.BindNull(4);
+  }
   create_local_trace.BindInt(
-      4, new_report.skip_reason == SkipUploadReason::kNoSkip
+      5, new_report.skip_reason == SkipUploadReason::kNoSkip
              ? static_cast<int>(ReportUploadState::kPending)
              : static_cast<int>(ReportUploadState::kNotUploaded));
-  create_local_trace.BindNull(5);
-  create_local_trace.BindInt(6, static_cast<int>(new_report.skip_reason));
+  create_local_trace.BindNull(6);
+  create_local_trace.BindInt(7, static_cast<int>(new_report.skip_reason));
   if (!new_report.trace_content.empty()) {
-    create_local_trace.BindBlob(7, new_report.trace_content);
+    create_local_trace.BindBlob(8, new_report.trace_content);
   } else {
-    create_local_trace.BindNull(7);
+    create_local_trace.BindNull(8);
   }
-  create_local_trace.BindInt64(8, new_report.total_size);
-  create_local_trace.BindBlob(9, new_report.system_profile);
+  create_local_trace.BindInt64(9, new_report.total_size);
+  create_local_trace.BindBlob(10, new_report.system_profile);
 
   return create_local_trace.Run();
 }
@@ -493,7 +501,7 @@ std::vector<ClientTraceReport> TraceReportDatabase::GetAllReports() {
 
   sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
       SELECT uuid, creation_time, scenario_name, upload_rule_name,
-        state, upload_time, skip_reason,
+        upload_rule_value, state, upload_time, skip_reason,
         trace_content IS NOT NULL as has_trace_content, file_size
       FROM local_traces
       ORDER BY creation_time DESC
@@ -515,7 +523,7 @@ TraceReportDatabase::GetNextReportPendingUpload() {
 
   sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
       SELECT uuid, creation_time, scenario_name, upload_rule_name,
-        state, upload_time, skip_reason,
+        upload_rule_value, state, upload_time, skip_reason,
         trace_content IS NOT NULL as has_trace_content, file_size
       FROM local_traces WHERE state in (1,2)
       ORDER BY creation_time DESC
