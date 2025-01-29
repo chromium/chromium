@@ -4627,7 +4627,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.Cast.UserAction" enum="MediaSessionAction"
-    expires_after="2025-04-06">
+    expires_after="2025-06-08">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -4651,7 +4651,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.DisplayPage"
-    enum="MediaNotificationDisplayPage" expires_after="2025-01-31">
+    enum="MediaNotificationDisplayPage" expires_after="2025-06-08">
   <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
