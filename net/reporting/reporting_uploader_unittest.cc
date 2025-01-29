@@ -661,6 +661,7 @@ TEST_F(ReportingUploaderTest, RespectsNetworkAnonymizationKey) {
                 "Connection: keep-alive\r\n"
                 "Content-Length: 2\r\n"
                 "Content-Type: application/reports+json\r\n"
+                "Origin: https://origin\r\n"
                 "User-Agent: \r\n"
                 "Accept-Encoding: gzip, deflate\r\n"
                 "Accept-Language: en-us,fr\r\n\r\n"),
@@ -671,6 +672,7 @@ TEST_F(ReportingUploaderTest, RespectsNetworkAnonymizationKey) {
                 "Connection: keep-alive\r\n"
                 "Content-Length: 2\r\n"
                 "Content-Type: application/reports+json\r\n"
+                "Origin: https://origin\r\n"
                 "User-Agent: \r\n"
                 "Accept-Encoding: gzip, deflate\r\n"
                 "Accept-Language: en-us,fr\r\n\r\n"),
@@ -699,6 +701,7 @@ TEST_F(ReportingUploaderTest, RespectsNetworkAnonymizationKey) {
                 "Connection: keep-alive\r\n"
                 "Content-Length: 2\r\n"
                 "Content-Type: application/reports+json\r\n"
+                "Origin: https://origin\r\n"
                 "User-Agent: \r\n"
                 "Accept-Encoding: gzip, deflate\r\n"
                 "Accept-Language: en-us,fr\r\n\r\n"),

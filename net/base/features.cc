@@ -691,4 +691,8 @@ BASE_FEATURE_PARAM(size_t,
                    "max_entries",
                    1000);
 
+BASE_FEATURE(kReportingApiCorsOriginHeader,
+             "ReportingApiCorsOriginHeader",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features
