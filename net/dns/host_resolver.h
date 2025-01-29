@@ -228,8 +228,9 @@ class NET_EXPORT HostResolver {
     // synchronously, and GetEndpointResults() will return finalized results.
     virtual int Start(Delegate* delegate) = 0;
 
-    // The current available service endpoints. These can be changed over time
-    // while resolution is still ongoing. Changes are signaled by a call to the
+    // The current available service endpoints. May return stale results when
+    // the cache usage is ALLOWED. These can be changed over time while
+    // resolution is still ongoing. Changes are signaled by a call to the
     // delegate's OnServiceEndpointsUpdated(). Results are finalized when
     // Start() finished synchronously (returning other than ERR_IO_PENDING), or
     // delegate's OnServiceEndpointRequestFinished() is called.
@@ -255,6 +256,20 @@ class NET_EXPORT HostResolver {
     // while resolution is still ongoing. In general, should be called only
     // after resolution completed.
     virtual ResolveErrorInfo GetResolveErrorInfo() = 0;
+
+    // Staleness about the current endpoint results. Only available if results
+    // were received from the host cache, otherwise returns nullptr.
+    // This can be changed over time while resolution is still ongoing, e.g.,
+    // clearing to nullptr if the cached results were intermediate stale results
+    // and these are replaced with fresh results.
+    virtual const HostCache::EntryStaleness* GetStaleInfo() const = 0;
+
+    // True when the current endpoints are a stale result returned only as a
+    // preliminary results while the resolver retrieves fresh results. This is
+    // equivalent to checking the staleness from GetStaleInfo() while the
+    // request isn't final. This can be changed over time while resolution is
+    // still ongoing.
+    virtual bool IsStaleWhileRefresing() const = 0;
 
     // Change the priority of this request.
     virtual void ChangeRequestPriority(RequestPriority priority) = 0;
@@ -368,6 +383,9 @@ class NET_EXPORT HostResolver {
   struct NET_EXPORT ResolveHostParameters {
     ResolveHostParameters();
 
+    ResolveHostParameters(const ResolveHostParameters&);
+    ResolveHostParameters& operator=(const ResolveHostParameters&);
+
     // Requested DNS query type. If UNSPECIFIED, the resolver will select a set
     // of queries automatically. It will select A, AAAA, or both as the address
     // queries, depending on IPv4/IPv6 settings and reachability. It may also
@@ -385,13 +403,23 @@ class NET_EXPORT HostResolver {
     HostResolverSource source = HostResolverSource::ANY;
 
     enum class CacheUsage {
-      // Results may come from the host cache if non-stale.
+      // For ResolveHostRequest, results may come from the host cache if
+      // non-stale.
+      //
+      // For ServiceEndpointRequest, stale results may come from the host cache
+      // only as intermediate results (not the final results). Final results
+      // may come from the host cache if non-stale, or may be fresh responses
+      // from resolvers.
+      // TODO(crbug.com/384204936): The name is confusing. Figure out better
+      // name for this mode.
       ALLOWED,
 
       // Results may come from the host cache even if stale (by expiration or
       // network changes). In secure dns AUTOMATIC mode, the cache is checked
       // for both secure and insecure results prior to any secure DNS lookups to
       // minimize response time.
+      //
+      // For ServiceEndpointRequest, final results could be stale.
       STALE_ALLOWED,
 
       // Results will not come from the host cache.

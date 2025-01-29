@@ -97,6 +97,8 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
   const std::set<std::string>& GetDnsAliasResults() override;
   bool EndpointsCryptoReady() override;
   ResolveErrorInfo GetResolveErrorInfo() override;
+  const HostCache::EntryStaleness* GetStaleInfo() const override;
+  bool IsStaleWhileRefresing() const override;
   void ChangeRequestPriority(RequestPriority priority) override;
 
  private:
