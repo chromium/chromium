@@ -6862,6 +6862,21 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCANNER_ACTION_COPY_TEXT_AND_FORMAT" desc="The label on a button that can be clicked to copy text with formatting from the contents of a screenshot." translateable="false">
         Copy text and format
       </message>
+      <message name="IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_CREATE_EVENT" desc="The message shown on a toast to indicate an error occurred when trying to add an event to the user's calendar from the contents of a screenshot.">
+        Couldn't add to Calendar
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_CREATE_CONTACT" desc="The message shown on a toast to indicate an error occurred when trying to create a new contact from the contents of a screenshot.">
+        Couldn’t create contact
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_CREATE_DOC" desc="The message shown on a toast to indicate an error occurred when trying to create a new Google Doc from the contents of a screenshot.">
+        Couldn’t create Google Doc
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_CREATE_SHEET" desc="The message shown on a toast to indicate an error occurred when trying to create a new Google Sheet from the contents of a screenshot.">
+        Couldn’t create Google Sheet
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_COPY_TEXT_AND_FORMAT" desc="The message shown on a toast to indicate an error occurred when trying to copy text with formatting from the contents of a screenshot.">
+        Couldn’t copy with formatting
+      </message>
 
       <!-- Snap Group -->
       <message name="IDS_ASH_SNAP_GROUP_CLICK_TO_LOCK_WINDOWS" desc="Click to lock the windows.">
