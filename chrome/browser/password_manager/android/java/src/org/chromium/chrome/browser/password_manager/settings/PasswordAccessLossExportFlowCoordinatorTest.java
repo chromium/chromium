@@ -33,6 +33,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -74,6 +76,10 @@ public class PasswordAccessLossExportFlowCoordinatorTest {
     private void setUpAccessLossWarningType(@PasswordAccessLossWarningType int type) {
         when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(any()))
                 .thenReturn(type);
+        FakePasswordManagerBackendSupportHelper helper =
+                new FakePasswordManagerBackendSupportHelper();
+        helper.setBackendPresent(true);
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(helper);
     }
 
     private void initializeExportFlowCoordinator() {

@@ -74,6 +74,10 @@ public class PasswordAccessLossDialogHelperTest {
         when(mUserPrefsJniMock.get(any())).thenReturn(mPrefService);
         mModalDialogManager = new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
         mModalDialogManagerSupplier = new ObservableSupplierImpl<>(mModalDialogManager);
+        FakePasswordManagerBackendSupportHelper helper =
+                new FakePasswordManagerBackendSupportHelper();
+        helper.setBackendPresent(true);
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(helper);
     }
 
     @Test

@@ -8,6 +8,7 @@
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "chrome/android/chrome_jni_headers/PasswordAccessLossWarningBridge_jni.h"
+#include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "ui/android/window_android.h"
 
@@ -23,6 +24,11 @@ PasswordAccessLossWarningBridgeImpl::~PasswordAccessLossWarningBridgeImpl() =
 bool PasswordAccessLossWarningBridgeImpl::ShouldShowAccessLossNoticeSheet(
     PrefService* pref_service,
     bool called_at_startup) {
+  // The warning should not be shown on builds without UPM.
+  if (!GetUtilBridge().IsInternalBackendPresent()) {
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(
           password_manager::features::
               kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
@@ -107,4 +113,21 @@ void PasswordAccessLossWarningBridgeImpl::MaybeShowAccessLossNoticeSheet(
                               kPasswordAccessLossWarningShownAtStartupTimestamp,
                           base::Time::Now());
   }
+}
+
+void PasswordAccessLossWarningBridgeImpl::SetUtilBridgeForTesting(
+    std::unique_ptr<
+        password_manager_android_util::PasswordManagerUtilBridgeInterface>
+        util_bridge) {
+  CHECK(!util_bridge_);
+  util_bridge_ = std::move(util_bridge);
+}
+
+password_manager_android_util::PasswordManagerUtilBridgeInterface&
+PasswordAccessLossWarningBridgeImpl::GetUtilBridge() {
+  if (!util_bridge_) {
+    util_bridge_ = std::make_unique<
+        password_manager_android_util::PasswordManagerUtilBridge>();
+  }
+  return *util_bridge_;
 }
