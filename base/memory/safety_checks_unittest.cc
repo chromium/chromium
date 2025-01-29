@@ -205,12 +205,14 @@ TEST(MemorySafetyCheckTest, ZapOnFree) {
   }
 
   static_assert(
-      !is_memory_safety_checked<DefaultChecks, MemorySafetyCheck::kZapOnFree>);
+      !is_memory_safety_checked<DefaultChecks,
+                                MemorySafetyCheck::kSchedulerLoopQuarantine>);
   static_assert(
-      is_memory_safety_checked<AdvancedChecks, MemorySafetyCheck::kZapOnFree>);
+      is_memory_safety_checked<AdvancedChecks,
+                               MemorySafetyCheck::kSchedulerLoopQuarantine>);
 
   {
-    // Without kZapOnFree.
+    // Without kSchedulerLoopQuarantine.
     auto* ptr = new DefaultChecks();
     EXPECT_NE(ptr, nullptr);
     delete ptr;
@@ -218,7 +220,7 @@ TEST(MemorySafetyCheckTest, ZapOnFree) {
   }
 
   {
-    // With kZapOnFree.
+    // With kSchedulerLoopQuarantine.
     auto* ptr = new AdvancedChecks();
     EXPECT_NE(ptr, nullptr);
     memset(ptr->data, 'A', sizeof(ptr->data));
