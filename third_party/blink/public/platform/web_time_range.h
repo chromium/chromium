@@ -32,9 +32,9 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_TIME_RANGE_H_
 
 #include <algorithm>
+#include <vector>
 
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 

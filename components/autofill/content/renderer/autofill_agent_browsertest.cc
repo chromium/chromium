@@ -716,8 +716,7 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
     </form>
   )");
 
-  blink::WebVector<blink::WebFormElement> forms =
-      GetDocument().GetTopLevelForms();
+  std::vector<blink::WebFormElement> forms = GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());
   FormData form = *form_util::ExtractFormData(
       forms[0].GetDocument(), forms[0],
@@ -1246,7 +1245,7 @@ TEST_P(AutofillAgentSubmissionTest,
       kCallTimerStateDummy);
   ASSERT_TRUE(form.has_value());
 
-  blink::WebVector<blink::WebFormControlElement> field_elements =
+  std::vector<blink::WebFormControlElement> field_elements =
       form_element.GetFormControlElements();
 
   for (const blink::WebFormControlElement& field_element : field_elements) {

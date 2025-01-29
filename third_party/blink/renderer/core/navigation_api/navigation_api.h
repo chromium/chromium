@@ -44,13 +44,14 @@ class CORE_EXPORT NavigationApi final : public EventTarget {
   explicit NavigationApi(LocalDOMWindow*);
   ~NavigationApi() final = default;
 
-  void InitializeForNewWindow(HistoryItem& current,
-                              WebFrameLoadType,
-                              CommitReason,
-                              NavigationApi* previous,
-                              const WebVector<WebHistoryItem>& back_entries,
-                              const WebVector<WebHistoryItem>& forward_entries,
-                              HistoryItem* previous_entry);
+  void InitializeForNewWindow(
+      HistoryItem& current,
+      WebFrameLoadType,
+      CommitReason,
+      NavigationApi* previous,
+      const std::vector<WebHistoryItem>& back_entries,
+      const std::vector<WebHistoryItem>& forward_entries,
+      HistoryItem* previous_entry);
   void UpdateForNavigation(HistoryItem&, WebFrameLoadType);
   void SetEntriesForRestore(
       const mojom::blink::NavigationApiHistoryEntryArraysPtr&,

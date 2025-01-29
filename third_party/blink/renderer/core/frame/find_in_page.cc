@@ -271,13 +271,13 @@ void FindInPage::ClearActiveFindMatch() {
 }
 
 void WebLocalFrameImpl::SetTickmarks(const WebElement& target,
-                                     const WebVector<gfx::Rect>& tickmarks) {
+                                     const std::vector<gfx::Rect>& tickmarks) {
   find_in_page_->SetTickmarks(target, tickmarks);
 }
 
 void FindInPage::SetTickmarks(
     const WebElement& target,
-    const WebVector<gfx::Rect>& tickmarks_in_layout_space) {
+    const std::vector<gfx::Rect>& tickmarks_in_layout_space) {
   LayoutBox* box;
   if (target.IsNull())
     box = frame_->GetFrame()->ContentLayoutObject();

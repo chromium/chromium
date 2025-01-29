@@ -172,7 +172,7 @@ struct BLINK_EXPORT WebNavigationInfo {
 
   // The origin trial features activated in the document initiating this
   // navigation that should be applied in the document being navigated to.
-  WebVector<int> initiator_origin_trial_features;
+  std::vector<int> initiator_origin_trial_features;
 
   // The value of hrefTranslate attribute of a link, if this navigation was
   // inititated by clicking a link.
@@ -331,7 +331,7 @@ struct BLINK_EXPORT WebNavigationParams {
   // Redirects which happened while fetching the main resource.
   // TODO(dgozman): we are only interested in the final values instead of
   // all information about redirects.
-  WebVector<RedirectInfo> redirects;
+  std::vector<RedirectInfo> redirects;
   // The final response for the main resource. This will be used to determine
   // the type of resulting document.
   WebURLResponse response;
@@ -429,14 +429,14 @@ struct BLINK_EXPORT WebNavigationParams {
     CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
         loader_factory;
   };
-  WebVector<std::unique_ptr<PrefetchedSignedExchange>>
+  std::vector<std::unique_ptr<PrefetchedSignedExchange>>
       prefetched_signed_exchanges;
   // An optional tick clock to be used for document loader timing. This is used
   // for testing.
   raw_ptr<const base::TickClock> tick_clock = nullptr;
   // The origin trial features activated in the document initiating this
   // navigation that should be applied in the document being navigated to.
-  WebVector<int> initiator_origin_trial_features;
+  std::vector<int> initiator_origin_trial_features;
 
   // UKM source id to be associated with the Document that will be installed
   // in the current frame.
@@ -447,7 +447,7 @@ struct BLINK_EXPORT WebNavigationParams {
   std::optional<FramePolicy> frame_policy;
 
   // A list of origin trial names to enable for the document being loaded.
-  WebVector<WebString> force_enabled_origin_trials;
+  std::vector<WebString> force_enabled_origin_trials;
 
   // Whether the page is in an origin-keyed agent cluster.
   // https://html.spec.whatwg.org/C/#is-origin-keyed
@@ -460,7 +460,7 @@ struct BLINK_EXPORT WebNavigationParams {
 
   // List of client hints enabled for top-level frame. These still need to be
   // checked against permissions policy before use.
-  WebVector<network::mojom::WebClientHintsType> enabled_client_hints;
+  std::vector<network::mojom::WebClientHintsType> enabled_client_hints;
 
   // Whether the navigation is cross-site and swaps BrowsingContextGroups
   // (BrowsingInstances).
@@ -483,20 +483,20 @@ struct BLINK_EXPORT WebNavigationParams {
   // These are used to construct a subset of the back/forward list for the
   // window.navigation API. They only have the attributes that are needed for
   // that API.
-  WebVector<WebHistoryItem> navigation_api_back_entries;
-  WebVector<WebHistoryItem> navigation_api_forward_entries;
+  std::vector<WebHistoryItem> navigation_api_back_entries;
+  std::vector<WebHistoryItem> navigation_api_forward_entries;
   WebHistoryItem navigation_api_previous_entry;
 
   // List of URLs which are preloaded by HTTP Early Hints.
   // TODO(https://crbug.com/1317936): Pass information more than URL such as
   // request destination so that ResourceFetcher can provide more useful
   // console messages when Early Hints preloaded resources are not used.
-  WebVector<WebURL> early_hints_preloaded_resources;
+  std::vector<WebURL> early_hints_preloaded_resources;
 
   // If this is a navigation to fenced frame from an interest group auction,
   // contains URNs mapped to the ad components returned by the winning bid.
   // Null, otherwise.
-  std::optional<WebVector<WebURL>> ad_auction_components;
+  std::optional<std::vector<WebURL>> ad_auction_components;
 
   // Whether the current context would be allowed to create an opaque-ads
   //  frame (based on the browser-side calculations). See

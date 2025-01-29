@@ -32,6 +32,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
@@ -67,7 +68,6 @@
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -4101,7 +4101,7 @@ void WebViewImpl::DraggableRegionsChanged() {
     return;
   }
 
-  WebVector<WebDraggableRegion> web_regions =
+  std::vector<WebDraggableRegion> web_regions =
       MainFrameImpl()->GetDocument().DraggableRegions();
 
   // If |supports_draggable_regions_| is false, the web view should only send

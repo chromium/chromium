@@ -34,6 +34,7 @@
 #include <limits>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
@@ -81,7 +82,6 @@
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_content_capture_client.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_link_preview_triggerer.h"
@@ -1669,7 +1669,7 @@ void LocalFrame::MediaQueryAffectingValueChangedForLocalSubtree(
 }
 
 void LocalFrame::ViewportSegmentsChanged(
-    const WebVector<gfx::Rect>& viewport_segments) {
+    const std::vector<gfx::Rect>& viewport_segments) {
   if (!RuntimeEnabledFeatures::ViewportSegmentsEnabled(
           GetDocument()->GetExecutionContext())) {
     return;
@@ -1696,7 +1696,7 @@ void LocalFrame::ViewportSegmentsChanged(
 }
 
 void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
-    const WebVector<gfx::Rect>& viewport_segments) {
+    const std::vector<gfx::Rect>& viewport_segments) {
   DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled(
       GetDocument()->GetExecutionContext()));
 
@@ -1716,7 +1716,7 @@ void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
 
 void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
     StyleEnvironmentVariables& vars,
-    const WebVector<gfx::Rect>& viewport_segments) {
+    const std::vector<gfx::Rect>& viewport_segments) {
   // Unset all variables, since they will be set as a whole by the code below.
   // Since the number and configurations of the segments can change, and
   // removing variables clears all values that have previously been set,

@@ -31,6 +31,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -41,7 +42,6 @@
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_renderer_sink.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_destination_uma_reporter.h"
 #include "third_party/blink/renderer/platform/audio/audio_io_callback.h"

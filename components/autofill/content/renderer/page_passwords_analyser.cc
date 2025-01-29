@@ -37,7 +37,6 @@ using blink::WebLabelElement;
 using blink::WebLocalFrame;
 using blink::WebNode;
 using blink::WebString;
-using blink::WebVector;
 
 namespace autofill {
 

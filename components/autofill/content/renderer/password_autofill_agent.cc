@@ -64,7 +64,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -92,7 +91,6 @@ using blink::WebNode;
 using blink::WebSecurityOrigin;
 using blink::WebString;
 using blink::WebURL;
-using blink::WebVector;
 using blink::WebView;
 
 using password_manager::util::IsRendererRecognizedCredentialForm;
@@ -1409,7 +1407,7 @@ void PasswordAutofillAgent::UserGestureObserved() {
 }
 
 void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
-    WebVector<WebFormElement>& forms,
+    std::vector<WebFormElement>& forms,
     const SynchronousFormCache& form_cache) {
   if (!render_frame()) {
     return;
@@ -1482,7 +1480,7 @@ void PasswordAutofillAgent::SendPasswordForms(
     return;
   }
 
-  WebVector<WebFormElement> forms = doc.GetTopLevelForms();
+  std::vector<WebFormElement> forms = doc.GetTopLevelForms();
 
   if (IsShowAutofillSignaturesEnabled())
     AnnotateFormsAndFieldsWithSignatures(forms, form_cache);

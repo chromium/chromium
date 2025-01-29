@@ -51,7 +51,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -1319,10 +1318,9 @@ TEST_F(PasswordAutofillAgentTest, IsWebElementVisibleTest) {
 
   LoadHTML(kVisibleFormWithNoUsernameHTML);
   frame = GetMainFrame();
-  blink::WebVector<WebFormElement> forms =
-      frame->GetDocument().GetTopLevelForms();
+  std::vector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1u, forms.size());
-  blink::WebVector<blink::WebFormControlElement> web_control_elements =
+  std::vector<blink::WebFormControlElement> web_control_elements =
       forms[0].GetFormControlElements();
   ASSERT_EQ(1u, web_control_elements.size());
   EXPECT_TRUE(
@@ -4179,7 +4177,7 @@ TEST_F(PasswordAutofillAgentTest,
 
     // Get the username and password form input elements.
     blink::WebDocument document = GetMainFrame()->GetDocument();
-    blink::WebVector<WebFormElement> forms = document.GetTopLevelForms();
+    std::vector<WebFormElement> forms = document.GetTopLevelForms();
     WebFormElement form_element = forms[0];
     std::vector<blink::WebFormControlElement> control_elements =
         form_util::GetOwnedAutofillableFormControls(document, form_element);

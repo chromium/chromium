@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_STATS_REPORT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_STATS_REPORT_H_
 
-#include "third_party/blink/public/platform/web_vector.h"
+#include <vector>
+
 #include "third_party/blink/renderer/bindings/core/v8/maplike.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_rtc_stats_report.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"

@@ -395,7 +395,7 @@ void DedicatedOrSharedWorkerFetchContextImpl::FinalizeRequest(
   }
 }
 
-WebVector<std::unique_ptr<URLLoaderThrottle>>
+std::vector<std::unique_ptr<URLLoaderThrottle>>
 DedicatedOrSharedWorkerFetchContextImpl::CreateThrottles(
     const network::ResourceRequest& request) {
   if (throttle_provider_) {
@@ -636,7 +636,7 @@ WebDedicatedOrSharedWorkerFetchContext::Create(
         pending_fallback_factory,
     CrossVariantMojoReceiver<mojom::SubresourceLoaderUpdaterInterfaceBase>
         pending_subresource_loader_updater,
-    const WebVector<WebString>& web_cors_exempt_header_list,
+    const std::vector<WebString>& web_cors_exempt_header_list,
     mojo::PendingRemote<mojom::ResourceLoadInfoNotifier>
         pending_resource_load_info_notifier) {
   mojo::PendingReceiver<mojom::blink::ServiceWorkerWorkerClient>

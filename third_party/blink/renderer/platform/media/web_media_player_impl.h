@@ -212,7 +212,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   bool HasAudio() const override;
 
   void EnabledAudioTracksChanged(
-      const WebVector<WebMediaPlayer::TrackId>& enabled_track_ids) override;
+      const std::vector<WebMediaPlayer::TrackId>& enabled_track_ids) override;
   void SelectedVideoTrackChanged(
       std::optional<WebMediaPlayer::TrackId> selected_track_id) override;
 

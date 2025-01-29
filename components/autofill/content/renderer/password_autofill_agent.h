@@ -431,7 +431,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // signatures as HTML attributes. Used by
   // chrome://flags/#enable-show-autofill-signatures only.
   void AnnotateFormsAndFieldsWithSignatures(
-      blink::WebVector<blink::WebFormElement>& forms,
+      std::vector<blink::WebFormElement>& forms,
       const SynchronousFormCache& form_cache);
 
   // Scans the given frame for password forms and sends them up to the browser.

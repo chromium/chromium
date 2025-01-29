@@ -10,7 +10,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 class WebFormControlElement;
@@ -49,7 +48,7 @@ void MaybeEmitFormIssuesToDevtools(blink::WebLocalFrame& web_local_frame,
                                    base::span<const FormData> forms);
 
 std::vector<FormIssue> GetFormIssuesForTesting(
-    const blink::WebVector<blink::WebFormControlElement>& control_elements,
+    const std::vector<blink::WebFormControlElement>& control_elements,
     std::vector<FormIssue> form_issues);
 
 std::vector<FormIssue> CheckForLabelsWithIncorrectForAttributeForTesting(

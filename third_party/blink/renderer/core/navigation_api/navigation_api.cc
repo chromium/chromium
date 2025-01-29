@@ -159,8 +159,8 @@ void NavigationApi::InitializeForNewWindow(
     WebFrameLoadType load_type,
     CommitReason commit_reason,
     NavigationApi* previous,
-    const WebVector<WebHistoryItem>& back_entries,
-    const WebVector<WebHistoryItem>& forward_entries,
+    const std::vector<WebHistoryItem>& back_entries,
+    const std::vector<WebHistoryItem>& forward_entries,
     HistoryItem* previous_entry) {
   CHECK(entries_.empty());
 

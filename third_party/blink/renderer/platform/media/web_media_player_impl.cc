@@ -1311,7 +1311,7 @@ void WebMediaPlayerImpl::OnSelectedVideoTrackChanged(
 }
 
 void WebMediaPlayerImpl::EnabledAudioTracksChanged(
-    const WebVector<WebMediaPlayer::TrackId>& enabled_track_ids) {
+    const std::vector<WebMediaPlayer::TrackId>& enabled_track_ids) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   std::vector<MediaTrack::Id> enabled_tracks;
   for (const auto& blinkTrackId : enabled_track_ids) {

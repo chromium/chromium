@@ -177,8 +177,8 @@ TEST_F(WebAudioSourceProviderImplTest, RenderTainted) {
   auto bus = media::AudioBus::Create(params_);
   bus->Zero();
 
-  // Point the WebVector into memory owned by |bus|.
-  WebVector<float*> audio_data(static_cast<size_t>(bus->channels()));
+  // Point the std::vector into memory owned by |bus|.
+  std::vector<float*> audio_data(static_cast<size_t>(bus->channels()));
   for (size_t i = 0; i < audio_data.size(); ++i)
     audio_data[i] = bus->channel(static_cast<int>(i));
 
@@ -206,8 +206,8 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
   auto bus1 = media::AudioBus::Create(params_);
   auto bus2 = media::AudioBus::Create(params_);
 
-  // Point the WebVector into memory owned by |bus1|.
-  WebVector<float*> audio_data(static_cast<size_t>(bus1->channels()));
+  // Point the std::vector into memory owned by |bus1|.
+  std::vector<float*> audio_data(static_cast<size_t>(bus1->channels()));
   for (size_t i = 0; i < audio_data.size(); ++i)
     audio_data[i] = bus1->channel(static_cast<int>(i));
 
@@ -292,8 +292,8 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInputTainted) {
   auto bus = media::AudioBus::Create(params_);
   bus->Zero();
 
-  // Point the WebVector into memory owned by |bus|.
-  WebVector<float*> audio_data(static_cast<size_t>(bus->channels()));
+  // Point the std::vector into memory owned by |bus|.
+  std::vector<float*> audio_data(static_cast<size_t>(bus->channels()));
   for (size_t i = 0; i < audio_data.size(); ++i)
     audio_data[i] = bus->channel(static_cast<int>(i));
 
@@ -392,8 +392,8 @@ TEST_F(WebAudioSourceProviderImplTest, MultipleInitializeWithSetClient) {
   auto bus1 = media::AudioBus::Create(stream_params);
   auto bus2 = media::AudioBus::Create(stream_params);
 
-  // Point the WebVector into memory owned by |bus1|.
-  WebVector<float*> audio_data(static_cast<size_t>(bus1->channels()));
+  // Point the std::vector into memory owned by |bus1|.
+  std::vector<float*> audio_data(static_cast<size_t>(bus1->channels()));
   for (size_t i = 0; i < audio_data.size(); ++i)
     audio_data[i] = bus1->channel(static_cast<int>(i));
 
@@ -428,8 +428,8 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInputDifferentChannelCount) {
 
   auto bus = media::AudioBus::Create(mono_params);
 
-  // Point the WebVector into memory owned by |bus|.
-  WebVector<float*> audio_data(static_cast<size_t>(bus->channels()));
+  // Point the std::vector into memory owned by |bus|.
+  std::vector<float*> audio_data(static_cast<size_t>(bus->channels()));
   for (size_t i = 0; i < audio_data.size(); ++i)
     audio_data[i] = bus->channel(static_cast<int>(i));
 

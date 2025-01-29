@@ -68,7 +68,7 @@ class CORE_EXPORT InspectorMemoryAgent final
       std::unique_ptr<protocol::Memory::SamplingProfile>*) override;
 
  private:
-  Vector<String> Symbolize(const WebVector<const void*>& addresses);
+  Vector<String> Symbolize(const std::vector<const void*>& addresses);
   std::unique_ptr<protocol::Memory::SamplingProfile> GetSamplingProfileById(
       uint32_t id);
 

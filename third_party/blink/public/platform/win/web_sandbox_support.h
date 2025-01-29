@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/win/windows_types.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 // Repeat some Windows typedefs used by the locale functions that
 // are not in base/win/windows_types.h
@@ -55,12 +55,13 @@ class WebSandboxSupport {
       LCID lcid,
       bool force_defaults) = 0;
 
-  virtual WebVector<WebString> MonthLabels(LCID lcid, bool force_defaults) = 0;
-  virtual WebVector<WebString> WeekDayShortLabels(LCID lcid,
+  virtual std::vector<WebString> MonthLabels(LCID lcid,
+                                             bool force_defaults) = 0;
+  virtual std::vector<WebString> WeekDayShortLabels(LCID lcid,
+                                                    bool force_defaults) = 0;
+  virtual std::vector<WebString> ShortMonthLabels(LCID lcid,
                                                   bool force_defaults) = 0;
-  virtual WebVector<WebString> ShortMonthLabels(LCID lcid,
-                                                bool force_defaults) = 0;
-  virtual WebVector<WebString> AmPmLabels(LCID lcid, bool force_defaults) = 0;
+  virtual std::vector<WebString> AmPmLabels(LCID lcid, bool force_defaults) = 0;
 
   // Note: only specified allowed types can be provided for `type`.
   virtual WebString LocaleString(LCID lcid,

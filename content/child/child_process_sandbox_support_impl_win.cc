@@ -64,14 +64,14 @@ WebSandboxSupportWin::DigitsAndSigns(LCID lcid, bool force_defaults) {
   return init_data;
 }
 
-blink::WebVector<blink::WebString> WebSandboxSupportWin::LocaleStrings(
+std::vector<blink::WebString> WebSandboxSupportWin::LocaleStrings(
     LCID lcid,
     bool force_defaults,
     mojom::SandboxSupport::LcTypeStrings collection) {
   std::vector<std::u16string> results;
   CHECK(sandbox_support_->LocaleStrings(lcid, force_defaults, collection,
                                         &results));
-  blink::WebVector<blink::WebString> ret;
+  std::vector<blink::WebString> ret;
   ret.reserve(results.size());
   for (const auto& str : results) {
     ret.push_back(blink::WebString(str));
@@ -79,28 +79,28 @@ blink::WebVector<blink::WebString> WebSandboxSupportWin::LocaleStrings(
   return ret;
 }
 
-blink::WebVector<blink::WebString> WebSandboxSupportWin::MonthLabels(
+std::vector<blink::WebString> WebSandboxSupportWin::MonthLabels(
     LCID lcid,
     bool force_defaults) {
   return LocaleStrings(lcid, force_defaults,
                        mojom::SandboxSupport::LcTypeStrings::kMonths);
 }
 
-blink::WebVector<blink::WebString> WebSandboxSupportWin::WeekDayShortLabels(
+std::vector<blink::WebString> WebSandboxSupportWin::WeekDayShortLabels(
     LCID lcid,
     bool force_defaults) {
   return LocaleStrings(lcid, force_defaults,
                        mojom::SandboxSupport::LcTypeStrings::kShortWeekDays);
 }
 
-blink::WebVector<blink::WebString> WebSandboxSupportWin::ShortMonthLabels(
+std::vector<blink::WebString> WebSandboxSupportWin::ShortMonthLabels(
     LCID lcid,
     bool force_defaults) {
   return LocaleStrings(lcid, force_defaults,
                        mojom::SandboxSupport::LcTypeStrings::kShortMonths);
 }
 
-blink::WebVector<blink::WebString> WebSandboxSupportWin::AmPmLabels(
+std::vector<blink::WebString> WebSandboxSupportWin::AmPmLabels(
     LCID lcid,
     bool force_defaults) {
   return LocaleStrings(lcid, force_defaults,

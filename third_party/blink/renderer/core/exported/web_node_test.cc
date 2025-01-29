@@ -141,7 +141,7 @@ TEST_F(WebNodeTest, CanFindTextNodesThatAreContainers) {
 
   EXPECT_FALSE(element.IsNull());
 
-  WebVector<WebNode> nodes =
+  std::vector<WebNode> nodes =
       element.FindAllTextNodesMatchingRegex("^ Hello world! $");
   ASSERT_EQ(nodes.size(), 1U);
   EXPECT_EQ(element.GetDocument().GetElementById("id").FirstChild(), nodes[0]);

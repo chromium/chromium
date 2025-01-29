@@ -51,7 +51,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -82,7 +81,6 @@ using blink::WebNode;
 using blink::WebOptionElement;
 using blink::WebSelectElement;
 using blink::WebString;
-using blink::WebVector;
 
 namespace autofill::form_util {
 
@@ -1765,7 +1763,7 @@ uint64_t GetMaxLength(const WebFormControlElement& element) {
 // For more details, see the documentation of `SelectOption`.
 std::vector<SelectOption> GetSelectOptions(
     const WebSelectElement& select_element) {
-  WebVector<WebElement> option_elements = select_element.GetListItems();
+  std::vector<WebElement> option_elements = select_element.GetListItems();
 
   // Constrain the maximum list length to prevent a malicious site from DOS'ing
   // the browser, without entirely breaking autocomplete for some extreme
@@ -1811,7 +1809,7 @@ std::vector<SelectOption> GetDataListOptions(const WebInputElement& element) {
   auto to_string = [](WebString s) {
     return s.Utf16().substr(0, kMaxStringLength);
   };
-  WebVector<WebOptionElement> option_elements =
+  std::vector<WebOptionElement> option_elements =
       element.FilteredDataListOptions();
   std::vector<SelectOption> options;
   options.reserve(std::min(option_elements.size(), kMaxListSize));
@@ -2852,14 +2850,14 @@ std::string ExtractFinalCheckoutAmountFromDom(
     std::string_view price_regex,
     std::string_view label_regex,
     size_t number_of_ancestor_levels_to_search) {
-  WebVector<WebNode> price_nodes =
+  std::vector<WebNode> price_nodes =
       document.FindAllTextNodesMatchingRegex(WebString::FromUTF8(price_regex));
 
   if (price_nodes.empty()) {
     return "";
   }
 
-  WebVector<WebNode> label_nodes =
+  std::vector<WebNode> label_nodes =
       document.FindAllTextNodesMatchingRegex(WebString::FromUTF8(label_regex));
 
   if (label_nodes.empty()) {

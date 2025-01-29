@@ -226,7 +226,7 @@ bool IsIsolatedContext() {
 
 // Function defined in third_party/blink/public/web/blink.h.
 void SetCorsExemptHeaderList(
-    const WebVector<WebString>& web_cors_exempt_header_list) {
+    const std::vector<WebString>& web_cors_exempt_header_list) {
   Vector<String> cors_exempt_header_list(
       base::checked_cast<wtf_size_t>(web_cors_exempt_header_list.size()));
   base::ranges::transform(web_cors_exempt_header_list,

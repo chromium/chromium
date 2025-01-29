@@ -75,7 +75,7 @@ namespace blink {
 
 WebServiceWorkerInstalledScriptsManagerParams::
     WebServiceWorkerInstalledScriptsManagerParams(
-        WebVector<WebURL> installed_scripts_urls,
+        std::vector<WebURL> installed_scripts_urls,
         CrossVariantMojoReceiver<
             mojom::blink::ServiceWorkerInstalledScriptsManagerInterfaceBase>
             manager_receiver,

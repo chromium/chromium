@@ -110,7 +110,6 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_v8_value_converter.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_media_inspector.h"
@@ -150,7 +149,6 @@ using blink::WebAudioSinkDescriptor;
 using blink::WebMediaStreamTrack;
 using blink::WebString;
 using blink::WebURL;
-using blink::WebVector;
 
 namespace content {
 
@@ -1060,7 +1058,7 @@ bool RendererBlinkPlatformImpl::DisallowV8FeatureFlagOverrides() const {
 
 void RendererBlinkPlatformImpl::AppendContentSecurityPolicy(
     const blink::WebURL& url,
-    blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {
+    std::vector<blink::WebContentSecurityPolicyHeader>* csp) {
   GetContentClient()->renderer()->AppendContentSecurityPolicy(url, csp);
 }
 

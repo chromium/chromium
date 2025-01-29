@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
@@ -16,7 +17,6 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
@@ -134,7 +134,7 @@ class PLATFORM_EXPORT FrameWidget {
   virtual bool Resizable() const = 0;
 
   // Returns the viewport segments for the widget.
-  virtual const WebVector<gfx::Rect>& ViewportSegments() const = 0;
+  virtual const std::vector<gfx::Rect>& ViewportSegments() const = 0;
 
   // Sets the ink metadata on the layer tree host
   virtual void SetDelegatedInkMetadata(
@@ -173,7 +173,7 @@ class PLATFORM_EXPORT FrameWidget {
   // Returns ime_text_spans and corresponding window coordinates for the list
   // of given spans.
   virtual Vector<ui::mojom::blink::ImeTextSpanInfoPtr> GetImeTextSpansInfo(
-      const WebVector<ui::ImeTextSpan>& ime_text_spans) = 0;
+      const std::vector<ui::ImeTextSpan>& ime_text_spans) = 0;
   virtual WebTextInputInfo TextInputInfo() = 0;
   virtual ui::mojom::blink::VirtualKeyboardVisibilityRequest
   GetLastVirtualKeyboardVisibilityRequest() = 0;

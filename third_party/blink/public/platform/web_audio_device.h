@@ -32,7 +32,6 @@
 #include "media/base/output_device_info.h"
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 

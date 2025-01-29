@@ -115,7 +115,7 @@ Status DeriveKey(const blink::WebCryptoAlgorithm& algorithm,
                  blink::WebCryptoKey* derived_key);
 
 bool SerializeKeyForClone(const blink::WebCryptoKey& key,
-                          blink::WebVector<uint8_t>* key_data);
+                          std::vector<uint8_t>* key_data);
 
 bool DeserializeKeyForClone(const blink::WebCryptoKeyAlgorithm& algorithm,
                             blink::WebCryptoKeyType type,

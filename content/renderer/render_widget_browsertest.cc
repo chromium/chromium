@@ -200,7 +200,7 @@ TEST_F(RenderWidgetTest, GetCompositionRangeValidComposition) {
       "<script> document.querySelector('div').focus(); </script>");
   gfx::Range range = LastCompositionRange();
   EXPECT_FALSE(range.IsValid());
-  blink::WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
   DCHECK(GetInputMethodController());
   GetInputMethodController()->SetComposition("hello", empty_ime_text_spans,
                                              blink::WebRange(), 3, 3);

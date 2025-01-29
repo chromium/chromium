@@ -4685,9 +4685,9 @@ void HTMLMediaElement::AudioSourceProviderImpl::ProvideInput(
     return;
   }
 
-  // Wrap the AudioBus channel data using WebVector.
+  // Wrap the AudioBus channel data using std::vector.
   unsigned n = bus->NumberOfChannels();
-  WebVector<float*> web_audio_data(n);
+  std::vector<float*> web_audio_data(n);
   for (unsigned i = 0; i < n; ++i)
     web_audio_data[i] = bus->Channel(i)->MutableData();
 

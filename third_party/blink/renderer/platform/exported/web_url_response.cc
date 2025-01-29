@@ -514,7 +514,7 @@ int64_t WebURLResponse::GetPadding() const {
 }
 
 void WebURLResponse::SetUrlListViaServiceWorker(
-    const WebVector<WebURL>& url_list_via_service_worker) {
+    const std::vector<WebURL>& url_list_via_service_worker) {
   Vector<KURL> url_list(
       base::checked_cast<wtf_size_t>(url_list_via_service_worker.size()));
   base::ranges::copy(url_list_via_service_worker, url_list.begin());
@@ -542,7 +542,7 @@ std::vector<WebString> WebURLResponse::CorsExposedHeaderNames() const {
 }
 
 void WebURLResponse::SetCorsExposedHeaderNames(
-    const WebVector<WebString>& header_names) {
+    const std::vector<WebString>& header_names) {
   Vector<String> exposed_header_names;
   exposed_header_names.AppendSpan(base::span(header_names));
   resource_response_->SetCorsExposedHeaderNames(exposed_header_names);
@@ -690,7 +690,7 @@ bool WebURLResponse::FromArchive() const {
   return resource_response_->FromArchive();
 }
 
-void WebURLResponse::SetDnsAliases(const WebVector<WebString>& aliases) {
+void WebURLResponse::SetDnsAliases(const std::vector<WebString>& aliases) {
   Vector<String> dns_aliases(base::checked_cast<wtf_size_t>(aliases.size()));
   base::ranges::transform(aliases, dns_aliases.begin(),
                           &WebString::operator WTF::String);

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/encryptedmedia/navigator_request_media_key_system_access.h"
 
 #include <algorithm>
+#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -12,7 +13,6 @@
 #include "third_party/blink/public/platform/web_encrypted_media_request.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/public/platform/web_media_key_system_media_capability.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"

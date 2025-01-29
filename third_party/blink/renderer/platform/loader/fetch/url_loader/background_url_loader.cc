@@ -419,7 +419,7 @@ class BackgroundURLLoader::Context
     URLLoaderThrottleProvider* throttle_provider =
         background_resource_fetch_context->GetThrottleProvider();
     if (throttle_provider) {
-      WebVector<std::unique_ptr<blink::URLLoaderThrottle>> web_throttles =
+      std::vector<std::unique_ptr<blink::URLLoaderThrottle>> web_throttles =
           throttle_provider->CreateThrottles(
               background_resource_fetch_context->GetLocalFrameToken(),
               *request);

@@ -314,8 +314,8 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // Called when a watched CSS selector matches or stops matching.
   virtual void DidMatchCSS(
-      const WebVector<WebString>& newly_matching_selectors,
-      const WebVector<WebString>& stopped_matching_selectors) {}
+      const std::vector<WebString>& newly_matching_selectors,
+      const std::vector<WebString>& stopped_matching_selectors) {}
 
   // Console messages ----------------------------------------------------
 

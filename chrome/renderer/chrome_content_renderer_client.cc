@@ -285,7 +285,6 @@ using blink::WebURL;
 using blink::WebURLError;
 using blink::WebURLRequest;
 using blink::WebURLResponse;
-using blink::WebVector;
 using blink::mojom::FetchCacheMode;
 using content::RenderFrame;
 using content::RenderThread;
@@ -318,14 +317,14 @@ std::vector<url::Origin> GetAdditionalPdfInternalPluginAllowedOrigins() {
 #if BUILDFLAG(ENABLE_PLUGINS)
 void AppendParams(
     const std::vector<WebPluginMimeType::Param>& additional_params,
-    WebVector<WebString>* existing_names,
-    WebVector<WebString>* existing_values) {
+    std::vector<WebString>* existing_names,
+    std::vector<WebString>* existing_values) {
   DCHECK(existing_names->size() == existing_values->size());
   size_t existing_size = existing_names->size();
   size_t total_size = existing_size + additional_params.size();
 
-  WebVector<WebString> names(total_size);
-  WebVector<WebString> values(total_size);
+  std::vector<WebString> names(total_size);
+  std::vector<WebString> values(total_size);
 
   for (size_t i = 0; i < existing_size; ++i) {
     names[i] = (*existing_names)[i];
@@ -1859,7 +1858,7 @@ void ChromeContentRendererClient::DidSetUserAgent(
 
 void ChromeContentRendererClient::AppendContentSecurityPolicy(
     const blink::WebURL& url,
-    blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {
+    std::vector<blink::WebContentSecurityPolicyHeader>* csp) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #if BUILDFLAG(ENABLE_PDF)
   // Don't apply default CSP to PDF renderers.

@@ -34,22 +34,21 @@ class WebSandboxSupportWin : public blink::WebSandboxSupport {
       LCID lcid,
       bool force_defaults) override;
 
-  blink::WebVector<blink::WebString> MonthLabels(LCID lcid,
+  std::vector<blink::WebString> MonthLabels(LCID lcid,
+                                            bool force_defaults) override;
+  std::vector<blink::WebString> WeekDayShortLabels(
+      LCID lcid,
+      bool force_defaults) override;
+  std::vector<blink::WebString> ShortMonthLabels(LCID lcid,
                                                  bool force_defaults) override;
-  blink::WebVector<blink::WebString> WeekDayShortLabels(
-      LCID lcid,
-      bool force_defaults) override;
-  blink::WebVector<blink::WebString> ShortMonthLabels(
-      LCID lcid,
-      bool force_defaults) override;
-  blink::WebVector<blink::WebString> AmPmLabels(LCID lcid,
-                                                bool force_defaults) override;
+  std::vector<blink::WebString> AmPmLabels(LCID lcid,
+                                           bool force_defaults) override;
   blink::WebString LocaleString(LCID lcid,
                                 LCTYPE type,
                                 bool force_defaults) override;
 
  private:
-  blink::WebVector<blink::WebString> LocaleStrings(
+  std::vector<blink::WebString> LocaleStrings(
       LCID lcid,
       bool force_defaults,
       mojom::SandboxSupport::LcTypeStrings collection);

@@ -51,7 +51,7 @@ WebDOMMessageEvent::WebDOMMessageEvent(
     const WebString& origin,
     const WebFrame* source_frame,
     const WebDocument& target_document,
-    WebVector<MessagePortChannel> channels)
+    std::vector<MessagePortChannel> channels)
     : WebDOMMessageEvent(MessageEvent::Create()) {
   DOMWindow* window = nullptr;
   if (source_frame)

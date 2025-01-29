@@ -30,7 +30,7 @@ std::optional<HeapVector<Member<DOMRect>>> DOMViewport::segments() const {
 
   UseCounter::Count(frame->GetDocument(), WebFeature::kFoldableAPIs);
 
-  WebVector<gfx::Rect> web_segments =
+  std::vector<gfx::Rect> web_segments =
       frame->GetWidgetForLocalRoot()->ViewportSegments();
 
   // If there is a single segment, return null as authors should use other

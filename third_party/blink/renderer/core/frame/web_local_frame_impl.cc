@@ -92,6 +92,7 @@
 #include <memory>
 #include <numeric>
 #include <utility>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
@@ -121,7 +122,6 @@
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url_error.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
@@ -363,7 +363,7 @@ class ChromePrintContext : public PrintContext {
 
   void SpoolPagesWithBoundariesForTesting(cc::PaintCanvas* canvas,
                                           const gfx::Size& spool_size_in_pixels,
-                                          const WebVector<uint32_t>* pages) {
+                                          const std::vector<uint32_t>* pages) {
     gfx::Rect all_pages_rect(spool_size_in_pixels);
 
     PaintRecordBuilder builder;
@@ -375,7 +375,7 @@ class ChromePrintContext : public PrintContext {
     // Fill the whole background by white.
     context.FillRect(all_pages_rect, Color::kWhite, AutoDarkMode::Disabled());
 
-    WebVector<uint32_t> all_pages;
+    std::vector<uint32_t> all_pages;
     if (!pages) {
       all_pages.reserve(PageCount());
       all_pages.resize(PageCount());
@@ -1387,7 +1387,7 @@ void WebLocalFrameImpl::RemoveSpellingMarkers() {
 }
 
 void WebLocalFrameImpl::RemoveSpellingMarkersUnderWords(
-    const WebVector<WebString>& words) {
+    const std::vector<WebString>& words) {
   Vector<String> converted_words;
   converted_words.AppendSpan(base::span(words));
   GetFrame()->RemoveSpellingMarkersUnderWords(converted_words);
@@ -1634,7 +1634,7 @@ bool WebLocalFrameImpl::SetEditableSelectionOffsets(int start, int end) {
 }
 
 bool WebLocalFrameImpl::AddImeTextSpansToExistingText(
-    const WebVector<ui::ImeTextSpan>& ime_text_spans,
+    const std::vector<ui::ImeTextSpan>& ime_text_spans,
     unsigned text_start,
     unsigned text_end) {
   TRACE_EVENT0("blink", "WebLocalFrameImpl::AddImeTextSpansToExistingText");
@@ -1680,7 +1680,7 @@ bool WebLocalFrameImpl::ClearImeTextSpansByType(ui::ImeTextSpan::Type type,
 bool WebLocalFrameImpl::SetCompositionFromExistingText(
     int composition_start,
     int composition_end,
-    const WebVector<ui::ImeTextSpan>& ime_text_spans) {
+    const std::vector<ui::ImeTextSpan>& ime_text_spans) {
   TRACE_EVENT0("blink", "WebLocalFrameImpl::setCompositionFromExistingText");
   if (EditContext* edit_context =
           GetFrame()->GetInputMethodController().GetActiveEditContext()) {
@@ -1974,7 +1974,7 @@ WebPrintPageDescription WebLocalFrameImpl::GetPageDescription(
 }
 
 gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
-    const WebVector<uint32_t>& pages) {
+    const std::vector<uint32_t>& pages) {
   int spool_width = 0;
   int spool_height = 0;
 
@@ -1998,7 +1998,7 @@ gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
 }
 
 gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(uint32_t page_count) {
-  WebVector<uint32_t> pages(page_count);
+  std::vector<uint32_t> pages(page_count);
   std::iota(pages.begin(), pages.end(), 0);
   return SpoolSizeInPixelsForTesting(pages);
 }
@@ -2006,7 +2006,7 @@ gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(uint32_t page_count) {
 void WebLocalFrameImpl::PrintPagesForTesting(
     cc::PaintCanvas* canvas,
     const gfx::Size& spool_size_in_pixels,
-    const WebVector<uint32_t>* pages) {
+    const std::vector<uint32_t>* pages) {
   DCHECK(print_context_);
 
   print_context_->SpoolPagesWithBoundariesForTesting(
@@ -2844,7 +2844,7 @@ WebFrame* WebLocalFrameImpl::GetProvisionalOwnerFrame() {
 }
 
 void WebLocalFrameImpl::MaybeStartOutermostMainFrameNavigation(
-    const WebVector<WebURL>& urls) const {
+    const std::vector<WebURL>& urls) const {
   Vector<KURL> kurls;
   std::move(urls.begin(), urls.end(), std::back_inserter(kurls));
   GetFrame()->MaybeStartOutermostMainFrameNavigation(std::move(kurls));

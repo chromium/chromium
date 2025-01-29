@@ -219,22 +219,22 @@ WebElement WebNode::QuerySelector(const WebString& selector) const {
       ->QuerySelector(selector, IGNORE_EXCEPTION_FOR_TESTING);
 }
 
-WebVector<WebElement> WebNode::QuerySelectorAll(
+std::vector<WebElement> WebNode::QuerySelectorAll(
     const WebString& selector) const {
   if (!private_->IsContainerNode())
-    return WebVector<WebElement>();
+    return std::vector<WebElement>();
   StaticElementList* elements =
       blink::To<ContainerNode>(private_.Get())
           ->QuerySelectorAll(selector, IGNORE_EXCEPTION_FOR_TESTING);
   if (elements) {
-    WebVector<WebElement> vector;
+    std::vector<WebElement> vector;
     vector.reserve(elements->length());
     for (unsigned i = 0; i < elements->length(); ++i) {
       vector.push_back(elements->item(i));
     }
     return vector;
   }
-  return WebVector<WebElement>();
+  return std::vector<WebElement>();
 }
 
 WebString WebNode::FindTextInElementWith(
@@ -249,20 +249,20 @@ WebString WebNode::FindTextInElementWith(
       substring, [&](const String& text) { return validity_checker(text); }));
 }
 
-WebVector<WebNode> WebNode::FindAllTextNodesMatchingRegex(
+std::vector<WebNode> WebNode::FindAllTextNodesMatchingRegex(
     const WebString& regex) const {
   ContainerNode* container_node =
       blink::DynamicTo<ContainerNode>(private_.Get());
   if (!container_node) {
-    return WebVector<WebNode>();
+    return std::vector<WebNode>();
   }
 
   StaticNodeList* nodes = container_node->FindAllTextNodesMatchingRegex(regex);
   if (!nodes) {
-    return WebVector<WebNode>();
+    return std::vector<WebNode>();
   }
 
-  WebVector<WebNode> nodes_vector;
+  std::vector<WebNode> nodes_vector;
   nodes_vector.reserve(nodes->length());
   for (unsigned i = 0; i < nodes->length(); i++) {
     nodes_vector.push_back(nodes->item(i));

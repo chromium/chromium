@@ -191,7 +191,7 @@ InspectorMemoryAgent::GetSamplingProfileById(uint32_t id) {
 }
 
 Vector<String> InspectorMemoryAgent::Symbolize(
-    const WebVector<const void*>& addresses) {
+    const std::vector<const void*>& addresses) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // TODO(alph): Move symbolization to the client.
   Vector<const void*> addresses_to_symbolize;

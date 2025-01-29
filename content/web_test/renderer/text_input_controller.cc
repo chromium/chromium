@@ -416,7 +416,7 @@ void TextInputController::SetComposition(const std::string& text,
                             replacement_range_end - replacement_range_start);
   if (auto* controller = GetInputMethodController()) {
     controller->SetComposition(
-        newText, blink::WebVector<ui::ImeTextSpan>(std::move(ime_text_spans)),
+        newText, std::vector<ui::ImeTextSpan>(std::move(ime_text_spans)),
         replacement_range, textLength, textLength);
   }
 }

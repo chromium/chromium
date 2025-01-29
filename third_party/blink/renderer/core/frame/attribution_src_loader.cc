@@ -8,6 +8,7 @@
 
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -51,7 +52,6 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -518,7 +518,7 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigation(
 
 std::optional<Impression> AttributionSrcLoader::RegisterNavigation(
     const KURL& navigation_url,
-    const WebVector<WebString>& attribution_srcs,
+    const std::vector<WebString>& attribution_srcs,
     bool has_transient_user_activation,
     network::mojom::ReferrerPolicy referrer_policy) {
   CHECK(local_frame_);

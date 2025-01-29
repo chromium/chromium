@@ -33,6 +33,8 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/types/pass_key.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -41,7 +43,6 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_touch_action.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -225,7 +226,7 @@ class WebFrameWidget : public WebWidget {
   // Get the viewport segments for this widget.
   // See
   // https://github.com/WICG/visual-viewport/blob/gh-pages/segments-explainer/SEGMENTS-EXPLAINER.md
-  virtual const WebVector<gfx::Rect>& ViewportSegments() const = 0;
+  virtual const std::vector<gfx::Rect>& ViewportSegments() const = 0;
 
   // Release any mouse lock or pointer capture held. This is used to reset
   // state between WebTest runs.

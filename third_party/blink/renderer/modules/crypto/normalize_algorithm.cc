@@ -285,7 +285,7 @@ class ErrorContext {
 bool GetOptionalBufferSource(const Dictionary& raw,
                              const char* property_name,
                              bool& has_property,
-                             WebVector<uint8_t>& bytes,
+                             std::vector<uint8_t>& bytes,
                              const ErrorContext& context,
                              ExceptionState& exception_state) {
   has_property = false;
@@ -325,7 +325,7 @@ bool GetOptionalBufferSource(const Dictionary& raw,
 
 bool GetBufferSource(const Dictionary& raw,
                      const char* property_name,
-                     WebVector<uint8_t>& bytes,
+                     std::vector<uint8_t>& bytes,
                      const ErrorContext& context,
                      ExceptionState& exception_state) {
   bool has_property;
@@ -341,7 +341,7 @@ bool GetBufferSource(const Dictionary& raw,
 
 bool GetUint8Array(const Dictionary& raw,
                    const char* property_name,
-                   WebVector<uint8_t>& bytes,
+                   std::vector<uint8_t>& bytes,
                    const ErrorContext& context,
                    ExceptionState& exception_state) {
   v8::Local<v8::Value> v8_value;
@@ -366,7 +366,7 @@ bool GetUint8Array(const Dictionary& raw,
 //     typedef Uint8Array BigInteger;
 bool GetBigInteger(const Dictionary& raw,
                    const char* property_name,
-                   WebVector<uint8_t>& bytes,
+                   std::vector<uint8_t>& bytes,
                    const ErrorContext& context,
                    ExceptionState& exception_state) {
   if (!GetUint8Array(raw, property_name, bytes, context, exception_state))
@@ -374,7 +374,7 @@ bool GetBigInteger(const Dictionary& raw,
 
   if (bytes.empty()) {
     // Empty BigIntegers represent 0 according to the spec
-    bytes = WebVector<uint8_t>(static_cast<size_t>(1u));
+    bytes = std::vector<uint8_t>(static_cast<size_t>(1u));
     DCHECK_EQ(0u, bytes[0]);
   }
 
@@ -549,7 +549,7 @@ bool ParseAesCbcParams(const Dictionary& raw,
                        std::unique_ptr<WebCryptoAlgorithmParams>& params,
                        const ErrorContext& context,
                        ExceptionState& exception_state) {
-  WebVector<uint8_t> iv;
+  std::vector<uint8_t> iv;
   if (!GetBufferSource(raw, "iv", iv, context, exception_state))
     return false;
 
@@ -690,7 +690,7 @@ bool ParseRsaHashedKeyGenParams(
                  exception_state))
     return false;
 
-  WebVector<uint8_t> public_exponent;
+  std::vector<uint8_t> public_exponent;
   if (!GetBigInteger(raw, "publicExponent", public_exponent, context,
                      exception_state))
     return false;
@@ -714,7 +714,7 @@ bool ParseAesCtrParams(const Dictionary& raw,
                        std::unique_ptr<WebCryptoAlgorithmParams>& params,
                        const ErrorContext& context,
                        ExceptionState& exception_state) {
-  WebVector<uint8_t> counter;
+  std::vector<uint8_t> counter;
   if (!GetBufferSource(raw, "counter", counter, context, exception_state))
     return false;
 
@@ -737,12 +737,12 @@ bool ParseAesGcmParams(const Dictionary& raw,
                        std::unique_ptr<WebCryptoAlgorithmParams>& params,
                        const ErrorContext& context,
                        ExceptionState& exception_state) {
-  WebVector<uint8_t> iv;
+  std::vector<uint8_t> iv;
   if (!GetBufferSource(raw, "iv", iv, context, exception_state))
     return false;
 
   bool has_additional_data;
-  WebVector<uint8_t> additional_data;
+  std::vector<uint8_t> additional_data;
   if (!GetOptionalBufferSource(raw, "additionalData", has_additional_data,
                                additional_data, context, exception_state))
     return false;
@@ -769,7 +769,7 @@ bool ParseRsaOaepParams(const Dictionary& raw,
                         const ErrorContext& context,
                         ExceptionState& exception_state) {
   bool has_label;
-  WebVector<uint8_t> label;
+  std::vector<uint8_t> label;
   if (!GetOptionalBufferSource(raw, "label", has_label, label, context,
                                exception_state))
     return false;
@@ -943,7 +943,7 @@ bool ParsePbkdf2Params(v8::Isolate* isolate,
                        std::unique_ptr<WebCryptoAlgorithmParams>& params,
                        const ErrorContext& context,
                        ExceptionState& exception_state) {
-  WebVector<uint8_t> salt;
+  std::vector<uint8_t> salt;
   if (!GetBufferSource(raw, "salt", salt, context, exception_state))
     return false;
 
@@ -991,10 +991,10 @@ bool ParseHkdfParams(v8::Isolate* isolate,
   WebCryptoAlgorithm hash;
   if (!ParseHash(isolate, raw, hash, context, exception_state))
     return false;
-  WebVector<uint8_t> salt;
+  std::vector<uint8_t> salt;
   if (!GetBufferSource(raw, "salt", salt, context, exception_state))
     return false;
-  WebVector<uint8_t> info;
+  std::vector<uint8_t> info;
   if (!GetBufferSource(raw, "info", info, context, exception_state))
     return false;
 

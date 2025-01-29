@@ -61,7 +61,7 @@ Status CommonEncryptDecrypt(InitFunc init_func,
     return Status::OperationError();
   }
 
-  const blink::WebVector<uint8_t>& label =
+  const std::vector<uint8_t>& label =
       algorithm.RsaOaepParams()->OptionalLabel();
 
   if (label.size()) {

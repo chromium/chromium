@@ -155,7 +155,7 @@ void WebAudioMediaStreamAudioSink::SetClient(
 }
 
 void WebAudioMediaStreamAudioSink::ProvideInput(
-    const WebVector<float*>& audio_data,
+    const std::vector<float*>& audio_data,
     int number_of_frames) {
   NON_REENTRANT_SCOPE(provide_input_reentrancy_checker_);
   DCHECK_EQ(number_of_frames, kWebAudioRenderBufferSize);

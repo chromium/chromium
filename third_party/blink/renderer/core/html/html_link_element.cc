@@ -132,7 +132,7 @@ void HTMLLinkElement::ParseAttribute(
     }
   } else if (name == html_names::kSizesAttr) {
     sizes_->DidUpdateAttributeValue(params.old_value, value);
-    WebVector<gfx::Size> web_icon_sizes =
+    std::vector<gfx::Size> web_icon_sizes =
         WebIconSizesParser::ParseIconSizes(value);
     icon_sizes_.resize(base::checked_cast<wtf_size_t>(web_icon_sizes.size()));
     for (wtf_size_t i = 0; i < icon_sizes_.size(); ++i)

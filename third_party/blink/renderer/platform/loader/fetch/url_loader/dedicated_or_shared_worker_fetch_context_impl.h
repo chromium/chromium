@@ -118,7 +118,7 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
           url_loader_factory) override;
   std::optional<WebURL> WillSendRequest(const WebURL& url) override;
   void FinalizeRequest(WebURLRequest&) override;
-  WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+  std::vector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       const network::ResourceRequest& request) override;
   mojom::ControllerServiceWorkerMode GetControllerServiceWorkerMode()
       const override;

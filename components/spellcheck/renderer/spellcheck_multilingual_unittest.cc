@@ -14,6 +14,7 @@
 #include <memory>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -28,7 +29,6 @@
 #include "components/spellcheck/renderer/spellcheck_provider_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
 
 namespace {
@@ -109,7 +109,7 @@ class MultilingualSpellCheckTest : public testing::Test {
   void ExpectSpellCheckParagraphResults(
       const std::u16string& input,
       const std::vector<SpellCheckResult>& expected) {
-    blink::WebVector<blink::WebTextCheckingResult> results;
+    std::vector<blink::WebTextCheckingResult> results;
     spellcheck_->SpellCheckParagraph(input, provider_->GetSpellCheckHost(),
                                      &results);
 
@@ -247,7 +247,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckSuggestions) {
   });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    blink::WebVector<blink::WebString> suggestions;
+    std::vector<blink::WebString> suggestions;
     size_t misspelling_start;
     size_t misspelling_length;
     static_cast<blink::WebTextCheckClient*>(provider())

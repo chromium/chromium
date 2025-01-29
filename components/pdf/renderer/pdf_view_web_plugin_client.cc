@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/values.h"
@@ -21,7 +22,6 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_dom_message_event.h"
@@ -137,8 +137,7 @@ void PdfViewWebPluginClient::ReportFindInPageTickmarks(
     const std::vector<gfx::Rect>& tickmarks) {
   blink::WebLocalFrame* frame = GetFrame();
   if (frame) {
-    frame->SetTickmarks(blink::WebElement(),
-                        blink::WebVector<gfx::Rect>(tickmarks));
+    frame->SetTickmarks(blink::WebElement(), std::vector<gfx::Rect>(tickmarks));
   }
 }
 

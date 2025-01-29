@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/unguessable_token.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/rtc_error.h"
@@ -67,9 +66,9 @@ struct CrossThreadCopier<std::set<rtc::SocketAddress>>
 };
 
 template <>
-struct CrossThreadCopier<blink::WebVector<cricket::RelayServerConfig>>
+struct CrossThreadCopier<std::vector<cricket::RelayServerConfig>>
     : public CrossThreadCopierPassThrough<
-          blink::WebVector<cricket::RelayServerConfig>> {
+          std::vector<cricket::RelayServerConfig>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

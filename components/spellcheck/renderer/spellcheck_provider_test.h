@@ -18,14 +18,13 @@
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_text_checking_completion.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
 
 struct FakeTextCheckingResult {
   size_t completion_count_ = 0;
   size_t cancellation_count_ = 0;
-  blink::WebVector<blink::WebTextCheckingResult> results_;
+  std::vector<blink::WebTextCheckingResult> results_;
 
   explicit FakeTextCheckingResult();
   ~FakeTextCheckingResult();
@@ -38,7 +37,7 @@ class FakeTextCheckingCompletion : public blink::WebTextCheckingCompletion {
   ~FakeTextCheckingCompletion() override;
 
   void DidFinishCheckingText(
-      const blink::WebVector<blink::WebTextCheckingResult>& results) override;
+      const std::vector<blink::WebTextCheckingResult>& results) override;
   void DidCancelCheckingText() override;
 
   raw_ptr<FakeTextCheckingResult> result_;
@@ -87,9 +86,8 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
       const std::u16string& text,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion);
 
-  void SetLastResults(
-      const std::u16string last_request,
-      blink::WebVector<blink::WebTextCheckingResult>& last_results);
+  void SetLastResults(const std::u16string last_request,
+                      std::vector<blink::WebTextCheckingResult>& last_results);
   bool SatisfyRequestFromCache(const std::u16string& text,
                                blink::WebTextCheckingCompletion* completion);
 
