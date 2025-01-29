@@ -650,7 +650,7 @@ std::unique_ptr<views::Widget> GlicWindowController::CreateGlicWidget(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 #endif
   params.bounds = initial_bounds;
-  params.sublevel = ChromeWidgetSublevel::kSublevelHoverable;
+  params.sublevel = ChromeWidgetSublevel::kSublevelGlic;
 
   std::unique_ptr<views::Widget> widget =
       std::make_unique<views::Widget>(std::move(params));
