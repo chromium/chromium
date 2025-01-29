@@ -317,7 +317,6 @@
 <translation id="2308243864813041101">Aby kontynuować proces aktualizacji, odłącz kabel USB urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="2320295602967756579">Włącz jasny motyw</translation>
 <translation id="2323506179655536734">POMINIĘTO</translation>
-<translation id="2323755382216917952">Aby dokończyć instalację tej aktualizacji, musisz ponownie uruchomić komputer. Aktualizowanie może potrwać kilka minut. Podczas aktualizowania oprogramowania układowego nie odłączaj ani nie wyłączaj komputera.</translation>
 <translation id="2324354238778375592">Pływające</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Świetna (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -463,7 +462,6 @@
 <translation id="3178532070248519384">awangardowym</translation>
 <translation id="3182676044300231689">Wpisz prompt, np. „pisz z większą pewnością”</translation>
 <translation id="3188257591659621405">Moje pliki</translation>
-<translation id="3188931456353313123">Ta aktualizacja jest dostarczana przez producenta urządzenia i nie została zweryfikowana przez Google.</translation>
 <translation id="319101249942218879">Zmieniono obraz awatara</translation>
 <translation id="3192947282887913208">Pliki dźwiękowe</translation>
 <translation id="3199982728237701504">Podajnik dokumentów (dwustronny)</translation>

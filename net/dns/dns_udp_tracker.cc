@@ -4,11 +4,11 @@
 
 #include "net/dns/dns_udp_tracker.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/tick_clock.h"
 #include "net/base/net_errors.h"
 
@@ -64,7 +64,7 @@ void DnsUdpTracker::RecordQuery(uint16_t port, uint16_t query_id) {
   PurgeOldRecords();
 
   int reused_port_count = base::checked_cast<int>(
-      base::ranges::count(recent_queries_, port, &QueryData::port));
+      std::ranges::count(recent_queries_, port, &QueryData::port));
 
   if (reused_port_count >= kPortReuseThreshold && !low_entropy_) {
     low_entropy_ = true;
@@ -126,7 +126,7 @@ void DnsUdpTracker::SaveIdMismatch(uint16_t id) {
   base::TimeTicks now = tick_clock_->NowTicks();
   base::TimeTicks time_cutoff = now - kMaxRecognizedIdAge;
   bool is_recognized =
-      base::ranges::any_of(recent_queries_, [&](const auto& recent_query) {
+      std::ranges::any_of(recent_queries_, [&](const auto& recent_query) {
         return recent_query.query_id == id && recent_query.time >= time_cutoff;
       });
 

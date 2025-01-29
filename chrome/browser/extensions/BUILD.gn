@@ -523,6 +523,8 @@ source_set("extensions") {
       "favicon/favicon_util.h",
       "file_handlers/file_handling_launch_utils.cc",
       "file_handlers/file_handling_launch_utils.h",
+      "forced_extensions/assessment_assistant_tracker.cc",
+      "forced_extensions/assessment_assistant_tracker.h",
       "forced_extensions/force_installed_metrics.cc",
       "forced_extensions/force_installed_metrics.h",
       "forced_extensions/force_installed_tracker.cc",

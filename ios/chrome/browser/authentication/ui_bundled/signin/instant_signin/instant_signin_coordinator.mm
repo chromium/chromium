@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_mediator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -45,6 +46,8 @@
   ActivityOverlayCoordinator* _activityOverlayCoordinator;
   // Action recorded if sign-in succeeded.
   signin_metrics::AccountConsistencyPromoAction _actionToRecordOnSuccess;
+  // The signin logger.
+  UserSigninLogger* _signinLogger;
 }
 
 #pragma mark - Public
@@ -75,7 +78,9 @@
 
 - (void)start {
   [super start];
-  signin_metrics::LogSignInStarted(self.accessPoint);
+  _signinLogger = [[UserSigninLogger alloc] initWithAccessPoint:self.accessPoint
+                                                    promoAction:_promoAction];
+  [_signinLogger logSigninStarted];
   ProfileIOS* profile = self.browser->GetProfile();
   _mediator =
       [[InstantSigninMediator alloc] initWithAccessPoint:self.accessPoint];
@@ -134,6 +139,7 @@
   CHECK(!_addAccountSigninCoordinator);
   CHECK(!_activityOverlayCoordinator);
   CHECK(!_identityChooserCoordinator);
+  _signinLogger = nil;
   [_mediator disconnect];
   _mediator.delegate = nil;
   _mediator = nil;

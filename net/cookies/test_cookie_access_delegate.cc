@@ -4,6 +4,7 @@
 
 #include "net/cookies/test_cookie_access_delegate.h"
 
+#include <algorithm>
 #include <optional>
 #include <set>
 #include <utility>
@@ -13,7 +14,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "net/base/schemeful_site.h"

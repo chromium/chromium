@@ -30,8 +30,8 @@
 /// availability of navigating to previous entry.
 - (void)onBackNavigationAvailabilityMaybeChanged:(BOOL)canGoBack;
 
-/// Called when a related search URL is loaded from LRP.
-- (void)onRelatedSearchLoaded:(NSString*)omniboxText;
+/// Called when a lens overlay SRP is loaded with `omniboxText`.
+- (void)onSRPLoadWithOmniboxText:(NSString*)omniboxText;
 
 @end
 

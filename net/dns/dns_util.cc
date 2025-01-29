@@ -8,6 +8,7 @@
 #include <limits.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cstring>
 #include <string>
 #include <string_view>
@@ -20,7 +21,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/byte_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
@@ -176,16 +176,16 @@ std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromNameservers(
   const auto entries = GetDohProviderEntriesFromNameservers(dns_servers);
   std::vector<DnsOverHttpsServerConfig> doh_servers;
   doh_servers.reserve(entries.size());
-  base::ranges::transform(entries, std::back_inserter(doh_servers),
-                          &DohProviderEntry::doh_server_config);
+  std::ranges::transform(entries, std::back_inserter(doh_servers),
+                         &DohProviderEntry::doh_server_config);
   return doh_servers;
 }
 
 std::string GetDohProviderIdForHistogramFromServerConfig(
     const DnsOverHttpsServerConfig& doh_server) {
   const auto& entries = DohProviderEntry::GetList();
-  const auto it = base::ranges::find(entries, doh_server,
-                                     &DohProviderEntry::doh_server_config);
+  const auto it = std::ranges::find(entries, doh_server,
+                                    &DohProviderEntry::doh_server_config);
   return it != entries.end() ? std::string((*it)->provider) : "Other";
 }
 

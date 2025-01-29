@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Չեղյալ են հայտարարվել</translation>
 <translation id="1020274983236703756">Բացառիկ բովանդակություն <ph name="PRODUCT_NAME" />-ի համար</translation>
 <translation id="1022628058306505708">Հողահոսք</translation>
+<translation id="102432830749687801">Օգտագործեք Google-ի «Բովանդակության տեղափոխում» հավելվածը՝ ձեր ուսումնական հաշվի տվյալները անձնական հաշիվ տեղափոխելու համար, քանի դեռ չեք կորցրել հասանելիությունը։</translation>
 <translation id="1026212596705997935">Դյուրանցումն օգտագործվում է «<ph name="CONFLICT_ACCEL_NAME" />» գործողության համար։ Սեղմեք նոր դյուրանցում։ Առկա դյուրանցումը փոխարինելու համար նորից սեղմեք այս դյուրանցումը։</translation>
 <translation id="1030856839388844477">Զրոյացնել տվյալների օգտագործումը</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> հոսք, <ph name="CPU_MAX_CLOCK_SPEED" /> ԳՀց)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Պատյանի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="1397738625398125236">Անցախուցը պատասխանում է փինգ հարցմանը</translation>
 <translation id="1398634363027580500">HTTPS-ի շատ բարձր հապաղում</translation>
+<translation id="1406389211945506521">Շնորհակալություն ձեր փորձով կիսվելու համար։ Ձեր կարծիքը կօգնի մեզ ստեղծել ավելի օգտակար և արժանահավատ բովանդակություն։</translation>
 <translation id="1407069428457324124">Մուգ թեմա</translation>
 <translation id="1413240736185167732">Չհաջողվեց տպել – Զտիչը չաշխատեց</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Դասական արվեստ</translation>
 <translation id="181434555916624618">Այս պահին մարդկանց մասին տվյալներ պարունակող արդյունքները չեն ցուցադրվի։ Փորձեք այլ հարցում կատարել։</translation>
 <translation id="1815850098929213707">Ընտրված է <ph name="KEYS" /> ստեղնը։ Հպեք կոճակին՝ կարգավորումը փոփոխելու համար</translation>
+<translation id="1818174214124933000">Ընտրելով «Ուղարկել»՝ ձեր կարծիքն ու ստորև ներկայացված տեղեկությունները կուղարկվեն Google-ին։ Դրանք կստուգվեն մեր մասնագետների կողմից և կօգտագործվեն մեր պրոդուկտներն ու ծառայությունները կամ մեքենայական ուսուցման մոդելները բարելավելու համար՝ համաձայն Google-ի <ph name="LINK_POLICY_BEGIN" />Գաղտնիության քաղաքականության<ph name="LINK_POLICY_END" /> և <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Օգտագործման պայմանների<ph name="LINK_TERMS_OF_SERVICE_END" />։</translation>
 <translation id="1823120442877418684">Օբյեկտներ</translation>
 <translation id="1827738518074806965">Ցուցասրահ</translation>
+<translation id="183287940576828840">Վիրավորական/վտանգավոր</translation>
 <translation id="1836553715834333258">Համակարգի տարրերի գույն</translation>
 <translation id="183675228220305365">ռեալիստական</translation>
 <translation id="1838374766361614909">Մաքրել որոնումը</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Ձախողված UDP հարցումներ</translation>
 <translation id="1908394185991500139">ձախ սլաք</translation>
 <translation id="1914144885717544695">ուրբաթ օրը</translation>
+<translation id="1915960750806557358">Կիսվեք ձեր կարծիքով կամ նկարագրեք խնդիրը։ Մի՛ ներառեք անձնական, զգայուն կամ կոնֆիդենցիալ տեղեկություններ։</translation>
 <translation id="1923388006036088459">Ակցենտային գույներ</translation>
 <translation id="1945403655450283000">Ձայնագրիչ</translation>
 <translation id="1947737735496445907">Տպված է</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Թարմացումը շարունակելու համար անջատեք USB մալուխը <ph name="DEVICE_NAME" /> սարքից</translation>
 <translation id="2320295602967756579">Միացնել բաց թեման</translation>
 <translation id="2323506179655536734">ԲԱՑ ԹՈՂՆՎԵՑ</translation>
-<translation id="2323755382216917952">Այս թարմացման համար անհրաժեշտ է, որ վերագործարկեք ձեր համակարգիչը՝ տեղադրումն ավարտելու համար։ Թարմացումը կարող է մի քանի րոպե տևել։ Քանի դեռ ներկառուցված ծրագիրը թարմացվում է, մի՛ անջատեք ձեր համակարգիչը։</translation>
 <translation id="2324354238778375592">Լողացող ռեժիմ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Գերազանց (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">ավանգարդ</translation>
 <translation id="3182676044300231689">Մուտքագրեք հարցում, օրինակ՝ «գրիր ավելի վստահ տոնայնությամբ»</translation>
 <translation id="3188257591659621405">Իմ ֆայլերը</translation>
-<translation id="3188931456353313123">Այս թարմացումը տրամադրվել է սարքի արտադրողի կողմից և չի ստուգվել Google-ի կողմից։</translation>
 <translation id="319101249942218879">Ավատարի պատկերը փոխվել է</translation>
 <translation id="3192947282887913208">Աուդիո ֆայլեր</translation>
 <translation id="3199982728237701504">Փաստաթղթերի մատակարար (երկկողմանի)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">Քանի անգամ է ձեր մարտկոցն ամբողջությամբ լիցքավորվել</translation>
 <translation id="3877066159641251281">Լսել թարգմանությունը</translation>
 <translation id="3880601782712134623">Ավտոմատ հայտնաբերել տարբեր ձայներ և յուրաքանչյուր խոսողին տալ ընդհանուր բնույթի պիտակ, օրինակ՝ Խոսող 1, Խոսող 2</translation>
+<translation id="38811596981744338">Իրավական խնդիր</translation>
 <translation id="3885327323343477505">Փոխել էկրանապահը</translation>
 <translation id="3889914174935857450">Զրոյացնել ամսաթիվը</translation>
 <translation id="3897092660631435901">Ընտրացանկ</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356">Լիցքավորվել է <ph name="RATE" />-ով՝ <ph name="NUM_SECONDS" /> վայրկյանում։</translation>
 <translation id="4930320165497208503">Միացում կարգավորելու կամ ստեղծելու համար անցեք <ph name="BEGIN_LINK" />Կարգավորումներ<ph name="END_LINK" />։</translation>
 <translation id="4932733599132424254">Ամսաթիվ</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, բացվում է նոր ներդիրում</translation>
 <translation id="4946927805998996217">Ստեղծվում է ամփոփագիր</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> սարքի ներկառուցված ծրագիրը թարմացվել է <ph name="VERSION" /> տարբերակով</translation>
 <translation id="4950893758552030541">ծառերի թունել</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Ստացեք տեղեկություններ էկրանի տարրերի վերաբերյալ</translation>
 <translation id="6694534975463174713">կողպեք</translation>
 <translation id="6700703207451721535">Այս հղումով մուտքը թույլատրված չէ։ Թույլտվության հետ կապված հարցերով դիմեք ձեր ուսուցչին։</translation>
+<translation id="6703179086771097594">Ի՞նչ խնդիր է առաջացել</translation>
 <translation id="6704062477274546131">DNS-ի լուծաչափ</translation>
 <translation id="6712933881624804031">հովիտ</translation>
 <translation id="6716013206176357696">ելակներ</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Ներբեռնեք գրադարձման մոդելը Կարգավորումներում</translation>
 <translation id="7058278511608979688">Ավարտել և պահել</translation>
 <translation id="7059230779847288458">Լիցքավորում, մնացել է <ph name="TIME_VALUE" /></translation>
+<translation id="7064209589142995848">Բովանդակության տեղափոխում</translation>
 <translation id="7065336548231472971">Ընտրված է <ph name="LANGUAGE_NAME" /> լեզուն</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> ստեղնը</translation>
 <translation id="7068619307603204412">Նախապատրաստեք սարքը</translation>
@@ -1592,6 +1599,7 @@
 <translation id="8476942730579767658">Պատուհաններ և աշխատասեղաններ</translation>
 <translation id="8477536061607044749">գրաֆիկական դիզայն</translation>
 <translation id="8477551185774834963">DNS-ի հապաղումը փոքր առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
+<translation id="8481308460877552925">Փաստացի սխալ է</translation>
 <translation id="8482376765267780829">Ընտրեք տեքստ՝ պարզեցնելու համար</translation>
 <translation id="8483248364096924578">IP հասցե</translation>
 <translation id="8491311378305535241">Չհաջողվեց միանալ HTTP կայքերին Android-ի համար հավելվածներից հրապատի միջոցով։</translation>

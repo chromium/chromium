@@ -43,7 +43,8 @@ export function getHtml(this: ProfileCustomizationAppElement) {
           aria-label="$i18n{profileCustomizationInputLabel}" auto-validate
           placeholder="$i18n{profileCustomizationInputPlaceholder}" autofocus
           error-message="$i18n{profileCustomizationInputErrorMessage}"
-          required spellcheck="false" @blur="${this.validateInputOnBlur_}">
+          required spellcheck="false" @blur="${this.validateInputOnBlur_}"
+          ?disabled="${this.hasEnterpriseLabel}">
       </cr-input>
 
       <div id="pickThemeContainer">

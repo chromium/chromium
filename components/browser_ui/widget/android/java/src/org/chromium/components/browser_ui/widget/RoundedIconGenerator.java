@@ -136,9 +136,8 @@ public class RoundedIconGenerator {
     }
 
     /** {@link #generateIconForUrl(GURL, boolean)} */
-    @Deprecated
-    @Nullable // TODO(crbug.com/40549331): Use GURL-variant or #generateIconForText
-    public Bitmap generateIconForUrl(String url, boolean includePrivateRegistries) {
+    @Deprecated // TODO(crbug.com/40549331): Use GURL-variant or #generateIconForText
+    public @Nullable Bitmap generateIconForUrl(String url, boolean includePrivateRegistries) {
         if (TextUtils.isEmpty(url)) return null;
 
         String text = getIconTextForUrl(url, includePrivateRegistries);
@@ -160,9 +159,8 @@ public class RoundedIconGenerator {
     }
 
     /** {@link #generateIconForUrl(GURL)} */
-    @Deprecated
-    @Nullable // TODO(crbug.com/40549331): Use GURL-variant or #generateIconForText
-    public Bitmap generateIconForUrl(String url) {
+    @Deprecated // TODO(crbug.com/40549331): Use GURL-variant or #generateIconForText
+    public @Nullable Bitmap generateIconForUrl(String url) {
         return generateIconForUrl(url, false);
     }
 

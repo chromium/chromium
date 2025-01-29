@@ -89,6 +89,14 @@ export class SettingsManageProfileElement extends
        */
       isProfileShortcutSettingVisible_: Boolean,
 
+      hasEnterpriseLabel_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('hasEnterpriseLabel');
+        },
+      },
+
+
       /**
        * TODO(dpapad): Move this back to the HTML file when the Polymer2 version
        * of the code is deleted. Because of "\" being a special character in a

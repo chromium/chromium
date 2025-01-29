@@ -281,11 +281,13 @@ using chrome_test_util::SettingsDoneButton;
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 
-  // TODO(crbug.com/41493423): There should be log for SigninStartedAccessPoint,
-  // Signin.SignIn.Offered and Signin.SigninCompletedAccessPoint.NotDefault
+  // TODO(crbug.com/41493423): There should be log for
+  // Signin.SignIn.Offered.
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
       initWithAccessPoint:signin_metrics::AccessPoint::kBookmarkManager];
   expecteds.signinSignInStarted = 1;
+  expecteds.signinSigninStartedAccessPoint = 1;
+  expecteds.signinSignStartedAccessPointNewAccountNoExistingAccount = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 

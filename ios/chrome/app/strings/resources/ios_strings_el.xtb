@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Ο κωδικός πρόσβασης αποθηκεύτηκε στον Λογαριασμό σας Google, {EMAIL}}other{Οι κωδικοί πρόσβασης αποθηκεύτηκαν στον Λογαριασμό σας Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Προσθήκη κωδικού πρόσβασης…</translation>
 <translation id="2797302972324086597">Κωδικός χώρας</translation>
-<translation id="2802403747691280910">Έκλεισαν <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="2816489851009559785">Μενού → Ρυθμίσεις → Προεπιλεγμένο πρόγραμμα περιήγησης</translation>
 <translation id="2818821771744632548">Αποσυνδεθήκατε από τον λογαριασμό σας <ph name="USER_NAME" /> στο πλαίσιο της επαναφοράς του iPhone. Για να συνδεθείτε ξανά, πατήστε Συνέχεια παρακάτω.</translation>
 <translation id="2819667972867209401">Όταν είναι ενεργοποιημένη αυτή η ρύθμιση, τα δεδομένα αποθηκεύονται στον Λογαριασμό σας Google. Όταν είναι απενεργοποιημένη, τα δεδομένα αποθηκεύονται μόνο σε αυτή τη συσκευή και διαγράφονται εάν αποσυνδεθείτε.</translation>
@@ -562,6 +561,7 @@
 <translation id="3517216995152707259">Η διαγραφή των δεδομένων περιήγησης δεν σας αποσυνδέει από τον Λογαριασμό σας Google. Για να γίνει αυτό, <ph name="BEGIN_LINK" />αποσυνδεθείτε από το Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Άνοιγμα καρτέλας για περιήγηση στον ιστό</translation>
 <translation id="3519905498307021260">{count,plural, =1{Άνοιγμα καρτέλας}other{Άνοιγμα {count} καρτελών}}</translation>
+<translation id="3523513363815970085">Απόκρυψη της ενότητας Οι κορυφαίοι ιστότοποί σας</translation>
 <translation id="3523789730715594198">Μπορείτε να διακόψετε τον συγχρονισμό ανά πάσα στιγμή στις ρυθμίσεις. Η Google μπορεί να εξατομικεύει την Αναζήτηση και άλλες υπηρεσίες με βάση το ιστορικό σας.</translation>
 <translation id="3527085408025491307">Φάκελος</translation>
 <translation id="3529024052484145543">Μη ασφαλής</translation>
@@ -837,6 +837,7 @@
 <translation id="4769198578611055647">Σας βοηθά να έχετε πρόσβαση σε αποθηκευμένα κλειδιά πρόσβασης σε οποιαδήποτε συσκευή</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Άνοιγμα στην Ανώνυμη περιήγηση;</translation>
+<translation id="479208892659046780">Οι κορυφαίοι ιστότοποί σας</translation>
 <translation id="4792385443586519711">Επωνυμία εταιρείας</translation>
 <translation id="479628432297359449">Διακοπή λήψης;</translation>
 <translation id="4796496140132859135">Ομάδα καρτελών. Συμπτύχθηκε.</translation>
@@ -1592,7 +1593,6 @@
 <translation id="7975036700432177008">Δοκιμή</translation>
 <translation id="797588153137233716">Μενού → Ιστορικό → Διαγραφή δεδομένων περιήγησης</translation>
 <translation id="7977451675950311423">Σας προειδοποιεί εάν χρησιμοποιήσετε έναν κωδικό πρόσβασης που έχει παραβιαστεί μέσω παραβίασης δεδομένων.</translation>
-<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> νέες καρτέλες, έκλεισαν <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">Οι καρτέλες θα παραμείνουν ανοιχτές σε αυτή τη συσκευή, αλλά η ομάδα θα διαγραφεί οριστικά.</translation>
 <translation id="797874245254030665">Αποκτήστε πρόσβαση στους κωδικούς πρόσβασης και τα κλειδιά πρόσβασης από οποιαδήποτε εφαρμογή</translation>
 <translation id="7982789257301363584">Δίκτυο</translation>
@@ -1779,7 +1779,6 @@
 <translation id="8728922029615312208">Κλείσιμο όλων</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
 <translation id="87371078663613140">Εξερευνήστε τις επιλογές στη γραμμή μενού</translation>
-<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> νέες καρτέλες</translation>
 <translation id="8741627442233023406">{count,plural, =1{Έλεγχος καρτέλας…}other{Έλεγχος όλων των καρτελών…}}</translation>
 <translation id="8741995161408053644">Ο Λογαριασμός σας Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Δημιουργία συνδέσμου</translation>

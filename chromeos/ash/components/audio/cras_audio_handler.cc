@@ -21,7 +21,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -2597,8 +2596,8 @@ void CrasAudioHandler::SwitchToTopPriorityDevice(
   // When the audio selection improvement flag is on, no user priority will be
   // maintained. Use built-in priority rather than user priority.
   AudioDevice top_device = features::IsAudioSelectionImprovementEnabled()
-                               ? base::ranges::max(devices, LessBuiltInPriority)
-                               : base::ranges::max(devices, LessUserPriority);
+                               ? std::ranges::max(devices, LessBuiltInPriority)
+                               : std::ranges::max(devices, LessUserPriority);
   if (!top_device.is_for_simple_usage()) {
     return;
   }

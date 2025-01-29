@@ -317,7 +317,6 @@
 <translation id="2308243864813041101">Isključite USB kabl uređaja <ph name="DEVICE_NAME" /> da biste nastavili proces ažuriranja</translation>
 <translation id="2320295602967756579">Omogućite svetlu temu</translation>
 <translation id="2323506179655536734">PRESKOČENO</translation>
-<translation id="2323755382216917952">Za ovo ažuriranje morate da restartujete računar da biste dovršili instalaciju. Ovo ažuriranje može da potraje nekoliko minuta. Ne prekidajte vezu računara sa izvorom napajanja niti ga isključujte dok se firmver ažurira.</translation>
 <translation id="2324354238778375592">Plutajuće</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Odličan (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -463,7 +462,6 @@
 <translation id="3178532070248519384">avangarda</translation>
 <translation id="3182676044300231689">Unesite upit kao što je „neka zvuči samopouzdanije“</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
-<translation id="3188931456353313123">Ovo ažuriranje pruža proizvođač uređaja i Google ga nije verifikovao.</translation>
 <translation id="319101249942218879">Slika avatara je promenjena</translation>
 <translation id="3192947282887913208">Audio datoteke</translation>
 <translation id="3199982728237701504">Uvlačenje dokumenta (dvostrano)</translation>

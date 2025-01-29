@@ -1424,11 +1424,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "classify-url-on-process-response-event",
-    "owners": [ "tju@chromium.org", "chrome-kids-eng@chromium.org" ],
-    "expiry_milestone": 131
-  },
-  {
     "name": "clay-blocking-dialog",
     "owners": ["triploblastic@google.com", "dgn@google.com", "chrome-waffle-eng@google.com"],
     "expiry_milestone": 135
@@ -3840,6 +3835,14 @@
       "//ui/accessibility/OWNERS"
     ],
     "expiry_milestone": 135
+  },
+  {
+    "name": "enable-snackbar-in-settings",
+    "owners": [
+      "uno-desktop@google.com",
+      "//components/signin/OWNERS"
+    ],
+    "expiry_milestone": 138
   },
   {
     "name": "enable-speculation-rules-prerendering-target-hint",

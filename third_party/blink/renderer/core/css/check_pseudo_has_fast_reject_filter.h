@@ -36,8 +36,6 @@ namespace blink {
 // '.a .b' doesn't match any descendants of '#has_anchor' since the bloom filter
 // doesn't contain the hash for '.b'.
 class CORE_EXPORT CheckPseudoHasFastRejectFilter {
-  USING_FAST_MALLOC(CheckPseudoHasFastRejectFilter);
-
  public:
   using FastRejectFilter = WTF::BloomFilter<12>;
 

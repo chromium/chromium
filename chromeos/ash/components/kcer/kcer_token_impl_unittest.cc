@@ -136,7 +136,7 @@ const CertDer& GetCertDer() {
 }
 
 bool SpanEqual(base::span<const uint8_t> s1, base::span<const uint8_t> s2) {
-  return base::ranges::equal(s1, s2);
+  return std::ranges::equal(s1, s2);
 }
 
 [[nodiscard]] bool FindAttribute(chaps::AttributeList attrs,

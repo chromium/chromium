@@ -427,7 +427,6 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2789552044937754463">{COUNT,plural, =1{Kata laluan disimpan dalam Google Account anda, {EMAIL}}other{Kata laluan disimpan dalam Google Account anda, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Tambahkan kata laluan…</translation>
 <translation id="2797302972324086597">Kod negara</translation>
-<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> ditutup</translation>
 <translation id="2816489851009559785">Menu → Tetapan → Penyemak imbas lalai</translation>
 <translation id="2818821771744632548">Anda telah dilog keluar daripada akaun anda, <ph name="USER_NAME" />, sebagai sebahagian daripada tetapan semula iPhone anda. Untuk log masuk semula, ketik "Teruskan" di bawah.</translation>
 <translation id="2819667972867209401">Apabila dihidupkan, data disimpan pada Google Account anda. Apabila dimatikan, data akan disimpan hanya pada peranti ini dan akan dipadamkan jika anda log keluar.</translation>
@@ -1593,7 +1592,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="7975036700432177008">Cuba</translation>
 <translation id="797588153137233716">Menu → Sejarah → Padamkan data semakan imbas</translation>
 <translation id="7977451675950311423">Memberikan amaran kepada anda jika anda menggunakan kata laluan yang telah terjejas dalam pelanggaran data.</translation>
-<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> tab baharu, <ph name="NUMBER_OF_TABS_REMOVED" /> ditutup</translation>
 <translation id="797824194429476746">Tab akan kekal terbuka pada peranti ini tetapi kumpulan tersebut akan dipadamkan secara kekal.</translation>
 <translation id="797874245254030665">Akses kata laluan &amp; kunci laluan anda daripada mana-mana apl</translation>
 <translation id="7982789257301363584">Rangkaian</translation>
@@ -1780,7 +1778,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8728922029615312208">Tutup semua</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="87371078663613140">Teroka pilihan dalam bar menu</translation>
-<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> tab baharu</translation>
 <translation id="8741627442233023406">{count,plural, =1{Semak tab…}other{Semak semua tab…}}</translation>
 <translation id="8741995161408053644">Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Buat pautan</translation>

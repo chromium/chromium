@@ -27,6 +27,7 @@ class PrerenderHandleImpl final : public PrerenderHandle,
   ~PrerenderHandleImpl() override;
 
   // PrerenderHandle:
+  int32_t GetHandleId() const override;
   const GURL& GetInitialPrerenderingUrl() const override;
   base::WeakPtr<PrerenderHandle> GetWeakPtr() override;
   void SetPreloadingAttemptFailureReason(
@@ -45,6 +46,8 @@ class PrerenderHandleImpl final : public PrerenderHandle,
 
  private:
   PrerenderHost* GetPrerenderHost();
+
+  const int handle_id_;
 
   base::WeakPtr<PrerenderHostRegistry> prerender_host_registry_;
   // `frame_tree_node_id_` is the root FrameTreeNode id of the prerendered

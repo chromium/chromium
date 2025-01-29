@@ -52,8 +52,6 @@ class ClassifyUrlNavigationThrottleTest
            supervised_user::SupervisionMixin::SignInMode::kSupervised,
        .embedded_test_server_options = {.resolver_rules_map_host_list =
                                             "*.example.com"}}};
-  base::test::ScopedFeatureList feature_list_{
-      kClassifyUrlOnProcessResponseEvent};
   content::test::PrerenderTestHelper prerender_helper_{
       base::BindRepeating(&ClassifyUrlNavigationThrottleTest::web_contents,
                           base::Unretained(this))};

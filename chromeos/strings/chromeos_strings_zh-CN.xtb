@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> 专有资源现已推出</translation>
 <translation id="1022628058306505708">地球的风景变化</translation>
+<translation id="102432830749687801">请务必在失去访问权限之前，使用 Google 的 Content Transfer 应用将学校账号数据转移到个人账号。</translation>
 <translation id="1026212596705997935">此快捷键已用于“<ph name="CONFLICT_ACCEL_NAME" />”。请按新的快捷键。如要替换现有的快捷键，请再次按这个快捷键。</translation>
 <translation id="1030856839388844477">重置流量使用情况</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（<ph name="THREAD_COUNT" /> 个线程，<ph name="CPU_MAX_CLOCK_SPEED" />GHz）</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">设备保护套电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="1397738625398125236">可以对网关执行 ping 操作</translation>
 <translation id="1398634363027580500">HTTPS 延迟非常高</translation>
+<translation id="1406389211945506521">感谢您分享自己的体验。您的反馈有助于我们创建更准确、更实用的内容。</translation>
 <translation id="1407069428457324124">深色主题</translation>
 <translation id="1413240736185167732">失败 - 过滤器出问题了</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,11 @@
 <translation id="1808803439260407870">经典艺术</translation>
 <translation id="181434555916624618">目前，系统不会显示包含某个人的结果。请试试其他提示。</translation>
 <translation id="1815850098929213707">所选按键为 <ph name="KEYS" />。点按按钮即可修改控件</translation>
+<translation id="1818174214124933000">选择发送后，系统会将您的反馈和内容（如下所示）发送给 Google 供人工审核。我们会根据<ph name="LINK_POLICY_BEGIN" />《隐私权政策》<ph name="LINK_POLICY_END" />和<ph name="LINK_TERMS_OF_SERVICE_BEGIN" />《Google 服务条款》<ph name="LINK_TERMS_OF_SERVICE_END" />使用这些信息训练或改进我们的产品和服务。</translation>
 <translation id="1823120442877418684">物体</translation>
 <translation id="1827738518074806965">画廊</translation>
+<translation id="183287940576828840">令人反感/不安全</translation>
+<translation id="1834032517784994783">选择转写语言</translation>
 <translation id="1836553715834333258">系统颜色</translation>
 <translation id="183675228220305365">现实主义</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
@@ -225,6 +230,7 @@
 <translation id="1908234395526491708">UDP 请求失败</translation>
 <translation id="1908394185991500139">向左箭头</translation>
 <translation id="1914144885717544695">在周五</translation>
+<translation id="1915960750806557358">分享您的反馈或描述您的问题。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="1923388006036088459">强调色</translation>
 <translation id="1945403655450283000">录音机</translation>
 <translation id="1947737735496445907">已打印</translation>
@@ -311,7 +317,6 @@
 <translation id="2308243864813041101">请拔下<ph name="DEVICE_NAME" /> USB 线，以继续更新流程</translation>
 <translation id="2320295602967756579">启用浅色主题</translation>
 <translation id="2323506179655536734">已跳过</translation>
-<translation id="2323755382216917952">此更新需要您重启计算机，才能完成安装。此更新可能需要几分钟的时间才能完成。固件更新期间，请不要拔掉计算机的电源插头或关机。</translation>
 <translation id="2324354238778375592">悬浮</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">极佳 (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +462,6 @@
 <translation id="3178532070248519384">前卫艺术</translation>
 <translation id="3182676044300231689">输入提示，例如“语气更自信”</translation>
 <translation id="3188257591659621405">我的文件</translation>
-<translation id="3188931456353313123">此更新由设备制造商提供，并且未经 Google 验证。</translation>
 <translation id="319101249942218879">头像图片变了</translation>
 <translation id="3192947282887913208">音频文件</translation>
 <translation id="3199982728237701504">文件馈送器（双面）</translation>
@@ -596,6 +600,7 @@
 <translation id="387301095347517405">您的电池已经历的完整充电循环次数</translation>
 <translation id="3877066159641251281">聆听译文</translation>
 <translation id="3880601782712134623">自动检测不同的语音，并为每位讲者添加一个宽泛的标签，例如讲者 1、讲者 2</translation>
+<translation id="38811596981744338">法律问题</translation>
 <translation id="3885327323343477505">更换屏保</translation>
 <translation id="3889914174935857450">重置日期</translation>
 <translation id="3897092660631435901">菜单</translation>
@@ -727,6 +732,7 @@
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
 <translation id="4483498983731992167">无法创建转写内容</translation>
 <translation id="4486524074141928967">您将于<ph name="TIME" /> 退出账号</translation>
+<translation id="4487890678161807486">打开转写语言选择器</translation>
 <translation id="4500722292849917410">此快捷键不可用。按新的快捷键时，请使用辅助键（ctrl、alt、shift 或<ph name="META_KEY" />键）。</translation>
 <translation id="4500966230243561393">界面颜色</translation>
 <translation id="4503223151711056411">向左</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒内充了 <ph name="RATE" /> 的电量。</translation>
 <translation id="4930320165497208503">若要设置或更新连接，请转到<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />。</translation>
 <translation id="4932733599132424254">日期</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />，在新标签页中打开</translation>
 <translation id="4946927805998996217">正在生成摘要</translation>
 <translation id="4950314376641394653">固件“<ph name="DEVICE_NAME" />”已更新到版本 <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">树隧道</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">获取与您的所选项相关的信息</translation>
 <translation id="6694534975463174713">锁定</translation>
 <translation id="6700703207451721535">此链接无法访问。如需访问权限，请与您的老师联系。</translation>
+<translation id="6703179086771097594">哪些方面表现欠佳？</translation>
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6712933881624804031">山谷</translation>
 <translation id="6716013206176357696">草莓</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">请在“设置”中下载转写模型</translation>
 <translation id="7058278511608979688">结束并保存</translation>
 <translation id="7059230779847288458">正在充电，还需 <ph name="TIME_VALUE" />才能充满</translation>
+<translation id="7064209589142995848">Content Transfer</translation>
 <translation id="7065336548231472971">已选择<ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186"><ph name="KEY" /> 键</translation>
 <translation id="7068619307603204412">准备设备</translation>
@@ -1592,6 +1601,7 @@
 <translation id="8476942730579767658">窗口和桌面</translation>
 <translation id="8477536061607044749">平面设计</translation>
 <translation id="8477551185774834963">DNS 延迟时间略微超出了允许的阈值</translation>
+<translation id="8481308460877552925">与事实不符</translation>
 <translation id="8482376765267780829">请选择一些文字进行简化</translation>
 <translation id="8483248364096924578">IP 地址</translation>
 <translation id="8491311378305535241">无法通过防火墙从 Android 应用连接到 HTTP 网站</translation>

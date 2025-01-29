@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{‏گذرواژه در «حساب Google» شما ({EMAIL}) ذخیره شد}one{‏گذرواژه در «حساب Google» شما ({EMAIL}) ذخیره شد}other{‏گذرواژه‌ها در «حساب Google» شما ({EMAIL}) ذخیره شد}}</translation>
 <translation id="2791174088547598693">افزودن گذرواژه…</translation>
 <translation id="2797302972324086597">کد کشور</translation>
-<translation id="2802403747691280910">‫<ph name="NUMBER_OF_TABS_REMOVED" /> برگه بسته شد</translation>
 <translation id="2816489851009559785">منو ← تنظیمات ← مرورگر پیش‌فرض</translation>
 <translation id="2818821771744632548">‏به‌عنوان بخشی از بازنشانی iPhone، از سیستم حساب <ph name="USER_NAME" /> خارج شدید. برای ورود مجدد به سیستم، روی «ادامه» در زیر تک‌ضرب بزنید.</translation>
 <translation id="2819667972867209401">‏وقتی روشن باشد، داده‌ها در «حساب Google» شما ذخیره می‌شود. وقتی خاموش باشد، داده‌ها فقط در این دستگاه ذخیره می‌شود و درصورت خروج از سیستم، داده‌ها حذف می‌شود.</translation>
@@ -1593,7 +1592,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7975036700432177008">امتحان کنید</translation>
 <translation id="797588153137233716">منو ← سابقه ← حذف داده‌های مرور</translation>
 <translation id="7977451675950311423">اگر از گذرواژه‌ای استفاده کنید که در سرقت اطلاعات شبکه لو رفته باشد، به شما هشدار می‌دهد.</translation>
-<translation id="7977482887663636093">‫<ph name="NUMBER_OF_TABS_ADDED" /> برگه جدید، <ph name="NUMBER_OF_TABS_REMOVED" /> برگه بسته شد</translation>
 <translation id="797824194429476746">برگه‌ها در این دستگاه باز می‌مانند اما گروه برای همیشه حذف خواهد شد.</translation>
 <translation id="797874245254030665">از هر برنامه‌ای به گذرواژه‌ها و گذرکلیدهایتان دسترسی داشته باشید</translation>
 <translation id="7982789257301363584">شبکه</translation>
@@ -1780,7 +1778,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8728922029615312208">بستن همه</translation>
 <translation id="8730621377337864115">تمام</translation>
 <translation id="87371078663613140">گزینه‌ها را در نوار منو کاوش کنید</translation>
-<translation id="8739706427581741437">‫<ph name="NUMBER_OF_TABS_ADDED" /> برگه جدید</translation>
 <translation id="8741627442233023406">{count,plural, =1{مرور کردن برگه…}one{مرور کردن برگه…}other{مرور کردن همه برگه‌ها…}}</translation>
 <translation id="8741995161408053644">‏ممکن است حساب Google شما اشکال سابقه مرور دیگری در <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> داشته باشد.</translation>
 <translation id="874599634440689554">ایجاد کردن پیوند</translation>

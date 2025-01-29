@@ -30,10 +30,11 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/payments/payment_app_install_util.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_utils.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_utils.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -62,6 +63,7 @@
 namespace payments {
 
 namespace {
+
 // This is preferred to SelectValue, since only SetSelectedRow fires the events
 // as if done by a user.
 void SelectComboboxRowForValue(views::Combobox* combobox,
@@ -515,37 +517,22 @@ PaymentRequestBrowserTestBase::payments_data_manager() {
 
 void PaymentRequestBrowserTestBase::AddAutofillProfile(
     const autofill::AutofillProfile& profile) {
-  autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  size_t profile_count =
-      personal_data_manager->address_data_manager().GetProfiles().size();
-  autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
-  personal_data_manager->address_data_manager().AddProfile(profile);
-  std::move(waiter).Wait();
-  EXPECT_EQ(profile_count + 1,
-            personal_data_manager->address_data_manager().GetProfiles().size());
+  size_t profile_count = address_data_manager()->GetProfiles().size();
+  address_data_manager()->AddProfile(profile);
+  autofill::AddressDataChangedWaiter(address_data_manager()).Wait();
+  EXPECT_EQ(profile_count + 1, address_data_manager()->GetProfiles().size());
 }
 
 void PaymentRequestBrowserTestBase::AddCreditCard(
     const autofill::CreditCard& card) {
-  autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  size_t card_count =
-      personal_data_manager->payments_data_manager().GetCreditCards().size();
-  autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
+  size_t card_count = payments_data_manager()->GetCreditCards().size();
   if (card.record_type() == autofill::CreditCard::RecordType::kLocalCard) {
-    personal_data_manager->payments_data_manager().AddCreditCard(card);
+    payments_data_manager()->AddCreditCard(card);
   } else {
-    test_api(personal_data_manager->payments_data_manager())
-        .AddServerCreditCard(card);
+    test_api(*payments_data_manager()).AddServerCreditCard(card);
   }
-  std::move(waiter).Wait();
-  EXPECT_EQ(
-      card_count + 1,
-      personal_data_manager->payments_data_manager().GetCreditCards().size());
-}
-
-void PaymentRequestBrowserTestBase::WaitForOnPersonalDataChanged() {
-  autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  autofill::PersonalDataChangedWaiter(*personal_data_manager).Wait();
+  autofill::PaymentsDataChangedWaiter(payments_data_manager()).Wait();
+  EXPECT_EQ(card_count + 1, payments_data_manager()->GetCreditCards().size());
 }
 
 void PaymentRequestBrowserTestBase::CreatePaymentRequestForTest(

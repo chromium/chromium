@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Caracteres</translation>
 <translation id="1827738518074806965">Galería de arte</translation>
 <translation id="183287940576828840">Ofensivo o poco seguro</translation>
+<translation id="1834032517784994783">Seleccionar idioma de transcripción</translation>
 <translation id="1836553715834333258">Color del sistema</translation>
 <translation id="183675228220305365">realista</translation>
 <translation id="1838374766361614909">Borrar búsqueda</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">Desconecta el cable USB de tu <ph name="DEVICE_NAME" /> para continuar con el proceso de actualización</translation>
 <translation id="2320295602967756579">Habilitar tema claro</translation>
 <translation id="2323506179655536734">SALTADA</translation>
-<translation id="2323755382216917952">Esta actualización requiere que reinicies tu ordenador para completar la instalación. La actualización puede tardar varios minutos en completarse. Mientras se actualiza el firmware, no desconectes ni apagues tu ordenador.</translation>
 <translation id="2324354238778375592">Flotar</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> PPP</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">vanguardista</translation>
 <translation id="3182676044300231689">Introduce una petición como "que suene con más seguridad"</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
-<translation id="3188931456353313123">Esta actualización la proporciona el fabricante del dispositivo y Google no la ha verificado.</translation>
 <translation id="319101249942218879">Se ha cambiado la imagen del avatar</translation>
 <translation id="3192947282887913208">Archivos de audio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (dos caras)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">Se ha producido un error al hacer ping en la puerta de enlace de red no predeterminada</translation>
 <translation id="4483498983731992167">No se puede crear la transcripción</translation>
 <translation id="4486524074141928967">Tu sesión se cerrará a las <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Abrir selector de idioma de transcripción</translation>
 <translation id="4500722292849917410">Combinación de teclas no disponible. Pulsa una nueva combinación de teclas usando una tecla modificadora (Ctrl, Alt, Mayús o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Color de la interfaz</translation>
 <translation id="4503223151711056411">Flecha hacia la izquierda</translation>

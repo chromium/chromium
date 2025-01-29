@@ -8,10 +8,12 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
@@ -43,6 +45,7 @@ struct ProfilePickerTestParam {
   bool disallow_profile_creation = false;
   bool use_glic_version = false;
   bool no_glic_eligible_profiles = false;
+  bool is_enterprise_badging_enabled = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -99,6 +102,9 @@ const ProfilePickerTestParam kTestParams[] = {
      .use_multiple_profiles = true,
      .has_supervised_user = true,
      .show_kite_for_supervised_users = true},
+    {.pixel_test_param = {.test_suffix = "ManagedProfileHasWorkLabel"},
+     .use_multiple_profiles = true,
+     .is_enterprise_badging_enabled = true},
 #endif
     {.pixel_test_param = {.test_suffix = "GlicRegular"},
      .use_glic_version = true},
@@ -124,6 +130,7 @@ const ProfilePickerTestParam kTestParams[] = {
                               PixelTestParam::kPortraitModeWindowSize},
      .use_multiple_profiles = true,
      .use_glic_version = true},
+
 };
 
 enum class ProfileStatus {
@@ -227,6 +234,10 @@ void AddMultipleProfiles(bool is_glic_version, bool has_supervised_user) {
               SetSigninProfileProperties(
                   IdentityManagerFactory::GetForProfile(profile),
                   profile_status, is_glic_version);
+              if (profile_status == ProfileStatus::kSignedInManaged) {
+                enterprise_util::SetUserAcceptedAccountManagement(profile,
+                                                                  true);
+              }
               run_loop.Quit();
             }));
     run_loop.Run();
@@ -244,7 +255,9 @@ class ProfilePickerUIPixelTest
     scoped_feature_list_.InitWithFeatureStates(
         {{supervised_user::kShowKiteForSupervisedUsers,
           GetParam().show_kite_for_supervised_users},
-         {kOutlineSilhouetteIcon, GetParam().outline_silhouette_icon}});
+         {kOutlineSilhouetteIcon, GetParam().outline_silhouette_icon},
+         {features::kEnterpriseProfileBadgingForAvatar,
+          GetParam().is_enterprise_badging_enabled}});
 #endif
   }
 

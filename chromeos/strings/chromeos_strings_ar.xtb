@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">أصناف</translation>
 <translation id="1827738518074806965">معرض الفنون</translation>
 <translation id="183287940576828840">مسيء أو غير آمن</translation>
+<translation id="1834032517784994783">اختيار لغة تحويل الصوت إلى نص</translation>
 <translation id="1836553715834333258">لون النظام</translation>
 <translation id="183675228220305365">الفن الواقعي</translation>
 <translation id="1838374766361614909">محو البحث</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">‏عليك فصل كابل USB الخاص بجهاز "<ph name="DEVICE_NAME" />" عن مصدر الطاقة لمواصلة عملية التحديث</translation>
 <translation id="2320295602967756579">تفعيل المظهر الفاتح</translation>
 <translation id="2323506179655536734">تم تخطّي الاختبار.</translation>
-<translation id="2323755382216917952">يتطلّب هذا التحديث إعادة تشغيل جهاز الكمبيوتر لإكمال عملية التثبيت. وقد يستغرق إكمال التحديث بضع دقائق. لا تفصل جهاز الكمبيوتر أو تطفئه أثناء تحديث البرامج الثابتة.</translation>
 <translation id="2324354238778375592">النافذة العائمة</translation>
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> نقطة لكل بوصة (DPI)</translation>
 <translation id="2346474577291266260">إشارة ممتازة (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">الفن الطلائعي</translation>
 <translation id="3182676044300231689">أدخِل طلبًا، مثل "إعادة الكتابة بأسلوب أكثر ثقة"</translation>
 <translation id="3188257591659621405">ملفاتي</translation>
-<translation id="3188931456353313123">‏هذا التحديث مقدَّم من الشركة المصنّعة للجهاز ولم تتحقّق Google منه.</translation>
 <translation id="319101249942218879">تم تغيير الأفاتار.</translation>
 <translation id="3192947282887913208">ملفات صوتية</translation>
 <translation id="3199982728237701504">وحدة تغذية المستندات (وجهان)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">تعذَّر فحص اتصال بوابة الشبكة غير التلقائية.</translation>
 <translation id="4483498983731992167">تعذَّر إنشاء النص</translation>
 <translation id="4486524074141928967">سيتمّ تسجيل خروجك في <ph name="TIME" /></translation>
+<translation id="4487890678161807486">فتح أداة اختيار لغة تحويل الصوت إلى نص</translation>
 <translation id="4500722292849917410">‏هذا الاختصار غير متاح. اضغط على اختصار جديد باستخدام أحد مفاتيح التعديل (Ctrl أو Alt أو Shift أو مفتاح <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">لون الواجهة</translation>
 <translation id="4503223151711056411">السهم المتّجه لليسار</translation>

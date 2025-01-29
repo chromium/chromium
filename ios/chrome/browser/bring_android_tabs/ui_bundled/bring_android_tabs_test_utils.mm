@@ -117,8 +117,6 @@ void VerifyThatPromptDoesNotShowOnRestart(const GURL& test_server) {
 
 void CleanUp() {
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
   [ChromeEarlGrey
       clearUserPrefWithName:"ios.bring_android_tabs.prompt_displayed"];

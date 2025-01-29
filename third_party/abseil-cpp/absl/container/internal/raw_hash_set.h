@@ -3221,35 +3221,10 @@ class raw_hash_set {
     return 1;
   }
 
-  // Erases the element pointed to by `it`.
-  //
-  // Unlike `std::unordered_set::erase`, this returns `void` to reduce
-  // algorithmic complexity to O(1). When erasing multiple elements, proper
-  // iterator management is crucial to avoid invalidation errors. The preferred
-  // method is `absl::erase_if`, which manages this complexity and simplifies
-  // the code. However, if specific requirements prevent using `absl::erase_if`
-  // (such as needing to perform extra operations on each element), the iterator
-  // must be manually advanced. Techniques like post-increment iteration with
-  // `erase` can ensure the iterator remains valid during the removal process.
-  //
-  // Example using absl::erase_if:
-  //
-  // absl::flat_hash_set<std::string> email_addresses = GetEmailAddresses();
-  // absl::erase_if(email_addresses,
-  //             [](const auto& a) { return !IsValidAddress(a); });
-  //
-  // Example using post-increment iteration:
-  //
-  // absl::flat_hash_set<std::string> email_addresses = GetEmailAddresses();
-  // for (auto it = email_addresses.begin(); it != email_addresses.end();) {
-  //   if (!IsValidAddress(*it)) {
-  //     process_element_being_erased(*it);
-  //     email_addresses.erase(it++);
-  //   } else {
-  //     process_element_being_kept(*it);
-  //     ++it;
-  //   }
-  // }
+  // Erases the element pointed to by `it`. Unlike `std::unordered_set::erase`,
+  // this method returns void to reduce algorithmic complexity to O(1). The
+  // iterator is invalidated so any increment should be done before calling
+  // erase (e.g. `erase(it++)`).
   void erase(const_iterator cit) { erase(cit.inner_); }
 
   // This overload is necessary because otherwise erase<K>(const K&) would be

@@ -172,7 +172,6 @@
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
 #include "chrome/browser/supervised_user/classify_url_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
-#include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
@@ -5354,16 +5353,9 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       SupervisedUserGoogleAuthNavigationThrottle::MaybeCreate(handle),
       &throttles);
 
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kClassifyUrlOnProcessResponseEvent)) {
     MaybeAddThrottle(
         supervised_user::MaybeCreateClassifyUrlNavigationThrottleFor(handle),
         &throttles);
-  } else {
-    MaybeAddThrottle(
-        SupervisedUserNavigationThrottle::MaybeCreateThrottleFor(handle),
-        &throttles);
-  }
 
   if (auto* throttle_manager =
           subresource_filter::ContentSubresourceFilterThrottleManager::

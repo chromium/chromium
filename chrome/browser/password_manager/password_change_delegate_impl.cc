@@ -5,19 +5,14 @@
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 
 #include "base/timer/timer.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/password_change/change_form_submission_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
-#include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
-#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#include "components/optimization_guide/core/optimization_guide_proto_util.h"
-#include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/generation/password_generator.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -27,7 +22,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
-#include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -42,12 +36,6 @@ namespace {
 using password_manager::PasswordForm;
 using password_manager::PasswordFormCache;
 using password_manager::PasswordFormManager;
-using PasswordChangeOutcome = optimization_guide::proto ::
-    PasswordChangeSubmissionData_PasswordChangeOutcome;
-using ProtoTreeUpdate = optimization_guide::proto::AXTreeUpdate;
-
-// Max numbers of nodes for the AX Tree Update Snapshot.
-constexpr int kMaxNodesInAXTreeSnapshot = 5000;
 
 PasswordFormCache& GetFormCache(content::WebContents* web_contents) {
   auto* client = static_cast<password_manager::PasswordManagerClient*>(
@@ -228,23 +216,26 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormParsed(
     return;
   }
 
-  form_manager_ = form_manager->Clone();
+  CHECK(!submission_verifier_);
+  CHECK(executor_);
+  generated_password_ = GeneratePassword(
+      *form_manager->GetParsedObservedForm(),
+      form_manager->GetDriver()->GetPasswordGenerationHelper());
 
-  // Post task is required because when PasswordFormManager parses a form
-  // SendFillInformationToRenderer is invoked after OnPasswordFormParsed,
-  // potentially clearing agent state and preventing successful login detection.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PasswordChangeDelegateImpl::FillChangePasswordForm,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     *form_manager->GetParsedObservedForm(),
-                     form_manager->GetDriver()));
+  submission_verifier_ = std::make_unique<ChangeFormSubmissionVerifier>(
+      executor_.get(),
+      base::BindOnce(
+          &PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified,
+          weak_ptr_factory_.GetWeakPtr()));
+  submission_verifier_->FillChangePasswordForm(form_manager, original_password_,
+                                               generated_password_);
+  UpdateState(PasswordChangeDelegate::State::kChangingPassword);
 }
 
 void PasswordChangeDelegateImpl::WebContentsDestroyed() {
   // PasswordFormManager keeps raw pointers to PasswordManagerClient reset it
   // immediately to avoid keeping dangling pointer.
-  form_manager_.reset();
+  submission_verifier_.reset();
 }
 
 bool PasswordChangeDelegateImpl::IsPasswordChangeOngoing(
@@ -265,7 +256,7 @@ void PasswordChangeDelegateImpl::Stop() {
 
 void PasswordChangeDelegateImpl::Restart() {
   CHECK_EQ(State::kChangePasswordFormNotFound, current_state_);
-  CHECK(!form_manager_);
+  CHECK(!submission_verifier_);
 
   current_state_ = State::kWaitingForChangePasswordForm;
   StartPasswordChange();
@@ -273,63 +264,8 @@ void PasswordChangeDelegateImpl::Restart() {
 
 void PasswordChangeDelegateImpl::OnPasswordFormSubmission(
     content::WebContents* web_contents) {
-  if (executor_ && executor_.get() == web_contents && form_manager_ &&
-      !submission_detected_) {
-    submission_detected_ = true;
-    web_contents->RequestAXTreeSnapshot(
-        base::BindOnce(&PasswordChangeDelegateImpl::ProcessTree,
-                       weak_ptr_factory_.GetWeakPtr()),
-        ui::AXMode::kWebContents, kMaxNodesInAXTreeSnapshot,
-        /* timeout= */ {}, content::WebContents::AXTreeSnapshotPolicy::kAll);
-  }
-}
-
-void PasswordChangeDelegateImpl::ProcessTree(ui::AXTreeUpdate& ax_tree_update) {
-  ProtoTreeUpdate ax_tree_proto;
-  optimization_guide::PopulateAXTreeUpdateProto(ax_tree_update, &ax_tree_proto);
-  // Construct request.
-  optimization_guide::proto::PasswordChangeRequest request;
-  optimization_guide::proto::PageContext* page_context =
-      request.mutable_page_context();
-  *page_context->mutable_ax_tree_data() = std::move(ax_tree_proto);
-
-  OptimizationGuideKeyedService* optimization_executor =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(executor_->GetBrowserContext()));
-  optimization_executor->ExecuteModel(
-      optimization_guide::ModelBasedCapabilityKey::kPasswordChangeSubmission,
-      request,
-      /*execution_timeout=*/std::nullopt,
-      base::BindOnce(&PasswordChangeDelegateImpl::OnExecutionResponseCallback,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void PasswordChangeDelegateImpl::OnExecutionResponseCallback(
-    optimization_guide::OptimizationGuideModelExecutionResult execution_result,
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  if (!execution_result.response.has_value()) {
-    UpdateState(State::kPasswordChangeFailed);
-    return;
-  }
-  std::optional<optimization_guide::proto::PasswordChangeResponse> response =
-      optimization_guide::ParsedAnyMetadata<
-          optimization_guide::proto::PasswordChangeResponse>(
-          execution_result.response.value());
-  if (!response) {
-    UpdateState(State::kPasswordChangeFailed);
-    return;
-  }
-  PasswordChangeOutcome outcome =
-      response.value().outcome_data().submission_outcome();
-  if (outcome ==
-          PasswordChangeOutcome::
-              PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME ||
-      outcome ==
-          PasswordChangeOutcome::
-              PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME) {
-    SuccessfulSubmissionDetected();
-  } else {
-    UpdateState(State::kPasswordChangeFailed);
+  if (submission_verifier_) {
+    submission_verifier_->OnPasswordFormSubmission(web_contents);
   }
 }
 
@@ -347,14 +283,6 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
 }
 #endif
 
-void PasswordChangeDelegateImpl::SuccessfulSubmissionDetected() {
-  if (form_manager_) {
-    form_manager_->OnUpdateUsernameFromPrompt(username_);
-    form_manager_->Save();
-    UpdateState(State::kPasswordSuccessfullyChanged);
-  }
-}
-
 void PasswordChangeDelegateImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -364,7 +292,8 @@ void PasswordChangeDelegateImpl::RemoveObserver(Observer* observer) {
 }
 
 std::u16string PasswordChangeDelegateImpl::GetDisplayOrigin() const {
-  GURL url = form_manager_ ? form_manager_->GetURL() : change_password_url_;
+  GURL url = submission_verifier_ ? submission_verifier_->GetURL()
+                                  : change_password_url_;
   return url_formatter::FormatUrlForSecurityDisplay(
       url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
@@ -413,34 +342,17 @@ void PasswordChangeDelegateImpl::UpdateState(
   }
 }
 
-void PasswordChangeDelegateImpl::ChangePasswordFormFilled(
-    const autofill::FormData& submitted_form) {
-  form_manager_->ProvisionallySave(
-      submitted_form, form_manager_->GetDriver().get(),
-      base::LRUCache<password_manager::PossibleUsernameFieldIdentifier,
-                     password_manager::PossibleUsernameData>(
-          password_manager::kMaxSingleUsernameFieldsToStore));
-}
-
-void PasswordChangeDelegateImpl::FillChangePasswordForm(
-    password_manager::PasswordForm form,
-    base::WeakPtr<password_manager::PasswordManagerDriver> driver) {
-  if (!form_manager_ || !driver || !driver->GetPasswordGenerationHelper()) {
-    return;
+void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
+  if (!result) {
+    UpdateState(State::kPasswordChangeFailed);
+  } else {
+    // Password change was successful. Save new password with an original
+    // username.
+    submission_verifier_->SavePassword(username_);
+    UpdateState(State::kPasswordSuccessfullyChanged);
   }
 
-  generated_password_ =
-      GeneratePassword(form, driver->GetPasswordGenerationHelper());
-
-  driver->SubmitChangePasswordForm(
-      form.password_element_renderer_id, form.new_password_element_renderer_id,
-      form.confirmation_password_element_renderer_id, original_password_,
-      generated_password_,
-      base::BindOnce(&PasswordChangeDelegateImpl::ChangePasswordFormFilled,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  form_manager_->PresaveGeneratedPassword(form.form_data, generated_password_);
-  UpdateState(PasswordChangeDelegate::State::kChangingPassword);
+  submission_verifier_.reset();
 }
 
 bool PasswordChangeDelegateImpl::IsPrivacyNoticeAcknowledged() const {

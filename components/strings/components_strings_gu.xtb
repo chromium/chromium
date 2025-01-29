@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" કીને સમાન શબ્દકોશમાં "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" કી તરીકે સેટ કરી શકાતી નથી</translation>
 <translation id="1455413310270022028">ઇરેઝર</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{0 રિવ્યૂ જુઓ}=1{1 રિવ્યૂ જુઓ}one{તમામ # રિવ્યૂ જુઓ}other{તમામ # રિવ્યૂ જુઓ}}</translation>
 <translation id="1458059624921545588">લોકો અને સંસ્થા</translation>
 <translation id="1458140305240870199">અંતર્વસ્ત્રો</translation>
 <translation id="1459693405370120464">હવામાન</translation>
@@ -804,7 +805,7 @@
 <translation id="237978325638124213">પરફ્યુમ અને ફ્રેગ્રેન્સ</translation>
 <translation id="2380886658946992094">કાનૂની</translation>
 <translation id="2383455408879745299">Chrome સેટિંગમાં તમારા ઍક્સેસિબિલિટીના સાધનો મનગમતા બનાવો</translation>
-<translation id="2384307209577226199">એન્ટરપ્રાઇઝ ડિફોલ્ટ</translation>
+<translation id="2384307209577226199">એન્ટરપ્રાઇઝ ડિફૉલ્ટ</translation>
 <translation id="238459632961158867">વેબસાઇટ</translation>
 <translation id="2385809941344967209">તમારા Chrome સેટિંગમાંથી Chrome અપડેટ કરો</translation>
 <translation id="2386255080630008482">સર્વરનું પ્રમાણપત્ર રદ કરવામાં આવ્યું છે.</translation>
@@ -1956,6 +1957,7 @@
 <translation id="4407758156081352648">સુરક્ષા જાળવવા માટે, તમારી સંસ્થા Chromeમાં પાસવર્ડનો ફરીથી ઉપયોગ કરવાની મંજૂરી આપતી નથી. વપરાશકર્તાની પ્રાઇવસીની સુરક્ષા માટે Chromeમાં પાસવર્ડ એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
 <translation id="4408413947728134509">કુકી <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">આ કન્ફિગ્યુરેશન ઇન્સ્ટૉલ કરવા યોગ્ય તરીકે માર્ક કરેલું છે, પરંતુ આ આર્કિટેક્ચર માટે કોઈ છબી પ્રદાન કરવામાં આવી નથી, તેથી તેને ઇન્સ્ટૉલ કરી શકાશે નહીં.</translation>
+<translation id="4412377069090572315">લોકો શું કહી રહ્યાં છે</translation>
 <translation id="4414452699610169758">પાસવર્ડ, ચુકવણી પદ્ધતિઓ અને સરનામા સાચવવા તથા ભરવા માટે Google Password Manager અને Chromeની ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરો</translation>
 <translation id="4414515549596849729">કુકી અને સાઇટ ડેટા</translation>
 <translation id="4415156962929755728">પ્લાસ્ટિક (હાઇ ગ્લોસ)</translation>
@@ -2777,6 +2779,7 @@
 <translation id="5937560539988385583">પેજનો અનુવાદ કર્યો</translation>
 <translation id="5938153366081463283">વર્ચ્યુઅલ કાર્ડ ઉમેરો</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">આ માહિતી Trustpilot, ScamAdviser, Google અને વધુ જેવી રિવ્યૂ માટેની સ્વતંત્ર વેબસાઇટ પરથી આવે છે. સારાંશો AI વડે બનાવવામાં આવે છે.</translation>
 <translation id="5944297261866530437">કાપડ (હાઇ-ગ્લોસ)</translation>
 <translation id="5950901984834744590">રેઝર અને શેવર</translation>
 <translation id="5951495562196540101">ઉપભોક્તા એકાઉન્ટ સાથે નોંધણી કરાવી શકાતી નથી (પૅકેજમાં લાઇસન્સ ઉપલબ્ધ છે).</translation>
@@ -3143,6 +3146,7 @@
 <translation id="6567832540451970450">તમારા ઍડમિનિસ્ટ્રેટર આ સાઇટ માટે <ph name="PERMISSION" />ને મંજૂરી આપે છે</translation>
 <translation id="6568793038316600992">'ચુકવણી પદ્ધતિઓ મેનેજ કરો' બટન, Chrome સેટિંગમાં તમારી ચુકવણીઓ અને ક્રેડિટ કાર્ડની માહિતી મેનેજ કરવા માટે સક્રિય કરો</translation>
 <translation id="6569060085658103619">તમે એક્સ્ટેન્શન પેજ જોઈ રહ્યાં છો</translation>
+<translation id="6572867903637058088">શું આ સહાયરૂપ છે?</translation>
 <translation id="6573200754375280815">જમણી બાજુએ બે કાણાં પાડો</translation>
 <translation id="6574762126505704998">પૂર્ણ સ્ક્રીન</translation>
 <translation id="6575408526598156416">એકાઉન્ટમાં સાચવો</translation>
@@ -3438,7 +3442,6 @@
 <translation id="7110368079836707726">કૉલેજ અને યુનિવર્સિટી</translation>
 <translation id="7111012039238467737">(માન્ય)</translation>
 <translation id="7111507312244504964">સંપત્તિ નિરીક્ષણ અને મૂલ્યાંકન</translation>
-<translation id="7112327784801341716">શું તમારી હાલની માહિતી દેખાઈ રહી નથી? તેને અપડેટ કરવા માટે તમારી બેંકનો સંપર્ક કરો.</translation>
 <translation id="7116334367957017155">તમારી પાસે કોઇ સાચવેલું સરનામું નથી. કોઈ સરનામું ઉમેરો, જેથી Googleની સમગ્ર પ્રોડક્ટમાં તેનો ઉપયોગ કરી શકાય.</translation>
 <translation id="7118618213916969306">ક્લિપબોર્ડ URL શોધો, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">તમે આ ચેતવણી જોઈ રહ્યાં છો કારણ કે આ સાઇટ HTTPSને સપોર્ટ કરતી નથી. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3501,7 +3504,6 @@
 <translation id="7219179957768738017">કનેક્શન <ph name="SSL_VERSION" /> નો ઉપયોગ કરે છે.</translation>
 <translation id="7220786058474068424">પ્રક્રિયા કરી રહ્યું છે</translation>
 <translation id="7221855153210829124">સૂચનાઓ દર્શાવો</translation>
-<translation id="7221857374443660083">તમારી બેંક ખાતરી કરવા માંગે છે કે તે તમે જ છો</translation>
 <translation id="722454870747268814">નવું છૂપું ટૅબ</translation>
 <translation id="7227293336683593977">કિંમતનો ઇતિહાસ</translation>
 <translation id="7232352818707016189">'સરખામણી ટેબલ' માટે વધુ ક્રિયાઓ</translation>
@@ -4322,9 +4324,11 @@
 <translation id="8672535691554698269">કમ્પ્યૂટર નેટવર્ક</translation>
 <translation id="8675446170353411473">તમારી ફાઇલો <ph name="CLOUD_PROVIDER" /> પર અપલોડ કરવામાં આવી રહી છે</translation>
 <translation id="8676424191133491403">કોઈ વિલંબ વિના</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} ટેબલ ડિલીટ કરવામાં આવ્યું}one{{COUNT} ટેબલ ડિલીટ કરવામાં આવ્યું}other{{COUNT} ટેબલ ડિલીટ કરવામાં આવ્યા}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, જવાબ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> પરનું વેબપેજ લોડ કરી શકાયું નથી કારણ કે:</translation>
 <translation id="8682297334444610648">Dino ગેમ, રમવા માટે ટૅપ કરો</translation>
+<translation id="8685225035093721011">સ્ટોરના રિવ્યૂ</translation>
 <translation id="8686424632716064939">કમ્પ્યુટર સુરક્ષા</translation>
 <translation id="8687278439622293018"><ph name="ENTRY_VOICEOVER" /> એન્ટ્રીને ડિલીટ કરવામાં આવી છે</translation>
 <translation id="8687429322371626002">તમારું ડિવાઇસ અને એકાઉન્ટ <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે.</translation>

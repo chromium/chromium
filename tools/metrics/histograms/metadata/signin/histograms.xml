@@ -2436,6 +2436,9 @@ OAuth Multilogin call. -->
     - For the First Run, we log it once for the whole first run flow, it does
     not get recorded multiple times if the user steps back in the flow and
     chooses again to sign in.
+
+    - More access points were added in M134 in iOS, which should lead to an
+    increase in the number of log, not related to an actual increase in usage.
   </summary>
 </histogram>
 

@@ -427,7 +427,6 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2789552044937754463">{COUNT,plural, =1{Se guardó la contraseña en tu Cuenta de Google, {EMAIL}}other{Se guardaron las contraseñas en tu Cuenta de Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Agregar contraseña…</translation>
 <translation id="2797302972324086597">Código de país</translation>
-<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> cerrada(s)</translation>
 <translation id="2816489851009559785">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="2818821771744632548">Saliste de tu cuenta <ph name="USER_NAME" /> como parte del restablecimiento de tu iPhone. Para volver a acceder, presiona "Continuar".</translation>
 <translation id="2819667972867209401">Si se activa, los datos se guardarán en tu Cuenta de Google. Si se desactiva, los datos se guardan solo en este dispositivo y se borran si sales de tu cuenta.</translation>
@@ -1593,7 +1592,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="7975036700432177008">Probar</translation>
 <translation id="797588153137233716">Menú → Historial → Borrar datos de navegación</translation>
 <translation id="7977451675950311423">Te advierte si usas una contraseña que fue hackeada en una violación de la seguridad de los datos.</translation>
-<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> pestaña(s) nueva(s), <ph name="NUMBER_OF_TABS_REMOVED" /> cerrada(s)</translation>
 <translation id="797824194429476746">Las pestañas permanecerán abiertas en este dispositivo, pero el grupo se borrará de forma permanente.</translation>
 <translation id="797874245254030665">Accede a las contraseñas y llaves de acceso desde cualquier app</translation>
 <translation id="7982789257301363584">Red</translation>
@@ -1780,7 +1778,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8728922029615312208">Cerrar todas</translation>
 <translation id="8730621377337864115">Listo</translation>
 <translation id="87371078663613140">Explora las opciones en la barra de menú.</translation>
-<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> pestaña(s) nueva(s)</translation>
 <translation id="8741627442233023406">{count,plural, =1{Revisar la pestaña…}other{Revisar todas las pestañas…}}</translation>
 <translation id="8741995161408053644">Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Crear vínculo</translation>

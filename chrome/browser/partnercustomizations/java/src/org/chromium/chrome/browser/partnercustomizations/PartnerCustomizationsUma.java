@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.partnercustomizations;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.PartnerCustomizationsHomepageEnum.NTP_CORRECTLY;
 import static org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.PartnerCustomizationsHomepageEnum.NTP_INCORRECTLY;
 import static org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.PartnerCustomizationsHomepageEnum.NTP_UNKNOWN;
@@ -20,7 +21,6 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -192,10 +192,10 @@ class PartnerCustomizationsUma {
 
     /**
      * Logs the outcome of creating an initial tab relative to Partner customization.
+     *
      * @param activityLifecycleDispatcher A lifecycle dispatcher used to delay any execution that
-     *                                    might be risky until after native initialization.
+     *     might be risky until after native initialization.
      */
-    @NullUnmarked
     @VisibleForTesting
     void logInitialTabCustomizationOutcome(
             @Nullable ActivityLifecycleDispatcher activityLifecycleDispatcher) {
@@ -211,6 +211,7 @@ class PartnerCustomizationsUma {
                 () -> {
                     assert mDidCreateInitialTabAfterCustomization != null;
 
+                    assumeNonNull(mHomepageCharacterizationHelper);
                     boolean isInitialTabNtpOrOverview =
                             mHomepageCharacterizationHelper.get().isUrlNtp(mHomepageUrlCreated);
                     boolean isHomepagePartner = mHomepageCharacterizationHelper.get().isPartner();

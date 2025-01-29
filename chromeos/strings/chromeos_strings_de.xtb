@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Abgebrochen</translation>
 <translation id="1020274983236703756">Exklusive <ph name="PRODUCT_NAME" />-Assets jetzt verfügbar</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="102432830749687801">Verwende die App „Inhaltsübertragung“ von Google, um die Daten deines Kontos einer Bildungseinrichtung in dein privates Konto zu übertragen, bevor du den Zugriff verlierst.</translation>
 <translation id="1026212596705997935">Tastenkombination wird bereits für „<ph name="CONFLICT_ACCEL_NAME" />“ verwendet. Soll diese nicht ersetzt werden, drücke eine andere Kombination. Wenn du die ursprüngliche Tastenkombination ersetzen möchtest, drücke diese Tastenkombination noch einmal.</translation>
 <translation id="1030856839388844477">Datennutzung zurücksetzen</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> Threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Der Akkustand des Case liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Gateway kann kontaktiert werden</translation>
 <translation id="1398634363027580500">Sehr hohe HTTPS-Latenz</translation>
+<translation id="1406389211945506521">Vielen Dank, dass du deine Erfahrungen mit uns teilst. Dein Feedback hilft uns, genauere und nützlichere Inhalte zu erstellen.</translation>
 <translation id="1407069428457324124">Dunkles Design</translation>
 <translation id="1413240736185167732">Fehlgeschlagen – Filter funktioniert nicht</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Klassik</translation>
 <translation id="181434555916624618">Ergebnisse mit Personen werden vorerst nicht angezeigt. Versuche es mit einem anderen Prompt.</translation>
 <translation id="1815850098929213707">Die ausgewählte Taste ist „<ph name="KEYS" />“. Wenn du das Steuerelement bearbeiten möchtest, tippe auf die Schaltfläche.</translation>
+<translation id="1818174214124933000">Wenn du „Senden“ auswählst, werden dein Feedback und deine Inhalte (wie unten angezeigt) gemäß der <ph name="LINK_POLICY_BEGIN" />Datenschutzerklärung<ph name="LINK_POLICY_END" /> und den <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google-Nutzungsbedingungen<ph name="LINK_TERMS_OF_SERVICE_END" /> an Google gesendet, manuell geprüft und dazu verwendet, unsere Produkte und Dienste zu trainieren und zu verbessern.</translation>
 <translation id="1823120442877418684">Objekte</translation>
 <translation id="1827738518074806965">Kunstgalerie</translation>
+<translation id="183287940576828840">Anstößig/bedenklich</translation>
 <translation id="1836553715834333258">Systemfarbe</translation>
 <translation id="183675228220305365">Realismus</translation>
 <translation id="1838374766361614909">Suche löschen</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Fehlgeschlagene UDP-Anfragen</translation>
 <translation id="1908394185991500139">Pfeil nach links</translation>
 <translation id="1914144885717544695">am Freitag</translation>
+<translation id="1915960750806557358">Gib uns Feedback oder beschreibe das Problem. Achte darauf, dass du keine persönlichen, sensiblen oder vertraulichen Informationen angibst.</translation>
 <translation id="1923388006036088459">Akzentfarben</translation>
 <translation id="1945403655450283000">Rekorder</translation>
 <translation id="1947737735496445907">Gedruckt</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Ziehe zum Fortsetzen des Updates das USB-Kabel des Geräts „<ph name="DEVICE_NAME" />“ ab</translation>
 <translation id="2320295602967756579">Helles Design aktivieren</translation>
 <translation id="2323506179655536734">ÜBERSPRUNGEN</translation>
-<translation id="2323755382216917952">Bei diesem Update musst du deinen Computer neu starten, um die Installation abzuschließen. Das Update kann einige Minuten dauern. Während die Firmware aktualisiert wird, darf der Computer nicht vom Stromnetz getrennt oder heruntergefahren werden.</translation>
 <translation id="2324354238778375592">Unverankert</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Sehr gut (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">Avantgarde</translation>
 <translation id="3182676044300231689">Gib einen Prompt wie „verwende einen selbstbewussteren Tonfall“ ein</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
-<translation id="3188931456353313123">Dieses Update wird vom Hersteller des Geräts bereitgestellt und wurde nicht von Google überprüft.</translation>
 <translation id="319101249942218879">Avatarbild geändert</translation>
 <translation id="3192947282887913208">Audiodateien</translation>
 <translation id="3199982728237701504">Dokumenteneinzug (beidseitig)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">Wie oft der Akku vollständig aufgeladen wurde</translation>
 <translation id="3877066159641251281">Übersetzung anhören</translation>
 <translation id="3880601782712134623">Unterschiedliche Stimmen automatisch erkennen und jedem Sprecher ein generisches Label zuweisen, z. B. „Sprecher 1“ und „Sprecher 2“</translation>
+<translation id="38811596981744338">Rechtliches Problem</translation>
 <translation id="3885327323343477505">Bildschirmschoner ändern</translation>
 <translation id="3889914174935857450">Datum für die Zurücksetzung</translation>
 <translation id="3897092660631435901">Menü</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden aufgeladen.</translation>
 <translation id="4930320165497208503">Gehe zum Einrichten oder Aktualisieren einer Verbindung zu den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" /> (wird in neuem Tab geöffnet)</translation>
 <translation id="4946927805998996217">Zusammenfassung wird generiert</translation>
 <translation id="4950314376641394653">Firmware deines Geräts (<ph name="DEVICE_NAME" />) wurde auf Version <ph name="VERSION" /> aktualisiert</translation>
 <translation id="4950893758552030541">Allee</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Informationen zu deiner Auswahl erhalten</translation>
 <translation id="6694534975463174713">Schloss</translation>
 <translation id="6700703207451721535">Der Zugriff auf diesen Link wurde nicht erteilt. Wenn du Zugriff benötigst, wende dich an deine Lehrkraft.</translation>
+<translation id="6703179086771097594">Was hat nicht gut funktioniert?</translation>
 <translation id="6704062477274546131">DNS-Auflösung</translation>
 <translation id="6712933881624804031">Tal</translation>
 <translation id="6716013206176357696">Erdbeeren</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Lade ein Transkriptmodell in den Einstellungen herunter</translation>
 <translation id="7058278511608979688">Speichern und beenden</translation>
 <translation id="7059230779847288458">Vollständig geladen in <ph name="TIME_VALUE" /></translation>
+<translation id="7064209589142995848">Inhaltsübertragung</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> ausgewählt</translation>
 <translation id="7066538517128343186">der <ph name="KEY" />-Schlüssel</translation>
 <translation id="7068619307603204412">Gerät vorbereiten</translation>
@@ -1592,6 +1599,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8476942730579767658">Fenster und Desktops</translation>
 <translation id="8477536061607044749">Grafikdesign</translation>
 <translation id="8477551185774834963">Die DNS-Latenz liegt etwas über dem zulässigen Grenzwert</translation>
+<translation id="8481308460877552925">Faktisch falsch</translation>
 <translation id="8482376765267780829">Text zum Vereinfachen auswählen</translation>
 <translation id="8483248364096924578">IP-Adresse</translation>
 <translation id="8491311378305535241">Eine Verbindung zu HTTP-Websites durch eine Firewall ist von Android-Apps aus nicht möglich</translation>

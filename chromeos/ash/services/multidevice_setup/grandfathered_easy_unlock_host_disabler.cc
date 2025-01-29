@@ -4,10 +4,11 @@
 
 #include "chromeos/ash/services/multidevice_setup/grandfathered_easy_unlock_host_disabler.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
@@ -188,7 +189,7 @@ GrandfatheredEasyUnlockHostDisabler::GetEasyUnlockHostToDisable() {
 
   multidevice::RemoteDeviceRefList synced_devices =
       device_sync_client_->GetSyncedDevices();
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       synced_devices,
       [&legacy_device_id, &instance_id](const auto& remote_device) {
         return (legacy_device_id != kNoDevice &&

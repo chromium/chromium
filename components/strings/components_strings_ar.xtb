@@ -963,6 +963,7 @@
 <translation id="2674170444375937751">هل تريد فعلًا حذف هذه الصفحات من السجل؟</translation>
 <translation id="2674524144218093528">دهان وتشطيبات منازل</translation>
 <translation id="2674804415323431591">إخفاء الاقتراحات</translation>
+<translation id="26774279487328902">لم تعُد مجموعات علامات التبويب البالغ عددها <ph name="GROUP_COUNT" /> متوفّرة</translation>
 <translation id="2677748264148917807">الخروج</translation>
 <translation id="2683195745483370038">النتائج الأخرى التي تم العثور عليها</translation>
 <translation id="2686919536310834199">يمكنك إرسال ملاحظات حول ميزة "مساعدة في الكتابة".</translation>
@@ -2268,6 +2269,7 @@
 <translation id="5001526427543320409">ملفات تعريف الارتباط الخارجية</translation>
 <translation id="5002932099480077015">‏إذا تم التفعيل، سيخزن Chrome نسخة من بطاقتك على هذا الجهاز لملء النموذج بشكل أسرع.</translation>
 <translation id="5007392906805964215">مراجعة</translation>
+<translation id="500790844453430087">لم تعُد مجموعتَا علامات التبويب "<ph name="GROUP_TITLE_1" />" و"<ph name="GROUP_TITLE_2" />" متوفّرتَين</translation>
 <translation id="5011561501798487822">لغة تم التعرّف عليها</translation>
 <translation id="5015510746216210676">اسم الجهاز:</translation>
 <translation id="5017554619425969104">النص الذي نسخته</translation>
@@ -2375,6 +2377,7 @@
 <translation id="519422657042045905">التعليق التوضيحي غير متوفِّر</translation>
 <translation id="5200063972779787617">حفظ العنوان في الحساب</translation>
 <translation id="5201306358585911203">تعرض صفحة مضمّنة في هذه الصفحة</translation>
+<translation id="5205114269877707377">‏‫"<ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />"، يُرجى الضغط على مفتاح Tab لتصفُّح الإجراءات المتاحة، ثم الضغط على مفتاح Enter لتنفيذ الإجراء المحدَّد.</translation>
 <translation id="5205222826937269299">الاسم مطلوب</translation>
 <translation id="5206392433295093945">غرفة نوم</translation>
 <translation id="5209670883520018268">الدُرج 20</translation>
@@ -2740,6 +2743,7 @@
 <translation id="5866898949289125849">أنت تطّلع على صفحة أدوات المطوّرين.</translation>
 <translation id="5869405914158311789">لا يمكن الوصول إلى الموقع الإلكتروني هذا</translation>
 <translation id="5869522115854928033">كلمات المرور المحفوظة</translation>
+<translation id="5872215789867188990">لم تعُد مجموعة علامات التبويب "<ph name="GROUP_TITLE" />" متوفّرة</translation>
 <translation id="5872692522325383488">‏تم حفظ رقم الحساب بصيغة IBAN</translation>
 <translation id="5873297634595728366">مركبات ديزل</translation>
 <translation id="5877359070305966420">موارد بشرية</translation>
@@ -3444,7 +3448,6 @@
 <translation id="7110368079836707726">كليات وجامعات</translation>
 <translation id="7111012039238467737">(صالح)</translation>
 <translation id="7111507312244504964">معاينات عقارات وتقييماتها</translation>
-<translation id="7112327784801341716">إذا لم تظهر معلوماتك الحديثة، يُرجى التواصل مع المصرف الذي تتعامل معه لتعديلها.</translation>
 <translation id="7116334367957017155">‏لم يتم حفظ أي عناوين. أضِف عنوانًا لاستخدامه في جميع منتجات Google.</translation>
 <translation id="7118618213916969306">‏البحث عن عنوان URL للحافظة، <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">‏يظهر لك هذا التحذير لأنّ هذا الموقع الإلكتروني لا يتوافق مع بروتوكول HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3507,7 +3510,6 @@
 <translation id="7219179957768738017">الاتصال يستخدم <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">جارٍ المعالجة</translation>
 <translation id="7221855153210829124">عرض الإشعارات</translation>
-<translation id="7221857374443660083">يريد المصرف التأكد من هويتك.</translation>
 <translation id="722454870747268814">علامة تبويب للتصفح المتخفي</translation>
 <translation id="7227293336683593977">سجلّ الأسعار</translation>
 <translation id="7232352818707016189">مزيد من الإجراءات في جدول المقارنة</translation>

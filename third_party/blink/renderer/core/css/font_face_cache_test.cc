@@ -23,8 +23,6 @@
 namespace blink {
 
 class FontFaceCacheTest : public PageTestBase {
-  USING_FAST_MALLOC(FontFaceCacheTest);
-
  protected:
   FontFaceCacheTest() = default;
   ~FontFaceCacheTest() override = default;

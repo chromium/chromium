@@ -18068,10 +18068,6 @@ void RenderFrameHostImpl::GetBoundInterfacesForTesting(
 std::optional<base::flat_map<blink::mojom::PermissionName,
                              blink::mojom::PermissionStatus>>
 RenderFrameHostImpl::GetCachedPermissionStatuses() {
-// `GetCombinedPermissionStatus` on Android is not fully supported for now.
-#if BUILDFLAG(IS_ANDROID)
-  return std::nullopt;
-#else
   using blink::PermissionType;
   using blink::mojom::PermissionName;
   static constexpr auto kPermissions =
@@ -18091,7 +18087,6 @@ RenderFrameHostImpl::GetCachedPermissionStatuses() {
   }
 
   return permission_map;
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 blink::mojom::PermissionStatus RenderFrameHostImpl::GetCombinedPermissionStatus(

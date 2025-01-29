@@ -512,6 +512,7 @@ mojom("url_loader_base") {
     "service_worker_router_info.mojom",
     "shared_dictionary_access_observer.mojom",
     "source_location.mojom",
+    "source_type.mojom",
     "sri_message_signature.mojom",
     "supports_loading_mode.mojom",
     "timing_allow_origin.mojom",
@@ -649,10 +650,6 @@ mojom("url_loader_base") {
           copyable_pass_by_value = true
         },
         {
-          mojom = "network.mojom.SourceType"
-          cpp = "::net::SourceStream::SourceType"
-        },
-        {
           mojom = "network.mojom.DataElementBytes"
           cpp = "::network::DataElementBytes"
           move_only = true
@@ -740,6 +737,17 @@ mojom("url_loader_base") {
       traits_headers = [
         "//services/network/public/cpp/parsed_request_cookie_mojom_traits.h",
       ]
+      traits_public_deps = [ "//net" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.SourceType"
+          cpp = "::net::SourceStream::SourceType"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/source_type_mojom_traits.h" ]
       traits_public_deps = [ "//net" ]
     },
   ]

@@ -438,11 +438,6 @@ class ChromePasswordManagerClient
 #if BUILDFLAG(IS_ANDROID)
   void ResetErrorMessageDelegate();
 
-  // Called only once on startup. If a migration warning should be shown
-  // it calls the launcher to do so. This results in passwords being fetched
-  // from the store as that is a prerequisite for showing the warning.
-  void TryToShowLocalPasswordMigrationWarning();
-
   // Called on startup. It will show the post password migration sheet if
   // needed.
   void TryToShowPostPasswordMigrationSheet();

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/network_config/cros_network_config.h"
 
+#include <algorithm>
 #include <cmath>
 #include <optional>
 #include <string_view>
@@ -15,7 +16,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -569,8 +569,8 @@ bool IsCellularConnecting(NetworkStateHandler* network_state_handler) {
   NetworkStateHandler::NetworkStateList cellular_networks;
   network_state_handler->GetVisibleNetworkListByType(
       NetworkTypePattern::Cellular(), &cellular_networks);
-  return base::ranges::any_of(cellular_networks,
-                              &NetworkState::IsConnectingState);
+  return std::ranges::any_of(cellular_networks,
+                             &NetworkState::IsConnectingState);
 }
 
 mojom::InhibitReason GetInhibitReason(

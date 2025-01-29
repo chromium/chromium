@@ -271,6 +271,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Sleutels “<ph name="DATA_CONTROLS_FIRST_KEY_SET" />” kan nie in dieselfde woordeboek as die “<ph name="DATA_CONTROLS_SECOND_KEY_SET" />”-sleutels gestel word nie</translation>
 <translation id="1455413310270022028">Uitveër</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Bekyk 0 resensies}=1{Bekyk 1 resensie}other{Bekyk al # resensies}}</translation>
 <translation id="1458059624921545588">Mense en samelewing</translation>
 <translation id="1458140305240870199">Onderklere</translation>
 <translation id="1459693405370120464">Weer</translation>
@@ -1956,6 +1957,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4407758156081352648">Om sekuriteit te handhaaf, laat jou organisasie nie toe dat wagwoorde in Chrome hergebruik word nie. Wagwoorde in Chrome is geënkripteer om gebruikerprivaatheid te beskerm.</translation>
 <translation id="4408413947728134509">Webkoekies <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Hierdie opstelling is as installeerbaar gemerk, maar geen prent is vir hierdie argitektuur verskaf nie en daarom kan dit nie geïnstalleer word nie.</translation>
+<translation id="4412377069090572315">Wat die mense sê</translation>
 <translation id="4414452699610169758">Gebruik Google Wagwoordbestuurder en Chrome-outovul om wagwoorde, betaalmetodes en adresse te stoor en in te vul</translation>
 <translation id="4414515549596849729">webkoekies en werfdata</translation>
 <translation id="4415156962929755728">Plastiek (glansryk)</translation>
@@ -2777,6 +2779,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5937560539988385583">Bladsy is vertaal</translation>
 <translation id="5938153366081463283">Voeg virtuele kaart by</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Hierdie inligting is afkomstig van onafhanklike resensiewebwerwe soos Trustpilot, ScamAdviser, Google en meer. Opsommings is met KI geskep</translation>
 <translation id="5944297261866530437">Tekstiel (glansryk)</translation>
 <translation id="5950901984834744590">Skeermesse en skeertoestelle</translation>
 <translation id="5951495562196540101">Kan nie met 'n verbruikerrekening inskryf nie (verpakte lisensie beskikbaar).</translation>
@@ -3143,6 +3146,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6567832540451970450">Jou administrateur laat <ph name="PERMISSION" /> toe vir hierdie werf</translation>
 <translation id="6568793038316600992">Knoppie om betaalmetodes te bestuur; aktiveer om jou betaal- en kredietkaartinligting in Chrome-instellings te bestuur</translation>
 <translation id="6569060085658103619">Jy bekyk tans 'n uitbreidingbladsy</translation>
+<translation id="6572867903637058088">Is dit nuttig?</translation>
 <translation id="6573200754375280815">Dubbelpons regs</translation>
 <translation id="6574762126505704998">Vul</translation>
 <translation id="6575408526598156416">Stoor in rekening</translation>
@@ -3438,7 +3442,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7110368079836707726">Kolleges en universiteite</translation>
 <translation id="7111012039238467737">(Geldig)</translation>
 <translation id="7111507312244504964">Eiendomsinspeksies en -keurings</translation>
-<translation id="7112327784801341716">Sien jy nie jou huidige inligting nie? Kontak jou bank om dit op te dateer.</translation>
 <translation id="7116334367957017155">Jy het geen adresse gestoor nie. Voeg ’n adres by om in alle Google-produkte te gebruik.</translation>
 <translation id="7118618213916969306">Soek vir knipbord-URL, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Jy sien hierdie waarskuwing omdat hierdie werf nie HTTPS steun nie. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3500,7 +3503,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7219179957768738017">Die verbinding gebruik <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Verwerk tans</translation>
 <translation id="7221855153210829124">Wys kennisgewings</translation>
-<translation id="7221857374443660083">Jou bank wil seker maak dat dit jy is</translation>
 <translation id="722454870747268814">Nuwe Incognito-oortjie</translation>
 <translation id="7227293336683593977">Prysgeskiedenis</translation>
 <translation id="7232352818707016189">Meer handeling vir Vergelyktabel</translation>
@@ -4321,9 +4323,11 @@ Bykomende besonderhede:
 <translation id="8672535691554698269">Rekenaarnetwerke</translation>
 <translation id="8675446170353411473">Jou lêers word na <ph name="CLOUD_PROVIDER" /> opgelaai</translation>
 <translation id="8676424191133491403">Geen wagperiode nie</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} tabel is uitgevee}other{{COUNT} tabelle is uitgevee}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, antwoord, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Die webbladsy by <ph name="PAGE" /> kon nie gelaai word nie, want:</translation>
 <translation id="8682297334444610648">Dino-speletjie, tik om te speel</translation>
+<translation id="8685225035093721011">Winkelresensies</translation>
 <translation id="8686424632716064939">Rekenaarsekuriteit</translation>
 <translation id="8687278439622293018">Inskrywing <ph name="ENTRY_VOICEOVER" /> is uitgevee</translation>
 <translation id="8687429322371626002">Jou toestel en rekening word deur <ph name="MANAGER" /> bestuur.</translation>

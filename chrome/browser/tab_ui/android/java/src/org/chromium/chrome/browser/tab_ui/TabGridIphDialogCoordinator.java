@@ -35,12 +35,13 @@ public class TabGridIphDialogCoordinator implements TabSwitcherIphController {
                     (IphDialogView)
                             LayoutInflater.from(context)
                                     .inflate(R.layout.iph_dialog_layout, null, false);
-            mIphDialogView.setDrawable(
+            String title = context.getString(R.string.iph_drag_and_drop_title);
+            String description = context.getString(R.string.iph_drag_and_drop_content);
+            mIphDialogView.initialize(
                     AppCompatResources.getDrawable(
                             context, R.drawable.iph_drag_and_drop_animated_drawable),
-                    context.getString(R.string.iph_drag_and_drop_content));
-            mIphDialogView.setTitle(context.getString(R.string.iph_drag_and_drop_title));
-            mIphDialogView.setDescription(context.getString(R.string.iph_drag_and_drop_content));
+                    title,
+                    description);
             mModalDialogManager = modalDialogManager;
 
             ModalDialogProperties.Controller dialogController =

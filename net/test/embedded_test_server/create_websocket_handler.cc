@@ -98,7 +98,7 @@ EmbeddedTestServer::UpgradeResultOrHttpResponse HandleWebSocketUpgrade(
   auto tokens =
       base::SplitStringPiece(connection_header->second, ",",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (!base::ranges::any_of(tokens, [](std::string_view token) {
+  if (!std::ranges::any_of(tokens, [](std::string_view token) {
         return base::EqualsCaseInsensitiveASCII(token, "Upgrade");
       })) {
     DVLOG(1) << "Connection header does not contain 'Upgrade'. Tokens: "

@@ -58,11 +58,11 @@ public class DownloadDirectoryProvider {
          * Get the primary download directory. See {@link
          * DownloadDirectoryProvider#getPrimaryDownloadDirectory()}.
          */
-        @Nullable
-        File getPrimaryDownloadDirectory();
+        @Nullable File getPrimaryDownloadDirectory();
 
         /**
          * Get download directories on secondary storage.
+         *
          * @return A list of directories on the secondary storage.
          */
         SecondaryStorageInfo getSecondaryStorageDownloadDirectories();
@@ -190,9 +190,10 @@ public class DownloadDirectoryProvider {
     private final class ExternalSDCardReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (assumeNonNull(intent.getAction()).equals(Intent.ACTION_MEDIA_REMOVED)
-                    || intent.getAction().equals(Intent.ACTION_MEDIA_MOUNTED)
-                    || intent.getAction().equals(Intent.ACTION_MEDIA_EJECT)) {
+            String action = intent.getAction();
+            if (Intent.ACTION_MEDIA_REMOVED.equals(action)
+                    || Intent.ACTION_MEDIA_MOUNTED.equals(action)
+                    || Intent.ACTION_MEDIA_EJECT.equals(action)) {
                 // When receiving SD card events, immediately retrieve download directory may not
                 // yield correct result, mark needs update to force to fire another
                 // AllDirectoriesTask on next getAllDirectoriesOptions call.

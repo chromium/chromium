@@ -222,6 +222,69 @@ std::vector<autofill::Suggestion> CreateErrorOrNoInfoSuggestions(
           CreateFeedbackSuggestion()};
 }
 
+// Returns suggestions whose set of fields and values to be filled are not
+// subsets of another.
+std::vector<autofill::Suggestion> DedupeFillingSuggestions(
+    std::vector<autofill::Suggestion> suggestions) {
+  // Returns -1 if the filling payload of `suggestion_a` is a proper subset of
+  // the one from `suggestion_b`. Returns 0 if the filling payload of
+  // `suggestion_a` is identical to the one from `suggestion_b`. Returns 1
+  // otherwise.
+  auto check_suggestions_filling_payload_subset_status =
+      [](const autofill::Suggestion& suggestion_a,
+         const autofill::Suggestion& suggestion_b) {
+        const autofill::Suggestion::AutofillAiPayload* payload_a =
+            absl::get_if<autofill::Suggestion::AutofillAiPayload>(
+                &suggestion_a.payload);
+        CHECK(payload_a);
+        const autofill::Suggestion::AutofillAiPayload* payload_b =
+            absl::get_if<autofill::Suggestion::AutofillAiPayload>(
+                &suggestion_b.payload);
+        CHECK(payload_b);
+
+        for (auto& [field_global_id, value_to_fill] :
+             payload_a->values_to_fill) {
+          if (!payload_b->values_to_fill.contains(field_global_id) ||
+              value_to_fill != payload_b->values_to_fill.at(field_global_id)) {
+            return 1;
+          }
+        }
+
+        return payload_b->values_to_fill.size() >
+                       payload_a->values_to_fill.size()
+                   ? -1
+                   : 0;
+      };
+
+  // Remove those that are subsets of some other suggestion.
+  std::vector<autofill::Suggestion> deduped_filling_suggestions;
+  std::set<size_t> duplicated_filling_payloads_to_skip;
+  for (size_t i = 0; i < suggestions.size(); i++) {
+    if (duplicated_filling_payloads_to_skip.contains(i)) {
+      continue;
+    }
+    bool is_proper_subset_of_another_suggestion = false;
+    for (size_t j = 0; j < suggestions.size(); j++) {
+      if (i == j) {
+        continue;
+      }
+
+      int subset_status = check_suggestions_filling_payload_subset_status(
+          suggestions[i], suggestions[j]);
+      if (subset_status == -1) {
+        is_proper_subset_of_another_suggestion = true;
+      } else if (subset_status == 0) {
+        duplicated_filling_payloads_to_skip.insert(j);
+      }
+    }
+    if (!is_proper_subset_of_another_suggestion) {
+      deduped_filling_suggestions.push_back(suggestions[i]);
+    }
+  }
+
+  return deduped_filling_suggestions;
+}
+
 }  // namespace
 
 // Returns true if the type of `autofill_suggestion` should not be added to
@@ -300,7 +363,6 @@ std::vector<autofill::Suggestion> CreateFillingSuggestionsV2(
     if (!attribute_for_triggering_field) {
       continue;
     }
-    // TODO(crbug.com/389629573): Handle deduping suggestions.
     // TODO(crbug.com/389629573): Handle label generation.
     suggestions.emplace_back(
         base::UTF8ToUTF16(attribute_for_triggering_field->value()),
@@ -338,7 +400,8 @@ std::vector<autofill::Suggestion> CreateFillingSuggestionsV2(
         values_to_fill, kIgnorableSkipReasons);
     suggestions.back().payload = payload;
   }
-  return suggestions;
+
+  return DedupeFillingSuggestions(std::move(suggestions));
 }
 
 std::vector<autofill::Suggestion> CreateFillingSuggestions(

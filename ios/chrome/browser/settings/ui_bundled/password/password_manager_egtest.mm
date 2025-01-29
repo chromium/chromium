@@ -97,7 +97,7 @@ using testing::NavigationBarBackButton;
 
 namespace {
 
-constexpr base::TimeDelta kSyncInitializedTimeout = base::Seconds(5);
+constexpr base::TimeDelta kSyncActiveTimeout = base::Seconds(5);
 
 id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
   return grey_allOf(grey_accessibilityID(id),
@@ -2876,8 +2876,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Sign-in and synced user.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncInitializedTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
 
   // Add passwords for the user.
   SaveExamplePasswordForms();

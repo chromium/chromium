@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Паролата е запазена в профила ви в Google {EMAIL}}other{Паролите са запазени в профила ви в Google {EMAIL}}}</translation>
 <translation id="2791174088547598693">Добавяне на парола…</translation>
 <translation id="2797302972324086597">Код на държавата</translation>
-<translation id="2802403747691280910">Затворихте <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="2816489851009559785">Меню → Настройки → Браузър по подразбиране</translation>
 <translation id="2818821771744632548">Излязохте от профила си <ph name="USER_NAME" /> при нулирането на своя iPhone. За да влезете отново, докоснете „Напред“ по-долу.</translation>
 <translation id="2819667972867209401">Когато настройката е включена, данните се запазват в профила ви в Google. Когато е изключена, те се запазват само на това устройство и се изтриват, ако излезете от профила си.</translation>
@@ -1593,7 +1592,6 @@
 <translation id="7975036700432177008">Изпробване</translation>
 <translation id="797588153137233716">Меню → История → Изтриване на данните за сърфирането</translation>
 <translation id="7977451675950311423">Предупреждава ви, ако използвате парола, която е компрометирана при нарушение на сигурността на данните.</translation>
-<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> нови раздела. Затворихте <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">Разделите ще останат отворени на това устройство, но групата ще бъде изтрита за постоянно.</translation>
 <translation id="797874245254030665">Осъществявайте достъп до паролите и ключовете си за достъп от всяко приложение</translation>
 <translation id="7982789257301363584">Мрежа</translation>
@@ -1604,6 +1602,7 @@
 <translation id="800361585186029508">Въведените URL адреси се отварят в Google Chrome.</translation>
 <translation id="8005666035647241369">Към мениджъра на паролите в Google на това устройство</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
+<translation id="8017015647846870183">От Google Мениджър на пароли, включително пароли и ключове за достъп</translation>
 <translation id="802154636333426148">Изтеглянето не бе успешно</translation>
 <translation id="8023170444051056234">Незабавно ще загубите достъп до групата раздели „<ph name="GROUP_NAME" />“ и тя ще бъде изтрита от всичките ви устройства</translation>
 <translation id="8023878949384262191">Разгъва секцията.</translation>
@@ -1780,7 +1779,6 @@
 <translation id="8728922029615312208">Затваряне на всички</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="87371078663613140">Разгледайте опциите в лентата с менюта.</translation>
-<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> нови раздела</translation>
 <translation id="8741627442233023406">{count,plural, =1{Преглед на раздела…}other{Преглед на всички раздели…}}</translation>
 <translation id="8741995161408053644">Възможно е в профила ви в Google да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Създаване на връзка</translation>

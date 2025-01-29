@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{密碼已儲存到 Google 帳戶 ({EMAIL})}other{密碼已儲存到 Google 帳戶 ({EMAIL})}}</translation>
 <translation id="2791174088547598693">新增密碼…</translation>
 <translation id="2797302972324086597">國家/地區代碼</translation>
-<translation id="2802403747691280910">已關閉 <ph name="NUMBER_OF_TABS_REMOVED" /> 個分頁</translation>
 <translation id="2816489851009559785">「選單」→「設定」→「預設瀏覽器」</translation>
 <translation id="2818821771744632548">你已在重設 iPhone 時登出帳戶 (<ph name="USER_NAME" />)，如要重新登入，請輕觸下方的「繼續」。</translation>
 <translation id="2819667972867209401">開啟時，資料會儲存到 Google 帳戶；關閉後，資料只會儲存到這部裝置，並在你登出後刪除。</translation>
@@ -1593,7 +1592,6 @@
 <translation id="7975036700432177008">試用</translation>
 <translation id="797588153137233716">「選單」→「歷史記錄」→「刪除瀏覽資料」</translation>
 <translation id="7977451675950311423">如果你使用的密碼因資料侵害事件而外洩，系統會顯示警告訊息。</translation>
-<translation id="7977482887663636093">新增 <ph name="NUMBER_OF_TABS_ADDED" /> 個分頁，並關閉 <ph name="NUMBER_OF_TABS_REMOVED" /> 個分頁</translation>
 <translation id="797824194429476746">這些分頁會在這部裝置上保持開啟，但該群組會永久刪除。</translation>
 <translation id="797874245254030665">從任何應用程式存取密碼和密碼金鑰</translation>
 <translation id="7982789257301363584">網路</translation>
@@ -1780,7 +1778,6 @@
 <translation id="8728922029615312208">全部關閉</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="87371078663613140">瀏覽選單列中的選項</translation>
-<translation id="8739706427581741437">新增 <ph name="NUMBER_OF_TABS_ADDED" /> 個分頁</translation>
 <translation id="8741627442233023406">{count,plural, =1{查看分頁…}other{查看所有分頁…}}</translation>
 <translation id="8741995161408053644">您仍可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 存取 Google 帳戶中保存的各種瀏覽記錄。</translation>
 <translation id="874599634440689554">建立連結</translation>

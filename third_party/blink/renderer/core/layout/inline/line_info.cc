@@ -252,35 +252,6 @@ bool LineInfo::GlyphCountIsGreaterThan(wtf_size_t limit) const {
   return false;
 }
 
-bool LineInfo::ShouldHangTrailingSpaces() const {
-  if (RuntimeEnabledFeatures::
-          HangingWhitespaceDoesNotDependOnAlignmentEnabled()) {
-    return true;
-  }
-  if (!HasTrailingSpaces()) {
-    return false;
-  }
-  if (!line_style_->ShouldWrapLine()) {
-    return false;
-  }
-  switch (text_align_) {
-    case ETextAlign::kStart:
-    case ETextAlign::kJustify:
-      return true;
-    case ETextAlign::kEnd:
-    case ETextAlign::kCenter:
-    case ETextAlign::kWebkitCenter:
-      return false;
-    case ETextAlign::kLeft:
-    case ETextAlign::kWebkitLeft:
-      return IsLtr(BaseDirection());
-    case ETextAlign::kRight:
-    case ETextAlign::kWebkitRight:
-      return IsRtl(BaseDirection());
-  }
-  NOTREACHED();
-}
-
 bool LineInfo::IsHyphenated() const {
   for (const InlineItemResult& item_result : base::Reversed(Results())) {
     if (item_result.Length()) {
@@ -293,28 +264,14 @@ bool LineInfo::IsHyphenated() const {
 void LineInfo::UpdateTextAlign() {
   text_align_ = GetTextAlign(IsLastLine());
 
-  if (RuntimeEnabledFeatures::
-          HangingWhitespaceDoesNotDependOnAlignmentEnabled()) {
-    allow_hang_for_alignment_ = true;
+  allow_hang_for_alignment_ = true;
 
-    if (HasTrailingSpaces()) {
-      hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
-      return;
-    }
-
-    hang_width_ = LayoutUnit();
-  } else {
-    allow_hang_for_alignment_ = false;
-
-    if (HasTrailingSpaces() && line_style_->ShouldWrapLine()) {
-      if (ShouldHangTrailingSpaces()) {
-        hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
-        allow_hang_for_alignment_ = true;
-        return;
-      }
-      hang_width_ = ComputeTrailingSpaceWidth();
-    }
+  if (HasTrailingSpaces()) {
+    hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
+    return;
   }
+
+  hang_width_ = LayoutUnit();
 
   if (text_align_ == ETextAlign::kJustify)
     end_offset_for_justify_ = InflowEndOffset();
@@ -392,9 +349,7 @@ LayoutUnit LineInfo::ComputeTrailingSpaceWidth(unsigned* end_offset_out) const {
       }
     }
 
-    if (trailing_item_width &&
-        RuntimeEnabledFeatures::
-            HangingWhitespaceDoesNotDependOnAlignmentEnabled()) {
+    if (trailing_item_width) {
       switch (item.Style()->GetWhiteSpaceCollapse()) {
         case WhiteSpaceCollapse::kCollapse:
         case WhiteSpaceCollapse::kPreserveBreaks:

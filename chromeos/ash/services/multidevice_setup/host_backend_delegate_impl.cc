@@ -4,13 +4,13 @@
 
 #include "chromeos/ash/services/multidevice_setup/host_backend_delegate_impl.h"
 
+#include <algorithm>
 #include <sstream>
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/components/multidevice/software_feature_state.h"
@@ -292,7 +292,7 @@ std::optional<multidevice::RemoteDeviceRef>
 HostBackendDelegateImpl::GetHostFromDeviceSync() {
   multidevice::RemoteDeviceRefList synced_devices =
       device_sync_client_->GetSyncedDevices();
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       synced_devices, multidevice::SoftwareFeatureState::kEnabled,
       [](const auto& remote_device) {
         return remote_device.GetSoftwareFeatureState(

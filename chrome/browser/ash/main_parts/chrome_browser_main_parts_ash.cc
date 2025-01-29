@@ -911,8 +911,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   lock_to_single_user_manager_ =
       std::make_unique<policy::LockToSingleUserManager>();
 
-  shortcut_mapping_pref_service_ =
-      std::make_unique<ShortcutMappingPrefService>();
+  shortcut_mapping_pref_service_ = std::make_unique<ShortcutMappingPrefService>(
+      *g_browser_process->local_state());
 
   // AccessibilityManager and SystemKeyEventListener use InputMethodManager.
   input_method::Initialize();
@@ -1209,12 +1209,14 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     InitializeNetworkPortalDetector();
 
     // Initialize an observer to update NetworkHandler's pref based services.
-    network_pref_state_observer_ = std::make_unique<NetworkPrefStateObserver>();
+    network_pref_state_observer_ = std::make_unique<NetworkPrefStateObserver>(
+        *g_browser_process->local_state());
 
     // Initialize an observer to update CrosBluetoothConfig's pref based
     // services.
     bluetooth_pref_state_observer_ =
-        std::make_unique<BluetoothPrefStateObserver>();
+        std::make_unique<BluetoothPrefStateObserver>(
+            *g_browser_process->local_state());
 
     if (base::FeatureList::IsEnabled(
             ::features::kHappinessTrackingSystemBluetoothRevamp)) {

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/i18n/message_formatter.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -17,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/styled_label.h"
@@ -28,6 +30,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMerchantTrustContentView,
                                       kElementIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMerchantTrustContentView,
                                       kViewReviewsId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMerchantTrustContentView,
+                                      kHatsButtonId);
 
 PageInfoMerchantTrustContentView::PageInfoMerchantTrustContentView() {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
@@ -42,7 +46,7 @@ PageInfoMerchantTrustContentView::PageInfoMerchantTrustContentView() {
   view_reviews_button_ = AddChildView(CreateViewReviewsButton());
   view_reviews_button_->SetProperty(views::kMarginsKey,
                                     gfx::Insets().set_bottom(bottom_margin));
-  AddChildView(CreateHatsButton());
+  hats_button_ = AddChildView(CreateHatsButton());
   // No bottom margin for the content view because the HaTS button acts as a
   // footer.
   SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 0));
@@ -75,13 +79,21 @@ void PageInfoMerchantTrustContentView::SetReviewsSummary(
   summary_label_->SetText(summary);
 }
 
-void PageInfoMerchantTrustContentView::SetRating(double rating) {
+void PageInfoMerchantTrustContentView::SetRatingAndReviewCount(double rating,
+                                                               int count) {
   star_rating_view_->SetRating(rating);
-}
 
-void PageInfoMerchantTrustContentView::SetReviewCount(int count) {
   view_reviews_button_->SetTitleText(l10n_util::GetPluralStringFUTF16(
       IDS_PAGE_INFO_MERCHANT_TRUST_VIEW_ALL_REVIEWS, count));
+  auto a11y_description = base::i18n::MessageFormatter::FormatWithNumberedArgs(
+      l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_MERCHANT_TRUST_STAR_RATING_AND_COUNT_A11Y_DESCRIPTION),
+      count, rating);
+  view_reviews_button_->GetViewAccessibility().SetName(a11y_description);
+}
+
+void PageInfoMerchantTrustContentView::SetHatsButtonVisibility(bool visible) {
+  hats_button_->SetVisible(visible);
 }
 
 std::unique_ptr<views::View>
@@ -166,6 +178,8 @@ PageInfoMerchantTrustContentView::CreateHatsButton() {
       std::u16string());
   hats_button->SetBackground(
       views::CreateThemedSolidBackground(ui::kColorSysNeutralContainer));
+  hats_button->SetProperty(views::kElementIdentifierKey, kHatsButtonId);
+  hats_button->SetVisible(false);
   return hats_button;
 }
 

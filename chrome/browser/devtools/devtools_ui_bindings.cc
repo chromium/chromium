@@ -1005,7 +1005,7 @@ void DevToolsUIBindings::OnRegisterAidaClientEventRequest(
 void DevToolsUIBindings::OnAidaConversationResponse(
     DevToolsEmbedderMessageDispatcher::Delegate::DispatchCallback callback,
     int stream_id,
-    const std::string& request,
+    const std::string request,
     base::TimeDelta delay,
     absl::variant<network::ResourceRequest, std::string>
         resource_request_or_error,

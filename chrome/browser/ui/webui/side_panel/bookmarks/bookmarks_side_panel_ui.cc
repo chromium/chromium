@@ -43,6 +43,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -202,6 +203,11 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean(
       "bookmarksTreeViewEnabled",
       base::FeatureList::IsEnabled(features::kBookmarksTreeView));
+  // TODO(crbug.com/380818698): Replace this with the flag which will be used to
+  // launch account storage for bookmarks.
+  source->AddBoolean("isBookmarksInTransportModeEnabled",
+                     base::FeatureList::IsEnabled(
+                         syncer::kSyncEnableBookmarksInTransportMode));
   source->AddInteger(
       "sortOrder",
       prefs->GetInteger(bookmarks_webui::prefs::kBookmarksSortOrder));

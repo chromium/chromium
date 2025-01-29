@@ -39,6 +39,12 @@ MockMotionEvent::MockMotionEvent(Action action)
 }
 
 MockMotionEvent::MockMotionEvent(Action action,
+                                 base::TimeTicks time,
+                                 const PointerProperties& pointer,
+                                 base::TimeTicks down_time)
+    : MotionEventGeneric(action, time, pointer), cached_down_time_(down_time) {}
+
+MockMotionEvent::MockMotionEvent(Action action,
                                  TimeTicks time,
                                  float x0,
                                  float y0)
@@ -89,6 +95,10 @@ MockMotionEvent::MockMotionEvent(const MockMotionEvent& other)
 }
 
 MockMotionEvent::~MockMotionEvent() {
+}
+
+base::TimeTicks MockMotionEvent::GetDownTime() const {
+  return cached_down_time_;
 }
 
 MockMotionEvent& MockMotionEvent::PressPoint(float x, float y) {

@@ -271,6 +271,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Tangenterna <ph name="DATA_CONTROLS_FIRST_KEY_SET" /> kan inte anges i samma ordlista som tangenterna <ph name="DATA_CONTROLS_SECOND_KEY_SET" /></translation>
 <translation id="1455413310270022028">Suddgummi</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Visa 0 recensioner}=1{Visa 1 recension}other{Visa alla # recensioner}}</translation>
 <translation id="1458059624921545588">Människor och samhälle</translation>
 <translation id="1458140305240870199">Underkläder</translation>
 <translation id="1459693405370120464">Väder</translation>
@@ -1956,6 +1957,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4407758156081352648">För att upprätthålla säkerheten tillåter inte organisationen att lösenord återanvänds i Chrome. Lösenord i Chrome är krypterade för att skydda användarnas integritet.</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Denna konfiguration har markerats som installerbar, men ingen avbildning tillhandahålls för denna arkitektur och kan därför inte installeras.</translation>
+<translation id="4412377069090572315">Så tycker andra</translation>
 <translation id="4414452699610169758">Använd Google Lösenordshantering och Chromes autofyll för att spara och fylla i lösenord, betalningsmetoder och adresser</translation>
 <translation id="4414515549596849729">cookies och webbplatsdata</translation>
 <translation id="4415156962929755728">Plast (högblank)</translation>
@@ -2371,6 +2373,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="519422657042045905">Kommentering är inte tillgängligt</translation>
 <translation id="5200063972779787617">Spara adressen i kontot</translation>
 <translation id="5201306358585911203">På en inbäddad sida på den här sidan står det</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb för att bläddra bland tillgängliga åtgärder och sedan på Retur för att utföra den valda åtgärden.</translation>
 <translation id="5205222826937269299">Namn måste anges</translation>
 <translation id="5206392433295093945">Sovrum</translation>
 <translation id="5209670883520018268">Fack 20</translation>
@@ -2777,6 +2780,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5937560539988385583">Sidan har översatts</translation>
 <translation id="5938153366081463283">Lägg till ett virtuellt kort</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Informationen kommer från oberoende webbplatser med recensioner som Trustpilot, ScamAdviser och Google. Sammanfattningar skapas med AI.</translation>
 <translation id="5944297261866530437">Tyg (högblankt)</translation>
 <translation id="5950901984834744590">Rakhyvlar och rakapparater</translation>
 <translation id="5951495562196540101">Det går inte att registrera enheten med ett konsumentkonto (paketerad licens är tillgänglig).</translation>
@@ -3143,6 +3147,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6567832540451970450">Administratören tillåter <ph name="PERMISSION" /> för den här webbplatsen</translation>
 <translation id="6568793038316600992">Knappen Hantera betalningsmetoder: aktivera om du vill hantera betalningar och kreditkortsuppgifter i inställningarna för Chrome</translation>
 <translation id="6569060085658103619">Du visar en tilläggssida</translation>
+<translation id="6572867903637058088">Var det här till hjälp?</translation>
 <translation id="6573200754375280815">Två hål till höger</translation>
 <translation id="6574762126505704998">Fyll</translation>
 <translation id="6575408526598156416">Spara i kontot</translation>
@@ -3438,7 +3443,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7110368079836707726">Universitet och högskolor</translation>
 <translation id="7111012039238467737">(Giltigt)</translation>
 <translation id="7111507312244504964">Fastighetsbesiktning och värdering</translation>
-<translation id="7112327784801341716">Saknar du aktuella uppgifter? Kontakta banken för att uppdatera dem.</translation>
 <translation id="7116334367957017155">Du har inga sparade adresser. Lägg till en adress om du vill använda den i Googles produkter.</translation>
 <translation id="7118618213916969306">Sök efter webbadressen i Urklipp, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Den här varningen visas därför att webbplatsen inte stöder HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer om den här varningen<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3501,7 +3505,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7219179957768738017">För anslutningen används <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Bearbetning pågår</translation>
 <translation id="7221855153210829124">Visa aviseringar</translation>
-<translation id="7221857374443660083">Din bank vill bekräfta att det är du</translation>
 <translation id="722454870747268814">Ny inkognitoflik</translation>
 <translation id="7227293336683593977">Prishistorik</translation>
 <translation id="7232352818707016189">Fler åtgärder för tabellen Jämför</translation>
@@ -4323,9 +4326,11 @@ Mer information:
 <translation id="8672535691554698269">Datornätverk</translation>
 <translation id="8675446170353411473">Filerna laddas upp till <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Ingen fördröjning</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} tabell har tagits bort}other{{COUNT} tabeller har tagits bort}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, svar, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Det gick inte att läsa in webbsidan på <ph name="PAGE" />. Orsak:</translation>
 <translation id="8682297334444610648">Dino-spelet, tryck för att spela</translation>
+<translation id="8685225035093721011">Butiksrecensioner</translation>
 <translation id="8686424632716064939">Datorsäkerhet</translation>
 <translation id="8687278439622293018">Posten <ph name="ENTRY_VOICEOVER" /> har raderats</translation>
 <translation id="8687429322371626002">Enheten och kontot hanteras av <ph name="MANAGER" />.</translation>

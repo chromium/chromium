@@ -116,4 +116,8 @@ const base::FeatureParam<base::TimeDelta>
         &kMerchantTrustEvaluationExperimentSurvey,
         "RequiredInteractionDuration", base::Seconds(5)};
 
+BASE_FEATURE(kMerchantTrustLearnSurvey,
+             "MerchantTrustLearnSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace page_info

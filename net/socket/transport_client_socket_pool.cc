@@ -4,6 +4,7 @@
 
 #include "net/socket/transport_client_socket_pool.h"
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 
@@ -20,7 +21,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -1541,11 +1541,11 @@ std::unique_ptr<ConnectJob> TransportClientSocketPool::Group::RemoveUnboundJob(
   SanityCheck();
 
   // Check that |job| is in the list.
-  auto it = base::ranges::find(jobs_, job, &std::unique_ptr<ConnectJob>::get);
+  auto it = std::ranges::find(jobs_, job, &std::unique_ptr<ConnectJob>::get);
   CHECK(it != jobs_.end(), base::NotFatalUntil::M130);
 
   // Check if |job| is in the unassigned jobs list. If so, remove it.
-  auto it2 = base::ranges::find(unassigned_jobs_, job);
+  auto it2 = std::ranges::find(unassigned_jobs_, job);
   if (it2 != unassigned_jobs_.end()) {
     unassigned_jobs_.erase(it2);
   } else {

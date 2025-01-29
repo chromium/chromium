@@ -8,12 +8,13 @@
 
 #include <winhttp.h>
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -136,8 +137,8 @@ bool ProxyConfigServiceWin::AddKeyToWatchList(HKEY rootkey,
 
 void ProxyConfigServiceWin::OnObjectSignaled(base::win::RegKey* key) {
   // Figure out which registry key signalled this change.
-  auto it = base::ranges::find(keys_to_watch_, key,
-                               &std::unique_ptr<base::win::RegKey>::get);
+  auto it = std::ranges::find(keys_to_watch_, key,
+                              &std::unique_ptr<base::win::RegKey>::get);
   CHECK(it != keys_to_watch_.end(), base::NotFatalUntil::M130);
 
   // Keep watching the registry key.

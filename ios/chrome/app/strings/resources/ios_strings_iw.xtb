@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{‏הסיסמה נשמרה בחשבון Google שלך, {EMAIL}}one{‏הסיסמאות נשמרו בחשבון Google שלך, {EMAIL}}two{‏הסיסמאות נשמרו בחשבון Google שלך, {EMAIL}}other{‏הסיסמאות נשמרו בחשבון Google שלך, {EMAIL}}}</translation>
 <translation id="2791174088547598693">הוספת סיסמה…</translation>
 <translation id="2797302972324086597">קוד מדינה</translation>
-<translation id="2802403747691280910">מספר הכרטיסיות שנסגרו: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="2816489851009559785">תפריט ← הגדרות ← דפדפן ברירת המחדל</translation>
 <translation id="2818821771744632548">‏המערכת הוציאה אותך מהחשבון, <ph name="USER_NAME" />, במסגרת האיפוס של iPhone. כדי להיכנס שוב לחשבון צריך ללחוץ על 'המשך' למטה.</translation>
 <translation id="2819667972867209401">‏כשההגדרה מופעלת, הנתונים נשמרים בחשבון שלך ב-Google. כשההגדרה מושבתת, הנתונים נשמרים רק במכשיר הזה ונמחקים כשיוצאים מהחשבון.</translation>
@@ -562,6 +561,7 @@
 <translation id="3517216995152707259">‏מחיקת נתוני הגלישה לא מובילה ליציאה מהחשבון שלך ב-Google. כדי לעשות את זה, <ph name="BEGIN_LINK" />צריך לצאת מהחשבון ב-Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">אפשר לפתוח כרטיסייה כדי לגלוש באינטרנט.</translation>
 <translation id="3519905498307021260">{count,plural, =1{פתיחת הכרטיסייה}one{פתיחת {count} הכרטיסיות}two{פתיחת {count} הכרטיסיות}other{פתיחת {count} הכרטיסיות}}</translation>
+<translation id="3523513363815970085">הסתרת הכרטיס "האתרים המובילים שלך"</translation>
 <translation id="3523789730715594198">‏אפשר לעדכן את ההגדרות, בכל רגע, כדי להפסיק את הסנכרון. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="3527085408025491307">תיקייה</translation>
 <translation id="3529024052484145543">לא מאובטח</translation>
@@ -837,6 +837,7 @@
 <translation id="4769198578611055647">הפעולה הזו עוזרת לך לגשת למפתחות הגישה ששמורים בכל מכשיר</translation>
 <translation id="4787847736989526091">‫<ph name="VALUE" />,‏ <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">לפתוח במצב פרטי?</translation>
+<translation id="479208892659046780">האתרים המובילים שלך</translation>
 <translation id="4792385443586519711">שם חברה</translation>
 <translation id="479628432297359449">לעצור את ההורדה?</translation>
 <translation id="4796496140132859135">קבוצת כרטיסיות. מצב מכווץ.</translation>
@@ -1591,7 +1592,6 @@
 <translation id="7975036700432177008">נסה</translation>
 <translation id="797588153137233716">תפריט ← היסטוריה ← מחיקת נתוני הגלישה</translation>
 <translation id="7977451675950311423">מקבלים אזהרה אם משתמשים בסיסמה שנחשפה בפרצה באבטחת מידע.</translation>
-<translation id="7977482887663636093">מספר הכרטיסיות החדשות: <ph name="NUMBER_OF_TABS_ADDED" />. מספר הכרטיסיות שנסגרו: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצה תימחק לתמיד.</translation>
 <translation id="797874245254030665">רוצה לגשת לסיסמאות ולמפתחות שלך מכל האפליקציות?</translation>
 <translation id="7982789257301363584">רשת</translation>
@@ -1778,7 +1778,6 @@
 <translation id="8728922029615312208">סגירת הכול</translation>
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="87371078663613140">בודקים את האפשרויות בסרגל התפריטים</translation>
-<translation id="8739706427581741437">מספר הכרטיסיות החדשות: <ph name="NUMBER_OF_TABS_ADDED" /></translation>
 <translation id="8741627442233023406">{count,plural, =1{בדיקת הכרטיסייה…}one{בדיקת כל הכרטיסיות…}two{בדיקת כל הכרטיסיות…}other{בדיקת כל הכרטיסיות…}}</translation>
 <translation id="8741995161408053644">‏ייתכן שיהיה אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">יצירת קישור</translation>

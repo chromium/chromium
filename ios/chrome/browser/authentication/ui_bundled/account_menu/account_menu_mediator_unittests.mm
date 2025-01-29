@@ -191,22 +191,7 @@ TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
 // Checks that removing a secondary identity lead to updating the
 // consumer.
 TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
-  // Expectations due to ChromeAccountManagerServiceObserver updates.
-  // If AreSeparateProfilesForManagedAccountsEnabled() is true, the updates come
-  // from IdentityManager instead, which doesn't send no-op updates.
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-    OCMExpect([consumer_
-        updateAccountListWithGaiaIDsToAdd:@[]
-                          gaiaIDsToRemove:@[]
-                            gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
-  }
   OCMExpect([consumer_ updatePrimaryAccount]);
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-    OCMExpect([consumer_
-        updateAccountListWithGaiaIDsToAdd:@[]
-                          gaiaIDsToRemove:@[]
-                            gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
-  }
 
   OCMExpect([consumer_
       updateAccountListWithGaiaIDsToAdd:@[]
@@ -337,10 +322,6 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
                           targetRect:target];
   VerifyMock();
 
-  OCMExpect([consumer_
-      updateAccountListWithGaiaIDsToAdd:@[]
-                        gaiaIDsToRemove:@[]
-                          gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
   OCMExpect([delegate_ unblockOtherScenes]);
   OCMExpect([consumer_ switchingStopped]);
   OCMExpect([consumer_ setUserInteractionsEnabled:YES]);
@@ -394,10 +375,6 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   // The delegate should not receive any message. The mediator directly sign the
   // user back in the previous account.
   OCMExpect([delegate_ unblockOtherScenes]);
-  OCMExpect([consumer_
-      updateAccountListWithGaiaIDsToAdd:@[]
-                        gaiaIDsToRemove:@[]
-                          gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
   OCMExpect([consumer_ updatePrimaryAccount]);
   OCMExpect([consumer_ switchingStopped]);
   OCMExpect([consumer_ setUserInteractionsEnabled:YES]);
@@ -500,10 +477,6 @@ TEST_P(AccountMenuMediatorTest, TestDidTapAddAccount) {
   OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   [mediator_ didTapAddAccount];
   OCMExpect([consumer_ switchingStopped]);
-  OCMExpect([consumer_
-      updateAccountListWithGaiaIDsToAdd:@[]
-                        gaiaIDsToRemove:@[]
-                          gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
   OCMExpect([consumer_ setUserInteractionsEnabled:YES]);
   completion(SigninCoordinatorResult::SigninCoordinatorResultInterrupted, nil);
 }

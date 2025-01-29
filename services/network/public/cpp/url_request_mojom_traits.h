@@ -27,6 +27,7 @@
 #include "services/network/public/cpp/network_isolation_key_mojom_traits.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/cpp/source_type_mojom_traits.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
@@ -44,14 +45,6 @@
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
-
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
-    EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType> {
-  static network::mojom::SourceType ToMojom(net::SourceStream::SourceType type);
-  static bool FromMojom(network::mojom::SourceType in,
-                        net::SourceStream::SourceType* out);
-};
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)

@@ -7,17 +7,18 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "net/websockets/websocket_frame.h"
+
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "net/websockets/websocket_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 

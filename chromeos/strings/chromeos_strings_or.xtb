@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">ଚରିତ୍ର</translation>
 <translation id="1827738518074806965">ଆର୍ଟ ଗ୍ୟାଲେରୀ</translation>
 <translation id="183287940576828840">ଅପମାନଜନକ/ଅସୁରକ୍ଷିତ</translation>
+<translation id="1834032517784994783">ଟ୍ରାନ୍ସକ୍ରିପସନ ଭାଷା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="1836553715834333258">ସିଷ୍ଟମର ରଙ୍ଗ</translation>
 <translation id="183675228220305365">ରିଆଲିଷ୍ଟ</translation>
 <translation id="1838374766361614909">ସର୍ଚ୍ଚ ଖାଲି କରନ୍ତୁ</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">ଅପଡେଟ ପ୍ରକ୍ରିୟା ଜାରି ରଖିବାକୁ <ph name="DEVICE_NAME" />ର USB କେବୁଲକୁ ଅନପ୍ଲଗ କରନ୍ତୁ</translation>
 <translation id="2320295602967756579">ହାଲୁକା ଥିମ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="2323506179655536734">ବାଦ୍ ଦିଆଯାଇଛି</translation>
-<translation id="2323755382216917952">ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ଆପଣ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ ବୋଲି ଏହି ଅପଡେଟ ଆବଶ୍ୟକ କରେ। ଏହି ଅପଡେଟ ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପାଇଁ କିଛି ମିନିଟ ଲାଗିପାରେ। ଫାର୍ମୱେରକୁ ଅପଡେଟ କରାଯାଉଥିବା ସମୟରେ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ଅନପ୍ଲଗ କିମ୍ବା ବନ୍ଦ କରନ୍ତୁ ନାହିଁ।</translation>
 <translation id="2324354238778375592">ଫ୍ଲୋଟ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">ସର୍ବୋତ୍ତମ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">ଏଭାଣ୍ଟ-ଗାର୍ଡ</translation>
 <translation id="3182676044300231689">"ଏହାକୁ ଅଧିକ ଆତ୍ମବିଶ୍ୱାସୀ କର" ପରି ଏକ ପ୍ରମ୍ପ୍ଟ ଲେଖନ୍ତୁ</translation>
 <translation id="3188257591659621405">ମୋ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
-<translation id="3188931456353313123">ଏହି ଅପଡେଟ ଡିଭାଇସର ନିର୍ମାତା ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଛି ଏବଂ ଏହାକୁ Google ଦ୍ୱାରା ଯାଞ୍ଚ କରାଯାଇନାହିଁ।</translation>
 <translation id="319101249942218879">ଅବତାର ଇମେଜ ପରିବର୍ତ୍ତନ କରାଯାଇଛି</translation>
 <translation id="3192947282887913208">ଅଡିଓ ଫାଇଲ୍ସ</translation>
 <translation id="3199982728237701504">ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ (ଦୁଇ-ପାର୍ଶ୍ୱ)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4483498983731992167">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="4486524074141928967">ଆପଣଙ୍କୁ <ph name="TIME" />ରେ ସାଇନ ଆଉଟ କରାଯିବ</translation>
+<translation id="4487890678161807486">ଟ୍ରାନ୍ସକ୍ରିପସନ ଭାଷା ପିକର ଖୋଲନ୍ତୁ</translation>
 <translation id="4500722292849917410">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। ଏକ ମୋଡିଫାୟର କୀ (ctrl, alt, shift କିମ୍ବା <ph name="META_KEY" />) ବ୍ୟବହାର କରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ।</translation>
 <translation id="4500966230243561393">ଇଣ୍ଟରଫେସ ରଙ୍ଗ</translation>
 <translation id="4503223151711056411">ବାମ ତୀର</translation>

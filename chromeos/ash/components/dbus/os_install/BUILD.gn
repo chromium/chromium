@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ui.gni")
-
-assert(is_chromeos_ash, "Non-Chrome-OS builds cannot depend on //chromeos")
+assert(is_chromeos, "Non-Chrome-OS builds cannot depend on //chromeos")
 
 component("os_install") {
   defines = [ "IS_OS_INSTALL_IMPL" ]

@@ -708,6 +708,7 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 <translation id="152657506688053119">Elenco di URL alternativi per il fornitore del servizio di ricerca predefinito</translation>
 <translation id="1530812829012954197">Visualizza sempre i seguenti schemi URL nel browser host</translation>
 <translation id="1534007181698071943">Consenti la disattivazione per impostazione predefinita dei gestori di eventi unload durante il ritiro</translation>
+<translation id="1535199908978041429">Mostra la scheda Calendario di Outlook nella pagina Nuova scheda (beta)</translation>
 <translation id="1539343118617844331">Scuola</translation>
 <translation id="1542491165152947087">Consenti agli utenti di attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.</translation>
 <translation id="1542958897137600427">Attiva il provisioning dei certificati client</translation>
@@ -1557,6 +1558,17 @@ Se questa policy non viene configurata, inizialmente Traduzione dal Vivo sarà d
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> non viene configurato, non è presente alcuna icona per il provider di ricerca.</translation>
 <translation id="2136073175041447267">Configura le unità cloud (Google Drive, Microsoft OneDrive) in <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="2142409122365327693">Questa è una funzionalità beta.
+
+Questo criterio consente di stabilire la visibilità della scheda File di SharePoint e OneDrive nella pagina Nuova scheda. La scheda verrà visualizzata nella pagina Nuova scheda solo se il criterio è abilitato e la tua organizzazione ha autorizzato l'utilizzo dei dati dei file di SharePoint e OneDrive nel browser.
+
+I dati di SharePoint e OneDrive non verranno archiviati dal browser.
+
+La scheda dei file di SharePoint e OneDrive consigliati mostra un elenco di file consigliati.  Lo scopo è risolvere il problema del cambio di contesto e migliorare la produttività fornendo agli utenti una scorciatoia ai loro documenti più importanti.
+
+La scheda Microsoft di SharePoint e OneDrive richiederà una configurazione amministrativa aggiuntiva. Per informazioni dettagliate su come collegare la scheda della pagina Nuova scheda di Chrome a SharePoint, consulta l'articolo del Centro assistenza.
+
+Se il criterio <ph name="NTPCARDSVISIBLE" /> è disattivato, la scheda di SharePoint e OneDrive non verrà mostrata. Se il criterio <ph name="NTPCARDSVISIBLE" /> è attivato, la scheda di SharePoint e OneDrive verrà mostrata se anche il relativo criterio è attivato e sono disponibili dati da mostrare. Se <ph name="NTPCARDSVISIBLE" /> non viene configurato, la scheda di SharePoint e OneDrive verrà mostrata se anche il relativo criterio è attivato, l'utente ha attivato la scheda in Personalizza Chrome e sono disponibili dati da mostrare.</translation>
 <translation id="2144236546337326489">Consenti l'attivazione della continuazione di attività Phone Hub</translation>
 <translation id="2145735238144543545">Certificati client richiesti</translation>
 <translation id="2146103669166779785">Colore esadecimale che verrà utilizzato per generare e applicare un tema al browser.</translation>
@@ -2035,6 +2047,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se questa impostazione viene disattivata, <ph name="PRODUCT_NAME" /> non rileverà quando una finestra è coperta da altre finestre.
 
       Se questo criterio non viene impostato, il rilevamento della copertura della finestra verrà attivato.</translation>
+<translation id="2461842213361247">ServiceWorker può controllare gli iframe srcdoc</translation>
 <translation id="2462606868915618110">A partire dalla versione M108, tutti i metodi <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> verranno richiamati in modo sincrono.
       Fino alla versione M110, questo criterio riattiva la chiamata asincrona dei metodi <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.
       Se il criterio viene impostato su Attivato, i metodi <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> vengono richiamati in modo asincrono.
@@ -2312,6 +2325,7 @@ Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istan
 
 Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="2650049181907741121">Azione da compiere quando l'utente chiude lo schermo</translation>
+<translation id="2652747206827086936">Disattiva la scheda File di SharePoint e OneDrive nella pagina Nuova scheda</translation>
 <translation id="2656559539624760733">Non utilizzare Chrome Root Store.</translation>
 <translation id="2658653824183107970">Usa l'implementazione <ph name="CORS" /> legacy anziché la nuova implementazione <ph name="CORS" /></translation>
 <translation id="2660846099862559570">Non utilizzare mai un proxy</translation>
@@ -3490,6 +3504,7 @@ Se questo criterio viene configurato, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POL
 <translation id="3539103206548425861">Se il criterio viene configurato, la riproduzione video automatica (senza il consenso dell'utente) con contenuti audio è consentita in <ph name="PRODUCT_NAME" />. Se il criterio <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> viene impostato su true, tale criterio non ha effetto. Se il criterio <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> viene impostato su false, l'insieme di pattern URL in tale criterio possono comunque essere riprodotti. Se il criterio viene modificato mentre <ph name="PRODUCT_NAME" /> è in esecuzione, viene applicato solo alle nuove schede aperte.
 
       Per informazioni dettagliate sui pattern URL validi, vai all'indirizzo https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="3540496580121878254">ServiceWorker non controllerà gli iframe srcdoc</translation>
 <translation id="3540846231645422635">Disattiva i report sull'interfaccia di rete del dispositivo</translation>
 <translation id="3540935459049973317">Limiti di utilizzo per app</translation>
 <translation id="3546260240984542017">Mantieni gli spazi vuoti per tutti i tipi MIME</translation>
@@ -5178,6 +5193,17 @@ Se il criterio viene impostato su False, verrà utilizzato il comportamento pred
 <translation id="4835622243021053389">Attiva autenticazione NTLMv2</translation>
 <translation id="4840015507504937941">Questo criterio consente di impostare le dimensioni minime (in byte) dei dati negli appunti, che verranno controllate in base alle regole di limitazione relativa agli appunti definite nel criterio DataLeakPreventionRulesList.
       Se non viene configurato, l'impostazione predefinita è 0, il che significa che tutti i dati incollati dagli appunti verranno controllati secondo le regole configurate.</translation>
+<translation id="4843535028402307134">https://github.com/w3c/ServiceWorker/issues/765 chiede che l'iframe srcdoc con
+l'attributo sandbox "allow-same-origin" sia sotto il controllo di ServiceWorker.
+
+Se il criterio viene abilitato o se non viene configurato,
+<ph name="PRODUCT_NAME" /> fa in modo che gli iframe srcdoc
+con attributi sandbox "allow-same-origin" siano sotto il controllo di ServiceWorker.
+
+Se il criterio viene disattivato, l'iframe srcdoc non viene controllato da
+ServiceWorker.
+
+Questo criterio è stato pensato per essere temporaneo e verrà rimosso nel 2026.</translation>
 <translation id="4846678215172543001">Questo criterio impedisce la visualizzazione di avvisi di URL simili sui siti elencati. Questi avvisi sono solitamente mostrati sui siti in cui <ph name="PRODUCT_NAME" /> crede che sia in atto un tentativo di spoofing di un altro sito noto all'utente.
 
        Se il criterio viene attivato e impostato su uno o più domini, non verrà visualizzata alcuna pagina di avviso di somiglianza quando l'utente visita le pagine di quel dominio.
@@ -5510,6 +5536,7 @@ Se la policy non viene configurata, il relativo comportamento viene determinato 
 Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5056708224511062314">Ingrandimento dello schermo disattivato</translation>
 <translation id="5058573563327660283">Seleziona la strategia da utilizzare per liberare spazio su disco durante la pulizia automatica (obsoleta)</translation>
+<translation id="5060285390484464499">Consenti a ServiceWorker di controllare gli iframe srcdoc</translation>
 <translation id="5061114193960158745">Questo criterio consente di stabilire l'elenco di siti web che non causeranno mai un cambio di browser. Ogni elemento è considerato come una regola. Le regole con una corrispondenza non aprono un browser alternativo. A differenza del criterio <ph name="URL_LIST_POLICY_NAME" />, le regole vengono applicate in entrambe le direzioni. Quando il componente aggiuntivo <ph name="IE_PRODUCT_NAME" /> è attivo, il criterio consente di stabilire anche se <ph name="IE_PRODUCT_NAME" /> deve aprire questi URL in <ph name="PRODUCT_NAME" />.
 
       Se il criterio non viene impostato, non viene aggiunto alcun sito web all'elenco.
@@ -8223,6 +8250,17 @@ Se viene impostato su False o se non viene configurato, il layout non è disponi
 <translation id="685769593149966548">Applica la modalità Restrizione massima per YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
 <translation id="6866755486434471318">Consenti a <ph name="PEPPER_NAME" /> di usare immagini condivise per la decodifica video.</translation>
+<translation id="6871249820683694350">Questa è una funzionalità beta.
+
+Questo criterio consente di stabilire la visibilità della scheda Outlook nella pagina Nuova scheda. La scheda verrà visualizzata nella pagina Nuova scheda solo se il criterio è abilitato e la tua organizzazione ha autorizzato l'utilizzo dei dati del calendario di Outlook nel browser.
+
+I dati di Outlook non verranno archiviati dal browser.
+
+La scheda di Outlook mostra il prossimo evento nel calendario, nonché un'anteprima delle riunioni previste per il resto della giornata. Lo scopo è risolvere il problema del cambio di contesto e migliorare la produttività fornendo agli utenti una scorciatoia alla prossima riunione.
+
+La scheda Microsoft Outlook richiederà una configurazione amministrativa aggiuntiva. Per informazioni dettagliate su come collegare la scheda della pagina Nuova scheda di Chrome a Outlook, consulta l'articolo del Centro assistenza.
+
+Se il criterio <ph name="NTPCARDSVISIBLE" /> è disattivato, la scheda di Outlook non verrà mostrata. Se il criterio <ph name="NTPCARDSVISIBLE" /> è attivato, la scheda di Outlook verrà mostrata se anche il relativo criterio è attivato e sono disponibili dati da mostrare. Se il criterio <ph name="NTPCARDSVISIBLE" /> non viene configurato, la scheda di Outlook verrà mostrata se anche il relativo criterio è attivato, l'utente ha attivato la scheda in Personalizza Chrome e sono disponibili dati da mostrare.</translation>
 <translation id="6878757724611298427">Consenti agli utenti di utilizzare app per Android su dispositivi non affiliati</translation>
 <translation id="6881397131210596522">Se il criterio viene impostato su 2, ai siti verrà automaticamente impedito di utilizzare l'API WebPrinting.
 
@@ -8856,6 +8894,7 @@ Se questo criterio viene disattivato o se non viene configurato, le impostazioni
           Se imposti questo criterio, gli utenti non potranno modificarlo o eseguirne l'override.
 
           Se questo criterio non viene configurato, la funzione di correzione del colore è inizialmente disattivata, ma può essere attivata dall'utente in qualsiasi momento.</translation>
+<translation id="7323780795955997799">Mostra la scheda File di SharePoint e OneDrive nella pagina Nuova scheda (beta)</translation>
 <translation id="7323855063560306712">Consente di impostare un elenco di pattern URL per i siti che specifica i siti a cui l'autorizzazione per la gestione delle finestre viene automaticamente negata. Ciò limiterà la capacità dei siti di vedere le informazioni sulle schermate del dispositivo e di utilizzare quelle informazioni per aprire e posizionare finestre oppure per richiedere lo schermo intero su schermate specifiche.
 
 Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
@@ -9254,6 +9293,7 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
           Se la norma non viene impostata, verrà utilizzato per tutti i siti il renderer predefinito. (È possibile utilizzare la norma <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> per configurare il renderer predefinito).</translation>
 <translation id="768925347918758827">Stati Uniti.</translation>
 <translation id="7696412993033202071">URL lancio app di autenticazione esterne</translation>
+<translation id="7696534428021833264">Attiva la scheda File di SharePoint e OneDrive nella pagina Nuova scheda</translation>
 <translation id="7701341006446125684">Imposta le dimensioni della cache di app ed estensioni (in byte)</translation>
 <translation id="7703041979684393741">Non consentire la raccolta di log eventi WebRTC dai servizi Google</translation>
 <translation id="770339941914297201">Nuovo comportamento: le app di Chrome Kiosk verranno aggiornate solo utilizzando l'URL di aggiornamento dal criterio</translation>

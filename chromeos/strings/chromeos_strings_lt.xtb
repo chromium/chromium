@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Atšaukta</translation>
 <translation id="1020274983236703756">Dabar pasiekiami išskirtiniai „<ph name="PRODUCT_NAME" />“ ištekliai</translation>
 <translation id="1022628058306505708">Žemės srautas</translation>
+<translation id="102432830749687801">Įsitikinkite, kad naudojate „Google“ programą „Turinio perkėlimo įrankis“, kad perkeltumėte mokyklos paskyros duomenis į asmeninę paskyrą, kol nepraradote prieigos.</translation>
 <translation id="1026212596705997935">Naudojamas „<ph name="CONFLICT_ACCEL_NAME" />“ spartusis klavišas. Paspauskite naują spartųjį klavišą. Jei norite pakeisti esamą spartųjį klavišą, dar kartą paspauskite šį spartųjį klavišą.</translation>
 <translation id="1030856839388844477">Nustatyti duomenų naudojimą iš naujo</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (grupių: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Įrenginio dėklo akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="1397738625398125236">Galima patikrinti tinklų sietuvo ryšį</translation>
 <translation id="1398634363027580500">Labai didelė HTTPS delsa</translation>
+<translation id="1406389211945506521">Dėkojame, kad dalijatės savo patirtimi. Jūsų atsiliepimai padeda mums kurti tikslesnį ir naudingesnį turinį.</translation>
 <translation id="1407069428457324124">Tamsioji tema</translation>
 <translation id="1413240736185167732">Nepavyko – filtras neveikia tinkamai</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Klasikinis menas</translation>
 <translation id="181434555916624618">Kol kas rezultatai su žmonėmis nebus rodomi. Bandykite kitą užklausą.</translation>
 <translation id="1815850098929213707">Pasirinktas klavišas yra „<ph name="KEYS" />“. Palieskite mygtuką, kad redaguotumėte valdiklį</translation>
+<translation id="1818174214124933000">Kai pasirinksite siųsti, jūsų atsiliepimai ir turinys (pateiktas toliau) bus siunčiami „Google“, peržiūrėti žmonių ir naudojami siekiant mokyti ar tobulinti produktus bei paslaugas, vadovaujantis <ph name="LINK_POLICY_BEGIN" />privatumo politika<ph name="LINK_POLICY_END" /> ir <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />„Google“ paslaugų teikimo sąlygomis<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Personažai</translation>
 <translation id="1827738518074806965">Meno galerija</translation>
+<translation id="183287940576828840">Įžeidžiantis ar nesaugus</translation>
 <translation id="1836553715834333258">Sistemos spalva</translation>
 <translation id="183675228220305365">realizmas</translation>
 <translation id="1838374766361614909">Išvalyti paiešką</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Nepavyko pateikti UDP užklausų</translation>
 <translation id="1908394185991500139">rodyklė kairėn</translation>
 <translation id="1914144885717544695">penktadienį</translation>
+<translation id="1915960750806557358">Pateikite atsiliepimą arba aprašykite problemą. Neįtraukite jokios asmens, neskelbtinos ar konfidencialios informacijos.</translation>
 <translation id="1923388006036088459">Paryškinimo spalvos</translation>
 <translation id="1945403655450283000">Garso įrašytuvas</translation>
 <translation id="1947737735496445907">Atspausdinta</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Jei norite tęsti atnaujinimo procesą, atjunkite „<ph name="DEVICE_NAME" />“ USB laidą</translation>
 <translation id="2320295602967756579">Įgalinti šviesiąją temą</translation>
 <translation id="2323506179655536734">PRALEISTA</translation>
-<translation id="2323755382216917952">Norint užbaigti atnaujinimą, reikia iš naujo paleisti kompiuterį. Šis atnaujinimas gali užtrukti kelias minutes. Kol programinė aparatinė įranga atnaujinama, neatjunkite ir neišjunkite kompiuterio.</translation>
 <translation id="2324354238778375592">Užslinkti</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> tšk./col.</translation>
 <translation id="2346474577291266260">Puikus (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">avangardo</translation>
 <translation id="3182676044300231689">Įveskite užklausą, pvz., „reikia, kad skambėtų užtikrinčiau“</translation>
 <translation id="3188257591659621405">Mano failai</translation>
-<translation id="3188931456353313123">Šį naujinį teikia įrenginio gamintojas ir „Google“ jo nepatvirtino.</translation>
 <translation id="319101249942218879">Pseudoportreto vaizdas pakeistas</translation>
 <translation id="3192947282887913208">Garso įrašų failai</translation>
 <translation id="3199982728237701504">Dokumentų tiektuvas (dvipusis)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">Kartų, kai akumuliatorius buvo įkraunamas visą ciklą, skaičius</translation>
 <translation id="3877066159641251281">Klausyti vertimo</translation>
 <translation id="3880601782712134623">Automatiškai aptikti skirtingus balsus ir kiekvienam kalbančiajam suteikti bendrojo pobūdžio etiketę, pvz., „1 kalbantysis“ ir „2 kalbantysis“</translation>
+<translation id="38811596981744338">Teisinė problema</translation>
 <translation id="3885327323343477505">Keisti ekrano užsklandą</translation>
 <translation id="3889914174935857450">Nustatyti datą iš naujo</translation>
 <translation id="3897092660631435901">Meniu</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356">Įkrauta: <ph name="RATE" /> per <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="4930320165497208503">Norėdami nustatyti ar atnaujinti ryšį, eikite į <ph name="BEGIN_LINK" />Nustatymus<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, atidaroma naujame skirtuke</translation>
 <translation id="4946927805998996217">Suvestinė generuojama</translation>
 <translation id="4950314376641394653">Įrenginio „<ph name="DEVICE_NAME" />“ programinė aparatinė įranga atnaujinta į <ph name="VERSION" /> versiją</translation>
 <translation id="4950893758552030541">medžių tunelis</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Su pasirinkimu susijusios informacijos gavimas</translation>
 <translation id="6694534975463174713">užrakinti</translation>
 <translation id="6700703207451721535">Neleidžiama pasiekti šios nuorodos. Jei reikia prieigos, teiraukitės mokytojo.</translation>
+<translation id="6703179086771097594">Kas neveikė tinkamai?</translation>
 <translation id="6704062477274546131">DNS pavadinimų vertimas</translation>
 <translation id="6712933881624804031">slėnis</translation>
 <translation id="6716013206176357696">braškės</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Atsisiųskite transkribavimo modelį skiltyje „Nustatymai“</translation>
 <translation id="7058278511608979688">Baigti ir išsaugoti</translation>
 <translation id="7059230779847288458">Kraunama, <ph name="TIME_VALUE" />, kol bus įkrauta</translation>
+<translation id="7064209589142995848">Turinio perkėlimo įrankis</translation>
 <translation id="7065336548231472971">Pasirinkta: <ph name="LANGUAGE_NAME" /> k.</translation>
 <translation id="7066538517128343186">klavišas „<ph name="KEY" />“</translation>
 <translation id="7068619307603204412">Įrenginio paruošimas</translation>
@@ -1592,6 +1599,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8476942730579767658">Langai ir darbalaukiai</translation>
 <translation id="8477536061607044749">grafinis dizainas</translation>
 <translation id="8477551185774834963">DNS delsa šiek tiek viršija leistiną slenksčio vertę</translation>
+<translation id="8481308460877552925">Faktiškai netinkamas</translation>
 <translation id="8482376765267780829">Pasirinkite tekstą, kurį norite supaprastinti</translation>
 <translation id="8483248364096924578">IP adresas</translation>
 <translation id="8491311378305535241">Nepavyko iš „Android“ programų prisijungti per užkardą prie HTTP svetainių</translation>

@@ -394,12 +394,40 @@ void BookmarkMergedSurfaceService::BookmarkModelLoaded(bool ids_reassigned) {
   // TODO(crbug.com/391785358): Notify observers.
 }
 
-void BookmarkMergedSurfaceService::BookmarkNodeMoved(
-    const bookmarks::BookmarkNode* old_parent,
+void BookmarkMergedSurfaceService::OnWillMoveBookmarkNode(
+    const BookmarkNode* old_parent,
     size_t old_index,
-    const bookmarks::BookmarkNode* new_parent,
+    const BookmarkNode* new_parent,
     size_t new_index) {
-  // TODO(crbug.com/391785358): Notify observers.
+  CHECK(!cached_index_for_node_move_);
+  CHECK(old_parent);
+  const BookmarkNode* node_to_move = old_parent->children()[old_index].get();
+  size_t index = GetIndexAcrossStorage(node_to_move, old_index);
+  cached_index_for_node_move_.emplace(index, node_to_move);
+}
+
+void BookmarkMergedSurfaceService::BookmarkNodeMoved(
+    const BookmarkNode* old_parent,
+    size_t old_index,
+    const BookmarkNode* new_parent,
+    size_t new_index) {
+  CHECK(cached_index_for_node_move_);
+  const BookmarkNode* moved_node = new_parent->children()[new_index].get();
+  CHECK_EQ(moved_node, cached_index_for_node_move_->second);
+  const BookmarkParentFolder old_parent_folder(
+      BookmarkParentFolder::FromFolderNode(old_parent));
+  const BookmarkParentFolder new_parent_folder(
+      BookmarkParentFolder::FromFolderNode(new_parent));
+  // Trackers must have been updated already, because they are registered as
+  // observers before `this`.
+  const size_t new_index_across_storage =
+      GetIndexAcrossStorage(moved_node, new_index);
+  for (auto& observer : observers_) {
+    observer.BookmarkNodeMoved(old_parent_folder,
+                               cached_index_for_node_move_->first,
+                               new_parent_folder, new_index_across_storage);
+  }
+  cached_index_for_node_move_.reset();
 }
 
 void BookmarkMergedSurfaceService::BookmarkNodeAdded(
@@ -470,26 +498,32 @@ void BookmarkMergedSurfaceService::BookmarkNodeRemoved(
 
 void BookmarkMergedSurfaceService::BookmarkNodeChanged(
     const bookmarks::BookmarkNode* node) {
-  // TODO(crbug.com/391785358): Notify observers.
-}
-
-void BookmarkMergedSurfaceService::OnWillChangeBookmarkMetaInfo(
-    const bookmarks::BookmarkNode* node) {
-  // TODO(crbug.com/391785358): Notify observers.
+  for (auto& observer : observers_) {
+    observer.BookmarkNodeChanged(node);
+  }
 }
 
 void BookmarkMergedSurfaceService::BookmarkNodeFaviconChanged(
     const bookmarks::BookmarkNode* node) {
-  // TODO(crbug.com/391785358): Notify observers.
+  for (auto& observer : observers_) {
+    observer.BookmarkNodeFaviconChanged(node);
+  }
 }
 
 void BookmarkMergedSurfaceService::BookmarkNodeChildrenReordered(
     const bookmarks::BookmarkNode* node) {
-  // TODO(crbug.com/391785358): Notify observers.
+  CHECK(node);
+  CHECK(node->is_folder());
+  const BookmarkParentFolder folder(BookmarkParentFolder::FromFolderNode(node));
+  for (auto& observer : observers_) {
+    observer.BookmarkParentFolderChildrenReordered(folder);
+  }
 }
 
 void BookmarkMergedSurfaceService::BookmarkAllUserNodesRemoved(
     const std::set<GURL>& removed_urls,
     const base::Location& location) {
-  // TODO(crbug.com/391785358): Notify observers.
+  for (auto& observer : observers_) {
+    observer.BookmarkAllUserNodesRemoved();
+  }
 }

@@ -78,14 +78,13 @@
       <iron-list id="filtered-items-list" items="[[filteredItems_]]"
           scroll-target="dialog-body">
         <template>
-          <cr-checkbox-with-policy
+          <cr-checkbox
               class="list-item no-outline"
               checked="[[willAdd_(item.id, itemIdsToAdd_.size)]]"
               disabled="[[item.disabledByPolicy]]"
-              policy-tooltip="[[policyTooltip]]"
               tab-index="[[tabIndex]]" on-change="onCheckboxChange_">
             [[item.name]]
-          </cr-checkbox-with-policy>
+          </cr-checkbox>
         </template>
       </iron-list>
     </template>

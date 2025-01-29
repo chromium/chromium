@@ -1213,6 +1213,12 @@ void FrameSinkManagerImpl::NotifyRendererBlockStateChanged(
                                                   render_input_routers);
 }
 
+void FrameSinkManagerImpl::RequestInputBack() {
+  bool success = input_manager_->ReturnInputBackToBrowser();
+  TRACE_EVENT_INSTANT("viz", "FrameSinkManagerImpl::RequestInputBack",
+                      "success", success);
+}
+
 void FrameSinkManagerImpl::RequestBeginFrameForGpuService(bool toggle) {
   if (root_begin_frame_source_ && gpu_service_) {
     if (toggle) {

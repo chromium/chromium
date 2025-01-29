@@ -228,6 +228,11 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       bool blocked,
       const std::vector<FrameSinkId>& render_input_routers);
 
+  // Requests input handling to be transferred back to BrowserMain thread from
+  // VizCompositor thread for cases like touch selection, overscrolls. See
+  // crbug.com/392044047 for more details.
+  void RequestInputBack();
+
   using ScreenshotDestinationReadyCallback =
       base::OnceCallback<void(const SkBitmap& copy_output)>;
   // Sets the callback which is invoked when a `CopyOutputResult` associated

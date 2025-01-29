@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Тэмдэгтүүд</translation>
 <translation id="1827738518074806965">Уран зургийн галерей</translation>
 <translation id="183287940576828840">Доромжилсон/аюултай</translation>
+<translation id="1834032517784994783">Сийрүүлгийн хэлийг сонгоно уу</translation>
 <translation id="1836553715834333258">Системийн өнгө</translation>
 <translation id="183675228220305365">реалист</translation>
 <translation id="1838374766361614909">Хайлтыг арилгах</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">Шинэчлэх явцыг үргэлжлүүлэхийн тулд <ph name="DEVICE_NAME" />-н USB кабелийг салгана уу</translation>
 <translation id="2320295602967756579">Цайвар загварыг идэвхжүүлэх</translation>
 <translation id="2323506179655536734">АЛГАССАН</translation>
-<translation id="2323755382216917952">Энэ шинэчлэлт нь танаас суулгаж дуусгахын тулд компьютероо дахин эхлүүлэхийг шаарддаг. Энэ шинэчлэлтийг дуусгахад цөөн хэдэн минут зарцуулж болно. Жижиг программыг шинэчилж байхад компьютероо салгаж эсвэл унтрааж болохгүй.</translation>
 <translation id="2324354238778375592">Хөвөгч</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Маш сайн (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">авангард</translation>
 <translation id="3182676044300231689">"Илүү итгэлтэй болго" зэрэг заавар оруулна уу</translation>
 <translation id="3188257591659621405">Миний файл</translation>
-<translation id="3188931456353313123">Энэ шинэчлэлтийг төхөөрөмж үйлдвэрлэгчээс олгосон бөгөөд Google-с баталгаажуулаагүй.</translation>
 <translation id="319101249942218879">Аватар зургийг өөрчилсөн</translation>
 <translation id="3192947282887913208">Аудио файлууд</translation>
 <translation id="3199982728237701504">Документыг дамжуулах тавиур (Хоёр талаар нь)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">Сүлжээний өгөгдмөл бус гэйтвэйд пин илгээж чадсангүй</translation>
 <translation id="4483498983731992167">Сийрүүлэг үүсгэх боломжгүй</translation>
 <translation id="4486524074141928967">Таныг <ph name="TIME" />-д гаргана</translation>
+<translation id="4487890678161807486">Сийрүүлгийн хэл сонгогчийг нээх</translation>
 <translation id="4500722292849917410">Товчлол боломжгүй байна. Тохируулагч товчийг (ctrl, alt, shift эсвэл <ph name="META_KEY" />) ашиглан шинэ товчлолыг дарна уу.</translation>
 <translation id="4500966230243561393">Интерфейсийн өнгө</translation>
 <translation id="4503223151711056411">Зүүн сум</translation>

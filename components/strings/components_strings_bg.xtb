@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Ключовете <ph name="DATA_CONTROLS_FIRST_KEY_SET" /> не могат да бъдат зададени в същия речник като <ph name="DATA_CONTROLS_SECOND_KEY_SET" /></translation>
 <translation id="1455413310270022028">Гума</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Преглед на 0 отзива}=1{Преглед на 1 отзив}other{Преглед на всичките # отзива}}</translation>
 <translation id="1458059624921545588">Хора и общество</translation>
 <translation id="1458140305240870199">Долни дрехи</translation>
 <translation id="1459693405370120464">Времето</translation>
@@ -1956,6 +1957,7 @@
 <translation id="4407758156081352648">От съображения за сигурност организацията ви не позволява повторното използване на пароли в Chrome. Паролите в браузъра са шифровани с цел защита на поверителността на потребителите.</translation>
 <translation id="4408413947728134509">„Бисквитки“ <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Тази конфигурация е означена като такава с възможност за инсталиране, но не може да се инсталира, тъй като не е предоставен образ за съответната архитектура.</translation>
+<translation id="4412377069090572315">Какво казват хората</translation>
 <translation id="4414452699610169758">Използвайте Google Мениджър на пароли и функцията на Chrome за автоматичното попълване, за да запазвате и попълвате пароли, начини на плащане и адреси</translation>
 <translation id="4414515549596849729">„бисквитки“ и данни за сайтове</translation>
 <translation id="4415156962929755728">Пластмаса (силно гланцирана)</translation>
@@ -2371,6 +2373,7 @@
 <translation id="519422657042045905">Няма достъп до режима за пояснения</translation>
 <translation id="5200063972779787617">Запазване на адреса в профила</translation>
 <translation id="5201306358585911203">Страница, вградена в тази страница, изпраща съобщение</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab, за да видите наличните действия, и след това Enter, за да изпълните избраното.</translation>
 <translation id="5205222826937269299">Името е задължително</translation>
 <translation id="5206392433295093945">Спалня</translation>
 <translation id="5209670883520018268">Тава 20</translation>
@@ -2777,6 +2780,7 @@
 <translation id="5937560539988385583">Страницата е преведена</translation>
 <translation id="5938153366081463283">Добавяне на виртуална карта</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Тази информация е от независими уебсайтове за отзиви, като например Trustpilot, ScamAdviser, Google и др. Обобщенията се създават с AI.</translation>
 <translation id="5944297261866530437">Текстил (силно гланциран)</translation>
 <translation id="5950901984834744590">Бръсначи и самобръсначки</translation>
 <translation id="5951495562196540101">Не е възможно регистриране с профил на потребител (налице е лиценз в пакет).</translation>
@@ -3143,6 +3147,7 @@
 <translation id="6567832540451970450">Администраторът ви разрешава на този сайт достъп до <ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">Бутон „Управление на начините на плащане“. Активирайте, за да управлявате информацията си за плащане и данните за кредитните си карти в настройките на Chrome</translation>
 <translation id="6569060085658103619">Преглеждате страница на разширение</translation>
+<translation id="6572867903637058088">Това полезно ли е?</translation>
 <translation id="6573200754375280815">Двойно перфориране отдясно</translation>
 <translation id="6574762126505704998">Запълване</translation>
 <translation id="6575408526598156416">Запазване в профила</translation>
@@ -3438,7 +3443,6 @@
 <translation id="7110368079836707726">Колежи и университети</translation>
 <translation id="7111012039238467737">(валиден)</translation>
 <translation id="7111507312244504964">Инспекции и оценки на недвижими имоти</translation>
-<translation id="7112327784801341716">Не виждате текущите си данни? Свържете се с банката си, за да ги актуализирате.</translation>
 <translation id="7116334367957017155">Нямате запазени адреси. Добавете адрес, за да го използвате в продуктите на Google.</translation>
 <translation id="7118618213916969306">Търсене на URL адреса от буферната памет, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Виждате това предупреждение, защото сайтът не поддържа HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече за това предупреждение<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3501,7 +3505,6 @@
 <translation id="7219179957768738017">Връзката използва <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Обработва се</translation>
 <translation id="7221855153210829124">Показва известия</translation>
-<translation id="7221857374443660083">Банката иска да се увери, че това сте вие</translation>
 <translation id="722454870747268814">Нов раздел в режим „инкогнито“</translation>
 <translation id="7227293336683593977">История на цените</translation>
 <translation id="7232352818707016189">Още действия за таблицата за сравняване</translation>
@@ -3876,6 +3879,7 @@
 <translation id="784404208867107517">Групирана история</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Възникна грешка. Опитайте отново.</translation>
+<translation id="784623644169604270">Няма скорошна активност</translation>
 <translation id="785476343534277563">Колежански спортове</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Въведете новата дата на валидност и кода за проверка, който се намира на <ph name="SIDE_OF_CARD" /></translation>
@@ -4322,9 +4326,11 @@
 <translation id="8672535691554698269">Компютърни мрежи</translation>
 <translation id="8675446170353411473">Файловете ви се качват в(ъв) <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Без забавяне</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{Изтрихте {COUNT} таблица}other{Изтрихте {COUNT} таблици}}</translation>
 <translation id="8680536109547170164">„<ph name="QUERY" />“, отговор: „<ph name="ANSWER" />“</translation>
 <translation id="8681531050781943054">Уеб страницата на адрес <ph name="PAGE" /> не можа да бъде заредена, защото:</translation>
 <translation id="8682297334444610648">Играта с динозавъра – докоснете, за да играете</translation>
+<translation id="8685225035093721011">Отзиви за магазина</translation>
 <translation id="8686424632716064939">Компютърна защита</translation>
 <translation id="8687278439622293018">Записът „<ph name="ENTRY_VOICEOVER" />“ бе изтрит</translation>
 <translation id="8687429322371626002">Устройството и профилът ви се управляват от <ph name="MANAGER" />.</translation>

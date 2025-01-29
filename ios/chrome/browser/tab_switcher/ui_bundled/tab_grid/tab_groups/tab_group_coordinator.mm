@@ -37,6 +37,8 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_presentation_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
 #import "ios/web/public/web_state_id.h"
 
 namespace {
@@ -63,6 +65,9 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   raw_ptr<const TabGroup> _tabGroup;
   // The coordinator for the user education half screen.
   SharedTabGroupUserEducationCoordinator* _userEducationCoordinator;
+  // Coordinator that handles confirmation dialog when the last tab of a group
+  // is closed.
+  TabGroupConfirmationCoordinator* _lastTabClosingAlert;
 }
 
 #pragma mark - Public
@@ -405,13 +410,42 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 - (void)tabGroupMediatorCloseLastTabAsOwner:(TabGroupMediator*)mediator {
   CHECK_EQ(_mediator, mediator);
+  __weak TabGroupCoordinator* weakSelf = self;
+  [self lastTabClosingAlertFromActionType:TabGroupActionType::
+                                              kDeleteOrKeepSharedTabGroup
+                            primaryAction:^{
+                              [weakSelf deleteGroup];
+                            }];
 }
 
 - (void)tabGroupMediatorCloseLastTabAsMember:(TabGroupMediator*)mediator {
   CHECK_EQ(_mediator, mediator);
+  [self lastTabClosingAlertFromActionType:TabGroupActionType::
+                                              kLeaveOrKeepSharedTabGroup
+                            primaryAction:^{
+                                // TODO(crbug.com/378880564): Add
+                                // leave action.
+                            }];
 }
 
 #pragma mark - Private
+
+// Creates and starts a TabGroupConfirmationCoordinator setuped with the given
+// parameters.
+- (void)lastTabClosingAlertFromActionType:(TabGroupActionType)actionType
+                            primaryAction:(TabGroupActionBlock)action {
+  _lastTabClosingAlert = [[TabGroupConfirmationCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                      actionType:actionType
+                      sourceView:self.baseViewController.view];
+  _lastTabClosingAlert.primaryAction = action;
+  _lastTabClosingAlert.secondaryAction = ^{
+    // TODO(crbug.com/378880292): Add keep action.
+  };
+  _lastTabClosingAlert.tabGroupName = _tabGroup->GetTitle();
+  [_lastTabClosingAlert start];
+}
 
 // Sets up the `_viewController`.
 - (void)setUpViewController {
@@ -451,6 +485,11 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
   // Record the presentation.
   [defaults setBool:YES forKey:kSharedTabGroupUserEducationShownOnceKey];
+}
+
+// Removes the shared tab group.
+- (void)deleteGroup {
+  [_mediator deleteSharedTabGroup:_tabGroup];
 }
 
 @end

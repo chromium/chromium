@@ -185,6 +185,10 @@ class BookmarkMergedSurfaceService : public KeyedService,
 
   // bookmarks::BookmarkModelObserver:
   void BookmarkModelLoaded(bool ids_reassigned) override;
+  void OnWillMoveBookmarkNode(const bookmarks::BookmarkNode* old_parent,
+                              size_t old_index,
+                              const bookmarks::BookmarkNode* new_parent,
+                              size_t new_index) override;
   void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
                          size_t old_index,
                          const bookmarks::BookmarkNode* new_parent,
@@ -202,8 +206,6 @@ class BookmarkMergedSurfaceService : public KeyedService,
                            const std::set<GURL>& no_longer_bookmarked,
                            const base::Location& location) override;
   void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
-  void OnWillChangeBookmarkMetaInfo(
-      const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeChildrenReordered(
       const bookmarks::BookmarkNode* node) override;
@@ -246,6 +248,12 @@ class BookmarkMergedSurfaceService : public KeyedService,
   // - Otherwise, it contains a single node that is being removed.
   base::flat_map<size_t, raw_ptr<const bookmarks::BookmarkNode>>
       cached_index_for_nodes_removal_;
+
+  // Non-empty in the middle of moving a bookmark node.
+  // It is set in `OnWillMoveBookmarkNode()` and cleared in
+  // `BookmarkNodeMoved()`.
+  std::optional<std::pair<size_t, raw_ptr<const bookmarks::BookmarkNode>>>
+      cached_index_for_node_move_;
 
   base::ObserverList<BookmarkMergedSurfaceServiceObserver> observers_;
 

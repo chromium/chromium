@@ -1054,6 +1054,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP" desc="The iOS context menu item for deleting a shared tab group. [iOS only]">
         Delete Group
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_KEEPSHAREDGROUP" desc="The iOS context menu item for keeping a shared tab group. [iOS only]">
+        Keep Group
+      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP" desc="The iOS context menu item for leaving a shared tab group. [iOS only]">
         Leave Group
       </message>
@@ -4020,9 +4023,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SETTINGS_CREDENTIAL_DELETION_TEXT" desc="Section title in password settings, explaining to the user what data will be deleted. [iOS Only]">
         From Google Password Manager, including passwords and passkeys
       </message>
-      <message name="IDS_IOS_PASSWORD_SETTINGS_NO_CREDENTIAL_DELETION_TEXT" desc="Section title in password settings, explaining to the user there is no data to be deleted. [iOS Only]">
-        No saved passwords or passkeys
-      </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION" desc="Description of the confirmation alert when the user tap delete all data button. The 'list of sites &amp; apps' corresponds to the data shown in the 'Never Saved' section in the home page of Password Manager. [iOS only]">
         {password, plural,
         =0 {{passkey, plural,
@@ -4048,6 +4048,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_GOOGLE_PASSWORD_MANAGER_PIN_TITLE" desc="Title of the section for managing the PIN for Google Password Manager. [iOS Only]">
         Google Password Manager PIN
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_NO_CREDENTIAL_DELETION_TEXT" desc="Section title in password settings, explaining to the user there is no data to be deleted. [iOS Only]">
+        No saved passwords or passkeys
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION" desc="Section title in settings &gt; password, about on-device Encryption. [iOS Only]">
         On-Device Encryption
@@ -5553,6 +5556,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_DELETE_TITLE" desc="Title of the confirmation to delete a shared tab group in the action sheet.">
         Delete group?
       </message>
+      <message name="IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_KEEP_OR_DELETE_MESSAGE" desc="Message of the confirmation when the owner of a shared tab group is closing the last tab.">
+        Keep this group to add tabs later, or delete it if you no longer need it.
+      </message>
+      <message name="IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_KEEP_OR_DELETE_MESSAGE_EXPLANATION_PART" desc="Message of the confirmation when the owner of a shared tab group is closing the last tab.">
+        If you delete it, everyone will immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and it will be deleted from all devices.
+      </message>
+      <message name="IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_KEEP_OR_LEAVE_MESSAGE" desc="Message of the confirmation when a member of a shared tab group is closing the last tab.">
+        Keep this group to add tabs later, or leave it if you no longer want access to it.
+      </message>
       <message name="IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_LEAVE_MESSAGE" desc="Message of the confirmation to leave a shared tab group in the action sheet.">
         You’ll immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and it will be deleted from all your devices
       </message>
@@ -6207,6 +6219,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_TITLE" desc="Title of the confirmation to delete a tab group in the action sheet.">
         Delete group?
+      </message>
+      <message name="IDS_IOS_TAB_GROUP_CONFIRMATION_KEEP_TITLE" desc="Title of the confirmation to keep a tab group in the action sheet.">
+        Keep group?
       </message>
       <message name="IDS_IOS_TAB_GROUP_CONFIRMATION_LAST_TAB_MOVE_TITLE" desc="Title of the confirmation to move the last tab of a group and delete the group.">
         Remove tab and delete group?

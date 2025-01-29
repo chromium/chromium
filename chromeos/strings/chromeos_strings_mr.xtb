@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">रद्द झाले</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> विशेष मालमत्ता आता उपलब्ध आहेत</translation>
 <translation id="1022628058306505708">मृदा वाह</translation>
+<translation id="102432830749687801">तुम्ही अ‍ॅक्सेस गमवण्यापूर्वी तुमच्या शाळेचा खाते डेटा तुमच्या वैयक्तिक खात्यामध्ये हलवण्यासाठी Google चे आशय ट्रान्सफर ॲप वापरण्याची खात्री करा.</translation>
 <translation id="1026212596705997935">शॉर्टकट हा "<ph name="CONFLICT_ACCEL_NAME" />" साठी वापरला जात आहे. नवीन शॉर्टकट प्रेस करा. विद्यमान शॉर्टकट बदलण्यासाठी, हा शॉर्टकट पुन्हा प्रेस करा.</translation>
 <translation id="1030856839388844477">डेटा वापर रीसेट करा</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">डिव्हाइसच्या केसच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
 <translation id="1397738625398125236">गेटवेला पिंग करता येते</translation>
 <translation id="1398634363027580500">अत्युच्च HTTPS लेटन्सी</translation>
+<translation id="1406389211945506521">तुमचा अनुभव शेअर केल्याबद्दल धन्यवाद. तुमचा फीडबॅक आम्हाला आणखी अचूक आणि फायदेशीर आशय तयार करण्यात मदत करतो.</translation>
 <translation id="1407069428457324124">गडद थीम</translation>
 <translation id="1413240736185167732">अयशस्वी झाले - फिल्टर अयशस्वी झाले</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,11 @@
 <translation id="1808803439260407870">क्लासिक आर्ट</translation>
 <translation id="181434555916624618">सध्यासाठी, लोक असलेले परिणाम दाखवले जाणार नाहीत. दुसरा प्रॉम्प्ट वापरून पहा.</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> की निवडलेली आहे. नियंत्रण संपादित करण्यासाठी बटणावर टॅप करा</translation>
+<translation id="1818174214124933000">तुम्ही पाठवा निवडता, तेव्हा तुमचा फीडबॅक आणि आशय (खाली दाखवलेला) <ph name="LINK_POLICY_BEGIN" />गोपनीयता धोरण<ph name="LINK_POLICY_END" /> आणि <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google सेवा अटी<ph name="LINK_TERMS_OF_SERVICE_END" /> यांच्या अधीन राहून Google ला पाठवला जाईल, त्याचे लोकांद्वारे पुनरावलोकन केले जाईल आणि आमची उत्पादने व सेवांना प्रशिक्षण देण्यासाठी किंवा त्यांमध्ये सुधारणा करण्यासाठी वापरला जाईल.</translation>
 <translation id="1823120442877418684">पात्रे</translation>
 <translation id="1827738518074806965">आर्ट गॅलरी</translation>
+<translation id="183287940576828840">आक्षेपार्ह/असुरक्षित</translation>
+<translation id="1834032517784994783">ट्रान्सक्रिप्शनची भाषा निवडा</translation>
 <translation id="1836553715834333258">सिस्टीमचा रंग</translation>
 <translation id="183675228220305365">वास्तववादी</translation>
 <translation id="1838374766361614909">शोध साफ करा</translation>
@@ -225,6 +230,7 @@
 <translation id="1908234395526491708">UDP विनंती पूर्ण करता आली नाही</translation>
 <translation id="1908394185991500139">अ‍ॅरो लेफ्ट</translation>
 <translation id="1914144885717544695">शुक्रवारी</translation>
+<translation id="1915960750806557358">तुमचा फीडबॅक शेअर करा किंवा तुमच्या समस्येचे वर्णन करा. वैयक्तिक, संवेदनशील किंवा गोपनीय असे काहीही समाविष्ट न केल्याची खात्री करा.</translation>
 <translation id="1923388006036088459">ॲक्सेंट रंग</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">प्रिंट केले</translation>
@@ -311,7 +317,6 @@
 <translation id="2308243864813041101">अपडेट करण्याची प्रक्रिया पुढे सुरू ठेवण्यासाठी, <ph name="DEVICE_NAME" /> ची USB केबल अनप्लग करा</translation>
 <translation id="2320295602967756579">फिकट थीम सुरू करा</translation>
 <translation id="2323506179655536734">वगळली</translation>
-<translation id="2323755382216917952">या अपडेटनुसार, इंस्टॉलेशन पूर्ण करण्यासाठी तुम्ही तुमचा काँप्युटर रीस्टार्ट करणे आवश्यक आहे. हे अपडेट पूर्ण होण्यासाठी काही मिनिटे लागू शकतात. फर्मवेअर अपडेट होत असताना, तुमचा काँप्युटर अनप्लग करू नका किंवा बंद करू नका.</translation>
 <translation id="2324354238778375592">फ्लोट करा</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">उत्कृष्ट (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +462,6 @@
 <translation id="3178532070248519384">अ‍ॅवोंत-गार्ड</translation>
 <translation id="3182676044300231689">"आणखी आत्मविश्वास दिसू द्या" यासारखा प्रॉम्प्ट एंटर करा</translation>
 <translation id="3188257591659621405">माझ्या फाइल</translation>
-<translation id="3188931456353313123">हे अपडेट डिव्हाइस निर्मात्याने पुरवले आहे आणि Google ने त्याची पडताळणी केलेली नाही.</translation>
 <translation id="319101249942218879">अवतार इमेज बदला</translation>
 <translation id="3192947282887913208">ऑडिओ फाइल</translation>
 <translation id="3199982728237701504">दस्तऐवज फीडर (दोन बाजू असलेले)</translation>
@@ -596,6 +600,7 @@
 <translation id="387301095347517405">तुमची बॅटरी किती वेळा पूर्ण चार्ज झाली त्याची संख्या</translation>
 <translation id="3877066159641251281">भाषांतर ऐका</translation>
 <translation id="3880601782712134623">वेगळे आवाज आपोआप डिटेक्ट करा प्रत्येक स्पीकरला स्पीकर १ आणि स्पीकर २ यांसारखे सामान्य लेबल द्या</translation>
+<translation id="38811596981744338">कायदेशीर समस्या</translation>
 <translation id="3885327323343477505">स्क्रीन सेव्हर बदला</translation>
 <translation id="3889914174935857450">तारीख रीसेट करा</translation>
 <translation id="3897092660631435901">मेनू</translation>
@@ -727,6 +732,7 @@
 <translation id="4483049906298469269">डीफॉल्ट नसलेला नेटवर्क गेटवे पिंग करता आला नाही</translation>
 <translation id="4483498983731992167">ट्रान्स्क्रिप्ट तयार करू शकत नाही</translation>
 <translation id="4486524074141928967">तुम्हाला <ph name="TIME" /> वाजता साइन आउट केले जाईल</translation>
+<translation id="4487890678161807486">ट्रान्स्क्रिप्शनचे भाषा निवडक उघडा</translation>
 <translation id="4500722292849917410">शॉर्टकट उपलब्ध नाही. नवीन मॉडिफायर की (कंट्रोल, ऑल्ट, शिफ्ट किंवा <ph name="META_KEY" />) वापरून नवीन शॉर्टकट प्रेस करा.</translation>
 <translation id="4500966230243561393">इंटरफेसचा रंग</translation>
 <translation id="4503223151711056411">लेफ्ट अ‍ॅरो</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंदांत <ph name="RATE" /> शुल्क आकारले.</translation>
 <translation id="4930320165497208503">कनेक्शन सेट किंवा अपडेट करण्यासाठी, <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> वर जा.</translation>
 <translation id="4932733599132424254">तारीख</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, नवीन टॅबमध्ये उघडते</translation>
 <translation id="4946927805998996217">सारांश जनरेट करत आहे</translation>
 <translation id="4950314376641394653">फर्मवेअर <ph name="DEVICE_NAME" /> हे <ph name="VERSION" /> आवृत्तीवर अपडेट केले गेले आहे</translation>
 <translation id="4950893758552030541">झाडांचा बोगदा</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">तुमच्या निवडीशी संबंधित माहिती मिळवा</translation>
 <translation id="6694534975463174713">लॉक</translation>
 <translation id="6700703207451721535">या लिंकसाठी अ‍ॅक्सेसला अनुमती नाही. तुम्हाला अ‍ॅक्सेस हवा असल्यास, तुमच्या शिक्षकांशी संपर्क साधा.</translation>
+<translation id="6703179086771097594">कोणत्या गोष्टीचा चांगला उपयोग झाला नाही?</translation>
 <translation id="6704062477274546131">DNS रिझोल्युशन</translation>
 <translation id="6712933881624804031">दरी</translation>
 <translation id="6716013206176357696">स्ट्रॉबेरी</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">ट्रान्स्क्रिप्शन मॉडेल सेटिंग्ज मध्ये डाउनलोड करा</translation>
 <translation id="7058278511608979688">संपवा आणि सेव्ह करा</translation>
 <translation id="7059230779847288458">चार्ज होत आहे, <ph name="TIME_VALUE" /> मध्ये पूर्ण होईल</translation>
+<translation id="7064209589142995848">आशय ट्रान्सफर</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> निवडली आहे</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> की</translation>
 <translation id="7068619307603204412">तुमचे डिव्हाइस तयार आहे</translation>
@@ -1592,6 +1601,7 @@
 <translation id="8476942730579767658">विंडो आणि डेस्क</translation>
 <translation id="8477536061607044749">ग्राफिक डिझाइन</translation>
 <translation id="8477551185774834963">DNS लेटन्सी अनुमती असलेल्या सीमेपेक्षा किंचित जास्त आहे</translation>
+<translation id="8481308460877552925">तथ्यानुसार चुकीचा आहे</translation>
 <translation id="8482376765267780829">सोपे करण्यासाठी काही मजकूर निवडा</translation>
 <translation id="8483248364096924578">IP पत्ता</translation>
 <translation id="8491311378305535241">Android अ‍ॅप्सवरून HTTPS वेबसाइटशी फायरवॉलद्वारे कनेक्ट करू शकत नाही</translation>

@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -51,6 +52,7 @@
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 constexpr gfx::Size HatsNextWebDialog::kMinSize;
@@ -395,6 +397,8 @@ HatsNextWebDialog::HatsNextWebDialog(
       AddChildView(std::make_unique<HatsWebView>(otr_profile_, browser, this));
   web_view_->LoadInitialURL(GetParameterizedHatsURL());
   web_view_->EnableSizingFromWebContents(kMinSize, kMaxSize);
+
+  SetProperty(views::kElementIdentifierKey, kHatsNextWebDialogId);
 
   set_margins(gfx::Insets());
   widget_ = views::BubbleDialogDelegateView::CreateBubble(this);

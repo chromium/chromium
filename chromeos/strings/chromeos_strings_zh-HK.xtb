@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">角色</translation>
 <translation id="1827738518074806965">畫廊</translation>
 <translation id="183287940576828840">令人反感/不安全</translation>
+<translation id="1834032517784994783">選取轉錄語言</translation>
 <translation id="1836553715834333258">系統顏色</translation>
 <translation id="183675228220305365">現實主義</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">請拔除「<ph name="DEVICE_NAME" />」的 USB 連接線，以繼續更新程序</translation>
 <translation id="2320295602967756579">啟用淺色主題背景</translation>
 <translation id="2323506179655536734">已略過</translation>
-<translation id="2323755382216917952">這次更新需要重新啟動電腦才能完成安裝。更新可能需時幾分鐘。韌體更新時，請勿拔除或關閉電腦。</translation>
 <translation id="2324354238778375592">浮動</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">非常好 (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">前衛</translation>
 <translation id="3182676044300231689">輸入提示，例如「使用較堅定的語氣」</translation>
 <translation id="3188257591659621405">我的檔案</translation>
-<translation id="3188931456353313123">此更新由裝置製造商提供，尚未經 Google 驗證。</translation>
 <translation id="319101249942218879">改咗顯示圖片</translation>
 <translation id="3192947282887913208">音效檔案</translation>
 <translation id="3199982728237701504">文件送紙器 (雙面)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">無法連線偵測非預設的網絡閘道</translation>
 <translation id="4483498983731992167">無法建立轉錄文字</translation>
 <translation id="4486524074141928967">系統會在<ph name="TIME" />將你登出</translation>
+<translation id="4487890678161807486">開啟轉錄語言選擇器</translation>
 <translation id="4500722292849917410">無法使用快速鍵。請透過輔助鍵 (Ctrl、Alt、Shift 或<ph name="META_KEY" />) 按下新的快速鍵。</translation>
 <translation id="4500966230243561393">介面顏色</translation>
 <translation id="4503223151711056411">向左箭咀</translation>

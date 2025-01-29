@@ -174,6 +174,16 @@ suite('ManageProfileTests', function() {
     assertEquals('New Name From Browser', nameField.value);
   });
 
+  // Tests profile name is not editable for work profile.
+  test('ManageProfileNameDisabledForEnterprise', async function() {
+    loadTimeData.overrideValues({hasEnterpriseLabel: true});
+    manageProfile = createManageProfileElement();
+    flush();
+    const nameField = manageProfile.$.name;
+    assertTrue(nameField.disabled);
+    assertEquals('Initial Fake Name', nameField.value);
+  });
+
   // Tests that the theme selector is visible.
   test('ThemeColorPicker', async function() {
     manageProfile = createManageProfileElement();

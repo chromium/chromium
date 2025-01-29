@@ -4,6 +4,7 @@
 
 #include "net/quic/quic_session_pool.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <set>
@@ -23,7 +24,6 @@
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -687,7 +687,7 @@ QuicChromiumClientSession* QuicSessionPool::FindExistingSession(
 
 std::optional<QuicSessionKey> QuicSessionPool::GetActiveSessionToServerId(
     const QuicSessionKey& session_key) const {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       active_sessions_, [&session_key](const auto& key_value) {
         return session_key != key_value.first &&
                session_key.server_id() == key_value.first.server_id();
@@ -699,8 +699,8 @@ std::optional<QuicSessionKey> QuicSessionPool::GetActiveSessionToServerId(
 
 std::optional<QuicSessionKey> QuicSessionPool::GetActiveJobToServerId(
     const QuicSessionKey& session_key) const {
-  auto it = base::ranges::find_if(
-      active_jobs_, [&session_key](const auto& key_value) {
+  auto it =
+      std::ranges::find_if(active_jobs_, [&session_key](const auto& key_value) {
         return session_key != key_value.first &&
                session_key.server_id() == key_value.first.server_id();
       });

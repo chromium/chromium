@@ -217,6 +217,7 @@ source_set("content_browsertests_filters") {
     "//testing/buildbot/filters/fuchsia.coverage.content_browsertests.filter",
     "//testing/buildbot/filters/linux-lacros.content_browsertests.filter",
     "//testing/buildbot/filters/site_isolation_android.content_browsertests.filter",
+    "//testing/buildbot/filters/trees_in_viz.content_browsertests.filter",
     "//testing/buildbot/filters/vulkan.content_browsertests.filter",
   ]
 }

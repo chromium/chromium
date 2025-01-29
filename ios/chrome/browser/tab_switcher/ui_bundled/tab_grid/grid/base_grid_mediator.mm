@@ -1759,6 +1759,9 @@ void LogPriceDropMetrics(web::WebState* web_state) {
       break;
     case TabGroupActionType::kUngroupTabGroup:
     case TabGroupActionType::kDeleteTabGroup:
+
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
       NOTREACHED();
   }
 }

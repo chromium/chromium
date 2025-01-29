@@ -649,4 +649,31 @@ TEST_F(AffiliationServiceImplTest, PrefetchChangePasswordURLForAndroidApp) {
             service()->GetChangePasswordURL(origin));
 }
 
+TEST_F(AffiliationServiceImplTest, PrefetchChangePasswordURLForUrlWithPath) {
+  const GURL origin(kOneExampleChangePasswordURL);
+  auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
+  auto* raw_mock_fetcher = mock_fetcher.get();
+
+  EXPECT_CALL(*mock_fetcher, StartRequest);
+  EXPECT_CALL(mock_fetcher_factory(), CreateInstance)
+      .WillOnce(Return(ByMove(std::move(mock_fetcher))));
+
+  service()->PrefetchChangePasswordURLs({origin}, base::DoNothing());
+
+  GroupedFacets group;
+  group.facets = {
+      Facet(FacetURI::FromPotentiallyInvalidSpec(kTestAndroidFacetURIBeta1),
+            FacetBrandingInfo(), GURL(k1ExampleChangePasswordURL)),
+      Facet(FacetURI::FromPotentiallyInvalidSpec(kOneExampleURL),
+            FacetBrandingInfo(), GURL(k1ExampleChangePasswordURL))};
+  auto test_result = std::make_unique<AffiliationFetcherDelegate::Result>();
+  test_result->groupings.push_back(group);
+
+  static_cast<AffiliationFetcherDelegate*>(service())->OnFetchSucceeded(
+      raw_mock_fetcher, std::move(test_result));
+
+  EXPECT_EQ(GURL(k1ExampleChangePasswordURL),
+            service()->GetChangePasswordURL(origin));
+}
+
 }  // namespace affiliations

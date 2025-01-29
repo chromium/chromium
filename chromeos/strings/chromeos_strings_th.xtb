@@ -317,7 +317,6 @@
 <translation id="2308243864813041101">ถอดสาย USB ของ <ph name="DEVICE_NAME" /> เพื่ออัปเดตต่อ</translation>
 <translation id="2320295602967756579">เปิดใช้ธีมสว่าง</translation>
 <translation id="2323506179655536734">ข้าม</translation>
-<translation id="2323755382216917952">การอัปเดตนี้กำหนดให้คุณต้องรีสตาร์ทคอมพิวเตอร์เพื่อให้การติดตั้งเสร็จสมบูรณ์ การอัปเดตนี้อาจใช้เวลาสักครู่จึงจะเรียบร้อย ขณะอัปเดตเฟิร์มแวร์ โปรดอย่าถอดปลั๊กหรือปิดคอมพิวเตอร์</translation>
 <translation id="2324354238778375592">ลอย</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">ดีมาก (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -463,7 +462,6 @@
 <translation id="3178532070248519384">อาวองการ์ด</translation>
 <translation id="3182676044300231689">ป้อนพรอมต์ เช่น "ทำให้ดูมั่นใจมากขึ้น"</translation>
 <translation id="3188257591659621405">ไฟล์ของฉัน</translation>
-<translation id="3188931456353313123">การอัปเดตนี้ให้บริการโดยผู้ผลิตอุปกรณ์และไม่ได้รับการยืนยันจาก Google</translation>
 <translation id="319101249942218879">เปลี่ยนรูปโปรไฟล์แล้ว</translation>
 <translation id="3192947282887913208">ไฟล์เสียง</translation>
 <translation id="3199982728237701504">ตัวป้อนเอกสาร (สองด้าน)</translation>

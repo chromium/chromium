@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Annulé</translation>
 <translation id="1020274983236703756">De nouveaux composants <ph name="PRODUCT_NAME" /> exclusifs sont disponibles</translation>
 <translation id="1022628058306505708">Flux terrestre</translation>
+<translation id="102432830749687801">Assurez-vous d'utiliser l'appli Transfert de contenus de Google pour déplacer les données de votre compte scolaire vers votre compte personnel avant de perdre l'accès.</translation>
 <translation id="1026212596705997935">Le raccourci est actuellement utilisé pour <ph name="CONFLICT_ACCEL_NAME" />. Appuyez sur un nouveau raccourci. Pour remplacer le raccourci existant, appuyez de nouveau dessus.</translation>
 <translation id="1030856839388844477">Réinitialiser la consommation des données</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">L'étui de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
 <translation id="1397738625398125236">Pinguer la passerelle</translation>
 <translation id="1398634363027580500">Latence très élevée des requêtes HTTPS</translation>
+<translation id="1406389211945506521">Merci de nous avoir donné votre avis. Vos commentaires nous aident à créer des contenus plus précis et plus utiles.</translation>
 <translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1413240736185167732">Échec – Problème au niveau du filtre</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Art classique</translation>
 <translation id="181434555916624618">Pour le moment, les résultats contenant des personnes ne sont pas affichés. Essayez une autre requête.</translation>
 <translation id="1815850098929213707">La touche <ph name="KEYS" /> est sélectionnée. Appuyez sur le bouton pour modifier la commande.</translation>
+<translation id="1818174214124933000">Lorsque vous sélectionnez "Envoyer", vos commentaires et votre contenu (présentés ci-dessous) sont envoyés à Google, examinés par des réviseurs humains et utilisés pour entraîner ou améliorer nos produits et services, conformément aux <ph name="LINK_POLICY_BEGIN" />Règles de confidentialité<ph name="LINK_POLICY_END" /> et aux <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Conditions d'utilisation de Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Caractères</translation>
 <translation id="1827738518074806965">Galerie d'art</translation>
+<translation id="183287940576828840">Choquant/Dangereux</translation>
 <translation id="1836553715834333258">Couleur du système</translation>
 <translation id="183675228220305365">réaliste</translation>
 <translation id="1838374766361614909">Effacer la recherche</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Échec de la requête UDP</translation>
 <translation id="1908394185991500139">flèche vers la gauche</translation>
 <translation id="1914144885717544695">vendredi</translation>
+<translation id="1915960750806557358">Partagez vos commentaires ou décrivez votre problème. Veillez à ne fournir aucune information personnelle, sensible ou confidentielle.</translation>
 <translation id="1923388006036088459">Couleurs d'accentuation</translation>
 <translation id="1945403655450283000">Enregistreur</translation>
 <translation id="1947737735496445907">Impression terminée</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Débranchez le câble USB du <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
 <translation id="2320295602967756579">Activer le thème clair</translation>
 <translation id="2323506179655536734">IGNORÉ</translation>
-<translation id="2323755382216917952">Cette mise à jour, qui peut prendre quelques minutes, exige que vous redémarriez votre ordinateur pour terminer l'installation. Vous ne devez pas débrancher ni éteindre l'ordinateur pendant la mise à jour du micrologiciel.</translation>
 <translation id="2324354238778375592">Superposer</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2346474577291266260">Excellente (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Saisissez une requête telle que "rendre plus confiant"</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
-<translation id="3188931456353313123">Cette mise à jour fournie par le fabricant de l'appareil n'a pas été validée par Google.</translation>
 <translation id="319101249942218879">Image d'avatar modifiée</translation>
 <translation id="3192947282887913208">Fichiers audio</translation>
 <translation id="3199982728237701504">Chargeur de document (recto verso)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">Nombre de cycles de charge complets effectués sur votre batterie</translation>
 <translation id="3877066159641251281">Écouter la traduction</translation>
 <translation id="3880601782712134623">détecter automatiquement les différentes voix et attribuer un identifiant générique (par exemple, Intervenant 1 et Intervenant 2) à chaque intervenant ;</translation>
+<translation id="38811596981744338">Problème juridique</translation>
 <translation id="3885327323343477505">Modifier l'économiseur d'écran</translation>
 <translation id="3889914174935857450">Date de réinitialisation</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356"><ph name="RATE" /> chargés en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="4930320165497208503">Pour configurer ou mettre à jour une connexion, accédez à <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, s'ouvre dans un nouvel onglet</translation>
 <translation id="4946927805998996217">Génération du résumé…</translation>
 <translation id="4950314376641394653">La version <ph name="VERSION" /> du micrologiciel <ph name="DEVICE_NAME" /> a été installée</translation>
 <translation id="4950893758552030541">charmille</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Obtenir des informations sur votre sélection</translation>
 <translation id="6694534975463174713">cadenas</translation>
 <translation id="6700703207451721535">L'accès à ce lien n'est pas autorisé. Si vous avez besoin d'y accéder, adressez-vous à votre enseignant.</translation>
+<translation id="6703179086771097594">Qu'est-ce qui n'a pas bien fonctionné ?</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
 <translation id="6712933881624804031">vallée</translation>
 <translation id="6716013206176357696">fraises</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Téléchargez le modèle de transcription dans les paramètres</translation>
 <translation id="7058278511608979688">Terminer et enregistrer</translation>
 <translation id="7059230779847288458">Recharge en cours, complète dans <ph name="TIME_VALUE" /></translation>
+<translation id="7064209589142995848">Transfert de contenus</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> sélectionné</translation>
 <translation id="7066538517128343186">la clé <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Préparer votre appareil</translation>
@@ -1592,6 +1599,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8476942730579767658">Fenêtres et bureaux</translation>
 <translation id="8477536061607044749">conception graphique</translation>
 <translation id="8477551185774834963">Seuil de latence autorisé légèrement dépassé par le DNS</translation>
+<translation id="8481308460877552925">Contenu incorrect</translation>
 <translation id="8482376765267780829">Sélectionner du texte à simplifier</translation>
 <translation id="8483248364096924578">Adresse IP</translation>
 <translation id="8491311378305535241">Impossible de se connecter aux sites HTTP via le pare-feu depuis les applis Android</translation>

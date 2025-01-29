@@ -4,10 +4,10 @@
 
 #include "net/base/network_delegate.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"

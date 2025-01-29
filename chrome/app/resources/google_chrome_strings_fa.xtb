@@ -19,7 +19,6 @@
 <translation id="1184145431117212167">‏نصب انجام نشد چون از نسخه Windows شما پشتیبانی نمی‌شود.</translation>
 <translation id="1194807384646768652">‏‫Chrome این بارگیری را مسدود کرد زیرا این نوع فایل معمولاً بارگیری نمی‌شود و ممکن است خطرناک باشد</translation>
 <translation id="1203500561924088507">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید مرورگر را بازراه‌اندازی کنید.</translation>
-<translation id="1229096353876452996">‏‫Google توصیه می‌کند Chrome را به‌عنوان پیش‌فرض تنظیم کنید</translation>
 <translation id="1265739287306757398">با نحوه انجام کار آشنا شوید</translation>
 <translation id="1278833599417554002">‏راه‌اندازی مجدد برای به‌روزرسانی Chrome</translation>
 <translation id="1290883685122687410">خطای راه‌اندازی: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -275,7 +274,6 @@
 <translation id="4389991535395284064">‏هنگام مرور «درحالت ناشناس»، Chrome قبل‌از اینکه سایت را ازطریق اتصال ناامن بار کند به شما هشدار می‌دهد</translation>
 <translation id="4427306783828095590">«محافظت بهبودیافته» کارهای بیشتری برای مسدود کردن رمزگیری و بدافزار انجام می‌دهد</translation>
 <translation id="4434353761996769206">خطای نصب‌کننده: <ph name="INSTALLER_ERROR" /></translation>
-<translation id="4438657683599538446">‏ورود به سیستم Chrome با <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">‏Chrome - ورود به سیستم شبکه - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">‏عملکرد دیگری در Google Chrome درحال انجام است. لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="4459234553906210702">‏سنجش آگهی به سایت‌هایی که بازدید می‌کنید اجازه می‌دهد اطلاعاتی را از Chrome درخواست کنند که به آن‌ها کمک می‌کند عملکرد آگهی‌هایشان را بسنجند. «سنجش آگهی» ردیابی بین‌سایتی را با انتقال حداقل اطلاعات ممکن بین سایت‌ها محدود می‌کند.</translation>

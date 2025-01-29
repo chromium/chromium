@@ -266,7 +266,7 @@
                       actionType:actionType
                       sourceView:sourceView];
   __weak TabStripCoordinator* weakSelf = self;
-  _tabGroupConfirmationCoordinator.action = ^{
+  _tabGroupConfirmationCoordinator.primaryAction = ^{
     switch (actionType) {
       case TabGroupActionType::kUngroupTabGroup:
         [weakSelf ungroupTabGroup:tabGroupItem];
@@ -278,6 +278,9 @@
       case TabGroupActionType::kDeleteSharedTabGroup:
         // TODO(crbug.com/375587197): Implement this.
         break;
+      case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+      case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+        NOTREACHED();
     }
   };
   _tabGroupConfirmationCoordinator.tabGroupName = tabGroupItem.title;

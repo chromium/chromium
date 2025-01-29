@@ -330,9 +330,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
       initWithAccessPoint:signin_metrics::AccessPoint::kSettings];
-  // TODO(crbug.com/41493423): We should log that the signin was offered,
-  // completed and Signin.SigninStartedAccessPoint.
+  // TODO(crbug.com/41493423): We should log that the signin was offered.
   expecteds.signinSignInStarted = 1;
+  expecteds.signinSigninStartedAccessPoint = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
@@ -395,9 +395,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
       initWithAccessPoint:signin_metrics::AccessPoint::kSettings];
-  // TODO(crbug.com/41493423): We should log that the signin was offered,
-  // completed and Signin.SigninStartedAccessPoint.
+  // TODO(crbug.com/41493423): We should log that the signin was offered.
   expecteds.signinSignInStarted = 1;
+  expecteds.signinSigninStartedAccessPoint = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
@@ -445,8 +445,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
       initWithAccessPoint:signin_metrics::AccessPoint::kSettings];
   // TODO(crbug.com/41493423): We should log that the signin was offered,
-  // completed and Signin.SigninStartedAccessPoint.
+  // completed.
   expecteds.signinSignInStarted = 1;
+  expecteds.signinSigninStartedAccessPoint = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 

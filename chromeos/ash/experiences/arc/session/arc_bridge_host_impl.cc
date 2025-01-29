@@ -4,13 +4,13 @@
 
 #include "chromeos/ash/experiences/arc/session/arc_bridge_host_impl.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_manager.h"
 #include "ash/public/cpp/message_center/arc_notifications_host_initializer.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/mojom/adbd.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
@@ -509,7 +509,7 @@ void ArcBridgeHostImpl::OnInstanceReady(
 
 void ArcBridgeHostImpl::OnChannelClosed(MojoChannelBase* channel) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  mojo_channels_.erase(base::ranges::find(
+  mojo_channels_.erase(std::ranges::find(
       mojo_channels_, channel, &std::unique_ptr<MojoChannelBase>::get));
 }
 

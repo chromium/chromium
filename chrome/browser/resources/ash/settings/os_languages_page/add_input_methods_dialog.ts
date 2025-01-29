@@ -105,7 +105,15 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
                name: inputMethod.displayName,
                searchTerms: inputMethod.tags,
                disabledByPolicy: !!inputMethod.isProhibitedByPolicy,
-             }));
+             }))
+        .sort((a, b) => {
+          if (a.disabledByPolicy === b.disabledByPolicy) {
+            return 0;
+          }
+          return a.disabledByPolicy ?
+              1 :
+              -1;  // Sort: enabled comes before disabled
+        });
   }
 
   /**

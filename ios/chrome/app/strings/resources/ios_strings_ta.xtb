@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{உங்கள் Google கணக்கில் ({EMAIL}) கடவுச்சொல் சேமிக்கப்பட்டது}other{உங்கள் Google கணக்கில் ({EMAIL}) கடவுச்சொற்கள் சேமிக்கப்பட்டன}}</translation>
 <translation id="2791174088547598693">கடவுச்சொல்லைச் சேர்…</translation>
 <translation id="2797302972324086597">தேசக் குறியீடு</translation>
-<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> மூடப்பட்டது</translation>
 <translation id="2816489851009559785">மெனு → அமைப்புகள் → இயல்பு பிரவுசர்</translation>
 <translation id="2818821771744632548">iPhoneனை மீட்டமைப்பதன் ஒரு பகுதியாக <ph name="USER_NAME" /> கணக்கில் இருந்து வெளியேற்றப்பட்டீர்கள். மீண்டும் உள்நுழைய கீழே உள்ள “தொடர்க” என்பதைத் தட்டவும்.</translation>
 <translation id="2819667972867209401">இயக்கப்பட்டிருக்கும்போது, தரவு உங்கள் Google கணக்கில் சேமிக்கப்படும். முடக்கப்பட்டிருந்தால் இந்தச் சாதனத்தில் மட்டும் தரவு சேமிக்கப்படும், நீங்கள் வெளியேறினால் நீக்கப்படும்.</translation>
@@ -1591,7 +1590,6 @@
 <translation id="7975036700432177008">முயற்சிக்கவும்</translation>
 <translation id="797588153137233716">மெனு → செயல்பாடுகள் → பிரவுசிங் தரவை நீக்கு</translation>
 <translation id="7977451675950311423">தரவு மீறலில் பாதிக்கப்பட்டுள்ள கடவுச்சொல்லை நீங்கள் பயன்படுத்தினால் உங்களை எச்சரிக்கும்.</translation>
-<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> புதிய பக்கம், <ph name="NUMBER_OF_TABS_REMOVED" /> மூடப்பட்டது</translation>
 <translation id="797824194429476746">இந்தச் சாதனத்தில் பக்கங்கள் திறந்தே இருக்கும் என்றாலும், குழு நிரந்தரமாக நீக்கப்படும்.</translation>
 <translation id="797874245254030665">எந்த ஆப்ஸில் இருந்தும் கடவுச்சொற்களையும் கடவுச்சாவிகளையும் அணுகுதல்</translation>
 <translation id="7982789257301363584">நெட்வொர்க்</translation>
@@ -1778,7 +1776,6 @@
 <translation id="8728922029615312208">எல்லாவற்றையும் மூடு</translation>
 <translation id="8730621377337864115">முடிந்தது</translation>
 <translation id="87371078663613140">மெனு பட்டியில் உள்ள விருப்பங்களைப் பார்க்கவும்</translation>
-<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> புதிய பக்கம்</translation>
 <translation id="8741627442233023406">{count,plural, =1{பக்கத்தைக் காட்டு…}other{எல்லாப் பக்கங்களையும் காட்டு…}}</translation>
 <translation id="8741995161408053644">உங்கள் Google கணக்கு <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> என்ற தளத்தில் உலாவல் வரலாறு தொடர்பான பிற தகவல்களைக் கொண்டிருக்கலாம்.</translation>
 <translation id="874599634440689554">இணைப்பை உருவாக்கு</translation>

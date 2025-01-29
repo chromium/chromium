@@ -160,7 +160,7 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   bool vary_by_default = true;
 
   // If the dictionary contains unknown keys, maybe fail parsing.
-  const bool has_unrecognized_keys = !base::ranges::all_of(
+  const bool has_unrecognized_keys = !std::ranges::all_of(
       dict,
       [&](const auto& pair) { return base::Contains(kValidKeys, pair.first); });
 

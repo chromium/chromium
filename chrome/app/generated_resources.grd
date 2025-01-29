@@ -13979,6 +13979,9 @@ This can include information about installed software, files, your browser, and 
         <message name="IDS_SYNC_PASSPHRASE_DIALOG_TITLE" desc="Title of the sync passphrase dialog">
           Enter your passphrase
         </message>
+        <message name="IDS_SYNC_PASSPHRASE_DIALOG_OK_BUTTON" desc="Label of the main button of the sync passphrase dialog">
+          Enter
+        </message>
 
         <if expr="use_titlecase">
           <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_CLOSE" desc="Text of the button to confirm browser close after cookie setting change in behavior.">

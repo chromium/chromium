@@ -644,6 +644,17 @@ const int kExpectedExitAnimationCount = 2;
   }
 }
 
+- (void)respondToTabWillChange {
+  if (!_associatedTabHelper) {
+    return;
+  }
+
+  _associatedTabHelper->RecordViewportSnaphot();
+  _associatedTabHelper->RecordSheetDimensionState(
+      _resultsPagePresenter.sheetDimension);
+  _associatedTabHelper->UpdateSnapshotStorage();
+}
+
 #pragma mark - LensOverlayResultConsumer
 
 // This coordinator acts as a proxy consumer to the result consumer to implement

@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Karakter</translation>
 <translation id="1827738518074806965">Galeri seni</translation>
 <translation id="183287940576828840">Menyinggung/Tidak Aman</translation>
+<translation id="1834032517784994783">Pilih bahasa transkripsi</translation>
 <translation id="1836553715834333258">Warna sistem</translation>
 <translation id="183675228220305365">realis</translation>
 <translation id="1838374766361614909">Hapus penelusuran</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">Cabut kabel USB <ph name="DEVICE_NAME" /> untuk melanjutkan proses update</translation>
 <translation id="2320295602967756579">Aktifkan tema terang</translation>
 <translation id="2323506179655536734">DILEWATI</translation>
-<translation id="2323755382216917952">Update ini mengharuskan Anda untuk memulai ulang komputer guna menyelesaikan penginstalan. Mungkin perlu waktu beberapa menit untuk menyelesaikan proses update ini. Saat firmware sedang diupdate, jangan mencabut atau mematikan komputer.</translation>
 <translation id="2324354238778375592">Mengambang</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Sangat baik (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Masukkan perintah seperti "buat terdengar lebih percaya diri"</translation>
 <translation id="3188257591659621405">File saya</translation>
-<translation id="3188931456353313123">Update ini disediakan oleh produsen perangkat dan belum diverifikasi oleh Google.</translation>
 <translation id="319101249942218879">Gambar avatar diubah</translation>
 <translation id="3192947282887913208">File Audio</translation>
 <translation id="3199982728237701504">Pengumpan Dokumen (Dua Sisi)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">Gagal melakukan ping ke gateway jaringan non-default</translation>
 <translation id="4483498983731992167">Tidak dapat membuat transkrip</translation>
 <translation id="4486524074141928967">Anda akan logout pada <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Buka pemilih bahasa transkripsi</translation>
 <translation id="4500722292849917410">Pintasan tidak tersedia. Tekan pintasan baru menggunakan tombol pengubah (ctrl, alt, shift, atau <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Warna antarmuka</translation>
 <translation id="4503223151711056411">Panah kiri</translation>

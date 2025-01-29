@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Carateres</translation>
 <translation id="1827738518074806965">Galeria de arte</translation>
 <translation id="183287940576828840">Ofensivo/inseguro</translation>
+<translation id="1834032517784994783">Selecione o idioma da transcrição</translation>
 <translation id="1836553715834333258">Cor do sistema</translation>
 <translation id="183675228220305365">realista</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">Desligue o cabo USB do dispositivo <ph name="DEVICE_NAME" /> para continuar o processo de atualização</translation>
 <translation id="2320295602967756579">Ativar tema claro</translation>
 <translation id="2323506179655536734">IGNORADO</translation>
-<translation id="2323755382216917952">Esta atualização requer que reinicie o computador para concluir a instalação. Esta atualização pode demorar alguns minutos a ser concluída Enquanto o firmware está a ser atualizado, não desligue nem encerre o computador.</translation>
 <translation id="2324354238778375592">Flutuante</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Introduza um comando como "tornar mais confiante"</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
-<translation id="3188931456353313123">Esta atualização é fornecida pelo fabricante do dispositivo e não foi validada pela Google.</translation>
 <translation id="319101249942218879">Imagem do avatar alterada</translation>
 <translation id="3192947282887913208">Ficheiros de áudio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (dois lados)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">Falha ao enviar ping ao gateway da rede não predefinida.</translation>
 <translation id="4483498983731992167">Não é possível criar a transcrição</translation>
 <translation id="4486524074141928967">A sua sessão vai ser terminada à(s) <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Abrir selecionador de idiomas da transcrição</translation>
 <translation id="4500722292849917410">Atalho não disponível. Prima um novo atalho através de uma tecla de modificação (Ctrl, Alt, Shift ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Cor da interface</translation>
 <translation id="4503223151711056411">Seta para a esquerda</translation>

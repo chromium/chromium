@@ -281,6 +281,7 @@
 <translation id="1925320505152357008">1 منٹ سے کم</translation>
 <translation id="1928739107511554905">‏اپ ڈیٹ حاصل کرنے کیلئے، ٹچ اسکرین استعمال کر کے منسلک شدہ کی بورڈ سے اپنا Chromebook دوبارہ شروع کریں۔</translation>
 <translation id="1929331825127010451">سوال پر واپس جائیں</translation>
+<translation id="1946615340060705561">‏چھوڑنے کیلئے "c" دبائیں</translation>
 <translation id="1948405482892809935">اگلے صارف پر سوئچ کریں</translation>
 <translation id="1951012854035635156">اسسٹنٹ</translation>
 <translation id="1954252331066828794">اسکرین ریکارڈنگ مکمل ہو گئی</translation>
@@ -973,7 +974,7 @@
 <translation id="4285498937028063278">پن ہٹائیں</translation>
 <translation id="428715201724021596">پروفائل سے منسلک کیا جا رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="4287250812980588583">‏‫Chrome ونڈو</translation>
-<translation id="4291322857434980285">{NUM_APPS,plural, =1{‏‫Mic والیوم کو <ph name="APP_NAME" /> کے ذریعے کنٹرول کیا جاتا ہے}other{‏‫Mic والیوم کو # ایپس کے ذریعے کنٹرول کیا جاتا ہے}}</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{مائیک والیوم کو <ph name="APP_NAME" /> کے ذریعے کنٹرول کیا جا رہا ہے}other{مائیک والیوم کو # ایپس کے ذریعے کنٹرول کیا جا رہا ہے}}</translation>
 <translation id="4294319844246081198">صبح بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="4296136865091727875">تمام <ph name="COUNT" /> اطلاعات صاف کریں</translation>
 <translation id="4300272766492248925">ایپ کھولیں</translation>
@@ -990,7 +991,7 @@
 <translation id="4322742403972824594">‏Ctrl + Alt + 'اوپر تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا۔ Home کلید کا استعمال کرنے کیلئے، <ph name="LAUNCHER_KEY_NAME" /> کلید + 'بائیں تیر کا نشان' کو دبائیں۔</translation>
 <translation id="4324840740119394760">اس سے کیمرے کی اجازت کے ساتھ <ph name="APP_NAME" /> اور تمام ایپس اور ویب سائٹس کو کیمرے تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="4327147325944669226">گیم ریکارڈ کریں</translation>
-<translation id="4329076911374908740">محفوظ کردہ گروپس کی زیادہ سے زیادہ تعداد حد تک پہنچ گئی</translation>
+<translation id="4329076911374908740">محفوظ کردہ گروپس کی زیادہ سے زیادہ تعداد حد تک پہنچ گئی۔</translation>
 <translation id="4338109981321384717">میگنفائنگ گلاس</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />، خاموش کردہ</translation>
 <translation id="4351244548802238354">ڈائیلاگ بند کریں</translation>

@@ -3,12 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//chromeos/ash/components/scalable_iph/scalable_iph.gni")
 import("//tools/grit/grit_rule.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 grit("resources") {
   source = "ash_resources.grd"

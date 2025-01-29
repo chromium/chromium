@@ -2282,15 +2282,6 @@
       },
     },
     {
-      // Updates the hanging behavior of preserved whitespace at the end of a
-      // line to not depend on text-align. This flag is to be used as a
-      // killswitch in case of any issues.
-      // https://github.com/w3c/csswg-drafts/issues/3440
-      // crbug.com/1363901
-      name: "HangingWhitespaceDoesNotDependOnAlignment",
-      status: "stable",
-    },
-    {
       name: "HasUAVisualTransition",
       status: "stable",
     },
@@ -4176,12 +4167,6 @@
     },
     {
       name: "SvgNoPixelSnappingScaleAdjustment",
-      status: "stable",
-    },
-    {
-      // Feature for optimizing SVG transform changes. This is a kill switch in
-      // case we encounter issues with these optimizations.
-      name: "SvgTransformOptimization",
       status: "stable",
     },
     {

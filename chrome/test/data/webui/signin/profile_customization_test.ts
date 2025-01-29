@@ -33,6 +33,7 @@ suite('ProfileCustomizationTest', function() {
       backgroundColor: 'rgb(0, 255, 0)',
       pictureUrl: AVATAR_URL_1,
       isManaged: false,
+      hasEnterpriseLabel: false,
       welcomeTitle: '',
     });
     ProfileCustomizationBrowserProxyImpl.setInstance(browserProxy);
@@ -112,6 +113,24 @@ suite('ProfileCustomizationTest', function() {
     assertEquals('Bob', profileName);
   });
 
+  test('ChangeNameDisabledForWorkProfile', async function() {
+    await initializeApp();
+    webUIListenerCallback('on-profile-info-changed', {
+      backgroundColor: 'rgb(0, 255, 0)',
+      pictureUrl: AVATAR_URL_1,
+      isManaged: true,
+      hasEnterpriseLabel: true,
+      welcomeTitle: '',
+    });
+    await microtasksFinished();
+
+    const nameInput = app.$.nameInput;
+    await nameInput.updateComplete;
+    assertEquals('TestName', nameInput.value);
+    assertFalse(nameInput.invalid);
+    assertTrue(nameInput.disabled);
+  });
+
   test('ProfileInfo', async function() {
     await initializeApp();
     // Check initial info.
@@ -175,6 +194,7 @@ suite(`LocalProfileCreationTest`, function() {
       backgroundColor: 'rgb(0, 255, 0)',
       pictureUrl: AVATAR_URL_1,
       isManaged: false,
+      hasEnterpriseLabel: false,
       welcomeTitle: '',
     });
     ProfileCustomizationBrowserProxyImpl.setInstance(browserProxy);

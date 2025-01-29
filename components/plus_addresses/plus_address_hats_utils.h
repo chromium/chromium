@@ -8,6 +8,8 @@
 namespace plus_addresses::hats {
 
 // Hats Bits data fields:
+inline constexpr char kPlusAddressesCount[] =
+    "The number of the plus addresses the user has";
 inline constexpr char kFirstPlusAddressCreationTime[] =
     "Time passed since the user has created the first plus address, in seconds";
 inline constexpr char kLastPlusAddressFillingTime[] =

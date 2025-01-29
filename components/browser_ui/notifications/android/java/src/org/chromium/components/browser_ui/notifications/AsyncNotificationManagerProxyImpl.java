@@ -15,7 +15,6 @@ import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils.NotificationEvent;
 
@@ -180,12 +179,13 @@ import java.util.function.Function;
      * Helper method to run an runnable inside a scoped event in background, and executes callback
      * on the ui thread.
      */
-    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
-    private <T> void runAsyncAndReply(String eventName, Callable<T> callable, Callback callback) {
-        new AsyncTask<T>() {
+    // https://github.com/uber/NullAway/issues/1126#issuecomment-2619949211
+    @SuppressWarnings({"NoDynamicStringsInTraceEventCheck", "NullAway"})
+    private <T extends @Nullable Object> void runAsyncAndReply(
+            String eventName, Callable<T> callable, Callback<T> callback) {
+        new AsyncTask<@Nullable T>() {
             boolean mSuccess = true;
 
-            @NullUnmarked
             @Override
             protected @Nullable T doInBackground() {
                 try (TraceEvent te = TraceEvent.scoped(eventName)) {
@@ -200,7 +200,7 @@ import java.util.function.Function;
             }
 
             @Override
-            protected void onPostExecute(T result) {
+            protected void onPostExecute(@Nullable T result) {
                 // TODO(crbug.com/388114708): currently the callback is not called on failure to
                 // match the behavior of NotificationManangerproxyImpl. But this should be changed
                 // to always call the callback as it might cause undesirable consequences.

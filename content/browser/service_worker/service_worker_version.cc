@@ -3173,7 +3173,7 @@ ServiceWorkerVersion::SetupRouterEvaluator(
 
   // Check if we have fetch handler. This is a rare case, since this should have
   // been validated in the renderer already when adding a new router rule.
-  if (router_evaluator_->has_fetch_event_source() &&
+  if (router_evaluator_->require_fetch_handler() &&
       fetch_handler_existence() == FetchHandlerExistence::DOES_NOT_EXIST) {
     router_evaluator_.reset();
     return ServiceWorkerRouterEvaluatorErrorEnums::

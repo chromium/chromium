@@ -21,7 +21,6 @@
 <translation id="1184145431117212167">Таны Windows-н хувилбарыг дэмждэггүй тул суулгаж чадсангүй.</translation>
 <translation id="1194807384646768652">Файлын төрлийг ихэвчлэн татдаггүй бөгөөд энэ нь аюултай байж магадгүй тул Chrome энэ таталтыг блоклосон</translation>
 <translation id="1203500561924088507">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө хөтчөө дахин эхлүүлэх ёстой.</translation>
-<translation id="1229096353876452996">Chrome-г өгөгдмөлөөр тохируулахыг Google зөвлөж байна</translation>
 <translation id="1265739287306757398">Заавар харах</translation>
 <translation id="1278833599417554002">&amp;Chrome-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="1290883685122687410">Тохируулгын алдаа: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -279,7 +278,6 @@
 <translation id="4389991535395284064">Нууцлалын горимд үзэх үед Chrome аюултай холболт ашиглан сайтыг ачаалахаас өмнө танд сануулна</translation>
 <translation id="4427306783828095590">Сайжруулсан хамгаалалт нь фишинг болон хортой кодыг блоклохын тулд илүү ихийг хийдэг</translation>
 <translation id="4434353761996769206">Суулгагчийн алдаа: <ph name="INSTALLER_ERROR" /></translation>
-<translation id="4438657683599538446">Chrome-д <ph name="USER_EMAIL" />-р нэвтрэх</translation>
 <translation id="4450664632294415862">Chrome - Сүлжээнд нэвтрэх - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome-н өөр үйл ажиллагаа явагдаж байна. Дараа дахин оролдоно уу.</translation>
 <translation id="4459234553906210702">Зарын хэмжилт нь таны зочилсон сайтуудад зарынхаа гүйцэтгэлийг хэмжихэд туслах мэдээллийг Chrome-с хүсэх боломжийг олгоно. Зарын хэмжилт нь сайт хооронд аль болох бага мэдээлэл шилжүүлснээр сайт хоорондын хяналтыг хязгаарлана.</translation>

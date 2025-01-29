@@ -962,6 +962,7 @@
 <translation id="2674170444375937751">کیا آپ واقعی ان صفحات کو اپنی سرگزشت سے حذف کرنا چاہتے ہیں؟</translation>
 <translation id="2674524144218093528">گھر کی پینٹنگ اور سجاوٹ</translation>
 <translation id="2674804415323431591">تجاویز چھپائیں</translation>
+<translation id="26774279487328902">‫<ph name="GROUP_COUNT" /> ٹیب گروپس اب مزید دستیاب نہیں ہیں</translation>
 <translation id="2677748264148917807">چھوڑیں</translation>
 <translation id="2683195745483370038">دوسرے نتائج ملے</translation>
 <translation id="2686919536310834199">لکھنے میں میری مدد کریں کے لیے تاثرات بھیجیں۔</translation>
@@ -2267,6 +2268,7 @@
 <translation id="5001526427543320409">فریق ثالث کوکیز</translation>
 <translation id="5002932099480077015">‏فعال ہونے پر، زیادہ تیزی سے فارم بھرنے کیلئے Chrome آپ کے کارڈ کی کاپی کو اس آلہ پر اسٹور کرے گا۔</translation>
 <translation id="5007392906805964215">جائزہ لیں</translation>
+<translation id="500790844453430087">‫"<ph name="GROUP_TITLE_1" />" اور "<ph name="GROUP_TITLE_2" />" "ٹیب گروپس اب مزید دستیاب نہیں ہیں</translation>
 <translation id="5011561501798487822">شناخت کردہ زبان</translation>
 <translation id="5015510746216210676">مشین کا نام:</translation>
 <translation id="5017554619425969104">آپ کا کاپی کردہ متن</translation>
@@ -2374,6 +2376,7 @@
 <translation id="519422657042045905">تشریح دستیاب نہیں ہے</translation>
 <translation id="5200063972779787617">اکاؤنٹ میں پتہ محفوظ کریں</translation>
 <translation id="5201306358585911203">اس صفحے پر انضمام کردہ ایک صفحے کے مطابق</translation>
+<translation id="5205114269877707377">‏<ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />، دستیاب کارروائیوں کو براؤز کرنے کے لیے ٹیب دبائیں، پھر منتخب کارروائی کو رو بہ عمل لانے کے لیے Enter دبائیں۔</translation>
 <translation id="5205222826937269299">نام مطلوب ہے</translation>
 <translation id="5206392433295093945">بیڈ روم</translation>
 <translation id="5209670883520018268">ٹرے 20</translation>
@@ -2739,6 +2742,7 @@
 <translation id="5866898949289125849">آپ ڈویلپر ٹولز کا صفحہ ملاحظہ کر رہے ہیں</translation>
 <translation id="5869405914158311789">اس سائٹ تک رسائی حاصل نہیں کی جا سکتی ہے</translation>
 <translation id="5869522115854928033">محفوظ کردہ پاس ورڈز</translation>
+<translation id="5872215789867188990">‫"<ph name="GROUP_TITLE" />" ٹیب گروپ اب مزید دستیاب نہیں ہے</translation>
 <translation id="5872692522325383488">‏IBAN محفوظ کیا گيا</translation>
 <translation id="5873297634595728366">ڈیزل گاڑیاں</translation>
 <translation id="5877359070305966420">انسانی وسائل</translation>
@@ -3444,7 +3448,6 @@
 <translation id="7110368079836707726">کالجز اور یونیورسٹیاں</translation>
 <translation id="7111012039238467737">(درست)</translation>
 <translation id="7111507312244504964">املاک کے معائنے اور تخمینے</translation>
-<translation id="7112327784801341716">آپ کی موجودہ معلومات نظر نہیں آ رہی ہے؟ اپنے بینک سے رابطہ کر کے اسے اپ ڈیٹ کریں۔</translation>
 <translation id="7116334367957017155">‏آپ نے کوئی بھی پتہ محفوظ نہیں کیا ہے۔ سبھی Google پروڈکٹس پر استعمال کرنے کے لیے ایک پتہ شامل کریں۔</translation>
 <translation id="7118618213916969306">‏کلپ بورڈ URL تلاش کریں، <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">‏آپ یہ وارننگ اس لیے دیکھ رہے ہیں کیونکہ یہ سائٹ HTTPS کو سپورٹ نہیں کرتی ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3506,7 +3509,6 @@
 <translation id="7219179957768738017">کنکشن <ph name="SSL_VERSION" /> کا استعمال کرتا ہے۔</translation>
 <translation id="7220786058474068424">کارروائی ہورہی ہے</translation>
 <translation id="7221855153210829124">اطلاعات دکھائیں</translation>
-<translation id="7221857374443660083">آپ کا بینک یہ یقینی بنانا چاہتا ہے کہ یہ آپ ہی ہیں</translation>
 <translation id="722454870747268814">نیا پوشیدگی ٹیب</translation>
 <translation id="7227293336683593977">قیمت کی سرگزشت</translation>
 <translation id="7232352818707016189">موازنہ ٹیبل کے لیے مزید کارروائیاں</translation>

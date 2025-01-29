@@ -63,7 +63,6 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     const password_manager::PasswordForm* form_to_fill,
     autofill::FieldRendererId focused_field_renderer_id,
     ShowHybridOption should_show_hybrid_option,
-    ShowPasswordMigrationWarningCallback show_password_migration_warning,
     std::unique_ptr<PasswordAccessLossWarningBridge> data_loss_warning_bridge)
     : password_client_(password_client),
       web_contents_(web_contents),
@@ -73,8 +72,6 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
       form_to_fill_(form_to_fill),
       focused_field_renderer_id_(focused_field_renderer_id),
       should_show_hybrid_option_(should_show_hybrid_option),
-      show_password_migration_warning_(
-          std::move(show_password_migration_warning)),
       access_loss_warning_bridge_(std::move(data_loss_warning_bridge)) {}
 
 TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
@@ -98,8 +95,6 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
       form_to_fill_(form_to_fill),
       focused_field_renderer_id_(focused_field_renderer_id),
       should_show_hybrid_option_(should_show_hybrid_option),
-      show_password_migration_warning_(
-          base::BindRepeating(&local_password_migration::ShowWarning)),
       access_loss_warning_bridge_(
           std::make_unique<PasswordAccessLossWarningBridgeImpl>()),
       source_id_(password_client->web_contents()
@@ -321,7 +316,6 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
   PrefService* prefs = profile->GetPrefs();
   filler_->UpdateTriggerSubmission(
       ShouldTriggerSubmission() &&
-      !local_password_migration::ShouldShowWarning(profile) &&
       !access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
           prefs, /*called_at_startup=*/false));
   filler_->FillUsernameAndPassword(
@@ -344,9 +338,6 @@ void TouchToFillControllerAutofillDelegate::OnFillingCredentialComplete(
         /*called_at_startup=*/false,
         password_manager_android_util::PasswordAccessLossWarningTriggers::
             kTouchToFill);
-  } else {
-    // TODO: crbug.com/340437382 - Deprecate the migration warning sheet.
-    ShowPasswordMigrationWarningIfNeeded();
   }
 
   if (triggered_submission) {
@@ -375,17 +366,4 @@ void TouchToFillControllerAutofillDelegate::CleanUpFillerAndReportOutcome(
   filler_->Dismiss(ToShowVirtualKeyboard(show_virtual_keyboard));
   filler_.reset();
   base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome", outcome);
-}
-
-void TouchToFillControllerAutofillDelegate::
-    ShowPasswordMigrationWarningIfNeeded() {
-  if (!local_password_migration::ShouldShowWarning(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()))) {
-    return;
-  }
-  show_password_migration_warning_.Run(
-      web_contents_->GetTopLevelNativeWindow(),
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-      password_manager::metrics_util::PasswordMigrationWarningTriggers::
-          kTouchToFill);
 }

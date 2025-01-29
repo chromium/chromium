@@ -493,9 +493,7 @@ void WizardController::Init(OobeScreenId first_screen) {
   //
   // TODO (ygorshenin@): implement handling of the local state
   // corruption in the case of asynchronous loading.
-  bool is_enterprise_managed =
-      ash::InstallAttributes::Get()->IsEnterpriseManaged();
-  if (!is_enterprise_managed) {
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     const PrefService::PrefInitializationStatus status =
         GetLocalState()->GetInitializationStatus();
     if (status == PrefService::INITIALIZATION_STATUS_ERROR) {
@@ -518,11 +516,8 @@ void WizardController::Init(OobeScreenId first_screen) {
     }
   }
 
-  const bool device_is_owned =
-      is_enterprise_managed ||
-      !user_manager::UserManager::Get()->GetUsers().empty();
   // Do not show the HID Detection screen if device is owned.
-  if (!device_is_owned && HIDDetectionScreen::CanShowScreen() &&
+  if (!StartupUtils::IsDeviceOwned() && HIDDetectionScreen::CanShowScreen() &&
       first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // TODO(https://crbug.com/1275960): Move logic into
     // HIDDetectionScreen::MaybeSkip.
@@ -2848,11 +2843,13 @@ void WizardController::OnDeviceModificationCanceled() {
   }
 
   LOG(WARNING) << "No previous screen on unowned device";
-  if (prescribed_enrollment_config_.should_enroll()) {
-    ShowPackagedLicenseScreen();
-  } else {
-    ShowLoginScreen();
+  // The WelcomeView is not available when we enter OOBE from the login screen.
+  // TODO(crbug.com/393041544) Determine if safeguard is really required.
+  if (HasScreen(WelcomeView::kScreenId)) {
+    ShowWelcomeScreen();
+    return;
   }
+  ShowLoginScreen();
 }
 
 void WizardController::OnManagementTransitionScreenExit() {

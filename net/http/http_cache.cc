@@ -9,6 +9,7 @@
 
 #include "net/http/http_cache.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -32,7 +33,6 @@
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1190,7 +1190,7 @@ void HttpCache::DoneWithEntry(scoped_refptr<ActiveEntry>& entry,
   }
 
   // Transaction is waiting in the done_headers_queue.
-  auto it = base::ranges::find(entry->done_headers_queue(), transaction);
+  auto it = std::ranges::find(entry->done_headers_queue(), transaction);
   if (it != entry->done_headers_queue().end()) {
     entry->done_headers_queue().erase(it);
 

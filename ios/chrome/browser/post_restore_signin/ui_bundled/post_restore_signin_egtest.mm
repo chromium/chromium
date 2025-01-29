@@ -6,6 +6,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
@@ -75,13 +77,24 @@ FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
               IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PRIMARY_ACTION_SHORT))]
       performAction:grey_tap()];
 
-  [SigninEarlGreyUI assertFakeAddAccountMenuDisplayed];
+  // fakeIdentity1 is already added in the fake system identity manager, and the
+  // fake one check-fail if an existing identity is added again.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGreyUI addFakeAccountInFakeAddAccountMenu:fakeIdentity];
+
+  // Decline History Sync.
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           PromoScreenSecondaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
+      performAction:grey_tap()];
 
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
       initWithAccessPoint:signin_metrics::AccessPoint::
                               kPostDeviceRestoreSigninPromo];
-  // TODO(crbug.com/41493423): We should log that the signin was offered,
-  // and started.
+  expecteds.signinSigninStartedAccessPoint = 1;
+  expecteds.signinSignInStarted = 1;
+  // TODO(crbug.com/41493423): We should log that the signin was offered.
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 

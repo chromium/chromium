@@ -291,6 +291,7 @@ TEST_F(PlusAddressSuggestionGeneratorTest, NoSuggestionsOnLoginForm) {
   PasswordFormClassification classification;
   classification.type = PasswordFormClassification::Type::kLoginForm;
   classification.username_field = focused_field.global_id();
+  classification.password_field = login_form.fields()[1].global_id();
   EXPECT_THAT(generator.GetSuggestions(
                   /*affiliated_plus_addresses=*/{},
                   /*is_creation_enabled=*/true, login_form, focused_field,
@@ -339,9 +340,6 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
 // the password field is hidden.
 TEST_F(PlusAddressSuggestionGeneratorTest,
        SuggestionsOnLoginFormWithHiddenPasswordField) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressOfferCreationIfPasswordFieldIsNotVisible};
-
   PlusAddressSuggestionGenerator generator(
       &setting_service(), &allocator(),
       url::Origin::Create(GURL("https://foo.bar")));

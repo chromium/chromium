@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.FadingShadow;
@@ -64,29 +65,17 @@ public class SelectableListLayout<E> extends FrameLayout
         implements DisplayStyleObserver, SelectionObserver<E>, BackPressHandler {
     private static final int WIDE_DISPLAY_MIN_PADDING_DP = 16;
 
-    @SuppressWarnings("NullAway.Init")
     private RecyclerView.Adapter mAdapter;
-
     private ViewStub mToolbarStub;
     private TextView mEmptyView;
-
-    @SuppressWarnings("NullAway.Init")
     private TextView mEmptyStateSubHeadingView;
-
     private View mEmptyViewWrapper;
-
-    @SuppressWarnings("NullAway.Init")
     private ImageView mEmptyImageView;
-
     private LoadingView mLoadingView;
-
-    @SuppressWarnings("NullAway.Init")
     private RecyclerView mRecyclerView;
-
     private @Nullable ItemAnimator mItemAnimator;
     SelectableListToolbar<E> mToolbar;
 
-    @SuppressWarnings("NullAway.Init")
     private FadingShadowView mToolbarShadow;
 
     private @StringRes int mEmptyStringResId;
@@ -171,10 +160,11 @@ public class SelectableListLayout<E> extends FrameLayout
      * Initializes the layout with the given recycler view and adapter.
      *
      * @param adapter The adapter that provides a binding from an app-specific data set to views
-     *                that are displayed within the RecyclerView.
+     *     that are displayed within the RecyclerView.
      * @param recyclerView The recycler view to be shown.
      * @return The RecyclerView itself.
      */
+    @Initializer
     public RecyclerView initializeRecyclerView(
             RecyclerView.Adapter adapter, @Nullable RecyclerView recyclerView) {
         mAdapter = adapter;
@@ -195,6 +185,7 @@ public class SelectableListLayout<E> extends FrameLayout
 
         mRecyclerView.setAdapter(mAdapter);
         initializeRecyclerViewProperties();
+        mItemAnimator = mRecyclerView.getItemAnimator();
         return mRecyclerView;
     }
 
@@ -221,8 +212,6 @@ public class SelectableListLayout<E> extends FrameLayout
                         int oldBottom) -> {
                     setToolbarShadowVisibility();
                 });
-
-        mItemAnimator = mRecyclerView.getItemAnimator();
     }
 
     /**
@@ -284,6 +273,7 @@ public class SelectableListLayout<E> extends FrameLayout
      * @param showBackInNormalView Whether the back arrow should appear on the normal view.
      * @return The initialized SelectionToolbar.
      */
+    @Initializer
     public SelectableListToolbar<E> initializeToolbar(
             @LayoutRes int toolbarLayoutId,
             SelectionDelegate<E> delegate,
@@ -345,6 +335,7 @@ public class SelectableListLayout<E> extends FrameLayout
      * @return The {@link TextView} displayed when the list is empty.
      */
     // @TODO: (crbugs.com/1443648) Refactor return value for ForTesting method
+    @Initializer
     public TextView initializeEmptyStateView(
             @DrawableRes int imageResId,
             @StringRes int emptyHeadingStringResId,

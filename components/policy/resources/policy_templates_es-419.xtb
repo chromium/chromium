@@ -713,6 +713,7 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
 <translation id="152657506688053119">Lista de las URL alternativas para el proveedor de búsqueda predeterminado</translation>
 <translation id="1530812829012954197">Siempre procesar los siguientes patrones de direcciones URL en el navegador del host</translation>
 <translation id="1534007181698071943">Permitir que los controladores del evento de descarga estén inhabilitados de forma predeterminada durante la baja</translation>
+<translation id="1535199908978041429">Mostrar la tarjeta del calendario de Outlook en la página Nueva pestaña (beta)</translation>
 <translation id="1539343118617844331">Institución educativa</translation>
 <translation id="1542491165152947087">Permitir que los usuarios activen o desactiven la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anuncios en sus dispositivos</translation>
 <translation id="1542958897137600427">Habilitar el aprovisionamiento de certificados de cliente</translation>
@@ -1566,6 +1567,17 @@ Si no la estableces, la Traducción instantánea estará inicialmente inhabilita
 
       Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />, no se especificará ningún ícono para el proveedor de búsqueda.</translation>
 <translation id="2136073175041447267">Configura unidades en la nube (Google Drive, Microsoft OneDrive) en <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="2142409122365327693">Esta es una función beta.
+
+Esta política controla la visibilidad de la tarjeta de archivos de SharePoint y OneDrive en la página Nueva pestaña. La tarjeta solo se mostrará en la página Nueva pestaña si la política está habilitada y tu organización autorizó el uso de los datos de archivos de SharePoint y OneDrive en el navegador.
+
+El navegador no almacenará los datos de SharePoint ni OneDrive.
+
+En la tarjeta de recomendaciones de archivos de SharePoint y OneDrive, se muestra una lista de archivos recomendados.  Su objetivo es abordar el problema relacionado con el cambio de contexto y mejorar la productividad brindándoles a los usuarios un acceso directo a sus documentos más importantes.
+
+La tarjeta de Microsoft SharePoint y OneDrive requerirá una configuración adicional del administrador. Si quieres obtener información detallada para conectar la tarjeta de la página Nueva pestaña de Chrome a Sharepoint, consulta el artículo de ayuda.
+
+Si inhabilitas <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de SharePoint ni OneDrive. Si habilitas <ph name="NTPCARDSVISIBLE" />, se mostrarán la tarjeta de SharePoint y la de OneDrive si esta política también está habilitada y hay datos para mostrar. Si no estableces <ph name="NTPCARDSVISIBLE" />, se mostrarán la tarjeta de SharePoint y la de OneDrive si esta política también está habilitada, el usuario tiene la tarjeta habilitada en Personalizar Chrome y hay datos para mostrar.</translation>
 <translation id="2144236546337326489">Permitir que se habilite la continuación de tareas en Phone Hub</translation>
 <translation id="2145735238144543545">Certificados de cliente obligatorios</translation>
 <translation id="2146103669166779785">El código hexadecimal de color que se usará para generar un esquema y aplicarlo en el navegador.</translation>
@@ -2067,6 +2079,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si inhabilitas esta configuración, <ph name="PRODUCT_NAME" /> no detectará cuando una ventana quede cubierta por otras.
 
       Si no estableces esta política, se habilitará la detección de oclusión.</translation>
+<translation id="2461842213361247">ServiceWorker puede controlar los iframes de srcdoc</translation>
 <translation id="2462606868915618110">A partir de la versión M108, todos los métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> se invocarán de forma síncrona.
       Hasta la versión M110, esta política vuelve a habilitar la invocación asíncrona de los métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.
       Si habilitas esta política, los métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> se invocarán de forma asíncrona.
@@ -2368,6 +2381,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="2650049181907741121">Medida que se debe tomar cuando el usuario cierra la tapa</translation>
+<translation id="2652747206827086936">Inhabilitar la tarjeta de archivos de SharePoint y OneDrive de NTP</translation>
 <translation id="2656559539624760733">No utilizar Chrome Root Store</translation>
 <translation id="2658653824183107970">Utiliza la implementación heredada de <ph name="CORS" /> en lugar de la nueva implementación de <ph name="CORS" /></translation>
 <translation id="2660846099862559570">Nunca usar un proxy</translation>
@@ -3549,6 +3563,7 @@ Si estableces esta política, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME
 <translation id="3539103206548425861">Si estableces la política, los videos se reproducirán de forma automática (sin el consentimiento del usuario) con contenido de audio en <ph name="PRODUCT_NAME" />. Si estableces la política <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> como verdadera, esta no tendrá ningún efecto. Si estableces <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> como falsa, de todos modos podrá reproducirse cualquier patrón de URL que esté especificado en esta política. Si esta política cambia mientras se ejecuta <ph name="PRODUCT_NAME" />, el cambio solo se aplicará a las pestañas que se abran a partir de ese momento.
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta: https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="3540496580121878254">ServiceWorker no controlará los iframes de srcdoc</translation>
 <translation id="3540846231645422635">Inhabilitar los informes de la interfaz de red del dispositivo</translation>
 <translation id="3540935459049973317">Límites de tiempo por app</translation>
 <translation id="3546260240984542017">Conservar espacios en blanco para todos los tipos de MIME</translation>
@@ -5313,6 +5328,17 @@ Si la estableces como falsa, se usará el comportamiento predeterminado.</transl
 <translation id="4835622243021053389">Habilitar la autenticación NTLMv2</translation>
 <translation id="4840015507504937941">Esta política establece el tamaño mínimo (en bytes) de los datos del portapapeles, los cuales se revisarán según las reglas de restricción del portapapeles definidas en la política DataLeakPreventionRulesList.
       Si no la estableces, se configurará de forma predeterminada en 0, lo que significa que todo el contenido que se pegue del portapapeles se revisará según las reglas configuradas.</translation>
+<translation id="4843535028402307134">En https://github.com/w3c/ServiceWorker/issues/765, se solicita que el iframe srcdoc con
+el atributo de la zona de pruebas "allow-same-origin" esté bajo el control de ServiceWorker.
+
+Si habilitas la política o no la estableces,
+<ph name="PRODUCT_NAME" /> hará que los iframes de srcdoc
+con atributos de la zona de pruebas “allow-same-origin” estén bajo el control de ServiceWorker.
+
+Si la inhabilitas, el iframe de srcdoc no estará controlado por
+ServiceWorker.
+
+Esta política es temporal y se quitará en 2026.</translation>
 <translation id="4846678215172543001">Esta política impide que se muestren advertencias de URL similares en los sitios incluidos en la lista. Por lo general, se muestran estas advertencias en sitios que <ph name="PRODUCT_NAME" /> interpreta que falsifican otro sitio con el que el usuario está familiarizado.
 
        Si habilitas la política y la estableces en uno o más dominios, no se mostrarán páginas de advertencias de sitios similares cuando el usuario visite páginas de ese dominio.
@@ -5665,6 +5691,7 @@ Si no estableces la política, su comportamiento se determina según la polític
 Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5056708224511062314">La lupa está inhabilitada.</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en el disco durante el proceso de limpieza automática (dejó de estar disponible)</translation>
+<translation id="5060285390484464499">Permitir que ServiceWorker controle los iframes de srcdoc</translation>
 <translation id="5061114193960158745">Si estableces esta política, se controlará la lista de sitios web que nunca obligarán a cambiar de navegador. Cada elemento será tratado como una regla. Las reglas que coincidan no se abrirán en un navegador alternativo. A diferencia de la política <ph name="URL_LIST_POLICY_NAME" />, las reglas se aplican en ambas direcciones. Si el complemento de <ph name="IE_PRODUCT_NAME" /> está activado, también controlará si <ph name="IE_PRODUCT_NAME" /> puede abrir estas URL en <ph name="PRODUCT_NAME" />.
 
       Si no estableces la política, no se agregarán sitios web a la lista.
@@ -8475,6 +8502,17 @@ Si la estableces como falsa o no la estableces, el diseño no estará disponible
 <translation id="685769593149966548">Aplicar el modo restringido estricto para YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versiones posteriores</translation>
 <translation id="6866755486434471318">Permitir que <ph name="PEPPER_NAME" /> use las imágenes compartidas para la decodificación de videos</translation>
+<translation id="6871249820683694350">Esta es una función beta.
+
+Esta política controla la visibilidad de la tarjeta de Outlook en la página Nueva pestaña. La tarjeta solo se mostrará en la página Nueva pestaña si la política está habilitada y tu organización autorizó el uso de los datos del calendario de Outlook en el navegador.
+
+El navegador no almacenará los datos de Outlook.
+
+La tarjeta de Outlook muestra el próximo evento de calendario, junto con una vista rápida del resto de las reuniones del día. Su objetivo es abordar el problema relacionado con el cambio de contexto y mejorar la productividad brindándoles a los usuarios un acceso directo a su próxima reunión.
+
+La tarjeta de Microsoft Outlook requerirá una configuración adicional del administrador. Si quieres obtener información detallada para conectar la tarjeta de la página Nueva pestaña de Chrome a Outlook, consulta el artículo de ayuda.
+
+Si inhabilitas <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de Outlook. Si habilitas <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de Outlook si esta política también está habilitada y hay datos para mostrar. Si no estableces <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de Outlook si esta política también está habilitada, el usuario tiene la tarjeta habilitada en Personalizar Chrome y hay datos para mostrar.</translation>
 <translation id="6878757724611298427">Permitir que los usuarios utilicen apps para Android en dispositivos no afiliados</translation>
 <translation id="6881397131210596522">Si estableces la política en 2, se impedirá automáticamente que los sitios usen la API de WebPrinting.
 
@@ -9109,6 +9147,7 @@ Si inhabilitas esta política o no la estableces, no se permitirá la configurac
           Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, la función de corrección de colores estará inhabilitada en un principio, pero el usuario podrá habilitarla en cualquier momento.</translation>
+<translation id="7323780795955997799">Mostrar la tarjeta de archivos de SharePoint y OneDrive en la página Nueva pestaña (beta)</translation>
 <translation id="7323855063560306712">Te permite establecer una lista de patrones de URL de sitios que rechazarán automáticamente el permiso de administración de ventanas. Esto limitará la capacidad de los sitios para ver la información sobre las pantallas del dispositivo y utilizarla para abrir y ubicar ventanas o solicitar el modo pantalla completa en pantallas específicas.
 
 Para obtener información detallada sobre los patrones de URL de sitios válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />). Esta política solo establece coincidencias basadas en el origen; por lo tanto, se ignoran todas las rutas de acceso que se incluyan en el patrón de URL.
@@ -9514,6 +9553,7 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
           Si no se configura esta política, se usará el procesador determinado en todos los sitios. (Se puede usar la política <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> para configurar este procesador).</translation>
 <translation id="768925347918758827">Estados Unidos.</translation>
 <translation id="7696412993033202071">URLs de inicio de apps de autenticador externas</translation>
+<translation id="7696534428021833264">Habilitar la tarjeta de archivos de SharePoint y OneDrive de NTP</translation>
 <translation id="7701341006446125684">Establecer tamaño de caché de apps y extensiones (en bytes)</translation>
 <translation id="7703041979684393741">No permitir la recopilación de registros de eventos de WebRTC de los servicios de Google</translation>
 <translation id="770339941914297201">Nuevo comportamiento: Las apps de Chrome para kiosco solo se actualizarán con la URL de actualización que se encuentra en la política</translation>

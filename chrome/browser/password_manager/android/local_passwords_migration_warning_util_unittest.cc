@@ -80,9 +80,12 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest, TestShouldShowWhenMoreThanADay) {
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     GTEST_SKIP();
   }
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitWithFeatures(
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsMigrationWarning},
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning});
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
@@ -163,9 +166,12 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest,
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     GTEST_SKIP();
   }
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitWithFeatures(
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsMigrationWarning},
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning});
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(

@@ -8,7 +8,6 @@
 #import "base/metrics/user_metrics.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/service/sync_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
@@ -38,7 +37,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -106,16 +104,15 @@ using signin_metrics::PromoAction;
 - (void)start {
   base::RecordAction(base::UserMetricsAction("Signin_AccountsTableView_Open"));
   ProfileIOS* profile = self.browser->GetProfile();
-  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   _mediator = [[ManageAccountsMediator alloc]
-        initWithSyncService:syncService
-      accountManagerService:ChromeAccountManagerServiceFactory::GetForProfile(
-                                profile)
-                authService:AuthenticationServiceFactory::GetForProfile(profile)
-            identityManager:IdentityManagerFactory::GetForProfile(profile)];
+      initWithAccountManagerService:ChromeAccountManagerServiceFactory::
+                                        GetForProfile(profile)
+                        authService:AuthenticationServiceFactory::GetForProfile(
+                                        profile)
+                    identityManager:IdentityManagerFactory::GetForProfile(
+                                        profile)];
 
-  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu) &&
-      !syncService->HasSyncConsent()) {
+  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
     ManageAccountsTableViewController* viewController =
         [[ManageAccountsTableViewController alloc]
             initWithOfferSignout:self.showSignoutButton];

@@ -18,6 +18,7 @@ source_set("instant_signin") {
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
     "//ios/chrome/browser/authentication/ui_bundled/identity_chooser",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/logging",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/model/application_context",

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <set>
@@ -30,7 +31,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1704,10 +1704,10 @@ class DnsTransactionImpl final : public DnsTransaction {
   }
 
   bool AnyAttemptPending() {
-    return base::ranges::any_of(attempts_,
-                                [](std::unique_ptr<DnsAttempt>& attempt) {
-                                  return attempt->IsPending();
-                                });
+    return std::ranges::any_of(attempts_,
+                               [](std::unique_ptr<DnsAttempt>& attempt) {
+                                 return attempt->IsPending();
+                               });
   }
 
   void OnFallbackPeriodExpired() {

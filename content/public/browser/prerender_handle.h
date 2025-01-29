@@ -17,9 +17,12 @@ class PrerenderHandle {
   PrerenderHandle() = default;
   virtual ~PrerenderHandle() = default;
 
+  virtual int32_t GetHandleId() const = 0;
+
   // Returns the initial URL that is passed to PrerenderHostRegistry for
   // starting a prerendering page.
   virtual const GURL& GetInitialPrerenderingUrl() const = 0;
+
   virtual base::WeakPtr<PrerenderHandle> GetWeakPtr() = 0;
   virtual void SetPreloadingAttemptFailureReason(
       PreloadingFailureReason reason) = 0;

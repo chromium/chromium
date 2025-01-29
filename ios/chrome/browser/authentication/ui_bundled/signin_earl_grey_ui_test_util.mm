@@ -159,10 +159,9 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
                      grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
-  // Sync utilities require sync to be initialized in order to perform
+  // Sync utilities require sync to be active in order to perform
   // operations on the Sync server.
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:base::Seconds(10)];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 }
 
 + (void)signOut {

@@ -1380,21 +1380,27 @@ class FetchLaterManager::DeferredLoader final
     // discoverying the URL loading connections from here are gone.
   }
 
+  // Implements "process a deferred fetch" algorithm from
+  // https://whatpr.org/fetch/1647.html#process-a-deferred-fetch
   void Process(const FetchLaterRendererMetricType& metric_type) {
-    // TODO(crbug.com/40276121): Update the following implementation.
-    // https://whatpr.org/fetch/1647.html#process-a-deferred-fetch
-    // To process a deferred fetch deferredRecord:
-    // 1. If deferredRecord’s invoke state is not "deferred", then return.
-    if (invoke_state_ != InvokeState::DEFERRED) {
+    // 1. If deferredRecord’s invoke state is not "pending", then return.
+    if (invoke_state_ != InvokeState::PENDING) {
       return;
     }
-    // 2. Set deferredRecord’s invoke state to "activated".
-    SetInvokeState(InvokeState::ACTIVATED);
+    // 2. Set deferredRecord’s invoke state to "sent".
+    SetInvokeState(InvokeState::SENT);
     // 3. Fetch deferredRecord’s request.
     if (loader_) {
       LogFetchLaterMetric(metric_type);
       loader_->SendNow();
     }
+    // 4. Queue a global task on the deferred fetch task source with
+    // deferredRecord’s request’s client’s global object to run deferredRecord’s
+    // notify invoked,
+    // which is "onActivatedWithoutTermination": "set activated to true" from
+    // https://whatpr.org/fetch/1647.html#ref-for-queue-a-deferred-fetch
+    // NOTE: Call sites are already triggered from other task queues.
+    SetActivated();
   }
 
   // Returns this loader's total request size if `url` is "same origin" with
@@ -1429,30 +1435,31 @@ class FetchLaterManager::DeferredLoader final
 
  private:
   enum class InvokeState {
-    DEFERRED,
+    PENDING,
+    SENT,
     ABORTED,
-    ACTIVATED
   };
   void SetInvokeState(InvokeState state) {
     switch (state) {
-      case InvokeState::DEFERRED:
+      case InvokeState::PENDING:
         UseCounter::Count(GetExecutionContext(),
-                          WebFeature::kFetchLaterInvokeStateDeferred);
+                          WebFeature::kFetchLaterInvokeStatePending);
+        break;
+      case InvokeState::SENT:
+        UseCounter::Count(GetExecutionContext(),
+                          WebFeature::kFetchLaterInvokeStateSent);
         break;
       case InvokeState::ABORTED:
         UseCounter::Count(GetExecutionContext(),
                           WebFeature::kFetchLaterInvokeStateAborted);
         break;
-      case InvokeState::ACTIVATED:
-        UseCounter::Count(GetExecutionContext(),
-                          WebFeature::kFetchLaterInvokeStateActivated);
-        break;
       default:
         NOTREACHED();
     };
     invoke_state_ = state;
-    fetch_later_result_->SetActivated(state == InvokeState::ACTIVATED);
   }
+
+  void SetActivated() { fetch_later_result_->SetActivated(true); }
 
   // FetchLoaderBase overrides:
   bool IsDeferred() const override { return true; }
@@ -1547,7 +1554,8 @@ class FetchLaterManager::DeferredLoader final
   }
 
   // A deferred fetch record's "invoke state" field.
-  InvokeState invoke_state_ = InvokeState::DEFERRED;
+  // https://whatpr.org/fetch/1647.html#deferred-fetch-record-invoke-state
+  InvokeState invoke_state_ = InvokeState::PENDING;
 
   // Owns this instance.
   Member<FetchLaterManager> fetch_later_manager_;
@@ -1661,17 +1669,12 @@ FetchLaterResult* FetchLaterManager::FetchLater(
     return nullptr;
   }
 
-  // 11 Let controlDocument be request’s client’s deferred-fetch control
-  // document.
   CHECK(DomWindow());
-  auto* control_frame =
-      FetchLaterUtil::GetDeferredFetchControlFrame(DomWindow()->GetFrame());
-
-  // 12. If the available deferred-fetch quota given controlDocument and
+  // 11. If the available deferred-fetch quota given controlDocument and
   // request’s URL’s origin is less than request’s total request length, then
   // throw a "QuotaExceededError" DOMException.
   auto available_quota = FetchLaterUtil::GetAvailableDeferredFetchQuota(
-      DynamicTo<LocalFrame>(control_frame), request->Url());
+      DomWindow()->GetFrame(), request->Url());
   auto total_request_length = FetchLaterUtil::CalculateRequestSize(*request);
   if (available_quota < total_request_length) {
     UseCounter::Count(GetExecutionContext(),
@@ -1685,9 +1688,9 @@ FetchLaterResult* FetchLaterManager::FetchLater(
     return nullptr;
   }
 
-  // 14. Let deferredRecord be the result of calling queue a deferred fetch
-  // given request, controlDocument’s fetch group, activateAfter, and the
-  // following step: set activated to true.
+  // 13. Let deferredRecord be the result of calling queue a deferred fetch
+  // given request, activateAfter, and the following step: set activated to
+  // true.
 
   // "To queue a deferred fetch ..."
   // https://whatpr.org/fetch/1647.html#queue-a-deferred-fetch
@@ -1700,14 +1703,16 @@ FetchLaterResult* FetchLaterManager::FetchLater(
   request->SetKeepalive(true);
 
   // 4. Let deferredRecord be a new deferred fetch record whose request is
-  // request.
+  // request, and whose notify invoked is onActivatedWithoutTermination.
   auto* deferred_loader = MakeGarbageCollected<DeferredLoader>(
       GetExecutionContext(), this, request, total_request_length, script_state,
       signal, activate_after);
-  // 5. Append deferredRecord to fetchGroup’s deferred fetch records.
+  // 5. Append deferredRecord to document’s fetch group’s deferred fetch
+  // records.
   deferred_loaders_.insert(deferred_loader);
-
   deferred_loader->Start(exception_state);
+  // Continued in `DeferredLoader::CreateLoader()`.
+
   // 15. Return a new FetchLaterResult whose activated getter steps are to
   // return activated.
   return deferred_loader->fetch_later_result();
@@ -1890,20 +1895,20 @@ void FetchLaterManager::UpdateDeferredBytesQuota(const KURL& url,
   CHECK_LE(total_quota, kMaxScheduledDeferredBytes);
 
   // https://whatpr.org/fetch/1647.html#available-deferred-fetch-quota
-  // 9. For each deferred fetch record deferredRecord of controlDocument’s fetch
-  // group’s deferred fetch records:
+  // 8-2. For each deferred fetch record deferredRecord of controlDocument’s
+  // fetch group’s deferred fetch records:
   for (const auto& deferred_loader : deferred_loaders_) {
     if (quota_for_url_origin == 0 && total_quota == 0) {
       // Early termination.
       return;
     }
 
-    // 9-1. Let requestLength be the total request length of deferredRecord’s
+    // 8-2-1. Let requestLength be the total request length of deferredRecord’s
     // request.
-    // 9-2. Decrement quota by requestLength.
+    // 8-2-2. Decrement quota by requestLength.
     total_quota -= std::min(total_quota, deferred_loader->GetDeferredBytes());
 
-    // 9-3. If deferredRecord’s request’s URL’s origin is same origin with
+    // 8-2-3. If deferredRecord’s request’s URL’s origin is same origin with
     // origin, then decrement quotaForRequestOrigin by requestLength.
     quota_for_url_origin -=
         std::min(quota_for_url_origin,

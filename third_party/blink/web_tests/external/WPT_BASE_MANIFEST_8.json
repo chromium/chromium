@@ -76872,7 +76872,7 @@
       ]
      ],
      "background-image-table-cells-straddling-no-repeat.html": [
-      "67f7937a3fcc93d1f4d0ce1806eea1e12e6078ee",
+      "022e64620896a2aea6ad224a18bc4bee58774a2a",
       [
        null,
        [
@@ -76881,7 +76881,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            4500
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-image-table-cells-zoomed.html": [
@@ -154325,6 +154341,23 @@
         [
          "/css/css-lists/list-style-image-zoom-dynamic-ref.html",
          "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "list-style-position-001.html": [
+      "361ca994f76e6601971857a61a968b4853e607cb",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/list-style-position-001-ref.html",
+         "=="
+        ],
+        [
+         "/css/css-lists/list-style-position-001-notref.html",
+         "!="
         ]
        ],
        {}
@@ -346342,6 +346375,14 @@
       "09baac4663a16dbc43b6147848a2b16b39b71815",
       []
      ],
+     "list-style-position-001-notref.html": [
+      "8f3c3dfaa91309c24badef72e9d11f4c705ee382",
+      []
+     ],
+     "list-style-position-001-ref.html": [
+      "ef2a03da18d97929e3cdb8165f32744c1412aa00",
+      []
+     ],
      "list-style-type-decimal-line-height-ref.html": [
       "856fe43d8ef3150fe6cdf2eec8774afd7ff92ea6",
       []
@@ -433354,39 +433395,399 @@
       {}
      ]
     ],
-    "idbcursor-direction-index-keyrange.htm": [
-     "c26997c9ff30d15d7ebb106c5d8ed10c4bd4b1ae",
+    "idbcursor-direction-index-keyrange.any.js": [
+     "0437ce2004e6ccacdb0864987c9822bf3ad48640",
      [
-      null,
-      {}
+      "IndexedDB/idbcursor-direction-index-keyrange.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - index with keyrange"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction-index-keyrange.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - index with keyrange"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction-index-keyrange.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - index with keyrange"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction-index-keyrange.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - index with keyrange"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbcursor-direction-index.htm": [
-     "a2adeb73d6bfdabc2af720b745465cb518d896ae",
+    "idbcursor-direction-index.any.js": [
+     "d573bf5932d1d20e241a212cb30a07590096876c",
      [
-      null,
-      {}
+      "IndexedDB/idbcursor-direction-index.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - index"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction-index.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - index"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction-index.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - index"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction-index.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - index"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbcursor-direction-objectstore-keyrange.htm": [
-     "e5b5a22de9d0356e45fccb4198c3a141b438f78c",
+    "idbcursor-direction-objectstore-keyrange.any.js": [
+     "ad5ddc70babc81460b93f6cfb7a61439ed48e968",
      [
-      null,
-      {}
+      "IndexedDB/idbcursor-direction-objectstore-keyrange.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - object store with keyrange"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction-objectstore-keyrange.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - object store with keyrange"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction-objectstore-keyrange.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - object store with keyrange"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction-objectstore-keyrange.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - object store with keyrange"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbcursor-direction-objectstore.htm": [
-     "cac1a589d78e6ca0a716e60b64634a0e6697f4b1",
+    "idbcursor-direction-objectstore.any.js": [
+     "6d3e67e252e78ce59eacf0c0ed9b93aec589c09a",
      [
-      null,
-      {}
+      "IndexedDB/idbcursor-direction-objectstore.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction-objectstore.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction-objectstore.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction-objectstore.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor direction - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbcursor-direction.htm": [
-     "18e3a02ef87a344421355acc3160f8ef7587f5e2",
+    "idbcursor-direction.any.js": [
+     "e65fc287c46b3d4998b2f1ef9340063316cbc8e6",
      [
-      null,
-      {}
+      "IndexedDB/idbcursor-direction.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.direction"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.direction"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.direction"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-direction.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.direction"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbcursor-iterating-update.htm": [
@@ -558232,7 +558633,7 @@
         ]
        ],
        "multiple-iframes.tentative.https.window.js": [
-        "3f46f84a5fc18a1d7fbaca3fdc0a3d7b6a5f2d64",
+        "c6968903f9487ca972102d5d63c5e96bc9580849",
         [
          "fetch/fetch-later/quota/same-origin-iframe/multiple-iframes.tentative.https.window.html",
          {
@@ -629603,7 +630004,7 @@
          ]
         ],
         "switch-picker-appearance.tentative.html": [
-         "09bea44a3409b1ada1e11c331486302e20d3c581",
+         "da546658f892175e0770ec7ec94d4a6e5ed5b942",
          [
           null,
           {
@@ -665068,6 +665469,15 @@
       ]
      ]
     },
+    "pointermove_after_pointerover_target_removed.tentative.html": [
+     "b724d3faf3f3a7aca15efdb3fee7b1f7db7be951",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "pointerup_after_pointerdown_target_removed.html": [
      "65c6ea314c8fd0b316290de9319c7750a676721a",
      [
@@ -687646,7 +688056,7 @@
       ]
      ],
      "static-router-no-fetch-handler.https.html": [
-      "e98dd08a90ad610744d83fbe8c4e6d72c901b77c",
+      "4dbbbe69c7dfe9e1ce68f6e94de0d6cf8a432611",
       [
        null,
        {}
@@ -712667,6 +713077,15 @@
        {
         "testdriver": true,
         "timeout": "long"
+       }
+      ]
+     ],
+     "mousemove_after_mouseover_target_removed.html": [
+      "f84ba4ff5b7038d1d9852eb3b201807408736c2e",
+      [
+       null,
+       {
+        "testdriver": true
        }
       ]
      ],

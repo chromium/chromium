@@ -450,6 +450,10 @@ void UpdatePositionVisibilityAfterLayout(
       }
     }
   }
+
+  if (AXObjectCache* cache = node.GetDocument().ExistingAXObjectCache()) {
+    cache->CSSAnchorChanged(node.GetLayoutBox());
+  }
 }
 
 }  // namespace
@@ -2475,10 +2479,6 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
 
   UpdatePositionVisibilityAfterLayout(offset_info, node,
                                       container_builder_->AnchorQuery());
-
-  if (AXObjectCache* cache = node.GetDocument().ExistingAXObjectCache()) {
-    cache->CSSAnchorChanged(node.GetLayoutBox());
-  }
 
   return layout_result;
 }

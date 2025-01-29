@@ -427,7 +427,6 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2789552044937754463">{COUNT,plural, =1{Contrasenya desada al teu Compte de Google ({EMAIL})}other{Contrasenyes desades al teu Compte de Google ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Afegeix una contrasenya…</translation>
 <translation id="2797302972324086597">Codi de país</translation>
-<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> de tancades</translation>
 <translation id="2816489851009559785">Menú → Configuració → Navegador predeterminat</translation>
 <translation id="2818821771744632548">S'ha tancat la sessió del teu compte, <ph name="USER_NAME" />, com a part del restabliment de l'iPhone. Per tornar a iniciar la sessió, toca Continua més avall.</translation>
 <translation id="2819667972867209401">Si aquesta opció està activada, les dades es desen al teu Compte de Google. Si està desactivada, les dades només es desen en aquest dispositiu i se suprimeixen si tanques la sessió.</translation>
@@ -562,6 +561,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3517216995152707259">En suprimir les dades de navegació, no se't tanca la sessió del teu Compte de Google. Per fer-ho, <ph name="BEGIN_LINK" />tanca la sessió de Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Obriu una pestanya per navegar pel web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Obre la pestanya}other{Obre {count} pestanyes}}</translation>
+<translation id="3523513363815970085">Amaga Els teus llocs web principals</translation>
 <translation id="3523789730715594198">Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3529024052484145543">No és segur</translation>
@@ -837,6 +837,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4769198578611055647">T'ajuda a accedir a les claus d'accés desades en qualsevol dispositiu</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Vols obrir-ho en mode d'incògnit?</translation>
+<translation id="479208892659046780">Els teus llocs web principals</translation>
 <translation id="4792385443586519711">Nom de l'empresa</translation>
 <translation id="479628432297359449">Vols aturar la baixada?</translation>
 <translation id="4796496140132859135">Grup de pestanyes. Replegat.</translation>
@@ -1591,7 +1592,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="7975036700432177008">Prova</translation>
 <translation id="797588153137233716">Menú → Historial → Suprimeix les dades de navegació</translation>
 <translation id="7977451675950311423">T'avisa si utilitzes una contrasenya que està en perill a causa d'una violació de les dades.</translation>
-<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> pestanyes noves, <ph name="NUMBER_OF_TABS_REMOVED" /> de tancades</translation>
 <translation id="797824194429476746">Les pestanyes continuaran obertes en aquest dispositiu, però el grup se suprimirà permanentment.</translation>
 <translation id="797874245254030665">Accedeix a les teves contrasenyes i claus d'accés des de qualsevol aplicació</translation>
 <translation id="7982789257301363584">Xarxa</translation>
@@ -1602,6 +1602,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="800361585186029508">Obre els URL introduïts a Google Chrome.</translation>
 <translation id="8005666035647241369">Ves al gestor de contrasenyes de Google en aquest dispositiu</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
+<translation id="8017015647846870183">Del gestor de contrasenyes de Google, incloses les contrasenyes i les claus d'accés</translation>
 <translation id="802154636333426148">Error de baixada</translation>
 <translation id="8023170444051056234">Perdràs immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i se suprimirà de tots els teus dispositius</translation>
 <translation id="8023878949384262191">Desplega la secció.</translation>
@@ -1778,7 +1779,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8728922029615312208">Tanca-ho tot</translation>
 <translation id="8730621377337864115">Fet</translation>
 <translation id="87371078663613140">Explora les opcions a la barra de menú</translation>
-<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> pestanyes noves</translation>
 <translation id="8741627442233023406">{count,plural, =1{Revisa la pestanya…}other{Revisa totes les pestanyes…}}</translation>
 <translation id="8741995161408053644">És possible que el vostre compte de Google tingui altres formes de l'historial de navegació a <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Crea un enllaç</translation>

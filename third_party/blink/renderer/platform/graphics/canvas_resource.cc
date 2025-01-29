@@ -89,6 +89,32 @@ void CanvasResource::Release() {
   }
 }
 
+scoped_refptr<StaticBitmapImage> CanvasResource::CreateUnacceleratedBitmap() {
+  if (!IsValid()) {
+    return nullptr;
+  }
+
+  // Construct an SkImage that references the shared memory buffer.
+  auto mapping = GetClientSharedImage()->Map();
+  if (!mapping) {
+    LOG(ERROR) << "MapSharedImage Failed.";
+    return nullptr;
+  }
+
+  auto sk_image = SkImages::RasterFromPixmapCopy(
+      mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()));
+
+  // Unmap the underlying buffer.
+  mapping.reset();
+  if (!sk_image) {
+    return nullptr;
+  }
+
+  auto image = UnacceleratedStaticBitmapImage::Create(sk_image);
+  image->SetOriginClean(OriginClean());
+  return image;
+}
+
 gpu::InterfaceBase* CanvasResource::InterfaceBase() const {
   if (!ContextProviderWrapper())
     return nullptr;
@@ -288,27 +314,7 @@ bool CanvasResourceSharedBitmap::IsValid() const {
 }
 
 scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
-  if (!IsValid())
-    return nullptr;
-  // Construct an SkImage that references the shared memory buffer.
-  // The release callback holds a reference to |this| to ensure that the
-  // canvas resource that owns the shared memory stays alive at least until
-  // the SkImage is destroyed.
-  SkImageInfo image_info = CreateSkImageInfo();
-  auto scoped_mapping = shared_image_->Map();
-
-  auto sk_image = SkImages::RasterFromPixmapCopy(
-      scoped_mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()));
-
-  // Unmap the underlying buffer.
-  scoped_mapping.reset();
-  if (!sk_image) {
-    return nullptr;
-  }
-
-  auto image = UnacceleratedStaticBitmapImage::Create(sk_image);
-  image->SetOriginClean(OriginClean());
-  return image;
+  return CreateUnacceleratedBitmap();
 }
 
 scoped_refptr<CanvasResourceSharedBitmap> CanvasResourceSharedBitmap::Create(
@@ -589,24 +595,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
 
   SkImageInfo image_info = CreateSkImageInfo();
   if (!is_accelerated_) {
-    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping =
-        GetClientSharedImage()->Map();
-    if (!mapping) {
-      LOG(ERROR) << "MapSharedImage Failed.";
-      return nullptr;
-    }
-    auto sk_image = SkImages::RasterFromPixmapCopy(
-        mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()));
-
-    // Unmap the underlying buffer.
-    mapping.reset();
-    if (!sk_image) {
-      return nullptr;
-    }
-
-    auto image = UnacceleratedStaticBitmapImage::Create(sk_image);
-    image->SetOriginClean(OriginClean());
-    return image;
+    return CreateUnacceleratedBitmap();
   }
 
   // In order to avoid creating multiple representations for this shared image

@@ -709,6 +709,7 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 <translation id="152657506688053119">Lista de URLs alternativos para o provedor de pesquisa padrão</translation>
 <translation id="1530812829012954197">Sempre renderizar os seguintes padrões de URL no navegador do host</translation>
 <translation id="1534007181698071943">Permitir que manipuladores de eventos de descarregamento sejam desativados por padrão durante a suspensão de uso</translation>
+<translation id="1535199908978041429">Mostrar o card do Calendário do Outlook na página "Nova guia" (Beta)</translation>
 <translation id="1539343118617844331">Escola</translation>
 <translation id="1542491165152947087">Permitir que os usuários ativem ou desativem a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios no dispositivo.</translation>
 <translation id="1542958897137600427">Ativar o provisionamento de certificado do cliente</translation>
@@ -1568,6 +1569,17 @@ Se for deixada sem definição, a Tradução instantânea ficará desativada ini
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> não for definida, o provedor de pesquisa não terá um ícone.</translation>
 <translation id="2136073175041447267">Configure os drives na nuvem (Google Drive, Microsoft OneDrive) no <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="2142409122365327693">Este é um recurso Beta.
+
+Essa política controla a visibilidade do card de arquivos do SharePoint e do OneDrive na página "Nova guia". O card só vai aparecer na página "Nova guia" se a política estiver ativada e sua organização tiver autorizado o uso dos dados de arquivos do SharePoint e do OneDrive no navegador.
+
+Os dados do SharePoint e do OneDrive não serão armazenados pelo navegador.
+
+O card de recomendação de arquivos do SharePoint e do OneDrive mostra uma lista de arquivos recomendados.  O objetivo é resolver o problema da mudança de contexto e aumentar a produtividade, dando aos usuários um atalho para acessar os documentos mais importantes.
+
+O card da Microsoft para o SharePoint e o OneDrive vai precisar de mais configurações administrativas. Para mais informações sobre como conectar o card da página "Nova guia" do Chrome ao Sharepoint, consulte o artigo de ajuda.
+
+Se a política <ph name="NTPCARDSVISIBLE" /> for desativada, o card do SharePoint e do OneDrive não vai aparecer. Se a <ph name="NTPCARDSVISIBLE" /> for ativada, o card do Sharepoint e do OneDrive vai aparecer caso esta política também esteja ativada e haja dados para mostrar. Se a <ph name="NTPCARDSVISIBLE" /> for deixada sem definição, o card do SharePoint e do OneDrive vai aparecer caso esta política também esteja ativada, o usuário tenha ativado o card na página "Personalizar o Chrome" e haja dados para mostrar.</translation>
 <translation id="2144236546337326489">Permitir que a continuação da tarefa do recurso "Seu smartphone" seja ativada</translation>
 <translation id="2145735238144543545">Certificados do cliente obrigatórios</translation>
 <translation id="2146103669166779785">Cor hexadecimal que será usada para gerar e aplicar um tema ao navegador.</translation>
@@ -2066,6 +2078,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se você desativar essa configuração, o <ph name="PRODUCT_NAME" /> não detectará quando uma janela for coberta por outras.
 
       Se esta política não for definida, a detecção de oclusão será ativada.</translation>
+<translation id="2461842213361247">O ServiceWorker pode controlar iframes srcdoc</translation>
 <translation id="2462606868915618110">Na versão M108 e mais recentes, todos os métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> vão ser invocados de maneira síncrona.
       Até a versão M110, esta política reativa a invocação assíncrona de métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.
       Se a política for ativada, os métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> vão ser invocados de maneira assíncrona.
@@ -2369,6 +2382,7 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
 
 No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="2650049181907741121">Ação a ser realizada quando o usuário fecha a tampa</translation>
+<translation id="2652747206827086936">Desativar o card de arquivos do SharePoint e do OneDrive na página "Nova guia"</translation>
 <translation id="2656559539624760733">Não usar a Chrome Root Store.</translation>
 <translation id="2658653824183107970">Usar a implementação legada de <ph name="CORS" /> em vez do novo <ph name="CORS" /></translation>
 <translation id="2660846099862559570">Nunca usar um proxy</translation>
@@ -3547,6 +3561,7 @@ Se for definida, o <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> não p
 <translation id="3539103206548425861">Se a política for definida, será possível iniciar vídeos automaticamente (sem o consentimento do usuário) com conteúdo de áudio no <ph name="PRODUCT_NAME" />. Se a política <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> for definida como verdadeira, esta política não terá efeito. Se a política <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> for definida como falsa, todos os padrões de URL definidos nesta política terão permissão para serem iniciados. Se a política for modificada enquanto o <ph name="PRODUCT_NAME" /> estiver em execução, ela se aplicará apenas a guias abertas recentemente.
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="3540496580121878254">O ServiceWorker não vai controlar iframes srcdoc</translation>
 <translation id="3540846231645422635">Desativar relatórios sobre a interface de rede do dispositivo</translation>
 <translation id="3540935459049973317">Limites de tempo por app</translation>
 <translation id="3546260240984542017">Manter espaços em branco para todos os Tipos MIME</translation>
@@ -5313,6 +5328,17 @@ Se a política for definida como "false", o comportamento padrão será usado.</
 <translation id="4835622243021053389">Ativar autenticação NTLMv2.</translation>
 <translation id="4840015507504937941">Esta política define o tamanho mínimo (em bytes) dos dados da área de transferência que serão verificados de acordo com as regras de restrição definidas na política DataLeakPreventionRulesList.
       Se ela for deixada sem definição, o padrão será 0, ou seja, todos os dados da área de transferência serão verificados de acordo com as regras configuradas.</translation>
+<translation id="4843535028402307134">https://github.com/w3c/ServiceWorker/issues/765 pede que o iframe srcdoc com
+o atributo de sandbox "allow-same-origin" esteja sob controle do ServiceWorker.
+
+Se a política for ativada ou deixada sem definição, o
+<ph name="PRODUCT_NAME" /> fará com que os iframes de srcdoc
+com atributos de sandbox "allow-same-origin" estejam sob controle do ServiceWorker.
+
+Se a política for desativada, o iframe de srcdoc não será controlado pelo
+ServiceWorker.
+
+Essa política é temporária e será removida em 2026.</translation>
 <translation id="4846678215172543001">Esta política evita a exibição de alertas de URL parecido nos sites listados. Geralmente, esses alertas são exibidos em sites em que o <ph name="PRODUCT_NAME" /> acredita estar havendo uma tentativa de spoofing, ou seja, a falsificação de um site conhecido pelo usuário.
 
        Se a política estiver ativada e for definida para um ou mais domínios, nenhuma página de alerta para URL parecido será exibida nas páginas do domínio em questão.
@@ -5665,6 +5691,7 @@ Se for deixada sem definição, o comportamento será determinado pela política
 Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5056708224511062314">Lupa desativada</translation>
 <translation id="5058573563327660283">Selecionar a estratégia usada para liberar espaço em disco durante a limpeza automática (obsoleta)</translation>
+<translation id="5060285390484464499">Permitir que o ServiceWorker controle iframes srcdoc</translation>
 <translation id="5061114193960158745">A definição a política controla a lista de sites que nunca causarão uma troca de navegador. Cada item é tratado como uma regra. As regras correspondentes não abrirão um navegador alternativo. Ao contrário da política <ph name="URL_LIST_POLICY_NAME" />, as regras se aplicam nas duas direções. Quando o suplemento do <ph name="IE_PRODUCT_NAME" /> estiver ativado, ele também controlará se o <ph name="IE_PRODUCT_NAME" /> abrirá os URLs no <ph name="PRODUCT_NAME" />.
 
       Se a política não for definida, nenhum site será adicionado à lista.
@@ -8463,6 +8490,17 @@ Se ela for definida como "false" ou deixada sem definição, o layout não ficar
 <translation id="685769593149966548">Aplicar o Modo restrito rigoroso para o YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou versão posterior</translation>
 <translation id="6866755486434471318">Permitir que <ph name="PEPPER_NAME" /> use imagens compartilhadas para decodificar vídeos.</translation>
+<translation id="6871249820683694350">Este é um recurso Beta.
+
+Essa política controla a visibilidade do card do Outlook na página "Nova guia". O card só vai aparecer nessa página se a política estiver ativada e sua organização tiver autorizado o uso dos dados do Calendário do Outlook no navegador.
+
+Os dados do Outlook não serão armazenados pelo navegador.
+
+O card do Outlook mostra o próximo evento da agenda e oferece uma visão geral das outras reuniões do dia. O objetivo é resolver o problema da mudança de contexto e aumentar a produtividade, dando aos usuários um atalho para acessar a próxima reunião.
+
+O card do Microsoft Outlook vai precisar de mais configurações administrativas. Para mais informações sobre como conectar o card da página "Nova guia" do Chrome ao Outlook, consulte o artigo de ajuda.
+
+Se a política <ph name="NTPCARDSVISIBLE" /> for desativada, o card do Outlook não vai aparecer. Se a <ph name="NTPCARDSVISIBLE" /> for ativada, o card do Outlook vai aparecer se esta política também estiver ativada e houver dados para mostrar. Se a <ph name="NTPCARDSVISIBLE" /> for deixada sem definição, o card do Outlook vai aparecer se esta política também estiver ativada, o usuário tiver ativado o card na página "Personalizar o Chrome" e houver dados para mostrar.</translation>
 <translation id="6878757724611298427">Permite que os usuários usem apps Android em dispositivos não afiliados</translation>
 <translation id="6881397131210596522">Se a política for definida como 2, os sites não poderão usar a API WebPrinting automaticamente.
 
@@ -9094,6 +9132,7 @@ Se esta política for desativada ou não for definida, as configurações de con
           Se você definir esta política, os usuários não poderão mudá-la ou substituí-la.
 
           Se esta política não for definida, o recurso de correção de cor ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+<translation id="7323780795955997799">Mostrar o card de arquivos do SharePoint e do OneDrive na página "Nova guia" (Beta)</translation>
 <translation id="7323855063560306712">Permite definir uma lista de padrões de URL que especificam os sites que vão negar automaticamente a permissão para gerenciamento de janelas. Isso vai limitar a capacidade dos sites de acessar informações sobre as telas do dispositivo e de usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em casos específicos.
 
 Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Os caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos. A política só faz a correspondência de origens, então os caminhos no padrão do URL vão ser ignorados.
@@ -9498,6 +9537,7 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 Se esta política não for definida, o renderizador padrão será usado para todos os sites. A política <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> pode ser usada para configurar o renderizador padrão.</translation>
 <translation id="768925347918758827">Estados Unidos.</translation>
 <translation id="7696412993033202071">URLs de inicialização de apps para autenticação externa</translation>
+<translation id="7696534428021833264">Ativar o card de arquivos do SharePoint e do OneDrive na página "Nova guia"</translation>
 <translation id="7701341006446125684">Definir o tamanho do cache de aplicativos e extensões (em bytes)</translation>
 <translation id="7703041979684393741">Não permitir a coleta de logs de eventos WebRTC em Serviços do Google</translation>
 <translation id="770339941914297201">Novo comportamento: apps do Chrome para quiosque só serão atualizados usando o URL definido na política</translation>

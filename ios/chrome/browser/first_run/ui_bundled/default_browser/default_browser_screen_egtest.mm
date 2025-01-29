@@ -147,8 +147,6 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 // Signs out and clears sync data.
 - (void)reset {
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
 }
 

@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import type {CrCheckboxWithPolicyElement, LanguageHelper, OsSettingsAddItemsDialogElement, OsSettingsInputPageElement, SettingsLanguagesElement} from 'chrome://os-settings/lazy_load.js';
+import type {LanguageHelper, OsSettingsAddItemsDialogElement, OsSettingsInputPageElement, SettingsLanguagesElement} from 'chrome://os-settings/lazy_load.js';
 import {InputsShortcutReminderState, LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from 'chrome://os-settings/lazy_load.js';
 import type {CrCheckboxElement, IronListElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {AcceleratorAction, CrSettingsPrefs, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
@@ -422,21 +422,21 @@ suite('<os-settings-input-page>', () => {
           policyIcon: false,
         },
         {
-          name: 'US International keyboard',
-          checkboxDisabled: true,
-          checkboxChecked: false,
-          policyIcon: true,
-        },
-        {
           name: 'Vietnamese keyboard',
           checkboxDisabled: false,
           checkboxChecked: false,
           policyIcon: false,
         },
+        {
+          name: 'US International keyboard',
+          checkboxDisabled: true,
+          checkboxChecked: false,
+          policyIcon: true,
+        },
       ];
 
       for (let i = 0; i < allItems.length; i++) {
-        const checkbox = allItems[i]!.shadowRoot!.querySelector('cr-checkbox');
+        const checkbox = allItems[i] as CrCheckboxElement;
         assertTrue(!!checkbox);
         assertStringContains(allItems[i]!.textContent!, expectedItems[i]!.name);
         assertEquals(
@@ -447,15 +447,10 @@ suite('<os-settings-input-page>', () => {
             expectedItems[i]!.checkboxChecked, checkbox.checked,
             `expect ${expectedItems[i]!.name}'s checkbox checked state to be ${
                 expectedItems[i]!.checkboxChecked}`);
-        assertEquals(
-            expectedItems[i]!.policyIcon,
-            !!allItems[i]!.shadowRoot!.querySelector('iron-icon'),
-            `expect ${expectedItems[i]!.name}'s policy icon presence to be ${
-                expectedItems[i]!.policyIcon}`);
       }
 
       // selecting Vietnamese keyboard
-      const checkbox = allItems[3]!.shadowRoot!.querySelector('cr-checkbox');
+      const checkbox = allItems[2] as CrCheckboxElement;
       assertTrue(!!checkbox);
       checkbox.click();
 
@@ -1207,8 +1202,7 @@ suite('<os-settings-input-page>', () => {
     /**
      * Returns the list items in the dialog.
      */
-    function getAllLanguagesCheckboxWithPolicies():
-        CrCheckboxWithPolicyElement[] {
+    function getAllLanguagesCheckboxes(): CrCheckboxElement[] {
       // If an element (the <iron-list> in this case) is hidden in Polymer,
       // Polymer will intelligently not update the DOM of the hidden element
       // to prevent DOM updates that the user can't see. However, this means
@@ -1221,22 +1215,8 @@ suite('<os-settings-input-page>', () => {
         return [];
       }
       return [
-        ...allLangsList.querySelectorAll('cr-checkbox-with-policy'),
+        ...allLangsList.querySelectorAll('cr-checkbox'),
       ].filter(checkbox => isVisible(checkbox));
-    }
-
-    /**
-     * Returns the internal cr-checkboxes in allLanguages.
-     */
-    function getAllLanguagesCheckboxes(): CrCheckboxElement[] {
-      const checkboxWithPolicies = getAllLanguagesCheckboxWithPolicies();
-      return checkboxWithPolicies.map(checkboxWithPolicy => {
-        const checkBox =
-            checkboxWithPolicy.shadowRoot!.querySelector<CrCheckboxElement>(
-                '#checkbox');
-        assertTrue(!!checkBox);
-        return checkBox;
-      });
     }
 
     setup(async () => {
@@ -1312,7 +1292,7 @@ suite('<os-settings-input-page>', () => {
       // There are four languages with spell check enabled in
       // fake_language_settings_private.js: en-US, en-CA, sw, nb.
       // en-US shouldn't be displayed as it is already enabled.
-      const allItems = getAllLanguagesCheckboxWithPolicies();
+      const allItems = getAllLanguagesCheckboxes();
       assertEquals(3, allItems.length);
       assertStringContains(allItems[0]!.textContent!, 'English (Canada)');
       assertStringContains(allItems[1]!.textContent!, 'Swahili');
@@ -1386,19 +1366,13 @@ suite('<os-settings-input-page>', () => {
       assertFalse(dialog.$.dialog.open);
     });
 
-    test('policy disabled languages cannot be selected and show icon', () => {
+    test('policy disabled languages cannot be selected', () => {
       // Force-disable sw.
       inputPage.setPrefValue('spellcheck.blocked_dictionaries', ['sw']);
       flush();
 
-      const swCheckboxWithPolicy = getAllLanguagesCheckboxWithPolicies()[1];
-      assertTrue(!!swCheckboxWithPolicy);
-      const swCheckbox =
-          swCheckboxWithPolicy.shadowRoot!.querySelector('cr-checkbox');
+      const swCheckbox = getAllLanguagesCheckboxes()[1];
       assertTrue(!!swCheckbox);
-      const swPolicyIcon =
-          swCheckboxWithPolicy.shadowRoot!.querySelector('iron-icon');
-      assertTrue(!!swPolicyIcon);
 
       assertTrue(swCheckbox.disabled);
       assertFalse(swCheckbox.checked);
@@ -1437,25 +1411,24 @@ suite('<os-settings-input-page>', () => {
       const searchInput = dialog.shadowRoot!.querySelector('cr-search-field');
       assertTrue(!!searchInput);
       // Expecting a few languages to be displayed when no query exists.
-      assertGE(getAllLanguagesCheckboxWithPolicies().length, 1);
+      assertGE(getAllLanguagesCheckboxes().length, 1);
 
       // Issue query that matches the |displayedName| in lowercase.
       searchInput.setValue('norwegian');
       flush();
-      assertEquals(1, getAllLanguagesCheckboxWithPolicies().length);
+      assertEquals(1, getAllLanguagesCheckboxes().length);
       assertStringContains(
-          getAllLanguagesCheckboxWithPolicies()[0]!.textContent!,
-          'Norwegian Bokmål');
+          getAllLanguagesCheckboxes()[0]!.textContent!, 'Norwegian Bokmål');
 
       // Issue query that matches the |nativeDisplayedName|.
       searchInput.setValue('norsk');
       flush();
-      assertEquals(1, getAllLanguagesCheckboxWithPolicies().length);
+      assertEquals(1, getAllLanguagesCheckboxes().length);
 
       // Issue query that does not match any language.
       searchInput.setValue('egaugnal');
       flush();
-      assertEquals(0, getAllLanguagesCheckboxWithPolicies().length);
+      assertEquals(0, getAllLanguagesCheckboxes().length);
       assertTrue(
           isVisible(dialog.shadowRoot!.querySelector('#no-search-results')));
     });

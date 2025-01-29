@@ -9,6 +9,7 @@
 
 #include "net/disk_cache/simple/simple_synchronous_entry.h"
 
+#include <algorithm>
 #include <cstring>
 #include <functional>
 #include <limits>
@@ -26,7 +27,6 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "crypto/secure_hash.h"
@@ -585,7 +585,7 @@ int SimpleSynchronousEntry::DeleteEntrySetFiles(
     std::unique_ptr<UnboundBackendFileOperations> unbound_file_operations) {
   auto file_operations = unbound_file_operations->Bind(
       base::SequencedTaskRunner::GetCurrentDefault());
-  const size_t did_delete_count = base::ranges::count_if(
+  const size_t did_delete_count = std::ranges::count_if(
       *key_hashes, [&path, &file_operations](const uint64_t& key_hash) {
         return SimpleSynchronousEntry::DeleteFilesForEntryHash(
             path, key_hash, file_operations.get());

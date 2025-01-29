@@ -4,13 +4,14 @@
 
 package org.chromium.components.browser_ui.edge_to_edge;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.util.TokenHolder;
 
@@ -65,7 +66,8 @@ public class EdgeToEdgeManager {
      * Returns the {@link EdgeToEdgeStateProvider} for checking and requesting changes to the
      * edge-to-edge state.
      */
-    public @Nullable EdgeToEdgeStateProvider getEdgeToEdgeStateProvider() {
+    public EdgeToEdgeStateProvider getEdgeToEdgeStateProvider() {
+        assert mEdgeToEdgeStateProvider != null; // Ensure not destroyed.
         return mEdgeToEdgeStateProvider;
     }
 
@@ -88,9 +90,8 @@ public class EdgeToEdgeManager {
      * Returns true if the content should fit within the system's window insets, false if the
      * content should be drawn edge-to-edge (into the window insets).
      */
-    @NullUnmarked
     public boolean shouldContentFitsWindowInsets() {
-        return mContentFitsWindowInsetsSupplier.get();
+        return assumeNonNull(mContentFitsWindowInsetsSupplier.get());
     }
 
     /**

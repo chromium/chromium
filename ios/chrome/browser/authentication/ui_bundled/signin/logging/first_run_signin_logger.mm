@@ -20,13 +20,14 @@
 
 - (void)logSigninStarted {
   if (!self.hasRecordedSigninStarted) {
-    self.hasRecordedSigninStarted = YES;
+    signin_metrics::LogSignInStarted(self.accessPoint);
     signin_metrics::LogSigninAccessPointStarted(self.accessPoint,
                                                 self.promoAction);
     signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
     base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   first_run::kWelcomeAndSigninScreenStart);
   }
+  self.hasRecordedSigninStarted = YES;
 }
 
 @end

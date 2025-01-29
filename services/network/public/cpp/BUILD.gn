@@ -439,6 +439,8 @@ component("cpp_base") {
     "resource_request.h",
     "resource_request_body.cc",
     "resource_request_body.h",
+    "source_type_mojom_traits.cc",
+    "source_type_mojom_traits.h",
     "transferable_directory.cc",
     "transferable_directory.h",
     "transferable_socket.cc",

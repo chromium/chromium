@@ -295,26 +295,14 @@ void InlineLayoutAlgorithm::PrepareBoxStates(
       .RebuildBoxStates(line_info, 0u, break_token->StartItemIndex());
 }
 
-static LayoutUnit AdjustLineOffsetForHanging(LineInfo* line_info,
-                                             LayoutUnit& line_offset) {
+static LayoutUnit AdjustLineOffsetForHanging(LineInfo* line_info) {
   if (IsLtr(line_info->BaseDirection()))
     return LayoutUnit();
 
-  // If !line_info->ShouldHangTrailingSpaces(), the hang width is not considered
-  // in ApplyTextAlign, and so line_offset points to where the left edge of the
-  // hanging spaces should be. Since the line box rect has to start at the left
-  // edge of the text instead (needed for caret positioning), we increase
-  // line_offset.
-  LayoutUnit hang_width = line_info->HangWidth();
-  if (!line_info->ShouldHangTrailingSpaces()) {
-    line_offset += hang_width;
-  }
-
-  // Now line_offset always points to where the left edge of the text should be.
   // If there are any hanging spaces, the starting position of the line must be
   // offset by the width of the hanging spaces so that the text starts at
   // line_offset.
-  return -hang_width;
+  return -line_info->HangWidth();
 }
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -363,7 +351,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   LogicalLineItems* line_box = &line_container->BaseLine();
   // Apply justification before placing items, because it affects size/position
   // of items, which are needed to compute inline static positions.
-  LayoutUnit line_offset_for_text_align = ApplyTextAlign(line_info);
+  const LayoutUnit line_offset_for_text_align = ApplyTextAlign(line_info);
 
   // Clear the current line without releasing the buffer.
   line_container->Shrink();
@@ -373,8 +361,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   line_builder.CreateLine(line_info, line_box, this);
 
   const LayoutUnit hang_width = line_info->HangWidth();
-  const LayoutUnit position =
-      AdjustLineOffsetForHanging(line_info, line_offset_for_text_align);
+  const LayoutUnit position = AdjustLineOffsetForHanging(line_info);
   LayoutUnit inline_size = box_states_->ComputeInlinePositions(
       line_box, position, line_info->IsBlockInInline());
   if (hang_width) [[unlikely]] {

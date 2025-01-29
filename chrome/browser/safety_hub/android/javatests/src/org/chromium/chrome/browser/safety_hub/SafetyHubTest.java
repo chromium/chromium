@@ -208,8 +208,10 @@ public final class SafetyHubTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mProfile = mActivityTestRule.getProfile(/* incognito= */ false);
 
-        // Make sure the compromised passwords count is reset at the beginning of the test suite.
+        // Reset state to the default of the compromised passwords count and the browsing data
+        // state.
         clearCompromisedPasswordsCount();
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
     }
 
     @Test
@@ -666,8 +668,6 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
         verifySummaryNextToTextVisibility(safeBrowsingTitle, true);
 
-        // TODO(https://crbug.com/388788381): Reset all states, including the safe browsing state
-        // between tests in the tear down method.
         // Reset Safe Browsing state so it doesn't leak to other tests.
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
     }

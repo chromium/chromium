@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_bridge.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -15,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -77,7 +77,7 @@ syncer::EntityData GenerateWifiEntityData(
 bool VectorContainsProto(
     const std::vector<sync_pb::WifiConfigurationSpecifics>& protos,
     const sync_pb::WifiConfigurationSpecifics& proto) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       protos, [&proto](const sync_pb::WifiConfigurationSpecifics& specifics) {
         return NetworkIdentifier::FromProto(specifics) ==
                    NetworkIdentifier::FromProto(proto) &&

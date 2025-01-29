@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/strings/to_string.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
@@ -137,7 +138,8 @@ void FakePlusAddressService::OnAcceptedInlineSuggestion(
 
 std::map<std::string, std::string>
 FakePlusAddressService::GetPlusAddressHatsData() const {
-  return {{hats::kFirstPlusAddressCreationTime, "-1"},
+  return {{hats::kPlusAddressesCount, base::ToString(GetPlusProfiles().size())},
+          {hats::kFirstPlusAddressCreationTime, "-1"},
           {hats::kLastPlusAddressFillingTime, "-1"}};
 }
 

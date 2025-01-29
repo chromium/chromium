@@ -139,10 +139,10 @@ void Bitmap::SetRange(int begin, int end, bool value) {
   SetWordBits(end, end_offset, value);
 
   // Set all the words in the middle.
-  base::ranges::fill(map_.subspan(base::checked_cast<size_t>(begin / kIntBits),
-                                  base::checked_cast<size_t>(
-                                      (end / kIntBits) - (begin / kIntBits))),
-                     (value ? 0xFFFFFFFFu : 0x00u));
+  std::ranges::fill(map_.subspan(base::checked_cast<size_t>(begin / kIntBits),
+                                 base::checked_cast<size_t>(
+                                     (end / kIntBits) - (begin / kIntBits))),
+                    (value ? 0xFFFFFFFFu : 0x00u));
 }
 
 // Return true if any bit between begin inclusive and end exclusive

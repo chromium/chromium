@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{પાસવર્ડને તમારા Google એકાઉન્ટ, {EMAIL}માં સાચવ્યો}one{પાસવર્ડને તમારા Google એકાઉન્ટ, {EMAIL}માં સાચવ્યો}other{પાસવર્ડને તમારા Google એકાઉન્ટ, {EMAIL}માં સાચવ્યા}}</translation>
 <translation id="2791174088547598693">પાસવર્ડ ઉમેરો…</translation>
 <translation id="2797302972324086597">દેશનો કોડ</translation>
-<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> બંધ છે</translation>
 <translation id="2816489851009559785">મેનૂ → સેટિંગ → ડિફૉલ્ટ બ્રાઉઝર</translation>
 <translation id="2818821771744632548">તમારો iPhone રીસેટ કરવાની પ્રક્રિયાના ભાગ તરીકે, તમારા એકાઉન્ટ <ph name="USER_NAME" />માંથી તમને સાઇન આઉટ કરવામાં આવ્યા. ફરીથી સાઇન ઇન કરવા માટે, "ચાલુ રાખો" પર ટૅપ કરો.</translation>
 <translation id="2819667972867209401">જ્યારે ચાલુ હોય, ત્યારે ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે. જ્યારે આ બંધ હોય, ત્યારે ડેટા માત્ર આ ડિવાઇસમાં સાચવવામાં આવે છે અને જો તમે સાઇન આઉટ કરો, તો ડિલીટ કરવામાં આવે છે.</translation>
@@ -562,6 +561,7 @@
 <translation id="3517216995152707259">તમારો બ્રાઉઝિંગ ડેટા ડિલીટ કરવાથી તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થતા નથી. આમ કરવા માટે, <ph name="BEGIN_LINK" />Chromeમાંથી સાઇન આઉટ કરો<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">વેબ બ્રાઉઝ કરવા ટેબ ખોલો.</translation>
 <translation id="3519905498307021260">{count,plural, =1{ટૅબ ખોલો}one{{count} ટૅબ ખોલો}other{{count} ટૅબ ખોલો}}</translation>
+<translation id="3523513363815970085">"તમારી લોકપ્રિય સાઇટ" છુપાવો</translation>
 <translation id="3523789730715594198">તમે કોઈપણ સમયે સેટિંગમાં જઈને સિંક કરવાનું બંધ રોકી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="3527085408025491307">ફોલ્ડર</translation>
 <translation id="3529024052484145543">સુરક્ષિત નથી</translation>
@@ -837,6 +837,7 @@
 <translation id="4769198578611055647">કોઈપણ ડિવાઇસ પર સાચવેલી પાસકી ઍક્સેસ કરવામાં તમને સહાય કરે છે</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">શું છૂપા મોડમાં ખોલીએ?</translation>
+<translation id="479208892659046780">તમારી લોકપ્રિય સાઇટ</translation>
 <translation id="4792385443586519711">કંપનીનું નામ</translation>
 <translation id="479628432297359449">ડાઉનલોડ રોકીએ?</translation>
 <translation id="4796496140132859135">ટૅબનું ગ્રૂપ. નાનું કર્યું.</translation>
@@ -1591,7 +1592,6 @@
 <translation id="7975036700432177008">પ્રયાસ કરો</translation>
 <translation id="797588153137233716">મેનૂ → ઇતિહાસ → બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
 <translation id="7977451675950311423">તમે ઉપયોગમાં લો છો તે પાસવર્ડ સાથે કોઈ ડેટા ઉલ્લંઘન દરમિયાન ચેડાં કરવામાં આવ્યા હોય તો તમને ચેતવણી આપે છે.</translation>
-<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> નવા ટૅબ, <ph name="NUMBER_OF_TABS_REMOVED" /> બંધ છે</translation>
 <translation id="797824194429476746">આ ડિવાઇસ પર ટૅબ ખુલ્લા રહેશે, પરંતુ ગ્રૂપ કાયમ માટે ડિલીટ કરવામાં આવશે.</translation>
 <translation id="797874245254030665">કોઈપણ ઍપમાંથી તમારા પાસવર્ડ અને પાસકી ઍક્સેસ કરો</translation>
 <translation id="7982789257301363584">નેટવર્ક</translation>
@@ -1778,7 +1778,6 @@
 <translation id="8728922029615312208">બધા બંધ કરો</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="87371078663613140">મેનૂ બારના વિકલ્પો વિશે શોધખોળ કરો</translation>
-<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> નવા ટૅબ</translation>
 <translation id="8741627442233023406">{count,plural, =1{ટૅબનો રિવ્યૂ કરો…}one{બધા ટૅબનો રિવ્યૂ કરો…}other{બધા ટૅબનો રિવ્યૂ કરો…}}</translation>
 <translation id="8741995161408053644">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
 <translation id="874599634440689554">લિંક બનાવો</translation>

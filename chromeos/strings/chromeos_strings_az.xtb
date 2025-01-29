@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Ləğv edilib</translation>
 <translation id="1020274983236703756">Eksklüziv <ph name="PRODUCT_NAME" /> aktivləri əlçatandır</translation>
 <translation id="1022628058306505708">Aşağıya axın</translation>
+<translation id="102432830749687801">Girişi itirməzdən əvvəl məktəb hesabı datasını şəxsi hesaba köçürmək üçün Google-un Kontent transferi tətbiqindən istifadə edin.</translation>
 <translation id="1026212596705997935">Qısayol "<ph name="CONFLICT_ACCEL_NAME" />" üçün istifadə edilir. Yeni qısayol üzərinə basın. Mövcud qısayolu əvəzləmək üçün bu qısayolun üzərinə yenidən basın.</translation>
 <translation id="1030856839388844477">Data istifadəsini sıfırlayın</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> mövzu, <ph name="CPU_MAX_CLOCK_SPEED" /> GHs)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Keysin batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Giriş test edilə bilər</translation>
 <translation id="1398634363027580500">Çox yüksək HTTPS gecikməsi</translation>
+<translation id="1406389211945506521">Təcrübənizi paylaşdığınız üçün təşəkkür edirik. Rəyiniz dəqiq və faydalı kontent yaratmağa kömək edir.</translation>
 <translation id="1407069428457324124">Tünd tema</translation>
 <translation id="1413240736185167732">Alınmadı - Filtr xətası</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,11 @@
 <translation id="1808803439260407870">Klassik incəsənət</translation>
 <translation id="181434555916624618">Hələlik insanlarla bağlı nəticələr göstərilməyəcək. Başqa sorğu ilə cəhd edin.</translation>
 <translation id="1815850098929213707">Seçilmiş düymə: <ph name="KEYS" />. Nizamlayıcını redaktə etmək üçün düyməyə toxunun</translation>
+<translation id="1818174214124933000">Göndərməyi seçəndə rəy və kontent (aşağıda göstərilib) Google-a göndəriləcək, insanlar tərəfindən nəzərdən keçiriləcək, habelə <ph name="LINK_POLICY_BEGIN" />Məxfilik Siyasətinə<ph name="LINK_POLICY_END" /> və <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google Xidmət Şərtlərinə<ph name="LINK_TERMS_OF_SERVICE_END" /> uyğun olaraq məhsul və xidmətləri öyrətmək və ya təkmilləşdirmək üçün istifadə olunacaq.</translation>
 <translation id="1823120442877418684">Simvollar</translation>
 <translation id="1827738518074806965">İncəsənət qalereyası</translation>
+<translation id="183287940576828840">Təhqiramiz/Təhlükəli</translation>
+<translation id="1834032517784994783">Transkripsiya dilini seçin</translation>
 <translation id="1836553715834333258">Sistem rəngi</translation>
 <translation id="183675228220305365">realist</translation>
 <translation id="1838374766361614909">Axtarışı təmizləyin</translation>
@@ -225,6 +230,7 @@
 <translation id="1908234395526491708">Alınmayan UDP sorğuları</translation>
 <translation id="1908394185991500139">sol ox</translation>
 <translation id="1914144885717544695">Cümə</translation>
+<translation id="1915960750806557358">Rəy paylaşın və ya problemi təsvir edin. Şəxsi, həssas və ya məxfi məlumat daxil etməyin.</translation>
 <translation id="1923388006036088459">Vurğu rəngləri</translation>
 <translation id="1945403655450283000">Diktofon</translation>
 <translation id="1947737735496445907">Çap edilib</translation>
@@ -311,7 +317,6 @@
 <translation id="2308243864813041101">Güncəllənmə prosesinə davam etmək üçün <ph name="DEVICE_NAME" /> USB kabelini ayırın</translation>
 <translation id="2320295602967756579">İşıqlı temanı aktiv edin</translation>
 <translation id="2323506179655536734">ÖTÜRÜLÜB</translation>
-<translation id="2323755382216917952">Bu güncəllənmə quraşdırmanı tamamlamaq üçün kompüteri yenidən başlatmağınızı tələb edir. Bu güncəllənmənin tamamlanması bir neçə dəqiqə çəkə bilər. Mikroproqram təminatı güncəllənərkən kompüteri elektrik şəbəkəsindən ayırmayın və ya söndürməyin.</translation>
 <translation id="2324354238778375592">Üzən</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Əla (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +462,6 @@
 <translation id="3178532070248519384">avanqard</translation>
 <translation id="3182676044300231689">"Daha özgüvənli et" kimi bir əmr daxil edin</translation>
 <translation id="3188257591659621405">Fayllarım</translation>
-<translation id="3188931456353313123">Bu güncəllənmə cihaz istehsalçısı tərəfindən təmin edilib və Google tərəfindən doğrulanmayıb.</translation>
 <translation id="319101249942218879">Avatar şəkli dəyişib</translation>
 <translation id="3192947282887913208">Audio Fayllar</translation>
 <translation id="3199982728237701504">Sənəd Bəsləyici (İki tərəfli)</translation>
@@ -596,6 +600,7 @@
 <translation id="387301095347517405">Batareyanızın tam şarj edilmə sayı</translation>
 <translation id="3877066159641251281">Tərcüməni dinləyin</translation>
 <translation id="3880601782712134623">Fərqli səsləri avtomatik aşkar edin və hər spikerə Spiker 1 və Spiker 2 kimi ümumi etiket verin</translation>
+<translation id="38811596981744338">Hüquqi problem</translation>
 <translation id="3885327323343477505">Ekran qoruyucunu dəyişdirin</translation>
 <translation id="3889914174935857450">Sıfırlanma tarixi</translation>
 <translation id="3897092660631435901">Menyu</translation>
@@ -727,6 +732,7 @@
 <translation id="4483049906298469269">Qeyri-defolt şəbəkə girişini yoxlamaq alınmadı</translation>
 <translation id="4483498983731992167">Transkript yaratmaq mümkün deyil</translation>
 <translation id="4486524074141928967"><ph name="TIME" /> radələrində hesabdan çıxacaqsınız</translation>
+<translation id="4487890678161807486">Transkripsiya dilseçənini açın</translation>
 <translation id="4500722292849917410">Qısayol əlçatan deyil. Dəyişdirici düymədən (ctrl, alt, shift və ya <ph name="META_KEY" />) istifadə edərək yeni qısayola basın.</translation>
 <translation id="4500966230243561393">İnterfeys rəngi</translation>
 <translation id="4503223151711056411">Sol ox</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> saniyədə <ph name="RATE" /> şarj edilib.</translation>
 <translation id="4930320165497208503">Bağlantını ayarlamaq və ya güncəlləmək üçün <ph name="BEGIN_LINK" />Ayarlara<ph name="END_LINK" /> keçin.</translation>
 <translation id="4932733599132424254">Tarix</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, yeni tabda açılır</translation>
 <translation id="4946927805998996217">Xülasə yaradılır</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> cihazı <ph name="VERSION" /> versiyaya güncəllənib</translation>
 <translation id="4950893758552030541">ağac tuneli</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">Seçiminizlə bağlı məlumat əldə edin</translation>
 <translation id="6694534975463174713">kilid</translation>
 <translation id="6700703207451721535">Bu keçid üçün girişə icazə verilmir. Girişə ehtiyacınız olub-olmadığını müəllimdən soruşun.</translation>
+<translation id="6703179086771097594">Nə qaydasında deyildi?</translation>
 <translation id="6704062477274546131">DNS Həlli</translation>
 <translation id="6712933881624804031">dərə</translation>
 <translation id="6716013206176357696">çiyələklər</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">Ayarlarda transkripsiya modelini endirin</translation>
 <translation id="7058278511608979688">Bitirin və yadda saxlayın</translation>
 <translation id="7059230779847288458">Şarj edilir, tam dolana qədər <ph name="TIME_VALUE" /> qalıb</translation>
+<translation id="7064209589142995848">Kontent transferi</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> seçilib</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> düyməsi</translation>
 <translation id="7068619307603204412">Cihazınızı hazırlayın</translation>
@@ -1592,6 +1601,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8476942730579767658">Pəncərə və masalar</translation>
 <translation id="8477536061607044749">qrafik dizayn</translation>
 <translation id="8477551185774834963">DNS gecikməsi icazə verilən həddən azca yuxarıdır</translation>
+<translation id="8481308460877552925">Faktiki olaraq yanlış</translation>
 <translation id="8482376765267780829">Sadələşdirmək üçün mətn seçin</translation>
 <translation id="8483248364096924578">IP ünvanı</translation>
 <translation id="8491311378305535241">Alov divarı aktiv olduqda Android tətbiqlərindən HTTPS vebsaytlarına qoşulmaq olmur</translation>

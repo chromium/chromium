@@ -4,10 +4,11 @@
 
 #include "chromeos/printing/uri.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/printing/uri_impl.h"
@@ -97,7 +98,7 @@ class Encoder {
 
 // Returns true if given string has characters outside ASCII (outside 0x00-07F).
 bool HasNonASCII(const std::string& str) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       str, [](char c) { return static_cast<unsigned char>(c) > 0x7f; });
 }
 

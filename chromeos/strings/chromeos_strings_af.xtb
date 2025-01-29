@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Gekanselleer</translation>
 <translation id="1020274983236703756">Eksklusiewe <ph name="PRODUCT_NAME" />-komponente is nou beskikbaar</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="102432830749687801">Maak seker dat jy die Inhoudoordragapp deur Google gebruik om jou skoolrekeningdata na jou persoonlike rekening toe te skuif voordat jy toegang verloor.</translation>
 <translation id="1026212596705997935">Kortpad word gebruik vir “<ph name="CONFLICT_ACCEL_NAME" />”. Druk ’n nuwe kortpad. Druk hierdie kortpad weer om die oorspronklike kortpad te vervang.</translation>
 <translation id="1030856839388844477">Terugsteldatagebruik</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> drade, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Toestel het <ph name="BATTERY_PERCENTAGE" />% batterykrag in houer.</translation>
 <translation id="1397738625398125236">Deurgang kan gepieng word</translation>
 <translation id="1398634363027580500">Baie hoë HTTPS-traagheid</translation>
+<translation id="1406389211945506521">Dankie dat jy jou ervaring gedeel het. Jou terugvoer help ons om meer akkurate en voordelige inhoud te skep.</translation>
 <translation id="1407069428457324124">Donkertema</translation>
 <translation id="1413240736185167732">Misluk – Filter het misluk</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Klassieke kuns</translation>
 <translation id="181434555916624618">Resultate met mense sal vir nou nie gewys word nie. Probeer ’n ander porboodskap.</translation>
 <translation id="1815850098929213707">Gekose sleutel is <ph name="KEYS" />. Tik op die knoppie om die kontrole te wysig</translation>
+<translation id="1818174214124933000">Wanneer jy stuur kies, sal jou terugvoer en inhoud (wat hier onder gewys word) aan Google gestuur word, deur mense gekontroleer word, en gebruik word om ons produkte en dienste op te lei en te verbeter, onderworpe aan die <ph name="LINK_POLICY_BEGIN" />privaatheidsbeleid<ph name="LINK_POLICY_END" /> en <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google se diensbepalings<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Karakters</translation>
 <translation id="1827738518074806965">Kunsgalery</translation>
+<translation id="183287940576828840">Aanstootlik/Onveilig</translation>
 <translation id="1836553715834333258">Stelselkleur</translation>
 <translation id="183675228220305365">realisties</translation>
 <translation id="1838374766361614909">Vee soektog uit</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Mislukte UDP-versoeke</translation>
 <translation id="1908394185991500139">pyl links</translation>
 <translation id="1914144885717544695">op Vrydag</translation>
+<translation id="1915960750806557358">Deel jou terugvoer of beskryf jou kwessie. Maak seker dat jy niks persoonlik, sensitief of vertroulik insluit nie.</translation>
 <translation id="1923388006036088459">Aksentkleure</translation>
 <translation id="1945403655450283000">Klankopnemer</translation>
 <translation id="1947737735496445907">Gedruk</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Prop die <ph name="DEVICE_NAME" /> se USB-kabel uit om met die opdateringproses voort te gaan</translation>
 <translation id="2320295602967756579">Aktiveer ligtema</translation>
 <translation id="2323506179655536734">OORGESLAAN</translation>
-<translation id="2323755382216917952">Hierdie opdatering vereis dat jy jou rekenaar herbegin om installasie te voltooi. Hierdie opdatering kan ’n paar minute neem om te voltooi. Moenie jou rekenaar uitprop of afskakel terwyl die fermware opdateer nie.</translation>
 <translation id="2324354238778375592">Sweef</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Uitstekend (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Voer porteks soos “maak dit meer selfversekerd” in</translation>
 <translation id="3188257591659621405">My lêers</translation>
-<translation id="3188931456353313123">Hierdie opdatering word deur die toestelvervaardiger verskaf en is nie deur Google geverifieer nie.</translation>
 <translation id="319101249942218879">Avatar-prent het verander</translation>
 <translation id="3192947282887913208">Oudiolêers</translation>
 <translation id="3199982728237701504">Dokumentvoerder (twee kante)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">Die aantal keer wat jou battery deur 'n volledige laaisiklus gegaan het</translation>
 <translation id="3877066159641251281">Luister na vertaling</translation>
 <translation id="3880601782712134623">Bespeur outomaties kenmerkende stemme en gee vir elke spreker ’n generiese etiket soos Spreker 1 en Spreker 2</translation>
+<translation id="38811596981744338">Wetlike kwessie</translation>
 <translation id="3885327323343477505">Verander sluimerskerm</translation>
 <translation id="3889914174935857450">Stel datum terug</translation>
 <translation id="3897092660631435901">Kieslys</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356">Het <ph name="RATE" /> gelaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="4930320165497208503">Gaan na <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> om 'n verbinding op te stel of op te dateer.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />; maak in nuwe oortjie oop</translation>
 <translation id="4946927805998996217">Genereer tans opsomming</translation>
 <translation id="4950314376641394653">Fermware <ph name="DEVICE_NAME" /> is opgedateer na weergawe <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">boomtonnel</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Kry inligting wat met jou keuse verband hou</translation>
 <translation id="6694534975463174713">sluit</translation>
 <translation id="6700703207451721535">Toegang word nie vir hierdie skakel toegelaat nie. Raadpleeg jou onderwyser as jy toegang nodig het.</translation>
+<translation id="6703179086771097594">Wat het nie goed gewerk nie?</translation>
 <translation id="6704062477274546131">DNS-ontbinding</translation>
 <translation id="6712933881624804031">vallei</translation>
 <translation id="6716013206176357696">aarbeie</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Laai transkripsiemodel in Instellings af</translation>
 <translation id="7058278511608979688">Beëindig en stoor</translation>
 <translation id="7059230779847288458">Laai tans; <ph name="TIME_VALUE" /> tot vol</translation>
+<translation id="7064209589142995848">Inhoudoordrag</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> gekies</translation>
 <translation id="7066538517128343186">die <ph name="KEY" />-sleutel</translation>
 <translation id="7068619307603204412">Maak jou toestel gereed</translation>
@@ -1592,6 +1599,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8476942730579767658">Vensters en lessenaars</translation>
 <translation id="8477536061607044749">grafiese ontwerp</translation>
 <translation id="8477551185774834963">DNS-traagheid is effens bo toelaatbare drempel</translation>
+<translation id="8481308460877552925">Feitelik verkeerd</translation>
 <translation id="8482376765267780829">Kies teks om te vereenvoudig</translation>
 <translation id="8483248364096924578">IP-adres</translation>
 <translation id="8491311378305535241">Kan nie deur brandmuur van Android-programme af aan HTTP-webwerwe koppel nie</translation>

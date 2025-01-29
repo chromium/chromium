@@ -8,6 +8,7 @@ import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_T
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 
@@ -282,6 +283,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     private void startPrerendering(
             String url,
             AwPrefetchParameters prefetchParameters,
+            CancellationSignal cancellationSignal,
             Callback<Void> activationCallback,
             Callback<Throwable> errorCallback)
             throws Exception {
@@ -291,6 +293,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                     mAwContents.startPrerendering(
                             url,
                             prefetchParameters,
+                            cancellationSignal,
                             callbackExecutor,
                             activationCallback,
                             errorCallback);
@@ -302,10 +305,12 @@ public class AwPrerenderTest extends AwParameterizedTest {
     private void startPrerenderingAndWait(
             String url,
             AwPrefetchParameters prefetchParameters,
+            CancellationSignal cancellationSignal,
             Callback<Void> activationCallback,
             Callback<Throwable> errorCallback)
             throws Exception {
-        startPrerendering(url, prefetchParameters, activationCallback, errorCallback);
+        startPrerendering(
+                url, prefetchParameters, cancellationSignal, activationCallback, errorCallback);
 
         // Wait until the prerendered page starts running JavaScript.
         mPrerenderLifecycleWebMessageListener.waitForOnPostMessage();
@@ -436,6 +441,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                                 mAwContents.startPrerendering(
                                         mPrerenderingUrl,
                                         prefetchParameters,
+                                        /* cancellationSignal= */ null,
                                         callbackExecutor,
                                         mActivationCallbackHelper.getCallback(),
                                         mPrerenderErrorCallbackHelper.getCallback());
@@ -536,9 +542,12 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         int currentCallCount = mActivationCallbackHelper.getCallCount();
 
+        var cancellationSignal = new CancellationSignal();
+
         startPrerenderingAndWait(
                 mPrerenderingUrl,
-                null,
+                /* prefetchParameters= */ null,
+                cancellationSignal,
                 mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
@@ -556,6 +565,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // Wait until the navigation activates the prerendered page.
         mActivationCallbackHelper.waitForCallback(currentCallCount);
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        // Cancel after activation should not cause a runtime error.
+        Assert.assertFalse(cancellationSignal.isCanceled());
+        cancellationSignal.cancel();
+        Assert.assertTrue(cancellationSignal.isCanceled());
     }
 
     // Tests the case where a user navigates to a page different from a prerendered page.
@@ -572,6 +586,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerenderingAndWait(
                 mPrerenderingUrl,
                 /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
                 mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
@@ -608,6 +623,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerenderingAndWait(
                 initialPrerenderingUrl,
                 /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
                 mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
@@ -652,6 +668,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerendering(
                 initialPrerenderingUrl,
                 /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
                 mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
@@ -697,6 +714,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerendering(
                 initialPrerenderingUrl,
                 /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
                 mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
@@ -741,6 +759,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerendering(
                 mPrerenderingUrl,
                 prefetchParameters,
+                /* cancellationSignal= */ null,
                 mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
@@ -922,6 +941,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerendering(
                 mPrerenderingUrl,
                 prefetchParameters,
+                /* cancellationSignal= */ null,
                 mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
@@ -1692,7 +1712,8 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // response.
         startPrerenderingAndWait(
                 mPrerenderingUrl,
-                null,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
                 mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
@@ -1743,7 +1764,8 @@ public class AwPrerenderTest extends AwParameterizedTest {
         String prerenderUrl = getUrl(prerenderPath);
         startPrerenderingAndWait(
                 prerenderUrl,
-                null,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
                 mActivationCallbackHelper.getCallback(),
                 mPrerenderErrorCallbackHelper.getCallback());
 
@@ -1774,7 +1796,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void testDuplicatePrerenderSuccess() throws Throwable {
+    public void testDuplicatePrerender_Success() throws Throwable {
         loadInitialPage();
 
         var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
@@ -1786,13 +1808,15 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         startPrerendering(
                 mPrerenderingUrl,
-                null,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
                 activationCallbackHelper1.getCallback(),
                 errorCallbackHelper1.getCallback());
 
         startPrerendering(
                 mPrerenderingUrl,
-                null,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
                 activationCallbackHelper2.getCallback(),
                 errorCallbackHelper2.getCallback());
 
@@ -1810,13 +1834,13 @@ public class AwPrerenderTest extends AwParameterizedTest {
     }
 
     // Tests the case where prerendering is triggered for the same URL multiple times and then
-    // canceled.
+    // canceled by an unexpected error.
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void testDuplicatePrerenderCancel() throws Throwable {
+    public void testDuplicatePrerender_UnexpectedError() throws Throwable {
         loadInitialPage();
 
         var histogramWatcher = createFinalStatusHistogramWatcher(/*kAllPrerenderingCanceled*/ 81);
@@ -1828,25 +1852,84 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         startPrerendering(
                 mPrerenderingUrl,
-                null,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
                 activationCallbackHelper1.getCallback(),
                 errorCallbackHelper1.getCallback());
 
         startPrerendering(
                 mPrerenderingUrl,
-                null,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
                 activationCallbackHelper2.getCallback(),
                 errorCallbackHelper2.getCallback());
 
         // Wait until the prerendered page is loaded.
         mPrerenderLifecycleWebMessageListener.waitForOnPostMessage();
 
+        // Emulate cancellation by an unexpected error.
         ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.cancelAllPrerendering());
 
         // Wait until the prerendered page is canceled. Both the cancel callbacks should be called.
         errorCallbackHelper1.waitForNext();
         errorCallbackHelper2.waitForNext();
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    // Tests the case where prerendering is triggered for the same URL multiple times and then
+    // canceled by CancellationSignal.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testDuplicatePrerender_CancellationSignal() throws Throwable {
+        loadInitialPage();
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kTriggerDestroyed*/ 16);
+
+        var cancellationSignal1 = new CancellationSignal();
+        var cancellationSignal2 = new CancellationSignal();
+        var activationCallbackHelper1 = new ActivationCallbackHelper();
+        var activationCallbackHelper2 = new ActivationCallbackHelper();
+        var errorCallbackHelper1 = new PrerenderErrorCallbackHelper();
+        var errorCallbackHelper2 = new PrerenderErrorCallbackHelper();
+
+        startPrerendering(
+                mPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                cancellationSignal1,
+                activationCallbackHelper1.getCallback(),
+                errorCallbackHelper1.getCallback());
+
+        startPrerendering(
+                mPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                cancellationSignal2,
+                activationCallbackHelper2.getCallback(),
+                errorCallbackHelper2.getCallback());
+
+        Assert.assertFalse(cancellationSignal1.isCanceled());
+        Assert.assertFalse(cancellationSignal2.isCanceled());
+
+        // Cancel prerendering 2 using CancellationSignal. This is an intentional cancellation, so
+        // the error callbacks should not be called.
+        cancellationSignal2.cancel();
+
+        Assert.assertFalse(cancellationSignal1.isCanceled());
+        Assert.assertTrue(cancellationSignal2.isCanceled());
+
+        // Wait until the prerendered page is canceled.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        // The error callbacks should not be called.
+        Assert.assertEquals(0, errorCallbackHelper1.getCallCount());
+        Assert.assertEquals(0, errorCallbackHelper2.getCallCount());
+
+        // Calling the other cancellation signal after cancellation should not cause a runtime
+        // error.
+        cancellationSignal1.cancel();
+        Assert.assertTrue(cancellationSignal1.isCanceled());
     }
 
     // Tests the case where prerendering is triggered for different URLs.
@@ -1871,13 +1954,15 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         startPrerenderingAndWait(
                 prerenderingUrl1,
-                null,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
                 activationCallbackHelper1.getCallback(),
                 errorCallbackHelper1.getCallback());
 
         startPrerenderingAndWait(
                 prerenderingUrl2,
-                null,
+                /* prefetchParameters= */ null,
+                /* cancellationSignal= */ null,
                 activationCallbackHelper2.getCallback(),
                 errorCallbackHelper2.getCallback());
 
@@ -1930,7 +2015,8 @@ public class AwPrerenderTest extends AwParameterizedTest {
         for (int i = 0; i < prerenderingUrls.length; ++i) {
             startPrerendering(
                     prerenderingUrls[i],
-                    null,
+                    /* prefetchParameters= */ null,
+                    /* cancellationSignal= */ null,
                     activationCallbackHelpers[i].getCallback(),
                     errorCallbackHelpers[i].getCallback());
         }

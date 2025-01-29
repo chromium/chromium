@@ -256,10 +256,14 @@
   [self.toolbarConsumer setCanGoBack:canGoBack];
 }
 
-- (void)onRelatedSearchLoaded:(NSString*)omniboxText {
-  [self.omniboxCoordinator setThumbnailImage:nil];
-  _thumbnailRemoved = YES;
-  [self.lensHandler hideUserSelection];
+- (void)onSRPLoadWithOmniboxText:(NSString*)omniboxText {
+  if (![omniboxText isEqualToString:_currentLensResult.queryText]) {
+    if (!_currentLensResult.isTextSelection) {
+      [self.omniboxCoordinator setThumbnailImage:nil];
+      _thumbnailRemoved = YES;
+    }
+    [self.lensHandler hideUserSelection];
+  }
   [self updateOmniboxText:omniboxText];
 }
 
@@ -284,6 +288,10 @@
 
 - (void)lensResultPageOpenURLInNewTabRequsted:(GURL)URL {
   [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:URL];
+}
+
+- (void)respondToTabWillChange {
+  [self.delegate respondToTabWillChange];
 }
 
 #pragma mark - Private

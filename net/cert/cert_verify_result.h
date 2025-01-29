@@ -78,10 +78,6 @@ class NET_EXPORT CertVerifyResult {
   // meaningless if the certificate was not trusted.
   bool is_issued_by_known_root;
 
-  // is_issued_by_additional_trust_anchor is true if the root CA used for this
-  // verification came from the list of additional trust anchors.
-  bool is_issued_by_additional_trust_anchor;
-
   // Verification of stapled OCSP response, if present.
   bssl::OCSPVerifyResult ocsp_result;
 

@@ -114,10 +114,10 @@ scoped_refptr<base::SingleThreadTaskRunner> IOTaskRunner() {
 }
 
 bool SpanEqual(base::span<const uint8_t> s1, base::span<const uint8_t> s2) {
-  return base::ranges::equal(s1, s2);
+  return std::ranges::equal(s1, s2);
 }
 bool SpanEqual(base::span<const char> s1, base::span<const uint8_t> s2) {
-  return base::ranges::equal(base::as_bytes(s1), s2);
+  return std::ranges::equal(base::as_bytes(s1), s2);
 }
 
 std::string ToString(const std::vector<SigningScheme>& vec) {

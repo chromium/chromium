@@ -25,6 +25,7 @@ test("chromeos_components_unittests") {
     "//chromeos/components/onc:unit_tests",
     "//chromeos/components/quick_answers:unit_tests",
     "//chromeos/components/security_token_pin:unit_tests",
+    "//chromeos/components/sensors:ash_unit_tests",
     "//mojo/core/embedder",
     "//ui/base:base",
   ]
@@ -33,8 +34,4 @@ test("chromeos_components_unittests") {
     "//chromeos/strings:chromeos_test_strings",
     "//ui/resources:ui_test_pak_data",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/components/sensors:ash_unit_tests" ]
-  }
 }

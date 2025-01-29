@@ -28,6 +28,9 @@
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gl/android/scoped_a_native_window.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/viz/service/service_jni_headers/InputTransferHandlerViz_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace viz {
@@ -457,6 +460,33 @@ GpuServiceImpl* InputManager::GetGpuService() {
 input::RenderInputRouter* InputManager::GetRenderInputRouterFromFrameSinkId(
     const FrameSinkId& id) {
   return rir_map_[id].get();
+}
+
+bool InputManager::ReturnInputBackToBrowser() {
+#if BUILDFLAG(IS_ANDROID)
+  if (!receiver_data_) {
+    return false;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaGlobalRef<jobject> viz_input_token_java(
+      env,
+      base::AndroidInputReceiverCompat::GetInstance()
+          .AInputTransferToken_toJavaFn(
+              env, receiver_data_->viz_input_token().a_input_transfer_token()));
+  base::android::ScopedJavaGlobalRef<jobject> browser_input_token_java(
+      env,
+      base::AndroidInputReceiverCompat::GetInstance()
+          .AInputTransferToken_toJavaFn(
+              env,
+              receiver_data_->browser_input_token().a_input_transfer_token()));
+
+  return static_cast<bool>(Java_InputTransferHandlerViz_transferInput(
+      env, viz_input_token_java, browser_input_token_java));
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // `ReturnInputBackToBrowser` is only being called from Android specific
+  // usecases currently with InputVizard.
+  NOTREACHED();
 }
 
 std::unique_ptr<RenderInputRouterSupportBase>

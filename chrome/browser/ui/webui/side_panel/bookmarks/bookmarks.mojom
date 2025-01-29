@@ -52,6 +52,9 @@ interface BookmarksPageHandler {
   // Bookmarks the current active tab in the given folder.
   BookmarkCurrentTabInFolder(int64 folder_id);
 
+  // Opens the edit bookmark dialog.
+  ExecuteEditCommand(array<int64> node_ids, ActionSource source);
+
   // Opens the bookmarks specified by node_ids in a new background tab, using
   // the same logic as the native bookmarks context menu.
   ExecuteOpenInNewTabCommand(array<int64> node_ids, ActionSource source);

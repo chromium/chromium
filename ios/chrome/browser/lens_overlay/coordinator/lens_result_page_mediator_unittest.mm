@@ -56,6 +56,10 @@
   _openInNewTabRequested = YES;
 }
 
+- (void)respondToTabWillChange {
+  // NO-OP
+}
+
 @end
 
 @interface LensResultPageMediator (Testing)

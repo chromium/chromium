@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/data_migration/device.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <utility>
@@ -16,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
@@ -131,7 +131,7 @@ TEST_F(DeviceTest, TransmitsAllFiles) {
 
   ASSERT_TRUE(base::test::RunUntil([this]() {
     // All expected files have been written to disc.
-    return base::ranges::all_of(
+    return std::ranges::all_of(
         requested_file_payload_ids_,
         [this](int64_t payload_id) { return FileIsReady(payload_id); });
   }));

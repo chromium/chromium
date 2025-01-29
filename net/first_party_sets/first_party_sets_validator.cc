@@ -4,7 +4,8 @@
 
 #include "net/first_party_sets/first_party_sets_validator.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "net/base/schemeful_site.h"
 
 namespace net {
@@ -36,7 +37,7 @@ void FirstPartySetsValidator::Update(const SchemefulSite& site,
 }
 
 bool FirstPartySetsValidator::IsValid() const {
-  return base::ranges::all_of(primary_states_, [](const auto& pair) -> bool {
+  return std::ranges::all_of(primary_states_, [](const auto& pair) -> bool {
     return pair.second.IsValid();
   });
 }

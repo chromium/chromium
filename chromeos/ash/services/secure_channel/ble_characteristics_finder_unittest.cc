@@ -4,13 +4,13 @@
 
 #include "chromeos/ash/services/secure_channel/ble_characteristics_finder.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"

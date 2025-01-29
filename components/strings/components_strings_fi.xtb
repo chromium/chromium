@@ -271,6 +271,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Avaimia "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" ei voi asettaa samaan sanakirjaan kuin "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
 <translation id="1455413310270022028">Pyyhekumi</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Näytä 0 arvostelua}=1{Näytä 1 arvostelu}other{Näytä kaikki # arvostelua}}</translation>
 <translation id="1458059624921545588">Ihmiset ja yhteiskunta</translation>
 <translation id="1458140305240870199">Alusasut</translation>
 <translation id="1459693405370120464">Sää</translation>
@@ -1957,6 +1958,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4407758156081352648">Organisaatiosi ei salli salasanojen uudelleenkäyttöä Chromessa turvallisuussyistä. Chromen salasanat salataan käyttäjien tietosuojan takaamiseksi.</translation>
 <translation id="4408413947728134509">Evästeet <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Tämä kokoonpano on merkitty asennettavaksi, mutta tätä arkkitehtuuria varten ei ole lisätty näköistiedostoa, joten sitä ei voi asentaa.</translation>
+<translation id="4412377069090572315">Mitä muut ovat mieltä</translation>
 <translation id="4414452699610169758">Tallenna ja täytä salasanoja, maksutapoja ja osoitteita Google Salasanojen ja Chromen automaattisen täytön avulla</translation>
 <translation id="4414515549596849729">evästeet ja sivustodata</translation>
 <translation id="4415156962929755728">Muovi (erittäin kiiltävä)</translation>
@@ -2372,6 +2374,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="519422657042045905">Merkintää ei saatavilla</translation>
 <translation id="5200063972779787617">Tallenna osoite tilille</translation>
 <translation id="5201306358585911203">Viesti tälle sivulle upotetulta sivulta</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, selaa käytettävissä olevia toimintoja painamalla sarkainta ja suorita valittu toiminto painamalla Enter.</translation>
 <translation id="5205222826937269299">Nimi vaaditaan</translation>
 <translation id="5206392433295093945">Makuuhuone</translation>
 <translation id="5209670883520018268">Lokero 20</translation>
@@ -2778,6 +2781,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5937560539988385583">Sivu käännetty</translation>
 <translation id="5938153366081463283">Lisää virtuaalinen kortti</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Tiedot ovat peräisin riippumattomilta arvostelusivustoilta, kuten Trustpilot, ScamAdviser ja Google. Yhteenvedot luodaan tekoälyllä.</translation>
 <translation id="5944297261866530437">Kangas (erittäin kiiltävä)</translation>
 <translation id="5950901984834744590">Terät ja parranajo</translation>
 <translation id="5951495562196540101">Liittyminen kuluttajatilillä ei onnistu (pakettilisenssi saatavilla).</translation>
@@ -3144,6 +3148,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6567832540451970450">Järjestelmänvalvoja sallii <ph name="PERMISSION" />n käytön tällä sivustolla</translation>
 <translation id="6568793038316600992">Ylläpidä maksutapoja ‑painike, aktivoi ylläpitääksesi maksu- ja credit-korttitietoja Chromen asetuksissa</translation>
 <translation id="6569060085658103619">Tämä on laajennussivu.</translation>
+<translation id="6572867903637058088">Oliko tästä apua?</translation>
 <translation id="6573200754375280815">Kaksi reikää oikealla</translation>
 <translation id="6574762126505704998">Täytä</translation>
 <translation id="6575408526598156416">Tallenna tilille</translation>
@@ -3439,7 +3444,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7110368079836707726">Yliopistot ja korkeakoulut</translation>
 <translation id="7111012039238467737">(Voimassa)</translation>
 <translation id="7111507312244504964">Kuntotarkastukset ja kiinteistöarviot</translation>
-<translation id="7112327784801341716">Eivätkö tietosi ole ajan tasalla? Ota yhteyttä pankkiin ja päivitä ne.</translation>
 <translation id="7116334367957017155">Et ole tallentanut osoitteita. Lisää osoite, niin voit käyttää sitä Googlen tuotteissa.</translation>
 <translation id="7118618213916969306">Hae leikepöydän URL-osoitetta, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Näet tämän varoituksen, koska sivusto ei tue HTTPS:ää. <ph name="BEGIN_LEARN_MORE_LINK" />Lisätietoja tästä varoituksesta<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3502,7 +3506,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7219179957768738017">Yhteys käyttää protokollaa <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Käsitellään.</translation>
 <translation id="7221855153210829124">Näytä ilmoitukset</translation>
-<translation id="7221857374443660083">Pankkisi edellyttää henkilöllisyyden vahvistamista</translation>
 <translation id="722454870747268814">Uusi incognito-välilehti</translation>
 <translation id="7227293336683593977">Hintahistoria</translation>
 <translation id="7232352818707016189">Lisää toimintoja vertailutaulukkoon</translation>
@@ -4324,9 +4327,11 @@ Lisätietoja:
 <translation id="8672535691554698269">Tietokoneverkot</translation>
 <translation id="8675446170353411473">Tiedostoja ladataan tänne: <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Ei viivettä</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} taulukko poistettu}other{{COUNT} taulukkoa poistettu}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, vastaus, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Verkkosivun <ph name="PAGE" /> lataaminen epäonnistui:</translation>
 <translation id="8682297334444610648">Dino-peli, pelaa napauttamalla</translation>
+<translation id="8685225035093721011">Kaupan arvostelut</translation>
 <translation id="8686424632716064939">Tietoturva</translation>
 <translation id="8687278439622293018">Merkintä <ph name="ENTRY_VOICEOVER" /> on poistettu</translation>
 <translation id="8687429322371626002"><ph name="MANAGER" /> ylläpitää laitettasi ja tiliäsi.</translation>

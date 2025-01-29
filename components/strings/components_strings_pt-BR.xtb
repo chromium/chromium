@@ -961,6 +961,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2674170444375937751">Você quer mesmo excluir essas páginas do seu histórico?</translation>
 <translation id="2674524144218093528">Pintura e acabamento de casas</translation>
 <translation id="2674804415323431591">Ocultar sugestões</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> grupos de guias não estão mais disponíveis</translation>
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2683195745483370038">Outros resultados encontrados</translation>
 <translation id="2686919536310834199">Enviar feedback para a opção "Quero ajuda para escrever".</translation>
@@ -2264,6 +2265,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5001526427543320409">Cookies de terceiros</translation>
 <translation id="5002932099480077015">Se ativado, o Chrome armazenará uma cópia do seu cartão neste dispositivo para preencher formulários mais rapidamente.</translation>
 <translation id="5007392906805964215">Revisar</translation>
+<translation id="500790844453430087">Os grupos de guias "<ph name="GROUP_TITLE_1" />" e "<ph name="GROUP_TITLE_2" />" não estão mais disponíveis</translation>
 <translation id="5011561501798487822">Idioma detectado</translation>
 <translation id="5015510746216210676">Nome do computador:</translation>
 <translation id="5017554619425969104">Texto que você copiou</translation>
@@ -2736,6 +2738,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5866898949289125849">Você está vendo uma página de ferramentas para desenvolvedores</translation>
 <translation id="5869405914158311789">Não é possível acessar esse site</translation>
 <translation id="5869522115854928033">Senhas salvas</translation>
+<translation id="5872215789867188990">O grupo de guias "<ph name="GROUP_TITLE" />" não está mais disponível</translation>
 <translation id="5872692522325383488">IBAN salvo</translation>
 <translation id="5873297634595728366">Veículos a diesel</translation>
 <translation id="5877359070305966420">Recursos humanos</translation>
@@ -3438,7 +3441,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7110368079836707726">Universidades</translation>
 <translation id="7111012039238467737">(válido)</translation>
 <translation id="7111507312244504964">Inspeções e avaliações de propriedade</translation>
-<translation id="7112327784801341716">Suas informações atuais não são mostradas? Entre em contato com seu banco para atualizar esses dados.</translation>
 <translation id="7116334367957017155">Você não tem nenhum endereço salvo. Adicione um endereço para usá-lo nos produtos do Google.</translation>
 <translation id="7118618213916969306">Pesquisa o URL da área de transferência, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Esta mensagem está sendo mostrada porque o site não é compatível com HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3501,7 +3503,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7219179957768738017">A conexão usa a <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Processando</translation>
 <translation id="7221855153210829124">Mostrar notificações</translation>
-<translation id="7221857374443660083">O banco precisa confirmar sua identidade</translation>
 <translation id="722454870747268814">Nova guia anônima</translation>
 <translation id="7227293336683593977">Histórico de preços</translation>
 <translation id="7232352818707016189">Mais ações para a tabela de comparação</translation>

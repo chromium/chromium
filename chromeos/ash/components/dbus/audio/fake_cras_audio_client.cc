@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace ash {
@@ -520,7 +520,7 @@ void FakeCrasAudioClient::NotifySurveyTriggered(
 }
 
 AudioNodeList::iterator FakeCrasAudioClient::FindNode(uint64_t node_id) {
-  return base::ranges::find(node_list_, node_id, &AudioNode::id);
+  return std::ranges::find(node_list_, node_id, &AudioNode::id);
 }
 
 void FakeCrasAudioClient::SetForceRespectUiGains(

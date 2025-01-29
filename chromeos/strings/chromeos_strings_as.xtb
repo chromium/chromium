@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">বৰ্ণ</translation>
 <translation id="1827738518074806965">আর্ট গেলাৰী</translation>
 <translation id="183287940576828840">আপত্তিজনক/সুৰক্ষিত নহয়</translation>
+<translation id="1834032517784994783">ট্ৰেন্সক্ৰিপশ্বনৰ ভাষা বাছনি কৰক</translation>
 <translation id="1836553715834333258">ছিষ্টেমৰ ৰং</translation>
 <translation id="183675228220305365">বাস্তৱবাদী</translation>
 <translation id="1838374766361614909">সন্ধান কৰা বস্তুবোৰ মচক</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">আপডে’ট প্ৰক্ৰিয়াটো অব্যাহত ৰাখিবলৈ <ph name="DEVICE_NAME" />ৰ ইউএছবি কে’বলডাল আনপ্লাগ কৰক</translation>
 <translation id="2320295602967756579">পাতল ৰঙৰ থীম সক্ষম কৰক</translation>
 <translation id="2323506179655536734">এৰি যোৱা হৈছে</translation>
-<translation id="2323755382216917952">এই আপডে’টটোৰ বাবে ইনষ্টলেশ্বন সম্পূৰ্ণ কৰিবলৈ আপোনাৰ কম্পিউটাৰটো ৰিষ্টাৰ্ট কৰিব লাগিব। এই আপডে’টটো সম্পূৰ্ণ হ’বলৈ কেইমিনিটমান সময় লাগিব পাৰে। ফাৰ্মৱেৰটো আপডে’ট হৈ থকাৰ সময়ত, আপোনাৰ কম্পিউটাৰটো আনপ্লাগ বা শ্বাট ডাউন নকৰিব।</translation>
 <translation id="2324354238778375592">ওপঙা</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">উত্তম (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">আভাণ্ট-গাৰ্ড</translation>
 <translation id="3182676044300231689">"এইটো অধিক আত্মবিশ্বাসী যেন লগা কৰক"ৰ দৰে এটা প্ৰ’ম্পট্‌ দিয়ক</translation>
 <translation id="3188257591659621405">মোৰ ফাইলসমূহ</translation>
-<translation id="3188931456353313123">এই আপডে’টটো ডিভাইচৰ নিৰ্মাতাই প্ৰদান কৰিছে আৰু সেয়া Googleএ সত্যাপন কৰা নাই।</translation>
 <translation id="319101249942218879">অৱতাৰৰ প্ৰতিচ্ছবি সলনি হৈছে</translation>
 <translation id="3192947282887913208">অডিঅ’ ফাইল</translation>
 <translation id="3199982728237701504">নথি ফীডাৰ (দুফাল থকা)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্কৰ গে’টৱে’টোক পিং কৰাত বিফল হ'ল</translation>
 <translation id="4483498983731992167">ট্ৰেন্সক্ৰিপ্ট সৃষ্টি কৰিব নোৱাৰি</translation>
 <translation id="4486524074141928967">আপোনাক <ph name="TIME" />ত ছাইন আউট কৰোৱা হ’ব</translation>
+<translation id="4487890678161807486">ট্ৰেন্সক্ৰিপশ্বনৰ ভাষা বাছনিকৰ্তা খোলক</translation>
 <translation id="4500722292849917410">শ্বৰ্টকাট উপলব্ধ নহয়। এটা সংশোধক চাবি (ctrl, alt, shift অথবা <ph name="META_KEY" />) ব্যৱহাৰ কৰি এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
 <translation id="4500966230243561393">ইণ্টাৰফে’চৰ ৰং</translation>
 <translation id="4503223151711056411">লেফ্ট এৰ’</translation>

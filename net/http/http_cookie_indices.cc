@@ -4,11 +4,11 @@
 
 #include "net/http/http_cookie_indices.h"
 
+#include <algorithm>
 #include <functional>
 
 #include "base/containers/span.h"
 #include "base/pickle.h"
-#include "base/ranges/algorithm.h"
 #include "crypto/sha2.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/http/http_response_headers.h"
@@ -96,13 +96,13 @@ std::optional<std::vector<std::string>> ParseCookieIndices(
 CookieIndicesHash HashCookieIndices(
     base::span<const std::string> cookie_indices,
     base::span<const std::pair<std::string, std::string>> cookies) {
-  CHECK(base::ranges::adjacent_find(cookie_indices, std::greater_equal<>()) ==
+  CHECK(std::ranges::adjacent_find(cookie_indices, std::greater_equal<>()) ==
         cookie_indices.end())
       << "cookie indices must be sorted and unique";
 
   std::vector<std::pair<std::string_view, std::string_view>> cookies_sorted(
       cookies.begin(), cookies.end());
-  base::ranges::sort(cookies_sorted);
+  std::ranges::sort(cookies_sorted);
 
   base::Pickle pickle;
   auto cookies_it = cookies_sorted.begin();

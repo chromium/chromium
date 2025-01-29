@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.edge_to_edge.layout;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +16,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsCompat.Type;
 
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.edge_to_edge.BaseSystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.R;
@@ -66,7 +68,6 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
     /**
      * @see Activity#setContentView(View, LayoutParams)
      */
-    @NullUnmarked
     public View wrapContentView(View contentView, LayoutParams params) {
         ensureInitialized();
         mView.addView(contentView, params);
@@ -104,9 +105,9 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         mView.setNavBarDividerColor(mNavBarDividerColor);
     }
 
-    @NullUnmarked
     @Override
     public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat windowInsets) {
+        assumeNonNull(mView);
         Insets statusBarInsets = windowInsets.getInsets(Type.statusBars());
         mView.setStatusBarInsets(statusBarInsets);
 
@@ -135,6 +136,7 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
                 .build();
     }
 
+    @EnsuresNonNull("mView")
     private void ensureInitialized() {
         if (mView != null) return;
 

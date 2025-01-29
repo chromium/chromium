@@ -1132,7 +1132,7 @@ Google Chrome is unable to recover your settings.
           You’ll be signed out of most sites when you close all Chrome windows, except your Google Account if you’re signed in to Chrome. To let sites remember you, <ph name="SETTINGS_LINK">$1<ex>go to settings</ex></ph>.
         </message>
         <message name="IDS_SYNC_PASSPHRASE_DIALOG_FOOTER" desc="Dialog footer of the passphrase dialog.">
-          If you forgot your passphrase or want to change this setting, <ph name="SETTINGS_LINK">$1<ex>clear</ex></ph> the Chrome data in your account.
+          If you forgot your passphrase or want to change this setting, <ph name="SETTINGS_LINK">$1<ex>clear</ex></ph> the Chrome data in your account
         </message>
         <message name="IDS_SYNC_PASSPHRASE_DIALOG_FOOTER_LINK_ACC" desc="Accessibility label for the link in the footer of the sync passhprase dialog">
           Clear the Chrome data in your account

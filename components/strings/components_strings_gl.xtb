@@ -2371,6 +2371,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="519422657042045905">O modo de anotación non está dispoñible</translation>
 <translation id="5200063972779787617">Gardar o enderezo na conta</translation>
 <translation id="5201306358585911203">Unha páxina inserida nesta páxina di</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme o tabulador para consultar as accións dispoñibles e despois Introducir para executar a acción seleccionada.</translation>
 <translation id="5205222826937269299">É obrigatorio introducir o nome</translation>
 <translation id="5206392433295093945">Dormitorio</translation>
 <translation id="5209670883520018268">Bandexa 20</translation>
@@ -3438,7 +3439,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7110368079836707726">Facultades e universidades</translation>
 <translation id="7111012039238467737">(Válido)</translation>
 <translation id="7111507312244504964">Inspeccións e valoracións de propiedades</translation>
-<translation id="7112327784801341716">Non ves a túa información actual? Ponte en contacto co banco para actualizala.</translation>
 <translation id="7116334367957017155">Non tes ningún enderezo gardado. Engade un enderezo para usalo nos diferentes produtos de Google.</translation>
 <translation id="7118618213916969306">Buscar URL do portapapeis (<ph name="SHORT_URL" />)</translation>
 <translation id="7118852830504022370">Móstrase esta advertencia porque o sitio non é compatible con HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3500,7 +3500,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7219179957768738017">A conexión utiliza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Procesando</translation>
 <translation id="7221855153210829124">Mostrar notificacións</translation>
-<translation id="7221857374443660083">O teu banco queres comprobar a túa identidade</translation>
 <translation id="722454870747268814">Nova pestana do modo de incógnito</translation>
 <translation id="7227293336683593977">Historial de prezos</translation>
 <translation id="7232352818707016189">Máis accións para a táboa de comparación</translation>

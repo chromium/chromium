@@ -90,12 +90,6 @@ BASE_DECLARE_FEATURE(
     kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
 #endif
 
-// Alters the behavior of the supervised_user::SupervisedUserNavigationThrottle
-// so that the decision whether to proceed or cancel is made when the response
-// is ready to be rendered, rather than before the request (or any redirect) is
-// issued.
-BASE_DECLARE_FEATURE(kClassifyUrlOnProcessResponseEvent);
-
 // Throttle will unconditionally allow requests to GWS redirector.
 BASE_DECLARE_FEATURE(kExemptGuardianApprovalOnGwsRedirector);
 

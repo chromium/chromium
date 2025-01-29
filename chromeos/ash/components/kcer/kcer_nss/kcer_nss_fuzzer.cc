@@ -6,6 +6,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
@@ -14,7 +16,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/raw_span.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
@@ -147,19 +148,19 @@ struct FuzzEqual {
 
   bool operator()(const scoped_refptr<net::X509Certificate>& a,
                   const scoped_refptr<net::X509Certificate>& b) const {
-    return base::ranges::equal(GetCertData(a), GetCertData(b));
+    return std::ranges::equal(GetCertData(a), GetCertData(b));
   }
   bool operator()(const scoped_refptr<net::X509Certificate>& a,
                   const scoped_refptr<const Cert>& b) const {
-    return base::ranges::equal(GetCertData(a), GetCertData(b));
+    return std::ranges::equal(GetCertData(a), GetCertData(b));
   }
   bool operator()(const scoped_refptr<const Cert>& a,
                   const scoped_refptr<net::X509Certificate>& b) const {
-    return base::ranges::equal(GetCertData(a), GetCertData(b));
+    return std::ranges::equal(GetCertData(a), GetCertData(b));
   }
   bool operator()(const scoped_refptr<const Cert>& a,
                   const scoped_refptr<const Cert>& b) const {
-    return base::ranges::equal(GetCertData(a), GetCertData(b));
+    return std::ranges::equal(GetCertData(a), GetCertData(b));
   }
 };
 

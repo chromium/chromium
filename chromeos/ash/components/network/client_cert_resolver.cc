@@ -13,6 +13,7 @@
 #include <certt.h>  // for (SECCertUsageEnum) certUsageAnyCA
 #include <pk11pub.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -23,7 +24,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
@@ -400,7 +400,7 @@ std::vector<NetworkAndMatchingCert> FindCertificateMatches(
                 ::onc::ONC_SOURCE_DEVICE_POLICY
             ? &device_wide_client_cert_and_issuers
             : &all_client_cert_and_issuers;
-    auto cert_it = base::ranges::find_if(
+    auto cert_it = std::ranges::find_if(
         *client_certs,
         MatchCertWithCertConfig(network_and_cert_config.cert_config));
     if (cert_it == client_certs->end()) {
@@ -509,7 +509,7 @@ bool ClientCertResolver::ResolveClientCertificateSync(
 
   // Search for a certificate matching the pattern, reference or
   // ProvisioningProfileId.
-  std::vector<CertAndIssuer>::iterator cert_it = base::ranges::find_if(
+  std::vector<CertAndIssuer>::iterator cert_it = std::ranges::find_if(
       client_cert_and_issuers, MatchCertWithCertConfig(client_cert_config));
 
   if (cert_it == client_cert_and_issuers.end()) {

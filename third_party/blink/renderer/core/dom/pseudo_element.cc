@@ -312,16 +312,22 @@ const ComputedStyle* PseudoElement::CustomStyleForLayoutObject(
   // originating element.
   DCHECK(!IsHighlightPseudoElement(pseudo_id_));
   Element* parent = ParentOrShadowHostElement();
-  if (!RuntimeEnabledFeatures::CSSNestedPseudoElementsEnabled()) {
-    return parent->StyleForPseudoElement(
+  // second condition is to temporary fix nested ::marker
+  // on ::before and ::after when they are declared as display: list-item,
+  // so that we don't lose e.g. list-style-type property.
+  // TODO(373478544): remove second condition, once the flag is
+  // flipped.
+  if (RuntimeEnabledFeatures::CSSNestedPseudoElementsEnabled() ||
+      (IsMarkerPseudoElement() && parentElement()->IsPseudoElement())) {
+    return StyleForPseudoElement(
         style_recalc_context,
-        StyleRequest(GetPseudoIdForStyling(), parent->GetComputedStyle(),
+        StyleRequest(kPseudoIdNone, parent->GetComputedStyle(),
                      /* originating_element_style */ nullptr,
                      view_transition_name_));
   }
-  return StyleForPseudoElement(
+  return parent->StyleForPseudoElement(
       style_recalc_context,
-      StyleRequest(kPseudoIdNone, parent->GetComputedStyle(),
+      StyleRequest(GetPseudoIdForStyling(), parent->GetComputedStyle(),
                    /* originating_element_style */ nullptr,
                    view_transition_name_));
 }

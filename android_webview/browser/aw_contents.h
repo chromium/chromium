@@ -201,12 +201,23 @@ class AwContents : public FindHelper::Listener,
 
   void FlushBackForwardCache(JNIEnv* env, jint reason);
 
-  void StartPrerendering(
+  // Returns a non-negative non-zero integer when prerendering successfully
+  // started. The returned integer can be passed to CancelPrerendering().
+  // Returns -1 when prerendering failed to start.
+  jint StartPrerendering(
       JNIEnv* env,
       const std::string& prerendering_url,
       const base::android::JavaParamRef<jobject>& j_prefetch_params,
       const base::android::JavaParamRef<jobject>& j_activation_callback,
       const base::android::JavaParamRef<jobject>& j_error_callback);
+
+  // `prerender_id` should be a returned value of StartPrerendering(). If a
+  // corresponding prerendering has already been canceled or activated, this
+  // does nothing.
+  void CancelPrerendering(JNIEnv* env, int prerender_id);
+
+  // Cancel all prerendering running on this contents regardless of how they are
+  // triggered (StartPrerendering() or speculation rules).
   void CancelAllPrerendering(JNIEnv* env);
 
   bool GetViewTreeForceDarkState() { return view_tree_force_dark_state_; }

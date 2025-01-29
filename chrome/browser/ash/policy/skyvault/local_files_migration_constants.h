@@ -21,7 +21,7 @@ constexpr base::TimeDelta kFinalMigrationTimeout = base::Hours(1);
 inline constexpr char kUploadRootPrefix[] = "ChromeOS device";
 
 // The maximum number of retries before failing the migration.
-inline constexpr int kMaxRetryCount = 5;
+inline constexpr int kMaxRetryCount = 20;
 
 // The path where the log file for migration upload errors is stored.
 const base::FilePath::CharType kErrorLogFileBasePath[] =

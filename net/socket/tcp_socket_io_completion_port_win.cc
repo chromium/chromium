@@ -72,7 +72,7 @@ bool SkipCompletionPortOnSuccessIsSupported() {
     }
 
     // Return true iff all protocols return IFS handles.
-    return base::ranges::all_of(
+    return std::ranges::all_of(
         buffer.subspan(0, result), [](const WSAPROTOCOL_INFOW& protocol_info) {
           return protocol_info.dwServiceFlags1 & XP1_IFS_HANDLES;
         });

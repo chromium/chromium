@@ -30,7 +30,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -741,7 +740,7 @@ ChannelState WebSocketChannel::HandleFrameByState(
       DVLOG(1) << "Got Ping of size " << payload.size();
       if (state_ == CONNECTED) {
         auto buffer = base::MakeRefCounted<IOBufferWithSize>(payload.size());
-        base::ranges::copy(payload, buffer->data());
+        std::ranges::copy(payload, buffer->data());
         return SendFrameInternal(true, WebSocketFrameHeader::kOpCodePong,
                                  std::move(buffer), payload.size());
       }

@@ -98,39 +98,32 @@ uint32_t FetchLaterUtil::CountDescendantsWithReservedMinimalQuota(
 uint32_t FetchLaterUtil::GetReservedDeferredFetchQuota(const Frame* frame) {
   CHECK(frame);
 
-  // 2. Let isTopLevel be true if controlDocument’s node navigable is a
+  // 3. Let isTopLevel be true if controlDocument’s node navigable is a
   // top-level traversable; otherwise false.
   bool is_top_level = frame->IsOutermostMainFrame();
 
-  // 3. Let deferredFetchAllowed be true if controlDocument is allowed to use
+  // 4. Let deferredFetchAllowed be true if controlDocument is allowed to use
   // the policy-controlled feature "deferred-fetch"; otherwise false.
   bool is_deferred_fetch_allowed = IsFeatureEnabledForFrame(
       frame, mojom::blink::PermissionsPolicyFeature::kDeferredFetch);
 
-  // 4. Let deferredFetchMinimalAllowed be true if controlDocument is allowed to
+  // 5. Let deferredFetchMinimalAllowed be true if controlDocument is allowed to
   // use the policy-controlled feature "deferred-fetch-minimal"; otherwise
   // false.
   bool is_deferred_fetch_minimal_allowed = IsFeatureEnabledForFrame(
       frame, mojom::blink::PermissionsPolicyFeature::kDeferredFetchMinimal);
 
-  // 5. Let quota be the result of the first matching statement:
+  // 6. Let quota be the result of the first matching statement:
 
-  // 5-1. isTopLevel is true and deferredFetchAllowed is false
-  // 5-2. isTopLevel is false, and deferredFetchAllowed is false, and
-  // deferredFetchMinimalAllowed is false => 0.
-  if ((is_top_level && !is_deferred_fetch_allowed) ||
-      (!is_top_level && !is_deferred_fetch_allowed &&
-       !is_deferred_fetch_minimal_allowed)) {
+  // 6-1. isTopLevel is true and deferredFetchAllowed is false => 0
+  if (is_top_level && !is_deferred_fetch_allowed) {
     return 0;
   }
-
-  // 5-3. isTopLevel is true and deferredFetchMinimalAllowed is false =>
-  // 640 kibibytes.
+  // 6-2. isTopLevel is true, and deferredFetchMinimalAllowed is false => 0
   if (is_top_level && !is_deferred_fetch_minimal_allowed) {
-    return kMaxScheduledDeferredBytes;
+    return 0;
   }
-
-  // 5-4. isTopLevel is true => 512 kibibytes.
+  // 6-3. isTopLevel is true => 512 kibibytes.
   if (is_top_level) {
     return kMaxScheduledDeferredBytes - kQuotaReservedForDeferredFetchMinimal;
   }
@@ -142,14 +135,14 @@ uint32_t FetchLaterUtil::GetReservedDeferredFetchQuota(const Frame* frame) {
   uint32_t container_reserved_quota =
       ToReservedDeferredFetchQuota(container_policy);
 
-  // 5-5. deferredFetchAllowed is true, and navigable’s navigable container’s
+  // 6-4. deferredFetchAllowed is true, and navigable’s navigable container’s
   // reserved deferred-fetch quota is normal quota => normal quota.
   if (is_deferred_fetch_allowed &&
       container_reserved_quota == kNormalReservedDeferredFetchQuota) {
     return kNormalReservedDeferredFetchQuota;
   }
 
-  // 5-6. deferredFetchMinimalAllowed is true, and navigable’s navigable
+  // 6-5. deferredFetchMinimalAllowed is true, and navigable’s navigable
   // container’s reserved deferred-fetch quota is minimal quota => minimal
   // quota.
   if (is_deferred_fetch_minimal_allowed &&
@@ -157,7 +150,7 @@ uint32_t FetchLaterUtil::GetReservedDeferredFetchQuota(const Frame* frame) {
     return kMinimalReservedDeferredFetchQuota;
   }
 
-  // 5-7. Otherwise => 0.
+  // 6-6. Otherwise => 0.
   return 0;
 }
 
@@ -279,49 +272,57 @@ bool FetchLaterUtil::ShouldClearDeferredFetchPolicy(Frame* frame) {
 uint64_t FetchLaterUtil::GetAvailableDeferredFetchQuota(Frame* frame,
                                                         const KURL& url) {
   CHECK(frame);
+  // 1. Let controlDocument be document’s deferred-fetch control document.
+  // 2. Let navigable be controlDocument’s node navigable.
+  // NOTE: The wording "controlDocument" means `control_frame->GetDocument()`.
+  auto* control_frame = FetchLaterUtil::GetDeferredFetchControlFrame(frame);
 
-  // 1. Let navigable be controlDocument’s node navigable `frame`.
-  uint64_t quota = GetReservedDeferredFetchQuota(frame);
+  uint64_t quota = GetReservedDeferredFetchQuota(control_frame);
 
-  // 6. For each navigable in controlDocument’s node navigable’s descendant
-  // navigables:
-  for (auto* navigable = frame->Tree().TraverseNext(frame); navigable;
-       navigable = navigable->Tree().TraverseNext(frame)) {
-    // whose container document’s deferred-fetch control document is
-    // controlDocument,
-    if (GetDeferredFetchControlFrame(navigable) == frame) {
-      // decrement quota by navigable’s navigable container’s reserved
-      // deferred-fetch quota.
-      quota -= std::min(
-          quota,
-          static_cast<uint64_t>(ToReservedDeferredFetchQuota(
-              navigable->Owner()->GetFramePolicy().deferred_fetch_policy)));
-    }
-  }
-
-  // 7. If quota is equal or less than 0, then return 0.
-  if (quota == 0) {
-    return 0;
-  }
-
-  // 8. Let quotaForRequestOrigin be 64 kibibytes.
+  // 7. Let quotaForRequestOrigin be 64 kibibytes.
   uint64_t quota_for_request_origin =
       kMaxPerRequestOriginScheduledDeferredBytes;
 
-  // 9. For each deferred fetch record deferredRecord of controlDocument’s fetch
-  // group’s deferred fetch records:
-  auto* scoped_fetcher = GlobalFetch::ScopedFetcher::From(
-      *DynamicTo<LocalDOMWindow>(frame->DomWindow()));
-  scoped_fetcher->UpdateDeferredBytesQuota(url, quota_for_request_origin,
-                                           quota);
+  // 8. For each navigable in controlDocument’s node navigable’s inclusive
+  // descendant navigables
+  for (auto* navigable = control_frame; navigable;
+       navigable = navigable->Tree().TraverseNext(control_frame)) {
+    // whose active document’s deferred-fetch control document is
+    // controlDocument:
+    if (GetDeferredFetchControlFrame(navigable) != control_frame) {
+      continue;
+    }
 
-  // 10. If quota is equal or less than 0, then return 0.
+    // 8-1. For each container in navigable’s active document’s shadow-including
+    // inclusive descendants:
+    // NOTE: these don't include `navigable`'s container itself.
+    for (auto* container = navigable->Tree().TraverseNext(navigable); container;
+         container = container->Tree().TraverseNext(navigable)) {
+      // which is a navigable container
+      if (container->Owner()) {
+        // decrement quota by container’s reserved deferred-fetch quota.
+        quota -= std::min(
+            quota,
+            static_cast<uint64_t>(ToReservedDeferredFetchQuota(
+                container->Owner()->GetFramePolicy().deferred_fetch_policy)));
+      }
+    }
+
+    // 8-2. For each deferred fetch record deferredRecord of controlDocument’s
+    // fetch group’s deferred fetch records:
+    auto* scoped_fetcher = GlobalFetch::ScopedFetcher::From(
+        *DynamicTo<LocalDOMWindow>(navigable->DomWindow()));
+    scoped_fetcher->UpdateDeferredBytesQuota(url, quota_for_request_origin,
+                                             quota);
+  }
+
+  // 9. If quota is equal or less than 0, then return 0.
   if (quota == 0) {
     return 0;
   }
 
-  // 11. If quota is less than quotaForRequestOrigin, then return quota.
-  // 12. Return quotaForRequestOrigin.
+  // 10. If quota is less than quotaForRequestOrigin, then return quota.
+  // 11. Return quotaForRequestOrigin.
   return quota < quota_for_request_origin ? quota : quota_for_request_origin;
 }
 

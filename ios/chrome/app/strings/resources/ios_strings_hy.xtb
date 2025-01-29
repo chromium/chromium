@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Գաղտնաբառը պահվեց ձեր Google հաշվում ({EMAIL})}one{Գաղտնաբառը պահվեց ձեր Google հաշվում ({EMAIL})}other{Գաղտնաբառերը պահվեցին ձեր Google հաշվում ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Ավելացնել գաղտնաբառ…</translation>
 <translation id="2797302972324086597">Երկրի կոդը</translation>
-<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" />-ը փակված է</translation>
 <translation id="2816489851009559785">Ընտրացանկ → Կարգավորումներ → Կանխադրված դիտարկիչ</translation>
 <translation id="2818821771744632548">Ձեր iPhone-ը վերակայելիս դուք դուրս եք գրվել ձեր <ph name="USER_NAME" /> հաշվից։ Մուտք գործելու համար ստորև սեղմեք «Շարունակել»։</translation>
 <translation id="2819667972867209401">Երբ միացված է, տվյալները պահվում են ձեր Google հաշվում։ Հակառակ դեպքում տվյալները կպահվեն միայն այս սարքում և կջնջվեն, երբ դուրս գաք հաշվից։</translation>
@@ -562,6 +561,7 @@
 <translation id="3517216995152707259">Ձեր այցելությունների պատմությունը ջնջելով՝ դուք դուրս չեք գա ձեր Google հաշվից։ Հաշվից դուրս գալու համար անհրաժեշտ է <ph name="BEGIN_LINK" />դուրս գալ Chrome-ից<ph name="END_LINK" />։</translation>
 <translation id="3519193562722059437">Բացեք ներդիր՝ համացանցում կայքեր դիտելու համար:</translation>
 <translation id="3519905498307021260">{count,plural, =1{Բացել ներդիրը}one{Բացել {count} ներդիր}other{Բացել {count} ներդիր}}</translation>
+<translation id="3523513363815970085">Թաքցնել «Ձեր թոփ կայքերը» քարտը</translation>
 <translation id="3523789730715594198">Ցանկացած ժամանակ կարգավորումներում կարող եք կանգնեցնել համաժամացումը։ Google-ը կարող է ձեր պատմության հիման վրա անհատականացնել Որոնումը և այլ ծառայություններ։</translation>
 <translation id="3527085408025491307">Պանակ</translation>
 <translation id="3529024052484145543">Անվտանգ չէ</translation>
@@ -837,6 +837,7 @@
 <translation id="4769198578611055647">Սրա օգնությամբ կարող եք օգտագործել պահված մուտքի բանալիները ցանկացած սարքում</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Բացե՞լ ինկոգնիտո ռեժիմում</translation>
+<translation id="479208892659046780">Ձեր թոփ կայքերը</translation>
 <translation id="4792385443586519711">Ընկերության անվանումը</translation>
 <translation id="479628432297359449">Ընդհատե՞լ ներբեռնումը</translation>
 <translation id="4796496140132859135">Ներդիրների խումբ։ Ծալված է։</translation>
@@ -1591,7 +1592,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7975036700432177008">Փորձել</translation>
 <translation id="797588153137233716">Ընտրացանկ → Պատմություն → Ջնջել այցելությունների պատմությունը</translation>
 <translation id="7977451675950311423">Զգուշացնում է ձեզ, երբ տվյալների արտահոսքի հետևանքով կոտրված գաղտնաբառ եք օգտագործում։</translation>
-<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> նոր ներդիր, <ph name="NUMBER_OF_TABS_REMOVED" />-ը փակված է</translation>
 <translation id="797824194429476746">Այս սարքում ներդիրները կմնան բացված, սակայն խումբն ընդմիշտ կջնջվի։</translation>
 <translation id="797874245254030665">Գաղտնաբառերի և մուտքի բանալիների հասանելիություն ցանկացած հավելվածից</translation>
 <translation id="7982789257301363584">Ցանց</translation>
@@ -1778,7 +1778,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8728922029615312208">Փակել բոլորը</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="87371078663613140">Ծանոթացեք ընտրացանկի գոտու ընտրանքներին</translation>
-<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> նոր ներդիր</translation>
 <translation id="8741627442233023406">{count,plural, =1{Դիտել ներդիրը…}one{Դիտել բոլոր ներդիրները…}other{Դիտել բոլոր ներդիրները…}}</translation>
 <translation id="8741995161408053644">Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս: Դրանք կարող եք գտնել <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> էջում:</translation>
 <translation id="874599634440689554">Ստեղծել հղում</translation>

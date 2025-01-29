@@ -142,6 +142,11 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
         return mSecondaryButtonText;
     }
 
+    @Nullable
+    View.OnClickListener getPrimaryButtonClickListener() {
+        return mPrimaryButtonClickListener;
+    }
+
     private void updatePreferenceContentDescription(View view) {
         // For accessibility, read out the whole title and whether the group is collapsed/expanded.
         String collapseOrExpandedText =

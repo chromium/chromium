@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/secure_channel/active_connection_manager_impl.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/containers/contains.h"
@@ -11,7 +12,6 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"

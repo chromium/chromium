@@ -162,21 +162,16 @@ std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
     const std::string command_line_value = command_line->GetSwitchValueASCII(
         test_switches::kAddFakeIdentitiesAtStartup);
 
-    identities =
-        [FakeSystemIdentity identitiesFromBase64String:command_line_value];
+    if (command_line_value.empty()) {
+      // If no identities were passed via parameter, add a single fake identity.
+      identities = [NSArray arrayWithObject:[FakeSystemIdentity fakeIdentity1]];
+    } else {
+      identities =
+          [FakeSystemIdentity identitiesFromBase64String:command_line_value];
+    }
   }
 
-  auto system_identity_manager =
-      std::make_unique<FakeSystemIdentityManager>(identities);
-
-  // Add a fake identity if asked to start the app in signed-in state but
-  // no identity was passed via the kAddFakeIdentitiesAtStartup parameter.
-  if (identities.count == 0 &&
-      command_line->HasSwitch(test_switches::kSignInAtStartup)) {
-    system_identity_manager->AddIdentity([FakeSystemIdentity fakeIdentity1]);
-  }
-
-  return system_identity_manager;
+  return std::make_unique<FakeSystemIdentityManager>(identities);
 }
 
 std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend() {

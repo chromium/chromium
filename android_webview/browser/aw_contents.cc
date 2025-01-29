@@ -1492,7 +1492,7 @@ void AwContents::FlushBackForwardCache(JNIEnv* env, jint reason) {
       static_cast<NotRestoredReason>(reason));
 }
 
-void AwContents::StartPrerendering(
+jint AwContents::StartPrerendering(
     JNIEnv* env,
     const std::string& prerendering_url,
     const base::android::JavaParamRef<jobject>& j_prefetch_params,
@@ -1521,7 +1521,7 @@ void AwContents::StartPrerendering(
     if (handle->GetInitialPrerenderingUrl().spec() == prerendering_url) {
       handle->AddActivationCallback(std::move(activation_callback));
       handle->AddErrorCallback(std::move(error_callback));
-      return;
+      return handle->GetHandleId();
     }
   }
 
@@ -1561,7 +1561,9 @@ void AwContents::StartPrerendering(
           /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
           /*prerender_navigation_handle_callback=*/{});
 
+  int32_t handle_id = -1;
   if (prerender_handle) {
+    handle_id = prerender_handle->GetHandleId();
     prerender_handle->AddActivationCallback(std::move(activation_callback));
     prerender_handle->AddErrorCallback(std::move(error_callback));
     prerender_handles_.push_back(std::move(prerender_handle));
@@ -1569,6 +1571,15 @@ void AwContents::StartPrerendering(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(error_callback));
   }
+  return handle_id;
+}
+
+void AwContents::CancelPrerendering(JNIEnv* env, jint prerender_id) {
+  EraseIf(
+      prerender_handles_,
+      [prerender_id](const std::unique_ptr<content::PrerenderHandle>& handle) {
+        return handle->GetHandleId() == prerender_id;
+      });
 }
 
 void AwContents::CancelAllPrerendering(JNIEnv* env) {

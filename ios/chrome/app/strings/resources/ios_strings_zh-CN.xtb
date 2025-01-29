@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{密码已保存到您的 Google 账号 {EMAIL}}other{密码已保存到您的 Google 账号 {EMAIL}}}</translation>
 <translation id="2791174088547598693">添加密码…</translation>
 <translation id="2797302972324086597">国家/地区代码</translation>
-<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> 个已关闭</translation>
 <translation id="2816489851009559785">菜单 → 设置 → 默认浏览器</translation>
 <translation id="2818821771744632548">您在 iPhone 重置过程中退出了账号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
 <translation id="2819667972867209401">当此设置处于开启状态时，数据会保存在您的 Google 账号中。当此设置处于关闭状态时，数据只会保存到此设备上，并且会在您退出账号后被删除。</translation>
@@ -562,6 +561,7 @@
 <translation id="3517216995152707259">删除浏览数据不会让您退出 Google 账号。若要退出账号，请<ph name="BEGIN_LINK" />从 Chrome 中退出<ph name="END_LINK" />。</translation>
 <translation id="3519193562722059437">打开一个标签页即可浏览网络。</translation>
 <translation id="3519905498307021260">{count,plural, =1{打开标签页}other{打开 {count} 个标签页}}</translation>
+<translation id="3523513363815970085">隐藏“您最常访问的网站”</translation>
 <translation id="3523789730715594198">您可以随时在“设置”中停止同步。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="3527085408025491307">文件夹</translation>
 <translation id="3529024052484145543">不安全</translation>
@@ -837,6 +837,7 @@
 <translation id="4769198578611055647">有助于您在任意设备上访问已保存的通行密钥</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">在无痕模式下打开？</translation>
+<translation id="479208892659046780">您最常访问的网站</translation>
 <translation id="4792385443586519711">公司名称</translation>
 <translation id="479628432297359449">停止下载？</translation>
 <translation id="4796496140132859135">标签页分组，已收起。</translation>
@@ -1591,7 +1592,6 @@
 <translation id="7975036700432177008">试用</translation>
 <translation id="797588153137233716">菜单 → 历史记录 → 删除浏览数据</translation>
 <translation id="7977451675950311423">若您使用的密码遭遇了数据泄露，向您发出警告。</translation>
-<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> 个新标签页，<ph name="NUMBER_OF_TABS_REMOVED" /> 个已关闭</translation>
 <translation id="797824194429476746">相应标签页将在此设备上保持打开状态，但分组将被永久删除。</translation>
 <translation id="797874245254030665">从任意应用中获取您的密码和通行密钥</translation>
 <translation id="7982789257301363584">网络</translation>
@@ -1602,6 +1602,7 @@
 <translation id="800361585186029508">在 Google Chrome 中打开输入的网址。</translation>
 <translation id="8005666035647241369">保存到此设备上的 Google 密码管理工具中</translation>
 <translation id="8011489434346330032">网页检查器</translation>
+<translation id="8017015647846870183">Google 密码管理工具中的数据，包括密码和通行密钥</translation>
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8023170444051056234">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从您的所有设备中删除</translation>
 <translation id="8023878949384262191">展开此部分。</translation>
@@ -1778,7 +1779,6 @@
 <translation id="8728922029615312208">全部关闭</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="87371078663613140">浏览菜单栏中的选项</translation>
-<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> 个新标签页</translation>
 <translation id="8741627442233023406">{count,plural, =1{查看标签页…}other{查看所有标签页…}}</translation>
 <translation id="8741995161408053644">您的 Google 账号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="874599634440689554">创建链接</translation>

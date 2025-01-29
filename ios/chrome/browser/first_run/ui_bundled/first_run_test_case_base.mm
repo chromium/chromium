@@ -49,20 +49,11 @@
 
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface setupHistogramTester]);
-
-  // Because this test suite changes the state of Sync passwords, wait
-  // until the engine is initialized before startup.
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:NO
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
 }
 
 - (void)tearDownHelper {
   [SigninEarlGrey signOut];
 
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:NO
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
 
   // Clear sync prefs for data types.
@@ -87,7 +78,7 @@
   AppLaunchConfiguration config;
 
   config.additional_args.push_back(std::string("-") +
-                                   test_switches::kSignInAtStartup);
+                                   test_switches::kAddFakeIdentitiesAtStartup);
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
   // Relaunches the app at each test to rewind the startup state.

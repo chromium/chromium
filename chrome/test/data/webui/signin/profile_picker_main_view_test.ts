@@ -61,6 +61,7 @@ function generateProfilesList(n: number): ProfileState[] {
              avatarIcon: `AvatarUrl-${i}`,
              avatarBadge: i % 4 === 0 ? 'cr:domain' : '',
              profileCardButtonLabel: '',
+             hasEnterpriseLabel: false,
            }));
 }
 
@@ -178,6 +179,34 @@ suite('ProfilePickerMainViewTest', function() {
     profiles.splice(3, 1);
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
+  });
+
+  test('EditLocalProfileNameDisabledForWorkProfile', async function() {
+    await browserProxy.whenCalled('initializeMainView');
+    const profiles = Array({
+      profilePath: `profilePath`,
+      localProfileName: `Work Profile`,
+      isSyncing: true,
+      needsSignin: false,
+      gaiaName: `User`,
+      userName: `User@example.com`,
+      avatarIcon: `AvatarUrl`,
+      avatarBadge: 'cr:domain',
+      profileCardButtonLabel: '',
+      hasEnterpriseLabel: true,
+    });
+    await simulateProfilesListChanged(profiles);
+
+    // Verify that the input field is disabled.
+    const localProfileName =
+        mainViewElement.shadowRoot!.querySelector('profile-card')!.$.nameInput;
+    assertEquals(localProfileName.value, profiles[0]!.localProfileName);
+    assertTrue(localProfileName.disabled);
+    // Verify that the hover line is hidden.
+    const hoverUnderline =
+        mainViewElement.shadowRoot!.querySelector('profile-card')!.shadowRoot!
+            .querySelector<HTMLElement>('#hoverUnderline');
+    assertTrue(!!hoverUnderline && hoverUnderline?.hidden);
   });
 
   test('EditLocalProfileName', async function() {

@@ -327,6 +327,10 @@ void HostFrameSinkManager::NotifyRendererBlockStateChanged(
                                                        render_input_routers);
 }
 
+void HostFrameSinkManager::RequestInputBack() {
+  frame_sink_manager_->RequestInputBack();
+}
+
 void HostFrameSinkManager::SetOnCopyOutputReadyCallback(
     const blink::SameDocNavigationScreenshotDestinationToken& destination_token,
     ScreenshotDestinationReadyCallback callback) {

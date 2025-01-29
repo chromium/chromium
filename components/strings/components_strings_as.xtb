@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" কীসমূহ একেখন অভিধানত "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" কী হিচাপে ছেট কৰিব নোৱাৰি</translation>
 <translation id="1455413310270022028">ইৰেজাৰ</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{০ টা পৰ্যালোচনা চাওক}=1{১ টা পৰ্যালোচনা চাওক}one{# টা পৰ্যালোচনাৰ আটাইবোৰ চাওক}other{# টা পৰ্যালোচনাৰ আটাইবোৰ চাওক}}</translation>
 <translation id="1458059624921545588">লোক আৰু সমাজ</translation>
 <translation id="1458140305240870199">অন্তর্বাস</translation>
 <translation id="1459693405370120464">বতৰ</translation>
@@ -961,6 +962,7 @@
 <translation id="2674170444375937751">আপুনি ব্ৰাউজিং ইতিহাসৰ পৰা এই পৃষ্ঠাসমূহ মচিবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="2674524144218093528">হাউছ পেইণ্টিং আৰু ফিনিশ্বিং</translation>
 <translation id="2674804415323431591">পৰামৰ্শসমূহ লুকুৱাওক</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> টেবৰ গোট আৰু উপলব্ধ নহয়</translation>
 <translation id="2677748264148917807">ত্যাগ কৰক</translation>
 <translation id="2683195745483370038">অন্য ফলাফল পোৱা গৈছে</translation>
 <translation id="2686919536310834199">হেল্প মী ৰাইটৰ বাবে মতামত পঠিয়াওক</translation>
@@ -1952,6 +1954,7 @@
 <translation id="4407758156081352648">সুৰক্ষা বৰ্তাই ৰাখিবলৈ, আপোনাৰ প্ৰতিষ্ঠানে Chromeত পাছৱৰ্ড পুনৰ ব্যৱহাৰ কৰিবলৈ অনুমতি নিদিয়ে। ব্যৱহাৰকাৰীৰ গোপনীয়তা সুৰক্ষিত কৰিবলৈ Chromeৰ পাছৱৰ্ডসমূহ এনক্ৰিপ্ট কৰা হয়।</translation>
 <translation id="4408413947728134509">কুকি <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">এই কনফিগাৰেশ্বনটো ইনষ্টল কৰিব পৰা হিচাপে চিহ্নিত কৰা হৈছে, কিন্তু এই গঠন প্ৰণালীটোৰ বাবে কোনো প্ৰতিচ্ছবি প্ৰদান কৰা হোৱা নাই, গতিকে এইটো ইনষ্টল কৰিব নোৱাৰি।</translation>
+<translation id="4412377069090572315">লোকসকলে কি কৈছে</translation>
 <translation id="4414452699610169758">পাছৱৰ্ড, পৰিশোধৰ পদ্ধতি আৰু ঠিকনাসমূহ ছেভ কৰি পূৰ কৰিবলৈ Google Password Manager আৰু Chromeৰ স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাটো ব্যৱহাৰ কৰক</translation>
 <translation id="4414515549596849729">কুকি আৰু ছাইটৰ ডেটা</translation>
 <translation id="4415156962929755728">প্লাষ্টিক (হাই গ্লছ)</translation>
@@ -2260,6 +2263,7 @@
 <translation id="5001526427543320409">তৃতীয় পক্ষৰ কুকি</translation>
 <translation id="5002932099480077015">যদি এইটো সক্ষম কৰা হয়, তেন্তে Chromeএ ফর্মৰ ক্ষিপ্ৰতাৰে পুৰাবলৈ আপোনাৰ কার্ডৰ এটা প্ৰতিলিপি এই ডিভাইচত ষ্ট’ৰ কৰিব।</translation>
 <translation id="5007392906805964215">পৰ্যালোচনা কৰক</translation>
+<translation id="500790844453430087">"<ph name="GROUP_TITLE_1" />" আৰু "<ph name="GROUP_TITLE_2" />" টেবৰ গোট আৰু উপলব্ধ নহয়</translation>
 <translation id="5011561501798487822">চিনাক্ত কৰা ভাষা</translation>
 <translation id="5015510746216210676">মেছিনৰ নাম:</translation>
 <translation id="5017554619425969104">আপুনি প্ৰতিলিপি কৰা পাঠ</translation>
@@ -2732,6 +2736,7 @@
 <translation id="5866898949289125849">আপুনি বিকাশকৰ্তাৰ সঁজুলিৰ এটা পৃষ্ঠা চাই আছে</translation>
 <translation id="5869405914158311789">এই ছাইটটো খুলিব নোৱাৰি</translation>
 <translation id="5869522115854928033">ছেভ কৰা পাছৱৰ্ডসমূহ</translation>
+<translation id="5872215789867188990">"<ph name="GROUP_TITLE" />" টেবৰ গোট আৰু উপলব্ধ নহয়</translation>
 <translation id="5872692522325383488">IBAN ছেভ কৰা হ’ল</translation>
 <translation id="5873297634595728366">ডিজেলত চলা বাহন</translation>
 <translation id="5877359070305966420">মানৱ সম্পদ</translation>
@@ -2773,6 +2778,7 @@
 <translation id="5937560539988385583">পৃষ্ঠাখন অনুবাদ কৰা হ’ল</translation>
 <translation id="5938153366081463283">ভাৰ্চুৱেল কাৰ্ডখন যোগ দিয়ক</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">এই তথ্য Trustpilot, ScamAdviser, Google আৰু বহুতোৰ দৰে স্বতন্ত্ৰ পৰ্যালোচনাৰ ৱেবছাইটৰ পৰা লোৱা। সাৰাংশ AIৰ জৰিয়তে সৃষ্টি কৰা হৈছে।</translation>
 <translation id="5944297261866530437">ফেব্ৰিক (হাই-গ্লছ)</translation>
 <translation id="5950901984834744590">ৰেজৰ আৰু শ্বেভাৰ</translation>
 <translation id="5951495562196540101">উপভোক্তাৰ একাউণ্টৰ সৈতে পঞ্জীয়ন কৰিব নোৱাৰি (পেকেজ অনুজ্ঞাপত্ৰ উপলব্ধ)।</translation>
@@ -3138,6 +3144,7 @@
 <translation id="6567832540451970450">আপোনাৰ প্ৰশাসকে এই ছাইটটোৰ বাবে <ph name="PERMISSION" /> দিয়ে</translation>
 <translation id="6568793038316600992">পৰিশোধ পদ্ধতিসমূহ পৰিচালনা কৰাৰ বুটাম, Chromeৰ ছেটিঙত আপোনাৰ পৰিশোধসমূহ আৰু ক্ৰেডিট কাৰ্ডৰ তথ্য পৰিচালনা কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="6569060085658103619">আপুনি কোনো এক্সটেনশ্বনৰ পৃষ্ঠা চাই আছে</translation>
+<translation id="6572867903637058088">এইটো সহায়কনে?</translation>
 <translation id="6573200754375280815">সোঁফালে দুবাৰ পাঞ্চ কৰক</translation>
 <translation id="6574762126505704998">সম্পূৰ্ণ স্ক্ৰীনজুৰি</translation>
 <translation id="6575408526598156416">একাউণ্টত ছেভ কৰক</translation>
@@ -3433,7 +3440,6 @@
 <translation id="7110368079836707726">মহাবিদ্যালয় আৰু বিশ্ববিদ্যালয়</translation>
 <translation id="7111012039238467737">(মান্য)</translation>
 <translation id="7111507312244504964">সম্পত্তিৰ নিৰীক্ষণ আৰু মূল্যায়ন</translation>
-<translation id="7112327784801341716">আপোনাৰ বৰ্তমানৰ তথ্য দেখা নাই নেকি? এয়া আপডে’ট কৰিবলৈ আপোনাৰ বেংকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="7116334367957017155">আপোনাৰ কোনো ঠিকনা ছেভ কৰি থোৱা হোৱা নাই। সমগ্ৰ Googleৰ প্ৰ’ডাক্টত ব্যৱহাৰ কৰিবলৈ এটা ঠিকনা যোগ দিয়ক।</translation>
 <translation id="7118618213916969306">ক্লিপব'ৰ্ড URL, <ph name="SHORT_URL" /> সন্ধান কৰক</translation>
 <translation id="7118852830504022370">এই ছাইটটোৱে HTTPS সমৰ্থন নকৰে বাবে আপুনি এই সকীয়নিটো দেখা পাইছে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সকীয়নিৰ বিষয়ে অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3495,7 +3501,6 @@
 <translation id="7219179957768738017">সংযোগটোৱে <ph name="SSL_VERSION" /> ব্যৱহাৰ কৰে।</translation>
 <translation id="7220786058474068424">প্ৰক্ৰিয়া চলি আছে</translation>
 <translation id="7221855153210829124">জাননী দেখুৱাওক</translation>
-<translation id="7221857374443660083">আপোনাৰ বেংকে এয়া আপুনি বুলি নিশ্চিত কৰিবলৈ বিচাৰে</translation>
 <translation id="722454870747268814">নতুন ইনক’গ্নিট’ টেব</translation>
 <translation id="7227293336683593977">মূল্যৰ ইতিহাস</translation>
 <translation id="7232352818707016189">তুলনাৰ তালিকাৰ বাবে অধিক কাৰ্য</translation>
@@ -4316,9 +4321,11 @@
 <translation id="8672535691554698269">কম্পিউটাৰ নেটৱৰ্ক</translation>
 <translation id="8675446170353411473">আপোনাৰ ফাইলসমূহ <ph name="CLOUD_PROVIDER" />ত আপল’ড কৰি থকা হৈছে</translation>
 <translation id="8676424191133491403">কোনো বিলম্ব নাই</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} খন তালিকা মচা হৈছে}one{{COUNT} খন তালিকা মচা হৈছে}other{{COUNT} খন তালিকা মচা হৈছে}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, উত্তৰ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />ত ৱেবপৃষ্ঠাটো ল’ড কৰিব নোৱাৰাৰ কাৰণ হৈছে:</translation>
 <translation id="8682297334444610648">ডাইন’ছৰৰ গে’ম, খেলিবলৈ টিপক</translation>
+<translation id="8685225035093721011">ষ্ট’ৰৰ পৰ্যালোচনা</translation>
 <translation id="8686424632716064939">কম্পিউটাৰৰ সুৰক্ষা</translation>
 <translation id="8687278439622293018"><ph name="ENTRY_VOICEOVER" /> প্ৰবিষ্টিটো মচা হৈছে</translation>
 <translation id="8687429322371626002">আপোনাৰ ডিভাইচ আৰু একাউণ্ট <ph name="MANAGER" />এ পৰিচালনা কৰে।</translation>

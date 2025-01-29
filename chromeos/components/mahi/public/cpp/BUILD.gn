@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 assert(is_chromeos)
 
 component("cpp") {
@@ -27,6 +25,7 @@ component("cpp") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/crosapi/mojom",
     "//components/account_id",
@@ -36,10 +35,4 @@ component("cpp") {
     "//ui/color",
     "//ui/gfx",
   ]
-  if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
-  }
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
-  }
 }

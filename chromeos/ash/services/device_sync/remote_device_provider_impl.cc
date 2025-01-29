@@ -4,12 +4,13 @@
 
 #include "chromeos/ash/services/device_sync/remote_device_provider_impl.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/secure_message_delegate_impl.h"
 #include "chromeos/ash/services/device_sync/remote_device_loader.h"

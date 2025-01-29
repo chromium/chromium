@@ -943,20 +943,6 @@ NSString* SerializedValue(const base::Value* value) {
       base::SysNSStringToUTF8(GUID));
 }
 
-+ (NSError*)waitForSyncEngineInitialized:(BOOL)isInitialized
-                             syncTimeout:(base::TimeDelta)timeout {
-  bool success = WaitUntilConditionOrTimeout(timeout, ^{
-    return chrome_test_util::IsSyncEngineInitialized() == isInitialized;
-  });
-  if (!success) {
-    NSString* errorDescription =
-        [NSString stringWithFormat:@"Sync must be initialized: %@",
-                                   isInitialized ? @"YES" : @"NO"];
-    return testing::NSErrorWithLocalizedDescription(errorDescription);
-  }
-  return nil;
-}
-
 + (NSError*)waitForSyncFeatureEnabled:(BOOL)isEnabled
                           syncTimeout:(base::TimeDelta)timeout {
   bool success = WaitUntilConditionOrTimeout(timeout, ^{

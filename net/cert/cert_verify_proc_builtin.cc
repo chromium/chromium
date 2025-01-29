@@ -229,15 +229,10 @@ class CertVerifyProcTrustStore {
 
   bool IsNonChromeRootStoreTrustAnchor(
       const bssl::ParsedCertificate* trust_anchor) const {
-    return IsAdditionalTrustAnchor(trust_anchor) ||
+    return additional_trust_store_->GetTrust(trust_anchor).IsTrustAnchor() ||
            system_trust_store_->IsLocallyTrustedRoot(trust_anchor);
   }
 #endif
-
-  bool IsAdditionalTrustAnchor(
-      const bssl::ParsedCertificate* trust_anchor) const {
-    return additional_trust_store_->GetTrust(trust_anchor).IsTrustAnchor();
-  }
 
  private:
   raw_ptr<SystemTrustStore> system_trust_store_;
@@ -1126,9 +1121,6 @@ int AssignVerifyResult(X509Certificate* input_cert,
   if (trusted_cert) {
     verify_result->is_issued_by_known_root =
         trust_store->IsKnownRoot(trusted_cert);
-
-    verify_result->is_issued_by_additional_trust_anchor =
-        trust_store->IsAdditionalTrustAnchor(trusted_cert);
   }
 
   if (path_is_valid && (verification_type == VerificationType::kEV)) {

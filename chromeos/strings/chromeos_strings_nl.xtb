@@ -317,7 +317,6 @@
 <translation id="2308243864813041101">Koppel de USB-kabel van je <ph name="DEVICE_NAME" /> los om door te gaan met het updateproces</translation>
 <translation id="2320295602967756579">Licht thema aanzetten</translation>
 <translation id="2323506179655536734">OVERGESLAGEN</translation>
-<translation id="2323755382216917952">Voor deze update moet je je computer opnieuw opstarten om de installatie af te ronden. Deze update kan een paar minuten duren. Koppel je computer niet los en zet deze niet uit terwijl de firmware wordt geüpdatet.</translation>
 <translation id="2324354238778375592">Zwevend</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Uitstekend (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -463,7 +462,6 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Voer een prompt in zoals 'laat het meer zelfvertrouwen uitstralen'</translation>
 <translation id="3188257591659621405">Mijn bestanden</translation>
-<translation id="3188931456353313123">Deze update wordt geleverd door de fabrikant van het apparaat en is niet geverifieerd door Google.</translation>
 <translation id="319101249942218879">Avatar-afbeelding gewijzigd</translation>
 <translation id="3192947282887913208">Audiobestanden</translation>
 <translation id="3199982728237701504">Documentfeeder (dubbelzijdig)</translation>

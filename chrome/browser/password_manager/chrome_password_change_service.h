@@ -66,6 +66,9 @@ class ChromePasswordChangeService
   // PasswordChangeDelegate::Observer impl.
   void OnPasswordChangeStopped(PasswordChangeDelegate* delegate) override;
 
+  // KeyedService impl.
+  void Shutdown() override;
+
   const raw_ptr<affiliations::AffiliationService> affiliation_service_;
 
   // TODO(crbug.com/382652112): Remove once testing is simplified.

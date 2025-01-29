@@ -147,6 +147,9 @@ class DriveSkyvaultUploader
   // to exit early.
   bool cancelled_ = false;
 
+  // Indicates whether there was no connection on starting the task.
+  bool waiting_for_connection_ = false;
+
   // Stores the first encountered error, if any.
   std::optional<MigrationUploadError> error_;
 

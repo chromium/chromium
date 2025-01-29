@@ -42,13 +42,13 @@ public class RtlGestureNavIphDialog {
                         LayoutInflater.from(context)
                                 .inflate(R.layout.iph_dialog_layout, null, false);
         mModalDialogManager = modalDialogManager;
-        mIphDialogView.setDrawable(
+        String title = context.getString(R.string.rtl_gesture_nav_iph_dialog_title);
+        String description = context.getString(R.string.rtl_gesture_nav_iph_dialog_content);
+        mIphDialogView.initialize(
                 AppCompatResources.getDrawable(
                         context, R.drawable.rtl_gesture_nav_iph_dialog_drawable),
-                context.getString(R.string.rtl_gesture_nav_iph_dialog_content));
-        mIphDialogView.setTitle(context.getString(R.string.rtl_gesture_nav_iph_dialog_title));
-        mIphDialogView.setDescription(
-                context.getString(R.string.rtl_gesture_nav_iph_dialog_content));
+                title,
+                description);
         mIphDialogView.setIntervalMs(1200);
 
         ModalDialogProperties.Controller dialogController =

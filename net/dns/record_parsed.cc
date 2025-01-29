@@ -40,6 +40,7 @@ std::unique_ptr<const RecordParsed> RecordParsed::CreateFrom(
   if (!parser->ReadRecord(&record))
     return nullptr;
 
+  base::span<const uint8_t> rdata_span = base::as_byte_span(record.rdata);
   bool unrecognized_type = false;
   switch (record.type) {
     case ARecordRdata::kType:
@@ -64,7 +65,7 @@ std::unique_ptr<const RecordParsed> RecordParsed::CreateFrom(
       rdata = NsecRecordRdata::Create(record.rdata, *parser);
       break;
     case OptRecordRdata::kType:
-      rdata = OptRecordRdata::Create(record.rdata);
+      rdata = OptRecordRdata::Create(rdata_span);
       break;
     case HttpsRecordRdata::kType:
       rdata = HttpsRecordRdata::Parse(record.rdata);

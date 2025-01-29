@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Скасавана</translation>
 <translation id="1020274983236703756">Цяпер даступны эксклюзіўныя аб’екты <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Рух Зямлі</translation>
+<translation id="102432830749687801">Праграма "Перанос змесціва" ад Google дазваляе перанесці даныя вучэбнага ўліковага запісу ў асабісты ўліковы запіс да таго, як вы страціце да іх доступ.</translation>
 <translation id="1026212596705997935">Спалучэнне клавіш выкарыстоўваецца для дзеяння "<ph name="CONFLICT_ACCEL_NAME" />". Націсніце новае спалучэнне. Каб замяніць існуючае, націсніце новае спалучэнне клавіш яшчэ раз.</translation>
 <translation id="1030856839388844477">Скінуць даныя выкарыстання трафіка</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (патокаў: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Узровень зараду акумулятара чахла: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Можна выканаць праверку ping для шлюза</translation>
 <translation id="1398634363027580500">Вельмі вялікая затрымка HTTPS</translation>
+<translation id="1406389211945506521">Дзякуй за водгук. Вы дапамагаеце нам ствараць больш дакладнае і карыснае змесціва.</translation>
 <translation id="1407069428457324124">Цёмная тэма</translation>
 <translation id="1413240736185167732">Збой: фільтр не працуе</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,11 @@
 <translation id="1808803439260407870">Класічнае мастацтва</translation>
 <translation id="181434555916624618">На гэты момант вынікі, на якіх прысутнічаюць людзі, не паказваюцца. Паспрабуйце выкарыстаць іншы запыт.</translation>
 <translation id="1815850098929213707">Выбрана клавіша <ph name="KEYS" />. Каб змяніць выбар, націсніце на кнопку.</translation>
+<translation id="1818174214124933000">Пры націсканні кнопкі адпраўкі ваш водгук разам з паказаным ніжэй змесцівам будзе адпраўлены ў Google і разгледжаны спецыялістамі, пасля чаго ён будзе выкарыстоўвацца для навучання ці паляпшэння нашых прадуктаў і сэрвісаў у адпаведнасці з <ph name="LINK_POLICY_BEGIN" />Палітыкай прыватнасці<ph name="LINK_POLICY_END" /> і <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Умовамі выкарыстання Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Тэмы</translation>
 <translation id="1827738518074806965">Мастацкая галерэя</translation>
+<translation id="183287940576828840">Абразлівае або небяспечнае змесціва</translation>
+<translation id="1834032517784994783">Выбраць мову расшыфроўкі</translation>
 <translation id="1836553715834333258">Колер сістэмы</translation>
 <translation id="183675228220305365">рэалізм</translation>
 <translation id="1838374766361614909">Ачысціць поле пошуку</translation>
@@ -225,6 +230,7 @@
 <translation id="1908234395526491708">Збоі запытаў UDP</translation>
 <translation id="1908394185991500139">стрэлка ўлева</translation>
 <translation id="1914144885717544695">у пятніцу</translation>
+<translation id="1915960750806557358">Напішыце водгук або апішыце праблему. Не ўказвайце асабістую і канфідэнцыяльную інфармацыю.</translation>
 <translation id="1923388006036088459">Колеравыя акцэнты</translation>
 <translation id="1945403655450283000">Дыктафон</translation>
 <translation id="1947737735496445907">Надрукавана</translation>
@@ -311,7 +317,6 @@
 <translation id="2308243864813041101">Каб працягнуць абнаўленне, адключыце кабель USB ад прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2320295602967756579">Уключыць светлую тэму</translation>
 <translation id="2323506179655536734">ПРАПУШЧАНА</translation>
-<translation id="2323755382216917952">Гэта абнаўленне патрабуе, каб вы перазапусцілі камп’ютар і завяршылі ўсталяванне. Для завяршэння абнаўлення можа спатрэбіцца некалькі хвілін. Падчас абнаўлення ўбудаванага ПЗ не адключайце камп’ютар ад сеткі сілкавання і не завяршайце яго працу.</translation>
 <translation id="2324354238778375592">Зрабіць акно плаваючым</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Выдатны (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +462,6 @@
 <translation id="3178532070248519384">авангард</translation>
 <translation id="3182676044300231689">Увядзіце запыт, напрыклад: "Зрабі тон больш упэўненым"</translation>
 <translation id="3188257591659621405">Мае файлы</translation>
-<translation id="3188931456353313123">Гэта абнаўленне пастаўлена вытворцам прылады і не было праверана Google.</translation>
 <translation id="319101249942218879">Відарыс аватара зменены</translation>
 <translation id="3192947282887913208">Аўдыяфайлы</translation>
 <translation id="3199982728237701504">Прылада для падачы дакументаў (абодвума бакамі)</translation>
@@ -596,6 +600,7 @@
 <translation id="387301095347517405">Колькасць поўных пройдзеных цыклаў зарадкі акумулятара</translation>
 <translation id="3877066159641251281">Праслухаць пераклад</translation>
 <translation id="3880601782712134623">аўтаматычна вызначаць асобныя галасы і прызначаць кожнаму суразмоўніку агульную метку, напрыклад, "Суразмоўнік 1" і "Суразмоўнік 2";</translation>
+<translation id="38811596981744338">Парушэнне заканадаўства</translation>
 <translation id="3885327323343477505">Змяніць застаўку</translation>
 <translation id="3889914174935857450">Дата скіду</translation>
 <translation id="3897092660631435901">Меню</translation>
@@ -727,6 +732,7 @@
 <translation id="4483049906298469269">Не ўдалося праверыць сувязь з нестандартным сеткавым шлюзам</translation>
 <translation id="4483498983731992167">Не ўдаецца стварыць расшыфроўку</translation>
 <translation id="4486524074141928967">Вы выйдзеце з уліковага запісу ў <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Адкрыць інструмент выбару мовы расшыфроўкі</translation>
 <translation id="4500722292849917410">Гэта спалучэнне клавіш недаступнае – выберыце іншае, націснуўшы клавішы ў такой камбінацыі, якая не будзе ўключаць у сябе клавішу-мадыфікатар (Ctrl, Alt, Shift або "<ph name="META_KEY" />").</translation>
 <translation id="4500966230243561393">Колер інтэрфейсу</translation>
 <translation id="4503223151711056411">Стрэлка ўлева</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356">Зараджана: <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="4930320165497208503">Каб наладзіць або абнавіць падключэнне, перайдзіце ў <ph name="BEGIN_LINK" />Налады<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, адкрыецца ў новай укладцы</translation>
 <translation id="4946927805998996217">Зводка ствараецца</translation>
 <translation id="4950314376641394653">Убудаванае праграмнае забеспячэнне прылады "<ph name="DEVICE_NAME" />" абноўлена да версіі <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">тунэль з дрэў</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">Атрыманне інфармацыі, звязанай з вылучаным вамі</translation>
 <translation id="6694534975463174713">блакіроўка</translation>
 <translation id="6700703207451721535">Доступ да гэтай спасылкі забаронены. Спытайце пра доступ у выкладчыка.</translation>
+<translation id="6703179086771097594">Што вам не спадабалася?</translation>
 <translation id="6704062477274546131">Супастаўленне імён DNS</translation>
 <translation id="6712933881624804031">даліна</translation>
 <translation id="6716013206176357696">суніцы</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">Спампуйце мадэль расшыфроўкі ў Наладах</translation>
 <translation id="7058278511608979688">Завяршыць і захаваць</translation>
 <translation id="7059230779847288458">Ідзе зарадка, <ph name="TIME_VALUE" /> да поўнай зарадкі</translation>
+<translation id="7064209589142995848">Перанос змесціва</translation>
 <translation id="7065336548231472971">Выбрана мова: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">клавіша <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Падрыхтоўка прылады</translation>
@@ -1590,6 +1599,7 @@
 <translation id="8476942730579767658">Вокны і працоўныя сталы</translation>
 <translation id="8477536061607044749">графічны дызайн</translation>
 <translation id="8477551185774834963">Затрымка DNS крыху перавышае дапушчальнае парогавае значэнне</translation>
+<translation id="8481308460877552925">Няправільныя звесткі</translation>
 <translation id="8482376765267780829">Выберыце фрагмент тэксту для спрашчэння</translation>
 <translation id="8483248364096924578">IP-адрас</translation>
 <translation id="8491311378305535241">Не ўдалося падключыцца праз брандмаўар да вэб-сайтаў HTTP з праграм Android</translation>

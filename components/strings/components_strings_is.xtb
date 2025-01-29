@@ -271,6 +271,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Ekki er hægt að setja upp lyklana „<ph name="DATA_CONTROLS_FIRST_KEY_SET" />“ í sama reglusafni og lyklarnir „<ph name="DATA_CONTROLS_SECOND_KEY_SET" />“ eru í</translation>
 <translation id="1455413310270022028">Strokleður</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Skoða 0 umsagnir}=1{Skoða 1 umsögn}one{Skoða # umsögn}other{Skoða # umsagnir}}</translation>
 <translation id="1458059624921545588">Fólk og samfélag</translation>
 <translation id="1458140305240870199">Undirfatnaður</translation>
 <translation id="1459693405370120464">Veður</translation>
@@ -1956,6 +1957,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4407758156081352648">Til að viðhalda öryggi þínu leyfir fyrirtækið þitt ekki endurnotkun aðgangsorða á Chrome. Aðgangsorð á Chrome eru dulkóðuð til að vernda friðhelgi notenda.</translation>
 <translation id="4408413947728134509">Fótspor <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Þessi stilling er merkt sem uppsetjanleg en engin mynd er til staðar fyrir þetta grunnkerfi svo ekki er hægt að setja hana upp.</translation>
+<translation id="4412377069090572315">Það sem aðrir segja</translation>
 <translation id="4414452699610169758">Notaðu Google-aðgangsorðastjórnun og sjálfvirka útfyllingu Chrome til að vista og fylla út aðgangsorð, greiðslumáta og heimilisföng</translation>
 <translation id="4414515549596849729">fótspor og gögn vefsvæða</translation>
 <translation id="4415156962929755728">Plast (háglans)</translation>
@@ -2371,6 +2373,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="519422657042045905">Athugasemdir eru ekki tiltækar</translation>
 <translation id="5200063972779787617">Vista heimilisfang á reikningi</translation>
 <translation id="5201306358585911203">Innfelld síða á þessari síðu segir</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn til að skoða hvaða aðgerðir eru í boði og síðan á Enter til að framkvæma valda aðgerð.</translation>
 <translation id="5205222826937269299">Heiti er nauðsynlegt</translation>
 <translation id="5206392433295093945">Svefnherbergi</translation>
 <translation id="5209670883520018268">Bakki 20</translation>
@@ -2777,6 +2780,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5937560539988385583">Síða þýdd</translation>
 <translation id="5938153366081463283">Bæta við sýndarkorti</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Þessar upplýsingar koma frá sjálfstæðum umsagnavefsvæðum eins og Trustpilot, ScamAdviser, Google og fleiri. Samantektir eru búnar til með gervigreind.</translation>
 <translation id="5944297261866530437">Vefnaður (háglans)</translation>
 <translation id="5950901984834744590">Rakvélar</translation>
 <translation id="5951495562196540101">Þú getur ekki skráð þig með almennum reikningi (pakkaleyfi í boði).</translation>
@@ -3143,6 +3147,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6567832540451970450">Kerfisstjórinn þinn veitti þessu vefsvæði aðgang að <ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">Hnappurinn „Stjórna greiðslumátum“, virkjaðu til að stjórna greiðslu- og kreditkortaupplýsingum í stillingum Chrome</translation>
 <translation id="6569060085658103619">Þú ert að skoða viðbótarsíðu</translation>
+<translation id="6572867903637058088">Er þetta gagnlegt?</translation>
 <translation id="6573200754375280815">Tvö göt hægra megin</translation>
 <translation id="6574762126505704998">Fylling</translation>
 <translation id="6575408526598156416">Vista á reikningi</translation>
@@ -3438,7 +3443,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7110368079836707726">Háskólar</translation>
 <translation id="7111012039238467737">(gilt)</translation>
 <translation id="7111507312244504964">Fasteignaskoðun og -mat</translation>
-<translation id="7112327784801341716">Sérðu ekki núverandi upplýsingar? Hafðu samband við bankann þinn til að uppfæra upplýsingarnar.</translation>
 <translation id="7116334367957017155">Þú ert ekki með nein vistuð heimilisföng. Bættu heimilisfangi við til að nota það í vörum Google.</translation>
 <translation id="7118618213916969306">Leita að vefslóð á klippiborði, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Þessi viðvörun birtist vegna þess að þetta vefsvæði styður ekki HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3500,7 +3504,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7219179957768738017">Tengingin notar <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Í vinnslu</translation>
 <translation id="7221855153210829124">Sýna tilkynningar</translation>
-<translation id="7221857374443660083">Bankinn þinn vill staðfesta að um þig sé að ræða</translation>
 <translation id="722454870747268814">Nýr huliðsflipi</translation>
 <translation id="7227293336683593977">Verðferill</translation>
 <translation id="7232352818707016189">Fleiri aðgerðir fyrir samanburðartöflu</translation>
@@ -4321,9 +4324,11 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8672535691554698269">Tölvukerfi</translation>
 <translation id="8675446170353411473">Verið er að hlaða skránum þínum upp í <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Engin töf</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} töflu eytt}one{{COUNT} töflu eytt}other{{COUNT} töflum eytt}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, svar, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Ekki var hægt að hlaða vefsíðuna á <ph name="PAGE" /> vegna þess að:</translation>
 <translation id="8682297334444610648">Risaeðluleikur, ýttu til að spila</translation>
+<translation id="8685225035093721011">Umsagnir um verslun</translation>
 <translation id="8686424632716064939">Tölvuöryggi</translation>
 <translation id="8687278439622293018">Færslunni <ph name="ENTRY_VOICEOVER" /> var eytt</translation>
 <translation id="8687429322371626002"><ph name="MANAGER" /> hefur umsjón með tækinu þínu og reikningnum.</translation>

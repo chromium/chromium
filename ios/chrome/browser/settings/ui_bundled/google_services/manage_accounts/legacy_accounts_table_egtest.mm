@@ -302,9 +302,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Sign In `fakeIdentity`.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
-  // Add a bookmark after sync is initialized.
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
+  // Add a bookmark after sync is active.
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
@@ -328,9 +328,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Sign In `fakeIdentity`.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
-  // Add a bookmark after sync is initialized.
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
+  // Add a bookmark after sync is active.
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kAccount];
@@ -353,9 +353,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [SigninEarlGreyUI
       signinWithFakeIdentity:[FakeSystemIdentity fakeManagedIdentity]];
 
-  // Add a bookmark after sync is initialized.
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
+  // Add a bookmark after sync is active.
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
@@ -378,9 +378,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [SigninEarlGreyUI
       signinWithFakeIdentity:[FakeSystemIdentity fakeManagedIdentity]];
 
-  // Add a bookmark after sync is initialized.
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
+  // Add a bookmark after sync is active.
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kAccount];
@@ -426,9 +426,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
-  // Add a bookmark after sync is initialized.
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
+  // Add a bookmark after sync is active.
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
@@ -513,20 +513,6 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
   // Assert that the empty state background is absent.
   [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
-}
-
-// Tests that the sign-out footer is not shown when the user is not syncing.
-- (void)testSignOutFooterForSignInOnlyUser {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [self openAccountSettings];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                         IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE)),
-                     grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_nil()];
 }
 
 @end

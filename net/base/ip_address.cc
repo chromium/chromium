@@ -17,7 +17,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -195,7 +194,7 @@ bool IPAddressBytes::operator<(const IPAddressBytes& other) const {
 }
 
 bool IPAddressBytes::operator==(const IPAddressBytes& other) const {
-  return base::ranges::equal(*this, other);
+  return std::ranges::equal(*this, other);
 }
 
 bool IPAddressBytes::operator!=(const IPAddressBytes& other) const {
@@ -536,37 +535,37 @@ Dns64PrefixLength ExtractPref64FromIpv4onlyArpaAAAA(const IPAddress& address) {
   IPAddress ipv4onlyarpa1(192, 0, 0, 171);
   auto span = base::span(address.bytes());
 
-  if (base::ranges::equal(ipv4onlyarpa0.bytes(), span.subspan(12u)) ||
-      base::ranges::equal(ipv4onlyarpa1.bytes(), span.subspan(12u))) {
+  if (std::ranges::equal(ipv4onlyarpa0.bytes(), span.subspan(12u)) ||
+      std::ranges::equal(ipv4onlyarpa1.bytes(), span.subspan(12u))) {
     return Dns64PrefixLength::k96bit;
   }
-  if (base::ranges::equal(ipv4onlyarpa0.bytes(), span.subspan(9u, 4u)) ||
-      base::ranges::equal(ipv4onlyarpa1.bytes(), span.subspan(9u, 4u))) {
+  if (std::ranges::equal(ipv4onlyarpa0.bytes(), span.subspan(9u, 4u)) ||
+      std::ranges::equal(ipv4onlyarpa1.bytes(), span.subspan(9u, 4u))) {
     return Dns64PrefixLength::k64bit;
   }
   IPAddressBytes ipv4;
   ipv4.Append(span.subspan(7u, 1u));
   ipv4.Append(span.subspan(9u, 3u));
-  if (base::ranges::equal(ipv4onlyarpa0.bytes(), ipv4) ||
-      base::ranges::equal(ipv4onlyarpa1.bytes(), ipv4)) {
+  if (std::ranges::equal(ipv4onlyarpa0.bytes(), ipv4) ||
+      std::ranges::equal(ipv4onlyarpa1.bytes(), ipv4)) {
     return Dns64PrefixLength::k56bit;
   }
   ipv4 = IPAddressBytes();
   ipv4.Append(span.subspan(6u, 2u));
   ipv4.Append(span.subspan(9u, 2u));
-  if (base::ranges::equal(ipv4onlyarpa0.bytes(), ipv4) ||
-      base::ranges::equal(ipv4onlyarpa1.bytes(), ipv4)) {
+  if (std::ranges::equal(ipv4onlyarpa0.bytes(), ipv4) ||
+      std::ranges::equal(ipv4onlyarpa1.bytes(), ipv4)) {
     return Dns64PrefixLength::k48bit;
   }
   ipv4 = IPAddressBytes();
   ipv4.Append(span.subspan(5u, 3u));
   ipv4.Append(span.subspan(9u, 1u));
-  if (base::ranges::equal(ipv4onlyarpa0.bytes(), ipv4) ||
-      base::ranges::equal(ipv4onlyarpa1.bytes(), ipv4)) {
+  if (std::ranges::equal(ipv4onlyarpa0.bytes(), ipv4) ||
+      std::ranges::equal(ipv4onlyarpa1.bytes(), ipv4)) {
     return Dns64PrefixLength::k40bit;
   }
-  if (base::ranges::equal(ipv4onlyarpa0.bytes(), span.subspan(4u, 4u)) ||
-      base::ranges::equal(ipv4onlyarpa1.bytes(), span.subspan(4u, 4u))) {
+  if (std::ranges::equal(ipv4onlyarpa0.bytes(), span.subspan(4u, 4u)) ||
+      std::ranges::equal(ipv4onlyarpa1.bytes(), span.subspan(4u, 4u))) {
     return Dns64PrefixLength::k32bit;
   }
   // if ipv4onlyarpa address is not found return 0

@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 
-enum class AccountErrorUserActionableType;
 @class IdentityViewItem;
 @protocol SystemIdentity;
 
@@ -18,9 +17,6 @@ enum class AccountErrorUserActionableType;
 
 // Reloads all items. Does nothing if the model is not loaded yet.
 - (void)reloadAllItems;
-
-// Updates error section.
-- (void)updateErrorSectionModelAndReloadViewIfNeeded:(BOOL)reloadViewIfNeeded;
 
 // Pops the view.
 - (void)popView;

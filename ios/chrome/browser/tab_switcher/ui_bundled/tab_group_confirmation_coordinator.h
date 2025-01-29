@@ -23,7 +23,10 @@ typedef void (^TabGroupActionBlock)();
     : ChromeCoordinator <TabGroupConfirmationCommands>
 
 // The action that a tab group is going to take.
-@property(nonatomic, strong) TabGroupActionBlock action;
+@property(nonatomic, strong) TabGroupActionBlock primaryAction;
+
+// The secondary action that a tab group is going to take. Can be nil.
+@property(nonatomic, strong) TabGroupActionBlock secondaryAction;
 
 // The name of the tab group.
 @property(nonatomic, copy) NSString* tabGroupName;

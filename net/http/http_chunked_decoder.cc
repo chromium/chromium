@@ -49,7 +49,6 @@
 
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "net/base/net_errors.h"
@@ -195,7 +194,7 @@ bool HttpChunkedDecoder::ParseChunkSize(base::span<const uint8_t> buf,
   // Be more restrictive than HexStringToInt64;
   // don't allow inputs with leading "-", "+", "0x", "0X"
   std::string_view chunk_size = base::as_string_view(buf);
-  if (!base::ranges::all_of(chunk_size, base::IsHexDigit<char>)) {
+  if (!std::ranges::all_of(chunk_size, base::IsHexDigit<char>)) {
     return false;
   }
 

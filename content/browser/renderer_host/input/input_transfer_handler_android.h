@@ -53,6 +53,11 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   static constexpr const char* kEventsAfterTransferHistogram =
       "Android.InputOnViz.Browser.EventsAfterTransfer";
 
+  bool touch_transferred() { return touch_transferred_; }
+  bool FilterRedundantDownEvent(const ui::MotionEvent& event);
+
+  void RequestInputBack();
+
  private:
   void Reset();
 
@@ -61,6 +66,10 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
 
   raw_ptr<InputTransferHandlerAndroidClient> client_ = nullptr;
   bool touch_transferred_ = false;
+  // Stores the event time of first down event of the most recent touch sequence
+  // transferred to VizCompositor. See
+  // (https://developer.android.com/reference/android/view/MotionEvent#getDownTime())
+  base::TimeTicks cached_transferred_sequence_down_time_ms_;
   int touch_moves_seen_after_transfer_ = 0;
   std::unique_ptr<JniDelegate> jni_delegate_ = nullptr;
 };
