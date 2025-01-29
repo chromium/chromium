@@ -118,6 +118,7 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
                                                 String& sub_message,
                                                 TextDirection& sub_message_dir);
   virtual Element& ValidationAnchor() const;
+  Element& GetHostOrFocusDelegate() const;
   bool ValidationAnchorOrHostIsFocusable() const;
 
   // For Element::IsValidElement(), which is for :valid :invalid selectors.
