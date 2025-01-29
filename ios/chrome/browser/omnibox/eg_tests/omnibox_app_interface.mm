@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_app_interface.h"
+#import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/files/file_util.h"
@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/history/model/top_sites_factory.h"
+#import "ios/chrome/browser/omnibox/eg_tests/test_fake_suggestions_service.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/test_fake_suggestions_service.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"

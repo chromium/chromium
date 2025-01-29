@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/omnibox/ui_bundled/test_fake_suggestions_service.h"
+#include "ios/chrome/browser/omnibox/eg_tests/test_fake_suggestions_service.h"
 
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"

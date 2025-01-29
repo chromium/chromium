@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_EARL_GREY_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_EARL_GREY_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_OMNIBOX_EARL_GREY_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_OMNIBOX_EARL_GREY_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_test_util.h"
+#import "ios/chrome/browser/omnibox/eg_tests/omnibox_test_util.h"
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 
 namespace net {
@@ -51,4 +51,4 @@ class EmbeddedTestServer;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_EARL_GREY_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_OMNIBOX_EARL_GREY_H_

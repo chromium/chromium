@@ -141,7 +141,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/location_bar/ui_bundled:ui_bundled",
     "//ios/chrome/browser/metrics/model:eg_app_support+eg2",
     "//ios/chrome/browser/ntp/ui_bundled",
-    "//ios/chrome/browser/omnibox/ui_bundled:eg_app_support+eg2",
+    "//ios/chrome/browser/omnibox/eg_tests:eg_app_support+eg2",
     "//ios/chrome/browser/omnibox/ui_bundled:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_popup_shared",

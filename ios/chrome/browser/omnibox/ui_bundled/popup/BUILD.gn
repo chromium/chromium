@@ -263,37 +263,3 @@ source_set("unit_tests") {
     "//ui/base",
   ]
 }
-
-source_set("eg2_tests") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [
-    "omnibox_popup_egtest.mm",
-    "omnibox_popup_pedal_egtest.mm",
-  ]
-  deps = [
-    ":popup_accessibility_identifier_constants",
-    "//base",
-    "//components/omnibox/common",
-    "//components/strings",
-    "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/history/ui_bundled:constants",
-    "//ios/chrome/browser/omnibox/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/omnibox/ui_bundled:features",
-    "//ios/chrome/browser/omnibox/ui_bundled:omnibox_popup_shared",
-    "//ios/chrome/browser/settings/ui_bundled:constants",
-    "//ios/chrome/browser/settings/ui_bundled/cells:clear_browsing_data_constants",
-    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data:features",
-    "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
-    "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
-    "//ios/chrome/common/ui/confirmation_alert:constants",
-    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//net:test_support",
-    "//ui/base",
-    "//ui/strings",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}

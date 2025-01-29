@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_TEST_FAKE_SUGGESTIONS_SERVICE_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_TEST_FAKE_SUGGESTIONS_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_TEST_FAKE_SUGGESTIONS_SERVICE_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_TEST_FAKE_SUGGESTIONS_SERVICE_H_
 
 #import "base/files/file_path.h"
 #import "base/memory/weak_ptr.h"
@@ -54,4 +54,4 @@ class TestFakeSuggestionsService : public RemoteSuggestionsService::Observer {
   base::WeakPtrFactory<TestFakeSuggestionsService> weak_ptr_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_TEST_FAKE_SUGGESTIONS_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_TEST_FAKE_SUGGESTIONS_SERVICE_H_
