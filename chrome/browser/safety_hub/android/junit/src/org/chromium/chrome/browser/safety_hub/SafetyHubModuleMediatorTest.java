@@ -24,8 +24,8 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleOption;
-import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleState;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.Arrays;

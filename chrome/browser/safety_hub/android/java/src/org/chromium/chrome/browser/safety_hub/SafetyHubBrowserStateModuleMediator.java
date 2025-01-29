@@ -8,7 +8,7 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleState;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.components.browser_ui.settings.CardPreference;
 
 import java.util.List;

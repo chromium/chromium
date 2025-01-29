@@ -19,7 +19,6 @@ generate_jni("jni_headers") {
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/safety_hub/DeprecatedSafetyHubModuleProperties.java",
     "java/src/org/chromium/chrome/browser/safety_hub/MagicStackBridge.java",
     "java/src/org/chromium/chrome/browser/safety_hub/MagicStackEntry.java",
     "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissionReviewBridge.java",

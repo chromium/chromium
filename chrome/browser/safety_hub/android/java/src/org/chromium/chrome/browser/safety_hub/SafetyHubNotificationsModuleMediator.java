@@ -8,9 +8,9 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 
 import android.view.View;
 
-import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleOption;
-import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleState;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.NotificationsModuleInteractions;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
